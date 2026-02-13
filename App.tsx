@@ -167,6 +167,13 @@ function AppContent() {
 
 // Main App component with providers
 export default function App() {
+  // Landing only mode - skip auth entirely
+  if (isLandingOnly) {
+    return <LandingPage onLogin={() => {
+      document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' });
+    }} />;
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
