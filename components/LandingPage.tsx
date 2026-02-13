@@ -10,6 +10,7 @@ import { supabase } from '../src/lib/supabase/client';
 
 interface LandingPageProps {
   onLogin: () => void;
+  isDemo?: boolean;
 }
 
 // --- Components Helpers ---
@@ -248,7 +249,7 @@ const Header: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
   );
 };
 
-const Hero: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
+const Hero: React.FC<{ onLogin: () => void; isDemo?: boolean }> = ({ onLogin, isDemo }) => {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error' | 'duplicate'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
@@ -353,30 +354,45 @@ const Hero: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
           아이디어 검증부터 IR 자료 생성까지, Draft OS 하나로 끝내세요.
         </p>
 
-        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row items-center lg:justify-start justify-center max-w-xl lg:max-w-md gap-3 w-full lg:mx-0 mx-auto mb-10" id="waitlist">
-          <div className="w-full relative">
-             <input
-              type="email"
-              placeholder="이메일을 입력해주세요"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 bg-white border border-gray-300 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all text-sm font-mono placeholder:font-sans rounded-none"
-              required
-            />
+        {isDemo ? (
+          <div className="flex flex-col sm:flex-row items-center lg:justify-start justify-center gap-4 mb-10">
+            <button
+              onClick={onLogin}
+              className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 font-bold text-lg transition-all flex items-center gap-3 shadow-lg shadow-blue-200/50"
+            >
+              <Rocket className="w-5 h-5" />
+              데모 체험하기
+            </button>
+            <span className="text-sm text-gray-500 font-mono">로그인 없이 바로 체험</span>
           </div>
-          <button
-            type="submit"
-            disabled={status === 'loading'}
-            className={`w-full sm:w-auto px-8 py-3 text-white font-medium transition-all flex items-center justify-center whitespace-nowrap shadow-lg shadow-blue-200/50 rounded-none shrink-0 disabled:opacity-70 ${getButtonStyle()}`}
-          >
-            {getButtonContent()}
-          </button>
-        </form>
+        ) : (
+          <>
+            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row items-center lg:justify-start justify-center max-w-xl lg:max-w-md gap-3 w-full lg:mx-0 mx-auto mb-10" id="waitlist">
+              <div className="w-full relative">
+                 <input
+                  type="email"
+                  placeholder="이메일을 입력해주세요"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-gray-300 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all text-sm font-mono placeholder:font-sans rounded-none"
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={status === 'loading'}
+                className={`w-full sm:w-auto px-8 py-3 text-white font-medium transition-all flex items-center justify-center whitespace-nowrap shadow-lg shadow-blue-200/50 rounded-none shrink-0 disabled:opacity-70 ${getButtonStyle()}`}
+              >
+                {getButtonContent()}
+              </button>
+            </form>
 
-        {errorMessage && (
-          <div className="text-red-500 text-sm mb-4 lg:text-left text-center">
-            {errorMessage}
-          </div>
+            {errorMessage && (
+              <div className="text-red-500 text-sm mb-4 lg:text-left text-center">
+                {errorMessage}
+              </div>
+            )}
+          </>
         )}
 
         <div className="flex flex-wrap items-center lg:justify-start justify-center gap-4 sm:gap-6 text-[10px] font-mono text-gray-400 uppercase tracking-widest">
@@ -700,7 +716,7 @@ const LiveFeed: React.FC = () => {
   );
 };
 
-const FinalCTA: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
+const FinalCTA: React.FC<{ onLogin: () => void; isDemo?: boolean }> = ({ onLogin, isDemo }) => {
     return (
         <section className="py-24 bg-black text-white relative overflow-hidden">
             <div className="grid-bg-dark absolute inset-0 opacity-20 pointer-events-none"></div>
@@ -719,12 +735,21 @@ const FinalCTA: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
                       onClick={onLogin}
                       className="bg-blue-600 text-white px-8 py-4 font-bold text-lg hover:bg-blue-500 transition-colors flex items-center justify-center gap-2 group w-full sm:w-auto"
                     >
-                        GET STARTED <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        {isDemo ? (
+                          <>
+                            <Rocket className="w-5 h-5" />
+                            데모 체험하기
+                          </>
+                        ) : (
+                          <>
+                            GET STARTED <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                          </>
+                        )}
                     </button>
                 </div>
 
                 <p className="mt-8 text-xs font-mono text-gray-600 tracking-widest uppercase">
-                    Join 2,000+ Founders Waiting
+                    {isDemo ? '로그인 없이 바로 체험해보세요' : 'Join 2,000+ Founders Waiting'}
                 </p>
             </div>
 
@@ -791,18 +816,31 @@ const Footer: React.FC = () => {
   );
 };
 
-export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
+export const LandingPage: React.FC<LandingPageProps> = ({ onLogin, isDemo }) => {
   return (
     <div className="min-h-screen font-sans selection:bg-blue-100 text-slate-900 bg-white">
       <Header onLogin={onLogin} />
       <main>
-        <Hero onLogin={onLogin} />
+        <Hero onLogin={onLogin} isDemo={isDemo} />
         <PainPoints />
         <Features />
         <LiveFeed />
-        <FinalCTA onLogin={onLogin} />
+        <FinalCTA onLogin={onLogin} isDemo={isDemo} />
       </main>
       <Footer />
+
+      {/* Demo Mode Floating Button */}
+      {isDemo && (
+        <div className="fixed bottom-6 right-6 z-50">
+          <button
+            onClick={onLogin}
+            className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-full shadow-xl flex items-center gap-2 font-bold text-sm transition-all hover:scale-105"
+          >
+            <Rocket size={18} />
+            데모 체험하기
+          </button>
+        </div>
+      )}
     </div>
   );
 };

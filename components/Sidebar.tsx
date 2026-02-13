@@ -20,9 +20,10 @@ import {
 interface SidebarProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  onBackToLanding?: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, onBackToLanding }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -124,8 +125,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
 
               <div className="h-px bg-gray-100 my-1"></div>
 
-              <button className="flex items-center gap-3 px-3 py-2 text-xs font-bold text-red-600 hover:bg-red-50 rounded-sm transition-colors text-left w-full">
-                <LogOut size={14} /> Sign Out
+              <button
+                onClick={() => onBackToLanding?.()}
+                className="flex items-center gap-3 px-3 py-2 text-xs font-bold text-red-600 hover:bg-red-50 rounded-sm transition-colors text-left w-full"
+              >
+                <LogOut size={14} /> {onBackToLanding ? 'Exit Demo' : 'Sign Out'}
               </button>
             </div>
          )}
