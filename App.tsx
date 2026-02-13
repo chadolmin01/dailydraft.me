@@ -369,6 +369,7 @@ function LandingOnlyApp() {
   const [isDemo, setIsDemo] = useState(false);
 
   const handleEnterDemo = () => {
+    console.log('handleEnterDemo called');
     setIsDemo(true);
   };
 
