@@ -387,9 +387,15 @@ function LandingOnlyApp() {
 
 // Main App component with providers
 export default function App() {
-  // Landing only mode - show landing with demo option
+  // Landing only mode - show landing with demo option (still need AuthProvider for demo components)
   if (isLandingOnly) {
-    return <LandingOnlyApp />;
+    return (
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <LandingOnlyApp />
+        </AuthProvider>
+      </QueryClientProvider>
+    );
   }
 
   return (
