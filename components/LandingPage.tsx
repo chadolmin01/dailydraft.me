@@ -771,9 +771,7 @@ const Footer: React.FC = () => {
                   팀 빌딩부터 투자 유치까지, Draft가 함께합니다.
                </p>
                <div className="flex gap-4">
-                  <div className="w-8 h-8 bg-gray-100 flex items-center justify-center border border-gray-200 hover:border-black transition-colors"><span className="font-bold text-xs">Fb</span></div>
-                  <div className="w-8 h-8 bg-gray-100 flex items-center justify-center border border-gray-200 hover:border-black transition-colors"><span className="font-bold text-xs">In</span></div>
-                  <div className="w-8 h-8 bg-gray-100 flex items-center justify-center border border-gray-200 hover:border-black transition-colors"><span className="font-bold text-xs">Tw</span></div>
+                  <a href="https://instagram.com/dailydraft_me" target="_blank" rel="noopener noreferrer" className="w-8 h-8 bg-gray-100 flex items-center justify-center border border-gray-200 hover:border-black hover:bg-gray-200 transition-colors"><span className="font-bold text-xs">IG</span></a>
                </div>
             </div>
 
@@ -796,10 +794,11 @@ const Footer: React.FC = () => {
             </div>
 
              <div>
-               <h4 className="font-bold text-sm mb-4 font-mono uppercase tracking-wider">Legal</h4>
+               <h4 className="font-bold text-sm mb-4 font-mono uppercase tracking-wider">Contact</h4>
                <ul className="space-y-3 text-sm text-gray-500">
-                  <li><a href="#" className="hover:text-black transition-colors">개인정보처리방침</a></li>
-                  <li><a href="#" className="hover:text-black transition-colors">이용약관</a></li>
+                  <li><a href="https://instagram.com/dailydraft_me" target="_blank" rel="noopener noreferrer" className="hover:text-black transition-colors">Instagram</a></li>
+                  <li><a href="mailto:team@dailydraft.me" className="hover:text-black transition-colors">team@dailydraft.me</a></li>
+                  <li><a href="tel:010-4631-9554" className="hover:text-black transition-colors">010-4631-9554</a></li>
                </ul>
             </div>
         </div>
