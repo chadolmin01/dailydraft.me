@@ -10,6 +10,7 @@ import { supabase } from '../src/lib/supabase/client';
 
 interface LandingPageProps {
   onLogin: () => void;
+  onDemo?: () => void;
   isDemo?: boolean;
 }
 
@@ -249,7 +250,7 @@ const Header: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
   );
 };
 
-const Hero: React.FC<{ onLogin: () => void; isDemo?: boolean }> = ({ onLogin, isDemo }) => {
+const Hero: React.FC<{ onLogin: () => void; onDemo?: () => void; isDemo?: boolean }> = ({ onLogin, onDemo, isDemo }) => {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error' | 'duplicate'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
@@ -382,10 +383,10 @@ const Hero: React.FC<{ onLogin: () => void; isDemo?: boolean }> = ({ onLogin, is
         )}
 
         {/* Demo Button */}
-        {isDemo && (
+        {isDemo && onDemo && (
           <div className="flex flex-row flex-wrap items-center lg:justify-start justify-center gap-3 mb-6">
             <button
-              onClick={onLogin}
+              onClick={onDemo}
               className="bg-gray-900 hover:bg-gray-800 text-white px-6 py-3 font-medium transition-all flex items-center gap-2 border border-gray-700"
             >
               <Rocket className="w-4 h-4" />
@@ -716,7 +717,7 @@ const LiveFeed: React.FC = () => {
   );
 };
 
-const FinalCTA: React.FC<{ onLogin: () => void; isDemo?: boolean }> = ({ onLogin, isDemo }) => {
+const FinalCTA: React.FC<{ onLogin: () => void; onDemo?: () => void; isDemo?: boolean }> = ({ onLogin, onDemo, isDemo }) => {
     return (
         <section className="py-24 bg-black text-white relative overflow-hidden">
             <div className="grid-bg-dark absolute inset-0 opacity-20 pointer-events-none"></div>
@@ -731,21 +732,22 @@ const FinalCTA: React.FC<{ onLogin: () => void; isDemo?: boolean }> = ({ onLogin
                 </p>
 
                 <div className="flex flex-col sm:flex-row justify-center gap-4 max-w-md mx-auto">
-                    <button
-                      onClick={onLogin}
-                      className="bg-blue-600 text-white px-8 py-4 font-bold text-lg hover:bg-blue-500 transition-colors flex items-center justify-center gap-2 group w-full sm:w-auto"
-                    >
-                        {isDemo ? (
-                          <>
-                            <Rocket className="w-5 h-5" />
-                            데모 체험하기
-                          </>
-                        ) : (
-                          <>
-                            GET STARTED <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                          </>
-                        )}
-                    </button>
+                    {isDemo && onDemo ? (
+                      <button
+                        onClick={onDemo}
+                        className="bg-blue-600 text-white px-8 py-4 font-bold text-lg hover:bg-blue-500 transition-colors flex items-center justify-center gap-2 group w-full sm:w-auto"
+                      >
+                        <Rocket className="w-5 h-5" />
+                        데모 체험하기
+                      </button>
+                    ) : (
+                      <button
+                        onClick={onLogin}
+                        className="bg-blue-600 text-white px-8 py-4 font-bold text-lg hover:bg-blue-500 transition-colors flex items-center justify-center gap-2 group w-full sm:w-auto"
+                      >
+                        GET STARTED <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                      </button>
+                    )}
                 </div>
 
                 <p className="mt-8 text-xs font-mono text-gray-600 tracking-widest uppercase">
@@ -829,24 +831,28 @@ const Footer: React.FC = () => {
   );
 };
 
-export const LandingPage: React.FC<LandingPageProps> = ({ onLogin, isDemo }) => {
+export const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onDemo, isDemo }) => {
+  const scrollToWaitlist = () => {
+    document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <div className="min-h-screen font-sans selection:bg-blue-100 text-slate-900 bg-white">
-      <Header onLogin={onLogin} />
+      <Header onLogin={scrollToWaitlist} />
       <main>
-        <Hero onLogin={onLogin} isDemo={isDemo} />
+        <Hero onLogin={scrollToWaitlist} onDemo={onDemo} isDemo={isDemo} />
         <PainPoints />
         <Features />
         <LiveFeed />
-        <FinalCTA onLogin={onLogin} isDemo={isDemo} />
+        <FinalCTA onLogin={scrollToWaitlist} onDemo={onDemo} isDemo={isDemo} />
       </main>
       <Footer />
 
       {/* Demo Mode Floating Button */}
-      {isDemo && (
+      {isDemo && onDemo && (
         <div className="fixed bottom-6 right-6 z-50">
           <button
-            onClick={onLogin}
+            onClick={onDemo}
             className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-full shadow-xl flex items-center gap-2 font-bold text-sm transition-all hover:scale-105"
           >
             <Rocket size={18} />

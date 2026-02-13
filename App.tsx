@@ -381,7 +381,7 @@ function LandingOnlyApp() {
     return <DemoApp onExitDemo={handleExitDemo} />;
   }
 
-  return <LandingPage onLogin={handleEnterDemo} isDemo={true} />;
+  return <LandingPage onLogin={() => {}} onDemo={handleEnterDemo} isDemo={true} />;
 }
 
 // Main App component with providers
