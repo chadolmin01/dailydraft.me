@@ -29,7 +29,8 @@ const queryClient = new QueryClient({
 });
 
 // Landing page only mode - for pre-launch deployment
-const isLandingOnly = import.meta.env.VITE_LANDING_ONLY === 'true';
+// const isLandingOnly = import.meta.env.VITE_LANDING_ONLY === 'true';
+const isLandingOnly = true; // TEMP: hardcoded for testing
 
 function AppContent() {
   const { isAuthenticated, isLoading: authLoading, profile } = useAuth();
