@@ -832,8 +832,6 @@ const Footer: React.FC = () => {
 };
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onDemo, isDemo }) => {
-  console.log('LandingPage render - isDemo:', isDemo, 'onDemo:', typeof onDemo);
-
   const scrollToWaitlist = () => {
     document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' });
   };
