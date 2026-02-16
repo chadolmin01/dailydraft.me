@@ -114,7 +114,11 @@
       "Bash(npm uninstall:*)",
       "Bash(npm run cache:*)",
       "Bash(npm init:*)",
-      "Bash(git rm:*)"
+      "Bash(git rm:*)",
+      "WebFetch(domain:kbizplan.com)",
+      "WebFetch(domain:brunch.co.kr)",
+      "WebFetch(domain:imweb.me)",
+      "WebFetch(domain:www.winnersshop.kr)"
     ]
   }
 }

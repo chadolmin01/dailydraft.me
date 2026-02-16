@@ -1,17 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { collectDevpostHackathons } from '@/src/lib/events/collectors';
+import { syncEventsToDatabase } from '@/src/lib/events/event-sync-manager';
+import { createClient } from '@supabase/supabase-js';
 
 export const runtime = 'nodejs';
 export const maxDuration = 300; // 5 minutes for processing
 
 /**
- * Cron endpoint for syncing external events (Devpost, Meetup)
+ * Cron endpoint for syncing external events (Devpost)
  * POST /api/cron/sync-external-events
  *
- * 이 엔드포인트는 event-collector 모듈을 호출하여
- * 외부 소스(Devpost, Meetup)에서 이벤트를 수집합니다.
- *
- * 현재는 event-collector 모듈이 별도로 실행되므로
- * 이 엔드포인트는 트리거 역할만 합니다.
+ * Devpost API에서 해커톤 정보를 수집하여 데이터베이스에 저장합니다.
  */
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
@@ -37,25 +36,57 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 2. 외부 이벤트 동기화
-    // event-collector 모듈은 독립적으로 실행되므로
-    // 여기서는 상태만 확인하거나 직접 호출할 수 있습니다.
+    // 2. Collect from Devpost
+    const devpostEvents = await collectDevpostHackathons({
+      maxPages: 5,
+      status: 'open',
+      includeOnline: true,
+    });
 
-    // Option A: 독립 실행 (권장)
-    // GitHub Actions에서 직접 event-collector 실행
+    if (devpostEvents.length === 0) {
+      return NextResponse.json({
+        success: true,
+        timestamp: new Date().toISOString(),
+        result: {
+          devpost: { collected: 0, synced: 0 },
+        },
+        duration_ms: Date.now() - startTime,
+      });
+    }
 
-    // Option B: 모듈 직접 호출 (모노레포 시)
-    // const { runFullSync } = await import('event-collector');
-    // const result = await runFullSync();
+    // 3. Sync to database with AI processing
+    const syncResult = await syncEventsToDatabase(devpostEvents);
 
-    // 현재는 placeholder 응답
+    // 4. Generate deadline notifications
+    let notificationsCreated = 0;
+    if (syncResult.new_events > 0) {
+      try {
+        const supabaseAdmin = createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.SUPABASE_SERVICE_ROLE_KEY!
+        );
+        const { data: notifResult } = await supabaseAdmin.rpc('generate_deadline_notifications');
+        notificationsCreated = notifResult || 0;
+      } catch {
+        // Notification generation failed, continue
+      }
+    }
+
     const duration = Date.now() - startTime;
 
     return NextResponse.json({
       success: true,
       timestamp: new Date().toISOString(),
-      message: 'External event sync triggered. Check event-collector logs for details.',
-      sources: ['devpost', 'meetup'],
+      result: {
+        devpost: {
+          collected: devpostEvents.length,
+          new_events: syncResult.new_events,
+          updated_events: syncResult.updated_events,
+          skipped_events: syncResult.skipped_events,
+          errors: syncResult.errors.length,
+        },
+        notifications_created: notificationsCreated,
+      },
       duration_ms: duration,
     });
 
@@ -81,7 +112,7 @@ export async function POST(request: NextRequest) {
 export async function GET() {
   return NextResponse.json({
     status: 'ready',
-    sources: ['devpost', 'meetup'],
+    sources: ['devpost'],
     timestamp: new Date().toISOString(),
   });
 }
