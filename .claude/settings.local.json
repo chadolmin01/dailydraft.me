@@ -120,7 +120,17 @@
       "WebFetch(domain:imweb.me)",
       "WebFetch(domain:www.winnersshop.kr)",
       "WebFetch(domain:blog.highoutputclub.com)",
-      "WebFetch(domain:k-rnd.com)"
+      "WebFetch(domain:k-rnd.com)",
+      "WebFetch(domain:velog.io)",
+      "WebFetch(domain:longrunnewstart.com)",
+      "WebFetch(domain:disquiet.io)",
+      "Bash(pushd:*)",
+      "WebFetch(domain:lucy-the-marketer.kr)",
+      "WebFetch(domain:babajung.com)",
+      "WebFetch(domain:eopla.net)",
+      "WebFetch(domain:bodeveloper.com)",
+      "WebFetch(domain:www.beginmate.com)",
+      "WebFetch(domain:founders.company)"
     ]
   }
 }

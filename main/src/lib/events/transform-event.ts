@@ -1,7 +1,13 @@
 import type { KStartupEventItem, TransformedEvent } from '@/src/types/startup-events';
+import { filterPersonalInfo } from './legal-compliance';
 
 /**
  * Transform K-Startup API response to internal format
+ *
+ * 법적 준수:
+ * - 개인정보 필터링 적용
+ * - 원본 URL 보존 (출처 명시)
+ * - 메타데이터만 저장 (저작권 보호)
  *
  * API Field Mapping:
  * - pbanc_sn: 공고일련번호 → external_id
@@ -16,21 +22,33 @@ import type { KStartupEventItem, TransformedEvent } from '@/src/types/startup-ev
 export function transformKStartupEvent(item: KStartupEventItem): TransformedEvent {
   const eventType = normalizeEventType(item.supt_biz_clsfc);
 
+  // 개인정보 필터링 적용
+  const title = filterPersonalInfo(cleanText(item.biz_pbanc_nm));
+  const organizer = filterPersonalInfo(cleanText(item.pbanc_ntrp_nm));
+  const description = cleanHtml(item.pbanc_ctnt);
+  const targetAudience = cleanText(item.aply_trgt);
+
   return {
     external_id: `k-startup:${item.pbanc_sn}`,
     source: 'k-startup',
-    title: cleanText(item.biz_pbanc_nm),
-    organizer: cleanText(item.pbanc_ntrp_nm),
+    title,
+    organizer,
     event_type: eventType,
-    description: cleanHtml(item.pbanc_ctnt),
+    description: description ? filterPersonalInfo(description) : null,
     start_date: null,
     end_date: null,
     registration_start_date: parseDate(item.pbanc_rcpt_bgng_dt),
     registration_end_date: parseDate(item.pbanc_rcpt_end_dt) || getTodayISO(),
-    registration_url: item.detl_pg_url || item.biz_aply_url || null,
-    views_count: 0, // Not provided by this API
-    target_audience: cleanText(item.aply_trgt) || null,
-    raw_data: item as Record<string, unknown>,
+    registration_url: item.detl_pg_url || item.biz_aply_url || null, // 원본 URL 보존
+    views_count: 0,
+    target_audience: targetAudience ? filterPersonalInfo(targetAudience) : null,
+    // 최소한의 메타데이터만 저장 (저작권 보호)
+    raw_data: {
+      pbanc_sn: item.pbanc_sn,
+      supt_biz_clsfc: item.supt_biz_clsfc,
+      supt_regin: item.supt_regin,
+      // 전체 원본 데이터는 저장하지 않음
+    },
   };
 }
 

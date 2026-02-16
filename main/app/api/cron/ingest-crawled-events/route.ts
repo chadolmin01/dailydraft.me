@@ -3,6 +3,10 @@ import { createClient } from '@supabase/supabase-js';
 import { geminiRateLimiter } from '@/src/lib/ai/rate-limiter';
 import { classifyEventTags } from '@/src/lib/ai/event-tag-classifier';
 import { generateEventEmbedding } from '@/src/lib/ai/embeddings';
+import {
+  filterPersonalInfo,
+  createDataProvenance,
+} from '@/src/lib/events/legal-compliance';
 
 export const runtime = 'nodejs';
 export const maxDuration = 300; // 5 minutes for processing
@@ -149,12 +153,24 @@ export async function POST(request: NextRequest) {
 
 /**
  * Ingest events from crawler into database
+ * 법적 준수: 개인정보 필터링 및 데이터 출처 기록
  */
 async function ingestEvents(
   source: CrawledSource,
   events: CrawledEvent[],
   options: { skipAI: boolean }
 ): Promise<IngestResult> {
+  // 데이터 출처 기록 (법적 방어)
+  const provenance = createDataProvenance(
+    `crawler:${source}`,
+    source,
+    {
+      dataType: 'public_webpage',
+      robotsAllowed: true, // 외부 크롤러에서 이미 확인됨
+    }
+  );
+  console.log(`[Ingest] 데이터 출처:`, provenance);
+
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -176,12 +192,15 @@ async function ingestEvents(
   );
   result.skipped_events = events.length - activeEvents.length;
 
-  if (activeEvents.length === 0) {
+  // 개인정보 필터링 적용
+  const sanitizedEvents = activeEvents.map(sanitizeCrawledEvent);
+
+  if (sanitizedEvents.length === 0) {
     return result;
   }
 
   // Get existing events
-  const externalIds = activeEvents.map(e => e.external_id);
+  const externalIds = sanitizedEvents.map(e => e.external_id);
   const { data: existingEvents } = await supabase
     .from('startup_events')
     .select('external_id')
@@ -190,8 +209,8 @@ async function ingestEvents(
   const existingIds = new Set(existingEvents?.map(e => e.external_id) || []);
 
   // Process new events
-  const newEvents = activeEvents.filter(e => !existingIds.has(e.external_id));
-  const updateEvents = activeEvents.filter(e => existingIds.has(e.external_id));
+  const newEvents = sanitizedEvents.filter(e => !existingIds.has(e.external_id));
+  const updateEvents = sanitizedEvents.filter(e => existingIds.has(e.external_id));
 
   // Insert new events
   for (const event of newEvents) {
@@ -331,5 +350,32 @@ export async function GET() {
     status: 'ready',
     valid_sources: VALID_CRAWLED_SOURCES,
     timestamp: new Date().toISOString(),
+    legal_compliance: {
+      personal_info_filtering: true,
+      data_provenance_logging: true,
+      original_url_preserved: true,
+    },
   });
+}
+
+/**
+ * 크롤링된 이벤트 데이터 정화 (법적 준수)
+ * - 개인정보 필터링
+ * - raw_data 최소화 (저작권 보호)
+ */
+function sanitizeCrawledEvent(event: CrawledEvent): CrawledEvent {
+  return {
+    ...event,
+    // 개인정보 필터링 적용
+    title: filterPersonalInfo(event.title),
+    organizer: filterPersonalInfo(event.organizer),
+    description: event.description ? filterPersonalInfo(event.description) : null,
+    target_audience: event.target_audience ? filterPersonalInfo(event.target_audience) : null,
+    // raw_data 최소화 (저작권 보호)
+    raw_data: event.raw_data ? {
+      source_url: (event.raw_data as Record<string, unknown>).source_url,
+      crawled_at: (event.raw_data as Record<string, unknown>).crawled_at,
+      // 전체 HTML/원본 데이터는 저장하지 않음
+    } : null,
+  };
 }
