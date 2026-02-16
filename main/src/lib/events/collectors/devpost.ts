@@ -1,11 +1,31 @@
 /**
  * Devpost API 클라이언트 - 해커톤 수집
+ *
+ * 법적 준수 사항:
+ * - Devpost 공개 API 사용 (robots.txt 준수)
+ * - 메타데이터만 저장 (저작권 보호)
+ * - Rate limiting 적용 (서버 부하 방지)
+ * - 원본 링크 보존 (출처 명시)
  */
 
 import type { TransformedEvent } from '@/src/types/startup-events';
+import {
+  checkRobotsTxt,
+  filterPersonalInfo,
+  RateLimiter,
+  createDataProvenance,
+  getLegalHeaders,
+  type DataProvenance,
+} from '../legal-compliance';
 
 // Devpost API 엔드포인트
 const DEVPOST_API_BASE = 'https://devpost.com/api/hackathons';
+
+// Rate limiter instance (분당 20회, 최소 3초 간격)
+const rateLimiter = new RateLimiter({
+  maxRequestsPerMinute: 20,
+  minDelayMs: 3000,
+});
 
 interface DevpostHackathon {
   id: string;
@@ -44,13 +64,16 @@ interface FetchOptions {
 }
 
 /**
- * Devpost 해커톤 목록 조회
+ * Devpost 해커톤 목록 조회 (법적 준수)
  */
 async function fetchDevpostPage(options: {
   page: number;
   perPage: number;
   status: string;
 }): Promise<DevpostHackathon[]> {
+  // Rate limiting 대기
+  await rateLimiter.waitForSlot();
+
   const params = new URLSearchParams({
     page: String(options.page),
     per_page: String(options.perPage),
@@ -62,8 +85,8 @@ async function fetchDevpostPage(options: {
   const response = await fetch(url, {
     method: 'GET',
     headers: {
+      ...getLegalHeaders('TeamBuilder-Bot/1.0 (+https://teambuilder.kr/bot)'),
       'Accept': 'application/json',
-      'User-Agent': 'TeamBuilder-EventCollector/1.0',
     },
   });
 
@@ -76,7 +99,7 @@ async function fetchDevpostPage(options: {
 }
 
 /**
- * 모든 오픈 해커톤 수집
+ * 모든 오픈 해커톤 수집 (법적 준수)
  */
 export async function collectDevpostHackathons(
   options: FetchOptions = {}
@@ -88,45 +111,72 @@ export async function collectDevpostHackathons(
     includeOnline = true,
   } = options;
 
+  // 1. robots.txt 확인 (법적 준수)
+  const robotsCheck = await checkRobotsTxt('https://devpost.com', '/api/hackathons');
+  if (!robotsCheck.allowed) {
+    console.warn(`Devpost 크롤링 불가: ${robotsCheck.reason}`);
+    return [];
+  }
+
+  console.log('[Devpost] robots.txt 확인 완료, 수집 시작');
+
   const allHackathons: DevpostHackathon[] = [];
   let currentPage = 1;
   let hasMore = true;
 
-  while (hasMore && currentPage <= maxPages) {
-    const hackathons = await fetchDevpostPage({
-      page: currentPage,
-      perPage,
-      status,
-    });
-
-    if (hackathons.length === 0) {
-      break;
+  // 2. 데이터 출처 기록 (법적 방어)
+  const provenance = createDataProvenance(
+    'https://devpost.com/api/hackathons',
+    'Devpost',
+    {
+      dataType: 'public_api',
+      robotsAllowed: true,
+      license: 'Public API - Terms of Service',
     }
+  );
+  console.log('[Devpost] 데이터 출처:', provenance);
 
-    // 온라인 또는 한국 해커톤 필터링
-    const filtered = hackathons.filter((h) => {
-      const location = h.displayed_location?.location?.toLowerCase() || '';
-      const isOnline = location === 'online' || location.includes('virtual');
-      const isKorea = location.includes('korea') || location.includes('seoul');
-      return includeOnline ? (isOnline || isKorea) : isKorea;
-    });
+  while (hasMore && currentPage <= maxPages) {
+    try {
+      const hackathons = await fetchDevpostPage({
+        page: currentPage,
+        perPage,
+        status,
+      });
 
-    allHackathons.push(...filtered);
+      if (hackathons.length === 0) {
+        break;
+      }
 
-    hasMore = hackathons.length === perPage;
-    currentPage++;
+      // 온라인 또는 한국 해커톤 필터링
+      const filtered = hackathons.filter((h) => {
+        const location = h.displayed_location?.location?.toLowerCase() || '';
+        const isOnline = location === 'online' || location.includes('virtual');
+        const isKorea = location.includes('korea') || location.includes('seoul');
+        return includeOnline ? (isOnline || isKorea) : isKorea;
+      });
 
-    if (hasMore) {
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Rate limiting
+      allHackathons.push(...filtered);
+
+      hasMore = hackathons.length === perPage;
+      currentPage++;
+
+    } catch (error) {
+      console.error(`[Devpost] 페이지 ${currentPage} 수집 실패:`, error);
+      break;
     }
   }
 
-  // TransformedEvent로 변환
+  console.log(`[Devpost] 총 ${allHackathons.length}개 해커톤 수집 완료`);
+
+  // 3. TransformedEvent로 변환 (개인정보 필터링 포함)
   return allHackathons.map(transformDevpostHackathon);
 }
 
 /**
  * Devpost 해커톤을 TransformedEvent로 변환
+ * - 개인정보 필터링 적용
+ * - 원본 링크 보존
  */
 function transformDevpostHackathon(hackathon: DevpostHackathon): TransformedEvent {
   const { start, end } = parseDevpostDateRange(hackathon.submission_period_dates);
@@ -146,21 +196,37 @@ function transformDevpostHackathon(hackathon: DevpostHackathon): TransformedEven
   const eventType = determineEventType(hackathon);
   const location = hackathon.displayed_location?.location || 'Online';
 
+  // 개인정보 필터링 적용
+  const title = filterPersonalInfo(cleanText(hackathon.title) || hackathon.title);
+  const description = hackathon.tagline
+    ? filterPersonalInfo(cleanText(hackathon.tagline) || '')
+    : null;
+  const organizer = filterPersonalInfo(
+    cleanText(hackathon.organization_name) || 'Devpost'
+  );
+
   return {
     external_id: `devpost:${hackathon.id}`,
     source: 'devpost',
-    title: cleanText(hackathon.title) || hackathon.title,
-    organizer: cleanText(hackathon.organization_name) || 'Devpost',
+    title,
+    organizer,
     event_type: eventType,
-    description: cleanText(hackathon.tagline),
+    description,
     start_date: start,
     end_date: end,
     registration_start_date: null,
     registration_end_date: registrationEndDate,
-    registration_url: hackathon.url,
+    registration_url: hackathon.url, // 원본 링크 보존 (저작권 준수)
     views_count: hackathon.registrations_count || 0,
     target_audience: '개발자, 디자이너, 창업가',
-    raw_data: hackathon as unknown as Record<string, unknown>,
+    // 최소한의 메타데이터만 저장 (저작권 보호)
+    raw_data: {
+      id: hackathon.id,
+      themes: hackathon.themes,
+      location,
+      prize_amount: hackathon.prize_amount,
+      // 전체 원본 데이터는 저장하지 않음
+    },
   };
 }
 

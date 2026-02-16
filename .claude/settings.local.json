@@ -118,7 +118,9 @@
       "WebFetch(domain:kbizplan.com)",
       "WebFetch(domain:brunch.co.kr)",
       "WebFetch(domain:imweb.me)",
-      "WebFetch(domain:www.winnersshop.kr)"
+      "WebFetch(domain:www.winnersshop.kr)",
+      "WebFetch(domain:blog.highoutputclub.com)",
+      "WebFetch(domain:k-rnd.com)"
     ]
   }
 }

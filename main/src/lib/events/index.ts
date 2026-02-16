@@ -25,3 +25,16 @@ export type {
   CrawlOptions,
   CrawlerSource,
 } from './crawlers';
+
+// Legal Compliance (법적 준수)
+export {
+  checkRobotsTxt,
+  checkLegalCompliance,
+  filterPersonalInfo,
+  extractMetadataOnly,
+  RateLimiter,
+  getLegalHeaders,
+  createDataProvenance,
+} from './legal-compliance';
+
+export type { DataProvenance } from './legal-compliance';
