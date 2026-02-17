@@ -1,6 +1,7 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse, validateRequired } from '@/src/lib/api-utils'
 import { BOOST_PRODUCTS, type BoostType } from '@/src/lib/subscription/constants'
+import { logError } from '@/src/lib/error-logging'
 
 // GET: Get active boosts for user or opportunity
 export async function GET(request: Request) {
@@ -54,15 +55,21 @@ export async function GET(request: Request) {
 
     return ApiResponse.ok(data || [])
   } catch (error) {
-    return ApiResponse.internalError(
-      '부스트 조회 중 오류가 발생했습니다',
-      error instanceof Error ? error.message : undefined
-    )
+    const err = error instanceof Error ? error : new Error(String(error))
+    await logError({
+      level: 'error',
+      source: 'api',
+      errorCode: err.name,
+      message: err.message,
+      stackTrace: err.stack,
+      endpoint: '/api/boosts',
+      method: 'GET',
+    })
+    return ApiResponse.internalError('부스트 조회 중 오류가 발생했습니다', err.message)
   }
 }
 
-// POST: Create boost (without payment - for testing or admin)
-// Production should use /api/payments for proper payment processing
+// POST: Create boost (requires premium status)
 export async function POST(request: Request) {
   try {
     const supabase = await createClient()
@@ -73,6 +80,17 @@ export async function POST(request: Request) {
 
     if (!user) {
       return ApiResponse.unauthorized()
+    }
+
+    // Check if user has premium status
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('is_premium')
+      .eq('user_id', user.id)
+      .single()
+
+    if (!profile?.is_premium) {
+      return ApiResponse.forbidden('프리미엄 사용자만 부스트를 사용할 수 있습니다')
     }
 
     const body = await request.json()
@@ -137,7 +155,7 @@ export async function POST(request: Request) {
     const now = new Date()
     const expiresAt = new Date(now.getTime() + boostProduct.durationHours * 60 * 60 * 1000)
 
-    // Create boost (for testing without payment)
+    // Create boost (premium user - no payment required)
     const { data, error } = await supabase
       .from('boosts')
       .insert({
@@ -147,8 +165,8 @@ export async function POST(request: Request) {
         status: 'active',
         starts_at: now.toISOString(),
         expires_at: expiresAt.toISOString(),
-        amount_paid: boostProduct.price,
-        payment_id: null, // No payment for test
+        amount_paid: 0, // Premium user - no payment
+        payment_id: null,
       })
       .select()
       .single()
@@ -159,10 +177,17 @@ export async function POST(request: Request) {
 
     return ApiResponse.created(data)
   } catch (error) {
-    return ApiResponse.internalError(
-      '부스트 생성 중 오류가 발생했습니다',
-      error instanceof Error ? error.message : undefined
-    )
+    const err = error instanceof Error ? error : new Error(String(error))
+    await logError({
+      level: 'error',
+      source: 'api',
+      errorCode: err.name,
+      message: err.message,
+      stackTrace: err.stack,
+      endpoint: '/api/boosts',
+      method: 'POST',
+    })
+    return ApiResponse.internalError('부스트 생성 중 오류가 발생했습니다', err.message)
   }
 }
 
@@ -217,9 +242,16 @@ export async function DELETE(request: Request) {
 
     return ApiResponse.ok({ message: '부스트가 취소되었습니다' })
   } catch (error) {
-    return ApiResponse.internalError(
-      '부스트 취소 중 오류가 발생했습니다',
-      error instanceof Error ? error.message : undefined
-    )
+    const err = error instanceof Error ? error : new Error(String(error))
+    await logError({
+      level: 'error',
+      source: 'api',
+      errorCode: err.name,
+      message: err.message,
+      stackTrace: err.stack,
+      endpoint: '/api/boosts',
+      method: 'DELETE',
+    })
+    return ApiResponse.internalError('부스트 취소 중 오류가 발생했습니다', err.message)
   }
 }

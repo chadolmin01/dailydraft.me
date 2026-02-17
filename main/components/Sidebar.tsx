@@ -15,14 +15,24 @@ import {
   LogOut,
   Bell,
   Settings,
+  BarChart3,
+  AlertCircle,
+  Gift,
+  Crown,
 } from 'lucide-react'
 import { useAuth } from '@/src/context/AuthContext'
+import { useAdmin } from '@/src/hooks/useAdmin'
+import { usePremium } from '@/src/hooks/usePremium'
+import InviteCodeModal from '@/components/InviteCodeModal'
 
 export const Sidebar: React.FC = () => {
   const router = useRouter()
   const pathname = usePathname()
   const { signOut } = useAuth()
+  const { isAdmin } = useAdmin()
+  const { isPremium, refetch: refetchPremium } = usePremium()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
   const navItems = [
@@ -31,7 +41,7 @@ export const Sidebar: React.FC = () => {
     { id: 'projects', icon: Briefcase, label: 'PROJECTS', path: '/projects' },
     { id: 'profile', icon: User, label: 'PROFILE', path: '/profile' },
     { id: 'calendar', icon: Calendar, label: 'SCHEDULE', path: '/calendar' },
-    { id: 'messages', icon: MessageSquare, label: 'COMM', path: '/messages' },
+    { id: 'messages', icon: MessageSquare, label: 'CHAT', path: '/messages' },
     { id: 'documents', icon: FileText, label: 'DOCS', path: '/documents' },
     { id: 'network', icon: Users, label: 'NET', path: '/network' },
   ]
@@ -52,13 +62,28 @@ export const Sidebar: React.FC = () => {
     }
   }, [isMenuOpen])
 
-  const handleMenuAction = (action: string) => {
+  const handleMenuAction = async (action: string) => {
     if (action === 'profile') router.push('/profile')
+    if (action === 'usage') router.push('/usage')
+    if (action === 'error-logs') router.push('/admin/error-logs')
+    if (action === 'invite-codes-admin') router.push('/admin/invite-codes')
+    if (action === 'invite-code') {
+      setIsInviteModalOpen(true)
+    }
     if (action === 'signout') {
-      signOut()
-      router.push('/')
+      try {
+        await signOut()
+        // Force a hard navigation to clear all client state
+        window.location.href = '/login'
+      } catch (error) {
+        console.error('Sign out error:', error)
+      }
     }
     setIsMenuOpen(false)
+  }
+
+  const handleInviteSuccess = () => {
+    refetchPremium()
   }
 
   const getActiveTab = () => {
@@ -119,7 +144,15 @@ export const Sidebar: React.FC = () => {
           <div className="absolute left-14 bottom-2 w-56 bg-white border border-gray-200 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] rounded-sm p-1 flex flex-col gap-0.5 z-50 animate-in fade-in zoom-in-95 duration-100 origin-bottom-left">
             {/* User Info */}
             <div className="px-3 py-2.5 mb-1 border-b border-gray-100">
-              <div className="font-bold text-sm text-gray-900">User</div>
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-sm text-gray-900">User</span>
+                {isPremium && (
+                  <span className="flex items-center gap-0.5 px-1.5 py-0.5 bg-gradient-to-r from-amber-400 to-amber-500 text-white text-[9px] font-bold rounded-full">
+                    <Crown size={10} />
+                    PRO
+                  </span>
+                )}
+              </div>
               <div className="text-[10px] text-gray-400 font-mono mt-0.5">user@draft.io</div>
             </div>
 
@@ -129,6 +162,12 @@ export const Sidebar: React.FC = () => {
               className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-50 hover:text-black rounded-sm transition-colors text-left w-full"
             >
               <User size={14} /> My Profile
+            </button>
+            <button
+              onClick={() => handleMenuAction('usage')}
+              className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-50 hover:text-black rounded-sm transition-colors text-left w-full"
+            >
+              <BarChart3 size={14} /> Usage & Billing
             </button>
             <button className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-50 hover:text-black rounded-sm transition-colors text-left w-full">
               <Settings size={14} /> Settings
@@ -140,7 +179,39 @@ export const Sidebar: React.FC = () => {
               </span>
             </button>
 
+            {/* Invite Code - Only show for non-premium users */}
+            {!isPremium && (
+              <button
+                onClick={() => handleMenuAction('invite-code')}
+                className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-blue-600 hover:bg-blue-50 rounded-sm transition-colors text-left w-full"
+              >
+                <Gift size={14} /> 초대 코드 입력
+              </button>
+            )}
+
             <div className="h-px bg-gray-100 my-1"></div>
+
+            {/* Admin Section - Only show for admins */}
+            {isAdmin && (
+              <>
+                <div className="px-3 py-1.5">
+                  <div className="text-[9px] font-mono text-gray-400 uppercase">Admin</div>
+                </div>
+                <button
+                  onClick={() => handleMenuAction('invite-codes-admin')}
+                  className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-50 hover:text-black rounded-sm transition-colors text-left w-full"
+                >
+                  <Gift size={14} /> 초대 코드 관리
+                </button>
+                <button
+                  onClick={() => handleMenuAction('error-logs')}
+                  className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-50 hover:text-black rounded-sm transition-colors text-left w-full"
+                >
+                  <AlertCircle size={14} /> Error Logs
+                </button>
+                <div className="h-px bg-gray-100 my-1"></div>
+              </>
+            )}
 
             <button
               onClick={() => handleMenuAction('signout')}
@@ -157,15 +228,24 @@ export const Sidebar: React.FC = () => {
             ${
               isMenuOpen
                 ? 'bg-black text-white border-black'
-                : 'bg-gray-100 text-gray-600 border-gray-200 hover:border-black'
+                : isPremium
+                  ? 'bg-gradient-to-br from-amber-400 to-amber-500 text-white border-amber-400'
+                  : 'bg-gray-100 text-gray-600 border-gray-200 hover:border-black'
             }`}
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
-          U
+          {isPremium ? <Crown size={16} /> : 'U'}
           {/* Notification Dot */}
           <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></div>
         </button>
       </div>
+
+      {/* Invite Code Modal */}
+      <InviteCodeModal
+        isOpen={isInviteModalOpen}
+        onClose={() => setIsInviteModalOpen(false)}
+        onSuccess={handleInviteSuccess}
+      />
     </div>
   )
 }

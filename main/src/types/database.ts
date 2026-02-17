@@ -555,11 +555,14 @@ export type Database = {
           graduation_year: number | null
           id: string
           interest_tags: string[] | null
+          invite_code_used: string | null
+          is_premium: boolean | null
           location: string | null
           major: string | null
           nickname: string
           onboarding_completed: boolean | null
           personality: Json | null
+          premium_activated_at: string | null
           profile_visibility: string | null
           skills: Json | null
           university: string | null
@@ -580,11 +583,14 @@ export type Database = {
           graduation_year?: number | null
           id?: string
           interest_tags?: string[] | null
+          invite_code_used?: string | null
+          is_premium?: boolean | null
           location?: string | null
           major?: string | null
           nickname: string
           onboarding_completed?: boolean | null
           personality?: Json | null
+          premium_activated_at?: string | null
           profile_visibility?: string | null
           skills?: Json | null
           university?: string | null
@@ -605,11 +611,14 @@ export type Database = {
           graduation_year?: number | null
           id?: string
           interest_tags?: string[] | null
+          invite_code_used?: string | null
+          is_premium?: boolean | null
           location?: string | null
           major?: string | null
           nickname?: string
           onboarding_completed?: boolean | null
           personality?: Json | null
+          premium_activated_at?: string | null
           profile_visibility?: string | null
           skills?: Json | null
           university?: string | null
@@ -617,6 +626,42 @@ export type Database = {
           user_id?: string
           vision_embedding?: string | null
           vision_summary?: string | null
+        }
+        Relationships: []
+      }
+      invite_codes: {
+        Row: {
+          id: string
+          code: string
+          created_by: string | null
+          recipient_email: string | null
+          used_by: string | null
+          used_at: string | null
+          expires_at: string | null
+          is_active: boolean
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          code: string
+          created_by?: string | null
+          recipient_email?: string | null
+          used_by?: string | null
+          used_at?: string | null
+          expires_at?: string | null
+          is_active?: boolean
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          code?: string
+          created_by?: string | null
+          recipient_email?: string | null
+          used_by?: string | null
+          used_at?: string | null
+          expires_at?: string | null
+          is_active?: boolean
+          created_at?: string | null
         }
         Relationships: []
       }
@@ -785,6 +830,182 @@ export type Database = {
           email?: string
           current_situation?: 'solo_want_team' | 'has_project_need_member' | 'want_to_join' | 'just_curious' | null
           created_at?: string | null
+        }
+        Relationships: []
+      }
+      payment_failures: {
+        Row: {
+          id: string
+          user_id: string
+          subscription_id: string
+          status: 'initial_failure' | 'retry_failed' | 'final_warning' | 'downgraded'
+          failure_count: number
+          first_failure_at: string
+          last_failure_at: string
+          grace_period_ends_at: string
+          downgrade_at: string | null
+          resolved_at: string | null
+          notifications_sent: string[]
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          subscription_id: string
+          status?: 'initial_failure' | 'retry_failed' | 'final_warning' | 'downgraded'
+          failure_count?: number
+          first_failure_at: string
+          last_failure_at: string
+          grace_period_ends_at: string
+          downgrade_at?: string | null
+          resolved_at?: string | null
+          notifications_sent?: string[]
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          subscription_id?: string
+          status?: 'initial_failure' | 'retry_failed' | 'final_warning' | 'downgraded'
+          failure_count?: number
+          first_failure_at?: string
+          last_failure_at?: string
+          grace_period_ends_at?: string
+          downgrade_at?: string | null
+          resolved_at?: string | null
+          notifications_sent?: string[]
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_failures_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      notifications: {
+        Row: {
+          id: string
+          user_id: string
+          type: string
+          title: string
+          message: string
+          priority: string
+          data: Json | null
+          read: boolean
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          type: string
+          title: string
+          message: string
+          priority?: string
+          data?: Json | null
+          read?: boolean
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          type?: string
+          title?: string
+          message?: string
+          priority?: string
+          data?: Json | null
+          read?: boolean
+          created_at?: string | null
+        }
+        Relationships: []
+      }
+      business_plans: {
+        Row: {
+          id: string
+          user_id: string
+          template_type: 'yebi-chogi' | 'student-300' | 'saengae-chungnyeon' | 'oneul-jeongtong' | 'gyeonggi-g-star'
+          status: 'draft' | 'in_progress' | 'completed'
+          title: string | null
+          basic_info: Json | null
+          problem_data: Json | null
+          solution_data: Json | null
+          scaleup_data: Json | null
+          team_data: Json | null
+          extra_sections: Json | null
+          validation_score: number | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          template_type: 'yebi-chogi' | 'student-300' | 'saengae-chungnyeon' | 'oneul-jeongtong' | 'gyeonggi-g-star'
+          status?: 'draft' | 'in_progress' | 'completed'
+          title?: string | null
+          basic_info?: Json | null
+          problem_data?: Json | null
+          solution_data?: Json | null
+          scaleup_data?: Json | null
+          team_data?: Json | null
+          extra_sections?: Json | null
+          validation_score?: number | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          template_type?: 'yebi-chogi' | 'student-300' | 'saengae-chungnyeon' | 'oneul-jeongtong' | 'gyeonggi-g-star'
+          status?: 'draft' | 'in_progress' | 'completed'
+          title?: string | null
+          basic_info?: Json | null
+          problem_data?: Json | null
+          solution_data?: Json | null
+          scaleup_data?: Json | null
+          team_data?: Json | null
+          extra_sections?: Json | null
+          validation_score?: number | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      validated_ideas: {
+        Row: {
+          id: string
+          user_id: string
+          project_idea: string
+          conversation_history: string | null
+          reflected_advice: string[]
+          artifacts: Json | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          project_idea: string
+          conversation_history?: string | null
+          reflected_advice?: string[]
+          artifacts?: Json | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          project_idea?: string
+          conversation_history?: string | null
+          reflected_advice?: string[]
+          artifacts?: Json | null
+          created_at?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }
