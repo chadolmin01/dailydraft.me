@@ -12,7 +12,7 @@ export const resend = resendApiKey ? new Resend(resendApiKey) : null
 export const FROM_EMAIL = process.env.EMAIL_FROM || 'DailyDraft <onboarding@resend.dev>'
 
 // 앱 URL
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://dailydraft.io'
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://dailydraft.me'
 
 // 이메일 전송 가능 여부 확인
 export function isEmailEnabled(): boolean {
