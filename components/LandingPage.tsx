@@ -3,10 +3,12 @@ import {
   Sparkles, Users, Calendar, FileText, ArrowRight, CheckCircle2,
   LayoutGrid, Clock, Target, MessageSquare, Zap, Briefcase,
   ChevronRight, Plus, Minus, Search, Settings, Share2, BarChart3,
-  AlertTriangle, FileQuestion, Unplug, XCircle, Rocket, Loader2
+  AlertTriangle, FileQuestion, Unplug, XCircle, Rocket, Loader2,
+  UserPlus
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { supabase } from '../src/lib/supabase/client';
+import { useWaitlistCount } from '../src/hooks/useWaitlistCount';
 
 interface LandingPageProps {
   onLogin: () => void;
@@ -221,6 +223,10 @@ const MockAICard = () => (
 // --- Sections ---
 
 const Header: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
+  const scrollToSection = (sectionId: string) => {
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -232,6 +238,22 @@ const Header: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
         </div>
 
         <div className="flex items-center space-x-6">
+           {/* Navigation Links - Desktop only */}
+           <nav className="hidden md:flex items-center space-x-6">
+             <button
+               onClick={() => scrollToSection('features')}
+               className="text-sm font-medium text-gray-500 hover:text-black transition-colors"
+             >
+               기능
+             </button>
+             <button
+               onClick={() => scrollToSection('faq')}
+               className="text-sm font-medium text-gray-500 hover:text-black transition-colors"
+             >
+               FAQ
+             </button>
+           </nav>
+
            <button
              onClick={onLogin}
              className="text-sm font-medium text-gray-500 hover:text-black hidden sm:block font-mono"
@@ -253,6 +275,7 @@ const Header: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
 const Hero: React.FC<{ onLogin: () => void; onDemo?: () => void; isDemo?: boolean }> = ({ onLogin, onDemo, isDemo }) => {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error' | 'duplicate'>('idle');
+  const { data: waitlistCount, isLoading: isCountLoading } = useWaitlistCount();
   const [errorMessage, setErrorMessage] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -264,7 +287,7 @@ const Hero: React.FC<{ onLogin: () => void; onDemo?: () => void; isDemo?: boolea
 
     try {
       const { error } = await supabase
-        .from('waitlist')
+        .from('waitlist_signups')
         .insert({ email: email.toLowerCase().trim() });
 
       if (error) {
@@ -379,6 +402,18 @@ const Hero: React.FC<{ onLogin: () => void; onDemo?: () => void; isDemo?: boolea
         {errorMessage && (
           <div className="text-red-500 text-sm mb-4 lg:text-left text-center">
             {errorMessage}
+          </div>
+        )}
+
+        {/* Waitlist Count */}
+        {!isCountLoading && waitlistCount !== undefined && waitlistCount > 0 && (
+          <div className="flex items-center lg:justify-start justify-center mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-50 border border-orange-200 rounded-none">
+              <span className="text-orange-500">🔥</span>
+              <span className="text-sm font-medium text-orange-700">
+                현재 <span className="font-bold">{waitlistCount.toLocaleString()}</span>명이 대기 중입니다
+              </span>
+            </div>
           </div>
         )}
 
@@ -667,6 +702,89 @@ const Features: React.FC = () => {
   );
 };
 
+const HowItWorks: React.FC = () => {
+  const steps = [
+    {
+      step: 1,
+      icon: UserPlus,
+      title: '프로필 작성',
+      description: '3분 안에 완성. 당신의 비전, 스킬, 원하는 팀원 유형을 알려주세요.',
+    },
+    {
+      step: 2,
+      icon: Sparkles,
+      title: 'AI 매칭',
+      description: '비전 기반 분석. AI가 최적의 공동 창업자와 기회를 찾아드립니다.',
+    },
+    {
+      step: 3,
+      icon: Rocket,
+      title: '팀 빌딩',
+      description: '바로 시작. 매칭된 팀원과 함께 아이디어를 현실로 만드세요.',
+    },
+  ];
+
+  return (
+    <section className="py-24 bg-white border-t border-gray-200 relative">
+      <div className="grid-bg absolute inset-0 opacity-40 pointer-events-none"></div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={fadeInUp}
+          className="text-center mb-16"
+        >
+          <div className="inline-flex items-center gap-2 px-3 py-1 border border-gray-300 bg-gray-50 mb-6">
+            <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-gray-600">HOW IT WORKS</span>
+          </div>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 mb-6 leading-tight break-keep">
+            시작은 <span className="text-blue-600">간단</span>합니다
+          </h2>
+          <p className="text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed break-keep">
+            복잡한 절차 없이, 3단계로 완벽한 팀을 만나보세요.
+          </p>
+        </motion.div>
+
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-8"
+        >
+          {steps.map((item) => (
+            <motion.div
+              key={item.step}
+              variants={fadeInUp}
+              className="relative bg-white border border-gray-200 p-8 hover:border-black hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.05)] transition-all group"
+            >
+              {/* Step Number Badge */}
+              <div className="absolute -top-4 left-8 bg-black text-white w-8 h-8 flex items-center justify-center font-mono font-bold text-sm">
+                {item.step}
+              </div>
+
+              {/* Icon */}
+              <div className="w-14 h-14 bg-gray-50 border border-gray-200 flex items-center justify-center mb-6 group-hover:bg-blue-50 group-hover:border-blue-200 transition-colors">
+                <item.icon className="w-6 h-6 text-gray-600 group-hover:text-blue-600 transition-colors" />
+              </div>
+
+              {/* Content */}
+              <h3 className="text-xl font-bold text-slate-900 mb-3">{item.title}</h3>
+              <p className="text-gray-600 text-sm leading-relaxed break-keep">{item.description}</p>
+
+              {/* Connector Line (between cards) */}
+              {item.step < 3 && (
+                <div className="hidden md:block absolute top-1/2 -right-4 w-8 border-t-2 border-dashed border-gray-300"></div>
+              )}
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
 const LiveFeed: React.FC = () => {
   const activities = [
     { type: 'MATCH', text: 'Project Alpha just matched with a Senior Backend Developer', time: '2m ago' },
@@ -712,6 +830,106 @@ const LiveFeed: React.FC = () => {
             ))}
           </motion.div>
         </div>
+      </div>
+    </section>
+  );
+};
+
+const FAQ: React.FC = () => {
+  const [openId, setOpenId] = useState<string | null>(null);
+
+  const faqs = [
+    {
+      id: 'free',
+      question: 'Draft는 무료인가요?',
+      answer: '네, 현재 베타 기간 동안 모든 핵심 기능을 무료로 이용하실 수 있습니다. 정식 출시 후에도 기본 기능은 무료로 제공될 예정이며, 고급 AI 분석과 프리미엄 매칭 기능은 유료 플랜으로 제공됩니다.',
+    },
+    {
+      id: 'team',
+      question: '어떤 종류의 팀원을 찾을 수 있나요?',
+      answer: '개발자, 디자이너, 마케터, 기획자 등 스타트업에 필요한 모든 역할의 팀원을 찾을 수 있습니다. 또한 투자자, 멘토, 어드바이저와도 연결될 수 있어 초기 스타트업에 필요한 네트워크를 구축할 수 있습니다.',
+    },
+    {
+      id: 'matching',
+      question: 'AI 매칭은 어떤 기준으로 이루어지나요?',
+      answer: 'Draft의 AI는 단순 스킬 매칭을 넘어 비전 정렬도, 작업 스타일, 프로젝트 이력, 성장 잠재력 등 30가지 이상의 지표를 분석합니다. 이를 통해 단기 협업이 아닌, 장기적으로 함께할 수 있는 최적의 팀원을 추천합니다.',
+    },
+    {
+      id: 'gov',
+      question: '정부지원사업 정보는 어떻게 제공되나요?',
+      answer: '예비창업패키지, 초기창업패키지 등 주요 정부지원사업의 공고를 실시간으로 트래킹하여 알려드립니다. 또한 AI가 당신의 프로필과 사업 아이디어를 분석하여 선정 가능성이 높은 사업을 우선 추천해드립니다.',
+    },
+    {
+      id: 'privacy',
+      question: '개인정보는 어떻게 보호되나요?',
+      answer: '모든 데이터는 암호화되어 저장되며, 프로필 공개 범위를 직접 설정할 수 있습니다. 매칭 요청 시에만 상대방에게 기본 정보가 공개되며, 연락처 등 민감 정보는 양측이 동의한 후에만 공유됩니다.',
+    },
+  ];
+
+  const toggleFaq = (id: string) => {
+    setOpenId(openId === id ? null : id);
+  };
+
+  return (
+    <section id="faq" className="py-24 bg-white border-t border-gray-200 relative">
+      <div className="grid-bg absolute inset-0 opacity-40 pointer-events-none"></div>
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={fadeInUp}
+          className="text-center mb-16"
+        >
+          <div className="inline-flex items-center gap-2 px-3 py-1 border border-gray-300 bg-gray-50 mb-6">
+            <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-gray-600">FAQ</span>
+          </div>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 mb-6 leading-tight break-keep">
+            자주 묻는 <span className="text-blue-600">질문</span>
+          </h2>
+          <p className="text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed break-keep">
+            Draft에 대해 궁금한 점을 확인해보세요.
+          </p>
+        </motion.div>
+
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="space-y-4"
+        >
+          {faqs.map((faq) => (
+            <motion.div
+              key={faq.id}
+              variants={fadeInUp}
+              className="border border-gray-200 bg-white hover:border-gray-300 transition-colors"
+            >
+              <button
+                onClick={() => toggleFaq(faq.id)}
+                className="w-full px-6 py-5 flex items-center justify-between text-left"
+              >
+                <span className="font-bold text-slate-900 pr-4">{faq.question}</span>
+                <div className="shrink-0 w-6 h-6 bg-gray-100 border border-gray-200 flex items-center justify-center">
+                  {openId === faq.id ? (
+                    <Minus className="w-4 h-4 text-gray-600" />
+                  ) : (
+                    <Plus className="w-4 h-4 text-gray-600" />
+                  )}
+                </div>
+              </button>
+              <div
+                className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                  openId === faq.id ? 'max-h-[200px] opacity-100' : 'max-h-0 opacity-0'
+                }`}
+              >
+                <div className="px-6 pb-5 text-gray-600 leading-relaxed break-keep">
+                  {faq.answer}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
       </div>
     </section>
   );
@@ -843,7 +1061,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onDemo, isDem
         <Hero onLogin={scrollToWaitlist} onDemo={onDemo} isDemo={isDemo} />
         <PainPoints />
         <Features />
+        <HowItWorks />
         <LiveFeed />
+        <FAQ />
         <FinalCTA onLogin={scrollToWaitlist} onDemo={onDemo} isDemo={isDemo} />
       </main>
       <Footer />

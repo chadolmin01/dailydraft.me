@@ -46,3 +46,9 @@ export {
   eventKeys,
   type EventWithBookmark,
 } from './useEvents'
+
+// Waitlist hooks
+export {
+  useWaitlistCount,
+  waitlistKeys,
+} from './useWaitlistCount'
