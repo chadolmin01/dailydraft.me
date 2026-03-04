@@ -10,7 +10,20 @@
       "Bash(git merge:*)",
       "Bash(git stash:*)",
       "Bash(git stash pop:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npx supabase db push:*)",
+      "Bash(npx supabase login)",
+      "Bash(npx supabase:*)",
+      "Bash(SUPABASE_ACCESS_TOKEN=\"sbp_cli_BOOK-9F5CT1HQ3I\\\\chado@BOOK-9F5CT1HQ3I_1772090870\" npx supabase db push:*)",
+      "Bash(SUPABASE_ACCESS_TOKEN=\"sbp_000a8048cb48e4c1dd696b4af11617a43bcb1802\" npx supabase db push:*)",
+      "Bash(SUPABASE_ACCESS_TOKEN=\"sbp_000a8048cb48e4c1dd696b4af11617a43bcb1802\" npx supabase db pull:*)",
+      "Bash(SUPABASE_ACCESS_TOKEN=\"sbp_000a8048cb48e4c1dd696b4af11617a43bcb1802\" npx supabase migration repair:*)",
+      "Bash(SUPABASE_ACCESS_TOKEN=\"sbp_000a8048cb48e4c1dd696b4af11617a43bcb1802\" npx supabase migration:*)",
+      "Skill(browser-use)",
+      "Bash(browser-use open:*)",
+      "Bash(browser-use screenshot:*)",
+      "Bash(browser-use close:*)"
     ]
   }
 }

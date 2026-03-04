@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/src/lib/supabase/client'
 import type { Database } from '@/src/types/database'
 
 export interface CoffeeChat {
@@ -43,7 +43,7 @@ export function useCoffeeChats(options: UseCoffeeChatsOptions = {}): UseCoffeeCh
   const [chats, setChats] = useState<CoffeeChat[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const supabase = createClientComponentClient<Database>()
+  const supabase = createClient()
 
   const fetchChats = useCallback(async () => {
     try {

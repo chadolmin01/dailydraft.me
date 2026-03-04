@@ -42,7 +42,8 @@ export const CoffeeChatButton: React.FC<CoffeeChatButtonProps> = ({
   useEffect(() => {
     const checkUser = async () => {
       try {
-        const supabase = (await import('@supabase/auth-helpers-nextjs')).createClientComponentClient()
+        const { createClient } = await import('@/src/lib/supabase/client')
+        const supabase = createClient()
         const { data } = await supabase.auth.getUser()
         if (data?.user) {
           setCurrentUserId(data.user.id)

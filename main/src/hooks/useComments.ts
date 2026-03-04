@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/src/lib/supabase/client'
 import type { Database } from '@/src/types/database'
 
 export interface Comment {
@@ -35,7 +35,7 @@ export function useComments({ opportunityId }: UseCommentsOptions): UseCommentsR
   const [comments, setComments] = useState<Comment[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const supabase = createClientComponentClient<Database>()
+  const supabase = createClient()
 
   const fetchComments = useCallback(async () => {
     try {

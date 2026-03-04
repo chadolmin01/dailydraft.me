@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Zap, ArrowRight, MessageCircle, Heart, Loader2 } from 'lucide-react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/src/lib/supabase/client'
 import type { Database } from '@/src/types/database'
 
 type Opportunity = Database['public']['Tables']['opportunities']['Row']
@@ -12,7 +12,7 @@ export const OpportunitySection: React.FC = () => {
   const router = useRouter()
   const [projects, setProjects] = useState<Opportunity[]>([])
   const [loading, setLoading] = useState(true)
-  const supabase = createClientComponentClient<Database>()
+  const supabase = createClient()
 
   useEffect(() => {
     const fetchProjects = async () => {

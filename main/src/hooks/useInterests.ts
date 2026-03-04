@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/src/lib/supabase/client'
 import type { Database } from '@/src/types/database'
 
 interface UseInterestsOptions {
@@ -18,7 +18,7 @@ interface UseInterestsReturn {
 export function useInterests({ opportunityId }: UseInterestsOptions): UseInterestsReturn {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const supabase = createClientComponentClient<Database>()
+  const supabase = createClient()
 
   const expressInterest = useCallback(async (email: string): Promise<boolean> => {
     try {
