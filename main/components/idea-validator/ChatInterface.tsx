@@ -1,9 +1,19 @@
 'use client';
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { Send, Cpu, Paintbrush, DollarSign, ArrowRight, Lightbulb, Check, MessageSquare, X, Edit3, Sparkles, MessageCircle, TrendingUp, AlertTriangle, ShieldCheck, Layers, Coins, Lock, Zap, Sword, MoreHorizontal } from 'lucide-react';
 import { ChatMessage, AnalysisMetrics, ValidationLevel } from './types';
 import { analyzeIdea } from './geminiService';
+import { createSessionTracker, trackSessionEnd, type TurnData, type SessionData } from '@/lib/analytics/sessionTracker';
+
+// Preloaded context from external startup idea
+interface PreloadedStartupContext {
+  startupId: string;
+  startupName: string;
+  description?: string;
+  koreaFitReason?: string;
+  suggestedLocalization?: string;
+}
 
 interface ChatInterfaceProps {
   onComplete: (history: string, idea: string, reflectedAdvice: string[]) => void;
@@ -13,6 +23,8 @@ interface ChatInterfaceProps {
   onExternalInputChange?: (value: string) => void;
   hideInput?: boolean;
   onRegisterSend?: (sendFn: () => void) => void;
+  // Preloaded context from external startup idea
+  preloadedContext?: PreloadedStartupContext;
 }
 
 interface ReflectionModalState {
@@ -23,7 +35,7 @@ interface ReflectionModalState {
   suggestedActions: string[];
 }
 
-const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, externalInput, onExternalInputChange, hideInput = false, onRegisterSend }) => {
+const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, externalInput, onExternalInputChange, hideInput = false, onRegisterSend, preloadedContext }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [internalInput, setInternalInput] = useState('');
 
@@ -32,7 +44,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
   const setInput = onExternalInputChange || setInternalInput;
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-  
+
+  // Error state for retry functionality
+  const [aiError, setAiError] = useState<{ message: string; lastInput: string } | null>(null);
+
   // Metrics State
   const [metrics, setMetrics] = useState<AnalysisMetrics | null>(null);
 
@@ -43,12 +58,42 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
   // Token System State
   const FREE_TURNS = 5;
   const [turnCount, setTurnCount] = useState(0);
-  const [tokens, setTokens] = useState(30); 
+  const [tokens, setTokens] = useState(30);
+
+  // Session Tracking for Analytics
+  const [firstUserInput, setFirstUserInput] = useState<string>('');
+  const sessionTracker = useMemo(() => {
+    const sessionId = `session_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    return createSessionTracker({
+      sessionId,
+      level: level as 'SKETCH' | 'MVP' | 'DEFENSE',
+      ideaText: '', // Will be set on first user input
+      fromStartupIdea: !!preloadedContext,
+      startupSource: preloadedContext?.startupId ? 'external' : undefined
+    });
+  }, [level, preloadedContext]); 
 
   // Initial greeting
   useEffect(() => {
     let greeting = "";
-    if (level === ValidationLevel.SKETCH) {
+
+    // Check if we have preloaded context from an external startup idea
+    if (preloadedContext) {
+      const { startupName, description, koreaFitReason, suggestedLocalization } = preloadedContext;
+      greeting = `안녕하세요! 해외 서비스 '${startupName}'을 한국에 로컬라이징하는 프로젝트를 시작합니다.\n\n`;
+
+      if (description) {
+        greeting += `📌 **원본 서비스**: ${description}\n`;
+      }
+      if (koreaFitReason) {
+        greeting += `🇰🇷 **한국 시장 분석**: ${koreaFitReason}\n`;
+      }
+      if (suggestedLocalization) {
+        greeting += `💡 **현지화 포인트**: ${suggestedLocalization}\n`;
+      }
+
+      greeting += `\n이 서비스를 한국에서 어떤 타겟에게 제공하고 싶으세요? 구체적인 고객층이나 사용 시나리오를 알려주시면 함께 검증해 드릴게요.`;
+    } else if (level === ValidationLevel.SKETCH) {
       greeting = "환영합니다! 아이디어 스케치 모드입니다. 부담 갖지 말고 생각나는 대로 말씀해 주세요. 우리가 함께 다듬어 드릴게요!";
     } else if (level === ValidationLevel.DEFENSE) {
       greeting = "투자자 방어 모드입니다. 준비 되셨습니까? 논리가 빈약하면 살아남기 힘들 겁니다. 아이디어를 제시하세요.";
@@ -69,7 +114,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
         suggestedActions: []
       }]
     }]);
-  }, [level]);
+  }, [level, preloadedContext]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -77,9 +122,25 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
     }
   }, [messages, isTyping]);
 
+  // Session Analytics: 이탈 시 데이터 전송
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      // 세션이 시작되었고 완료되지 않은 경우에만 이탈 추적
+      if (firstUserInput && sessionTracker.getTurns().length > 0) {
+        // sendBeacon은 페이지 언로드 시에도 안정적으로 전송
+        // 하지만 Supabase는 직접 지원하지 않으므로 abandon() 호출
+        sessionTracker.abandon();
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [firstUserInput, sessionTracker]);
+
   // Core AI processing logic
   const processAIResponse = async (userInput: string, currentMessages: ChatMessage[]) => {
     setIsTyping(true);
+    setAiError(null); // Clear previous error
     try {
       // Build history for context with explicit Decision/Reflection markers
       const historyStrings = currentMessages.flatMap(m => {
@@ -98,7 +159,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
       // Safety check for responses
       if (!analysisResult.responses || !Array.isArray(analysisResult.responses)) {
         console.error('Invalid response format:', analysisResult);
-        throw new Error('Invalid response format from AI');
+        throw new Error('AI 응답 형식이 올바르지 않습니다');
       }
 
       // Update Metrics
@@ -115,13 +176,47 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
       };
 
       setMessages(prev => [...prev, aiMsg]);
+
+      // Session Analytics: 턴 데이터 추적
+      const newTurnCount = turnCount + 1;
+      const turnData: TurnData = {
+        turn: newTurnCount,
+        scores: analysisResult.metrics ? {
+          score: analysisResult.metrics.score,
+          vcScore: analysisResult.metrics.vcScore,
+          developerScore: analysisResult.metrics.developerScore,
+          designerScore: analysisResult.metrics.designerScore
+        } : undefined,
+        adviceShown: analysisResult.responses?.length || 0,
+        adviceReflected: 0, // 나중에 반영 시 업데이트됨
+        reflectedCategories: [],
+        personaEngagement: analysisResult.responses?.reduce((acc, r) => {
+          acc[r.role] = (acc[r.role] || 0) + 1;
+          return acc;
+        }, {} as Record<string, number>) || {}
+      };
+      sessionTracker.addTurn(turnData);
+
       setTurnCount(prev => prev + 1); // Increment turn count
     } catch (e) {
-      console.error(e);
+      console.error('[ChatInterface] AI response failed:', e);
+      // Set error state for retry UI
+      setAiError({
+        message: e instanceof Error ? e.message : 'AI 응답 중 오류가 발생했습니다',
+        lastInput: userInput,
+      });
     } finally {
       setIsTyping(false);
     }
   };
+
+  // Retry handler for failed AI requests
+  const handleRetry = useCallback(() => {
+    if (!aiError?.lastInput) return;
+    const lastInput = aiError.lastInput;
+    setAiError(null);
+    processAIResponse(lastInput, messages);
+  }, [aiError, messages]);
 
   const handleSend = useCallback(async () => {
     if (!input.trim()) return;
@@ -144,11 +239,16 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
     const newMessages = [...messages, userMsg];
     setMessages(newMessages);
 
+    // Session Analytics: 첫 번째 사용자 입력 저장
+    if (!firstUserInput) {
+      setFirstUserInput(input);
+    }
+
     const currentInput = input;
     setInput('');
 
     await processAIResponse(currentInput, newMessages);
-  }, [input, turnCount, tokens, messages, setInput]);
+  }, [input, turnCount, tokens, messages, setInput, firstUserInput]);
 
   // Register handleSend with parent if using external input
   useEffect(() => {
@@ -232,15 +332,29 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
       await processAIResponse(consolidatedText, newMessages);
   };
 
-  const handleFinish = () => {
+  const handleFinish = async () => {
     const fullConv = messages.map(m => {
       if(m.isUser) return `User: ${m.text}`;
       return m.responses?.map(r => `${r.role}: ${r.content}`).join('\n');
     }).join('\n\n');
-    const reflectedAdvice = messages.flatMap(m => 
+    const reflectedAdvice = messages.flatMap(m =>
       m.responses?.filter(r => r.isReflected).map(r => `[${r.role}] ${r.reflectedText || r.content}`) || []
     );
     const firstIdea = messages.find(m => m.isUser)?.text || "Startup Project";
+
+    // Session Analytics: 세션 완료 추적
+    if (firstUserInput) {
+      // 세션 트래커의 ideaText 업데이트 (첫 입력 기준)
+      await trackSessionEnd({
+        sessionId: `session_${Date.now()}`,
+        level: level as 'SKETCH' | 'MVP' | 'DEFENSE',
+        ideaText: firstUserInput,
+        turns: sessionTracker.getTurns(),
+        fromStartupIdea: !!preloadedContext,
+        startupSource: preloadedContext?.startupId ? 'external' : undefined
+      }, true);
+    }
+
     onComplete(fullConv, firstIdea, reflectedAdvice);
   };
 
@@ -414,6 +528,41 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
                  <div className="w-2 h-2 bg-gray-300 rounded-full animate-bounce"></div>
                  <div className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '75ms' }}></div>
                  <div className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+              </div>
+            )}
+
+            {/* AI Error with Retry */}
+            {aiError && !isTyping && (
+              <div className="ml-10 p-4 bg-red-50 border border-red-200 rounded-xl">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center shrink-0">
+                    <span className="text-red-500 text-sm">!</span>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-red-800 mb-1">
+                      AI 응답 중 오류가 발생했습니다
+                    </p>
+                    <p className="text-xs text-red-600 mb-3">
+                      {aiError.message}
+                    </p>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={handleRetry}
+                        className="px-3 py-1.5 bg-red-600 text-white text-xs font-medium rounded-lg hover:bg-red-700 transition-colors"
+                      >
+                        다시 시도
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setAiError(null)}
+                        className="px-3 py-1.5 bg-white text-red-600 text-xs font-medium rounded-lg border border-red-200 hover:bg-red-50 transition-colors"
+                      >
+                        무시
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
             <div className="h-4"></div>

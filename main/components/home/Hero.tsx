@@ -109,13 +109,13 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
       <div className="relative z-10 flex flex-col items-center text-center mt-20 md:mt-32 max-w-3xl mx-auto">
         <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] mb-8">
             <Ruler size={14} className="text-black" />
-            <span className="text-xs font-bold text-black font-mono">DRAFT OS v2.4.0 KR</span>
+            <span className="text-xs font-bold text-black font-mono">DRAFT COMMUNITY</span>
         </div>
 
         <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-[1.2] mb-6 text-slate-900">
-          함께 성장할 팀을 찾고,<br />
+          모든 프로젝트는<br />
           <span className="text-gray-400 relative">
-            아이디어를 실현하세요.
+            Draft에서 시작됩니다.
             <svg className="absolute -bottom-2 left-0 w-full h-3 text-indigo-500 opacity-50" viewBox="0 0 100 10" preserveAspectRatio="none">
                 <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="2" fill="none" strokeDasharray="4 2" />
             </svg>
@@ -123,8 +123,8 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
         </h1>
 
         <p className="text-lg md:text-xl text-gray-600 mb-10 max-w-2xl leading-relaxed break-keep">
-          예비 창업가/초기 창업가를 위한 프로젝트 빌더.<br className="hidden md:inline" />
-          마음 맞는 팀원 찾기부터 팀 룰 세팅, 프로젝트 관리까지.
+          프로젝트를 공유하고, 피드백 받고,<br className="hidden md:inline" />
+          함께할 사람을 만나세요.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
@@ -132,7 +132,7 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
             onClick={onCtaClick}
             className="group w-full sm:w-auto flex items-center justify-center gap-2 bg-black text-white px-8 py-4 font-bold text-sm hover:bg-gray-800 transition-all duration-200 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)] hover:translate-x-[2px] hover:translate-y-[2px] border border-black"
           >
-            팀 빌딩 시작하기
+            프로젝트 올리기
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
           </button>
 

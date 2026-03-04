@@ -1,0 +1,318 @@
+{
+  "metadata": {
+    "created_date": "2026-02-16",
+    "purpose": "A4 사이즈 최적화 PSST 사업계획서 디자인 시스템"
+  },
+  "a4_specifications": {
+    "size": {
+      "mm": {"width": 210, "height": 297},
+      "px_72dpi": {"width": 595, "height": 842},
+      "px_96dpi": {"width": 794, "height": 1123},
+      "px_150dpi": {"width": 1240, "height": 1754},
+      "px_300dpi": {"width": 2480, "height": 3508}
+    },
+    "safe_area": {
+      "margin_mm": {"top": 20, "bottom": 20, "left": 25, "right": 20},
+      "content_area_mm": {"width": 165, "height": 257}
+    },
+    "recommended_dpi": 150,
+    "color_mode": "CMYK for print, RGB for screen"
+  },
+  "grid_system": {
+    "columns": 12,
+    "gutter_mm": 5,
+    "column_width_mm": 11.25,
+    "baseline_grid_mm": 4,
+    "common_layouts": [
+      {"name": "full", "columns": 12, "use": "제목, 큰 차트"},
+      {"name": "two-thirds", "columns": 8, "use": "본문 + 사이드"},
+      {"name": "half", "columns": 6, "use": "2단 비교"},
+      {"name": "third", "columns": 4, "use": "3단 구성"},
+      {"name": "quarter", "columns": 3, "use": "4단 아이콘/통계"}
+    ]
+  },
+  "typography": {
+    "scale": {
+      "h1_title": {"size_pt": 28, "line_height": 1.2, "weight": "Bold", "use": "페이지 제목"},
+      "h2_section": {"size_pt": 20, "line_height": 1.3, "weight": "SemiBold", "use": "섹션 제목"},
+      "h3_subsection": {"size_pt": 16, "line_height": 1.4, "weight": "SemiBold", "use": "소제목"},
+      "body_large": {"size_pt": 12, "line_height": 1.6, "weight": "Regular", "use": "주요 본문"},
+      "body": {"size_pt": 10, "line_height": 1.5, "weight": "Regular", "use": "일반 본문"},
+      "caption": {"size_pt": 8, "line_height": 1.4, "weight": "Regular", "use": "캡션, 출처"},
+      "number_highlight": {"size_pt": 36, "line_height": 1.1, "weight": "Bold", "use": "핵심 숫자 강조"}
+    },
+    "fonts": {
+      "korean": {
+        "primary": "Pretendard",
+        "fallback": ["Noto Sans KR", "Spoqa Han Sans Neo"],
+        "weights": [400, 500, 600, 700]
+      },
+      "english": {
+        "primary": "Inter",
+        "fallback": ["SF Pro Display", "Roboto"],
+        "weights": [400, 500, 600, 700]
+      },
+      "numbers": {
+        "primary": "Inter",
+        "note": "숫자는 tabular figures 사용 권장"
+      }
+    }
+  },
+  "spacing": {
+    "unit_mm": 4,
+    "scale": {
+      "xs": 4,
+      "sm": 8,
+      "md": 16,
+      "lg": 24,
+      "xl": 32,
+      "xxl": 48
+    },
+    "sections": {
+      "page_header_height_mm": 30,
+      "section_gap_mm": 24,
+      "paragraph_gap_mm": 12,
+      "item_gap_mm": 8
+    }
+  },
+  "page_templates": {
+    "cover": {
+      "layout": "centered",
+      "elements": [
+        {"type": "logo", "position": "top-center", "size_mm": {"width": 60, "height": 60}},
+        {"type": "title", "position": "center", "font": "h1_title", "max_lines": 2},
+        {"type": "tagline", "position": "below-title", "font": "body_large"},
+        {"type": "team_name", "position": "bottom-center", "font": "h3_subsection"},
+        {"type": "date", "position": "bottom-right", "font": "caption"}
+      ],
+      "style": "minimal, impactful"
+    },
+    "summary": {
+      "layout": "grid-4",
+      "elements": [
+        {"type": "section_title", "position": "top", "content": "Executive Summary"},
+        {"type": "key_points", "layout": "2x2 grid", "items": 4},
+        {"type": "one_liner", "position": "bottom", "font": "body_large", "highlight": true}
+      ],
+      "importance": "가장 중요한 페이지 - 심사위원 첫인상"
+    },
+    "problem": {
+      "layout": "left-heavy",
+      "ratio": "8:4",
+      "elements": [
+        {"type": "section_title", "content": "Problem"},
+        {"type": "pain_point", "layout": "numbered-list", "max_items": 3},
+        {"type": "data_visualization", "position": "right", "types": ["chart", "infographic"]},
+        {"type": "quote", "style": "customer-voice", "optional": true}
+      ]
+    },
+    "solution": {
+      "layout": "visual-heavy",
+      "ratio": "5:7",
+      "elements": [
+        {"type": "section_title", "content": "Solution"},
+        {"type": "product_image", "position": "right", "size": "large"},
+        {"type": "feature_list", "layout": "icon-list", "max_items": 4},
+        {"type": "how_it_works", "layout": "3-step-flow", "optional": true}
+      ]
+    },
+    "market": {
+      "layout": "data-focused",
+      "elements": [
+        {"type": "section_title", "content": "Market Opportunity"},
+        {"type": "tam_sam_som", "layout": "concentric-circles", "position": "left"},
+        {"type": "growth_rate", "layout": "line-chart", "position": "right"},
+        {"type": "key_numbers", "layout": "3-column", "position": "bottom"}
+      ]
+    },
+    "business_model": {
+      "layout": "diagram-centered",
+      "elements": [
+        {"type": "section_title", "content": "Business Model"},
+        {"type": "revenue_flow", "layout": "flowchart", "position": "center"},
+        {"type": "pricing", "layout": "table", "position": "bottom-left"},
+        {"type": "unit_economics", "layout": "metrics", "position": "bottom-right"}
+      ]
+    },
+    "competition": {
+      "layout": "comparison",
+      "elements": [
+        {"type": "section_title", "content": "Competitive Landscape"},
+        {"type": "comparison_matrix", "layout": "table", "highlight_us": true},
+        {"type": "positioning_map", "layout": "2x2-matrix", "optional": true}
+      ]
+    },
+    "traction": {
+      "layout": "metrics-grid",
+      "elements": [
+        {"type": "section_title", "content": "Traction & Milestones"},
+        {"type": "key_metrics", "layout": "4-cards", "style": "number-highlight"},
+        {"type": "timeline", "layout": "horizontal", "position": "bottom"}
+      ]
+    },
+    "team": {
+      "layout": "people-focused",
+      "elements": [
+        {"type": "section_title", "content": "Team"},
+        {"type": "team_members", "layout": "3-column", "max_members": 6},
+        {"type": "member_card", "includes": ["photo", "name", "role", "background"]},
+        {"type": "advisors", "layout": "small-cards", "position": "bottom", "optional": true}
+      ]
+    },
+    "financials": {
+      "layout": "chart-heavy",
+      "elements": [
+        {"type": "section_title", "content": "Financial Plan"},
+        {"type": "projection_chart", "layout": "bar-chart", "position": "top"},
+        {"type": "fund_usage", "layout": "pie-chart", "position": "bottom-left"},
+        {"type": "key_assumptions", "layout": "bullet-list", "position": "bottom-right"}
+      ]
+    },
+    "closing": {
+      "layout": "centered",
+      "elements": [
+        {"type": "call_to_action", "font": "h2_section"},
+        {"type": "contact_info", "layout": "centered"},
+        {"type": "qr_code", "optional": true, "size_mm": {"width": 30, "height": 30}}
+      ]
+    }
+  },
+  "component_library": {
+    "cards": {
+      "metric_card": {
+        "size_mm": {"width": 75, "height": 50},
+        "structure": ["number (36pt)", "label (10pt)", "trend_indicator"],
+        "padding_mm": 8,
+        "border_radius_mm": 4
+      },
+      "team_card": {
+        "size_mm": {"width": 50, "height": 70},
+        "structure": ["photo (40x40mm)", "name (12pt)", "role (10pt)"],
+        "padding_mm": 6
+      },
+      "feature_card": {
+        "size_mm": {"width": 75, "height": 40},
+        "structure": ["icon (24x24px)", "title (12pt)", "description (10pt)"],
+        "padding_mm": 8
+      }
+    },
+    "charts": {
+      "bar_chart": {
+        "height_mm": 80,
+        "bar_width_mm": 15,
+        "gap_mm": 8,
+        "colors": "use brand primary gradient"
+      },
+      "line_chart": {
+        "height_mm": 60,
+        "line_weight_pt": 2,
+        "dot_size_pt": 6
+      },
+      "pie_chart": {
+        "diameter_mm": 60,
+        "max_segments": 5,
+        "label_position": "outside"
+      },
+      "tam_sam_som": {
+        "diameter_mm": 80,
+        "style": "concentric circles",
+        "colors": ["light", "medium", "dark"]
+      }
+    },
+    "lists": {
+      "bullet_list": {
+        "bullet_style": "circle or custom icon",
+        "indent_mm": 8,
+        "item_gap_mm": 6
+      },
+      "numbered_list": {
+        "number_style": "circled or plain",
+        "indent_mm": 10,
+        "item_gap_mm": 8
+      },
+      "icon_list": {
+        "icon_size_mm": 6,
+        "icon_gap_mm": 8,
+        "text_align": "left"
+      }
+    },
+    "tables": {
+      "comparison_table": {
+        "header_height_mm": 12,
+        "row_height_mm": 10,
+        "column_min_width_mm": 25,
+        "highlight_column": "our product",
+        "check_icon": "✓ or custom"
+      }
+    }
+  },
+  "color_system": {
+    "semantic_colors": {
+      "primary": {"use": "브랜드 메인, CTA, 강조"},
+      "secondary": {"use": "보조 강조, 배경"},
+      "success": {"hex": "#10B981", "use": "긍정 지표, 성장"},
+      "warning": {"hex": "#F59E0B", "use": "주의, 중요"},
+      "error": {"hex": "#EF4444", "use": "문제점, 감소"},
+      "neutral": {
+        "900": "#111827",
+        "700": "#374151",
+        "500": "#6B7280",
+        "300": "#D1D5DB",
+        "100": "#F3F4F6",
+        "50": "#F9FAFB"
+      }
+    },
+    "usage_rules": [
+      "배경: neutral-50 또는 white",
+      "본문: neutral-700 또는 neutral-900",
+      "캡션: neutral-500",
+      "강조: primary color",
+      "차트: primary gradient + neutral"
+    ]
+  },
+  "export_settings": {
+    "pdf": {
+      "dpi": 150,
+      "color_profile": "sRGB",
+      "embed_fonts": true,
+      "compression": "medium"
+    },
+    "print": {
+      "dpi": 300,
+      "color_profile": "CMYK",
+      "bleed_mm": 3,
+      "crop_marks": true
+    },
+    "web_view": {
+      "format": "PDF or HTML",
+      "max_file_size_mb": 10,
+      "optimize_images": true
+    }
+  },
+  "accessibility": {
+    "contrast_ratio": {
+      "text_normal": "4.5:1 minimum",
+      "text_large": "3:1 minimum"
+    },
+    "font_size_minimum_pt": 8,
+    "color_blind_safe": "차트에 패턴/라벨 병행 사용"
+  },
+  "best_practices": {
+    "do": [
+      "한 페이지에 한 가지 핵심 메시지",
+      "숫자는 크게, 설명은 작게",
+      "시각화 70% : 텍스트 30%",
+      "여백 충분히 확보",
+      "일관된 정렬 (좌측 정렬 권장)",
+      "그리드 시스템 준수"
+    ],
+    "dont": [
+      "페이지 꽉 채우기",
+      "3가지 이상 색상 남용",
+      "작은 폰트 (8pt 미만)",
+      "저해상도 이미지",
+      "복잡한 차트",
+      "애니메이션/움직임 (PDF)"
+    ]
+  }
+}

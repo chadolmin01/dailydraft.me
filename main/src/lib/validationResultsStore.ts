@@ -61,6 +61,14 @@ export const validationResultsStore = {
     }
   },
 
+  delete: (id: string) => {
+    const all = validationResultsStore.getAll();
+    const filtered = all.filter(r => r.id !== id);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
+    }
+  },
+
   clear: () => {
     if (typeof window !== 'undefined') {
       localStorage.removeItem(STORAGE_KEY);

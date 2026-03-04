@@ -5,7 +5,11 @@ import { useRouter } from 'next/navigation'
 import { BackgroundGrid } from '@/components/home/BackgroundGrid'
 import { Navbar } from '@/components/home/Navbar'
 import { Hero } from '@/components/home/Hero'
-import { Features } from '@/components/home/Features'
+// import { Features } from '@/components/home/Features'
+import { HowItWorks } from '@/components/home/HowItWorks'
+import { CommunityFeedback } from '@/components/home/CommunityFeedback'
+import { OpportunitySection } from '@/components/home/OpportunitySection'
+import { FAQ } from '@/components/home/FAQ'
 import { Footer } from '@/components/home/Footer'
 
 export default function HomePage() {
@@ -23,7 +27,11 @@ export default function HomePage() {
 
       <main className="relative z-10 pt-20">
         <Hero onCtaClick={handleLoginClick} />
-        <Features />
+        {/* <Features /> */}
+        <HowItWorks />
+        <CommunityFeedback />
+        <OpportunitySection />
+        <FAQ />
       </main>
 
       <Footer />

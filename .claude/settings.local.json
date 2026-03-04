@@ -130,7 +130,29 @@
       "WebFetch(domain:eopla.net)",
       "WebFetch(domain:bodeveloper.com)",
       "WebFetch(domain:www.beginmate.com)",
-      "WebFetch(domain:founders.company)"
+      "WebFetch(domain:founders.company)",
+      "Bash(git stash pop:*)",
+      "Bash(git stash drop:*)",
+      "Bash(jq:*)",
+      "Bash(supabase db push:*)",
+      "Bash(vercel:*)",
+      "WebFetch(domain:localhost)",
+      "Skill(browser-use)",
+      "Bash(uvx:*)",
+      "Bash(npx playwright:*)",
+      "Bash(where:*)",
+      "Bash(cmd //c \"dir %USERPROFILE%\\\\Desktop\\\\poster*\")",
+      "Bash(pip show:*)",
+      "Bash(pip install:*)",
+      "Bash(python -m browser_use:*)",
+      "Bash(C:/Users/chado/AppData/Local/Programs/Python/Python313/Scripts/browser-use.exe install)",
+      "Bash(chcp:*)",
+      "Bash(C:/Users/chado/AppData/Local/Programs/Python/Python313/Scripts/browser-use.exe:*)",
+      "Bash(PYTHONIOENCODING=utf-8 python:*)",
+      "Bash(python:*)",
+      "Bash(cmd //c \"dir C:\\\\Users\\\\chado\\\\OneDrive\\\\Desktop\\\\slide*\")",
+      "Bash(cmd //c \"dir C:\\\\Users\\\\chado\\\\Desktop\\\\slide* 2>nul\")",
+      "Bash(cmd //c \"dir C:\\\\Users\\\\chado\\\\OneDrive\\\\Desktop\\\\\")"
     ]
   }
 }

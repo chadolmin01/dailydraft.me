@@ -1,11 +1,22 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import SelectionScreen from './SelectionScreen';
 import ChatInterface from './ChatInterface';
 import ResultView from './ResultView';
 import { AppState, ValidationLevel } from './types';
 import { validationResultsStore } from '@/src/lib/validationResultsStore';
+import { useAuth } from '@/src/context/AuthContext';
+import { useCreateValidatedIdea, type ValidationLevel as DBValidationLevel } from '@/src/hooks/useValidatedIdeas';
+
+// Preloaded context from external startup idea (e.g., from Explore page)
+interface PreloadedStartupContext {
+  startupId: string;
+  startupName: string;
+  description?: string;
+  koreaFitReason?: string;
+  suggestedLocalization?: string;
+}
 
 interface IdeaValidatorProps {
   onClose?: () => void;
@@ -18,14 +29,28 @@ interface IdeaValidatorProps {
   onExternalInputChange?: (value: string) => void;
   hideInput?: boolean;
   onRegisterSend?: (sendFn: () => void) => void;
+  // Preloaded context from external startup idea
+  preloadedContext?: PreloadedStartupContext;
 }
 
-const IdeaValidator: React.FC<IdeaValidatorProps> = ({ onClose, onComplete, embedded = false, skipToLevelSelect = false, onBack, externalInput, onExternalInputChange, hideInput = false, onRegisterSend }) => {
+const IdeaValidator: React.FC<IdeaValidatorProps> = ({ onClose, onComplete, embedded = false, skipToLevelSelect = false, onBack, externalInput, onExternalInputChange, hideInput = false, onRegisterSend, preloadedContext }) => {
   const [view, setView] = useState<AppState>(AppState.SELECTION);
   const [conversationHistory, setConversationHistory] = useState<string>('');
   const [projectIdea, setProjectIdea] = useState<string>('');
   const [reflectedAdvice, setReflectedAdvice] = useState<string[]>([]);
   const [selectedLevel, setSelectedLevel] = useState<ValidationLevel>(ValidationLevel.MVP);
+
+  // Auth & DB hooks
+  const { user } = useAuth();
+  const createValidatedIdea = useCreateValidatedIdea();
+
+  // 마운트 상태 추적 (메모리 누수 방지)
+  const isMountedRef = useRef(true);
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const handleSelection = (mode: 'general' | 'ai', level?: ValidationLevel) => {
     if (mode === 'ai') {
@@ -39,27 +64,49 @@ const IdeaValidator: React.FC<IdeaValidatorProps> = ({ onClose, onComplete, embe
   };
 
   const [savedResultId, setSavedResultId] = useState<string | null>(null);
+  const [dbResultId, setDbResultId] = useState<string | null>(null);
 
-  const handleChatComplete = (history: string, idea: string, advice: string[]) => {
+  const handleChatComplete = async (history: string, idea: string, advice: string[]) => {
     setConversationHistory(history);
     setProjectIdea(idea);
     setReflectedAdvice(advice);
     setView(AppState.RESULT);
 
-    // Save validation result for use in project creation
+    // 1. localStorage 저장 (동기, 백업 & 비로그인 사용자용)
     const savedResult = validationResultsStore.save({
       projectIdea: idea,
       conversationHistory: history,
       reflectedAdvice: advice,
     });
     setSavedResultId(savedResult.id);
+
+    // 2. DB 저장 (비동기, 로그인 사용자)
+    if (user) {
+      try {
+        const dbResult = await createValidatedIdea.mutateAsync({
+          project_idea: idea,
+          conversation_history: history,
+          reflected_advice: advice,
+          validation_level: selectedLevel as DBValidationLevel,
+        });
+        // 마운트 상태 확인 후 상태 업데이트
+        if (isMountedRef.current) {
+          setDbResultId(dbResult.id);
+        }
+      } catch (error) {
+        console.error('[IdeaValidator] Failed to save to DB:', error);
+        // DB 저장 실패해도 localStorage 결과는 유지
+      }
+    }
     // Note: Don't call onComplete here - wait for user to finish viewing results
   };
 
   const handleResultComplete = () => {
     // Notify parent when user is done viewing results
-    if (onComplete && savedResultId) {
-      onComplete({ id: savedResultId, projectIdea });
+    // DB ID 우선, 없으면 localStorage ID 사용
+    const resultId = dbResultId || savedResultId;
+    if (onComplete && resultId) {
+      onComplete({ id: resultId, projectIdea });
     }
   };
 
@@ -77,6 +124,7 @@ const IdeaValidator: React.FC<IdeaValidatorProps> = ({ onClose, onComplete, embe
               onExternalInputChange={onExternalInputChange}
               hideInput={hideInput}
               onRegisterSend={onRegisterSend}
+              preloadedContext={preloadedContext}
             />
           </div>
         );
@@ -88,6 +136,8 @@ const IdeaValidator: React.FC<IdeaValidatorProps> = ({ onClose, onComplete, embe
               originalIdea={projectIdea}
               reflectedAdvice={reflectedAdvice}
               onComplete={handleResultComplete}
+              validatedIdeaId={dbResultId}
+              validationLevel={selectedLevel}
             />
           </div>
         );

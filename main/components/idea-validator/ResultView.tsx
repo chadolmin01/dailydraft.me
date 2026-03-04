@@ -1,31 +1,52 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Download, Share2, Briefcase, FileText, Layout, Cpu, Paintbrush, DollarSign, Shield, MapPin, Clock, Globe, Copy, Check, Target, Server, Zap, BarChart, Users, Star, Award } from 'lucide-react';
-import { Artifacts, PrdStructure, JdStructure } from './types';
+import { useRouter } from 'next/navigation';
+import { Download, Share2, Briefcase, FileText, Layout, Cpu, Paintbrush, DollarSign, Shield, MapPin, Clock, Globe, Copy, Check, Target, Server, Zap, BarChart, Users, Star, Award, ArrowRight } from 'lucide-react';
+import { Artifacts, PrdStructure, JdStructure, ValidationLevel } from './types';
 import { generateFinalArtifacts } from './geminiService';
 import { validationResultsStore } from '@/src/lib/validationResultsStore';
+import { useUpdateValidatedIdeaFull } from '@/src/hooks/useValidatedIdeas';
 
 interface ResultViewProps {
   conversationHistory: string;
   originalIdea: string;
   reflectedAdvice?: string[];
   onComplete?: () => void;
+  validatedIdeaId?: string | null;
+  validationLevel?: ValidationLevel;
 }
 
-const ResultView: React.FC<ResultViewProps> = ({ conversationHistory, originalIdea, reflectedAdvice = [], onComplete }) => {
+const ResultView: React.FC<ResultViewProps> = ({
+  conversationHistory,
+  originalIdea,
+  reflectedAdvice = [],
+  onComplete,
+  validatedIdeaId,
+  validationLevel,
+}) => {
+  const router = useRouter();
   const [artifacts, setArtifacts] = useState<Artifacts | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'overview' | 'prd' | 'jd'>('overview');
   const [copied, setCopied] = useState(false);
 
+  // DB 업데이트 훅
+  const updateValidatedIdea = useUpdateValidatedIdeaFull();
+
   useEffect(() => {
+    let isMounted = true;
+
     const fetchArtifacts = async () => {
       try {
         const data = await generateFinalArtifacts(originalIdea, conversationHistory, reflectedAdvice);
+
+        // 언마운트 체크
+        if (!isMounted) return;
+
         setArtifacts(data);
 
-        // Save artifacts to the latest validation result
+        // 1. localStorage 저장 (기존 - 백업)
         const latest = validationResultsStore.getLatest();
         if (latest && data.prd && data.jd) {
           validationResultsStore.updateArtifacts(latest.id, {
@@ -33,14 +54,65 @@ const ResultView: React.FC<ResultViewProps> = ({ conversationHistory, originalId
             jd: JSON.stringify(data.jd),
           });
         }
+
+        // 2. DB 업데이트 (로그인 사용자)
+        if (validatedIdeaId && isMounted) {
+          try {
+            await updateValidatedIdea.mutateAsync({
+              id: validatedIdeaId,
+              data: {
+                artifacts: {
+                  prd: JSON.stringify(data.prd),
+                  jd: JSON.stringify(data.jd),
+                },
+                score: data.score,
+                personaScores: data.personaScores,
+                actionPlan: data.actionPlan,
+                validationLevel: validationLevel,
+              },
+            });
+          } catch (dbError) {
+            console.error('[ResultView] Failed to update DB:', dbError);
+          }
+        }
       } catch (e) {
+        if (!isMounted) return;
         console.error(e);
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
+
     fetchArtifacts();
-  }, [conversationHistory, originalIdea, reflectedAdvice]);
+
+    return () => {
+      isMounted = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversationHistory, originalIdea, validatedIdeaId, validationLevel]);
+
+  // 사업계획서 작성 페이지로 이동
+  const handleGoToBusinessPlan = () => {
+    // artifacts가 없으면 이동하지 않음
+    if (!artifacts) {
+      console.warn('[ResultView] Artifacts not ready');
+      return;
+    }
+
+    // sessionStorage에 검증 데이터 저장
+    sessionStorage.setItem('ideaValidatorData', JSON.stringify({
+      validationId: validatedIdeaId,
+      projectIdea: originalIdea,
+      artifacts: artifacts,
+      reflectedAdvice: reflectedAdvice,
+      personaScores: artifacts.personaScores,
+      score: artifacts.score,
+    }));
+
+    router.push('/business-plan?from=idea-validator');
+  };
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -261,11 +333,12 @@ const ResultView: React.FC<ResultViewProps> = ({ conversationHistory, originalId
                  </div>
               </div>
               <div className="flex gap-3 mt-4 md:mt-0">
-                 <button className="px-8 py-3 bg-black text-white font-bold rounded-full hover:bg-gray-800 transition-colors shadow-xl shadow-gray-200 transform hover:-translate-y-0.5">
+                 <button type="button" className="px-8 py-3 bg-black text-white font-bold rounded-full hover:bg-gray-800 transition-colors shadow-xl shadow-gray-200 transform hover:-translate-y-0.5">
                     Apply Now
                  </button>
-                 <button 
-                    onClick={() => handleCopy(JSON.stringify(jd))} 
+                 <button
+                    type="button"
+                    onClick={() => handleCopy(JSON.stringify(jd))}
                     className="p-3 border border-gray-200 rounded-full hover:bg-gray-50 text-gray-600 transition-colors"
                  >
                     {copied ? <Check size={20} className="text-green-500" /> : <Share2 size={20} />}
@@ -369,14 +442,26 @@ const ResultView: React.FC<ResultViewProps> = ({ conversationHistory, originalId
                    <span className="text-lg text-gray-400 font-medium">/100</span>
                </div>
              </div>
-             {onComplete && (
+             <div className="flex items-center gap-3">
+               {onComplete && (
+                 <button
+                   type="button"
+                   onClick={onComplete}
+                   className="px-5 py-3 bg-white text-gray-700 font-bold rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors flex items-center gap-2 text-sm"
+                 >
+                   완료
+                 </button>
+               )}
                <button
-                 onClick={onComplete}
-                 className="px-6 py-3 bg-black text-white font-bold rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2 text-sm"
+                 type="button"
+                 onClick={handleGoToBusinessPlan}
+                 className="px-6 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm shadow-lg shadow-blue-200"
                >
-                 완료
+                 <Briefcase size={16} />
+                 사업계획서 작성하기
+                 <ArrowRight size={16} />
                </button>
-             )}
+             </div>
           </div>
       </div>
 
@@ -386,7 +471,8 @@ const ResultView: React.FC<ResultViewProps> = ({ conversationHistory, originalId
         {/* Left Column: Navigation */}
         <div className="col-span-2">
             <div className="sticky top-6 space-y-1">
-                <button 
+                <button
+                  type="button"
                   onClick={() => setActiveTab('overview')}
                   className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all ${activeTab === 'overview' ? 'bg-white border border-gray-200 shadow-sm text-draft-black' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'}`}
                 >
@@ -397,7 +483,8 @@ const ResultView: React.FC<ResultViewProps> = ({ conversationHistory, originalId
                   {activeTab === 'overview' && <div className="w-1.5 h-1.5 bg-black rounded-full" />}
                 </button>
 
-                <button 
+                <button
+                  type="button"
                   onClick={() => setActiveTab('prd')}
                   className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all ${activeTab === 'prd' ? 'bg-white border border-gray-200 shadow-sm text-draft-black' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'}`}
                 >
@@ -408,7 +495,8 @@ const ResultView: React.FC<ResultViewProps> = ({ conversationHistory, originalId
                   {activeTab === 'prd' && <div className="w-1.5 h-1.5 bg-black rounded-full" />}
                 </button>
 
-                <button 
+                <button
+                  type="button"
                   onClick={() => setActiveTab('jd')}
                   className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all ${activeTab === 'jd' ? 'bg-white border border-gray-200 shadow-sm text-draft-black' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'}`}
                 >
@@ -420,10 +508,10 @@ const ResultView: React.FC<ResultViewProps> = ({ conversationHistory, originalId
                 </button>
             
                 <div className="pt-6 mt-2 border-t border-gray-100 space-y-2 px-1">
-                   <button className="w-full py-2 px-3 rounded-lg border border-gray-200 bg-white text-gray-700 text-xs font-bold hover:border-gray-400 hover:shadow-sm flex items-center justify-center gap-2 transition-all">
+                   <button type="button" className="w-full py-2 px-3 rounded-lg border border-gray-200 bg-white text-gray-700 text-xs font-bold hover:border-gray-400 hover:shadow-sm flex items-center justify-center gap-2 transition-all">
                       <Download size={14} /> PDF
                    </button>
-                   <button className="w-full py-2 px-3 rounded-lg bg-black text-white text-xs font-bold hover:bg-gray-800 hover:shadow-md flex items-center justify-center gap-2 transition-all">
+                   <button type="button" className="w-full py-2 px-3 rounded-lg bg-black text-white text-xs font-bold hover:bg-gray-800 hover:shadow-md flex items-center justify-center gap-2 transition-all">
                       <Share2 size={14} /> Share
                    </button>
                 </div>

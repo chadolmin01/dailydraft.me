@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "md-to-pdf": "^5.2.5"
+  },
+  "dependencies": {
+    "hwp.js": "^0.0.3",
+    "mammoth": "^1.11.0"
+  }
+}

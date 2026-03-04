@@ -1,37 +1,14 @@
 'use client'
 
-import React, { useState } from 'react'
-import { Search, Filter, ArrowRight, Code, Zap, Users, Star, Rocket, LayoutGrid, Loader2 } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
+import { Search, Filter, ArrowRight, Code, Zap, Users, Star, Rocket, LayoutGrid, Loader2, Globe } from 'lucide-react'
 import { Card } from './ui/Card'
+import { StartupIdeaCard } from './StartupIdeaCard'
+import { StartupIdeaModal } from './StartupIdeaModal'
+import type { StartupIdea, StartupKoreaAnalysis } from '@/src/lib/startups/types'
 
-const featuredItems = [
-  {
-    id: 'f1',
-    title: 'Project Alpha',
-    subtitle: '법률 상담 자동화 솔루션 팀 빌딩',
-    image: 'bg-gray-900',
-    tags: ['CO-FOUNDER', 'AI ENGINEER'],
-    type: 'PROJECT'
-  },
-  {
-    id: 'f2',
-    title: 'Stealth Fintech',
-    subtitle: '시리즈 A 투자 유치 완료',
-    image: 'bg-draft-blue',
-    tags: ['HIRING', 'BACKEND'],
-    type: 'STARTUP'
-  },
-  {
-    id: 'f3',
-    title: 'Deep Health',
-    subtitle: '수면 데이터 분석 AI',
-    image: 'bg-gray-800',
-    tags: ['SEED', 'DATA SCIENTIST'],
-    type: 'PROJECT'
-  }
-]
-
-const marqueeItems = [...featuredItems, ...featuredItems, ...featuredItems, ...featuredItems]
+// Marquee 배경색 순환
+const MARQUEE_COLORS = ['bg-gray-900', 'bg-draft-blue', 'bg-gray-800', 'bg-black', 'bg-gray-700']
 
 const projects = [
   {
@@ -83,8 +60,59 @@ const talents = [
   }
 ]
 
+interface StartupIdeaWithAnalysis extends StartupIdea {
+  korea_deep_analysis: StartupKoreaAnalysis | null
+  final_score: number | null
+}
+
 export const Explore: React.FC = () => {
   const [activeTab, setActiveTab] = useState('All')
+  const [topStartupIdeas, setTopStartupIdeas] = useState<StartupIdeaWithAnalysis[]>([])
+  const [startupIdeasLoading, setStartupIdeasLoading] = useState(true)
+  const [selectedStartup, setSelectedStartup] = useState<StartupIdeaWithAnalysis | null>(null)
+
+  // Fetch top startup ideas (12개)
+  useEffect(() => {
+    const fetchTopStartupIdeas = async () => {
+      try {
+        const res = await fetch('/api/startup-ideas?sort=final_score&limit=12&analyzed=true')
+        if (!res.ok) throw new Error('Failed to fetch')
+        const data = await res.json()
+        setTopStartupIdeas(data.data || [])
+      } catch (error) {
+        console.error('Failed to fetch startup ideas:', error)
+      } finally {
+        setStartupIdeasLoading(false)
+      }
+    }
+
+    fetchTopStartupIdeas()
+  }, [])
+
+  // Marquee용 상위 6개 (점수 높은 순)
+  const marqueeIdeas = topStartupIdeas.slice(0, 6)
+  const marqueeItems = [...marqueeIdeas, ...marqueeIdeas, ...marqueeIdeas]
+
+  // Handle open modal
+  const handleOpenModal = (id: string) => {
+    const startup = topStartupIdeas.find(s => s.id === id)
+    if (startup) {
+      setSelectedStartup(startup)
+    }
+  }
+
+  // Handle start building click
+  const handleStartBuilding = (id: string) => {
+    const startup = topStartupIdeas.find(s => s.id === id) || selectedStartup
+    if (!startup) return
+
+    // Navigate to idea validator with context
+    const params = new URLSearchParams({
+      startupId: startup.id,
+      name: startup.name,
+    })
+    window.location.href = `/idea-validator?${params.toString()}`
+  }
 
   return (
     <div className="flex-1 overflow-y-auto h-screen bg-[#FAFAFA] bg-grid-engineering">
@@ -117,41 +145,109 @@ export const Explore: React.FC = () => {
              </div>
           </div>
 
-          {/* Featured Marquee */}
+          {/* Featured Marquee - 해외 검증 아이디어 */}
+          {marqueeItems.length > 0 && (
           <div className="relative w-full overflow-hidden group">
              <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-[#FAFAFA] to-transparent z-10 pointer-events-none"></div>
              <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-[#FAFAFA] to-transparent z-10 pointer-events-none"></div>
 
              <div className="flex gap-6 animate-marquee hover:[animation-play-state:paused] w-max py-2">
-                {marqueeItems.map((item, index) => (
-                   <div key={`${item.id}-${index}`} className={`
-                      relative overflow-hidden rounded-2xl p-6 h-64 w-[450px] flex flex-col justify-between shrink-0 cursor-pointer shadow-md hover:shadow-xl hover:scale-[1.02] transition-all duration-300
-                      ${item.image}
-                   `}>
+                {marqueeItems.map((startup, index) => {
+                   const analysis = startup.korea_deep_analysis
+                   const bgColor = MARQUEE_COLORS[index % MARQUEE_COLORS.length]
+                   const founderType = analysis?.target_founder_type?.[0] || ''
+
+                   return (
+                   <div
+                      key={`${startup.id}-${index}`}
+                      onClick={() => handleOpenModal(startup.id)}
+                      className={`
+                         relative overflow-hidden rounded-2xl p-6 h-64 w-[450px] flex flex-col justify-between shrink-0 cursor-pointer shadow-md hover:shadow-xl hover:scale-[1.02] transition-all duration-300
+                         ${bgColor}
+                      `}
+                   >
                       <div className="flex justify-between items-start z-10">
-                         <span className="text-[10px] font-mono font-bold text-white border border-white/30 px-3 py-1.5 rounded-full bg-black/20 backdrop-blur-sm">
-                            {item.type}
+                         <span className="text-[10px] font-mono font-bold text-white border border-white/30 px-3 py-1.5 rounded-full bg-black/20 backdrop-blur-sm uppercase">
+                            {startup.source === 'producthunt' ? 'Product Hunt' : startup.source}
                          </span>
-                         <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur flex items-center justify-center">
-                           <ArrowRight className="text-white" size={16} />
+                         <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-mono text-white/80 bg-white/10 px-2 py-1 rounded-sm backdrop-blur-sm">
+                               적합도 {analysis?.korea_fit_score || 0}
+                            </span>
+                            <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur flex items-center justify-center">
+                              <ArrowRight className="text-white" size={16} />
+                            </div>
                          </div>
                       </div>
 
                       <div className="relative z-10 text-white">
-                         <h3 className="text-2xl font-bold mb-2 tracking-tight truncate">{item.title}</h3>
-                         <p className="text-white/80 text-sm mb-4 font-light truncate">{item.subtitle}</p>
+                         <h3 className="text-2xl font-bold mb-2 tracking-tight truncate">{startup.name}</h3>
+                         <p className="text-white/80 text-sm mb-4 font-light line-clamp-2">{analysis?.korean_summary || startup.tagline}</p>
                          <div className="flex items-center gap-2 flex-wrap">
-                            {item.tags.map(tag => (
-                               <span key={tag} className="text-[10px] font-mono text-black bg-white px-2 py-1 rounded-sm font-bold">
-                                  {tag}
-                               </span>
-                            ))}
+                            <span className="text-[10px] font-mono text-black bg-white px-2 py-1 rounded-sm font-bold">
+                               {startup.upvotes.toLocaleString()} UPVOTES
+                            </span>
+                            {founderType && (
+                            <span className="text-[10px] font-mono text-black bg-white px-2 py-1 rounded-sm font-bold">
+                               {founderType === 'Blitz Builder' ? '실행형' : founderType === 'Market Sniper' ? '분석형' : founderType === 'Tech Pioneer' ? '기술형' : '커뮤니티형'}
+                            </span>
+                            )}
                          </div>
                       </div>
                    </div>
-                ))}
+                   )
+                })}
              </div>
           </div>
+          )}
+
+          {/* Global Startup Ideas Section */}
+          <section>
+             <div className="flex justify-between items-center mb-6">
+                <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                   <Globe size={18} /> 이번 주 해외 검증 아이디어
+                </h2>
+                <a
+                   href="/startup-ideas"
+                   className="text-xs font-mono text-gray-500 hover:text-black transition-colors flex items-center gap-1 border-b border-gray-300 pb-0.5 hover:border-black"
+                >
+                   VIEW ALL <ArrowRight size={12}/>
+                </a>
+             </div>
+
+             {startupIdeasLoading ? (
+                <div className="flex items-center justify-center py-16">
+                   <Loader2 className="animate-spin text-gray-400" size={24} />
+                </div>
+             ) : topStartupIdeas.length === 0 ? (
+                <Card className="text-center py-12" padding="p-6">
+                   <Globe className="mx-auto mb-4 text-gray-300" size={40} />
+                   <p className="text-gray-500 text-sm">아직 분석된 아이디어가 없습니다</p>
+                   <p className="text-gray-400 text-xs mt-1">곧 새로운 아이디어가 추가됩니다</p>
+                </Card>
+             ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                   {topStartupIdeas.map((startup) => (
+                      <StartupIdeaCard
+                         key={startup.id}
+                         id={startup.id}
+                         name={startup.name}
+                         tagline={startup.tagline}
+                         description={startup.description}
+                         logoUrl={startup.logo_url}
+                         websiteUrl={startup.website_url}
+                         sourceUrl={startup.source_url}
+                         source={startup.source}
+                         upvotes={startup.upvotes}
+                         koreaFitScore={startup.korea_fit_score}
+                         finalScore={startup.final_score}
+                         koreaDeepAnalysis={startup.korea_deep_analysis}
+                         onStartBuilding={handleOpenModal}
+                      />
+                   ))}
+                </div>
+             )}
+          </section>
 
           {/* Categories */}
           <div className="flex gap-1 border-b border-gray-200">
@@ -282,6 +378,30 @@ export const Explore: React.FC = () => {
           </section>
 
        </div>
+
+       {/* Startup Detail Modal */}
+       {selectedStartup && (
+         <StartupIdeaModal
+           isOpen={!!selectedStartup}
+           onClose={() => setSelectedStartup(null)}
+           onStartBuilding={() => handleStartBuilding(selectedStartup.id)}
+           startup={{
+             id: selectedStartup.id,
+             name: selectedStartup.name,
+             tagline: selectedStartup.tagline,
+             description: selectedStartup.description,
+             logoUrl: selectedStartup.logo_url,
+             websiteUrl: selectedStartup.website_url,
+             sourceUrl: selectedStartup.source_url,
+             source: selectedStartup.source,
+             upvotes: selectedStartup.upvotes,
+             category: selectedStartup.category,
+             koreaFitScore: selectedStartup.korea_fit_score,
+             finalScore: selectedStartup.final_score,
+             koreaDeepAnalysis: selectedStartup.korea_deep_analysis,
+           }}
+         />
+       )}
     </div>
   )
 }

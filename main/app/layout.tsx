@@ -3,21 +3,23 @@ import { Providers } from '@/src/context/Providers'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Draft - AI 기반 팀 빌딩 플랫폼',
-  description: '스타트업, 공모전, 사이드 프로젝트를 위한 AI 매칭 서비스. 아이디어 검증부터 IR 자료 생성까지, Draft OS 하나로 끝내세요.',
-  keywords: ['스타트업', '팀빌딩', 'AI', '공동창업자', '사이드프로젝트', '예비창업패키지'],
+  title: 'Draft - 모든 프로젝트는 여기서 시작됩니다',
+  description: '프로젝트를 공유하고, 피드백 받고, 함께할 사람을 만나세요.',
+  keywords: ['스타트업', '프로젝트', '커뮤니티', '피드백', '사이드프로젝트', '팀빌딩'],
   openGraph: {
-    title: 'Draft - AI 기반 팀 빌딩 플랫폼',
-    description: '초기 창업자와 대학생을 위한 AI 팀 빌딩 플랫폼',
+    title: 'Draft - 모든 프로젝트는 여기서 시작됩니다',
+    description: '프로젝트를 공유하고, 피드백 받고, 함께할 사람을 만나세요.',
     url: 'https://dailydraft.me',
     siteName: 'Draft',
+    images: ['/og-image.png'],
     type: 'website',
     locale: 'ko_KR',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Draft - AI 기반 팀 빌딩 플랫폼',
-    description: '초기 창업자와 대학생을 위한 AI 팀 빌딩 플랫폼',
+    title: 'Draft - 모든 프로젝트는 여기서 시작됩니다',
+    description: '프로젝트를 공유하고, 피드백 받고, 함께할 사람을 만나세요.',
+    images: ['/og-image.png'],
   },
   robots: {
     index: true,

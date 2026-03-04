@@ -939,6 +939,7 @@ export type Database = {
           team_data: Json | null
           extra_sections: Json | null
           validation_score: number | null
+          validated_idea_id: string | null
           created_at: string | null
           updated_at: string | null
         }
@@ -955,6 +956,7 @@ export type Database = {
           team_data?: Json | null
           extra_sections?: Json | null
           validation_score?: number | null
+          validated_idea_id?: string | null
           created_at?: string | null
           updated_at?: string | null
         }
@@ -971,6 +973,7 @@ export type Database = {
           team_data?: Json | null
           extra_sections?: Json | null
           validation_score?: number | null
+          validated_idea_id?: string | null
           created_at?: string | null
           updated_at?: string | null
         }
@@ -984,6 +987,10 @@ export type Database = {
           conversation_history: string | null
           reflected_advice: string[]
           artifacts: Json | null
+          score: number | null
+          persona_scores: Json | null
+          action_plan: Json | null
+          validation_level: string | null
           created_at: string | null
           updated_at: string | null
         }
@@ -994,6 +1001,10 @@ export type Database = {
           conversation_history?: string | null
           reflected_advice?: string[]
           artifacts?: Json | null
+          score?: number | null
+          persona_scores?: Json | null
+          action_plan?: Json | null
+          validation_level?: string | null
           created_at?: string | null
           updated_at?: string | null
         }
@@ -1004,6 +1015,10 @@ export type Database = {
           conversation_history?: string | null
           reflected_advice?: string[]
           artifacts?: Json | null
+          score?: number | null
+          persona_scores?: Json | null
+          action_plan?: Json | null
+          validation_level?: string | null
           created_at?: string | null
           updated_at?: string | null
         }

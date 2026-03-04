@@ -91,8 +91,12 @@ export enum AppState {
   RESULT = 'RESULT',
 }
 
-export enum ValidationLevel {
-  SKETCH = 'SKETCH',   // Level 1: Idea Sketch (Fast/Beginner)
-  MVP = 'MVP',         // Level 2: MVP Building (Standard)
-  DEFENSE = 'DEFENSE', // Level 3: Investor Defense (Pro/Hardcore)
-}
+/** 검증 난이도 레벨 - useValidatedIdeas.ts에서 정의된 타입과 동일 */
+export type ValidationLevel = 'SKETCH' | 'MVP' | 'DEFENSE';
+
+// enum 대신 상수 객체로 대체 (기존 ValidationLevel.SKETCH 같은 사용 패턴 지원)
+export const ValidationLevel = {
+  SKETCH: 'SKETCH' as const,   // Level 1: Idea Sketch (Fast/Beginner)
+  MVP: 'MVP' as const,         // Level 2: MVP Building (Standard)
+  DEFENSE: 'DEFENSE' as const, // Level 3: Investor Defense (Pro/Hardcore)
+} as const;

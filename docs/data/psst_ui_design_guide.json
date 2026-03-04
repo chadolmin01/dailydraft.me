@@ -1,0 +1,183 @@
+{
+  "metadata": {
+    "collected_date": "2026-02-16",
+    "purpose": "PSST 사업계획서 UI/디자인 스타일 가이드"
+  },
+  "design_principles": {
+    "core_philosophy": [
+      "기능적 디자인 우선 (예쁜 것보다 전달력)",
+      "브랜드 아이덴티티 일관성 유지",
+      "심사위원 가독성 최우선",
+      "복잡한 정보의 효과적 시각화"
+    ],
+    "layout_rules": [
+      "매거진처럼 - 가독성 있는 레이아웃",
+      "여백(whitespace) 적극 활용",
+      "정보 흐름에 따른 시선 유도",
+      "한 페이지에 한 가지 핵심 메시지"
+    ]
+  },
+  "page_structure": {
+    "recommended_pages": 15,
+    "max_pages": 30,
+    "sections": [
+      {"name": "표지", "pages": 1, "content": "기업명, 아이템명, 핵심 태그라인"},
+      {"name": "개요", "pages": 1, "content": "전체 요약 (가장 중요!)"},
+      {"name": "Problem", "pages": 2, "content": "문제 정의, 시장 배경"},
+      {"name": "Solution", "pages": 3, "content": "해결책, 제품/서비스 소개"},
+      {"name": "Market", "pages": 2, "content": "시장 규모, 경쟁 분석"},
+      {"name": "Business Model", "pages": 2, "content": "수익 구조, 가격 정책"},
+      {"name": "Scale-up", "pages": 2, "content": "성장 전략, 마케팅"},
+      {"name": "Team", "pages": 1, "content": "팀 소개, 역량"},
+      {"name": "Financial", "pages": 1, "content": "자금 계획, 예상 매출"}
+    ]
+  },
+  "color_schemes": {
+    "by_industry": {
+      "IT/테크": {
+        "primary": ["#2563EB", "#3B82F6"],
+        "secondary": ["#1E293B", "#475569"],
+        "accent": ["#10B981", "#06B6D4"],
+        "style": "모던, 미니멀, 클린"
+      },
+      "헬스케어/바이오": {
+        "primary": ["#059669", "#10B981"],
+        "secondary": ["#1E40AF", "#3B82F6"],
+        "accent": ["#F59E0B"],
+        "style": "신뢰, 청결, 전문성"
+      },
+      "금융/핀테크": {
+        "primary": ["#1E3A8A", "#1E40AF"],
+        "secondary": ["#0F172A", "#334155"],
+        "accent": ["#F59E0B", "#EAB308"],
+        "style": "신뢰, 안정, 전문성"
+      },
+      "식품/F&B": {
+        "primary": ["#DC2626", "#F97316"],
+        "secondary": ["#84CC16", "#22C55E"],
+        "accent": ["#FBBF24"],
+        "style": "따뜻함, 신선함, 활력"
+      },
+      "교육/에듀테크": {
+        "primary": ["#7C3AED", "#8B5CF6"],
+        "secondary": ["#2563EB", "#3B82F6"],
+        "accent": ["#F59E0B"],
+        "style": "창의성, 성장, 친근함"
+      },
+      "제조/하드웨어": {
+        "primary": ["#475569", "#64748B"],
+        "secondary": ["#1E293B", "#334155"],
+        "accent": ["#F97316", "#3B82F6"],
+        "style": "견고함, 기술력, 신뢰"
+      }
+    },
+    "trends_2025": {
+      "dominant": "대담한 네온 색상, 그라데이션",
+      "direction": "미니멀 → 맥시멀 (more is more)",
+      "typography": "굵고 강한 느낌의 타이포그래피",
+      "texture": "비대칭 요소, 강렬한 질감"
+    }
+  },
+  "typography": {
+    "korean_fonts": [
+      {"name": "Pretendard", "usage": "본문, 제목 모두 적합", "style": "모던"},
+      {"name": "Noto Sans KR", "usage": "본문 가독성 우수", "style": "중립"},
+      {"name": "Spoqa Han Sans", "usage": "IT/테크 스타트업", "style": "깔끔"},
+      {"name": "SUIT", "usage": "다양한 두께, 유연함", "style": "현대적"}
+    ],
+    "size_guide": {
+      "title": "28-36pt",
+      "subtitle": "20-24pt",
+      "body": "12-14pt",
+      "caption": "10-11pt",
+      "emphasis": "bold 사용, 색상 강조"
+    },
+    "rules": [
+      "폰트 종류 2개 이내 사용",
+      "본문 줄간격 1.5-1.8",
+      "단락 간 여백 충분히",
+      "강조는 bold 또는 색상 (밑줄 X)"
+    ]
+  },
+  "visualization": {
+    "chart_types": {
+      "시장규모": "원형 차트, 막대 그래프",
+      "성장률": "꺾은선 그래프, 화살표",
+      "비교분석": "표, 비교 막대 그래프",
+      "프로세스": "플로우차트, 타임라인",
+      "팀구성": "조직도, 사진 + 역할"
+    },
+    "icons": {
+      "style": "라인 아이콘 또는 솔리드 아이콘 (혼용 X)",
+      "sources": ["Feather Icons", "Heroicons", "Material Icons"],
+      "usage": "각 섹션 시작, 핵심 포인트 강조"
+    },
+    "images": {
+      "do": ["제품 스크린샷", "MVP 사진", "팀 사진", "데이터 차트"],
+      "dont": ["스톡 이미지 남용", "저해상도 이미지", "관련 없는 이미지"]
+    }
+  },
+  "layout_templates": {
+    "cover_page": {
+      "elements": ["로고", "아이템명", "태그라인", "팀명", "연도"],
+      "style": "심플, 임팩트 있게",
+      "tip": "첫인상 결정, 5초 안에 기억에 남게"
+    },
+    "content_page": {
+      "grid": "12컬럼 그리드 권장",
+      "margin": "상하좌우 최소 20px",
+      "structure": [
+        "헤더 (섹션명)",
+        "핵심 메시지 (1줄)",
+        "상세 내용 (글 + 시각화)",
+        "페이지 번호"
+      ]
+    },
+    "data_page": {
+      "ratio": "텍스트 30% : 시각화 70%",
+      "rules": [
+        "숫자는 크게",
+        "그래프는 단순하게",
+        "출처 명시"
+      ]
+    }
+  },
+  "success_patterns": {
+    "visual": [
+      "비즈니스 모델 캔버스 도식화",
+      "3단계 시장 진입 타임라인",
+      "Before/After 비교 차트",
+      "팀원 사진 + 역할 한 줄 소개",
+      "경쟁사 비교표 (우리가 돋보이게)"
+    ],
+    "content": [
+      "한 페이지 = 한 메시지",
+      "두괄식 (결론 먼저)",
+      "숫자로 증명",
+      "스토리텔링 흐름"
+    ]
+  },
+  "tools_recommended": {
+    "design": [
+      {"name": "Figma", "use": "프로토타입, 협업", "cost": "무료/유료"},
+      {"name": "Canva", "use": "빠른 제작, 템플릿", "cost": "무료/유료"},
+      {"name": "미리캔버스", "use": "한국형 템플릿", "cost": "무료/유료"},
+      {"name": "PowerPoint", "use": "범용성, 편집 용이", "cost": "유료"}
+    ],
+    "chart": [
+      {"name": "Datawrapper", "use": "차트 생성", "cost": "무료"},
+      {"name": "Chart.js", "use": "웹 차트", "cost": "무료"}
+    ],
+    "prototype": [
+      {"name": "Figma", "use": "앱/웹 UI", "cost": "무료"},
+      {"name": "Framer", "use": "인터랙티브", "cost": "무료/유료"}
+    ]
+  },
+  "sources": [
+    "https://brunch.co.kr/@jaeywriter/114",
+    "https://brunch.co.kr/@team-slogup/9",
+    "https://help.miricanvas.com/hc/ko/articles/360039489471",
+    "https://imweb.me/blog?idx=215",
+    "https://eagler.blog/2024/08/08/ir-pitch-deck/"
+  ]
+}
