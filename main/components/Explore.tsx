@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { Search, Filter, ArrowRight, Code, Zap, Users, Star, Rocket, LayoutGrid, Loader2, Globe } from 'lucide-react'
+import { Search, Filter, ArrowRight, Code, Zap, Users, Star, Rocket, LayoutGrid, Loader2, Globe, TrendingUp, Bookmark, Clock, Flame, ChevronRight, Hash, UserCircle, Sparkles } from 'lucide-react'
 import { Card } from './ui/Card'
 import { StartupIdeaCard } from './StartupIdeaCard'
 import { StartupIdeaModal } from './StartupIdeaModal'
@@ -9,6 +9,25 @@ import type { StartupIdea, StartupKoreaAnalysis } from '@/src/lib/startups/types
 
 // Marquee 배경색 순환
 const MARQUEE_COLORS = ['bg-gray-900', 'bg-draft-blue', 'bg-gray-800', 'bg-black', 'bg-gray-700']
+
+// 카테고리 데이터
+const categories = [
+  { id: 'all', label: '전체', icon: LayoutGrid, count: 128 },
+  { id: 'ai', label: 'AI / ML', icon: Sparkles, count: 45 },
+  { id: 'saas', label: 'SaaS', icon: Code, count: 32 },
+  { id: 'fintech', label: 'Fintech', icon: TrendingUp, count: 18 },
+  { id: 'health', label: 'Health', icon: Zap, count: 15 },
+  { id: 'community', label: 'Community', icon: Users, count: 12 },
+]
+
+// 트렌딩 태그
+const trendingTags = [
+  { tag: 'AI Agent', count: 234 },
+  { tag: 'Automation', count: 189 },
+  { tag: 'No-Code', count: 156 },
+  { tag: 'B2B SaaS', count: 142 },
+  { tag: 'Developer Tools', count: 98 },
+]
 
 const projects = [
   {
@@ -66,10 +85,12 @@ interface StartupIdeaWithAnalysis extends StartupIdea {
 }
 
 export const Explore: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('All')
   const [topStartupIdeas, setTopStartupIdeas] = useState<StartupIdeaWithAnalysis[]>([])
   const [startupIdeasLoading, setStartupIdeasLoading] = useState(true)
   const [selectedStartup, setSelectedStartup] = useState<StartupIdeaWithAnalysis | null>(null)
+  const [carouselIndex, setCarouselIndex] = useState(0)
+  const [selectedCategory, setSelectedCategory] = useState('all')
+  const [sortBy, setSortBy] = useState<'latest' | 'popular' | 'trending'>('trending')
 
   // Fetch top startup ideas (12개)
   useEffect(() => {
@@ -89,9 +110,18 @@ export const Explore: React.FC = () => {
     fetchTopStartupIdeas()
   }, [])
 
-  // Marquee용 상위 6개 (점수 높은 순)
-  const marqueeIdeas = topStartupIdeas.slice(0, 6)
-  const marqueeItems = [...marqueeIdeas, ...marqueeIdeas, ...marqueeIdeas]
+  // 캐러셀용 상위 6개 (점수 높은 순)
+  const carouselIdeas = topStartupIdeas.slice(0, 6)
+
+  // 캐러셀 자동 슬라이드 (4초 멈춤 → 한 칸씩 이동)
+  const maxIndex = Math.max(0, carouselIdeas.length - 3)
+  useEffect(() => {
+    if (carouselIdeas.length <= 3) return
+    const timer = setInterval(() => {
+      setCarouselIndex((prev) => (prev >= maxIndex ? 0 : prev + 1))
+    }, 4000)
+    return () => clearInterval(timer)
+  }, [carouselIdeas.length, maxIndex])
 
   // Handle open modal
   const handleOpenModal = (id: string) => {
@@ -115,293 +145,393 @@ export const Explore: React.FC = () => {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto h-screen bg-[#FAFAFA] bg-grid-engineering">
-       <div className="max-w-[1600px] mx-auto p-8 lg:p-12 space-y-12">
+    <div className="flex-1 overflow-y-auto h-screen bg-[#FAFAFA]">
+      <div className="max-w-[1400px] mx-auto px-4 lg:px-6 py-6">
 
-          {/* Header */}
-          <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-gray-200 pb-6">
-             <div>
-                <div className="text-xs font-mono text-gray-500 mb-2 flex items-center gap-2">
-                   <span className="w-2 h-2 bg-black rounded-sm"></span>
-                   MARKETPLACE
-                </div>
-                <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Explore</h1>
-             </div>
+        {/* 3-Column Layout */}
+        <div className="flex gap-6">
 
-             <div className="flex gap-2 w-full md:w-auto">
-                <div className="relative flex-1 md:w-80">
-                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Search size={16} className="text-gray-400" />
-                   </div>
-                   <input
-                      type="text"
-                      className="block w-full pl-10 pr-3 py-2.5 bg-white border border-gray-200 rounded-sm focus:outline-none focus:border-black text-sm transition-all"
-                      placeholder="Search projects, talent..."
-                   />
+          {/* ========== 좌측 사이드바 ========== */}
+          <aside className="hidden lg:block w-[220px] flex-shrink-0">
+            <div className="sticky top-6 space-y-6">
+
+              {/* 카테고리 */}
+              <div className="bg-white rounded-xl border border-gray-100 p-4">
+                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">카테고리</h3>
+                <nav className="space-y-1">
+                  {categories.map((cat) => (
+                    <button
+                      key={cat.id}
+                      onClick={() => setSelectedCategory(cat.id)}
+                      className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all ${
+                        selectedCategory === cat.id
+                          ? 'bg-black text-white'
+                          : 'text-gray-600 hover:bg-gray-50'
+                      }`}
+                    >
+                      <span className="flex items-center gap-2">
+                        <cat.icon size={14} />
+                        {cat.label}
+                      </span>
+                      <span className={`text-xs ${selectedCategory === cat.id ? 'text-gray-300' : 'text-gray-400'}`}>
+                        {cat.count}
+                      </span>
+                    </button>
+                  ))}
+                </nav>
+              </div>
+
+              {/* 트렌딩 태그 */}
+              <div className="bg-white rounded-xl border border-gray-100 p-4">
+                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1">
+                  <Flame size={12} /> 트렌딩 태그
+                </h3>
+                <div className="space-y-2">
+                  {trendingTags.map((item, idx) => (
+                    <button
+                      key={item.tag}
+                      className="w-full flex items-center justify-between px-2 py-1.5 rounded-md text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+                    >
+                      <span className="flex items-center gap-2">
+                        <span className="text-gray-400 text-xs">#{idx + 1}</span>
+                        <Hash size={12} className="text-gray-400" />
+                        {item.tag}
+                      </span>
+                      <span className="text-xs text-gray-400">{item.count}</span>
+                    </button>
+                  ))}
                 </div>
-                <button className="bg-white border border-gray-200 text-black px-4 py-2 text-sm font-medium hover:bg-gray-50 rounded-sm transition-colors">
-                   <Filter size={16} />
+              </div>
+
+              {/* 필터 */}
+              <div className="bg-white rounded-xl border border-gray-100 p-4">
+                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">필터</h3>
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                    <input type="checkbox" className="rounded border-gray-300" />
+                    한국 적합도 70+
+                  </label>
+                  <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                    <input type="checkbox" className="rounded border-gray-300" />
+                    1000+ Upvotes
+                  </label>
+                  <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                    <input type="checkbox" className="rounded border-gray-300" />
+                    이번 주 신규
+                  </label>
+                </div>
+              </div>
+
+            </div>
+          </aside>
+
+          {/* ========== 메인 콘텐츠 ========== */}
+          <main className="flex-1 min-w-0 space-y-8">
+
+            {/* 상단 헤더 + 검색 */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">탐색</h1>
+                <p className="text-sm text-gray-500 mt-1">해외에서 검증된 스타트업 아이디어를 발견하세요</p>
+              </div>
+              <div className="flex gap-2 w-full sm:w-auto">
+                <div className="relative flex-1 sm:w-64">
+                  <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="text"
+                    className="w-full pl-9 pr-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-200"
+                    placeholder="아이디어 검색..."
+                  />
+                </div>
+                <button className="lg:hidden p-2 bg-white border border-gray-200 rounded-lg">
+                  <Filter size={18} className="text-gray-600" />
                 </button>
-             </div>
-          </div>
+              </div>
+            </div>
 
-          {/* Featured Marquee - 해외 검증 아이디어 */}
-          {marqueeItems.length > 0 && (
-          <div className="relative w-full overflow-hidden group">
-             <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-[#FAFAFA] to-transparent z-10 pointer-events-none"></div>
-             <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-[#FAFAFA] to-transparent z-10 pointer-events-none"></div>
+            {/* 정렬 탭 */}
+            <div className="flex items-center gap-1 border-b border-gray-200">
+              {[
+                { id: 'trending', label: '트렌딩', icon: Flame },
+                { id: 'latest', label: '최신', icon: Clock },
+                { id: 'popular', label: '인기', icon: Star },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setSortBy(tab.id as typeof sortBy)}
+                  className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 -mb-[2px] transition-colors ${
+                    sortBy === tab.id
+                      ? 'border-black text-black'
+                      : 'border-transparent text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  <tab.icon size={14} />
+                  {tab.label}
+                </button>
+              ))}
+            </div>
 
-             <div className="flex gap-6 animate-marquee hover:[animation-play-state:paused] w-max py-2">
-                {marqueeItems.map((startup, index) => {
-                   const analysis = startup.korea_deep_analysis
-                   const bgColor = MARQUEE_COLORS[index % MARQUEE_COLORS.length]
-                   const founderType = analysis?.target_founder_type?.[0] || ''
+            {/* Featured Carousel */}
+            {carouselIdeas.length > 0 && (
+              <div className="w-full">
+                <div className="overflow-hidden rounded-xl">
+                  <div
+                    className="flex transition-transform duration-700 ease-in-out"
+                    style={{ transform: `translateX(-${carouselIndex * (100 / 3)}%)` }}
+                  >
+                    {carouselIdeas.map((startup, index) => {
+                      const analysis = startup.korea_deep_analysis
+                      const bgColor = MARQUEE_COLORS[index % MARQUEE_COLORS.length]
+                      const founderType = analysis?.target_founder_type?.[0] || ''
 
-                   return (
-                   <div
-                      key={`${startup.id}-${index}`}
-                      onClick={() => handleOpenModal(startup.id)}
-                      className={`
-                         relative overflow-hidden rounded-2xl p-6 h-64 w-[450px] flex flex-col justify-between shrink-0 cursor-pointer shadow-md hover:shadow-xl hover:scale-[1.02] transition-all duration-300
-                         ${bgColor}
-                      `}
-                   >
-                      <div className="flex justify-between items-start z-10">
-                         <span className="text-[10px] font-mono font-bold text-white border border-white/30 px-3 py-1.5 rounded-full bg-black/20 backdrop-blur-sm uppercase">
-                            {startup.source === 'producthunt' ? 'Product Hunt' : startup.source}
-                         </span>
-                         <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-mono text-white/80 bg-white/10 px-2 py-1 rounded-sm backdrop-blur-sm">
-                               적합도 {analysis?.korea_fit_score || 0}
-                            </span>
-                            <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur flex items-center justify-center">
-                              <ArrowRight className="text-white" size={16} />
+                      return (
+                        <div
+                          key={startup.id}
+                          className="w-1/3 flex-shrink-0 px-1.5 first:pl-0 last:pr-0"
+                        >
+                          <div
+                            onClick={() => handleOpenModal(startup.id)}
+                            className={`
+                              relative overflow-hidden rounded-xl p-5 h-52 flex flex-col justify-between cursor-pointer shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-300
+                              ${bgColor}
+                            `}
+                          >
+                            <div className="flex justify-between items-start z-10">
+                              <span className="text-[10px] font-mono font-bold text-white border border-white/30 px-2 py-1 rounded-full bg-black/20 backdrop-blur-sm uppercase">
+                                {startup.source === 'producthunt' ? 'PH' : startup.source}
+                              </span>
+                              <span className="text-[10px] font-mono text-white/80 bg-white/10 px-2 py-1 rounded backdrop-blur-sm">
+                                적합도 {analysis?.korea_fit_score || 0}
+                              </span>
                             </div>
-                         </div>
-                      </div>
 
-                      <div className="relative z-10 text-white">
-                         <h3 className="text-2xl font-bold mb-2 tracking-tight truncate">{startup.name}</h3>
-                         <p className="text-white/80 text-sm mb-4 font-light line-clamp-2">{analysis?.korean_summary || startup.tagline}</p>
-                         <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-[10px] font-mono text-black bg-white px-2 py-1 rounded-sm font-bold">
-                               {startup.upvotes.toLocaleString()} UPVOTES
-                            </span>
-                            {founderType && (
-                            <span className="text-[10px] font-mono text-black bg-white px-2 py-1 rounded-sm font-bold">
-                               {founderType === 'Blitz Builder' ? '실행형' : founderType === 'Market Sniper' ? '분석형' : founderType === 'Tech Pioneer' ? '기술형' : '커뮤니티형'}
-                            </span>
-                            )}
-                         </div>
-                      </div>
-                   </div>
-                   )
-                })}
-             </div>
-          </div>
-          )}
+                            <div className="relative z-10 text-white">
+                              <h3 className="text-lg font-bold mb-1.5 tracking-tight truncate">{startup.name}</h3>
+                              <p className="text-white/70 text-xs mb-3 line-clamp-2">{analysis?.korean_summary || startup.tagline}</p>
+                              <div className="flex items-center gap-2">
+                                <span className="text-[10px] font-mono text-black bg-white px-2 py-0.5 rounded font-bold">
+                                  {startup.upvotes.toLocaleString()} UP
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
 
-          {/* Global Startup Ideas Section */}
-          <section>
-             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                   <Globe size={18} /> 이번 주 해외 검증 아이디어
+                {carouselIdeas.length > 3 && (
+                  <div className="flex justify-center gap-1.5 mt-3">
+                    {Array.from({ length: Math.max(1, carouselIdeas.length - 2) }).map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setCarouselIndex(index)}
+                        className={`h-1.5 rounded-full transition-all duration-300 ${
+                          index === carouselIndex ? 'bg-gray-900 w-6' : 'bg-gray-300 w-1.5 hover:bg-gray-400'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 아이디어 그리드 */}
+            <section>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-base font-bold text-gray-900 flex items-center gap-2">
+                  <Globe size={16} /> 이번 주 해외 검증 아이디어
                 </h2>
                 <a
-                   href="/startup-ideas"
-                   className="text-xs font-mono text-gray-500 hover:text-black transition-colors flex items-center gap-1 border-b border-gray-300 pb-0.5 hover:border-black"
+                  href="/startup-ideas"
+                  className="text-xs text-gray-500 hover:text-black flex items-center gap-1"
                 >
-                   VIEW ALL <ArrowRight size={12}/>
+                  전체 보기 <ChevronRight size={14} />
                 </a>
-             </div>
+              </div>
 
-             {startupIdeasLoading ? (
+              {startupIdeasLoading ? (
                 <div className="flex items-center justify-center py-16">
-                   <Loader2 className="animate-spin text-gray-400" size={24} />
+                  <Loader2 className="animate-spin text-gray-400" size={24} />
                 </div>
-             ) : topStartupIdeas.length === 0 ? (
+              ) : topStartupIdeas.length === 0 ? (
                 <Card className="text-center py-12" padding="p-6">
-                   <Globe className="mx-auto mb-4 text-gray-300" size={40} />
-                   <p className="text-gray-500 text-sm">아직 분석된 아이디어가 없습니다</p>
-                   <p className="text-gray-400 text-xs mt-1">곧 새로운 아이디어가 추가됩니다</p>
+                  <Globe className="mx-auto mb-4 text-gray-300" size={40} />
+                  <p className="text-gray-500 text-sm">아직 분석된 아이디어가 없습니다</p>
                 </Card>
-             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                   {topStartupIdeas.map((startup) => (
-                      <StartupIdeaCard
-                         key={startup.id}
-                         id={startup.id}
-                         name={startup.name}
-                         tagline={startup.tagline}
-                         description={startup.description}
-                         logoUrl={startup.logo_url}
-                         websiteUrl={startup.website_url}
-                         sourceUrl={startup.source_url}
-                         source={startup.source}
-                         upvotes={startup.upvotes}
-                         koreaFitScore={startup.korea_fit_score}
-                         finalScore={startup.final_score}
-                         koreaDeepAnalysis={startup.korea_deep_analysis}
-                         onStartBuilding={handleOpenModal}
-                      />
-                   ))}
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {topStartupIdeas.slice(0, 8).map((startup) => (
+                    <StartupIdeaCard
+                      key={startup.id}
+                      id={startup.id}
+                      name={startup.name}
+                      tagline={startup.tagline}
+                      description={startup.description}
+                      logoUrl={startup.logo_url}
+                      websiteUrl={startup.website_url}
+                      sourceUrl={startup.source_url}
+                      source={startup.source}
+                      upvotes={startup.upvotes}
+                      koreaFitScore={startup.korea_fit_score}
+                      finalScore={startup.final_score}
+                      koreaDeepAnalysis={startup.korea_deep_analysis}
+                      onStartBuilding={handleOpenModal}
+                    />
+                  ))}
                 </div>
-             )}
-          </section>
+              )}
+            </section>
 
-          {/* Categories */}
-          <div className="flex gap-1 border-b border-gray-200">
-             {['All', 'Projects', 'Startups', 'Talent'].map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`px-6 py-3 text-sm font-bold font-mono transition-colors uppercase border-b-2
-                     ${activeTab === tab
-                        ? 'text-black border-black'
-                        : 'text-gray-400 border-transparent hover:text-gray-600'
-                     }
-                  `}
-                >
-                   {tab}
-                </button>
-             ))}
-          </div>
-
-          {/* Projects Grid */}
-          <section>
-             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                   <LayoutGrid size={18} /> Trending Projects
+            {/* 프로젝트 섹션 */}
+            <section>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-base font-bold text-gray-900 flex items-center gap-2">
+                  <LayoutGrid size={16} /> 진행 중인 프로젝트
                 </h2>
-                <button className="text-xs font-mono text-gray-500 hover:text-black transition-colors flex items-center gap-1 border-b border-gray-300 pb-0.5 hover:border-black">
-                   VIEW ALL <ArrowRight size={12}/>
+                <button className="text-xs text-gray-500 hover:text-black flex items-center gap-1">
+                  전체 보기 <ChevronRight size={14} />
                 </button>
-             </div>
+              </div>
 
-             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {projects.map((p) => (
-                   <Card key={p.id} className="group h-full flex flex-col hover:-translate-y-1" padding="p-6">
-                      <div className="flex justify-between items-start mb-4">
-                         <div className="w-10 h-10 rounded-sm bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-900 group-hover:bg-black group-hover:text-white transition-colors">
-                            <Zap size={20} />
-                         </div>
-                         <span className="text-[10px] font-mono text-gray-400 bg-gray-50 px-2 py-1 rounded-sm border border-gray-100">
-                            {p.members} MEMBERS
-                         </span>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {projects.slice(0, 4).map((p) => (
+                  <Card key={p.id} className="group hover:border-gray-300" padding="p-4">
+                    <div className="flex gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-600 group-hover:bg-black group-hover:text-white transition-colors flex-shrink-0">
+                        <Zap size={18} />
                       </div>
-
-                      <h3 className="font-bold text-gray-900 mb-2 group-hover:text-draft-blue transition-colors truncate">{p.title}</h3>
-                      <p className="text-xs text-gray-500 leading-relaxed mb-6 flex-1 line-clamp-2 break-keep">
-                         {p.desc}
-                      </p>
-
-                      <div className="pt-4 border-t border-gray-100 mt-auto">
-                         <div className="flex justify-between items-center mb-3">
-                            <span className="text-[10px] font-mono text-gray-400 uppercase">Need</span>
-                            <span className="text-xs font-bold text-gray-900">{p.role}</span>
-                         </div>
-                         <div className="flex flex-wrap gap-1">
-                            {p.stack.map(s => (
-                               <span key={s} className="text-[10px] bg-white border border-gray-200 text-gray-600 px-1.5 py-0.5 rounded-sm">
-                                  {s}
-                               </span>
-                            ))}
-                         </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2">
+                          <h3 className="font-semibold text-gray-900 text-sm truncate">{p.title}</h3>
+                          <span className="text-[10px] text-gray-400 flex-shrink-0">{p.members}명</span>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1 line-clamp-2">{p.desc}</p>
+                        <div className="flex items-center gap-2 mt-2">
+                          <span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded font-medium">{p.role}</span>
+                          {p.stack.slice(0, 2).map(s => (
+                            <span key={s} className="text-[10px] text-gray-400">{s}</span>
+                          ))}
+                        </div>
                       </div>
-                   </Card>
+                    </div>
+                  </Card>
                 ))}
-             </div>
-          </section>
+              </div>
+            </section>
 
-          {/* Talent Grid */}
-          <section>
-             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                   <Users size={18} /> Top Talent
-                </h2>
-                <button className="text-xs font-mono text-gray-500 hover:text-black transition-colors flex items-center gap-1 border-b border-gray-300 pb-0.5 hover:border-black">
-                   VIEW ALL <ArrowRight size={12}/>
+          </main>
+
+          {/* ========== 우측 사이드바 ========== */}
+          <aside className="hidden xl:block w-[280px] flex-shrink-0">
+            <div className="sticky top-6 space-y-6">
+
+              {/* 이번 주 인기 */}
+              <div className="bg-white rounded-xl border border-gray-100 p-4">
+                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1">
+                  <TrendingUp size={12} /> 이번 주 인기
+                </h3>
+                <div className="space-y-3">
+                  {topStartupIdeas.slice(0, 5).map((startup, idx) => (
+                    <button
+                      key={startup.id}
+                      onClick={() => handleOpenModal(startup.id)}
+                      className="w-full flex items-start gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors text-left"
+                    >
+                      <span className="text-lg font-bold text-gray-300 w-5">{idx + 1}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 truncate">{startup.name}</p>
+                        <p className="text-xs text-gray-500 truncate">{startup.tagline}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-[10px] text-gray-400">{startup.upvotes} UP</span>
+                          <span className="text-[10px] text-green-600">적합도 {startup.korea_fit_score}</span>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 추천 인재 */}
+              <div className="bg-white rounded-xl border border-gray-100 p-4">
+                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1">
+                  <UserCircle size={12} /> 추천 인재
+                </h3>
+                <div className="space-y-3">
+                  {talents.slice(0, 4).map((t) => (
+                    <div key={t.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                      <div className="w-9 h-9 bg-gray-100 rounded-full flex items-center justify-center text-xs font-bold text-gray-600">
+                        {t.name.substring(0, 2)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900">{t.name}</p>
+                        <p className="text-xs text-gray-500">{t.role}</p>
+                      </div>
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+                        t.status === 'OPEN' ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-500'
+                      }`}>
+                        {t.status}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <button className="w-full mt-3 text-xs text-gray-500 hover:text-black flex items-center justify-center gap-1">
+                  더 보기 <ChevronRight size={14} />
                 </button>
-             </div>
+              </div>
 
-             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4">
-                {talents.map((t) => (
-                   <Card key={t.id} className="group hover:border-black" padding="p-5">
-                      <div className="flex items-center gap-4 mb-5">
-                         <div className="w-12 h-12 bg-gray-100 rounded-sm border border-gray-200 flex items-center justify-center text-sm font-bold text-gray-600 group-hover:bg-black group-hover:text-white group-hover:border-black transition-colors">
-                            {t.name.substring(0,2)}
-                         </div>
-                         <div>
-                            <h3 className="font-bold text-sm text-gray-900">{t.name}</h3>
-                            <p className="text-xs text-gray-500 font-mono mt-0.5">{t.role}</p>
-                         </div>
-                      </div>
-
-                      <div className="flex justify-between items-center mb-4 pb-4 border-b border-gray-100">
-                         <span className="text-[10px] font-mono font-bold text-gray-400 uppercase">Status</span>
-                         <span className={`px-2 py-0.5 rounded-sm text-[10px] font-bold border ${
-                            t.status === 'OPEN' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-gray-50 text-gray-500 border-gray-200'
-                         }`}>
-                            {t.status}
-                         </span>
-                      </div>
-
-                      <div className="flex flex-wrap gap-1.5">
-                         {t.tags.map(tag => (
-                            <span key={tag} className="text-[10px] font-mono text-gray-600 bg-gray-50 px-2 py-1 rounded-sm border border-gray-100">
-                               {tag}
-                            </span>
-                         ))}
-                      </div>
-                   </Card>
-                ))}
-             </div>
-          </section>
-
-          {/* Banner */}
-          <section className="bg-black text-white rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-lg relative overflow-hidden group">
-             <div className="absolute top-0 right-0 w-64 h-64 bg-gray-800 rounded-full blur-3xl opacity-20 -mr-16 -mt-16 pointer-events-none"></div>
-
-             <div className="relative z-10 flex items-center gap-4 md:gap-6 w-full md:w-auto">
-                <div className="w-10 h-10 md:w-12 md:h-12 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/10 shrink-0">
-                   <Rocket className="text-white" size={20} />
+              {/* CTA 배너 */}
+              <div className="bg-gradient-to-br from-gray-900 to-black rounded-xl p-5 text-white">
+                <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center mb-4">
+                  <Rocket size={20} />
                 </div>
-                <div>
-                   <h2 className="text-lg md:text-xl font-bold tracking-tight">Ready to build?</h2>
-                   <p className="text-gray-400 text-xs md:text-sm font-light mt-0.5">당신의 아이디어를 실현할 최고의 팀을 찾아보세요.</p>
-                </div>
-             </div>
+                <h3 className="font-bold text-base mb-1">아이디어가 있나요?</h3>
+                <p className="text-gray-400 text-xs mb-4">팀을 구성하고 프로젝트를 시작하세요</p>
+                <button className="w-full bg-white text-black text-sm font-semibold py-2 rounded-lg hover:bg-gray-100 transition-colors">
+                  프로젝트 시작하기
+                </button>
+              </div>
 
-             <button className="relative z-10 bg-white text-black px-6 py-2.5 text-xs md:text-sm font-bold rounded-full hover:bg-gray-200 transition-colors shadow-sm whitespace-nowrap w-full md:w-auto">
-                Start Project
-             </button>
-          </section>
+              {/* 북마크 */}
+              <div className="bg-white rounded-xl border border-gray-100 p-4">
+                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1">
+                  <Bookmark size={12} /> 저장한 아이디어
+                </h3>
+                <p className="text-xs text-gray-500 text-center py-4">
+                  아직 저장한 아이디어가 없습니다
+                </p>
+              </div>
 
-       </div>
+            </div>
+          </aside>
 
-       {/* Startup Detail Modal */}
-       {selectedStartup && (
-         <StartupIdeaModal
-           isOpen={!!selectedStartup}
-           onClose={() => setSelectedStartup(null)}
-           onStartBuilding={() => handleStartBuilding(selectedStartup.id)}
-           startup={{
-             id: selectedStartup.id,
-             name: selectedStartup.name,
-             tagline: selectedStartup.tagline,
-             description: selectedStartup.description,
-             logoUrl: selectedStartup.logo_url,
-             websiteUrl: selectedStartup.website_url,
-             sourceUrl: selectedStartup.source_url,
-             source: selectedStartup.source,
-             upvotes: selectedStartup.upvotes,
-             category: selectedStartup.category,
-             koreaFitScore: selectedStartup.korea_fit_score,
-             finalScore: selectedStartup.final_score,
-             koreaDeepAnalysis: selectedStartup.korea_deep_analysis,
-           }}
-         />
-       )}
+        </div>
+      </div>
+
+      {/* Startup Detail Modal */}
+      {selectedStartup && (
+        <StartupIdeaModal
+          isOpen={!!selectedStartup}
+          onClose={() => setSelectedStartup(null)}
+          onStartBuilding={() => handleStartBuilding(selectedStartup.id)}
+          startup={{
+            id: selectedStartup.id,
+            name: selectedStartup.name,
+            tagline: selectedStartup.tagline,
+            description: selectedStartup.description,
+            logoUrl: selectedStartup.logo_url,
+            websiteUrl: selectedStartup.website_url,
+            sourceUrl: selectedStartup.source_url,
+            source: selectedStartup.source,
+            upvotes: selectedStartup.upvotes,
+            category: selectedStartup.category,
+            koreaFitScore: selectedStartup.korea_fit_score,
+            finalScore: selectedStartup.final_score,
+            koreaDeepAnalysis: selectedStartup.korea_deep_analysis,
+          }}
+        />
+      )}
     </div>
   )
 }

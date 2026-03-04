@@ -12,15 +12,15 @@ const hiddenRoutes = [
   '/workflow',
   '/business-plan',
   '/validated-ideas',
-  // '/dashboard', // Uncomment to hide dashboard
+  '/dashboard', // Hidden - redirect to /explore
 ]
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
 
-  // Check if the current path is a hidden route - redirect to home
+  // Check if the current path is a hidden route - redirect to /explore
   if (hiddenRoutes.some(route => pathname.startsWith(route))) {
-    return NextResponse.redirect(new URL('/', request.url))
+    return NextResponse.redirect(new URL('/explore', request.url))
   }
   let supabaseResponse = NextResponse.next({
     request,
@@ -61,10 +61,10 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // If logged in and trying to access login page, redirect to dashboard
+  // If logged in and trying to access login page, redirect to explore
   if (user && request.nextUrl.pathname === '/login') {
     const url = request.nextUrl.clone()
-    url.pathname = '/dashboard'
+    url.pathname = '/explore'
     return NextResponse.redirect(url)
   }
 

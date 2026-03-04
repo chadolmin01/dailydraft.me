@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server'
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
-  const next = searchParams.get('next') ?? '/dashboard'
+  const next = searchParams.get('next') ?? '/explore'
 
   if (code) {
     const cookieStore = await cookies()
@@ -44,7 +44,7 @@ export async function GET(request: Request) {
           .single()
 
         if (profile?.onboarding_completed) {
-          return NextResponse.redirect(`${origin}/dashboard`)
+          return NextResponse.redirect(`${origin}/explore`)
         } else {
           return NextResponse.redirect(`${origin}/onboarding`)
         }

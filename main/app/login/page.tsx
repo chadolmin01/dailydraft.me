@@ -35,7 +35,7 @@ export default function LoginPage() {
   useEffect(() => {
     if (!authLoading && isAuthenticated) {
       if (profile?.onboarding_completed) {
-        router.push('/dashboard')
+        router.push('/explore')
       } else {
         router.push('/onboarding')
       }
@@ -81,7 +81,7 @@ export default function LoginPage() {
         if (error) {
           setError(error.message)
         } else {
-          router.push('/dashboard')
+          router.push('/explore')
         }
       }
     } catch {
