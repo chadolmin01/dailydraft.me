@@ -1,7 +1,27 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+// Routes that are hidden in community mode
+// Remove routes from this array to restore access
+const hiddenRoutes = [
+  '/calendar',
+  '/messages',
+  '/documents',
+  '/network',
+  '/usage',
+  '/workflow',
+  '/business-plan',
+  '/validated-ideas',
+  // '/dashboard', // Uncomment to hide dashboard
+]
+
 export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname
+
+  // Check if the current path is a hidden route - redirect to home
+  if (hiddenRoutes.some(route => pathname.startsWith(route))) {
+    return NextResponse.redirect(new URL('/', request.url))
+  }
   let supabaseResponse = NextResponse.next({
     request,
   })

@@ -2,6 +2,10 @@
 
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
+
+// Community Mode: When true, hides profile card, project status, and deadline sections
+// Set to false to restore full dashboard functionality
+const COMMUNITY_MODE = true
 import { Card } from './ui/Card'
 import { DetailModal } from './ui/DetailModal'
 import {
@@ -302,7 +306,8 @@ export const Dashboard: React.FC = () => {
         {/* Content Wrapper */}
         <div className="flex-1 flex flex-col gap-3 min-h-0">
 
-          {/* Top Section */}
+          {/* Top Section - Hidden in Community Mode */}
+          {!COMMUNITY_MODE && (
           <div className="grid grid-cols-1 md:grid-cols-12 gap-3 shrink-0">
 
             {/* Profile Card */}
@@ -537,6 +542,7 @@ export const Dashboard: React.FC = () => {
               </div>
             </div>
           </div>
+          )}
 
           {/* Opportunity Index */}
           <div className="flex flex-col gap-3">

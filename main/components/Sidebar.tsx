@@ -35,15 +35,17 @@ export const Sidebar: React.FC = () => {
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
+  // Community Mode: Only show FEED, PROJECTS, PROFILE
+  // Other items are commented out but preserved for future use
   const navItems = [
-    { id: 'dashboard', icon: LayoutDashboard, label: 'DASHBOARD', path: '/dashboard' },
-    { id: 'explore', icon: Compass, label: 'EXPLORE', path: '/explore' },
+    // { id: 'dashboard', icon: LayoutDashboard, label: 'DASHBOARD', path: '/dashboard' },
+    { id: 'explore', icon: Compass, label: 'FEED', path: '/explore' },
     { id: 'projects', icon: Briefcase, label: 'PROJECTS', path: '/projects' },
     { id: 'profile', icon: User, label: 'PROFILE', path: '/profile' },
-    { id: 'calendar', icon: Calendar, label: 'SCHEDULE', path: '/calendar' },
-    { id: 'messages', icon: MessageSquare, label: 'CHAT', path: '/messages' },
-    { id: 'documents', icon: FileText, label: 'DOCS', path: '/documents' },
-    { id: 'network', icon: Users, label: 'NET', path: '/network' },
+    // { id: 'calendar', icon: Calendar, label: 'SCHEDULE', path: '/calendar' },
+    // { id: 'messages', icon: MessageSquare, label: 'CHAT', path: '/messages' },
+    // { id: 'documents', icon: FileText, label: 'DOCS', path: '/documents' },
+    // { id: 'network', icon: Users, label: 'NET', path: '/network' },
   ]
 
   // Close menu when clicking outside
@@ -163,12 +165,14 @@ export const Sidebar: React.FC = () => {
             >
               <User size={14} /> My Profile
             </button>
+            {/* Community Mode: Usage hidden
             <button
               onClick={() => handleMenuAction('usage')}
               className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-50 hover:text-black rounded-sm transition-colors text-left w-full"
             >
               <BarChart3 size={14} /> Usage & Billing
             </button>
+            */}
             <button className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-50 hover:text-black rounded-sm transition-colors text-left w-full">
               <Settings size={14} /> Settings
             </button>

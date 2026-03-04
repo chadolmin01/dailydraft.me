@@ -480,11 +480,13 @@ export type Database = {
           demo_images: string[] | null
           description: string
           id: string
+          interest_count: number | null
           interest_tags: string[] | null
           location: string | null
           location_type: string | null
           needed_roles: string[] | null
           needed_skills: Json | null
+          pain_point: string | null
           project_links: Json | null
           status: string | null
           time_commitment: string | null
@@ -503,11 +505,13 @@ export type Database = {
           demo_images?: string[] | null
           description: string
           id?: string
+          interest_count?: number | null
           interest_tags?: string[] | null
           location?: string | null
           location_type?: string | null
           needed_roles?: string[] | null
           needed_skills?: Json | null
+          pain_point?: string | null
           project_links?: Json | null
           status?: string | null
           time_commitment?: string | null
@@ -526,11 +530,13 @@ export type Database = {
           demo_images?: string[] | null
           description?: string
           id?: string
+          interest_count?: number | null
           interest_tags?: string[] | null
           location?: string | null
           location_type?: string | null
           needed_roles?: string[] | null
           needed_skills?: Json | null
+          pain_point?: string | null
           project_links?: Json | null
           status?: string | null
           time_commitment?: string | null

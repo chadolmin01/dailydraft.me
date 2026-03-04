@@ -6,7 +6,11 @@
       "Bash(find:*)",
       "Bash(git checkout:*)",
       "Bash(git add:*)",
-      "Bash(git commit -m \"$\\(cat <<''EOF''\nPhase 1: Landing page redesign for community platform\n\n- Update Hero.tsx copy to community-focused messaging\n- Create HowItWorks.tsx \\(3-step flow\\)\n- Create CommunityFeedback.tsx \\(mock project + comments\\)\n- Create OpportunitySection.tsx \\(live projects from DB\\)\n- Create FAQ.tsx \\(accordion-style FAQ\\)\n- Update layout.tsx OG tags for community branding\n- Comment out Features component in page.tsx\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nPhase 1: Landing page redesign for community platform\n\n- Update Hero.tsx copy to community-focused messaging\n- Create HowItWorks.tsx \\(3-step flow\\)\n- Create CommunityFeedback.tsx \\(mock project + comments\\)\n- Create OpportunitySection.tsx \\(live projects from DB\\)\n- Create FAQ.tsx \\(accordion-style FAQ\\)\n- Update layout.tsx OG tags for community branding\n- Comment out Features component in page.tsx\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git merge:*)",
+      "Bash(git stash:*)",
+      "Bash(git stash pop:*)",
+      "Bash(git commit:*)"
     ]
   }
 }
