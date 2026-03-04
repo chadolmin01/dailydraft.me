@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import {
-  Sparkles, Users, Calendar, FileText, ArrowRight, CheckCircle2,
-  LayoutGrid, Clock, Target, MessageSquare, Zap, Briefcase,
-  ChevronRight, Plus, Minus, Search, Settings, Share2, BarChart3,
-  AlertTriangle, FileQuestion, Unplug, XCircle, Rocket, Loader2,
-  UserPlus
+  Users, FileText, ArrowRight,
+  MessageSquare, Briefcase, Plus, Minus, Rocket
 } from 'lucide-react';
+import { OpportunitySlidePanel } from './OpportunitySlidePanel';
 import { motion } from 'framer-motion';
-import { supabase } from '../src/lib/supabase/client';
 import { useWaitlistCount } from '../src/hooks/useWaitlistCount';
+import { useWaitlistOpportunities } from '../src/hooks/useWaitlistOpportunities';
 
 interface LandingPageProps {
   onLogin: () => void;
@@ -16,28 +14,7 @@ interface LandingPageProps {
   isDemo?: boolean;
 }
 
-// --- Components Helpers ---
-
-// A technical crosshair marker often seen in blueprints
-const Crosshair = ({ className }: { className?: string }) => (
-  <div className={`absolute w-3 h-3 pointer-events-none ${className}`}>
-    <div className="absolute top-1/2 left-0 w-full h-[1px] bg-black/20"></div>
-    <div className="absolute left-1/2 top-0 h-full w-[1px] bg-black/20"></div>
-  </div>
-);
-
-// A section divider with measurements
-const TechnicalDivider = () => (
-  <div className="w-full h-px bg-gray-200 relative my-12">
-    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-3 bg-black"></div>
-    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-3 bg-black"></div>
-    <div className="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 bg-white px-2 text-[10px] font-mono text-gray-400">
-      SECTION BREAK
-    </div>
-  </div>
-);
-
-// Animation Variants
+// --- Animation Variants ---
 const fadeInUp = {
   hidden: { opacity: 0, y: 40 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
@@ -55,169 +32,86 @@ const staggerContainer = {
 
 // --- Mock UI Components ---
 
-const MockDashboardUI = () => (
-  <div className="w-full bg-white rounded-none border border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,0.1)] overflow-hidden flex flex-col md:flex-row h-full min-h-[400px]">
-    {/* Sidebar */}
-    <div className="w-16 border-r border-gray-200 flex flex-col items-center py-6 gap-6 bg-white hidden md:flex shrink-0">
-      <div className="w-8 h-8 bg-black flex items-center justify-center text-white font-bold font-mono">D.</div>
-      <div className="flex flex-col gap-6 mt-8">
-        <div className="p-2 bg-gray-100 rounded"><LayoutGrid className="w-5 h-5 text-black" /></div>
-        <Briefcase className="w-5 h-5 text-gray-400 hover:text-black transition-colors cursor-pointer" />
-        <Users className="w-5 h-5 text-gray-400 hover:text-black transition-colors cursor-pointer" />
-        <FileText className="w-5 h-5 text-gray-400 hover:text-black transition-colors cursor-pointer" />
+// Project Feed Mock for Hero section - shows project cards with community feel
+const MockProjectFeed = () => (
+  <div className="w-full bg-white rounded-none border border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,0.1)] overflow-hidden">
+    {/* Feed Header */}
+    <div className="bg-gray-50 border-b border-gray-200 p-4 flex justify-between items-center">
+      <div className="flex items-center gap-2">
+        <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+        <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-gray-600">LIVE PROJECTS</span>
       </div>
+      <span className="text-[10px] text-gray-400 font-mono">3 NEW TODAY</span>
     </div>
 
-    {/* Main Content */}
-    <div className="flex-1 bg-white p-0 relative min-w-0">
-      <div className="grid-bg absolute inset-0 opacity-50 pointer-events-none"></div>
-
-      <div className="p-4 sm:p-5 relative z-10">
-        {/* Header */}
-        <div className="flex flex-wrap justify-between items-end mb-6 border-b border-gray-100 pb-4 gap-4">
-          <div>
-             <div className="flex items-center gap-2 mb-1">
-                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                <span className="text-[10px] text-gray-400 font-mono tracking-widest whitespace-nowrap">WORKSPACE / MAIN</span>
-             </div>
-             <h3 className="text-lg sm:text-xl font-bold text-gray-900 tracking-tight">Dashboard</h3>
+    {/* Project Cards */}
+    <div className="divide-y divide-gray-100">
+      {/* Project Card 1 */}
+      <div className="p-4 hover:bg-blue-50/30 transition-colors cursor-pointer group">
+        <div className="flex items-start gap-3 mb-3">
+          <div className="w-10 h-10 bg-blue-600 text-white flex items-center justify-center font-bold text-sm shrink-0">JK</div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="font-bold text-sm text-gray-900 group-hover:text-blue-600">대학생 중고거래 플랫폼</span>
+              <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+            </div>
+            <p className="text-xs text-gray-500 line-clamp-2 break-keep">에브리타임 연동으로 학교 인증된 사용자 간 중고거래. 신뢰 기반 캠퍼스 마켓.</p>
           </div>
-          <button className="bg-black hover:bg-gray-800 text-white text-xs px-3 py-1.5 flex items-center gap-2 font-mono transition-colors whitespace-nowrap">
-             <Plus className="w-3 h-3" /> NEW
-          </button>
         </div>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 border border-gray-200 mb-6 bg-gray-50">
-           {/* Card 1 */}
-           <div className="bg-white p-3 sm:p-4 border-b sm:border-b-0 sm:border-r border-gray-200 relative group">
-              <div className="flex items-center gap-3 mb-4">
-                 <div className="w-8 h-8 bg-black text-white flex items-center justify-center font-bold text-xs font-mono shrink-0">P1</div>
-                 <div className="min-w-0">
-                    <div className="font-bold text-sm truncate">Project Alpha</div>
-                    <div className="text-[10px] text-gray-400 font-mono truncate">STRATEGY</div>
-                 </div>
-              </div>
-              <div className="flex flex-wrap gap-2 text-[10px] font-mono">
-                 <span className="bg-gray-100 px-1.5 py-0.5 border border-gray-200">SEOUL</span>
-              </div>
-           </div>
-
-           {/* Card 2 */}
-           <div className="bg-white p-3 sm:p-4 border-b sm:border-b-0 lg:border-r border-gray-200 flex flex-col justify-between">
-              <div className="text-[10px] text-gray-400 font-mono uppercase tracking-wider">Total Views</div>
-              <div>
-                <div className="text-2xl font-bold text-gray-900 font-mono tracking-tighter">1,240</div>
-                <div className="text-[10px] text-green-600 mt-1 font-mono">+12%</div>
-              </div>
-           </div>
-
-           {/* Card 3 */}
-           <div className="bg-blue-50/30 p-3 sm:p-4 flex flex-col justify-between relative overflow-hidden sm:col-span-2 lg:col-span-1">
-               <div className="absolute top-0 right-0 w-8 h-8 border-l border-b border-blue-200"></div>
-               <div className="flex justify-between items-start">
-                  <div className="text-[10px] text-blue-600 font-mono uppercase tracking-wider">Req</div>
-                  <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-               </div>
-               <div>
-                  <div className="text-2xl font-bold text-blue-900 font-mono tracking-tighter">04</div>
-                  <div className="text-[10px] text-blue-600 mt-1 font-mono">WAITING</div>
-               </div>
-           </div>
+        <div className="flex flex-wrap gap-1.5">
+          <span className="text-[10px] px-2 py-0.5 bg-blue-50 border border-blue-200 text-blue-700 font-mono">프론트엔드</span>
+          <span className="text-[10px] px-2 py-0.5 bg-gray-100 border border-gray-200 text-gray-600 font-mono">서울대 경영</span>
         </div>
+        <div className="flex items-center gap-4 mt-3 text-[10px] text-gray-400 font-mono">
+          <span className="flex items-center gap-1"><MessageSquare className="w-3 h-3" /> 12 피드백</span>
+          <span className="flex items-center gap-1"><Users className="w-3 h-3" /> 3 관심</span>
+        </div>
+      </div>
 
-        {/* Recommended Section */}
-        <div className="border border-gray-200 p-1">
-           <div className="flex justify-between items-center bg-gray-50 px-3 py-2 border-b border-gray-200 mb-1">
-              <h4 className="font-bold text-xs text-gray-900 font-mono uppercase">Opportunities</h4>
-              <span className="text-[10px] text-gray-400 font-mono cursor-pointer hover:text-black">ALL</span>
-           </div>
-           <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
-              {/* Dark Card */}
-              <div className="bg-[#111] p-4 text-white relative group">
-                 <div className="absolute top-3 right-3 border border-gray-700 px-1.5 py-0.5 text-[10px] font-mono text-green-400">98%</div>
-                 <div className="mb-3">
-                    <span className="text-[10px] font-mono text-gray-500 block mb-1">SEED STAGE</span>
-                    <h5 className="font-bold text-sm leading-tight break-keep">AI Pet Health<br/>Platform</h5>
-                 </div>
-              </div>
+      {/* Project Card 2 */}
+      <div className="p-4 hover:bg-blue-50/30 transition-colors cursor-pointer group">
+        <div className="flex items-start gap-3 mb-3">
+          <div className="w-10 h-10 bg-purple-600 text-white flex items-center justify-center font-bold text-sm shrink-0">YH</div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="font-bold text-sm text-gray-900 group-hover:text-blue-600">AI 학습 플래너</span>
+              <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+            </div>
+            <p className="text-xs text-gray-500 line-clamp-2 break-keep">개인 학습 패턴 분석으로 최적의 공부 시간표 생성. 시험 준비 효율화.</p>
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          <span className="text-[10px] px-2 py-0.5 bg-green-50 border border-green-200 text-green-700 font-mono">백엔드</span>
+          <span className="text-[10px] px-2 py-0.5 bg-gray-100 border border-gray-200 text-gray-600 font-mono">연세대 컴공</span>
+        </div>
+        <div className="flex items-center gap-4 mt-3 text-[10px] text-gray-400 font-mono">
+          <span className="flex items-center gap-1"><MessageSquare className="w-3 h-3" /> 8 피드백</span>
+          <span className="flex items-center gap-1"><Users className="w-3 h-3" /> 5 관심</span>
+        </div>
+      </div>
 
-               {/* Blue Card */}
-               <div className="bg-blue-600 p-4 text-white relative">
-                 <div className="absolute top-3 right-3 bg-blue-500 px-1.5 py-0.5 text-[10px] font-mono border border-blue-400">85%</div>
-                 <div className="mb-3">
-                    <span className="text-[10px] font-mono text-blue-200 block mb-1">GOV SUPPORT</span>
-                    <h5 className="font-bold text-sm leading-tight break-keep">2026 예비창업<br/>패키지 모집</h5>
-                 </div>
-              </div>
-           </div>
+      {/* Project Card 3 */}
+      <div className="p-4 hover:bg-blue-50/30 transition-colors cursor-pointer group">
+        <div className="flex items-start gap-3 mb-3">
+          <div className="w-10 h-10 bg-orange-500 text-white flex items-center justify-center font-bold text-sm shrink-0">MJ</div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="font-bold text-sm text-gray-900 group-hover:text-blue-600">캠퍼스 밀키트</span>
+            </div>
+            <p className="text-xs text-gray-500 line-clamp-2 break-keep">자취생 타겟 소포장 밀키트. 기숙사/원룸 1인분 간편 요리 구독.</p>
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          <span className="text-[10px] px-2 py-0.5 bg-purple-50 border border-purple-200 text-purple-700 font-mono">기획/마케팅</span>
+          <span className="text-[10px] px-2 py-0.5 bg-gray-100 border border-gray-200 text-gray-600 font-mono">고려대 경제</span>
+        </div>
+        <div className="flex items-center gap-4 mt-3 text-[10px] text-gray-400 font-mono">
+          <span className="flex items-center gap-1"><MessageSquare className="w-3 h-3" /> 15 피드백</span>
+          <span className="flex items-center gap-1"><Users className="w-3 h-3" /> 7 관심</span>
         </div>
       </div>
     </div>
   </div>
-);
-
-const MockAICard = () => (
-   <div className="bg-white rounded-none border border-black shadow-[8px_8px_0px_0px_#111] max-w-sm w-full relative overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
-      <div className="bg-black p-4 text-white flex items-center justify-between">
-         <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-yellow-400" />
-            <span className="text-xs font-mono font-bold tracking-wider">AI ANALYSIS</span>
-         </div>
-         <span className="text-[10px] font-mono text-gray-400">v2.4</span>
-      </div>
-
-      <div className="p-5 relative">
-         <div className="grid-bg absolute inset-0 opacity-30"></div>
-         <div className="relative z-10">
-            <div className="mb-4">
-               <h4 className="text-lg font-bold mb-1 tracking-tight">Matches Found</h4>
-               <p className="text-[10px] text-gray-500 font-mono">BASED ON VISION</p>
-            </div>
-
-            {/* Match Item 1 */}
-            <div className="bg-white border border-blue-200 p-2.5 mb-2 relative hover:border-blue-600 transition-colors cursor-pointer group shadow-sm">
-               <div className="absolute -left-[1px] top-0 bottom-0 w-1 bg-blue-600"></div>
-               <div className="flex justify-between items-start mb-2 pl-2">
-                  <div className="flex items-center gap-3">
-                     <div className="w-8 h-8 bg-gray-100 flex items-center justify-center font-bold text-xs shrink-0">SJ</div>
-                     <div>
-                        <div className="font-bold text-sm text-gray-900 group-hover:text-blue-600">Sarah Jin</div>
-                        <div className="text-[10px] text-gray-500 font-mono">ANGEL INVESTOR</div>
-                     </div>
-                  </div>
-                  <div className="text-blue-600 text-sm font-mono font-bold">94%</div>
-               </div>
-               <div className="pl-2 w-full bg-gray-100 h-1 mt-2">
-                  <div className="bg-blue-600 h-full w-[94%]"></div>
-               </div>
-            </div>
-
-            {/* Match Item 2 */}
-            <div className="bg-white border border-gray-200 p-2.5 relative opacity-70 hover:opacity-100 transition-opacity cursor-pointer">
-               <div className="flex justify-between items-start mb-2 pl-2">
-                  <div className="flex items-center gap-3">
-                     <div className="w-8 h-8 bg-gray-100 flex items-center justify-center font-bold text-xs shrink-0">DC</div>
-                     <div>
-                        <div className="font-bold text-sm text-gray-900">David Choi</div>
-                        <div className="text-[10px] text-gray-500 font-mono">SENIOR BACKEND</div>
-                     </div>
-                  </div>
-                  <div className="text-gray-600 text-sm font-mono font-bold">88%</div>
-               </div>
-               <div className="pl-2 w-full bg-gray-100 h-1 mt-2">
-                  <div className="bg-gray-400 h-full w-[88%]"></div>
-               </div>
-            </div>
-         </div>
-      </div>
-
-      <div className="bg-gray-50 p-3 text-center border-t border-gray-200">
-         <button className="text-[10px] font-mono font-bold text-gray-600 hover:text-black flex items-center justify-center gap-2 w-full transition-colors">
-            VIEW REPORT <ArrowRight className="w-3 h-3" />
-         </button>
-      </div>
-   </div>
 );
 
 // --- Sections ---
@@ -272,81 +166,8 @@ const Header: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
   );
 };
 
-const Hero: React.FC<{ onLogin: () => void; onDemo?: () => void; isDemo?: boolean }> = ({ onLogin, onDemo, isDemo }) => {
-  const [email, setEmail] = useState('');
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error' | 'duplicate'>('idle');
+const Hero: React.FC<{ onOpenSlidePanel: () => void; onDemo?: () => void; isDemo?: boolean }> = ({ onOpenSlidePanel, onDemo, isDemo }) => {
   const { data: waitlistCount, isLoading: isCountLoading } = useWaitlistCount();
-  const [errorMessage, setErrorMessage] = useState('');
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) return;
-
-    setStatus('loading');
-    setErrorMessage('');
-
-    try {
-      const { error } = await supabase
-        .from('waitlist_signups')
-        .insert({ email: email.toLowerCase().trim() });
-
-      if (error) {
-        // Check for duplicate email (unique constraint violation)
-        if (error.code === '23505') {
-          setStatus('duplicate');
-          setTimeout(() => {
-            setStatus('idle');
-            onLogin(); // Still go to login for existing waitlist users
-          }, 2000);
-        } else {
-          console.error('Waitlist error:', error);
-          setStatus('error');
-          setErrorMessage('오류가 발생했습니다. 다시 시도해주세요.');
-          setTimeout(() => setStatus('idle'), 3000);
-        }
-      } else {
-        setStatus('success');
-        setEmail('');
-        setTimeout(() => {
-          setStatus('idle');
-          onLogin(); // Go to signup after successful waitlist submission
-        }, 2000);
-      }
-    } catch (err) {
-      console.error('Waitlist error:', err);
-      setStatus('error');
-      setErrorMessage('네트워크 오류가 발생했습니다.');
-      setTimeout(() => setStatus('idle'), 3000);
-    }
-  };
-
-  const getButtonContent = () => {
-    switch (status) {
-      case 'loading':
-        return <Loader2 className="w-4 h-4 animate-spin" />;
-      case 'success':
-        return '신청 완료!';
-      case 'duplicate':
-        return '이미 신청됨!';
-      case 'error':
-        return '다시 시도';
-      default:
-        return '사전 예약하기';
-    }
-  };
-
-  const getButtonStyle = () => {
-    switch (status) {
-      case 'success':
-        return 'bg-green-600 hover:bg-green-600';
-      case 'duplicate':
-        return 'bg-yellow-600 hover:bg-yellow-600';
-      case 'error':
-        return 'bg-red-600 hover:bg-red-500';
-      default:
-        return 'bg-blue-600 hover:bg-blue-700';
-    }
-  };
 
   return (
     <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto flex flex-col lg:flex-row items-center relative overflow-hidden min-h-screen gap-12 lg:gap-16">
@@ -369,48 +190,30 @@ const Hero: React.FC<{ onLogin: () => void; onDemo?: () => void; isDemo?: boolea
         </div>
 
         <h1 className="text-5xl sm:text-6xl xl:text-7xl font-bold tracking-tighter text-slate-900 mb-8 leading-[1.1] break-keep">
-          완벽한 팀은<br />
-          첫 번째 <span className="relative inline-block text-blue-600 mx-2">Draft<svg className="absolute w-full h-3 bottom-1 left-0 text-blue-200 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" opacity="0.5" /></svg></span>에서 시작됩니다
+          모든 프로젝트는<br />
+          <span className="relative inline-block text-blue-600 mx-2">Draft<svg className="absolute w-full h-3 bottom-1 left-0 text-blue-200 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" opacity="0.5" /></svg></span>에서 시작됩니다
         </h1>
 
-        <p className="text-lg text-gray-600 mb-10 leading-relaxed break-keep lg:mx-0 mx-auto max-w-xl lg:max-w-none">
-          초기 창업자와 대학생을 위한 AI 팀 빌딩 플랫폼.<br className="hidden sm:block"/>
-          아이디어 검증부터 IR 자료 생성까지, Draft OS 하나로 끝내세요.
+        <p className="text-lg text-gray-600 mb-6 leading-relaxed break-keep lg:mx-0 mx-auto max-w-xl lg:max-w-none">
+          프로젝트를 공유하고, 피드백 받고, 함께할 사람을 만나세요.
         </p>
 
-        {/* Waitlist Form */}
-        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row items-center lg:justify-start justify-center max-w-xl lg:max-w-md gap-3 w-full lg:mx-0 mx-auto mb-6" id="waitlist">
-          <div className="w-full relative">
-             <input
-              type="email"
-              placeholder="이메일을 입력해주세요"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 bg-white border border-gray-300 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all text-sm font-mono placeholder:font-sans rounded-none"
-              required
-            />
-          </div>
+        {/* CTA Button */}
+        <div className="flex flex-col sm:flex-row items-center lg:justify-start justify-center gap-4 mb-6">
           <button
-            type="submit"
-            disabled={status === 'loading'}
-            className={`w-full sm:w-auto px-8 py-3 text-white font-medium transition-all flex items-center justify-center whitespace-nowrap shadow-lg shadow-blue-200/50 rounded-none shrink-0 disabled:opacity-70 ${getButtonStyle()}`}
+            onClick={onOpenSlidePanel}
+            className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 font-bold text-lg transition-all flex items-center justify-center gap-3 shadow-lg shadow-blue-200/50 group"
           >
-            {getButtonContent()}
+            AI로 30초 만에 공고 만들기
+            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </button>
-        </form>
-
-        {errorMessage && (
-          <div className="text-red-500 text-sm mb-4 lg:text-left text-center">
-            {errorMessage}
-          </div>
-        )}
+        </div>
 
         {/* Waitlist Count */}
         {!isCountLoading && waitlistCount !== undefined && waitlistCount > 0 && (
           <div className="flex items-center lg:justify-start justify-center mb-6">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-50 border border-orange-200 rounded-none">
-              <span className="text-orange-500">🔥</span>
-              <span className="text-sm font-medium text-orange-700">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-50 border border-gray-200 rounded-none">
+              <span className="text-sm font-medium text-gray-700">
                 현재 <span className="font-bold">{waitlistCount.toLocaleString()}</span>명이 대기 중입니다
               </span>
             </div>
@@ -440,30 +243,20 @@ const Hero: React.FC<{ onLogin: () => void; onDemo?: () => void; isDemo?: boolea
         </div>
       </motion.div>
 
-      {/* Right Column: Product Visual */}
+      {/* Right Column: Project Feed Visual */}
       <motion.div
          initial={{ opacity: 0, x: 30 }}
          animate={{ opacity: 1, x: 0 }}
          transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
          className="w-full lg:w-1/2 relative px-4 lg:px-0"
       >
-         <div className="relative group perspective-1000">
-            {/* Main Dashboard */}
+         <div className="relative group">
+            {/* Project Feed */}
             <motion.div
-              animate={{ y: [0, -10, 0] }}
+              animate={{ y: [0, -8, 0] }}
               transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
             >
-               <MockDashboardUI />
-            </motion.div>
-
-            {/* Floating Elements - Positioned to the left bottom to overlap dashboard */}
-            <motion.div
-               className="absolute -left-6 -bottom-10 z-20 hidden xl:block"
-               initial={{ opacity: 0, y: 20 }}
-               animate={{ opacity: 1, y: 0 }}
-               transition={{ delay: 1, duration: 0.8 }}
-            >
-               <MockAICard />
+               <MockProjectFeed />
             </motion.div>
          </div>
       </motion.div>
@@ -471,232 +264,160 @@ const Hero: React.FC<{ onLogin: () => void; onDemo?: () => void; isDemo?: boolea
   );
 };
 
-const PainPoints: React.FC = () => {
-  const problems = [
-    {
-      code: "ERR_TEAM_MISMATCH",
-      title: "팀 빌딩의 미스매치",
-      desc: "개발자는 기획자를, 기획자는 개발자를 찾지 못합니다. 단순 스펙 매칭으로는 비전을 공유하는 '진짜 동료'를 만날 수 없습니다.",
-      path: "~/system/logs/team_match.log"
-    },
-    {
-      code: "ERR_PROCESS_OVERLOAD",
-      title: "복잡한 행정 프로세스",
-      desc: "법인 설립부터 정부지원사업 서류까지. 아이디어 실행에 집중해야 할 골든타임을 복잡한 서류 작업에 뺏기고 있습니다.",
-      path: "~/system/logs/admin_task.log"
-    },
-    {
-      code: "ERR_INFO_ASYMMETRY",
-      title: "정보의 비대칭",
-      desc: "검증된 정보는 폐쇄적인 네트워크 안에만 존재합니다. 주변의 부정확한 '카더라' 통신에 의존하다 시행착오만 반복합니다.",
-      path: "~/system/logs/network.log"
-    }
-  ];
 
-  return (
-    <section className="py-24 bg-[#111] text-white relative border-t border-gray-800 overflow-hidden">
-        {/* Dark Grid Background */}
-        <div className="grid-bg-dark absolute inset-0 opacity-20 pointer-events-none"></div>
 
-        {/* Vertical Decorative Lines */}
-        <div className="absolute top-0 left-4 sm:left-10 bottom-0 w-px bg-white/5"></div>
-        <div className="absolute top-0 right-4 sm:right-10 bottom-0 w-px bg-white/5"></div>
+// Seed data for opportunity cards (simplified to match AI-generated format)
+const seedOpportunities = [
+  {
+    id: 'seed-1',
+    title: 'AI 헬스케어 앱',
+    description: '개인 맞춤형 건강 관리 서비스를 개발합니다. AI로 건강 데이터를 분석하고 맞춤 솔루션을 제공합니다.',
+    roles: ['백엔드 개발자'],
+    field: '헬스케어',
+  },
+  {
+    id: 'seed-2',
+    title: '에듀테크 플랫폼',
+    description: 'AI 기반 맞춤형 학습 솔루션을 만듭니다. 학생 개개인에게 최적화된 학습 경험을 제공합니다.',
+    roles: ['프론트엔드 개발자'],
+    field: '에듀테크',
+  },
+  {
+    id: 'seed-3',
+    title: '핀테크 솔루션',
+    description: '소상공인을 위한 결제/정산 플랫폼입니다. 간편한 금융 서비스로 사업 운영을 돕습니다.',
+    roles: ['PM', '기획자'],
+    field: '핀테크',
+  },
+  {
+    id: 'seed-4',
+    title: '소셜임팩트 스타트업',
+    description: '지역 사회 문제를 기술로 해결하는 플랫폼입니다. 사회적 가치와 비즈니스 성장을 함께 추구합니다.',
+    roles: ['디자이너'],
+    field: '소셜임팩트',
+  },
+];
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <motion.div
-               initial="hidden"
-               whileInView="visible"
-               viewport={{ once: true, margin: "-100px" }}
-               variants={fadeInUp}
-               className="mb-20 text-center"
-            >
-                <div className="inline-flex items-center gap-2 px-3 py-1 border border-red-500/30 bg-red-500/10 text-red-400 mb-6 rounded-none backdrop-blur-sm">
-                    <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></div>
-                    <span className="text-[10px] font-mono font-bold tracking-widest uppercase">SYSTEM CRITICAL WARNING</span>
-                </div>
-
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 leading-tight break-keep">
-                    스타트업 초기 단계에서 발생하는<br />
-                    <span className="text-gray-500">치명적인 오류들</span>
-                </h2>
-
-                <p className="text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed break-keep">
-                    열정만으로는 넘어설 수 없는 현실적인 문제들.<br className="hidden sm:block"/>
-                    많은 초기 창업자들이 제품을 만들기도 전에 '죽음의 계곡'을 마주합니다.
-                </p>
-            </motion.div>
-
-            <motion.div
-               variants={staggerContainer}
-               initial="hidden"
-               whileInView="visible"
-               viewport={{ once: true }}
-               className="grid grid-cols-1 md:grid-cols-3 gap-6"
-            >
-               {problems.map((item, i) => (
-                   <motion.div
-                     key={i}
-                     variants={fadeInUp}
-                     className="bg-black border border-gray-800 hover:border-gray-600 transition-colors group relative flex flex-col"
-                   >
-                       {/* Terminal Header */}
-                       <div className="border-b border-gray-800 p-3 flex justify-between items-center bg-[#0a0a0a] group-hover:bg-[#151515] transition-colors">
-                          <span className="text-[10px] font-mono text-gray-600 group-hover:text-gray-400 transition-colors truncate max-w-[150px]">{item.path}</span>
-                          <div className="flex gap-1.5 opacity-50 group-hover:opacity-100 transition-opacity">
-                             <div className="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
-                             <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80"></div>
-                             <div className="w-2.5 h-2.5 rounded-full bg-green-500/80"></div>
-                          </div>
-                       </div>
-
-                       <div className="p-6 flex-1 flex flex-col">
-                           <div className="mb-4 font-mono text-[10px] text-red-400 bg-red-950/20 border border-red-900/30 px-2 py-1 self-start inline-block">
-                             &gt; ERROR_CODE: {item.code}
-                           </div>
-                           <h3 className="text-xl font-bold mb-3 text-white">{item.title}</h3>
-                           <p className="text-sm text-gray-400 leading-relaxed break-keep">
-                               {item.desc}
-                           </p>
-                       </div>
-
-                       {/* Tech Corners */}
-                       <div className="absolute top-0 left-0 w-2 h-2 border-l border-t border-gray-700 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                       <div className="absolute bottom-0 right-0 w-2 h-2 border-r border-b border-gray-700 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                   </motion.div>
-               ))}
-            </motion.div>
-        </div>
-    </section>
-  )
+interface OpportunitySectionProps {
+  onOpenSlidePanel: () => void;
 }
 
-const Features: React.FC = () => {
+const OpportunitySection: React.FC<OpportunitySectionProps> = ({ onOpenSlidePanel }) => {
+  const { opportunities: realOpportunities, loading } = useWaitlistOpportunities(4);
+
+  // Combine real opportunities with seed data to always show 4 cards
+  const displayOpportunities = React.useMemo(() => {
+    const realMapped = realOpportunities.map((opp) => ({
+      id: opp.id,
+      title: opp.title,
+      description: opp.description,
+      roles: opp.roles,
+      field: opp.field,
+      isReal: true,
+    }));
+
+    // Fill remaining slots with seed data
+    const remainingCount = Math.max(0, 4 - realMapped.length);
+    const seedFill = seedOpportunities.slice(0, remainingCount).map(s => ({ ...s, isReal: false }));
+
+    return [...realMapped, ...seedFill];
+  }, [realOpportunities]);
+
   return (
-    <section id="features" className="py-24 bg-white border-t border-gray-200 relative">
+    <section className="py-24 bg-gray-50 border-t border-gray-200 relative">
       <div className="grid-bg absolute inset-0 opacity-40 pointer-events-none"></div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-
-        <TechnicalDivider />
-
-        {/* Feature 1: Matching */}
         <motion.div
-           initial="hidden"
-           whileInView="visible"
-           viewport={{ once: true, margin: "-100px" }}
-           variants={fadeInUp}
-           className="flex flex-col md:flex-row items-center gap-16 mb-32"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={fadeInUp}
+          className="text-center mb-16"
         >
-           <div className="flex-1">
-              <div className="flex items-center gap-2 mb-4">
-                 <Target className="w-4 h-4 text-blue-600" />
-                 <span className="text-blue-600 font-mono text-xs font-bold tracking-widest uppercase">AI MATCHING ENGINE</span>
-              </div>
-              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-6 leading-tight break-keep">
-                 단순 연결이 아닌,<br/>
-                 정밀한 <span className="bg-yellow-100 px-1">팀 설계</span>입니다.
-              </h2>
-              <p className="text-gray-600 leading-relaxed mb-8 break-keep">
-                 Draft의 AI는 단순한 스킬 매칭을 넘어섭니다. 프로젝트 이력, 작업 스타일, 비전 정렬도(Alignment)를 분석하여 퍼즐처럼 완벽하게 들어맞는 공동 창업자를 제안합니다.
-              </p>
-
-              <div className="space-y-4">
-                 <div className="flex items-start gap-4 p-4 border border-gray-200 bg-white hover:border-black transition-colors group cursor-default">
-                    <div className="bg-gray-50 p-2 border border-gray-200 group-hover:bg-black group-hover:text-white transition-colors"><BarChart3 className="w-5 h-5" /></div>
-                    <div>
-                       <h4 className="font-bold text-sm mb-1">매칭 적합도 분석 리포트</h4>
-                       <p className="text-xs text-gray-500 break-keep">이 후보자가 왜 94% 적합한지, 30가지 지표로 분석해드립니다.</p>
-                    </div>
-                 </div>
-                 <div className="flex items-start gap-4 p-4 border border-gray-200 bg-white hover:border-black transition-colors group cursor-default">
-                    <div className="bg-gray-50 p-2 border border-gray-200 group-hover:bg-black group-hover:text-white transition-colors"><MessageSquare className="w-5 h-5" /></div>
-                    <div>
-                       <h4 className="font-bold text-sm mb-1">AI 인터뷰 모드</h4>
-                       <p className="text-xs text-gray-500 break-keep">만나기 전, AI가 당신을 대신해 기술/인성 면접을 진행합니다.</p>
-                    </div>
-                 </div>
-              </div>
-           </div>
-           <div className="flex-1 flex justify-center relative w-full">
-              {/* Decorative elements */}
-              <div className="absolute inset-0 border border-gray-100 transform rotate-3 scale-95 z-0 hidden sm:block"></div>
-              <div className="relative z-10 w-full flex justify-center">
-                 <MockAICard />
-              </div>
-           </div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 border border-orange-300 bg-orange-50 mb-6">
+            <Rocket className="w-3 h-3 text-orange-500" />
+            <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-orange-600">LIVE PROJECTS</span>
+          </div>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 mb-6 leading-tight break-keep">
+            지금 <span className="text-blue-600">팀원을 찾고 있는</span> 프로젝트들
+          </h2>
+          <p className="text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed break-keep">
+            실제로 함께할 팀원을 모집하고 있는 프로젝트입니다.<br className="hidden sm:block" />
+            당신의 아이디어도 여기에 등록해보세요.
+          </p>
         </motion.div>
 
-        {/* Feature 2: Docs & Management */}
+        {/* Opportunity Cards Grid */}
         <motion.div
-           initial="hidden"
-           whileInView="visible"
-           viewport={{ once: true, margin: "-100px" }}
-           variants={fadeInUp}
-           className="flex flex-col md:flex-row-reverse items-center gap-16"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
         >
-           <div className="flex-1">
-              <div className="flex items-center gap-2 mb-4">
-                 <LayoutGrid className="w-4 h-4 text-green-600" />
-                 <span className="text-green-600 font-mono text-xs font-bold tracking-widest uppercase">STARTUP OS</span>
-              </div>
-              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-6 leading-tight break-keep">
-                 아이디어 구상부터 IR까지,<br/>
-                 <span className="bg-green-100 px-1">자동화된 워크스페이스</span>
-              </h2>
-              <p className="text-gray-600 leading-relaxed mb-8 break-keep">
-                 문서 양식 때문에 고민하지 마세요. 예비창업패키지용 PSST 사업계획서부터 주주간 계약서까지, 스타트업 표준 양식을 AI가 초안(Draft)으로 작성해줍니다.
-              </p>
+          {displayOpportunities.map((opp) => (
+            <motion.div
+              key={opp.id}
+              variants={fadeInUp}
+              className={`bg-white border hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.05)] transition-all group cursor-pointer ${
+                opp.isReal
+                  ? 'border-blue-300 hover:border-blue-500'
+                  : 'border-gray-200 hover:border-black'
+              }`}
+            >
+              <div className="p-6">
+                {/* New Badge for real opportunities */}
+                {opp.isReal && (
+                  <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-50 border border-green-200 text-green-700 text-[10px] font-bold mb-2">
+                    <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                    NEW
+                  </div>
+                )}
 
-              <ul className="space-y-4 font-medium text-gray-700">
-                 <li className="flex items-center gap-3 p-3 bg-gray-50 border border-transparent hover:border-gray-200 transition-colors">
-                    <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
-                    <span className="text-sm">PSST 표준 사업계획서 자동 생성</span>
-                 </li>
-                 <li className="flex items-center gap-3 p-3 bg-gray-50 border border-transparent hover:border-gray-200 transition-colors">
-                    <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
-                    <span className="text-sm">정부지원사업 마감일 자동 트래킹</span>
-                 </li>
-                 <li className="flex items-center gap-3 p-3 bg-gray-50 border border-transparent hover:border-gray-200 transition-colors">
-                    <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
-                    <span className="text-sm">법률 검토된 공동창업 계약서 템플릿</span>
-                 </li>
-              </ul>
-           </div>
+                {/* Title */}
+                <h3 className="font-bold text-lg text-slate-900 mb-2 group-hover:text-blue-600 transition-colors">
+                  {opp.title}
+                </h3>
+                <p className="text-sm text-gray-500 mb-4 break-keep line-clamp-2">{opp.description}</p>
 
-           <div className="flex-1 w-full">
-              <div className="bg-white border border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,0.05)] overflow-hidden">
-                 <div className="bg-gray-50 border-b border-gray-200 p-4 flex justify-between items-center">
-                    <h4 className="font-bold text-sm flex items-center gap-2 font-mono"><FileText className="w-4 h-4" /> DOCUMENTS.DIR</h4>
-                    <button className="bg-white border border-gray-300 text-[10px] px-2 py-1 flex items-center gap-1 font-mono hover:bg-gray-100"><Plus className="w-3 h-3"/> NEW</button>
-                 </div>
-                 <div className="divide-y divide-gray-100">
-                    {[
-                       { name: '2026 예비창업패키지 사업계획서_v1.2', tag: '#Funding', status: 'Draft', date: '2h ago' },
-                       { name: '주주간 계약서 (Co-founder Agreement)', tag: '#Legal', status: 'Review', date: 'Yesterday' },
-                       { name: '헬스케어 시장 SOM 분석 데이터', tag: '#Research', status: 'Final', date: 'Feb 10' },
-                       { name: '서비스 소개서 (Landing Page Copy)', tag: '#Marketing', status: 'Draft', date: 'Feb 08' }
-                    ].map((doc, i) => (
-                       <div key={i} className="p-4 flex items-center justify-between hover:bg-blue-50/50 transition-colors group cursor-pointer">
-                          <div className="flex items-center gap-3 overflow-hidden">
-                             <div className="w-8 h-8 bg-gray-100 border border-gray-200 text-gray-500 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors shrink-0"><FileText className="w-4 h-4" /></div>
-                             <div className="min-w-0">
-                                <div className="text-sm font-bold text-gray-900 mb-0.5 truncate">{doc.name}</div>
-                                <div className="text-[10px] text-gray-400 font-mono">{doc.tag}</div>
-                             </div>
-                          </div>
-                          <div className="flex items-center gap-3 shrink-0">
-                             <span className={`text-[10px] px-2 py-0.5 border font-mono ${
-                                doc.status === 'Final' ? 'bg-green-50 border-green-200 text-green-700' :
-                                doc.status === 'Review' ? 'bg-yellow-50 border-yellow-200 text-yellow-700' :
-                                'bg-gray-50 border-gray-200 text-gray-500'
-                             }`}>{doc.status}</span>
-                          </div>
-                       </div>
-                    ))}
-                 </div>
+                {/* Roles */}
+                <div className="flex flex-wrap gap-1.5 mb-3">
+                  {opp.roles.map((role) => (
+                    <div key={role} className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 border border-blue-200 text-blue-700 text-xs font-medium">
+                      <Briefcase className="w-3 h-3" />
+                      {role}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Field */}
+                <span className="text-[10px] px-2 py-0.5 bg-gray-100 text-gray-600 font-mono">
+                  {opp.field}
+                </span>
               </div>
-           </div>
+            </motion.div>
+          ))}
         </motion.div>
 
+        {/* CTA Button */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3 }}
+          className="text-center"
+        >
+          <button
+            onClick={onOpenSlidePanel}
+            className="bg-black hover:bg-gray-800 text-white px-8 py-4 font-bold text-lg transition-all flex items-center justify-center gap-3 group mx-auto shadow-[4px_4px_0px_0px_rgba(0,82,204,0.3)]"
+          >
+            AI로 30초 만에 공고 만들기
+            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          </button>
+          <p className="mt-4 text-sm text-gray-500">
+            로그인 없이 바로 시작할 수 있어요
+          </p>
+        </motion.div>
       </div>
     </section>
   );
@@ -706,26 +427,26 @@ const HowItWorks: React.FC = () => {
   const steps = [
     {
       step: 1,
-      icon: UserPlus,
-      title: '프로필 작성',
-      description: '3분 안에 완성. 당신의 비전, 스킬, 원하는 팀원 유형을 알려주세요.',
+      icon: FileText,
+      title: '프로젝트 올리기',
+      description: '아이디어 단계든 진행 중이든, 고민 포인트와 함께 공유하세요.',
     },
     {
       step: 2,
-      icon: Sparkles,
-      title: 'AI 매칭',
-      description: '비전 기반 분석. AI가 최적의 공동 창업자와 기회를 찾아드립니다.',
+      icon: MessageSquare,
+      title: '피드백 받고 탐색하기',
+      description: '다른 사람들의 훈수를 받고, 관심 가는 프로젝트에 관심 표현하세요.',
     },
     {
       step: 3,
-      icon: Rocket,
-      title: '팀 빌딩',
-      description: '바로 시작. 매칭된 팀원과 함께 아이디어를 현실로 만드세요.',
+      icon: Users,
+      title: '커피챗으로 만나기',
+      description: '마음 맞으면 가볍게 만나서 이야기 나눠보세요.',
     },
   ];
 
   return (
-    <section className="py-24 bg-white border-t border-gray-200 relative">
+    <section id="features" className="py-24 bg-white border-t border-gray-200 relative">
       <div className="grid-bg absolute inset-0 opacity-40 pointer-events-none"></div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div
@@ -742,7 +463,7 @@ const HowItWorks: React.FC = () => {
             시작은 <span className="text-blue-600">간단</span>합니다
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed break-keep">
-            복잡한 절차 없이, 3단계로 완벽한 팀을 만나보세요.
+            복잡한 절차 없이, 3단계로 함께할 사람을 만나보세요.
           </p>
         </motion.div>
 
@@ -785,51 +506,138 @@ const HowItWorks: React.FC = () => {
   );
 };
 
-const LiveFeed: React.FC = () => {
-  const activities = [
-    { type: 'MATCH', text: 'Project Alpha just matched with a Senior Backend Developer', time: '2m ago' },
-    { type: 'CREATE', text: 'New Team "EcoFlow" started their journey', time: '5m ago' },
-    { type: 'FUNDING', text: 'Team "NeuralNet" qualified for Pre-Startup Package', time: '12m ago' },
-    { type: 'JOIN', text: 'Sarah J. joined the waitlist', time: '15m ago' },
-    { type: 'MATCH', text: 'FinTech "Ledger" found their CTO', time: '22m ago' },
+interface CommunityFeedbackProps {
+  onOpenSlidePanel: () => void;
+}
+
+const CommunityFeedback: React.FC<CommunityFeedbackProps> = ({ onOpenSlidePanel }) => {
+  const feedbackComments = [
+    {
+      id: 1,
+      author: '김OO',
+      school: '연대 경영',
+      comment: '타겟을 대학생으로 좁히는 게 낫지 않을까요? 범용 중고거래는 당근이 너무 강해서...',
+      avatar: 'KO',
+      avatarBg: 'bg-blue-500',
+    },
+    {
+      id: 2,
+      author: '이OO',
+      school: '카이스트 전산',
+      comment: '당근마켓이랑 차별점이 뭔가요? 학교 인증 말고 다른 킬러 피처가 필요할 것 같아요.',
+      avatar: 'LO',
+      avatarBg: 'bg-green-600',
+    },
+    {
+      id: 3,
+      author: '박OO',
+      school: '서울대 창업',
+      comment: 'MVP는 에브리타임 연동부터 해보는 건 어때요? 이미 학생들이 거래 글 올리더라구요.',
+      avatar: 'PO',
+      avatarBg: 'bg-purple-600',
+    },
   ];
 
   return (
-    <section className="py-12 border-t border-gray-200 bg-gray-50 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
-        <div className="flex items-center gap-2 justify-center">
-            <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-            <span className="text-xs font-mono font-bold tracking-widest uppercase text-gray-500">LIVE SYSTEM ACTIVITY</span>
-        </div>
-      </div>
+    <section className="py-24 bg-gray-50 border-t border-gray-200 relative overflow-hidden">
+      <div className="grid-bg absolute inset-0 opacity-40 pointer-events-none"></div>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={fadeInUp}
+          className="text-center mb-16"
+        >
+          <div className="inline-flex items-center gap-2 px-3 py-1 border border-blue-300 bg-blue-50 mb-6">
+            <MessageSquare className="w-3 h-3 text-blue-500" />
+            <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-blue-600">COMMUNITY FEEDBACK</span>
+          </div>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 mb-6 leading-tight break-keep">
+            여러 학교의 <span className="text-blue-600">다양한 시선</span>으로<br className="hidden sm:block" />
+            프로젝트를 발전시켜요
+          </h2>
+          <p className="text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed break-keep">
+            스택오버플로우처럼, 레딧처럼.<br className="hidden sm:block" />
+            솔직한 피드백이 프로젝트를 더 강하게 만듭니다.
+          </p>
+        </motion.div>
 
-      <div className="relative w-full">
-        <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-gray-50 to-transparent z-10 pointer-events-none"></div>
-        <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-gray-50 to-transparent z-10 pointer-events-none"></div>
-
-        <div className="flex overflow-hidden">
-          <motion.div
-            className="flex gap-4 flex-nowrap pl-4"
-            animate={{ x: ["0%", "-50%"] }}
-            transition={{ repeat: Infinity, duration: 30, ease: "linear" }}
-            style={{ width: "max-content" }}
-          >
-            {[...activities, ...activities, ...activities, ...activities].map((activity, i) => (
-              <div key={i} className="flex-shrink-0 bg-white border border-gray-200 p-4 w-72 shadow-sm hover:border-black transition-colors group">
-                 <div className="flex justify-between items-start mb-2">
-                    <span className={`text-[10px] font-mono px-1.5 py-0.5 border ${
-                      activity.type === 'MATCH' ? 'bg-blue-50 border-blue-200 text-blue-600' :
-                      activity.type === 'CREATE' ? 'bg-green-50 border-green-200 text-green-600' :
-                      activity.type === 'FUNDING' ? 'bg-yellow-50 border-yellow-200 text-yellow-600' :
-                      'bg-gray-50 border-gray-200 text-gray-500'
-                    }`}>{activity.type}</span>
-                    <span className="text-[10px] font-mono text-gray-400">{activity.time}</span>
-                 </div>
-                 <p className="text-xs font-medium text-gray-800 line-clamp-2">{activity.text}</p>
+        {/* Feedback Mockup */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="max-w-3xl mx-auto"
+        >
+          {/* Project Card */}
+          <div className="bg-white border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,0.1)] overflow-hidden mb-6">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 bg-blue-600 text-white flex items-center justify-center font-bold text-lg shrink-0">JK</div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <h3 className="font-bold text-xl text-gray-900">대학생 중고거래 플랫폼</h3>
+                    <span className="text-[10px] px-2 py-0.5 bg-green-50 border border-green-200 text-green-700 font-mono">IDEA</span>
+                  </div>
+                  <p className="text-gray-600 mb-3 break-keep">
+                    에브리타임 연동으로 학교 인증된 사용자끼리 중고거래할 수 있는 플랫폼입니다.
+                    기숙사/학교 근처 직거래 위주로, 배송비 없이 저렴하게 거래할 수 있어요.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="text-[10px] px-2 py-1 bg-blue-50 border border-blue-200 text-blue-700 font-medium">프론트엔드 개발자 구함</span>
+                    <span className="text-[10px] px-2 py-1 bg-gray-100 border border-gray-200 text-gray-600 font-mono">서울대 경영</span>
+                  </div>
+                </div>
               </div>
-            ))}
+            </div>
+
+            {/* Comments Section */}
+            <div className="bg-gray-50 p-4">
+              <div className="flex items-center gap-2 mb-4">
+                <MessageSquare className="w-4 h-4 text-gray-500" />
+                <span className="text-sm font-bold text-gray-700">피드백 {feedbackComments.length}개</span>
+              </div>
+
+              <div className="space-y-4">
+                {feedbackComments.map((fb) => (
+                  <div key={fb.id} className="bg-white border border-gray-200 p-4 hover:border-gray-300 transition-colors">
+                    <div className="flex items-start gap-3">
+                      <div className={`w-8 h-8 ${fb.avatarBg} text-white flex items-center justify-center text-xs font-bold shrink-0`}>
+                        {fb.avatar}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-bold text-sm text-gray-900">{fb.author}</span>
+                          <span className="text-[10px] px-1.5 py-0.5 bg-gray-100 border border-gray-200 text-gray-500 font-mono">{fb.school}</span>
+                        </div>
+                        <p className="text-sm text-gray-600 break-keep">{fb.comment}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* CTA Button */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+            className="text-center"
+          >
+            <button
+              onClick={onOpenSlidePanel}
+              className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 font-bold text-lg transition-all flex items-center justify-center gap-3 group mx-auto shadow-lg shadow-blue-200/50"
+            >
+              나도 프로젝트 올리고 피드백 받기
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </button>
           </motion.div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
@@ -842,27 +650,27 @@ const FAQ: React.FC = () => {
     {
       id: 'free',
       question: 'Draft는 무료인가요?',
-      answer: '네, 현재 베타 기간 동안 모든 핵심 기능을 무료로 이용하실 수 있습니다. 정식 출시 후에도 기본 기능은 무료로 제공될 예정이며, 고급 AI 분석과 프리미엄 매칭 기능은 유료 플랜으로 제공됩니다.',
+      answer: '네, 현재 베타 기간 동안 모든 핵심 기능을 무료로 이용하실 수 있습니다. 정식 출시 후에도 기본 기능은 무료로 제공될 예정이며, 프리미엄 기능은 유료 플랜으로 제공됩니다.',
     },
     {
-      id: 'team',
-      question: '어떤 종류의 팀원을 찾을 수 있나요?',
-      answer: '개발자, 디자이너, 마케터, 기획자 등 스타트업에 필요한 모든 역할의 팀원을 찾을 수 있습니다. 또한 투자자, 멘토, 어드바이저와도 연결될 수 있어 초기 스타트업에 필요한 네트워크를 구축할 수 있습니다.',
+      id: 'project',
+      question: '어떤 프로젝트를 올릴 수 있나요?',
+      answer: '아이디어 단계부터 진행 중인 프로젝트까지 모두 환영합니다. 스타트업 아이디어, 사이드 프로젝트, 학교 과제, 공모전 준비 등 함께할 사람이 필요한 모든 프로젝트를 올릴 수 있어요.',
     },
     {
-      id: 'matching',
-      question: 'AI 매칭은 어떤 기준으로 이루어지나요?',
-      answer: 'Draft의 AI는 단순 스킬 매칭을 넘어 비전 정렬도, 작업 스타일, 프로젝트 이력, 성장 잠재력 등 30가지 이상의 지표를 분석합니다. 이를 통해 단기 협업이 아닌, 장기적으로 함께할 수 있는 최적의 팀원을 추천합니다.',
+      id: 'feedback',
+      question: '피드백은 어떻게 받나요?',
+      answer: '프로젝트를 올리면 다른 학교, 다른 전공의 사람들이 자유롭게 의견을 남길 수 있어요. 솔직한 훈수부터 건설적인 제안까지, 다양한 시선으로 프로젝트를 발전시킬 수 있습니다.',
     },
     {
-      id: 'gov',
-      question: '정부지원사업 정보는 어떻게 제공되나요?',
-      answer: '예비창업패키지, 초기창업패키지 등 주요 정부지원사업의 공고를 실시간으로 트래킹하여 알려드립니다. 또한 AI가 당신의 프로필과 사업 아이디어를 분석하여 선정 가능성이 높은 사업을 우선 추천해드립니다.',
+      id: 'coffeechat',
+      question: '커피챗은 어떻게 진행되나요?',
+      answer: '관심 있는 프로젝트나 사람에게 커피챗을 신청할 수 있어요. 양쪽이 동의하면 연락처가 공유되고, 카페나 학교에서 가볍게 만나 이야기를 나눌 수 있습니다.',
     },
     {
       id: 'privacy',
       question: '개인정보는 어떻게 보호되나요?',
-      answer: '모든 데이터는 암호화되어 저장되며, 프로필 공개 범위를 직접 설정할 수 있습니다. 매칭 요청 시에만 상대방에게 기본 정보가 공개되며, 연락처 등 민감 정보는 양측이 동의한 후에만 공유됩니다.',
+      answer: '모든 데이터는 암호화되어 저장되며, 프로필 공개 범위를 직접 설정할 수 있습니다. 연락처 등 민감 정보는 양측이 커피챗에 동의한 후에만 공유됩니다.',
     },
   ];
 
@@ -969,7 +777,7 @@ const FinalCTA: React.FC<{ onLogin: () => void; onDemo?: () => void; isDemo?: bo
                 </div>
 
                 <p className="mt-8 text-xs font-mono text-gray-600 tracking-widest uppercase">
-                    {isDemo ? '로그인 없이 바로 체험해보세요' : 'Join 2,000+ Founders Waiting'}
+                    로그인 없이 바로 시작할 수 있어요
                 </p>
 
                 {/* Instagram CTA */}
@@ -1001,8 +809,8 @@ const Footer: React.FC = () => {
             <div className="col-span-2 md:col-span-1 pr-8">
                <span className="font-bold text-xl tracking-tight text-gray-900 block mb-4 font-sans">Draft.</span>
                <p className="text-sm text-gray-500 mb-6 leading-relaxed break-keep">
-                  초기 창업자를 위한 운영체제.<br/>
-                  팀 빌딩부터 투자 유치까지, Draft가 함께합니다.
+                  프로젝트를 공유하고,<br/>
+                  함께할 사람을 만나는 공간.
                </p>
                <div className="flex gap-4">
                   <a href="https://instagram.com/dailydraft_me" target="_blank" rel="noopener noreferrer" className="w-8 h-8 bg-gray-100 flex items-center justify-center border border-gray-200 hover:border-black hover:bg-gray-200 transition-colors"><span className="font-bold text-xs">IG</span></a>
@@ -1010,11 +818,11 @@ const Footer: React.FC = () => {
             </div>
 
             <div>
-               <h4 className="font-bold text-sm mb-4 font-mono uppercase tracking-wider">Product</h4>
+               <h4 className="font-bold text-sm mb-4 font-mono uppercase tracking-wider">Service</h4>
                <ul className="space-y-3 text-sm text-gray-500">
-                  <li><a href="#" className="hover:text-black transition-colors">AI 매칭</a></li>
-                  <li><a href="#" className="hover:text-black transition-colors">문서 자동화</a></li>
-                  <li><a href="#" className="hover:text-black transition-colors">일정 관리</a></li>
+                  <li><a href="#features" className="hover:text-black transition-colors">프로젝트</a></li>
+                  <li><a href="#features" className="hover:text-black transition-colors">커뮤니티</a></li>
+                  <li><a href="#faq" className="hover:text-black transition-colors">FAQ</a></li>
                </ul>
             </div>
 
@@ -1050,6 +858,8 @@ const Footer: React.FC = () => {
 };
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onDemo, isDemo }) => {
+  const [isSlideOpen, setIsSlideOpen] = useState(false);
+
   const scrollToWaitlist = () => {
     document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -1058,15 +868,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onDemo, isDem
     <div className="min-h-screen font-sans selection:bg-blue-100 text-slate-900 bg-white">
       <Header onLogin={scrollToWaitlist} />
       <main>
-        <Hero onLogin={scrollToWaitlist} onDemo={onDemo} isDemo={isDemo} />
-        <PainPoints />
-        <Features />
+        <Hero onOpenSlidePanel={() => setIsSlideOpen(true)} onDemo={onDemo} isDemo={isDemo} />
         <HowItWorks />
-        <LiveFeed />
+        <CommunityFeedback onOpenSlidePanel={() => setIsSlideOpen(true)} />
+        <OpportunitySection onOpenSlidePanel={() => setIsSlideOpen(true)} />
         <FAQ />
         <FinalCTA onLogin={scrollToWaitlist} onDemo={onDemo} isDemo={isDemo} />
       </main>
       <Footer />
+
+      {/* AI Opportunity Slide Panel */}
+      <OpportunitySlidePanel
+        isOpen={isSlideOpen}
+        onClose={() => setIsSlideOpen(false)}
+      />
 
       {/* Demo Mode Floating Button */}
       {isDemo && onDemo && (
