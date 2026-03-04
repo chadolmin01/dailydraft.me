@@ -22,7 +22,7 @@ export const Card: React.FC<CardProps> = ({
   variant = 'default',
 }) => {
   // Base classes - Removed bg-white to allow variants to control it
-  const baseClasses = 'transition-all duration-200 rounded-sm'
+  const baseClasses = 'transition-all duration-200 rounded-xl'
 
   // Default: Clean white bg, border, subtle shadow, sharp hover
   const defaultClasses = 'bg-white border border-gray-200 hover:border-black hover:shadow-sm'

@@ -145,7 +145,7 @@ export const Explore: React.FC = () => {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto h-screen bg-[#FAFAFA]">
+    <div className="flex-1 overflow-y-auto bg-[#FAFAFA]">
       <div className="max-w-[1400px] mx-auto px-4 lg:px-6 py-6">
 
         {/* 3-Column Layout */}
@@ -239,7 +239,7 @@ export const Explore: React.FC = () => {
                   <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input
                     type="text"
-                    className="w-full pl-9 pr-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-200"
+                    className="w-full pl-9 pr-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black/10"
                     placeholder="아이디어 검색..."
                   />
                 </div>

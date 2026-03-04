@@ -85,7 +85,10 @@ export const TopNavbar: React.FC = () => {
             </button>
 
             {/* 알림 버튼 */}
-            <button className="relative p-2 text-gray-500 hover:text-black hover:bg-gray-100 rounded-lg transition-colors">
+            <button
+              aria-label="알림"
+              className="relative p-2 text-gray-500 hover:text-black hover:bg-gray-100 rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
+            >
               <Bell size={20} />
               <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
             </button>
@@ -94,7 +97,9 @@ export const TopNavbar: React.FC = () => {
             <div className="relative" ref={menuRef}>
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="flex items-center gap-2 p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+                aria-label="프로필 메뉴"
+                aria-expanded={isMenuOpen}
+                className="flex items-center gap-2 p-1.5 hover:bg-gray-100 rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
               >
                 <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center relative">
                   {isPremium && (
@@ -154,7 +159,9 @@ export const TopNavbar: React.FC = () => {
             {/* 모바일 햄버거 메뉴 */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 text-gray-500 hover:text-black hover:bg-gray-100 rounded-lg"
+              aria-label={isMobileMenuOpen ? '메뉴 닫기' : '메뉴 열기'}
+              aria-expanded={isMobileMenuOpen}
+              className="md:hidden p-2 text-gray-500 hover:text-black hover:bg-gray-100 rounded-lg focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
             >
               {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>

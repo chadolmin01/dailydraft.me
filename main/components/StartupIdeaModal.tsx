@@ -86,7 +86,7 @@ export const StartupIdeaModal: React.FC<StartupIdeaModalProps> = ({
       />
 
       {/* Modal */}
-      <div className="relative bg-white rounded-sm shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+      <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-start justify-between p-6 border-b border-gray-100">
           <div className="flex items-center gap-4">
