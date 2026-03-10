@@ -62,6 +62,9 @@ export function useCoffeeChats(options: UseCoffeeChatsOptions = {}): UseCoffeeCh
 
       if (asOwner) {
         query = query.eq('owner_user_id', userData.user.id)
+      } else {
+        // Always scope to current user to prevent fetching all rows
+        query = query.eq('requester_user_id', userData.user.id)
       }
 
       query = query.order('created_at', { ascending: false })

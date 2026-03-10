@@ -245,7 +245,7 @@ export const Explore: React.FC = () => {
                 </button>
               </div>
 
-              <div className="flex items-center gap-1">
+              {activeTab === 'projects' && <div className="flex items-center gap-1">
                 {[
                   { id: 'trending', label: '트렌딩', icon: Flame },
                   { id: 'latest', label: '최신', icon: Clock },
@@ -264,7 +264,7 @@ export const Explore: React.FC = () => {
                     {tab.label}
                   </button>
                 ))}
-              </div>
+              </div>}
             </div>
 
             {/* 프로젝트 탭 */}

@@ -46,14 +46,21 @@ export const Profile: React.FC = () => {
     setIsEditing(true)
   }
 
+  const [saveError, setSaveError] = useState<string | null>(null)
+
   const handleSaveProfile = async () => {
-    await updateProfile.mutateAsync({
-      nickname: editNickname.trim() || undefined,
-      desired_position: editPosition.trim() || undefined,
-      university: editUniversity.trim() || undefined,
-      vision_summary: editVision.trim() || undefined,
-    })
-    setIsEditing(false)
+    setSaveError(null)
+    try {
+      await updateProfile.mutateAsync({
+        nickname: editNickname.trim() || undefined,
+        desired_position: editPosition.trim() || undefined,
+        university: editUniversity.trim() || undefined,
+        vision_summary: editVision.trim() || undefined,
+      })
+      setIsEditing(false)
+    } catch {
+      setSaveError('프로필 저장에 실패했습니다. 다시 시도해주세요.')
+    }
   }
   const { data: myOpportunities = [] } = useMyOpportunities()
   const { chats, loading: chatsLoading, acceptChat, declineChat } = useCoffeeChats({ asOwner: true })
@@ -512,6 +519,9 @@ export const Profile: React.FC = () => {
                 {updateProfile.isPending ? '저장 중...' : '저장'}
               </button>
             </div>
+            {saveError && (
+              <p className="mt-3 text-sm text-red-600 bg-red-50 px-4 py-2 rounded-lg">{saveError}</p>
+            )}
           </div>
         </div>
       )}

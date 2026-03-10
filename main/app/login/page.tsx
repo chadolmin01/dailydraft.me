@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import React, { Suspense, useEffect, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Command, Mail, Github, Chrome, ArrowRight, Activity, Cpu, Shield, Globe, Zap, Users, Building2, Rocket, AlertCircle, Loader2, MessageCircle } from 'lucide-react'
 import { useAuth } from '@/src/context/AuthContext'
 
@@ -20,8 +20,18 @@ const showcaseColumn1 = [...showcaseItems, ...showcaseItems, ...showcaseItems]
 const showcaseColumn2 = [...showcaseItems.reverse(), ...showcaseItems, ...showcaseItems]
 
 export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginContent />
+    </Suspense>
+  )
+}
+
+function LoginContent() {
   const router = useRouter()
   const { signIn, signUp, signInWithGoogle, signInWithGithub, isAuthenticated, isLoading: authLoading, profile } = useAuth()
+  const searchParams = useSearchParams()
+  const redirectTo = searchParams.get('redirect') || '/explore'
   const [phase, setPhase] = useState<'loading' | 'ready'>('loading')
   const [progress, setProgress] = useState(0)
   const [email, setEmail] = useState('')
@@ -34,11 +44,7 @@ export default function LoginPage() {
   // Check if already authenticated
   useEffect(() => {
     if (!authLoading && isAuthenticated) {
-      if (profile?.onboarding_completed) {
-        router.push('/explore')
-      } else {
-        router.push('/onboarding')
-      }
+      router.push(redirectTo)
     }
   }, [authLoading, isAuthenticated, profile, router])
 
@@ -74,14 +80,14 @@ export default function LoginPage() {
         if (error) {
           setError(error.message)
         } else {
-          router.push('/onboarding')
+          router.push(redirectTo)
         }
       } else {
         const { error } = await signIn(email, password)
         if (error) {
           setError(error.message)
         } else {
-          router.push('/explore')
+          router.push(redirectTo)
         }
       }
     } catch {

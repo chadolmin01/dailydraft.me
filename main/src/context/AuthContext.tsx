@@ -76,19 +76,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setSession(session)
       }).catch(() => {})
 
-      fetchProfile(user.id).then(setProfile).catch(() => setProfile(null))
-      setIsLoading(false)
+      // Wait for profile before setting isLoading=false to prevent UI flicker
+      fetchProfile(user.id).then(setProfile).catch(() => setProfile(null)).finally(() => setIsLoading(false))
     }).catch((err) => {
       console.warn('Auth getUser failed:', err?.message)
       setIsLoading(false)
     })
 
-    // Listen for auth changes
+    // Listen for auth changes (skip INITIAL_SESSION to avoid race with getUser above)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        // Skip initial session — getUser() handles initialization above
+        if (event === 'INITIAL_SESSION') return
+
         // Handle session expiry / token refresh failure
         if (event === 'TOKEN_REFRESHED' && !session) {
-          // Refresh token failed — force re-login
           setUser(null)
           setSession(null)
           setProfile(null)
@@ -111,8 +113,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } else {
           setProfile(null)
         }
-
-        setIsLoading(false)
       }
     )
 
@@ -144,11 +144,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Create profile after signup
     if (!error && data.user) {
-      await supabase.from('profiles').insert({
+      const { error: profileError } = await supabase.from('profiles').insert({
         user_id: data.user.id,
         nickname,
         contact_email: email,
       })
+      if (profileError) {
+        console.error('Failed to create profile:', profileError)
+      }
     }
 
     return { error }

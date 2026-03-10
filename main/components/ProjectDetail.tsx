@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
@@ -9,7 +9,7 @@ import {
   MessageCircle, ExternalLink, Sparkles, X
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { createClient } from '@/src/lib/supabase/client'
+import { supabase } from '@/src/lib/supabase/client'
 import { useAuth } from '@/src/context/AuthContext'
 import { useCoffeeChats } from '@/src/hooks/useCoffeeChats'
 import { COFFEE_CHAT_TEMPLATES } from '@/src/lib/constants/coffee-chat-templates'
@@ -126,7 +126,6 @@ const SignupCTA: React.FC<{ onClose: () => void; onSignup: () => void }> = ({ on
 // Main Component
 export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
   const router = useRouter()
-  const supabase = useMemo(() => createClient(), [])
   const { user } = useAuth()
   const { requestChat } = useCoffeeChats()
 
@@ -143,14 +142,16 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
+    let cancelled = false
     const fetchData = async () => {
       try {
-        // Fetch opportunity and creator in parallel
         const { data: oppData, error: oppError } = await supabase
           .from('opportunities')
           .select('*')
           .eq('id', id)
           .single()
+
+        if (cancelled) return
 
         if (oppError) {
           setError('프로젝트를 찾을 수 없습니다.')
@@ -159,7 +160,6 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
         setOpportunity(oppData as OpportunityData)
 
-        // Fetch creator profile
         if (oppData.creator_id) {
           const { data: profileData } = await supabase
             .from('profiles')
@@ -167,19 +167,20 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
             .eq('user_id', oppData.creator_id)
             .single()
 
-          if (profileData) {
+          if (!cancelled && profileData) {
             setCreator(profileData as CreatorProfile)
           }
         }
       } catch {
-        setError('데이터를 불러오는 중 오류가 발생했습니다.')
+        if (!cancelled) setError('데이터를 불러오는 중 오류가 발생했습니다.')
       } finally {
-        setLoading(false)
+        if (!cancelled) setLoading(false)
       }
     }
 
     fetchData()
-  }, [id, supabase])
+    return () => { cancelled = true }
+  }, [id])
 
   // ESC to close CTA
   useEffect(() => {

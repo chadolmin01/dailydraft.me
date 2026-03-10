@@ -79,6 +79,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
     setShowCta(false)
     setShowCoffeeChatForm(false)
     setCoffeeChatMessage('')
+    setCoffeeChatSending(false)
     setCoffeeChatSent(false)
     setCoffeeChatError(false)
   }, [projectId])

@@ -1,11 +1,11 @@
 'use client'
 
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Zap, ArrowRight, MessageCircle, Heart, Loader2, Plus, Sparkles,
 } from 'lucide-react'
-import { createClient } from '@/src/lib/supabase/client'
+import { supabase } from '@/src/lib/supabase/client'
 import { ProjectDetailModal } from '@/components/ProjectDetailModal'
 
 interface DisplayProject {
@@ -37,7 +37,6 @@ export const OpportunitySection: React.FC<OpportunitySectionProps> = ({ onSlideP
   const [projects, setProjects] = useState<DisplayProject[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
-  const supabase = useMemo(() => createClient(), [])
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -69,7 +68,7 @@ export const OpportunitySection: React.FC<OpportunitySectionProps> = ({ onSlideP
     }
 
     fetchProjects()
-  }, [supabase])
+  }, [])
 
   const mockProjects: DisplayProject[] = [
     {
@@ -129,7 +128,7 @@ export const OpportunitySection: React.FC<OpportunitySectionProps> = ({ onSlideP
               <div
                 key={project.id}
                 className="group bg-white border border-gray-200 p-6 hover:border-black hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col h-full"
-                onClick={() => setSelectedProjectId(project.id)}
+                onClick={() => project.isReal ? setSelectedProjectId(project.id) : router.push('/explore')}
               >
                 {/* Header */}
                 <div className="flex justify-between items-start mb-4">

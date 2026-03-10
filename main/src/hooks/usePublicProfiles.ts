@@ -67,6 +67,7 @@ export function usePublicProfileById(profileId: string | undefined) {
         .from('profiles')
         .select('id, user_id, nickname, desired_position, interest_tags, location, profile_visibility, vision_summary')
         .eq('id', profileId)
+        .eq('profile_visibility', 'public')
         .maybeSingle()
 
       if (error) throw error
