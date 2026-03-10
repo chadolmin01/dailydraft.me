@@ -76,7 +76,7 @@ export const ProjectFeed: React.FC = () => {
         const { data, error } = await supabase
           .from('opportunities')
           .select('*')
-          .eq('status', 'open')
+          .eq('status', 'active')
           .order('interest_count', { ascending: false, nullsFirst: false })
           .order('created_at', { ascending: false })
           .limit(10)

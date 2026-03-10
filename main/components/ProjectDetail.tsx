@@ -139,7 +139,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
   const [coffeeChatMessage, setCoffeeChatMessage] = useState('')
   const [coffeeChatSending, setCoffeeChatSending] = useState(false)
   const [coffeeChatSent, setCoffeeChatSent] = useState(false)
-  const [liked, setLiked] = useState(false)
+  const [coffeeChatError, setCoffeeChatError] = useState(false)
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
@@ -153,42 +153,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
           .single()
 
         if (oppError) {
-          // Try waitlist_signups as fallback
-          const { data: waitlistData, error: waitlistError } = await supabase
-            .from('waitlist_signups')
-            .select('id, opportunity_draft, created_at')
-            .eq('id', id)
-            .single()
-
-          if (waitlistError || !waitlistData?.opportunity_draft) {
-            setError('프로젝트를 찾을 수 없습니다.')
-            return
-          }
-
-          // Convert waitlist data to opportunity format
-          const draft = waitlistData.opportunity_draft as any
-          setOpportunity({
-            id: waitlistData.id,
-            title: draft.title || '제목 없음',
-            description: draft.description || '',
-            type: 'side_project',
-            status: 'open',
-            needed_roles: draft.roles || draft.neededRoles || [],
-            needed_skills: null,
-            interest_tags: draft.field ? [draft.field] : draft.tags || [],
-            location: null,
-            location_type: 'remote',
-            time_commitment: null,
-            compensation_type: null,
-            compensation_details: null,
-            pain_point: draft.problem || null,
-            project_links: null,
-            interest_count: null,
-            applications_count: null,
-            views_count: null,
-            created_at: waitlistData.created_at,
-            creator_id: '',
-          })
+          setError('프로젝트를 찾을 수 없습니다.')
           return
         }
 
@@ -236,7 +201,11 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
     }
   }
 
+  const isOwner = !!(user && opportunity && user.id === opportunity.creator_id)
+
   const handleCoffeeChatAction = () => {
+    if (isOwner) return // 자기 프로젝트에는 커피챗 신청 불가
+    if (!opportunity?.creator_id) return // waitlist 프로젝트는 커피챗 불가
     if (user) {
       setShowCoffeeChatForm(true)
     } else {
@@ -284,9 +253,8 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
   }
 
   const mockUpdates = generateMockUpdates(id)
-  const interestCount = opportunity.interest_count ?? seededNumber(id, 3, 18)
-  const viewsCount = opportunity.views_count ?? seededNumber(id + 'v', 20, 150)
-  const coffeeCount = seededNumber(id + 'coffee', 1, 6)
+  const interestCount = opportunity.interest_count ?? 0
+  const viewsCount = opportunity.views_count ?? 0
 
   const projectLinks = opportunity.project_links as Record<string, string> | null
 
@@ -327,7 +295,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                    opportunity.type === 'startup' ? 'STARTUP' :
                    opportunity.type === 'study' ? 'STUDY' : opportunity.type?.toUpperCase() || 'PROJECT'}
                 </span>
-                {opportunity.status === 'open' || opportunity.status === 'active' ? (
+                {opportunity.status === 'active' ? (
                   <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-50 border border-green-200 text-green-700 text-[10px] font-bold">
                     <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
                     모집 중
@@ -399,22 +367,18 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
           {/* Stats Bar */}
           <div className="flex items-center gap-6 mt-6 pt-6 border-t border-gray-100 text-sm text-gray-500">
-            <span className="flex items-center gap-1.5">
-              <Heart size={14} className="text-gray-400" />
-              관심 <span className="font-bold text-gray-900">{interestCount}</span>
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Eye size={14} className="text-gray-400" />
-              조회 <span className="font-bold text-gray-900">{viewsCount}</span>
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Coffee size={14} className="text-gray-400" />
-              커피챗 <span className="font-bold text-gray-900">{coffeeCount}</span>
-            </span>
-            <span className="flex items-center gap-1.5">
-              <MessageCircle size={14} className="text-gray-400" />
-              피드백 <span className="font-bold text-gray-900">{seededNumber(id + 'fb', 0, 8)}</span>
-            </span>
+            {interestCount > 0 && (
+              <span className="flex items-center gap-1.5">
+                <Heart size={14} className="text-gray-400" />
+                관심 <span className="font-bold text-gray-900">{interestCount}</span>
+              </span>
+            )}
+            {viewsCount > 0 && (
+              <span className="flex items-center gap-1.5">
+                <Eye size={14} className="text-gray-400" />
+                조회 <span className="font-bold text-gray-900">{viewsCount}</span>
+              </span>
+            )}
           </div>
         </div>
       </header>
@@ -760,20 +724,29 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-black resize-none mb-4 text-left"
                   />
 
+                  {coffeeChatError && (
+                    <p className="text-xs text-red-500 mb-3">전송에 실패했습니다. 다시 시도해주세요.</p>
+                  )}
+
                   <button
                     onClick={async () => {
                       if (!coffeeChatMessage.trim() || !opportunity?.id || !user?.email) return
                       setCoffeeChatSending(true)
+                      setCoffeeChatError(false)
                       try {
-                        await requestChat({
+                        const result = await requestChat({
                           opportunityId: opportunity.id,
                           email: user.email,
                           name: user.user_metadata?.full_name || user.email.split('@')[0],
                           message: coffeeChatMessage.trim(),
                         })
-                        setCoffeeChatSent(true)
+                        if (result) {
+                          setCoffeeChatSent(true)
+                        } else {
+                          setCoffeeChatError(true)
+                        }
                       } catch {
-                        // Error handled in hook
+                        setCoffeeChatError(true)
                       } finally {
                         setCoffeeChatSending(false)
                       }

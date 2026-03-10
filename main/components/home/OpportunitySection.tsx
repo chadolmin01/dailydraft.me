@@ -1,33 +1,68 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { Zap, ArrowRight, MessageCircle, Heart, Loader2 } from 'lucide-react'
+import {
+  Zap, ArrowRight, MessageCircle, Heart, Loader2, Plus, Sparkles,
+} from 'lucide-react'
 import { createClient } from '@/src/lib/supabase/client'
-import type { Database } from '@/src/types/database'
+import { ProjectDetailModal } from '@/components/ProjectDetailModal'
 
-type Opportunity = Database['public']['Tables']['opportunities']['Row']
+interface DisplayProject {
+  id: string
+  title: string
+  description: string
+  needed_roles: string[]
+  interest_tags: string[]
+  isReal?: boolean
+}
 
-export const OpportunitySection: React.FC = () => {
+interface OpportunitySectionProps {
+  onSlidePanelOpen?: () => void
+}
+
+// Seed 기반 고정 mock 숫자 (id로부터 결정적 해시)
+function seededNumber(id: string, min: number, max: number): number {
+  let hash = 0
+  for (let i = 0; i < id.length; i++) {
+    hash = ((hash << 5) - hash) + id.charCodeAt(i)
+    hash |= 0
+  }
+  return min + (Math.abs(hash) % (max - min + 1))
+}
+
+// --- Main Component ---
+export const OpportunitySection: React.FC<OpportunitySectionProps> = ({ onSlidePanelOpen }) => {
   const router = useRouter()
-  const [projects, setProjects] = useState<Opportunity[]>([])
+  const [projects, setProjects] = useState<DisplayProject[]>([])
   const [loading, setLoading] = useState(true)
-  const supabase = createClient()
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
+  const supabase = useMemo(() => createClient(), [])
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
         const { data, error } = await supabase
           .from('opportunities')
-          .select('*')
-          .eq('status', 'open')
+          .select('id, title, description, needed_roles, interest_tags')
+          .eq('status', 'active')
           .order('created_at', { ascending: false })
-          .limit(8)
+          .limit(3)
 
         if (error) throw error
-        setProjects(data || [])
+
+        const oppProjects: DisplayProject[] = (data || []).map((opp) => ({
+          id: opp.id,
+          title: opp.title || '',
+          description: opp.description || '',
+          needed_roles: opp.needed_roles || [],
+          interest_tags: opp.interest_tags || [],
+          isReal: true,
+        }))
+
+        setProjects(oppProjects)
       } catch (err) {
-        console.error('Failed to fetch projects:', err)
+        console.warn('Failed to fetch projects, using mock data')
       } finally {
         setLoading(false)
       }
@@ -36,8 +71,7 @@ export const OpportunitySection: React.FC = () => {
     fetchProjects()
   }, [supabase])
 
-  // Fallback mock data when no projects exist
-  const mockProjects = [
+  const mockProjects: DisplayProject[] = [
     {
       id: '1',
       title: 'AI 기반 이력서 분석 서비스',
@@ -59,16 +93,11 @@ export const OpportunitySection: React.FC = () => {
       needed_roles: ['풀스택 개발자'],
       interest_tags: ['커머스', '소셜임팩트'],
     },
-    {
-      id: '4',
-      title: '반려동물 헬스케어 앱',
-      description: '반려동물의 건강 상태를 기록하고 관리할 수 있는 앱',
-      needed_roles: ['iOS 개발자', 'UI/UX 디자이너'],
-      interest_tags: ['헬스케어', '펫테크'],
-    },
   ]
 
-  const displayProjects = projects.length > 0 ? projects : mockProjects
+  const displayProjects = projects.length > 0
+    ? projects.slice(0, 3)
+    : mockProjects.slice(0, 3)
 
   return (
     <section className="w-full py-24 px-6 md:px-12 bg-gray-50">
@@ -100,21 +129,29 @@ export const OpportunitySection: React.FC = () => {
               <div
                 key={project.id}
                 className="group bg-white border border-gray-200 p-6 hover:border-black hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col h-full"
-                onClick={() => router.push(`/explore?project=${project.id}`)}
+                onClick={() => setSelectedProjectId(project.id)}
               >
                 {/* Header */}
                 <div className="flex justify-between items-start mb-4">
-                  <div className="w-10 h-10 bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-900 group-hover:bg-black group-hover:text-white transition-colors">
-                    <Zap size={20} />
+                  <div className="flex items-center gap-2">
+                    <div className="w-10 h-10 bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-900 group-hover:bg-black group-hover:text-white transition-colors">
+                      <Zap size={20} />
+                    </div>
+                    {project.isReal && (
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-green-50 border border-green-200 text-green-700 text-[10px] font-bold">
+                        <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                        NEW
+                      </span>
+                    )}
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="flex items-center gap-1 text-[10px] font-mono text-gray-400">
                       <MessageCircle size={10} />
-                      {Math.floor(Math.random() * 15)}
+                      {seededNumber(project.id + 'msg', 2, 15)}
                     </span>
                     <span className="flex items-center gap-1 text-[10px] font-mono text-gray-400">
                       <Heart size={10} />
-                      {Math.floor(Math.random() * 10)}
+                      {seededNumber(project.id + 'heart', 1, 10)}
                     </span>
                   </div>
                 </div>
@@ -131,7 +168,6 @@ export const OpportunitySection: React.FC = () => {
 
                 {/* Footer */}
                 <div className="pt-4 border-t border-gray-100 mt-auto">
-                  {/* Need Roles */}
                   {project.needed_roles && project.needed_roles.length > 0 && (
                     <div className="mb-3">
                       <span className="text-[10px] font-mono text-gray-400 uppercase block mb-1">
@@ -150,7 +186,6 @@ export const OpportunitySection: React.FC = () => {
                     </div>
                   )}
 
-                  {/* Tags */}
                   {project.interest_tags && project.interest_tags.length > 0 && (
                     <div className="flex flex-wrap gap-1">
                       {project.interest_tags.slice(0, 3).map((tag) => (
@@ -166,6 +201,25 @@ export const OpportunitySection: React.FC = () => {
                 </div>
               </div>
             ))}
+
+            {/* + Add Project Card */}
+            <div
+              onClick={onSlidePanelOpen}
+              className="group bg-white border-2 border-dashed border-gray-300 p-6 hover:border-blue-500 hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col items-center justify-center h-full min-h-[220px] gap-4"
+            >
+              <div className="w-14 h-14 bg-gray-50 border border-gray-200 flex items-center justify-center group-hover:bg-blue-600 group-hover:border-blue-600 transition-colors">
+                <Plus size={24} className="text-gray-400 group-hover:text-white transition-colors" />
+              </div>
+              <div className="text-center">
+                <p className="font-bold text-gray-700 group-hover:text-blue-600 transition-colors mb-1">
+                  내 아이디어 등록하기
+                </p>
+                <p className="text-xs text-gray-400 flex items-center justify-center gap-1">
+                  <Sparkles size={12} />
+                  AI가 30초 만에 공고 작성
+                </p>
+              </div>
+            </div>
           </div>
         )}
 
@@ -178,14 +232,20 @@ export const OpportunitySection: React.FC = () => {
             </p>
           </div>
           <button
-            onClick={() => router.push('/login')}
+            onClick={onSlidePanelOpen || (() => router.push('/login'))}
             className="group flex items-center gap-2 bg-white text-black px-6 py-3 font-bold text-sm hover:bg-gray-100 transition-colors shrink-0"
           >
-            시작하기
+            AI로 공고 만들기
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
       </div>
+
+      {/* Project Detail Modal */}
+      <ProjectDetailModal
+        projectId={selectedProjectId}
+        onClose={() => setSelectedProjectId(null)}
+      />
     </section>
   )
 }

@@ -14,6 +14,11 @@ export type OpportunityWithCreator = Opportunity & {
   creator?: {
     nickname: string
     user_id: string
+    skills?: unknown
+    location?: string | null
+    contact_email?: string | null
+    desired_position?: string | null
+    university?: string | null
   }
 }
 
@@ -33,16 +38,14 @@ export function useOpportunities(filters?: {
   type?: string
   interestTags?: string[]
   limit?: number
+  offset?: number
 }) {
   return useQuery({
     queryKey: opportunityKeys.list(filters ?? {}),
     queryFn: async () => {
       let query = supabase
         .from('opportunities')
-        .select(`
-          *,
-          creator:profiles!opportunities_creator_id_fkey(nickname, user_id)
-        `)
+        .select('*', { count: 'exact' })
         .eq('status', 'active')
         .order('created_at', { ascending: false })
 
@@ -54,14 +57,21 @@ export function useOpportunities(filters?: {
         query = query.overlaps('interest_tags', filters.interestTags)
       }
 
-      if (filters?.limit) {
-        query = query.limit(filters.limit)
-      }
+      const offset = filters?.offset ?? 0
+      const limit = filters?.limit ?? 50
 
-      const { data, error } = await query
+      query = query.range(offset, offset + limit - 1)
+
+      const { data, error, count } = await query
 
       if (error) throw error
-      return data as OpportunityWithCreator[]
+      return { items: data as OpportunityWithCreator[], totalCount: count ?? 0 }
+    },
+    staleTime: 1000 * 60 * 2,
+    retry: (failureCount, error) => {
+      // AbortError는 Strict Mode에서 발생 → 조용히 1회 재시도
+      if (error?.message?.includes('AbortError')) return failureCount < 1
+      return failureCount < 2
     },
   })
 }
@@ -75,10 +85,7 @@ export function useOpportunity(id: string | undefined) {
 
       const { data, error } = await supabase
         .from('opportunities')
-        .select(`
-          *,
-          creator:profiles!opportunities_creator_id_fkey(nickname, user_id, skills, location, contact_email)
-        `)
+        .select('*')
         .eq('id', id)
         .single()
 
@@ -86,6 +93,11 @@ export function useOpportunity(id: string | undefined) {
       return data as OpportunityWithCreator
     },
     enabled: !!id,
+    staleTime: 1000 * 60 * 2,
+    retry: (failureCount, error) => {
+      if (error?.message?.includes('AbortError')) return failureCount < 1
+      return failureCount < 2
+    },
   })
 }
 
@@ -122,10 +134,7 @@ export function useRecommendedOpportunities(limit = 4) {
       // In production, this would use vector similarity search
       const { data, error } = await supabase
         .from('opportunities')
-        .select(`
-          *,
-          creator:profiles!opportunities_creator_id_fkey(nickname, user_id)
-        `)
+        .select('*')
         .eq('status', 'active')
         .neq('creator_id', user?.id ?? '')
         .order('created_at', { ascending: false })

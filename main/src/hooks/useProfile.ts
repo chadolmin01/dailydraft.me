@@ -65,7 +65,7 @@ export function useProfileById(userId: string | undefined) {
 // Update profile mutation
 export function useUpdateProfile() {
   const queryClient = useQueryClient()
-  const { user } = useAuth()
+  const { user, refreshProfile } = useAuth()
 
   return useMutation({
     mutationFn: async (updates: ProfileUpdate) => {
@@ -83,6 +83,8 @@ export function useUpdateProfile() {
     },
     onSuccess: (data) => {
       queryClient.setQueryData(profileKeys.detail(user?.id ?? ''), data)
+      // Sync AuthContext profile so navbar/header updates immediately
+      refreshProfile().catch(() => {})
     },
   })
 }

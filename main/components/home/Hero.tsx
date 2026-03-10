@@ -6,9 +6,10 @@ import { ArrowRight, Sparkles, Users, Zap, Ruler } from 'lucide-react'
 
 interface HeroProps {
   onCtaClick: () => void
+  onSlidePanelOpen?: () => void
 }
 
-export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
+export const Hero: React.FC<HeroProps> = ({ onCtaClick, onSlidePanelOpen }) => {
   return (
     <section className="relative w-full pt-16 pb-32 px-6 md:px-12 max-w-7xl mx-auto flex flex-col items-center">
 
@@ -136,8 +137,12 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
           </button>
 
-          <button className="w-full sm:w-auto px-8 py-4 font-bold text-sm border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 hover:text-black transition-all duration-200 hover:border-black">
-            설계도 보기
+          <button
+            onClick={onSlidePanelOpen}
+            className="group w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 font-bold text-sm border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 hover:text-black transition-all duration-200 hover:border-black"
+          >
+            <Sparkles size={16} />
+            AI로 30초 만에 공고 만들기
           </button>
         </div>
 
@@ -158,8 +163,8 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
                 ))}
              </div>
              <div className="text-left">
-                <p className="text-xs font-bold text-black font-mono">2,000+ MAKERS</p>
-                <p className="text-[10px] text-gray-500">Joined in the last 24h</p>
+                <p className="text-xs font-bold text-black font-mono">MAKERS</p>
+                <p className="text-[10px] text-gray-500">Growing community</p>
              </div>
         </div>
       </div>

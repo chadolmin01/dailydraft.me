@@ -26,24 +26,50 @@ export const Explore: React.FC = () => {
   const [sortBy, setSortBy] = useState<'latest' | 'popular' | 'trending'>('trending')
   const [activeTab, setActiveTab] = useState<'projects' | 'people'>('projects')
   const [recruitingOnly, setRecruitingOnly] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
   const { isAuthenticated } = useAuth()
 
-  // Map UI sort labels → DB column names
-  const sortMapping: Record<typeof sortBy, 'final_score' | 'created_at' | 'upvotes'> = {
-    trending: 'final_score',
-    latest: 'created_at',
-    popular: 'upvotes',
-  }
+  const PAGE_SIZE = 12
+  const [displayLimit, setDisplayLimit] = useState(PAGE_SIZE)
 
   // Projects via useOpportunities
-  const { data: opportunities = [], isLoading: opportunitiesLoading } = useOpportunities({ limit: 12 })
+  const { data: oppData, isLoading: opportunitiesLoading } = useOpportunities({ limit: displayLimit })
+  const opportunities = oppData?.items ?? []
+  const totalCount = oppData?.totalCount ?? 0
+  const hasMore = displayLimit < totalCount
 
   // People via usePublicProfiles
   const { data: publicProfiles = [], isLoading: profilesLoading } = usePublicProfiles({ limit: 12 })
 
-  // Map opportunities to project card format
+  const query = searchQuery.toLowerCase().trim()
+
+  // Map opportunities to project card format with filtering + sorting
   const projectCards = opportunities
-    .filter((opp: OpportunityWithCreator) => !recruitingOnly || opp.status === 'active' || opp.status === 'open')
+    .filter((opp: OpportunityWithCreator) => {
+      // Recruiting filter
+      if (recruitingOnly && opp.status !== 'active') return false
+      // Category filter
+      if (selectedCategory !== 'all') {
+        const tags = (opp.interest_tags || []).map(t => t.toLowerCase())
+        if (!tags.some(t => t.includes(selectedCategory.toLowerCase()))) return false
+      }
+      // Search filter
+      if (query) {
+        const title = (opp.title || '').toLowerCase()
+        const desc = (opp.description || '').toLowerCase()
+        const tags = (opp.interest_tags || []).join(' ').toLowerCase()
+        const roles = (opp.needed_roles || []).join(' ').toLowerCase()
+        if (!title.includes(query) && !desc.includes(query) && !tags.includes(query) && !roles.includes(query)) return false
+      }
+      return true
+    })
+    .sort((a, b) => {
+      if (sortBy === 'latest') {
+        return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
+      }
+      // popular & trending: recently updated first (until engagement metrics exist)
+      return new Date(b.updated_at || b.created_at || 0).getTime() - new Date(a.updated_at || a.created_at || 0).getTime()
+    })
     .map((opp: OpportunityWithCreator) => ({
       id: opp.id,
       title: opp.title,
@@ -54,18 +80,26 @@ export const Explore: React.FC = () => {
       updatedAt: opp.updated_at ?? undefined,
     }))
 
-  // Map public profiles to talent card format
-  const talentCards = publicProfiles.length > 0
-    ? publicProfiles.map((profile: PublicProfile) => ({
-        id: profile.id,
-        name: profile.nickname || 'Anonymous',
-        role: profile.desired_position || 'Explorer',
-        exp: '',
-        tags: (profile.interest_tags || []).slice(0, 2),
-        status: 'OPEN' as const,
-        visionSummary: profile.vision_summary,
-      }))
-    : FALLBACK_TALENTS.map(t => ({ ...t, visionSummary: undefined }))
+  // Map public profiles to talent card format with search filter
+  const talentCards = (publicProfiles.length > 0
+    ? publicProfiles
+        .filter((profile: PublicProfile) => {
+          if (!query) return true
+          const name = (profile.nickname || '').toLowerCase()
+          const role = (profile.desired_position || '').toLowerCase()
+          const tags = (profile.interest_tags || []).join(' ').toLowerCase()
+          return name.includes(query) || role.includes(query) || tags.includes(query)
+        })
+        .map((profile: PublicProfile) => ({
+          id: profile.id,
+          name: profile.nickname || 'Anonymous',
+          role: profile.desired_position || 'Explorer',
+          exp: '',
+          tags: (profile.interest_tags || []).slice(0, 2),
+          status: 'OPEN' as const,
+          visionSummary: profile.vision_summary,
+        }))
+    : FALLBACK_TALENTS.map(t => ({ ...t, visionSummary: undefined })))
 
   // Categories with icons
   const categories = FALLBACK_CATEGORIES.map((cat) => ({
@@ -173,6 +207,8 @@ export const Explore: React.FC = () => {
                 <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black/10"
                   placeholder="프로젝트, 사람, 기술 스택 검색..."
                 />
@@ -265,11 +301,14 @@ export const Explore: React.FC = () => {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-start justify-between gap-2">
                               <h3 className="font-semibold text-gray-900 text-sm truncate">{p.title}</h3>
-                              {getUpdateBadge(p.updatedAt) && (
-                                <span className="text-[10px] text-green-600 font-mono flex-shrink-0">
-                                  {getUpdateBadge(p.updatedAt)}
-                                </span>
-                              )}
+                              {(() => {
+                                const badge = getUpdateBadge(p.updatedAt)
+                                return badge ? (
+                                  <span className="text-[10px] text-green-600 font-mono flex-shrink-0">
+                                    {badge}
+                                  </span>
+                                ) : null
+                              })()}
                             </div>
                             <p className="text-xs text-gray-500 mt-1 line-clamp-2">{p.desc}</p>
                             <div className="flex items-center gap-2 mt-2">
@@ -282,6 +321,18 @@ export const Explore: React.FC = () => {
                         </div>
                       </Card>
                     ))}
+                  </div>
+                )}
+
+                {/* Load more */}
+                {hasMore && !opportunitiesLoading && (
+                  <div className="text-center mt-6">
+                    <button
+                      onClick={() => setDisplayLimit(prev => prev + PAGE_SIZE)}
+                      className="px-6 py-2.5 text-sm font-medium text-gray-600 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+                    >
+                      더 보기{!searchQuery && selectedCategory === 'all' && !recruitingOnly ? ` (${totalCount - projectCards.length}개 남음)` : ''}
+                    </button>
                   </div>
                 )}
               </section>
