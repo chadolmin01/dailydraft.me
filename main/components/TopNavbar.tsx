@@ -24,12 +24,17 @@ const NavLink = ({ href, active, children }: { href: string; active: boolean; ch
 export const TopNavbar: React.FC = () => {
   const router = useRouter()
   const pathname = usePathname()
-  const { signOut } = useAuth()
+  const { signOut, user } = useAuth()
   const { isAdmin } = useAdmin()
 
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
+
+  // 라우트 변경 시 모바일 메뉴 닫기
+  useEffect(() => {
+    setIsMobileMenuOpen(false)
+  }, [pathname])
 
   // 메뉴 외부 클릭 감지
   useEffect(() => {
@@ -86,7 +91,6 @@ export const TopNavbar: React.FC = () => {
               className="relative p-2 text-gray-500 hover:text-black hover:bg-gray-100 rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
             >
               <Bell size={20} />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
             </button>
 
             {/* 프로필 드롭다운 */}
@@ -108,9 +112,9 @@ export const TopNavbar: React.FC = () => {
                   {/* 유저 정보 */}
                   <div className="px-4 py-3 border-b border-gray-100">
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-sm">User</span>
+                      <span className="font-semibold text-sm">{user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}</span>
                     </div>
-                    <p className="text-xs text-gray-500 mt-0.5">user@draft.io</p>
+                    <p className="text-xs text-gray-500 mt-0.5 truncate">{user?.email || ''}</p>
                   </div>
 
                   {/* 메뉴 아이템들 */}

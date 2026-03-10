@@ -48,8 +48,12 @@ export function usePremium(): UsePremiumReturn {
       const hasActiveSubscription = !!subscription && subscription.plan_type !== 'free'
       setIsPremium(hasActiveSubscription)
       setPremiumActivatedAt(null)
-    } catch (error) {
-      console.error('Failed to fetch premium status:', error)
+    } catch (error: unknown) {
+      // Silently ignore AbortError from React Strict Mode (navigator.locks abort)
+      const msg = error instanceof Error ? error.message : String(error)
+      if (!msg.includes('AbortError')) {
+        console.error('Failed to fetch premium status:', error)
+      }
       setIsPremium(false)
       setPremiumActivatedAt(null)
     } finally {

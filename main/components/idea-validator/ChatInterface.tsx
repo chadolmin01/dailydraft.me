@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { Send, Cpu, Paintbrush, DollarSign, ArrowRight, Lightbulb, Check, MessageSquare, X, Edit3, Sparkles, MessageCircle, TrendingUp, AlertTriangle, ShieldCheck, Layers, Coins, Lock, Zap, Sword, MoreHorizontal } from 'lucide-react';
 import { ChatMessage, AnalysisMetrics, ValidationLevel } from './types';
 import { analyzeIdea } from './geminiService';
-import { createSessionTracker, trackSessionEnd, type TurnData, type SessionData } from '@/lib/analytics/sessionTracker';
+import { createSessionTracker, trackSessionEnd, type TurnData, type SessionData } from '@/src/lib/analytics/sessionTracker';
 
 // Preloaded context from external startup idea
 interface PreloadedStartupContext {

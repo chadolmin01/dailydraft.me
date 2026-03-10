@@ -23,7 +23,15 @@
       "Skill(browser-use)",
       "Bash(browser-use open:*)",
       "Bash(browser-use screenshot:*)",
-      "Bash(browser-use close:*)"
+      "Bash(browser-use close:*)",
+      "Bash(netstat:*)",
+      "WebSearch",
+      "WebFetch(domain:www.producthunt.com)",
+      "WebFetch(domain:www.ycombinator.com)",
+      "Bash(npm run build:*)",
+      "Bash(npx tsc:*)",
+      "Bash(curl:*)",
+      "Bash(browser-use:*)"
     ]
   }
 }

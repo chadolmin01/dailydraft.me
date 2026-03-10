@@ -23,33 +23,30 @@ export function usePublicProfiles(options?: {
 }) {
   return useQuery({
     queryKey: publicProfileKeys.list(options ?? {}),
+    staleTime: 1000 * 60 * 2,
+    retry: (failureCount, error) => {
+      if (error?.message?.includes('AbortError')) return failureCount < 1
+      return failureCount < 2
+    },
     queryFn: async () => {
-      try {
-        let query = supabase
-          .from('profiles')
-          .select('id, user_id, nickname, desired_position, interest_tags, location, profile_visibility, vision_summary')
-          .eq('profile_visibility', 'public')
-          .order('updated_at', { ascending: false })
+      let query = supabase
+        .from('profiles')
+        .select('id, user_id, nickname, desired_position, interest_tags, location, profile_visibility, vision_summary')
+        .eq('profile_visibility', 'public')
+        .order('updated_at', { ascending: false })
 
-        if (options?.interestTags && options.interestTags.length > 0) {
-          query = query.overlaps('interest_tags', options.interestTags)
-        }
-
-        if (options?.limit) {
-          query = query.limit(options.limit)
-        }
-
-        const { data, error } = await query
-
-        if (error) {
-          console.error('Failed to fetch public profiles:', error.message, error.code, error.details)
-          return []
-        }
-        return data as PublicProfile[]
-      } catch (err) {
-        console.error('Public profiles query error:', err)
-        return []
+      if (options?.interestTags && options.interestTags.length > 0) {
+        query = query.overlaps('interest_tags', options.interestTags)
       }
+
+      if (options?.limit) {
+        query = query.limit(options.limit)
+      }
+
+      const { data, error } = await query
+
+      if (error) throw error
+      return data as PublicProfile[]
     },
   })
 }
@@ -58,6 +55,11 @@ export function usePublicProfiles(options?: {
 export function usePublicProfileById(profileId: string | undefined) {
   return useQuery({
     queryKey: [...publicProfileKeys.all, 'detail', profileId],
+    staleTime: 1000 * 60 * 2,
+    retry: (failureCount, error) => {
+      if (error?.message?.includes('AbortError')) return failureCount < 1
+      return failureCount < 2
+    },
     queryFn: async () => {
       if (!profileId) return null
 
@@ -71,5 +73,34 @@ export function usePublicProfileById(profileId: string | undefined) {
       return data as PublicProfile | null
     },
     enabled: !!profileId,
+  })
+}
+
+// Fetch profile by user_id (for creator info)
+export type CreatorProfile = Pick<Profile,
+  'id' | 'user_id' | 'nickname' | 'desired_position' | 'university' | 'interest_tags' | 'skills' | 'location' | 'contact_email'
+>
+
+export function useProfileByUserId(userId: string | undefined) {
+  return useQuery({
+    queryKey: [...publicProfileKeys.all, 'user', userId],
+    staleTime: 1000 * 60 * 2,
+    retry: (failureCount, error) => {
+      if (error?.message?.includes('AbortError')) return failureCount < 1
+      return failureCount < 2
+    },
+    queryFn: async () => {
+      if (!userId) return null
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, user_id, nickname, desired_position, university, interest_tags, skills, location, contact_email')
+        .eq('user_id', userId)
+        .maybeSingle()
+
+      if (error) throw error
+      return data as CreatorProfile | null
+    },
+    enabled: !!userId,
   })
 }

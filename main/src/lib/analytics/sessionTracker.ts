@@ -3,7 +3,7 @@
  * 익명화된 세션 데이터를 수집하여 proprietary data flywheel 구축
  */
 
-import { createClient } from '@/lib/supabase/client'
+import { createClient } from '@/src/lib/supabase/client'
 
 // 세션 데이터 타입
 export interface SessionData {

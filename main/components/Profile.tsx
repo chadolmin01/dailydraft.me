@@ -22,15 +22,39 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { useAuth } from '@/src/context/AuthContext'
-import { useProfile } from '@/src/hooks/useProfile'
+import { useProfile, useUpdateProfile } from '@/src/hooks/useProfile'
 import { useMyOpportunities, calculateDaysLeft } from '@/src/hooks/useOpportunities'
 import { useCoffeeChats } from '@/src/hooks/useCoffeeChats'
 
 export const Profile: React.FC = () => {
   const [contactInput, setContactInput] = useState('')
   const [acceptingChatId, setAcceptingChatId] = useState<string | null>(null)
+  const [isEditing, setIsEditing] = useState(false)
+  const [editNickname, setEditNickname] = useState('')
+  const [editPosition, setEditPosition] = useState('')
+  const [editUniversity, setEditUniversity] = useState('')
+  const [editVision, setEditVision] = useState('')
   const { user } = useAuth()
   const { data: profile, isLoading } = useProfile()
+  const updateProfile = useUpdateProfile()
+
+  const startEdit = () => {
+    setEditNickname(profile?.nickname || '')
+    setEditPosition(profile?.desired_position || '')
+    setEditUniversity(profile?.university || '')
+    setEditVision(profile?.vision_summary || '')
+    setIsEditing(true)
+  }
+
+  const handleSaveProfile = async () => {
+    await updateProfile.mutateAsync({
+      nickname: editNickname.trim() || undefined,
+      desired_position: editPosition.trim() || undefined,
+      university: editUniversity.trim() || undefined,
+      vision_summary: editVision.trim() || undefined,
+    })
+    setIsEditing(false)
+  }
   const { data: myOpportunities = [] } = useMyOpportunities()
   const { chats, loading: chatsLoading, acceptChat, declineChat } = useCoffeeChats({ asOwner: true })
 
@@ -78,6 +102,7 @@ export const Profile: React.FC = () => {
                   )}
                 </div>
                 <button
+                  onClick={startEdit}
                   className="w-full mt-4 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold border border-gray-200 rounded-lg hover:bg-black hover:text-white hover:border-black transition-colors"
                 >
                   <Edit3 size={12} /> 프로필 수정
@@ -131,7 +156,10 @@ export const Profile: React.FC = () => {
                         {profile?.vision_summary || profile?.desired_position || '프로필을 완성해주세요'}
                       </p>
                     </div>
-                    <button className="lg:hidden flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold border border-gray-200 rounded-lg hover:bg-black hover:text-white hover:border-black transition-colors flex-shrink-0">
+                    <button
+                      onClick={startEdit}
+                      className="lg:hidden flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold border border-gray-200 rounded-lg hover:bg-black hover:text-white hover:border-black transition-colors flex-shrink-0"
+                    >
                       <Edit3 size={12} /> 수정
                     </button>
                   </div>
@@ -410,6 +438,83 @@ export const Profile: React.FC = () => {
 
         </div>
       </div>
+
+      {/* Edit Profile Modal */}
+      {isEditing && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={() => setIsEditing(false)}>
+          <div
+            className="bg-white w-full max-w-md rounded-xl shadow-2xl border border-gray-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+              <h3 className="font-bold text-gray-900">프로필 수정</h3>
+              <button onClick={() => setIsEditing(false)} className="p-1 text-gray-400 hover:text-black">
+                <X size={18} />
+              </button>
+            </div>
+            <div className="px-6 py-5 space-y-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">닉네임</label>
+                <input
+                  type="text"
+                  value={editNickname}
+                  onChange={(e) => setEditNickname(e.target.value)}
+                  maxLength={30}
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-black"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">포지션</label>
+                <input
+                  type="text"
+                  value={editPosition}
+                  onChange={(e) => setEditPosition(e.target.value)}
+                  placeholder="예: 프론트엔드 개발자"
+                  maxLength={50}
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-black"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">대학교</label>
+                <input
+                  type="text"
+                  value={editUniversity}
+                  onChange={(e) => setEditUniversity(e.target.value)}
+                  placeholder="예: 서울대학교"
+                  maxLength={50}
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-black"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">한 줄 소개</label>
+                <textarea
+                  value={editVision}
+                  onChange={(e) => setEditVision(e.target.value)}
+                  placeholder="자신을 한 줄로 소개해주세요"
+                  rows={2}
+                  maxLength={200}
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-black resize-none"
+                />
+              </div>
+            </div>
+            <div className="px-6 py-4 border-t border-gray-100 flex justify-end gap-2">
+              <button
+                onClick={() => setIsEditing(false)}
+                className="px-4 py-2 text-sm text-gray-600 hover:text-black transition-colors"
+              >
+                취소
+              </button>
+              <button
+                onClick={handleSaveProfile}
+                disabled={updateProfile.isPending}
+                className="px-5 py-2 bg-black text-white text-sm font-semibold rounded-lg hover:bg-gray-800 disabled:opacity-50 transition-colors"
+              >
+                {updateProfile.isPending ? '저장 중...' : '저장'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

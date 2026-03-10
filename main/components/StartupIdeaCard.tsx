@@ -52,11 +52,13 @@ export const StartupIdeaCard: React.FC<StartupIdeaCardProps> = ({
   const hasAnalysis = !!analysis
 
   return (
-    <Card className="group h-full flex flex-col hover:-translate-y-1" padding="p-0">
-      {/* Header */}
-      <div className="p-5 pb-4">
-        <div className="flex items-start justify-between gap-3">
-          {/* Logo and Title */}
+    <Card className="group h-[228px] flex flex-col hover:-translate-y-1 overflow-hidden" padding="p-0">
+      {/* ============================================
+          HEADER: 72px (py-4 = 32px + content 40px)
+          - Logo (40x40) + Name + Source + Upvotes
+          ============================================ */}
+      <div className="h-[72px] px-5 py-4 flex-shrink-0">
+        <div className="flex items-center justify-between gap-3 h-full">
           <div className="flex items-center gap-3 min-w-0 flex-1">
             {logoUrl ? (
               <img
@@ -78,8 +80,6 @@ export const StartupIdeaCard: React.FC<StartupIdeaCardProps> = ({
               </p>
             </div>
           </div>
-
-          {/* Upvotes Badge */}
           <div className="flex items-center gap-1 text-[10px] font-mono text-gray-400 bg-gray-50 px-2 py-1 rounded-sm border border-gray-100 flex-shrink-0">
             <TrendingUp size={10} />
             {upvotes.toLocaleString()}
@@ -87,91 +87,89 @@ export const StartupIdeaCard: React.FC<StartupIdeaCardProps> = ({
         </div>
       </div>
 
-      {/* Summary */}
-      <div className="px-5 pb-4 flex-1">
-        {hasAnalysis ? (
-          <p className="text-xs text-gray-500 leading-relaxed line-clamp-2 break-keep">
-            {analysis.korean_summary}
-          </p>
-        ) : (
-          <p className="text-xs text-gray-400 leading-relaxed line-clamp-2 break-keep italic">
-            {tagline || '분석 대기 중...'}
-          </p>
+      {/* ============================================
+          BODY: 100px (228 - 72 - 56 = 100px)
+          - Summary (2줄) + Tags + Competitors
+          ============================================ */}
+      <div className="h-[100px] px-5 flex flex-col justify-start overflow-hidden flex-shrink-0">
+        {/* Summary: 고정 48px (2줄 * 24px line-height) */}
+        <div className="h-[48px] mb-3">
+          {hasAnalysis ? (
+            <p className="text-sm text-gray-600 leading-6 line-clamp-2 break-keep">
+              {analysis.korean_summary}
+            </p>
+          ) : (
+            <p className="text-sm text-gray-400 leading-6 line-clamp-2 break-keep italic">
+              {tagline || '분석 대기 중...'}
+            </p>
+          )}
+        </div>
+
+        {/* Tags: 고정 영역 */}
+        {hasAnalysis && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-[10px] font-mono text-white bg-gray-900 px-2 py-1 rounded-sm">
+                적합도 {analysis.korea_fit_score}
+              </span>
+              <span className="text-[10px] font-mono text-gray-600 bg-gray-100 px-2 py-1 rounded-sm">
+                {analysis.difficulty === 'easy' ? '쉬움' : analysis.difficulty === 'medium' ? '보통' : '어려움'}
+              </span>
+              {analysis.target_founder_type?.slice(0, 1).map((type) => (
+                <span
+                  key={type}
+                  className="text-[10px] font-mono text-gray-600 bg-gray-100 px-2 py-1 rounded-sm"
+                >
+                  {FOUNDER_TYPE_LABELS[type] || type}
+                </span>
+              ))}
+            </div>
+            {analysis.korea_exists && analysis.korea_competitors.length > 0 && (
+              <div className="flex items-center gap-1.5 text-[10px] text-gray-400">
+                <Users size={10} />
+                <span>경쟁: {analysis.korea_competitors.slice(0, 2).join(', ')}</span>
+              </div>
+            )}
+          </div>
         )}
       </div>
 
-      {/* Scores & Tags */}
-      {hasAnalysis && (
-        <div className="px-5 pb-4">
-          <div className="flex items-center gap-2 flex-wrap">
-            {/* Korea Fit Score */}
-            <span className="text-[10px] font-mono text-gray-900 bg-gray-100 px-2 py-0.5 rounded-sm border border-gray-200">
-              적합도 {analysis.korea_fit_score} ({getScoreLabel(analysis.korea_fit_score)})
-            </span>
-
-            {/* Difficulty */}
-            <span className="text-[10px] font-mono text-gray-500 bg-gray-50 px-2 py-0.5 rounded-sm border border-gray-100">
-              {analysis.difficulty === 'easy' ? '쉬움' : analysis.difficulty === 'medium' ? '보통' : '어려움'}
-            </span>
-
-            {/* Founder Types */}
-            {analysis.target_founder_type?.slice(0, 1).map((type) => (
-              <span
-                key={type}
-                className="text-[10px] font-mono text-gray-500 bg-gray-50 px-2 py-0.5 rounded-sm border border-gray-100"
-              >
-                {FOUNDER_TYPE_LABELS[type] || type}
-              </span>
-            ))}
-          </div>
-
-          {/* Competitors Warning */}
-          {analysis.korea_exists && analysis.korea_competitors.length > 0 && (
-            <div className="mt-3 flex items-center gap-1.5 text-[10px] text-gray-500">
-              <Users size={10} />
-              <span>경쟁: {analysis.korea_competitors.slice(0, 2).join(', ')}</span>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Divider */}
-      <div className="border-t border-gray-100 mt-auto" />
-
-      {/* Actions */}
-      <div className="p-4 flex items-center justify-between gap-2">
-        {/* External Links */}
-        <div className="flex items-center gap-3">
-          <a
-            href={sourceUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[10px] font-mono text-gray-400 hover:text-gray-900 flex items-center gap-1 transition-colors"
-          >
-            원본 <ArrowUpRight size={10} />
-          </a>
-          {websiteUrl && (
+      {/* ============================================
+          FOOTER: 56px (py-4 = 32px + content 24px)
+          - Links + Button
+          ============================================ */}
+      <div className="h-[56px] px-5 py-4 border-t border-gray-100 flex-shrink-0">
+        <div className="flex items-center justify-between h-full">
+          <div className="flex items-center gap-4">
             <a
-              href={websiteUrl}
+              href={sourceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[10px] font-mono text-gray-400 hover:text-gray-900 flex items-center gap-1 transition-colors"
+              className="text-xs text-gray-400 hover:text-gray-900 flex items-center gap-1 transition-colors"
             >
-              웹사이트 <ArrowUpRight size={10} />
+              원본 <ArrowUpRight size={12} />
             </a>
+            {websiteUrl && (
+              <a
+                href={websiteUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-gray-400 hover:text-gray-900 flex items-center gap-1 transition-colors"
+              >
+                웹사이트 <ArrowUpRight size={12} />
+              </a>
+            )}
+          </div>
+          {onStartBuilding && hasAnalysis && (
+            <button
+              onClick={() => onStartBuilding(id)}
+              className="px-4 py-2 bg-black text-white text-xs font-bold rounded-sm hover:bg-gray-800 transition-colors flex items-center gap-1"
+            >
+              빌딩 시작
+              <ArrowUpRight size={12} />
+            </button>
           )}
         </div>
-
-        {/* Start Building Button */}
-        {onStartBuilding && hasAnalysis && (
-          <button
-            onClick={() => onStartBuilding(id)}
-            className="px-3 py-1.5 bg-black text-white text-[10px] font-bold rounded-sm hover:bg-gray-800 transition-colors flex items-center gap-1"
-          >
-            빌딩 시작
-            <ArrowUpRight size={10} />
-          </button>
-        )}
       </div>
     </Card>
   )
