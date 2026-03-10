@@ -2,7 +2,7 @@
 // Change these values to switch between "훈수" and "피드백" terminology
 
 // Set to 'hunsu' for 훈수, 'feedback' for 피드백
-const LABEL_MODE: 'hunsu' | 'feedback' = 'feedback'
+const LABEL_MODE: string = 'feedback'
 
 export const COMMENT_LABEL = LABEL_MODE === 'hunsu' ? '훈수' : '피드백'
 export const COMMENT_VERB = LABEL_MODE === 'hunsu' ? '훈수' : '피드백'

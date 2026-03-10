@@ -222,7 +222,7 @@ export function useUpdateValidatedIdeaFull() {
       const updates: ValidatedIdeaUpdate = {}
 
       if (data.artifacts) {
-        updates.artifacts = data.artifacts
+        updates.artifacts = data.artifacts as unknown as ValidatedIdeaUpdate['artifacts']
       }
 
       if (data.score !== undefined) {
@@ -234,11 +234,11 @@ export function useUpdateValidatedIdeaFull() {
       }
 
       if (data.personaScores) {
-        updates.persona_scores = data.personaScores
+        updates.persona_scores = data.personaScores as unknown as ValidatedIdeaUpdate['persona_scores']
       }
 
       if (data.actionPlan) {
-        updates.action_plan = data.actionPlan
+        updates.action_plan = data.actionPlan as unknown as ValidatedIdeaUpdate['action_plan']
       }
 
       if (data.validationLevel) {

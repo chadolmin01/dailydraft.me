@@ -569,6 +569,8 @@ export type Database = {
           onboarding_completed: boolean | null
           personality: Json | null
           premium_activated_at: string | null
+          profile_analysis: Json | null
+          profile_analysis_at: string | null
           profile_visibility: string | null
           skills: Json | null
           university: string | null
@@ -597,6 +599,8 @@ export type Database = {
           onboarding_completed?: boolean | null
           personality?: Json | null
           premium_activated_at?: string | null
+          profile_analysis?: Json | null
+          profile_analysis_at?: string | null
           profile_visibility?: string | null
           skills?: Json | null
           university?: string | null
@@ -625,6 +629,8 @@ export type Database = {
           onboarding_completed?: boolean | null
           personality?: Json | null
           premium_activated_at?: string | null
+          profile_analysis?: Json | null
+          profile_analysis_at?: string | null
           profile_visibility?: string | null
           skills?: Json | null
           university?: string | null
@@ -1030,6 +1036,391 @@ export type Database = {
         }
         Relationships: []
       }
+      // ---- Manually added: startup_ideas & korea_startup_references ----
+      // Note: If regenerating via `npx supabase gen types typescript`, these will be overwritten.
+      startup_ideas: {
+        Row: {
+          id: string
+          external_id: string
+          source: string
+          source_url: string
+          name: string
+          tagline: string | null
+          description: string | null
+          category: string[]
+          logo_url: string | null
+          website_url: string | null
+          funding_stage: string | null
+          total_funding: number | null
+          investors: string[]
+          upvotes: number
+          comments_count: number
+          korea_fit_score: number | null
+          korea_fit_analysis: Json | null
+          similar_korea_startups: string[]
+          interest_tags: string[]
+          tier: number
+          priority_score: number
+          status: string
+          raw_data: Json | null
+          korea_deep_analysis: Json | null
+          final_score: number | null
+          collected_at: string | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          external_id: string
+          source: string
+          source_url: string
+          name: string
+          tagline?: string | null
+          description?: string | null
+          category?: string[]
+          logo_url?: string | null
+          website_url?: string | null
+          funding_stage?: string | null
+          total_funding?: number | null
+          investors?: string[]
+          upvotes?: number
+          comments_count?: number
+          korea_fit_score?: number | null
+          korea_fit_analysis?: Json | null
+          similar_korea_startups?: string[]
+          interest_tags?: string[]
+          tier?: number
+          priority_score?: number
+          status?: string
+          raw_data?: Json | null
+          korea_deep_analysis?: Json | null
+          final_score?: number | null
+          collected_at?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          external_id?: string
+          source?: string
+          source_url?: string
+          name?: string
+          tagline?: string | null
+          description?: string | null
+          category?: string[]
+          logo_url?: string | null
+          website_url?: string | null
+          funding_stage?: string | null
+          total_funding?: number | null
+          investors?: string[]
+          upvotes?: number
+          comments_count?: number
+          korea_fit_score?: number | null
+          korea_fit_analysis?: Json | null
+          similar_korea_startups?: string[]
+          interest_tags?: string[]
+          tier?: number
+          priority_score?: number
+          status?: string
+          raw_data?: Json | null
+          korea_deep_analysis?: Json | null
+          final_score?: number | null
+          collected_at?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      korea_startup_references: {
+        Row: {
+          id: string
+          external_id: string | null
+          source: string
+          name: string
+          description: string | null
+          category: string[]
+          website_url: string | null
+          raw_data: Json | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          external_id?: string | null
+          source: string
+          name: string
+          description?: string | null
+          category?: string[]
+          website_url?: string | null
+          raw_data?: Json | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          external_id?: string | null
+          source?: string
+          name?: string
+          description?: string | null
+          category?: string[]
+          website_url?: string | null
+          raw_data?: Json | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      // ---- Manually added: comments, helpful_votes, comment_reports, interests, coffee_chats, session_analytics ----
+      comments: {
+        Row: {
+          id: string
+          opportunity_id: string
+          user_id: string | null
+          nickname: string
+          school: string | null
+          content: string
+          helpful_count: number | null
+          report_count: number | null
+          is_hidden: boolean | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          opportunity_id: string
+          user_id?: string | null
+          nickname: string
+          school?: string | null
+          content: string
+          helpful_count?: number | null
+          report_count?: number | null
+          is_hidden?: boolean | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          opportunity_id?: string
+          user_id?: string | null
+          nickname?: string
+          school?: string | null
+          content?: string
+          helpful_count?: number | null
+          report_count?: number | null
+          is_hidden?: boolean | null
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      helpful_votes: {
+        Row: {
+          id: string
+          comment_id: string
+          voter_identifier: string
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          comment_id: string
+          voter_identifier: string
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          comment_id?: string
+          voter_identifier?: string
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "helpful_votes_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      comment_reports: {
+        Row: {
+          id: string
+          comment_id: string
+          reporter_identifier: string
+          reason: string | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          comment_id: string
+          reporter_identifier: string
+          reason?: string | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          comment_id?: string
+          reporter_identifier?: string
+          reason?: string | null
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comment_reports_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      interests: {
+        Row: {
+          id: string
+          opportunity_id: string
+          user_email: string
+          user_id: string | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          opportunity_id: string
+          user_email: string
+          user_id?: string | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          opportunity_id?: string
+          user_email?: string
+          user_id?: string | null
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interests_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      coffee_chats: {
+        Row: {
+          id: string
+          opportunity_id: string
+          requester_email: string
+          requester_user_id: string | null
+          requester_name: string | null
+          owner_user_id: string
+          status: 'pending' | 'accepted' | 'declined'
+          contact_info: string | null
+          message: string | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          opportunity_id: string
+          requester_email: string
+          requester_user_id?: string | null
+          requester_name?: string | null
+          owner_user_id: string
+          status?: 'pending' | 'accepted' | 'declined'
+          contact_info?: string | null
+          message?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          opportunity_id?: string
+          requester_email?: string
+          requester_user_id?: string | null
+          requester_name?: string | null
+          owner_user_id?: string
+          status?: 'pending' | 'accepted' | 'declined'
+          contact_info?: string | null
+          message?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coffee_chats_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      session_analytics: {
+        Row: {
+          id: string
+          session_hash: string
+          validation_level: string | null
+          total_turns: number | null
+          completed: boolean | null
+          dropped_at_turn: number | null
+          idea_category: string[] | null
+          idea_word_count: number | null
+          score_history: Json | null
+          final_score: Json | null
+          advice_shown: number | null
+          advice_reflected: number | null
+          reflected_categories: string[] | null
+          persona_engagement: Json | null
+          from_startup_idea: boolean | null
+          startup_source: string | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          session_hash: string
+          validation_level?: string | null
+          total_turns?: number | null
+          completed?: boolean | null
+          dropped_at_turn?: number | null
+          idea_category?: string[] | null
+          idea_word_count?: number | null
+          score_history?: Json | null
+          final_score?: Json | null
+          advice_shown?: number | null
+          advice_reflected?: number | null
+          reflected_categories?: string[] | null
+          persona_engagement?: Json | null
+          from_startup_idea?: boolean | null
+          startup_source?: string | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          session_hash?: string
+          validation_level?: string | null
+          total_turns?: number | null
+          completed?: boolean | null
+          dropped_at_turn?: number | null
+          idea_category?: string[] | null
+          idea_word_count?: number | null
+          score_history?: Json | null
+          final_score?: Json | null
+          advice_shown?: number | null
+          advice_reflected?: number | null
+          reflected_categories?: string[] | null
+          persona_engagement?: Json | null
+          from_startup_idea?: boolean | null
+          startup_source?: string | null
+          created_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -1205,6 +1596,117 @@ export type Database = {
       get_waitlist_count: {
         Args: Record<string, never>
         Returns: number
+      }
+      // ---- Manually added: startup_ideas RPC functions ----
+      calculate_final_score: {
+        Args: {
+          p_korea_fit_score: number
+          p_upvotes: number
+          p_korea_exists: boolean
+          p_difficulty: string
+        }
+        Returns: number
+      }
+      update_startup_final_scores: {
+        Args: Record<string, never>
+        Returns: { updated_count: number }[]
+      }
+      get_top_startup_ideas: {
+        Args: {
+          p_limit?: number
+          p_sort?: string
+        }
+        Returns: {
+          id: string
+          name: string
+          tagline: string | null
+          description: string | null
+          category: string[]
+          logo_url: string | null
+          website_url: string | null
+          source: string
+          source_url: string
+          upvotes: number
+          korea_fit_score: number | null
+          final_score: number | null
+          korea_deep_analysis: Json | null
+        }[]
+      }
+      calculate_startup_priority: {
+        Args: {
+          p_upvotes: number
+          p_total_funding: number
+          p_korea_fit_score: number
+          p_tier: number
+        }
+        Returns: number
+      }
+      // ---- Manually added: community & analytics RPC functions ----
+      vote_helpful: {
+        Args: {
+          p_comment_id: string
+          p_voter_identifier: string
+        }
+        Returns: boolean
+      }
+      report_comment: {
+        Args: {
+          p_comment_id: string
+          p_reporter_identifier: string
+          p_reason?: string | null
+        }
+        Returns: boolean
+      }
+      express_interest: {
+        Args: {
+          p_opportunity_id: string
+          p_user_email: string
+          p_user_id?: string | null
+        }
+        Returns: boolean
+      }
+      has_expressed_interest: {
+        Args: {
+          p_opportunity_id: string
+          p_user_email: string
+        }
+        Returns: boolean
+      }
+      request_coffee_chat: {
+        Args: {
+          p_opportunity_id: string
+          p_requester_email: string
+          p_requester_name: string
+          p_message?: string | null
+          p_requester_user_id?: string | null
+        }
+        Returns: string
+      }
+      accept_coffee_chat: {
+        Args: {
+          p_chat_id: string
+          p_contact_info: string
+        }
+        Returns: boolean
+      }
+      decline_coffee_chat: {
+        Args: {
+          p_chat_id: string
+        }
+        Returns: boolean
+      }
+      get_session_analytics_summary: {
+        Args: {
+          p_days?: number
+        }
+        Returns: {
+          total_sessions: number
+          completed_sessions: number
+          completion_rate: number
+          avg_turns: number
+          top_categories: string[]
+          avg_final_score: number
+        }[]
       }
     }
     Enums: {

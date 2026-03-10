@@ -54,7 +54,7 @@ interface BusinessPlanEditorProps {
 }
 
 export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
-  templateType = 'psst',
+  templateType = 'psst' as FormTemplateType,
   initialData,
   initialSectionData,
   validationSource,
