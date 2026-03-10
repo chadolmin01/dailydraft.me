@@ -7,78 +7,44 @@ import {
   Download,
   CheckSquare,
   FileText,
-  ChevronLeft,
-  ChevronRight,
   Loader2,
-  Edit3
+  Edit3,
+  Zap,
+  Coffee,
+  Clock,
+  Check,
+  X,
+  Plus,
+  User,
+  Briefcase,
+  Mail,
+  Building2,
 } from 'lucide-react'
+import Link from 'next/link'
 import { useAuth } from '@/src/context/AuthContext'
 import { useProfile } from '@/src/hooks/useProfile'
+import { useMyOpportunities, calculateDaysLeft } from '@/src/hooks/useOpportunities'
+import { useCoffeeChats } from '@/src/hooks/useCoffeeChats'
 
 export const Profile: React.FC = () => {
-  const [currentAnalysisIndex, setCurrentAnalysisIndex] = useState(0)
+  const [contactInput, setContactInput] = useState('')
+  const [acceptingChatId, setAcceptingChatId] = useState<string | null>(null)
   const { user } = useAuth()
   const { data: profile, isLoading } = useProfile()
+  const { data: myOpportunities = [] } = useMyOpportunities()
+  const { chats, loading: chatsLoading, acceptChat, declineChat } = useCoffeeChats({ asOwner: true })
 
   const skills = profile?.skills as Array<{ name: string; level: string }> | null
 
-  const analysisReports = [
-    {
-      id: 'hardware',
-      title: 'Hardware Startup',
-      score: 98,
-      metrics: [
-        { label: 'MARKET FIT', val: 98 },
-        { label: 'EXPERIENCE', val: 75 }
-      ],
-      theme: 'bg-[#0052CC] border-blue-900',
-      textColor: 'text-white',
-      subColor: 'text-blue-200',
-      barBg: 'bg-blue-900/40',
-      barFill: 'bg-white',
-      btnText: 'text-[#0052CC]'
-    },
-    {
-      id: 'saas',
-      title: 'B2B SaaS',
-      score: 85,
-      metrics: [
-        { label: 'TECH STACK', val: 92 },
-        { label: 'SCALABILITY', val: 60 }
-      ],
-      theme: 'bg-gray-900 border-black',
-      textColor: 'text-white',
-      subColor: 'text-gray-400',
-      barBg: 'bg-gray-700',
-      barFill: 'bg-white',
-      btnText: 'text-black'
-    },
-    {
-      id: 'impact',
-      title: 'Social Impact',
-      score: 90,
-      metrics: [
-        { label: 'MISSION FIT', val: 95 },
-        { label: 'ESG SCORE', val: 82 }
-      ],
-      theme: 'bg-[#059669] border-green-800',
-      textColor: 'text-white',
-      subColor: 'text-green-200',
-      barBg: 'bg-green-800/40',
-      barFill: 'bg-white',
-      btnText: 'text-[#059669]'
-    }
-  ]
+  const pendingChats = chats.filter(c => c.status === 'pending')
+  const otherChats = chats.filter(c => c.status !== 'pending')
 
-  const nextReport = () => {
-    setCurrentAnalysisIndex((prev) => (prev + 1) % analysisReports.length)
+  const handleAcceptChat = async (chatId: string) => {
+    if (!contactInput.trim()) return
+    await acceptChat(chatId, contactInput)
+    setAcceptingChatId(null)
+    setContactInput('')
   }
-
-  const prevReport = () => {
-    setCurrentAnalysisIndex((prev) => (prev - 1 + analysisReports.length) % analysisReports.length)
-  }
-
-  const currentReport = analysisReports[currentAnalysisIndex]
 
   if (isLoading) {
     return (
@@ -88,239 +54,360 @@ export const Profile: React.FC = () => {
     )
   }
 
-  const lastUpdated = profile?.updated_at
-    ? new Date(profile.updated_at).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\. /g, '.').replace('.', '')
-    : '-'
-
   return (
-    <div className="flex-1 p-8 lg:p-12 overflow-y-auto h-screen bg-[#FAFAFA] bg-grid-engineering">
-      <div className="max-w-[1600px] mx-auto space-y-10">
+    <div className="flex-1 overflow-y-auto bg-[#FAFAFA]">
+      <div className="max-w-[1400px] mx-auto px-4 lg:px-6 py-6">
 
-        {/* Header */}
-        <div className="flex justify-between items-end border-b border-gray-200 pb-6">
-           <div>
-              <div className="text-xs font-mono text-gray-500 mb-2">PERSONNEL FILE / ID: {profile?.id?.slice(0, 8).toUpperCase() || 'N/A'}</div>
-              <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Profile</h1>
-           </div>
-           <div className="text-right flex items-center gap-4">
-              <div className="font-mono text-xs text-gray-400">Last Updated: {lastUpdated}</div>
-              <button className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold border border-gray-300 rounded-sm hover:bg-black hover:text-white hover:border-black transition-colors">
-                <Edit3 size={12} /> Edit Profile
-              </button>
-           </div>
-        </div>
+        {/* 3-Column Layout */}
+        <div className="flex gap-6">
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+          {/* ========== 좌측 사이드바 ========== */}
+          <aside className="hidden lg:block w-[220px] flex-shrink-0">
+            <div className="sticky top-6 space-y-6">
 
-           {/* Left Column */}
-           <div className="col-span-12 md:col-span-8 lg:col-span-9 space-y-8">
-
-              {/* Profile Overview */}
-              <div className="bg-white p-6 rounded-sm border border-gray-200 shadow-sm flex flex-col sm:flex-row gap-8">
-                 <div className="w-32 h-32 bg-gray-100 rounded-sm border border-gray-200 flex items-center justify-center shrink-0 text-3xl font-bold text-gray-400">
+              {/* 프로필 미니 카드 */}
+              <div className="bg-white rounded-xl border border-gray-100 p-4">
+                <div className="flex flex-col items-center text-center">
+                  <div className="w-16 h-16 bg-gray-100 rounded-xl border border-gray-200 flex items-center justify-center text-lg font-bold text-gray-400 mb-3">
                     {profile?.nickname?.slice(0, 2).toUpperCase() || user?.email?.slice(0, 2).toUpperCase() || 'U'}
-                 </div>
-                 <div className="flex-1 space-y-6">
-                    <div>
-                       <h2 className="text-xl font-bold text-gray-900">
-                         {profile?.nickname || 'User'}
-                         {profile?.university && (
-                           <span className="text-sm font-normal text-gray-400 ml-2 font-mono">{profile.university}</span>
-                         )}
-                       </h2>
-                       <p className="text-sm text-gray-500 mt-1">
-                         {profile?.vision_summary || profile?.desired_position || 'Complete your profile to add a bio'}
-                       </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-2 border-t border-gray-100">
-                       <div>
-                          <label className="block text-[10px] font-mono font-bold text-gray-400 mb-1">POSITION</label>
-                          <div className="font-bold text-sm text-gray-900">{profile?.desired_position || 'Not set'}</div>
-                       </div>
-                       <div>
-                          <label className="block text-[10px] font-mono font-bold text-gray-400 mb-1">AFFILIATION</label>
-                          <div className="font-bold text-sm text-gray-900">{profile?.university || 'Not set'}</div>
-                       </div>
-                       <div>
-                          <label className="block text-[10px] font-mono font-bold text-gray-400 mb-1">LOCATION</label>
-                          <div className="font-bold text-sm text-gray-900 flex items-center gap-1">
-                            <MapPin size={12} className="text-gray-400"/> {profile?.location || 'Not set'}
-                          </div>
-                       </div>
-                       <div>
-                          <label className="block text-[10px] font-mono font-bold text-gray-400 mb-1">CONTACT</label>
-                          <div className="font-bold text-sm text-gray-900 font-mono truncate">
-                            {profile?.contact_email || user?.email || 'Not set'}
-                          </div>
-                       </div>
-                    </div>
-
-                    <div className="flex gap-2 flex-wrap">
-                       {profile?.interest_tags?.map((tag, idx) => (
-                         <span key={idx} className="px-3 py-1.5 text-xs font-bold border border-gray-300 rounded-sm bg-gray-50">
-                           {tag}
-                         </span>
-                       ))}
-                       {(!profile?.interest_tags || profile.interest_tags.length === 0) && (
-                         <span className="text-xs text-gray-400">No interests added yet</span>
-                       )}
-                    </div>
-                 </div>
+                  </div>
+                  <h3 className="font-bold text-sm text-gray-900">{profile?.nickname || 'User'}</h3>
+                  <p className="text-xs text-gray-500 mt-0.5">{profile?.desired_position || '포지션 미설정'}</p>
+                  {profile?.university && (
+                    <p className="text-[10px] text-gray-400 mt-1">{profile.university}</p>
+                  )}
+                </div>
+                <button
+                  className="w-full mt-4 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold border border-gray-200 rounded-lg hover:bg-black hover:text-white hover:border-black transition-colors"
+                >
+                  <Edit3 size={12} /> 프로필 수정
+                </button>
               </div>
 
-              {/* Skills */}
-              <div>
-                 <h3 className="text-sm font-bold text-gray-900 mb-4 font-mono uppercase">Technical Specifications</h3>
-                 {skills && skills.length > 0 ? (
-                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <Card variant="flat" padding="p-5" className="rounded-sm bg-white border-gray-200">
-                         <h4 className="text-xs font-bold text-gray-500 mb-3 font-mono">SKILLS</h4>
-                         <ul className="space-y-2 text-sm text-gray-700">
-                            {skills.map((skill, idx) => (
-                              <li key={idx} className="flex items-center justify-between gap-2">
-                                <span className="flex items-center gap-2">
-                                  <CheckSquare size={14} className="text-draft-blue"/>
-                                  {skill.name}
-                                </span>
-                                <span className="text-[10px] font-mono text-gray-400 uppercase">{skill.level}</span>
-                              </li>
-                            ))}
-                         </ul>
-                      </Card>
-                      {profile?.personality && (
-                        <Card variant="flat" padding="p-5" className="rounded-sm bg-white border-gray-200">
-                           <h4 className="text-xs font-bold text-gray-500 mb-3 font-mono">PERSONALITY</h4>
-                           <ul className="space-y-2 text-sm text-gray-700">
-                              {Object.entries(profile.personality as Record<string, number>).map(([key, value]) => (
-                                <li key={key} className="flex items-center justify-between gap-2">
-                                  <span className="capitalize">{key.replace(/_/g, ' ')}</span>
-                                  <div className="flex items-center gap-2">
-                                    <div className="w-16 h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                                      <div
-                                        className="h-full bg-draft-blue rounded-full"
-                                        style={{ width: `${value}%` }}
-                                      />
-                                    </div>
-                                    <span className="text-[10px] font-mono text-gray-400">{value}%</span>
-                                  </div>
-                                </li>
-                              ))}
-                           </ul>
-                        </Card>
+              {/* 빠른 이동 */}
+              <div className="bg-white rounded-xl border border-gray-100 p-4">
+                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">바로가기</h3>
+                <nav className="space-y-1">
+                  {[
+                    { label: '내 프로젝트', icon: Zap, count: myOpportunities.length },
+                    { label: '받은 커피챗', icon: Coffee, count: pendingChats.length },
+                    { label: '기술 스택', icon: CheckSquare, count: skills?.length || 0 },
+                    { label: '첨부파일', icon: FileText, count: 2 },
+                  ].map((item) => (
+                    <button
+                      key={item.label}
+                      className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+                    >
+                      <span className="flex items-center gap-2">
+                        <item.icon size={14} />
+                        {item.label}
+                      </span>
+                      {item.count > 0 && (
+                        <span className="text-[10px] text-gray-400">{item.count}</span>
                       )}
-                   </div>
-                 ) : (
-                   <Card variant="flat" padding="p-5" className="rounded-sm bg-white border-gray-200">
-                      <p className="text-sm text-gray-400 text-center py-4">
-                        No skills added yet. Complete your profile to add skills.
-                      </p>
-                   </Card>
-                 )}
+                    </button>
+                  ))}
+                </nav>
               </div>
 
-              {/* History */}
-              <div>
-                 <h3 className="text-sm font-bold text-gray-900 mb-4 font-mono uppercase">Project History</h3>
-                 <div className="space-y-6 border-l border-gray-200 pl-6 ml-2">
-                    <div className="relative">
-                       <div className="absolute -left-[29px] top-1.5 w-3 h-3 bg-white border border-gray-400 rounded-sm"></div>
-                       <div className="text-xs font-mono text-gray-400 mb-1">2023.01 - 2023.06</div>
-                       <h4 className="font-bold text-gray-900">브랜드 리뉴얼 프로젝트</h4>
-                       <p className="text-sm text-gray-600 mt-2 leading-relaxed">
-                          전면적인 리브랜딩 전략을 수립하고 실행하여 MAU 200% 성장을 달성했습니다. 디자인, 개발, 마케팅 크로스펑셔널 팀을 리드했습니다.
-                       </p>
-                    </div>
-                    <div className="relative">
-                       <div className="absolute -left-[29px] top-1.5 w-3 h-3 bg-white border border-gray-400 rounded-sm"></div>
-                       <div className="text-xs font-mono text-gray-400 mb-1">2022.05 - 2022.12</div>
-                       <h4 className="font-bold text-gray-900">하드웨어 런칭 킥스타터 캠페인</h4>
-                       <p className="text-sm text-gray-600 mt-2 leading-relaxed">
-                          목표 금액의 500%를 초과 달성하며 성공적으로 런칭했습니다. 초기 유저 커뮤니티 5,000명을 확보했습니다.
-                       </p>
-                    </div>
-                 </div>
-              </div>
-           </div>
+            </div>
+          </aside>
 
-           {/* Right Column: Analysis */}
-           <div className="col-span-12 md:col-span-4 lg:col-span-3 space-y-6">
+          {/* ========== 메인 콘텐츠 ========== */}
+          <main className="flex-1 min-w-0 space-y-6">
 
-              {/* Dynamic Analysis Card */}
-              <div className={`p-6 rounded-sm shadow-lg border transition-all duration-500 relative overflow-hidden ${currentReport.theme}`}>
-                 <div className="flex justify-between items-start mb-6">
+            {/* 프로필 오버뷰 */}
+            <div className="bg-white rounded-xl border border-gray-100 p-4">
+              <div className="flex flex-col sm:flex-row gap-4">
+                {/* 모바일에서만 보이는 아바타 */}
+                <div className="lg:hidden w-14 h-14 bg-gray-100 rounded-xl border border-gray-200 flex items-center justify-center text-base font-bold text-gray-400 flex-shrink-0">
+                  {profile?.nickname?.slice(0, 2).toUpperCase() || user?.email?.slice(0, 2).toUpperCase() || 'U'}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-3">
                     <div>
-                        <h3 className={`text-xl font-bold mb-1 break-keep leading-tight ${currentReport.textColor}`}>
-                            {currentReport.title}<br/>Fit Analysis
-                        </h3>
-                        <p className={`${currentReport.subColor} text-[10px] font-mono mt-1`}>AI MATCHING REPORT</p>
+                      <h2 className="text-base font-bold text-gray-900">{profile?.nickname || 'User'}</h2>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {profile?.vision_summary || profile?.desired_position || '프로필을 완성해주세요'}
+                      </p>
                     </div>
-                    <div className="flex gap-1 z-10">
-                        <button
-                            onClick={prevReport}
-                            className={`p-1 rounded hover:bg-white/20 transition-colors ${currentReport.textColor}`}
-                        >
-                            <ChevronLeft size={18}/>
-                        </button>
-                        <button
-                            onClick={nextReport}
-                            className={`p-1 rounded hover:bg-white/20 transition-colors ${currentReport.textColor}`}
-                        >
-                            <ChevronRight size={18}/>
-                        </button>
-                    </div>
-                 </div>
+                    <button className="lg:hidden flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold border border-gray-200 rounded-lg hover:bg-black hover:text-white hover:border-black transition-colors flex-shrink-0">
+                      <Edit3 size={12} /> 수정
+                    </button>
+                  </div>
 
-                 <div className="space-y-5 text-sm relative z-10 min-h-[100px]">
-                    {currentReport.metrics.map((metric, idx) => (
-                        <div key={idx}>
-                           <div className={`flex justify-between mb-1.5 text-xs font-mono ${currentReport.subColor}`}>
-                              <span>{metric.label}</span>
-                              <span className={currentReport.textColor + " font-bold"}>{metric.val}%</span>
-                           </div>
-                           <div className={`w-full h-1.5 rounded-sm overflow-hidden ${currentReport.barBg}`}>
-                              <div
-                                className={`h-full ${currentReport.barFill} transition-all duration-500`}
-                                style={{ width: `${metric.val}%` }}
-                              ></div>
-                           </div>
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-4 pt-3 border-t border-gray-100">
+                    <div className="flex items-center gap-2">
+                      <Briefcase size={12} className="text-gray-400" />
+                      <div>
+                        <p className="text-[10px] text-gray-400">포지션</p>
+                        <p className="text-xs font-medium text-gray-900">{profile?.desired_position || '미설정'}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Building2 size={12} className="text-gray-400" />
+                      <div>
+                        <p className="text-[10px] text-gray-400">소속</p>
+                        <p className="text-xs font-medium text-gray-900">{profile?.university || '미설정'}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <MapPin size={12} className="text-gray-400" />
+                      <div>
+                        <p className="text-[10px] text-gray-400">위치</p>
+                        <p className="text-xs font-medium text-gray-900">{profile?.location || '미설정'}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Mail size={12} className="text-gray-400" />
+                      <div>
+                        <p className="text-[10px] text-gray-400">연락처</p>
+                        <p className="text-xs font-medium text-gray-900 truncate">{profile?.contact_email || user?.email || '미설정'}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {profile?.interest_tags && profile.interest_tags.length > 0 && (
+                    <div className="flex gap-1.5 flex-wrap mt-3">
+                      {profile.interest_tags.map((tag, idx) => (
+                        <span key={idx} className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-lg font-medium">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* 내 프로젝트 */}
+            <section>
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
+                  <Zap size={16} /> 내 프로젝트
+                </h3>
+                <Link
+                  href="/projects/new"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+                >
+                  <Plus size={14} /> 새 프로젝트
+                </Link>
+              </div>
+
+              {myOpportunities.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {myOpportunities.map((opp) => {
+                    const daysLeft = calculateDaysLeft(opp.created_at)
+                    return (
+                      <Card key={opp.id} className="group hover:border-gray-300" padding="p-4">
+                        <div className="flex gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-600 group-hover:bg-black group-hover:text-white transition-colors flex-shrink-0">
+                            <Zap size={18} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-2">
+                              <h4 className="font-semibold text-sm text-gray-900 truncate">{opp.title}</h4>
+                              <span className={`text-[10px] px-1.5 py-0.5 rounded-lg flex-shrink-0 ${
+                                opp.status === 'active' ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-500'
+                              }`}>
+                                {opp.status === 'active' ? '모집중' : opp.status}
+                              </span>
+                            </div>
+                            <p className="text-xs text-gray-500 mt-1 line-clamp-2">{opp.description}</p>
+                            <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-50">
+                              <div className="flex items-center gap-3 text-[10px] text-gray-400">
+                                <span>{opp.applications_count || 0}명 지원</span>
+                                <span>{opp.interest_count || 0} 관심</span>
+                              </div>
+                              {daysLeft > 0 && (
+                                <span className="text-[10px] text-gray-400 flex items-center gap-1">
+                                  <Clock size={10} /> D-{daysLeft}
+                                </span>
+                              )}
+                            </div>
+                          </div>
                         </div>
-                    ))}
-                 </div>
+                      </Card>
+                    )
+                  })}
+                </div>
+              ) : (
+                <Card className="text-center py-8" padding="p-6">
+                  <Zap className="mx-auto mb-3 text-gray-300" size={32} />
+                  <p className="text-gray-500 text-sm mb-3">아직 등록한 프로젝트가 없습니다</p>
+                  <Link
+                    href="/projects/new"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+                  >
+                    <Plus size={16} /> 프로젝트 만들기
+                  </Link>
+                </Card>
+              )}
+            </section>
 
-                 <div className="flex justify-center gap-1.5 mt-8 mb-4">
-                    {analysisReports.map((_, idx) => (
-                        <div
-                            key={idx}
-                            className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                                idx === currentAnalysisIndex ? 'bg-white scale-125' : 'bg-white/30'
-                            }`}
-                        />
-                    ))}
-                 </div>
-
-                 <button className={`w-full py-3 bg-white ${currentReport.btnText} font-bold text-xs rounded-sm hover:bg-gray-100 transition-colors uppercase font-mono shadow-sm`}>
-                    View Full Report
-                 </button>
+            {/* 받은 커피챗 */}
+            <section>
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
+                  <Coffee size={16} /> 받은 커피챗
+                  {pendingChats.length > 0 && (
+                    <span className="text-[10px] bg-red-500 text-white px-1.5 py-0.5 rounded-full">{pendingChats.length}</span>
+                  )}
+                </h3>
               </div>
 
-              <div className="bg-white border border-gray-200 rounded-sm p-5 shadow-sm">
-                 <h4 className="font-bold text-xs text-gray-500 mb-4 font-mono uppercase flex items-center gap-2">
-                    <FileText size={14}/> Attachments
-                 </h4>
-                 <div className="space-y-3">
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-sm border border-gray-100 hover:border-black transition-colors cursor-pointer group">
-                       <span className="text-sm text-gray-700 truncate font-medium">Resume_2024.pdf</span>
-                       <Download size={14} className="text-gray-400 group-hover:text-black"/>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-sm border border-gray-100 hover:border-black transition-colors cursor-pointer group">
-                       <span className="text-sm text-gray-700 truncate font-medium">Portfolio.pdf</span>
-                       <Download size={14} className="text-gray-400 group-hover:text-black"/>
-                    </div>
-                 </div>
-              </div>
+              {chatsLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="animate-spin text-gray-400" size={20} />
+                </div>
+              ) : chats.length > 0 ? (
+                <div className="space-y-3">
+                  {/* 대기 중 */}
+                  {pendingChats.map((chat) => (
+                    <Card key={chat.id} className="border-amber-200 bg-amber-50/30" padding="p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex gap-3 flex-1 min-w-0">
+                          <div className="w-9 h-9 bg-amber-100 rounded-full flex items-center justify-center text-xs font-bold text-amber-700 flex-shrink-0">
+                            {(chat.requester_name || chat.requester_email || '?').slice(0, 2)}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-semibold text-sm text-gray-900">{chat.requester_name || chat.requester_email}</span>
+                              <span className="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-lg">대기중</span>
+                            </div>
+                            {chat.message && (
+                              <p className="text-xs text-gray-500 line-clamp-2">{chat.message}</p>
+                            )}
+                            <p className="text-[10px] text-gray-400 mt-1">
+                              {new Date(chat.created_at).toLocaleDateString('ko-KR')}
+                            </p>
+                          </div>
+                        </div>
 
-           </div>
+                        {acceptingChatId === chat.id ? (
+                          <div className="flex items-center gap-2 flex-shrink-0">
+                            <input
+                              type="text"
+                              value={contactInput}
+                              onChange={(e) => setContactInput(e.target.value)}
+                              placeholder="연락처 입력"
+                              className="w-32 px-2 py-1 text-xs border border-gray-300 rounded-lg focus:outline-none focus:border-black"
+                            />
+                            <button
+                              onClick={() => handleAcceptChat(chat.id)}
+                              className="p-1.5 bg-black text-white rounded-lg hover:bg-gray-800"
+                            >
+                              <Check size={12} />
+                            </button>
+                            <button
+                              onClick={() => { setAcceptingChatId(null); setContactInput('') }}
+                              className="p-1.5 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300"
+                            >
+                              <X size={12} />
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 flex-shrink-0">
+                            <button
+                              onClick={() => setAcceptingChatId(chat.id)}
+                              className="px-3 py-1.5 text-xs font-semibold bg-black text-white rounded-lg hover:bg-gray-800"
+                            >
+                              수락
+                            </button>
+                            <button
+                              onClick={() => declineChat(chat.id)}
+                              className="px-3 py-1.5 text-xs font-semibold border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50"
+                            >
+                              거절
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </Card>
+                  ))}
+
+                  {/* 처리 완료 */}
+                  {otherChats.map((chat) => (
+                    <Card key={chat.id} className="hover:border-gray-300" padding="p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 bg-gray-100 rounded-full flex items-center justify-center text-xs font-bold text-gray-500 flex-shrink-0">
+                          {(chat.requester_name || chat.requester_email || '?').slice(0, 2)}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium text-sm text-gray-900">{chat.requester_name || chat.requester_email}</span>
+                            <span className={`text-[10px] px-1.5 py-0.5 rounded-lg ${
+                              chat.status === 'accepted' ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-500'
+                            }`}>
+                              {chat.status === 'accepted' ? '수락됨' : '거절됨'}
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-gray-400 mt-0.5">
+                            {new Date(chat.created_at).toLocaleDateString('ko-KR')}
+                          </p>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <Card className="text-center py-8" padding="p-6">
+                  <Coffee className="mx-auto mb-3 text-gray-300" size={32} />
+                  <p className="text-gray-500 text-sm">아직 받은 커피챗이 없습니다</p>
+                </Card>
+              )}
+            </section>
+
+            {/* 기술 스택 */}
+            <section>
+              <h3 className="text-base font-bold text-gray-900 flex items-center gap-2 mb-4">
+                <CheckSquare size={16} /> 기술 스택
+              </h3>
+              {skills && skills.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="bg-white rounded-xl border border-gray-100 p-4">
+                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">스킬</h4>
+                    <div className="space-y-2">
+                      {skills.map((skill, idx) => (
+                        <div key={idx} className="flex items-center justify-between">
+                          <span className="flex items-center gap-2 text-sm text-gray-700">
+                            <CheckSquare size={14} className="text-blue-500" />
+                            {skill.name}
+                          </span>
+                          <span className="text-[10px] text-gray-400 uppercase">{skill.level}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  {profile?.personality && (
+                    <div className="bg-white rounded-xl border border-gray-100 p-4">
+                      <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">성향</h4>
+                      <div className="space-y-2">
+                        {Object.entries(profile.personality as Record<string, number>).map(([key, value]) => (
+                          <div key={key} className="flex items-center justify-between">
+                            <span className="text-sm text-gray-700 capitalize">{key.replace(/_/g, ' ')}</span>
+                            <div className="flex items-center gap-2">
+                              <div className="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                <div className="h-full bg-black rounded-full" style={{ width: `${value}%` }} />
+                              </div>
+                              <span className="text-[10px] text-gray-400 w-7 text-right">{value}%</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Card className="text-center py-8" padding="p-6">
+                  <CheckSquare className="mx-auto mb-3 text-gray-300" size={32} />
+                  <p className="text-gray-500 text-sm">아직 스킬이 추가되지 않았습니다</p>
+                </Card>
+              )}
+            </section>
+
+          </main>
+
         </div>
       </div>
     </div>

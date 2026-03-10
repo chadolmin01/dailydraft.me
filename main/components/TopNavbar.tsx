@@ -2,12 +2,10 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { PenTool, User, LogOut, Gift, Crown, Bell, Menu, X, Plus, Settings } from 'lucide-react'
+import { PenTool, User, LogOut, Bell, Menu, X, Plus, Settings } from 'lucide-react'
 import Link from 'next/link'
 import { useAuth } from '@/src/context/AuthContext'
 import { useAdmin } from '@/src/hooks/useAdmin'
-import { usePremium } from '@/src/hooks/usePremium'
-import InviteCodeModal from '@/components/InviteCodeModal'
 
 // NavLink 컴포넌트 - 활성 상태 스타일링
 const NavLink = ({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) => (
@@ -28,11 +26,9 @@ export const TopNavbar: React.FC = () => {
   const pathname = usePathname()
   const { signOut } = useAuth()
   const { isAdmin } = useAdmin()
-  const { isPremium, refetch: refetchPremium } = usePremium()
 
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
   // 메뉴 외부 클릭 감지
@@ -54,7 +50,7 @@ export const TopNavbar: React.FC = () => {
   return (
     <>
       <nav className="fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-100 z-50">
-        <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
+        <div className="max-w-[1400px] mx-auto px-4 lg:px-6 h-full flex items-center justify-between">
 
           {/* ===== 좌측: 로고 + 메인 메뉴 ===== */}
           <div className="flex items-center gap-8">
@@ -69,7 +65,7 @@ export const TopNavbar: React.FC = () => {
             {/* 데스크탑 메뉴 */}
             <div className="hidden md:flex items-center gap-6">
               <NavLink href="/explore" active={pathname === '/explore'}>탐색</NavLink>
-              <NavLink href="/projects" active={pathname.startsWith('/projects')}>프로젝트</NavLink>
+              <NavLink href="/profile" active={pathname === '/profile'}>마이페이지</NavLink>
             </div>
           </div>
 
@@ -101,10 +97,7 @@ export const TopNavbar: React.FC = () => {
                 aria-expanded={isMenuOpen}
                 className="flex items-center gap-2 p-1.5 hover:bg-gray-100 rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
               >
-                <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center relative">
-                  {isPremium && (
-                    <Crown size={10} className="absolute -top-1 -right-1 text-amber-500 bg-white rounded-full p-0.5" />
-                  )}
+                <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
                   <User size={16} className="text-gray-600" />
                 </div>
               </button>
@@ -116,11 +109,6 @@ export const TopNavbar: React.FC = () => {
                   <div className="px-4 py-3 border-b border-gray-100">
                     <div className="flex items-center gap-2">
                       <span className="font-semibold text-sm">User</span>
-                      {isPremium && (
-                        <span className="flex items-center gap-0.5 px-1.5 py-0.5 bg-gradient-to-r from-amber-400 to-amber-500 text-white text-[10px] font-bold rounded-full">
-                          <Crown size={10} /> PRO
-                        </span>
-                      )}
                     </div>
                     <p className="text-xs text-gray-500 mt-0.5">user@draft.io</p>
                   </div>
@@ -131,20 +119,11 @@ export const TopNavbar: React.FC = () => {
                     <MenuItem icon={Settings} disabled>설정</MenuItem>
                   </div>
 
-                  {/* 초대 코드 (비프리미엄) */}
-                  {!isPremium && (
-                    <div className="py-1 border-t border-gray-100">
-                      <MenuItem icon={Gift} onClick={() => setIsInviteModalOpen(true)} highlight>
-                        초대 코드 입력
-                      </MenuItem>
-                    </div>
-                  )}
-
                   {/* 어드민 섹션 */}
                   {isAdmin && (
                     <div className="py-1 border-t border-gray-100">
                       <p className="px-4 py-1 text-[10px] font-mono text-gray-400 uppercase">Admin</p>
-                      <MenuItem icon={Gift} onClick={() => router.push('/admin/invite-codes')}>초대 코드 관리</MenuItem>
+                      <MenuItem icon={Settings} onClick={() => router.push('/admin/invite-codes')}>초대 코드 관리</MenuItem>
                     </div>
                   )}
 
@@ -173,7 +152,7 @@ export const TopNavbar: React.FC = () => {
           <div className="md:hidden absolute top-16 left-0 right-0 bg-white border-b border-gray-200 shadow-lg animate-in slide-in-from-top duration-200">
             <div className="px-4 py-3 space-y-1">
               <MobileNavLink href="/explore" active={pathname === '/explore'}>탐색</MobileNavLink>
-              <MobileNavLink href="/projects" active={pathname.startsWith('/projects')}>프로젝트</MobileNavLink>
+              <MobileNavLink href="/profile" active={pathname === '/profile'}>마이페이지</MobileNavLink>
               <button
                 onClick={() => router.push('/projects/new')}
                 className="w-full mt-2 flex items-center justify-center gap-1.5 px-4 py-3 bg-black text-white text-sm font-semibold rounded-lg"
@@ -185,12 +164,6 @@ export const TopNavbar: React.FC = () => {
         )}
       </nav>
 
-      {/* 초대 코드 모달 */}
-      <InviteCodeModal
-        isOpen={isInviteModalOpen}
-        onClose={() => setIsInviteModalOpen(false)}
-        onSuccess={() => { refetchPremium(); setIsInviteModalOpen(false) }}
-      />
     </>
   )
 }

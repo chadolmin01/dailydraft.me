@@ -105,6 +105,16 @@ export function useCoffeeChats(options: UseCoffeeChatsOptions = {}): UseCoffeeCh
       if (rpcError) throw rpcError
 
       await fetchChats()
+
+      // Fire-and-forget email notification
+      if (result) {
+        fetch('/api/coffee-chat/notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'request', chatId: result }),
+        }).catch(() => {})
+      }
+
       return result as string
     } catch (err) {
       console.error('Failed to request coffee chat:', err)
@@ -128,6 +138,12 @@ export function useCoffeeChats(options: UseCoffeeChatsOptions = {}): UseCoffeeCh
             c.id === chatId ? { ...c, status: 'accepted', contact_info: contactInfo } : c
           )
         )
+        // Fire-and-forget email notification
+        fetch('/api/coffee-chat/notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'accepted', chatId }),
+        }).catch(() => {})
       }
 
       return data as boolean
@@ -150,6 +166,12 @@ export function useCoffeeChats(options: UseCoffeeChatsOptions = {}): UseCoffeeCh
         setChats((prev) =>
           prev.map((c) => (c.id === chatId ? { ...c, status: 'declined' } : c))
         )
+        // Fire-and-forget email notification
+        fetch('/api/coffee-chat/notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'declined', chatId }),
+        }).catch(() => {})
       }
 
       return data as boolean
