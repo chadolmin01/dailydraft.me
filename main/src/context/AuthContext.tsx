@@ -60,21 +60,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Initialize auth state
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-      setUser(session?.user ?? null)
-
-      if (session?.user) {
-        fetchProfile(session.user.id).then(setProfile)
+    // Validate session with server via getUser() (not getSession() which only reads local storage)
+    supabase.auth.getUser().then(({ data: { user }, error }) => {
+      if (error || !user) {
+        setUser(null)
+        setSession(null)
+        setProfile(null)
+        setIsLoading(false)
+        return
       }
 
+      setUser(user)
+      // Also get the session for token access
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        setSession(session)
+      }).catch(() => {})
+
+      fetchProfile(user.id).then(setProfile).catch(() => setProfile(null))
+      setIsLoading(false)
+    }).catch((err) => {
+      console.warn('Auth getUser failed:', err?.message)
       setIsLoading(false)
     })
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        // Handle session expiry / token refresh failure
+        if (event === 'TOKEN_REFRESHED' && !session) {
+          // Refresh token failed — force re-login
+          setUser(null)
+          setSession(null)
+          setProfile(null)
+          return
+        }
+
+        if (event === 'SIGNED_OUT') {
+          setUser(null)
+          setSession(null)
+          setProfile(null)
+          return
+        }
+
         setSession(session)
         setUser(session?.user ?? null)
 

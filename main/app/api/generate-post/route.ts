@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
 import Anthropic from '@anthropic-ai/sdk'
+import { applyRateLimit, getClientIp } from '@/src/lib/rate-limit/api-rate-limiter'
+import { logApiError } from '@/src/lib/error-logging'
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -36,6 +40,31 @@ interface GeneratedPost {
 
 export async function POST(request: NextRequest) {
   try {
+    // Auth check
+    const cookieStore = await cookies()
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() { return cookieStore.getAll() },
+          setAll(cookiesToSet: { name: string; value: string; options?: Record<string, unknown> }[]) {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              try { cookieStore.set(name, value, options as any) } catch { /* read-only */ }
+            })
+          },
+        },
+      }
+    )
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Rate limit: prevent API credit abuse
+    const rateLimitResponse = applyRateLimit(user.id, getClientIp(request))
+    if (rateLimitResponse) return rateLimitResponse
+
     const body: RequestBody = await request.json()
 
     if (!body.role || !body.neededRoles || !body.field || !body.description) {
@@ -43,6 +72,17 @@ export async function POST(request: NextRequest) {
         { error: 'Missing required fields: role, neededRoles, field, description' },
         { status: 400 }
       )
+    }
+
+    // Input length validation
+    if (body.description.length > 500) {
+      return NextResponse.json({ error: 'Description too long (max 500 chars)' }, { status: 400 })
+    }
+    if (body.neededRoles.length > 10) {
+      return NextResponse.json({ error: 'Too many roles (max 10)' }, { status: 400 })
+    }
+    if (body.field.length > 50 || body.role.length > 50) {
+      return NextResponse.json({ error: 'Field/role too long (max 50 chars)' }, { status: 400 })
     }
 
     const userPrompt = `
@@ -106,11 +146,7 @@ ${body.painPoint ? `고민 포인트: ${body.painPoint}` : ''}
       data: generatedPost,
     })
   } catch (error) {
-    console.error('Generate post error:', error)
-
-    if (error instanceof Error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
-    }
+    logApiError(error, request).catch(() => {})
 
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }

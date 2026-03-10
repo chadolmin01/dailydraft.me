@@ -26,14 +26,8 @@ export async function GET() {
       return ApiResponse.unauthorized()
     }
 
-    // Check if user is admin
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('is_admin')
-      .eq('user_id', user.id)
-      .single()
-
-    if (!profile?.is_admin) {
+    // Check if user is admin (from JWT app_metadata — consistent with client useAdmin hook)
+    if (user.app_metadata?.is_admin !== true) {
       return ApiResponse.forbidden('관리자만 접근할 수 있습니다')
     }
 
@@ -229,14 +223,8 @@ export async function DELETE(request: Request) {
       return ApiResponse.unauthorized()
     }
 
-    // Check if user is admin
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('is_admin')
-      .eq('user_id', user.id)
-      .single()
-
-    if (!profile?.is_admin) {
+    // Check if user is admin (from JWT app_metadata — consistent with client useAdmin hook)
+    if (user.app_metadata?.is_admin !== true) {
       return ApiResponse.forbidden('관리자만 접근할 수 있습니다')
     }
 

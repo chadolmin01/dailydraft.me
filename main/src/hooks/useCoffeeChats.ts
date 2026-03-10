@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { createClient } from '@/src/lib/supabase/client'
-import type { Database } from '@/src/types/database'
+import { supabase } from '@/src/lib/supabase/client'
 
 export interface CoffeeChat {
   id: string
@@ -43,7 +42,6 @@ export function useCoffeeChats(options: UseCoffeeChatsOptions = {}): UseCoffeeCh
   const [chats, setChats] = useState<CoffeeChat[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const supabase = createClient()
 
   const fetchChats = useCallback(async () => {
     try {
@@ -79,11 +77,13 @@ export function useCoffeeChats(options: UseCoffeeChatsOptions = {}): UseCoffeeCh
     } finally {
       setLoading(false)
     }
-  }, [opportunityId, asOwner, supabase])
+  }, [opportunityId, asOwner])
 
   useEffect(() => {
     fetchChats()
   }, [fetchChats])
+
+  const [requesting, setRequesting] = useState(false)
 
   const requestChat = async (data: {
     opportunityId: string
@@ -91,8 +91,28 @@ export function useCoffeeChats(options: UseCoffeeChatsOptions = {}): UseCoffeeCh
     name: string
     message?: string
   }): Promise<string | null> => {
+    // Prevent double-submit
+    if (requesting) return null
+    setRequesting(true)
+
     try {
       const { data: userData } = await supabase.auth.getUser()
+
+      // Check if user already has a pending chat for this opportunity
+      if (userData?.user) {
+        const { data: existing } = await supabase
+          .from('coffee_chats')
+          .select('id')
+          .eq('opportunity_id', data.opportunityId)
+          .eq('requester_user_id', userData.user.id)
+          .eq('status', 'pending')
+          .maybeSingle()
+
+        if (existing) {
+          setError('이미 커피챗을 신청한 프로젝트입니다')
+          return null
+        }
+      }
 
       const { data: result, error: rpcError } = await supabase.rpc('request_coffee_chat', {
         p_opportunity_id: data.opportunityId,
@@ -120,6 +140,8 @@ export function useCoffeeChats(options: UseCoffeeChatsOptions = {}): UseCoffeeCh
       console.error('Failed to request coffee chat:', err)
       setError(err instanceof Error ? err.message : 'Failed to request coffee chat')
       return null
+    } finally {
+      setRequesting(false)
     }
   }
 

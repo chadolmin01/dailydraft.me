@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { createClient } from '@/src/lib/supabase/client'
-import type { Database } from '@/src/types/database'
+import { supabase } from '@/src/lib/supabase/client'
 
 interface UseInterestsOptions {
   opportunityId: string
@@ -18,8 +17,6 @@ interface UseInterestsReturn {
 export function useInterests({ opportunityId }: UseInterestsOptions): UseInterestsReturn {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const supabase = createClient()
-
   const expressInterest = useCallback(async (email: string): Promise<boolean> => {
     try {
       setLoading(true)
@@ -43,7 +40,7 @@ export function useInterests({ opportunityId }: UseInterestsOptions): UseInteres
     } finally {
       setLoading(false)
     }
-  }, [opportunityId, supabase])
+  }, [opportunityId])
 
   const checkInterest = useCallback(async (email: string): Promise<boolean> => {
     try {
@@ -59,7 +56,7 @@ export function useInterests({ opportunityId }: UseInterestsOptions): UseInteres
       console.error('Failed to check interest:', err)
       return false
     }
-  }, [opportunityId, supabase])
+  }, [opportunityId])
 
   return {
     loading,

@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { applyRateLimit, getClientIp } from '@/src/lib/rate-limit/api-rate-limiter'
+import { logApiError } from '@/src/lib/error-logging'
 import { resend, FROM_EMAIL, isEmailEnabled } from '@/src/lib/email/client'
 import { renderCoffeeChatRequestEmail } from '@/src/lib/email/templates/coffee-chat-request'
 import { renderCoffeeChatResponseEmail } from '@/src/lib/email/templates/coffee-chat-response'
 import { createClient } from '@supabase/supabase-js'
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -13,6 +17,31 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://dailydraft.me'
 
 export async function POST(req: NextRequest) {
   try {
+    // 인증 검증: 로그인한 사용자만 이메일 발송 트리거 가능
+    const cookieStore = await cookies()
+    const supabaseAuth = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() { return cookieStore.getAll() },
+          setAll(cookiesToSet: { name: string; value: string; options?: Record<string, unknown> }[]) {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              try { cookieStore.set(name, value, options as any) } catch { /* read-only in some contexts */ }
+            })
+          },
+        },
+      }
+    )
+    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser()
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Rate limit
+    const rateLimitResponse = applyRateLimit(user.id, getClientIp(req))
+    if (rateLimitResponse) return rateLimitResponse
+
     if (!isEmailEnabled()) {
       return NextResponse.json({ success: false, error: 'Email not configured' }, { status: 200 })
     }
@@ -33,6 +62,13 @@ export async function POST(req: NextRequest) {
 
     if (chatError || !chat) {
       return NextResponse.json({ error: 'Chat not found' }, { status: 404 })
+    }
+
+    // 소유권 검증: 요청자 또는 프로젝트 오너만 이메일 트리거 가능
+    const isRequester = chat.requester_user_id === user.id
+    const isOwner = chat.owner_user_id === user.id
+    if (!isRequester && !isOwner) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     // Fetch opportunity title
@@ -60,7 +96,7 @@ export async function POST(req: NextRequest) {
 
     if (type === 'request') {
       if (!ownerEmail) {
-        return NextResponse.json({ success: false, error: 'Owner email not found' })
+        return NextResponse.json({ success: false, error: 'Owner email not found' }, { status: 422 })
       }
 
       const html = renderCoffeeChatRequestEmail({
@@ -71,7 +107,7 @@ export async function POST(req: NextRequest) {
         appUrl: APP_URL,
       })
 
-      await resend!.emails.send({
+      await resend?.emails.send({
         from: FROM_EMAIL,
         to: ownerEmail,
         subject: `[Draft] ${requesterName}님이 커피챗을 신청했습니다`,
@@ -79,7 +115,7 @@ export async function POST(req: NextRequest) {
       })
     } else if (type === 'accepted' || type === 'declined') {
       if (!requesterEmail) {
-        return NextResponse.json({ success: false, error: 'Requester email not found' })
+        return NextResponse.json({ success: false, error: 'Requester email not found' }, { status: 422 })
       }
 
       const html = renderCoffeeChatResponseEmail({
@@ -91,7 +127,7 @@ export async function POST(req: NextRequest) {
         appUrl: APP_URL,
       })
 
-      await resend!.emails.send({
+      await resend?.emails.send({
         from: FROM_EMAIL,
         to: requesterEmail,
         subject: `[Draft] 커피챗이 ${type === 'accepted' ? '수락' : '거절'}되었습니다`,
@@ -101,7 +137,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Coffee chat notify error:', error)
+    logApiError(error, req).catch(() => {})
     return NextResponse.json({ success: false, error: 'Internal error' }, { status: 500 })
   }
 }

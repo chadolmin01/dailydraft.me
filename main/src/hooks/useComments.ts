@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { createClient } from '@/src/lib/supabase/client'
-import type { Database } from '@/src/types/database'
+import { supabase } from '@/src/lib/supabase/client'
 
 export interface Comment {
   id: string
@@ -35,8 +34,6 @@ export function useComments({ opportunityId }: UseCommentsOptions): UseCommentsR
   const [comments, setComments] = useState<Comment[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const supabase = createClient()
-
   const fetchComments = useCallback(async () => {
     try {
       setLoading(true)
@@ -59,7 +56,7 @@ export function useComments({ opportunityId }: UseCommentsOptions): UseCommentsR
     } finally {
       setLoading(false)
     }
-  }, [opportunityId, supabase])
+  }, [opportunityId])
 
   useEffect(() => {
     if (opportunityId) {

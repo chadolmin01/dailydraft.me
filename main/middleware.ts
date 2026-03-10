@@ -1,9 +1,10 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-// Routes that are hidden in community mode
+// Routes that are hidden in MVP mode (code preserved, UI hidden)
 // Remove routes from this array to restore access
 const hiddenRoutes = [
+  '/dashboard',
   '/calendar',
   '/messages',
   '/documents',
@@ -12,13 +13,57 @@ const hiddenRoutes = [
   '/workflow',
   '/business-plan',
   '/validated-ideas',
-  '/dashboard', // Hidden - redirect to /explore
+  '/idea-validator',
+  '/onboarding',
+  '/guide',
+  '/waitlist',
+  '/project',        // legacy /project/* flows
+]
+
+// API routes hidden in MVP mode — returns 404
+const hiddenApiRoutes = [
+  '/api/ai-chat',
+  '/api/applications',
+  '/api/boosts',
+  '/api/business-plan',
+  '/api/event-applications',
+  '/api/events',
+  '/api/idea-validator',
+  '/api/notifications',
+  '/api/onboarding',
+  '/api/payments',
+  '/api/payment-status',
+  '/api/pdf-structure',
+  '/api/prd',
+  '/api/profile/analyze',
+  '/api/profile/extract',
+  '/api/profile/activity',
+  '/api/profile/insights',
+  '/api/startup-ideas',
+  '/api/subscriptions',
+  '/api/usage',
+  '/api/waitlist',
+  '/api/webhooks/tosspayments',
+  '/api/cron/analyze-startup-ideas',
+  '/api/cron/expire-boosts',
+  '/api/cron/ingest-crawled-events',
+  '/api/cron/process-payment-failures',
+  '/api/cron/send-emails',
+  '/api/cron/sync-events',
+  '/api/cron/sync-external-events',
+  '/api/cron/sync-startup-ideas',
+  '/api/cron/weekly-digest',
 ]
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
 
-  // Check if the current path is a hidden route - redirect to /explore
+  // Block hidden API routes — return 404
+  if (hiddenApiRoutes.some(route => pathname.startsWith(route))) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  }
+
+  // Block hidden pages — redirect to /explore
   if (hiddenRoutes.some(route => pathname.startsWith(route))) {
     return NextResponse.redirect(new URL('/explore', request.url))
   }
@@ -52,7 +97,8 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   // Protected routes - redirect to login if not authenticated
-  const protectedPaths = ['/dashboard', '/profile', '/calendar', '/explore', '/projects', '/messages', '/documents', '/network', '/onboarding', '/guide']
+  // Only active routes that require auth
+  const protectedPaths = ['/profile', '/explore', '/projects', '/admin']
   const isProtectedPath = protectedPaths.some(path => request.nextUrl.pathname.startsWith(path))
 
   if (isProtectedPath && !user) {
