@@ -121,8 +121,8 @@ export const Explore: React.FC = () => {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto bg-[#FAFAFA]">
-      <div className="max-w-[1400px] mx-auto px-4 lg:px-6 py-6">
+    <div className="flex-1 overflow-y-auto bg-surface-bg">
+      <div className="max-w-container-wide mx-auto px-4 lg:px-6 py-6">
 
         {/* 3-Column Layout */}
         <div className="flex gap-6">
@@ -132,8 +132,8 @@ export const Explore: React.FC = () => {
             <div className="sticky top-6 space-y-6">
 
               {/* 카테고리 */}
-              <div className="bg-white rounded-xl border border-gray-100 p-4">
-                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">카테고리</h3>
+              <div className="bg-surface-card rounded-xl border border-border p-4">
+                <h3 className="text-xs font-bold text-txt-tertiary uppercase tracking-wider mb-3">카테고리</h3>
                 <nav className="space-y-1">
                   {categories.map((cat) => (
                     <button
@@ -141,15 +141,15 @@ export const Explore: React.FC = () => {
                       onClick={() => setSelectedCategory(cat.id)}
                       className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all ${
                         selectedCategory === cat.id
-                          ? 'bg-black text-white'
-                          : 'text-gray-600 hover:bg-gray-50'
+                          ? 'bg-accent text-txt-inverse'
+                          : 'text-txt-secondary hover:bg-surface-sunken'
                       }`}
                     >
                       <span className="flex items-center gap-2">
                         <cat.icon size={14} />
                         {cat.label}
                       </span>
-                      <span className={`text-xs ${selectedCategory === cat.id ? 'text-gray-300' : 'text-gray-400'}`}>
+                      <span className={`text-xs ${selectedCategory === cat.id ? 'text-txt-inverse/60' : 'text-txt-tertiary'}`}>
                         {cat.count > 0 ? cat.count : ''}
                       </span>
                     </button>
@@ -158,35 +158,35 @@ export const Explore: React.FC = () => {
               </div>
 
               {/* 트렌딩 태그 */}
-              <div className="bg-white rounded-xl border border-gray-100 p-4">
-                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1">
+              <div className="bg-surface-card rounded-xl border border-border p-4">
+                <h3 className="text-xs font-bold text-txt-tertiary uppercase tracking-wider mb-3 flex items-center gap-1">
                   <Flame size={12} /> 트렌딩 태그
                 </h3>
                 <div className="space-y-2">
                   {trendingTags.map((item, idx) => (
                     <button
                       key={item.tag}
-                      className="w-full flex items-center justify-between px-2 py-1.5 rounded-md text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+                      className="w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-sm text-txt-secondary hover:bg-surface-sunken transition-colors"
                     >
                       <span className="flex items-center gap-2">
-                        <span className="text-gray-400 text-xs">#{idx + 1}</span>
-                        <Hash size={12} className="text-gray-400" />
+                        <span className="text-txt-tertiary text-xs">#{idx + 1}</span>
+                        <Hash size={12} className="text-txt-tertiary" />
                         {item.tag}
                       </span>
-                      <span className="text-xs text-gray-400">{item.count}</span>
+                      <span className="text-xs text-txt-tertiary">{item.count}</span>
                     </button>
                   ))}
                 </div>
               </div>
 
               {/* 필터 */}
-              <div className="bg-white rounded-xl border border-gray-100 p-4">
-                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">필터</h3>
+              <div className="bg-surface-card rounded-xl border border-border p-4">
+                <h3 className="text-xs font-bold text-txt-tertiary uppercase tracking-wider mb-3">필터</h3>
                 <div className="space-y-2">
-                  <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                  <label className="flex items-center gap-2 text-sm text-txt-secondary cursor-pointer">
                     <input
                       type="checkbox"
-                      className="rounded border-gray-300"
+                      className="rounded border-border-strong"
                       checked={recruitingOnly}
                       onChange={(e) => setRecruitingOnly(e.target.checked)}
                     />
@@ -204,29 +204,29 @@ export const Explore: React.FC = () => {
             {/* 검색바 */}
             <div className="flex gap-2">
               <div className="relative flex-1">
-                <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-txt-disabled" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black/10"
+                  className="w-full pl-11 pr-4 py-3 bg-surface-card border border-border rounded-xl text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/10"
                   placeholder="프로젝트, 사람, 기술 스택 검색..."
                 />
               </div>
-              <button className="lg:hidden p-3 bg-white border border-gray-200 rounded-xl">
-                <Filter size={18} className="text-gray-600" />
+              <button className="lg:hidden p-3 bg-surface-card border border-border rounded-xl">
+                <Filter size={18} className="text-txt-secondary" />
               </button>
             </div>
 
             {/* 프로젝트/사람 탭 + 정렬 */}
-            <div className="flex items-center justify-between border-b border-gray-200">
+            <div className="flex items-center justify-between border-b border-border">
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => setActiveTab('projects')}
                   className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 -mb-[2px] transition-colors ${
                     activeTab === 'projects'
-                      ? 'border-black text-black'
-                      : 'border-transparent text-gray-500 hover:text-gray-700'
+                      ? 'border-accent text-txt-primary'
+                      : 'border-transparent text-txt-tertiary hover:text-txt-secondary'
                   }`}
                 >
                   <LayoutGrid size={14} />
@@ -236,8 +236,8 @@ export const Explore: React.FC = () => {
                   onClick={() => setActiveTab('people')}
                   className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 -mb-[2px] transition-colors ${
                     activeTab === 'people'
-                      ? 'border-black text-black'
-                      : 'border-transparent text-gray-500 hover:text-gray-700'
+                      ? 'border-accent text-txt-primary'
+                      : 'border-transparent text-txt-tertiary hover:text-txt-secondary'
                   }`}
                 >
                   <Users size={14} />
@@ -256,8 +256,8 @@ export const Explore: React.FC = () => {
                     onClick={() => setSortBy(tab.id as typeof sortBy)}
                     className={`flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
                       sortBy === tab.id
-                        ? 'bg-gray-100 text-black'
-                        : 'text-gray-400 hover:text-gray-600'
+                        ? 'bg-surface-sunken text-txt-primary'
+                        : 'text-txt-tertiary hover:text-txt-secondary'
                     }`}
                   >
                     <tab.icon size={12} />
@@ -275,11 +275,11 @@ export const Explore: React.FC = () => {
                     {[1,2,3,4].map((i) => (
                       <Card key={i} padding="p-4">
                         <div className="flex gap-3 animate-pulse">
-                          <div className="w-10 h-10 rounded-lg bg-gray-200 flex-shrink-0" />
+                          <div className="w-10 h-10 rounded-lg bg-surface-sunken flex-shrink-0" />
                           <div className="flex-1 space-y-2">
-                            <div className="h-4 bg-gray-200 rounded w-3/4" />
-                            <div className="h-3 bg-gray-100 rounded w-full" />
-                            <div className="h-3 bg-gray-100 rounded w-1/2" />
+                            <div className="h-4 bg-surface-sunken rounded w-3/4" />
+                            <div className="h-3 bg-border-subtle rounded w-full" />
+                            <div className="h-3 bg-border-subtle rounded w-1/2" />
                           </div>
                         </div>
                       </Card>
@@ -287,34 +287,34 @@ export const Explore: React.FC = () => {
                   </div>
                 ) : projectCards.length === 0 ? (
                   <Card className="text-center py-12" padding="p-6">
-                    <LayoutGrid className="mx-auto mb-4 text-gray-300" size={40} />
-                    <p className="text-gray-500 text-sm">등록된 프로젝트가 없습니다</p>
+                    <LayoutGrid className="mx-auto mb-4 text-txt-disabled" size={40} />
+                    <p className="text-txt-tertiary text-sm">등록된 프로젝트가 없습니다</p>
                   </Card>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {projectCards.map((p) => (
-                      <Card key={p.id} className="group hover:border-gray-300 cursor-pointer" padding="p-4" onClick={() => setSelectedProjectId(p.id)}>
+                      <Card key={p.id} className="group hover:border-border-strong cursor-pointer" padding="p-4" onClick={() => setSelectedProjectId(p.id)}>
                         <div className="flex gap-3">
-                          <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-600 group-hover:bg-black group-hover:text-white transition-colors flex-shrink-0">
-                            <Zap size={18} />
+                          <div className="w-10 h-10 rounded-lg bg-surface-sunken flex items-center justify-center text-txt-secondary group-hover:bg-accent group-hover:text-txt-inverse transition-colors flex-shrink-0">
+                            <Rocket size={18} />
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-start justify-between gap-2">
-                              <h3 className="font-semibold text-gray-900 text-sm truncate">{p.title}</h3>
+                              <h3 className="font-semibold text-txt-primary text-sm truncate">{p.title}</h3>
                               {(() => {
                                 const badge = getUpdateBadge(p.updatedAt)
                                 return badge ? (
-                                  <span className="text-[10px] text-green-600 font-mono flex-shrink-0">
+                                  <span className="text-xs text-status-success-text font-mono flex-shrink-0">
                                     {badge}
                                   </span>
                                 ) : null
                               })()}
                             </div>
-                            <p className="text-xs text-gray-500 mt-1 line-clamp-2">{p.desc}</p>
+                            <p className="text-xs text-txt-tertiary mt-1 line-clamp-2">{p.desc}</p>
                             <div className="flex items-center gap-2 mt-2">
-                              <span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded font-medium">{p.role}</span>
+                              <span className="text-xs bg-tag-default-bg text-tag-default-text px-2 py-0.5 rounded font-medium">{p.role}</span>
                               {p.stack.slice(0, 2).map(s => (
-                                <span key={s} className="text-[10px] text-gray-400">{s}</span>
+                                <span key={s} className="text-xs text-txt-tertiary">{s}</span>
                               ))}
                             </div>
                           </div>
@@ -329,7 +329,7 @@ export const Explore: React.FC = () => {
                   <div className="text-center mt-6">
                     <button
                       onClick={() => setDisplayLimit(prev => prev + PAGE_SIZE)}
-                      className="px-6 py-2.5 text-sm font-medium text-gray-600 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+                      className="px-6 py-2.5 text-sm font-medium text-txt-secondary border border-border rounded-xl hover:bg-surface-sunken transition-colors"
                     >
                       더 보기{!searchQuery && selectedCategory === 'all' && !recruitingOnly ? ` (${totalCount - projectCards.length}개 남음)` : ''}
                     </button>
@@ -346,10 +346,10 @@ export const Explore: React.FC = () => {
                     {[1,2,3,4,5,6].map((i) => (
                       <Card key={i} padding="p-4">
                         <div className="flex gap-3 animate-pulse">
-                          <div className="w-10 h-10 rounded-full bg-gray-200 flex-shrink-0" />
+                          <div className="w-10 h-10 rounded-full bg-surface-sunken flex-shrink-0" />
                           <div className="flex-1 space-y-2">
-                            <div className="h-4 bg-gray-200 rounded w-1/2" />
-                            <div className="h-3 bg-gray-100 rounded w-3/4" />
+                            <div className="h-4 bg-surface-sunken rounded w-1/2" />
+                            <div className="h-3 bg-border-subtle rounded w-3/4" />
                           </div>
                         </div>
                       </Card>
@@ -357,36 +357,36 @@ export const Explore: React.FC = () => {
                   </div>
                 ) : talentCards.length === 0 ? (
                   <Card className="text-center py-12" padding="p-6">
-                    <Users className="mx-auto mb-4 text-gray-300" size={40} />
-                    <p className="text-gray-500 text-sm">등록된 사람이 없습니다</p>
+                    <Users className="mx-auto mb-4 text-txt-disabled" size={40} />
+                    <p className="text-txt-tertiary text-sm">등록된 사람이 없습니다</p>
                   </Card>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {talentCards.map((t) => (
-                      <Card key={t.id} className="group hover:border-gray-300 cursor-pointer" padding="p-4">
+                      <Card key={t.id} className="group hover:border-border-strong cursor-pointer" padding="p-4">
                         <div className="flex gap-3">
-                          <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-xs font-bold text-gray-600 flex-shrink-0">
+                          <div className="w-10 h-10 bg-surface-sunken rounded-full flex items-center justify-center text-xs font-bold text-txt-secondary flex-shrink-0">
                             {t.name.substring(0, 2)}
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-start justify-between gap-2">
                               <div>
-                                <h3 className="font-semibold text-gray-900 text-sm">{t.name}</h3>
-                                <p className="text-xs text-gray-500">{t.role}</p>
+                                <h3 className="font-semibold text-txt-primary text-sm">{t.name}</h3>
+                                <p className="text-xs text-txt-tertiary">{t.role}</p>
                               </div>
-                              <span className={`text-[10px] px-1.5 py-0.5 rounded flex-shrink-0 ${
-                                t.status === 'OPEN' ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-500'
+                              <span className={`text-xs px-1.5 py-0.5 rounded flex-shrink-0 ${
+                                t.status === 'OPEN' ? 'bg-status-success-bg text-status-success-text' : 'bg-status-neutral-bg text-status-neutral-text'
                               }`}>
                                 {t.status}
                               </span>
                             </div>
                             {t.visionSummary && (
-                              <p className="text-xs text-gray-400 mt-1 line-clamp-1">{t.visionSummary}</p>
+                              <p className="text-xs text-txt-tertiary mt-1 line-clamp-1">{t.visionSummary}</p>
                             )}
                             {t.tags.length > 0 && (
                               <div className="flex items-center gap-1.5 mt-2">
                                 {t.tags.map(tag => (
-                                  <span key={tag} className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded font-medium">{tag}</span>
+                                  <span key={tag} className="text-xs bg-tag-default-bg text-tag-default-text px-2 py-0.5 rounded font-medium">{tag}</span>
                                 ))}
                               </div>
                             )}
@@ -406,22 +406,22 @@ export const Explore: React.FC = () => {
             <div className="sticky top-6 space-y-6">
 
               {/* 추천 인재 */}
-              <div className="bg-white rounded-xl border border-gray-100 p-4">
-                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1">
+              <div className="bg-surface-card rounded-xl border border-border p-4">
+                <h3 className="text-xs font-bold text-txt-tertiary uppercase tracking-wider mb-3 flex items-center gap-1">
                   <UserCircle size={12} /> 추천 인재
                 </h3>
                 <div className="space-y-3">
                   {talentCards.slice(0, 4).map((t) => (
-                    <div key={t.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
-                      <div className="w-9 h-9 bg-gray-100 rounded-full flex items-center justify-center text-xs font-bold text-gray-600">
+                    <div key={t.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-surface-sunken transition-colors cursor-pointer">
+                      <div className="w-9 h-9 bg-surface-sunken rounded-full flex items-center justify-center text-xs font-bold text-txt-secondary">
                         {t.name.substring(0, 2)}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900">{t.name}</p>
-                        <p className="text-xs text-gray-500">{t.role}</p>
+                        <p className="text-sm font-medium text-txt-primary">{t.name}</p>
+                        <p className="text-xs text-txt-tertiary">{t.role}</p>
                       </div>
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded ${
-                        t.status === 'OPEN' ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-500'
+                      <span className={`text-xs px-1.5 py-0.5 rounded ${
+                        t.status === 'OPEN' ? 'bg-status-success-bg text-status-success-text' : 'bg-status-neutral-bg text-status-neutral-text'
                       }`}>
                         {t.status}
                       </span>
@@ -430,22 +430,22 @@ export const Explore: React.FC = () => {
                 </div>
                 <button
                   onClick={() => setActiveTab('people')}
-                  className="w-full mt-3 text-xs text-gray-500 hover:text-black flex items-center justify-center gap-1"
+                  className="w-full mt-3 text-xs text-txt-tertiary hover:text-txt-primary flex items-center justify-center gap-1"
                 >
                   더 보기 <ChevronRight size={14} />
                 </button>
               </div>
 
               {/* CTA 배너 */}
-              <div className="bg-gradient-to-br from-gray-900 to-black rounded-xl p-5 text-white">
-                <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center mb-4">
+              <div className="bg-surface-inverse rounded-xl p-5 text-txt-inverse">
+                <div className="w-10 h-10 bg-surface-card/10 rounded-lg flex items-center justify-center mb-4">
                   <Rocket size={20} />
                 </div>
                 <h3 className="font-bold text-base mb-1">아이디어가 있나요?</h3>
-                <p className="text-gray-400 text-xs mb-4">팀을 구성하고 프로젝트를 시작하세요</p>
+                <p className="text-txt-inverse/70 text-xs mb-4">팀을 구성하고 프로젝트를 시작하세요</p>
                 <Link
                   href="/projects/new"
-                  className="w-full bg-white text-black text-sm font-semibold py-2 rounded-lg hover:bg-gray-100 transition-colors block text-center"
+                  className="w-full bg-surface-card text-txt-primary text-sm font-semibold py-2 rounded-lg hover:bg-surface-sunken transition-colors block text-center"
                 >
                   프로젝트 시작하기
                 </Link>
