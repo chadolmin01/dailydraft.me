@@ -6,6 +6,19 @@ import type { Tables } from '../types/database'
 
 type Profile = Tables<'profiles'>
 
+// AbortError 방어: 실패 시 1회 재시도
+async function withRetry<T>(fn: () => Promise<T>, retries = 1): Promise<T> {
+  try {
+    return await fn()
+  } catch (err) {
+    if (retries > 0 && err instanceof DOMException && err.name === 'AbortError') {
+      await new Promise(r => setTimeout(r, 300))
+      return withRetry(fn, retries - 1)
+    }
+    throw err
+  }
+}
+
 export type PublicProfile = Pick<Profile,
   'id' | 'user_id' | 'nickname' | 'desired_position' | 'interest_tags' | 'location' | 'profile_visibility' | 'vision_summary'
 >
@@ -24,11 +37,9 @@ export function usePublicProfiles(options?: {
   return useQuery({
     queryKey: publicProfileKeys.list(options ?? {}),
     staleTime: 1000 * 60 * 2,
-    retry: (failureCount, error) => {
-      if (error?.message?.includes('AbortError')) return failureCount < 1
-      return failureCount < 2
-    },
-    queryFn: async () => {
+    retry: (failureCount) => failureCount < 3,
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
+    queryFn: () => withRetry(async () => {
       let query = supabase
         .from('profiles')
         .select('id, user_id, nickname, desired_position, interest_tags, location, profile_visibility, vision_summary')
@@ -47,7 +58,7 @@ export function usePublicProfiles(options?: {
 
       if (error) throw error
       return data as PublicProfile[]
-    },
+    }),
   })
 }
 
@@ -56,11 +67,9 @@ export function usePublicProfileById(profileId: string | undefined) {
   return useQuery({
     queryKey: [...publicProfileKeys.all, 'detail', profileId],
     staleTime: 1000 * 60 * 2,
-    retry: (failureCount, error) => {
-      if (error?.message?.includes('AbortError')) return failureCount < 1
-      return failureCount < 2
-    },
-    queryFn: async () => {
+    retry: (failureCount) => failureCount < 3,
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
+    queryFn: () => withRetry(async () => {
       if (!profileId) return null
 
       const { data, error } = await supabase
@@ -72,7 +81,7 @@ export function usePublicProfileById(profileId: string | undefined) {
 
       if (error) throw error
       return data as PublicProfile | null
-    },
+    }),
     enabled: !!profileId,
   })
 }
@@ -86,11 +95,9 @@ export function useProfileByUserId(userId: string | undefined) {
   return useQuery({
     queryKey: [...publicProfileKeys.all, 'user', userId],
     staleTime: 1000 * 60 * 2,
-    retry: (failureCount, error) => {
-      if (error?.message?.includes('AbortError')) return failureCount < 1
-      return failureCount < 2
-    },
-    queryFn: async () => {
+    retry: (failureCount) => failureCount < 3,
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
+    queryFn: () => withRetry(async () => {
       if (!userId) return null
 
       const { data, error } = await supabase
@@ -101,7 +108,7 @@ export function useProfileByUserId(userId: string | undefined) {
 
       if (error) throw error
       return data as CreatorProfile | null
-    },
+    }),
     enabled: !!userId,
   })
 }

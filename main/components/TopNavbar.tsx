@@ -13,7 +13,7 @@ const IconButton = ({ label, onClick, children }: { label: string; onClick?: () 
     <button
       onClick={onClick}
       aria-label={label}
-      className="relative p-2 text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken rounded-lg transition-colors"
+      className="relative p-2 text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
     >
       {children}
     </button>
@@ -27,7 +27,7 @@ const IconButton = ({ label, onClick, children }: { label: string; onClick?: () 
 const NavLink = ({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) => (
   <Link
     href={href}
-    className={`text-sm font-medium transition-colors relative py-2
+    className={`text-sm font-medium transition-colors relative py-2 focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 rounded-sm
       ${active
         ? 'text-txt-primary after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-accent'
         : 'text-txt-tertiary hover:text-txt-primary'
@@ -90,7 +90,7 @@ export const TopNavbar: React.FC = () => {
               <NavLink href="/profile" active={pathname === '/profile'}>마이페이지</NavLink>
               <button
                 onClick={() => router.push('/projects/new')}
-                className="flex items-center gap-1.5 px-4 py-2 bg-accent text-txt-inverse text-sm font-semibold rounded-lg hover:bg-accent-hover transition-colors shadow-sm"
+                className="flex items-center gap-1.5 px-4 py-2 bg-accent text-txt-inverse text-sm font-semibold rounded-lg hover:bg-accent-hover transition-colors shadow-sm focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
               >
                 <Plus size={16} />
                 새 프로젝트
@@ -106,7 +106,7 @@ export const TopNavbar: React.FC = () => {
               placeholder="프로젝트, 사람 검색..."
               className="w-full pl-9 pr-12 py-2 bg-surface-sunken border border-border rounded-lg text-sm placeholder:text-txt-disabled focus:outline-none focus:border-accent focus:bg-surface-card transition-all"
             />
-            <button className="absolute right-1.5 top-1/2 -translate-y-1/2 px-3 py-1 bg-accent text-txt-inverse text-xs font-semibold rounded-md hover:bg-accent-hover transition-colors">
+            <button className="absolute right-1.5 top-1/2 -translate-y-1/2 px-3 py-1 bg-accent text-txt-inverse text-xs font-semibold rounded-md hover:bg-accent-hover transition-colors focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2">
               검색
             </button>
           </div>
@@ -224,7 +224,7 @@ const MenuItem = ({ icon: Icon, children, onClick, disabled, highlight, danger }
       ${disabled ? 'text-txt-disabled cursor-not-allowed' : ''}
       ${highlight ? 'text-status-info-text hover:bg-status-info-bg' : ''}
       ${danger ? 'text-status-danger-text hover:bg-status-danger-bg' : ''}
-      ${!disabled && !highlight && !danger ? 'text-txt-secondary hover:bg-surface-sunken' : ''}
+      ${!disabled && !highlight && !danger ? 'text-txt-secondary hover:bg-surface-sunken focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2' : ''}
     `}
   >
     <Icon size={16} />

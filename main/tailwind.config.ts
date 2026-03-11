@@ -18,9 +18,9 @@ const config: Config = {
         tooltip: '600',
       },
       maxWidth: {
-        'container-narrow': '768px',
-        'container-standard': '1200px',
-        'container-wide': '1400px',
+        'container-narrow': '48rem',
+        'container-standard': '72rem',
+        'container-wide': '82rem',
       },
       fontFamily: {
         sans: ['"Noto Sans KR"', 'sans-serif'],
@@ -71,13 +71,6 @@ const config: Config = {
           'default-text': 'var(--tag-default-text)',
           'strong-bg': 'var(--tag-strong-bg)',
           'strong-text': 'var(--tag-strong-text)',
-        },
-        // ── Legacy (점진적 마이그레이션) ──
-        draft: {
-          black: '#222222',
-          gray: '#666666',
-          light: '#F4F4F5',
-          paper: '#FFFFFF',
         },
       },
       borderRadius: {

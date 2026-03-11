@@ -9,6 +9,19 @@ type Opportunity = Tables<'opportunities'>
 type OpportunityInsert = TablesInsert<'opportunities'>
 type OpportunityUpdate = TablesUpdate<'opportunities'>
 
+// AbortError 방어: 실패 시 1회 재시도
+async function withRetry<T>(fn: () => Promise<T>, retries = 1): Promise<T> {
+  try {
+    return await fn()
+  } catch (err) {
+    if (retries > 0 && err instanceof DOMException && err.name === 'AbortError') {
+      await new Promise(r => setTimeout(r, 300))
+      return withRetry(fn, retries - 1)
+    }
+    throw err
+  }
+}
+
 // Extended type with creator profile
 export type OpportunityWithCreator = Opportunity & {
   creator?: {
@@ -42,7 +55,7 @@ export function useOpportunities(filters?: {
 }) {
   return useQuery({
     queryKey: opportunityKeys.list(filters ?? {}),
-    queryFn: async () => {
+    queryFn: () => withRetry(async () => {
       let query = supabase
         .from('opportunities')
         .select('*', { count: 'exact' })
@@ -66,13 +79,10 @@ export function useOpportunities(filters?: {
 
       if (error) throw error
       return { items: data as OpportunityWithCreator[], totalCount: count ?? 0 }
-    },
+    }),
     staleTime: 1000 * 60 * 2,
-    retry: (failureCount, error) => {
-      // AbortError는 Strict Mode에서 발생 → 조용히 1회 재시도
-      if (error?.message?.includes('AbortError')) return failureCount < 1
-      return failureCount < 2
-    },
+    retry: (failureCount) => failureCount < 3,
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
   })
 }
 
@@ -94,10 +104,8 @@ export function useOpportunity(id: string | undefined) {
     },
     enabled: !!id,
     staleTime: 1000 * 60 * 2,
-    retry: (failureCount, error) => {
-      if (error?.message?.includes('AbortError')) return failureCount < 1
-      return failureCount < 2
-    },
+    retry: (failureCount) => failureCount < 3,
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
   })
 }
 

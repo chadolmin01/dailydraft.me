@@ -15,6 +15,7 @@ const clientOptions = {
     flowType: 'pkce' as const,
     persistSession: true,
     detectSessionInUrl: true,
+    lock: async (_name: string, _acquireTimeout: number, fn: () => Promise<unknown>) => await fn(),
   },
 }
 

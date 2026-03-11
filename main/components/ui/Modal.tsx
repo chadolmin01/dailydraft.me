@@ -82,7 +82,7 @@ export const Modal: React.FC<ModalProps> = ({
         ref={containerRef}
         tabIndex={-1}
         className={cn(
-          'relative z-modal bg-surface-elevated w-full shadow-2xl rounded-xl',
+          'relative z-modal bg-surface-elevated w-full shadow-2xl rounded-xl border border-border',
           'animate-in fade-in zoom-in-95 duration-200',
           sizeMap[size],
           className
@@ -101,7 +101,7 @@ export const Modal: React.FC<ModalProps> = ({
               <button
                 onClick={onClose}
                 aria-label="닫기"
-                className="p-1 rounded-lg hover:bg-surface-sunken transition-colors text-txt-tertiary hover:text-txt-secondary"
+                className="p-1 rounded-lg hover:bg-surface-sunken transition-colors text-txt-tertiary hover:text-txt-secondary focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
               >
                 <X size={18} />
               </button>
