@@ -72,7 +72,7 @@ export const Modal: React.FC<ModalProps> = ({
     >
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        className="absolute inset-0 bg-surface-inverse/40 backdrop-blur-sm"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -82,7 +82,7 @@ export const Modal: React.FC<ModalProps> = ({
         ref={containerRef}
         tabIndex={-1}
         className={cn(
-          'relative z-modal bg-white w-full shadow-2xl',
+          'relative z-modal bg-surface-elevated w-full shadow-2xl rounded-xl',
           'animate-in fade-in zoom-in-95 duration-200',
           sizeMap[size],
           className
@@ -90,9 +90,9 @@ export const Modal: React.FC<ModalProps> = ({
       >
         {/* Header */}
         {(title || showClose) && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-border">
             {title && (
-              <h2 className="font-bold text-gray-900 text-base">
+              <h2 className="font-bold text-txt-primary text-base">
                 {title}
               </h2>
             )}
@@ -101,7 +101,7 @@ export const Modal: React.FC<ModalProps> = ({
               <button
                 onClick={onClose}
                 aria-label="닫기"
-                className="p-1 hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600"
+                className="p-1 rounded-lg hover:bg-surface-sunken transition-colors text-txt-tertiary hover:text-txt-secondary"
               >
                 <X size={18} />
               </button>

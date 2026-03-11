@@ -27,14 +27,65 @@ const config: Config = {
         mono: ['"JetBrains Mono"', '"Nanum Gothic Coding"', 'monospace'],
       },
       colors: {
+        // ── Design System Tokens ──
+        surface: {
+          bg: 'var(--surface-bg)',
+          card: 'var(--surface-card)',
+          elevated: 'var(--surface-elevated)',
+          sunken: 'var(--surface-sunken)',
+          inverse: 'var(--surface-inverse)',
+        },
+        txt: {
+          primary: 'var(--text-primary)',
+          secondary: 'var(--text-secondary)',
+          tertiary: 'var(--text-tertiary)',
+          disabled: 'var(--text-disabled)',
+          inverse: 'var(--text-inverse)',
+        },
+        border: {
+          DEFAULT: 'var(--border-default)',
+          strong: 'var(--border-strong)',
+          subtle: 'var(--border-subtle)',
+        },
+        accent: {
+          DEFAULT: 'var(--accent-primary)',
+          hover: 'var(--accent-primary-hover)',
+          secondary: 'var(--accent-secondary)',
+          'secondary-hover': 'var(--accent-secondary-hover)',
+        },
+        status: {
+          'success-bg': 'var(--status-success-bg)',
+          'success-text': 'var(--status-success-text)',
+          'warning-bg': 'var(--status-warning-bg)',
+          'warning-text': 'var(--status-warning-text)',
+          'danger-bg': 'var(--status-danger-bg)',
+          'danger-text': 'var(--status-danger-text)',
+          'info-bg': 'var(--status-info-bg)',
+          'info-text': 'var(--status-info-text)',
+          'neutral-bg': 'var(--status-neutral-bg)',
+          'neutral-text': 'var(--status-neutral-text)',
+          'danger-accent': 'var(--status-danger-accent)',
+        },
+        tag: {
+          'default-bg': 'var(--tag-default-bg)',
+          'default-text': 'var(--tag-default-text)',
+          'strong-bg': 'var(--tag-strong-bg)',
+          'strong-text': 'var(--tag-strong-text)',
+        },
+        // ── Legacy (점진적 마이그레이션) ──
         draft: {
           black: '#222222',
           gray: '#666666',
           light: '#F4F4F5',
           paper: '#FFFFFF',
-          blue: '#0052CC',
-          accent: '#FF4D4D',
         },
+      },
+      borderRadius: {
+        xs: 'var(--radius-xs)',
+        sm: 'var(--radius-sm)',
+        md: 'var(--radius-md)',
+        lg: 'var(--radius-lg)',
+        xl: 'var(--radius-xl)',
       },
       boxShadow: {
         soft: '0 2px 8px rgba(0,0,0,0.05)',
