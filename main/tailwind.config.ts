@@ -8,6 +8,20 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      zIndex: {
+        dropdown: '100',
+        sticky: '200',
+        fixed: '300',
+        'modal-backdrop': '400',
+        modal: '401',
+        popover: '500',
+        tooltip: '600',
+      },
+      maxWidth: {
+        'container-narrow': '768px',
+        'container-standard': '1200px',
+        'container-wide': '1400px',
+      },
       fontFamily: {
         sans: ['"Noto Sans KR"', 'sans-serif'],
         mono: ['"JetBrains Mono"', '"Nanum Gothic Coding"', 'monospace'],

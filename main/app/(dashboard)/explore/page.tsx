@@ -1,7 +1,436 @@
 'use client'
 
-import { Explore } from '@/components/Explore'
+import React, { useState } from 'react'
+import { Search, Filter, ArrowRight, Zap, Users, Star, Rocket, LayoutGrid, Loader2, Clock, Flame, ChevronRight, Hash, UserCircle, Sparkles } from 'lucide-react'
+import Link from 'next/link'
+import { Card } from '@/components/ui/Card'
+import { PageContainer } from '@/components/ui/PageContainer'
+import { DashboardLayout } from '@/components/ui/DashboardLayout'
+import { ProjectDetailModal } from '@/components/ProjectDetailModal'
+import { useOpportunities, type OpportunityWithCreator } from '@/src/hooks/useOpportunities'
+import { usePublicProfiles, type PublicProfile } from '@/src/hooks/usePublicProfiles'
+import { FALLBACK_CATEGORIES, FALLBACK_TRENDING_TAGS, FALLBACK_TALENTS } from '@/src/lib/fallbacks/explore'
+import { useAuth } from '@/src/context/AuthContext'
+
+const CATEGORY_ICONS: Record<string, React.ElementType> = {
+  all: LayoutGrid,
+  'AI/ML': Sparkles,
+  SaaS: Zap,
+  Fintech: Star,
+  HealthTech: Zap,
+  Social: Users,
+}
 
 export default function ExplorePage() {
-  return <Explore />
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState('all')
+  const [sortBy, setSortBy] = useState<'latest' | 'popular' | 'trending'>('trending')
+  const [activeTab, setActiveTab] = useState<'projects' | 'people'>('projects')
+  const [recruitingOnly, setRecruitingOnly] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const { isAuthenticated } = useAuth()
+
+  const PAGE_SIZE = 12
+  const [displayLimit, setDisplayLimit] = useState(PAGE_SIZE)
+
+  const { data: oppData, isLoading: opportunitiesLoading } = useOpportunities({ limit: displayLimit })
+  const opportunities = oppData?.items ?? []
+  const totalCount = oppData?.totalCount ?? 0
+  const hasMore = displayLimit < totalCount
+
+  const { data: publicProfiles = [], isLoading: profilesLoading } = usePublicProfiles({ limit: 12 })
+
+  const query = searchQuery.toLowerCase().trim()
+
+  const projectCards = opportunities
+    .filter((opp: OpportunityWithCreator) => {
+      if (recruitingOnly && opp.status !== 'active') return false
+      if (selectedCategory !== 'all') {
+        const tags = (opp.interest_tags || []).map(t => t.toLowerCase())
+        if (!tags.some(t => t.includes(selectedCategory.toLowerCase()))) return false
+      }
+      if (query) {
+        const title = (opp.title || '').toLowerCase()
+        const desc = (opp.description || '').toLowerCase()
+        const tags = (opp.interest_tags || []).join(' ').toLowerCase()
+        const roles = (opp.needed_roles || []).join(' ').toLowerCase()
+        if (!title.includes(query) && !desc.includes(query) && !tags.includes(query) && !roles.includes(query)) return false
+      }
+      return true
+    })
+    .sort((a, b) => {
+      if (sortBy === 'latest') return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
+      return new Date(b.updated_at || b.created_at || 0).getTime() - new Date(a.updated_at || a.created_at || 0).getTime()
+    })
+    .map((opp: OpportunityWithCreator) => ({
+      id: opp.id,
+      title: opp.title,
+      desc: opp.description || '',
+      role: opp.needed_roles?.[0] || 'Team Member',
+      stack: (opp.interest_tags || []).slice(0, 2),
+      members: 0,
+      updatedAt: opp.updated_at ?? undefined,
+    }))
+
+  const talentCards = (publicProfiles.length > 0
+    ? publicProfiles
+        .filter((profile: PublicProfile) => {
+          if (!query) return true
+          const name = (profile.nickname || '').toLowerCase()
+          const role = (profile.desired_position || '').toLowerCase()
+          const tags = (profile.interest_tags || []).join(' ').toLowerCase()
+          return name.includes(query) || role.includes(query) || tags.includes(query)
+        })
+        .map((profile: PublicProfile) => ({
+          id: profile.id,
+          name: profile.nickname || 'Anonymous',
+          role: profile.desired_position || 'Explorer',
+          exp: '',
+          tags: (profile.interest_tags || []).slice(0, 2),
+          status: 'OPEN' as const,
+          visionSummary: profile.vision_summary,
+        }))
+    : FALLBACK_TALENTS.map(t => ({ ...t, visionSummary: undefined })))
+
+  const categories = FALLBACK_CATEGORIES.map((cat) => ({
+    ...cat,
+    icon: CATEGORY_ICONS[cat.id] || LayoutGrid,
+  }))
+
+  const trendingTags = FALLBACK_TRENDING_TAGS
+
+  const getUpdateBadge = (updatedAt: string | undefined) => {
+    if (!updatedAt) return null
+    const daysAgo = Math.floor((Date.now() - new Date(updatedAt).getTime()) / (1000 * 60 * 60 * 24))
+    if (daysAgo <= 7) return daysAgo === 0 ? '오늘 업데이트' : `${daysAgo}일 전 업데이트`
+    return null
+  }
+
+  return (
+    <div className="bg-[#FAFAFA] min-h-full">
+      {/* Featured Hero */}
+      <PageContainer size="wide" className="pt-4 pb-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="lg:col-span-2 bg-black rounded-2xl p-8 flex flex-col justify-end min-h-[320px] relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+            <div className="relative z-10">
+              <div className="flex gap-2 mb-3">
+                <span className="text-[10px] font-mono font-bold text-white border border-white/30 px-3 py-1 rounded-full bg-black/20 backdrop-blur-sm">PROJECT</span>
+              </div>
+              <h2 className="text-2xl font-bold text-white mb-1">이번 주 추천 프로젝트</h2>
+              <p className="text-white/60 text-sm">팀원을 찾고 있는 프로젝트를 확인해보세요</p>
+            </div>
+          </div>
+          <div className="flex flex-col gap-4">
+            <div className="bg-gray-900 rounded-2xl p-6 flex-1 flex flex-col justify-end min-h-[150px]">
+              <span className="text-[10px] font-mono text-white/50 mb-1">TRENDING</span>
+              <h3 className="text-lg font-bold text-white">AI / ML</h3>
+              <p className="text-white/50 text-xs">12개 프로젝트 모집 중</p>
+            </div>
+            <div className="bg-draft-blue rounded-2xl p-6 flex-1 flex flex-col justify-end min-h-[150px]">
+              <span className="text-[10px] font-mono text-white/50 mb-1">NEW</span>
+              <h3 className="text-lg font-bold text-white">이번 주 신규</h3>
+              <p className="text-white/50 text-xs">새로 올라온 프로젝트</p>
+            </div>
+          </div>
+        </div>
+      </PageContainer>
+
+      {/* Main Content */}
+      <DashboardLayout
+        size="wide"
+        sidebar={
+          <div className="space-y-6">
+            {/* 카테고리 */}
+            <div className="bg-white rounded-xl border border-gray-100 p-4">
+              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">카테고리</h3>
+              <nav className="space-y-1">
+                {categories.map((cat) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => setSelectedCategory(cat.id)}
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all ${
+                      selectedCategory === cat.id ? 'bg-black text-white' : 'text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    <span className="flex items-center gap-2">
+                      <cat.icon size={14} />
+                      {cat.label}
+                    </span>
+                    <span className={`text-xs ${selectedCategory === cat.id ? 'text-gray-300' : 'text-gray-400'}`}>
+                      {cat.count > 0 ? cat.count : ''}
+                    </span>
+                  </button>
+                ))}
+              </nav>
+            </div>
+
+            {/* 트렌딩 태그 */}
+            <div className="bg-white rounded-xl border border-gray-100 p-4">
+              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1">
+                <Flame size={12} /> 트렌딩 태그
+              </h3>
+              <div className="space-y-2">
+                {trendingTags.map((item, idx) => (
+                  <button
+                    key={item.tag}
+                    className="w-full flex items-center justify-between px-2 py-1.5 rounded-md text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="text-gray-400 text-xs">#{idx + 1}</span>
+                      <Hash size={12} className="text-gray-400" />
+                      {item.tag}
+                    </span>
+                    <span className="text-xs text-gray-400">{item.count}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* 필터 */}
+            <div className="bg-white rounded-xl border border-gray-100 p-4">
+              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">필터</h3>
+              <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="rounded border-gray-300"
+                  checked={recruitingOnly}
+                  onChange={(e) => setRecruitingOnly(e.target.checked)}
+                />
+                모집 중만 보기
+              </label>
+            </div>
+          </div>
+        }
+        aside={
+          <div className="space-y-6">
+            {/* 추천 인재 */}
+            <div className="bg-white rounded-xl border border-gray-100 p-4">
+              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1">
+                <UserCircle size={12} /> 추천 인재
+              </h3>
+              <div className="space-y-3">
+                {talentCards.slice(0, 4).map((t) => (
+                  <div key={t.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                    <div className="w-9 h-9 bg-gray-100 rounded-full flex items-center justify-center text-xs font-bold text-gray-600">
+                      {t.name.substring(0, 2)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900">{t.name}</p>
+                      <p className="text-xs text-gray-500">{t.role}</p>
+                    </div>
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+                      t.status === 'OPEN' ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-500'
+                    }`}>
+                      {t.status}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <button
+                onClick={() => setActiveTab('people')}
+                className="w-full mt-3 text-xs text-gray-500 hover:text-black flex items-center justify-center gap-1"
+              >
+                더 보기 <ChevronRight size={14} />
+              </button>
+            </div>
+
+            {/* CTA 배너 */}
+            <div className="bg-gradient-to-br from-gray-900 to-black rounded-xl p-5 text-white">
+              <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center mb-4">
+                <Rocket size={20} />
+              </div>
+              <h3 className="font-bold text-base mb-1">아이디어가 있나요?</h3>
+              <p className="text-gray-400 text-xs mb-4">팀을 구성하고 프로젝트를 시작하세요</p>
+              <Link
+                href="/projects/new"
+                className="w-full bg-white text-black text-sm font-semibold py-2 rounded-lg hover:bg-gray-100 transition-colors block text-center"
+              >
+                프로젝트 시작하기
+              </Link>
+            </div>
+          </div>
+        }
+      >
+        {/* 탭 + 정렬 */}
+        <div className="flex items-center justify-between border-b border-gray-200 mb-6">
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setActiveTab('projects')}
+              className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 -mb-[2px] transition-colors ${
+                activeTab === 'projects' ? 'border-black text-black' : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              <LayoutGrid size={14} />
+              프로젝트
+            </button>
+            <button
+              onClick={() => setActiveTab('people')}
+              className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 -mb-[2px] transition-colors ${
+                activeTab === 'people' ? 'border-black text-black' : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              <Users size={14} />
+              사람
+            </button>
+          </div>
+
+          {activeTab === 'projects' && (
+            <div className="flex items-center gap-1">
+              {[
+                { id: 'trending', label: '트렌딩', icon: Flame },
+                { id: 'latest', label: '최신', icon: Clock },
+                { id: 'popular', label: '인기', icon: Star },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setSortBy(tab.id as typeof sortBy)}
+                  className={`flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                    sortBy === tab.id ? 'bg-gray-100 text-black' : 'text-gray-400 hover:text-gray-600'
+                  }`}
+                >
+                  <tab.icon size={12} />
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* 프로젝트 탭 */}
+        {activeTab === 'projects' && (
+          <section>
+            {opportunitiesLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[1,2,3,4].map((i) => (
+                  <Card key={i} padding="p-4">
+                    <div className="flex gap-3 animate-pulse">
+                      <div className="w-10 h-10 rounded-lg bg-gray-200 flex-shrink-0" />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-4 bg-gray-200 rounded w-3/4" />
+                        <div className="h-3 bg-gray-100 rounded w-full" />
+                        <div className="h-3 bg-gray-100 rounded w-1/2" />
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            ) : projectCards.length === 0 ? (
+              <Card className="text-center py-12" padding="p-6">
+                <LayoutGrid className="mx-auto mb-4 text-gray-300" size={40} />
+                <p className="text-gray-500 text-sm">등록된 프로젝트가 없습니다</p>
+              </Card>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {projectCards.map((p) => (
+                  <Card key={p.id} className="group hover:border-gray-300 cursor-pointer" padding="p-4" onClick={() => setSelectedProjectId(p.id)}>
+                    <div className="flex gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-600 group-hover:bg-black group-hover:text-white transition-colors flex-shrink-0">
+                        <Zap size={18} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2">
+                          <h3 className="font-semibold text-gray-900 text-sm truncate">{p.title}</h3>
+                          {(() => {
+                            const badge = getUpdateBadge(p.updatedAt)
+                            return badge ? (
+                              <span className="text-[10px] text-green-600 font-mono flex-shrink-0">{badge}</span>
+                            ) : null
+                          })()}
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1 line-clamp-2">{p.desc}</p>
+                        <div className="flex items-center gap-2 mt-2">
+                          <span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded font-medium">{p.role}</span>
+                          {p.stack.slice(0, 2).map(s => (
+                            <span key={s} className="text-[10px] text-gray-400">{s}</span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
+
+            {hasMore && !opportunitiesLoading && (
+              <div className="text-center mt-6">
+                <button
+                  onClick={() => setDisplayLimit(prev => prev + PAGE_SIZE)}
+                  className="px-6 py-2.5 text-sm font-medium text-gray-600 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+                >
+                  더 보기{!searchQuery && selectedCategory === 'all' && !recruitingOnly ? ` (${totalCount - projectCards.length}개 남음)` : ''}
+                </button>
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* 사람 탭 */}
+        {activeTab === 'people' && (
+          <section>
+            {profilesLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[1,2,3,4,5,6].map((i) => (
+                  <Card key={i} padding="p-4">
+                    <div className="flex gap-3 animate-pulse">
+                      <div className="w-10 h-10 rounded-full bg-gray-200 flex-shrink-0" />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-4 bg-gray-200 rounded w-1/2" />
+                        <div className="h-3 bg-gray-100 rounded w-3/4" />
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            ) : talentCards.length === 0 ? (
+              <Card className="text-center py-12" padding="p-6">
+                <Users className="mx-auto mb-4 text-gray-300" size={40} />
+                <p className="text-gray-500 text-sm">등록된 사람이 없습니다</p>
+              </Card>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {talentCards.map((t) => (
+                  <Card key={t.id} className="group hover:border-gray-300 cursor-pointer" padding="p-4">
+                    <div className="flex gap-3">
+                      <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-xs font-bold text-gray-600 flex-shrink-0">
+                        {t.name.substring(0, 2)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <h3 className="font-semibold text-gray-900 text-sm">{t.name}</h3>
+                            <p className="text-xs text-gray-500">{t.role}</p>
+                          </div>
+                          <span className={`text-[10px] px-1.5 py-0.5 rounded flex-shrink-0 ${
+                            t.status === 'OPEN' ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-500'
+                          }`}>
+                            {t.status}
+                          </span>
+                        </div>
+                        {t.visionSummary && (
+                          <p className="text-xs text-gray-400 mt-1 line-clamp-1">{t.visionSummary}</p>
+                        )}
+                        {t.tags.length > 0 && (
+                          <div className="flex items-center gap-1.5 mt-2">
+                            {t.tags.map(tag => (
+                              <span key={tag} className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded font-medium">{tag}</span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
+      </DashboardLayout>
+
+      <ProjectDetailModal
+        projectId={selectedProjectId}
+        onClose={() => setSelectedProjectId(null)}
+      />
+    </div>
+  )
 }

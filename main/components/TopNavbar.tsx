@@ -2,10 +2,26 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { PenTool, User, LogOut, Bell, Menu, X, Plus, Settings } from 'lucide-react'
+import { PenTool, User, LogOut, Bell, Menu, X, Plus, Settings, Search, MessageSquare, Moon, Sun, MoreHorizontal } from 'lucide-react'
 import Link from 'next/link'
 import { useAuth } from '@/src/context/AuthContext'
 import { useAdmin } from '@/src/hooks/useAdmin'
+
+// 툴팁 아이콘 버튼
+const IconButton = ({ label, onClick, children }: { label: string; onClick?: () => void; children: React.ReactNode }) => (
+  <div className="relative group">
+    <button
+      onClick={onClick}
+      aria-label={label}
+      className="relative p-2 text-gray-500 hover:text-black hover:bg-gray-100 rounded-lg transition-colors"
+    >
+      {children}
+    </button>
+    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+      {label}
+    </div>
+  </div>
+)
 
 // NavLink 컴포넌트 - 활성 상태 스타일링
 const NavLink = ({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) => (
@@ -29,6 +45,7 @@ export const TopNavbar: React.FC = () => {
 
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isDarkMode, setIsDarkMode] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
   // 라우트 변경 시 모바일 메뉴 닫기
@@ -57,8 +74,8 @@ export const TopNavbar: React.FC = () => {
       <nav className="fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-100 z-50">
         <div className="max-w-[1400px] mx-auto px-4 lg:px-6 h-full flex items-center justify-between">
 
-          {/* ===== 좌측: 로고 + 메인 메뉴 ===== */}
-          <div className="flex items-center gap-8">
+          {/* ===== 좌측: 로고 + 메뉴 + CTA ===== */}
+          <div className="flex items-center gap-6 shrink-0">
             {/* 로고 */}
             <Link href="/explore" className="flex items-center gap-2 group">
               <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center group-hover:bg-gray-800 transition-colors">
@@ -68,30 +85,49 @@ export const TopNavbar: React.FC = () => {
             </Link>
 
             {/* 데스크탑 메뉴 */}
-            <div className="hidden md:flex items-center gap-6">
+            <div className="hidden md:flex items-center gap-5">
               <NavLink href="/explore" active={pathname === '/explore'}>탐색</NavLink>
               <NavLink href="/profile" active={pathname === '/profile'}>마이페이지</NavLink>
+              <button
+                onClick={() => router.push('/projects/new')}
+                className="flex items-center gap-1.5 px-4 py-2 bg-black text-white text-sm font-semibold rounded-lg hover:bg-gray-800 transition-colors shadow-sm"
+              >
+                <Plus size={16} />
+                새 프로젝트
+              </button>
             </div>
           </div>
 
-          {/* ===== 우측: 액션 + 프로필 ===== */}
-          <div className="flex items-center gap-3">
-            {/* Primary CTA - 새 프로젝트 */}
-            <button
-              onClick={() => router.push('/projects/new')}
-              className="hidden md:flex items-center gap-1.5 px-4 py-2 bg-black text-white text-sm font-semibold rounded-lg hover:bg-gray-800 transition-colors shadow-sm"
-            >
-              <Plus size={16} />
-              새 프로젝트
+          {/* ===== 중앙: 검색바 ===== */}
+          <div className="hidden md:flex flex-1 max-w-xl mx-6 relative">
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+            <input
+              type="text"
+              placeholder="프로젝트, 사람 검색..."
+              className="w-full pl-9 pr-12 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm placeholder:text-gray-400 focus:outline-none focus:border-black focus:bg-white transition-all"
+            />
+            <button className="absolute right-1.5 top-1/2 -translate-y-1/2 px-3 py-1 bg-black text-white text-xs font-semibold rounded-md hover:bg-gray-800 transition-colors">
+              검색
             </button>
+          </div>
 
-            {/* 알림 버튼 */}
-            <button
-              aria-label="알림"
-              className="relative p-2 text-gray-500 hover:text-black hover:bg-gray-100 rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
-            >
+          {/* ===== 우측: AI채팅 + 다크모드 + 알림 + 더보기 + 프로필 ===== */}
+          <div className="flex items-center gap-1 shrink-0">
+            <IconButton label="AI 채팅">
+              <MessageSquare size={20} />
+            </IconButton>
+
+            <IconButton label={isDarkMode ? '라이트 모드' : '다크 모드'} onClick={() => setIsDarkMode(!isDarkMode)}>
+              {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+            </IconButton>
+
+            <IconButton label="알림">
               <Bell size={20} />
-            </button>
+            </IconButton>
+
+            <IconButton label="더보기">
+              <MoreHorizontal size={20} />
+            </IconButton>
 
             {/* 프로필 드롭다운 */}
             <div className="relative" ref={menuRef}>
