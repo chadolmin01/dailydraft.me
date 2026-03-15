@@ -22,7 +22,7 @@ import Link from 'next/link'
 import { useAuth } from '@/src/context/AuthContext'
 import { useProfile, useUpdateProfile } from '@/src/hooks/useProfile'
 import { useMyOpportunities, calculateDaysLeft } from '@/src/hooks/useOpportunities'
-import { useCoffeeChats, useAcceptCoffeeChat, useDeclineCoffeeChat } from '@/src/hooks/useCoffeeChats'
+import { useCoffeeChats, useAcceptCoffeeChat, useDeclineCoffeeChat, useUpdateChatOutcome, type CoffeeChatOutcome } from '@/src/hooks/useCoffeeChats'
 
 export const Profile: React.FC = () => {
   const [contactInput, setContactInput] = useState('')
@@ -65,6 +65,13 @@ export const Profile: React.FC = () => {
   const { data: sentChats = [], isLoading: sentChatsLoading } = useCoffeeChats()
   const acceptChatMutation = useAcceptCoffeeChat()
   const declineChatMutation = useDeclineCoffeeChat()
+  const updateOutcomeMutation = useUpdateChatOutcome()
+
+  const outcomeConfig: Record<CoffeeChatOutcome, { label: string; style: string }> = {
+    team_formed: { label: '팀 합류', style: 'bg-status-success-bg text-status-success-text' },
+    pending: { label: '보류 중', style: 'bg-status-warning-bg text-status-warning-text' },
+    no_match: { label: '불발', style: 'bg-surface-sunken text-txt-tertiary' },
+  }
 
   const skills = profile?.skills as Array<{ name: string; level: string }> | null
 
@@ -379,11 +386,30 @@ export const Profile: React.FC = () => {
                             }`}>
                               {chat.status === 'accepted' ? '수락됨' : '거절됨'}
                             </span>
+                            {chat.status === 'accepted' && chat.outcome && (
+                              <span className={`text-xs px-1.5 py-0.5 rounded-lg ${outcomeConfig[chat.outcome].style}`}>
+                                {outcomeConfig[chat.outcome].label}
+                              </span>
+                            )}
                           </div>
                           <p className="text-xs text-txt-disabled mt-0.5">
                             {new Date(chat.created_at).toLocaleDateString('ko-KR')}
                           </p>
                         </div>
+                        {/* Outcome selector for accepted chats without outcome */}
+                        {chat.status === 'accepted' && !chat.outcome && (
+                          <div className="flex gap-1 flex-shrink-0">
+                            {(Object.keys(outcomeConfig) as CoffeeChatOutcome[]).map((key) => (
+                              <button
+                                key={key}
+                                onClick={() => updateOutcomeMutation.mutate({ chatId: chat.id, outcome: key })}
+                                className={`px-2 py-1 text-[10px] font-medium rounded-lg border border-border hover:border-border-strong transition-colors ${outcomeConfig[key].style}`}
+                              >
+                                {outcomeConfig[key].label}
+                              </button>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </Card>
                   ))}

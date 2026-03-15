@@ -3,6 +3,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/src/lib/supabase/client'
 
+export type CoffeeChatOutcome = 'team_formed' | 'pending' | 'no_match'
+
 export interface CoffeeChat {
   id: string
   opportunity_id: string
@@ -13,6 +15,7 @@ export interface CoffeeChat {
   status: 'pending' | 'accepted' | 'declined'
   contact_info: string | null
   message: string | null
+  outcome: CoffeeChatOutcome | null
   created_at: string
   updated_at: string
 }
@@ -140,6 +143,25 @@ export function useAcceptCoffeeChat() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type: 'accepted', chatId: variables.chatId }),
       }).catch((err) => console.warn('[CoffeeChat] notify email failed:', err))
+      queryClient.invalidateQueries({ queryKey: coffeeChatKeys.all })
+    },
+  })
+}
+
+// ── Mutation: update coffee chat outcome ──
+export function useUpdateChatOutcome() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async ({ chatId, outcome }: { chatId: string; outcome: CoffeeChatOutcome }) => {
+      const { error } = await supabase
+        .from('coffee_chats')
+        .update({ outcome })
+        .eq('id', chatId)
+
+      if (error) throw error
+    },
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: coffeeChatKeys.all })
     },
   })
