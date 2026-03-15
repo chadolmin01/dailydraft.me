@@ -24,7 +24,7 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick, onSlidePanelOpen }) => {
             <circle cx="800" cy="150" r="3" fill="black" />
         </svg>
 
-        {/* Card 1: Talent Profile - Wireframe Style */}
+        {/* Card 1: Side Project */}
         <div className="absolute top-20 -left-12 w-64 bg-white/90 backdrop-blur-sm p-4 rounded-none border border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] animate-float rotate-[-2deg]">
             <div className="absolute -top-1 -left-1 w-2 h-2 bg-black"></div>
             <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-black"></div>
@@ -33,17 +33,14 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick, onSlidePanelOpen }) => {
                 <div className="w-8 h-8 rounded-none border border-black bg-gray-50 flex items-center justify-center">
                     <Users size={16} className="text-black" />
                 </div>
-                <span className="text-[10px] font-mono border border-black px-1 text-black bg-yellow-50">SIDE PROJECT</span>
+                <span className="text-[10px] font-mono border border-black px-1 text-black bg-yellow-50">모집 중</span>
             </div>
-            <div className="h-2 w-24 bg-black/10 rounded-none mb-2 relative">
-                <div className="absolute -left-2 top-0 h-full w-[1px] bg-black"></div>
-                <div className="absolute -right-2 top-0 h-full w-[1px] bg-black"></div>
-            </div>
-            <div className="h-2 w-16 bg-gray-200 rounded-none"></div>
-            <div className="mt-2 text-[8px] font-mono text-gray-400 text-right">REF: S-STUDENT-01</div>
+            <h3 className="text-sm font-bold mb-1">캠퍼스 중고거래</h3>
+            <p className="text-xs text-gray-500">React Native / Node.js</p>
+            <div className="mt-2 text-[8px] font-mono text-gray-400 text-right">MEMBERS: 2/4</div>
         </div>
 
-        {/* Card 2: Project Hiring (Blue) - Blueprint Style */}
+        {/* Card 2: Team Building */}
         <div className="absolute top-32 -right-24 w-72 bg-[#4F46E5] p-5 rounded-sm shadow-xl animate-float-delayed rotate-[1deg] ring-1 ring-offset-4 ring-indigo-100">
             <div className="absolute top-0 right-0 p-1">
                 <div className="w-2 h-2 border border-white/50 rounded-full"></div>
@@ -52,15 +49,14 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick, onSlidePanelOpen }) => {
                 <div className="w-8 h-8 bg-white/10 flex items-center justify-center border border-white/20">
                     <Zap size={16} className="text-white" />
                 </div>
-                <span className="text-[10px] font-mono border border-white/30 text-white px-2 py-0.5">TEAM BUILDING</span>
+                <span className="text-[10px] font-mono border border-white/30 text-white px-2 py-0.5">팀빌딩 중</span>
             </div>
-            <h3 className="text-white font-bold text-lg mb-1 font-sans">App Dev Team</h3>
-            <p className="text-indigo-100 text-xs font-mono">Flutter / React Native</p>
+            <h3 className="text-white font-bold text-lg mb-1 font-sans">AI 스터디 플래너</h3>
+            <p className="text-indigo-100 text-xs font-mono">Next.js / Python / GPT</p>
 
-            {/* Technical markings */}
             <div className="mt-3 flex justify-between items-end border-t border-white/10 pt-2">
-                <span className="text-[8px] text-white/50 font-mono">MEMBERS: 2/4</span>
-                <span className="text-[8px] text-white/50 font-mono">MVP_PHASE</span>
+                <span className="text-[8px] text-white/50 font-mono">디자이너 구해요</span>
+                <span className="text-[8px] text-white/50 font-mono">MVP 단계</span>
             </div>
         </div>
 
@@ -89,20 +85,19 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick, onSlidePanelOpen }) => {
                 </div>
             </div>
         </div>
-         {/* Card 4: Series A - Dark */}
+         {/* Card 4: Launched Project */}
         <div className="absolute bottom-40 -right-8 w-64 bg-[#111] p-5 shadow-2xl animate-float rotate-[-1deg] border border-gray-700">
              <div className="flex justify-between items-start mb-6">
                 <div className="w-8 h-8 bg-white/10 flex items-center justify-center border border-white/10">
                     <Sparkles size={14} className="text-gray-300" />
                 </div>
-                <span className="text-[10px] font-mono border border-white/20 text-gray-300 px-2 py-0.5">LAUNCHED</span>
+                <span className="text-[10px] font-mono border border-white/20 text-gray-300 px-2 py-0.5">런칭 완료</span>
             </div>
-             <h3 className="text-white font-bold text-lg mb-1">Campus Life</h3>
-             <p className="text-gray-500 text-xs border-b border-gray-800 pb-2 mb-2">University Social Platform</p>
+             <h3 className="text-white font-bold text-lg mb-1">학식 알리미</h3>
+             <p className="text-gray-500 text-xs border-b border-gray-800 pb-2 mb-2">대학 식당 메뉴 알림 서비스</p>
              <div className="flex gap-2">
-                <div className="w-2 h-2 rounded-full bg-gray-800"></div>
-                <div className="w-2 h-2 rounded-full bg-white"></div>
-                <div className="w-2 h-2 rounded-full bg-white"></div>
+                <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                <span className="text-[8px] text-gray-500 font-mono">3명이 함께 만들었어요</span>
              </div>
         </div>
       </div>

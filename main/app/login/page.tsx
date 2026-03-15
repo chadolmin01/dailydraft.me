@@ -7,13 +7,13 @@ import { useAuth } from '@/src/context/AuthContext'
 
 // Data for the Marquee
 const showcaseItems = [
-  { type: 'startup', title: 'PetPulse', desc: 'AI 펫 헬스케어', tag: 'Series A', color: 'bg-black text-white' },
-  { type: 'talent', title: 'Sarah Kim', desc: 'Product Designer (7y+)', tag: 'Open to Work', color: 'bg-white border-gray-200 text-gray-900' },
-  { type: 'project', title: 'Deep Learning Ops', desc: 'MLOps 파이프라인 구축', tag: 'Hiring', color: 'bg-blue-600 text-white' },
-  { type: 'startup', title: 'Green Cycle', desc: '친환경 패키징 솔루션', tag: 'Seed', color: 'bg-white border-gray-200 text-gray-900' },
-  { type: 'talent', title: 'David Lee', desc: 'Full Stack Dev', tag: 'Available', color: 'bg-white border-gray-200 text-gray-900' },
-  { type: 'project', title: 'Fintech MVP', desc: '송금 간편화 서비스', tag: 'Team Building', color: 'bg-gray-900 text-white' },
-  { type: 'startup', title: 'EduTech Pro', desc: '성인 직무 교육', tag: 'Pre-A', color: 'bg-white border-gray-200 text-gray-900' },
+  { type: 'project', title: '캠퍼스 중고거래', desc: 'React Native 앱 개발', tag: '모집 중', color: 'bg-black text-white' },
+  { type: 'talent', title: '김민수', desc: '프론트엔드 개발자', tag: 'OPEN', color: 'bg-white border-gray-200 text-gray-900' },
+  { type: 'project', title: 'AI 스터디 플래너', desc: 'GPT 기반 학습 도우미', tag: '팀빌딩 중', color: 'bg-blue-600 text-white' },
+  { type: 'talent', title: '박지영', desc: 'UI/UX 디자이너', tag: 'OPEN', color: 'bg-white border-gray-200 text-gray-900' },
+  { type: 'project', title: '학식 알리미', desc: '대학 식당 메뉴 알림', tag: '런칭 완료', color: 'bg-gray-900 text-white' },
+  { type: 'talent', title: '이준호', desc: '백엔드 개발자', tag: 'OPEN', color: 'bg-white border-gray-200 text-gray-900' },
+  { type: 'project', title: '동아리 매칭', desc: '관심사 기반 동아리 추천', tag: '모집 중', color: 'bg-white border-gray-200 text-gray-900' },
 ]
 
 const showcaseColumn1 = [...showcaseItems, ...showcaseItems, ...showcaseItems]
@@ -134,7 +134,7 @@ function LoginContent() {
           <div className="text-xl font-bold tracking-tighter">{progress}%</div>
         </div>
         <div className="text-[10px] text-gray-400 font-medium tracking-widest animate-pulse uppercase">
-           Booting Draft OS...
+           Draft 로딩 중...
         </div>
       </div>
     )
@@ -155,19 +155,19 @@ function LoginContent() {
             </div>
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-gray-50 border border-gray-100 rounded-full">
                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-               <span className="text-[10px] font-mono font-bold text-gray-500 uppercase">System Operational</span>
+               <span className="text-[10px] font-mono font-bold text-gray-500 uppercase">Open Beta</span>
             </div>
          </div>
 
          {/* Center Form */}
          <div className="px-5 sm:px-8 md:px-12 flex flex-col justify-center animate-slide-up-fade" style={{ animationDelay: '0.1s' }}>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 tracking-tight">
-               {isSignUp ? 'Create Account' : 'Welcome back, Architect.'}
+               {isSignUp ? '계정 만들기' : '다시 만나서 반가워요!'}
             </h1>
             <p className="text-gray-500 text-sm mb-8 leading-relaxed">
                {isSignUp
-                  ? 'Join Draft to build your dream team and find opportunities.'
-                  : 'Please enter your credentials to access your projects and network.'}
+                  ? 'Draft에서 팀을 만들고 프로젝트를 시작하세요.'
+                  : '로그인하고 프로젝트와 커피챗을 확인하세요.'}
             </p>
 
             {error && (
@@ -180,38 +180,38 @@ function LoginContent() {
             <form onSubmit={handleLogin} className="space-y-4">
                {isSignUp && (
                   <div className="space-y-1.5">
-                     <label className="text-[10px] font-bold font-mono text-gray-400 uppercase tracking-widest">Nickname</label>
+                     <label className="text-[10px] font-bold font-mono text-gray-400 uppercase tracking-widest">닉네임</label>
                      <input
                         type="text"
                         value={nickname}
                         onChange={(e) => setNickname(e.target.value)}
                         className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-sm text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-all placeholder:text-gray-300"
-                        placeholder="Your nickname"
+                        placeholder="닉네임을 입력하세요"
                         required={isSignUp}
                      />
                   </div>
                )}
 
                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold font-mono text-gray-400 uppercase tracking-widest">Work Email</label>
+                  <label className="text-[10px] font-bold font-mono text-gray-400 uppercase tracking-widest">이메일</label>
                   <input
                      type="email"
                      value={email}
                      onChange={(e) => setEmail(e.target.value)}
                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-sm text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-all placeholder:text-gray-300 font-mono"
-                     placeholder="name@company.com"
+                     placeholder="email@example.com"
                      required
                   />
                </div>
 
                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold font-mono text-gray-400 uppercase tracking-widest">Password</label>
+                  <label className="text-[10px] font-bold font-mono text-gray-400 uppercase tracking-widest">비밀번호</label>
                   <input
                      type="password"
                      value={password}
                      onChange={(e) => setPassword(e.target.value)}
                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-sm text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-all placeholder:text-gray-300"
-                     placeholder="Enter your password"
+                     placeholder="비밀번호를 입력하세요"
                      required
                      minLength={6}
                   />
@@ -227,7 +227,7 @@ function LoginContent() {
                   ) : (
                      <>
                         <span className="font-mono uppercase tracking-wide">
-                           {isSignUp ? 'Create Account' : 'Authenticate'}
+                           {isSignUp ? '가입하기' : '로그인'}
                         </span>
                         <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                      </>
@@ -242,7 +242,7 @@ function LoginContent() {
                }}
                className="mt-4 text-sm text-gray-500 hover:text-black transition-colors text-center"
             >
-               {isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
+               {isSignUp ? '이미 계정이 있나요? 로그인' : '계정이 없나요? 가입하기'}
             </button>
 
             <div className="relative my-8">
@@ -250,7 +250,7 @@ function LoginContent() {
                   <div className="w-full border-t border-gray-100"></div>
                </div>
                <div className="relative flex justify-center text-xs">
-                  <span className="bg-white px-2 text-gray-400 font-mono text-[10px] uppercase tracking-widest">Or Continue With</span>
+                  <span className="bg-white px-2 text-gray-400 font-mono text-[10px] uppercase tracking-widest">소셜 로그인</span>
                </div>
             </div>
 
@@ -309,12 +309,12 @@ function LoginContent() {
          {/* Slogan Overlay */}
          <div className="absolute bottom-12 right-12 text-right z-10 max-w-md">
             <h2 className="text-4xl font-bold text-gray-900 tracking-tight leading-tight mb-2">
-               Build your team,<br/>
-               <span className="text-gray-400">Validate your idea.</span>
+               프로젝트를 올리고,<br/>
+               <span className="text-gray-400">팀을 만들어보세요.</span>
             </h2>
             <div className="flex justify-end gap-2">
-               <div className="px-3 py-1 bg-white border border-gray-200 rounded-full text-[10px] font-bold font-mono shadow-sm">AI MATCHING</div>
-               <div className="px-3 py-1 bg-white border border-gray-200 rounded-full text-[10px] font-bold font-mono shadow-sm">CONTRACTS</div>
+               <div className="px-3 py-1 bg-white border border-gray-200 rounded-full text-[10px] font-bold font-mono shadow-sm">커피챗</div>
+               <div className="px-3 py-1 bg-white border border-gray-200 rounded-full text-[10px] font-bold font-mono shadow-sm">팀빌딩</div>
             </div>
          </div>
       </div>

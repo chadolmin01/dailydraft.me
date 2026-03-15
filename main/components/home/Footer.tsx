@@ -15,28 +15,27 @@ export const Footer: React.FC = () => {
              <span className="font-bold text-sm tracking-tight">Draft.</span>
           </div>
           <p className="text-[10px] font-mono text-gray-400 uppercase tracking-widest">
-            © 2026 Draft Inc. All rights reserved.
+            © 2026 Draft. All rights reserved.
           </p>
         </div>
 
         <div className="flex gap-8">
             <div className="flex flex-col gap-2">
-                <span className="text-[10px] font-mono text-gray-400 uppercase">Product</span>
-                <Link href="#features" className="text-sm text-gray-600 hover:text-black">Features</Link>
-                <Link href="#" className="text-sm text-gray-600 hover:text-black">Enterprise</Link>
-                <Link href="#" className="text-sm text-gray-600 hover:text-black">Security</Link>
+                <span className="text-[10px] font-mono text-gray-400 uppercase">서비스</span>
+                <Link href="#how-it-works" className="text-sm text-gray-600 hover:text-black">이용 방법</Link>
+                <Link href="#projects" className="text-sm text-gray-600 hover:text-black">프로젝트</Link>
+                <Link href="#faq" className="text-sm text-gray-600 hover:text-black">FAQ</Link>
             </div>
             <div className="flex flex-col gap-2">
-                <span className="text-[10px] font-mono text-gray-400 uppercase">Company</span>
-                <Link href="#" className="text-sm text-gray-600 hover:text-black">About</Link>
-                <Link href="#" className="text-sm text-gray-600 hover:text-black">Careers</Link>
-                <Link href="#" className="text-sm text-gray-600 hover:text-black">Legal</Link>
+                <span className="text-[10px] font-mono text-gray-400 uppercase">안내</span>
+                <Link href="mailto:contact@dailydraft.me" className="text-sm text-gray-600 hover:text-black">문의하기</Link>
+                <Link href="/login" className="text-sm text-gray-600 hover:text-black">로그인</Link>
             </div>
         </div>
 
         <div className="flex items-center gap-2 border border-gray-200 px-3 py-1.5 rounded-md bg-gray-50">
              <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-             <span className="text-[10px] font-mono text-gray-500 uppercase">All Systems Normal</span>
+             <span className="text-[10px] font-mono text-gray-500 uppercase">OPEN BETA</span>
         </div>
       </div>
     </footer>

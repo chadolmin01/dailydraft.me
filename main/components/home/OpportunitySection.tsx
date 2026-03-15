@@ -99,7 +99,7 @@ export const OpportunitySection: React.FC<OpportunitySectionProps> = ({ onSlideP
     : mockProjects.slice(0, 3)
 
   return (
-    <section className="w-full py-24 px-6 md:px-12 bg-gray-50">
+    <section id="projects" className="w-full py-24 px-6 md:px-12 bg-gray-50">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-12">
           <div>

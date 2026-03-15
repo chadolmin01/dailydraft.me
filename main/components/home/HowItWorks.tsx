@@ -23,7 +23,7 @@ const steps = [
 
 export const HowItWorks: React.FC = () => {
   return (
-    <section className="w-full py-24 px-6 md:px-12 bg-gray-50">
+    <section id="how-it-works" className="w-full py-24 px-6 md:px-12 bg-gray-50">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <span className="text-xs font-mono font-bold text-gray-500 tracking-wider mb-4 block">
