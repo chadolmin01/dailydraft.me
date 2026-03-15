@@ -17,7 +17,7 @@ const hiddenRoutes = [
   '/onboarding',
   '/guide',
   '/waitlist',
-  '/project',        // legacy /project/* flows
+  '/project/',        // legacy /project/* flows (trailing slash to avoid matching /projects)
 ]
 
 // API routes hidden in MVP mode — returns 404
@@ -64,7 +64,8 @@ export async function middleware(request: NextRequest) {
   }
 
   // Block hidden pages — redirect to /explore
-  if (hiddenRoutes.some(route => pathname.startsWith(route))) {
+  // Match exact path or path with trailing segments (e.g. /project/ matches /project/abc but not /projects)
+  if (hiddenRoutes.some(route => pathname === route.replace(/\/$/, '') || pathname.startsWith(route))) {
     return NextResponse.redirect(new URL('/explore', request.url))
   }
   let supabaseResponse = NextResponse.next({
