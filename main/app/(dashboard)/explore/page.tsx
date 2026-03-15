@@ -8,6 +8,7 @@ import { DashboardLayout } from '@/components/ui/DashboardLayout'
 import { ProjectDetailModal } from '@/components/ProjectDetailModal'
 import { useOpportunities, type OpportunityWithCreator, calculateDaysLeft } from '@/src/hooks/useOpportunities'
 import { usePublicProfiles, type PublicProfile } from '@/src/hooks/usePublicProfiles'
+import { useUserRecommendations, type UserRecommendation } from '@/src/hooks/useUserRecommendations'
 import { FALLBACK_CATEGORIES, FALLBACK_TRENDING_TAGS, FALLBACK_TALENTS } from '@/src/lib/fallbacks/explore'
 import { useAuth } from '@/src/context/AuthContext'
 
@@ -27,7 +28,7 @@ export default function ExplorePage() {
   const [activeTab, setActiveTab] = useState<'projects' | 'people'>('projects')
   const [recruitingOnly, setRecruitingOnly] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, user } = useAuth()
 
   const PAGE_SIZE = 12
   const [displayLimit, setDisplayLimit] = useState(PAGE_SIZE)
@@ -38,6 +39,8 @@ export default function ExplorePage() {
   const hasMore = displayLimit < totalCount
 
   const { data: publicProfiles = [], isLoading: profilesLoading } = usePublicProfiles({ limit: 12 })
+  const { data: sidebarRecs = [] } = useUserRecommendations({ limit: 4 })
+  const { data: peopleRecs = [], isLoading: recsLoading } = useUserRecommendations({ limit: 6 })
 
   const query = searchQuery.toLowerCase().trim()
 
@@ -100,6 +103,12 @@ export default function ExplorePage() {
   }))
 
   const trendingTags = FALLBACK_TRENDING_TAGS
+
+  const getMatchColorClass = (score: number) => {
+    if (score >= 80) return 'bg-status-success-bg text-status-success-text'
+    if (score >= 60) return 'bg-tag-default-bg text-tag-default-text'
+    return 'bg-surface-sunken text-txt-tertiary'
+  }
 
   const getUpdateBadge = (updatedAt: string | undefined) => {
     if (!updatedAt) return null
@@ -209,25 +218,43 @@ export default function ExplorePage() {
             {/* 추천 인재 */}
             <div className="bg-surface-card rounded-xl border border-border p-4">
               <h3 className="text-xs font-bold text-txt-tertiary uppercase tracking-wider mb-3 flex items-center gap-1">
-                <UserCircle size={12} /> 추천 인재
+                {isAuthenticated && sidebarRecs.length > 0 ? <Sparkles size={12} /> : <UserCircle size={12} />}
+                {isAuthenticated && sidebarRecs.length > 0 ? 'AI 추천 인재' : '추천 인재'}
               </h3>
               <div className="space-y-3">
-                {talentCards.slice(0, 4).map((t) => (
-                  <div key={t.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-surface-sunken transition-colors cursor-pointer">
-                    <div className="w-9 h-9 bg-surface-sunken rounded-full flex items-center justify-center text-xs font-bold text-txt-secondary">
-                      {t.name.substring(0, 2)}
+                {isAuthenticated && sidebarRecs.length > 0 ? (
+                  sidebarRecs.map((rec: UserRecommendation) => (
+                    <div key={rec.user_id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-surface-sunken transition-colors cursor-pointer">
+                      <div className="w-9 h-9 bg-surface-sunken rounded-full flex items-center justify-center text-xs font-bold text-txt-secondary">
+                        {(rec.nickname || '??').substring(0, 2)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-txt-primary">{rec.nickname}</p>
+                        <p className="text-xs text-txt-tertiary truncate">{rec.match_reason}</p>
+                      </div>
+                      <span className={`text-xs px-1.5 py-0.5 rounded ${getMatchColorClass(rec.match_score)}`}>
+                        {rec.match_score}%
+                      </span>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-txt-primary">{t.name}</p>
-                      <p className="text-xs text-txt-tertiary">{t.role}</p>
+                  ))
+                ) : (
+                  talentCards.slice(0, 4).map((t) => (
+                    <div key={t.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-surface-sunken transition-colors cursor-pointer">
+                      <div className="w-9 h-9 bg-surface-sunken rounded-full flex items-center justify-center text-xs font-bold text-txt-secondary">
+                        {t.name.substring(0, 2)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-txt-primary">{t.name}</p>
+                        <p className="text-xs text-txt-tertiary">{t.role}</p>
+                      </div>
+                      <span className={`text-xs px-1.5 py-0.5 rounded ${
+                        t.status === 'OPEN' ? 'bg-status-success-bg text-status-success-text' : 'bg-surface-sunken text-txt-tertiary'
+                      }`}>
+                        {t.status}
+                      </span>
                     </div>
-                    <span className={`text-xs px-1.5 py-0.5 rounded ${
-                      t.status === 'OPEN' ? 'bg-status-success-bg text-status-success-text' : 'bg-surface-sunken text-txt-tertiary'
-                    }`}>
-                      {t.status}
-                    </span>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
               <button
                 onClick={() => setActiveTab('people')}
@@ -399,6 +426,65 @@ export default function ExplorePage() {
         {/* ── 사람 탭: NEW-B 카드 디자인 ── */}
         {activeTab === 'people' && (
           <section>
+            {/* AI 추천 팀원 섹션 (로그인 유저만) */}
+            {isAuthenticated && peopleRecs.length > 0 && (
+              <div className="mb-8">
+                <h3 className="text-xs font-bold text-txt-tertiary uppercase tracking-wider mb-4 flex items-center gap-1">
+                  <Sparkles size={12} /> AI 추천 팀원
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {peopleRecs.map((rec: UserRecommendation) => (
+                    <div
+                      key={rec.user_id}
+                      className="bg-surface-card border border-border rounded-xl overflow-hidden group hover:border-border-strong hover:shadow-sm transition-all cursor-pointer h-[13.75rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+                    >
+                      {/* 헤더: 아바타 + 이름/역할 — 76px */}
+                      <div className="px-4 pt-4 h-[4.75rem] shrink-0">
+                        <div className="flex gap-3">
+                          <div className="w-12 h-12 bg-surface-sunken rounded-xl flex items-center justify-center text-base font-bold text-txt-secondary shrink-0">
+                            {(rec.nickname || '??').substring(0, 2)}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-0.5">
+                              <h3 className="font-semibold text-base text-txt-primary truncate">{rec.nickname}</h3>
+                              <span className={`text-xs px-1.5 py-0.5 rounded shrink-0 ${getMatchColorClass(rec.match_score)}`}>
+                                {rec.match_score}%
+                              </span>
+                            </div>
+                            <p className="text-sm text-txt-secondary truncate">{rec.desired_position || 'Explorer'}{rec.location ? ` · ${rec.location}` : ''}</p>
+                          </div>
+                        </div>
+                      </div>
+                      {/* 본문: 매칭 이유 + 태그 — 92px */}
+                      <div className="px-4 h-[5.75rem] shrink-0 overflow-hidden">
+                        <p className="text-sm text-txt-tertiary line-clamp-2 mb-2">{rec.match_reason}</p>
+                        {rec.interest_tags.length > 0 && (
+                          <div className="flex items-center gap-1.5 overflow-hidden">
+                            {rec.interest_tags.map((tag: string) => (
+                              <span key={tag} className="text-xs bg-tag-default-bg text-tag-default-text px-2 py-0.5 rounded font-medium shrink-0">{tag}</span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      {/* 푸터 — 52px */}
+                      <div className="px-4 pb-4 h-[3.25rem] shrink-0 flex items-end">
+                        <div className="flex items-center justify-between w-full pt-2 border-t border-border-subtle">
+                          <span className="text-xs text-txt-tertiary">{rec.founder_type || rec.desired_position || 'Explorer'}</span>
+                          <span className="text-xs text-status-success-text flex items-center gap-1"><Coffee size={10} /> 커피챗 가능</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {/* Divider */}
+                <div className="mt-6 mb-2 flex items-center gap-3">
+                  <div className="flex-1 border-t border-border" />
+                  <span className="text-xs text-txt-tertiary font-medium">모든 사람</span>
+                  <div className="flex-1 border-t border-border" />
+                </div>
+              </div>
+            )}
+
             {profilesLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[1,2,3,4,5,6].map((i) => (
