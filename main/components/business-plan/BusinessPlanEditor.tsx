@@ -437,9 +437,8 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
                 <RejectionWarnings
                   text={Object.values(sectionData[WIZARD_STEPS[currentStep - 1].sections[0] as string] || {}).join('\n')}
                   section={WIZARD_STEPS[currentStep - 1].sections[0] as string}
-                  onAutoFix={(patternId, suggestedFix) => {
+                  onAutoFix={() => {
                     // TODO: Implement auto-fix integration
-                    console.log('Auto-fix requested:', patternId, suggestedFix)
                   }}
                 />
               </div>

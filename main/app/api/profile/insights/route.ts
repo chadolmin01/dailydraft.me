@@ -102,8 +102,8 @@ export async function GET() {
     )
 
     return NextResponse.json({
-      profileViews: Math.floor(Math.random() * 50) + 10, // TODO: 실제 조회수 추적
-      viewsTrend: 'up',
+      profileViews: 0, // 조회수 추적 미구현
+      viewsTrend: 'stable',
       matchedOpportunities: matchedCount,
       topMatchingSkills,
       demandedSkills,
