@@ -6,11 +6,9 @@ import { logError } from '@/src/lib/error-logging'
 // Generate random 8-character code (uppercase letters + numbers)
 function generateInviteCode(): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-  let code = ''
-  for (let i = 0; i < 8; i++) {
-    code += chars.charAt(Math.floor(Math.random() * chars.length))
-  }
-  return code
+  const bytes = new Uint8Array(8)
+  crypto.getRandomValues(bytes)
+  return Array.from(bytes, b => chars[b % chars.length]).join('')
 }
 
 // GET: List invite codes (admin only)
@@ -38,7 +36,7 @@ export async function GET() {
       .order('created_at', { ascending: false })
 
     if (error) {
-      return ApiResponse.internalError('초대 코드 조회 중 오류가 발생했습니다', error.message)
+      return ApiResponse.internalError('초대 코드 조회 중 오류가 발생했습니다')
     }
 
     return ApiResponse.ok(codes || [])
@@ -53,7 +51,7 @@ export async function GET() {
       endpoint: '/api/invite-codes',
       method: 'GET',
     })
-    return ApiResponse.internalError('초대 코드 조회 중 오류가 발생했습니다', err.message)
+    return ApiResponse.internalError('초대 코드 조회 중 오류가 발생했습니다')
   }
 }
 
@@ -70,14 +68,8 @@ export async function POST(request: Request) {
       return ApiResponse.unauthorized()
     }
 
-    // Check if user is admin
-    const { data: adminProfile } = await supabase
-      .from('profiles')
-      .select('is_admin')
-      .eq('user_id', user.id)
-      .single()
-
-    if (!adminProfile?.is_admin) {
+    // Check if user is admin (from JWT app_metadata — consistent with GET/DELETE)
+    if (user.app_metadata?.is_admin !== true) {
       return ApiResponse.forbidden('관리자만 접근할 수 있습니다')
     }
 
@@ -176,7 +168,7 @@ export async function POST(request: Request) {
       .single()
 
     if (createError) {
-      return ApiResponse.internalError('초대 코드 생성 중 오류가 발생했습니다', createError.message)
+      return ApiResponse.internalError('초대 코드 생성 중 오류가 발생했습니다')
     }
 
     // Get recipient name for email
@@ -206,7 +198,7 @@ export async function POST(request: Request) {
       endpoint: '/api/invite-codes',
       method: 'POST',
     })
-    return ApiResponse.internalError('초대 코드 생성 중 오류가 발생했습니다', err.message)
+    return ApiResponse.internalError('초대 코드 생성 중 오류가 발생했습니다')
   }
 }
 
@@ -242,7 +234,7 @@ export async function DELETE(request: Request) {
       .eq('id', codeId)
 
     if (error) {
-      return ApiResponse.internalError('초대 코드 비활성화 중 오류가 발생했습니다', error.message)
+      return ApiResponse.internalError('초대 코드 비활성화 중 오류가 발생했습니다')
     }
 
     return ApiResponse.ok({ message: '초대 코드가 비활성화되었습니다' })
@@ -257,6 +249,6 @@ export async function DELETE(request: Request) {
       endpoint: '/api/invite-codes',
       method: 'DELETE',
     })
-    return ApiResponse.internalError('초대 코드 비활성화 중 오류가 발생했습니다', err.message)
+    return ApiResponse.internalError('초대 코드 비활성화 중 오류가 발생했습니다')
   }
 }

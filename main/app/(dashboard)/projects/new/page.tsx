@@ -84,7 +84,15 @@ export default function NewProjectPage() {
       const res = await fetch('/api/projects/generate-description', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, type, painPoint: painPoint || undefined }),
+        body: JSON.stringify({
+          title,
+          type,
+          painPoint: painPoint || undefined,
+          roles: selectedRoles.length > 0 ? selectedRoles : undefined,
+          locationType,
+          timeCommitment: timeCommitment || undefined,
+          compensationType: compensationType || undefined,
+        }),
       })
       if (!res.ok) throw new Error('생성 실패')
       const { description: generated } = await res.json()

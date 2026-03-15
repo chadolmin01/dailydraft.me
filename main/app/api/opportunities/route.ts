@@ -35,7 +35,7 @@ export async function GET(request: Request) {
 
     let query = supabase
       .from('opportunities')
-      .select('*')
+      .select('id, type, title, description, status, creator_id, needed_roles, needed_skills, interest_tags, location_type, location, time_commitment, compensation_type, compensation_details, applications_count, views_count, is_boosted, boost_type, created_at, updated_at')
       .eq('status', 'active')
 
     // Apply filters
@@ -63,7 +63,7 @@ export async function GET(request: Request) {
     const { data, error } = await query
 
     if (error) {
-      return ApiResponse.internalError('Opportunity 목록을 가져오는데 실패했습니다', error.message)
+      return ApiResponse.internalError('Opportunity 목록을 가져오는데 실패했습니다')
     }
 
     // Sort with boosted opportunities first
@@ -89,10 +89,7 @@ export async function GET(request: Request) {
 
     return ApiResponse.ok(sortedData)
   } catch (error) {
-    return ApiResponse.internalError(
-      'Opportunity 목록 조회 중 오류가 발생했습니다',
-      error instanceof Error ? error.message : undefined
-    )
+    return ApiResponse.internalError('Opportunity 목록 조회 중 오류가 발생했습니다')
   }
 }
 
@@ -176,7 +173,7 @@ export async function POST(request: Request) {
       .single()
 
     if (error) {
-      return ApiResponse.internalError('Opportunity 생성에 실패했습니다', error.message)
+      return ApiResponse.internalError('Opportunity 생성에 실패했습니다')
     }
 
     // Increment user's opportunity usage count
@@ -184,9 +181,6 @@ export async function POST(request: Request) {
 
     return ApiResponse.created(data)
   } catch (error) {
-    return ApiResponse.internalError(
-      'Opportunity 생성 중 오류가 발생했습니다',
-      error instanceof Error ? error.message : undefined
-    )
+    return ApiResponse.internalError('Opportunity 생성 중 오류가 발생했습니다')
   }
 }

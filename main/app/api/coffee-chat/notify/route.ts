@@ -64,10 +64,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Chat not found' }, { status: 404 })
     }
 
-    // 소유권 검증: 요청자 또는 프로젝트 오너만 이메일 트리거 가능
+    // 소유권 + 역할 검증: type별로 적절한 사용자만 트리거 가능
     const isRequester = chat.requester_user_id === user.id
     const isOwner = chat.owner_user_id === user.id
     if (!isRequester && !isOwner) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+    // request는 요청자만, accepted/declined는 오너만 트리거 가능
+    if (type === 'request' && !isRequester) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+    if ((type === 'accepted' || type === 'declined') && !isOwner) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 

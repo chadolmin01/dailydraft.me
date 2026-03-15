@@ -1,7 +1,7 @@
 'use client'
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
-import { User, Session, AuthError } from '@supabase/supabase-js'
+import { User, AuthError } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase/client'
 import type { Tables } from '../types/database'
 
@@ -9,7 +9,6 @@ type Profile = Tables<'profiles'>
 
 interface AuthContextType {
   user: User | null
-  session: Session | null
   profile: Profile | null
   isLoading: boolean
   isAuthenticated: boolean
@@ -25,7 +24,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
-  const [session, setSession] = useState<Session | null>(null)
+  // Session is managed internally — not exposed to prevent token leakage
   const [profile, setProfile] = useState<Profile | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
@@ -64,17 +63,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     supabase.auth.getUser().then(({ data: { user }, error }) => {
       if (error || !user) {
         setUser(null)
-        setSession(null)
         setProfile(null)
         setIsLoading(false)
         return
       }
 
       setUser(user)
-      // Also get the session for token access
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        setSession(session)
-      }).catch(() => {})
 
       // Wait for profile before setting isLoading=false to prevent UI flicker
       fetchProfile(user.id).then(setProfile).catch(() => setProfile(null)).finally(() => setIsLoading(false))
@@ -92,19 +86,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Handle session expiry / token refresh failure
         if (event === 'TOKEN_REFRESHED' && !session) {
           setUser(null)
-          setSession(null)
           setProfile(null)
           return
         }
 
         if (event === 'SIGNED_OUT') {
           setUser(null)
-          setSession(null)
           setProfile(null)
           return
         }
 
-        setSession(session)
         setUser(session?.user ?? null)
 
         if (session?.user) {
@@ -183,13 +174,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     await supabase.auth.signOut()
     setUser(null)
-    setSession(null)
     setProfile(null)
   }
 
   const value: AuthContextType = {
     user,
-    session,
     profile,
     isLoading,
     isAuthenticated: !!user,

@@ -45,11 +45,12 @@ export async function PATCH(
       .from('accepted_connections') as any)
       .update(updateData)
       .eq('id', memberId)
+      .eq('opportunity_id', id)
       .select()
       .single()
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ error: 'Failed to update team member' }, { status: 500 })
     }
 
     return NextResponse.json(data)
@@ -91,9 +92,10 @@ export async function DELETE(
       .from('accepted_connections') as any)
       .update({ status: 'left' })
       .eq('id', memberId)
+      .eq('opportunity_id', id)
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ error: 'Failed to remove team member' }, { status: 500 })
     }
 
     return NextResponse.json({ success: true })
