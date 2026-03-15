@@ -67,7 +67,7 @@ export function CoffeeChatResponseEmail({
 
       <div style={{ textAlign: 'center', marginBottom: '32px' }}>
         <a
-          href={`${appUrl}/explore`}
+          href={accepted ? `${appUrl}/profile` : `${appUrl}/explore`}
           style={{
             display: 'inline-block',
             padding: '12px 24px',
@@ -79,7 +79,7 @@ export function CoffeeChatResponseEmail({
             textDecoration: 'none',
           }}
         >
-          Draft 둘러보기
+          {accepted ? '내 커피챗 확인하기' : 'Draft 둘러보기'}
         </a>
       </div>
 

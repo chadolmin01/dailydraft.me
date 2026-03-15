@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/src/lib/supabase/client'
 
 export interface CoffeeChat {
@@ -17,42 +17,32 @@ export interface CoffeeChat {
   updated_at: string
 }
 
+export const coffeeChatKeys = {
+  all: ['coffee_chats'] as const,
+  owner: () => [...coffeeChatKeys.all, 'owner'] as const,
+  requester: () => [...coffeeChatKeys.all, 'requester'] as const,
+  byOpportunity: (id: string) => [...coffeeChatKeys.all, 'opportunity', id] as const,
+}
+
 interface UseCoffeeChatsOptions {
   opportunityId?: string
-  asOwner?: boolean // If true, fetch chats where user is the owner
+  asOwner?: boolean
+  enabled?: boolean
 }
 
-interface UseCoffeeChatsReturn {
-  chats: CoffeeChat[]
-  loading: boolean
-  error: string | null
-  requestChat: (data: {
-    opportunityId: string
-    email: string
-    name: string
-    message?: string
-  }) => Promise<string | null>
-  acceptChat: (chatId: string, contactInfo: string) => Promise<boolean>
-  declineChat: (chatId: string) => Promise<boolean>
-  refetch: () => Promise<void>
-}
+// ── Query: fetch coffee chats ──
+export function useCoffeeChats(options: UseCoffeeChatsOptions = {}) {
+  const { opportunityId, asOwner = false, enabled = true } = options
 
-export function useCoffeeChats(options: UseCoffeeChatsOptions = {}): UseCoffeeChatsReturn {
-  const { opportunityId, asOwner = false } = options
-  const [chats, setChats] = useState<CoffeeChat[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  const fetchChats = useCallback(async () => {
-    try {
-      setLoading(true)
-      setError(null)
-
+  return useQuery({
+    queryKey: opportunityId
+      ? coffeeChatKeys.byOpportunity(opportunityId)
+      : asOwner
+        ? coffeeChatKeys.owner()
+        : coffeeChatKeys.requester(),
+    queryFn: async () => {
       const { data: userData } = await supabase.auth.getUser()
-      if (!userData?.user) {
-        setChats([])
-        return
-      }
+      if (!userData?.user) return []
 
       let query = supabase.from('coffee_chats').select('*')
 
@@ -63,45 +53,34 @@ export function useCoffeeChats(options: UseCoffeeChatsOptions = {}): UseCoffeeCh
       if (asOwner) {
         query = query.eq('owner_user_id', userData.user.id)
       } else {
-        // Always scope to current user to prevent fetching all rows
         query = query.eq('requester_user_id', userData.user.id)
       }
 
       query = query.order('created_at', { ascending: false })
 
-      const { data, error: fetchError } = await query
+      const { data, error } = await query
+      if (error) throw error
+      return (data as CoffeeChat[]) || []
+    },
+    staleTime: 1000 * 60 * 2,
+    enabled,
+  })
+}
 
-      if (fetchError) throw fetchError
+// ── Mutation: request a coffee chat ──
+export function useRequestCoffeeChat() {
+  const queryClient = useQueryClient()
 
-      setChats((data as CoffeeChat[]) || [])
-    } catch (err) {
-      console.error('Failed to fetch coffee chats:', err)
-      setError(err instanceof Error ? err.message : 'Failed to fetch coffee chats')
-    } finally {
-      setLoading(false)
-    }
-  }, [opportunityId, asOwner])
-
-  useEffect(() => {
-    fetchChats()
-  }, [fetchChats])
-
-  const [requesting, setRequesting] = useState(false)
-
-  const requestChat = async (data: {
-    opportunityId: string
-    email: string
-    name: string
-    message?: string
-  }): Promise<string | null> => {
-    // Prevent double-submit
-    if (requesting) return null
-    setRequesting(true)
-
-    try {
+  return useMutation({
+    mutationFn: async (data: {
+      opportunityId: string
+      email: string
+      name: string
+      message?: string
+    }) => {
       const { data: userData } = await supabase.auth.getUser()
 
-      // Check if user already has a pending chat for this opportunity
+      // Duplicate check
       if (userData?.user) {
         const { data: existing } = await supabase
           .from('coffee_chats')
@@ -112,12 +91,11 @@ export function useCoffeeChats(options: UseCoffeeChatsOptions = {}): UseCoffeeCh
           .maybeSingle()
 
         if (existing) {
-          setError('이미 커피챗을 신청한 프로젝트입니다')
-          return null
+          throw new Error('이미 커피챗을 신청한 프로젝트입니다')
         }
       }
 
-      const { data: result, error: rpcError } = await supabase.rpc('request_coffee_chat', {
+      const { data: result, error } = await supabase.rpc('request_coffee_chat', {
         p_opportunity_id: data.opportunityId,
         p_requester_email: data.email,
         p_requester_name: data.name,
@@ -125,95 +103,69 @@ export function useCoffeeChats(options: UseCoffeeChatsOptions = {}): UseCoffeeCh
         p_requester_user_id: userData?.user?.id || null,
       })
 
-      if (rpcError) throw rpcError
-
-      await fetchChats()
-
-      // Fire-and-forget email notification
-      if (result) {
+      if (error) throw error
+      return result as string
+    },
+    onSuccess: (chatId) => {
+      if (chatId) {
         fetch('/api/coffee-chat/notify', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type: 'request', chatId: result }),
-        }).catch(() => {})
+          body: JSON.stringify({ type: 'request', chatId }),
+        }).catch((err) => console.warn('[CoffeeChat] notify email failed:', err))
       }
+      queryClient.invalidateQueries({ queryKey: coffeeChatKeys.all })
+    },
+  })
+}
 
-      return result as string
-    } catch (err) {
-      console.error('Failed to request coffee chat:', err)
-      setError(err instanceof Error ? err.message : 'Failed to request coffee chat')
-      return null
-    } finally {
-      setRequesting(false)
-    }
-  }
+// ── Mutation: accept a coffee chat ──
+export function useAcceptCoffeeChat() {
+  const queryClient = useQueryClient()
 
-  const acceptChat = async (chatId: string, contactInfo: string): Promise<boolean> => {
-    try {
-      const { data, error: rpcError } = await supabase.rpc('accept_coffee_chat', {
+  return useMutation({
+    mutationFn: async ({ chatId, contactInfo }: { chatId: string; contactInfo: string }) => {
+      const { data, error } = await supabase.rpc('accept_coffee_chat', {
         p_chat_id: chatId,
         p_contact_info: contactInfo,
       })
 
-      if (rpcError) throw rpcError
-
-      if (data) {
-        setChats((prev) =>
-          prev.map((c) =>
-            c.id === chatId ? { ...c, status: 'accepted', contact_info: contactInfo } : c
-          )
-        )
-        // Fire-and-forget email notification
-        fetch('/api/coffee-chat/notify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type: 'accepted', chatId }),
-        }).catch(() => {})
-      }
-
+      if (error) throw error
+      if (!data) throw new Error('수락에 실패했습니다')
       return data as boolean
-    } catch (err) {
-      console.error('Failed to accept coffee chat:', err)
-      setError(err instanceof Error ? err.message : 'Failed to accept')
-      return false
-    }
-  }
+    },
+    onSuccess: (_, variables) => {
+      fetch('/api/coffee-chat/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'accepted', chatId: variables.chatId }),
+      }).catch((err) => console.warn('[CoffeeChat] notify email failed:', err))
+      queryClient.invalidateQueries({ queryKey: coffeeChatKeys.all })
+    },
+  })
+}
 
-  const declineChat = async (chatId: string): Promise<boolean> => {
-    try {
-      const { data, error: rpcError } = await supabase.rpc('decline_coffee_chat', {
+// ── Mutation: decline a coffee chat ──
+export function useDeclineCoffeeChat() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (chatId: string) => {
+      const { data, error } = await supabase.rpc('decline_coffee_chat', {
         p_chat_id: chatId,
       })
 
-      if (rpcError) throw rpcError
-
-      if (data) {
-        setChats((prev) =>
-          prev.map((c) => (c.id === chatId ? { ...c, status: 'declined' } : c))
-        )
-        // Fire-and-forget email notification
-        fetch('/api/coffee-chat/notify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type: 'declined', chatId }),
-        }).catch(() => {})
-      }
-
+      if (error) throw error
+      if (!data) throw new Error('거절에 실패했습니다')
       return data as boolean
-    } catch (err) {
-      console.error('Failed to decline coffee chat:', err)
-      setError(err instanceof Error ? err.message : 'Failed to decline')
-      return false
-    }
-  }
-
-  return {
-    chats,
-    loading,
-    error,
-    requestChat,
-    acceptChat,
-    declineChat,
-    refetch: fetchChats,
-  }
+    },
+    onSuccess: (_, chatId) => {
+      fetch('/api/coffee-chat/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'declined', chatId }),
+      }).catch((err) => console.warn('[CoffeeChat] notify email failed:', err))
+      queryClient.invalidateQueries({ queryKey: coffeeChatKeys.all })
+    },
+  })
 }

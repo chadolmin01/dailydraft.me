@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
     if (rateLimitResponse) return rateLimitResponse
 
     if (!isEmailEnabled()) {
-      return NextResponse.json({ success: false, error: 'Email not configured' }, { status: 200 })
+      return NextResponse.json({ success: false, error: 'Email not configured' }, { status: 503 })
     }
 
     const body = await req.json()

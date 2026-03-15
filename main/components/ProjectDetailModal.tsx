@@ -3,29 +3,22 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
-  ArrowRight, Heart, Coffee, Users, Eye, Clock,
+  ArrowRight, Heart, Coffee, Users, Clock,
   Briefcase, MapPin, Calendar, Loader2, AlertCircle,
   MessageCircle, Sparkles, X, ArrowUpRight, Share2
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useOpportunity } from '@/src/hooks/useOpportunities'
 import { useProfileByUserId } from '@/src/hooks/usePublicProfiles'
+import { useProjectUpdates } from '@/src/hooks/useProjectUpdates'
 import { useAuth } from '@/src/context/AuthContext'
 import { useCoffeeChats } from '@/src/hooks/useCoffeeChats'
-import { COFFEE_CHAT_TEMPLATES } from '@/src/lib/constants/coffee-chat-templates'
+import { WriteUpdateForm } from '@/components/WriteUpdateForm'
+import { CoffeeChatRequestForm } from '@/components/CoffeeChatRequestForm'
 
 interface ProjectDetailModalProps {
   projectId: string | null
   onClose: () => void
-}
-
-function seededNumber(id: string, min: number, max: number): number {
-  let hash = 0
-  for (let i = 0; i < id.length; i++) {
-    hash = ((hash << 5) - hash) + id.charCodeAt(i)
-    hash |= 0
-  }
-  return min + (Math.abs(hash) % (max - min + 1))
 }
 
 const updateTypeColors: Record<string, string> = {
@@ -44,44 +37,29 @@ const updateTypeLabels: Record<string, string> = {
   general: '일반',
 }
 
-type UpdateType = 'ideation' | 'design' | 'development' | 'launch' | 'general'
-
-// Mock weekly updates (until project_updates table exists)
-function generateMockUpdates(id: string) {
-  const updates: { week: number; title: string; content: string; type: UpdateType }[] = [
-    { week: 1, title: '아이디어 구체화', content: '문제 정의와 타겟 유저 분석을 완료했습니다. 핵심 가설을 수립하고 검증 계획을 세웠습니다.', type: 'ideation' },
-    { week: 2, title: 'MVP 설계', content: '핵심 기능 3가지를 선정하고 와이어프레임을 작성했습니다. 기술 스택을 결정했습니다.', type: 'design' },
-    { week: 3, title: '개발 시작', content: '기본 인증 시스템과 메인 기능의 프로토타입을 구현 중입니다.', type: 'development' },
-  ]
-  const count = seededNumber(id + 'updates', 1, 3)
-  return updates.slice(0, count)
-}
 
 export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, onClose }) => {
   const router = useRouter()
   const [showCta, setShowCta] = useState(false)
   const [showCoffeeChatForm, setShowCoffeeChatForm] = useState(false)
-  const [coffeeChatMessage, setCoffeeChatMessage] = useState('')
-  const [coffeeChatSending, setCoffeeChatSending] = useState(false)
-  const [coffeeChatSent, setCoffeeChatSent] = useState(false)
-  const [coffeeChatError, setCoffeeChatError] = useState(false)
   const [shareCopied, setShareCopied] = useState(false)
+  const [showWriteUpdate, setShowWriteUpdate] = useState(false)
   const { user } = useAuth()
-  const { requestChat } = useCoffeeChats()
+  const { data: myChatsForProject = [] } = useCoffeeChats({
+    opportunityId: projectId ?? undefined,
+    enabled: !!projectId,
+  })
 
   const { data: opportunity, isLoading: loading } = useOpportunity(projectId ?? undefined)
   const { data: creator } = useProfileByUserId(opportunity?.creator_id ?? undefined)
-  const updates = opportunity?.id ? generateMockUpdates(opportunity.id) : []
+  const { data: updates = [] } = useProjectUpdates(opportunity?.id)
 
   const isOwner = !!(user && opportunity && user.id === opportunity.creator_id)
+  const existingChat = myChatsForProject.length > 0 ? myChatsForProject[0] : null
 
   useEffect(() => {
     setShowCta(false)
     setShowCoffeeChatForm(false)
-    setCoffeeChatMessage('')
-    setCoffeeChatSending(false)
-    setCoffeeChatSent(false)
-    setCoffeeChatError(false)
   }, [projectId])
 
   useEffect(() => {
@@ -106,6 +84,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
 
   const handleAction = () => {
     if (isOwner) return // 자기 프로젝트에는 커피챗 신청 불가
+    if (existingChat) return // 이미 신청한 경우
     if (user) {
       setShowCoffeeChatForm(true)
     } else {
@@ -158,19 +137,19 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-4xl max-h-[90vh] bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col relative"
+              className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl max-h-[95vh] md:max-h-[90vh] bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col relative"
               role="dialog"
               aria-modal="true"
               aria-label={opportunity?.title || '프로젝트 상세'}
             >
               {/* macOS-style Window Bar */}
-              <div className="bg-[#F9FAFB] border-b border-gray-200/80 px-5 py-3 flex items-center justify-between rounded-t-xl shrink-0">
+              <div className="bg-[#F9FAFB] border-b border-gray-200/80 px-3 sm:px-5 py-3 flex items-center justify-between rounded-t-xl shrink-0">
                 <div className="flex items-center gap-2">
-                  <button onClick={onClose} className="group w-3 h-3 rounded-full bg-[#FF5F57] hover:brightness-90 transition-all relative" aria-label="닫기">
-                    <X size={7} className="text-[#FF5F57] group-hover:text-[#4A0002] absolute inset-0 m-auto transition-colors" />
+                  <button onClick={onClose} className="group w-5 h-5 sm:w-3 sm:h-3 rounded-full bg-[#FF5F57] hover:brightness-90 transition-all relative flex items-center justify-center" aria-label="닫기">
+                    <X size={10} className="text-[#FF5F57] group-hover:text-[#4A0002] transition-colors sm:w-[7px] sm:h-[7px]" />
                   </button>
-                  <div className="w-3 h-3 rounded-full bg-[#FEBC2E]" />
-                  <div className="w-3 h-3 rounded-full bg-[#28C840]" />
+                  <div className="w-3 h-3 rounded-full bg-[#FEBC2E] hidden sm:block" />
+                  <div className="w-3 h-3 rounded-full bg-[#28C840] hidden sm:block" />
                 </div>
                 {!loading && opportunity && (
                   <div className="flex items-center gap-2">
@@ -187,10 +166,10 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                     )}
                   </div>
                 )}
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1">
                   <button
                     onClick={handleShare}
-                    className="p-1 hover:bg-gray-200/60 rounded-md transition-colors"
+                    className="p-2 hover:bg-gray-200/60 rounded-md transition-colors"
                     aria-label="공유"
                   >
                     {shareCopied ? (
@@ -201,10 +180,10 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                   </button>
                   <button
                     onClick={onClose}
-                    className="p-1 hover:bg-gray-200/60 rounded-md transition-colors"
+                    className="p-2 hover:bg-gray-200/60 rounded-md transition-colors"
                     aria-label="닫기"
                   >
-                    <X size={16} className="text-gray-400" />
+                    <X size={18} className="text-gray-400" />
                   </button>
                 </div>
               </div>
@@ -224,7 +203,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                   {/* Scrollable Content */}
                   <div className="flex-1 overflow-y-auto">
                     {/* Header */}
-                    <div className="px-8 pt-6 pb-6">
+                    <div className="px-4 sm:px-8 pt-4 sm:pt-6 pb-4 sm:pb-6">
 
                       {/* Title */}
                       <h2 className="text-2xl font-bold text-gray-900 mb-4 break-keep leading-tight">
@@ -284,11 +263,11 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                     </div>
 
                     {/* Divider */}
-                    <div className="mx-8 border-t border-gray-100" />
+                    <div className="mx-4 sm:mx-8 border-t border-gray-100" />
 
                     {/* Body: 2-Column Layout */}
-                    <div className="px-8 py-6">
-                      <div className="grid grid-cols-1 md:grid-cols-5 gap-10">
+                    <div className="px-4 sm:px-8 py-4 sm:py-6">
+                      <div className="grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-10">
                         {/* Left Column (3/5) */}
                         <div className="md:col-span-3 space-y-8">
                           {/* Description */}
@@ -319,6 +298,14 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                               <h3 className="text-[10px] font-mono font-bold text-gray-400 uppercase tracking-wider">
                                 주간 업데이트
                               </h3>
+                              {isOwner && (
+                                <button
+                                  onClick={() => setShowWriteUpdate(true)}
+                                  className="text-xs text-gray-500 hover:text-black transition-colors font-medium"
+                                >
+                                  + 작성하기
+                                </button>
+                              )}
                             </div>
 
                             {updates.length > 0 ? (
@@ -326,14 +313,14 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                                 <div className="absolute left-[7px] top-1 bottom-1 w-[2px] bg-gray-200 rounded-full" />
                                 <div className="space-y-5">
                                   {updates.map((update) => (
-                                    <div key={update.week} className="relative">
-                                      <div className={`absolute -left-6 top-1 w-4 h-4 rounded-full border-[3px] border-white ${updateTypeColors[update.type] || 'bg-gray-400'} shadow-sm`} />
+                                    <div key={update.id} className="relative">
+                                      <div className={`absolute -left-6 top-1 w-4 h-4 rounded-full border-[3px] border-white ${updateTypeColors[update.update_type] || 'bg-gray-400'} shadow-sm`} />
                                       <div>
                                         <div className="flex items-center gap-2 mb-1">
                                           <span className="text-xs font-medium text-gray-500">
-                                            {updateTypeLabels[update.type] || update.type}
+                                            {updateTypeLabels[update.update_type] || update.update_type}
                                           </span>
-                                          <span className="text-[10px] font-mono text-gray-300">Week {update.week}</span>
+                                          <span className="text-[10px] font-mono text-gray-300">Week {update.week_number}</span>
                                         </div>
                                         <h4 className="font-semibold text-gray-900 text-sm mb-0.5">{update.title}</h4>
                                         <p className="text-xs text-gray-500 leading-relaxed break-keep">{update.content}</p>
@@ -346,6 +333,14 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                               <div className="text-center py-6">
                                 <Clock size={20} className="text-gray-200 mx-auto mb-2" />
                                 <p className="text-xs text-gray-400">아직 업데이트가 없습니다</p>
+                                {isOwner && (
+                                  <button
+                                    onClick={() => setShowWriteUpdate(true)}
+                                    className="mt-2 text-xs text-gray-500 hover:text-black transition-colors font-medium"
+                                  >
+                                    첫 번째 업데이트를 작성해보세요
+                                  </button>
+                                )}
                               </div>
                             )}
                           </section>
@@ -410,12 +405,22 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                                       <Briefcase size={14} className="text-gray-400" />
                                       <span className="text-sm text-gray-700">{role}</span>
                                     </div>
-                                    <button
-                                      onClick={handleAction}
-                                      className="text-xs text-gray-400 hover:text-gray-700 transition-colors"
-                                    >
-                                      커피챗 신청 &rarr;
-                                    </button>
+                                    {existingChat ? (
+                                      <span className={`text-xs ${
+                                        existingChat.status === 'pending' ? 'text-amber-500' :
+                                        existingChat.status === 'accepted' ? 'text-green-600' : 'text-gray-400'
+                                      }`}>
+                                        {existingChat.status === 'pending' ? '대기 중' :
+                                         existingChat.status === 'accepted' ? '수락됨' : '거절됨'}
+                                      </span>
+                                    ) : (
+                                      <button
+                                        onClick={handleAction}
+                                        className="text-xs text-gray-400 hover:text-gray-700 transition-colors"
+                                      >
+                                        커피챗 신청 &rarr;
+                                      </button>
+                                    )}
                                   </div>
                                 ))}
                               </div>
@@ -458,153 +463,112 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                               <div className="flex items-center gap-2.5">
                                 <Users size={14} className="text-gray-300 shrink-0" />
                                 <span className="text-gray-500">관심</span>
-                                <span className="text-gray-800 font-medium">{opportunity.interest_count ?? seededNumber(projectId, 3, 18)}명</span>
+                                <span className="text-gray-800 font-medium">{opportunity.interest_count ?? 0}명</span>
                               </div>
                             </div>
                           </div>
 
                           {/* CTA Card */}
+                          {!isOwner && (
                           <div className="bg-gray-900 rounded-xl p-5 text-white">
-                            <h3 className="font-bold text-sm mb-1">프로젝트에 참여하고 싶나요?</h3>
-                            <p className="text-gray-400 text-xs mb-4 break-keep">
-                              커피챗으로 메이커와 직접 이야기해보세요.
-                            </p>
-                            <button
-                              onClick={handleAction}
-                              className="w-full bg-white text-gray-900 py-2.5 rounded-lg font-bold text-sm hover:bg-gray-100 transition-colors flex items-center justify-center gap-2"
-                            >
-                              <Coffee size={14} />
-                              커피챗 신청하기
-                            </button>
+                            {existingChat ? (
+                              <>
+                                <h3 className="font-bold text-sm mb-1">
+                                  {existingChat.status === 'pending' ? '커피챗 대기 중' :
+                                   existingChat.status === 'accepted' ? '커피챗이 수락되었습니다!' : '커피챗이 거절되었습니다'}
+                                </h3>
+                                <p className="text-gray-400 text-xs mb-4 break-keep">
+                                  {existingChat.status === 'pending' ? '메이커가 요청을 확인 중입니다.' :
+                                   existingChat.status === 'accepted' ? '메이커의 연락처를 확인하세요.' :
+                                   '다른 프로젝트를 탐색해보세요.'}
+                                </p>
+                                {existingChat.status === 'accepted' && existingChat.contact_info && (
+                                  <div className="bg-white/10 rounded-lg p-3 text-sm text-white">
+                                    연락처: {existingChat.contact_info}
+                                  </div>
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                <h3 className="font-bold text-sm mb-1">프로젝트에 참여하고 싶나요?</h3>
+                                <p className="text-gray-400 text-xs mb-4 break-keep">
+                                  커피챗으로 메이커와 직접 이야기해보세요.
+                                </p>
+                                <button
+                                  onClick={handleAction}
+                                  className="w-full bg-white text-gray-900 py-2.5 rounded-lg font-bold text-sm hover:bg-gray-100 transition-colors flex items-center justify-center gap-2"
+                                >
+                                  <Coffee size={14} />
+                                  커피챗 신청하기
+                                </button>
+                              </>
+                            )}
                           </div>
+                          )}
                         </div>
                       </div>
                     </div>
                   </div>
 
                   {/* Sticky Footer CTA */}
+                  {!isOwner && (
                   <div className="px-6 py-4 bg-white border-t border-gray-100">
-                    <button
-                      onClick={handleAction}
-                      className="w-full bg-gray-900 hover:bg-gray-800 text-white h-11 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-colors"
-                    >
-                      <Coffee size={15} />
-                      커피챗 신청
-                    </button>
+                    {existingChat ? (
+                      <div className={`w-full h-11 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 ${
+                        existingChat.status === 'pending' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
+                        existingChat.status === 'accepted' ? 'bg-green-50 text-green-700 border border-green-200' :
+                        'bg-gray-50 text-gray-500 border border-gray-200'
+                      }`}>
+                        <Coffee size={15} />
+                        {existingChat.status === 'pending' ? '커피챗 대기 중' :
+                         existingChat.status === 'accepted' ? '커피챗 수락됨' : '커피챗 거절됨'}
+                      </div>
+                    ) : (
+                      <button
+                        onClick={handleAction}
+                        className="w-full bg-gray-900 hover:bg-gray-800 text-white h-11 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-colors"
+                      >
+                        <Coffee size={15} />
+                        커피챗 신청
+                      </button>
+                    )}
                   </div>
+                  )}
 
                   {/* Coffee Chat Form Overlay (Authenticated) */}
                   <AnimatePresence>
-                    {showCoffeeChatForm && (
+                    {showCoffeeChatForm && opportunity && (
                       <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="absolute inset-0 bg-white/95 backdrop-blur-sm z-20 flex flex-col items-center justify-center p-8 text-center rounded-xl"
+                        className="absolute inset-0 bg-white/95 backdrop-blur-sm z-20 flex flex-col items-center justify-center p-4 sm:p-8 text-center rounded-xl overflow-y-auto"
                       >
                         <motion.div
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: 20 }}
                           transition={{ delay: 0.1 }}
-                          className="w-full max-w-md"
+                          className="w-full max-w-sm sm:max-w-md"
                         >
-                          {coffeeChatSent ? (
-                            <>
-                              <div className="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center mb-4 mx-auto">
-                                <Coffee size={24} className="text-green-600" />
-                              </div>
-                              <h3 className="text-xl font-bold text-gray-900 mb-2">커피챗 신청 완료!</h3>
-                              <p className="text-gray-500 text-sm mb-6">메이커에게 알림이 전송되었습니다. 수락되면 연락처를 받을 수 있어요.</p>
-                              <button
-                                onClick={() => { setShowCoffeeChatForm(false); setCoffeeChatSent(false) }}
-                                className="text-sm text-gray-400 hover:text-gray-600 transition-colors"
-                              >
-                                돌아가기
-                              </button>
-                            </>
-                          ) : (
-                            <>
-                              <Coffee size={28} className="text-gray-900 mb-4 mx-auto" />
-                              <h3 className="text-lg font-bold text-gray-900 mb-1">커피챗 신청</h3>
-                              <p className="text-gray-500 text-xs mb-5">메이커에게 보낼 메시지를 작성해주세요</p>
-
-                              {/* Template buttons */}
-                              <div className="flex flex-wrap gap-2 justify-center mb-4">
-                                {COFFEE_CHAT_TEMPLATES.map((tpl) => (
-                                  <button
-                                    key={tpl.id}
-                                    onClick={() => setCoffeeChatMessage(tpl.message)}
-                                    className="text-[11px] px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
-                                  >
-                                    {tpl.label}
-                                  </button>
-                                ))}
-                              </div>
-
-                              <textarea
-                                value={coffeeChatMessage}
-                                onChange={(e) => setCoffeeChatMessage(e.target.value)}
-                                placeholder="안녕하세요! 프로젝트에 관심이 있어서 연락드립니다..."
-                                rows={4}
-                                className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-black resize-none mb-4"
-                              />
-
-                              {coffeeChatError && (
-                                <p className="text-xs text-red-500 mb-3">전송에 실패했습니다. 다시 시도해주세요.</p>
-                              )}
-
-                              <button
-                                onClick={async () => {
-                                  if (!coffeeChatMessage.trim() || !opportunity?.id || !user?.email) return
-                                  setCoffeeChatSending(true)
-                                  setCoffeeChatError(false)
-                                  try {
-                                    const result = await requestChat({
-                                      opportunityId: opportunity.id,
-                                      email: user.email,
-                                      name: user.user_metadata?.full_name || user.email.split('@')[0],
-                                      message: coffeeChatMessage.trim(),
-                                    })
-                                    if (result) {
-                                      setCoffeeChatSent(true)
-                                    } else {
-                                      setCoffeeChatError(true)
-                                    }
-                                  } catch {
-                                    setCoffeeChatError(true)
-                                  } finally {
-                                    setCoffeeChatSending(false)
-                                  }
-                                }}
-                                disabled={!coffeeChatMessage.trim() || coffeeChatSending}
-                                className="w-full bg-gray-900 hover:bg-gray-800 text-white py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed mb-3"
-                              >
-                                {coffeeChatSending ? (
-                                  <>
-                                    <Loader2 size={14} className="animate-spin" />
-                                    전송 중...
-                                  </>
-                                ) : (
-                                  <>
-                                    <Coffee size={14} />
-                                    신청하기
-                                  </>
-                                )}
-                              </button>
-
-                              <button
-                                onClick={() => setShowCoffeeChatForm(false)}
-                                className="text-sm text-gray-400 hover:text-gray-600 transition-colors"
-                              >
-                                돌아가기
-                              </button>
-                            </>
-                          )}
+                          <CoffeeChatRequestForm
+                            opportunityId={opportunity.id}
+                            onClose={() => setShowCoffeeChatForm(false)}
+                          />
                         </motion.div>
                       </motion.div>
                     )}
                   </AnimatePresence>
+
+                  {/* Write Update Modal (Owner) */}
+                  {opportunity && (
+                    <WriteUpdateForm
+                      opportunityId={opportunity.id}
+                      createdAt={opportunity.created_at}
+                      isOpen={showWriteUpdate}
+                      onClose={() => setShowWriteUpdate(false)}
+                    />
+                  )}
 
                   {/* Signup CTA Overlay (Non-authenticated) */}
                   <AnimatePresence>
@@ -613,13 +577,14 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="absolute inset-0 bg-white/95 backdrop-blur-sm z-20 flex flex-col items-center justify-center p-8 text-center rounded-xl"
+                        className="absolute inset-0 bg-white/95 backdrop-blur-sm z-20 flex flex-col items-center justify-center p-4 sm:p-8 text-center rounded-xl overflow-y-auto"
                       >
                         <motion.div
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: 20 }}
                           transition={{ delay: 0.1 }}
+                          className="w-full max-w-sm sm:max-w-md"
                         >
                           <div className="w-14 h-14 bg-gray-900 rounded-2xl flex items-center justify-center mb-6 mx-auto">
                             <span className="text-white font-black text-xl font-mono">D</span>

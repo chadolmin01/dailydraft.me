@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { Coffee, Check, X, Clock, MessageSquare, Mail, Loader2, User } from 'lucide-react'
-import { useCoffeeChats, CoffeeChat } from '@/src/hooks/useCoffeeChats'
+import { useCoffeeChats, useAcceptCoffeeChat, useDeclineCoffeeChat, type CoffeeChat } from '@/src/hooks/useCoffeeChats'
 
 interface CoffeeChatListProps {
   asOwner?: boolean
@@ -13,10 +13,12 @@ export const CoffeeChatList: React.FC<CoffeeChatListProps> = ({
   asOwner = true,
   opportunityId,
 }) => {
-  const { chats, loading, acceptChat, declineChat } = useCoffeeChats({
+  const { data: chats = [], isLoading: loading } = useCoffeeChats({
     opportunityId,
     asOwner,
   })
+  const acceptChat = useAcceptCoffeeChat()
+  const declineChat = useDeclineCoffeeChat()
 
   const pendingChats = chats.filter((c) => c.status === 'pending')
   const resolvedChats = chats.filter((c) => c.status !== 'pending')
@@ -53,8 +55,8 @@ export const CoffeeChatList: React.FC<CoffeeChatListProps> = ({
             <CoffeeChatItem
               key={chat.id}
               chat={chat}
-              onAccept={acceptChat}
-              onDecline={declineChat}
+              onAccept={(chatId, contactInfo) => acceptChat.mutateAsync({ chatId, contactInfo })}
+              onDecline={(chatId) => declineChat.mutateAsync(chatId)}
             />
           ))}
         </div>
@@ -107,15 +109,19 @@ const CoffeeChatItem: React.FC<CoffeeChatItemProps> = ({
   const handleAccept = async () => {
     if (!contactInfo.trim() || !onAccept) return
     setProcessing(true)
-    await onAccept(chat.id, contactInfo.trim())
+    try {
+      await onAccept(chat.id, contactInfo.trim())
+      setShowAcceptModal(false)
+    } catch { /* handled by mutation */ }
     setProcessing(false)
-    setShowAcceptModal(false)
   }
 
   const handleDecline = async () => {
     if (!onDecline) return
     setProcessing(true)
-    await onDecline(chat.id)
+    try {
+      await onDecline(chat.id)
+    } catch { /* handled by mutation */ }
     setProcessing(false)
   }
 

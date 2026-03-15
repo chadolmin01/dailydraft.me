@@ -4,9 +4,7 @@ import React, { useState } from 'react'
 import { Card } from './ui/Card'
 import {
   MapPin,
-  Download,
   CheckSquare,
-  FileText,
   Loader2,
   Edit3,
   Zap,
@@ -15,16 +13,16 @@ import {
   Check,
   X,
   Plus,
-  User,
   Briefcase,
   Mail,
   Building2,
+  Send,
 } from 'lucide-react'
 import Link from 'next/link'
 import { useAuth } from '@/src/context/AuthContext'
 import { useProfile, useUpdateProfile } from '@/src/hooks/useProfile'
 import { useMyOpportunities, calculateDaysLeft } from '@/src/hooks/useOpportunities'
-import { useCoffeeChats } from '@/src/hooks/useCoffeeChats'
+import { useCoffeeChats, useAcceptCoffeeChat, useDeclineCoffeeChat } from '@/src/hooks/useCoffeeChats'
 
 export const Profile: React.FC = () => {
   const [contactInput, setContactInput] = useState('')
@@ -63,7 +61,10 @@ export const Profile: React.FC = () => {
     }
   }
   const { data: myOpportunities = [] } = useMyOpportunities()
-  const { chats, loading: chatsLoading, acceptChat, declineChat } = useCoffeeChats({ asOwner: true })
+  const { data: chats = [], isLoading: chatsLoading } = useCoffeeChats({ asOwner: true })
+  const { data: sentChats = [], isLoading: sentChatsLoading } = useCoffeeChats()
+  const acceptChatMutation = useAcceptCoffeeChat()
+  const declineChatMutation = useDeclineCoffeeChat()
 
   const skills = profile?.skills as Array<{ name: string; level: string }> | null
 
@@ -72,9 +73,11 @@ export const Profile: React.FC = () => {
 
   const handleAcceptChat = async (chatId: string) => {
     if (!contactInput.trim()) return
-    await acceptChat(chatId, contactInput)
-    setAcceptingChatId(null)
-    setContactInput('')
+    try {
+      await acceptChatMutation.mutateAsync({ chatId, contactInfo: contactInput })
+      setAcceptingChatId(null)
+      setContactInput('')
+    } catch { /* error handled by React Query */ }
   }
 
   if (isLoading) {
@@ -123,8 +126,8 @@ export const Profile: React.FC = () => {
                   {[
                     { label: '내 프로젝트', icon: Zap, count: myOpportunities.length },
                     { label: '받은 커피챗', icon: Coffee, count: pendingChats.length },
+                    { label: '보낸 커피챗', icon: Send, count: sentChats.length },
                     { label: '기술 스택', icon: CheckSquare, count: skills?.length || 0 },
-                    { label: '첨부파일', icon: FileText, count: 2 },
                   ].map((item) => (
                     <button
                       key={item.label}
@@ -300,7 +303,7 @@ export const Profile: React.FC = () => {
                   {/* 대기 중 */}
                   {pendingChats.map((chat) => (
                     <Card key={chat.id} className="border-border bg-status-warning-bg/30" padding="p-4">
-                      <div className="flex items-start justify-between gap-3">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                         <div className="flex gap-3 flex-1 min-w-0">
                           <div className="w-9 h-9 bg-status-warning-bg rounded-full flex items-center justify-center text-xs font-bold text-status-warning-text flex-shrink-0">
                             {(chat.requester_name || chat.requester_email || '?').slice(0, 2)}
@@ -320,25 +323,25 @@ export const Profile: React.FC = () => {
                         </div>
 
                         {acceptingChatId === chat.id ? (
-                          <div className="flex items-center gap-2 flex-shrink-0">
+                          <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
                             <input
                               type="text"
                               value={contactInput}
                               onChange={(e) => setContactInput(e.target.value)}
                               placeholder="연락처 입력"
-                              className="w-32 px-2 py-1 text-xs border border-border-strong rounded-lg focus:outline-none focus:border-accent"
+                              className="w-24 sm:w-32 px-2 py-1.5 text-xs border border-border-strong rounded-lg focus:outline-none focus:border-accent"
                             />
                             <button
                               onClick={() => handleAcceptChat(chat.id)}
-                              className="p-1.5 bg-accent text-txt-inverse rounded-lg hover:bg-accent-hover"
+                              className="p-2 bg-accent text-txt-inverse rounded-lg hover:bg-accent-hover"
                             >
-                              <Check size={12} />
+                              <Check size={14} />
                             </button>
                             <button
                               onClick={() => { setAcceptingChatId(null); setContactInput('') }}
-                              className="p-1.5 bg-surface-sunken text-txt-secondary rounded-lg hover:bg-border-strong"
+                              className="p-2 bg-surface-sunken text-txt-secondary rounded-lg hover:bg-border-strong"
                             >
-                              <X size={12} />
+                              <X size={14} />
                             </button>
                           </div>
                         ) : (
@@ -350,7 +353,7 @@ export const Profile: React.FC = () => {
                               수락
                             </button>
                             <button
-                              onClick={() => declineChat(chat.id)}
+                              onClick={() => declineChatMutation.mutate(chat.id)}
                               className="px-3 py-1.5 text-xs font-semibold border border-border-strong text-txt-secondary rounded-lg hover:bg-surface-sunken"
                             >
                               거절
@@ -389,6 +392,64 @@ export const Profile: React.FC = () => {
                 <Card className="text-center py-8" padding="p-6">
                   <Coffee className="mx-auto mb-3 text-txt-disabled" size={32} />
                   <p className="text-txt-tertiary text-sm">아직 받은 커피챗이 없습니다</p>
+                </Card>
+              )}
+            </section>
+
+            {/* 보낸 커피챗 */}
+            <section>
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-base font-bold text-txt-primary flex items-center gap-2">
+                  <Send size={16} /> 보낸 커피챗
+                </h3>
+              </div>
+
+              {sentChatsLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="animate-spin text-txt-disabled" size={20} />
+                </div>
+              ) : sentChats.length > 0 ? (
+                <div className="space-y-3">
+                  {sentChats.map((chat) => (
+                    <Card key={chat.id} className="hover:border-border-strong" padding="p-4">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
+                          chat.status === 'pending' ? 'bg-status-warning-bg text-status-warning-text' :
+                          chat.status === 'accepted' ? 'bg-status-success-bg text-status-success-text' :
+                          'bg-surface-sunken text-txt-tertiary'
+                        }`}>
+                          <Coffee size={16} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium text-sm text-txt-primary truncate">
+                              {chat.message ? chat.message.slice(0, 40) + (chat.message.length > 40 ? '...' : '') : '커피챗 신청'}
+                            </span>
+                            <span className={`text-xs px-1.5 py-0.5 rounded-lg flex-shrink-0 ${
+                              chat.status === 'pending' ? 'bg-status-warning-bg text-status-warning-text' :
+                              chat.status === 'accepted' ? 'bg-status-success-bg text-status-success-text' :
+                              'bg-surface-sunken text-txt-tertiary'
+                            }`}>
+                              {chat.status === 'pending' ? '대기중' : chat.status === 'accepted' ? '수락됨' : '거절됨'}
+                            </span>
+                          </div>
+                          <p className="text-xs text-txt-disabled mt-0.5">
+                            {new Date(chat.created_at).toLocaleDateString('ko-KR')}
+                          </p>
+                          {chat.status === 'accepted' && chat.contact_info && (
+                            <p className="text-xs text-status-success-text mt-1 font-medium">
+                              연락처: {chat.contact_info}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <Card className="text-center py-8" padding="p-6">
+                  <Send className="mx-auto mb-3 text-txt-disabled" size={32} />
+                  <p className="text-txt-tertiary text-sm">아직 보낸 커피챗이 없습니다</p>
                 </Card>
               )}
             </section>

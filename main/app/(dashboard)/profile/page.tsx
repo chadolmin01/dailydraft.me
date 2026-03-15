@@ -25,7 +25,7 @@ import { Modal } from '@/components/ui/Modal'
 import { useAuth } from '@/src/context/AuthContext'
 import { useProfile, useUpdateProfile } from '@/src/hooks/useProfile'
 import { useMyOpportunities, calculateDaysLeft } from '@/src/hooks/useOpportunities'
-import { useCoffeeChats } from '@/src/hooks/useCoffeeChats'
+import { useCoffeeChats, useAcceptCoffeeChat, useDeclineCoffeeChat } from '@/src/hooks/useCoffeeChats'
 
 export default function ProfilePage() {
   const [contactInput, setContactInput] = useState('')
@@ -40,7 +40,9 @@ export default function ProfilePage() {
   const { data: profile, isLoading } = useProfile()
   const updateProfile = useUpdateProfile()
   const { data: myOpportunities = [] } = useMyOpportunities()
-  const { chats, loading: chatsLoading, acceptChat, declineChat } = useCoffeeChats({ asOwner: true })
+  const { data: chats = [], isLoading: chatsLoading } = useCoffeeChats({ asOwner: true })
+  const acceptChatMutation = useAcceptCoffeeChat()
+  const declineChatMutation = useDeclineCoffeeChat()
 
   const skills = profile?.skills as Array<{ name: string; level: string }> | null
   const pendingChats = chats.filter(c => c.status === 'pending')
@@ -71,9 +73,11 @@ export default function ProfilePage() {
 
   const handleAcceptChat = async (chatId: string) => {
     if (!contactInput.trim()) return
-    await acceptChat(chatId, contactInput)
-    setAcceptingChatId(null)
-    setContactInput('')
+    try {
+      await acceptChatMutation.mutateAsync({ chatId, contactInfo: contactInput })
+      setAcceptingChatId(null)
+      setContactInput('')
+    } catch { /* error handled by React Query */ }
   }
 
   if (isLoading) {
@@ -407,7 +411,7 @@ export default function ProfilePage() {
             <div className="space-y-3">
               {pendingChats.map((chat) => (
                 <div key={chat.id} className="bg-surface-card border border-border rounded-xl p-4 border-l-4 border-l-status-warning-text">
-                  <div className="flex items-start justify-between gap-3">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                     <div className="flex gap-3 flex-1 min-w-0">
                       <div className="w-9 h-9 bg-status-warning-bg rounded-full flex items-center justify-center text-xs font-bold text-status-warning-text flex-shrink-0">
                         {(chat.requester_name || chat.requester_email || '?').slice(0, 2)}
@@ -427,25 +431,25 @@ export default function ProfilePage() {
                     </div>
 
                     {acceptingChatId === chat.id ? (
-                      <div className="flex items-center gap-2 flex-shrink-0">
+                      <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
                         <input
                           type="text"
                           value={contactInput}
                           onChange={(e) => setContactInput(e.target.value)}
                           placeholder="연락처 입력"
-                          className="w-32 px-2 py-1 text-xs border border-border rounded-lg focus:outline-none focus:border-accent"
+                          className="w-24 sm:w-32 px-2 py-1.5 text-xs border border-border rounded-lg focus:outline-none focus:border-accent"
                         />
                         <button
                           onClick={() => handleAcceptChat(chat.id)}
-                          className="p-1.5 bg-accent text-txt-inverse rounded-lg hover:bg-accent-hover"
+                          className="p-2 bg-accent text-txt-inverse rounded-lg hover:bg-accent-hover"
                         >
-                          <Check size={12} />
+                          <Check size={14} />
                         </button>
                         <button
                           onClick={() => { setAcceptingChatId(null); setContactInput('') }}
-                          className="p-1.5 bg-surface-sunken text-txt-secondary rounded-lg hover:bg-border"
+                          className="p-2 bg-surface-sunken text-txt-secondary rounded-lg hover:bg-border"
                         >
-                          <X size={12} />
+                          <X size={14} />
                         </button>
                       </div>
                     ) : (
@@ -457,7 +461,7 @@ export default function ProfilePage() {
                           수락
                         </button>
                         <button
-                          onClick={() => declineChat(chat.id)}
+                          onClick={() => declineChatMutation.mutate(chat.id)}
                           className="px-3 py-1.5 text-xs font-semibold border border-border text-txt-secondary rounded-lg hover:bg-surface-sunken focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1"
                         >
                           거절

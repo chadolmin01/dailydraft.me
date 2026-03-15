@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { Coffee, Loader2, X, Check, Clock } from 'lucide-react'
-import { useCoffeeChats } from '@/src/hooks/useCoffeeChats'
+import { useCoffeeChats, useRequestCoffeeChat } from '@/src/hooks/useCoffeeChats'
 
 interface CoffeeChatButtonProps {
   opportunityId: string
@@ -15,7 +15,8 @@ export const CoffeeChatButton: React.FC<CoffeeChatButtonProps> = ({
   ownerId,
   className = '',
 }) => {
-  const { chats, loading: chatsLoading, requestChat } = useCoffeeChats({ opportunityId })
+  const { data: chats = [], isLoading: chatsLoading } = useCoffeeChats({ opportunityId })
+  const requestChatMutation = useRequestCoffeeChat()
 
   const [showModal, setShowModal] = useState(false)
   const [name, setName] = useState('')
@@ -77,18 +78,17 @@ export const CoffeeChatButton: React.FC<CoffeeChatButtonProps> = ({
     setSubmitting(true)
     setError('')
 
-    const result = await requestChat({
-      opportunityId,
-      email: email.trim(),
-      name: name.trim(),
-      message: message.trim() || undefined,
-    })
-
-    if (result) {
+    try {
+      await requestChatMutation.mutateAsync({
+        opportunityId,
+        email: email.trim(),
+        name: name.trim(),
+        message: message.trim() || undefined,
+      })
       localStorage.setItem('user_email_interest', email.trim())
       localStorage.setItem('user_name', name.trim())
       setShowModal(false)
-    } else {
+    } catch {
       setError('요청에 실패했습니다. 다시 시도해주세요.')
     }
 
