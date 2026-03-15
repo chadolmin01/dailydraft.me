@@ -1,8 +1,8 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { ArrowLeft, Loader2, Plus, X } from 'lucide-react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { ArrowLeft, Loader2, Plus, X, Sparkles } from 'lucide-react'
 import { useCreateOpportunity } from '@/src/hooks/useOpportunities'
 
 const TYPE_OPTIONS = [
@@ -38,6 +38,8 @@ const chipInactiveClass = 'bg-white text-gray-600 border-gray-200 hover:border-g
 
 export default function NewProjectPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const returnTo = searchParams.get('from')
   const createOpportunity = useCreateOpportunity()
 
   const [title, setTitle] = useState('')
@@ -52,6 +54,7 @@ export default function NewProjectPage() {
   const [compensationDetails, setCompensationDetails] = useState('')
   const [links, setLinks] = useState<{ label: string; url: string }[]>([])
   const [error, setError] = useState('')
+  const [aiLoading, setAiLoading] = useState(false)
 
   // Read AI-generated draft from localStorage
   useEffect(() => {
@@ -71,6 +74,26 @@ export default function NewProjectPage() {
     setSelectedRoles(prev =>
       prev.includes(role) ? prev.filter(r => r !== role) : [...prev, role]
     )
+  }
+
+  const generateDescription = async () => {
+    if (!title.trim()) { setError('먼저 프로젝트 이름을 입력해주세요'); return }
+    setAiLoading(true)
+    setError('')
+    try {
+      const res = await fetch('/api/projects/generate-description', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, type, painPoint: painPoint || undefined }),
+      })
+      if (!res.ok) throw new Error('생성 실패')
+      const { description: generated } = await res.json()
+      if (generated) setDescription(generated)
+    } catch {
+      setError('AI 설명 생성에 실패했습니다. 다시 시도해주세요.')
+    } finally {
+      setAiLoading(false)
+    }
   }
 
   const addLink = () => setLinks(prev => [...prev, { label: '', url: '' }])
@@ -106,7 +129,7 @@ export default function NewProjectPage() {
         project_links: Object.keys(projectLinks).length > 0 ? projectLinks : null,
         status: 'active',
       })
-      router.push(`/p/${result.id}`)
+      router.push(returnTo || `/p/${result.id}`)
     } catch {
       setError('프로젝트 생성에 실패했습니다. 다시 시도해주세요.')
     }
@@ -155,7 +178,21 @@ export default function NewProjectPage() {
 
             {/* Description */}
             <div>
-              <label className={labelClass}>프로젝트 설명 *</label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-sm font-medium text-gray-700">프로젝트 설명 *</label>
+                <button
+                  type="button"
+                  onClick={generateDescription}
+                  disabled={aiLoading || !title.trim()}
+                  className="flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-lg border transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-white text-gray-600 border-gray-200 hover:border-black hover:text-black"
+                >
+                  {aiLoading ? (
+                    <><Loader2 size={12} className="animate-spin" /> 생성 중...</>
+                  ) : (
+                    <><Sparkles size={12} /> AI로 작성</>
+                  )}
+                </button>
+              </div>
               <textarea value={description} onChange={(e) => setDescription(e.target.value)}
                 placeholder="어떤 서비스인지, 현재 진행 상황은 어떤지 자유롭게 적어주세요"
                 rows={5} maxLength={2000} className={`${inputClass} resize-none`} />
