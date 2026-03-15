@@ -26,7 +26,7 @@ export const InterestButton: React.FC<InterestButtonProps> = ({
 
   // Check if user has already expressed interest
   useEffect(() => {
-    const savedEmail = localStorage.getItem('user_email_interest')
+    const savedEmail = sessionStorage.getItem('user_email_interest')
     if (savedEmail) {
       setEmail(savedEmail)
       checkInterest(savedEmail).then(setHasInterest)
@@ -36,7 +36,7 @@ export const InterestButton: React.FC<InterestButtonProps> = ({
   const handleClick = () => {
     if (hasInterest) return
 
-    const savedEmail = localStorage.getItem('user_email_interest')
+    const savedEmail = sessionStorage.getItem('user_email_interest')
     if (savedEmail) {
       handleSubmit(savedEmail)
     } else {
@@ -63,7 +63,7 @@ export const InterestButton: React.FC<InterestButtonProps> = ({
     const success = await expressInterest(finalEmail)
 
     if (success) {
-      localStorage.setItem('user_email_interest', finalEmail)
+      sessionStorage.setItem('user_email_interest', finalEmail)
       setHasInterest(true)
       setCount((prev) => prev + 1)
       setShowModal(false)

@@ -33,8 +33,8 @@ export const CoffeeChatButton: React.FC<CoffeeChatButtonProps> = ({
 
   // Load saved info from localStorage
   useEffect(() => {
-    const savedEmail = localStorage.getItem('user_email_interest')
-    const savedName = localStorage.getItem('user_name')
+    const savedEmail = sessionStorage.getItem('user_email_interest')
+    const savedName = sessionStorage.getItem('user_name')
     if (savedEmail) setEmail(savedEmail)
     if (savedName) setName(savedName)
   }, [])
@@ -85,8 +85,8 @@ export const CoffeeChatButton: React.FC<CoffeeChatButtonProps> = ({
         name: name.trim(),
         message: message.trim() || undefined,
       })
-      localStorage.setItem('user_email_interest', email.trim())
-      localStorage.setItem('user_name', name.trim())
+      sessionStorage.setItem('user_email_interest', email.trim())
+      sessionStorage.setItem('user_name', name.trim())
       setShowModal(false)
     } catch {
       setError('요청에 실패했습니다. 다시 시도해주세요.')

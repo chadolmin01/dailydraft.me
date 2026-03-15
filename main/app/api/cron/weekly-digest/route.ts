@@ -56,7 +56,6 @@ export async function POST(request: NextRequest) {
       {
         success: false,
         timestamp: new Date().toISOString(),
-        error: errorMessage,
         duration_ms: Date.now() - startTime,
       },
       { status: 500 }
@@ -72,12 +71,5 @@ export async function GET() {
   return NextResponse.json({
     status: 'ready',
     timestamp: new Date().toISOString(),
-    env_check: {
-      cron_secret: !!process.env.CRON_SECRET,
-      resend_api_key: !!process.env.RESEND_API_KEY,
-      supabase_url: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-      supabase_service_key: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-    },
-    schedule: 'Weekly (recommended: Sunday 10:00 KST)',
   });
 }

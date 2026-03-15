@@ -35,10 +35,14 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId })
 
   // Load voted/reported state from localStorage
   useEffect(() => {
-    const voted = localStorage.getItem(`voted_${opportunityId}`)
-    const reported = localStorage.getItem(`reported_${opportunityId}`)
-    if (voted) setVotedComments(new Set(JSON.parse(voted)))
-    if (reported) setReportedComments(new Set(JSON.parse(reported)))
+    try {
+      const voted = localStorage.getItem(`voted_${opportunityId}`)
+      const reported = localStorage.getItem(`reported_${opportunityId}`)
+      if (voted) setVotedComments(new Set(JSON.parse(voted)))
+      if (reported) setReportedComments(new Set(JSON.parse(reported)))
+    } catch {
+      // Ignore corrupted localStorage data
+    }
   }, [opportunityId])
 
   // Generate unique voter identifier
