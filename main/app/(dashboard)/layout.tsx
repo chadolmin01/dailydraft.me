@@ -10,8 +10,8 @@ export default function DashboardLayout({
   return (
     <div className="min-h-screen bg-surface-bg">
       <TopNavbar />
-      <main className="pt-16">
-        <div className="min-h-[calc(100vh-64px)]">
+      <main className="pt-14">
+        <div className="min-h-[calc(100vh-56px)]">
           {children}
         </div>
       </main>

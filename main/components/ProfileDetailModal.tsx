@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useDetailedPublicProfile } from '@/src/hooks/usePublicProfiles'
+import { useAuth } from '@/src/context/AuthContext'
 
 interface ProfileDetailModalProps {
   profileId: string | null
@@ -22,6 +23,7 @@ const SITUATION_LABELS: Record<string, string> = {
 }
 
 export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileId, byUserId, onClose }) => {
+  const { isAuthenticated } = useAuth()
   const { data: profile, isLoading: loading } = useDetailedPublicProfile(
     profileId ?? undefined,
     byUserId ? { byUserId: true } : undefined
@@ -234,13 +236,23 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                         <h3 className="text-[0.625rem] font-mono font-bold text-gray-400 uppercase tracking-wider mb-3">
                           연락처
                         </h3>
-                        <a
-                          href={`mailto:${profile.contact_email}`}
-                          className="inline-flex items-center gap-2 px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded-lg text-sm text-gray-600 transition-colors"
-                        >
-                          <Mail size={14} />
-                          {profile.contact_email}
-                        </a>
+                        {isAuthenticated ? (
+                          <a
+                            href={`mailto:${profile.contact_email}`}
+                            className="inline-flex items-center gap-2 px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded-lg text-sm text-gray-600 transition-colors"
+                          >
+                            <Mail size={14} />
+                            {profile.contact_email}
+                          </a>
+                        ) : (
+                          <a
+                            href="/login"
+                            className="inline-flex items-center gap-2 px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded-lg text-sm text-gray-400 transition-colors"
+                          >
+                            <Mail size={14} />
+                            로그인하면 연락처를 볼 수 있어요
+                          </a>
+                        )}
                       </section>
                     )}
                   </div>
@@ -249,8 +261,23 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                   <div className="px-6 sm:px-8 pb-6">
                     <div className="bg-surface-inverse rounded-xl p-5 text-center">
                       <Coffee size={20} className="text-txt-inverse/50 mx-auto mb-2" />
-                      <p className="text-sm font-medium text-txt-inverse mb-1">커피챗으로 대화해보세요</p>
-                      <p className="text-xs text-txt-inverse/50">이 사람의 프로젝트에서 커피챗을 신청할 수 있어요</p>
+                      {isAuthenticated ? (
+                        <>
+                          <p className="text-sm font-medium text-txt-inverse mb-1">커피챗으로 대화해보세요</p>
+                          <p className="text-xs text-txt-inverse/50">이 사람의 프로젝트에서 커피챗을 신청할 수 있어요</p>
+                        </>
+                      ) : (
+                        <>
+                          <p className="text-sm font-medium text-txt-inverse mb-1">관심 있는 사람인가요?</p>
+                          <p className="text-xs text-txt-inverse/50 mb-3">로그인하면 커피챗 신청과 연락이 가능해요</p>
+                          <a
+                            href="/login"
+                            className="inline-flex items-center gap-2 bg-white text-gray-900 px-5 py-2 rounded-lg font-semibold text-xs hover:bg-gray-100 transition-colors"
+                          >
+                            로그인하기
+                          </a>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>

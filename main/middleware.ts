@@ -113,7 +113,7 @@ export async function middleware(request: NextRequest) {
 
   // Protected routes - redirect to login if not authenticated
   // Only active routes that require auth
-  const protectedPaths = ['/profile', '/explore', '/projects', '/admin']
+  const protectedPaths = ['/profile', '/projects', '/admin']
   const isProtectedPath = protectedPaths.some(path => request.nextUrl.pathname.startsWith(path))
 
   if (isProtectedPath && !user) {
