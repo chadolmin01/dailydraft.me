@@ -7,17 +7,17 @@ import Link from 'next/link'
 import { useAuth } from '@/src/context/AuthContext'
 import { useAdmin } from '@/src/hooks/useAdmin'
 
-// 툴팁 아이콘 버튼
-const IconButton = ({ label, onClick, children }: { label: string; onClick?: () => void; children: React.ReactNode }) => (
-  <div className="relative group">
+// 툴팁 아이콘 버튼 — 44px 터치 타겟 보장
+const IconButton = ({ label, onClick, children, className: extraClass }: { label: string; onClick?: () => void; children: React.ReactNode; className?: string }) => (
+  <div className={`relative group ${extraClass || ''}`}>
     <button
       onClick={onClick}
       aria-label={label}
-      className="relative p-2 text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+      className="relative min-w-[44px] min-h-[44px] flex items-center justify-center text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
     >
       {children}
     </button>
-    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 px-2 py-1 bg-surface-inverse text-txt-inverse text-xs rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-tooltip">
+    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 px-2 py-1 bg-surface-inverse text-txt-inverse text-xs rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-tooltip hidden md:block">
       {label}
     </div>
   </div>
@@ -113,11 +113,11 @@ export const TopNavbar: React.FC = () => {
 
           {/* ===== 우측: AI채팅 + 다크모드 + 알림 + 더보기 + 프로필 ===== */}
           <div className="flex items-center gap-1 shrink-0">
-            <IconButton label="AI 채팅">
+            <IconButton label="AI 채팅" className="hidden sm:block">
               <MessageSquare size={20} />
             </IconButton>
 
-            <IconButton label={isDarkMode ? '라이트 모드' : '다크 모드'} onClick={() => setIsDarkMode(!isDarkMode)}>
+            <IconButton label={isDarkMode ? '라이트 모드' : '다크 모드'} onClick={() => setIsDarkMode(!isDarkMode)} className="hidden sm:block">
               {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
             </IconButton>
 
@@ -125,7 +125,7 @@ export const TopNavbar: React.FC = () => {
               <Bell size={20} />
             </IconButton>
 
-            <IconButton label="더보기">
+            <IconButton label="더보기" className="hidden sm:block">
               <MoreHorizontal size={20} />
             </IconButton>
 
@@ -144,7 +144,7 @@ export const TopNavbar: React.FC = () => {
 
               {/* 드롭다운 메뉴 */}
               {isMenuOpen && (
-                <div className="absolute right-0 top-12 w-56 bg-surface-elevated border border-border rounded-xl shadow-lg py-2 animate-in fade-in zoom-in-95 duration-150 z-dropdown">
+                <div className="absolute right-0 top-12 w-[calc(100vw-2rem)] sm:w-56 max-w-[14rem] bg-surface-elevated border border-border rounded-xl shadow-lg py-2 animate-in fade-in zoom-in-95 duration-150 z-dropdown">
                   {/* 유저 정보 */}
                   <div className="px-4 py-3 border-b border-border-subtle">
                     <div className="flex items-center gap-2">
@@ -190,12 +190,21 @@ export const TopNavbar: React.FC = () => {
         {/* 모바일 메뉴 드로어 */}
         {isMobileMenuOpen && (
           <div className="md:hidden absolute top-16 left-0 right-0 bg-surface-card border-b border-border shadow-lg animate-in slide-in-from-top duration-200 z-fixed">
-            <div className="px-4 py-3 space-y-1">
+            <div className="px-4 py-3 space-y-2">
+              {/* 모바일 검색 */}
+              <div className="relative">
+                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-txt-disabled pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="프로젝트, 사람 검색..."
+                  className="w-full pl-9 pr-4 py-3 bg-surface-sunken border border-border rounded-lg text-sm placeholder:text-txt-disabled focus:outline-none focus:border-accent focus:bg-surface-card transition-all"
+                />
+              </div>
               <MobileNavLink href="/explore" active={pathname === '/explore'}>탐색</MobileNavLink>
               <MobileNavLink href="/profile" active={pathname === '/profile'}>마이페이지</MobileNavLink>
               <button
                 onClick={() => router.push('/projects/new')}
-                className="w-full mt-2 flex items-center justify-center gap-1.5 px-4 py-3 bg-accent text-txt-inverse text-sm font-semibold rounded-lg"
+                className="w-full mt-1 flex items-center justify-center gap-1.5 px-4 py-3 bg-accent text-txt-inverse text-sm font-semibold rounded-lg"
               >
                 <Plus size={16} /> 새 프로젝트
               </button>

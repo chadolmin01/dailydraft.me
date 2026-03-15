@@ -11,7 +11,7 @@ interface HeroProps {
 
 export const Hero: React.FC<HeroProps> = ({ onCtaClick, onSlidePanelOpen }) => {
   return (
-    <section className="relative w-full pt-16 pb-32 px-6 md:px-12 max-w-7xl mx-auto flex flex-col items-center">
+    <section className="relative w-full pt-8 sm:pt-16 pb-16 sm:pb-32 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto flex flex-col items-center">
 
       {/* Background Decor Elements - Blueprint style cards */}
       <div className="absolute top-0 w-full h-full max-w-6xl mx-auto pointer-events-none z-0 hidden lg:block">
@@ -107,13 +107,13 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick, onSlidePanelOpen }) => {
         </div>
       </div>
 
-      <div className="relative z-10 flex flex-col items-center text-center mt-20 md:mt-32 max-w-3xl mx-auto">
+      <div className="relative z-10 flex flex-col items-center text-center mt-12 sm:mt-20 md:mt-32 max-w-3xl mx-auto">
         <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] mb-8">
             <Ruler size={14} className="text-black" />
             <span className="text-xs font-bold text-black font-mono">DRAFT COMMUNITY</span>
         </div>
 
-        <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-[1.2] mb-6 text-slate-900">
+        <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold tracking-tight leading-[1.2] mb-6 text-slate-900">
           모든 프로젝트는<br />
           <span className="text-gray-400 relative">
             Draft에서 시작됩니다.

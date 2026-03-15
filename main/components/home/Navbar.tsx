@@ -10,7 +10,7 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-sm border-b border-gray-200 h-16 flex items-center px-6 md:px-12 justify-between">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-sm border-b border-gray-200 h-16 flex items-center px-4 sm:px-6 md:px-12 justify-between">
       <div className="flex items-center gap-3">
         <div className="w-8 h-8 bg-black flex items-center justify-center">
           <span className="text-white font-bold text-lg font-mono">D</span>

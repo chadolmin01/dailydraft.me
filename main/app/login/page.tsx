@@ -148,7 +148,7 @@ function LoginContent() {
       <div className="w-full lg:w-[480px] xl:w-[560px] flex flex-col justify-between bg-white z-20 shadow-2xl shrink-0 h-full relative border-r border-gray-100">
 
          {/* Top Branding */}
-         <div className="p-8 md:p-12 animate-slide-up-fade">
+         <div className="p-5 sm:p-8 md:p-12 animate-slide-up-fade">
             <div className="flex items-center gap-2 mb-6">
                <div className="w-8 h-8 bg-black text-white flex items-center justify-center font-black text-lg rounded-sm">D</div>
                <span className="font-bold text-xl tracking-tight">Draft.</span>
@@ -160,8 +160,8 @@ function LoginContent() {
          </div>
 
          {/* Center Form */}
-         <div className="px-8 md:px-12 flex flex-col justify-center animate-slide-up-fade" style={{ animationDelay: '0.1s' }}>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2 tracking-tight">
+         <div className="px-5 sm:px-8 md:px-12 flex flex-col justify-center animate-slide-up-fade" style={{ animationDelay: '0.1s' }}>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 tracking-tight">
                {isSignUp ? 'Create Account' : 'Welcome back, Architect.'}
             </h1>
             <p className="text-gray-500 text-sm mb-8 leading-relaxed">
@@ -275,7 +275,7 @@ function LoginContent() {
          </div>
 
          {/* Bottom Footer */}
-         <div className="p-8 md:p-12 text-[10px] text-gray-400 font-mono flex justify-between animate-slide-up-fade" style={{ animationDelay: '0.2s' }}>
+         <div className="p-5 sm:p-8 md:p-12 text-[10px] text-gray-400 font-mono flex justify-between animate-slide-up-fade" style={{ animationDelay: '0.2s' }}>
             <span>© 2026 DRAFT INC.</span>
             <span className="flex items-center gap-1"><Shield size={10}/> SECURE CONNECTION</span>
          </div>

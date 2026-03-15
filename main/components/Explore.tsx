@@ -27,6 +27,7 @@ export const Explore: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'projects' | 'people'>('projects')
   const [recruitingOnly, setRecruitingOnly] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false)
   const { isAuthenticated } = useAuth()
 
   const PAGE_SIZE = 12
@@ -213,13 +214,54 @@ export const Explore: React.FC = () => {
                   placeholder="프로젝트, 사람, 기술 스택 검색..."
                 />
               </div>
-              <button className="lg:hidden p-3 bg-surface-card border border-border rounded-xl">
+              <button
+                onClick={() => setMobileFilterOpen(!mobileFilterOpen)}
+                className="lg:hidden p-3 bg-surface-card border border-border rounded-xl"
+                aria-label="필터 열기"
+              >
                 <Filter size={18} className="text-txt-secondary" />
               </button>
             </div>
 
+            {/* 모바일 필터 드로어 */}
+            {mobileFilterOpen && (
+              <div className="lg:hidden bg-surface-card rounded-xl border border-border p-4 space-y-4 animate-in slide-in-from-top duration-200">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs font-bold text-txt-tertiary uppercase tracking-wider">카테고리</h3>
+                  <button onClick={() => setMobileFilterOpen(false)} className="text-xs text-txt-tertiary hover:text-txt-primary">
+                    닫기
+                  </button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {categories.map((cat) => (
+                    <button
+                      key={cat.id}
+                      onClick={() => { setSelectedCategory(cat.id); setMobileFilterOpen(false) }}
+                      className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                        selectedCategory === cat.id
+                          ? 'bg-accent text-txt-inverse'
+                          : 'bg-surface-sunken text-txt-secondary'
+                      }`}
+                    >
+                      <cat.icon size={12} />
+                      {cat.label}
+                    </button>
+                  ))}
+                </div>
+                <label className="flex items-center gap-2 text-sm text-txt-secondary cursor-pointer pt-2 border-t border-border-subtle">
+                  <input
+                    type="checkbox"
+                    className="rounded border-border-strong"
+                    checked={recruitingOnly}
+                    onChange={(e) => setRecruitingOnly(e.target.checked)}
+                  />
+                  모집 중만 보기
+                </label>
+              </div>
+            )}
+
             {/* 프로젝트/사람 탭 + 정렬 */}
-            <div className="flex items-center justify-between border-b border-border">
+            <div className="flex items-center justify-between border-b border-border gap-2">
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => setActiveTab('projects')}
