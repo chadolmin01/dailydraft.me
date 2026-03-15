@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error('Error expiring boosts:', error)
       return NextResponse.json(
-        { error: 'Failed to expire boosts', details: error.message },
+        { error: 'Failed to expire boosts' },
         { status: 500 }
       )
     }
@@ -40,10 +40,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error in expire-boosts cron:', error)
     return NextResponse.json(
-      {
-        error: 'Cron job failed',
-        details: error instanceof Error ? error.message : 'Unknown error',
-      },
+      { error: 'Cron job failed' },
       { status: 500 }
     )
   }

@@ -58,6 +58,20 @@ const hiddenApiRoutes = [
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
 
+  // CSRF protection: block cross-origin state-changing requests to API routes
+  if (pathname.startsWith('/api/') && ['POST', 'PATCH', 'PUT', 'DELETE'].includes(request.method)) {
+    const origin = request.headers.get('origin')
+    const host = request.headers.get('host')
+    // Allow requests with no origin (server-to-server, cron jobs)
+    // Block requests where origin doesn't match host
+    if (origin && host) {
+      const originHost = new URL(origin).host
+      if (originHost !== host) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      }
+    }
+  }
+
   // Block hidden API routes — return 404
   if (hiddenApiRoutes.some(route => pathname.startsWith(route))) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })

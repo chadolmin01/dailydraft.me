@@ -386,7 +386,7 @@ export default function ProfilePage() {
               title="아직 등록한 프로젝트가 없습니다"
               description="아이디어를 프로젝트로 만들고 팀원을 모집해보세요"
               actionLabel="프로젝트 만들기"
-              actionHref="/projects/new"
+              actionHref="/projects/new?from=/profile"
             />
           )}
         </section>
