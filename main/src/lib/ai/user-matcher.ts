@@ -1,5 +1,6 @@
 import type { Profile, Skill, CurrentSituation } from '@/src/types/profile'
 import type { ProfileAnalysisResult } from '@/src/types/profile-analysis'
+import { chatModel } from './gemini-client'
 
 export interface UserMatchResult {
   userId: string
@@ -376,4 +377,118 @@ export function rankUserMatches(
       }
     })
     .sort((a, b) => b.match_score - a.match_score)
+}
+
+/**
+ * Batch AI reason generation for top matched users
+ * One Gemini call for all candidates to save cost/latency
+ */
+interface MatchedUser {
+  user_id: string
+  nickname: string
+  desired_position: string | null
+  skills: Skill[]
+  interest_tags: string[]
+  founder_type: string | null
+  current_situation: string | null
+  match_score: number
+  match_reason: string
+  match_details: {
+    vision: number
+    skill: number
+    founder: number
+    interest: number
+    situation: number
+  }
+}
+
+export async function generateAIMatchReasons(
+  myProfile: {
+    nickname: string
+    desired_position: string | null
+    skills: Skill[]
+    interest_tags: string[]
+    current_situation: string | null
+    founder_type?: string | null
+    vision_summary: string | null
+  },
+  matchedUsers: MatchedUser[]
+): Promise<Map<string, string>> {
+  if (matchedUsers.length === 0) return new Map()
+
+  const candidateSummaries = matchedUsers.map((u, i) => {
+    const skills = (u.skills || []).map(s => s.name).join(', ') || '없음'
+    const tags = (u.interest_tags || []).join(', ') || '없음'
+    return `[${i + 1}] ${u.nickname} (ID: ${u.user_id})
+  - 포지션: ${u.desired_position || '미설정'}
+  - 스킬: ${skills}
+  - 관심사: ${tags}
+  - 파운더타입: ${u.founder_type || '미분석'}
+  - 상황: ${u.current_situation || '미설정'}
+  - 매칭점수: ${u.match_score}점
+  - 세부점수: 비전유사도=${u.match_details.vision}, 스킬보완=${u.match_details.skill}, 파운더시너지=${u.match_details.founder}, 관심겹침=${u.match_details.interest}, 상황매칭=${u.match_details.situation}`
+  }).join('\n\n')
+
+  const mySkills = (myProfile.skills || []).map(s => s.name).join(', ') || '없음'
+  const myTags = (myProfile.interest_tags || []).join(', ') || '없음'
+
+  const prompt = `당신은 스타트업 팀빌딩 플랫폼 "Draft"의 AI 매칭 어드바이저입니다.
+아래 사용자와 추천 후보들의 프로필/매칭 점수를 보고, 각 후보에 대해 **왜 이 사람과 함께하면 좋은지** 한 줄 추천 이유를 작성하세요.
+
+## 나의 프로필
+- 닉네임: ${myProfile.nickname}
+- 포지션: ${myProfile.desired_position || '미설정'}
+- 스킬: ${mySkills}
+- 관심사: ${myTags}
+- 파운더타입: ${myProfile.founder_type || '미분석'}
+- 상황: ${myProfile.current_situation || '미설정'}
+- 비전: ${myProfile.vision_summary || '없음'}
+
+## 추천 후보들
+${candidateSummaries}
+
+## 규칙
+- 각 후보의 user_id를 키로, 추천 이유를 값으로 하는 JSON 객체를 반환
+- 추천 이유는 **25자 이내**, 자연스러운 한국어, 반말 금지
+- 매칭 점수가 높은 이유를 구체적으로 언급 (예: 보완적 스킬, 비전 유사성, 파운더타입 시너지 등)
+- 상대가 가진 스킬 중 내가 없는 것을 강조
+- 딱딱한 나열이 아니라 협업 관점에서 따뜻하게 작성
+- JSON만 출력하세요
+
+## 출력 예시
+{
+  "uuid-1": "AI 기술력과 마케팅 감각이 시너지를 만들어요",
+  "uuid-2": "같은 EdTech 비전을 가진 실행력 있는 파트너"
+}`
+
+  try {
+    const result = await chatModel.generateContent({
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      generationConfig: {
+        temperature: 0.7,
+        topP: 0.9,
+        maxOutputTokens: 2000,
+        responseMimeType: 'application/json',
+      },
+    })
+
+    const text = result.response.text()
+    let jsonStr = text
+    const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/)
+    if (jsonMatch) jsonStr = jsonMatch[1]
+
+    const parsed = JSON.parse(jsonStr.trim()) as Record<string, string>
+    const reasonMap = new Map<string, string>()
+
+    for (const [userId, reason] of Object.entries(parsed)) {
+      if (typeof reason === 'string' && reason.length > 0) {
+        reasonMap.set(userId, reason.slice(0, 40))
+      }
+    }
+
+    return reasonMap
+  } catch (error) {
+    console.error('AI match reason generation failed:', error)
+    return new Map()
+  }
 }

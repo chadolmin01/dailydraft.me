@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { Coffee, Check, X, Clock, MessageSquare, Mail, Loader2, User } from 'lucide-react'
 import { useCoffeeChats, useAcceptCoffeeChat, useDeclineCoffeeChat, type CoffeeChat } from '@/src/hooks/useCoffeeChats'
+import { EmptyState } from './ui/EmptyState'
 
 interface CoffeeChatListProps {
   asOwner?: boolean
@@ -33,9 +34,13 @@ export const CoffeeChatList: React.FC<CoffeeChatListProps> = ({
 
   if (chats.length === 0) {
     return (
-      <div className="p-8 text-center text-gray-400">
-        <Coffee size={32} className="mx-auto mb-2 opacity-50" />
-        <p className="text-sm">아직 커피챗 신청이 없습니다</p>
+      <div className="p-4">
+        <EmptyState
+          icon={Coffee}
+          title="아직 커피챗 신청이 없습니다"
+          description="프로젝트에 관심 있는 사람들이 커피챗을 보낼 수 있어요"
+          size="compact"
+        />
       </div>
     )
   }

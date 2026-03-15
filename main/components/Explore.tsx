@@ -1,9 +1,10 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Search, Filter, ArrowRight, Zap, Users, Star, Rocket, LayoutGrid, Loader2, Clock, Flame, ChevronRight, Hash, UserCircle, Sparkles } from 'lucide-react'
+import { Search, Filter, ArrowRight, Zap, Users, Star, Rocket, LayoutGrid, Loader2, Clock, Flame, ChevronRight, Hash, UserCircle, Sparkles, FolderOpen } from 'lucide-react'
 import Link from 'next/link'
 import { Card } from './ui/Card'
+import { EmptyState } from './ui/EmptyState'
 import { ProjectDetailModal } from './ProjectDetailModal'
 import { useOpportunities, type OpportunityWithCreator } from '@/src/hooks/useOpportunities'
 import { usePublicProfiles, type PublicProfile } from '@/src/hooks/usePublicProfiles'
@@ -328,10 +329,13 @@ export const Explore: React.FC = () => {
                     ))}
                   </div>
                 ) : projectCards.length === 0 ? (
-                  <Card className="text-center py-12" padding="p-6">
-                    <LayoutGrid className="mx-auto mb-4 text-txt-disabled" size={40} />
-                    <p className="text-txt-tertiary text-sm">등록된 프로젝트가 없습니다</p>
-                  </Card>
+                  <EmptyState
+                    icon={FolderOpen}
+                    title="등록된 프로젝트가 없습니다"
+                    description="첫 번째 프로젝트를 만들어 팀원을 모집해보세요"
+                    actionLabel="프로젝트 만들기"
+                    actionHref="/projects/new"
+                  />
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {projectCards.map((p) => (
@@ -398,10 +402,11 @@ export const Explore: React.FC = () => {
                     ))}
                   </div>
                 ) : talentCards.length === 0 ? (
-                  <Card className="text-center py-12" padding="p-6">
-                    <Users className="mx-auto mb-4 text-txt-disabled" size={40} />
-                    <p className="text-txt-tertiary text-sm">등록된 사람이 없습니다</p>
-                  </Card>
+                  <EmptyState
+                    icon={Users}
+                    title="등록된 사람이 없습니다"
+                    description="프로필을 공개하면 여기에 표시돼요"
+                  />
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {talentCards.map((t) => (

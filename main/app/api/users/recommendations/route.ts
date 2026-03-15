@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
-import { rankUserMatches } from '@/src/lib/ai/user-matcher'
+import { rankUserMatches, generateAIMatchReasons } from '@/src/lib/ai/user-matcher'
 import type { Profile } from '@/src/types/profile'
 import type { ProfileAnalysisResult } from '@/src/types/profile-analysis'
 
@@ -103,8 +103,8 @@ export async function GET() {
     // Rank using the matching algorithm
     const ranked = rankUserMatches(myProfile, filteredCandidates)
 
-    // Return top 15 with curated fields
-    const results = ranked.slice(0, 15).map((r) => ({
+    // Top 15 with curated fields
+    const top15 = ranked.slice(0, 15).map((r) => ({
       user_id: r.user_id,
       nickname: r.nickname,
       desired_position: r.desired_position,
@@ -117,6 +117,26 @@ export async function GET() {
       match_score: r.match_score,
       match_reason: r.match_reason,
       match_details: r.match_details,
+    }))
+
+    // Generate AI-powered match reasons (single Gemini call for all)
+    const aiReasons = await generateAIMatchReasons(
+      {
+        nickname: myProfile.nickname,
+        desired_position: myProfile.desired_position,
+        skills: myProfile.skills || [],
+        interest_tags: myProfile.interest_tags || [],
+        current_situation: myProfile.current_situation,
+        founder_type: myProfile.profile_analysis?.founder_type || null,
+        vision_summary: myProfile.vision_summary,
+      },
+      top15
+    )
+
+    // Override rule-based reasons with AI reasons where available
+    const results = top15.map((r) => ({
+      ...r,
+      match_reason: aiReasons.get(r.user_id) || r.match_reason,
     }))
 
     return NextResponse.json(results)

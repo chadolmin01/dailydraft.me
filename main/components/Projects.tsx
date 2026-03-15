@@ -18,7 +18,9 @@ import {
   Plus,
   MapPin,
   Coffee,
+  FolderOpen,
 } from 'lucide-react'
+import { EmptyState } from './ui/EmptyState'
 import { useOpportunities, calculateDaysLeft, type OpportunityWithCreator } from '@/src/hooks/useOpportunities'
 
 export const Projects: React.FC = () => {
@@ -157,12 +159,21 @@ export const Projects: React.FC = () => {
                 <Loader2 className="animate-spin text-gray-400" size={24} />
               </div>
             ) : sorted.length === 0 ? (
-              <Card className="text-center py-12" padding="p-6">
-                <LayoutGrid className="mx-auto mb-4 text-gray-300" size={40} />
-                <p className="text-gray-500 text-sm">
-                  {searchQuery ? '검색 결과가 없습니다' : '아직 등록된 프로젝트가 없습니다'}
-                </p>
-              </Card>
+              searchQuery ? (
+                <EmptyState
+                  icon={Search}
+                  title="검색 결과가 없습니다"
+                  description="다른 키워드로 검색해보세요"
+                />
+              ) : (
+                <EmptyState
+                  icon={FolderOpen}
+                  title="아직 등록된 프로젝트가 없습니다"
+                  description="첫 번째 프로젝트를 등록하고 팀원을 찾아보세요"
+                  actionLabel="프로젝트 만들기"
+                  actionHref="/projects/new"
+                />
+              )
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {sorted.map((opp: OpportunityWithCreator) => {

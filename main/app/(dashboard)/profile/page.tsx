@@ -18,9 +18,11 @@ import {
   Mail,
   Building2,
   FolderOpen,
+  Code2,
 } from 'lucide-react'
 import Link from 'next/link'
 import { DashboardLayout } from '@/components/ui/DashboardLayout'
+import { EmptyState } from '@/components/ui/EmptyState'
 import { Modal } from '@/components/ui/Modal'
 import { useAuth } from '@/src/context/AuthContext'
 import { useProfile, useUpdateProfile } from '@/src/hooks/useProfile'
@@ -379,16 +381,13 @@ export default function ProfilePage() {
               })}
             </div>
           ) : (
-            <div className="bg-surface-card border border-border rounded-xl text-center py-12">
-              <FolderOpen className="mx-auto mb-3 text-border" size={32} />
-              <p className="text-txt-tertiary text-sm mb-3">아직 등록한 프로젝트가 없습니다</p>
-              <Link
-                href="/projects/new"
-                className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold bg-accent text-txt-inverse rounded-lg hover:bg-accent-hover transition-colors"
-              >
-                <Plus size={16} /> 프로젝트 만들기
-              </Link>
-            </div>
+            <EmptyState
+              icon={FolderOpen}
+              title="아직 등록한 프로젝트가 없습니다"
+              description="아이디어를 프로젝트로 만들고 팀원을 모집해보세요"
+              actionLabel="프로젝트 만들기"
+              actionHref="/projects/new"
+            />
           )}
         </section>
 
@@ -496,10 +495,13 @@ export default function ProfilePage() {
               ))}
             </div>
           ) : (
-            <div className="bg-surface-card border border-border rounded-xl text-center py-12">
-              <Coffee className="mx-auto mb-3 text-border" size={32} />
-              <p className="text-txt-tertiary text-sm">아직 받은 커피챗이 없습니다</p>
-            </div>
+            <EmptyState
+              icon={Coffee}
+              title="아직 받은 커피챗이 없습니다"
+              description="프로필을 완성하면 더 많은 커피챗을 받을 수 있어요"
+              actionLabel="프로필 완성하기"
+              onAction={startEdit}
+            />
           )}
         </section>
 
@@ -544,10 +546,13 @@ export default function ProfilePage() {
               )}
             </div>
           ) : (
-            <div className="bg-surface-card border border-border rounded-xl text-center py-12">
-              <CheckSquare className="mx-auto mb-3 text-border" size={32} />
-              <p className="text-txt-tertiary text-sm">아직 스킬이 추가되지 않았습니다</p>
-            </div>
+            <EmptyState
+              icon={Code2}
+              title="아직 스킬이 추가되지 않았습니다"
+              description="기술 스택을 추가하면 맞는 프로젝트를 추천받을 수 있어요"
+              actionLabel="스킬 추가하기"
+              onAction={startEdit}
+            />
           )}
         </section>
       </DashboardLayout>

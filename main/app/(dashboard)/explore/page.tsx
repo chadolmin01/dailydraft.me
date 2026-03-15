@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { Users, Star, Rocket, LayoutGrid, Clock, Flame, ChevronRight, Hash, UserCircle, Sparkles, Zap, Coffee, MessageSquare, FolderOpen } from 'lucide-react'
 import Link from 'next/link'
 import { PageContainer } from '@/components/ui/PageContainer'
+import { EmptyState } from '@/components/ui/EmptyState'
 import { DashboardLayout } from '@/components/ui/DashboardLayout'
 import { ProjectDetailModal } from '@/components/ProjectDetailModal'
 import { useOpportunities, type OpportunityWithCreator, calculateDaysLeft } from '@/src/hooks/useOpportunities'
@@ -343,10 +344,13 @@ export default function ExplorePage() {
                 ))}
               </div>
             ) : projectCards.length === 0 ? (
-              <div className="bg-surface-card border border-border rounded-xl text-center py-16">
-                <FolderOpen className="mx-auto mb-4 text-border" size={40} />
-                <p className="text-txt-tertiary text-sm">등록된 프로젝트가 없습니다</p>
-              </div>
+              <EmptyState
+                icon={FolderOpen}
+                title="등록된 프로젝트가 없습니다"
+                description="첫 번째 프로젝트를 만들어 팀원을 모집해보세요"
+                actionLabel="프로젝트 만들기"
+                actionHref="/projects/new"
+              />
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {projectCards.map((p) => {
@@ -500,10 +504,11 @@ export default function ExplorePage() {
                 ))}
               </div>
             ) : talentCards.length === 0 ? (
-              <div className="bg-surface-card border border-border rounded-xl text-center py-16">
-                <Users className="mx-auto mb-4 text-border" size={40} />
-                <p className="text-txt-tertiary text-sm">등록된 사람이 없습니다</p>
-              </div>
+              <EmptyState
+                icon={Users}
+                title="등록된 사람이 없습니다"
+                description="프로필을 공개하면 여기에 표시돼요"
+              />
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {talentCards.map((t) => (
