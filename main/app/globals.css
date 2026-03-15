@@ -4,7 +4,7 @@
 
 /* ============================================================
    DRAFT DESIGN SYSTEM — CSS Custom Properties
-   모노크롬 미니멀리즘 + 최소한의 시맨틱 컬러
+   브루탈리즘 · 각진 모서리 · 강한 그림자 · 모노크롬
    ============================================================ */
 
 :root {
@@ -25,9 +25,9 @@
   --text-link: #18181B;
 
   /* ── Border ── */
-  --border-default: #E4E4E7;
-  --border-strong: #A1A1AA;
-  --border-subtle: #F4F4F5;
+  --border-default: #D4D4D8;
+  --border-strong: #18181B;
+  --border-subtle: #E4E4E7;
 
   /* ── Accent (최소 사용) ── */
   --accent-primary: #18181B;
@@ -53,18 +53,28 @@
   --tag-default-text: #3F3F46;
   --tag-strong-bg: #18181B;
   --tag-strong-text: #FFFFFF;
-  --tag-outline-border: #E4E4E7;
+  --tag-outline-border: #D4D4D8;
   --tag-outline-text: #52525B;
 
   /* ── Misc ── */
-  --grid-color: rgba(0, 0, 0, 0.03);
-  --focus-ring: rgba(24, 24, 27, 0.4);
-  --radius-xs: 4px;
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
+  --grid-color: rgba(0, 0, 0, 0.04);
+  --focus-ring: rgba(24, 24, 27, 0.5);
+
+  /* ── Radius (브루탈리즘: 최소 라운딩) ── */
+  --radius-xs: 0px;
+  --radius-sm: 2px;
+  --radius-md: 2px;
+  --radius-lg: 4px;
+  --radius-xl: 4px;
   --radius-full: 9999px;
+
+  /* ── Shadow (브루탈리즘: 하드 오프셋) ── */
+  --shadow-sm: 2px 2px 0px 0px rgba(0, 0, 0, 0.1);
+  --shadow-md: 3px 3px 0px 0px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 4px 4px 0px 0px rgba(0, 0, 0, 0.15);
+  --shadow-xl: 6px 6px 0px 0px rgba(0, 0, 0, 0.15);
+  --shadow-solid: 4px 4px 0px 0px #18181B;
+  --shadow-solid-sm: 2px 2px 0px 0px #18181B;
 }
 
 /* ── Dark mode (future) ── */
@@ -133,7 +143,7 @@ body {
 }
 ::-webkit-scrollbar-thumb {
   background: var(--border-default);
-  border-radius: 3px;
+  border-radius: 0px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--border-strong);
@@ -147,7 +157,7 @@ body {
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: var(--border-default);
-  border-radius: 2px;
+  border-radius: 0px;
 }
 
 /* ============================================================

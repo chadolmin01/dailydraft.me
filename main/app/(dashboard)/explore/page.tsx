@@ -389,7 +389,7 @@ export default function ExplorePage() {
                 {isAuthenticated && sidebarRecs.length > 0 ? (
                   sidebarRecs.map((rec: UserRecommendation) => (
                     <div key={rec.user_id} onClick={() => { setSelectedProfileId(rec.user_id); setProfileByUserId(true) }} className="flex items-center gap-3 p-2 rounded-lg hover:bg-surface-sunken transition-colors cursor-pointer">
-                      <div className="w-9 h-9 bg-surface-sunken rounded-full flex items-center justify-center text-xs font-bold text-txt-secondary">
+                      <div className="w-9 h-9 bg-surface-sunken flex items-center justify-center text-xs font-bold text-txt-secondary">
                         {(rec.nickname || '??').substring(0, 2)}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -404,7 +404,7 @@ export default function ExplorePage() {
                 ) : (
                   talentCards.slice(0, 4).map((t) => (
                     <div key={t.id} onClick={() => { setSelectedProfileId(t.id); setProfileByUserId(false) }} className="flex items-center gap-3 p-2 rounded-lg hover:bg-surface-sunken transition-colors cursor-pointer">
-                      <div className="w-9 h-9 bg-surface-sunken rounded-full flex items-center justify-center text-xs font-bold text-txt-secondary">
+                      <div className="w-9 h-9 bg-surface-sunken flex items-center justify-center text-xs font-bold text-txt-secondary">
                         {t.name.substring(0, 2)}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -429,15 +429,15 @@ export default function ExplorePage() {
             </div>
 
             {/* CTA 배너 */}
-            <div className="bg-surface-inverse rounded-xl p-5 text-txt-inverse">
-              <div className="w-10 h-10 bg-surface-card/10 rounded-lg flex items-center justify-center mb-4">
+            <div className="bg-surface-inverse p-5 text-txt-inverse border border-black shadow-solid">
+              <div className="w-10 h-10 bg-surface-card/10 flex items-center justify-center mb-4">
                 <Rocket size={20} />
               </div>
               <h3 className="font-bold text-base mb-1">아이디어가 있나요?</h3>
               <p className="text-txt-inverse/50 text-xs mb-4">팀을 구성하고 프로젝트를 시작하세요</p>
               <Link
                 href={isAuthenticated ? '/projects/new' : '/login'}
-                className="w-full bg-surface-card text-txt-primary text-sm font-semibold py-2 rounded-lg hover:bg-surface-sunken transition-colors block text-center"
+                className="w-full bg-surface-card text-txt-primary text-sm font-bold py-2 hover:bg-surface-sunken transition-colors block text-center border border-border"
               >
                 {isAuthenticated ? '프로젝트 시작하기' : '로그인하고 시작하기'}
               </Link>
@@ -448,10 +448,10 @@ export default function ExplorePage() {
         {/* ── Gemini-style 확장형 검색바 ── */}
         <div ref={searchRef} className="relative mb-6">
           {/* 검색 컨테이너 */}
-          <div className={`relative rounded-2xl transition-all duration-200 ${
+          <div className={`relative transition-all duration-200 ${
             isSearchExpanded
-              ? 'bg-surface-card shadow-lg ring-1 ring-border-strong/20'
-              : 'bg-surface-sunken hover:bg-surface-card hover:shadow-soft'
+              ? 'bg-surface-card shadow-brutal border border-border-strong'
+              : 'bg-surface-sunken border border-border hover:bg-surface-card hover:shadow-sharp hover:border-border-strong'
           }`}>
             {/* 검색 입력 */}
             <div className="relative flex items-center">
@@ -482,7 +482,7 @@ export default function ExplorePage() {
                 {searchScope !== 'all' && (
                   <button
                     onClick={() => setSearchScope('all')}
-                    className="flex items-center gap-1 text-[0.625rem] font-mono uppercase tracking-wide bg-surface-inverse text-txt-inverse pl-2 pr-1.5 py-0.5 rounded-full hover:bg-accent-hover transition-colors"
+                    className="flex items-center gap-1 text-[0.625rem] font-mono uppercase tracking-wide bg-surface-inverse text-txt-inverse pl-2 pr-1.5 py-0.5 hover:bg-accent-hover transition-colors"
                   >
                     {searchScope === 'projects' ? '프로젝트' : searchScope === 'people' ? '사람' : '기술'}
                     <X size={10} />
@@ -491,7 +491,7 @@ export default function ExplorePage() {
                 {searchInput && (
                   <button
                     onClick={() => setSearchInput('')}
-                    className="p-1.5 text-txt-disabled hover:text-txt-secondary hover:bg-surface-sunken rounded-full transition-colors"
+                    className="p-1.5 text-txt-disabled hover:text-txt-secondary hover:bg-surface-sunken transition-colors"
                     aria-label="검색어 지우기"
                   >
                     <X size={14} />
@@ -673,7 +673,7 @@ export default function ExplorePage() {
                     <div
                       key={p.id}
                       onClick={() => setSelectedProjectId(p.id)}
-                      className="bg-surface-card border border-border rounded-xl overflow-hidden group hover:border-border-strong hover:shadow-sm transition-all cursor-pointer h-[21.25rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+                      className="bg-surface-card border border-border rounded-xl overflow-hidden group hover:border-border-strong hover:shadow-sharp transition-all cursor-pointer h-[21.25rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
                     >
                       {/* 헤더: 커버 — 144px */}
                       <div className="relative h-36 shrink-0 bg-surface-inverse flex items-end p-4">
@@ -698,7 +698,7 @@ export default function ExplorePage() {
                             <span key={tag} className="text-xs bg-black/40 backdrop-blur-sm text-white px-2 py-0.5 rounded font-medium shadow-sm">{tag}</span>
                           ))}
                         </div>
-                        <div className="relative z-[1] w-10 h-10 bg-surface-card rounded-lg flex items-center justify-center shadow-md">
+                        <div className="relative z-[1] w-10 h-10 bg-surface-card flex items-center justify-center shadow-solid-sm border border-border">
                           <Rocket size={20} className="text-txt-primary" />
                         </div>
                       </div>
@@ -760,7 +760,7 @@ export default function ExplorePage() {
                     <div
                       key={rec.user_id}
                       onClick={() => { setSelectedProfileId(rec.user_id); setProfileByUserId(true) }}
-                      className="bg-surface-card border border-border rounded-xl overflow-hidden group hover:border-border-strong hover:shadow-sm transition-all cursor-pointer h-[13.75rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+                      className="bg-surface-card border border-border rounded-xl overflow-hidden group hover:border-border-strong hover:shadow-sharp transition-all cursor-pointer h-[13.75rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
                     >
                       {/* 헤더: 아바타 + 이름/역할 — 76px */}
                       <div className="px-4 pt-4 h-[4.75rem] shrink-0">
@@ -837,7 +837,7 @@ export default function ExplorePage() {
                   <div
                     key={t.id}
                     onClick={() => { setSelectedProfileId(t.id); setProfileByUserId(false) }}
-                    className="bg-surface-card border border-border rounded-xl overflow-hidden group hover:border-border-strong hover:shadow-sm transition-all cursor-pointer h-[13.75rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+                    className="bg-surface-card border border-border rounded-xl overflow-hidden group hover:border-border-strong hover:shadow-sharp transition-all cursor-pointer h-[13.75rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
                   >
                     {/* 헤더: 아바타 + 이름/역할 — 76px */}
                     <div className="px-4 pt-4 h-[4.75rem] shrink-0">

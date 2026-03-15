@@ -105,7 +105,19 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
       setShareCopied(true)
       setTimeout(() => setShareCopied(false), 2000)
     } catch {
-      // Fallback
+      // Fallback: textarea + execCommand for non-HTTPS or iframe contexts
+      const textarea = document.createElement('textarea')
+      textarea.value = url
+      textarea.style.position = 'fixed'
+      textarea.style.opacity = '0'
+      document.body.appendChild(textarea)
+      textarea.select()
+      try {
+        document.execCommand('copy')
+        setShareCopied(true)
+        setTimeout(() => setShareCopied(false), 2000)
+      } catch { /* clipboard unavailable */ }
+      document.body.removeChild(textarea)
     }
   }
 
@@ -123,7 +135,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-modal-backdrop"
           />
 
           {/* Modal */}
@@ -132,34 +144,34 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8"
+            className="fixed inset-0 z-modal flex items-center justify-center p-4 md:p-8"
             onClick={onClose}
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl max-h-[95vh] md:max-h-[90vh] bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col relative"
+              className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl max-h-[95vh] md:max-h-[90vh] bg-white shadow-brutal-xl border border-border-strong overflow-hidden flex flex-col relative"
               role="dialog"
               aria-modal="true"
               aria-label={opportunity?.title || '프로젝트 상세'}
             >
               {/* macOS-style Window Bar */}
-              <div className="bg-[#F9FAFB] border-b border-gray-200/80 px-3 sm:px-5 py-3 flex items-center justify-between rounded-t-xl shrink-0">
+              <div className="bg-[#F9FAFB] border-b border-border-strong px-3 sm:px-5 py-3 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-2">
                   <button onClick={onClose} className="group w-5 h-5 sm:w-3 sm:h-3 rounded-full bg-[#FF5F57] hover:brightness-90 transition-all relative flex items-center justify-center" aria-label="닫기">
-                    <X size={10} className="text-[#FF5F57] group-hover:text-[#4A0002] transition-colors sm:w-[7px] sm:h-[7px]" />
+                    <X size={10} className="text-[#FF5F57] group-hover:text-[#4A0002] transition-colors sm:w-[0.4375rem] sm:h-[0.4375rem]" />
                   </button>
                   <div className="w-3 h-3 rounded-full bg-[#FEBC2E] hidden sm:block" />
                   <div className="w-3 h-3 rounded-full bg-[#28C840] hidden sm:block" />
                 </div>
                 {!loading && opportunity && (
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 bg-gray-200/70 text-gray-500 rounded uppercase tracking-wider">
+                    <span className="text-[0.625rem] font-mono font-bold px-2 py-0.5 bg-gray-200/70 text-gray-500 rounded uppercase tracking-wider">
                       {opportunity.type === 'side_project' ? 'SIDE PROJECT' :
                        opportunity.type === 'startup' ? 'STARTUP' :
                        opportunity.type === 'study' ? 'STUDY' : opportunity.type?.toUpperCase() || 'PROJECT'}
                     </span>
                     {opportunity.status === 'active' && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-100/70 text-emerald-600 text-[10px] font-bold rounded">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-100/70 text-emerald-600 text-[0.625rem] font-bold rounded">
                         <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
                         모집 중
                       </span>
@@ -173,7 +185,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                     aria-label="공유"
                   >
                     {shareCopied ? (
-                      <span className="text-[10px] font-medium text-green-600 px-1">복사됨!</span>
+                      <span className="text-[0.625rem] font-medium text-green-600 px-1">복사됨!</span>
                     ) : (
                       <Share2 size={14} className="text-gray-400" />
                     )}
@@ -202,65 +214,145 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                 <>
                   {/* Scrollable Content */}
                   <div className="flex-1 overflow-y-auto">
-                    {/* Header */}
-                    <div className="px-4 sm:px-8 pt-4 sm:pt-6 pb-4 sm:pb-6">
 
-                      {/* Title */}
-                      <h2 className="text-2xl font-bold text-gray-900 mb-4 break-keep leading-tight">
-                        {opportunity.title}
-                      </h2>
+                    {/* Hero Cover or Plain Header */}
+                    {opportunity.demo_images && opportunity.demo_images.length > 0 ? (
+                      <>
+                        {/* Hero Cover — first image as background */}
+                        <div className="relative h-48 sm:h-56 overflow-hidden">
+                          <img
+                            src={opportunity.demo_images[0]}
+                            alt={opportunity.title}
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
 
-                      {/* Meta */}
-                      <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
-                        {creator ? (
-                          <span className="flex items-center gap-2">
-                            <div className="w-6 h-6 bg-gray-900 rounded-full flex items-center justify-center text-[10px] font-bold text-white">
-                              {creator.nickname.charAt(0)}
+                          {/* Title & Meta overlay */}
+                          <div className="absolute bottom-0 left-0 right-0 px-4 sm:px-8 pb-4 sm:pb-5">
+                            <h2 className="text-xl sm:text-2xl font-bold text-white mb-2 break-keep leading-tight drop-shadow-sm">
+                              {opportunity.title}
+                            </h2>
+                            <div className="flex flex-wrap items-center gap-3 text-sm text-white/70">
+                              {creator ? (
+                                <span className="flex items-center gap-2">
+                                  <div className="w-5 h-5 bg-white/20 backdrop-blur rounded-full flex items-center justify-center text-[0.5625rem] font-bold text-white">
+                                    {creator.nickname.charAt(0)}
+                                  </div>
+                                  <span className="font-medium text-white/90">{creator.nickname}</span>
+                                </span>
+                              ) : (
+                                <span className="flex items-center gap-2">
+                                  <div className="w-5 h-5 bg-white/20 backdrop-blur rounded-full flex items-center justify-center text-[0.5625rem] font-bold text-white/70">?</div>
+                                  <span className="font-medium text-white/90">익명</span>
+                                </span>
+                              )}
+                              {opportunity.created_at && (
+                                <span className="flex items-center gap-1.5">
+                                  <Calendar size={12} />
+                                  {daysAgo === 0 ? '오늘' : `${daysAgo}일 전`}
+                                </span>
+                              )}
+                              {opportunity.location_type && (
+                                <span className="flex items-center gap-1.5">
+                                  <MapPin size={12} />
+                                  {opportunity.location_type === 'remote' ? '원격' :
+                                   opportunity.location_type === 'offline' ? '오프라인' : '혼합'}
+                                </span>
+                              )}
                             </div>
-                            <span className="font-medium text-gray-700">{creator.nickname}</span>
-                          </span>
-                        ) : (
-                          <span className="flex items-center gap-2">
-                            <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-[10px] font-bold text-gray-500">?</div>
-                            <span className="font-medium text-gray-700">익명</span>
-                          </span>
-                        )}
-                        {opportunity.created_at && (
-                          <span className="flex items-center gap-1.5 text-gray-400">
-                            <Calendar size={13} />
-                            {daysAgo === 0 ? '오늘' : `${daysAgo}일 전`}
-                          </span>
-                        )}
-                        {opportunity.location_type && (
-                          <span className="flex items-center gap-1.5 text-gray-400">
-                            <MapPin size={13} />
-                            {opportunity.location_type === 'remote' ? '원격' :
-                             opportunity.location_type === 'offline' ? '오프라인' : '혼합'}
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Tags */}
-                      {opportunity.interest_tags && opportunity.interest_tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 mt-4">
-                          {opportunity.interest_tags.map((tag) => (
-                            <span key={tag} className="px-2.5 py-1 bg-gray-50 text-gray-500 text-xs rounded-md">
-                              {tag}
-                            </span>
-                          ))}
+                          </div>
                         </div>
-                      )}
 
-                      {/* Stats - only show real data */}
-                      <div className="flex items-center gap-5 mt-5 text-sm text-gray-400">
+                        {/* Tags + Stats below cover */}
+                        <div className="px-4 sm:px-8 pt-3 pb-3">
+                          {opportunity.interest_tags && opportunity.interest_tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1.5">
+                              {opportunity.interest_tags.map((tag) => (
+                                <span key={tag} className="px-2.5 py-1 bg-gray-50 text-gray-500 text-xs rounded-md">
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                          {opportunity.interest_count != null && opportunity.interest_count > 0 && (
+                            <div className="flex items-center gap-5 mt-2 text-sm text-gray-400">
+                              <span className="flex items-center gap-1.5">
+                                <Heart size={14} />
+                                <span className="font-medium text-gray-600">{opportunity.interest_count}</span>
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Extra images gallery */}
+                        {opportunity.demo_images.length > 1 && (
+                          <div className="px-4 sm:px-8 pb-3">
+                            <div className="flex gap-2 overflow-x-auto">
+                              {opportunity.demo_images.slice(1).map((src, idx) => (
+                                <img
+                                  key={idx}
+                                  src={src}
+                                  alt={`${opportunity.title} 이미지 ${idx + 2}`}
+                                  className="h-24 w-auto rounded-lg border border-gray-100 object-cover shrink-0"
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      /* Plain Header — no images */
+                      <div className="px-4 sm:px-8 pt-4 sm:pt-6 pb-3">
+                        <h2 className="text-2xl font-bold text-gray-900 mb-3 break-keep leading-tight">
+                          {opportunity.title}
+                        </h2>
+                        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                          {creator ? (
+                            <span className="flex items-center gap-2">
+                              <div className="w-6 h-6 bg-gray-900 rounded-full flex items-center justify-center text-[0.625rem] font-bold text-white">
+                                {creator.nickname.charAt(0)}
+                              </div>
+                              <span className="font-medium text-gray-700">{creator.nickname}</span>
+                            </span>
+                          ) : (
+                            <span className="flex items-center gap-2">
+                              <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-[0.625rem] font-bold text-gray-500">?</div>
+                              <span className="font-medium text-gray-700">익명</span>
+                            </span>
+                          )}
+                          {opportunity.created_at && (
+                            <span className="flex items-center gap-1.5 text-gray-400">
+                              <Calendar size={13} />
+                              {daysAgo === 0 ? '오늘' : `${daysAgo}일 전`}
+                            </span>
+                          )}
+                          {opportunity.location_type && (
+                            <span className="flex items-center gap-1.5 text-gray-400">
+                              <MapPin size={13} />
+                              {opportunity.location_type === 'remote' ? '원격' :
+                               opportunity.location_type === 'offline' ? '오프라인' : '혼합'}
+                            </span>
+                          )}
+                        </div>
+                        {opportunity.interest_tags && opportunity.interest_tags.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 mt-3">
+                            {opportunity.interest_tags.map((tag) => (
+                              <span key={tag} className="px-2.5 py-1 bg-gray-50 text-gray-500 text-xs rounded-md">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                         {opportunity.interest_count != null && opportunity.interest_count > 0 && (
-                          <span className="flex items-center gap-1.5">
-                            <Heart size={14} />
-                            <span className="font-medium text-gray-600">{opportunity.interest_count}</span>
-                          </span>
+                          <div className="flex items-center gap-5 mt-3 text-sm text-gray-400">
+                            <span className="flex items-center gap-1.5">
+                              <Heart size={14} />
+                              <span className="font-medium text-gray-600">{opportunity.interest_count}</span>
+                            </span>
+                          </div>
                         )}
                       </div>
-                    </div>
+                    )}
 
                     {/* Divider */}
                     <div className="mx-4 sm:mx-8 border-t border-gray-100" />
@@ -272,18 +364,18 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                         <div className="md:col-span-3 space-y-8">
                           {/* Description */}
                           <section>
-                            <h3 className="text-[10px] font-mono font-bold text-gray-400 uppercase tracking-wider mb-3">
+                            <h3 className="text-[0.625rem] font-mono font-bold text-gray-400 uppercase tracking-wider mb-3">
                               프로젝트 소개
                             </h3>
-                            <p className="text-[15px] text-gray-700 leading-[1.8] break-keep whitespace-pre-line">
+                            <p className="text-[0.9375rem] text-gray-700 leading-[1.8] break-keep whitespace-pre-line">
                               {opportunity.description}
                             </p>
                           </section>
 
                           {/* Pain Point */}
                           {opportunity.pain_point && (
-                            <section className="bg-gray-50 rounded-xl p-5">
-                              <h3 className="text-[10px] font-mono font-bold text-gray-400 uppercase tracking-wider mb-2">
+                            <section className="bg-surface-sunken border border-border p-5">
+                              <h3 className="text-[0.625rem] font-mono font-bold text-gray-400 uppercase tracking-wider mb-2">
                                 해결하려는 문제
                               </h3>
                               <p className="text-sm text-gray-700 leading-relaxed break-keep">
@@ -295,7 +387,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                           {/* Weekly Updates Timeline */}
                           <section>
                             <div className="flex items-center justify-between mb-5">
-                              <h3 className="text-[10px] font-mono font-bold text-gray-400 uppercase tracking-wider">
+                              <h3 className="text-[0.625rem] font-mono font-bold text-gray-400 uppercase tracking-wider">
                                 주간 업데이트
                               </h3>
                               {isOwner && (
@@ -310,7 +402,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
 
                             {updates.length > 0 ? (
                               <div className="relative pl-6">
-                                <div className="absolute left-[7px] top-1 bottom-1 w-[2px] bg-gray-200 rounded-full" />
+                                <div className="absolute left-[0.4375rem] top-1 bottom-1 w-[2px] bg-gray-200 rounded-full" />
                                 <div className="space-y-5">
                                   {updates.map((update) => (
                                     <div key={update.id} className="relative">
@@ -320,7 +412,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                                           <span className="text-xs font-medium text-gray-500">
                                             {updateTypeLabels[update.update_type] || update.update_type}
                                           </span>
-                                          <span className="text-[10px] font-mono text-gray-300">Week {update.week_number}</span>
+                                          <span className="text-[0.625rem] font-mono text-gray-300">Week {update.week_number}</span>
                                         </div>
                                         <h4 className="font-semibold text-gray-900 text-sm mb-0.5">{update.title}</h4>
                                         <p className="text-xs text-gray-500 leading-relaxed break-keep">{update.content}</p>
@@ -346,15 +438,15 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                           </section>
 
                           {/* Feedback CTA */}
-                          <section className="bg-gray-50 rounded-xl p-6 text-center">
-                            <MessageCircle size={24} className="text-gray-300 mx-auto mb-2" />
-                            <p className="font-semibold text-gray-700 text-sm mb-1">피드백을 남겨보세요</p>
-                            <p className="text-xs text-gray-400 mb-4 break-keep">
+                          <section className="bg-surface-sunken border border-border p-6 text-center">
+                            <MessageCircle size={24} className="text-txt-disabled mx-auto mb-2" />
+                            <p className="font-bold text-txt-primary text-sm mb-1">피드백을 남겨보세요</p>
+                            <p className="text-xs text-txt-tertiary mb-4 break-keep">
                               아이디어에 대한 솔직한 의견이 프로젝트를 성장시킵니다
                             </p>
                             <button
                               onClick={handleAction}
-                              className="inline-flex items-center gap-2 bg-gray-900 text-white px-5 py-2.5 rounded-lg font-medium text-xs hover:bg-gray-800 transition-colors"
+                              className="inline-flex items-center gap-2 bg-surface-inverse text-txt-inverse px-5 py-2.5 font-bold text-xs hover:bg-accent-hover transition-colors border border-black shadow-solid-sm"
                             >
                               피드백 작성하기 <ArrowUpRight size={12} />
                             </button>
@@ -365,7 +457,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                         <div className="md:col-span-2 space-y-7">
                           {/* Team */}
                           <div>
-                            <h3 className="text-[10px] font-mono font-bold text-gray-400 uppercase tracking-wider mb-3">
+                            <h3 className="text-[0.625rem] font-mono font-bold text-gray-400 uppercase tracking-wider mb-3">
                               팀 정보
                             </h3>
                             {creator ? (
@@ -395,12 +487,12 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                           {/* Needed Roles */}
                           {opportunity.needed_roles && opportunity.needed_roles.length > 0 && (
                             <div>
-                              <h3 className="text-[10px] font-mono font-bold text-gray-400 uppercase tracking-wider mb-3">
+                              <h3 className="text-[0.625rem] font-mono font-bold text-gray-400 uppercase tracking-wider mb-3">
                                 모집 중인 포지션
                               </h3>
                               <div className="space-y-2">
                                 {opportunity.needed_roles.map((role) => (
-                                  <div key={role} className="flex items-center justify-between py-2.5 px-3 bg-gray-50 rounded-lg">
+                                  <div key={role} className="flex items-center justify-between py-2.5 px-3 bg-surface-sunken border border-border">
                                     <div className="flex items-center gap-2">
                                       <Briefcase size={14} className="text-gray-400" />
                                       <span className="text-sm text-gray-700">{role}</span>
@@ -429,7 +521,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
 
                           {/* Project Info */}
                           <div>
-                            <h3 className="text-[10px] font-mono font-bold text-gray-400 uppercase tracking-wider mb-3">
+                            <h3 className="text-[0.625rem] font-mono font-bold text-gray-400 uppercase tracking-wider mb-3">
                               프로젝트 정보
                             </h3>
                             <div className="space-y-2.5 text-sm">
@@ -470,7 +562,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
 
                           {/* CTA Card */}
                           {!isOwner && (
-                          <div className="bg-gray-900 rounded-xl p-5 text-white">
+                          <div className="bg-surface-inverse p-5 text-white border border-black shadow-solid">
                             {existingChat ? (
                               <>
                                 <h3 className="font-bold text-sm mb-1">
@@ -496,7 +588,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                                 </p>
                                 <button
                                   onClick={handleAction}
-                                  className="w-full bg-white text-gray-900 py-2.5 rounded-lg font-bold text-sm hover:bg-gray-100 transition-colors flex items-center justify-center gap-2"
+                                  className="w-full bg-white text-gray-900 py-2.5 font-bold text-sm hover:bg-gray-100 transition-colors flex items-center justify-center gap-2 border border-border"
                                 >
                                   <Coffee size={14} />
                                   커피챗 신청하기
@@ -509,31 +601,6 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                       </div>
                     </div>
                   </div>
-
-                  {/* Sticky Footer CTA */}
-                  {!isOwner && (
-                  <div className="px-6 py-4 bg-white border-t border-gray-100">
-                    {existingChat ? (
-                      <div className={`w-full h-11 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 ${
-                        existingChat.status === 'pending' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
-                        existingChat.status === 'accepted' ? 'bg-green-50 text-green-700 border border-green-200' :
-                        'bg-gray-50 text-gray-500 border border-gray-200'
-                      }`}>
-                        <Coffee size={15} />
-                        {existingChat.status === 'pending' ? '커피챗 대기 중' :
-                         existingChat.status === 'accepted' ? '커피챗 수락됨' : '커피챗 거절됨'}
-                      </div>
-                    ) : (
-                      <button
-                        onClick={handleAction}
-                        className="w-full bg-gray-900 hover:bg-gray-800 text-white h-11 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-colors"
-                      >
-                        <Coffee size={15} />
-                        커피챗 신청
-                      </button>
-                    )}
-                  </div>
-                  )}
 
                   {/* Coffee Chat Form Overlay (Authenticated) */}
                   <AnimatePresence>
@@ -603,7 +670,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                             무료로 시작하기
                             <ArrowRight size={16} />
                           </button>
-                          <p className="text-[10px] font-mono text-gray-400 uppercase tracking-wider mb-6">
+                          <p className="text-[0.625rem] font-mono text-gray-400 uppercase tracking-wider mb-6">
                             가입 30초 · 무료 · 바로 사용 가능
                           </p>
                           <button

@@ -73,13 +73,13 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-lg md:max-w-xl max-h-[95vh] md:max-h-[85vh] bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col relative"
+              className="w-full max-w-lg md:max-w-xl max-h-[95vh] md:max-h-[85vh] bg-white shadow-brutal-xl border border-border-strong overflow-hidden flex flex-col relative"
               role="dialog"
               aria-modal="true"
               aria-label={profile?.nickname || '프로필'}
             >
               {/* macOS-style Window Bar */}
-              <div className="bg-[#F9FAFB] border-b border-gray-200/80 px-3 sm:px-5 py-3 flex items-center justify-between rounded-t-xl shrink-0">
+              <div className="bg-[#F9FAFB] border-b border-border-strong px-3 sm:px-5 py-3 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-2">
                   <button onClick={onClose} className="group w-5 h-5 sm:w-3 sm:h-3 rounded-full bg-[#FF5F57] hover:brightness-90 transition-all relative flex items-center justify-center" aria-label="닫기">
                     <X size={10} className="text-[#FF5F57] group-hover:text-[#4A0002] transition-colors sm:w-[0.4375rem] sm:h-[0.4375rem]" />
@@ -114,7 +114,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                   {/* Profile Header */}
                   <div className="px-6 sm:px-8 pt-6 pb-4">
                     <div className="flex items-start gap-4">
-                      <div className="w-16 h-16 bg-surface-inverse rounded-2xl flex items-center justify-center text-xl font-bold text-txt-inverse shrink-0">
+                      <div className="w-16 h-16 bg-surface-inverse flex items-center justify-center text-xl font-bold text-txt-inverse shrink-0 shadow-solid-sm">
                         {profile.nickname.substring(0, 2)}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -141,7 +141,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                   {/* Status badge */}
                   {profile.current_situation && (
                     <div className="px-6 sm:px-8 pb-3">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-600 text-xs font-medium rounded-lg">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-status-success-bg text-status-success-text text-xs font-medium border border-status-success-text/20">
                         <Briefcase size={12} />
                         {SITUATION_LABELS[profile.current_situation] || profile.current_situation}
                       </span>
@@ -174,7 +174,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                           {skills.map((skill) => (
                             <span
                               key={skill.name}
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-50 text-gray-600 text-xs rounded-md border border-gray-100"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-tag-default-bg text-tag-default-text text-xs border border-border"
                             >
                               {skill.name}
                               <span className="text-gray-300">·</span>
@@ -209,19 +209,19 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                         </h3>
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                           {personality.mbti && (
-                            <div className="bg-gray-50 rounded-lg px-3 py-2">
+                            <div className="bg-surface-sunken px-3 py-2 border border-border">
                               <p className="text-[0.625rem] text-gray-400 mb-0.5">MBTI</p>
                               <p className="text-sm font-medium text-gray-700">{personality.mbti}</p>
                             </div>
                           )}
                           {personality.workStyle && (
-                            <div className="bg-gray-50 rounded-lg px-3 py-2">
+                            <div className="bg-surface-sunken px-3 py-2 border border-border">
                               <p className="text-[0.625rem] text-gray-400 mb-0.5">작업 스타일</p>
                               <p className="text-sm font-medium text-gray-700">{personality.workStyle}</p>
                             </div>
                           )}
                           {personality.communication && (
-                            <div className="bg-gray-50 rounded-lg px-3 py-2">
+                            <div className="bg-surface-sunken px-3 py-2 border border-border">
                               <p className="text-[0.625rem] text-gray-400 mb-0.5">소통 방식</p>
                               <p className="text-sm font-medium text-gray-700">{personality.communication}</p>
                             </div>
@@ -259,7 +259,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
 
                   {/* Footer CTA */}
                   <div className="px-6 sm:px-8 pb-6">
-                    <div className="bg-surface-inverse rounded-xl p-5 text-center">
+                    <div className="bg-surface-inverse p-5 text-center border border-black shadow-solid">
                       <Coffee size={20} className="text-txt-inverse/50 mx-auto mb-2" />
                       {isAuthenticated ? (
                         <>
@@ -272,7 +272,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                           <p className="text-xs text-txt-inverse/50 mb-3">로그인하면 커피챗 신청과 연락이 가능해요</p>
                           <a
                             href="/login"
-                            className="inline-flex items-center gap-2 bg-white text-gray-900 px-5 py-2 rounded-lg font-semibold text-xs hover:bg-gray-100 transition-colors"
+                            className="inline-flex items-center gap-2 bg-white text-gray-900 px-5 py-2 font-bold text-xs hover:bg-gray-100 transition-colors border border-border"
                           >
                             로그인하기
                           </a>
