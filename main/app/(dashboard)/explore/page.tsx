@@ -1,12 +1,15 @@
 'use client'
 
-import React, { useState } from 'react'
-import { Users, Star, Rocket, LayoutGrid, Clock, Flame, ChevronRight, Hash, UserCircle, Sparkles, Zap, Coffee, MessageSquare, FolderOpen } from 'lucide-react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
+import { Users, Star, Rocket, LayoutGrid, Clock, Flame, ChevronRight, Hash, UserCircle, Sparkles, Zap, Coffee, MessageSquare, FolderOpen, Search, X, Filter, Code2, User } from 'lucide-react'
+import { useSearchParams as useNextSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { PageContainer } from '@/components/ui/PageContainer'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { ErrorState } from '@/components/ui/ErrorState'
 import { DashboardLayout } from '@/components/ui/DashboardLayout'
 import { ProjectDetailModal } from '@/components/ProjectDetailModal'
+import { ProfileDetailModal } from '@/components/ProfileDetailModal'
 import { useOpportunities, type OpportunityWithCreator, calculateDaysLeft } from '@/src/hooks/useOpportunities'
 import { usePublicProfiles, type PublicProfile } from '@/src/hooks/usePublicProfiles'
 import { useUserRecommendations, type UserRecommendation } from '@/src/hooks/useUserRecommendations'
@@ -22,24 +25,56 @@ const CATEGORY_ICONS: Record<string, React.ElementType> = {
   Social: Users,
 }
 
+// Debounce hook
+function useDebouncedValue<T>(value: T, delay: number): T {
+  const [debounced, setDebounced] = useState(value)
+  useEffect(() => {
+    const timer = setTimeout(() => setDebounced(value), delay)
+    return () => clearTimeout(timer)
+  }, [value, delay])
+  return debounced
+}
+
 export default function ExplorePage() {
+  const urlParams = useNextSearchParams()
+  const initialQuery = urlParams.get('q') || ''
+  const initialScope = urlParams.get('scope') as 'all' | 'projects' | 'people' | 'skills' || 'all'
+
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
+  const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null)
+  const [profileByUserId, setProfileByUserId] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [sortBy, setSortBy] = useState<'latest' | 'popular' | 'trending'>('trending')
+  const [typeFilter, setTypeFilter] = useState<'all' | 'side_project' | 'startup' | 'study'>('all')
   const [activeTab, setActiveTab] = useState<'projects' | 'people'>('projects')
   const [recruitingOnly, setRecruitingOnly] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
+  const [searchInput, setSearchInput] = useState(initialQuery)
+  const [searchScope, setSearchScope] = useState<'all' | 'projects' | 'people' | 'skills'>(initialScope)
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false)
+  const searchRef = useRef<HTMLDivElement>(null)
+  const searchQuery = useDebouncedValue(searchInput, 300)
   const { isAuthenticated, user } = useAuth()
+
+  // Close expanded search on click outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setIsSearchExpanded(false)
+      }
+    }
+    if (isSearchExpanded) document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [isSearchExpanded])
 
   const PAGE_SIZE = 12
   const [displayLimit, setDisplayLimit] = useState(PAGE_SIZE)
 
-  const { data: oppData, isLoading: opportunitiesLoading } = useOpportunities({ limit: displayLimit })
+  const { data: oppData, isLoading: opportunitiesLoading, isError: oppError, refetch: refetchOpp } = useOpportunities({ limit: displayLimit })
   const opportunities = oppData?.items ?? []
   const totalCount = oppData?.totalCount ?? 0
   const hasMore = displayLimit < totalCount
 
-  const { data: publicProfiles = [], isLoading: profilesLoading } = usePublicProfiles({ limit: 12 })
+  const { data: publicProfiles = [], isLoading: profilesLoading, isError: profilesError, refetch: refetchProfiles } = usePublicProfiles({ limit: 12 })
   const { data: sidebarRecs = [] } = useUserRecommendations({ limit: 4 })
   const { data: peopleRecs = [], isLoading: recsLoading } = useUserRecommendations({ limit: 6 })
 
@@ -48,17 +83,26 @@ export default function ExplorePage() {
   // Map opportunities to project card format
   const projectCards = opportunities
     .filter((opp: OpportunityWithCreator) => {
+      if (typeFilter !== 'all' && opp.type !== typeFilter) return false
       if (recruitingOnly && opp.status !== 'active') return false
       if (selectedCategory !== 'all') {
         const tags = (opp.interest_tags || []).map(t => t.toLowerCase())
         if (!tags.some(t => t.includes(selectedCategory.toLowerCase()))) return false
       }
       if (query) {
+        // When scope is 'people', hide all projects
+        if (searchScope === 'people') return false
         const title = (opp.title || '').toLowerCase()
         const desc = (opp.description || '').toLowerCase()
         const tags = (opp.interest_tags || []).join(' ').toLowerCase()
         const roles = (opp.needed_roles || []).join(' ').toLowerCase()
-        if (!title.includes(query) && !desc.includes(query) && !tags.includes(query) && !roles.includes(query)) return false
+        if (searchScope === 'skills') {
+          // Skills scope: search only in tags and roles
+          if (!tags.includes(query) && !roles.includes(query)) return false
+        } else {
+          // 'all' or 'projects' scope: search everything
+          if (!title.includes(query) && !desc.includes(query) && !tags.includes(query) && !roles.includes(query)) return false
+        }
       }
       return true
     })
@@ -72,6 +116,7 @@ export default function ExplorePage() {
       desc: opp.description || '',
       roles: opp.needed_roles || [],
       tags: (opp.interest_tags || []).slice(0, 3),
+      coverImage: (opp.demo_images && opp.demo_images.length > 0) ? opp.demo_images[0] : null,
       daysLeft: calculateDaysLeft(opp.created_at),
       updatedAt: opp.updated_at ?? undefined,
       status: opp.status,
@@ -82,9 +127,16 @@ export default function ExplorePage() {
     ? publicProfiles
         .filter((profile: PublicProfile) => {
           if (!query) return true
+          // When scope is 'projects', hide all people
+          if (searchScope === 'projects') return false
           const name = (profile.nickname || '').toLowerCase()
           const role = (profile.desired_position || '').toLowerCase()
           const tags = (profile.interest_tags || []).join(' ').toLowerCase()
+          if (searchScope === 'skills') {
+            // Skills scope: search only in tags
+            return tags.includes(query)
+          }
+          // 'all' or 'people' scope
           return name.includes(query) || role.includes(query) || tags.includes(query)
         })
         .map((profile: PublicProfile) => ({
@@ -225,7 +277,7 @@ export default function ExplorePage() {
               <div className="space-y-3">
                 {isAuthenticated && sidebarRecs.length > 0 ? (
                   sidebarRecs.map((rec: UserRecommendation) => (
-                    <div key={rec.user_id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-surface-sunken transition-colors cursor-pointer">
+                    <div key={rec.user_id} onClick={() => { setSelectedProfileId(rec.user_id); setProfileByUserId(true) }} className="flex items-center gap-3 p-2 rounded-lg hover:bg-surface-sunken transition-colors cursor-pointer">
                       <div className="w-9 h-9 bg-surface-sunken rounded-full flex items-center justify-center text-xs font-bold text-txt-secondary">
                         {(rec.nickname || '??').substring(0, 2)}
                       </div>
@@ -240,7 +292,7 @@ export default function ExplorePage() {
                   ))
                 ) : (
                   talentCards.slice(0, 4).map((t) => (
-                    <div key={t.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-surface-sunken transition-colors cursor-pointer">
+                    <div key={t.id} onClick={() => { setSelectedProfileId(t.id); setProfileByUserId(false) }} className="flex items-center gap-3 p-2 rounded-lg hover:bg-surface-sunken transition-colors cursor-pointer">
                       <div className="w-9 h-9 bg-surface-sunken rounded-full flex items-center justify-center text-xs font-bold text-txt-secondary">
                         {t.name.substring(0, 2)}
                       </div>
@@ -282,6 +334,128 @@ export default function ExplorePage() {
           </div>
         }
       >
+        {/* ── Gemini-style 확장형 검색바 ── */}
+        <div ref={searchRef} className="relative mb-6">
+          {/* 검색 컨테이너 */}
+          <div className={`relative rounded-2xl transition-all duration-200 ${
+            isSearchExpanded
+              ? 'bg-surface-card shadow-lg ring-1 ring-border-strong/20'
+              : 'bg-surface-sunken hover:bg-surface-card hover:shadow-soft'
+          }`}>
+            {/* 검색 입력 */}
+            <div className="relative flex items-center">
+              <div className={`absolute left-4 transition-colors ${isSearchExpanded ? 'text-txt-secondary' : 'text-txt-disabled'}`}>
+                <Search size={18} />
+              </div>
+              <input
+                type="text"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onFocus={() => setIsSearchExpanded(true)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') { setIsSearchExpanded(false); (e.target as HTMLInputElement).blur() }
+                  if (e.key === 'Enter') setIsSearchExpanded(false)
+                }}
+                className={`w-full bg-transparent text-sm focus:outline-none transition-all ${
+                  isSearchExpanded ? 'pl-11 pr-24 py-3.5' : 'pl-11 pr-24 py-3'
+                }`}
+                placeholder={
+                  searchScope === 'projects' ? '프로젝트 이름, 설명으로 검색...'
+                  : searchScope === 'people' ? '이름, 포지션으로 검색...'
+                  : searchScope === 'skills' ? 'React, Python, Figma...'
+                  : '프로젝트, 사람, 기술 스택 검색...'
+                }
+              />
+              {/* 우측: scope 뱃지 + clear */}
+              <div className="absolute right-3 flex items-center gap-1.5">
+                {searchScope !== 'all' && (
+                  <button
+                    onClick={() => setSearchScope('all')}
+                    className="flex items-center gap-1 text-[0.625rem] font-mono uppercase tracking-wide bg-surface-inverse text-txt-inverse pl-2 pr-1.5 py-0.5 rounded-full hover:bg-accent-hover transition-colors"
+                  >
+                    {searchScope === 'projects' ? '프로젝트' : searchScope === 'people' ? '사람' : '기술'}
+                    <X size={10} />
+                  </button>
+                )}
+                {searchInput && (
+                  <button
+                    onClick={() => setSearchInput('')}
+                    className="p-1.5 text-txt-disabled hover:text-txt-secondary hover:bg-surface-sunken rounded-full transition-colors"
+                    aria-label="검색어 지우기"
+                  >
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* 확장 패널 */}
+            {isSearchExpanded && (
+              <div className="search-expand">
+                <div className="mx-4 border-t border-border-subtle" />
+                <div className="px-4 pt-3 pb-4 space-y-3">
+                  {/* 검색 범위 */}
+                  <div>
+                    <p className="text-[0.625rem] font-mono uppercase tracking-widest text-txt-disabled mb-2.5">SCOPE</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {([
+                        { id: 'all', label: '전체', icon: LayoutGrid, desc: '모든 결과' },
+                        { id: 'projects', label: '프로젝트', icon: FolderOpen, desc: '제목·설명' },
+                        { id: 'people', label: '사람', icon: User, desc: '이름·포지션' },
+                        { id: 'skills', label: '기술 스택', icon: Code2, desc: '기술·역할' },
+                      ] as const).map((scope) => {
+                        const isActive = searchScope === scope.id
+                        return (
+                          <button
+                            key={scope.id}
+                            onClick={() => {
+                              setSearchScope(scope.id)
+                              if (scope.id === 'projects') setActiveTab('projects')
+                              else if (scope.id === 'people') setActiveTab('people')
+                            }}
+                            className={`group/chip flex items-center gap-2 pl-2.5 pr-3.5 py-2 rounded-xl text-xs font-medium transition-all ${
+                              isActive
+                                ? 'bg-surface-inverse text-txt-inverse shadow-sm'
+                                : 'bg-surface-sunken text-txt-secondary hover:bg-surface-card hover:shadow-sm hover:ring-1 hover:ring-border'
+                            }`}
+                          >
+                            <div className={`w-6 h-6 rounded-lg flex items-center justify-center transition-colors ${
+                              isActive ? 'bg-white/15' : 'bg-surface-card group-hover/chip:bg-surface-elevated'
+                            }`}>
+                              <scope.icon size={13} />
+                            </div>
+                            <div className="text-left">
+                              <span className="block leading-tight">{scope.label}</span>
+                              <span className={`block text-[0.625rem] leading-tight ${isActive ? 'text-txt-inverse/50' : 'text-txt-disabled'}`}>{scope.desc}</span>
+                            </div>
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+
+                  {/* 키보드 힌트 */}
+                  <div className="flex items-center gap-3 pt-1">
+                    <span className="flex items-center gap-1.5 text-[0.625rem] text-txt-disabled">
+                      <kbd className="px-1.5 py-0.5 bg-surface-sunken border border-border rounded text-[0.625rem] font-mono">Enter</kbd>
+                      검색
+                    </span>
+                    <span className="flex items-center gap-1.5 text-[0.625rem] text-txt-disabled">
+                      <kbd className="px-1.5 py-0.5 bg-surface-sunken border border-border rounded text-[0.625rem] font-mono">Esc</kbd>
+                      닫기
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* 확장 시 배경 오버레이 */}
+          {isSearchExpanded && (
+            <div className="fixed inset-0 bg-black/5 -z-10 animate-in fade-in duration-200" />
+          )}
+        </div>
+
         {/* 탭 + 정렬 */}
         <div className="flex items-center justify-between border-b border-border mb-6">
           <div className="flex items-center gap-1">
@@ -293,6 +467,7 @@ export default function ExplorePage() {
             >
               <LayoutGrid size={14} />
               프로젝트
+              {query && <span className="ml-1 text-xs text-txt-tertiary">{projectCards.length}</span>}
             </button>
             <button
               onClick={() => setActiveTab('people')}
@@ -302,6 +477,7 @@ export default function ExplorePage() {
             >
               <Users size={14} />
               사람
+              {query && <span className="ml-1 text-xs text-txt-tertiary">{talentCards.length}</span>}
             </button>
           </div>
 
@@ -327,10 +503,36 @@ export default function ExplorePage() {
           )}
         </div>
 
+        {/* ── Type filter chips ── */}
+        {activeTab === 'projects' && (
+          <div className="flex items-center gap-1.5 mb-4">
+            {([
+              { id: 'all', label: '전체' },
+              { id: 'side_project', label: '사이드프로젝트' },
+              { id: 'startup', label: '스타트업' },
+              { id: 'study', label: '스터디' },
+            ] as const).map((t) => (
+              <button
+                key={t.id}
+                onClick={() => setTypeFilter(t.id)}
+                className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors ${
+                  typeFilter === t.id
+                    ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
+                    : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong'
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* ── 프로젝트 탭: REF-A 카드 디자인 ── */}
         {activeTab === 'projects' && (
           <section>
-            {opportunitiesLoading ? (
+            {oppError ? (
+              <ErrorState message="프로젝트를 불러오는 데 실패했습니다" onRetry={() => refetchOpp()} />
+            ) : opportunitiesLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[1,2,3,4,5,6].map((i) => (
                   <div key={i} className="bg-surface-card border border-border rounded-xl overflow-hidden h-[21.25rem] flex flex-col animate-pulse">
@@ -364,22 +566,28 @@ export default function ExplorePage() {
                     >
                       {/* 헤더: 커버 — 144px */}
                       <div className="relative h-36 shrink-0 bg-surface-inverse flex items-end p-4">
-                        <div className="absolute top-3 left-3">
+                        {p.coverImage && (
+                          <>
+                            <img src={p.coverImage} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                            <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/30" />
+                          </>
+                        )}
+                        <div className="absolute top-3 left-3 z-[1]">
                           {isUrgent ? (
-                            <span className="text-xs bg-status-danger-accent/90 backdrop-blur-sm text-txt-inverse px-2 py-0.5 rounded font-semibold">D-{p.daysLeft} 마감임박</span>
+                            <span className="text-xs bg-status-danger-accent/90 backdrop-blur-sm text-txt-inverse px-2 py-0.5 rounded font-semibold shadow-sm">D-{p.daysLeft} 마감임박</span>
                           ) : (
-                            <span className="text-xs bg-surface-inverse/60 backdrop-blur-sm text-txt-inverse px-2 py-0.5 rounded font-semibold">모집중</span>
+                            <span className="text-xs bg-black/60 backdrop-blur-sm text-white px-2 py-0.5 rounded font-semibold shadow-sm">모집중</span>
                           )}
                         </div>
-                        <div className="absolute top-3 right-3 flex gap-1.5">
+                        <div className="absolute top-3 right-3 flex gap-1.5 z-[1]">
                           {updateBadge && (
-                            <span className="text-xs bg-surface-inverse/40 backdrop-blur-sm text-txt-inverse px-2 py-0.5 rounded font-mono">{updateBadge}</span>
+                            <span className="text-xs bg-black/50 backdrop-blur-sm text-white px-2 py-0.5 rounded font-mono shadow-sm">{updateBadge}</span>
                           )}
                           {!updateBadge && p.tags.slice(0, 2).map(tag => (
-                            <span key={tag} className="text-xs bg-surface-card/15 backdrop-blur-sm text-txt-inverse px-2 py-0.5 rounded font-medium">{tag}</span>
+                            <span key={tag} className="text-xs bg-black/40 backdrop-blur-sm text-white px-2 py-0.5 rounded font-medium shadow-sm">{tag}</span>
                           ))}
                         </div>
-                        <div className="w-10 h-10 bg-surface-card rounded-lg flex items-center justify-center shadow-md">
+                        <div className="relative z-[1] w-10 h-10 bg-surface-card rounded-lg flex items-center justify-center shadow-md">
                           <Rocket size={20} className="text-txt-primary" />
                         </div>
                       </div>
@@ -440,6 +648,7 @@ export default function ExplorePage() {
                   {peopleRecs.map((rec: UserRecommendation) => (
                     <div
                       key={rec.user_id}
+                      onClick={() => { setSelectedProfileId(rec.user_id); setProfileByUserId(true) }}
                       className="bg-surface-card border border-border rounded-xl overflow-hidden group hover:border-border-strong hover:shadow-sm transition-all cursor-pointer h-[13.75rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
                     >
                       {/* 헤더: 아바타 + 이름/역할 — 76px */}
@@ -489,7 +698,9 @@ export default function ExplorePage() {
               </div>
             )}
 
-            {profilesLoading ? (
+            {profilesError ? (
+              <ErrorState message="프로필을 불러오는 데 실패했습니다" onRetry={() => refetchProfiles()} />
+            ) : profilesLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[1,2,3,4,5,6].map((i) => (
                   <div key={i} className="bg-surface-card border border-border rounded-xl overflow-hidden h-[13.75rem] flex flex-col animate-pulse">
@@ -514,6 +725,7 @@ export default function ExplorePage() {
                 {talentCards.map((t) => (
                   <div
                     key={t.id}
+                    onClick={() => { setSelectedProfileId(t.id); setProfileByUserId(false) }}
                     className="bg-surface-card border border-border rounded-xl overflow-hidden group hover:border-border-strong hover:shadow-sm transition-all cursor-pointer h-[13.75rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
                   >
                     {/* 헤더: 아바타 + 이름/역할 — 76px */}
@@ -568,6 +780,12 @@ export default function ExplorePage() {
       <ProjectDetailModal
         projectId={selectedProjectId}
         onClose={() => setSelectedProjectId(null)}
+      />
+
+      <ProfileDetailModal
+        profileId={selectedProfileId}
+        byUserId={profileByUserId}
+        onClose={() => setSelectedProfileId(null)}
       />
     </div>
   )

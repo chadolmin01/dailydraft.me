@@ -86,6 +86,40 @@ export function usePublicProfileById(profileId: string | undefined) {
   })
 }
 
+// Detailed public profile for modal view
+export type DetailedPublicProfile = Pick<Profile,
+  'id' | 'user_id' | 'nickname' | 'desired_position' | 'interest_tags' | 'location' |
+  'profile_visibility' | 'vision_summary' | 'skills' | 'university' | 'major' |
+  'current_situation' | 'personality' | 'contact_email'
+>
+
+export function useDetailedPublicProfile(
+  identifier: string | undefined,
+  options?: { byUserId?: boolean }
+) {
+  const field = options?.byUserId ? 'user_id' : 'id'
+  return useQuery({
+    queryKey: [...publicProfileKeys.all, 'detailed', field, identifier],
+    staleTime: 1000 * 60 * 2,
+    retry: (failureCount) => failureCount < 3,
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
+    queryFn: () => withRetry(async () => {
+      if (!identifier) return null
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, user_id, nickname, desired_position, interest_tags, location, profile_visibility, vision_summary, skills, university, major, current_situation, personality, contact_email')
+        .eq(field, identifier)
+        .eq('profile_visibility', 'public')
+        .maybeSingle()
+
+      if (error) throw error
+      return data as DetailedPublicProfile | null
+    }),
+    enabled: !!identifier,
+  })
+}
+
 // Fetch profile by user_id (for creator info)
 export type CreatorProfile = Pick<Profile,
   'id' | 'user_id' | 'nickname' | 'desired_position' | 'university' | 'interest_tags' | 'skills' | 'location' | 'contact_email'
