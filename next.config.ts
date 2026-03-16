@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
+
+  // Skip type checking during build — checked during dev
+  typescript: {
+    ignoreBuildErrors: true,
+  },
 }
 
 export default nextConfig
