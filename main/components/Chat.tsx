@@ -157,26 +157,26 @@ export const Chat: React.FC = () => {
   }) => (
     <button
       onClick={onClick}
-      className={`flex flex-col items-start p-5 border rounded-sm hover:shadow-sm transition-all duration-300 text-left group w-full relative ${
+      className={`flex flex-col items-start p-5 border hover:shadow-sharp transition-all duration-300 text-left group w-full relative ${
         variant === 'ai'
-          ? 'bg-draft-blue border-draft-blue hover:bg-draft-blue/90'
-          : 'bg-white border-gray-200 hover:border-black'
+          ? 'bg-[#4F46E5] border-[#4F46E5] hover:bg-[#4338CA]'
+          : 'bg-surface-card border-border-strong hover:border-border-strong'
       } ${className}`}
     >
       {badge && (
-        <div className="absolute -top-2 -right-2 px-2 py-0.5 bg-white text-draft-blue text-[10px] font-bold rounded-sm shadow-sm">
+        <div className="absolute -top-2 -right-2 px-2 py-0.5 bg-surface-card text-[#4F46E5] text-[0.625rem] font-bold shadow-solid-sm border border-border-strong">
           {badge}
         </div>
       )}
-      <div className={`w-9 h-9 border rounded-sm flex items-center justify-center mb-4 transition-colors
+      <div className={`w-9 h-9 border flex items-center justify-center mb-4 transition-colors
         ${variant === 'ai'
           ? 'bg-white/20 border-white/30 text-white'
-          : 'bg-gray-50 border-gray-100 text-gray-600 group-hover:bg-black group-hover:border-black group-hover:text-white'
+          : 'bg-surface-sunken border-border text-txt-secondary group-hover:bg-black group-hover:border-border-strong group-hover:text-white'
         }`}>
         <Icon size={16} />
       </div>
-      <span className={`font-bold text-sm mb-1 ${variant === 'ai' ? 'text-white' : 'text-gray-900'}`}>{title}</span>
-      <span className={`text-xs leading-relaxed break-keep ${variant === 'ai' ? 'text-white/80' : 'text-gray-500'}`}>{desc}</span>
+      <span className={`font-bold text-sm mb-1 ${variant === 'ai' ? 'text-white' : 'text-txt-primary'}`}>{title}</span>
+      <span className={`text-xs leading-relaxed break-keep ${variant === 'ai' ? 'text-white/80' : 'text-txt-tertiary'}`}>{desc}</span>
     </button>
   )
 
@@ -202,51 +202,51 @@ export const Chat: React.FC = () => {
     <div className="flex h-screen bg-[#FAFAFA] bg-grid-engineering overflow-hidden">
 
       {/* Left Sidebar: Session History */}
-      <div className="w-80 border-r border-gray-200 bg-white hidden lg:flex flex-col z-10">
-        <div className="p-5 border-b border-gray-100 flex justify-between items-center">
+      <div className="w-80 border-r border-border-strong bg-surface-card hidden lg:flex flex-col z-10">
+        <div className="p-5 border-b border-border-strong flex justify-between items-center">
           <div className="font-bold text-sm flex items-center gap-2">
-            <History size={16} className="text-gray-500" />
+            <History size={16} className="text-txt-tertiary" />
             Workspace
           </div>
-          <button className="p-1.5 hover:bg-gray-100 rounded text-gray-500 transition-colors">
+          <button className="p-1.5 hover:bg-surface-sunken text-txt-tertiary transition-colors">
             <Plus size={18} />
           </button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-3 space-y-1">
-          <div className="px-2 py-2 text-[10px] font-mono text-gray-400 uppercase tracking-wider">Today</div>
-          <button className="w-full text-left px-3 py-2 bg-gray-50 rounded-sm text-sm font-medium text-gray-900 border border-gray-200 hover:border-black transition-colors">
+          <div className="px-2 py-2 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-disabled">Today</div>
+          <button className="w-full text-left px-3 py-2 bg-surface-sunken text-sm font-medium text-txt-primary border border-border-strong hover:border-border-strong transition-colors">
             예비창업패키지 사업계획서
           </button>
-          <button className="w-full text-left px-3 py-2 hover:bg-gray-50 rounded-sm text-sm text-gray-600 transition-colors truncate">
+          <button className="w-full text-left px-3 py-2 hover:bg-surface-sunken text-sm text-txt-secondary transition-colors truncate">
             헬스케어 시장 TAM/SAM/SOM 분석
           </button>
 
-          <div className="px-2 py-2 text-[10px] font-mono text-gray-400 uppercase tracking-wider mt-3">Previous 7 Days</div>
-          <button className="w-full text-left px-3 py-2 hover:bg-gray-50 rounded-sm text-sm text-gray-600 transition-colors truncate">
+          <div className="px-2 py-2 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-disabled mt-3">Previous 7 Days</div>
+          <button className="w-full text-left px-3 py-2 hover:bg-surface-sunken text-sm text-txt-secondary transition-colors truncate">
             개발자 채용공고 문구 수정
           </button>
-          <button className="w-full text-left px-3 py-2 hover:bg-gray-50 rounded-sm text-sm text-gray-600 transition-colors truncate">
+          <button className="w-full text-left px-3 py-2 hover:bg-surface-sunken text-sm text-txt-secondary transition-colors truncate">
             투자자 콜드메일 초안
           </button>
 
           {/* Validated Ideas Section */}
           {validationResults.length > 0 && (
             <>
-              <div className="px-2 py-2 text-[10px] font-mono text-gray-400 uppercase tracking-wider mt-3 flex items-center gap-1.5">
+              <div className="px-2 py-2 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-disabled mt-3 flex items-center gap-1.5">
                 <Sparkles size={10} />
                 Validated Ideas
               </div>
               {validationResults.slice(0, 3).map((result) => (
                 <div
                   key={result.id}
-                  className="w-full text-left px-3 py-2 bg-white rounded-sm border border-gray-200 hover:border-black transition-colors cursor-pointer group"
+                  className="w-full text-left px-3 py-2 bg-surface-card border border-border-strong hover:border-border-strong transition-colors cursor-pointer group"
                 >
-                  <div className="text-sm font-medium text-gray-900 truncate group-hover:text-black">
+                  <div className="text-sm font-medium text-txt-primary truncate group-hover:text-black">
                     {result.projectIdea.slice(0, 35)}...
                   </div>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-[9px] font-mono text-green-600 uppercase">✓ Validated</span>
+                    <span className="text-[0.5625rem] font-mono text-green-600 uppercase">✓ Validated</span>
                   </div>
                 </div>
               ))}
@@ -254,34 +254,34 @@ export const Chat: React.FC = () => {
           )}
         </div>
 
-        <div className="p-4 border-t border-gray-200 bg-gray-50">
+        <div className="p-4 border-t border-border-strong bg-surface-sunken">
            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-              <span className="text-xs text-gray-500 font-mono">Draft AI v2.0 Online</span>
+              <div className="w-2 h-2 bg-green-500 animate-pulse"></div>
+              <span className="text-xs text-txt-tertiary font-mono">Draft AI v2.0 Online</span>
            </div>
         </div>
       </div>
 
       {/* Main Content Area - Persistent Shell */}
-      <div className="flex-1 flex flex-col max-w-[1200px] mx-auto w-full shadow-xl bg-white/50 backdrop-blur-sm relative">
+      <div className="flex-1 flex flex-col max-w-[75rem] mx-auto w-full shadow-brutal bg-surface-card/50 backdrop-blur-sm relative">
 
         {/* Persistent Header */}
-        <div className="px-6 py-4 bg-white/80 border-b border-gray-200 flex justify-between items-center backdrop-blur z-10 sticky top-0">
+        <div className="px-6 py-4 bg-surface-card/80 border-b border-border-strong flex justify-between items-center backdrop-blur z-10 sticky top-0">
           <div>
-            <h2 className="font-bold text-gray-900 flex items-center gap-2">
-              <div className="w-5 h-5 bg-black rounded-sm flex items-center justify-center">
-                <span className="text-white text-[10px] font-bold">D</span>
+            <h2 className="font-bold text-txt-primary flex items-center gap-2">
+              <div className="w-5 h-5 bg-black flex items-center justify-center">
+                <span className="text-white text-[0.625rem] font-bold">D</span>
               </div>
               Draft Workspace
             </h2>
-            <p className="text-[10px] text-gray-400 mt-0.5 font-mono uppercase tracking-wider">AI-Powered Startup Tools</p>
+            <p className="text-[0.625rem] text-txt-disabled mt-0.5 font-mono uppercase tracking-wider">AI-Powered Startup Tools</p>
           </div>
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1.5 px-2 py-1 bg-green-50 border border-green-200 rounded-full">
-              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-              <span className="text-[9px] font-mono text-green-600 font-bold uppercase">Online</span>
+            <div className="flex items-center gap-1.5 px-2 py-1 bg-status-success-bg border border-green-300">
+              <span className="w-1.5 h-1.5 bg-green-500 animate-pulse"></span>
+              <span className="text-[0.5625rem] font-mono text-status-success-text font-bold uppercase">Online</span>
             </div>
-            <button className="p-2 hover:bg-gray-100 rounded-sm text-gray-400 hover:text-black transition-colors">
+            <button className="p-2 hover:bg-surface-sunken text-txt-disabled hover:text-black transition-colors">
               <MoreHorizontal size={18} />
             </button>
           </div>
@@ -295,23 +295,23 @@ export const Chat: React.FC = () => {
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#FAFAFA] bg-grid-engineering z-20">
               <div className="flex flex-col items-center">
                 <div className="mb-8">
-                  <div className="w-16 h-16 bg-black rounded-sm flex items-center justify-center shadow-lg">
+                  <div className="w-16 h-16 bg-black flex items-center justify-center shadow-sharp">
                     <Bot size={28} className="text-white" />
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 rounded-full shadow-sm mb-6">
-                  <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-                  <span className="text-[10px] font-mono font-bold text-gray-500 uppercase tracking-wider">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-surface-card border border-border-strong shadow-solid-sm mb-6">
+                  <span className="w-1.5 h-1.5 bg-green-500 animate-pulse"></span>
+                  <span className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-wider">
                     Initializing System
                   </span>
                 </div>
 
-                <h2 className="text-2xl font-bold text-gray-900 tracking-tight mb-2">AI Validation Engine</h2>
-                <p className="text-xs text-gray-400 font-mono mb-10">Preparing your session...</p>
+                <h2 className="text-2xl font-bold text-txt-primary tracking-tight mb-2">AI Validation Engine</h2>
+                <p className="text-xs text-txt-disabled font-mono mb-10">Preparing your session...</p>
 
                 <div className="w-64 mb-8">
-                  <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
+                  <div className="h-1 bg-surface-sunken overflow-hidden">
                     <div
                       className="h-full bg-black transition-all duration-500 ease-out"
                       style={{ width: `${(onboardingStep / 3) * 100}%` }}
@@ -321,30 +321,30 @@ export const Chat: React.FC = () => {
 
                 <div className="flex items-center gap-6">
                   <div className={`flex items-center gap-2 transition-all duration-300 ${onboardingStep >= 1 ? 'opacity-100' : 'opacity-30'}`}>
-                    <div className={`w-5 h-5 rounded-sm flex items-center justify-center text-[10px] font-bold transition-all ${
-                      onboardingStep >= 1 ? 'bg-black text-white' : 'bg-gray-200 text-gray-400'
+                    <div className={`w-5 h-5 flex items-center justify-center text-[0.625rem] font-bold transition-all ${
+                      onboardingStep >= 1 ? 'bg-black text-white' : 'bg-surface-sunken text-txt-disabled'
                     }`}>
                       {onboardingStep >= 1 ? '✓' : '1'}
                     </div>
-                    <span className="text-[11px] font-medium text-gray-600">API Connected</span>
+                    <span className="text-[0.6875rem] font-medium text-txt-secondary">API Connected</span>
                   </div>
-                  <div className="w-8 h-px bg-gray-200"></div>
+                  <div className="w-8 h-px bg-border"></div>
                   <div className={`flex items-center gap-2 transition-all duration-300 ${onboardingStep >= 2 ? 'opacity-100' : 'opacity-30'}`}>
-                    <div className={`w-5 h-5 rounded-sm flex items-center justify-center text-[10px] font-bold transition-all ${
-                      onboardingStep >= 2 ? 'bg-black text-white' : 'bg-gray-200 text-gray-400'
+                    <div className={`w-5 h-5 flex items-center justify-center text-[0.625rem] font-bold transition-all ${
+                      onboardingStep >= 2 ? 'bg-black text-white' : 'bg-surface-sunken text-txt-disabled'
                     }`}>
                       {onboardingStep >= 2 ? '✓' : '2'}
                     </div>
-                    <span className="text-[11px] font-medium text-gray-600">Personas Ready</span>
+                    <span className="text-[0.6875rem] font-medium text-txt-secondary">Personas Ready</span>
                   </div>
-                  <div className="w-8 h-px bg-gray-200"></div>
+                  <div className="w-8 h-px bg-border"></div>
                   <div className={`flex items-center gap-2 transition-all duration-300 ${onboardingStep >= 3 ? 'opacity-100' : 'opacity-30'}`}>
-                    <div className={`w-5 h-5 rounded-sm flex items-center justify-center text-[10px] font-bold transition-all ${
-                      onboardingStep >= 3 ? 'bg-black text-white' : 'bg-gray-200 text-gray-400'
+                    <div className={`w-5 h-5 flex items-center justify-center text-[0.625rem] font-bold transition-all ${
+                      onboardingStep >= 3 ? 'bg-black text-white' : 'bg-surface-sunken text-txt-disabled'
                     }`}>
                       {onboardingStep >= 3 ? '✓' : '3'}
                     </div>
-                    <span className="text-[11px] font-medium text-gray-600">Session Active</span>
+                    <span className="text-[0.6875rem] font-medium text-txt-secondary">Session Active</span>
                   </div>
                 </div>
               </div>
@@ -356,7 +356,7 @@ export const Chat: React.FC = () => {
             <div className="absolute inset-0 z-20 overflow-hidden">
               <button
                 onClick={handleBackToPrompts}
-                className="absolute top-4 left-4 z-50 flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-sm text-xs text-gray-500 hover:text-gray-900 hover:border-black transition-colors shadow-sm"
+                className="absolute top-4 left-4 z-50 flex items-center gap-1.5 px-3 py-1.5 bg-surface-card border border-border-strong text-xs text-txt-tertiary hover:text-txt-primary hover:border-border-strong transition-colors shadow-solid-sm"
               >
                 <ArrowLeft size={12} />
                 <span className="font-mono uppercase tracking-wide">Exit</span>
@@ -383,7 +383,7 @@ export const Chat: React.FC = () => {
                <div className="h-6 flex items-center justify-center">
                  <button
                    onClick={handleBackToPrompts}
-                   className={`flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-900 transition-all duration-300 ${
+                   className={`flex items-center gap-1.5 text-xs text-txt-disabled hover:text-txt-primary transition-all duration-300 ${
                      promptState === 'selected' ? 'opacity-100' : 'opacity-0 pointer-events-none'
                    }`}
                  >
@@ -392,7 +392,7 @@ export const Chat: React.FC = () => {
                  </button>
                </div>
 
-               <h3 className="text-3xl font-bold text-gray-900 mb-4 text-center mt-2">
+               <h3 className="text-3xl font-bold text-txt-primary mb-4 text-center mt-2">
                  {promptState === 'selected' ? '어떻게 작성할까요?' : '무엇을 도와드릴까요?'}
                </h3>
 
@@ -461,25 +461,25 @@ export const Chat: React.FC = () => {
               className={`flex gap-4 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               {msg.role === 'ai' && (
-                <div className="w-8 h-8 rounded-sm bg-black flex items-center justify-center shrink-0 mt-1">
+                <div className="w-8 h-8 bg-black flex items-center justify-center shrink-0 mt-1">
                   <Bot size={16} className="text-white" />
                 </div>
               )}
 
               <div className={`max-w-[80%] md:max-w-[70%] space-y-1`}>
                 <div className="flex items-center gap-2 mb-1">
-                   <span className="text-xs font-bold text-gray-900">
+                   <span className="text-xs font-bold text-txt-primary">
                       {msg.role === 'user' ? 'Me' : 'Draft AI'}
                    </span>
-                   <span className="text-[10px] font-mono text-gray-400">{msg.timestamp}</span>
+                   <span className="text-[0.625rem] font-mono text-txt-disabled">{msg.timestamp}</span>
                 </div>
 
                 <div
                   className={`
-                    p-4 rounded-lg text-sm leading-relaxed whitespace-pre-wrap shadow-sm break-keep
+                    p-4 text-sm leading-relaxed whitespace-pre-wrap shadow-solid-sm break-keep border
                     ${msg.role === 'user'
-                      ? 'bg-white border border-gray-200 text-gray-900 rounded-tr-none'
-                      : 'bg-white border border-blue-100 text-gray-800 rounded-tl-none ring-1 ring-blue-50'}
+                      ? 'bg-surface-card border-border-strong text-txt-primary'
+                      : 'bg-surface-card border-[#4F46E5]/30 text-txt-primary'}
                   `}
                 >
                   {msg.content}
@@ -487,10 +487,10 @@ export const Chat: React.FC = () => {
 
                 {msg.role === 'ai' && messages.length > 0 && (
                    <div className="flex gap-2 mt-2">
-                      <button className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-full text-xs text-gray-500 hover:border-gray-400 hover:text-black transition-colors">
+                      <button className="flex items-center gap-1.5 px-3 py-1.5 bg-surface-card border border-border-strong text-xs text-txt-tertiary hover:border-border-strong hover:text-black transition-colors">
                          <FileText size={12} /> 리포트로 저장
                       </button>
-                      <button className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-full text-xs text-gray-500 hover:border-gray-400 hover:text-black transition-colors">
+                      <button className="flex items-center gap-1.5 px-3 py-1.5 bg-surface-card border border-border-strong text-xs text-txt-tertiary hover:border-border-strong hover:text-black transition-colors">
                          <ChevronRight size={12} /> 더 자세히 설명해줘
                       </button>
                    </div>
@@ -498,8 +498,8 @@ export const Chat: React.FC = () => {
               </div>
 
               {msg.role === 'user' && (
-                <div className="w-8 h-8 rounded-sm bg-gray-200 flex items-center justify-center shrink-0 mt-1">
-                  <User size={16} className="text-gray-500" />
+                <div className="w-8 h-8 bg-surface-sunken border border-border-strong flex items-center justify-center shrink-0 mt-1">
+                  <User size={16} className="text-txt-tertiary" />
                 </div>
               )}
             </div>
@@ -509,7 +509,7 @@ export const Chat: React.FC = () => {
         </div>
 
         {/* Persistent Input Area */}
-        <div className={`p-4 bg-white/95 backdrop-blur-sm border-t border-gray-200 z-30 ${promptState === 'onboarding' ? 'opacity-30 pointer-events-none' : ''}`}>
+        <div className={`p-4 bg-surface-card/95 backdrop-blur-sm border-t border-border-strong z-30 ${promptState === 'onboarding' ? 'opacity-30 pointer-events-none' : ''}`}>
           <div className="relative max-w-3xl mx-auto">
             <input
               type="text"
@@ -517,15 +517,15 @@ export const Chat: React.FC = () => {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Draft AI에게 업무를 요청하세요..."
-              className="w-full h-11 pl-4 pr-12 bg-gray-50 border border-gray-200 rounded-sm focus:outline-none focus:bg-white focus:border-black text-sm transition-all"
+              className="w-full h-11 pl-4 pr-12 bg-surface-sunken border-2 border-border-strong focus:outline-none focus:bg-surface-card focus:border-[#4F46E5] text-sm transition-all"
             />
             <button
               onClick={handleUnifiedSend}
               disabled={!input.trim() || isLoading}
-              className={`absolute right-1.5 top-1.5 p-2 rounded-sm transition-colors
+              className={`absolute right-1.5 top-1.5 p-2 transition-colors
                 ${input.trim() && !isLoading
-                  ? 'bg-black text-white hover:bg-gray-800'
-                  : 'bg-gray-200 text-gray-400 cursor-not-allowed'}
+                  ? 'bg-black text-white hover:bg-[#4F46E5]'
+                  : 'bg-surface-sunken text-txt-disabled cursor-not-allowed'}
               `}
             >
               {isLoading ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}

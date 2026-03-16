@@ -49,8 +49,8 @@ const getTaskStyles = (type: TaskType) => {
       };
     default:
       return {
-        card: 'bg-white hover:bg-gray-50 border-gray-200',
-        badge: 'bg-gray-100 text-gray-700 border-gray-200'
+        card: 'bg-surface-card hover:bg-surface-sunken border-border',
+        badge: 'bg-surface-sunken text-txt-secondary border-border'
       };
   }
 };
@@ -60,7 +60,7 @@ const getPriorityColor = (p: string) => {
     case 'HIGH': return 'text-red-500';
     case 'MEDIUM': return 'text-yellow-600';
     case 'LOW': return 'text-blue-500';
-    default: return 'text-gray-400';
+    default: return 'text-txt-disabled';
   }
 };
 
@@ -72,45 +72,45 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onDragStart, onClick }
       draggable
       onDragStart={(e) => onDragStart(e, task.id)}
       onClick={() => onClick(task)}
-      className={`group p-4 rounded-xl border shadow-sm hover:shadow-md transition-all cursor-grab active:cursor-grabbing mb-3 relative ${styles.card}`}
+      className={`group p-4 border shadow-sharp hover:shadow-brutal transition-all cursor-grab active:cursor-grabbing mb-3 relative ${styles.card}`}
     >
       <div className="flex justify-between items-start mb-2">
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-mono text-gray-500/80">{task.id}</span>
+          <span className="text-[0.625rem] font-mono text-txt-tertiary">{task.id}</span>
           {task.synced && (
-            <div className="flex items-center gap-1 text-[10px] text-gray-500/80 bg-white/50 px-1.5 py-0.5 rounded border border-black/5" title={`${task.externalTicketId}에 동기화됨`}>
+            <div className="flex items-center gap-1 text-[0.625rem] text-txt-tertiary bg-white/50 px-1.5 py-0.5 border border-black/5" title={`${task.externalTicketId}에 동기화됨`}>
               <LinkIcon size={8} />
               <span>{task.externalTicketId}</span>
             </div>
           )}
         </div>
-        <button className="text-gray-400 hover:text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity">
+        <button className="text-txt-disabled hover:text-txt-secondary opacity-0 group-hover:opacity-100 transition-opacity">
           <MoreHorizontal size={14} />
         </button>
       </div>
 
-      <h4 className="text-sm font-bold text-gray-900 mb-1.5 leading-snug">
+      <h4 className="text-sm font-bold text-txt-primary mb-1.5 leading-snug">
         {task.title}
       </h4>
 
-      <p className="text-xs text-gray-600 mb-4 line-clamp-2 leading-relaxed opacity-90">
+      <p className="text-xs text-txt-secondary mb-4 line-clamp-2 leading-relaxed opacity-90">
         {task.description}
       </p>
 
       <div className="flex items-center justify-between mt-auto">
-        <span className={`text-[10px] px-2 py-1 rounded-md font-bold shadow-sm ${styles.badge}`}>
+        <span className={`text-[0.625rem] px-2 py-1 font-bold shadow-sharp ${styles.badge}`}>
           {task.type}
         </span>
 
         <div className="flex items-center gap-3">
           {task.comments && task.comments.length > 0 && (
-            <div className="flex items-center gap-1 text-xs text-gray-500">
+            <div className="flex items-center gap-1 text-xs text-txt-tertiary">
               <MessageSquare size={12} />
               <span>{task.comments.length}</span>
             </div>
           )}
 
-          <div className="flex items-center gap-1 text-xs text-gray-500" title="예상 소요 시간">
+          <div className="flex items-center gap-1 text-xs text-txt-tertiary" title="예상 소요 시간">
             <Clock size={12} />
             <span>{task.estimate}</span>
           </div>
@@ -120,12 +120,12 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onDragStart, onClick }
           </div>
 
           {task.assignee ? (
-            <div className="w-6 h-6 rounded-full bg-white border border-gray-200 text-gray-700 flex items-center justify-center text-[10px] font-bold shadow-sm">
+            <div className="w-6 h-6 bg-surface-card border border-border text-txt-secondary flex items-center justify-center text-[0.625rem] font-bold shadow-sharp">
               {task.assignee}
             </div>
           ) : (
-            <div className="w-6 h-6 rounded-full border border-dashed border-gray-300 flex items-center justify-center text-gray-400 hover:border-gray-500 hover:text-gray-600 transition-colors bg-white/50">
-              <span className="text-[10px]">+</span>
+            <div className="w-6 h-6 border border-dashed border-border-strong flex items-center justify-center text-txt-disabled hover:border-border-strong hover:text-txt-secondary transition-colors bg-white/50">
+              <span className="text-[0.625rem]">+</span>
             </div>
           )}
         </div>

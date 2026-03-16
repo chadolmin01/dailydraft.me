@@ -55,7 +55,7 @@ const updateTypeConfig: Record<string, { label: string; color: string }> = {
   design: { label: '설계', color: 'bg-blue-100 text-blue-700 border-blue-200' },
   development: { label: '구현', color: 'bg-green-100 text-green-700 border-green-200' },
   launch: { label: '런칭', color: 'bg-purple-100 text-purple-700 border-purple-200' },
-  general: { label: '일반', color: 'bg-gray-100 text-gray-600 border-gray-200' },
+  general: { label: '일반', color: 'bg-surface-sunken text-txt-secondary border-border' },
 }
 
 // CTA Overlay Component
@@ -73,31 +73,31 @@ const SignupCTA: React.FC<{ onClose: () => void; onSignup: () => void }> = ({ on
       exit={{ scale: 0.95, y: 20 }}
       transition={{ type: 'spring', damping: 25, stiffness: 300 }}
       onClick={(e) => e.stopPropagation()}
-      className="bg-white w-full max-w-sm p-8 text-center shadow-2xl border border-gray-200"
+      className="bg-surface-card w-full max-w-sm p-8 text-center shadow-brutal border-2 border-border-strong"
     >
       <div className="w-16 h-16 bg-black flex items-center justify-center mx-auto mb-6">
         <span className="text-white font-black text-2xl font-mono">D</span>
       </div>
-      <h3 className="text-xl font-bold text-gray-900 mb-2">
+      <h3 className="text-xl font-bold text-txt-primary mb-2">
         이 프로젝트에 관심이 있으신가요?
       </h3>
-      <p className="text-gray-500 mb-8 leading-relaxed break-keep text-sm">
+      <p className="text-txt-tertiary mb-8 leading-relaxed break-keep text-sm">
         Draft에 가입하면 관심 표현, 커피챗 신청,<br />
         피드백 주고받기까지 모두 가능해요.
       </p>
       <button
         onClick={onSignup}
-        className="w-full bg-black hover:bg-gray-800 text-white px-8 py-4 font-bold text-sm flex items-center justify-center gap-2 transition-colors mb-3"
+        className="w-full bg-black hover:bg-[#333] text-white px-8 py-4 font-bold text-sm flex items-center justify-center gap-2 transition-colors border-2 border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] mb-3"
       >
         무료로 시작하기
         <ArrowRight size={16} />
       </button>
-      <p className="text-[10px] font-mono text-gray-400 uppercase tracking-wider mb-4">
+      <p className="text-[0.625rem] font-mono text-txt-disabled uppercase tracking-wider mb-4">
         가입 30초 · 무료 · 바로 사용 가능
       </p>
       <button
         onClick={onClose}
-        className="text-sm text-gray-400 hover:text-gray-600 transition-colors"
+        className="text-sm text-txt-disabled hover:text-txt-secondary transition-colors"
       >
         돌아가기
       </button>
@@ -204,10 +204,10 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen bg-surface-bg flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="animate-spin text-gray-400" size={32} />
-          <p className="text-sm text-gray-500">프로젝트 로딩 중...</p>
+          <Loader2 className="animate-spin text-txt-disabled" size={32} />
+          <p className="text-sm text-txt-tertiary">프로젝트 로딩 중...</p>
         </div>
       </div>
     )
@@ -215,14 +215,14 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
   if (error || !opportunity) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen bg-surface-bg flex items-center justify-center">
         <div className="text-center">
-          <AlertCircle size={48} className="text-gray-300 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-gray-900 mb-2">프로젝트를 찾을 수 없습니다</h2>
-          <p className="text-gray-500 mb-6">{error || '존재하지 않거나 삭제된 프로젝트입니다.'}</p>
+          <AlertCircle size={48} className="text-txt-disabled mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-txt-primary mb-2">프로젝트를 찾을 수 없습니다</h2>
+          <p className="text-txt-tertiary mb-6">{error || '존재하지 않거나 삭제된 프로젝트입니다.'}</p>
           <Link
             href="/"
-            className="inline-flex items-center gap-2 bg-black text-white px-6 py-3 font-bold text-sm hover:bg-gray-800 transition-colors"
+            className="inline-flex items-center gap-2 bg-black text-white px-6 py-3 font-bold text-sm hover:bg-[#333] transition-colors border-2 border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
           >
             <ArrowLeft size={16} />
             홈으로 돌아가기
@@ -238,13 +238,13 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
   const projectLinks = opportunity.project_links as Record<string, string> | null
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-surface-bg">
       {/* Top Navigation Bar */}
-      <nav className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-100">
+      <nav className="sticky top-0 z-40 bg-surface-card/95 backdrop-blur-sm border-b border-border-strong">
         <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-sm text-gray-600 hover:text-black transition-colors"
+            className="flex items-center gap-2 text-sm text-txt-secondary hover:text-txt-primary transition-colors"
           >
             <ArrowLeft size={16} />
             뒤로
@@ -254,7 +254,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
           </Link>
           <button
             onClick={handleShare}
-            className="flex items-center gap-2 text-sm text-gray-600 hover:text-black transition-colors"
+            className="flex items-center gap-2 text-sm text-txt-secondary hover:text-txt-primary transition-colors"
           >
             <Share2 size={16} />
             {copied ? '복사됨!' : '공유'}
@@ -263,39 +263,39 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
       </nav>
 
       {/* Hero Header */}
-      <header className="border-b border-gray-100">
+      <header className="border-b border-border-strong">
         <div className="max-w-6xl mx-auto px-6 py-10">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
             <div className="flex-1">
               {/* Type Badge */}
               <div className="flex items-center gap-2 mb-4">
-                <span className="text-[10px] font-mono font-bold px-2 py-1 border border-black text-black uppercase tracking-wider">
+                <span className="text-[0.625rem] font-mono font-bold px-2 py-1 border-2 border-border-strong text-black uppercase tracking-wider">
                   {opportunity.type === 'side_project' ? 'SIDE PROJECT' :
                    opportunity.type === 'startup' ? 'STARTUP' :
                    opportunity.type === 'study' ? 'STUDY' : opportunity.type?.toUpperCase() || 'PROJECT'}
                 </span>
                 {opportunity.status === 'active' ? (
-                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-50 border border-green-200 text-green-700 text-[10px] font-bold">
-                    <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-status-success-bg border border-status-success-text/30 text-status-success-text text-[0.625rem] font-bold">
+                    <span className="w-1.5 h-1.5 bg-green-500 animate-pulse" />
                     모집 중
                   </span>
                 ) : (
-                  <span className="px-2 py-1 bg-gray-100 text-gray-500 text-[10px] font-bold border border-gray-200">
+                  <span className="px-2 py-1 bg-surface-sunken text-txt-tertiary text-[0.625rem] font-bold border border-border">
                     마감
                   </span>
                 )}
               </div>
 
               {/* Title */}
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3 break-keep leading-tight">
+              <h1 className="text-3xl md:text-4xl font-bold text-txt-primary mb-3 break-keep leading-tight">
                 {opportunity.title}
               </h1>
 
               {/* Meta Info */}
-              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+              <div className="flex flex-wrap items-center gap-4 text-sm text-txt-tertiary">
                 {creator && (
                   <span className="flex items-center gap-1.5">
-                    <div className="w-5 h-5 bg-gray-200 flex items-center justify-center text-[10px] font-bold text-gray-600">
+                    <div className="w-5 h-5 bg-surface-sunken flex items-center justify-center text-[0.625rem] font-bold text-txt-secondary border border-border">
                       {creator.nickname.charAt(0)}
                     </div>
                     {creator.nickname}
@@ -322,7 +322,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
             <div className="hidden md:flex flex-col gap-3 shrink-0">
               <button
                 onClick={handleCoffeeChatAction}
-                className="bg-black hover:bg-gray-800 text-white px-8 py-3.5 font-bold text-sm flex items-center justify-center gap-2 transition-colors"
+                className="bg-[#4F46E5] hover:bg-[#4338CA] text-white px-8 py-3.5 font-bold text-sm flex items-center justify-center gap-2 transition-colors border-2 border-[#4F46E5] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
               >
                 <Coffee size={16} />
                 커피챗 신청
@@ -336,7 +336,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
               {opportunity.interest_tags.map((tag) => (
                 <span
                   key={tag}
-                  className="px-3 py-1 bg-gray-50 border border-gray-200 text-gray-600 text-xs font-medium"
+                  className="px-3 py-1 bg-surface-sunken border border-border text-txt-secondary text-xs font-medium"
                 >
                   {tag}
                 </span>
@@ -345,17 +345,17 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
           )}
 
           {/* Stats Bar */}
-          <div className="flex items-center gap-6 mt-6 pt-6 border-t border-gray-100 text-sm text-gray-500">
+          <div className="flex items-center gap-6 mt-6 pt-6 border-t border-dashed border-border text-sm text-txt-tertiary">
             {interestCount > 0 && (
               <span className="flex items-center gap-1.5">
-                <Heart size={14} className="text-gray-400" />
-                관심 <span className="font-bold text-gray-900">{interestCount}</span>
+                <Heart size={14} className="text-txt-disabled" />
+                관심 <span className="font-bold text-txt-primary">{interestCount}</span>
               </span>
             )}
             {viewsCount > 0 && (
               <span className="flex items-center gap-1.5">
-                <Eye size={14} className="text-gray-400" />
-                조회 <span className="font-bold text-gray-900">{viewsCount}</span>
+                <Eye size={14} className="text-txt-disabled" />
+                조회 <span className="font-bold text-txt-primary">{viewsCount}</span>
               </span>
             )}
           </div>
@@ -369,11 +369,11 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
           <div className="lg:col-span-2 space-y-10">
             {/* Project Description */}
             <section>
-              <h2 className="text-[11px] font-mono font-bold text-gray-600 uppercase tracking-wider mb-4">
+              <h2 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4">
                 프로젝트 소개
               </h2>
               <div className="prose prose-gray max-w-none">
-                <p className="text-gray-800 leading-relaxed break-keep whitespace-pre-line text-[15px]">
+                <p className="text-txt-secondary leading-relaxed break-keep whitespace-pre-line text-[0.9375rem]">
                   {opportunity.description}
                 </p>
               </div>
@@ -381,11 +381,11 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
             {/* Pain Point (if exists) */}
             {opportunity.pain_point && (
-              <section className="bg-gray-50 border border-gray-200 p-6">
-                <h2 className="text-[11px] font-mono font-bold text-gray-600 uppercase tracking-wider mb-3">
+              <section className="bg-surface-sunken border border-border-strong p-6">
+                <h2 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">
                   해결하려는 문제
                 </h2>
-                <p className="text-gray-800 leading-relaxed break-keep text-[15px]">
+                <p className="text-txt-secondary leading-relaxed break-keep text-[0.9375rem]">
                   {opportunity.pain_point}
                 </p>
               </section>
@@ -394,17 +394,17 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
             {/* Weekly Updates Timeline (Maker Log style) */}
             <section>
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-[11px] font-mono font-bold text-gray-600 uppercase tracking-wider">
+                <h2 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest">
                   주간 업데이트
                 </h2>
                 <div className="flex items-center gap-3">
-                  <span className="text-[10px] font-mono text-gray-400">
+                  <span className="text-[0.625rem] font-mono text-txt-disabled">
                     {realUpdates.length}개의 업데이트
                   </span>
                   {isOwner && (
                     <button
                       onClick={() => setShowWriteUpdate(true)}
-                      className="text-xs text-gray-500 hover:text-black transition-colors font-medium"
+                      className="text-xs text-txt-tertiary hover:text-txt-primary transition-colors font-medium"
                     >
                       + 작성하기
                     </button>
@@ -415,7 +415,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
               {realUpdates.length > 0 ? (
                 <div className="relative">
                   {/* Timeline Line */}
-                  <div className="absolute left-[15px] top-2 bottom-2 w-[1px] bg-gray-200" />
+                  <div className="absolute left-[0.9375rem] top-2 bottom-2 w-[1px] bg-border" />
 
                   <div className="space-y-6">
                     {realUpdates.map((update, index) => {
@@ -423,21 +423,21 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                       return (
                         <div key={update.id} className="relative pl-10">
                           {/* Timeline Dot */}
-                          <div className={`absolute left-[11px] top-1.5 w-[9px] h-[9px] border-2 bg-white ${
-                            index === 0 ? 'border-black' : 'border-gray-300'
+                          <div className={`absolute left-[0.6875rem] top-1.5 w-[0.5625rem] h-[0.5625rem] border-2 bg-surface-card ${
+                            index === 0 ? 'border-border-strong' : 'border-border-strong'
                           }`} />
 
-                          <div className="bg-white border border-gray-200 p-5 hover:border-gray-300 transition-colors">
+                          <div className="bg-surface-card border border-border-strong p-5 hover:shadow-sharp transition-all">
                             <div className="flex items-center gap-2 mb-2">
-                              <span className={`text-[10px] font-bold px-2 py-0.5 border ${config.color}`}>
+                              <span className={`text-[0.625rem] font-bold px-2 py-0.5 border ${config.color}`}>
                                 {config.label}
                               </span>
-                              <span className="text-[10px] font-mono text-gray-400">
+                              <span className="text-[0.625rem] font-mono text-txt-disabled">
                                 Week {update.week_number}
                               </span>
                             </div>
-                            <h3 className="font-bold text-gray-900 mb-1.5">{update.title}</h3>
-                            <p className="text-sm text-gray-600 leading-relaxed break-keep">
+                            <h3 className="font-bold text-txt-primary mb-1.5">{update.title}</h3>
+                            <p className="text-sm text-txt-secondary leading-relaxed break-keep">
                               {update.content}
                             </p>
                           </div>
@@ -448,12 +448,12 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                 </div>
               ) : (
                 <div className="text-center py-8">
-                  <Clock size={24} className="text-gray-200 mx-auto mb-2" />
-                  <p className="text-sm text-gray-400">아직 업데이트가 없습니다</p>
+                  <Clock size={24} className="text-txt-disabled mx-auto mb-2" />
+                  <p className="text-sm text-txt-disabled">아직 업데이트가 없습니다</p>
                   {isOwner && (
                     <button
                       onClick={() => setShowWriteUpdate(true)}
-                      className="mt-2 text-xs text-gray-500 hover:text-black transition-colors font-medium"
+                      className="mt-2 text-xs text-txt-tertiary hover:text-txt-primary transition-colors font-medium"
                     >
                       첫 번째 업데이트를 작성해보세요
                     </button>
@@ -474,18 +474,18 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
             {/* Feedback Section */}
             <section>
-              <h2 className="text-[11px] font-mono font-bold text-gray-600 uppercase tracking-wider mb-4">
+              <h2 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4">
                 커뮤니티 피드백
               </h2>
-              <div className="bg-gray-50 border border-gray-200 p-8 text-center">
-                <MessageCircle size={32} className="text-gray-300 mx-auto mb-3" />
-                <p className="font-bold text-gray-700 mb-1">피드백을 남겨보세요</p>
-                <p className="text-sm text-gray-500 mb-4 break-keep">
+              <div className="bg-surface-sunken border border-border-strong p-8 text-center">
+                <MessageCircle size={32} className="text-txt-disabled mx-auto mb-3" />
+                <p className="font-bold text-txt-primary mb-1">피드백을 남겨보세요</p>
+                <p className="text-sm text-txt-tertiary mb-4 break-keep">
                   아이디어에 대한 솔직한 의견이 프로젝트를 성장시킵니다
                 </p>
                 <button
                   onClick={handleCoffeeChatAction}
-                  className="inline-flex items-center gap-2 bg-black text-white px-5 py-2.5 font-bold text-sm hover:bg-gray-800 transition-colors"
+                  className="inline-flex items-center gap-2 bg-black text-white px-5 py-2.5 font-bold text-sm hover:bg-[#333] transition-colors border-2 border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
                 >
                   피드백 작성하기
                   <ChevronRight size={14} />
@@ -497,8 +497,8 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
           {/* Right: Sidebar (1/3) */}
           <aside className="space-y-6">
             {/* Team Section */}
-            <div className="border border-gray-200 p-6">
-              <h3 className="text-[11px] font-mono font-bold text-gray-600 uppercase tracking-wider mb-4">
+            <div className="border border-border-strong p-6">
+              <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4">
                 팀 정보
               </h3>
               {creator ? (
@@ -508,8 +508,8 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                       {creator.nickname.charAt(0)}
                     </div>
                     <div>
-                      <p className="font-bold text-gray-900 text-sm">{creator.nickname}</p>
-                      <p className="text-xs text-gray-500">
+                      <p className="font-bold text-txt-primary text-sm">{creator.nickname}</p>
+                      <p className="text-xs text-txt-tertiary">
                         {creator.desired_position || '메이커'}
                         {creator.university && ` · ${creator.university}`}
                       </p>
@@ -519,7 +519,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                   {creator.skills && (
                     <div className="flex flex-wrap gap-1.5">
                       {(Array.isArray(creator.skills) ? creator.skills : []).slice(0, 5).map((skill: string) => (
-                        <span key={skill} className="text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 font-medium">
+                        <span key={skill} className="text-[0.625rem] bg-surface-sunken text-txt-secondary px-2 py-0.5 font-medium border border-border">
                           {skill}
                         </span>
                       ))}
@@ -528,12 +528,12 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                 </div>
               ) : (
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gray-200 flex items-center justify-center font-bold text-sm text-gray-500">
+                  <div className="w-10 h-10 bg-surface-sunken flex items-center justify-center font-bold text-sm text-txt-tertiary border border-border">
                     ?
                   </div>
                   <div>
-                    <p className="font-bold text-gray-900 text-sm">익명 메이커</p>
-                    <p className="text-xs text-gray-500">프로필 비공개</p>
+                    <p className="font-bold text-txt-primary text-sm">익명 메이커</p>
+                    <p className="text-xs text-txt-tertiary">프로필 비공개</p>
                   </div>
                 </div>
               )}
@@ -541,15 +541,15 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
             {/* Needed Roles */}
             {opportunity.needed_roles && opportunity.needed_roles.length > 0 && (
-              <div className="border border-gray-200 p-6">
-                <h3 className="text-[11px] font-mono font-bold text-gray-600 uppercase tracking-wider mb-4">
+              <div className="border-2 border-border-strong p-6">
+                <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4">
                   모집 중인 포지션
                 </h3>
                 <div className="space-y-3">
                   {opportunity.needed_roles.map((role) => (
                     <div
                       key={role}
-                      className="flex items-center justify-between p-3 bg-blue-50 border border-blue-100"
+                      className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200"
                     >
                       <div className="flex items-center gap-2">
                         <Briefcase size={14} className="text-blue-600" />
@@ -557,7 +557,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                       </div>
                       <button
                         onClick={handleCoffeeChatAction}
-                        className="text-[10px] font-bold text-blue-600 hover:text-blue-800 transition-colors"
+                        className="text-[0.625rem] font-bold text-blue-600 hover:text-blue-800 transition-colors"
                       >
                         커피챗 신청 &rarr;
                       </button>
@@ -568,27 +568,27 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
             )}
 
             {/* Project Info */}
-            <div className="border border-gray-200 p-6">
-              <h3 className="text-[11px] font-mono font-bold text-gray-600 uppercase tracking-wider mb-4">
+            <div className="border border-border-strong p-6">
+              <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4">
                 프로젝트 정보
               </h3>
               <div className="space-y-3 text-sm">
                 {opportunity.time_commitment && (
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-500 flex items-center gap-1.5">
+                    <span className="text-txt-tertiary flex items-center gap-1.5">
                       <Clock size={14} />
                       시간 투자
                     </span>
-                    <span className="font-medium text-gray-900">{opportunity.time_commitment}</span>
+                    <span className="font-medium text-txt-primary">{opportunity.time_commitment}</span>
                   </div>
                 )}
                 {opportunity.location_type && (
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-500 flex items-center gap-1.5">
+                    <span className="text-txt-tertiary flex items-center gap-1.5">
                       <MapPin size={14} />
                       활동 방식
                     </span>
-                    <span className="font-medium text-gray-900">
+                    <span className="font-medium text-txt-primary">
                       {opportunity.location_type === 'remote' ? '원격' :
                        opportunity.location_type === 'offline' ? '오프라인' : '혼합'}
                     </span>
@@ -596,30 +596,30 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                 )}
                 {opportunity.compensation_type && (
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-500 flex items-center gap-1.5">
+                    <span className="text-txt-tertiary flex items-center gap-1.5">
                       <Sparkles size={14} />
                       보상
                     </span>
-                    <span className="font-medium text-gray-900">
+                    <span className="font-medium text-txt-primary">
                       {opportunity.compensation_type === 'equity' ? '지분' :
                        opportunity.compensation_type === 'paid' ? '유급' : '무급 (경험)'}
                     </span>
                   </div>
                 )}
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-500 flex items-center gap-1.5">
+                  <span className="text-txt-tertiary flex items-center gap-1.5">
                     <Users size={14} />
                     관심 표현
                   </span>
-                  <span className="font-medium text-gray-900">{interestCount}명</span>
+                  <span className="font-medium text-txt-primary">{interestCount}명</span>
                 </div>
               </div>
             </div>
 
             {/* Project Links */}
             {projectLinks && Object.keys(projectLinks).length > 0 && (
-              <div className="border border-gray-200 p-6">
-                <h3 className="text-[11px] font-mono font-bold text-gray-600 uppercase tracking-wider mb-4">
+              <div className="border-2 border-border-strong p-6">
+                <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4">
                   링크
                 </h3>
                 <div className="space-y-2">
@@ -629,7 +629,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                       href={url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm text-gray-600 hover:text-black transition-colors p-2 hover:bg-gray-50"
+                      className="flex items-center gap-2 text-sm text-txt-secondary hover:text-txt-primary transition-colors p-2 hover:bg-surface-sunken border border-transparent hover:border-border"
                     >
                       <ExternalLink size={14} />
                       {key}
@@ -640,14 +640,14 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
             )}
 
             {/* CTA Card */}
-            <div className="bg-black text-white p-6">
+            <div className="bg-black text-white p-6 border-2 border-black shadow-solid">
               <h3 className="font-bold mb-2">프로젝트에 참여하고 싶나요?</h3>
-              <p className="text-gray-400 text-sm mb-4 break-keep">
+              <p className="text-txt-inverse/50 text-sm mb-4 break-keep">
                 커피챗으로 메이커와 직접 이야기해보세요.
               </p>
               <button
                 onClick={handleCoffeeChatAction}
-                className="w-full bg-white text-black py-3 font-bold text-sm hover:bg-gray-100 transition-colors flex items-center justify-center gap-2"
+                className="w-full bg-white text-black py-3 font-bold text-sm hover:bg-surface-sunken transition-colors flex items-center justify-center gap-2 border-2 border-white"
               >
                 <Coffee size={14} />
                 커피챗 신청하기
@@ -658,10 +658,10 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
       </div>
 
       {/* Mobile Fixed CTA */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 md:hidden z-30">
+      <div className="fixed bottom-0 left-0 right-0 bg-surface-card border-t border-border-strong p-4 md:hidden z-30">
         <button
           onClick={handleCoffeeChatAction}
-          className="w-full bg-black text-white py-3.5 font-bold text-sm flex items-center justify-center gap-2"
+          className="w-full bg-[#4F46E5] text-white py-3.5 font-bold text-sm flex items-center justify-center gap-2 border-2 border-[#4F46E5] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
         >
           <Coffee size={16} />
           커피챗 신청

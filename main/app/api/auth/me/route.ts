@@ -23,7 +23,7 @@ export async function GET() {
   } catch (error) {
     return ApiResponse.internalError(
       '사용자 정보 조회 중 오류가 발생했습니다',
-      error instanceof Error ? error.message : undefined
+      undefined
     )
   }
 }

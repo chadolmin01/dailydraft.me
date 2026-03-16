@@ -39,18 +39,18 @@ interface ErrorLog {
 }
 
 const levelConfig = {
-  debug: { icon: Bug, color: 'text-gray-500', bg: 'bg-gray-100' },
-  info: { icon: Info, color: 'text-blue-500', bg: 'bg-blue-100' },
-  warn: { icon: AlertTriangle, color: 'text-yellow-600', bg: 'bg-yellow-100' },
-  error: { icon: AlertCircle, color: 'text-red-500', bg: 'bg-red-100' },
-  fatal: { icon: Skull, color: 'text-red-700', bg: 'bg-red-200' },
+  debug: { icon: Bug, color: 'text-txt-tertiary', bg: 'bg-surface-sunken' },
+  info: { icon: Info, color: 'text-blue-500', bg: 'bg-blue-50' },
+  warn: { icon: AlertTriangle, color: 'text-yellow-600', bg: 'bg-yellow-50' },
+  error: { icon: AlertCircle, color: 'text-red-500', bg: 'bg-red-50' },
+  fatal: { icon: Skull, color: 'text-red-700', bg: 'bg-red-100' },
 }
 
 const sourceColors = {
-  api: 'bg-blue-100 text-blue-700',
-  webhook: 'bg-purple-100 text-purple-700',
-  cron: 'bg-green-100 text-green-700',
-  client: 'bg-orange-100 text-orange-700',
+  api: 'border border-blue-600 text-blue-700',
+  webhook: 'border border-purple-600 text-purple-700',
+  cron: 'border border-green-600 text-green-700',
+  client: 'border border-orange-600 text-orange-700',
 }
 
 export default function ErrorLogsPage() {
@@ -73,8 +73,8 @@ export default function ErrorLogsPage() {
   // Show loading while checking admin status
   if (isAdminLoading) {
     return (
-      <div className="flex-1 flex items-center justify-center h-screen bg-[#FAFAFA]">
-        <Loader2 className="animate-spin text-gray-400" size={32} />
+      <div className="flex-1 flex items-center justify-center h-screen bg-surface-sunken">
+        <Loader2 className="animate-spin text-txt-disabled" size={32} />
       </div>
     )
   }
@@ -82,9 +82,9 @@ export default function ErrorLogsPage() {
   // Show access denied (brief flash before redirect)
   if (!isAdmin) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center h-screen bg-[#FAFAFA]">
+      <div className="flex-1 flex flex-col items-center justify-center h-screen bg-surface-sunken">
         <ShieldX size={48} className="text-red-400 mb-4" />
-        <p className="text-gray-600">접근 권한이 없습니다</p>
+        <p className="text-txt-secondary">접근 권한이 없습니다</p>
       </div>
     )
   }
@@ -137,21 +137,21 @@ export default function ErrorLogsPage() {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto h-screen bg-[#FAFAFA]">
-      <div className="max-w-[1600px] mx-auto p-8 lg:p-12 space-y-6">
+    <div className="flex-1 overflow-y-auto h-screen bg-surface-sunken">
+      <div className="max-w-[100rem] mx-auto p-8 lg:p-12 space-y-6">
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-gray-200 pb-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-border-strong pb-6">
           <div>
-            <div className="text-xs font-mono text-gray-500 mb-2 flex items-center gap-2">
-              <span className="w-2 h-2 bg-red-500 rounded-sm"></span>
+            <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-2 flex items-center gap-2">
+              <span className="w-2 h-2 bg-red-500"></span>
               ADMIN / MONITORING
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Error Logs</h1>
+            <h1 className="text-3xl font-bold text-txt-primary tracking-tight">Error Logs</h1>
           </div>
 
           <button
             onClick={() => refetch()}
-            className="flex items-center gap-2 px-4 py-2 bg-black text-white text-sm font-medium rounded-sm hover:bg-gray-800 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-black text-white text-sm font-medium border-2 border-black hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
           >
             <RefreshCw size={16} />
             새로고침
@@ -160,23 +160,23 @@ export default function ErrorLogsPage() {
 
         {/* Filters */}
         <div className="flex flex-wrap gap-4 items-center">
-          <div className="relative flex-1 min-w-[200px] max-w-md">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <div className="relative flex-1 min-w-[12.5rem] max-w-md">
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-txt-disabled" />
             <input
               type="text"
               placeholder="메시지, 엔드포인트 검색..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-black"
+              className="w-full pl-10 pr-4 py-2 bg-surface-card border-2 border-border-strong text-sm focus:outline-none focus:border-[#4F46E5]"
             />
           </div>
 
           <div className="flex items-center gap-2">
-            <Filter size={16} className="text-gray-400" />
+            <Filter size={16} className="text-txt-disabled" />
             <select
               value={levelFilter}
               onChange={(e) => setLevelFilter(e.target.value)}
-              className="px-3 py-2 bg-white border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-black"
+              className="px-3 py-2 bg-surface-card border-2 border-border-strong text-sm focus:outline-none focus:border-[#4F46E5]"
             >
               <option value="all">모든 레벨</option>
               <option value="debug">Debug</option>
@@ -189,7 +189,7 @@ export default function ErrorLogsPage() {
             <select
               value={sourceFilter}
               onChange={(e) => setSourceFilter(e.target.value)}
-              className="px-3 py-2 bg-white border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-black"
+              className="px-3 py-2 bg-surface-card border-2 border-border-strong text-sm focus:outline-none focus:border-[#4F46E5]"
             >
               <option value="all">모든 소스</option>
               <option value="api">API</option>
@@ -208,12 +208,12 @@ export default function ErrorLogsPage() {
             const count = (logs || []).filter(l => l.level === level).length
             return (
               <Card key={level} padding="p-4" className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-sm ${config.bg} flex items-center justify-center`}>
+                <div className={`w-10 h-10 ${config.bg} flex items-center justify-center`}>
                   <Icon size={20} className={config.color} />
                 </div>
                 <div>
-                  <div className="text-2xl font-bold font-mono">{count}</div>
-                  <div className="text-xs text-gray-500 uppercase">{level}</div>
+                  <div className="text-2xl font-bold font-mono text-txt-primary">{count}</div>
+                  <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">{level}</div>
                 </div>
               </Card>
             )
@@ -223,23 +223,23 @@ export default function ErrorLogsPage() {
         {/* Logs List */}
         {isLoading ? (
           <div className="flex items-center justify-center py-16">
-            <Loader2 className="animate-spin text-gray-400" size={32} />
+            <Loader2 className="animate-spin text-txt-disabled" size={32} />
           </div>
         ) : isError ? (
           <Card padding="p-8" className="text-center">
             <AlertCircle size={48} className="mx-auto text-red-400 mb-4" />
-            <p className="text-gray-600 mb-4">에러 로그를 불러올 수 없습니다</p>
+            <p className="text-txt-secondary mb-4">에러 로그를 불러올 수 없습니다</p>
             <button
               onClick={() => refetch()}
-              className="px-4 py-2 bg-gray-100 text-gray-700 text-sm rounded-sm hover:bg-gray-200"
+              className="px-4 py-2 border border-border-strong text-txt-secondary text-sm hover:bg-black hover:text-white transition-colors"
             >
               다시 시도
             </button>
           </Card>
         ) : filteredLogs.length === 0 ? (
           <Card padding="p-16" className="text-center">
-            <Info size={48} className="mx-auto text-gray-300 mb-4" />
-            <p className="text-gray-500">에러 로그가 없습니다</p>
+            <Info size={48} className="mx-auto text-txt-disabled mb-4" />
+            <p className="text-txt-tertiary">에러 로그가 없습니다</p>
           </Card>
         ) : (
           <div className="space-y-2">
@@ -258,49 +258,49 @@ export default function ErrorLogsPage() {
                 >
                   <button
                     onClick={() => toggleExpand(log.id)}
-                    className="w-full p-4 flex items-start gap-4 text-left hover:bg-gray-50 transition-colors"
+                    className="w-full p-4 flex items-start gap-4 text-left hover:bg-surface-sunken transition-colors"
                   >
-                    <div className={`w-8 h-8 rounded-sm ${config.bg} flex items-center justify-center shrink-0 mt-0.5`}>
+                    <div className={`w-8 h-8 ${config.bg} flex items-center justify-center shrink-0 mt-0.5`}>
                       <Icon size={16} className={config.color} />
                     </div>
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <span className={`px-2 py-0.5 text-[10px] font-mono font-bold rounded-sm ${sourceColors[log.source]}`}>
+                        <span className={`px-2 py-0.5 text-[0.625rem] font-mono font-bold ${sourceColors[log.source]}`}>
                           {log.source.toUpperCase()}
                         </span>
                         {log.error_code && (
-                          <span className="px-2 py-0.5 text-[10px] font-mono bg-gray-100 text-gray-600 rounded-sm">
+                          <span className="px-2 py-0.5 text-[0.625rem] font-mono font-bold bg-surface-sunken border border-border text-txt-secondary">
                             {log.error_code}
                           </span>
                         )}
                         {log.endpoint && (
-                          <span className="text-xs font-mono text-gray-400">
+                          <span className="text-xs font-mono text-txt-disabled">
                             {log.method} {log.endpoint}
                           </span>
                         )}
                       </div>
-                      <p className="text-sm text-gray-900 truncate">{log.message}</p>
+                      <p className="text-sm text-txt-primary truncate">{log.message}</p>
                     </div>
 
                     <div className="flex items-center gap-3 shrink-0">
-                      <span className="text-xs text-gray-400 font-mono">
+                      <span className="text-xs text-txt-disabled font-mono">
                         {formatDate(log.created_at)}
                       </span>
                       {isExpanded ? (
-                        <ChevronUp size={16} className="text-gray-400" />
+                        <ChevronUp size={16} className="text-txt-disabled" />
                       ) : (
-                        <ChevronDown size={16} className="text-gray-400" />
+                        <ChevronDown size={16} className="text-txt-disabled" />
                       )}
                     </div>
                   </button>
 
                   {isExpanded && (
-                    <div className="border-t border-gray-100 p-4 bg-gray-50 space-y-4">
+                    <div className="border-t border-border p-4 bg-surface-sunken space-y-4">
                       {/* Full message */}
                       <div>
-                        <h4 className="text-xs font-mono text-gray-500 mb-1">MESSAGE</h4>
-                        <p className="text-sm text-gray-900 bg-white p-3 rounded-sm border border-gray-200">
+                        <h4 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-1">MESSAGE</h4>
+                        <p className="text-sm text-txt-primary bg-surface-card p-3 border border-border-strong">
                           {log.message}
                         </p>
                       </div>
@@ -308,8 +308,8 @@ export default function ErrorLogsPage() {
                       {/* Stack trace */}
                       {log.stack_trace && (
                         <div>
-                          <h4 className="text-xs font-mono text-gray-500 mb-1">STACK TRACE</h4>
-                          <pre className="text-xs text-gray-700 bg-white p-3 rounded-sm border border-gray-200 overflow-x-auto">
+                          <h4 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-1">STACK TRACE</h4>
+                          <pre className="text-xs text-txt-secondary bg-surface-card p-3 border border-border-strong overflow-x-auto">
                             {log.stack_trace}
                           </pre>
                         </div>
@@ -318,8 +318,8 @@ export default function ErrorLogsPage() {
                       {/* Request body */}
                       {log.request_body && (
                         <div>
-                          <h4 className="text-xs font-mono text-gray-500 mb-1">REQUEST BODY</h4>
-                          <pre className="text-xs text-gray-700 bg-white p-3 rounded-sm border border-gray-200 overflow-x-auto">
+                          <h4 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-1">REQUEST BODY</h4>
+                          <pre className="text-xs text-txt-secondary bg-surface-card p-3 border border-border-strong overflow-x-auto">
                             {JSON.stringify(log.request_body, null, 2)}
                           </pre>
                         </div>
@@ -328,31 +328,31 @@ export default function ErrorLogsPage() {
                       {/* Metadata */}
                       {log.metadata && Object.keys(log.metadata).length > 0 && (
                         <div>
-                          <h4 className="text-xs font-mono text-gray-500 mb-1">METADATA</h4>
-                          <pre className="text-xs text-gray-700 bg-white p-3 rounded-sm border border-gray-200 overflow-x-auto">
+                          <h4 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-1">METADATA</h4>
+                          <pre className="text-xs text-txt-secondary bg-surface-card p-3 border border-border-strong overflow-x-auto">
                             {JSON.stringify(log.metadata, null, 2)}
                           </pre>
                         </div>
                       )}
 
                       {/* Additional info */}
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2 border-t border-gray-200">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2 border-t border-dashed border-border">
                         {log.user_id && (
                           <div>
-                            <span className="text-[10px] font-mono text-gray-400">USER ID</span>
-                            <p className="text-xs font-mono text-gray-600 truncate">{log.user_id}</p>
+                            <span className="text-[0.625rem] font-mono text-txt-disabled">USER ID</span>
+                            <p className="text-xs font-mono text-txt-secondary truncate">{log.user_id}</p>
                           </div>
                         )}
                         {log.ip_address && (
                           <div>
-                            <span className="text-[10px] font-mono text-gray-400">IP ADDRESS</span>
-                            <p className="text-xs font-mono text-gray-600">{log.ip_address}</p>
+                            <span className="text-[0.625rem] font-mono text-txt-disabled">IP ADDRESS</span>
+                            <p className="text-xs font-mono text-txt-secondary">{log.ip_address}</p>
                           </div>
                         )}
                         {log.user_agent && (
                           <div className="col-span-2">
-                            <span className="text-[10px] font-mono text-gray-400">USER AGENT</span>
-                            <p className="text-xs font-mono text-gray-600 truncate">{log.user_agent}</p>
+                            <span className="text-[0.625rem] font-mono text-txt-disabled">USER AGENT</span>
+                            <p className="text-xs font-mono text-txt-secondary truncate">{log.user_agent}</p>
                           </div>
                         )}
                       </div>

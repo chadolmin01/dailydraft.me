@@ -1,39 +1,30 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { MessageCircle, ThumbsUp, Flag, Send, Loader2 } from 'lucide-react'
+import { MessageCircle, ThumbsUp, Flag, Send, Loader2, ArrowRight } from 'lucide-react'
 import { useComments, Comment } from '@/src/hooks/useComments'
+import { useAuth } from '@/src/context/AuthContext'
 import { COMMENT_LABEL, COMMENT_VERB } from '@/src/constants/labels'
 
-// CEREAL 5 schools + others
-const SCHOOLS = [
-  '고려대학교',
-  '연세대학교',
-  '서울대학교',
-  '성균관대학교',
-  '한양대학교',
-  '카이스트',
-  '포스텍',
-  '기타',
-]
+const INITIAL_VISIBLE = 5
 
 interface CommentSectionProps {
   opportunityId: string
+  onLoginClick?: () => void
 }
 
-export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId }) => {
+export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, onLoginClick }) => {
+  const { user, profile } = useAuth()
   const { comments, loading, addComment, voteHelpful, reportComment } = useComments({
     opportunityId,
   })
 
-  const [nickname, setNickname] = useState('')
-  const [school, setSchool] = useState('')
   const [content, setContent] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [votedComments, setVotedComments] = useState<Set<string>>(new Set())
   const [reportedComments, setReportedComments] = useState<Set<string>>(new Set())
+  const [showAll, setShowAll] = useState(false)
 
-  // Load voted/reported state from localStorage
   useEffect(() => {
     try {
       const voted = localStorage.getItem(`voted_${opportunityId}`)
@@ -45,7 +36,6 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId })
     }
   }, [opportunityId])
 
-  // Generate unique voter identifier
   const getVoterIdentifier = () => {
     let identifier = localStorage.getItem('voter_identifier')
     if (!identifier) {
@@ -57,12 +47,12 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!nickname.trim() || !content.trim()) return
+    if (!content.trim() || !profile) return
 
     setSubmitting(true)
     const success = await addComment({
-      nickname: nickname.trim(),
-      school: school || undefined,
+      nickname: profile.nickname,
+      school: profile.university || undefined,
       content: content.trim(),
     })
 
@@ -98,81 +88,95 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId })
     }
   }
 
+  const visibleComments = showAll ? comments : comments.slice(0, INITIAL_VISIBLE)
+  const hasMore = comments.length > INITIAL_VISIBLE
+
   return (
-    <div className="bg-white border border-gray-200 rounded-sm">
+    <div className="bg-surface-card border border-border-strong">
       {/* Header */}
-      <div className="p-4 border-b border-gray-100">
-        <h3 className="font-bold text-gray-900 flex items-center gap-2">
-          <MessageCircle size={18} />
+      <div className="p-4 border-b border-border-strong">
+        <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest flex items-center gap-2">
+          <MessageCircle size={14} />
           {COMMENT_LABEL} ({comments.length})
         </h3>
       </div>
 
-      {/* Comment Form */}
-      <form onSubmit={handleSubmit} className="p-4 bg-gray-50 border-b border-gray-100">
-        <div className="flex gap-3 mb-3">
-          <input
-            type="text"
-            placeholder="닉네임"
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
-            className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-sm focus:outline-none focus:border-black"
-            maxLength={20}
-          />
-          <select
-            value={school}
-            onChange={(e) => setSchool(e.target.value)}
-            className="px-3 py-2 text-sm border border-gray-200 rounded-sm focus:outline-none focus:border-black bg-white"
-          >
-            <option value="">학교 선택 (선택)</option>
-            {SCHOOLS.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="flex gap-2">
-          <textarea
-            placeholder={`${COMMENT_VERB}를 남겨주세요...`}
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-sm focus:outline-none focus:border-black resize-none"
-            rows={2}
-            maxLength={500}
-          />
+      {/* Comment Form — login only */}
+      {user && profile ? (
+        <form onSubmit={handleSubmit} className="p-4 bg-surface-sunken border-b border-dashed border-border">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-7 h-7 bg-black text-white flex items-center justify-center text-xs font-bold shrink-0">
+              {profile.nickname.charAt(0)}
+            </div>
+            <span className="text-sm font-medium text-txt-primary">{profile.nickname}</span>
+            {profile.university && (
+              <>
+                <span className="text-border-strong">·</span>
+                <span className="text-xs text-txt-disabled font-mono">{profile.university}</span>
+              </>
+            )}
+          </div>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              placeholder={`${COMMENT_VERB}을 남겨주세요...`}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              className="flex-1 px-3 py-1.5 text-sm border-2 border-border-strong focus:outline-none focus:border-border-strong bg-surface-card text-txt-primary placeholder-txt-disabled"
+              maxLength={500}
+            />
+            <button
+              type="submit"
+              disabled={submitting || !content.trim()}
+              className="px-3 py-1.5 bg-black text-white border-2 border-black hover:bg-[#333] transition-colors disabled:bg-surface-sunken disabled:text-txt-disabled disabled:border-border-strong disabled:cursor-not-allowed flex items-center justify-center"
+            >
+              {submitting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+            </button>
+          </div>
+        </form>
+      ) : (
+        <div className="p-5 bg-surface-sunken border-b border-dashed border-border text-center">
+          <p className="text-sm text-txt-tertiary mb-3">로그인하고 {COMMENT_VERB}을 남겨보세요</p>
           <button
-            type="submit"
-            disabled={submitting || !nickname.trim() || !content.trim()}
-            className="px-4 bg-black text-white rounded-sm hover:bg-gray-800 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center"
+            onClick={onLoginClick}
+            className="inline-flex items-center gap-2 bg-black text-white px-5 py-2 text-xs font-bold border-2 border-black hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
           >
-            {submitting ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
+            로그인하기 <ArrowRight size={12} />
           </button>
         </div>
-      </form>
+      )}
 
       {/* Comments List */}
-      <div className="divide-y divide-gray-100">
+      <div className="divide-y divide-border">
         {loading ? (
           <div className="p-8 flex items-center justify-center">
-            <Loader2 className="animate-spin text-gray-400" size={24} />
+            <Loader2 className="animate-spin text-txt-disabled" size={24} />
           </div>
         ) : comments.length === 0 ? (
-          <div className="p-8 text-center text-gray-400 text-sm">
-            아직 {COMMENT_LABEL}이 없습니다. 첫 번째 {COMMENT_VERB}를 남겨보세요!
+          <div className="p-8 text-center text-txt-disabled text-sm">
+            아직 {COMMENT_LABEL}이 없습니다. 첫 번째 {COMMENT_VERB}을 남겨보세요!
           </div>
         ) : (
-          comments.map((comment) => (
-            <CommentItem
-              key={comment.id}
-              comment={comment}
-              hasVoted={votedComments.has(comment.id)}
-              hasReported={reportedComments.has(comment.id)}
-              onVote={() => handleVote(comment.id)}
-              onReport={() => handleReport(comment.id)}
-            />
-          ))
+          <>
+            {visibleComments.map((comment) => (
+              <CommentItem
+                key={comment.id}
+                comment={comment}
+                hasVoted={votedComments.has(comment.id)}
+                hasReported={reportedComments.has(comment.id)}
+                onVote={() => handleVote(comment.id)}
+                onReport={() => handleReport(comment.id)}
+              />
+            ))}
+            {hasMore && !showAll && (
+              <button
+                onClick={() => setShowAll(true)}
+                className="w-full p-3 text-xs font-medium text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken transition-colors"
+              >
+                {COMMENT_LABEL} {comments.length - INITIAL_VISIBLE}개 더 보기
+              </button>
+            )}
+          </>
         )}
       </div>
     </div>
@@ -211,28 +215,31 @@ const CommentItem: React.FC<CommentItemProps> = ({
     <div className="p-4">
       {/* Author info */}
       <div className="flex items-center gap-2 mb-2">
-        <span className="font-bold text-sm text-gray-900">{comment.nickname}</span>
+        <div className="w-6 h-6 bg-black text-white flex items-center justify-center text-[0.625rem] font-bold shrink-0">
+          {comment.nickname.charAt(0)}
+        </div>
+        <span className="font-bold text-sm text-txt-primary">{comment.nickname}</span>
         {comment.school && (
           <>
-            <span className="text-gray-300">|</span>
-            <span className="text-xs text-gray-500 font-mono">{comment.school}</span>
+            <span className="text-border-strong">·</span>
+            <span className="text-xs text-txt-disabled font-mono">{comment.school}</span>
           </>
         )}
-        <span className="text-xs text-gray-400 ml-auto">{formatDate(comment.created_at)}</span>
+        <span className="text-xs text-txt-disabled ml-auto">{formatDate(comment.created_at)}</span>
       </div>
 
       {/* Content */}
-      <p className="text-sm text-gray-700 leading-relaxed mb-3 break-keep">{comment.content}</p>
+      <p className="text-sm text-txt-secondary leading-relaxed mb-3 break-keep pl-8">{comment.content}</p>
 
       {/* Actions */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 pl-8">
         <button
           onClick={onVote}
           disabled={hasVoted}
           className={`flex items-center gap-1.5 text-xs transition-colors ${
             hasVoted
-              ? 'text-indigo-600 font-bold cursor-default'
-              : 'text-gray-400 hover:text-indigo-600'
+              ? 'text-[#4F46E5] font-bold cursor-default'
+              : 'text-txt-disabled hover:text-[#4F46E5]'
           }`}
         >
           <ThumbsUp size={14} />
@@ -243,7 +250,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
           onClick={onReport}
           disabled={hasReported}
           className={`flex items-center gap-1.5 text-xs transition-colors ${
-            hasReported ? 'text-red-400 cursor-default' : 'text-gray-300 hover:text-red-500'
+            hasReported ? 'text-red-400 cursor-default' : 'text-txt-disabled hover:text-red-500'
           }`}
         >
           <Flag size={12} />

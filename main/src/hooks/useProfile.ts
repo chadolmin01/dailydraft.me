@@ -14,13 +14,26 @@ export const profileKeys = {
   detail: (userId: string) => [...profileKeys.all, userId] as const,
 }
 
+// AbortError 방어: 실패 시 1회 재시도
+async function withRetry<T>(fn: () => Promise<T>, retries = 1): Promise<T> {
+  try {
+    return await fn()
+  } catch (err) {
+    if (retries > 0 && err instanceof DOMException && err.name === 'AbortError') {
+      await new Promise(r => setTimeout(r, 300))
+      return withRetry(fn, retries - 1)
+    }
+    throw err
+  }
+}
+
 // Fetch current user's profile
 export function useProfile() {
   const { user } = useAuth()
 
   return useQuery({
     queryKey: profileKeys.detail(user?.id ?? ''),
-    queryFn: async () => {
+    queryFn: () => withRetry(async () => {
       if (!user?.id) return null
 
       const { data, error } = await supabase
@@ -34,8 +47,10 @@ export function useProfile() {
       }
 
       return data as Profile | null
-    },
+    }),
     enabled: !!user?.id,
+    retry: (failureCount) => failureCount < 3,
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
   })
 }
 
@@ -43,7 +58,7 @@ export function useProfile() {
 export function useProfileById(userId: string | undefined) {
   return useQuery({
     queryKey: profileKeys.detail(userId ?? ''),
-    queryFn: async () => {
+    queryFn: () => withRetry(async () => {
       if (!userId) return null
 
       const { data, error } = await supabase
@@ -57,8 +72,10 @@ export function useProfileById(userId: string | undefined) {
       }
 
       return data as Profile | null
-    },
+    }),
     enabled: !!userId,
+    retry: (failureCount) => failureCount < 3,
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
   })
 }
 

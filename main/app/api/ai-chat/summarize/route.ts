@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
     }
 
     const { messages } = await request.json()
@@ -48,6 +48,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ summary })
   } catch (error) {
     console.error('Summarize error:', error)
-    return NextResponse.json({ summary: '' })
+    return NextResponse.json(
+      { summary: '', error: '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.' },
+      { status: 500 }
+    )
   }
 }

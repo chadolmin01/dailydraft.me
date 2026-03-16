@@ -31,7 +31,7 @@ export const CoffeeChatButton: React.FC<CoffeeChatButtonProps> = ({
     (c) => c.requester_email === email || c.requester_user_id === currentUserId
   )
 
-  // Load saved info from localStorage
+  // Load saved info from sessionStorage
   useEffect(() => {
     const savedEmail = sessionStorage.getItem('user_email_interest')
     const savedName = sessionStorage.getItem('user_name')
@@ -101,7 +101,7 @@ export const CoffeeChatButton: React.FC<CoffeeChatButtonProps> = ({
       return (
         <button
           disabled
-          className={`flex items-center gap-2 px-4 py-2 rounded-sm border bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed ${className}`}
+          className={`flex items-center gap-2 px-4 py-2 border bg-surface-sunken text-txt-disabled border-border cursor-not-allowed ${className}`}
         >
           <Coffee size={18} />
           <span className="text-sm font-medium">내 프로젝트</span>
@@ -111,19 +111,19 @@ export const CoffeeChatButton: React.FC<CoffeeChatButtonProps> = ({
 
     if (existingRequest) {
       const statusConfig = {
-        pending: { icon: Clock, text: '대기 중', style: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
-        accepted: { icon: Check, text: '수락됨', style: 'bg-green-50 text-green-700 border-green-200' },
-        declined: { icon: X, text: '거절됨', style: 'bg-gray-50 text-gray-500 border-gray-200' },
+        pending: { icon: Clock, text: '대기 중', style: 'bg-status-warning-bg text-status-warning-text border border-status-warning-text/30' },
+        accepted: { icon: Check, text: '수락됨', style: 'bg-status-success-bg text-status-success-text border border-status-success-text/30' },
+        declined: { icon: X, text: '거절됨', style: 'bg-surface-sunken text-txt-tertiary border border-border' },
       }
       const config = statusConfig[existingRequest.status]
       const StatusIcon = config.icon
 
       return (
-        <div className={`flex items-center gap-2 px-4 py-2 rounded-sm border ${config.style} ${className}`}>
+        <div className={`flex items-center gap-2 px-4 py-2 ${config.style} ${className}`}>
           <StatusIcon size={18} />
           <span className="text-sm font-medium">커피챗 {config.text}</span>
           {existingRequest.status === 'accepted' && existingRequest.contact_info && (
-            <span className="ml-2 text-xs bg-white px-2 py-0.5 rounded border border-green-200">
+            <span className="ml-2 text-xs bg-surface-card px-2 py-0.5 border border-status-success-text/30">
               {existingRequest.contact_info}
             </span>
           )}
@@ -135,10 +135,10 @@ export const CoffeeChatButton: React.FC<CoffeeChatButtonProps> = ({
       <button
         onClick={handleClick}
         disabled={chatsLoading}
-        className={`flex items-center gap-2 px-4 py-2 rounded-sm border transition-all bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100 hover:border-amber-400 ${className}`}
+        className={`flex items-center gap-2 px-4 py-2 border-2 transition-all bg-surface-card text-txt-primary border-border-strong hover:bg-black hover:text-white shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] ${className}`}
       >
         <Coffee size={18} />
-        <span className="text-sm font-medium">커피챗 신청하기</span>
+        <span className="text-sm font-bold">커피챗 신청하기</span>
       </button>
     )
   }
@@ -150,27 +150,27 @@ export const CoffeeChatButton: React.FC<CoffeeChatButtonProps> = ({
       {/* Request Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-sm shadow-xl w-full max-w-md">
-            <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-              <h3 className="font-bold text-gray-900 flex items-center gap-2">
-                <Coffee size={20} className="text-amber-600" />
+          <div className="bg-surface-card shadow-brutal border-2 border-border-strong w-full max-w-md">
+            <div className="p-4 border-b border-border-strong flex items-center justify-between">
+              <h3 className="font-bold text-txt-primary flex items-center gap-2">
+                <Coffee size={20} className="text-[#4F46E5]" />
                 커피챗 신청하기
               </h3>
               <button
                 onClick={() => setShowModal(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-txt-disabled hover:text-txt-secondary"
               >
                 <X size={20} />
               </button>
             </div>
 
             <div className="p-4 space-y-4">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-txt-secondary">
                 프로젝트 오너에게 커피챗을 신청합니다. 수락되면 연락처가 공개됩니다.
               </p>
 
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
+                <label className="block text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-1.5">
                   이름 (닉네임)
                 </label>
                 <input
@@ -178,12 +178,12 @@ export const CoffeeChatButton: React.FC<CoffeeChatButtonProps> = ({
                   placeholder="홍길동"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-sm focus:outline-none focus:border-black"
+                  className="w-full px-3 py-2 border-2 border-border-strong bg-surface-card focus:outline-none focus:border-[#4F46E5]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
+                <label className="block text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-1.5">
                   이메일
                 </label>
                 <input
@@ -191,23 +191,23 @@ export const CoffeeChatButton: React.FC<CoffeeChatButtonProps> = ({
                   placeholder="email@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-sm focus:outline-none focus:border-black"
+                  className="w-full px-3 py-2 border-2 border-border-strong bg-surface-card focus:outline-none focus:border-[#4F46E5]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
+                <label className="block text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-1.5">
                   메시지 (선택)
                 </label>
                 <textarea
                   placeholder="간단한 자기소개나 관심 포인트를 적어주세요"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-sm focus:outline-none focus:border-black resize-none"
+                  className="w-full px-3 py-2 border-2 border-border-strong bg-surface-card focus:outline-none focus:border-[#4F46E5] resize-none"
                   rows={3}
                   maxLength={300}
                 />
-                <div className="text-right text-xs text-gray-400 mt-1">
+                <div className="text-right text-xs text-txt-disabled font-mono mt-1">
                   {message.length}/300
                 </div>
               </div>
@@ -217,14 +217,14 @@ export const CoffeeChatButton: React.FC<CoffeeChatButtonProps> = ({
               <div className="flex gap-2 pt-2">
                 <button
                   onClick={() => setShowModal(false)}
-                  className="flex-1 px-4 py-2.5 border border-gray-200 text-gray-600 rounded-sm hover:bg-gray-50 text-sm font-medium"
+                  className="flex-1 px-4 py-2.5 border border-border-strong text-txt-secondary hover:bg-black hover:text-white text-sm font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
                 >
                   취소
                 </button>
                 <button
                   onClick={handleSubmit}
                   disabled={submitting}
-                  className="flex-1 px-4 py-2.5 bg-amber-500 text-white rounded-sm hover:bg-amber-600 text-sm font-medium disabled:bg-gray-300 flex items-center justify-center gap-2"
+                  className="flex-1 px-4 py-2.5 bg-[#4F46E5] text-white border-2 border-[#4F46E5] hover:bg-[#4338CA] text-sm font-bold shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-40 disabled:pointer-events-none flex items-center justify-center gap-2"
                 >
                   {submitting ? (
                     <Loader2 size={16} className="animate-spin" />

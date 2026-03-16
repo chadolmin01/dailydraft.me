@@ -98,8 +98,8 @@ function BusinessPlanPageContent() {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-gray-200 border-t-black rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">데이터를 불러오는 중...</p>
+          <div className="w-12 h-12 border-4 border-border border-t-black animate-spin mx-auto mb-4"></div>
+          <p className="text-txt-secondary">데이터를 불러오는 중...</p>
         </div>
       </div>
     )
@@ -119,31 +119,31 @@ function BusinessPlanPageContent() {
 
   // Template selection screen
   return (
-    <div className="min-h-screen bg-[#FAFAFA] p-6">
+    <div className="min-h-screen bg-surface-sunken p-6">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 mb-4"
+            className="flex items-center gap-2 text-sm text-txt-secondary hover:text-txt-primary mb-4"
           >
             <ArrowLeft size={16} />
             돌아가기
           </button>
 
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-black rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-black flex items-center justify-center">
               <FileText className="text-white" size={24} />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">사업계획서 작성</h1>
-              <p className="text-gray-600">정부지원사업 심사를 위한 사업계획서를 작성합니다</p>
+              <h1 className="text-2xl font-bold text-txt-primary">사업계획서 작성</h1>
+              <p className="text-txt-secondary">정부지원사업 심사를 위한 사업계획서를 작성합니다</p>
             </div>
           </div>
 
           {/* Idea Validator Badge */}
           {fromIdeaValidator && mappingSummary && (
-            <div className="mt-4 p-4 bg-purple-50 border border-purple-100 rounded-xl flex items-center gap-3">
+            <div className="mt-4 p-4 bg-purple-50 border border-purple-600 flex items-center gap-3">
               <Sparkles className="text-purple-600" size={20} />
               <div>
                 <p className="text-sm font-medium text-purple-800">Idea Validator 연동됨</p>
@@ -155,8 +155,8 @@ function BusinessPlanPageContent() {
 
         {/* Template Selection */}
         <div className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">양식 선택</h2>
-          <p className="text-sm text-gray-600 mb-6">
+          <h2 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-4">양식 선택</h2>
+          <p className="text-sm text-txt-secondary mb-6">
             작성하려는 정부지원사업에 맞는 양식을 선택하세요.
           </p>
         </div>
@@ -225,33 +225,33 @@ function TemplateCard({ id, name, description, pages, features, recommended, onC
   return (
     <button
       onClick={onClick}
-      className={`text-left p-5 bg-white border rounded-xl hover:shadow-md transition-all group ${
-        recommended ? 'border-blue-200 ring-2 ring-blue-100' : 'border-gray-200 hover:border-gray-300'
+      className={`text-left p-5 bg-surface-card border hover:shadow-sharp transition-all group ${
+        recommended ? 'border-[#4F46E5] ring-2 ring-[#4F46E5]/20' : 'border-border-strong hover:border-border-strong'
       }`}
     >
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2">
-          <FileText size={20} className="text-gray-400 group-hover:text-gray-600" />
-          <h3 className="font-semibold text-gray-900">{name}</h3>
+          <FileText size={20} className="text-txt-disabled group-hover:text-txt-secondary" />
+          <h3 className="font-semibold text-txt-primary">{name}</h3>
         </div>
         {recommended && (
-          <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold rounded">
+          <span className="px-2 py-0.5 border border-[#4F46E5] text-[#4F46E5] text-[0.625rem] font-mono font-bold">
             추천
           </span>
         )}
       </div>
 
-      <p className="text-sm text-gray-600 mb-3">{description}</p>
+      <p className="text-sm text-txt-secondary mb-3">{description}</p>
 
       <div className="flex items-center justify-between">
         <div className="flex flex-wrap gap-1">
           {features.slice(0, 2).map((feature, idx) => (
-            <span key={idx} className="px-2 py-0.5 bg-gray-100 text-gray-600 text-[10px] rounded">
+            <span key={idx} className="px-2 py-0.5 bg-surface-sunken text-txt-secondary text-[0.625rem] font-mono border border-border">
               {feature}
             </span>
           ))}
         </div>
-        <span className="text-xs text-gray-400 font-mono">{pages}p</span>
+        <span className="text-xs text-txt-disabled font-mono">{pages}p</span>
       </div>
     </button>
   )
@@ -261,7 +261,7 @@ export default function BusinessPlanPage() {
   return (
     <Suspense fallback={
       <div className="flex items-center justify-center h-screen">
-        <div className="w-12 h-12 border-4 border-gray-200 border-t-black rounded-full animate-spin"></div>
+        <div className="w-12 h-12 border-4 border-border border-t-black animate-spin"></div>
       </div>
     }>
       <BusinessPlanPageContent />

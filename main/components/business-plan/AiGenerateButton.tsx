@@ -87,13 +87,13 @@ export const AiGenerateButton: React.FC<AiGenerateButtonProps> = ({
           onClick={() => handleGenerate('draft')}
           disabled={disabled || isGenerating}
           className={`
-            flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-sm
+            flex-1 flex items-center justify-center gap-2 px-4 py-3
             text-sm font-medium transition-all
             ${disabled
-              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              ? 'bg-surface-sunken text-txt-tertiary cursor-not-allowed'
               : isGenerating
                 ? 'bg-blue-100 text-blue-600 cursor-wait'
-                : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-sm hover:shadow-md'
+                : 'bg-black text-white hover:bg-[#333] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
             }
           `}
         >
@@ -114,10 +114,10 @@ export const AiGenerateButton: React.FC<AiGenerateButtonProps> = ({
           onClick={() => setShowOptions(!showOptions)}
           disabled={disabled || isGenerating}
           className={`
-            p-3 rounded-sm border transition-all
+            p-3 border transition-all
             ${disabled || isGenerating
-              ? 'border-gray-200 text-gray-300 cursor-not-allowed'
-              : 'border-gray-300 text-gray-600 hover:border-gray-400 hover:bg-gray-50'
+              ? 'border-border text-txt-disabled cursor-not-allowed'
+              : 'border-border-strong text-txt-secondary hover:bg-black hover:text-white'
             }
           `}
         >
@@ -127,19 +127,19 @@ export const AiGenerateButton: React.FC<AiGenerateButtonProps> = ({
 
       {/* Options dropdown */}
       {showOptions && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-sm shadow-lg z-10">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-surface-card border border-border shadow-sharp z-10">
           {options.map((option) => (
             <button
               key={option.type}
               onClick={() => handleGenerate(option.type)}
-              className="w-full flex items-start gap-3 p-3 hover:bg-gray-50 transition-colors text-left"
+              className="w-full flex items-start gap-3 p-3 hover:bg-surface-sunken transition-colors text-left"
             >
-              <div className="w-8 h-8 bg-gray-100 rounded-sm flex items-center justify-center shrink-0">
-                <option.icon size={16} className="text-gray-600" />
+              <div className="w-8 h-8 bg-surface-sunken flex items-center justify-center shrink-0">
+                <option.icon size={16} className="text-txt-secondary" />
               </div>
               <div>
-                <div className="text-sm font-medium text-gray-900">{option.label}</div>
-                <div className="text-xs text-gray-500">{option.description}</div>
+                <div className="text-sm font-medium text-txt-primary">{option.label}</div>
+                <div className="text-xs text-txt-tertiary">{option.description}</div>
               </div>
             </button>
           ))}
@@ -147,7 +147,7 @@ export const AiGenerateButton: React.FC<AiGenerateButtonProps> = ({
       )}
 
       {disabled && (
-        <p className="text-xs text-gray-400 mt-2 text-center">
+        <p className="text-xs text-txt-tertiary mt-2 text-center">
           기본 정보(아이템명, 타겟 고객)를 먼저 입력해주세요
         </p>
       )}
@@ -174,12 +174,12 @@ export const AiFieldButton: React.FC<AiFieldButtonProps> = ({
       onClick={onClick}
       disabled={disabled || isGenerating}
       className={`
-        flex items-center gap-1.5 font-medium rounded-sm transition-all
-        ${compact ? 'px-2 py-1 text-[10px]' : 'px-3 py-1.5 text-xs'}
+        flex items-center gap-1.5 font-medium transition-all
+        ${compact ? 'px-2 py-1 text-[0.625rem]' : 'px-3 py-1.5 text-xs'}
         ${isGenerating
-          ? 'bg-gray-100 text-gray-400 cursor-wait'
+          ? 'bg-surface-sunken text-txt-tertiary cursor-wait'
           : disabled
-            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+            ? 'bg-surface-sunken text-txt-tertiary cursor-not-allowed'
             : 'bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200'
         }
       `}
@@ -219,25 +219,25 @@ export const AiAssistantFloating: React.FC<AiAssistantFloatingProps> = ({
   return (
     <div className="fixed bottom-6 right-6 z-40">
       {isExpanded && (
-        <div className="mb-3 bg-white border border-gray-200 rounded-sm shadow-lg overflow-hidden w-48">
+        <div className="mb-3 bg-surface-card border border-border shadow-sharp overflow-hidden w-48">
           <button
             onClick={() => { onGenerateSection(); setIsExpanded(false); }}
             disabled={isGenerating}
-            className="w-full flex items-center gap-2 p-3 hover:bg-gray-50 transition-colors text-left text-sm"
+            className="w-full flex items-center gap-2 p-3 hover:bg-surface-sunken transition-colors text-left text-sm"
           >
             <Wand2 size={14} className="text-blue-600" />
             <span>섹션 생성</span>
           </button>
           <button
             onClick={() => { onValidate(); setIsExpanded(false); }}
-            className="w-full flex items-center gap-2 p-3 hover:bg-gray-50 transition-colors text-left text-sm border-t border-gray-100"
+            className="w-full flex items-center gap-2 p-3 hover:bg-surface-sunken transition-colors text-left text-sm border-t border-border-subtle"
           >
             <Sparkles size={14} className="text-purple-600" />
             <span>검증하기</span>
           </button>
           <button
             onClick={() => { onSuggest(); setIsExpanded(false); }}
-            className="w-full flex items-center gap-2 p-3 hover:bg-gray-50 transition-colors text-left text-sm border-t border-gray-100"
+            className="w-full flex items-center gap-2 p-3 hover:bg-surface-sunken transition-colors text-left text-sm border-t border-border-subtle"
           >
             <Sparkles size={14} className="text-green-600" />
             <span>개선 제안</span>
@@ -248,11 +248,11 @@ export const AiAssistantFloating: React.FC<AiAssistantFloatingProps> = ({
       <button
         onClick={() => setIsExpanded(!isExpanded)}
         className={`
-          w-14 h-14 rounded-full shadow-lg flex items-center justify-center
+          w-14 h-14 shadow-brutal flex items-center justify-center
           transition-all duration-200
           ${isExpanded
-            ? 'bg-gray-800 text-white'
-            : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-xl hover:scale-105'
+            ? 'bg-surface-inverse text-white'
+            : 'bg-black text-white hover:shadow-sharp hover:scale-105'
           }
           ${isGenerating ? 'animate-pulse' : ''}
         `}

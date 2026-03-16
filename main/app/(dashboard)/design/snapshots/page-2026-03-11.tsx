@@ -421,7 +421,7 @@ export default function DesignPage() {
               </div>
             }
           >
-            <div className="bg-surface-inverse/5 border border-border rounded-lg p-6 text-center min-h-[200px] flex flex-col items-center justify-center">
+            <div className="bg-surface-inverse/5 border border-border rounded-lg p-6 text-center min-h-[12.5rem] flex flex-col items-center justify-center">
               <p className="text-sm font-medium text-txt-primary">Main Content</p>
               <p className="text-xs text-txt-tertiary mt-1">flex-1, 나머지 공간 전부</p>
               <p className="text-xs text-txt-disabled mt-3">Explore, Profile, Projects 페이지가 이 구조</p>
@@ -533,7 +533,7 @@ export default function DesignPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
 
           {/* 상태 1: 일반 모집중 (그라데이션 커버) */}
-          <div className="bg-surface-card border border-border rounded-xl overflow-hidden group hover:border-border-strong hover:shadow-sm transition-all cursor-pointer h-[340px] flex flex-col">
+          <div className="bg-surface-card border border-border rounded-xl overflow-hidden group hover:border-border-strong hover:shadow-sm transition-all cursor-pointer h-[21.25rem] flex flex-col">
             {/* 헤더: 커버 — 고정 144px */}
             <div className="relative h-36 shrink-0 bg-surface-inverse flex items-end p-4">
               <div className="absolute top-3 left-3">
@@ -548,7 +548,7 @@ export default function DesignPage() {
               </div>
             </div>
             {/* 본문: 제목+태그+설명 — 고정 영역, 넘치면 숨김 */}
-            <div className="px-4 pt-4 h-[120px] shrink-0 overflow-hidden">
+            <div className="px-4 pt-4 h-[7.5rem] shrink-0 overflow-hidden">
               <h3 className="font-semibold text-base text-txt-primary mb-1.5 truncate">AI 기반 이력서 분석 플랫폼</h3>
               <div className="flex items-center gap-1.5 mb-2 overflow-hidden">
                 <span className="text-xs font-mono text-txt-disabled uppercase tracking-wide shrink-0">NEED</span>
@@ -558,7 +558,7 @@ export default function DesignPage() {
               <p className="text-sm text-txt-secondary line-clamp-2">GPT-4를 활용해 이력서를 분석하고 맞춤형 피드백을 제공하는 서비스입니다.</p>
             </div>
             {/* 푸터: 작성자+메타 — 고정 영역 */}
-            <div className="px-4 pb-4 h-[76px] shrink-0 flex items-end">
+            <div className="px-4 pb-4 h-[4.75rem] shrink-0 flex items-end">
               <div className="flex items-center justify-between w-full pt-3 border-t border-border-subtle">
                 <div className="flex items-center gap-2">
                   <div className="w-5 h-5 bg-surface-sunken rounded-full flex items-center justify-center text-xs font-bold text-txt-secondary">김</div>
@@ -573,7 +573,7 @@ export default function DesignPage() {
           </div>
 
           {/* 상태 2: 마감임박 D≤3 (이미지 커버 대응) */}
-          <div className="bg-surface-card border border-border rounded-xl overflow-hidden group hover:border-border-strong hover:shadow-sm transition-all cursor-pointer h-[340px] flex flex-col">
+          <div className="bg-surface-card border border-border rounded-xl overflow-hidden group hover:border-border-strong hover:shadow-sm transition-all cursor-pointer h-[21.25rem] flex flex-col">
             <div className="relative h-36 shrink-0 bg-surface-inverse/90 flex items-end p-4">
               <div className="absolute top-3 left-3">
                 <span className="text-xs bg-status-danger-accent/90 backdrop-blur-sm text-txt-inverse px-2 py-0.5 rounded font-semibold">D-2 마감임박</span>
@@ -585,7 +585,7 @@ export default function DesignPage() {
                 <Rocket size={20} className="text-txt-primary" />
               </div>
             </div>
-            <div className="px-4 pt-4 h-[120px] shrink-0 overflow-hidden">
+            <div className="px-4 pt-4 h-[7.5rem] shrink-0 overflow-hidden">
               <h3 className="font-semibold text-base text-txt-primary mb-1.5 truncate">헬스케어 데이터 대시보드</h3>
               <div className="flex items-center gap-1.5 mb-2 overflow-hidden">
                 <span className="text-xs font-mono text-txt-disabled uppercase tracking-wide shrink-0">NEED</span>
@@ -594,7 +594,7 @@ export default function DesignPage() {
               </div>
               <p className="text-sm text-txt-secondary line-clamp-2">환자 데이터 시각화 및 실시간 모니터링 대시보드.</p>
             </div>
-            <div className="px-4 pb-4 h-[76px] shrink-0 flex items-end">
+            <div className="px-4 pb-4 h-[4.75rem] shrink-0 flex items-end">
               <div className="flex items-center justify-between w-full pt-3 border-t border-border-subtle">
                 <div className="flex items-center gap-2">
                   <div className="w-5 h-5 bg-surface-sunken rounded-full flex items-center justify-center text-xs font-bold text-txt-secondary">박</div>
@@ -609,7 +609,7 @@ export default function DesignPage() {
           </div>
 
           {/* 상태 3: 최근 업데이트 + 이미지 없음 fallback */}
-          <div className="bg-surface-card border border-border rounded-xl overflow-hidden group hover:border-border-strong hover:shadow-sm transition-all cursor-pointer h-[340px] flex flex-col">
+          <div className="bg-surface-card border border-border rounded-xl overflow-hidden group hover:border-border-strong hover:shadow-sm transition-all cursor-pointer h-[21.25rem] flex flex-col">
             <div className="relative h-36 shrink-0 bg-surface-sunken flex items-end p-4">
               <div className="absolute inset-0 flex items-center justify-center">
                 <FolderOpen size={32} className="text-border" />
@@ -624,7 +624,7 @@ export default function DesignPage() {
                 <Building2 size={20} className="text-txt-primary" />
               </div>
             </div>
-            <div className="px-4 pt-4 h-[120px] shrink-0 overflow-hidden">
+            <div className="px-4 pt-4 h-[7.5rem] shrink-0 overflow-hidden">
               <h3 className="font-semibold text-base text-txt-primary mb-1.5 truncate">캠퍼스 중고거래 앱</h3>
               <div className="flex items-center gap-1.5 mb-2 overflow-hidden">
                 <span className="text-xs font-mono text-txt-disabled uppercase tracking-wide shrink-0">NEED</span>
@@ -633,7 +633,7 @@ export default function DesignPage() {
               </div>
               <p className="text-sm text-txt-secondary line-clamp-2">대학교 내 중고거래를 위한 모바일 앱. 위치 기반 매칭 시스템.</p>
             </div>
-            <div className="px-4 pb-4 h-[76px] shrink-0 flex items-end">
+            <div className="px-4 pb-4 h-[4.75rem] shrink-0 flex items-end">
               <div className="flex items-center justify-between w-full pt-3 border-t border-border-subtle">
                 <div className="flex items-center gap-2">
                   <div className="w-5 h-5 bg-surface-sunken rounded-full flex items-center justify-center text-xs font-bold text-txt-secondary">이</div>
@@ -655,9 +655,9 @@ export default function DesignPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
 
           {/* 상태 1: OPEN — 팀 합류 가능 */}
-          <div className="bg-surface-card border border-border rounded-xl overflow-hidden group hover:border-border-strong hover:shadow-sm transition-all cursor-pointer h-[220px] flex flex-col">
+          <div className="bg-surface-card border border-border rounded-xl overflow-hidden group hover:border-border-strong hover:shadow-sm transition-all cursor-pointer h-[13.75rem] flex flex-col">
             {/* 헤더: 아바타 + 이름/역할 — 고정 */}
-            <div className="px-4 pt-4 h-[76px] shrink-0">
+            <div className="px-4 pt-4 h-[4.75rem] shrink-0">
               <div className="flex gap-3">
                 <div className="w-12 h-12 bg-surface-sunken rounded-xl flex items-center justify-center text-base font-bold text-txt-secondary shrink-0">
                   김민
@@ -672,7 +672,7 @@ export default function DesignPage() {
               </div>
             </div>
             {/* 본문: 바이오 + 스킬 — 고정 */}
-            <div className="px-4 h-[92px] shrink-0 overflow-hidden">
+            <div className="px-4 h-[5.75rem] shrink-0 overflow-hidden">
               <p className="text-sm text-txt-tertiary line-clamp-2 mb-2">AI와 디자인의 접점을 탐구하고 있습니다. React와 인터랙션 디자인에 관심이 많습니다.</p>
               <div className="flex items-center gap-1.5 overflow-hidden">
                 <span className="text-xs bg-tag-default-bg text-tag-default-text px-2 py-0.5 rounded font-medium shrink-0">React</span>
@@ -681,7 +681,7 @@ export default function DesignPage() {
               </div>
             </div>
             {/* 푸터: 상태 표시줄 — 고정 (C에서 가져옴) */}
-            <div className="px-4 pb-4 h-[52px] shrink-0 flex items-end">
+            <div className="px-4 pb-4 h-[3.25rem] shrink-0 flex items-end">
               <div className="flex items-center justify-between w-full pt-2 border-t border-border-subtle">
                 <span className="text-xs text-txt-tertiary">프로젝트 1개 진행중</span>
                 <span className="text-xs text-status-success-text flex items-center gap-1"><Coffee size={10} /> 커피챗 가능</span>
@@ -690,8 +690,8 @@ export default function DesignPage() {
           </div>
 
           {/* 상태 2: 커피챗 — 대화 가능 */}
-          <div className="bg-surface-card border border-border rounded-xl overflow-hidden group hover:border-border-strong hover:shadow-sm transition-all cursor-pointer h-[220px] flex flex-col">
-            <div className="px-4 pt-4 h-[76px] shrink-0">
+          <div className="bg-surface-card border border-border rounded-xl overflow-hidden group hover:border-border-strong hover:shadow-sm transition-all cursor-pointer h-[13.75rem] flex flex-col">
+            <div className="px-4 pt-4 h-[4.75rem] shrink-0">
               <div className="flex gap-3">
                 <div className="w-12 h-12 bg-surface-sunken rounded-xl flex items-center justify-center text-base font-bold text-txt-secondary shrink-0">
                   이서
@@ -705,7 +705,7 @@ export default function DesignPage() {
                 </div>
               </div>
             </div>
-            <div className="px-4 h-[92px] shrink-0 overflow-hidden">
+            <div className="px-4 h-[5.75rem] shrink-0 overflow-hidden">
               <p className="text-sm text-txt-tertiary line-clamp-2 mb-2">사용자 중심 프로덕트를 만들고 싶어요. 커뮤니티와 교육 분야에 관심이 많습니다.</p>
               <div className="flex items-center gap-1.5 overflow-hidden">
                 <span className="text-xs bg-tag-default-bg text-tag-default-text px-2 py-0.5 rounded font-medium shrink-0">PM</span>
@@ -713,7 +713,7 @@ export default function DesignPage() {
                 <span className="text-xs bg-tag-default-bg text-tag-default-text px-2 py-0.5 rounded font-medium shrink-0">Notion</span>
               </div>
             </div>
-            <div className="px-4 pb-4 h-[52px] shrink-0 flex items-end">
+            <div className="px-4 pb-4 h-[3.25rem] shrink-0 flex items-end">
               <div className="flex items-center justify-between w-full pt-2 border-t border-border-subtle">
                 <span className="text-xs text-txt-tertiary">프로젝트 2개 진행중</span>
                 <span className="text-xs text-txt-tertiary flex items-center gap-1"><MessageSquare size={10} /> 평균 응답 3시간</span>
@@ -722,8 +722,8 @@ export default function DesignPage() {
           </div>
 
           {/* 상태 3: BUSY — 현재 바쁨 */}
-          <div className="bg-surface-card border border-border rounded-xl overflow-hidden group hover:border-border-strong hover:shadow-sm transition-all cursor-pointer h-[220px] flex flex-col">
-            <div className="px-4 pt-4 h-[76px] shrink-0">
+          <div className="bg-surface-card border border-border rounded-xl overflow-hidden group hover:border-border-strong hover:shadow-sm transition-all cursor-pointer h-[13.75rem] flex flex-col">
+            <div className="px-4 pt-4 h-[4.75rem] shrink-0">
               <div className="flex gap-3">
                 <div className="w-12 h-12 bg-surface-sunken rounded-xl flex items-center justify-center text-base font-bold text-txt-secondary shrink-0">
                   박지
@@ -737,7 +737,7 @@ export default function DesignPage() {
                 </div>
               </div>
             </div>
-            <div className="px-4 h-[92px] shrink-0 overflow-hidden">
+            <div className="px-4 h-[5.75rem] shrink-0 overflow-hidden">
               <p className="text-sm text-txt-tertiary line-clamp-2 mb-2">확장 가능한 시스템 설계에 관심 있습니다. 현재 헬스케어 스타트업에서 인턴 중.</p>
               <div className="flex items-center gap-1.5 overflow-hidden">
                 <span className="text-xs bg-tag-default-bg text-tag-default-text px-2 py-0.5 rounded font-medium shrink-0">Node.js</span>
@@ -745,7 +745,7 @@ export default function DesignPage() {
                 <span className="text-xs bg-tag-default-bg text-tag-default-text px-2 py-0.5 rounded font-medium shrink-0">AWS</span>
               </div>
             </div>
-            <div className="px-4 pb-4 h-[52px] shrink-0 flex items-end">
+            <div className="px-4 pb-4 h-[3.25rem] shrink-0 flex items-end">
               <div className="flex items-center justify-between w-full pt-2 border-t border-border-subtle">
                 <span className="text-xs text-txt-tertiary">프로젝트 3개 진행중</span>
                 <span className="text-xs text-status-neutral-text">현재 팀 합류 불가</span>
@@ -1304,7 +1304,7 @@ function ViewModeDemo() {
         <div className={viewMode === 'detail' ? 'grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'space-y-1'}>
           {projects.map((p) => viewMode === 'detail' ? (
             /* ── 자세히: 커버 이미지 카드 (REF-A 동일 구조) ── */
-            <div key={p.title} className="bg-surface-card border border-border rounded-xl overflow-hidden group hover:border-border-strong hover:shadow-sm transition-all cursor-pointer h-[340px] flex flex-col">
+            <div key={p.title} className="bg-surface-card border border-border rounded-xl overflow-hidden group hover:border-border-strong hover:shadow-sm transition-all cursor-pointer h-[21.25rem] flex flex-col">
               <div className={`relative h-36 shrink-0 ${p.color} flex items-end p-4`}>
                 <div className="absolute top-3 left-3">
                   {p.daysLeft <= 3 ? (
@@ -1325,7 +1325,7 @@ function ViewModeDemo() {
                   <Rocket size={20} className="text-txt-primary" />
                 </div>
               </div>
-              <div className="px-4 pt-4 h-[120px] shrink-0 overflow-hidden">
+              <div className="px-4 pt-4 h-[7.5rem] shrink-0 overflow-hidden">
                 <h3 className="font-semibold text-base text-txt-primary mb-1.5 truncate">{p.title}</h3>
                 <div className="flex items-center gap-1.5 mb-2 overflow-hidden">
                   <span className="text-xs font-mono text-txt-disabled uppercase tracking-wide shrink-0">NEED</span>
@@ -1335,7 +1335,7 @@ function ViewModeDemo() {
                 </div>
                 <p className="text-sm text-txt-secondary line-clamp-2">{p.desc}</p>
               </div>
-              <div className="px-4 pb-4 h-[76px] shrink-0 flex items-end">
+              <div className="px-4 pb-4 h-[4.75rem] shrink-0 flex items-end">
                 <div className="flex items-center justify-between w-full pt-3 border-t border-border-subtle">
                   <div className="flex items-center gap-2">
                     <div className="w-5 h-5 bg-surface-sunken rounded-full flex items-center justify-center text-xs font-bold text-txt-secondary">{p.creator.slice(0, 1)}</div>
@@ -1395,7 +1395,7 @@ function ViewModeDemo() {
                     </div>
                     <div className="hidden md:flex items-center gap-1.5 w-40 shrink-0">
                       {p.roles.slice(0, 2).map(r => (
-                        <span key={r} className="text-xs bg-tag-default-bg text-tag-default-text px-2 py-0.5 rounded font-medium truncate max-w-[80px]">{r}</span>
+                        <span key={r} className="text-xs bg-tag-default-bg text-tag-default-text px-2 py-0.5 rounded font-medium truncate max-w-[5rem]">{r}</span>
                       ))}
                     </div>
                     <div className="hidden lg:flex items-center w-28 shrink-0">
@@ -1426,9 +1426,9 @@ function ViewModeDemo() {
         <div className={viewMode === 'detail' ? 'grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'space-y-1'}>
           {people.map((p) => viewMode === 'detail' ? (
             /* ── 자세히: NEW-B 확정 디자인 (가로형 + 상태 푸터) ── */
-            <div key={p.name} className="bg-surface-card border border-border rounded-xl overflow-hidden group hover:border-border-strong hover:shadow-sm transition-all cursor-pointer h-[220px] flex flex-col">
+            <div key={p.name} className="bg-surface-card border border-border rounded-xl overflow-hidden group hover:border-border-strong hover:shadow-sm transition-all cursor-pointer h-[13.75rem] flex flex-col">
               {/* 헤더: 아바타 + 이름/역할 */}
-              <div className="px-4 pt-4 h-[76px] shrink-0">
+              <div className="px-4 pt-4 h-[4.75rem] shrink-0">
                 <div className="flex gap-3">
                   <div className={`w-12 h-12 ${p.color} rounded-xl flex items-center justify-center text-base font-bold shrink-0`}>
                     {p.name.slice(0, 2)}
@@ -1445,7 +1445,7 @@ function ViewModeDemo() {
                 </div>
               </div>
               {/* 본문: 바이오 + 스킬 */}
-              <div className="px-4 h-[92px] shrink-0 overflow-hidden">
+              <div className="px-4 h-[5.75rem] shrink-0 overflow-hidden">
                 <p className="text-sm text-txt-tertiary line-clamp-2 mb-2">{p.bio}</p>
                 <div className="flex items-center gap-1.5 overflow-hidden">
                   {p.skills.map(s => (
@@ -1454,7 +1454,7 @@ function ViewModeDemo() {
                 </div>
               </div>
               {/* 푸터: 상태 표시줄 */}
-              <div className="px-4 pb-4 h-[52px] shrink-0 flex items-end">
+              <div className="px-4 pb-4 h-[3.25rem] shrink-0 flex items-end">
                 <div className="flex items-center justify-between w-full pt-2 border-t border-border-subtle">
                   <span className="text-xs text-txt-tertiary">프로젝트 {p.projectCount}개 진행중</span>
                   {p.status === 'open' && <span className="text-xs text-status-success-text flex items-center gap-1"><Coffee size={10} /> 커피챗 가능</span>}
@@ -1513,7 +1513,7 @@ function ViewModeDemo() {
                     </div>
                     <div className="hidden lg:flex items-center gap-1 w-40 shrink-0">
                       {p.skills.slice(0, 2).map(s => (
-                        <span key={s} className="text-xs bg-tag-default-bg text-tag-default-text px-2 py-0.5 rounded font-medium truncate max-w-[80px]">{s}</span>
+                        <span key={s} className="text-xs bg-tag-default-bg text-tag-default-text px-2 py-0.5 rounded font-medium truncate max-w-[5rem]">{s}</span>
                       ))}
                     </div>
                     <div className="hidden sm:flex items-center w-32 shrink-0">

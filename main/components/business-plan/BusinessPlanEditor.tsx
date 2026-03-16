@@ -255,7 +255,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
   if (!template) {
     return (
       <div className="flex items-center justify-center h-64">
-        <p className="text-gray-500">템플릿을 찾을 수 없습니다</p>
+        <p className="text-txt-tertiary">템플릿을 찾을 수 없습니다</p>
       </div>
     )
   }
@@ -263,30 +263,30 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
   return (
     <div className="flex h-screen bg-[#FAFAFA]">
       {/* Sidebar */}
-      <div className="w-72 bg-white border-r border-gray-200 flex flex-col">
+      <div className="w-72 bg-surface-card border-r border-border flex flex-col">
         {/* Header */}
-        <div className="p-4 border-b border-gray-200">
+        <div className="p-4 border-b border-border">
           <button
             onClick={onClose}
-            className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 mb-3"
+            className="flex items-center gap-2 text-sm text-txt-secondary hover:text-txt-primary mb-3"
           >
             <ArrowLeft size={16} />
             돌아가기
           </button>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-100 rounded-sm flex items-center justify-center">
+            <div className="w-10 h-10 bg-blue-100 flex items-center justify-center">
               <FileText size={20} className="text-blue-600" />
             </div>
             <div>
-              <h1 className="font-bold text-gray-900 text-sm">{template.shortName}</h1>
-              <p className="text-[10px] text-gray-500 font-mono">{template.pages}p</p>
+              <h1 className="font-bold text-txt-primary text-sm">{template.shortName}</h1>
+              <p className="text-[0.625rem] text-txt-tertiary font-mono">{template.pages}p</p>
             </div>
           </div>
         </div>
 
         {/* Steps */}
         <div className="flex-1 p-4 overflow-y-auto">
-          <h3 className="text-[10px] font-bold font-mono text-gray-500 mb-3 uppercase">
+          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary mb-3 uppercase tracking-widest">
             Progress
           </h3>
           <StepWizardCompact
@@ -297,10 +297,10 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
         </div>
 
         {/* Real-time Score Summary */}
-        <div className="p-4 border-t border-gray-200 space-y-3">
+        <div className="p-4 border-t border-border space-y-3">
           {/* Score indicator */}
           {validationResult && (
-            <div className={`p-3 rounded-lg ${
+            <div className={`p-3 ${
               validationResult.percentage >= passingScore
                 ? 'bg-green-50 border border-green-100'
                 : validationResult.percentage >= 50
@@ -314,7 +314,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
                   ) : (
                     <Target size={14} className="text-yellow-500" />
                   )}
-                  <span className="text-xs font-medium text-gray-700">
+                  <span className="text-xs font-medium text-txt-secondary">
                     {isValidating ? '분석 중...' : '실시간 점수'}
                   </span>
                 </div>
@@ -326,7 +326,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
                   {validationResult.totalScore}/{validationResult.maxScore}
                 </span>
               </div>
-              <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+              <div className="h-1.5 bg-surface-sunken overflow-hidden">
                 <div
                   className={`h-full transition-all duration-500 ${
                     validationResult.percentage >= passingScore ? 'bg-green-500' :
@@ -336,27 +336,27 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
                   style={{ width: `${validationResult.percentage}%` }}
                 />
               </div>
-              <div className="mt-1.5 flex justify-between text-[10px]">
-                <span className="text-gray-500">
+              <div className="mt-1.5 flex justify-between text-[0.625rem]">
+                <span className="text-txt-tertiary">
                   {validationResult.percentage >= passingScore
                     ? '합격 기준 충족'
                     : `합격까지 ${passingScore - validationResult.percentage}점`}
                 </span>
-                <span className="text-gray-400">{validationResult.percentage}%</span>
+                <span className="text-txt-tertiary">{validationResult.percentage}%</span>
               </div>
             </div>
           )}
 
           {/* Warning indicator */}
           {totalWarningCounts.total > 0 && (
-            <div className={`p-2 rounded-lg flex items-center justify-between ${
+            <div className={`p-2 flex items-center justify-between ${
               totalWarningCounts.high > 0 ? 'bg-red-50' : 'bg-yellow-50'
             }`}>
               <div className="flex items-center gap-1.5">
                 <AlertTriangle size={12} className={
                   totalWarningCounts.high > 0 ? 'text-red-500' : 'text-yellow-500'
                 } />
-                <span className="text-xs text-gray-700">탈락 위험 요소</span>
+                <span className="text-xs text-txt-secondary">탈락 위험 요소</span>
               </div>
               <span className={`text-xs font-bold ${
                 totalWarningCounts.high > 0 ? 'text-red-600' : 'text-yellow-600'
@@ -368,13 +368,13 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
 
           <button
             onClick={() => setShowValidation(true)}
-            className="w-full flex items-center justify-between p-3 bg-gray-50 rounded-sm hover:bg-gray-100 transition-colors"
+            className="w-full flex items-center justify-between p-3 bg-surface-sunken hover:bg-surface-card border border-transparent hover:border-border transition-colors"
           >
             <div className="flex items-center gap-2">
-              <TrendingUp size={16} className="text-gray-400" />
-              <span className="text-sm font-medium text-gray-700">상세 분석</span>
+              <TrendingUp size={16} className="text-txt-tertiary" />
+              <span className="text-sm font-medium text-txt-secondary">상세 분석</span>
             </div>
-            <span className="text-[10px] font-mono text-gray-400">
+            <span className="text-[0.625rem] font-mono text-txt-tertiary">
               {completedSteps.length}/{WIZARD_STEPS.length}
             </span>
           </button>
@@ -384,12 +384,12 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top Bar */}
-        <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+        <div className="bg-surface-card border-b border-border px-6 py-4 flex items-center justify-between">
           <div>
-            <h2 className="font-bold text-gray-900">
+            <h2 className="font-bold text-txt-primary">
               {WIZARD_STEPS[currentStep - 1].title}
             </h2>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-txt-tertiary">
               {WIZARD_STEPS[currentStep - 1].description}
             </p>
           </div>
@@ -398,14 +398,14 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
             <button
               onClick={handleSave}
               disabled={isSaving}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-sm hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-txt-secondary bg-surface-card border border-border-strong hover:bg-black hover:text-white transition-colors"
             >
               <Save size={16} />
               {isSaving ? '저장 중...' : '저장'}
             </button>
             <button
               onClick={() => setShowPreview(true)}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-sm hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-txt-secondary bg-surface-card border border-border-strong hover:bg-black hover:text-white transition-colors"
             >
               <Eye size={16} />
               미리보기
@@ -468,15 +468,15 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
         </div>
 
         {/* Bottom Navigation */}
-        <div className="bg-white border-t border-gray-200 px-6 py-4 flex items-center justify-between">
+        <div className="bg-surface-card border-t border-border px-6 py-4 flex items-center justify-between">
           <button
             onClick={handlePrevStep}
             disabled={currentStep === 1}
             className={`
-              flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-sm transition-colors
+              flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors
               ${currentStep === 1
-                ? 'text-gray-300 cursor-not-allowed'
-                : 'text-gray-700 hover:bg-gray-100'
+                ? 'text-txt-disabled cursor-not-allowed'
+                : 'text-txt-secondary hover:bg-surface-sunken'
               }
             `}
           >
@@ -489,12 +489,12 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
               <div
                 key={step.id}
                 className={`
-                  w-2 h-2 rounded-full transition-colors
+                  w-2 h-2 transition-colors
                   ${step.id === currentStep
                     ? 'bg-blue-600'
                     : completedSteps.includes(step.id)
                       ? 'bg-black'
-                      : 'bg-gray-200'
+                      : 'bg-surface-sunken'
                   }
                 `}
               />
@@ -504,7 +504,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
           {currentStep < WIZARD_STEPS.length ? (
             <button
               onClick={handleNextStep}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-black text-white rounded-sm hover:bg-gray-800 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-black text-white hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
             >
               다음
               <ArrowRight size={16} />
@@ -512,7 +512,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
           ) : (
             <button
               onClick={() => setShowPreview(true)}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-sm hover:bg-blue-700 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
             >
               <Eye size={16} />
               완료 및 미리보기
@@ -528,12 +528,12 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
             className="absolute inset-0 bg-black/30"
             onClick={() => setShowValidation(false)}
           />
-          <div className="relative bg-white w-[420px] h-full shadow-xl overflow-y-auto">
-            <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between z-10">
-              <h3 className="font-bold text-gray-900">실시간 점수 분석</h3>
+          <div className="relative bg-surface-card w-[26.25rem] h-full shadow-brutal overflow-y-auto">
+            <div className="sticky top-0 bg-surface-card border-b border-border px-4 py-3 flex items-center justify-between z-10">
+              <h3 className="font-bold text-txt-primary">실시간 점수 분석</h3>
               <button
                 onClick={() => setShowValidation(false)}
-                className="p-1 hover:bg-gray-100 rounded-sm"
+                className="p-1 hover:bg-surface-sunken"
               >
                 <X size={18} />
               </button>
@@ -561,15 +561,15 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
 
               {/* Rejection Warnings Summary */}
               {totalWarningCounts.total > 0 && (
-                <div className="border-t border-gray-100 pt-4">
-                  <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
+                <div className="border-t border-border-subtle pt-4">
+                  <h4 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">
                     탈락 위험 요소
                   </h4>
                   {Object.entries(allWarnings).map(([section, warnings]) => {
                     if (warnings.length === 0) return null
                     return (
                       <div key={section} className="mb-3">
-                        <div className="text-xs font-medium text-gray-600 mb-1 capitalize">
+                        <div className="text-xs font-medium text-txt-secondary mb-1 capitalize">
                           {section}
                         </div>
                         <RejectionWarnings
@@ -584,8 +584,8 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
               )}
 
               {/* Legacy Validation Panel */}
-              <div className="border-t border-gray-100 pt-4">
-                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
+              <div className="border-t border-border-subtle pt-4">
+                <h4 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">
                   상세 체크리스트
                 </h4>
                 <ValidationPanel

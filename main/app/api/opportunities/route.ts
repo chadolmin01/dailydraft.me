@@ -39,7 +39,7 @@ export async function GET(request: Request) {
       .eq('status', 'active')
 
     // Apply filters
-    if (type && ['team_building', 'project_join'].includes(type)) {
+    if (type && ['side_project', 'startup', 'study'].includes(type)) {
       query = query.eq('type', type)
     }
 
@@ -115,8 +115,8 @@ export async function POST(request: Request) {
     }
 
     // Validate type
-    if (!['team_building', 'project_join'].includes(body.type)) {
-      return ApiResponse.badRequest('type은 "team_building" 또는 "project_join"만 가능합니다')
+    if (!['side_project', 'startup', 'study'].includes(body.type)) {
+      return ApiResponse.badRequest('type은 "side_project", "startup", "study"만 가능합니다')
     }
 
     // Validate title length

@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 // GET: Get current user's profile
 export async function GET() {
@@ -11,7 +11,7 @@ export async function GET() {
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     const { data, error } = await supabase
@@ -21,15 +21,12 @@ export async function GET() {
       .single()
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 404 })
+      return ApiResponse.notFound('프로필을 찾을 수 없습니다')
     }
 
-    return NextResponse.json(data)
-  } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
-    )
+    return ApiResponse.ok(data)
+  } catch {
+    return ApiResponse.internalError('프로필 조회 중 오류가 발생했습니다')
   }
 }
 
@@ -43,7 +40,7 @@ export async function PATCH(request: Request) {
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     const body = await request.json()
@@ -68,6 +65,9 @@ export async function PATCH(request: Request) {
       'linkedin_url',
       'github_url',
       'avatar_url',
+      'cover_image_url',
+      'current_situation',
+      'affiliation_type',
     ]
 
     const updateData: Record<string, unknown> = {}
@@ -78,10 +78,7 @@ export async function PATCH(request: Request) {
     }
 
     if (Object.keys(updateData).length === 0) {
-      return NextResponse.json(
-        { error: 'No valid fields to update' },
-        { status: 400 }
-      )
+      return ApiResponse.badRequest('업데이트할 항목이 없습니다')
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -92,14 +89,11 @@ export async function PATCH(request: Request) {
       .single()
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return ApiResponse.internalError('프로필 업데이트에 실패했습니다')
     }
 
-    return NextResponse.json(data)
-  } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
-    )
+    return ApiResponse.ok(data)
+  } catch {
+    return ApiResponse.internalError('프로필 업데이트 중 오류가 발생했습니다')
   }
 }

@@ -76,22 +76,22 @@ export const InviteCodeModal: React.FC<InviteCodeModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       onClick={handleBackdropClick}
     >
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="bg-surface-card shadow-brutal border-2 border-border-strong max-w-md w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b">
+        <div className="flex items-center justify-between p-4 border-b border-border-strong">
           <div className="flex items-center gap-2">
-            <Gift size={20} className="text-blue-600" />
-            <h2 className="text-lg font-bold text-gray-900">초대 코드 입력</h2>
+            <Gift size={20} className="text-[#4F46E5]" />
+            <h2 className="text-lg font-bold text-txt-primary">초대 코드 입력</h2>
           </div>
           <button
             onClick={onClose}
             disabled={isSubmitting}
-            className="p-1 hover:bg-gray-100 rounded-full transition-colors disabled:opacity-50"
+            className="p-1 hover:bg-surface-sunken transition-colors disabled:opacity-50"
           >
-            <X size={20} className="text-gray-500" />
+            <X size={20} className="text-txt-disabled" />
           </button>
         </div>
 
@@ -99,27 +99,27 @@ export const InviteCodeModal: React.FC<InviteCodeModalProps> = ({
         <div className="p-6">
           {success ? (
             <div className="text-center py-8">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-green-100 border border-green-300 flex items-center justify-center mx-auto mb-4">
                 <CheckCircle size={32} className="text-green-600" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
+              <h3 className="text-xl font-bold text-txt-primary mb-2">
                 프리미엄 활성화 완료!
               </h3>
-              <p className="text-gray-600">
+              <p className="text-txt-secondary">
                 이제 모든 프리미엄 기능을 사용할 수 있습니다.
               </p>
             </div>
           ) : (
             <>
               {/* Description */}
-              <div className="bg-blue-50 rounded-lg p-4 mb-6">
+              <div className="bg-[#4F46E5]/5 border border-[#4F46E5] p-4 mb-6">
                 <div className="flex items-start gap-3">
-                  <Sparkles size={20} className="text-blue-600 flex-shrink-0 mt-0.5" />
+                  <Sparkles size={20} className="text-[#4F46E5] flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm text-blue-800 font-medium mb-1">
+                    <p className="text-sm text-[#4F46E5] font-medium mb-1">
                       프리미엄 초대 코드
                     </p>
-                    <p className="text-sm text-blue-700">
+                    <p className="text-sm text-txt-secondary">
                       이메일로 받은 8자리 초대 코드를 입력하면 프리미엄 기능이 활성화됩니다.
                     </p>
                   </div>
@@ -129,7 +129,7 @@ export const InviteCodeModal: React.FC<InviteCodeModalProps> = ({
               {/* Code Input */}
               <form onSubmit={handleSubmit}>
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-2">
                     초대 코드
                   </label>
                   <input
@@ -137,14 +137,14 @@ export const InviteCodeModal: React.FC<InviteCodeModalProps> = ({
                     value={code}
                     onChange={handleCodeChange}
                     placeholder="예: ABC12DEF"
-                    className={`w-full px-4 py-3 text-center text-xl font-mono tracking-wider border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                      error ? 'border-red-500' : 'border-gray-300'
+                    className={`w-full px-4 py-3 text-center text-xl font-mono tracking-wider border-2 focus:outline-none focus:border-border-strong bg-surface-card text-txt-primary ${
+                      error ? 'border-red-500' : 'border-border-strong'
                     }`}
                     disabled={isSubmitting}
                     autoFocus
                   />
                   <div className="flex justify-between items-center mt-2">
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs font-mono text-txt-disabled">
                       {code.length}/8 자리
                     </span>
                     {error && (
@@ -160,7 +160,7 @@ export const InviteCodeModal: React.FC<InviteCodeModalProps> = ({
                 <button
                   type="submit"
                   disabled={code.length !== 8 || isSubmitting}
-                  className="w-full py-3 bg-black text-white font-medium rounded-lg hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+                  className="w-full py-3 bg-black text-white font-bold border-2 border-black hover:bg-[#333] disabled:bg-surface-sunken disabled:text-txt-disabled disabled:border-border-strong disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
                 >
                   {isSubmitting ? (
                     <>
@@ -174,11 +174,11 @@ export const InviteCodeModal: React.FC<InviteCodeModalProps> = ({
               </form>
 
               {/* Help Text */}
-              <p className="text-xs text-gray-500 text-center mt-4">
+              <p className="text-xs text-txt-disabled text-center mt-4">
                 초대 코드가 없으신가요?{' '}
                 <a
                   href="mailto:support@dailydraft.io"
-                  className="text-blue-600 hover:underline"
+                  className="text-[#4F46E5] hover:underline"
                 >
                   문의하기
                 </a>

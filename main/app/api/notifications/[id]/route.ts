@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 // PATCH: 개별 알림 상태 업데이트
 export async function PATCH(
@@ -12,14 +13,14 @@ export async function PATCH(
 
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     const body = await request.json()
     const { status } = body
 
     if (!status || !['read', 'dismissed'].includes(status)) {
-      return NextResponse.json({ error: 'Invalid status' }, { status: 400 })
+      return ApiResponse.badRequest('올바르지 않은 상태값입니다')
     }
 
     const updateData: { status: string; read_at?: string } = { status }
@@ -36,12 +37,12 @@ export async function PATCH(
       .single()
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return ApiResponse.internalError('알림 상태 변경에 실패했습니다')
     }
 
-    return NextResponse.json(notification)
-  } catch (_err) {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return ApiResponse.ok(notification)
+  } catch {
+    return ApiResponse.internalError('알림 업데이트 중 오류가 발생했습니다')
   }
 }
 
@@ -56,7 +57,7 @@ export async function DELETE(
 
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     const { error } = await supabase
@@ -66,11 +67,11 @@ export async function DELETE(
       .eq('user_id', user.id)
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return ApiResponse.internalError('알림 삭제에 실패했습니다')
     }
 
-    return NextResponse.json({ success: true })
-  } catch (_err) {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return ApiResponse.ok({ success: true })
+  } catch {
+    return ApiResponse.internalError('알림 삭제 중 오류가 발생했습니다')
   }
 }

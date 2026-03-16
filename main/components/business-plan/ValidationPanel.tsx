@@ -307,14 +307,14 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
   return (
     <div className="space-y-6">
       {/* Overall Score */}
-      <div className={`p-4 rounded-sm border ${getScoreBg(validationResult.totalScore, validationResult.maxScore)}`}>
+      <div className={`p-4 border ${getScoreBg(validationResult.totalScore, validationResult.maxScore)}`}>
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-gray-700">총점</span>
+          <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-secondary">총점</span>
           <span className={`text-2xl font-bold ${getScoreColor(validationResult.totalScore, validationResult.maxScore)}`}>
             {validationResult.totalScore}/{validationResult.maxScore}
           </span>
         </div>
-        <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+        <div className="w-full h-2 bg-surface-sunken overflow-hidden">
           <div
             className={`h-full transition-all duration-500 ${
               (validationResult.totalScore / validationResult.maxScore) >= 0.8
@@ -326,12 +326,12 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
             style={{ width: `${(validationResult.totalScore / validationResult.maxScore) * 100}%` }}
           />
         </div>
-        <p className="text-xs text-gray-600 mt-2">{validationResult.overallFeedback}</p>
+        <p className="text-xs text-txt-secondary mt-2">{validationResult.overallFeedback}</p>
       </div>
 
       {/* Section Scores */}
       <div>
-        <h4 className="text-xs font-bold font-mono text-gray-500 mb-3 uppercase">
+        <h4 className="text-[0.625rem] font-mono font-bold text-txt-tertiary mb-3 uppercase tracking-widest">
           섹션별 점수
         </h4>
         <div className="space-y-3">
@@ -344,7 +344,7 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
       {/* Improvement Suggestions */}
       {validationResult.improvements.length > 0 && (
         <div>
-          <h4 className="text-xs font-bold font-mono text-gray-500 mb-3 uppercase flex items-center gap-2">
+          <h4 className="text-[0.625rem] font-mono font-bold text-txt-tertiary mb-3 uppercase tracking-widest flex items-center gap-2">
             <Lightbulb size={12} />
             개선 제안
           </h4>
@@ -353,7 +353,7 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
               <button
                 key={idx}
                 onClick={() => onShowSuggestion?.(imp.section, '')}
-                className="w-full text-left p-3 bg-white border border-gray-200 rounded-sm hover:border-gray-300 transition-colors group"
+                className="w-full text-left p-3 bg-surface-card border border-border hover:border-border-strong transition-colors group"
               >
                 <div className="flex items-start gap-2">
                   <AlertTriangle
@@ -363,14 +363,14 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
                     }`}
                   />
                   <div className="flex-1 min-w-0">
-                    <div className="text-[10px] font-mono text-gray-400 mb-0.5">
+                    <div className="text-[0.625rem] font-mono text-txt-tertiary mb-0.5">
                       {imp.section.toUpperCase()}
                     </div>
-                    <p className="text-xs text-gray-700">{imp.suggestion}</p>
+                    <p className="text-xs text-txt-secondary">{imp.suggestion}</p>
                   </div>
                   <ChevronRight
                     size={14}
-                    className="text-gray-300 group-hover:text-gray-500 transition-colors"
+                    className="text-txt-disabled group-hover:text-txt-tertiary transition-colors"
                   />
                 </div>
               </button>
@@ -398,10 +398,10 @@ const SectionScore: React.FC<SectionScoreProps> = ({ section }) => {
   }
 
   return (
-    <div className="border border-gray-200 rounded-sm overflow-hidden">
+    <div className="border border-border overflow-hidden">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between p-3 hover:bg-gray-50 transition-colors"
+        className="w-full flex items-center justify-between p-3 hover:bg-surface-sunken transition-colors"
       >
         <div className="flex items-center gap-2">
           {percentage >= 80 ? (
@@ -411,7 +411,7 @@ const SectionScore: React.FC<SectionScoreProps> = ({ section }) => {
           ) : (
             <XCircle size={16} className="text-red-500" />
           )}
-          <span className="text-sm font-medium text-gray-700">
+          <span className="text-sm font-medium text-txt-secondary">
             {sectionNames[section.section]}
           </span>
         </div>
@@ -427,13 +427,13 @@ const SectionScore: React.FC<SectionScoreProps> = ({ section }) => {
           </span>
           <ChevronRight
             size={14}
-            className={`text-gray-400 transition-transform ${expanded ? 'rotate-90' : ''}`}
+            className={`text-txt-tertiary transition-transform ${expanded ? 'rotate-90' : ''}`}
           />
         </div>
       </button>
 
       {expanded && (
-        <div className="px-3 pb-3 pt-1 border-t border-gray-100">
+        <div className="px-3 pb-3 pt-1 border-t border-border-subtle">
           <div className="space-y-2">
             {section.checks.map((check) => (
               <div
@@ -446,11 +446,11 @@ const SectionScore: React.FC<SectionScoreProps> = ({ section }) => {
                   <XCircle size={12} className="text-red-500 mt-0.5 shrink-0" />
                 )}
                 <div>
-                  <span className={check.passed ? 'text-gray-700' : 'text-gray-500'}>
+                  <span className={check.passed ? 'text-txt-secondary' : 'text-txt-tertiary'}>
                     {check.name}
                   </span>
                   {!check.passed && check.feedback && (
-                    <p className="text-gray-400 mt-0.5">{check.feedback}</p>
+                    <p className="text-txt-tertiary mt-0.5">{check.feedback}</p>
                   )}
                 </div>
               </div>

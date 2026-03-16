@@ -33,10 +33,10 @@ const SECTION_NAMES: Record<PsstSectionType, string> = {
 }
 
 const SECTION_ICONS: Record<PsstSectionType, string> = {
-  problem: '❓',
-  solution: '💡',
-  scaleup: '📈',
-  team: '👥',
+  problem: '?',
+  solution: '!',
+  scaleup: '^',
+  team: '&',
 }
 
 export const RealtimeScorePanel: React.FC<RealtimeScorePanelProps> = ({
@@ -68,10 +68,10 @@ export const RealtimeScorePanel: React.FC<RealtimeScorePanelProps> = ({
 
   if (!validationResult) {
     return (
-      <div className="bg-white border border-gray-200 rounded-lg p-4 animate-pulse">
-        <div className="h-6 bg-gray-200 rounded w-1/2 mb-4"></div>
-        <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
-        <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+      <div className="bg-surface-card border border-border p-4 animate-pulse">
+        <div className="h-6 bg-surface-sunken w-1/2 mb-4"></div>
+        <div className="h-4 bg-surface-sunken w-full mb-2"></div>
+        <div className="h-4 bg-surface-sunken w-3/4"></div>
       </div>
     )
   }
@@ -79,7 +79,7 @@ export const RealtimeScorePanel: React.FC<RealtimeScorePanelProps> = ({
   const { totalScore, maxScore, percentage, passingScore, sections, topImprovements } = validationResult
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+    <div className="bg-surface-card border border-border overflow-hidden">
       {/* Header - Overall Score */}
       <div className={`p-4 ${
         percentage >= 90 ? 'bg-green-50 border-b border-green-100' :
@@ -90,9 +90,9 @@ export const RealtimeScorePanel: React.FC<RealtimeScorePanelProps> = ({
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             {scoreStatus.icon}
-            <span className="text-sm font-semibold text-gray-700">전체 점수</span>
+            <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-secondary">전체 점수</span>
             {isValidating && (
-              <span className="inline-flex items-center px-2 py-0.5 text-[10px] font-medium bg-gray-100 text-gray-600 rounded-full">
+              <span className="inline-flex items-center px-2 py-0.5 text-[0.625rem] font-medium bg-surface-sunken text-txt-secondary">
                 <span className="animate-pulse">분석 중...</span>
               </span>
             )}
@@ -103,19 +103,19 @@ export const RealtimeScorePanel: React.FC<RealtimeScorePanelProps> = ({
             }`}>
               {totalScore}
             </span>
-            <span className="text-lg text-gray-400">/{maxScore}</span>
+            <span className="text-lg text-txt-tertiary">/{maxScore}</span>
           </div>
         </div>
 
         {/* Progress Bar */}
-        <div className="relative h-3 bg-gray-200 rounded-full overflow-hidden">
+        <div className="relative h-3 bg-surface-sunken overflow-hidden">
           {/* Passing threshold marker */}
           <div
-            className="absolute top-0 bottom-0 w-0.5 bg-gray-400 z-10"
+            className="absolute top-0 bottom-0 w-0.5 bg-txt-tertiary z-10"
             style={{ left: `${passingScore}%` }}
           />
           <div
-            className="absolute -top-1 text-[8px] font-mono text-gray-500 z-10"
+            className="absolute -top-1 text-[0.5rem] font-mono text-txt-tertiary z-10"
             style={{ left: `${passingScore}%`, transform: 'translateX(-50%)' }}
           >
             합격선 {passingScore}
@@ -139,13 +139,13 @@ export const RealtimeScorePanel: React.FC<RealtimeScorePanelProps> = ({
           }`}>
             {percentage >= passingScore ? '합격 기준 충족' : `합격까지 ${passingScore - percentage}점 필요`}
           </span>
-          <span className="text-gray-500">{percentage}%</span>
+          <span className="text-txt-tertiary">{percentage}%</span>
         </div>
       </div>
 
       {/* Section Scores */}
-      <div className="p-4 border-b border-gray-100">
-        <h4 className="text-[10px] font-bold font-mono text-gray-400 uppercase tracking-wider mb-3">
+      <div className="p-4 border-b border-border-subtle">
+        <h4 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">
           섹션별 점수
         </h4>
 
@@ -165,7 +165,7 @@ export const RealtimeScorePanel: React.FC<RealtimeScorePanelProps> = ({
       {/* Top Improvements */}
       {topImprovements.length > 0 && (
         <div className="p-4">
-          <h4 className="text-[10px] font-bold font-mono text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1">
+          <h4 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-1">
             <Zap size={12} className="text-yellow-500" />
             점수 향상 팁
           </h4>
@@ -175,33 +175,33 @@ export const RealtimeScorePanel: React.FC<RealtimeScorePanelProps> = ({
               <button
                 key={`${improvement.section}-${improvement.checkId}`}
                 onClick={() => onImprovementClick?.(improvement)}
-                className="w-full text-left p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group"
+                className="w-full text-left p-3 bg-surface-sunken hover:bg-surface-card border border-transparent hover:border-border transition-colors group"
               >
                 <div className="flex items-start gap-2">
-                  <div className={`shrink-0 mt-0.5 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                  <div className={`shrink-0 mt-0.5 w-5 h-5 flex items-center justify-center text-[0.625rem] font-bold ${
                     improvement.priority === 'high' ? 'bg-red-100 text-red-600' :
                     improvement.priority === 'medium' ? 'bg-yellow-100 text-yellow-600' :
-                    'bg-gray-100 text-gray-600'
+                    'bg-surface-sunken text-txt-secondary'
                   }`}>
                     +{improvement.potentialGain}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-[10px] font-mono text-gray-400 uppercase">
+                      <span className="text-[0.625rem] font-mono text-txt-tertiary uppercase">
                         {SECTION_NAMES[improvement.section]}
                       </span>
-                      <span className="text-[10px] text-gray-400">•</span>
-                      <span className="text-xs font-medium text-gray-700">
+                      <span className="text-[0.625rem] text-txt-tertiary">•</span>
+                      <span className="text-xs font-medium text-txt-secondary">
                         {improvement.checkName}
                       </span>
                     </div>
-                    <p className="text-xs text-gray-500 line-clamp-2">
+                    <p className="text-xs text-txt-tertiary line-clamp-2">
                       {improvement.feedback}
                     </p>
                   </div>
                   <ChevronRight
                     size={14}
-                    className="text-gray-300 group-hover:text-gray-500 transition-colors shrink-0"
+                    className="text-txt-disabled group-hover:text-txt-tertiary transition-colors shrink-0"
                   />
                 </div>
               </button>
@@ -230,18 +230,18 @@ const SectionScoreRow: React.FC<SectionScoreRowProps> = ({
   const { section: sectionType, score, maxScore, percentage, checks } = section
 
   return (
-    <div className="border border-gray-100 rounded-lg overflow-hidden">
+    <div className="border border-border-subtle overflow-hidden">
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between p-3 hover:bg-gray-50 transition-colors"
+        className="w-full flex items-center justify-between p-3 hover:bg-surface-sunken transition-colors"
       >
         <div className="flex items-center gap-3">
-          <span className="text-lg">{SECTION_ICONS[sectionType]}</span>
+          <span className="text-sm font-mono font-bold">{SECTION_ICONS[sectionType]}</span>
           <div className="text-left">
-            <div className="text-sm font-medium text-gray-800">
+            <div className="text-sm font-medium text-txt-primary">
               {SECTION_NAMES[sectionType]}
             </div>
-            <div className="text-[10px] text-gray-400">
+            <div className="text-[0.625rem] text-txt-tertiary">
               {checks.filter(c => c.passed).length}/{checks.length} 항목 충족
             </div>
           </div>
@@ -249,7 +249,7 @@ const SectionScoreRow: React.FC<SectionScoreRowProps> = ({
 
         <div className="flex items-center gap-3">
           {/* Mini progress bar */}
-          <div className="w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
+          <div className="w-20 h-2 bg-surface-sunken overflow-hidden">
             <div
               className={`h-full transition-all duration-300 ${
                 percentage >= 80 ? 'bg-green-500' :
@@ -269,16 +269,16 @@ const SectionScoreRow: React.FC<SectionScoreRowProps> = ({
           </span>
 
           {isExpanded ? (
-            <ChevronDown size={16} className="text-gray-400" />
+            <ChevronDown size={16} className="text-txt-tertiary" />
           ) : (
-            <ChevronRight size={16} className="text-gray-400" />
+            <ChevronRight size={16} className="text-txt-tertiary" />
           )}
         </div>
       </button>
 
       {/* Expanded Check Details */}
       {isExpanded && (
-        <div className="px-3 pb-3 pt-1 border-t border-gray-100 bg-gray-50">
+        <div className="px-3 pb-3 pt-1 border-t border-border-subtle bg-surface-sunken">
           <div className="space-y-1.5">
             {checks.map((check) => (
               <div
@@ -292,17 +292,17 @@ const SectionScoreRow: React.FC<SectionScoreRowProps> = ({
                 )}
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
-                    <span className={check.passed ? 'text-gray-700' : 'text-gray-500'}>
+                    <span className={check.passed ? 'text-txt-secondary' : 'text-txt-tertiary'}>
                       {check.name}
                     </span>
                     {!check.passed && check.potentialGain && (
-                      <span className="text-[10px] font-medium text-green-600 bg-green-50 px-1.5 py-0.5 rounded">
+                      <span className="text-[0.625rem] font-medium text-green-600 bg-green-50 px-1.5 py-0.5">
                         +{check.potentialGain}점
                       </span>
                     )}
                   </div>
                   {!check.passed && check.feedback && (
-                    <p className="text-gray-400 mt-0.5">{check.feedback}</p>
+                    <p className="text-txt-tertiary mt-0.5">{check.feedback}</p>
                   )}
                 </div>
               </div>
@@ -314,7 +314,7 @@ const SectionScoreRow: React.FC<SectionScoreRowProps> = ({
               e.stopPropagation()
               onClick()
             }}
-            className="mt-3 w-full py-2 text-xs font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded transition-colors"
+            className="mt-3 w-full py-2 text-xs font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 transition-colors"
           >
             이 섹션 편집하기 →
           </button>

@@ -5,7 +5,7 @@ import { ApiResponse, validateRequired } from '@/src/lib/api-utils'
 
 interface CreateFromEventRequest {
   event_id: string
-  type: 'team_building' | 'project_join'
+  type: 'side_project' | 'startup' | 'study'
   title?: string
   description?: string
   needed_roles?: string[]
@@ -40,8 +40,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate type
-    if (!['team_building', 'project_join'].includes(body.type)) {
-      return ApiResponse.badRequest('type은 "team_building" 또는 "project_join"만 가능합니다')
+    if (!['side_project', 'startup', 'study'].includes(body.type)) {
+      return ApiResponse.badRequest('type은 "side_project", "startup", "study"만 가능합니다')
     }
 
     // Check if event exists
@@ -134,7 +134,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     return ApiResponse.internalError(
       'Opportunity 생성 중 오류가 발생했습니다',
-      error instanceof Error ? error.message : undefined
+      undefined
     )
   }
 }

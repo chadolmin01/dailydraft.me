@@ -152,7 +152,29 @@
       "Bash(python:*)",
       "Bash(cmd //c \"dir C:\\\\Users\\\\chado\\\\OneDrive\\\\Desktop\\\\slide*\")",
       "Bash(cmd //c \"dir C:\\\\Users\\\\chado\\\\Desktop\\\\slide* 2>nul\")",
-      "Bash(cmd //c \"dir C:\\\\Users\\\\chado\\\\OneDrive\\\\Desktop\\\\\")"
+      "Bash(cmd //c \"dir C:\\\\Users\\\\chado\\\\OneDrive\\\\Desktop\\\\\")",
+      "Bash(git:*)",
+      "Bash(SUPABASE_SERVICE_ROLE_KEY=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByeHFqaXVpYmZybXV3d21raHFiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDQ1ODc1MywiZXhwIjoyMDg2MDM0NzUzfQ.bBpowt9nqwDrhsuQpiHvqyTleykQSsV_gybzh_2PBqc\" node:*)",
+      "Bash(npm ls:*)",
+      "Bash(cat:*)",
+      "Bash(npx next:*)",
+      "Bash(find C:\\\\project\\\\Draft\\\\main\\\\app\\\\\\(dashboard\\):*)",
+      "Bash(supabase:*)",
+      "Bash(export:*)",
+      "Bash(xargs sed:*)",
+      "Bash(npm info:*)",
+      "Bash(browser-use open:*)",
+      "Bash(browser-use eval:*)",
+      "Bash(browser-use close:*)",
+      "Bash(browser-use:*)",
+      "Bash(head:*)",
+      "Bash(xargs:*)",
+      "Bash(perl:*)",
+      "Bash(IFS= read:*)",
+      "Bash(/tmp/fix-borders.awk:*)",
+      "Bash(for f in \"main/app/\\(dashboard/\\)/admin/users/page.tsx\" \"main/app/\\(dashboard/\\)/admin/page.tsx\")",
+      "Bash(do echo \"=== $f ===\")",
+      "Read(//c/project/Draft/**)"
     ]
   }
 }

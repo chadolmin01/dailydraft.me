@@ -16,7 +16,7 @@ export const StepWizard: React.FC<StepWizardProps> = ({
   onStepClick,
 }) => {
   return (
-    <div className="bg-white border border-gray-200 rounded-sm p-4">
+    <div className="bg-surface-card border border-border p-4">
       <div className="flex items-center justify-between">
         {WIZARD_STEPS.map((step, index) => (
           <React.Fragment key={step.id}>
@@ -66,13 +66,13 @@ const StepItem: React.FC<StepItemProps> = ({
       {/* Step indicator */}
       <div
         className={`
-          w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm
+          w-10 h-10 flex items-center justify-center font-bold text-sm
           transition-all duration-200
           ${isCompleted
             ? 'bg-black text-white'
             : isActive
-              ? 'bg-blue-600 text-white ring-4 ring-blue-100'
-              : 'bg-gray-100 text-gray-400 border border-gray-200'
+              ? 'bg-[#4F46E5] text-txt-inverse ring-4 ring-[#4F46E5]/20'
+              : 'bg-surface-sunken text-txt-tertiary border border-border'
           }
         `}
       >
@@ -88,12 +88,12 @@ const StepItem: React.FC<StepItemProps> = ({
         <div
           className={`
             text-xs font-bold
-            ${isActive ? 'text-blue-600' : isCompleted ? 'text-gray-900' : 'text-gray-400'}
+            ${isActive ? 'text-[#4F46E5]' : isCompleted ? 'text-txt-primary' : 'text-txt-tertiary'}
           `}
         >
           {step.title}
         </div>
-        <div className="text-[10px] text-gray-400 hidden md:block max-w-[100px]">
+        <div className="text-[0.625rem] text-txt-tertiary hidden md:block max-w-[6.25rem]">
           {step.description}
         </div>
       </div>
@@ -108,10 +108,10 @@ interface StepConnectorProps {
 const StepConnector: React.FC<StepConnectorProps> = ({ isCompleted }) => {
   return (
     <div className="flex-1 mx-2 h-0.5 relative">
-      <div className="absolute inset-0 bg-gray-200 rounded-full" />
+      <div className="absolute inset-0 bg-surface-sunken" />
       <div
         className={`
-          absolute inset-0 bg-black rounded-full transition-all duration-500
+          absolute inset-0 bg-black transition-all duration-500
           ${isCompleted ? 'w-full' : 'w-0'}
         `}
       />
@@ -138,10 +138,10 @@ export const StepWizardCompact: React.FC<StepWizardProps> = ({
             onClick={() => isClickable && onStepClick?.(step.id)}
             disabled={!isClickable}
             className={`
-              w-full flex items-center gap-3 p-3 rounded-sm transition-all
+              w-full flex items-center gap-3 p-3 transition-all
               ${isActive
-                ? 'bg-blue-50 border border-blue-200'
-                : 'border border-transparent hover:bg-gray-50'
+                ? 'bg-[#4F46E5]/5 border border-[#4F46E5]/20'
+                : 'border border-transparent hover:bg-surface-sunken'
               }
               ${isClickable ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}
             `}
@@ -149,12 +149,12 @@ export const StepWizardCompact: React.FC<StepWizardProps> = ({
             {/* Step indicator */}
             <div
               className={`
-                w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs shrink-0
+                w-8 h-8 flex items-center justify-center font-bold text-xs shrink-0
                 ${isCompleted
                   ? 'bg-black text-white'
                   : isActive
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-400 border border-gray-200'
+                    ? 'bg-[#4F46E5] text-txt-inverse'
+                    : 'bg-surface-sunken text-txt-tertiary border border-border'
                 }
               `}
             >
@@ -170,7 +170,7 @@ export const StepWizardCompact: React.FC<StepWizardProps> = ({
               <div
                 className={`
                   text-sm font-medium
-                  ${isActive ? 'text-blue-600' : isCompleted ? 'text-gray-900' : 'text-gray-400'}
+                  ${isActive ? 'text-[#4F46E5]' : isCompleted ? 'text-txt-primary' : 'text-txt-tertiary'}
                 `}
               >
                 {step.title}
@@ -179,12 +179,12 @@ export const StepWizardCompact: React.FC<StepWizardProps> = ({
 
             {/* Progress indicator */}
             {isCompleted && (
-              <span className="text-[10px] font-mono text-green-600 bg-green-50 px-2 py-0.5 rounded-sm">
+              <span className="text-[0.625rem] font-mono text-status-success-text bg-status-success-bg px-2 py-0.5">
                 DONE
               </span>
             )}
             {isActive && !isCompleted && (
-              <span className="text-[10px] font-mono text-blue-600 bg-blue-50 px-2 py-0.5 rounded-sm animate-pulse">
+              <span className="text-[0.625rem] font-mono text-[#4F46E5] bg-[#4F46E5]/5 px-2 py-0.5 animate-pulse">
                 IN PROGRESS
               </span>
             )}

@@ -69,12 +69,12 @@ export const RejectionWarnings: React.FC<RejectionWarningsProps> = ({
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+    <div className="bg-surface-card border border-border overflow-hidden">
       {/* Header */}
       <div className={`p-3 flex items-center justify-between ${
         severityCounts.high > 0 ? 'bg-red-50 border-b border-red-100' :
         severityCounts.medium > 0 ? 'bg-yellow-50 border-b border-yellow-100' :
-        'bg-gray-50 border-b border-gray-100'
+        'bg-surface-sunken border-b border-border-subtle'
       }`}>
         <div className="flex items-center gap-2">
           <AlertTriangle
@@ -82,22 +82,22 @@ export const RejectionWarnings: React.FC<RejectionWarningsProps> = ({
             className={
               severityCounts.high > 0 ? 'text-red-500' :
               severityCounts.medium > 0 ? 'text-yellow-500' :
-              'text-gray-400'
+              'text-txt-tertiary'
             }
           />
-          <span className="text-sm font-semibold text-gray-700">
+          <span className="text-sm font-semibold text-txt-secondary">
             탈락 위험 요소 {warnings.length}개 발견
           </span>
         </div>
 
         <div className="flex items-center gap-2">
           {severityCounts.high > 0 && (
-            <span className="px-2 py-0.5 bg-red-100 text-red-700 text-[10px] font-bold rounded-full">
+            <span className="px-2 py-0.5 bg-red-100 text-red-700 text-[0.625rem] font-bold">
               심각 {severityCounts.high}
             </span>
           )}
           {severityCounts.medium > 0 && (
-            <span className="px-2 py-0.5 bg-yellow-100 text-yellow-700 text-[10px] font-bold rounded-full">
+            <span className="px-2 py-0.5 bg-yellow-100 text-yellow-700 text-[0.625rem] font-bold">
               주의 {severityCounts.medium}
             </span>
           )}
@@ -105,7 +105,7 @@ export const RejectionWarnings: React.FC<RejectionWarningsProps> = ({
       </div>
 
       {/* Warnings List */}
-      <div className="divide-y divide-gray-100">
+      <div className="divide-y divide-border">
         {warnings.map((warning) => (
           <WarningItem
             key={warning.pattern.id}
@@ -156,9 +156,9 @@ const WarningItem: React.FC<WarningItemProps> = ({
       bg: 'hover:bg-yellow-50',
     },
     low: {
-      icon: <Info size={16} className="text-gray-400" />,
-      badge: 'bg-gray-100 text-gray-600',
-      bg: 'hover:bg-gray-50',
+      icon: <Info size={16} className="text-txt-tertiary" />,
+      badge: 'bg-surface-sunken text-txt-secondary',
+      bg: 'hover:bg-surface-sunken',
     },
   }
 
@@ -175,30 +175,30 @@ const WarningItem: React.FC<WarningItemProps> = ({
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-sm font-medium text-gray-800">
+              <span className="text-sm font-medium text-txt-primary">
                 {pattern.name}
               </span>
               {match.count > 1 && (
-                <span className="text-[10px] font-medium text-gray-500">
+                <span className="text-[0.625rem] font-medium text-txt-tertiary">
                   ({match.count}회 감지)
                 </span>
               )}
             </div>
-            <p className="text-xs text-gray-500 line-clamp-2">
+            <p className="text-xs text-txt-tertiary line-clamp-2">
               {pattern.feedback}
             </p>
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
             {autoFixAvailable && (
-              <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-medium rounded">
+              <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[0.625rem] font-medium">
                 자동 수정 가능
               </span>
             )}
             {isExpanded ? (
-              <ChevronDown size={16} className="text-gray-400" />
+              <ChevronDown size={16} className="text-txt-tertiary" />
             ) : (
-              <ChevronRight size={16} className="text-gray-400" />
+              <ChevronRight size={16} className="text-txt-tertiary" />
             )}
           </div>
         </div>
@@ -206,24 +206,24 @@ const WarningItem: React.FC<WarningItemProps> = ({
 
       {/* Expanded Content */}
       {isExpanded && (
-        <div className="px-4 pb-4 pt-2 bg-gray-50 border-t border-gray-100">
+        <div className="px-4 pb-4 pt-2 bg-surface-sunken border-t border-border-subtle">
           {/* Matched Text */}
           {match.matches.length > 0 && (
             <div className="mb-3">
-              <div className="text-[10px] font-mono text-gray-400 uppercase mb-1">
+              <div className="text-[0.625rem] font-mono text-txt-tertiary uppercase mb-1">
                 감지된 표현
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {match.matches.slice(0, 5).map((m, idx) => (
                   <span
                     key={idx}
-                    className="px-2 py-1 bg-white border border-gray-200 rounded text-xs text-gray-700 font-mono"
+                    className="px-2 py-1 bg-surface-card border border-border text-xs text-txt-secondary font-mono"
                   >
                     "{m}"
                   </span>
                 ))}
                 {match.matches.length > 5 && (
-                  <span className="px-2 py-1 text-xs text-gray-500">
+                  <span className="px-2 py-1 text-xs text-txt-tertiary">
                     외 {match.matches.length - 5}개
                   </span>
                 )}
@@ -233,8 +233,8 @@ const WarningItem: React.FC<WarningItemProps> = ({
 
           {/* Auto Fix Suggestion */}
           {autoFixAvailable && suggestedFix && (
-            <div className="mb-3 p-3 bg-blue-50 border border-blue-100 rounded-lg">
-              <div className="text-[10px] font-mono text-blue-600 uppercase mb-1.5">
+            <div className="mb-3 p-3 bg-blue-50 border border-blue-100">
+              <div className="text-[0.625rem] font-mono text-blue-600 uppercase mb-1.5">
                 수정 제안
               </div>
               <p className="text-xs text-blue-800">{suggestedFix}</p>
@@ -244,16 +244,16 @@ const WarningItem: React.FC<WarningItemProps> = ({
           {/* Source Suggestions for missing source pattern */}
           {pattern.id === 'MISSING_SOURCE' && (
             <div className="mb-3">
-              <div className="text-[10px] font-mono text-gray-400 uppercase mb-1.5">
+              <div className="text-[0.625rem] font-mono text-txt-tertiary uppercase mb-1.5">
                 추천 출처
               </div>
               <div className="space-y-1">
                 {getSuggestedSources(section || '시장').slice(0, 3).map((source, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center gap-2 text-xs text-gray-600"
+                    className="flex items-center gap-2 text-xs text-txt-secondary"
                   >
-                    <ExternalLink size={12} className="text-gray-400" />
+                    <ExternalLink size={12} className="text-txt-tertiary" />
                     {source}
                   </div>
                 ))}
@@ -269,7 +269,7 @@ const WarningItem: React.FC<WarningItemProps> = ({
                   e.stopPropagation()
                   onAutoFix()
                 }}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded hover:bg-blue-700 transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white text-xs font-medium hover:bg-blue-700 transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
               >
                 <Wand2 size={12} />
                 자동 수정
@@ -280,7 +280,7 @@ const WarningItem: React.FC<WarningItemProps> = ({
                 e.stopPropagation()
                 onDismiss()
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 text-gray-600 text-xs font-medium rounded hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-surface-card border border-border-strong text-txt-secondary text-xs font-medium hover:bg-black hover:text-white transition-colors"
             >
               <X size={12} />
               무시
@@ -305,10 +305,10 @@ const CompactWarningBadge: React.FC<CompactWarningBadgeProps> = ({
   if (severityCounts.total === 0) return null
 
   return (
-    <div className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium ${
+    <div className={`inline-flex items-center gap-1.5 px-2 py-1 text-xs font-medium ${
       severityCounts.high > 0 ? 'bg-red-100 text-red-700' :
       severityCounts.medium > 0 ? 'bg-yellow-100 text-yellow-700' :
-      'bg-gray-100 text-gray-600'
+      'bg-surface-sunken text-txt-secondary'
     }`}>
       <AlertTriangle size={12} />
       <span>{severityCounts.total}개 위험 요소</span>
@@ -337,9 +337,9 @@ export const InlineWarningHighlight: React.FC<InlineWarningHighlightProps> = ({
   const [showTooltip, setShowTooltip] = useState(false)
 
   const highlightClass = {
-    high: 'bg-red-100 border-b-2 border-red-400',
-    medium: 'bg-yellow-100 border-b-2 border-yellow-400',
-    low: 'bg-gray-100 border-b-2 border-gray-400',
+    high: 'bg-red-100 border-b border-red-400',
+    medium: 'bg-yellow-100 border-b border-yellow-400',
+    low: 'bg-surface-sunken border-b border-border-strong',
   }
 
   return (
@@ -350,12 +350,12 @@ export const InlineWarningHighlight: React.FC<InlineWarningHighlightProps> = ({
     >
       {text.substring(start, end)}
       {showTooltip && (
-        <div className="absolute left-0 bottom-full mb-2 w-64 p-2 bg-gray-900 text-white text-xs rounded shadow-lg z-50">
+        <div className="absolute left-0 bottom-full mb-2 w-64 p-2 bg-surface-inverse text-white text-xs shadow-brutal z-50">
           <div className="font-medium mb-1">
             {severity === 'high' ? '심각한 문제' : severity === 'medium' ? '개선 필요' : '참고 사항'}
           </div>
           <p className="opacity-80">{feedback}</p>
-          <div className="absolute left-4 bottom-0 transform translate-y-1/2 rotate-45 w-2 h-2 bg-gray-900" />
+          <div className="absolute left-4 bottom-0 transform translate-y-1/2 rotate-45 w-2 h-2 bg-surface-inverse" />
         </div>
       )}
     </span>

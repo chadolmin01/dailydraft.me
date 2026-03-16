@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     const cronSecret = process.env.CRON_SECRET
 
     if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
     }
 
     const supabase = createAdminClient()

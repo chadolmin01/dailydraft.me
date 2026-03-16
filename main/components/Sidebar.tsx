@@ -23,6 +23,7 @@ import {
 import { useAuth } from '@/src/context/AuthContext'
 import { useAdmin } from '@/src/hooks/useAdmin'
 import { usePremium } from '@/src/hooks/usePremium'
+import { useUnreadCount } from '@/src/hooks/useMessages'
 import InviteCodeModal from '@/components/InviteCodeModal'
 
 export const Sidebar: React.FC = () => {
@@ -31,6 +32,7 @@ export const Sidebar: React.FC = () => {
   const { signOut } = useAuth()
   const { isAdmin } = useAdmin()
   const { isPremium, refetch: refetchPremium } = usePremium()
+  const { data: unreadMessages = 0 } = useUnreadCount()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
@@ -42,8 +44,8 @@ export const Sidebar: React.FC = () => {
     { id: 'explore', icon: Compass, label: 'FEED', path: '/explore' },
     { id: 'projects', icon: Briefcase, label: 'PROJECTS', path: '/projects' },
     { id: 'profile', icon: User, label: 'PROFILE', path: '/profile' },
+    { id: 'messages', icon: MessageSquare, label: 'MESSAGES', path: '/messages' },
     // { id: 'calendar', icon: Calendar, label: 'SCHEDULE', path: '/calendar' },
-    // { id: 'messages', icon: MessageSquare, label: 'CHAT', path: '/messages' },
     // { id: 'documents', icon: FileText, label: 'DOCS', path: '/documents' },
     // { id: 'network', icon: Users, label: 'NET', path: '/network' },
   ]
@@ -94,24 +96,24 @@ export const Sidebar: React.FC = () => {
   }
 
   return (
-    <div className="w-16 flex-shrink-0 bg-white border-r border-gray-200 flex flex-col items-center py-6 h-screen sticky top-0 z-50 shadow-[1px_0_0_0_rgba(0,0,0,0.02)]">
+    <div className="w-16 flex-shrink-0 bg-surface-card border-r border-border-strong flex flex-col items-center py-6 h-screen sticky top-0 z-50">
       {/* Home / Logo Button - Now goes to Dashboard */}
       <div
         className="mb-8 cursor-pointer group relative"
         onClick={() => router.push('/dashboard')}
       >
         <div
-          className={`w-10 h-10 flex items-center justify-center rounded-lg shadow-md transition-colors
+          className={`w-10 h-10 flex items-center justify-center rounded-sm transition-colors
             ${
               getActiveTab() === 'dashboard'
-                ? 'bg-black text-white'
-                : 'bg-white text-black border border-gray-200 hover:bg-black hover:text-white hover:border-black'
+                ? 'bg-black text-white shadow-solid-sm'
+                : 'bg-surface-card text-txt-primary border border-border-strong hover:bg-black hover:text-white hover:border-border-strong shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
             }
         `}
         >
           <PenTool size={20} />
         </div>
-        <div className="absolute left-14 top-1/2 -translate-y-1/2 bg-black text-white text-[10px] font-medium px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
+        <div className="absolute left-14 top-1/2 -translate-y-1/2 bg-black text-white text-[0.625rem] font-mono font-bold uppercase tracking-widest px-2 py-1 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-solid-sm">
           MAIN
         </div>
       </div>
@@ -122,17 +124,22 @@ export const Sidebar: React.FC = () => {
           <button
             key={item.id}
             onClick={() => router.push(item.path)}
-            className={`w-10 h-10 flex items-center justify-center transition-all duration-200 mx-auto rounded-lg relative group
+            className={`w-10 h-10 flex items-center justify-center transition-all duration-200 mx-auto rounded-sm relative group
               ${
                 getActiveTab() === item.id
-                  ? 'bg-gray-100 text-black shadow-sm border border-gray-200'
-                  : 'text-gray-400 hover:text-black hover:bg-gray-50'
+                  ? 'bg-[#4F46E5]/5 text-[#4F46E5] border border-[#4F46E5] shadow-solid-sm'
+                  : 'text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken border border-transparent'
               }`}
           >
             <item.icon size={20} strokeWidth={1.5} />
+            {item.id === 'messages' && unreadMessages > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[#4F46E5] text-white text-[0.5rem] font-bold flex items-center justify-center">
+                {unreadMessages > 9 ? '9+' : unreadMessages}
+              </span>
+            )}
 
             {/* Tooltip */}
-            <div className="absolute left-14 top-1/2 -translate-y-1/2 bg-black text-white text-[10px] font-medium px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
+            <div className="absolute left-14 top-1/2 -translate-y-1/2 bg-black text-white text-[0.625rem] font-mono font-bold uppercase tracking-widest px-2 py-1 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-solid-sm">
               {item.label}
             </div>
           </button>
@@ -143,42 +150,42 @@ export const Sidebar: React.FC = () => {
       <div className="mt-auto flex flex-col gap-4 w-full px-3 pb-4 relative" ref={menuRef}>
         {/* Popup Menu */}
         {isMenuOpen && (
-          <div className="absolute left-14 bottom-2 w-56 bg-white border border-gray-200 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] rounded-sm p-1 flex flex-col gap-0.5 z-50 animate-in fade-in zoom-in-95 duration-100 origin-bottom-left">
+          <div className="absolute left-14 bottom-2 w-56 bg-surface-card border-2 border-border-strong shadow-sharp rounded-sm p-1 flex flex-col gap-0.5 z-50 animate-in fade-in zoom-in-95 duration-100 origin-bottom-left">
             {/* User Info */}
-            <div className="px-3 py-2.5 mb-1 border-b border-gray-100">
+            <div className="px-3 py-2.5 mb-1 border-b border-dashed border-border">
               <div className="flex items-center gap-2">
-                <span className="font-bold text-sm text-gray-900">User</span>
+                <span className="font-bold text-sm text-txt-primary">User</span>
                 {isPremium && (
-                  <span className="flex items-center gap-0.5 px-1.5 py-0.5 bg-gradient-to-r from-amber-400 to-amber-500 text-white text-[9px] font-bold rounded-full">
+                  <span className="flex items-center gap-0.5 px-1.5 py-0.5 bg-amber-500 text-white text-[0.5625rem] font-mono font-bold rounded-sm border border-amber-600">
                     <Crown size={10} />
                     PRO
                   </span>
                 )}
               </div>
-              <div className="text-[10px] text-gray-400 font-mono mt-0.5">user@draft.io</div>
+              <div className="text-[0.625rem] text-txt-tertiary font-mono mt-0.5">user@draft.io</div>
             </div>
 
             {/* Menu Items */}
             <button
               onClick={() => handleMenuAction('profile')}
-              className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-50 hover:text-black rounded-sm transition-colors text-left w-full"
+              className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary rounded-sm transition-colors text-left w-full"
             >
               <User size={14} /> My Profile
             </button>
             {/* Community Mode: Usage hidden
             <button
               onClick={() => handleMenuAction('usage')}
-              className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-50 hover:text-black rounded-sm transition-colors text-left w-full"
+              className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary rounded-sm transition-colors text-left w-full"
             >
               <BarChart3 size={14} /> Usage & Billing
             </button>
             */}
-            <button className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-50 hover:text-black rounded-sm transition-colors text-left w-full">
+            <button className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary rounded-sm transition-colors text-left w-full">
               <Settings size={14} /> Settings
             </button>
-            <button className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-50 hover:text-black rounded-sm transition-colors text-left w-full">
+            <button className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary rounded-sm transition-colors text-left w-full">
               <Bell size={14} /> Notifications{' '}
-              <span className="ml-auto bg-red-50 text-red-500 px-1.5 py-0.5 rounded-full text-[9px] font-bold">
+              <span className="ml-auto bg-status-danger-bg text-status-danger-text px-1.5 py-0.5 rounded-sm text-[0.5625rem] font-mono font-bold border border-status-danger-accent">
                 2
               </span>
             </button>
@@ -187,39 +194,39 @@ export const Sidebar: React.FC = () => {
             {!isPremium && (
               <button
                 onClick={() => handleMenuAction('invite-code')}
-                className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-blue-600 hover:bg-blue-50 rounded-sm transition-colors text-left w-full"
+                className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-[#4F46E5] hover:bg-[#4F46E5]/5 rounded-sm transition-colors text-left w-full"
               >
                 <Gift size={14} /> 초대 코드 입력
               </button>
             )}
 
-            <div className="h-px bg-gray-100 my-1"></div>
+            <div className="h-px border-t border-dashed border-border my-1"></div>
 
             {/* Admin Section - Only show for admins */}
             {isAdmin && (
               <>
                 <div className="px-3 py-1.5">
-                  <div className="text-[9px] font-mono text-gray-400 uppercase">Admin</div>
+                  <div className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest">Admin</div>
                 </div>
                 <button
                   onClick={() => handleMenuAction('invite-codes-admin')}
-                  className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-50 hover:text-black rounded-sm transition-colors text-left w-full"
+                  className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary rounded-sm transition-colors text-left w-full"
                 >
                   <Gift size={14} /> 초대 코드 관리
                 </button>
                 <button
                   onClick={() => handleMenuAction('error-logs')}
-                  className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-50 hover:text-black rounded-sm transition-colors text-left w-full"
+                  className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary rounded-sm transition-colors text-left w-full"
                 >
                   <AlertCircle size={14} /> Error Logs
                 </button>
-                <div className="h-px bg-gray-100 my-1"></div>
+                <div className="h-px border-t border-dashed border-border my-1"></div>
               </>
             )}
 
             <button
               onClick={() => handleMenuAction('signout')}
-              className="flex items-center gap-3 px-3 py-2 text-xs font-bold text-red-600 hover:bg-red-50 rounded-sm transition-colors text-left w-full"
+              className="flex items-center gap-3 px-3 py-2 text-xs font-bold text-status-danger-text hover:bg-status-danger-bg rounded-sm transition-colors text-left w-full"
             >
               <LogOut size={14} /> Sign Out
             </button>
@@ -228,19 +235,19 @@ export const Sidebar: React.FC = () => {
 
         {/* Profile Avatar Trigger */}
         <button
-          className={`w-10 h-10 mx-auto rounded-full flex items-center justify-center text-[10px] font-bold cursor-pointer transition-all border relative group
+          className={`w-10 h-10 mx-auto rounded-sm flex items-center justify-center text-[0.625rem] font-bold cursor-pointer transition-all border relative group
             ${
               isMenuOpen
-                ? 'bg-black text-white border-black'
+                ? 'bg-black text-white border-black shadow-solid-sm'
                 : isPremium
-                  ? 'bg-gradient-to-br from-amber-400 to-amber-500 text-white border-amber-400'
-                  : 'bg-gray-100 text-gray-600 border-gray-200 hover:border-black'
+                  ? 'bg-amber-500 text-white border-amber-600 shadow-solid-sm'
+                  : 'bg-surface-sunken text-txt-secondary border-border-strong hover:border-border-strong shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
             }`}
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
           {isPremium ? <Crown size={16} /> : 'U'}
           {/* Notification Dot */}
-          <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></div>
+          <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-red-500 rounded-sm border border-surface-card"></div>
         </button>
       </div>
 

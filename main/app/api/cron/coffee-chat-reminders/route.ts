@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
   // Verify cron secret
   const authHeader = req.headers.get('authorization')
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
   }
 
   if (!isEmailEnabled()) {

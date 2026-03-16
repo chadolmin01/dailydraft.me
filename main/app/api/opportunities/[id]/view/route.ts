@@ -71,6 +71,6 @@ export async function POST(
     recentViews.set(viewKey, Date.now())
     return NextResponse.json({ success: true, views_count: data })
   } catch (_error) {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: '서버 오류가 발생했습니다' }, { status: 500 })
   }
 }

@@ -27,7 +27,7 @@ export const CoffeeChatList: React.FC<CoffeeChatListProps> = ({
   if (loading) {
     return (
       <div className="p-8 flex items-center justify-center">
-        <Loader2 className="animate-spin text-gray-400" size={24} />
+        <Loader2 className="animate-spin text-txt-disabled" size={24} />
       </div>
     )
   }
@@ -46,12 +46,12 @@ export const CoffeeChatList: React.FC<CoffeeChatListProps> = ({
   }
 
   return (
-    <div className="divide-y divide-gray-100">
+    <div className="divide-y divide-dashed divide-border">
       {/* Pending Section */}
       {pendingChats.length > 0 && (
         <div>
-          <div className="px-4 py-2 bg-yellow-50 border-b border-yellow-100">
-            <h4 className="text-xs font-bold text-yellow-700 flex items-center gap-2">
+          <div className="px-4 py-2 bg-status-warning-bg border-b border-border-strong">
+            <h4 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-status-warning-text flex items-center gap-2">
               <Clock size={14} />
               대기 중 ({pendingChats.length})
             </h4>
@@ -70,8 +70,8 @@ export const CoffeeChatList: React.FC<CoffeeChatListProps> = ({
       {/* Resolved Section */}
       {resolvedChats.length > 0 && (
         <div>
-          <div className="px-4 py-2 bg-gray-50 border-b border-gray-100">
-            <h4 className="text-xs font-bold text-gray-500">
+          <div className="px-4 py-2 bg-surface-sunken border-b border-border-strong">
+            <h4 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">
               처리됨 ({resolvedChats.length})
             </h4>
           </div>
@@ -136,14 +136,14 @@ const CoffeeChatItem: React.FC<CoffeeChatItemProps> = ({
         {/* Header */}
         <div className="flex items-start justify-between mb-2">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-              <User size={16} className="text-gray-500" />
+            <div className="w-8 h-8 bg-surface-sunken rounded-sm border border-border-strong flex items-center justify-center">
+              <User size={16} className="text-txt-tertiary" />
             </div>
             <div>
-              <div className="font-bold text-sm text-gray-900">
+              <div className="font-bold text-sm text-txt-primary">
                 {chat.requester_name || '익명'}
               </div>
-              <div className="text-xs text-gray-400 flex items-center gap-1">
+              <div className="text-xs text-txt-tertiary flex items-center gap-1">
                 <Mail size={10} />
                 {chat.requester_email}
               </div>
@@ -152,12 +152,12 @@ const CoffeeChatItem: React.FC<CoffeeChatItemProps> = ({
 
           {/* Status Badge */}
           {chat.status === 'accepted' && (
-            <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-bold rounded-full">
+            <span className="px-2 py-0.5 bg-status-success-bg text-status-success-text text-[0.625rem] font-mono font-bold rounded-sm border border-green-300">
               수락됨
             </span>
           )}
           {chat.status === 'declined' && (
-            <span className="px-2 py-0.5 bg-gray-100 text-gray-500 text-xs font-bold rounded-full">
+            <span className="px-2 py-0.5 bg-surface-sunken text-txt-tertiary text-[0.625rem] font-mono font-bold rounded-sm border border-border">
               거절됨
             </span>
           )}
@@ -165,21 +165,21 @@ const CoffeeChatItem: React.FC<CoffeeChatItemProps> = ({
 
         {/* Message */}
         {chat.message && (
-          <div className="bg-gray-50 p-3 rounded-sm mb-3 text-sm text-gray-600">
-            <MessageSquare size={12} className="inline mr-1.5 text-gray-400" />
+          <div className="bg-surface-sunken p-3 rounded-sm mb-3 text-sm text-txt-secondary border border-border">
+            <MessageSquare size={12} className="inline mr-1.5 text-txt-tertiary" />
             {chat.message}
           </div>
         )}
 
         {/* Contact Info (if accepted) */}
         {chat.status === 'accepted' && chat.contact_info && (
-          <div className="bg-green-50 p-3 rounded-sm mb-3 text-sm text-green-700 border border-green-100">
+          <div className="bg-status-success-bg p-3 rounded-sm mb-3 text-sm text-status-success-text border border-green-300">
             <strong>연락처:</strong> {chat.contact_info}
           </div>
         )}
 
         {/* Date */}
-        <div className="text-xs text-gray-400 mb-3">{formatDate(chat.created_at)}</div>
+        <div className="text-xs text-txt-disabled font-mono mb-3">{formatDate(chat.created_at)}</div>
 
         {/* Actions (only for pending) */}
         {!resolved && chat.status === 'pending' && (
@@ -187,7 +187,7 @@ const CoffeeChatItem: React.FC<CoffeeChatItemProps> = ({
             <button
               onClick={() => setShowAcceptModal(true)}
               disabled={processing}
-              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-green-500 text-white rounded-sm hover:bg-green-600 text-sm font-medium disabled:bg-gray-300"
+              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-[#4F46E5] text-white border-2 border-[#4F46E5] rounded-sm hover:bg-[#4338CA] text-sm font-bold shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-40 disabled:pointer-events-none"
             >
               <Check size={14} />
               수락
@@ -195,7 +195,7 @@ const CoffeeChatItem: React.FC<CoffeeChatItemProps> = ({
             <button
               onClick={handleDecline}
               disabled={processing}
-              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-white border border-gray-200 text-gray-600 rounded-sm hover:bg-gray-50 text-sm font-medium disabled:bg-gray-100"
+              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-surface-card border border-border-strong text-txt-secondary rounded-sm hover:bg-black hover:text-white text-sm font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-40 disabled:pointer-events-none"
             >
               {processing ? (
                 <Loader2 size={14} className="animate-spin" />
@@ -213,18 +213,18 @@ const CoffeeChatItem: React.FC<CoffeeChatItemProps> = ({
       {/* Accept Modal */}
       {showAcceptModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-sm shadow-xl w-full max-w-sm">
-            <div className="p-4 border-b border-gray-100">
-              <h3 className="font-bold text-gray-900">커피챗 수락</h3>
+          <div className="bg-surface-card rounded-sm shadow-sharp border-2 border-border-strong w-full max-w-sm">
+            <div className="p-4 border-b border-border-strong">
+              <h3 className="font-bold text-txt-primary">커피챗 수락</h3>
             </div>
 
             <div className="p-4 space-y-4">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-txt-secondary">
                 수락하면 입력한 연락처가 <strong>{chat.requester_name}</strong>님에게 공개됩니다.
               </p>
 
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
+                <label className="block text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-1.5">
                   공개할 연락처 (전화번호, 카카오톡 ID 등)
                 </label>
                 <input
@@ -232,21 +232,21 @@ const CoffeeChatItem: React.FC<CoffeeChatItemProps> = ({
                   placeholder="010-1234-5678 또는 카카오톡 ID"
                   value={contactInfo}
                   onChange={(e) => setContactInfo(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-sm focus:outline-none focus:border-black"
+                  className="w-full px-3 py-2 border-2 border-border-strong rounded-sm bg-surface-card focus:outline-none focus:border-[#4F46E5]"
                 />
               </div>
 
               <div className="flex gap-2">
                 <button
                   onClick={() => setShowAcceptModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-200 text-gray-600 rounded-sm hover:bg-gray-50 text-sm"
+                  className="flex-1 px-4 py-2 border border-border-strong text-txt-secondary rounded-sm hover:bg-black hover:text-white text-sm font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
                 >
                   취소
                 </button>
                 <button
                   onClick={handleAccept}
                   disabled={processing || !contactInfo.trim()}
-                  className="flex-1 px-4 py-2 bg-green-500 text-white rounded-sm hover:bg-green-600 text-sm disabled:bg-gray-300 flex items-center justify-center gap-2"
+                  className="flex-1 px-4 py-2 bg-[#4F46E5] text-white border-2 border-[#4F46E5] rounded-sm hover:bg-[#4338CA] text-sm font-bold shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-40 disabled:pointer-events-none flex items-center justify-center gap-2"
                 >
                   {processing ? (
                     <Loader2 size={16} className="animate-spin" />

@@ -26,7 +26,7 @@
 
   /* ── Border ── */
   --border-default: #D4D4D8;
-  --border-strong: #18181B;
+  --border-strong: #3F3F46;
   --border-subtle: #E4E4E7;
 
   /* ── Accent (최소 사용) ── */
@@ -73,8 +73,8 @@
   --shadow-md: 3px 3px 0px 0px rgba(0, 0, 0, 0.12);
   --shadow-lg: 4px 4px 0px 0px rgba(0, 0, 0, 0.15);
   --shadow-xl: 6px 6px 0px 0px rgba(0, 0, 0, 0.15);
-  --shadow-solid: 4px 4px 0px 0px #18181B;
-  --shadow-solid-sm: 2px 2px 0px 0px #18181B;
+  --shadow-solid: 4px 4px 0px 0px #3F3F46;
+  --shadow-solid-sm: 2px 2px 0px 0px #3F3F46;
 }
 
 /* ── Dark mode (future) ── */
@@ -135,29 +135,13 @@ body {
    SCROLLBAR
    ============================================================ */
 
+/* Hide scrollbars visually but keep scroll functionality */
+* {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
 ::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: var(--border-default);
-  border-radius: 0px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--border-strong);
-}
-
-.custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
-}
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: var(--border-default);
-  border-radius: 0px;
+  display: none; /* Chrome/Safari/Opera */
 }
 
 /* ============================================================

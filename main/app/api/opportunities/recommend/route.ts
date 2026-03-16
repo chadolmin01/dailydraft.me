@@ -13,13 +13,13 @@ export async function GET() {
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
     }
 
     // Get user profile with vision_embedding
     const { data: profileData, error: profileError } = await supabase
       .from('profiles')
-      .select('*')
+      .select('id, user_id, nickname, desired_position, skills, interest_tags, personality, current_situation, vision_summary, location, profile_analysis, onboarding_completed, vision_embedding')
       .eq('user_id', user.id)
       .single()
 
@@ -51,14 +51,14 @@ export async function GET() {
     if (opportunities.length === 0) {
       const { data: fallbackOpps, error: oppError } = await supabase
         .from('opportunities')
-        .select('*')
+        .select('id, type, title, description, status, creator_id, needed_roles, needed_skills, interest_tags, location_type, location, time_commitment, compensation_type, compensation_details, applications_count, views_count, created_at, updated_at')
         .eq('status', 'active')
         .neq('creator_id', user.id)
         .order('created_at', { ascending: false })
         .limit(50)
 
       if (oppError) {
-        return NextResponse.json({ error: oppError.message }, { status: 500 })
+        return NextResponse.json({ error: 'Failed to fetch opportunities' }, { status: 500 })
       }
 
       opportunities = (fallbackOpps || []) as unknown as Opportunity[]
@@ -75,7 +75,7 @@ export async function GET() {
     return NextResponse.json(ranked.slice(0, 20))
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Unknown error' },
+      { error: '서버 오류가 발생했습니다' },
       { status: 500 }
     )
   }

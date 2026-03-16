@@ -12,6 +12,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      direct_messages: {
+        Row: {
+          id: string
+          sender_id: string
+          receiver_id: string
+          content: string
+          is_read: boolean
+          read_at: string | null
+          deleted_by_sender: boolean
+          deleted_by_receiver: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          sender_id: string
+          receiver_id: string
+          content: string
+          is_read?: boolean
+          read_at?: string | null
+          deleted_by_sender?: boolean
+          deleted_by_receiver?: boolean
+          created_at?: string
+        }
+        Update: {
+          is_read?: boolean
+          read_at?: string | null
+          deleted_by_sender?: boolean
+          deleted_by_receiver?: boolean
+        }
+      }
       subscriptions: {
         Row: {
           id: string
@@ -553,9 +583,15 @@ export type Database = {
           age_range: string | null
           ai_chat_completed: boolean | null
           ai_chat_transcript: Json | null
+          avatar_url: string | null
           contact_email: string | null
           contact_kakao: string | null
+          cover_image_url: string | null
           created_at: string | null
+          affiliation_type: string | null
+          portfolio_url: string | null
+          linkedin_url: string | null
+          github_url: string | null
           current_situation: string | null
           desired_position: string | null
           graduation_year: number | null
@@ -563,6 +599,7 @@ export type Database = {
           interest_tags: string[] | null
           invite_code_used: string | null
           is_premium: boolean | null
+          is_uni_verified: boolean | null
           location: string | null
           major: string | null
           nickname: string
@@ -571,6 +608,7 @@ export type Database = {
           premium_activated_at: string | null
           profile_analysis: Json | null
           profile_analysis_at: string | null
+          profile_views: number | null
           profile_visibility: string | null
           skills: Json | null
           university: string | null
@@ -583,16 +621,23 @@ export type Database = {
           age_range?: string | null
           ai_chat_completed?: boolean | null
           ai_chat_transcript?: Json | null
+          affiliation_type?: string | null
+          avatar_url?: string | null
           contact_email?: string | null
           contact_kakao?: string | null
+          cover_image_url?: string | null
           created_at?: string | null
           current_situation?: string | null
+          portfolio_url?: string | null
+          linkedin_url?: string | null
+          github_url?: string | null
           desired_position?: string | null
           graduation_year?: number | null
           id?: string
           interest_tags?: string[] | null
           invite_code_used?: string | null
           is_premium?: boolean | null
+          is_uni_verified?: boolean | null
           location?: string | null
           major?: string | null
           nickname: string
@@ -613,16 +658,23 @@ export type Database = {
           age_range?: string | null
           ai_chat_completed?: boolean | null
           ai_chat_transcript?: Json | null
+          affiliation_type?: string | null
+          avatar_url?: string | null
           contact_email?: string | null
           contact_kakao?: string | null
+          cover_image_url?: string | null
           created_at?: string | null
           current_situation?: string | null
+          portfolio_url?: string | null
+          linkedin_url?: string | null
+          github_url?: string | null
           desired_position?: string | null
           graduation_year?: number | null
           id?: string
           interest_tags?: string[] | null
           invite_code_used?: string | null
           is_premium?: boolean | null
+          is_uni_verified?: boolean | null
           location?: string | null
           major?: string | null
           nickname?: string

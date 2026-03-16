@@ -80,29 +80,29 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
       />
 
       {/* Modal */}
-      <div className="relative bg-white w-full max-w-md rounded-lg shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative bg-surface-card w-full max-w-md border-2 border-border-strong shadow-brutal animate-in fade-in zoom-in-95 duration-200">
         {/* Close button */}
         <button
           onClick={onClose}
           aria-label="닫기"
-          className="absolute right-4 top-4 p-1 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-gray-600"
+          className="absolute right-4 top-4 p-1 hover:bg-surface-sunken transition-colors text-txt-tertiary hover:text-txt-primary border border-transparent hover:border-border"
         >
           <X size={18} />
         </button>
 
         <div className="p-6">
           {/* Icon */}
-          <div className={`w-12 h-12 rounded-full ${styles.icon} flex items-center justify-center mx-auto mb-4`}>
+          <div className={`w-12 h-12 ${styles.icon} flex items-center justify-center mx-auto mb-4 border border-current/20`}>
             <AlertTriangle size={24} />
           </div>
 
           {/* Title */}
-          <h3 className="text-lg font-bold text-gray-900 text-center mb-2">
+          <h3 className="text-lg font-bold text-txt-primary text-center mb-2">
             {title}
           </h3>
 
           {/* Message */}
-          <p className="text-sm text-gray-500 text-center mb-6">
+          <p className="text-sm text-txt-secondary text-center mb-6">
             {message}
           </p>
 
@@ -113,7 +113,6 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
               onClick={onClose}
               disabled={isLoading}
               fullWidth
-              className="rounded-lg"
             >
               {cancelText}
             </Button>
@@ -130,7 +129,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                 }
               }}
               disabled={isLoading}
-              className={`flex-1 px-4 py-2.5 text-sm font-bold rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center ${styles.button}`}
+              className={`flex-1 px-4 py-2.5 text-sm font-bold transition-all disabled:opacity-50 flex items-center justify-center shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] ${styles.button}`}
             >
               {isLoading ? '처리 중...' : confirmText}
             </button>

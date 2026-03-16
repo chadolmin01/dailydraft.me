@@ -30,33 +30,33 @@ export const FAQ: React.FC = () => {
   }
 
   return (
-    <section id="faq" className="w-full py-24 px-6 md:px-12">
+    <section id="faq" className="w-full py-32 px-6 md:px-12">
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-16">
-          <span className="text-xs font-mono font-bold text-gray-500 tracking-wider mb-4 block">
+          <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-4 block">
             FAQ
           </span>
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
+          <h2 className="text-3xl md:text-4xl font-bold text-txt-primary">
             자주 묻는 질문
           </h2>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-6">
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className="border border-gray-200 bg-white"
+              className="border border-border bg-surface-card"
             >
               <button
                 onClick={() => toggleFaq(index)}
-                className="w-full flex items-center justify-between p-6 text-left hover:bg-gray-50 transition-colors"
+                className="w-full flex items-center justify-between p-6 text-left hover:bg-surface-sunken transition-colors"
               >
-                <span className="font-bold text-gray-900 pr-4">
+                <span className="font-bold text-txt-primary pr-4">
                   {faq.question}
                 </span>
                 <ChevronDown
                   size={20}
-                  className={`text-gray-400 shrink-0 transition-transform duration-200 ${
+                  className={`text-txt-disabled shrink-0 transition-transform duration-200 ${
                     openIndex === index ? 'rotate-180' : ''
                   }`}
                 />
@@ -66,7 +66,7 @@ export const FAQ: React.FC = () => {
                   openIndex === index ? 'max-h-48' : 'max-h-0'
                 }`}
               >
-                <p className="px-6 pb-6 text-gray-600 leading-relaxed break-keep">
+                <p className="px-6 pb-6 text-txt-secondary leading-relaxed break-keep">
                   {faq.answer}
                 </p>
               </div>

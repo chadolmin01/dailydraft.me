@@ -12,7 +12,7 @@ export async function GET(
     // 인증 확인
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
     }
 
     // 태그 파라미터 파싱
@@ -107,7 +107,7 @@ export async function GET(
     })
   } catch (_error) {
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: '서버 오류가 발생했습니다' },
       { status: 500 }
     )
   }

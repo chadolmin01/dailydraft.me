@@ -163,10 +163,10 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
         onDrop={handleDrop}
         onClick={() => inputRef.current?.click()}
         className={`
-          relative border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all
+          relative border-2 border-dashed p-8 text-center cursor-pointer transition-all
           ${isDragging
-            ? 'border-blue-500 bg-blue-50'
-            : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+            ? 'border-[#4F46E5] bg-[#4F46E5]/5'
+            : 'border-border hover:border-border-strong hover:bg-surface-sunken'
           }
         `}
       >
@@ -183,21 +183,21 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
           <div className="space-y-2">
             <Upload
               size={32}
-              className={`mx-auto ${isDragging ? 'text-blue-500' : 'text-gray-400'}`}
+              className={`mx-auto ${isDragging ? 'text-[#4F46E5]' : 'text-txt-tertiary'}`}
             />
-            <p className="text-sm text-gray-600">
-              <span className="font-medium text-gray-900">클릭</span>하거나{' '}
-              <span className="font-medium text-gray-900">파일을 드래그</span>하세요
+            <p className="text-sm text-txt-secondary">
+              <span className="font-medium text-txt-primary">클릭</span>하거나{' '}
+              <span className="font-medium text-txt-primary">파일을 드래그</span>하세요
             </p>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-txt-tertiary">
               최대 {formatFileSize(maxSize)} · {multiple ? `최대 ${maxFiles}개` : '1개'}
             </p>
           </div>
         )}
 
         {isDragging && (
-          <div className="absolute inset-0 bg-blue-500/10 rounded-lg flex items-center justify-center">
-            <p className="text-sm font-medium text-blue-600">여기에 놓으세요</p>
+          <div className="absolute inset-0 bg-[#4F46E5]/10 flex items-center justify-center">
+            <p className="text-sm font-medium text-[#4F46E5]">여기에 놓으세요</p>
           </div>
         )}
       </div>
@@ -214,7 +214,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
       {files.length > 0 && (
         <div className="mt-4 space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-mono text-gray-500 uppercase">
+            <span className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest">
               {files.length}개 파일 선택됨
             </span>
             <button
@@ -222,7 +222,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
                 e.stopPropagation()
                 clearAll()
               }}
-              className="text-xs text-gray-400 hover:text-red-500 transition-colors"
+              className="text-xs text-txt-tertiary hover:text-red-500 transition-colors"
             >
               전체 삭제
             </button>
@@ -232,24 +232,24 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
             {files.map(({ file, id, preview }) => (
               <div
                 key={id}
-                className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200"
+                className="flex items-center gap-3 p-3 bg-surface-sunken border border-border"
               >
                 {preview ? (
                   <img
                     src={preview}
                     alt={file.name}
-                    className="w-10 h-10 object-cover rounded"
+                    className="w-10 h-10 object-cover"
                   />
                 ) : (
-                  <div className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center">
-                    <File size={20} className="text-gray-500" />
+                  <div className="w-10 h-10 bg-border-subtle flex items-center justify-center">
+                    <File size={20} className="text-txt-tertiary" />
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">
+                  <p className="text-sm font-medium text-txt-primary truncate">
                     {file.name}
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-txt-tertiary">
                     {formatFileSize(file.size)}
                   </p>
                 </div>
@@ -259,9 +259,9 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
                     removeFile(id)
                   }}
                   aria-label="파일 삭제"
-                  className="p-1 hover:bg-gray-200 rounded transition-colors"
+                  className="p-1 hover:bg-surface-sunken transition-colors"
                 >
-                  <X size={16} className="text-gray-400 hover:text-red-500" />
+                  <X size={16} className="text-txt-tertiary hover:text-red-500" />
                 </button>
               </div>
             ))}

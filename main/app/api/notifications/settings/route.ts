@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 export const runtime = 'nodejs'
 
@@ -26,7 +27,7 @@ export async function GET() {
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     const { data: settings, error } = await supabase
@@ -36,25 +37,21 @@ export async function GET() {
       .single()
 
     if (error && error.code !== 'PGRST116') {
-      // PGRST116: no rows returned (설정이 없는 경우)
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return ApiResponse.internalError('알림 설정 조회에 실패했습니다')
     }
 
     // 설정이 없으면 기본값 반환
     if (!settings) {
-      return NextResponse.json({
+      return ApiResponse.ok({
         ...DEFAULT_SETTINGS,
         user_id: user.id,
         is_default: true,
       })
     }
 
-    return NextResponse.json(settings)
-  } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
-    )
+    return ApiResponse.ok(settings)
+  } catch {
+    return ApiResponse.internalError('알림 설정 조회 중 오류가 발생했습니다')
   }
 }
 
@@ -71,7 +68,7 @@ export async function POST(request: NextRequest) {
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     const body = await request.json()
@@ -118,14 +115,11 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return ApiResponse.internalError('알림 설정 저장에 실패했습니다')
     }
 
-    return NextResponse.json(data)
-  } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
-    )
+    return ApiResponse.ok(data)
+  } catch {
+    return ApiResponse.internalError('알림 설정 업데이트 중 오류가 발생했습니다')
   }
 }

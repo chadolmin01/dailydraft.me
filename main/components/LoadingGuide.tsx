@@ -11,20 +11,20 @@ const TIPS = [
   {
     id: 1,
     icon: Search,
-    title: "Explore Opportunities",
-    desc: "검색창에서 'Pre-A' 또는 'Co-founder' 같은 키워드로 필터링하여 원하는 공고를 빠르게 찾으세요."
+    title: "Explore Feed",
+    desc: "피드에서 관심 분야 프로젝트를 찾고, 마음에 드는 팀에 합류해보세요."
   },
   {
     id: 2,
     icon: MessageSquare,
-    title: "AI Co-founder",
-    desc: "채팅 탭(Comm)에서 AI에게 사업계획서 초안 작성이나 시장 분석을 요청해보세요."
+    title: "Coffee Chat",
+    desc: "프로필에서 커피챗을 열어 다른 창업자와 1:1로 만나보세요."
   },
   {
     id: 3,
     icon: BarChart3,
-    title: "Market Insight",
-    desc: "대시보드 우측에서 실시간 시장 트렌드와 급상승 키워드를 확인할 수 있습니다."
+    title: "Start a Project",
+    desc: "나만의 프로젝트를 등록하고 함께할 팀원을 모집해보세요."
   }
 ]
 
@@ -74,27 +74,27 @@ export const LoadingGuide: React.FC<LoadingGuideProps> = ({ onComplete }) => {
     <div className="fixed inset-0 z-50 bg-[#FAFAFA] bg-grid-engineering flex flex-col items-center justify-center font-sans p-6">
 
       <div className="w-full max-w-md relative">
-         <div className="bg-white border border-gray-200 shadow-xl rounded-sm overflow-hidden relative z-10 animate-slide-up-fade">
+         <div className="bg-surface-card border border-border-strong shadow-brutal overflow-hidden relative z-10 animate-slide-up-fade">
 
-            <div className="h-32 bg-gray-900 relative overflow-hidden flex items-center justify-center">
+            <div className="h-32 bg-surface-inverse relative overflow-hidden flex items-center justify-center">
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20"></div>
-                <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
 
-                <div className="relative z-10 w-16 h-16 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.2)]">
+                <div className="relative z-10 w-16 h-16 bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.2)]">
                    <Zap size={32} className="text-white fill-white animate-pulse" />
                 </div>
 
-                <div className="absolute top-4 left-10 w-1 h-1 bg-blue-500 rounded-full animate-ping"></div>
-                <div className="absolute bottom-4 right-10 w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                <div className="absolute top-4 left-10 w-1 h-1 bg-blue-500 animate-ping"></div>
+                <div className="absolute bottom-4 right-10 w-1.5 h-1.5 bg-green-500 animate-pulse"></div>
             </div>
 
             <div className="p-8">
                <div className="flex justify-between items-end mb-2">
                   <span className="text-xs font-mono font-bold text-draft-blue uppercase animate-pulse">{statusText}</span>
-                  <span className="text-3xl font-bold font-mono text-gray-900 leading-none">{progress}%</span>
+                  <span className="text-3xl font-bold font-mono text-txt-primary leading-none">{progress}%</span>
                </div>
 
-               <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden mb-8">
+               <div className="w-full h-1.5 bg-surface-sunken overflow-hidden mb-8">
                   <div
                     className="h-full bg-black transition-all duration-100 ease-linear relative"
                     style={{ width: `${progress}%` }}
@@ -103,17 +103,17 @@ export const LoadingGuide: React.FC<LoadingGuideProps> = ({ onComplete }) => {
                   </div>
                </div>
 
-               <div className="border-t border-gray-100 pt-6">
+               <div className="border-t border-dashed border-border pt-6">
                   <div className="flex items-start gap-4">
-                     <div className="w-10 h-10 bg-gray-50 rounded-sm border border-gray-100 flex items-center justify-center shrink-0">
-                        <CurrentIcon size={20} className="text-gray-600" />
+                     <div className="w-10 h-10 bg-surface-sunken border border-border-strong flex items-center justify-center shrink-0">
+                        <CurrentIcon size={20} className="text-txt-tertiary" />
                      </div>
                      <div className="flex-1 animate-in fade-in slide-in-from-right-2 duration-300" key={currentTipIndex}>
                         <div className="flex items-center gap-2 mb-1">
-                           <span className="text-[10px] font-bold bg-black text-white px-1.5 py-0.5 rounded-sm font-mono">TIP</span>
-                           <h3 className="font-bold text-sm text-gray-900">{TIPS[currentTipIndex].title}</h3>
+                           <span className="text-[0.625rem] font-bold bg-black text-white px-1.5 py-0.5 font-mono">TIP</span>
+                           <h3 className="font-bold text-sm text-txt-primary">{TIPS[currentTipIndex].title}</h3>
                         </div>
-                        <p className="text-xs text-gray-500 leading-relaxed break-keep">
+                        <p className="text-xs text-txt-disabled leading-relaxed break-keep">
                            {TIPS[currentTipIndex].desc}
                         </p>
                      </div>
@@ -121,13 +121,13 @@ export const LoadingGuide: React.FC<LoadingGuideProps> = ({ onComplete }) => {
                </div>
             </div>
 
-            <div className="bg-gray-50 px-4 py-2 border-t border-gray-100 flex justify-between items-center text-[9px] font-mono text-gray-400">
+            <div className="bg-surface-sunken px-4 py-2 border-t border-border-strong flex justify-between items-center text-[0.5625rem] font-mono text-txt-disabled">
                <span>DRAFT OS v2.4.0</span>
                <span className="flex items-center gap-1">LOADING RESOURCES <span className="animate-spin">/</span></span>
             </div>
          </div>
 
-         <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 blur-2xl -z-10 rounded-full"></div>
+         <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 blur-2xl -z-10"></div>
       </div>
     </div>
   )

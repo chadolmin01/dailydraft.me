@@ -23,10 +23,10 @@ const Crosshair = ({ className }: { className?: string }) => (
 
 // A section divider with measurements
 const TechnicalDivider = () => (
-  <div className="w-full h-px bg-gray-200 relative my-12">
+  <div className="w-full h-px bg-border relative my-12">
     <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-3 bg-black"></div>
     <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-3 bg-black"></div>
-    <div className="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 bg-white px-2 text-[10px] font-mono text-gray-400">
+    <div className="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 bg-white px-2 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-disabled">
       SECTION BREAK
     </div>
   </div>
@@ -51,97 +51,97 @@ const staggerContainer: Variants = {
 // --- Mock UI Components ---
 
 const MockDashboardUI = () => (
-  <div className="w-full bg-white rounded-none border border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,0.1)] overflow-hidden flex flex-col md:flex-row h-full min-h-[400px]">
+  <div className="w-full bg-surface-card border border-border-strong shadow-brutal overflow-hidden flex flex-col md:flex-row h-full min-h-[25rem]">
     {/* Sidebar */}
-    <div className="w-16 border-r border-gray-200 flex flex-col items-center py-6 gap-6 bg-white hidden md:flex shrink-0">
+    <div className="w-16 border-r border-border flex flex-col items-center py-6 gap-6 bg-surface-card hidden md:flex shrink-0">
       <div className="w-8 h-8 bg-black flex items-center justify-center text-white font-bold font-mono">D.</div>
       <div className="flex flex-col gap-6 mt-8">
-        <div className="p-2 bg-gray-100 rounded"><LayoutGrid className="w-5 h-5 text-black" /></div>
-        <Briefcase className="w-5 h-5 text-gray-400 hover:text-black transition-colors cursor-pointer" />
-        <Users className="w-5 h-5 text-gray-400 hover:text-black transition-colors cursor-pointer" />
-        <FileText className="w-5 h-5 text-gray-400 hover:text-black transition-colors cursor-pointer" />
+        <div className="p-2 bg-surface-sunken"><LayoutGrid className="w-5 h-5 text-black" /></div>
+        <Briefcase className="w-5 h-5 text-txt-disabled hover:text-black transition-colors cursor-pointer" />
+        <Users className="w-5 h-5 text-txt-disabled hover:text-black transition-colors cursor-pointer" />
+        <FileText className="w-5 h-5 text-txt-disabled hover:text-black transition-colors cursor-pointer" />
       </div>
     </div>
 
     {/* Main Content */}
-    <div className="flex-1 bg-white p-0 relative min-w-0">
+    <div className="flex-1 bg-surface-card p-0 relative min-w-0">
       <div className="grid-bg absolute inset-0 opacity-50 pointer-events-none"></div>
 
       <div className="p-4 sm:p-5 relative z-10">
         {/* Header */}
-        <div className="flex flex-wrap justify-between items-end mb-6 border-b border-gray-100 pb-4 gap-4">
+        <div className="flex flex-wrap justify-between items-end mb-6 border-b border-border-subtle pb-4 gap-4">
           <div>
              <div className="flex items-center gap-2 mb-1">
-                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                <span className="text-[10px] text-gray-400 font-mono tracking-widest whitespace-nowrap">WORKSPACE / MAIN</span>
+                <span className="w-2 h-2 bg-green-500 animate-pulse"></span>
+                <span className="text-[0.625rem] text-txt-disabled font-mono tracking-widest whitespace-nowrap">WORKSPACE / MAIN</span>
              </div>
-             <h3 className="text-lg sm:text-xl font-bold text-gray-900 tracking-tight">Dashboard</h3>
+             <h3 className="text-lg sm:text-xl font-bold text-txt-primary tracking-tight">Dashboard</h3>
           </div>
-          <button className="bg-black hover:bg-gray-800 text-white text-xs px-3 py-1.5 flex items-center gap-2 font-mono transition-colors whitespace-nowrap">
+          <button className="bg-black hover:bg-[#333] text-white text-xs px-3 py-1.5 flex items-center gap-2 font-mono transition-colors whitespace-nowrap shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">
              <Plus className="w-3 h-3" /> NEW
           </button>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 border border-gray-200 mb-6 bg-gray-50">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 border border-border mb-6 bg-surface-sunken">
            {/* Card 1 */}
-           <div className="bg-white p-3 sm:p-4 border-b sm:border-b-0 sm:border-r border-gray-200 relative group">
+           <div className="bg-surface-card p-3 sm:p-4 border-b sm:border-b-0 sm:border-r border-border relative group">
               <div className="flex items-center gap-3 mb-4">
                  <div className="w-8 h-8 bg-black text-white flex items-center justify-center font-bold text-xs font-mono shrink-0">P1</div>
                  <div className="min-w-0">
                     <div className="font-bold text-sm truncate">Project Alpha</div>
-                    <div className="text-[10px] text-gray-400 font-mono truncate">STRATEGY</div>
+                    <div className="text-[0.625rem] text-txt-disabled font-mono truncate">STRATEGY</div>
                  </div>
               </div>
-              <div className="flex flex-wrap gap-2 text-[10px] font-mono">
-                 <span className="bg-gray-100 px-1.5 py-0.5 border border-gray-200">SEOUL</span>
+              <div className="flex flex-wrap gap-2 text-[0.625rem] font-mono">
+                 <span className="bg-surface-sunken px-1.5 py-0.5 border border-border">SEOUL</span>
               </div>
            </div>
 
            {/* Card 2 */}
-           <div className="bg-white p-3 sm:p-4 border-b sm:border-b-0 lg:border-r border-gray-200 flex flex-col justify-between">
-              <div className="text-[10px] text-gray-400 font-mono uppercase tracking-wider">Total Views</div>
+           <div className="bg-surface-card p-3 sm:p-4 border-b sm:border-b-0 lg:border-r border-border flex flex-col justify-between">
+              <div className="text-[0.625rem] text-txt-disabled font-mono uppercase tracking-wider">Total Views</div>
               <div>
-                <div className="text-2xl font-bold text-gray-900 font-mono tracking-tighter">1,240</div>
-                <div className="text-[10px] text-green-600 mt-1 font-mono">+12%</div>
+                <div className="text-2xl font-bold text-txt-primary font-mono tracking-tighter">1,240</div>
+                <div className="text-[0.625rem] text-green-600 mt-1 font-mono">+12%</div>
               </div>
            </div>
 
            {/* Card 3 */}
-           <div className="bg-blue-50/30 p-3 sm:p-4 flex flex-col justify-between relative overflow-hidden sm:col-span-2 lg:col-span-1">
-               <div className="absolute top-0 right-0 w-8 h-8 border-l border-b border-blue-200"></div>
+           <div className="bg-[#4F46E5]/5 p-3 sm:p-4 flex flex-col justify-between relative overflow-hidden sm:col-span-2 lg:col-span-1">
+               <div className="absolute top-0 right-0 w-8 h-8 border-l border-b border-[#4F46E5]/20"></div>
                <div className="flex justify-between items-start">
-                  <div className="text-[10px] text-blue-600 font-mono uppercase tracking-wider">Req</div>
-                  <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                  <div className="text-[0.625rem] text-[#4F46E5] font-mono uppercase tracking-wider">Req</div>
+                  <span className="w-2 h-2 bg-[#4F46E5]"></span>
                </div>
                <div>
-                  <div className="text-2xl font-bold text-blue-900 font-mono tracking-tighter">04</div>
-                  <div className="text-[10px] text-blue-600 mt-1 font-mono">WAITING</div>
+                  <div className="text-2xl font-bold text-[#4F46E5] font-mono tracking-tighter">04</div>
+                  <div className="text-[0.625rem] text-[#4F46E5] mt-1 font-mono">WAITING</div>
                </div>
            </div>
         </div>
 
         {/* Recommended Section */}
-        <div className="border border-gray-200 p-1">
-           <div className="flex justify-between items-center bg-gray-50 px-3 py-2 border-b border-gray-200 mb-1">
-              <h4 className="font-bold text-xs text-gray-900 font-mono uppercase">Opportunities</h4>
-              <span className="text-[10px] text-gray-400 font-mono cursor-pointer hover:text-black">ALL</span>
+        <div className="border border-border p-1">
+           <div className="flex justify-between items-center bg-surface-sunken px-3 py-2 border-b border-border mb-1">
+              <h4 className="font-bold text-xs text-txt-primary font-mono uppercase">Opportunities</h4>
+              <span className="text-[0.625rem] text-txt-disabled font-mono cursor-pointer hover:text-black">ALL</span>
            </div>
            <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
               {/* Dark Card */}
               <div className="bg-[#111] p-4 text-white relative group">
-                 <div className="absolute top-3 right-3 border border-gray-700 px-1.5 py-0.5 text-[10px] font-mono text-green-400">98%</div>
+                 <div className="absolute top-3 right-3 border border-white/15 px-1.5 py-0.5 text-[0.625rem] font-mono text-green-400">98%</div>
                  <div className="mb-3">
-                    <span className="text-[10px] font-mono text-gray-500 block mb-1">SEED STAGE</span>
+                    <span className="text-[0.625rem] font-mono text-txt-tertiary block mb-1">SEED STAGE</span>
                     <h5 className="font-bold text-sm leading-tight break-keep">AI Pet Health<br/>Platform</h5>
                  </div>
               </div>
 
-               {/* Blue Card */}
-               <div className="bg-blue-600 p-4 text-white relative">
-                 <div className="absolute top-3 right-3 bg-blue-500 px-1.5 py-0.5 text-[10px] font-mono border border-blue-400">85%</div>
+               {/* Indigo Card */}
+               <div className="bg-[#4F46E5] p-4 text-white relative">
+                 <div className="absolute top-3 right-3 bg-[#4338CA] px-1.5 py-0.5 text-[0.625rem] font-mono border border-[#4F46E5]">85%</div>
                  <div className="mb-3">
-                    <span className="text-[10px] font-mono text-blue-200 block mb-1">GOV SUPPORT</span>
+                    <span className="text-[0.625rem] font-mono text-indigo-200 block mb-1">GOV SUPPORT</span>
                     <h5 className="font-bold text-sm leading-tight break-keep">2026 예비창업<br/>패키지 모집</h5>
                  </div>
               </div>
@@ -153,13 +153,13 @@ const MockDashboardUI = () => (
 )
 
 const MockAICard = () => (
-   <div className="bg-white rounded-none border border-black shadow-[8px_8px_0px_0px_#111] max-w-sm w-full relative overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
+   <div className="bg-surface-card border border-border-strong shadow-brutal max-w-sm w-full relative overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
       <div className="bg-black p-4 text-white flex items-center justify-between">
          <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-yellow-400" />
-            <span className="text-xs font-mono font-bold tracking-wider">AI ANALYSIS</span>
+            <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest">AI ANALYSIS</span>
          </div>
-         <span className="text-[10px] font-mono text-gray-400">v2.4</span>
+         <span className="text-[0.625rem] font-mono text-txt-disabled">v2.4</span>
       </div>
 
       <div className="p-5 relative">
@@ -167,48 +167,48 @@ const MockAICard = () => (
          <div className="relative z-10">
             <div className="mb-4">
                <h4 className="text-lg font-bold mb-1 tracking-tight">Matches Found</h4>
-               <p className="text-[10px] text-gray-500 font-mono">BASED ON VISION</p>
+               <p className="text-[0.625rem] text-txt-tertiary font-mono">BASED ON VISION</p>
             </div>
 
             {/* Match Item 1 */}
-            <div className="bg-white border border-blue-200 p-2.5 mb-2 relative hover:border-blue-600 transition-colors cursor-pointer group shadow-sm">
-               <div className="absolute -left-[1px] top-0 bottom-0 w-1 bg-blue-600"></div>
+            <div className="bg-surface-card border border-[#4F46E5]/20 p-2.5 mb-2 relative hover:border-[#4F46E5] transition-colors cursor-pointer group shadow-sm">
+               <div className="absolute -left-[1px] top-0 bottom-0 w-1 bg-[#4F46E5]"></div>
                <div className="flex justify-between items-start mb-2 pl-2">
                   <div className="flex items-center gap-3">
-                     <div className="w-8 h-8 bg-gray-100 flex items-center justify-center font-bold text-xs shrink-0">SJ</div>
+                     <div className="w-8 h-8 bg-surface-sunken flex items-center justify-center font-bold text-xs shrink-0">SJ</div>
                      <div>
-                        <div className="font-bold text-sm text-gray-900 group-hover:text-blue-600">Sarah Jin</div>
-                        <div className="text-[10px] text-gray-500 font-mono">ANGEL INVESTOR</div>
+                        <div className="font-bold text-sm text-txt-primary group-hover:text-[#4F46E5]">Sarah Jin</div>
+                        <div className="text-[0.625rem] text-txt-tertiary font-mono">ANGEL INVESTOR</div>
                      </div>
                   </div>
-                  <div className="text-blue-600 text-sm font-mono font-bold">94%</div>
+                  <div className="text-[#4F46E5] text-sm font-mono font-bold">94%</div>
                </div>
-               <div className="pl-2 w-full bg-gray-100 h-1 mt-2">
-                  <div className="bg-blue-600 h-full w-[94%]"></div>
+               <div className="pl-2 w-full bg-surface-sunken h-1 mt-2">
+                  <div className="bg-[#4F46E5] h-full w-[94%]"></div>
                </div>
             </div>
 
             {/* Match Item 2 */}
-            <div className="bg-white border border-gray-200 p-2.5 relative opacity-70 hover:opacity-100 transition-opacity cursor-pointer">
+            <div className="bg-surface-card border border-border p-2.5 relative opacity-70 hover:opacity-100 transition-opacity cursor-pointer">
                <div className="flex justify-between items-start mb-2 pl-2">
                   <div className="flex items-center gap-3">
-                     <div className="w-8 h-8 bg-gray-100 flex items-center justify-center font-bold text-xs shrink-0">DC</div>
+                     <div className="w-8 h-8 bg-surface-sunken flex items-center justify-center font-bold text-xs shrink-0">DC</div>
                      <div>
-                        <div className="font-bold text-sm text-gray-900">David Choi</div>
-                        <div className="text-[10px] text-gray-500 font-mono">SENIOR BACKEND</div>
+                        <div className="font-bold text-sm text-txt-primary">David Choi</div>
+                        <div className="text-[0.625rem] text-txt-tertiary font-mono">SENIOR BACKEND</div>
                      </div>
                   </div>
-                  <div className="text-gray-600 text-sm font-mono font-bold">88%</div>
+                  <div className="text-txt-secondary text-sm font-mono font-bold">88%</div>
                </div>
-               <div className="pl-2 w-full bg-gray-100 h-1 mt-2">
-                  <div className="bg-gray-400 h-full w-[88%]"></div>
+               <div className="pl-2 w-full bg-surface-sunken h-1 mt-2">
+                  <div className="bg-txt-disabled h-full w-[88%]"></div>
                </div>
             </div>
          </div>
       </div>
 
-      <div className="bg-gray-50 p-3 text-center border-t border-gray-200">
-         <button className="text-[10px] font-mono font-bold text-gray-600 hover:text-black flex items-center justify-center gap-2 w-full transition-colors">
+      <div className="bg-surface-sunken p-3 text-center border-t border-border">
+         <button className="text-[0.625rem] font-mono font-bold text-txt-secondary hover:text-black flex items-center justify-center gap-2 w-full transition-colors">
             VIEW REPORT <ArrowRight className="w-3 h-3" />
          </button>
       </div>
@@ -223,7 +223,7 @@ const Header: React.FC = () => {
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-surface-card/90 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <div className="flex items-center space-x-2 cursor-pointer group" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
           <div className="w-6 h-6 bg-black flex items-center justify-center text-white font-bold text-xs font-mono group-hover:rotate-12 transition-transform">
@@ -235,13 +235,13 @@ const Header: React.FC = () => {
         <div className="flex items-center space-x-6">
            <Link
              href="/login"
-             className="text-sm font-medium text-gray-500 hover:text-black hidden sm:block font-mono"
+             className="text-sm font-medium text-txt-tertiary hover:text-black hidden sm:block font-mono"
            >
              Log in
            </Link>
            <Link
              href="/login"
-             className="bg-black text-white text-xs px-5 py-2.5 hover:bg-gray-800 transition-colors font-mono font-medium flex items-center gap-2"
+             className="bg-black text-white text-xs px-5 py-2.5 hover:bg-[#333] transition-colors font-mono font-medium flex items-center gap-2 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
            >
              GET STARTED <ArrowRight className="w-3 h-3" />
            </Link>
@@ -319,7 +319,7 @@ const Hero: React.FC = () => {
       case 'error':
         return 'bg-red-600 hover:bg-red-500'
       default:
-        return 'bg-blue-600 hover:bg-blue-700'
+        return 'bg-[#4F46E5] hover:bg-[#4338CA]'
     }
   }
 
@@ -328,8 +328,8 @@ const Hero: React.FC = () => {
       <div className="absolute inset-0 grid-bg -z-10 opacity-60"></div>
 
       {/* Decorative Lines */}
-      <div className="absolute left-10 top-0 bottom-0 w-px bg-gray-100 hidden 2xl:block"></div>
-      <div className="absolute right-10 top-0 bottom-0 w-px bg-gray-100 hidden 2xl:block"></div>
+      <div className="absolute left-10 top-0 bottom-0 w-px bg-border-subtle hidden 2xl:block"></div>
+      <div className="absolute right-10 top-0 bottom-0 w-px bg-border-subtle hidden 2xl:block"></div>
 
       {/* Left Column: Text Content */}
       <motion.div
@@ -338,17 +338,17 @@ const Hero: React.FC = () => {
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="w-full lg:w-1/2 text-center lg:text-left relative z-10"
       >
-        <div className="inline-flex items-center px-3 py-1 bg-white border border-black mb-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] lg:mx-0 mx-auto">
-          <span className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
-          <span className="text-[10px] font-mono font-bold tracking-widest uppercase">System Operational v2.0</span>
+        <div className="inline-flex items-center px-3 py-1 bg-surface-card border border-border-strong mb-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] lg:mx-0 mx-auto">
+          <span className="w-2 h-2 bg-green-500 mr-2 animate-pulse"></span>
+          <span className="text-[0.625rem] font-mono font-bold tracking-widest uppercase">System Operational v2.0</span>
         </div>
 
-        <h1 className="text-5xl sm:text-6xl xl:text-7xl font-bold tracking-tighter text-slate-900 mb-8 leading-[1.1] break-keep">
+        <h1 className="text-5xl sm:text-6xl xl:text-7xl font-bold tracking-tighter text-txt-primary mb-8 leading-[1.1] break-keep">
           완벽한 팀은<br />
-          첫 번째 <span className="relative inline-block text-blue-600 mx-2">Draft<svg className="absolute w-full h-3 bottom-1 left-0 text-blue-200 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" opacity="0.5" /></svg></span>에서 시작됩니다
+          첫 번째 <span className="relative inline-block text-[#4F46E5] mx-2">Draft<svg className="absolute w-full h-3 bottom-1 left-0 text-[#4F46E5]/30 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" opacity="0.5" /></svg></span>에서 시작됩니다
         </h1>
 
-        <p className="text-lg text-gray-600 mb-10 leading-relaxed break-keep lg:mx-0 mx-auto max-w-xl lg:max-w-none">
+        <p className="text-lg text-txt-secondary mb-10 leading-relaxed break-keep lg:mx-0 mx-auto max-w-xl lg:max-w-none">
           초기 창업자와 대학생을 위한 AI 팀 빌딩 플랫폼.<br className="hidden sm:block"/>
           아이디어 검증부터 IR 자료 생성까지, Draft OS 하나로 끝내세요.
         </p>
@@ -361,14 +361,14 @@ const Hero: React.FC = () => {
               placeholder="이메일을 입력해주세요"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 bg-white border border-gray-300 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all text-sm font-mono placeholder:font-sans rounded-none"
+              className="w-full px-4 py-3 bg-surface-card border border-border-strong focus:outline-none focus:border-border-strong focus:ring-1 focus:ring-black transition-all text-sm font-mono placeholder:font-sans"
               required
             />
           </div>
           <button
             type="submit"
             disabled={status === 'loading'}
-            className={`w-full sm:w-auto px-8 py-3 text-white font-medium transition-all flex items-center justify-center whitespace-nowrap shadow-lg shadow-blue-200/50 rounded-none shrink-0 disabled:opacity-70 ${getButtonStyle()}`}
+            className={`w-full sm:w-auto px-8 py-3 text-white font-medium transition-all flex items-center justify-center whitespace-nowrap shadow-sharp shrink-0 disabled:opacity-70 ${getButtonStyle()}`}
           >
             {getButtonContent()}
           </button>
@@ -380,7 +380,7 @@ const Hero: React.FC = () => {
           </div>
         )}
 
-        <div className="flex flex-wrap items-center lg:justify-start justify-center gap-4 sm:gap-6 text-[10px] font-mono text-gray-400 uppercase tracking-widest">
+        <div className="flex flex-wrap items-center lg:justify-start justify-center gap-4 sm:gap-6 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-disabled">
            <span>Free Beta Access</span>
            <span className="hidden sm:inline">.</span>
            <span>No Credit Card</span>
@@ -443,7 +443,7 @@ const PainPoints: React.FC = () => {
   ]
 
   return (
-    <section className="py-24 bg-[#111] text-white relative border-t border-gray-800 overflow-hidden">
+    <section className="py-24 bg-[#111] text-white relative border-t border-white/10 overflow-hidden">
         <div className="grid-bg-dark absolute inset-0 opacity-20 pointer-events-none"></div>
 
         <div className="absolute top-0 left-4 sm:left-10 bottom-0 w-px bg-white/5"></div>
@@ -457,17 +457,17 @@ const PainPoints: React.FC = () => {
                variants={fadeInUp}
                className="mb-20 text-center"
             >
-                <div className="inline-flex items-center gap-2 px-3 py-1 border border-red-500/30 bg-red-500/10 text-red-400 mb-6 rounded-none backdrop-blur-sm">
-                    <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></div>
-                    <span className="text-[10px] font-mono font-bold tracking-widest uppercase">SYSTEM CRITICAL WARNING</span>
+                <div className="inline-flex items-center gap-2 px-3 py-1 border border-red-500/30 bg-red-500/10 text-red-400 mb-6 backdrop-blur-sm">
+                    <div className="w-1.5 h-1.5 bg-red-500 animate-pulse"></div>
+                    <span className="text-[0.625rem] font-mono font-bold tracking-widest uppercase">SYSTEM CRITICAL WARNING</span>
                 </div>
 
                 <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 leading-tight break-keep">
                     스타트업 초기 단계에서 발생하는<br />
-                    <span className="text-gray-500">치명적인 오류들</span>
+                    <span className="text-txt-tertiary">치명적인 오류들</span>
                 </h2>
 
-                <p className="text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed break-keep">
+                <p className="text-txt-disabled max-w-2xl mx-auto text-lg leading-relaxed break-keep">
                     열정만으로는 넘어설 수 없는 현실적인 문제들.<br className="hidden sm:block"/>
                     많은 초기 창업자들이 제품을 만들기도 전에 '죽음의 계곡'을 마주합니다.
                 </p>
@@ -484,29 +484,29 @@ const PainPoints: React.FC = () => {
                    <motion.div
                      key={i}
                      variants={fadeInUp}
-                     className="bg-black border border-gray-800 hover:border-gray-600 transition-colors group relative flex flex-col"
+                     className="bg-black border border-white/10 hover:border-white/30 transition-colors group relative flex flex-col"
                    >
-                       <div className="border-b border-gray-800 p-3 flex justify-between items-center bg-[#0a0a0a] group-hover:bg-[#151515] transition-colors">
-                          <span className="text-[10px] font-mono text-gray-600 group-hover:text-gray-400 transition-colors truncate max-w-[150px]">{item.path}</span>
+                       <div className="border-b border-white/10 p-3 flex justify-between items-center bg-[#0a0a0a] group-hover:bg-[#151515] transition-colors">
+                          <span className="text-[0.625rem] font-mono text-white/40 group-hover:text-txt-disabled transition-colors truncate max-w-[9.375rem]">{item.path}</span>
                           <div className="flex gap-1.5 opacity-50 group-hover:opacity-100 transition-opacity">
-                             <div className="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
-                             <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80"></div>
-                             <div className="w-2.5 h-2.5 rounded-full bg-green-500/80"></div>
+                             <div className="w-2.5 h-2.5 bg-red-500/80"></div>
+                             <div className="w-2.5 h-2.5 bg-yellow-500/80"></div>
+                             <div className="w-2.5 h-2.5 bg-green-500/80"></div>
                           </div>
                        </div>
 
                        <div className="p-6 flex-1 flex flex-col">
-                           <div className="mb-4 font-mono text-[10px] text-red-400 bg-red-950/20 border border-red-900/30 px-2 py-1 self-start inline-block">
+                           <div className="mb-4 font-mono text-[0.625rem] text-red-400 bg-red-950/20 border border-red-900/30 px-2 py-1 self-start inline-block">
                              &gt; ERROR_CODE: {item.code}
                            </div>
                            <h3 className="text-xl font-bold mb-3 text-white">{item.title}</h3>
-                           <p className="text-sm text-gray-400 leading-relaxed break-keep">
+                           <p className="text-sm text-txt-disabled leading-relaxed break-keep">
                                {item.desc}
                            </p>
                        </div>
 
-                       <div className="absolute top-0 left-0 w-2 h-2 border-l border-t border-gray-700 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                       <div className="absolute bottom-0 right-0 w-2 h-2 border-r border-b border-gray-700 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                       <div className="absolute top-0 left-0 w-2 h-2 border-l border-t border-white/15 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                       <div className="absolute bottom-0 right-0 w-2 h-2 border-r border-b border-white/15 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                    </motion.div>
                ))}
             </motion.div>
@@ -517,7 +517,7 @@ const PainPoints: React.FC = () => {
 
 const Features: React.FC = () => {
   return (
-    <section id="features" className="py-24 bg-white border-t border-gray-200 relative">
+    <section id="features" className="py-24 bg-surface-card border-t border-border relative">
       <div className="grid-bg absolute inset-0 opacity-40 pointer-events-none"></div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
@@ -533,36 +533,36 @@ const Features: React.FC = () => {
         >
            <div className="flex-1">
               <div className="flex items-center gap-2 mb-4">
-                 <Target className="w-4 h-4 text-blue-600" />
-                 <span className="text-blue-600 font-mono text-xs font-bold tracking-widest uppercase">AI MATCHING ENGINE</span>
+                 <Target className="w-4 h-4 text-[#4F46E5]" />
+                 <span className="text-[#4F46E5] font-mono text-[0.625rem] font-bold tracking-widest uppercase">AI MATCHING ENGINE</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-6 leading-tight break-keep">
+              <h2 className="text-3xl sm:text-4xl font-bold text-txt-primary mb-6 leading-tight break-keep">
                  단순 연결이 아닌,<br/>
                  정밀한 <span className="bg-yellow-100 px-1">팀 설계</span>입니다.
               </h2>
-              <p className="text-gray-600 leading-relaxed mb-8 break-keep">
+              <p className="text-txt-secondary leading-relaxed mb-8 break-keep">
                  Draft의 AI는 단순한 스킬 매칭을 넘어섭니다. 프로젝트 이력, 작업 스타일, 비전 정렬도(Alignment)를 분석하여 퍼즐처럼 완벽하게 들어맞는 공동 창업자를 제안합니다.
               </p>
 
               <div className="space-y-4">
-                 <div className="flex items-start gap-4 p-4 border border-gray-200 bg-white hover:border-black transition-colors group cursor-default">
-                    <div className="bg-gray-50 p-2 border border-gray-200 group-hover:bg-black group-hover:text-white transition-colors"><BarChart3 className="w-5 h-5" /></div>
+                 <div className="flex items-start gap-4 p-4 border border-border bg-surface-card hover:border-border-strong transition-colors group cursor-default">
+                    <div className="bg-surface-sunken p-2 border border-border group-hover:bg-black group-hover:text-white transition-colors"><BarChart3 className="w-5 h-5" /></div>
                     <div>
                        <h4 className="font-bold text-sm mb-1">매칭 적합도 분석 리포트</h4>
-                       <p className="text-xs text-gray-500 break-keep">이 후보자가 왜 94% 적합한지, 30가지 지표로 분석해드립니다.</p>
+                       <p className="text-xs text-txt-tertiary break-keep">이 후보자가 왜 94% 적합한지, 30가지 지표로 분석해드립니다.</p>
                     </div>
                  </div>
-                 <div className="flex items-start gap-4 p-4 border border-gray-200 bg-white hover:border-black transition-colors group cursor-default">
-                    <div className="bg-gray-50 p-2 border border-gray-200 group-hover:bg-black group-hover:text-white transition-colors"><MessageSquare className="w-5 h-5" /></div>
+                 <div className="flex items-start gap-4 p-4 border border-border bg-surface-card hover:border-border-strong transition-colors group cursor-default">
+                    <div className="bg-surface-sunken p-2 border border-border group-hover:bg-black group-hover:text-white transition-colors"><MessageSquare className="w-5 h-5" /></div>
                     <div>
                        <h4 className="font-bold text-sm mb-1">AI 인터뷰 모드</h4>
-                       <p className="text-xs text-gray-500 break-keep">만나기 전, AI가 당신을 대신해 기술/인성 면접을 진행합니다.</p>
+                       <p className="text-xs text-txt-tertiary break-keep">만나기 전, AI가 당신을 대신해 기술/인성 면접을 진행합니다.</p>
                     </div>
                  </div>
               </div>
            </div>
            <div className="flex-1 flex justify-center relative w-full">
-              <div className="absolute inset-0 border border-gray-100 transform rotate-3 scale-95 z-0 hidden sm:block"></div>
+              <div className="absolute inset-0 border border-border-subtle transform rotate-3 scale-95 z-0 hidden sm:block"></div>
               <div className="relative z-10 w-full flex justify-center">
                  <MockAICard />
               </div>
@@ -580,26 +580,26 @@ const Features: React.FC = () => {
            <div className="flex-1">
               <div className="flex items-center gap-2 mb-4">
                  <LayoutGrid className="w-4 h-4 text-green-600" />
-                 <span className="text-green-600 font-mono text-xs font-bold tracking-widest uppercase">STARTUP OS</span>
+                 <span className="text-green-600 font-mono text-[0.625rem] font-bold tracking-widest uppercase">STARTUP OS</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-6 leading-tight break-keep">
+              <h2 className="text-3xl sm:text-4xl font-bold text-txt-primary mb-6 leading-tight break-keep">
                  아이디어 구상부터 IR까지,<br/>
                  <span className="bg-green-100 px-1">자동화된 워크스페이스</span>
               </h2>
-              <p className="text-gray-600 leading-relaxed mb-8 break-keep">
+              <p className="text-txt-secondary leading-relaxed mb-8 break-keep">
                  문서 양식 때문에 고민하지 마세요. 예비창업패키지용 PSST 사업계획서부터 주주간 계약서까지, 스타트업 표준 양식을 AI가 초안(Draft)으로 작성해줍니다.
               </p>
 
-              <ul className="space-y-4 font-medium text-gray-700">
-                 <li className="flex items-center gap-3 p-3 bg-gray-50 border border-transparent hover:border-gray-200 transition-colors">
+              <ul className="space-y-4 font-medium text-txt-secondary">
+                 <li className="flex items-center gap-3 p-3 bg-surface-sunken border border-transparent hover:border-border transition-colors">
                     <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
                     <span className="text-sm">PSST 표준 사업계획서 자동 생성</span>
                  </li>
-                 <li className="flex items-center gap-3 p-3 bg-gray-50 border border-transparent hover:border-gray-200 transition-colors">
+                 <li className="flex items-center gap-3 p-3 bg-surface-sunken border border-transparent hover:border-border transition-colors">
                     <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
                     <span className="text-sm">정부지원사업 마감일 자동 트래킹</span>
                  </li>
-                 <li className="flex items-center gap-3 p-3 bg-gray-50 border border-transparent hover:border-gray-200 transition-colors">
+                 <li className="flex items-center gap-3 p-3 bg-surface-sunken border border-transparent hover:border-border transition-colors">
                     <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
                     <span className="text-sm">법률 검토된 공동창업 계약서 템플릿</span>
                  </li>
@@ -607,31 +607,31 @@ const Features: React.FC = () => {
            </div>
 
            <div className="flex-1 w-full">
-              <div className="bg-white border border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,0.05)] overflow-hidden">
-                 <div className="bg-gray-50 border-b border-gray-200 p-4 flex justify-between items-center">
+              <div className="bg-surface-card border border-border-strong shadow-brutal overflow-hidden">
+                 <div className="bg-surface-sunken border-b border-border p-4 flex justify-between items-center">
                     <h4 className="font-bold text-sm flex items-center gap-2 font-mono"><FileText className="w-4 h-4" /> DOCUMENTS.DIR</h4>
-                    <button className="bg-white border border-gray-300 text-[10px] px-2 py-1 flex items-center gap-1 font-mono hover:bg-gray-100"><Plus className="w-3 h-3"/> NEW</button>
+                    <button className="bg-surface-card border border-border-strong text-[0.625rem] px-2 py-1 flex items-center gap-1 font-mono hover:bg-surface-sunken"><Plus className="w-3 h-3"/> NEW</button>
                  </div>
-                 <div className="divide-y divide-gray-100">
+                 <div className="divide-y divide-border">
                     {[
                        { name: '2026 예비창업패키지 사업계획서_v1.2', tag: '#Funding', status: 'Draft', date: '2h ago' },
                        { name: '주주간 계약서 (Co-founder Agreement)', tag: '#Legal', status: 'Review', date: 'Yesterday' },
                        { name: '헬스케어 시장 SOM 분석 데이터', tag: '#Research', status: 'Final', date: 'Feb 10' },
                        { name: '서비스 소개서 (Landing Page Copy)', tag: '#Marketing', status: 'Draft', date: 'Feb 08' }
                     ].map((doc, i) => (
-                       <div key={i} className="p-4 flex items-center justify-between hover:bg-blue-50/50 transition-colors group cursor-pointer">
+                       <div key={i} className="p-4 flex items-center justify-between hover:bg-[#4F46E5]/5 transition-colors group cursor-pointer">
                           <div className="flex items-center gap-3 overflow-hidden">
-                             <div className="w-8 h-8 bg-gray-100 border border-gray-200 text-gray-500 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors shrink-0"><FileText className="w-4 h-4" /></div>
+                             <div className="w-8 h-8 bg-surface-sunken border border-border text-txt-tertiary flex items-center justify-center group-hover:bg-[#4F46E5] group-hover:text-white transition-colors shrink-0"><FileText className="w-4 h-4" /></div>
                              <div className="min-w-0">
-                                <div className="text-sm font-bold text-gray-900 mb-0.5 truncate">{doc.name}</div>
-                                <div className="text-[10px] text-gray-400 font-mono">{doc.tag}</div>
+                                <div className="text-sm font-bold text-txt-primary mb-0.5 truncate">{doc.name}</div>
+                                <div className="text-[0.625rem] text-txt-disabled font-mono">{doc.tag}</div>
                              </div>
                           </div>
                           <div className="flex items-center gap-3 shrink-0">
-                             <span className={`text-[10px] px-2 py-0.5 border font-mono ${
+                             <span className={`text-[0.625rem] px-2 py-0.5 border font-mono ${
                                 doc.status === 'Final' ? 'bg-green-50 border-green-200 text-green-700' :
                                 doc.status === 'Review' ? 'bg-yellow-50 border-yellow-200 text-yellow-700' :
-                                'bg-gray-50 border-gray-200 text-gray-500'
+                                'bg-surface-sunken border-border text-txt-tertiary'
                              }`}>{doc.status}</span>
                           </div>
                        </div>
@@ -656,17 +656,17 @@ const LiveFeed: React.FC = () => {
   ]
 
   return (
-    <section className="py-12 border-t border-gray-200 bg-gray-50 overflow-hidden">
+    <section className="py-12 border-t border-border bg-surface-sunken overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
         <div className="flex items-center gap-2 justify-center">
-            <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-            <span className="text-xs font-mono font-bold tracking-widest uppercase text-gray-500">LIVE SYSTEM ACTIVITY</span>
+            <span className="w-2 h-2 bg-red-500 animate-pulse"></span>
+            <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">LIVE SYSTEM ACTIVITY</span>
         </div>
       </div>
 
       <div className="relative w-full">
-        <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-gray-50 to-transparent z-10 pointer-events-none"></div>
-        <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-gray-50 to-transparent z-10 pointer-events-none"></div>
+        <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-surface-sunken to-transparent z-10 pointer-events-none"></div>
+        <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-surface-sunken to-transparent z-10 pointer-events-none"></div>
 
         <div className="flex overflow-hidden">
           <motion.div
@@ -676,17 +676,17 @@ const LiveFeed: React.FC = () => {
             style={{ width: "max-content" }}
           >
             {[...activities, ...activities, ...activities, ...activities].map((activity, i) => (
-              <div key={i} className="flex-shrink-0 bg-white border border-gray-200 p-4 w-72 shadow-sm hover:border-black transition-colors group">
+              <div key={i} className="flex-shrink-0 bg-surface-card border border-border p-4 w-72 shadow-sm hover:border-border-strong transition-colors group">
                  <div className="flex justify-between items-start mb-2">
-                    <span className={`text-[10px] font-mono px-1.5 py-0.5 border ${
-                      activity.type === 'MATCH' ? 'bg-blue-50 border-blue-200 text-blue-600' :
+                    <span className={`text-[0.625rem] font-mono px-1.5 py-0.5 border ${
+                      activity.type === 'MATCH' ? 'bg-[#4F46E5]/5 border-[#4F46E5]/20 text-[#4F46E5]' :
                       activity.type === 'CREATE' ? 'bg-green-50 border-green-200 text-green-600' :
                       activity.type === 'FUNDING' ? 'bg-yellow-50 border-yellow-200 text-yellow-600' :
-                      'bg-gray-50 border-gray-200 text-gray-500'
+                      'bg-surface-sunken border-border text-txt-tertiary'
                     }`}>{activity.type}</span>
-                    <span className="text-[10px] font-mono text-gray-400">{activity.time}</span>
+                    <span className="text-[0.625rem] font-mono text-txt-disabled">{activity.time}</span>
                  </div>
-                 <p className="text-xs font-medium text-gray-800 line-clamp-2">{activity.text}</p>
+                 <p className="text-xs font-medium text-txt-primary line-clamp-2">{activity.text}</p>
               </div>
             ))}
           </motion.div>
@@ -707,9 +707,9 @@ const FinalCTA: React.FC = () => {
 
             <div className="max-w-4xl mx-auto px-4 relative z-10 text-center">
                 <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-8 tracking-tighter">
-                    Ready to launch<br/>your <span className="text-blue-500">Draft</span>?
+                    Ready to launch<br/>your <span className="text-[#4F46E5]">Draft</span>?
                 </h2>
-                <p className="text-gray-400 mb-10 text-lg max-w-2xl mx-auto leading-relaxed break-keep">
+                <p className="text-txt-disabled mb-10 text-lg max-w-2xl mx-auto leading-relaxed break-keep">
                     지금 시작하고, 초기 창업자를 위한 모든 기능을<br className="hidden sm:block"/>
                     가장 먼저 경험해보세요.
                 </p>
@@ -717,19 +717,19 @@ const FinalCTA: React.FC = () => {
                 <div className="flex flex-col sm:flex-row justify-center gap-4 max-w-md mx-auto">
                   <Link
                     href="/login"
-                    className="bg-blue-600 text-white px-8 py-4 font-bold text-lg hover:bg-blue-500 transition-colors flex items-center justify-center gap-2 group w-full sm:w-auto"
+                    className="bg-[#4F46E5] text-white px-8 py-4 font-bold text-lg hover:bg-[#4338CA] transition-colors flex items-center justify-center gap-2 group w-full sm:w-auto shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
                   >
                     GET STARTED <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </div>
 
-                <p className="mt-8 text-xs font-mono text-gray-600 tracking-widest uppercase">
+                <p className="mt-8 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-white/40">
                     Join 2,000+ Founders Waiting
                 </p>
 
                 {/* Instagram CTA */}
-                <div className="mt-12 pt-8 border-t border-gray-800">
-                    <p className="text-gray-400 mb-4 text-sm">최신 소식과 업데이트를 받아보세요</p>
+                <div className="mt-12 pt-8 border-t border-dashed border-white/10">
+                    <p className="text-txt-disabled mb-4 text-sm">최신 소식과 업데이트를 받아보세요</p>
                     <a
                       href="https://instagram.com/dailydraft_me"
                       target="_blank"
@@ -742,31 +742,31 @@ const FinalCTA: React.FC = () => {
                 </div>
             </div>
 
-            <div className="absolute top-10 left-10 w-20 h-20 border-l border-t border-gray-800 hidden sm:block"></div>
-            <div className="absolute bottom-10 right-10 w-20 h-20 border-r border-b border-gray-800 hidden sm:block"></div>
+            <div className="absolute top-10 left-10 w-20 h-20 border-l border-t border-white/10 hidden sm:block"></div>
+            <div className="absolute bottom-10 right-10 w-20 h-20 border-r border-b border-white/10 hidden sm:block"></div>
         </section>
     )
 }
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-white border-t border-gray-200 py-16">
+    <footer className="bg-surface-card border-t border-border py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
             <div className="col-span-2 md:col-span-1 pr-8">
-               <span className="font-bold text-xl tracking-tight text-gray-900 block mb-4 font-sans">Draft.</span>
-               <p className="text-sm text-gray-500 mb-6 leading-relaxed break-keep">
+               <span className="font-bold text-xl tracking-tight text-txt-primary block mb-4 font-sans">Draft.</span>
+               <p className="text-sm text-txt-tertiary mb-6 leading-relaxed break-keep">
                   초기 창업자를 위한 운영체제.<br/>
                   팀 빌딩부터 투자 유치까지, Draft가 함께합니다.
                </p>
                <div className="flex gap-4">
-                  <a href="https://instagram.com/dailydraft_me" target="_blank" rel="noopener noreferrer" className="w-8 h-8 bg-gray-100 flex items-center justify-center border border-gray-200 hover:border-black hover:bg-gray-200 transition-colors"><span className="font-bold text-xs">IG</span></a>
+                  <a href="https://instagram.com/dailydraft_me" target="_blank" rel="noopener noreferrer" className="w-8 h-8 bg-surface-sunken flex items-center justify-center border border-border hover:border-border-strong hover:bg-surface-sunken transition-colors"><span className="font-bold text-xs">IG</span></a>
                </div>
             </div>
 
             <div>
                <h4 className="font-bold text-sm mb-4 font-mono uppercase tracking-wider">Product</h4>
-               <ul className="space-y-3 text-sm text-gray-500">
+               <ul className="space-y-3 text-sm text-txt-tertiary">
                   <li><a href="#" className="hover:text-black transition-colors">AI 매칭</a></li>
                   <li><a href="#" className="hover:text-black transition-colors">문서 자동화</a></li>
                   <li><a href="#" className="hover:text-black transition-colors">일정 관리</a></li>
@@ -775,7 +775,7 @@ const Footer: React.FC = () => {
 
             <div>
                <h4 className="font-bold text-sm mb-4 font-mono uppercase tracking-wider">Company</h4>
-               <ul className="space-y-3 text-sm text-gray-500">
+               <ul className="space-y-3 text-sm text-txt-tertiary">
                   <li><a href="#" className="hover:text-black transition-colors">팀 소개</a></li>
                   <li><a href="#" className="hover:text-black transition-colors">채용</a></li>
                   <li><a href="#" className="hover:text-black transition-colors">문의하기</a></li>
@@ -784,15 +784,15 @@ const Footer: React.FC = () => {
 
              <div>
                <h4 className="font-bold text-sm mb-4 font-mono uppercase tracking-wider">Contact</h4>
-               <ul className="space-y-3 text-sm text-gray-500">
+               <ul className="space-y-3 text-sm text-txt-tertiary">
                   <li><a href="https://instagram.com/dailydraft_me" target="_blank" rel="noopener noreferrer" className="hover:text-black transition-colors">Instagram</a></li>
                   <li><a href="mailto:team@dailydraft.me" className="hover:text-black transition-colors">team@dailydraft.me</a></li>
-                  <li><a href="tel:010-4631-9554" className="hover:text-black transition-colors">010-4631-9554</a></li>
+                  <li><span className="text-txt-disabled">카카오톡 문의</span></li>
                </ul>
             </div>
         </div>
 
-        <div className="border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-gray-400 font-mono">
+        <div className="border-t border-dashed border-border pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-txt-disabled font-mono">
             <p>2026 Draft Inc. All rights reserved.</p>
             <div className="flex gap-4 mt-4 md:mt-0">
                <span>Seoul, Korea</span>
@@ -806,7 +806,7 @@ const Footer: React.FC = () => {
 
 export const LandingPage: React.FC = () => {
   return (
-    <div className="min-h-screen font-sans selection:bg-blue-100 text-slate-900 bg-white">
+    <div className="min-h-screen font-sans selection:bg-[#4F46E5]/10 text-txt-primary bg-surface-card">
       <Header />
       <main>
         <Hero />

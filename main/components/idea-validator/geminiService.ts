@@ -45,24 +45,23 @@ export const analyzeIdea = async (
 
   } catch (error) {
     console.error("Analysis Error:", error);
-    // Fallback response structure
     return {
       responses: [{
         role: 'System' as any,
         name: '시스템',
         avatar: '',
-        content: '신경망 연결이 불안정합니다. 잠시 후 다시 시도해주세요.',
+        content: '일시적인 오류가 발생했어요. 잠시 후 다시 시도해주세요.',
         tone: 'Neutral' as any,
-        suggestedActions: []
+        suggestedActions: ['잠시 후 다시 시도해주세요']
       }],
       metrics: {
         score: 0,
         developerScore: 0,
         designerScore: 0,
         vcScore: 0,
-        keyRisks: ["분석 실패"],
+        keyRisks: [],
         keyStrengths: [],
-        summary: "데이터를 불러오지 못했습니다."
+        summary: "일시적인 오류가 발생했습니다."
       }
     };
   }
@@ -98,13 +97,13 @@ export const generateFinalArtifacts = async (
 
   } catch (error) {
     console.error("Artifact Generation Error:", error);
-    // Return empty structured fallback
+    const errorMsg = '일시적인 오류가 발생했어요. 잠시 후 다시 시도해주세요.';
     return {
       prd: {
-        projectName: "Error Generating PRD",
-        version: "0.0.0",
-        tagline: "Please try again.",
-        overview: "문서 생성 중 오류가 발생했습니다.",
+        projectName: "생성 실패",
+        version: "-",
+        tagline: errorMsg,
+        overview: errorMsg,
         targetAudience: [],
         coreFeatures: [],
         techStack: [],
@@ -112,16 +111,16 @@ export const generateFinalArtifacts = async (
         userFlow: ""
       },
       jd: {
-        roleTitle: "Error",
-        department: "Unknown",
-        companyIntro: "Error generating JD.",
+        roleTitle: "생성 실패",
+        department: "-",
+        companyIntro: errorMsg,
         responsibilities: [],
         qualifications: [],
         preferred: [],
         benefits: []
       },
       score: 0,
-      ideaSummary: "요약 생성 실패",
+      ideaSummary: errorMsg,
       personaScores: { developer: 0, designer: 0, vc: 0 },
       actionPlan: { developer: [], designer: [], vc: [] }
     };

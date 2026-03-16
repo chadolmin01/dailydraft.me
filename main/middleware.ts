@@ -14,8 +14,6 @@ const hiddenRoutes = [
   '/business-plan',
   '/validated-ideas',
   '/idea-validator',
-  '/onboarding',
-  '/guide',
   '/waitlist',
   '/project/',        // legacy /project/* flows (trailing slash to avoid matching /projects)
 ]
@@ -30,7 +28,6 @@ const hiddenApiRoutes = [
   '/api/events',
   '/api/idea-validator',
   '/api/notifications',
-  '/api/onboarding',
   '/api/payments',
   '/api/payment-status',
   '/api/pdf-structure',
@@ -127,6 +124,22 @@ export async function middleware(request: NextRequest) {
     const url = request.nextUrl.clone()
     url.pathname = '/explore'
     return NextResponse.redirect(url)
+  }
+
+  // Mandatory onboarding: redirect unboarded users to /onboarding
+  const onboardingExemptPaths = ['/onboarding', '/auth/', '/api/', '/login', '/dev/', '/guide']
+  const needsOnboardingCheck = user && !onboardingExemptPaths.some(p => pathname.startsWith(p)) && pathname !== '/'
+
+  if (needsOnboardingCheck) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('onboarding_completed')
+      .eq('user_id', user.id)
+      .single()
+
+    if (profile && !profile.onboarding_completed) {
+      return NextResponse.redirect(new URL('/onboarding', request.url))
+    }
   }
 
   // Security headers

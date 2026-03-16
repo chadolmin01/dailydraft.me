@@ -15,7 +15,31 @@ export async function GET(
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+    }
+
+    // Verify user is the creator or a team member
+    const { data: opportunity } = await supabase
+      .from('opportunities')
+      .select('creator_id')
+      .eq('id', id)
+      .single()
+
+    if (!opportunity) {
+      return NextResponse.json({ error: 'Opportunity not found' }, { status: 404 })
+    }
+
+    const isCreator = (opportunity as any).creator_id === user.id
+    if (!isCreator) {
+      const { data: membership } = await (supabase.from('accepted_connections') as any)
+        .select('id')
+        .eq('opportunity_id', id)
+        .eq('applicant_id', user.id)
+        .limit(1)
+        .single()
+      if (!membership) {
+        return NextResponse.json({ error: '접근 권한이 없습니다' }, { status: 403 })
+      }
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -32,7 +56,7 @@ export async function GET(
       .order('created_at', { ascending: false })
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ error: 'Operation failed' }, { status: 500 })
     }
 
     const formattedAnnouncements = (announcements || []).map((a: any) => ({
@@ -48,7 +72,7 @@ export async function GET(
 
     return NextResponse.json(formattedAnnouncements)
   } catch (_error) {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: '서버 오류가 발생했습니다' }, { status: 500 })
   }
 }
 
@@ -66,7 +90,7 @@ export async function POST(
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
     }
 
     // Verify user is the opportunity creator
@@ -77,7 +101,7 @@ export async function POST(
       .single()
 
     if (!opportunity || (opportunity as any).creator_id !== user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      return NextResponse.json({ error: '접근 권한이 없습니다' }, { status: 403 })
     }
 
     const body = await request.json()
@@ -104,11 +128,11 @@ export async function POST(
       .single()
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ error: 'Operation failed' }, { status: 500 })
     }
 
     return NextResponse.json(data, { status: 201 })
   } catch (_error) {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: '서버 오류가 발생했습니다' }, { status: 500 })
   }
 }

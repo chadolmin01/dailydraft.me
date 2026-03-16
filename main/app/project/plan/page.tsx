@@ -171,8 +171,8 @@ export default function PlanPage() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Phase 2: Plan</h2>
-          <p className="text-gray-600 mt-1">
+          <h2 className="text-xl font-bold text-txt-primary">Phase 2: Plan</h2>
+          <p className="text-txt-secondary mt-1">
             팀원들의 의견을 모아 PRD(Product Requirements Document)를 생성합니다.
           </p>
         </div>
@@ -181,14 +181,14 @@ export default function PlanPage() {
             <button
               onClick={handleGeneratePRD}
               disabled={isGeneratingPRD}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-600 text-white text-sm rounded-lg hover:bg-violet-700 transition-colors disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-600 text-white text-sm border-2 border-violet-600 hover:bg-violet-700 transition-colors disabled:opacity-50 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
             >
               <FileText className="w-3.5 h-3.5" />
               PRD 보기
             </button>
           )}
-          <span className={`flex items-center gap-1.5 text-xs font-medium ${hasInitialSynthesis ? 'text-emerald-600' : 'text-gray-500'}`}>
-            <div className={`w-1.5 h-1.5 rounded-full ${hasInitialSynthesis ? 'bg-emerald-500 animate-pulse' : 'bg-gray-300'}`}></div>
+          <span className={`flex items-center gap-1.5 text-xs font-medium ${hasInitialSynthesis ? 'text-emerald-600' : 'text-txt-tertiary'}`}>
+            <div className={`w-1.5 h-1.5 ${hasInitialSynthesis ? 'bg-emerald-500 animate-pulse' : 'bg-txt-disabled'}`}></div>
             {hasInitialSynthesis ? 'Live Sync Active' : `Waiting (${inputs.filter(i => i.isSubmitted).length}/3)`}
           </span>
         </div>
@@ -200,9 +200,9 @@ export default function PlanPage() {
         {/* LEFT: Triangle + Input (2/5) */}
         <div className="lg:col-span-2 space-y-4">
           {/* Triangle Visual */}
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Alignment Map</div>
-            <div className="h-[280px]">
+          <div className="bg-surface-card border border-border-strong p-4">
+            <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-disabled mb-2">Alignment Map</div>
+            <div className="h-[17.5rem]">
               <TriangleVisual
                 inputs={inputs}
                 analyzing={isAnalyzing}
@@ -214,8 +214,8 @@ export default function PlanPage() {
           </div>
 
           {/* Input Section */}
-          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-            <div className="h-[320px]">
+          <div className="bg-surface-card border border-border-strong overflow-hidden">
+            <div className="h-[20rem]">
               <InputSection
                 inputs={inputs}
                 logs={logs}
@@ -231,15 +231,15 @@ export default function PlanPage() {
 
         {/* RIGHT: Result Dashboard (3/5) */}
         <div className="lg:col-span-3">
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="bg-surface-card border border-border-strong p-6">
             {/* Dashboard Header */}
-            <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
+            <div className="flex justify-between items-center mb-6 pb-4 border-b border-dashed border-border">
               <h3 className="text-lg font-bold flex items-center gap-2">
-                <div className="w-1.5 h-4 bg-black rounded-full"></div>
+                <div className="w-1.5 h-4 bg-black"></div>
                 Project Dashboard
               </h3>
               {result && (
-                <span className="text-[10px] font-mono text-gray-400 flex items-center gap-1">
+                <span className="text-[0.625rem] font-mono text-txt-disabled flex items-center gap-1">
                   <Clock className="w-3 h-3" />
                   {new Date().toLocaleTimeString()}
                 </span>
@@ -248,14 +248,14 @@ export default function PlanPage() {
 
             {/* Activity Log */}
             {logs.length > 0 && (
-              <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-4 border-b border-gray-100">
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap">Updates</span>
+              <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-4 border-b border-dashed border-border">
+                <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-disabled whitespace-nowrap">Updates</span>
                 {logs.slice(0, 3).map(log => (
-                  <div key={log.id} className="flex items-center gap-1.5 px-2 py-1 bg-gray-50 rounded border border-gray-100 whitespace-nowrap">
-                    <span className="text-[10px] text-gray-400 font-mono">
+                  <div key={log.id} className="flex items-center gap-1.5 px-2 py-1 bg-surface-sunken border border-border whitespace-nowrap">
+                    <span className="text-[0.625rem] text-txt-disabled font-mono">
                       {log.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
-                    <span className={`text-[10px] font-bold px-1 rounded ${getRoleColor(log.role)}`}>
+                    <span className={`text-[0.625rem] font-bold px-1 ${getRoleColor(log.role)}`}>
                       {log.role.split(' ')[0]}
                     </span>
                   </div>
@@ -264,7 +264,7 @@ export default function PlanPage() {
             )}
 
             {/* Result Content */}
-            <div className="max-h-[500px] overflow-y-auto custom-scrollbar">
+            <div className="max-h-[31.25rem] overflow-y-auto custom-scrollbar">
               <ResultSection result={result} selectedView={selectedView} logs={logs} prdResult={prdResult} />
             </div>
           </div>
@@ -272,22 +272,22 @@ export default function PlanPage() {
       </div>
 
       {/* Navigation */}
-      <div className="flex justify-between pt-4 border-t border-gray-200">
+      <div className="flex justify-between pt-4 border-t border-border-strong">
         <a
           href="/project/ideate"
-          className="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-sm text-sm font-medium hover:bg-gray-50 transition-colors"
+          className="px-6 py-2.5 border border-border-strong text-txt-secondary text-sm font-medium hover:bg-black hover:text-white transition-colors"
         >
-          ← 이전: Ideate
+          &larr; 이전: Ideate
         </a>
         <a
           href="/project/build"
-          className={`px-6 py-2.5 rounded-sm text-sm font-medium transition-colors ${
+          className={`px-6 py-2.5 text-sm font-medium transition-colors ${
             hasInitialSynthesis
-              ? 'bg-black text-white hover:bg-gray-800'
-              : 'bg-gray-200 text-gray-400 cursor-not-allowed pointer-events-none'
+              ? 'bg-black text-white border-2 border-black hover:bg-[#333] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
+              : 'bg-surface-sunken text-txt-disabled border border-border cursor-not-allowed pointer-events-none'
           }`}
         >
-          다음: Build →
+          다음: Build &rarr;
         </a>
       </div>
     </div>

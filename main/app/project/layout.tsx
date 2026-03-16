@@ -16,11 +16,11 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
   const currentPhaseIndex = phases.findIndex(p => pathname.startsWith(p.path));
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-surface-sunken">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-surface-card border-b border-border-strong">
         <div className="max-w-5xl mx-auto px-6 py-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">Project Studio</h1>
+          <h1 className="text-2xl font-bold text-txt-primary mb-6">Project Studio</h1>
 
           {/* Phase Stepper */}
           <div className="flex items-center justify-between">
@@ -38,13 +38,13 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
                     <div className="flex items-center gap-3">
                       {/* Step Circle */}
                       <div className={`
-                        w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold
-                        transition-all duration-200
+                        w-10 h-10 flex items-center justify-center text-sm font-bold
+                        transition-all duration-200 border
                         ${isActive
-                          ? 'bg-black text-white'
+                          ? 'bg-black text-white border-black'
                           : isPast
-                            ? 'bg-emerald-500 text-white'
-                            : 'bg-gray-200 text-gray-500 group-hover:bg-gray-300'
+                            ? 'bg-emerald-500 text-white border-emerald-500'
+                            : 'bg-surface-sunken text-txt-tertiary border-border-strong group-hover:bg-surface-card'
                         }
                       `}>
                         {isPast ? '✓' : index + 1}
@@ -52,10 +52,10 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
 
                       {/* Label */}
                       <div className="hidden sm:block">
-                        <p className={`text-sm font-semibold ${isActive ? 'text-black' : 'text-gray-500'}`}>
+                        <p className={`text-sm font-semibold ${isActive ? 'text-black' : 'text-txt-tertiary'}`}>
                           Phase {index + 1}: {phase.label}
                         </p>
-                        <p className={`text-xs ${isActive ? 'text-gray-600' : 'text-gray-400'}`}>
+                        <p className={`text-xs ${isActive ? 'text-txt-secondary' : 'text-txt-disabled'}`}>
                           {phase.description}
                         </p>
                       </div>
@@ -66,7 +66,7 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
                   {index < phases.length - 1 && (
                     <div className={`
                       hidden sm:block flex-1 h-0.5 mx-4
-                      ${index < currentPhaseIndex ? 'bg-emerald-500' : 'bg-gray-200'}
+                      ${index < currentPhaseIndex ? 'bg-emerald-500' : 'bg-border'}
                     `} />
                   )}
                 </React.Fragment>

@@ -19,7 +19,7 @@ export async function GET() {
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
     }
 
     const activities: Activity[] = []
@@ -177,7 +177,7 @@ export async function GET() {
     return NextResponse.json(activities.slice(0, 10))
   } catch (_error) {
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: '서버 오류가 발생했습니다' },
       { status: 500 }
     )
   }

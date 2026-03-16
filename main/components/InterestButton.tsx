@@ -71,6 +71,7 @@ export const InterestButton: React.FC<InterestButtonProps> = ({
       // Already interested (duplicate)
       setHasInterest(true)
       setShowModal(false)
+      setError('이미 관심을 표현했습니다')
     }
 
     setSubmitting(false)
@@ -81,21 +82,21 @@ export const InterestButton: React.FC<InterestButtonProps> = ({
       <button
         onClick={handleClick}
         disabled={loading || hasInterest}
-        className={`flex items-center gap-2 px-4 py-2 rounded-sm border transition-all ${
+        className={`flex items-center gap-2 px-4 py-2 border-2 transition-all ${
           hasInterest
-            ? 'bg-pink-50 text-pink-600 border-pink-200 cursor-default'
-            : 'bg-white text-gray-600 border-gray-200 hover:border-pink-400 hover:text-pink-600'
+            ? 'bg-pink-50 text-pink-600 border-pink-300 cursor-default'
+            : 'bg-surface-card text-txt-secondary border-border-strong hover:border-pink-400 hover:text-pink-600'
         } ${className}`}
       >
         <Heart
           size={18}
           className={hasInterest ? 'fill-pink-500 text-pink-500' : ''}
         />
-        <span className="text-sm font-medium">
+        <span className="text-sm font-bold">
           {hasInterest ? '관심 표현함' : '관심 있어요'}
         </span>
         {count > 0 && (
-          <span className="text-xs font-mono bg-gray-100 px-1.5 py-0.5 rounded">
+          <span className="text-xs font-mono bg-surface-sunken px-1.5 py-0.5 border border-border">
             {count}
           </span>
         )}
@@ -104,19 +105,19 @@ export const InterestButton: React.FC<InterestButtonProps> = ({
       {/* Email Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-sm shadow-xl w-full max-w-sm">
-            <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-              <h3 className="font-bold text-gray-900">관심 표현하기</h3>
+          <div className="bg-surface-card shadow-brutal border-2 border-border-strong w-full max-w-sm">
+            <div className="p-4 border-b border-border-strong flex items-center justify-between">
+              <h3 className="font-bold text-txt-primary">관심 표현하기</h3>
               <button
                 onClick={() => setShowModal(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-txt-disabled hover:text-txt-secondary"
               >
                 <X size={20} />
               </button>
             </div>
 
             <div className="p-4">
-              <p className="text-sm text-gray-600 mb-4">
+              <p className="text-sm text-txt-secondary mb-4">
                 관심을 표현하시면 프로젝트 오너에게 알림이 갑니다.
               </p>
 
@@ -125,26 +126,26 @@ export const InterestButton: React.FC<InterestButtonProps> = ({
                 placeholder="이메일을 입력하세요"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-200 rounded-sm focus:outline-none focus:border-black mb-2"
+                className="w-full px-3 py-2 border-2 border-border-strong bg-surface-card focus:outline-none focus:border-[#4F46E5] mb-2"
               />
 
               {error && <p className="text-xs text-red-500 mb-2">{error}</p>}
 
-              <p className="text-xs text-gray-400 mb-4">
+              <p className="text-xs text-txt-disabled mb-4">
                 * 이메일은 프로젝트 오너에게만 공개됩니다
               </p>
 
               <div className="flex gap-2">
                 <button
                   onClick={() => setShowModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-200 text-gray-600 rounded-sm hover:bg-gray-50 text-sm"
+                  className="flex-1 px-4 py-2 border border-border-strong text-txt-secondary hover:bg-black hover:text-white text-sm font-bold transition-all"
                 >
                   취소
                 </button>
                 <button
                   onClick={() => handleSubmit()}
                   disabled={submitting}
-                  className="flex-1 px-4 py-2 bg-black text-white rounded-sm hover:bg-gray-800 text-sm disabled:bg-gray-300 flex items-center justify-center gap-2"
+                  className="flex-1 px-4 py-2 bg-[#4F46E5] text-white border-2 border-[#4F46E5] hover:bg-[#4338CA] text-sm font-bold shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-40 flex items-center justify-center gap-2"
                 >
                   {submitting ? (
                     <Loader2 size={16} className="animate-spin" />

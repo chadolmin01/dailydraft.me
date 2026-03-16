@@ -135,7 +135,7 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
   };
 
   return (
-    <div className="flex h-full bg-white rounded-lg border border-gray-200 overflow-hidden">
+    <div className="flex h-full bg-surface-card border border-border overflow-hidden">
       {/* Analysis Panel (Left) */}
       {viewState === 'KANBAN' && (
         <AnalysisPanel
@@ -147,21 +147,21 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
 
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
-        <header className="h-14 border-b border-gray-200 bg-white px-4 flex items-center justify-between flex-shrink-0">
+        <header className="h-14 border-b border-border bg-surface-card px-4 flex items-center justify-between flex-shrink-0">
           <div className="flex items-center gap-3">
             {viewState === 'KANBAN' && (
               <button
                 onClick={() => setShowAnalysisPanel(!showAnalysisPanel)}
-                className={`p-1.5 rounded-md hover:bg-gray-100 transition-colors ${showAnalysisPanel ? 'text-indigo-600 bg-indigo-50' : 'text-gray-400'}`}
+                className={`p-1.5 hover:bg-surface-sunken transition-colors ${showAnalysisPanel ? 'text-indigo-600 bg-indigo-50' : 'text-txt-disabled'}`}
                 title="AI 분석 패널 토글"
               >
                 <PanelLeft size={16} />
               </button>
             )}
             <div className="flex items-center gap-2 text-sm">
-              <span className="text-gray-900 font-bold">{prd.title}</span>
+              <span className="text-txt-primary font-bold">{prd.title}</span>
               {viewState === 'KANBAN' && (
-                <span className="bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded text-[10px] font-bold border border-gray-200">
+                <span className="bg-surface-sunken text-txt-secondary px-1.5 py-0.5 text-[0.625rem] font-bold border border-border">
                   SPRINT-1
                 </span>
               )}
@@ -173,7 +173,7 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
               <button
                 onClick={handleSync}
                 disabled={isSyncing}
-                className="px-2 py-1 bg-white border border-gray-200 rounded-md shadow-sm text-xs font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-1.5 transition-all"
+                className="px-2 py-1 bg-surface-card border border-border-strong text-xs font-medium text-txt-secondary hover:bg-black hover:text-white flex items-center gap-1.5 transition-all"
               >
                 <RefreshCw size={12} className={isSyncing ? 'animate-spin' : ''} />
                 {isSyncing ? 'Syncing...' : 'Sync'}
@@ -185,7 +185,7 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
         {/* Content */}
         <div className="flex-1 overflow-hidden flex flex-col relative">
           {error && (
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-red-50 text-red-600 px-3 py-1.5 rounded-lg shadow-sm border border-red-200 flex items-center gap-2 z-50 text-xs">
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-red-50 text-red-600 px-3 py-1.5 shadow-sharp border border-red-200 flex items-center gap-2 z-50 text-xs">
               <AlertCircle size={14} />
               {error}
             </div>
@@ -195,40 +195,40 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
             <div className="h-full overflow-y-auto p-6">
               <div className="max-w-3xl mx-auto">
                 {/* PRD Viewer */}
-                <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+                <div className="bg-surface-card border border-border p-6 shadow-sharp">
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-xs font-mono font-medium border border-green-200">PHASE 2 완료</span>
-                        <span className="text-xs text-gray-400 font-mono">v1.2 FINAL</span>
+                        <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-mono font-medium border border-green-200">PHASE 2 완료</span>
+                        <span className="text-xs text-txt-disabled font-mono">v1.2 FINAL</span>
                       </div>
-                      <h2 className="text-xl font-bold text-gray-900">{prd.title}</h2>
+                      <h2 className="text-xl font-bold text-txt-primary">{prd.title}</h2>
                     </div>
-                    <div className="p-2 bg-gray-50 rounded-lg border border-gray-100">
-                      <FileText className="text-gray-400" size={20} />
+                    <div className="p-2 bg-surface-sunken border border-border-subtle">
+                      <FileText className="text-txt-disabled" size={20} />
                     </div>
                   </div>
 
                   <div className="space-y-4">
                     <div>
-                      <h3 className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-1 font-mono">요약</h3>
-                      <p className="text-gray-600 leading-relaxed text-sm">{prd.summary}</p>
+                      <h3 className="text-[0.625rem] font-mono font-bold text-txt-primary uppercase tracking-widest mb-1">요약</h3>
+                      <p className="text-txt-secondary leading-relaxed text-sm">{prd.summary}</p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-6">
                       <div>
-                        <h3 className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-1 font-mono">핵심 기능</h3>
+                        <h3 className="text-[0.625rem] font-mono font-bold text-txt-primary uppercase tracking-widest mb-1">핵심 기능</h3>
                         <ul className="list-disc list-inside space-y-0.5">
                           {prd.features.map((f, i) => (
-                            <li key={i} className="text-sm text-gray-600">{f}</li>
+                            <li key={i} className="text-sm text-txt-secondary">{f}</li>
                           ))}
                         </ul>
                       </div>
                       <div>
-                        <h3 className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-1 font-mono">기술 스택</h3>
+                        <h3 className="text-[0.625rem] font-mono font-bold text-txt-primary uppercase tracking-widest mb-1">기술 스택</h3>
                         <div className="flex flex-wrap gap-1.5">
                           {prd.techStack.map((t, i) => (
-                            <span key={i} className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs border border-gray-200 font-mono">
+                            <span key={i} className="px-2 py-0.5 bg-surface-sunken text-txt-secondary text-xs border border-border font-mono">
                               {t}
                             </span>
                           ))}
@@ -237,14 +237,14 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
                     </div>
                   </div>
 
-                  <div className="mt-8 pt-6 border-t border-gray-100 flex items-center justify-between">
+                  <div className="mt-8 pt-6 border-t border-dashed border-border flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center">
+                      <div className="w-8 h-8 bg-indigo-50 flex items-center justify-center">
                         <Cpu size={16} className="text-indigo-600" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-900">Phase 3를 시작할까요?</p>
-                        <p className="text-xs text-gray-500">AI가 이 문서를 실행 가능한 티켓으로 분해합니다.</p>
+                        <p className="text-sm font-medium text-txt-primary">Phase 3를 시작할까요?</p>
+                        <p className="text-xs text-txt-tertiary">AI가 이 문서를 실행 가능한 티켓으로 분해합니다.</p>
                       </div>
                     </div>
 
@@ -252,8 +252,8 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
                       onClick={handleGenerateTasks}
                       disabled={isGenerating}
                       className={`
-                        group relative px-4 py-2 rounded-lg font-medium text-sm text-white flex items-center gap-2 overflow-hidden transition-all
-                        ${isGenerating ? 'bg-gray-400 cursor-not-allowed' : 'bg-black hover:bg-gray-800 shadow-lg hover:shadow-xl'}
+                        group relative px-4 py-2 font-medium text-sm text-white flex items-center gap-2 overflow-hidden transition-all
+                        ${isGenerating ? 'bg-txt-disabled cursor-not-allowed' : 'bg-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'}
                       `}
                     >
                       {isGenerating && (
@@ -286,14 +286,14 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
                   </div>
                   <div className="flex items-center gap-2 mb-2">
                     <div className="flex -space-x-2">
-                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 border-2 border-white flex items-center justify-center text-[9px] font-bold text-gray-700 z-30">LS</div>
-                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 border-2 border-white flex items-center justify-center text-[9px] font-bold text-gray-700 z-20">DK</div>
-                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 border-2 border-white flex items-center justify-center text-[9px] font-bold text-indigo-700 z-10">AI</div>
+                      <div className="w-6 h-6 bg-surface-sunken border border-surface-card flex items-center justify-center text-[0.5625rem] font-bold text-txt-secondary z-30">LS</div>
+                      <div className="w-6 h-6 bg-surface-sunken border border-surface-card flex items-center justify-center text-[0.5625rem] font-bold text-txt-secondary z-20">DK</div>
+                      <div className="w-6 h-6 bg-indigo-100 border border-surface-card flex items-center justify-center text-[0.5625rem] font-bold text-indigo-700 z-10">AI</div>
                     </div>
-                    <button className="w-6 h-6 rounded-full border border-dashed border-gray-300 flex items-center justify-center text-gray-400 hover:border-gray-400 hover:text-gray-600 transition-colors">
+                    <button className="w-6 h-6 border border-dashed border-border-strong flex items-center justify-center text-txt-disabled hover:border-border-strong hover:text-txt-secondary transition-colors">
                       <Share2 size={12} />
                     </button>
-                    <button className="bg-black text-white px-2.5 py-1 rounded-md text-xs font-medium flex items-center gap-1.5 hover:bg-gray-800 transition-colors ml-1">
+                    <button className="bg-black text-white px-2.5 py-1 text-xs font-medium flex items-center gap-1.5 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all ml-1">
                       <Plus size={12} /> 추가
                     </button>
                   </div>
@@ -306,14 +306,14 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
                   {COLUMNS.map(column => (
                     <div
                       key={column.id}
-                      className="flex-1 min-w-[240px] max-w-xs flex flex-col h-full bg-gray-50/50 rounded-xl border border-dashed border-gray-200 hover:bg-gray-50/80 transition-colors"
+                      className="flex-1 min-w-[15rem] max-w-xs flex flex-col h-full bg-surface-sunken border border-dashed border-border hover:bg-surface-sunken/80 transition-colors"
                       onDragOver={handleDragOver}
                       onDrop={(e) => handleDrop(e, column.id)}
                     >
-                      <div className="p-2.5 flex items-center justify-between sticky top-0 bg-inherit z-10 rounded-t-xl">
+                      <div className="p-2.5 flex items-center justify-between sticky top-0 bg-inherit z-10">
                         <div className="flex items-center gap-2">
-                          <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wide">{column.label}</h3>
-                          <span className="bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded text-[10px] font-mono">
+                          <h3 className="text-[0.625rem] font-mono font-bold text-txt-secondary uppercase tracking-widest">{column.label}</h3>
+                          <span className="bg-surface-sunken text-txt-secondary px-1.5 py-0.5 text-[0.625rem] font-mono border border-border">
                             {filteredTasks.filter(t => t.status === column.id).length}
                           </span>
                         </div>
@@ -329,7 +329,7 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
                           />
                         ))}
                         {filteredTasks.filter(t => t.status === column.id).length === 0 && (
-                          <div className="h-20 border-2 border-dashed border-gray-200 rounded-lg flex flex-col items-center justify-center text-gray-400 text-xs gap-1">
+                          <div className="h-20 border border-dashed border-border flex flex-col items-center justify-center text-txt-disabled text-xs gap-1">
                             <span className="opacity-50">Empty</span>
                           </div>
                         )}

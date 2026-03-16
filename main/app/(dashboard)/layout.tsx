@@ -1,6 +1,7 @@
 'use client'
 
 import { TopNavbar } from '@/components/TopNavbar'
+import { HelpWidget } from '@/components/HelpWidget'
 
 export default function DashboardLayout({
   children,
@@ -15,6 +16,7 @@ export default function DashboardLayout({
           {children}
         </div>
       </main>
+      <HelpWidget />
     </div>
   )
 }

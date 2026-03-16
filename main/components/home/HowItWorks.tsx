@@ -23,13 +23,13 @@ const steps = [
 
 export const HowItWorks: React.FC = () => {
   return (
-    <section id="how-it-works" className="w-full py-24 px-6 md:px-12 bg-gray-50">
+    <section id="how-it-works" className="w-full py-32 px-6 md:px-12 bg-surface-sunken">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16">
-          <span className="text-xs font-mono font-bold text-gray-500 tracking-wider mb-4 block">
+        <div className="text-center mb-20">
+          <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-4 block">
             HOW IT WORKS
           </span>
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
+          <h2 className="text-3xl md:text-4xl font-bold text-txt-primary">
             간단한 3단계
           </h2>
         </div>
@@ -38,7 +38,7 @@ export const HowItWorks: React.FC = () => {
           {steps.map((step, index) => (
             <div
               key={index}
-              className="relative flex flex-col items-center text-center p-8 bg-white border border-gray-200 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-200"
+              className="relative flex flex-col items-center text-center p-8 bg-surface-card border border-border shadow-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-200"
             >
               {/* Step number */}
               <div className="absolute -top-3 -left-3 w-8 h-8 bg-black text-white flex items-center justify-center text-sm font-bold">
@@ -46,17 +46,17 @@ export const HowItWorks: React.FC = () => {
               </div>
 
               {/* Icon */}
-              <div className="w-16 h-16 bg-gray-100 border border-gray-200 flex items-center justify-center mb-6">
-                <step.icon size={28} className="text-gray-700" />
+              <div className="w-16 h-16 bg-surface-sunken border border-border flex items-center justify-center mb-6">
+                <step.icon size={28} className="text-txt-secondary" />
               </div>
 
               {/* Title */}
-              <h3 className="text-xl font-bold text-slate-900 mb-3">
+              <h3 className="text-xl font-bold text-txt-primary mb-3">
                 {step.title}
               </h3>
 
               {/* Description */}
-              <p className="text-gray-600 text-sm leading-relaxed break-keep">
+              <p className="text-txt-secondary text-sm leading-relaxed break-keep">
                 {step.description}
               </p>
             </div>
@@ -65,10 +65,10 @@ export const HowItWorks: React.FC = () => {
 
         {/* Connecting lines (desktop only) */}
         <div className="hidden md:flex justify-center mt-8">
-          <div className="flex items-center gap-4 text-gray-400">
-            <div className="w-24 h-[1px] bg-gray-300 border-dashed"></div>
-            <span className="text-xs font-mono">SIMPLE FLOW</span>
-            <div className="w-24 h-[1px] bg-gray-300 border-dashed"></div>
+          <div className="flex items-center gap-4 text-txt-disabled">
+            <div className="w-24 h-[1px] border-t border-dashed border-border"></div>
+            <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest">SIMPLE FLOW</span>
+            <div className="w-24 h-[1px] border-t border-dashed border-border"></div>
           </div>
         </div>
       </div>

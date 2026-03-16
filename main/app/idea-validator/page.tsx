@@ -56,10 +56,10 @@ function IdeaValidatorContent() {
 
   if (loading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-white">
+      <div className="h-screen flex items-center justify-center bg-surface-card">
         <div className="text-center">
-          <div className="w-8 h-8 border-2 border-black border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-sm text-gray-500">로딩 중...</p>
+          <div className="w-8 h-8 border border-border-strong border-t-transparent animate-spin mx-auto mb-4" />
+          <p className="text-sm text-txt-tertiary font-mono">로딩 중...</p>
         </div>
       </div>
     );
@@ -92,8 +92,8 @@ function IdeaValidatorContent() {
 export default function IdeaValidatorPage() {
   return (
     <Suspense fallback={
-      <div className="h-screen flex items-center justify-center bg-white">
-        <div className="w-8 h-8 border-2 border-black border-t-transparent rounded-full animate-spin" />
+      <div className="h-screen flex items-center justify-center bg-surface-card">
+        <div className="w-8 h-8 border border-border-strong border-t-transparent animate-spin" />
       </div>
     }>
       <IdeaValidatorContent />

@@ -44,7 +44,7 @@ export const CopyButton: React.FC<CopyButtonProps> = ({
     <button
       onClick={handleCopy}
       aria-label={`${label || text} 복사`}
-      className={`inline-flex items-center gap-1 text-gray-400 hover:text-gray-600 transition-colors ${className}`}
+      className={`inline-flex items-center gap-1 text-txt-tertiary hover:text-txt-secondary transition-colors ${className}`}
     >
       {copied ? (
         <Check size={iconSize} className="text-green-500" />
@@ -86,7 +86,7 @@ export const CopyableText: React.FC<CopyableTextProps> = ({
   return (
     <button
       onClick={handleCopy}
-      className={`inline-flex items-center gap-1.5 group cursor-pointer hover:text-gray-900 transition-colors ${className}`}
+      className={`inline-flex items-center gap-1.5 group cursor-pointer hover:text-txt-primary transition-colors ${className}`}
       title="클릭하여 복사"
     >
       <span className="truncate">{text}</span>

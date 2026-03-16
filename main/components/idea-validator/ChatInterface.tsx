@@ -71,7 +71,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
       fromStartupIdea: !!preloadedContext,
       startupSource: preloadedContext?.startupId ? 'external' : undefined
     });
-  }, [level, preloadedContext]); 
+  }, [level, preloadedContext]);
 
   // Initial greeting
   useEffect(() => {
@@ -83,13 +83,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
       greeting = `안녕하세요! 해외 서비스 '${startupName}'을 한국에 로컬라이징하는 프로젝트를 시작합니다.\n\n`;
 
       if (description) {
-        greeting += `📌 **원본 서비스**: ${description}\n`;
+        greeting += `**원본 서비스**: ${description}\n`;
       }
       if (koreaFitReason) {
-        greeting += `🇰🇷 **한국 시장 분석**: ${koreaFitReason}\n`;
+        greeting += `**한국 시장 분석**: ${koreaFitReason}\n`;
       }
       if (suggestedLocalization) {
-        greeting += `💡 **현지화 포인트**: ${suggestedLocalization}\n`;
+        greeting += `**현지화 포인트**: ${suggestedLocalization}\n`;
       }
 
       greeting += `\n이 서비스를 한국에서 어떤 타겟에게 제공하고 싶으세요? 구체적인 고객층이나 사용 시나리오를 알려주시면 함께 검증해 드릴게요.`;
@@ -260,7 +260,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
   const consumeTokenAndContinue = () => {
     if (tokens > 0) {
        setTokens(prev => prev - 1);
-       setTurnCount(0); 
+       setTurnCount(0);
     }
   };
 
@@ -372,25 +372,25 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
       case 'Developer': return 'bg-draft-blue/10 border-draft-blue/20 text-draft-blue';
       case 'Designer': return 'bg-draft-accent/10 border-draft-accent/20 text-draft-accent';
       case 'VC': return 'bg-emerald-50 border-emerald-200 text-emerald-600';
-      default: return 'bg-gray-50 border-gray-200 text-gray-600';
+      default: return 'bg-surface-sunken border-border text-txt-secondary';
     }
   };
 
   const ScoreBar = ({ label, score }: { label: string, score: number }) => (
       <div className="mb-4 last:mb-0">
-        <div className="flex justify-between items-center mb-1.5 text-gray-500">
+        <div className="flex justify-between items-center mb-1.5 text-txt-tertiary">
           <span className="text-xs font-medium font-mono uppercase tracking-wider">{label}</span>
-          <span className="text-xs font-bold text-gray-900">{score}%</span>
+          <span className="text-xs font-bold text-txt-primary">{score}%</span>
         </div>
-        <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
-          <div className="h-full bg-black rounded-full transition-all duration-1000 ease-out" style={{ width: `${score}%` }}></div>
+        <div className="w-full bg-surface-sunken h-1.5 overflow-hidden">
+          <div className="h-full bg-black transition-all duration-1000 ease-out" style={{ width: `${score}%` }}></div>
         </div>
       </div>
   );
 
   const lastMsg = messages.length > 0 ? messages[messages.length - 1] : null;
-  const pendingReflections = lastMsg && !lastMsg.isUser && lastMsg.responses 
-    ? lastMsg.responses.filter(r => r.isReflected) 
+  const pendingReflections = lastMsg && !lastMsg.isUser && lastMsg.responses
+    ? lastMsg.responses.filter(r => r.isReflected)
     : [];
   const hasPendingReflections = pendingReflections.length > 0;
   const isLimitReached = turnCount >= FREE_TURNS;
@@ -405,25 +405,25 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
               <div key={msg.id} className={`flex gap-3 ${msg.isUser ? 'justify-end' : 'justify-start'}`}>
 
                 {msg.isUser ? (
-                  // User Message - matches general chat style
+                  // User Message
                   <>
                     <div className="max-w-[70%] space-y-1">
                       <div className="flex items-center gap-2 mb-1 justify-end">
-                        <span className="text-xs font-bold text-gray-900">Me</span>
-                        <span className="text-[10px] font-mono text-gray-400">
+                        <span className="text-xs font-bold text-txt-primary">Me</span>
+                        <span className="text-[0.625rem] font-mono text-txt-tertiary">
                           {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
                       </div>
-                      <div className={`p-4 rounded-2xl rounded-tr-sm text-sm leading-relaxed shadow-sm break-keep
+                      <div className={`p-4 text-sm leading-relaxed shadow-sharp break-keep
                         ${msg.text?.startsWith('[종합 결정 사항]')
                             ? 'bg-black text-white border border-black'
-                            : 'bg-white border border-gray-200 text-gray-900'
+                            : 'bg-surface-card border border-border text-txt-primary'
                         }`}>
                         {msg.text}
                       </div>
                     </div>
-                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center shrink-0 mt-6">
-                      <span className="text-gray-500 text-xs font-bold">U</span>
+                    <div className="w-8 h-8 bg-surface-sunken flex items-center justify-center shrink-0 mt-6">
+                      <span className="text-txt-tertiary text-xs font-bold">U</span>
                     </div>
                   </>
                 ) : (
@@ -431,17 +431,17 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
                   <>
                     {msg.responses && msg.responses[0].role === 'System' ? (
                       <>
-                        <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center shrink-0 mt-6">
+                        <div className="w-8 h-8 bg-black flex items-center justify-center shrink-0 mt-6">
                           <span className="text-white font-bold text-xs">D</span>
                         </div>
                         <div className="max-w-[70%] space-y-1">
                           <div className="flex items-center gap-2 mb-1">
-                            <span className="text-xs font-bold text-gray-900">Draft AI</span>
-                            <span className="text-[10px] font-mono text-gray-400">
+                            <span className="text-xs font-bold text-txt-primary">Draft AI</span>
+                            <span className="text-[0.625rem] font-mono text-txt-tertiary">
                               {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             </span>
                           </div>
-                          <div className="p-4 bg-white border border-gray-200 rounded-2xl rounded-tl-sm text-sm text-gray-700 leading-relaxed break-keep shadow-sm">
+                          <div className="p-4 bg-surface-card border border-border text-sm text-txt-secondary leading-relaxed break-keep shadow-sharp">
                             {msg.responses[0].content}
                           </div>
                         </div>
@@ -449,11 +449,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
                     ) : (
                       <div className="w-full">
                         <div className="flex items-center gap-2 mb-3">
-                          <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
+                          <div className="w-8 h-8 bg-black flex items-center justify-center">
                             <span className="text-white font-bold text-xs">D</span>
                           </div>
-                          <span className="text-xs font-bold text-gray-900">Draft AI</span>
-                          <span className="text-[10px] font-mono text-gray-400">
+                          <span className="text-xs font-bold text-txt-primary">Draft AI</span>
+                          <span className="text-[0.625rem] font-mono text-txt-tertiary">
                             {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </span>
                         </div>
@@ -464,33 +464,33 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
                               onClick={() => resp.role !== 'System' && openReflectionModal(msg.id, idx, resp.role, resp.content, resp.suggestedActions, resp.reflectedText)}
                               className={`relative flex flex-col items-start p-5 border transition-all duration-200 text-left group w-full h-full
                                 ${resp.isReflected
-                                  ? 'bg-gray-50 border-black ring-1 ring-black rounded-xl'
-                                  : 'bg-white border-gray-200 hover:border-black hover:shadow-sm rounded-xl'
+                                  ? 'bg-surface-sunken border-border-strong ring-1 ring-black'
+                                  : 'bg-surface-card border-border hover:border-border-strong hover:shadow-sharp'
                                 }
                               `}
                               style={{ animationDelay: `${idx * 100}ms` }}
                             >
                               {/* Persona Icon */}
-                              <div className={`w-9 h-9 border rounded-lg flex items-center justify-center mb-4 transition-colors
+                              <div className={`w-9 h-9 border flex items-center justify-center mb-4 transition-colors
                                 ${resp.isReflected
                                   ? 'bg-black border-black text-white'
-                                  : `${getPersonaColor(resp.role)} group-hover:bg-black group-hover:border-black group-hover:text-white`
+                                  : `${getPersonaColor(resp.role)} group-hover:bg-black group-hover:border-border-strong group-hover:text-white`
                                 }
                               `}>
                                 {getPersonaIcon(resp.role)}
                               </div>
 
                               {/* Role Label */}
-                              <span className="font-bold text-sm text-gray-900 mb-2">{resp.role}</span>
+                              <span className="font-bold text-sm text-txt-primary mb-2">{resp.role}</span>
 
                               {/* Content */}
-                              <p className="text-xs text-gray-500 leading-relaxed break-keep flex-1">
+                              <p className="text-xs text-txt-tertiary leading-relaxed break-keep flex-1">
                                 {resp.isReflected && resp.reflectedText ? resp.reflectedText : resp.content}
                               </p>
 
                               {/* Selected Badge */}
                               {resp.isReflected && (
-                                <div className="absolute top-4 right-4 w-5 h-5 bg-black rounded-full flex items-center justify-center">
+                                <div className="absolute top-4 right-4 w-5 h-5 bg-black flex items-center justify-center">
                                    <Check size={12} className="text-white" />
                                 </div>
                               )}
@@ -498,18 +498,18 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
                           ))}
                         </div>
 
-                        {/* Next Step Button - shown below cards when this is the last message with reflections */}
+                        {/* Next Step Button */}
                         {msg.id === lastMsg?.id && msg.responses?.some(r => r.isReflected) && (
-                          <div className="ml-10 mt-4 flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                          <div className="ml-10 mt-4 flex items-center justify-between p-3 bg-surface-sunken border border-border">
                             <div className="flex items-center gap-3">
-                              <div className="text-[10px] font-bold font-mono text-gray-500 uppercase tracking-wide">
+                              <div className="text-[0.625rem] font-bold font-mono text-txt-tertiary uppercase tracking-widest">
                                 {msg.responses.filter(r => r.isReflected).length}개 조언 선택됨
                               </div>
                             </div>
                             <button
                               onClick={handleConsolidatedSend}
                               disabled={isTyping}
-                              className="bg-black hover:bg-gray-800 text-white px-5 py-2 rounded-lg font-bold text-xs transition-all flex items-center gap-2 disabled:opacity-50"
+                              className="bg-black hover:bg-[#333] text-white px-5 py-2 font-bold text-xs transition-all flex items-center gap-2 disabled:opacity-50 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
                             >
                               다음 단계
                               <ArrowRight size={14} />
@@ -525,17 +525,17 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
 
             {isTyping && (
               <div className="flex items-center gap-3 ml-10">
-                 <div className="w-2 h-2 bg-gray-300 rounded-full animate-bounce"></div>
-                 <div className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '75ms' }}></div>
-                 <div className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                 <div className="w-2 h-2 bg-txt-disabled animate-bounce"></div>
+                 <div className="w-2 h-2 bg-txt-disabled animate-bounce" style={{ animationDelay: '75ms' }}></div>
+                 <div className="w-2 h-2 bg-txt-disabled animate-bounce" style={{ animationDelay: '150ms' }}></div>
               </div>
             )}
 
             {/* AI Error with Retry */}
             {aiError && !isTyping && (
-              <div className="ml-10 p-4 bg-red-50 border border-red-200 rounded-xl">
+              <div className="ml-10 p-4 bg-red-50 border border-red-200">
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center shrink-0">
+                  <div className="w-8 h-8 bg-red-100 flex items-center justify-center shrink-0">
                     <span className="text-red-500 text-sm">!</span>
                   </div>
                   <div className="flex-1">
@@ -549,14 +549,14 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
                       <button
                         type="button"
                         onClick={handleRetry}
-                        className="px-3 py-1.5 bg-red-600 text-white text-xs font-medium rounded-lg hover:bg-red-700 transition-colors"
+                        className="px-3 py-1.5 bg-red-600 text-white text-xs font-medium hover:bg-red-700 transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
                       >
                         다시 시도
                       </button>
                       <button
                         type="button"
                         onClick={() => setAiError(null)}
-                        className="px-3 py-1.5 bg-white text-red-600 text-xs font-medium rounded-lg border border-red-200 hover:bg-red-50 transition-colors"
+                        className="px-3 py-1.5 bg-surface-card text-red-600 text-xs font-medium border border-red-200 hover:bg-red-50 transition-colors"
                       >
                         무시
                       </button>
@@ -569,23 +569,23 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
           </div>
         </div>
 
-        {/* Token Limit Warning - always shown when limit reached */}
+        {/* Token Limit Warning */}
         {isLimitReached && (
-          <div className="p-4 md:p-6 bg-white border-t border-gray-200 shrink-0 z-10">
+          <div className="p-4 md:p-6 bg-surface-card border-t border-border shrink-0 z-10">
             <div className="max-w-4xl mx-auto relative">
-              <div className="w-full bg-gray-50 border border-gray-200 rounded-sm p-4 flex items-center justify-between">
+              <div className="w-full bg-surface-sunken border border-border p-4 flex items-center justify-between">
                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-gray-200 rounded-sm flex items-center justify-center text-gray-500">
+                    <div className="w-8 h-8 bg-surface-sunken flex items-center justify-center text-txt-tertiary">
                         <Lock size={14} />
                     </div>
                     <div className="text-sm">
-                        <span className="font-bold text-gray-900 block">대화 턴 소진</span>
-                        <span className="text-xs text-gray-500">심도 있는 검증을 위해 토큰을 사용하세요.</span>
+                        <span className="font-bold text-txt-primary block">대화 턴 소진</span>
+                        <span className="text-xs text-txt-tertiary">심도 있는 검증을 위해 토큰을 사용하세요.</span>
                     </div>
                  </div>
                  <button
                     onClick={consumeTokenAndContinue}
-                    className="bg-black text-white px-4 py-2 rounded-sm text-xs font-bold hover:bg-gray-800 transition-colors"
+                    className="bg-black text-white px-4 py-2 text-xs font-bold hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
                  >
                     토큰 1개 사용 (잔여: {tokens})
                  </button>
@@ -594,13 +594,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
           </div>
         )}
 
-        {/* Regular Input Area - only shown when not in special states and hideInput is false */}
+        {/* Regular Input Area */}
         {!hideInput && !isLimitReached && (
-          <div className="p-4 md:p-6 bg-white border-t border-gray-200 shrink-0 z-10">
+          <div className="p-4 md:p-6 bg-surface-card border-t border-border shrink-0 z-10">
             <div className="max-w-4xl mx-auto relative">
               <div className="relative">
                   <textarea
-                    className="w-full min-h-[56px] pl-5 pr-14 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:bg-white focus:border-black focus:ring-1 focus:ring-black/10 resize-none text-sm transition-all"
+                    className="w-full min-h-[3.5rem] pl-5 pr-14 py-4 bg-surface-sunken border border-border focus:outline-none focus:bg-surface-card focus:border-border-strong focus:ring-1 focus:ring-black/10 resize-none text-sm transition-all"
                     placeholder="아이디어나 답변을 입력하세요..."
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
@@ -611,16 +611,16 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
                   <button
                     onClick={handleSend}
                     disabled={isTyping || !input.trim()}
-                    className={`absolute right-3 bottom-3 p-2 rounded-lg transition-colors
+                    className={`absolute right-3 bottom-3 p-2 transition-colors
                       ${input.trim() && !isTyping
-                        ? 'bg-black text-white hover:bg-gray-800'
-                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'}
+                        ? 'bg-black text-white hover:bg-[#333]'
+                        : 'bg-surface-sunken text-txt-tertiary cursor-not-allowed'}
                     `}
                   >
                     <Send size={16} />
                   </button>
               </div>
-              <p className="text-center text-[10px] text-gray-400 mt-3 font-mono">
+              <p className="text-center text-[0.625rem] text-txt-tertiary mt-3 font-mono">
                 Draft AI can make mistakes. Consider checking important information.
               </p>
             </div>
@@ -629,20 +629,20 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
       </div>
 
       {/* Right Sidebar - Analytics Panel */}
-      <div className="w-56 lg:w-64 bg-white border-l border-gray-200 overflow-y-auto shrink-0 p-4 hidden md:block">
+      <div className="w-56 lg:w-64 bg-surface-card border-l border-border overflow-y-auto shrink-0 p-4 hidden md:block">
 
          {/* Mode Indicator */}
-         <div className="mb-6 border border-gray-200 p-4 bg-white rounded-sm">
-           <div className="text-[9px] font-mono font-bold text-gray-400 uppercase tracking-widest mb-3">Current Session</div>
+         <div className="mb-6 border border-border p-4 bg-surface-card">
+           <div className="text-[0.5625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">Current Session</div>
            <div className="flex items-center gap-3">
-              <div className={`p-2 border rounded-sm ${
+              <div className={`p-2 border ${
                   level === ValidationLevel.SKETCH ? 'bg-yellow-50 border-yellow-200 text-yellow-600' :
                   level === ValidationLevel.DEFENSE ? 'bg-red-50 border-red-200 text-red-600' :
-                  'bg-gray-50 border-gray-200 text-gray-900'
+                  'bg-surface-sunken border-border text-txt-primary'
               }`}>
                   {level === ValidationLevel.SKETCH ? <Zap size={14}/> : level === ValidationLevel.DEFENSE ? <Sword size={14}/> : <Layers size={14}/>}
               </div>
-              <div className="font-bold text-gray-900 text-xs font-mono uppercase">
+              <div className="font-bold text-txt-primary text-xs font-mono uppercase">
                 {level === ValidationLevel.SKETCH ? 'Lv.1 Sketch' : level === ValidationLevel.DEFENSE ? 'Lv.3 Defense' : 'Lv.2 MVP'}
               </div>
            </div>
@@ -651,23 +651,23 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
          {/* Live Status */}
          <div className="flex items-center justify-between mb-5">
              <div className="flex items-center gap-2">
-                 <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
-                 <span className="text-[9px] font-bold font-mono text-gray-400 uppercase tracking-widest">Live Analysis</span>
+                 <div className="w-1.5 h-1.5 bg-green-500 animate-pulse"></div>
+                 <span className="text-[0.5625rem] font-bold font-mono text-txt-tertiary uppercase tracking-widest">Live Analysis</span>
              </div>
          </div>
 
          {/* Metrics Card */}
-         <div className="bg-white rounded-sm p-5 border border-gray-200 mb-6">
+         <div className="bg-surface-card p-5 border border-border mb-6">
             <div className="flex justify-between items-start mb-5">
                 <div>
                     <div className="flex items-center gap-1.5 mb-1">
-                      <Sparkles size={12} className="text-gray-900" />
-                      <h3 className="text-[9px] font-bold font-mono uppercase tracking-widest text-gray-500">AI Analysis</h3>
+                      <Sparkles size={12} className="text-txt-primary" />
+                      <h3 className="text-[0.5625rem] font-bold font-mono uppercase tracking-widest text-txt-tertiary">AI Analysis</h3>
                     </div>
-                    <h3 className="text-sm font-bold text-gray-900">Startup Fit Report</h3>
+                    <h3 className="text-sm font-bold text-txt-primary">Startup Fit Report</h3>
                 </div>
                 {metrics && (
-                    <div className="text-2xl font-bold font-mono text-gray-900">{metrics.score}</div>
+                    <div className="text-2xl font-bold font-mono text-txt-primary">{metrics.score}</div>
                 )}
             </div>
 
@@ -678,15 +678,15 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
                     <ScoreBar label="UX" score={metrics.designerScore} />
                 </div>
             ) : (
-                <div className="h-24 flex flex-col items-center justify-center text-gray-400 text-xs border border-gray-100 rounded-sm bg-gray-50">
+                <div className="h-24 flex flex-col items-center justify-center text-txt-tertiary text-xs border border-border-subtle bg-surface-sunken">
                     <div className="animate-pulse mb-1 font-bold">...</div>
-                    <span className="text-[10px] font-mono">데이터 대기 중</span>
+                    <span className="text-[0.625rem] font-mono">데이터 대기 중</span>
                 </div>
             )}
 
             {metrics && (
-               <div className="mt-5 pt-4 border-t border-gray-100">
-                   <button onClick={handleFinish} className="w-full bg-black text-white py-2.5 rounded-lg text-xs font-bold hover:bg-gray-800 transition-colors flex items-center justify-center gap-2">
+               <div className="mt-5 pt-4 border-t border-dashed border-border">
+                   <button onClick={handleFinish} className="w-full bg-black text-white py-2.5 text-xs font-bold hover:bg-[#333] transition-colors flex items-center justify-center gap-2 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">
                        전체 리포트 보기
                        <ArrowRight size={14} />
                    </button>
@@ -698,10 +698,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
          {metrics && (
              <div className="space-y-5">
                  <div>
-                     <h4 className="text-[9px] font-bold font-mono text-gray-400 uppercase tracking-widest mb-2">Strengths</h4>
+                     <h4 className="text-[0.5625rem] font-bold font-mono text-txt-tertiary uppercase tracking-widest mb-2">Strengths</h4>
                      <div className="space-y-1.5">
                         {metrics.keyStrengths.map((str, i) => (
-                            <div key={i} className="flex gap-2 text-xs text-gray-700 bg-gray-50 p-2.5 rounded-sm border border-gray-100">
+                            <div key={i} className="flex gap-2 text-xs text-txt-secondary bg-surface-sunken p-2.5 border border-border-subtle">
                                 <Check size={12} className="text-green-600 shrink-0 mt-0.5" />
                                 <span className="leading-relaxed break-keep">{str}</span>
                             </div>
@@ -710,10 +710,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
                  </div>
 
                  <div>
-                     <h4 className="text-[9px] font-bold font-mono text-gray-400 uppercase tracking-widest mb-2">Risks</h4>
+                     <h4 className="text-[0.5625rem] font-bold font-mono text-txt-tertiary uppercase tracking-widest mb-2">Risks</h4>
                      <div className="space-y-1.5">
                         {metrics.keyRisks.map((risk, i) => (
-                            <div key={i} className="flex gap-2 text-xs text-gray-700 bg-red-50 p-2.5 rounded-sm border border-red-100">
+                            <div key={i} className="flex gap-2 text-xs text-txt-secondary bg-red-50 p-2.5 border border-red-100">
                                 <AlertTriangle size={12} className="text-red-500 shrink-0 mt-0.5" />
                                 <span className="leading-relaxed break-keep">{risk}</span>
                             </div>
@@ -727,20 +727,20 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
       {/* Reflection Modal */}
       {reflectionModal && (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-white w-full max-w-xl rounded-2xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden">
-            <div className="px-5 py-4 border-b border-gray-200 flex items-center justify-between bg-white shrink-0">
+          <div className="bg-surface-card w-full max-w-xl shadow-brutal flex flex-col max-h-[85vh] overflow-hidden">
+            <div className="px-5 py-4 border-b border-border flex items-center justify-between bg-surface-card shrink-0">
               <div className="flex items-center gap-3">
-                 <div className="p-2 bg-gray-100 rounded-sm text-gray-700">
+                 <div className="p-2 bg-surface-sunken text-txt-secondary">
                     {getPersonaIcon(reflectionModal.role)}
                  </div>
                  <div>
-                    <h3 className="font-bold text-gray-900 text-sm">조언 반영하기</h3>
-                    <p className="text-[10px] text-gray-500 font-mono">피드백을 실행 계획으로 전환</p>
+                    <h3 className="font-bold text-txt-primary text-sm">조언 반영하기</h3>
+                    <p className="text-[0.625rem] text-txt-tertiary font-mono">피드백을 실행 계획으로 전환</p>
                  </div>
               </div>
               <button
                 onClick={closeReflectionModal}
-                className="text-gray-400 hover:text-gray-900 transition-colors p-1.5 rounded-sm hover:bg-gray-100"
+                className="text-txt-tertiary hover:text-txt-primary transition-colors p-1.5 hover:bg-surface-sunken"
               >
                 <X size={18} />
               </button>
@@ -748,15 +748,15 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
 
             <div className="p-5 overflow-y-auto">
                <div className="mb-5">
-                  <label className="text-[9px] font-bold font-mono text-gray-400 uppercase mb-2 block tracking-widest">Original</label>
-                  <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 text-sm text-gray-700 leading-relaxed break-keep">
+                  <label className="text-[0.5625rem] font-bold font-mono text-txt-tertiary uppercase mb-2 block tracking-widest">Original</label>
+                  <div className="p-4 bg-surface-sunken border border-border text-sm text-txt-secondary leading-relaxed break-keep">
                     {reflectionModal.originalContent}
                   </div>
                </div>
 
                {reflectionModal.suggestedActions && reflectionModal.suggestedActions.length > 0 && (
                    <div className="mb-5">
-                       <label className="flex items-center gap-2 text-[9px] font-bold font-mono text-gray-400 uppercase mb-2 tracking-widest">
+                       <label className="flex items-center gap-2 text-[0.5625rem] font-bold font-mono text-txt-tertiary uppercase mb-2 tracking-widest">
                            <Sparkles size={10} />
                            Quick Select
                        </label>
@@ -765,15 +765,15 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
                                <button
                                    key={idx}
                                    onClick={() => setReflectionText(action)}
-                                   className={`text-left p-3 rounded-xl border transition-all text-sm ${
+                                   className={`text-left p-3 border transition-all text-sm ${
                                        reflectionText === action
-                                       ? 'bg-gray-50 border-black ring-1 ring-black text-gray-900'
-                                       : 'bg-white border-gray-200 hover:border-black text-gray-600'
+                                       ? 'bg-surface-sunken border-border-strong ring-1 ring-black text-txt-primary'
+                                       : 'bg-surface-card border-border hover:border-border-strong text-txt-secondary'
                                    }`}
                                >
                                    <div className="flex items-start gap-3">
-                                       <div className={`mt-0.5 w-4 h-4 rounded-sm border flex items-center justify-center shrink-0 ${
-                                           reflectionText === action ? 'border-black bg-black' : 'border-gray-300'
+                                       <div className={`mt-0.5 w-4 h-4 border flex items-center justify-center shrink-0 ${
+                                           reflectionText === action ? 'border-black bg-black' : 'border-border-strong'
                                        }`}>
                                            {reflectionText === action && <Check size={10} className="text-white" />}
                                        </div>
@@ -786,23 +786,23 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
                )}
 
               <div>
-                <label className="text-[9px] font-bold font-mono text-gray-400 uppercase mb-2 block tracking-widest">
+                <label className="text-[0.5625rem] font-bold font-mono text-txt-tertiary uppercase mb-2 block tracking-widest">
                    My Decision
                 </label>
                 <textarea
                   value={reflectionText}
                   onChange={(e) => setReflectionText(e.target.value)}
-                  className="w-full h-28 p-4 bg-white border border-gray-200 rounded-xl text-gray-900 text-sm leading-relaxed focus:outline-none focus:border-black focus:ring-1 focus:ring-black/10 resize-none transition-all"
+                  className="w-full h-28 p-4 bg-surface-card border border-border text-txt-primary text-sm leading-relaxed focus:outline-none focus:border-border-strong focus:ring-1 focus:ring-black/10 resize-none transition-all"
                   placeholder="이 피드백을 어떻게 해결할지 구체적으로 적어주세요..."
                 />
               </div>
             </div>
 
-            <div className="p-4 border-t border-gray-200 bg-gray-50 flex justify-end gap-3 shrink-0">
+            <div className="p-4 border-t border-border bg-surface-sunken flex justify-end gap-3 shrink-0">
               {messages.find(m => m.id === reflectionModal.msgId)?.responses?.[reflectionModal.respIdx].isReflected && (
                 <button
                   onClick={removeReflection}
-                  className="mr-auto text-red-500 text-[10px] font-bold font-mono uppercase hover:underline"
+                  className="mr-auto text-red-500 text-[0.625rem] font-bold font-mono uppercase hover:underline"
                 >
                   Cancel
                 </button>
@@ -811,7 +811,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
               <button
                 onClick={saveReflectionLocally}
                 disabled={!reflectionText.trim()}
-                className="px-5 py-2 bg-black text-white font-bold rounded-lg hover:bg-gray-800 transition-colors text-xs disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-5 py-2 bg-black text-white font-bold hover:bg-[#333] transition-colors text-xs disabled:opacity-50 disabled:cursor-not-allowed shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
               >
                 {messages.find(m => m.id === reflectionModal.msgId)?.responses?.[reflectionModal.respIdx].isReflected ? 'Update' : 'Confirm'}
               </button>

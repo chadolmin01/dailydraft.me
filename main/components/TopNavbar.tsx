@@ -225,7 +225,7 @@ export const TopNavbar: React.FC = () => {
             {/* 드롭다운 — 검색바 아래로 자연스럽게 열림 */}
             {isSearchOpen && (
               <div className="absolute top-full left-0 right-0 mt-1.5 z-popover">
-                <div className="bg-surface-card shadow-brutal border border-border-strong overflow-hidden search-expand">
+                <div className="bg-surface-card shadow-brutal border border-border-strong overflow-hidden search-expand max-h-[60vh] overflow-y-auto">
 
                   {/* 바로가기 */}
                   <div className="px-2 pt-2 pb-1">
@@ -302,7 +302,7 @@ export const TopNavbar: React.FC = () => {
                 {/* 새 프로젝트 CTA */}
                 <button
                   onClick={() => router.push('/projects/new')}
-                  className="hidden md:flex items-center gap-1.5 px-3.5 py-1.5 bg-surface-inverse text-txt-inverse text-xs font-bold hover:bg-accent-hover active:scale-[0.97] transition-all border border-black shadow-solid-sm"
+                  className="hidden md:flex items-center gap-1.5 px-3.5 py-1.5 bg-surface-inverse text-txt-inverse text-xs font-bold hover:bg-accent-hover transition-all border border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
                 >
                   <Plus size={14} strokeWidth={2.5} />
                   <span>새 프로젝트</span>
@@ -379,7 +379,7 @@ export const TopNavbar: React.FC = () => {
                 {/* 비로그인: 로그인 버튼 */}
                 <Link
                   href="/login"
-                  className="hidden md:flex items-center gap-1.5 px-4 py-1.5 bg-surface-inverse text-txt-inverse text-xs font-bold hover:bg-accent-hover active:scale-[0.97] transition-all border border-black shadow-solid-sm"
+                  className="hidden md:flex items-center gap-1.5 px-4 py-1.5 bg-surface-inverse text-txt-inverse text-xs font-bold hover:bg-accent-hover transition-all border border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
                 >
                   로그인
                 </Link>
@@ -430,7 +430,7 @@ export const TopNavbar: React.FC = () => {
                   <MobileNavItem href="/profile" active={pathname === '/profile'}>마이페이지</MobileNavItem>
                   <button
                     onClick={() => { router.push('/projects/new'); setIsMobileMenuOpen(false) }}
-                    className="w-full mt-2 flex items-center justify-center gap-1.5 px-4 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-semibold rounded-xl active:scale-[0.98] transition-all"
+                    className="w-full mt-2 flex items-center justify-center gap-1.5 px-4 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-semibold transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
                   >
                     <Plus size={15} strokeWidth={2.5} /> 새 프로젝트
                   </button>
@@ -438,7 +438,7 @@ export const TopNavbar: React.FC = () => {
               ) : (
                 <Link
                   href="/login"
-                  className="w-full mt-2 flex items-center justify-center gap-1.5 px-4 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-semibold rounded-xl active:scale-[0.98] transition-all"
+                  className="w-full mt-2 flex items-center justify-center gap-1.5 px-4 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-semibold transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   로그인

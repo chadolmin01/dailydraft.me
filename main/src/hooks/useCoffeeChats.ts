@@ -44,7 +44,8 @@ export function useCoffeeChats(options: UseCoffeeChatsOptions = {}) {
         ? coffeeChatKeys.owner()
         : coffeeChatKeys.requester(),
     queryFn: async () => {
-      const { data: userData } = await supabase.auth.getUser()
+      const { data: userData, error: authError } = await supabase.auth.getUser()
+      if (authError) throw authError
       if (!userData?.user) return []
 
       let query = supabase.from('coffee_chats').select('*')
@@ -115,7 +116,7 @@ export function useRequestCoffeeChat() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ type: 'request', chatId }),
-        }).catch((err) => console.warn('[CoffeeChat] notify email failed:', err))
+        }).catch((err) => console.warn('[CoffeeChat] 알림 이메일 전송 실패 (커피챗은 정상 처리됨):', err))
       }
       queryClient.invalidateQueries({ queryKey: coffeeChatKeys.all })
     },
@@ -142,7 +143,7 @@ export function useAcceptCoffeeChat() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type: 'accepted', chatId: variables.chatId }),
-      }).catch((err) => console.warn('[CoffeeChat] notify email failed:', err))
+      }).catch((err) => console.warn('[CoffeeChat] 알림 이메일 전송 실패 (커피챗은 정상 처리됨):', err))
       queryClient.invalidateQueries({ queryKey: coffeeChatKeys.all })
     },
   })
@@ -186,7 +187,7 @@ export function useDeclineCoffeeChat() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type: 'declined', chatId }),
-      }).catch((err) => console.warn('[CoffeeChat] notify email failed:', err))
+      }).catch((err) => console.warn('[CoffeeChat] 알림 이메일 전송 실패 (커피챗은 정상 처리됨):', err))
       queryClient.invalidateQueries({ queryKey: coffeeChatKeys.all })
     },
   })

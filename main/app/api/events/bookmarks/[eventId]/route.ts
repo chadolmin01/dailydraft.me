@@ -12,7 +12,7 @@ export async function GET(
 
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
     }
 
     const { data: bookmark } = await supabase
@@ -27,7 +27,7 @@ export async function GET(
       bookmark,
     })
   } catch (_err) {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: '처리 중 오류가 발생했습니다' }, { status: 500 })
   }
 }
 
@@ -42,14 +42,14 @@ export async function PATCH(
 
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
     }
 
     const body = await request.json()
     const { notify_before_days } = body
 
     if (notify_before_days === undefined) {
-      return NextResponse.json({ error: 'notify_before_days is required' }, { status: 400 })
+      return NextResponse.json({ error: '알림 일수를 지정해주세요' }, { status: 400 })
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -61,12 +61,12 @@ export async function PATCH(
       .single()
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ error: '북마크 처리에 실패했습니다' }, { status: 500 })
     }
 
     return NextResponse.json(bookmark)
   } catch (_err) {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: '처리 중 오류가 발생했습니다' }, { status: 500 })
   }
 }
 
@@ -81,7 +81,7 @@ export async function DELETE(
 
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
     }
 
     const { error } = await supabase
@@ -91,11 +91,11 @@ export async function DELETE(
       .eq('event_id', eventId)
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ error: '북마크 처리에 실패했습니다' }, { status: 500 })
     }
 
     return NextResponse.json({ success: true })
   } catch (_err) {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: '처리 중 오류가 발생했습니다' }, { status: 500 })
   }
 }

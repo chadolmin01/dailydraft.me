@@ -83,8 +83,17 @@ const config: Config = {
         xl: 'var(--radius-xl)',
         '2xl': 'var(--radius-xl)',
         '3xl': 'var(--radius-xl)',
+        full: '9999px',
       },
       boxShadow: {
+        // Override Tailwind defaults → hard shadows
+        sm: 'var(--shadow-sm)',
+        DEFAULT: 'var(--shadow-sm)',
+        md: 'var(--shadow-md)',
+        lg: 'var(--shadow-lg)',
+        xl: 'var(--shadow-xl)',
+        '2xl': 'var(--shadow-xl)',
+        // Semantic brutal aliases
         soft: 'var(--shadow-sm)',
         sharp: 'var(--shadow-md)',
         brutal: 'var(--shadow-lg)',

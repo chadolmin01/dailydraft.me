@@ -56,13 +56,23 @@ export async function POST(request: NextRequest) {
 
     const result = await model.generateContent(prompt);
     const text = result.response.text();
-    const parsed = JSON.parse(text);
+
+    let parsed;
+    try {
+      parsed = JSON.parse(text);
+    } catch {
+      console.error('Generate Artifacts JSON parse failed. Raw:', text.slice(0, 200));
+      return NextResponse.json(
+        { success: false, error: 'AI 응답을 파싱하지 못했습니다. 다시 시도해주세요.' },
+        { status: 502 }
+      );
+    }
 
     return NextResponse.json({ success: true, result: parsed });
   } catch (error) {
     console.error('Generate Artifacts Error:', error);
     return NextResponse.json(
-      { success: false, error: error instanceof Error ? error.message : 'Artifact generation failed' },
+      { success: false, error: '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.' },
       { status: 500 }
     );
   }

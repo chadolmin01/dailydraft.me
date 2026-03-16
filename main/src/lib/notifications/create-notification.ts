@@ -8,6 +8,8 @@ export type NotificationType =
   | 'connection'
   | 'recommendation'
   | 'new_match'
+  | 'coffee_chat'
+  | 'comment'
 
 interface CreateNotificationParams {
   userId: string
@@ -143,5 +145,54 @@ export async function notifyNewConnection(
     title: '새로운 연결이 생겼습니다!',
     message: `${partnerName}님과 "${opportunityTitle}"를 통해 연결되었습니다.`,
     link: '/connections',
+  })
+}
+
+export async function notifyCoffeeChatRequest(
+  ownerId: string,
+  requesterName: string,
+  projectTitle: string
+) {
+  return createNotification({
+    userId: ownerId,
+    type: 'coffee_chat',
+    title: '커피챗 요청이 도착했습니다',
+    message: `${requesterName}님이 "${projectTitle}" 관련 커피챗을 요청했습니다.`,
+    link: '/profile?tab=coffee-chats',
+  })
+}
+
+export async function notifyCoffeeChatResponse(
+  requesterId: string,
+  ownerName: string,
+  projectTitle: string,
+  accepted: boolean
+) {
+  return createNotification({
+    userId: requesterId,
+    type: 'coffee_chat',
+    title: accepted ? '커피챗이 수락되었습니다!' : '커피챗 결과 안내',
+    message: accepted
+      ? `${ownerName}님이 "${projectTitle}" 커피챗을 수락했습니다. 연락처를 확인하세요.`
+      : `${ownerName}님이 "${projectTitle}" 커피챗을 거절했습니다.`,
+    link: '/profile?tab=coffee-chats',
+  })
+}
+
+export async function notifyNewComment(
+  creatorId: string,
+  commenterName: string,
+  opportunityTitle: string,
+  opportunityId: string
+) {
+  return createNotification({
+    userId: creatorId,
+    type: 'comment',
+    title: '새 댓글이 달렸습니다',
+    message: `${commenterName}님이 "${opportunityTitle}"에 댓글을 남겼습니다.`,
+    link: `/opportunities/${opportunityId}`,
+    metadata: {
+      opportunity_id: opportunityId,
+    },
   })
 }

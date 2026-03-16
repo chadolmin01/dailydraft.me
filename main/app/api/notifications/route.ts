@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 // GET: 내 알림 목록
 export async function GET(request: NextRequest) {
@@ -8,7 +9,7 @@ export async function GET(request: NextRequest) {
 
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     const { searchParams } = new URL(request.url)
@@ -35,7 +36,7 @@ export async function GET(request: NextRequest) {
     const { data: notifications, error } = await query
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return ApiResponse.internalError('알림 조회 중 오류가 발생했습니다')
     }
 
     // 읽지 않은 알림 수도 함께 반환
@@ -45,12 +46,12 @@ export async function GET(request: NextRequest) {
       .eq('user_id', user.id)
       .eq('status', 'unread')
 
-    return NextResponse.json({
+    return ApiResponse.ok({
       notifications,
       unread_count: unreadCount || 0,
     })
-  } catch (_err) {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  } catch {
+    return ApiResponse.internalError('알림 조회 중 오류가 발생했습니다')
   }
 }
 
@@ -61,7 +62,7 @@ export async function PATCH(request: NextRequest) {
 
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     const body = await request.json()
@@ -78,14 +79,14 @@ export async function PATCH(request: NextRequest) {
         .eq('status', 'unread')
 
       if (error) {
-        return NextResponse.json({ error: error.message }, { status: 500 })
+        return ApiResponse.internalError('알림 읽음 처리에 실패했습니다')
       }
 
-      return NextResponse.json({ success: true })
+      return ApiResponse.ok({ success: true })
     }
 
-    return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
-  } catch (_err) {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return ApiResponse.badRequest('올바르지 않은 요청입니다')
+  } catch {
+    return ApiResponse.internalError('알림 업데이트 중 오류가 발생했습니다')
   }
 }

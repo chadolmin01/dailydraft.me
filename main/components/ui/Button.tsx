@@ -13,11 +13,11 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantStyles: Record<ButtonVariant, string> = {
-  primary: 'bg-black text-white hover:bg-gray-800 shadow-sm',
-  secondary: 'bg-white border border-gray-200 text-black hover:border-black',
-  ghost: 'text-black hover:bg-gray-100',
-  blue: 'bg-draft-blue text-white hover:bg-blue-700 shadow-sm',
-  danger: 'bg-draft-accent text-white hover:bg-red-600 shadow-sm',
+  primary: 'bg-black text-white hover:bg-[#333] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]',
+  secondary: 'bg-surface-card border border-border-strong text-black hover:bg-black hover:text-white',
+  ghost: 'text-black hover:bg-surface-sunken',
+  blue: 'bg-[#4F46E5] text-white hover:bg-[#4338CA] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]',
+  danger: 'bg-red-600 text-white hover:bg-red-700 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]',
 }
 
 const sizeStyles: Record<ButtonSize, string> = {
@@ -35,7 +35,7 @@ export const Button: React.FC<ButtonProps> = ({
   disabled,
   ...props
 }) => {
-  const baseStyles = 'font-bold rounded-sm transition-colors flex items-center justify-center gap-2'
+  const baseStyles = 'font-bold rounded-sm transition-all flex items-center justify-center gap-2'
 
   return (
     <button
@@ -77,8 +77,8 @@ export const IconButton: React.FC<IconButtonProps> = ({
 }) => {
   const baseStyles = 'rounded-sm transition-colors flex items-center justify-center'
   const variantStyle = variant === 'ghost'
-    ? 'text-gray-400 hover:text-black hover:bg-gray-100'
-    : 'bg-white border border-gray-200 text-gray-600 hover:border-black hover:text-black'
+    ? 'text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken'
+    : 'bg-surface-card border border-border-strong text-txt-secondary hover:bg-black hover:text-white'
 
   return (
     <button

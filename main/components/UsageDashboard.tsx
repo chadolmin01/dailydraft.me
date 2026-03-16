@@ -51,15 +51,15 @@ interface UsageData {
 }
 
 const planColors: Record<string, { bg: string; text: string; border: string }> = {
-  free: { bg: 'bg-gray-100', text: 'text-gray-700', border: 'border-gray-300' },
-  pro: { bg: 'bg-blue-100', text: 'text-blue-700', border: 'border-blue-300' },
-  team: { bg: 'bg-purple-100', text: 'text-purple-700', border: 'border-purple-300' },
+  free: { bg: 'bg-surface-sunken', text: 'text-txt-secondary', border: 'border-border-strong' },
+  pro: { bg: 'bg-[#4F46E5]/5', text: 'text-[#4F46E5]', border: 'border-[#4F46E5]' },
+  team: { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-600' },
 }
 
 function ProgressBar({ used, limit, unlimited = false }: { used: number; limit: number; unlimited?: boolean }) {
   if (unlimited) {
     return (
-      <div className="w-full h-2 bg-green-100 rounded-full overflow-hidden">
+      <div className="w-full h-2 bg-green-50 overflow-hidden">
         <div className="h-full bg-green-500 w-full" />
       </div>
     )
@@ -70,7 +70,7 @@ function ProgressBar({ used, limit, unlimited = false }: { used: number; limit: 
   const isDanger = percentage >= 95
 
   return (
-    <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+    <div className="w-full h-2 bg-surface-sunken overflow-hidden">
       <div
         className={`h-full transition-all duration-300 ${
           isDanger ? 'bg-red-500' : isWarning ? 'bg-yellow-500' : 'bg-blue-500'
@@ -104,23 +104,23 @@ function UsageCard({
   const isDanger = percentage >= 95
 
   return (
-    <div className="bg-white rounded-xl p-4 border border-gray-200 hover:shadow-md transition-shadow">
+    <div className="bg-surface-card p-4 border border-border-strong shadow-sharp hover:shadow-brutal transition-shadow">
       <div className="flex items-center gap-3 mb-3">
-        <div className={`p-2 rounded-lg ${isDanger ? 'bg-red-100' : isWarning ? 'bg-yellow-100' : 'bg-blue-100'}`}>
-          <Icon className={`w-5 h-5 ${isDanger ? 'text-red-600' : isWarning ? 'text-yellow-600' : 'text-blue-600'}`} />
+        <div className={`p-2 border ${isDanger ? 'border-red-600 bg-red-50' : isWarning ? 'border-yellow-600 bg-yellow-50' : 'border-[#4F46E5] bg-[#4F46E5]/5'}`}>
+          <Icon className={`w-5 h-5 ${isDanger ? 'text-red-600' : isWarning ? 'text-yellow-600' : 'text-[#4F46E5]'}`} />
         </div>
-        <span className="font-medium text-gray-700">{title}</span>
+        <span className="font-medium text-txt-secondary">{title}</span>
       </div>
 
       <div className="space-y-2">
         <ProgressBar used={safeUsed} limit={safeLimit} unlimited={unlimited} />
 
         <div className="flex justify-between text-sm">
-          <span className="text-gray-500">
+          <span className="text-txt-tertiary">
             {safeUsed.toLocaleString()}{suffix} 사용
           </span>
           <span className={`font-medium ${
-            unlimited ? 'text-green-600' : isDanger ? 'text-red-600' : isWarning ? 'text-yellow-600' : 'text-gray-700'
+            unlimited ? 'text-green-600' : isDanger ? 'text-red-600' : isWarning ? 'text-yellow-600' : 'text-txt-secondary'
           }`}>
             {unlimited ? '무제한' : `${remaining.toLocaleString()}${suffix} 남음`}
           </span>
@@ -143,24 +143,24 @@ function ApiUsageSection({ apiUsage }: { apiUsage: UsageData['apiUsage'] }) {
   const percentage = (current.used / current.limit) * 100
 
   return (
-    <div className="bg-white rounded-xl p-6 border border-gray-200">
+    <div className="bg-surface-card p-6 border border-border-strong shadow-sharp">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-violet-100">
+          <div className="p-2 border border-violet-600 bg-violet-50">
             <Activity className="w-5 h-5 text-violet-600" />
           </div>
-          <h3 className="font-semibold text-gray-800">API 사용량</h3>
+          <h3 className="font-semibold text-txt-primary">API 사용량</h3>
         </div>
 
-        <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
+        <div className="flex gap-0 border border-border-strong p-0">
           {windows.map(({ key, label }) => (
             <button
               key={key}
               onClick={() => setSelectedWindow(key)}
-              className={`px-3 py-1 text-sm rounded-md transition-colors ${
+              className={`px-3 py-1 text-sm transition-colors ${
                 selectedWindow === key
-                  ? 'bg-white text-gray-800 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-800'
+                  ? 'bg-black text-white'
+                  : 'text-txt-tertiary hover:bg-surface-sunken'
               }`}
             >
               {label}
@@ -172,13 +172,13 @@ function ApiUsageSection({ apiUsage }: { apiUsage: UsageData['apiUsage'] }) {
       <div className="space-y-4">
         <div>
           <div className="flex justify-between mb-2">
-            <span className="text-2xl font-bold text-gray-800">
+            <span className="text-2xl font-bold text-txt-primary">
               {current.used.toLocaleString()}
-              <span className="text-lg text-gray-400 font-normal">
+              <span className="text-lg text-txt-disabled font-normal">
                 /{current.limit.toLocaleString()}
               </span>
             </span>
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-txt-tertiary">
               리셋: {new Date(current.resetAt).toLocaleTimeString('ko-KR', {
                 hour: '2-digit',
                 minute: '2-digit'
@@ -188,13 +188,13 @@ function ApiUsageSection({ apiUsage }: { apiUsage: UsageData['apiUsage'] }) {
           <ProgressBar used={current.used} limit={current.limit} />
         </div>
 
-        <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-100">
+        <div className="grid grid-cols-3 gap-4 pt-4 border-t border-dashed border-border">
           {windows.map(({ key, label }) => (
             <div key={key} className="text-center">
-              <div className="text-xs text-gray-500 mb-1">{label}</div>
+              <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-1">{label}</div>
               <div className="text-sm font-medium">
                 {apiUsage[key].remaining.toLocaleString()}
-                <span className="text-gray-400"> 남음</span>
+                <span className="text-txt-disabled"> 남음</span>
               </div>
             </div>
           ))}
@@ -242,20 +242,20 @@ export function UsageDashboard() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+      <div className="flex items-center justify-center min-h-[25rem]">
+        <Loader2 className="w-8 h-8 text-txt-disabled animate-spin" />
       </div>
     )
   }
 
   if (error || !data) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
+      <div className="flex flex-col items-center justify-center min-h-[25rem] gap-4">
         <AlertCircle className="w-12 h-12 text-red-500" />
-        <p className="text-gray-600">{error || '데이터를 불러올 수 없습니다.'}</p>
+        <p className="text-txt-secondary">{error || '데이터를 불러올 수 없습니다.'}</p>
         <button
           onClick={fetchUsage}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          className="px-4 py-2 bg-[#4F46E5] text-white border-2 border-[#4F46E5] hover:bg-[#4338CA] transition-colors"
         >
           다시 시도
         </button>
@@ -274,13 +274,13 @@ export function UsageDashboard() {
       {/* 헤더 */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">사용량 대시보드</h1>
-          <p className="text-gray-500 mt-1">현재 플랜의 사용량을 확인하세요</p>
+          <h1 className="text-2xl font-bold text-txt-primary">사용량 대시보드</h1>
+          <p className="text-txt-tertiary mt-1">현재 플랜의 사용량을 확인하세요</p>
         </div>
         <button
           onClick={handleRefresh}
           disabled={refreshing}
-          className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 text-txt-secondary border border-border-strong hover:bg-black hover:text-white transition-colors disabled:opacity-50"
         >
           <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
           새로고침
@@ -288,20 +288,20 @@ export function UsageDashboard() {
       </div>
 
       {/* 플랜 정보 */}
-      <div className={`rounded-xl p-6 ${colors.bg} border ${colors.border}`}>
+      <div className={`p-6 ${colors.bg} border ${colors.border} shadow-sharp`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className={`p-3 rounded-xl bg-white shadow-sm`}>
+            <div className="p-3 bg-surface-card border border-border-strong">
               <Crown className={`w-6 h-6 ${colors.text}`} />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold text-gray-800">{data.plan.nameKo} 플랜</h2>
-                <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${colors.bg} ${colors.text} border ${colors.border}`}>
+                <h2 className="text-xl font-bold text-txt-primary">{data.plan.nameKo} 플랜</h2>
+                <span className={`px-2 py-0.5 text-[0.625rem] font-mono font-bold ${colors.text} border ${colors.border}`}>
                   {data.plan.name.toUpperCase()}
                 </span>
               </div>
-              <p className="text-gray-600 text-sm mt-1">
+              <p className="text-txt-secondary text-sm mt-1">
                 {data.plan.status === 'active' ? (
                   <>
                     <CheckCircle className="w-4 h-4 inline text-green-500 mr-1" />
@@ -318,7 +318,7 @@ export function UsageDashboard() {
           </div>
 
           {data.plan.type === 'free' && (
-            <button className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors">
+            <button className="px-4 py-2 bg-[#4F46E5] text-white border-2 border-[#4F46E5] font-medium hover:bg-[#4338CA] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">
               Pro로 업그레이드
             </button>
           )}
@@ -362,12 +362,12 @@ export function UsageDashboard() {
       <ApiUsageSection apiUsage={data.apiUsage} />
 
       {/* 기간 정보 */}
-      <div className="bg-gray-50 rounded-xl p-4 flex items-center justify-between">
-        <div className="flex items-center gap-2 text-gray-600">
+      <div className="bg-surface-sunken border border-border-strong p-4 flex items-center justify-between">
+        <div className="flex items-center gap-2 text-txt-secondary">
           <Clock className="w-4 h-4" />
           <span>사용량 측정 기간</span>
         </div>
-        <span className="font-medium text-gray-800">
+        <span className="font-medium text-txt-primary">
           {new Date(data.usage.period.start).toLocaleDateString('ko-KR')} ~ {new Date(data.usage.period.end).toLocaleDateString('ko-KR')}
         </span>
       </div>

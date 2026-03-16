@@ -20,8 +20,8 @@ const spacingMap = {
 } as const
 
 const bgMap = {
-  white: 'bg-white',
-  gray: 'bg-gray-50',
+  white: 'bg-surface-card',
+  gray: 'bg-surface-sunken',
   transparent: '',
 } as const
 

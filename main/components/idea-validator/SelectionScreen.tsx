@@ -31,44 +31,44 @@ const SelectionScreen: React.FC<SelectionScreenProps> = ({ onSelect, skipToLevel
   }) => (
     <button
       onClick={onClick}
-      className={`group relative flex flex-col items-start p-6 h-full w-full border transition-all duration-200 text-left rounded-sm
+      className={`group relative flex flex-col items-start p-6 h-full w-full border transition-all duration-200 text-left
         ${variant === 'ai'
-          ? 'bg-white border-gray-200 hover:border-black hover:shadow-sm'
-          : 'bg-white border-gray-200 hover:border-black hover:shadow-sm'
+          ? 'bg-surface-card border-border hover:border-border-strong hover:shadow-sharp'
+          : 'bg-surface-card border-border hover:border-border-strong hover:shadow-sharp'
         }
       `}
     >
       {tag && (
-        <div className={`absolute top-5 right-5 text-[9px] font-mono font-bold px-2 py-0.5 uppercase tracking-wider border rounded-sm
+        <div className={`absolute top-5 right-5 text-[0.5625rem] font-mono font-bold px-2 py-0.5 uppercase tracking-wider border
           ${variant === 'ai'
             ? 'bg-draft-blue/10 text-draft-blue border-draft-blue/20'
-            : 'bg-gray-50 text-gray-500 border-gray-200'
+            : 'bg-surface-sunken text-txt-tertiary border-border'
           }`}>
           {tag}
         </div>
       )}
 
-      <div className={`mb-5 p-2.5 rounded-sm border
+      <div className={`mb-5 p-2.5 border
         ${variant === 'ai'
-          ? 'bg-gray-50 border-gray-100 text-gray-900 group-hover:bg-black group-hover:text-white group-hover:border-black transition-colors'
-          : 'bg-gray-50 border-gray-100 text-gray-900 group-hover:bg-black group-hover:text-white group-hover:border-black transition-colors'
+          ? 'bg-surface-sunken border-border-subtle text-txt-primary group-hover:bg-black group-hover:text-white group-hover:border-border-strong transition-colors'
+          : 'bg-surface-sunken border-border-subtle text-txt-primary group-hover:bg-black group-hover:text-white group-hover:border-border-strong transition-colors'
         }`}>
         {icon}
       </div>
 
-      <h3 className="text-lg font-bold mb-2 tracking-tight text-gray-900">
+      <h3 className="text-lg font-bold mb-2 tracking-tight text-txt-primary">
         {title}
       </h3>
 
-      <p className="text-xs text-gray-500 leading-relaxed mb-6 break-keep">
+      <p className="text-xs text-txt-tertiary leading-relaxed mb-6 break-keep">
         {description}
       </p>
 
-      <div className="mt-auto w-full flex items-center justify-between border-t border-gray-100 pt-4">
-        <span className="text-[10px] font-bold font-mono uppercase tracking-widest text-gray-500 group-hover:text-black transition-colors">
+      <div className="mt-auto w-full flex items-center justify-between border-t border-dashed border-border pt-4">
+        <span className="text-[0.625rem] font-bold font-mono uppercase tracking-widest text-txt-tertiary group-hover:text-black transition-colors">
           Select
         </span>
-        <ArrowRight size={14} className="text-gray-400 group-hover:text-black group-hover:translate-x-1 transition-all" />
+        <ArrowRight size={14} className="text-txt-disabled group-hover:text-black group-hover:translate-x-1 transition-all" />
       </div>
     </button>
   );
@@ -88,8 +88,8 @@ const SelectionScreen: React.FC<SelectionScreenProps> = ({ onSelect, skipToLevel
         iconBg: 'bg-yellow-50 text-yellow-600 border-yellow-200',
       },
       blue: {
-        border: 'hover:border-black',
-        iconBg: 'bg-gray-50 text-gray-900 border-gray-200',
+        border: 'hover:border-border-strong',
+        iconBg: 'bg-surface-sunken text-txt-primary border-border',
       },
       red: {
         border: 'hover:border-red-500',
@@ -102,23 +102,23 @@ const SelectionScreen: React.FC<SelectionScreenProps> = ({ onSelect, skipToLevel
     return (
       <button
         onClick={() => onSelect('ai', level)}
-        className={`group relative flex flex-col items-start p-5 w-full h-full bg-white border transition-all duration-200 text-left rounded-sm hover:shadow-sm ${currentTheme.border} ${recommended ? 'border-black ring-1 ring-black' : 'border-gray-200'}`}
+        className={`group relative flex flex-col items-start p-5 w-full h-full bg-surface-card border transition-all duration-200 text-left hover:shadow-sharp ${currentTheme.border} ${recommended ? 'border-border-strong ring-1 ring-black' : 'border-border'}`}
       >
         {recommended && (
-           <div className="absolute -top-2.5 left-5 bg-black text-white text-[9px] font-bold px-2 py-0.5 uppercase tracking-wider font-mono rounded-sm">
+           <div className="absolute -top-2.5 left-5 bg-black text-white text-[0.5625rem] font-bold px-2 py-0.5 uppercase tracking-wider font-mono">
               Recommended
            </div>
         )}
 
         <div className="w-full flex justify-between items-start mb-4">
-          <div className={`p-2 border rounded-sm transition-colors ${currentTheme.iconBg}`}>
+          <div className={`p-2 border transition-colors ${currentTheme.iconBg}`}>
              {icon}
           </div>
-          <ArrowRight size={14} className="text-gray-300 group-hover:text-black group-hover:translate-x-1 transition-all" />
+          <ArrowRight size={14} className="text-txt-disabled group-hover:text-black group-hover:translate-x-1 transition-all" />
         </div>
 
-        <h4 className="text-xs font-bold text-gray-900 mb-2 font-mono uppercase tracking-wide">{title}</h4>
-        <p className="text-xs text-gray-500 leading-relaxed break-keep">
+        <h4 className="text-xs font-bold text-txt-primary mb-2 font-mono uppercase tracking-wide">{title}</h4>
+        <p className="text-xs text-txt-tertiary leading-relaxed break-keep">
           {desc}
         </p>
       </button>
@@ -126,43 +126,43 @@ const SelectionScreen: React.FC<SelectionScreenProps> = ({ onSelect, skipToLevel
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-full w-full px-6 py-8 overflow-y-auto bg-[#FAFAFA]">
+    <div className="flex flex-col items-center justify-center h-full w-full px-6 py-8 overflow-y-auto bg-surface-sunken">
       <div className="w-full max-w-6xl">
 
         {!showLevelSelect ? (
           <div className="grid grid-cols-12 gap-6 lg:gap-10 items-center">
              {/* Left Text Area */}
              <div className="col-span-5 space-y-6 lg:space-y-8">
-                <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-white border border-gray-200 rounded-sm">
-                  <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-                  <span className="text-[9px] font-mono font-bold text-gray-500 uppercase tracking-widest">System Operational</span>
+                <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-surface-card border border-border">
+                  <span className="w-1.5 h-1.5 bg-green-500 animate-pulse"></span>
+                  <span className="text-[0.5625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest">System Operational</span>
                 </div>
 
                 <div>
-                  <h1 className="text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 mb-4 leading-tight">
+                  <h1 className="text-4xl lg:text-5xl font-bold tracking-tight text-txt-primary mb-4 leading-tight">
                     Idea Validator
                   </h1>
-                  <p className="text-gray-500 text-sm leading-relaxed break-keep">
+                  <p className="text-txt-tertiary text-sm leading-relaxed break-keep">
                     AI 페르소나(개발/디자인/VC)와 함께 비즈니스 모델을 점검하고,
                     실행 가능한 PRD를 설계하세요.
                   </p>
                 </div>
 
-                <div className="flex items-center gap-6 pt-4 border-t border-gray-200">
+                <div className="flex items-center gap-6 pt-4 border-t border-dashed border-border">
                    <div>
-                      <div className="text-xl font-bold text-gray-900 font-mono">1.2k+</div>
-                      <div className="text-[9px] text-gray-400 uppercase font-bold tracking-wider mt-0.5">Projects</div>
+                      <div className="text-xl font-bold text-txt-primary font-mono">1.2k+</div>
+                      <div className="text-[0.5625rem] text-txt-disabled uppercase font-bold tracking-wider mt-0.5">Projects</div>
                    </div>
                    <div>
-                      <div className="text-xl font-bold text-gray-900 font-mono">89%</div>
-                      <div className="text-[9px] text-gray-400 uppercase font-bold tracking-wider mt-0.5">Success Rate</div>
+                      <div className="text-xl font-bold text-txt-primary font-mono">89%</div>
+                      <div className="text-[0.5625rem] text-txt-disabled uppercase font-bold tracking-wider mt-0.5">Success Rate</div>
                    </div>
                 </div>
              </div>
 
              {/* Right Cards Area */}
              <div className="col-span-7 grid grid-cols-2 gap-4 lg:gap-5">
-                <SelectionCard 
+                <SelectionCard
                   title="일반 등록 (Manual)"
                   description="검증 과정을 건너뛰고 표준 템플릿을 사용하여 직접 문서를 작성합니다."
                   icon={<FileText size={24} />}
@@ -170,8 +170,8 @@ const SelectionScreen: React.FC<SelectionScreenProps> = ({ onSelect, skipToLevel
                   tag="Standard"
                   variant="default"
                 />
-                
-                <SelectionCard 
+
+                <SelectionCard
                   title="AI 검증 (Validation)"
                   description="가상의 전문가팀(개발/디자인/VC)과 함께 아이디어를 다각도로 분석합니다."
                   icon={<Sparkles size={24} />}
@@ -187,12 +187,12 @@ const SelectionScreen: React.FC<SelectionScreenProps> = ({ onSelect, skipToLevel
                 {(onBack || !skipToLevelSelect) && (
                   <button
                     onClick={() => onBack ? onBack() : setShowLevelSelect(false)}
-                    className="text-[10px] font-bold text-gray-400 hover:text-gray-900 mb-4 flex items-center gap-1 uppercase tracking-widest font-mono transition-colors mx-auto"
+                    className="text-[0.625rem] font-bold text-txt-disabled hover:text-txt-primary mb-4 flex items-center gap-1 uppercase tracking-widest font-mono transition-colors mx-auto"
                   >
                      ← Back
                   </button>
                 )}
-                <h2 className="text-3xl font-bold text-gray-900 tracking-tight">검증 난이도를 선택하세요</h2>
+                <h2 className="text-3xl font-bold text-txt-primary tracking-tight">검증 난이도를 선택하세요</h2>
              </div>
 
              <div className="flex justify-center items-stretch gap-4">

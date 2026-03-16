@@ -56,7 +56,7 @@ export const ValidationSourceBadge: React.FC<ValidationSourceBadgeProps> = ({
     return (
       <button
         onClick={onClick}
-        className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded border text-[10px] font-medium transition-colors hover:opacity-80 ${config.color}`}
+        className={`inline-flex items-center gap-1 px-1.5 py-0.5 border text-[0.625rem] font-medium transition-colors hover:opacity-80 ${config.color}`}
       >
         {config.icon}
         {config.label}
@@ -70,20 +70,20 @@ export const ValidationSourceBadge: React.FC<ValidationSourceBadgeProps> = ({
   return (
     <button
       onClick={onClick}
-      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all hover:shadow-sm ${config.color}`}
+      className={`inline-flex items-center gap-2 px-3 py-1.5 border text-xs font-medium transition-all hover:shadow-sharp ${config.color}`}
     >
       {config.icon}
       <span>{config.label}</span>
       {score !== undefined && (
         <>
-          <span className="text-gray-300">|</span>
+          <span className="text-txt-disabled">|</span>
           <span className="font-bold">{score}점</span>
         </>
       )}
       {timestamp && (
         <>
-          <span className="text-gray-300">|</span>
-          <span className="opacity-70 text-[10px]">{timestamp}</span>
+          <span className="text-txt-disabled">|</span>
+          <span className="opacity-70 text-[0.625rem]">{timestamp}</span>
         </>
       )}
       <ChevronRight size={12} className="opacity-50" />
@@ -143,7 +143,7 @@ export const ValidationFeedbackModal: React.FC<ValidationFeedbackModalProps> = (
         onClick={onClose}
       />
 
-      <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden animate-in zoom-in-95 duration-200">
+      <div className="relative bg-surface-card shadow-brutal w-full max-w-lg mx-4 overflow-hidden animate-in zoom-in-95 duration-200">
         {/* Header */}
         <div className={`${config.headerBg} text-white p-4`}>
           <div className="flex items-center justify-between">
@@ -153,7 +153,7 @@ export const ValidationFeedbackModal: React.FC<ValidationFeedbackModalProps> = (
             </div>
             <button
               onClick={onClose}
-              className="p-1 hover:bg-white/20 rounded transition-colors"
+              className="p-1 hover:bg-white/20 transition-colors"
             >
               <X size={20} />
             </button>
@@ -168,8 +168,8 @@ export const ValidationFeedbackModal: React.FC<ValidationFeedbackModalProps> = (
         </div>
 
         {/* Content */}
-        <div className="p-4 max-h-[400px] overflow-y-auto">
-          <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
+        <div className="p-4 max-h-[25rem] overflow-y-auto">
+          <h4 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">
             주요 피드백
           </h4>
 
@@ -177,21 +177,21 @@ export const ValidationFeedbackModal: React.FC<ValidationFeedbackModalProps> = (
             {feedback.map((item, idx) => (
               <div
                 key={idx}
-                className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg"
+                className="flex items-start gap-3 p-3 bg-surface-sunken"
               >
-                <CheckCircle2 size={16} className="text-gray-400 mt-0.5 shrink-0" />
-                <p className="text-sm text-gray-700 leading-relaxed">{item}</p>
+                <CheckCircle2 size={16} className="text-txt-tertiary mt-0.5 shrink-0" />
+                <p className="text-sm text-txt-secondary leading-relaxed">{item}</p>
               </div>
             ))}
           </div>
 
           {conversationSnippet && (
             <div className="mt-6">
-              <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
+              <h4 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">
                 대화 발췌
               </h4>
-              <div className="p-3 bg-gray-100 rounded-lg">
-                <p className="text-sm text-gray-600 italic whitespace-pre-wrap">
+              <div className="p-3 bg-surface-sunken">
+                <p className="text-sm text-txt-secondary italic whitespace-pre-wrap">
                   {conversationSnippet}
                 </p>
               </div>
@@ -200,10 +200,10 @@ export const ValidationFeedbackModal: React.FC<ValidationFeedbackModalProps> = (
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-gray-100 bg-gray-50">
+        <div className="p-4 border-t border-border-subtle bg-surface-sunken">
           <button
             onClick={onClose}
-            className="w-full py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors"
+            className="w-full py-2 bg-surface-inverse text-white text-sm font-medium hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
           >
             확인
           </button>
@@ -240,7 +240,7 @@ export const ValidationSourceSection: React.FC<ValidationSourceSectionProps> = (
   }
 
   return (
-    <div className="p-4 bg-purple-50 border border-purple-100 rounded-lg">
+    <div className="p-4 bg-purple-50 border border-purple-100">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <Sparkles size={16} className="text-purple-600" />

@@ -90,7 +90,7 @@ export function useOpportunities(filters?: {
 export function useOpportunity(id: string | undefined) {
   return useQuery({
     queryKey: opportunityKeys.detail(id ?? ''),
-    queryFn: async () => {
+    queryFn: () => withRetry(async () => {
       if (!id) return null
 
       const { data, error } = await supabase
@@ -101,7 +101,7 @@ export function useOpportunity(id: string | undefined) {
 
       if (error) throw error
       return data as OpportunityWithCreator
-    },
+    }),
     enabled: !!id,
     staleTime: 1000 * 60 * 2,
     retry: (failureCount) => failureCount < 3,
@@ -115,7 +115,7 @@ export function useMyOpportunities() {
 
   return useQuery({
     queryKey: opportunityKeys.my(user?.id ?? ''),
-    queryFn: async () => {
+    queryFn: () => withRetry(async () => {
       if (!user?.id) return []
 
       const { data, error } = await supabase
@@ -126,8 +126,10 @@ export function useMyOpportunities() {
 
       if (error) throw error
       return data as Opportunity[]
-    },
+    }),
     enabled: !!user?.id,
+    retry: (failureCount) => failureCount < 3,
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
   })
 }
 
@@ -137,7 +139,7 @@ export function useRecommendedOpportunities(limit = 4) {
 
   return useQuery({
     queryKey: opportunityKeys.recommended(user?.id ?? ''),
-    queryFn: async () => {
+    queryFn: () => withRetry(async () => {
       // For now, just fetch recent active opportunities
       // In production, this would use vector similarity search
       const { data, error } = await supabase
@@ -150,8 +152,10 @@ export function useRecommendedOpportunities(limit = 4) {
 
       if (error) throw error
       return data as OpportunityWithCreator[]
-    },
+    }),
     enabled: !!user?.id,
+    retry: (failureCount) => failureCount < 3,
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
   })
 }
 

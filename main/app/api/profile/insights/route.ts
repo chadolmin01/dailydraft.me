@@ -10,13 +10,13 @@ export async function GET() {
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
     }
 
     // 프로필 가져오기
     const { data: profile } = await supabase
       .from('profiles')
-      .select('skills, interest_tags, ai_chat_completed, contact_email')
+      .select('skills, interest_tags, ai_chat_completed, contact_email, profile_views')
       .eq('user_id', user.id)
       .single()
 
@@ -25,6 +25,7 @@ export async function GET() {
       interest_tags: string[] | null
       ai_chat_completed: boolean | null
       contact_email: string | null
+      profile_views: number | null
     } | null
 
     // 매칭 가능한 Opportunity 수 (관심 분야 겹치는)
@@ -102,8 +103,7 @@ export async function GET() {
     )
 
     return NextResponse.json({
-      profileViews: 0, // 조회수 추적 미구현
-      viewsTrend: 'stable',
+      profileViews: profileData?.profile_views || 0,
       matchedOpportunities: matchedCount,
       topMatchingSkills,
       demandedSkills,
@@ -112,7 +112,7 @@ export async function GET() {
     })
   } catch (_error) {
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: '서버 오류가 발생했습니다' },
       { status: 500 }
     )
   }

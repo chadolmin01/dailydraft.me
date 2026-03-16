@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
-  Zap, ArrowRight, MessageCircle, Heart, Loader2, Plus, Sparkles,
+  Zap, ArrowRight, MessageCircle, Heart, Loader2, Plus,
 } from 'lucide-react'
 import { supabase } from '@/src/lib/supabase/client'
 import { ProjectDetailModal } from '@/components/ProjectDetailModal'
@@ -17,10 +17,6 @@ interface DisplayProject {
   isReal?: boolean
 }
 
-interface OpportunitySectionProps {
-  onSlidePanelOpen?: () => void
-}
-
 // Seed 기반 고정 mock 숫자 (id로부터 결정적 해시)
 function seededNumber(id: string, min: number, max: number): number {
   let hash = 0
@@ -32,7 +28,7 @@ function seededNumber(id: string, min: number, max: number): number {
 }
 
 // --- Main Component ---
-export const OpportunitySection: React.FC<OpportunitySectionProps> = ({ onSlidePanelOpen }) => {
+export const OpportunitySection: React.FC = () => {
   const router = useRouter()
   const [projects, setProjects] = useState<DisplayProject[]>([])
   const [loading, setLoading] = useState(true)
@@ -99,20 +95,20 @@ export const OpportunitySection: React.FC<OpportunitySectionProps> = ({ onSlideP
     : mockProjects.slice(0, 3)
 
   return (
-    <section id="projects" className="w-full py-24 px-6 md:px-12 bg-gray-50">
+    <section id="projects" className="w-full py-32 px-6 md:px-12 bg-surface-sunken">
       <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-12">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-16">
           <div>
-            <span className="text-xs font-mono font-bold text-gray-500 tracking-wider mb-2 block">
+            <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-2 block">
               LIVE PROJECTS
             </span>
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
+            <h2 className="text-3xl md:text-4xl font-bold text-txt-primary">
               지금 올라온 프로젝트
             </h2>
           </div>
           <button
             onClick={() => router.push('/explore')}
-            className="text-sm font-bold text-gray-600 hover:text-black transition-colors flex items-center gap-1 border-b border-gray-300 pb-0.5 hover:border-black"
+            className="text-sm font-bold text-txt-secondary hover:text-black transition-colors flex items-center gap-1 border-b border-border-strong pb-0.5 hover:border-border-strong"
           >
             전체 보기 <ArrowRight size={14} />
           </button>
@@ -120,35 +116,35 @@ export const OpportunitySection: React.FC<OpportunitySectionProps> = ({ onSlideP
 
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="animate-spin text-gray-400" size={32} />
+            <Loader2 className="animate-spin text-txt-disabled" size={32} />
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {displayProjects.map((project) => (
               <div
                 key={project.id}
-                className="group bg-white border border-gray-200 p-6 hover:border-black hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col h-full"
+                className="group bg-surface-card border border-border p-6 hover:border-border-strong hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col h-full"
                 onClick={() => project.isReal ? setSelectedProjectId(project.id) : router.push('/explore')}
               >
                 {/* Header */}
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-900 group-hover:bg-black group-hover:text-white transition-colors">
+                    <div className="w-10 h-10 bg-surface-sunken border border-border-subtle flex items-center justify-center text-txt-primary group-hover:bg-black group-hover:text-white transition-colors">
                       <Zap size={20} />
                     </div>
                     {project.isReal && (
-                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-green-50 border border-green-200 text-green-700 text-[10px] font-bold">
-                        <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-green-50 border border-green-200 text-green-700 text-[0.625rem] font-bold">
+                        <span className="w-1.5 h-1.5 bg-green-500 animate-pulse" />
                         NEW
                       </span>
                     )}
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="flex items-center gap-1 text-[10px] font-mono text-gray-400">
+                    <span className="flex items-center gap-1 text-[0.625rem] font-mono text-txt-disabled">
                       <MessageCircle size={10} />
                       {seededNumber(project.id + 'msg', 2, 15)}
                     </span>
-                    <span className="flex items-center gap-1 text-[10px] font-mono text-gray-400">
+                    <span className="flex items-center gap-1 text-[0.625rem] font-mono text-txt-disabled">
                       <Heart size={10} />
                       {seededNumber(project.id + 'heart', 1, 10)}
                     </span>
@@ -156,27 +152,27 @@ export const OpportunitySection: React.FC<OpportunitySectionProps> = ({ onSlideP
                 </div>
 
                 {/* Title */}
-                <h3 className="font-bold text-gray-900 mb-2 group-hover:text-indigo-600 transition-colors truncate">
+                <h3 className="font-bold text-txt-primary mb-2 group-hover:text-[#4F46E5] transition-colors truncate">
                   {project.title}
                 </h3>
 
                 {/* Description */}
-                <p className="text-xs text-gray-500 leading-relaxed mb-6 flex-1 line-clamp-2 break-keep">
+                <p className="text-xs text-txt-tertiary leading-relaxed mb-6 flex-1 line-clamp-2 break-keep">
                   {project.description}
                 </p>
 
                 {/* Footer */}
-                <div className="pt-4 border-t border-gray-100 mt-auto">
+                <div className="pt-4 border-t border-dashed border-border mt-auto">
                   {project.needed_roles && project.needed_roles.length > 0 && (
                     <div className="mb-3">
-                      <span className="text-[10px] font-mono text-gray-400 uppercase block mb-1">
+                      <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-disabled block mb-1">
                         NEED
                       </span>
                       <div className="flex flex-wrap gap-1">
                         {project.needed_roles.slice(0, 2).map((role) => (
                           <span
                             key={role}
-                            className="text-[10px] bg-indigo-50 text-indigo-700 px-1.5 py-0.5 font-bold"
+                            className="text-[0.625rem] bg-[#4F46E5]/5 border border-[#4F46E5]/20 text-[#4F46E5] px-1.5 py-0.5 font-bold"
                           >
                             {role}
                           </span>
@@ -190,7 +186,7 @@ export const OpportunitySection: React.FC<OpportunitySectionProps> = ({ onSlideP
                       {project.interest_tags.slice(0, 3).map((tag) => (
                         <span
                           key={tag}
-                          className="text-[10px] bg-white border border-gray-200 text-gray-600 px-1.5 py-0.5"
+                          className="text-[0.625rem] bg-surface-card border border-border text-txt-secondary px-1.5 py-0.5"
                         >
                           {tag}
                         </span>
@@ -203,19 +199,18 @@ export const OpportunitySection: React.FC<OpportunitySectionProps> = ({ onSlideP
 
             {/* + Add Project Card */}
             <div
-              onClick={onSlidePanelOpen}
-              className="group bg-white border-2 border-dashed border-gray-300 p-6 hover:border-blue-500 hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col items-center justify-center h-full min-h-[220px] gap-4"
+              onClick={() => router.push('/login')}
+              className="group bg-surface-card border border-dashed border-border-strong p-6 hover:border-[#4F46E5] hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col items-center justify-center h-full min-h-[13.75rem] gap-4"
             >
-              <div className="w-14 h-14 bg-gray-50 border border-gray-200 flex items-center justify-center group-hover:bg-blue-600 group-hover:border-blue-600 transition-colors">
-                <Plus size={24} className="text-gray-400 group-hover:text-white transition-colors" />
+              <div className="w-14 h-14 bg-surface-sunken border border-border flex items-center justify-center group-hover:bg-[#4F46E5] group-hover:border-[#4F46E5] transition-colors">
+                <Plus size={24} className="text-txt-disabled group-hover:text-white transition-colors" />
               </div>
               <div className="text-center">
-                <p className="font-bold text-gray-700 group-hover:text-blue-600 transition-colors mb-1">
+                <p className="font-bold text-txt-secondary group-hover:text-[#4F46E5] transition-colors mb-1">
                   내 아이디어 등록하기
                 </p>
-                <p className="text-xs text-gray-400 flex items-center justify-center gap-1">
-                  <Sparkles size={12} />
-                  AI가 30초 만에 공고 작성
+                <p className="text-xs text-txt-disabled">
+                  팀원을 모집해보세요
                 </p>
               </div>
             </div>
@@ -223,18 +218,18 @@ export const OpportunitySection: React.FC<OpportunitySectionProps> = ({ onSlideP
         )}
 
         {/* CTA Banner */}
-        <div className="mt-12 bg-black text-white p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="mt-16 bg-black text-white p-10 flex flex-col md:flex-row items-center justify-between gap-8">
           <div>
             <h3 className="text-xl font-bold mb-2">나도 프로젝트 올리기</h3>
-            <p className="text-gray-400 text-sm">
+            <p className="text-txt-disabled text-sm">
               아이디어 단계부터 MVP까지, 어떤 단계든 공유하고 피드백 받으세요
             </p>
           </div>
           <button
-            onClick={onSlidePanelOpen || (() => router.push('/login'))}
-            className="group flex items-center gap-2 bg-white text-black px-6 py-3 font-bold text-sm hover:bg-gray-100 transition-colors shrink-0"
+            onClick={() => router.push('/login')}
+            className="group flex items-center gap-2 bg-white text-black px-6 py-3 font-bold text-sm hover:bg-surface-sunken transition-colors shrink-0 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
           >
-            AI로 공고 만들기
+            시작하기
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
           </button>
         </div>

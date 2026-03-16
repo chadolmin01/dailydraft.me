@@ -22,12 +22,12 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     // Fetch opportunity with creator profile
     const { data: oppData, error } = await supabase
       .from('opportunities')
-      .select('*')
+      .select('id, type, title, description, status, creator_id, needed_roles, needed_skills, interest_tags, location_type, location, time_commitment, compensation_type, compensation_details, applications_count, views_count, project_links, deadline, team_size, project_stage, created_at, updated_at')
       .eq('id', id)
       .single()
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 404 })
+      return NextResponse.json({ error: 'Opportunity not found' }, { status: 404 })
     }
 
     const data = oppData as OpportunityData
@@ -73,7 +73,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     })
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Unknown error' },
+      { error: '서버 오류가 발생했습니다' },
       { status: 500 }
     )
   }
@@ -90,7 +90,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
     }
 
     // Check if user is the creator
@@ -103,7 +103,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     const opportunity = opportunityData as { creator_id: string } | null
 
     if (!opportunity || opportunity.creator_id !== user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      return NextResponse.json({ error: '접근 권한이 없습니다' }, { status: 403 })
     }
 
     const body = await request.json()
@@ -150,13 +150,13 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       .single()
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ error: 'Operation failed' }, { status: 500 })
     }
 
     return NextResponse.json(data)
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Unknown error' },
+      { error: '서버 오류가 발생했습니다' },
       { status: 500 }
     )
   }
@@ -173,7 +173,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
     }
 
     // Check if user is the creator
@@ -186,20 +186,20 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
     const opportunity = oppData as { creator_id: string } | null
 
     if (!opportunity || opportunity.creator_id !== user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      return NextResponse.json({ error: '접근 권한이 없습니다' }, { status: 403 })
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error } = await (supabase.from('opportunities') as any).delete().eq('id', id)
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ error: 'Operation failed' }, { status: 500 })
     }
 
     return NextResponse.json({ success: true })
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Unknown error' },
+      { error: '서버 오류가 발생했습니다' },
       { status: 500 }
     )
   }

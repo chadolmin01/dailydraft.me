@@ -21,13 +21,13 @@ export const IdeaValidatorModal: React.FC<IdeaValidatorModalProps> = ({ isOpen, 
       />
 
       {/* Modal Content */}
-      <div className="relative bg-white w-[98vw] max-w-[1800px] h-[95vh] rounded-lg shadow-2xl flex flex-col overflow-hidden">
+      <div className="relative bg-surface-card w-[98vw] max-w-[112.5rem] h-[95vh] shadow-brutal border-2 border-border-strong flex flex-col overflow-hidden">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 z-50 w-8 h-8 flex items-center justify-center rounded-lg bg-white/80 hover:bg-gray-100 transition-colors shadow-sm"
+          className="absolute top-3 right-3 z-50 w-8 h-8 flex items-center justify-center bg-surface-card hover:bg-surface-sunken transition-colors border border-border-strong"
         >
-          <X className="w-5 h-5 text-gray-500" />
+          <X className="w-5 h-5 text-txt-disabled" />
         </button>
 
         {/* IdeaValidator */}

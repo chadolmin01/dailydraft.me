@@ -8,7 +8,7 @@ export async function GET() {
 
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
     }
 
     const { data: bookmarks, error } = await supabase
@@ -24,12 +24,12 @@ export async function GET() {
       .order('created_at', { ascending: false })
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ error: 'Operation failed' }, { status: 500 })
     }
 
     return NextResponse.json(bookmarks)
   } catch (_err) {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: '서버 오류가 발생했습니다' }, { status: 500 })
   }
 }
 
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
 
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
     }
 
     const body = await request.json()
@@ -75,11 +75,11 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ error: 'Operation failed' }, { status: 500 })
     }
 
     return NextResponse.json(bookmark, { status: 201 })
   } catch (_err) {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: '서버 오류가 발생했습니다' }, { status: 500 })
   }
 }

@@ -15,7 +15,7 @@ export async function PATCH(
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
     }
 
     // Verify user is the opportunity creator
@@ -26,7 +26,7 @@ export async function PATCH(
       .single()
 
     if (!opportunity || (opportunity as any).creator_id !== user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      return NextResponse.json({ error: '접근 권한이 없습니다' }, { status: 403 })
     }
 
     const body = await request.json()
@@ -55,7 +55,7 @@ export async function PATCH(
 
     return NextResponse.json(data)
   } catch (_error) {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: '서버 오류가 발생했습니다' }, { status: 500 })
   }
 }
 
@@ -73,7 +73,7 @@ export async function DELETE(
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
     }
 
     // Verify user is the opportunity creator
@@ -84,7 +84,7 @@ export async function DELETE(
       .single()
 
     if (!opportunity || (opportunity as any).creator_id !== user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      return NextResponse.json({ error: '접근 권한이 없습니다' }, { status: 403 })
     }
 
     // Set status to 'left' instead of deleting
@@ -100,6 +100,6 @@ export async function DELETE(
 
     return NextResponse.json({ success: true })
   } catch (_error) {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: '서버 오류가 발생했습니다' }, { status: 500 })
   }
 }

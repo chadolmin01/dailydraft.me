@@ -34,14 +34,14 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({
   return (
     <div className="space-y-6">
       {/* Section Header */}
-      <div className="flex items-center justify-between pb-4 border-b border-gray-200">
+      <div className="flex items-center justify-between pb-4 border-b border-dashed border-border">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">{section.title}</h2>
-          <p className="text-sm text-gray-500 mt-1">
+          <h2 className="text-xl font-bold text-txt-primary">{section.title}</h2>
+          <p className="text-sm text-txt-tertiary mt-1">
             배점: {section.weight}점
           </p>
         </div>
-        <div className="text-[10px] font-mono text-gray-400 bg-gray-50 px-2 py-1 rounded-sm border border-gray-100">
+        <div className="text-[0.625rem] font-mono font-bold text-txt-tertiary bg-surface-sunken px-2 py-1 border border-border-subtle uppercase tracking-widest">
           {section.type.toUpperCase()}
         </div>
       </div>
@@ -100,14 +100,14 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
       {/* Label */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <label className="font-medium text-gray-900 text-sm">
+          <label className="font-medium text-txt-primary text-sm">
             {field.label}
             {field.required && <span className="text-red-500 ml-0.5">*</span>}
           </label>
           {field.helpText && (
             <button
               onClick={() => setShowHelp(!showHelp)}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-txt-tertiary hover:text-txt-secondary"
             >
               <HelpCircle size={14} />
             </button>
@@ -120,13 +120,13 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
             onClick={handleAiGenerate}
             disabled={isGenerating || !basicInfo?.itemName}
             className={`
-              flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-sm
+              flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium
               transition-all
               ${isGenerating
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                ? 'bg-surface-sunken text-txt-tertiary cursor-not-allowed'
                 : !basicInfo?.itemName
-                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  : 'bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200'
+                  ? 'bg-surface-sunken text-txt-tertiary cursor-not-allowed'
+                  : 'bg-surface-sunken text-[#4F46E5] hover:bg-accent-secondary border border-border'
               }
             `}
             title={!basicInfo?.itemName ? '기본 정보를 먼저 입력하세요' : 'AI로 작성'}
@@ -148,7 +148,7 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
 
       {/* Help text */}
       {showHelp && field.helpText && (
-        <div className="p-3 bg-blue-50 border border-blue-100 rounded-sm text-xs text-blue-700">
+        <div className="p-3 bg-surface-sunken border border-border text-xs text-txt-secondary">
           {field.helpText}
         </div>
       )}
@@ -163,18 +163,18 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
             maxLength={maxLength}
             rows={6}
             className={`
-              w-full px-4 py-3 border rounded-sm text-sm resize-none
-              focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500
+              w-full px-4 py-3 border text-sm resize-none
+              focus:outline-none focus:border-border-strong
               transition-all
               ${error
                 ? 'border-red-300 bg-red-50/50'
-                : 'border-gray-200 bg-white hover:border-gray-300'
+                : 'border-border bg-surface-card hover:border-border-strong'
               }
               ${isGenerating ? 'opacity-50' : ''}
             `}
           />
           {/* Character count */}
-          <div className="absolute bottom-2 right-2 text-[10px] text-gray-400 font-mono">
+          <div className="absolute bottom-2 right-2 text-[0.625rem] text-txt-tertiary font-mono">
             {charCount.toLocaleString()}/{maxLength.toLocaleString()}
           </div>
         </div>
@@ -186,12 +186,12 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
           placeholder={field.placeholder}
           maxLength={field.maxLength}
           className={`
-            w-full px-4 py-2.5 border rounded-sm text-sm
-            focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500
+            w-full px-4 py-2.5 border text-sm
+            focus:outline-none focus:border-border-strong
             transition-all
             ${error
               ? 'border-red-300 bg-red-50/50'
-              : 'border-gray-200 bg-white hover:border-gray-300'
+              : 'border-border bg-surface-card hover:border-border-strong'
             }
           `}
         />
@@ -242,16 +242,16 @@ export const BasicInfoEditor: React.FC<BasicInfoEditorProps> = ({
   return (
     <div className="space-y-6">
       {/* Section Header */}
-      <div className="pb-4 border-b border-gray-200">
-        <h2 className="text-xl font-bold text-gray-900">기본 정보</h2>
-        <p className="text-sm text-gray-500 mt-1">
+      <div className="pb-4 border-b border-dashed border-border">
+        <h2 className="text-xl font-bold text-txt-primary">기본 정보</h2>
+        <p className="text-sm text-txt-tertiary mt-1">
           사업 아이템의 기본 정보를 입력하세요. AI 자동완성에 활용됩니다.
         </p>
       </div>
 
       {/* Item Name */}
       <div className="space-y-2">
-        <label className="font-medium text-gray-900 text-sm">
+        <label className="font-medium text-txt-primary text-sm">
           아이템/서비스명 <span className="text-red-500">*</span>
         </label>
         <input
@@ -260,9 +260,9 @@ export const BasicInfoEditor: React.FC<BasicInfoEditorProps> = ({
           onChange={(e) => onChange({ ...data, itemName: e.target.value })}
           placeholder="예: 헬스체커"
           className={`
-            w-full px-4 py-2.5 border rounded-sm text-sm
-            focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500
-            ${errors.itemName ? 'border-red-300 bg-red-50/50' : 'border-gray-200'}
+            w-full px-4 py-2.5 border text-sm
+            focus:outline-none focus:border-border-strong
+            ${errors.itemName ? 'border-red-300 bg-red-50/50' : 'border-border'}
           `}
         />
         {errors.itemName && (
@@ -275,7 +275,7 @@ export const BasicInfoEditor: React.FC<BasicInfoEditorProps> = ({
 
       {/* One-liner */}
       <div className="space-y-2">
-        <label className="font-medium text-gray-900 text-sm">
+        <label className="font-medium text-txt-primary text-sm">
           한 줄 설명 <span className="text-red-500">*</span>
         </label>
         <input
@@ -285,12 +285,12 @@ export const BasicInfoEditor: React.FC<BasicInfoEditorProps> = ({
           placeholder="예: AI 기반 건강검진 결과 분석 서비스"
           maxLength={50}
           className={`
-            w-full px-4 py-2.5 border rounded-sm text-sm
-            focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500
-            ${errors.oneLiner ? 'border-red-300 bg-red-50/50' : 'border-gray-200'}
+            w-full px-4 py-2.5 border text-sm
+            focus:outline-none focus:border-border-strong
+            ${errors.oneLiner ? 'border-red-300 bg-red-50/50' : 'border-border'}
           `}
         />
-        <div className="flex justify-between text-[10px] text-gray-400">
+        <div className="flex justify-between text-[0.625rem] text-txt-tertiary">
           <span>{errors.oneLiner || ''}</span>
           <span className="font-mono">{data.oneLiner.length}/50</span>
         </div>
@@ -298,7 +298,7 @@ export const BasicInfoEditor: React.FC<BasicInfoEditorProps> = ({
 
       {/* Target Customer */}
       <div className="space-y-2">
-        <label className="font-medium text-gray-900 text-sm">
+        <label className="font-medium text-txt-primary text-sm">
           타겟 고객 <span className="text-red-500">*</span>
         </label>
         <input
@@ -307,25 +307,25 @@ export const BasicInfoEditor: React.FC<BasicInfoEditorProps> = ({
           onChange={(e) => onChange({ ...data, targetCustomer: e.target.value })}
           placeholder="예: 30-50대 직장인, 건강 관리에 관심 있는 소비자"
           className={`
-            w-full px-4 py-2.5 border rounded-sm text-sm
-            focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500
-            ${errors.targetCustomer ? 'border-red-300 bg-red-50/50' : 'border-gray-200'}
+            w-full px-4 py-2.5 border text-sm
+            focus:outline-none focus:border-border-strong
+            ${errors.targetCustomer ? 'border-red-300 bg-red-50/50' : 'border-border'}
           `}
         />
-        <p className="text-[10px] text-gray-400">
+        <p className="text-[0.625rem] text-txt-tertiary">
           구체적으로 작성할수록 AI가 더 정확한 내용을 생성합니다
         </p>
       </div>
 
       {/* Industry */}
       <div className="space-y-2">
-        <label className="font-medium text-gray-900 text-sm">
+        <label className="font-medium text-txt-primary text-sm">
           업종 <span className="text-red-500">*</span>
         </label>
         <select
           value={data.industry}
           onChange={(e) => onChange({ ...data, industry: e.target.value as any })}
-          className="w-full px-4 py-2.5 border border-gray-200 rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white"
+          className="w-full px-4 py-2.5 border border-border text-sm focus:outline-none focus:border-border-strong bg-surface-card"
         >
           {industries.map((ind) => (
             <option key={ind.value} value={ind.value}>
@@ -337,8 +337,8 @@ export const BasicInfoEditor: React.FC<BasicInfoEditorProps> = ({
 
       {/* Funding Amount (Optional) */}
       <div className="space-y-2">
-        <label className="font-medium text-gray-900 text-sm">
-          희망 지원금액 <span className="text-gray-400 text-xs font-normal">(선택)</span>
+        <label className="font-medium text-txt-primary text-sm">
+          희망 지원금액 <span className="text-txt-tertiary text-xs font-normal">(선택)</span>
         </label>
         <div className="relative">
           <input
@@ -346,9 +346,9 @@ export const BasicInfoEditor: React.FC<BasicInfoEditorProps> = ({
             value={data.fundingAmount || ''}
             onChange={(e) => onChange({ ...data, fundingAmount: e.target.value ? Number(e.target.value) : undefined })}
             placeholder="5000"
-            className="w-full px-4 py-2.5 pr-12 border border-gray-200 rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+            className="w-full px-4 py-2.5 pr-12 border border-border text-sm focus:outline-none focus:border-border-strong"
           />
-          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-gray-400">
+          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-txt-tertiary">
             만원
           </span>
         </div>

@@ -59,8 +59,8 @@ export const InlineFeedbackBar: React.FC<InlineFeedbackProps> = ({
       return {
         type: 'info' as const,
         message: '더 자세히 작성해주세요',
-        color: 'text-gray-600 bg-gray-50 border-gray-100',
-        icon: <Lightbulb size={12} className="text-gray-400" />,
+        color: 'text-txt-secondary bg-surface-sunken border-border-subtle',
+        icon: <Lightbulb size={12} className="text-txt-tertiary" />,
       }
     }
     return {
@@ -119,8 +119,8 @@ export const FeedbackTooltip: React.FC<FeedbackTooltipProps> = ({
       text: '주의',
     },
     low: {
-      bg: 'bg-gray-800',
-      badge: 'bg-gray-500',
+      bg: 'bg-surface-inverse',
+      badge: 'bg-txt-tertiary',
       text: '참고',
     },
   }
@@ -136,13 +136,13 @@ export const FeedbackTooltip: React.FC<FeedbackTooltipProps> = ({
 
   return (
     <div className={`absolute ${positionClasses[position]} z-50 w-72 animate-in fade-in duration-150`}>
-      <div className={`${config.bg} rounded-lg shadow-xl p-3 text-white`}>
+      <div className={`${config.bg} shadow-brutal p-3 text-white`}>
         <div className="flex items-start gap-2">
-          <span className={`px-1.5 py-0.5 ${config.badge} text-[10px] font-bold rounded`}>
+          <span className={`px-1.5 py-0.5 ${config.badge} text-[0.625rem] font-bold`}>
             {config.text}
           </span>
           {potentialGain && (
-            <span className="px-1.5 py-0.5 bg-green-500 text-[10px] font-bold rounded">
+            <span className="px-1.5 py-0.5 bg-green-500 text-[0.625rem] font-bold">
               +{potentialGain}점
             </span>
           )}
@@ -151,8 +151,8 @@ export const FeedbackTooltip: React.FC<FeedbackTooltipProps> = ({
         <p className="mt-2 text-sm leading-relaxed opacity-90">{feedback}</p>
 
         {suggestion && (
-          <div className="mt-2 pt-2 border-t border-white/20">
-            <div className="text-[10px] uppercase opacity-60 mb-1">수정 제안</div>
+          <div className="mt-2 pt-2 border-t border-dashed border-white/20">
+            <div className="text-[0.625rem] uppercase opacity-60 mb-1">수정 제안</div>
             <p className="text-sm opacity-90">{suggestion}</p>
           </div>
         )}
@@ -234,9 +234,9 @@ export const HighlightedText: React.FC<HighlightedTextProps> = ({
   }, [text, sortedHighlights])
 
   const highlightClasses = {
-    error: 'bg-red-100 border-b-2 border-red-400 hover:bg-red-200 cursor-pointer',
-    warning: 'bg-yellow-100 border-b-2 border-yellow-400 hover:bg-yellow-200 cursor-pointer',
-    info: 'bg-blue-100 border-b-2 border-blue-400 hover:bg-blue-200 cursor-pointer',
+    error: 'bg-red-100 border-b border-red-400 hover:bg-red-200 cursor-pointer',
+    warning: 'bg-yellow-100 border-b border-yellow-400 hover:bg-yellow-200 cursor-pointer',
+    info: 'bg-blue-100 border-b border-blue-400 hover:bg-blue-200 cursor-pointer',
   }
 
   return (
@@ -275,19 +275,19 @@ export const QuickFixButton: React.FC<QuickFixButtonProps> = ({
   size = 'sm',
 }) => {
   const variantClasses = {
-    primary: 'bg-blue-600 text-white hover:bg-blue-700',
-    secondary: 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+    primary: 'bg-blue-600 text-white hover:bg-blue-700 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]',
+    secondary: 'bg-surface-sunken text-txt-secondary hover:bg-black hover:text-white border border-border-strong',
   }
 
   const sizeClasses = {
     sm: 'px-2.5 py-1 text-xs',
-    xs: 'px-2 py-0.5 text-[10px]',
+    xs: 'px-2 py-0.5 text-[0.625rem]',
   }
 
   return (
     <button
       onClick={onClick}
-      className={`inline-flex items-center gap-1 font-medium rounded transition-colors ${variantClasses[variant]} ${sizeClasses[size]}`}
+      className={`inline-flex items-center gap-1 font-medium transition-all ${variantClasses[variant]} ${sizeClasses[size]}`}
     >
       <Lightbulb size={size === 'sm' ? 12 : 10} />
       {label}
@@ -318,9 +318,9 @@ export const SectionFeedbackSummary: React.FC<SectionFeedbackSummaryProps> = ({
   const percentage = Math.round((score / maxScore) * 100)
 
   return (
-    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+    <div className="flex items-center justify-between p-3 bg-surface-sunken">
       <div className="flex items-center gap-3">
-        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${
+        <div className={`w-10 h-10 flex items-center justify-center text-sm font-bold ${
           percentage >= 80 ? 'bg-green-100 text-green-700' :
           percentage >= 60 ? 'bg-yellow-100 text-yellow-700' :
           'bg-red-100 text-red-700'
@@ -329,8 +329,8 @@ export const SectionFeedbackSummary: React.FC<SectionFeedbackSummaryProps> = ({
         </div>
 
         <div>
-          <div className="text-sm font-medium text-gray-800">{sectionName}</div>
-          <div className="text-xs text-gray-500">
+          <div className="text-sm font-medium text-txt-primary">{sectionName}</div>
+          <div className="text-xs text-txt-tertiary">
             {passedChecks}/{totalChecks} 항목 충족
           </div>
         </div>
@@ -338,7 +338,7 @@ export const SectionFeedbackSummary: React.FC<SectionFeedbackSummaryProps> = ({
 
       <div className="text-right">
         {topIssue && (
-          <div className="text-xs text-gray-500 max-w-[150px] truncate">{topIssue}</div>
+          <div className="text-xs text-txt-tertiary max-w-[9.375rem] truncate">{topIssue}</div>
         )}
         {potentialGain && potentialGain > 0 && (
           <div className="text-xs font-medium text-green-600">+{potentialGain}점 가능</div>

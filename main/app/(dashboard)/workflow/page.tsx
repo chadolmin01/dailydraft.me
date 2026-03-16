@@ -39,9 +39,9 @@ const BusinessPlanEditor = dynamic(
 // 로딩 스피너 컴포넌트
 function LoadingSpinner({ message }: { message: string }) {
   return (
-    <div className="flex flex-col items-center justify-center h-full min-h-[400px]">
-      <div className="w-12 h-12 border-4 border-gray-200 border-t-draft-blue rounded-full animate-spin mb-4" />
-      <p className="text-sm text-gray-500">{message}</p>
+    <div className="flex flex-col items-center justify-center h-full min-h-[25rem]">
+      <div className="w-12 h-12 border-4 border-border border-t-[#4F46E5] animate-spin mb-4" />
+      <p className="text-sm text-txt-tertiary">{message}</p>
     </div>
   );
 }
@@ -220,11 +220,11 @@ function WorkflowContent() {
   }
 
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-gray-50">
+    <div className="flex flex-col md:flex-row h-screen bg-surface-sunken">
       {/* 모바일 상단 진행 표시 */}
-      <div className="md:hidden bg-white border-b border-gray-200 px-4 py-3">
+      <div className="md:hidden bg-surface-card border-b border-border-strong px-4 py-3">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-gray-900">
+          <span className="text-sm font-medium text-txt-primary">
             Step {currentStep === 'validation' ? 1 : currentStep === 'prd' ? 2 : 3} / 3
           </span>
           {workflowData.score !== undefined && (
@@ -235,12 +235,12 @@ function WorkflowContent() {
           {(['validation', 'prd', 'business-plan'] as const).map((step) => (
             <div
               key={step}
-              className={`flex-1 h-1.5 rounded-full transition-colors ${
+              className={`flex-1 h-1.5 transition-colors ${
                 completedSteps.includes(step)
                   ? 'bg-green-500'
                   : currentStep === step
                   ? 'bg-draft-blue'
-                  : 'bg-gray-200'
+                  : 'bg-border'
               }`}
             />
           ))}
@@ -281,20 +281,20 @@ function WorkflowContent() {
                 onComplete={handlePrdComplete}
               />
             ) : (
-              <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-center">
-                <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
+              <div className="flex flex-col items-center justify-center h-full min-h-[25rem] text-center">
+                <div className="w-16 h-16 bg-yellow-50 border border-yellow-400 flex items-center justify-center mb-4">
                   <span className="text-2xl">⚠️</span>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                <h3 className="text-lg font-semibold text-txt-primary mb-2">
                   아이디어 검증이 필요합니다
                 </h3>
-                <p className="text-sm text-gray-500 mb-4 max-w-md">
+                <p className="text-sm text-txt-tertiary mb-4 max-w-md">
                   PRD를 생성하려면 먼저 아이디어 검증을 완료해주세요.
                 </p>
                 <button
                   type="button"
                   onClick={() => setCurrentStep('validation')}
-                  className="px-4 py-2 bg-draft-blue text-white text-sm font-medium rounded-lg hover:opacity-90 transition-colors"
+                  className="px-4 py-2 bg-[#4F46E5] text-white border-2 border-[#4F46E5] text-sm font-medium hover:bg-[#4338CA] transition-colors"
                 >
                   아이디어 검증으로 돌아가기
                 </button>

@@ -35,29 +35,29 @@ export const CommunityFeedback: React.FC = () => {
   const router = useRouter()
 
   return (
-    <section className="w-full py-24 px-6 md:px-12">
+    <section className="w-full py-32 px-6 md:px-12">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16">
-          <span className="text-xs font-mono font-bold text-gray-500 tracking-wider mb-4 block">
+        <div className="text-center mb-20">
+          <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-4 block">
             COMMUNITY FEEDBACK
           </span>
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-txt-primary mb-4">
             다양한 시각의 피드백
           </h2>
-          <p className="text-gray-600 max-w-xl mx-auto">
+          <p className="text-txt-secondary max-w-xl mx-auto">
             프로젝트를 올리면 다른 유저들이 자유롭게 피드백을 남깁니다
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           {/* Project Card */}
-          <div className="bg-white border border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="bg-surface-card border border-border-strong p-6 shadow-brutal">
             <div className="flex items-start justify-between mb-4">
               <div>
-                <h3 className="text-xl font-bold text-slate-900 mb-2">
+                <h3 className="text-xl font-bold text-txt-primary mb-2">
                   {mockProject.title}
                 </h3>
-                <p className="text-gray-600 text-sm">
+                <p className="text-txt-secondary text-sm">
                   {mockProject.description}
                 </p>
               </div>
@@ -68,7 +68,7 @@ export const CommunityFeedback: React.FC = () => {
               {mockProject.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="px-2 py-1 bg-gray-100 text-gray-700 text-xs font-mono"
+                  className="px-2 py-1 bg-surface-sunken text-txt-secondary text-xs font-mono border border-border"
                 >
                   {tag}
                 </span>
@@ -80,7 +80,7 @@ export const CommunityFeedback: React.FC = () => {
               {mockProject.needRoles.map((role) => (
                 <span
                   key={role}
-                  className="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs font-bold"
+                  className="px-2 py-1 bg-[#4F46E5]/5 border border-[#4F46E5]/20 text-[#4F46E5] text-xs font-bold"
                 >
                   NEED: {role}
                 </span>
@@ -88,12 +88,12 @@ export const CommunityFeedback: React.FC = () => {
             </div>
 
             {/* Stats */}
-            <div className="flex items-center gap-4 pt-4 border-t border-gray-200">
-              <div className="flex items-center gap-1 text-gray-600 text-sm">
+            <div className="flex items-center gap-4 pt-4 border-t border-dashed border-border">
+              <div className="flex items-center gap-1 text-txt-secondary text-sm">
                 <MessageCircle size={14} />
                 <span>피드백 {mockProject.commentCount}개</span>
               </div>
-              <div className="flex items-center gap-1 text-gray-600 text-sm">
+              <div className="flex items-center gap-1 text-txt-secondary text-sm">
                 <Heart size={14} />
                 <span>관심 {mockProject.interestCount}명</span>
               </div>
@@ -105,7 +105,7 @@ export const CommunityFeedback: React.FC = () => {
             {mockComments.map((comment, index) => (
               <div
                 key={index}
-                className="bg-gray-50 border border-gray-200 p-4 relative"
+                className="bg-surface-sunken border border-border p-4 relative"
               >
                 {/* Comment number */}
                 <div className="absolute -top-2 -left-2 w-6 h-6 bg-black text-white flex items-center justify-center text-xs font-bold">
@@ -113,15 +113,15 @@ export const CommunityFeedback: React.FC = () => {
                 </div>
 
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xs font-mono text-gray-500">
+                  <span className="text-xs font-mono text-txt-tertiary">
                     {comment.school}
                   </span>
-                  <span className="text-xs text-gray-400">|</span>
-                  <span className="text-xs font-bold text-gray-700">
+                  <span className="text-xs text-txt-disabled">|</span>
+                  <span className="text-xs font-bold text-txt-secondary">
                     {comment.name}
                   </span>
                 </div>
-                <p className="text-gray-700 text-sm leading-relaxed break-keep">
+                <p className="text-txt-secondary text-sm leading-relaxed break-keep">
                   {comment.content}
                 </p>
               </div>
@@ -130,10 +130,10 @@ export const CommunityFeedback: React.FC = () => {
         </div>
 
         {/* CTA */}
-        <div className="text-center mt-12">
+        <div className="text-center mt-16">
           <button
             onClick={() => router.push('/login')}
-            className="group inline-flex items-center gap-2 bg-black text-white px-8 py-4 font-bold text-sm hover:bg-gray-800 transition-all duration-200 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)] hover:translate-x-[2px] hover:translate-y-[2px] border border-black"
+            className="group inline-flex items-center gap-2 bg-black text-white px-8 py-4 font-bold text-sm hover:bg-[#333] transition-all duration-200 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] border border-black"
           >
             나도 프로젝트 올리기
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />

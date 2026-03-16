@@ -59,31 +59,43 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Initialize auth state
   useEffect(() => {
-    // Validate session with server via getUser() (not getSession() which only reads local storage)
-    supabase.auth.getUser().then(({ data: { user }, error }) => {
-      if (error || !user) {
+    let mounted = true
+
+    // Step 1: Fast path — read local session (no network, instant)
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!mounted) return
+      if (session?.user) {
+        setUser(session.user)
+        // Show UI immediately, fetch profile in parallel
+        fetchProfile(session.user.id)
+          .then(p => { if (mounted) setProfile(p) })
+          .catch(() => { if (mounted) setProfile(null) })
+          .finally(() => { if (mounted) setIsLoading(false) })
+      } else {
+        setIsLoading(false)
+      }
+    }).catch(() => {
+      if (mounted) setIsLoading(false)
+    })
+
+    // Step 2: Background — validate with server (handles expired tokens)
+    supabase.auth.getUser().then(({ data: { user: serverUser }, error }) => {
+      if (!mounted) return
+      if (error || !serverUser) {
+        // Server says invalid — clear state
         setUser(null)
         setProfile(null)
         setIsLoading(false)
-        return
       }
+      // If valid, getSession already set the correct user
+    }).catch(() => {})
 
-      setUser(user)
-
-      // Wait for profile before setting isLoading=false to prevent UI flicker
-      fetchProfile(user.id).then(setProfile).catch(() => setProfile(null)).finally(() => setIsLoading(false))
-    }).catch((err) => {
-      console.warn('Auth getUser failed:', err?.message)
-      setIsLoading(false)
-    })
-
-    // Listen for auth changes (skip INITIAL_SESSION to avoid race with getUser above)
+    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        // Skip initial session — getUser() handles initialization above
+        if (!mounted) return
         if (event === 'INITIAL_SESSION') return
 
-        // Handle session expiry / token refresh failure
         if (event === 'TOKEN_REFRESHED' && !session) {
           setUser(null)
           setProfile(null)
@@ -100,7 +112,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (session?.user) {
           const profileData = await fetchProfile(session.user.id)
-          setProfile(profileData)
+          if (mounted) setProfile(profileData)
         } else {
           setProfile(null)
         }
@@ -108,6 +120,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     )
 
     return () => {
+      mounted = false
       subscription.unsubscribe()
     }
   }, [fetchProfile])
@@ -142,6 +155,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
       if (profileError) {
         console.error('Failed to create profile:', profileError)
+        return { error: new AuthError('계정은 생성되었지만 프로필 생성에 실패했습니다. 다시 로그인해주세요.') }
       }
     }
 
@@ -172,7 +186,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Sign out
   const signOut = async () => {
-    await supabase.auth.signOut()
+    const { error } = await supabase.auth.signOut()
+    if (error) {
+      console.error('Sign out error (clearing local state anyway):', error.message)
+    }
     setUser(null)
     setProfile(null)
   }

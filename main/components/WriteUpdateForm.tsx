@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 import { Modal } from '@/components/ui/Modal'
 import { useCreateProjectUpdate, type ProjectUpdate } from '@/src/hooks/useProjectUpdates'
 
@@ -60,9 +61,11 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
       setTitle('')
       setContent('')
       setUpdateType('general')
+      toast.success('업데이트가 작성되었습니다')
       onClose()
     } catch {
       setError('업데이트 작성에 실패했습니다.')
+      toast.error('업데이트 작성에 실패했습니다')
     }
   }
 
@@ -72,27 +75,27 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
         {/* Week + Type */}
         <div className="flex gap-3">
           <div className="w-24">
-            <label className="block text-xs text-gray-500 mb-1">Week</label>
+            <label className="block text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-1">Week</label>
             <input
               type="number"
               min={1}
               value={weekNumber}
               onChange={(e) => setWeekNumber(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-black"
+              className="w-full px-3 py-2 border-2 border-border-strong text-sm focus:outline-none focus:border-border-strong bg-surface-card text-txt-primary"
             />
           </div>
           <div className="flex-1">
-            <label className="block text-xs text-gray-500 mb-1">유형</label>
+            <label className="block text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-1">유형</label>
             <div className="flex flex-wrap gap-1.5">
               {UPDATE_TYPES.map((t) => (
                 <button
                   key={t.value}
                   type="button"
                   onClick={() => setUpdateType(t.value)}
-                  className={`px-3 py-1.5 text-xs rounded-lg border transition-colors ${
+                  className={`px-3 py-1.5 text-xs border-2 transition-colors ${
                     updateType === t.value
                       ? 'bg-black text-white border-black'
-                      : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
+                      : 'bg-surface-card text-txt-secondary border-border-strong hover:border-border-strong'
                   }`}
                 >
                   {t.label}
@@ -104,27 +107,27 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
 
         {/* Title */}
         <div>
-          <label className="block text-xs text-gray-500 mb-1">제목</label>
+          <label className="block text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-1">제목</label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="이번 주에 무엇을 했나요?"
             maxLength={100}
-            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-black"
+            className="w-full px-3 py-2 border-2 border-border-strong text-sm focus:outline-none focus:border-border-strong bg-surface-card text-txt-primary placeholder-txt-disabled"
           />
         </div>
 
         {/* Content */}
         <div>
-          <label className="block text-xs text-gray-500 mb-1">내용</label>
+          <label className="block text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-1">내용</label>
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="진행 상황, 배운 점, 다음 계획 등을 자유롭게 적어주세요"
             rows={4}
             maxLength={2000}
-            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-black resize-none"
+            className="w-full px-3 py-2 border-2 border-border-strong text-sm focus:outline-none focus:border-border-strong resize-none bg-surface-card text-txt-primary placeholder-txt-disabled"
           />
         </div>
 
@@ -133,7 +136,7 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
         <button
           onClick={handleSubmit}
           disabled={createUpdate.isPending}
-          className="w-full py-2.5 bg-black text-white text-sm font-semibold rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+          className="w-full py-2.5 bg-black text-white text-sm font-bold border-2 border-black hover:bg-[#333] transition-colors disabled:opacity-50 flex items-center justify-center gap-2 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
         >
           {createUpdate.isPending ? (
             <><Loader2 size={14} className="animate-spin" /> 저장 중...</>

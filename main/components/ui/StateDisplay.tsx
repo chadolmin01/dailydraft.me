@@ -39,12 +39,12 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
     return (
       <div className={`flex flex-col items-center justify-center py-8 text-center ${className}`}>
         <AlertCircle size={32} className="text-red-400 mb-3" />
-        <p className="text-sm font-medium text-gray-700 mb-1">{title}</p>
-        <p className="text-xs text-gray-500 mb-3">{message}</p>
+        <p className="text-sm font-medium text-txt-secondary mb-1">{title}</p>
+        <p className="text-xs text-txt-tertiary mb-3">{message}</p>
         {onRetry && (
           <button
             onClick={onRetry}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-txt-secondary border border-border-strong hover:bg-surface-sunken transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
           >
             <RefreshCw size={12} />
             다시 시도
@@ -56,15 +56,15 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
 
   return (
     <div className={`flex flex-col items-center justify-center py-16 text-center ${className}`}>
-      <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-4">
+      <div className="w-16 h-16 bg-red-600/10 border border-red-600/20 flex items-center justify-center mb-4">
         <ServerCrash size={32} className="text-red-400" />
       </div>
-      <h3 className="text-lg font-bold text-gray-900 mb-2">{title}</h3>
-      <p className="text-sm text-gray-500 max-w-sm mb-6">{message}</p>
+      <h3 className="text-lg font-bold text-txt-primary mb-2">{title}</h3>
+      <p className="text-sm text-txt-tertiary max-w-sm mb-6">{message}</p>
       {onRetry && (
         <button
           onClick={onRetry}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 rounded-md transition-colors"
+          className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-black hover:bg-[#333] transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
         >
           <RefreshCw size={16} />
           다시 시도
@@ -94,15 +94,15 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
 }) => {
   return (
     <div className={`flex flex-col items-center justify-center py-16 text-center ${className}`}>
-      <div className="mb-4 text-gray-300">
+      <div className="mb-4 text-txt-disabled">
         {icon || <Inbox size={48} />}
       </div>
-      <h3 className="text-sm font-medium text-gray-500 mb-2">{title}</h3>
-      {message && <p className="text-xs text-gray-400 mb-4 max-w-xs">{message}</p>}
+      <h3 className="text-sm font-medium text-txt-tertiary mb-2">{title}</h3>
+      {message && <p className="text-xs text-txt-disabled mb-4 max-w-xs">{message}</p>}
       {action && (
         <button
           onClick={action.onClick}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-black hover:bg-gray-800 rounded-md transition-colors"
+          className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-black hover:bg-[#333] transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
         >
           {action.label}
         </button>
@@ -122,17 +122,17 @@ export const NetworkError: React.FC<NetworkErrorProps> = ({
 }) => {
   return (
     <div className={`flex flex-col items-center justify-center py-16 text-center ${className}`}>
-      <div className="w-16 h-16 bg-yellow-50 rounded-full flex items-center justify-center mb-4">
-        <WifiOff size={32} className="text-yellow-500" />
+      <div className="w-16 h-16 bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-4">
+        <WifiOff size={32} className="text-amber-500" />
       </div>
-      <h3 className="text-lg font-bold text-gray-900 mb-2">연결할 수 없습니다</h3>
-      <p className="text-sm text-gray-500 max-w-sm mb-6">
+      <h3 className="text-lg font-bold text-txt-primary mb-2">연결할 수 없습니다</h3>
+      <p className="text-sm text-txt-tertiary max-w-sm mb-6">
         인터넷 연결을 확인하고 다시 시도해주세요.
       </p>
       {onRetry && (
         <button
           onClick={onRetry}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 rounded-md transition-colors"
+          className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-black hover:bg-[#333] transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
         >
           <RefreshCw size={16} />
           다시 시도

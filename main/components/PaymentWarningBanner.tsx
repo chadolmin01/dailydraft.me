@@ -46,22 +46,22 @@ export function PaymentWarningBanner() {
 
   const levelStyles = {
     critical: {
-      bg: 'bg-red-50 border-red-200',
+      bg: 'bg-red-50 border-red-500',
       text: 'text-red-800',
       icon: 'text-red-500',
-      button: 'bg-red-600 hover:bg-red-700',
+      button: 'bg-red-600 hover:bg-red-700 border-red-600',
     },
     warning: {
-      bg: 'bg-yellow-50 border-yellow-200',
+      bg: 'bg-yellow-50 border-yellow-500',
       text: 'text-yellow-800',
       icon: 'text-yellow-500',
-      button: 'bg-yellow-600 hover:bg-yellow-700',
+      button: 'bg-yellow-600 hover:bg-yellow-700 border-yellow-600',
     },
     info: {
-      bg: 'bg-blue-50 border-blue-200',
+      bg: 'bg-blue-50 border-blue-500',
       text: 'text-blue-800',
       icon: 'text-blue-500',
-      button: 'bg-blue-600 hover:bg-blue-700',
+      button: 'bg-blue-600 hover:bg-blue-700 border-blue-600',
     },
   }
 
@@ -85,8 +85,8 @@ export function PaymentWarningBanner() {
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center gap-3">
           <AlertTriangle className={`w-5 h-5 ${styles.icon}`} />
-          <span className="font-medium">{getMessage()}</span>
-          <div className="flex items-center gap-1 text-sm opacity-75">
+          <span className="font-bold">{getMessage()}</span>
+          <div className="flex items-center gap-1 text-sm opacity-75 font-mono">
             <Clock className="w-4 h-4" />
             <span>
               {new Date(paymentFailure.gracePeriodEndsAt).toLocaleDateString('ko-KR')}까지
@@ -97,14 +97,14 @@ export function PaymentWarningBanner() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.push('/usage')}
-            className={`flex items-center gap-2 px-4 py-1.5 ${styles.button} text-white text-sm font-medium rounded-lg transition-colors`}
+            className={`flex items-center gap-2 px-4 py-1.5 ${styles.button} text-white text-sm font-bold border-2 transition-colors`}
           >
             <CreditCard className="w-4 h-4" />
             결제 수단 확인
           </button>
           <button
             onClick={() => setDismissed(true)}
-            className="p-1 hover:bg-black/10 rounded transition-colors"
+            className="p-1 hover:bg-black/10 transition-colors"
             aria-label="닫기"
           >
             <X className="w-4 h-4" />

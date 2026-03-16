@@ -40,8 +40,8 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
     )
 
     const buttonClass = isCompact
-      ? 'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-accent text-txt-inverse rounded-lg hover:bg-accent-hover transition-colors'
-      : 'inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold bg-accent text-txt-inverse rounded-lg hover:bg-accent-hover transition-colors shadow-sm'
+      ? 'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-[#4F46E5] text-white border-2 border-[#4F46E5] hover:bg-[#4338CA] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
+      : 'inline-flex items-center gap-2 px-4 py-2.5 text-sm font-bold bg-[#4F46E5] text-white border-2 border-[#4F46E5] hover:bg-[#4338CA] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
 
     if (actionHref) {
       return <Link href={actionHref} className={buttonClass}>{buttonContent}</Link>
@@ -51,21 +51,21 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
 
   return (
     <div className={`
-      bg-surface-card border border-border rounded-xl text-center
+      bg-surface-card border border-dashed border-border text-center
       ${isCompact ? 'py-6 px-4' : 'py-12 px-6'}
       ${className}
     `}>
       {/* Icon with + badge */}
       <div className={`relative inline-flex items-center justify-center ${isCompact ? 'mb-2' : 'mb-4'}`}>
         <div className={`
-          rounded-2xl bg-surface-sunken flex items-center justify-center
+          bg-surface-sunken border border-border flex items-center justify-center
           ${isCompact ? 'w-10 h-10' : 'w-14 h-14'}
         `}>
           <Icon size={isCompact ? 20 : 24} className="text-txt-disabled" />
         </div>
         {hasAction && (
           <div className={`
-            absolute -top-1 -right-1 bg-accent text-txt-inverse rounded-full flex items-center justify-center
+            absolute -top-1 -right-1 bg-[#4F46E5] text-white flex items-center justify-center
             ${isCompact ? 'w-4 h-4' : 'w-5 h-5'}
           `}>
             <Plus size={isCompact ? 10 : 12} strokeWidth={3} />

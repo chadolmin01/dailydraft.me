@@ -1,6 +1,6 @@
 import type { Skill } from './profile'
 
-export type OpportunityType = 'team_building' | 'project_join'
+export type OpportunityType = 'side_project' | 'startup' | 'study'
 export type LocationType = 'remote' | 'hybrid' | 'onsite'
 export type TimeCommitment = 'part_time' | 'full_time'
 export type CompensationType = 'equity' | 'salary' | 'unpaid' | 'hybrid'

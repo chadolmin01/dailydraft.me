@@ -17,7 +17,7 @@ export async function GET() {
 
     if (!user) {
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { error: '로그인이 필요합니다' },
         { status: 401 }
       )
     }
@@ -127,7 +127,7 @@ export async function GET() {
   } catch (error) {
     console.error('Error fetching usage:', error)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: '서버 오류가 발생했습니다' },
       { status: 500 }
     )
   }

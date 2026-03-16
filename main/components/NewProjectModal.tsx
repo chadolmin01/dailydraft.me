@@ -188,28 +188,28 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({ isOpen, onClos
       />
 
       {/* Modal Content */}
-      <div className="relative bg-white w-[98vw] max-w-[1600px] h-[92vh] rounded-lg shadow-2xl flex flex-col overflow-hidden">
+      <div className="relative bg-surface-card w-[98vw] max-w-[100rem] h-[92vh] shadow-brutal flex flex-col overflow-hidden border-2 border-border-strong">
         {/* Header */}
-        <div className="flex-shrink-0 border-b border-gray-200 px-6 py-4 flex items-center justify-between bg-white">
+        <div className="flex-shrink-0 border-b border-border-strong px-6 py-4 flex items-center justify-between bg-surface-card">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-black rounded-md flex items-center justify-center text-white">
+            <div className="w-8 h-8 bg-black flex items-center justify-center text-white">
               <FileText className="w-4 h-4" />
             </div>
             <div>
               <h2 className="font-bold text-lg">New Project</h2>
-              <p className="text-xs text-gray-500">팀원들의 의견을 모아 PRD를 생성합니다</p>
+              <p className="text-xs text-txt-tertiary">팀원들의 의견을 모아 PRD를 생성합니다</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <span className={`flex items-center gap-1.5 text-xs font-medium ${hasInitialSynthesis ? 'text-emerald-600' : 'text-gray-500'}`}>
-              <div className={`w-1.5 h-1.5 rounded-full ${hasInitialSynthesis ? 'bg-emerald-500 animate-pulse' : 'bg-gray-300'}`}></div>
+            <span className={`flex items-center gap-1.5 text-xs font-medium ${hasInitialSynthesis ? 'text-emerald-600' : 'text-txt-tertiary'}`}>
+              <div className={`w-1.5 h-1.5 ${hasInitialSynthesis ? 'bg-emerald-500 animate-pulse' : 'bg-txt-disabled'}`}></div>
               {hasInitialSynthesis ? 'Live Sync Active' : `Waiting (${inputs.filter(i => i.isSubmitted).length}/3)`}
             </span>
             <button
               onClick={onClose}
-              className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors"
+              className="w-8 h-8 flex items-center justify-center hover:bg-surface-sunken transition-colors border border-transparent hover:border-border"
             >
-              <X className="w-5 h-5 text-gray-500" />
+              <X className="w-5 h-5 text-txt-tertiary" />
             </button>
           </div>
         </div>
@@ -217,10 +217,10 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({ isOpen, onClos
         {/* Body */}
         <div className="flex-1 flex overflow-hidden">
           {/* LEFT: Triangle + Input */}
-          <div className="w-[35%] flex flex-col border-r border-gray-200 bg-gray-50/50">
+          <div className="w-[35%] flex flex-col border-r border-border-strong bg-surface-sunken/50">
             {/* Triangle Visual */}
             <div className="flex-1 relative flex items-center justify-center min-h-0 p-4">
-              <div className="absolute top-3 left-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Alignment Map</div>
+              <div className="absolute top-3 left-4 text-[0.625rem] font-bold text-txt-disabled uppercase tracking-wider font-mono">Alignment Map</div>
               <TriangleVisual
                 inputs={inputs}
                 analyzing={isAnalyzing}
@@ -231,7 +231,7 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({ isOpen, onClos
             </div>
 
             {/* Input Section */}
-            <div className="flex-shrink-0 border-t border-gray-200 bg-white h-[280px] overflow-hidden">
+            <div className="flex-shrink-0 border-t border-border-strong bg-surface-card h-[17.5rem] overflow-hidden">
               <InputSection
                 inputs={inputs}
                 logs={logs}
@@ -245,15 +245,15 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({ isOpen, onClos
           </div>
 
           {/* RIGHT: Result Dashboard */}
-          <div className="flex-1 flex flex-col bg-[#FAFAFA] overflow-hidden">
+          <div className="flex-1 flex flex-col bg-surface-bg overflow-hidden">
             {/* Dashboard Header */}
-            <div className="flex-shrink-0 px-6 py-4 border-b border-gray-200 bg-white flex justify-between items-center">
+            <div className="flex-shrink-0 px-6 py-4 border-b border-border-strong bg-surface-card flex justify-between items-center">
               <h3 className="text-base font-bold flex items-center gap-2">
-                <div className="w-1.5 h-4 bg-black rounded-full"></div>
+                <div className="w-1.5 h-4 bg-black"></div>
                 Project Dashboard
               </h3>
               {result && (
-                <span className="text-[10px] font-mono text-gray-400 flex items-center gap-1">
+                <span className="text-[0.625rem] font-mono text-txt-disabled flex items-center gap-1">
                   <Clock className="w-3 h-3" />
                   {new Date().toLocaleTimeString()}
                 </span>
@@ -262,15 +262,15 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({ isOpen, onClos
 
             {/* Activity Log */}
             {logs.length > 0 && (
-              <div className="flex-shrink-0 px-6 py-3 border-b border-gray-100 bg-white/80">
+              <div className="flex-shrink-0 px-6 py-3 border-b border-border bg-surface-card/80">
                 <div className="flex items-center gap-2 overflow-x-auto">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap">Updates</span>
+                  <span className="text-[0.625rem] font-bold text-txt-disabled uppercase tracking-wider whitespace-nowrap font-mono">Updates</span>
                   {logs.slice(0, 3).map(log => (
-                    <div key={log.id} className="flex items-center gap-1.5 px-2 py-1 bg-gray-50 rounded border border-gray-100 whitespace-nowrap">
-                      <span className="text-[10px] text-gray-400 font-mono">
+                    <div key={log.id} className="flex items-center gap-1.5 px-2 py-1 bg-surface-sunken border border-border whitespace-nowrap">
+                      <span className="text-[0.625rem] text-txt-disabled font-mono">
                         {log.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
-                      <span className={`text-[10px] font-bold px-1 rounded ${getRoleColor(log.role)}`}>
+                      <span className={`text-[0.625rem] font-bold px-1 ${getRoleColor(log.role)}`}>
                         {log.role.split(' ')[0]}
                       </span>
                     </div>
@@ -288,10 +288,10 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({ isOpen, onClos
 
         {/* Footer */}
         {hasInitialSynthesis && (
-          <div className="flex-shrink-0 border-t border-gray-200 px-6 py-4 bg-white flex justify-between items-center">
+          <div className="flex-shrink-0 border-t border-border-strong px-6 py-4 bg-surface-card flex justify-between items-center">
             <button
               onClick={() => setSelectedView('PRD')}
-              className="flex items-center gap-1.5 px-4 py-2 bg-violet-600 text-white text-sm font-medium rounded-lg hover:bg-violet-700 transition-colors"
+              className="flex items-center gap-1.5 px-4 py-2 bg-[#4F46E5] text-white text-sm font-bold border-2 border-[#4F46E5] hover:bg-[#4338CA] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
             >
               <FileText className="w-4 h-4" />
               PRD 보기
@@ -299,7 +299,7 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({ isOpen, onClos
             <div className="flex items-center gap-3">
               <button
                 onClick={onClose}
-                className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 border border-border-strong text-txt-secondary text-sm font-bold hover:bg-black hover:text-white transition-colors"
               >
                 나중에 하기
               </button>
@@ -308,10 +308,10 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({ isOpen, onClos
                   onClose();
                   onProceedToBuild?.(prdResult);
                 }}
-                className="px-6 py-2 bg-black text-white text-sm font-bold rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2"
+                className="px-6 py-2 bg-black text-white text-sm font-bold border-2 border-black hover:bg-[#333] transition-colors flex items-center gap-2 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
               >
                 다음: Build
-                <span className="text-[10px] bg-amber-400 text-amber-900 px-1.5 py-0.5 rounded font-bold">BETA</span>
+                <span className="text-[0.625rem] bg-amber-400 text-amber-900 px-1.5 py-0.5 font-bold font-mono">BETA</span>
               </button>
             </div>
           </div>

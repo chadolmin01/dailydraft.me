@@ -30,7 +30,7 @@ export const BackgroundGrid: React.FC = () => {
         </defs>
 
         {/* Left Abstract Structure */}
-        <g className="text-gray-900" transform="translate(-50, 100)">
+        <g className="text-txt-primary" transform="translate(-50, 100)">
            <path d="M100,50 L300,50" stroke="currentColor" strokeWidth="1" />
            <path d="M100,50 L100,400" stroke="currentColor" strokeWidth="1" />
            <path d="M100,400 L300,400" stroke="currentColor" strokeWidth="1" />
@@ -47,7 +47,7 @@ export const BackgroundGrid: React.FC = () => {
         </g>
 
         {/* Right Wireframe Building Mesh */}
-        <g className="text-gray-800" transform="translate(1000, 50) scale(1.5)">
+        <g className="text-txt-primary" transform="translate(1000, 50) scale(1.5)">
            <path d="M100,0 L200,50 L100,100 L0,50 Z" fill="none" stroke="currentColor" strokeWidth="0.5" />
            <path d="M100,100 L100,250" stroke="currentColor" strokeWidth="0.5" />
            <path d="M200,50 L200,200" stroke="currentColor" strokeWidth="0.5" />
@@ -63,10 +63,10 @@ export const BackgroundGrid: React.FC = () => {
       </svg>
 
       {/* Corner Marks */}
-      <div className="absolute top-10 left-10 w-4 h-4 border-l border-t border-black opacity-50" />
-      <div className="absolute top-10 right-10 w-4 h-4 border-r border-t border-black opacity-50" />
-      <div className="absolute bottom-10 left-10 w-4 h-4 border-l border-b border-black opacity-50" />
-      <div className="absolute bottom-10 right-10 w-4 h-4 border-r border-b border-black opacity-50" />
+      <div className="absolute top-10 left-10 w-4 h-4 border-l border-t border-border-strong opacity-50" />
+      <div className="absolute top-10 right-10 w-4 h-4 border-r border-t border-border-strong opacity-50" />
+      <div className="absolute bottom-10 left-10 w-4 h-4 border-l border-b border-border-strong opacity-50" />
+      <div className="absolute bottom-10 right-10 w-4 h-4 border-r border-b border-border-strong opacity-50" />
     </div>
   )
 }

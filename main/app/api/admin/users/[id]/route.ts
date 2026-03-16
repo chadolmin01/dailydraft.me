@@ -58,7 +58,7 @@ export async function PATCH(
     })
 
     if (error) {
-      return ApiResponse.internalError('Failed to update user', error.message)
+      return ApiResponse.internalError('Failed to update user')
     }
 
     return ApiResponse.ok({
@@ -78,7 +78,59 @@ export async function PATCH(
       endpoint: '/api/admin/users/[id]',
       method: 'PATCH',
     })
-    return ApiResponse.internalError('Failed to update user', err.message)
+    return ApiResponse.internalError('Failed to update user')
+  }
+}
+
+// DELETE: Delete user (admin only)
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const supabase = await createClient()
+    const { id: targetUserId } = await params
+
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      return ApiResponse.unauthorized()
+    }
+
+    if (user.app_metadata?.is_admin !== true) {
+      return ApiResponse.forbidden('관리자만 접근할 수 있습니다')
+    }
+
+    // Prevent self-deletion
+    if (targetUserId === user.id) {
+      return ApiResponse.badRequest('자기 자신을 삭제할 수 없습니다')
+    }
+
+    const adminClient = getAdminClient()
+
+    // Delete profile first (cascade should handle related data)
+    await adminClient.from('profiles').delete().eq('user_id', targetUserId)
+
+    // Delete the auth user
+    const { error } = await adminClient.auth.admin.deleteUser(targetUserId)
+
+    if (error) {
+      return ApiResponse.internalError('사용자 삭제 중 오류가 발생했습니다')
+    }
+
+    return ApiResponse.ok({ message: '사용자가 삭제되었습니다' })
+  } catch (error) {
+    const err = error instanceof Error ? error : new Error(String(error))
+    await logError({
+      level: 'error',
+      source: 'api',
+      errorCode: err.name,
+      message: err.message,
+      stackTrace: err.stack,
+      endpoint: '/api/admin/users/[id]',
+      method: 'DELETE',
+    })
+    return ApiResponse.internalError('사용자 삭제 중 오류가 발생했습니다')
   }
 }
 
@@ -111,7 +163,7 @@ export async function GET(
     const { data, error } = await adminClient.auth.admin.getUserById(targetUserId)
 
     if (error) {
-      return ApiResponse.internalError('Failed to get user', error.message)
+      return ApiResponse.internalError('Failed to get user')
     }
 
     if (!data.user) {
@@ -134,6 +186,6 @@ export async function GET(
       endpoint: '/api/admin/users/[id]',
       method: 'GET',
     })
-    return ApiResponse.internalError('Failed to get user', err.message)
+    return ApiResponse.internalError('Failed to get user')
   }
 }

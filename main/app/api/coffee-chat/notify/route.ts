@@ -4,6 +4,7 @@ import { logApiError } from '@/src/lib/error-logging'
 import { resend, FROM_EMAIL, isEmailEnabled } from '@/src/lib/email/client'
 import { renderCoffeeChatRequestEmail } from '@/src/lib/email/templates/coffee-chat-request'
 import { renderCoffeeChatResponseEmail } from '@/src/lib/email/templates/coffee-chat-response'
+import { notifyCoffeeChatRequest, notifyCoffeeChatResponse } from '@/src/lib/notifications/create-notification'
 import { createClient } from '@supabase/supabase-js'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
@@ -35,7 +36,7 @@ export async function POST(req: NextRequest) {
     )
     const { data: { user }, error: authError } = await supabaseAuth.auth.getUser()
     if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
     }
 
     // Rate limit
@@ -61,21 +62,21 @@ export async function POST(req: NextRequest) {
       .single()
 
     if (chatError || !chat) {
-      return NextResponse.json({ error: 'Chat not found' }, { status: 404 })
+      return NextResponse.json({ error: '채팅을 찾을 수 없습니다' }, { status: 404 })
     }
 
     // 소유권 + 역할 검증: type별로 적절한 사용자만 트리거 가능
     const isRequester = chat.requester_user_id === user.id
     const isOwner = chat.owner_user_id === user.id
     if (!isRequester && !isOwner) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      return NextResponse.json({ error: '접근 권한이 없습니다' }, { status: 403 })
     }
     // request는 요청자만, accepted/declined는 오너만 트리거 가능
     if (type === 'request' && !isRequester) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      return NextResponse.json({ error: '접근 권한이 없습니다' }, { status: 403 })
     }
     if ((type === 'accepted' || type === 'declined') && !isOwner) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      return NextResponse.json({ error: '접근 권한이 없습니다' }, { status: 403 })
     }
 
     // Fetch opportunity title
@@ -120,6 +121,9 @@ export async function POST(req: NextRequest) {
         subject: `[Draft] ${requesterName}님이 커피챗을 신청했습니다`,
         html,
       })
+
+      // In-app notification
+      await notifyCoffeeChatRequest(chat.owner_user_id, requesterName, projectTitle)
     } else if (type === 'accepted' || type === 'declined') {
       if (!requesterEmail) {
         return NextResponse.json({ success: false, error: 'Requester email not found' }, { status: 422 })
@@ -140,6 +144,14 @@ export async function POST(req: NextRequest) {
         subject: `[Draft] 커피챗이 ${type === 'accepted' ? '수락' : '거절'}되었습니다`,
         html,
       })
+
+      // In-app notification
+      await notifyCoffeeChatResponse(
+        chat.requester_user_id,
+        ownerName,
+        projectTitle,
+        type === 'accepted'
+      )
     }
 
     return NextResponse.json({ success: true })
