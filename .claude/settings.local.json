@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la \"C:\\\\project\\\\Draft\\\\main\\\\components\\\\home\"\" 2>/dev/null || echo \"home directory not found \")",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nPhase 1: Landing page redesign for community platform\n\n- Update Hero.tsx copy to community-focused messaging\n- Create HowItWorks.tsx \\(3-step flow\\)\n- Create CommunityFeedback.tsx \\(mock project + comments\\)\n- Create OpportunitySection.tsx \\(live projects from DB\\)\n- Create FAQ.tsx \\(accordion-style FAQ\\)\n- Update layout.tsx OG tags for community branding\n- Comment out Features component in page.tsx\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git merge:*)",
+      "Bash(git stash:*)",
+      "Bash(git stash pop:*)",
+      "Bash(git commit:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npx supabase db push:*)",
+      "Bash(npx supabase login)",
+      "Bash(npx supabase:*)",
+      "Bash(SUPABASE_ACCESS_TOKEN=\"sbp_cli_BOOK-9F5CT1HQ3I\\\\chado@BOOK-9F5CT1HQ3I_1772090870\" npx supabase db push:*)",
+      "Bash(SUPABASE_ACCESS_TOKEN=\"sbp_000a8048cb48e4c1dd696b4af11617a43bcb1802\" npx supabase db push:*)",
+      "Bash(SUPABASE_ACCESS_TOKEN=\"sbp_000a8048cb48e4c1dd696b4af11617a43bcb1802\" npx supabase db pull:*)",
+      "Bash(SUPABASE_ACCESS_TOKEN=\"sbp_000a8048cb48e4c1dd696b4af11617a43bcb1802\" npx supabase migration repair:*)",
+      "Bash(SUPABASE_ACCESS_TOKEN=\"sbp_000a8048cb48e4c1dd696b4af11617a43bcb1802\" npx supabase migration:*)",
+      "Skill(browser-use)",
+      "Bash(browser-use open:*)",
+      "Bash(browser-use screenshot:*)",
+      "Bash(browser-use close:*)",
+      "Bash(netstat:*)",
+      "WebSearch",
+      "WebFetch(domain:www.producthunt.com)",
+      "WebFetch(domain:www.ycombinator.com)",
+      "Bash(npm run build:*)",
+      "Bash(npx tsc:*)",
+      "Bash(curl:*)",
+      "Bash(browser-use:*)"
+    ]
+  }
+}
