@@ -181,7 +181,7 @@ export default function PlanPage() {
             <button
               onClick={handleGeneratePRD}
               disabled={isGeneratingPRD}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-600 text-white text-sm border-2 border-violet-600 hover:bg-violet-700 transition-colors disabled:opacity-50 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-600 text-white text-sm border border-violet-600 hover:bg-violet-700 transition-colors disabled:opacity-50 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
             >
               <FileText className="w-3.5 h-3.5" />
               PRD 보기
@@ -283,7 +283,7 @@ export default function PlanPage() {
           href="/project/build"
           className={`px-6 py-2.5 text-sm font-medium transition-colors ${
             hasInitialSynthesis
-              ? 'bg-black text-white border-2 border-black hover:bg-[#333] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
+              ? 'bg-black text-white border border-black hover:bg-[#333] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
               : 'bg-surface-sunken text-txt-disabled border border-border cursor-not-allowed pointer-events-none'
           }`}
         >

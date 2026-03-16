@@ -747,7 +747,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                         <div className="ob-form w-full">
                           {bubble.attachment === 'cta' && (
                             <div className="mt-3">
-                              <button onClick={handleCtaClick} className="ob-cta ob-hover inline-flex items-center gap-2.5 px-6 py-3 bg-[#4F46E5] text-white text-[13px] font-bold shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] border-2 border-[#4F46E5]">
+                              <button onClick={handleCtaClick} className="ob-cta ob-hover inline-flex items-center gap-2.5 px-6 py-3 bg-[#4F46E5] text-white text-[13px] font-bold shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] border border-[#4F46E5]">
                                 프로필 입력하기 <ArrowRight size={15} />
                               </button>
                               <p className="text-[11px] text-txt-tertiary mt-2.5 ml-1 font-mono">1분이면 끝나요</p>
@@ -832,7 +832,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                                   <p className="text-[10px] text-txt-tertiary font-mono mt-1">{profile.locations.join(', ')} 선택됨</p>
                                 )}
                               </div>
-                              <button onClick={handleInfoSubmit} disabled={!profile.name.trim()} className="w-full py-2.5 bg-[#4F46E5] text-white text-[13px] font-bold hover:bg-[#4338CA] transition-all flex items-center justify-center gap-2 disabled:opacity-20 disabled:cursor-not-allowed ob-hover shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] border-2 border-[#4F46E5]">
+                              <button onClick={handleInfoSubmit} disabled={!profile.name.trim()} className="w-full py-2.5 bg-[#4F46E5] text-white text-[13px] font-bold hover:bg-[#4338CA] transition-all flex items-center justify-center gap-2 disabled:opacity-20 disabled:cursor-not-allowed ob-hover shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] border border-[#4F46E5]">
                                 입력 완료 <ArrowRight size={14} />
                               </button>
                               <p className="text-[10px] text-txt-tertiary text-center font-mono">닉네임만 필수예요 · 나중에 수정 가능</p>
@@ -885,7 +885,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                                   ))}
                                 </div>
                               )}
-                              <button onClick={handleSkillInputSubmit} className="w-full py-2.5 bg-[#4F46E5] text-white text-[13px] font-bold hover:bg-[#4338CA] transition-all flex items-center justify-center gap-2 ob-hover shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] border-2 border-[#4F46E5]">
+                              <button onClick={handleSkillInputSubmit} className="w-full py-2.5 bg-[#4F46E5] text-white text-[13px] font-bold hover:bg-[#4338CA] transition-all flex items-center justify-center gap-2 ob-hover shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] border border-[#4F46E5]">
                                 {skillInput.trim() || selectedSkills.length > 0 ? '다음' : '건너뛰기'} <ArrowRight size={14} />
                               </button>
                             </div>
@@ -929,7 +929,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                                   ))}
                                 </div>
                               )}
-                              <button onClick={handleInterestInputSubmit} className="w-full py-2.5 bg-[#4F46E5] text-white text-[13px] font-bold hover:bg-[#4338CA] transition-all flex items-center justify-center gap-2 ob-hover shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] border-2 border-[#4F46E5]">
+                              <button onClick={handleInterestInputSubmit} className="w-full py-2.5 bg-[#4F46E5] text-white text-[13px] font-bold hover:bg-[#4338CA] transition-all flex items-center justify-center gap-2 ob-hover shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] border border-[#4F46E5]">
                                 {interestInput.trim() || selectedInterests.length > 0 ? '다음' : '건너뛰기'} <ArrowRight size={14} />
                               </button>
                             </div>
@@ -950,7 +950,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
                           {bubble.attachment === 'deep-chat-offer' && (
                             <div className="mt-3 space-y-2">
-                              <button onClick={handleDeepChatAccept} className="ob-chip ob-hover w-full text-left px-4 py-3.5 bg-[#4F46E5] text-white border-2 border-[#4F46E5] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all" style={{ animationDelay: '0ms' }}>
+                              <button onClick={handleDeepChatAccept} className="ob-chip ob-hover w-full text-left px-4 py-3.5 bg-[#4F46E5] text-white border border-[#4F46E5] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all" style={{ animationDelay: '0ms' }}>
                                 <div className="flex items-center gap-3">
                                   <div className="w-9 h-9 bg-white/15 flex items-center justify-center shrink-0">
                                     <MessageCircle size={16} />
@@ -978,7 +978,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
                           {bubble.attachment === ('deep-chat-offer-finish') && (
                             <div className="mt-3 space-y-2">
-                              <button onClick={() => { setBubbles(prev => prev.filter(b => b.attachment !== ('deep-chat-offer-finish'))) }} className="ob-chip ob-hover w-full text-left px-4 py-2.5 bg-[#4F46E5] text-white border-2 border-[#4F46E5] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all text-[13px] font-bold" style={{ animationDelay: '0ms' }}>
+                              <button onClick={() => { setBubbles(prev => prev.filter(b => b.attachment !== ('deep-chat-offer-finish'))) }} className="ob-chip ob-hover w-full text-left px-4 py-2.5 bg-[#4F46E5] text-white border border-[#4F46E5] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all text-[13px] font-bold" style={{ animationDelay: '0ms' }}>
                                 조금 더 대화하기
                               </button>
                               <button onClick={forceFinishDeepChat} className="ob-chip ob-hover w-full text-left px-4 py-2.5 bg-surface-card border border-border-strong hover:border-border-strong transition-all text-[13px] font-bold text-txt-primary" style={{ animationDelay: '60ms' }}>
@@ -1070,10 +1070,10 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
               <div className="max-w-2xl mx-auto">
                 <div className="flex items-center gap-2">
                   <div className="flex-1 relative">
-                    <input ref={deepChatInputRef} type="text" value={deepChatInput} onChange={(e) => setDeepChatInput(e.target.value)} placeholder={userMsgCount === 0 ? '첫 번째 질문에 답해보세요...' : '이어서 이야기해주세요...'} className="w-full pl-4 pr-11 py-3 bg-surface-sunken border-2 border-border-strong text-sm font-medium focus:outline-none focus:border-border-strong focus:bg-surface-card transition-all placeholder:text-txt-disabled" onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleDeepChatSend()} disabled={isTyping} />
+                    <input ref={deepChatInputRef} type="text" value={deepChatInput} onChange={(e) => setDeepChatInput(e.target.value)} placeholder={userMsgCount === 0 ? '첫 번째 질문에 답해보세요...' : '이어서 이야기해주세요...'} className="w-full pl-4 pr-11 py-3 bg-surface-sunken border border-border-strong text-sm font-medium focus:outline-none focus:border-border-strong focus:bg-surface-card transition-all placeholder:text-txt-disabled" onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleDeepChatSend()} disabled={isTyping} />
                     <button onClick={handleDeepChatSend} disabled={isTyping || !deepChatInput.trim()} className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-txt-disabled hover:text-black transition-colors disabled:opacity-30"><Send size={16} /></button>
                   </div>
-                  <button onClick={handleDeepChatFinish} disabled={isTyping} className={`ob-hover px-4 py-3 text-[13px] font-bold flex items-center gap-1.5 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] disabled:opacity-50 shrink-0 transition-all ${userMsgCount >= 3 ? 'bg-[#4F46E5] text-white border-2 border-[#4F46E5]' : 'bg-black text-white'}`}>
+                  <button onClick={handleDeepChatFinish} disabled={isTyping} className={`ob-hover px-4 py-3 text-[13px] font-bold flex items-center gap-1.5 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] disabled:opacity-50 shrink-0 transition-all ${userMsgCount >= 3 ? 'bg-[#4F46E5] text-white border border-[#4F46E5]' : 'bg-black text-white'}`}>
                     <CheckCircle2 size={14} />완료
                   </button>
                 </div>

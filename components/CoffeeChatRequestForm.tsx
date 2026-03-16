@@ -94,7 +94,7 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
         onChange={(e) => setMessage(e.target.value)}
         placeholder="안녕하세요! 프로젝트에 관심이 있어서 연락드립니다..."
         rows={4}
-        className="w-full px-4 py-3 border-2 border-border-strong rounded-sm text-sm text-left bg-surface-card focus:outline-none focus:border-[#4F46E5] resize-none mb-4"
+        className="w-full px-4 py-3 border border-border-strong rounded-sm text-sm text-left bg-surface-card focus:outline-none focus:border-[#4F46E5] resize-none mb-4"
       />
 
       {error && (
@@ -104,7 +104,7 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
       <button
         onClick={handleSubmit}
         disabled={!message.trim() || requestChat.isPending}
-        className="w-full bg-[#4F46E5] text-white border-2 border-[#4F46E5] py-3 rounded-sm font-bold text-sm flex items-center justify-center gap-2 hover:bg-[#4338CA] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-40 disabled:cursor-not-allowed mb-3"
+        className="w-full bg-[#4F46E5] text-white border border-[#4F46E5] py-3 rounded-sm font-bold text-sm flex items-center justify-center gap-2 hover:bg-[#4338CA] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-40 disabled:cursor-not-allowed mb-3"
       >
         {requestChat.isPending ? (
           <><Loader2 size={14} className="animate-spin" /> 전송 중...</>

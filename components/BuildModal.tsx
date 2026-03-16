@@ -23,7 +23,7 @@ export const BuildModal: React.FC<BuildModalProps> = ({ isOpen, onClose, prdData
       />
 
       {/* Modal Content */}
-      <div className="relative bg-surface-card w-[98vw] max-w-[100rem] h-[92vh] shadow-brutal border-2 border-border-strong flex flex-col overflow-hidden">
+      <div className="relative bg-surface-card w-[98vw] max-w-[100rem] h-[92vh] shadow-brutal border border-border-strong flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex-shrink-0 border-b border-border-strong px-6 py-4 flex items-center justify-between bg-surface-card">
           <div className="flex items-center gap-3">

@@ -171,7 +171,7 @@ export const ValidatedIdeasPage: React.FC = () => {
               <p className="text-sm text-txt-tertiary">AI로 검증한 모든 아이디어를 확인하고 관리하세요</p>
             </div>
           </div>
-          <button type="button" onClick={handleStartNewWorkflow} className="px-4 py-2 bg-black text-white border-2 border-black text-sm font-bold hover:bg-[#333] transition-colors flex items-center gap-2 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">
+          <button type="button" onClick={handleStartNewWorkflow} className="px-4 py-2 bg-black text-white border border-black text-sm font-bold hover:bg-[#333] transition-colors flex items-center gap-2 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">
             <Play size={16} /> 새 워크플로우
           </button>
         </div>
@@ -201,14 +201,14 @@ export const ValidatedIdeasPage: React.FC = () => {
       <div className="flex flex-wrap items-center gap-3 mb-6">
         <div className="relative flex-1 min-w-[12.5rem]">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-txt-disabled" />
-          <input type="text" placeholder="아이디어 검색..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-full pl-10 pr-4 py-2 border-2 border-border-strong text-sm focus:outline-none focus:border-[#4F46E5] transition-colors" />
+          <input type="text" placeholder="아이디어 검색..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-full pl-10 pr-4 py-2 border border-border-strong text-sm focus:outline-none focus:border-[#4F46E5] transition-colors" />
           {searchQuery && (
             <button type="button" onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-txt-disabled hover:text-txt-secondary" aria-label="검색어 지우기"><X size={14} /></button>
           )}
         </div>
         <div className="flex items-center gap-2">
           <Filter size={14} className="text-txt-disabled" aria-hidden="true" />
-          <select aria-label="문서 필터" value={filterHasArtifacts === null ? 'all' : filterHasArtifacts ? 'with' : 'without'} onChange={e => { const val = e.target.value; setFilterHasArtifacts(val === 'all' ? null : val === 'with') }} className="px-3 py-2 border-2 border-border-strong text-sm focus:outline-none focus:border-[#4F46E5]">
+          <select aria-label="문서 필터" value={filterHasArtifacts === null ? 'all' : filterHasArtifacts ? 'with' : 'without'} onChange={e => { const val = e.target.value; setFilterHasArtifacts(val === 'all' ? null : val === 'with') }} className="px-3 py-2 border border-border-strong text-sm focus:outline-none focus:border-[#4F46E5]">
             <option value="all">전체</option>
             <option value="with">문서 있음</option>
             <option value="without">문서 없음</option>
@@ -236,7 +236,7 @@ export const ValidatedIdeasPage: React.FC = () => {
           <div className="w-16 h-16 bg-surface-sunken border border-border-strong flex items-center justify-center mb-4"><Lightbulb size={28} className="text-txt-disabled" /></div>
           <h3 className="text-lg font-bold text-txt-primary mb-2">아직 검증된 아이디어가 없습니다</h3>
           <p className="text-sm text-txt-tertiary mb-6 max-w-md">워크플로우를 시작하여 아이디어 검증 → PRD 생성 → 사업계획서 작성까지 한번에 진행하세요</p>
-          <button type="button" onClick={handleStartNewWorkflow} className="px-6 py-3 bg-black text-white font-bold hover:bg-[#333] transition-colors flex items-center gap-2 border-2 border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"><Play size={16} /> 워크플로우 시작하기</button>
+          <button type="button" onClick={handleStartNewWorkflow} className="px-6 py-3 bg-black text-white font-bold hover:bg-[#333] transition-colors flex items-center gap-2 border border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"><Play size={16} /> 워크플로우 시작하기</button>
         </div>
       )}
 
@@ -277,7 +277,7 @@ export const ValidatedIdeasPage: React.FC = () => {
 
       {selectedIdea && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-labelledby="modal-title" onClick={(e) => { if (e.target === e.currentTarget) setSelectedIdea(null) }}>
-          <div className="bg-surface-card shadow-brutal max-w-2xl w-full max-h-[85vh] overflow-hidden flex flex-col border-2 border-border-strong">
+          <div className="bg-surface-card shadow-brutal max-w-2xl w-full max-h-[85vh] overflow-hidden flex flex-col border border-border-strong">
             <div className="px-6 py-4 border-b border-border-strong flex items-center justify-between shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-status-success-bg border border-green-300 flex items-center justify-center"><Sparkles size={18} className="text-status-success-text" aria-hidden="true" /></div>
@@ -303,7 +303,7 @@ export const ValidatedIdeasPage: React.FC = () => {
               <button type="button" onClick={() => setDeleteTarget(selectedIdea.id)} disabled={deleteIdea.isPending} className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 transition-colors text-sm disabled:opacity-50 border border-transparent hover:border-red-200"><Trash2 size={16} />삭제</button>
               <div className="flex gap-2">
                 <button type="button" onClick={() => setSelectedIdea(null)} className="px-4 py-2 text-txt-secondary hover:bg-surface-sunken transition-colors text-sm border border-border-strong font-bold">닫기</button>
-                <button type="button" onClick={() => handleContinueWorkflow(selectedIdea)} className="px-5 py-2 bg-black text-white hover:bg-[#333] transition-colors text-sm font-bold flex items-center gap-2 border-2 border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"><Play size={14} />워크플로우 이어하기<ChevronRight size={14} /></button>
+                <button type="button" onClick={() => handleContinueWorkflow(selectedIdea)} className="px-5 py-2 bg-black text-white hover:bg-[#333] transition-colors text-sm font-bold flex items-center gap-2 border border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"><Play size={14} />워크플로우 이어하기<ChevronRight size={14} /></button>
               </div>
             </div>
           </div>

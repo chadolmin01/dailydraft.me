@@ -57,7 +57,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
       ></div>
 
       {/* Modal Content */}
-      <div className="relative bg-surface-card w-full max-w-4xl h-[85vh] border-2 border-border-strong shadow-brutal flex flex-col overflow-hidden animate-[scale-in_0.2s_ease-out]">
+      <div className="relative bg-surface-card w-full max-w-4xl h-[85vh] border border-border-strong shadow-brutal flex flex-col overflow-hidden animate-[scale-in_0.2s_ease-out]">
         {/* Header */}
         <div className="bg-surface-card border-b border-dashed border-border sticky top-0 z-10 shrink-0">
           <div className="flex justify-between items-start p-6 pb-4">
@@ -212,7 +212,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
             {/* Sidebar */}
             <div className="w-full md:w-80 bg-surface-sunken border-l border-border-strong p-6 md:p-8 space-y-6 flex flex-col h-full overflow-y-auto custom-scrollbar">
               <div className="space-y-3">
-                <button className="w-full bg-[#4F46E5] text-white py-3 text-sm font-bold hover:bg-[#4338CA] transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] flex items-center justify-center gap-2 border-2 border-[#4F46E5]">
+                <button className="w-full bg-[#4F46E5] text-white py-3 text-sm font-bold hover:bg-[#4338CA] transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] flex items-center justify-center gap-2 border border-[#4F46E5]">
                   Apply Now <ArrowUpRight size={16} />
                 </button>
                 <div className="flex gap-2">

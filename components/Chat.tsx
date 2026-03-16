@@ -517,7 +517,7 @@ export const Chat: React.FC = () => {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Draft AI에게 업무를 요청하세요..."
-              className="w-full h-11 pl-4 pr-12 bg-surface-sunken border-2 border-border-strong focus:outline-none focus:bg-surface-card focus:border-[#4F46E5] text-sm transition-all"
+              className="w-full h-11 pl-4 pr-12 bg-surface-sunken border border-border-strong focus:outline-none focus:bg-surface-card focus:border-[#4F46E5] text-sm transition-all"
             />
             <button
               onClick={handleUnifiedSend}

@@ -53,7 +53,7 @@ export const Network: React.FC = () => {
                 <button className="border border-border-strong px-4 py-2 text-sm font-medium hover:bg-black hover:text-white transition-colors flex items-center gap-2">
                    <Upload size={16} /> Import
                 </button>
-                <button className="bg-[#4F46E5] text-white border-2 border-[#4F46E5] px-4 py-2 text-sm font-medium hover:bg-[#4338CA] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex items-center gap-2">
+                <button className="bg-[#4F46E5] text-white border border-[#4F46E5] px-4 py-2 text-sm font-medium hover:bg-[#4338CA] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex items-center gap-2">
                    <UserPlus size={16} /> Add Contact
                 </button>
              </div>
@@ -70,7 +70,7 @@ export const Network: React.FC = () => {
                    <input
                       type="text"
                       placeholder="Search contacts..."
-                      className="flex-1 py-2 bg-transparent text-sm focus:outline-none placeholder:text-txt-disabled border-2 border-transparent focus:border-[#4F46E5]"
+                      className="flex-1 py-2 bg-transparent text-sm focus:outline-none placeholder:text-txt-disabled border border-transparent focus:border-[#4F46E5]"
                    />
                    <div className="h-6 w-px bg-border mx-2"></div>
                    <div className="flex gap-2 pr-2">

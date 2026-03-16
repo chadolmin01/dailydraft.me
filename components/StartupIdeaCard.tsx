@@ -152,7 +152,7 @@ export const StartupIdeaCard: React.FC<StartupIdeaCardProps> = ({
           {onStartBuilding && hasAnalysis && (
             <button
               onClick={() => onStartBuilding(id)}
-              className="px-4 py-2 bg-black text-white text-xs font-bold hover:bg-[#333] transition-colors flex items-center gap-1 border-2 border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+              className="px-4 py-2 bg-black text-white text-xs font-bold hover:bg-[#333] transition-colors flex items-center gap-1 border border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
             >
               빌딩 시작
               <ArrowUpRight size={12} />

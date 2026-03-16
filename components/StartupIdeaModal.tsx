@@ -86,7 +86,7 @@ export const StartupIdeaModal: React.FC<StartupIdeaModalProps> = ({
       />
 
       {/* Modal */}
-      <div className="relative bg-surface-card shadow-brutal w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col border-2 border-border-strong">
+      <div className="relative bg-surface-card shadow-brutal w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col border border-border-strong">
         {/* Header */}
         <div className="flex items-start justify-between p-6 border-b border-border-strong">
           <div className="flex items-center gap-4">
@@ -279,7 +279,7 @@ export const StartupIdeaModal: React.FC<StartupIdeaModalProps> = ({
 
           <button
             onClick={onStartBuilding}
-            className="px-6 py-2.5 bg-black text-white text-sm font-bold hover:bg-[#333] transition-colors flex items-center gap-2 border-2 border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            className="px-6 py-2.5 bg-black text-white text-sm font-bold hover:bg-[#333] transition-colors flex items-center gap-2 border border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
           >
             이 아이디어로 빌딩 시작
             <ArrowUpRight size={16} />

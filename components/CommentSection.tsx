@@ -122,13 +122,13 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
               placeholder={`${COMMENT_VERB}을 남겨주세요...`}
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="flex-1 px-3 py-1.5 text-sm border-2 border-border-strong focus:outline-none focus:border-border-strong bg-surface-card text-txt-primary placeholder-txt-disabled"
+              className="flex-1 px-3 py-1.5 text-sm border border-border-strong focus:outline-none focus:border-border-strong bg-surface-card text-txt-primary placeholder-txt-disabled"
               maxLength={500}
             />
             <button
               type="submit"
               disabled={submitting || !content.trim()}
-              className="px-3 py-1.5 bg-black text-white border-2 border-black hover:bg-[#333] transition-colors disabled:bg-surface-sunken disabled:text-txt-disabled disabled:border-border-strong disabled:cursor-not-allowed flex items-center justify-center"
+              className="px-3 py-1.5 bg-black text-white border border-black hover:bg-[#333] transition-colors disabled:bg-surface-sunken disabled:text-txt-disabled disabled:border-border-strong disabled:cursor-not-allowed flex items-center justify-center"
             >
               {submitting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
             </button>
@@ -139,7 +139,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
           <p className="text-sm text-txt-tertiary mb-3">로그인하고 {COMMENT_VERB}을 남겨보세요</p>
           <button
             onClick={onLoginClick}
-            className="inline-flex items-center gap-2 bg-black text-white px-5 py-2 text-xs font-bold border-2 border-black hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            className="inline-flex items-center gap-2 bg-black text-white px-5 py-2 text-xs font-bold border border-black hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
           >
             로그인하기 <ArrowRight size={12} />
           </button>

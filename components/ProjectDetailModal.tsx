@@ -173,7 +173,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl max-h-[95vh] md:max-h-[90vh] bg-surface-card shadow-brutal-xl border-2 border-border-strong overflow-hidden flex flex-col relative"
+              className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl max-h-[95vh] md:max-h-[90vh] bg-surface-card shadow-brutal-xl border border-border-strong overflow-hidden flex flex-col relative"
               role="dialog"
               aria-modal="true"
               aria-label={opportunity?.title || '프로젝트 상세'}
@@ -679,7 +679,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
 
                           {/* CTA Card */}
                           {!isOwner && (
-                          <div className="bg-surface-inverse p-5 text-white border-2 border-black shadow-solid">
+                          <div className="bg-surface-inverse p-5 text-white border border-black shadow-solid">
                             {existingChat ? (
                               <>
                                 <h3 className="font-bold text-sm mb-1">
@@ -705,7 +705,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                                 </p>
                                 <button
                                   onClick={() => handleAction()}
-                                  className="w-full bg-white text-txt-primary py-2.5 font-bold text-sm hover:bg-surface-sunken transition-colors flex items-center justify-center gap-2 border-2 border-white"
+                                  className="w-full bg-white text-txt-primary py-2.5 font-bold text-sm hover:bg-surface-sunken transition-colors flex items-center justify-center gap-2 border border-white"
                                 >
                                   <Coffee size={14} />
                                   커피챗 신청하기
@@ -733,7 +733,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: 20 }}
                           transition={{ delay: 0.1 }}
-                          className="w-full max-w-sm sm:max-w-md bg-surface-card border-2 border-border-strong p-6 sm:p-8 shadow-brutal-xl"
+                          className="w-full max-w-sm sm:max-w-md bg-surface-card border border-border-strong p-6 sm:p-8 shadow-brutal-xl"
                         >
                           <CoffeeChatRequestForm
                             opportunityId={opportunity.id}
@@ -769,7 +769,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: 20 }}
                           transition={{ delay: 0.1 }}
-                          className="w-full max-w-sm sm:max-w-md bg-surface-card border-2 border-border-strong p-6 sm:p-8 shadow-brutal-xl"
+                          className="w-full max-w-sm sm:max-w-md bg-surface-card border border-border-strong p-6 sm:p-8 shadow-brutal-xl"
                         >
                           <div className="w-14 h-14 bg-black flex items-center justify-center mb-6 mx-auto">
                             <span className="text-white font-black text-xl font-mono">D</span>
@@ -783,7 +783,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                           </p>
                           <button
                             onClick={handleSignup}
-                            className="bg-black hover:bg-[#333] text-white px-8 py-3.5 font-bold text-sm flex items-center gap-2 transition-colors mx-auto mb-3 border-2 border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                            className="bg-black hover:bg-[#333] text-white px-8 py-3.5 font-bold text-sm flex items-center gap-2 transition-colors mx-auto mb-3 border border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
                           >
                             무료로 시작하기
                             <ArrowRight size={16} />

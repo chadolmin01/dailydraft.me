@@ -302,7 +302,7 @@ export default function ProfilePage() {
                     {percentage < 100 && (
                       <button
                         onClick={() => setIsEditOpen(true)}
-                        className="w-full mt-3 px-3 py-2 text-xs font-bold bg-[#4F46E5] text-white border-2 border-[#4F46E5] hover:bg-[#4338CA] transition-colors shadow-[2px_2px_0px_0px_rgba(79,70,229,0.3)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                        className="w-full mt-3 px-3 py-2 text-xs font-bold bg-[#4F46E5] text-white border border-[#4F46E5] hover:bg-[#4338CA] transition-colors shadow-[2px_2px_0px_0px_rgba(79,70,229,0.3)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
                       >
                         프로필 완성하기
                       </button>
@@ -405,7 +405,7 @@ export default function ProfilePage() {
             </h3>
             <Link
               href="/projects/new"
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-[#4F46E5] text-white border-2 border-[#4F46E5] hover:bg-[#4338CA] transition-colors shadow-[2px_2px_0px_0px_rgba(79,70,229,0.3)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-[#4F46E5] text-white border border-[#4F46E5] hover:bg-[#4338CA] transition-colors shadow-[2px_2px_0px_0px_rgba(79,70,229,0.3)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
             >
               <Plus size={14} /> 새 프로젝트
             </Link>
@@ -539,7 +539,7 @@ export default function ProfilePage() {
                           value={contactInput}
                           onChange={(e) => setContactInput(e.target.value)}
                           placeholder="연락처 입력"
-                          className="w-24 sm:w-32 px-2 py-1.5 text-xs font-mono border-2 border-border-strong focus:outline-none focus:border-[#4F46E5]"
+                          className="w-24 sm:w-32 px-2 py-1.5 text-xs font-mono border border-border-strong focus:outline-none focus:border-[#4F46E5]"
                         />
                         <button
                           onClick={() => handleAcceptChat(chat.id)}
@@ -558,7 +558,7 @@ export default function ProfilePage() {
                       <div className="flex items-center gap-2 flex-shrink-0">
                         <button
                           onClick={() => setAcceptingChatId(chat.id)}
-                          className="px-3 py-1.5 text-xs font-bold bg-emerald-600 text-white border-2 border-emerald-700 hover:bg-emerald-700 shadow-[2px_2px_0px_0px_rgba(5,150,105,0.3)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                          className="px-3 py-1.5 text-xs font-bold bg-emerald-600 text-white border border-emerald-700 hover:bg-emerald-700 shadow-[2px_2px_0px_0px_rgba(5,150,105,0.3)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
                         >
                           수락
                         </button>

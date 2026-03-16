@@ -99,7 +99,7 @@ export function ExploreSidebar({
           FILTER
         </h3>
         <label className="flex items-center gap-2.5 text-sm text-txt-secondary cursor-pointer group">
-          <div className={`w-4 h-4 border-2 flex items-center justify-center transition-all ${
+          <div className={`w-4 h-4 border flex items-center justify-center transition-all ${
             recruitingOnly ? 'bg-emerald-600 border-emerald-600' : 'border-border-strong group-hover:border-txt-secondary'
           }`}>
             {recruitingOnly && <Check size={10} className="text-white" strokeWidth={3} />}

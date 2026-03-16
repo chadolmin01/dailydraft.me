@@ -132,7 +132,7 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
 
           <button
             onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
-            className="group w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 font-bold text-sm border-2 border-border-strong bg-surface-card text-txt-secondary hover:bg-black hover:text-white transition-all duration-200"
+            className="group w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 font-bold text-sm border border-border-strong bg-surface-card text-txt-secondary hover:bg-black hover:text-white transition-all duration-200"
           >
             프로젝트 둘러보기
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />

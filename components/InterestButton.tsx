@@ -82,7 +82,7 @@ export const InterestButton: React.FC<InterestButtonProps> = ({
       <button
         onClick={handleClick}
         disabled={loading || hasInterest}
-        className={`flex items-center gap-2 px-4 py-2 border-2 transition-all ${
+        className={`flex items-center gap-2 px-4 py-2 border transition-all ${
           hasInterest
             ? 'bg-pink-50 text-pink-600 border-pink-300 cursor-default'
             : 'bg-surface-card text-txt-secondary border-border-strong hover:border-pink-400 hover:text-pink-600'
@@ -105,7 +105,7 @@ export const InterestButton: React.FC<InterestButtonProps> = ({
       {/* Email Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-surface-card shadow-brutal border-2 border-border-strong w-full max-w-sm">
+          <div className="bg-surface-card shadow-brutal border border-border-strong w-full max-w-sm">
             <div className="p-4 border-b border-border-strong flex items-center justify-between">
               <h3 className="font-bold text-txt-primary">관심 표현하기</h3>
               <button
@@ -126,7 +126,7 @@ export const InterestButton: React.FC<InterestButtonProps> = ({
                 placeholder="이메일을 입력하세요"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 border-2 border-border-strong bg-surface-card focus:outline-none focus:border-[#4F46E5] mb-2"
+                className="w-full px-3 py-2 border border-border-strong bg-surface-card focus:outline-none focus:border-[#4F46E5] mb-2"
               />
 
               {error && <p className="text-xs text-red-500 mb-2">{error}</p>}
@@ -145,7 +145,7 @@ export const InterestButton: React.FC<InterestButtonProps> = ({
                 <button
                   onClick={() => handleSubmit()}
                   disabled={submitting}
-                  className="flex-1 px-4 py-2 bg-[#4F46E5] text-white border-2 border-[#4F46E5] hover:bg-[#4338CA] text-sm font-bold shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-40 flex items-center justify-center gap-2"
+                  className="flex-1 px-4 py-2 bg-[#4F46E5] text-white border border-[#4F46E5] hover:bg-[#4338CA] text-sm font-bold shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-40 flex items-center justify-center gap-2"
                 >
                   {submitting ? (
                     <Loader2 size={16} className="animate-spin" />

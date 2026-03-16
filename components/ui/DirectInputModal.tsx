@@ -175,7 +175,7 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
         onClick={handleClose}
       />
 
-      <div className="relative bg-surface-card w-full max-w-lg border-2 border-border-strong shadow-brutal overflow-hidden max-h-[85vh] flex flex-col">
+      <div className="relative bg-surface-card w-full max-w-lg border border-border-strong shadow-brutal overflow-hidden max-h-[85vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-6 pb-0 shrink-0">
           <div className="flex items-center gap-3">
@@ -217,7 +217,7 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
               className={`
-                relative p-12 border-2 border-dashed text-center cursor-pointer transition-all duration-200
+                relative p-12 border border-dashed text-center cursor-pointer transition-all duration-200
                 ${isDragging
                   ? 'border-border-strong bg-surface-sunken'
                   : 'border-border hover:border-border-strong hover:bg-surface-sunken'

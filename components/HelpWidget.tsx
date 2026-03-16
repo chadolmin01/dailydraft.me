@@ -76,7 +76,7 @@ export function HelpWidget() {
         className={`fixed bottom-6 right-6 z-fixed w-12 h-12 flex items-center justify-center transition-all duration-300 ${
           isOpen
             ? 'bg-surface-inverse text-txt-inverse rotate-90'
-            : 'bg-[#4F46E5] text-white border-2 border-[#4F46E5] shadow-brutal hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
+            : 'bg-[#4F46E5] text-white border border-[#4F46E5] shadow-brutal hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
         }`}
         aria-label="도움말"
       >
@@ -86,7 +86,7 @@ export function HelpWidget() {
       {/* Panel */}
       {isOpen && (
         <div
-          className="fixed bottom-20 right-6 z-fixed w-[22rem] sm:w-[24rem] max-h-[min(32rem,calc(100vh-8rem))] bg-surface-card border-2 border-border-strong shadow-brutal-xl flex flex-col"
+          className="fixed bottom-20 right-6 z-fixed w-[22rem] sm:w-[24rem] max-h-[min(32rem,calc(100vh-8rem))] bg-surface-card border border-border-strong shadow-brutal-xl flex flex-col"
           style={{ animation: 'helpWidgetIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) both' }}
         >
           <style dangerouslySetInnerHTML={{ __html: `
@@ -285,7 +285,7 @@ function ChatTab() {
           <button
             onClick={send}
             disabled={isLoading || !input.trim()}
-            className="w-8 h-8 flex items-center justify-center bg-[#4F46E5] text-white border-2 border-[#4F46E5] hover:bg-[#4338CA] disabled:opacity-30 transition-colors shrink-0"
+            className="w-8 h-8 flex items-center justify-center bg-[#4F46E5] text-white border border-[#4F46E5] hover:bg-[#4338CA] disabled:opacity-30 transition-colors shrink-0"
           >
             <Send size={14} />
           </button>
@@ -342,7 +342,7 @@ function ReportTab() {
         <p className="text-[12px] text-txt-tertiary text-center">빠르게 확인하고 처리하겠습니다.<br />감사합니다!</p>
         <button
           onClick={() => setSubmitted(false)}
-          className="mt-2 px-4 py-2 text-[12px] font-bold bg-surface-card border-2 border-border-strong text-txt-secondary hover:bg-black hover:text-white hover:border-border-strong transition-colors"
+          className="mt-2 px-4 py-2 text-[12px] font-bold bg-surface-card border border-border-strong text-txt-secondary hover:bg-black hover:text-white hover:border-border-strong transition-colors"
         >
           새 리포트 작성
         </button>
@@ -411,7 +411,7 @@ function ReportTab() {
       <button
         onClick={handleSubmit}
         disabled={!category || !title.trim() || !description.trim() || isSubmitting}
-        className="w-full py-2.5 text-[12px] font-bold bg-[#4F46E5] text-white border-2 border-[#4F46E5] hover:bg-[#4338CA] disabled:opacity-30 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+        className="w-full py-2.5 text-[12px] font-bold bg-[#4F46E5] text-white border border-[#4F46E5] hover:bg-[#4338CA] disabled:opacity-30 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
       >
         {isSubmitting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
         리포트 제출

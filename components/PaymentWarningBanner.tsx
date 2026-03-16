@@ -97,7 +97,7 @@ export function PaymentWarningBanner() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.push('/usage')}
-            className={`flex items-center gap-2 px-4 py-1.5 ${styles.button} text-white text-sm font-bold border-2 transition-colors`}
+            className={`flex items-center gap-2 px-4 py-1.5 ${styles.button} text-white text-sm font-bold border transition-colors`}
           >
             <CreditCard className="w-4 h-4" />
             결제 수단 확인

@@ -190,7 +190,7 @@ function LoginContent() {
                         type="text"
                         value={nickname}
                         onChange={(e) => setNickname(e.target.value)}
-                        className="w-full px-4 py-3 bg-surface-sunken border-2 border-border-strong text-sm font-medium focus:outline-none focus:border-[#4F46E5] focus:bg-surface-card transition-all placeholder:text-txt-disabled"
+                        className="w-full px-4 py-3 bg-surface-sunken border border-border-strong text-sm font-medium focus:outline-none focus:border-[#4F46E5] focus:bg-surface-card transition-all placeholder:text-txt-disabled"
                         placeholder="닉네임을 입력하세요"
                         required={isSignUp}
                      />
@@ -203,7 +203,7 @@ function LoginContent() {
                      type="email"
                      value={email}
                      onChange={(e) => setEmail(e.target.value)}
-                     className="w-full px-4 py-3 bg-surface-sunken border-2 border-border-strong text-sm font-medium focus:outline-none focus:border-[#4F46E5] focus:bg-surface-card transition-all placeholder:text-txt-disabled font-mono"
+                     className="w-full px-4 py-3 bg-surface-sunken border border-border-strong text-sm font-medium focus:outline-none focus:border-[#4F46E5] focus:bg-surface-card transition-all placeholder:text-txt-disabled font-mono"
                      placeholder="email@example.com"
                      required
                   />
@@ -215,7 +215,7 @@ function LoginContent() {
                      type="password"
                      value={password}
                      onChange={(e) => setPassword(e.target.value)}
-                     className="w-full px-4 py-3 bg-surface-sunken border-2 border-border-strong text-sm font-medium focus:outline-none focus:border-[#4F46E5] focus:bg-surface-card transition-all placeholder:text-txt-disabled"
+                     className="w-full px-4 py-3 bg-surface-sunken border border-border-strong text-sm font-medium focus:outline-none focus:border-[#4F46E5] focus:bg-surface-card transition-all placeholder:text-txt-disabled"
                      placeholder="비밀번호를 입력하세요"
                      required
                      minLength={6}
@@ -225,7 +225,7 @@ function LoginContent() {
                <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-[#4F46E5] text-white py-3.5 text-sm font-bold border-2 border-[#4F46E5] hover:bg-[#4338CA] transition-all flex items-center justify-center gap-2 group shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-solid-sm"
+                  className="w-full bg-[#4F46E5] text-white py-3.5 text-sm font-bold border border-[#4F46E5] hover:bg-[#4338CA] transition-all flex items-center justify-center gap-2 group shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-solid-sm"
                >
                   {isSubmitting ? (
                      <Loader2 size={16} className="animate-spin" />
@@ -263,7 +263,7 @@ function LoginContent() {
                <button
                   onClick={handleGoogleLogin}
                   type="button"
-                  className="flex items-center justify-center gap-2 px-4 py-3 border-2 border-border-strong hover:bg-surface-inverse hover:text-txt-inverse transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                  className="flex items-center justify-center gap-2 px-4 py-3 border border-border-strong hover:bg-surface-inverse hover:text-txt-inverse transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
                >
                   <Chrome size={16} />
                   <span className="text-xs font-bold font-mono">Google</span>
@@ -271,7 +271,7 @@ function LoginContent() {
                <button
                   onClick={handleGithubLogin}
                   type="button"
-                  className="flex items-center justify-center gap-2 px-4 py-3 border-2 border-border-strong hover:bg-surface-inverse hover:text-txt-inverse transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                  className="flex items-center justify-center gap-2 px-4 py-3 border border-border-strong hover:bg-surface-inverse hover:text-txt-inverse transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
                >
                   <Github size={16} />
                   <span className="text-xs font-bold font-mono">GitHub</span>

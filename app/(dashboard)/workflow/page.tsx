@@ -294,7 +294,7 @@ function WorkflowContent() {
                 <button
                   type="button"
                   onClick={() => setCurrentStep('validation')}
-                  className="px-4 py-2 bg-[#4F46E5] text-white border-2 border-[#4F46E5] text-sm font-medium hover:bg-[#4338CA] transition-colors"
+                  className="px-4 py-2 bg-[#4F46E5] text-white border border-[#4F46E5] text-sm font-medium hover:bg-[#4338CA] transition-colors"
                 >
                   아이디어 검증으로 돌아가기
                 </button>

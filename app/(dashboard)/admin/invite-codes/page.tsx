@@ -176,7 +176,7 @@ export default function InviteCodesAdminPage() {
                 setSelectedEmail(e.target.value)
                 setSendError(null)
               }}
-              className="w-full px-3 py-2 border-2 border-border-strong focus:outline-none focus:border-[#4F46E5]"
+              className="w-full px-3 py-2 border border-border-strong focus:outline-none focus:border-[#4F46E5]"
               disabled={eligibleLoading}
             >
               <option value="">이메일 선택...</option>
@@ -190,7 +190,7 @@ export default function InviteCodesAdminPage() {
           <button
             onClick={() => selectedEmail && sendMutation.mutate(selectedEmail)}
             disabled={!selectedEmail || sendMutation.isPending}
-            className="px-4 py-2 bg-[#4F46E5] text-white border-2 border-[#4F46E5] hover:bg-[#4338CA] disabled:bg-surface-sunken disabled:border-border disabled:text-txt-disabled disabled:cursor-not-allowed flex items-center gap-2"
+            className="px-4 py-2 bg-[#4F46E5] text-white border border-[#4F46E5] hover:bg-[#4338CA] disabled:bg-surface-sunken disabled:border-border disabled:text-txt-disabled disabled:cursor-not-allowed flex items-center gap-2"
           >
             {sendMutation.isPending ? (
               <Loader2 className="w-4 h-4 animate-spin" />

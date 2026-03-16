@@ -327,7 +327,7 @@ export const Profile: React.FC = () => {
                 </h3>
                 <Link
                   href="/projects/new"
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-[#4F46E5] text-white border-2 border-[#4F46E5] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-[#4F46E5] text-white border border-[#4F46E5] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
                 >
                   <Plus size={14} /> 새 프로젝트
                 </Link>
@@ -345,7 +345,7 @@ export const Profile: React.FC = () => {
                   <p className="text-txt-tertiary text-sm mb-3">아직 등록한 프로젝트가 없습니다</p>
                   <Link
                     href="/projects/new"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold bg-[#4F46E5] text-white border-2 border-[#4F46E5] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold bg-[#4F46E5] text-white border border-[#4F46E5] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
                   >
                     <Plus size={16} /> 프로젝트 만들기
                   </Link>
@@ -400,7 +400,7 @@ export const Profile: React.FC = () => {
                               value={contactInput}
                               onChange={(e) => setContactInput(e.target.value)}
                               placeholder="연락처 입력"
-                              className="w-24 sm:w-32 px-2 py-1.5 text-xs border-2 border-border-strong focus:outline-none focus:border-[#4F46E5]"
+                              className="w-24 sm:w-32 px-2 py-1.5 text-xs border border-border-strong focus:outline-none focus:border-[#4F46E5]"
                             />
                             <button
                               onClick={() => handleAcceptChat(chat.id)}
@@ -967,7 +967,7 @@ function ProjectCardWithUpdates({ opp }: ProjectCardProps) {
             </div>
           ) : (
             /* 입력 바 (열린 상태) */
-            <div className="bg-surface-card border-2 border-[#4F46E5]/40 rounded-2xl overflow-hidden">
+            <div className="bg-surface-card border border-[#4F46E5]/40 rounded-2xl overflow-hidden">
               {/* 유형 + 템플릿 */}
               <div className="px-3 pt-2.5 pb-1.5 flex items-center gap-1 border-b border-border-subtle">
                 {INLINE_UPDATE_TYPES.map((t) => (

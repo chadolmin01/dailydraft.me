@@ -80,7 +80,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
       />
 
       {/* Modal */}
-      <div className="relative bg-surface-card w-full max-w-md border-2 border-border-strong shadow-brutal animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative bg-surface-card w-full max-w-md border border-border-strong shadow-brutal animate-in fade-in zoom-in-95 duration-200">
         {/* Close button */}
         <button
           onClick={onClose}

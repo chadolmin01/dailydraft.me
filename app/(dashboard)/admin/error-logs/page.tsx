@@ -151,7 +151,7 @@ export default function ErrorLogsPage() {
 
           <button
             onClick={() => refetch()}
-            className="flex items-center gap-2 px-4 py-2 bg-black text-white text-sm font-medium border-2 border-black hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            className="flex items-center gap-2 px-4 py-2 bg-black text-white text-sm font-medium border border-black hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
           >
             <RefreshCw size={16} />
             새로고침
@@ -167,7 +167,7 @@ export default function ErrorLogsPage() {
               placeholder="메시지, 엔드포인트 검색..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-surface-card border-2 border-border-strong text-sm focus:outline-none focus:border-[#4F46E5]"
+              className="w-full pl-10 pr-4 py-2 bg-surface-card border border-border-strong text-sm focus:outline-none focus:border-[#4F46E5]"
             />
           </div>
 
@@ -176,7 +176,7 @@ export default function ErrorLogsPage() {
             <select
               value={levelFilter}
               onChange={(e) => setLevelFilter(e.target.value)}
-              className="px-3 py-2 bg-surface-card border-2 border-border-strong text-sm focus:outline-none focus:border-[#4F46E5]"
+              className="px-3 py-2 bg-surface-card border border-border-strong text-sm focus:outline-none focus:border-[#4F46E5]"
             >
               <option value="all">모든 레벨</option>
               <option value="debug">Debug</option>
@@ -189,7 +189,7 @@ export default function ErrorLogsPage() {
             <select
               value={sourceFilter}
               onChange={(e) => setSourceFilter(e.target.value)}
-              className="px-3 py-2 bg-surface-card border-2 border-border-strong text-sm focus:outline-none focus:border-[#4F46E5]"
+              className="px-3 py-2 bg-surface-card border border-border-strong text-sm focus:outline-none focus:border-[#4F46E5]"
             >
               <option value="all">모든 소스</option>
               <option value="api">API</option>

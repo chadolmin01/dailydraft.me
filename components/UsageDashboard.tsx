@@ -255,7 +255,7 @@ export function UsageDashboard() {
         <p className="text-txt-secondary">{error || '데이터를 불러올 수 없습니다.'}</p>
         <button
           onClick={fetchUsage}
-          className="px-4 py-2 bg-[#4F46E5] text-white border-2 border-[#4F46E5] hover:bg-[#4338CA] transition-colors"
+          className="px-4 py-2 bg-[#4F46E5] text-white border border-[#4F46E5] hover:bg-[#4338CA] transition-colors"
         >
           다시 시도
         </button>
@@ -318,7 +318,7 @@ export function UsageDashboard() {
           </div>
 
           {data.plan.type === 'free' && (
-            <button className="px-4 py-2 bg-[#4F46E5] text-white border-2 border-[#4F46E5] font-medium hover:bg-[#4338CA] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">
+            <button className="px-4 py-2 bg-[#4F46E5] text-white border border-[#4F46E5] font-medium hover:bg-[#4338CA] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">
               Pro로 업그레이드
             </button>
           )}

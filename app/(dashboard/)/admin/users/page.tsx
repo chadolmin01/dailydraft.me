@@ -135,7 +135,7 @@ export default function AdminUsersPage() {
             </div>
             <button
               onClick={() => refetch()}
-              className="flex items-center gap-2 px-4 py-2 bg-black text-white text-sm font-medium border-2 border-black hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+              className="flex items-center gap-2 px-4 py-2 bg-black text-white text-sm font-medium border border-black hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
             >
               <RefreshCw size={16} />
               새로고침
@@ -152,7 +152,7 @@ export default function AdminUsersPage() {
               placeholder="닉네임, 대학, 이메일 검색..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-surface-card border-2 border-border-strong text-sm focus:outline-none focus:border-[#4F46E5] transition-colors"
+              className="w-full pl-10 pr-4 py-2.5 bg-surface-card border border-border-strong text-sm focus:outline-none focus:border-[#4F46E5] transition-colors"
             />
           </div>
           <div className="text-sm text-txt-tertiary font-mono">
@@ -199,12 +199,12 @@ export default function AdminUsersPage() {
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-1.5">
                           {u.onboarding_completed ? (
-                            <span className="px-2 py-0.5 text-[0.625rem] font-mono font-bold border-2 border-green-600 text-green-700">완료</span>
+                            <span className="px-2 py-0.5 text-[0.625rem] font-mono font-bold border border-green-600 text-green-700">완료</span>
                           ) : (
-                            <span className="px-2 py-0.5 text-[0.625rem] font-mono font-bold border-2 border-border-strong text-txt-tertiary">미완</span>
+                            <span className="px-2 py-0.5 text-[0.625rem] font-mono font-bold border border-border-strong text-txt-tertiary">미완</span>
                           )}
                           {u.is_premium && (
-                            <span className="px-2 py-0.5 text-[0.625rem] font-mono font-bold border-2 border-yellow-600 text-yellow-700">PRO</span>
+                            <span className="px-2 py-0.5 text-[0.625rem] font-mono font-bold border border-yellow-600 text-yellow-700">PRO</span>
                           )}
                         </div>
                       </td>
@@ -265,14 +265,14 @@ export default function AdminUsersPage() {
               <button
                 onClick={() => setDeleteTarget(null)}
                 disabled={deleteMutation.isPending}
-                className="px-4 py-2 text-sm text-txt-secondary border-2 border-border-strong hover:bg-black hover:text-white transition-colors"
+                className="px-4 py-2 text-sm text-txt-secondary border border-border-strong hover:bg-black hover:text-white transition-colors"
               >
                 취소
               </button>
               <button
                 onClick={() => deleteMutation.mutate(deleteTarget.user_id)}
                 disabled={deleteMutation.isPending}
-                className="px-4 py-2 text-sm bg-red-600 text-white border-2 border-red-600 hover:bg-red-700 disabled:opacity-50 transition-colors flex items-center gap-2"
+                className="px-4 py-2 text-sm bg-red-600 text-white border border-red-600 hover:bg-red-700 disabled:opacity-50 transition-colors flex items-center gap-2"
               >
                 {deleteMutation.isPending && <Loader2 size={14} className="animate-spin" />}
                 삭제

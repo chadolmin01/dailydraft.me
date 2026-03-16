@@ -21,7 +21,7 @@ export const IdeaValidatorModal: React.FC<IdeaValidatorModalProps> = ({ isOpen, 
       />
 
       {/* Modal Content */}
-      <div className="relative bg-surface-card w-[98vw] max-w-[112.5rem] h-[95vh] shadow-brutal border-2 border-border-strong flex flex-col overflow-hidden">
+      <div className="relative bg-surface-card w-[98vw] max-w-[112.5rem] h-[95vh] shadow-brutal border border-border-strong flex flex-col overflow-hidden">
         {/* Close Button */}
         <button
           onClick={onClose}

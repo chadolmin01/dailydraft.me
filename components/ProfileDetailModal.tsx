@@ -76,7 +76,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-lg md:max-w-xl max-h-[95vh] md:max-h-[85vh] bg-surface-card shadow-brutal-xl border-2 border-border-strong overflow-hidden flex flex-col relative"
+              className="w-full max-w-lg md:max-w-xl max-h-[95vh] md:max-h-[85vh] bg-surface-card shadow-brutal-xl border border-border-strong overflow-hidden flex flex-col relative"
               role="dialog"
               aria-modal="true"
               aria-label={profile?.nickname || '프로필'}
@@ -328,13 +328,13 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                     {isAuthenticated ? (
                       <DirectMessageBox receiverId={profile.user_id} />
                     ) : (
-                      <div className="bg-surface-inverse p-5 text-center border-2 border-black shadow-solid">
+                      <div className="bg-surface-inverse p-5 text-center border border-black shadow-solid">
                         <Coffee size={20} className="text-txt-inverse/50 mx-auto mb-2" />
                         <p className="text-sm font-medium text-txt-inverse mb-1">관심 있는 사람인가요?</p>
                         <p className="text-xs text-txt-inverse/50 mb-3">로그인하면 쪽지와 커피챗이 가능해요</p>
                         <a
                           href="/login"
-                          className="inline-flex items-center gap-2 bg-white text-txt-primary px-5 py-2 font-bold text-xs hover:bg-surface-sunken transition-colors border-2 border-white"
+                          className="inline-flex items-center gap-2 bg-white text-txt-primary px-5 py-2 font-bold text-xs hover:bg-surface-sunken transition-colors border border-white"
                         >
                           로그인하기
                         </a>
@@ -381,7 +381,7 @@ function DirectMessageBox({ receiverId }: { receiverId: string }) {
   }
 
   return (
-    <div className="border-2 border-border-strong p-4 shadow-solid-sm">
+    <div className="border border-border-strong p-4 shadow-solid-sm">
       <h4 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-2 flex items-center gap-1.5">
         <Send size={10} /> SEND MESSAGE
       </h4>

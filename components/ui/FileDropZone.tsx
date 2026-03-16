@@ -163,7 +163,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
         onDrop={handleDrop}
         onClick={() => inputRef.current?.click()}
         className={`
-          relative border-2 border-dashed p-8 text-center cursor-pointer transition-all
+          relative border border-dashed p-8 text-center cursor-pointer transition-all
           ${isDragging
             ? 'border-[#4F46E5] bg-[#4F46E5]/5'
             : 'border-border hover:border-border-strong hover:bg-surface-sunken'

@@ -334,7 +334,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
         <button
           onClick={handleSave}
           disabled={updateProfile.isPending}
-          className="flex items-center gap-1.5 px-4 py-2 bg-[#4F46E5] text-white text-xs font-bold border-2 border-[#4F46E5] hover:bg-[#4338CA] disabled:opacity-50 transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+          className="flex items-center gap-1.5 px-4 py-2 bg-[#4F46E5] text-white text-xs font-bold border border-[#4F46E5] hover:bg-[#4338CA] disabled:opacity-50 transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
         >
           {updateProfile.isPending ? (
             <Loader2 size={14} className="animate-spin" />
@@ -1064,7 +1064,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
           <button
             onClick={handleSave}
             disabled={updateProfile.isPending}
-            className="flex items-center gap-1.5 px-5 py-2.5 bg-[#4F46E5] text-white text-sm font-bold border-2 border-[#4F46E5] hover:bg-[#4338CA] disabled:opacity-50 transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            className="flex items-center gap-1.5 px-5 py-2.5 bg-[#4F46E5] text-white text-sm font-bold border border-[#4F46E5] hover:bg-[#4338CA] disabled:opacity-50 transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
           >
             {updateProfile.isPending ? (
               <Loader2 size={14} className="animate-spin" />
@@ -1080,7 +1080,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
     {/* 이미지 크롭 모달 */}
     {cropImage && (
       <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm">
-        <div className="bg-surface-card border-2 border-border-strong shadow-brutal-xl w-full max-w-lg mx-4 flex flex-col">
+        <div className="bg-surface-card border border-border-strong shadow-brutal-xl w-full max-w-lg mx-4 flex flex-col">
           {/* 헤더 */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-border-strong bg-surface-sunken">
             <span className="text-xs font-mono font-bold uppercase tracking-widest text-txt-tertiary">
@@ -1133,7 +1133,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
             </button>
             <button
               onClick={handleCropConfirm}
-              className="flex items-center gap-1.5 px-4 py-2 bg-[#4F46E5] text-white text-xs font-bold border-2 border-[#4F46E5] hover:bg-[#4338CA] transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+              className="flex items-center gap-1.5 px-4 py-2 bg-[#4F46E5] text-white text-xs font-bold border border-[#4F46E5] hover:bg-[#4338CA] transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
             >
               <Camera size={12} /> 적용
             </button>

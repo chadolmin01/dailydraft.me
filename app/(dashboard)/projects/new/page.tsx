@@ -391,7 +391,7 @@ function NewProjectContent() {
     <div className="flex-1 overflow-y-auto bg-surface-bg">
       <div className="max-w-4xl mx-auto px-4 py-2 md:py-4">
 
-        <form onSubmit={handleSubmit} className="bg-surface-card shadow-sharp overflow-hidden border-2 border-border-strong">
+        <form onSubmit={handleSubmit} className="bg-surface-card shadow-sharp overflow-hidden border border-border-strong">
 
           {/* ─── Window Bar ─── */}
           <div className="bg-surface-sunken border-b-2 border-border-strong px-3 sm:px-5 py-2.5 flex items-center justify-between relative">
@@ -596,7 +596,7 @@ function NewProjectContent() {
                     placeholder={theme.descPlaceholder}
                     rows={7}
                     maxLength={2000}
-                    className="w-full text-sm text-txt-secondary leading-[1.8] placeholder:text-txt-disabled border-2 border-border-strong p-3 focus:outline-none focus:border-surface-inverse resize-none bg-transparent"
+                    className="w-full text-sm text-txt-secondary leading-[1.8] placeholder:text-txt-disabled border border-border-strong p-3 focus:outline-none focus:border-surface-inverse resize-none bg-transparent"
                   />
                   <p className="text-[0.625rem] text-txt-disabled mt-1 text-right font-mono">{description.length}/2000</p>
                 </section>
@@ -672,7 +672,7 @@ function NewProjectContent() {
                         key={value}
                         type="button"
                         onClick={() => toggleRole(value)}
-                        className={`flex flex-col items-center justify-center aspect-square border-2 transition-colors ${
+                        className={`flex flex-col items-center justify-center aspect-square border transition-colors ${
                           selectedRoles.includes(value)
                             ? theme.roleOn
                             : 'bg-surface-sunken text-txt-secondary border-border-subtle hover:bg-accent-secondary hover:border-border'
@@ -819,7 +819,7 @@ function NewProjectContent() {
         {/* ─── Crop Modal ─── */}
         {cropSrc && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
-            <div className="bg-surface-card border-2 border-border-strong w-full max-w-lg flex flex-col overflow-hidden shadow-brutal">
+            <div className="bg-surface-card border border-border-strong w-full max-w-lg flex flex-col overflow-hidden shadow-brutal">
               {/* Header */}
               <div className="flex items-center justify-between px-4 py-2.5 border-b-2 border-border-strong bg-surface-sunken">
                 <div className="flex items-center gap-2">
@@ -875,7 +875,7 @@ function NewProjectContent() {
                   <button
                     type="button"
                     onClick={handleCropConfirm}
-                    className="flex-1 py-2.5 text-xs font-bold font-mono uppercase tracking-wider bg-surface-inverse text-txt-inverse border-2 border-surface-inverse hover:opacity-90 transition-opacity flex items-center justify-center gap-1.5"
+                    className="flex-1 py-2.5 text-xs font-bold font-mono uppercase tracking-wider bg-surface-inverse text-txt-inverse border border-surface-inverse hover:opacity-90 transition-opacity flex items-center justify-center gap-1.5"
                   >
                     <Check size={13} />
                     적용

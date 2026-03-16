@@ -135,7 +135,7 @@ export const CoffeeChatButton: React.FC<CoffeeChatButtonProps> = ({
       <button
         onClick={handleClick}
         disabled={chatsLoading}
-        className={`flex items-center gap-2 px-4 py-2 border-2 transition-all bg-surface-card text-txt-primary border-border-strong hover:bg-black hover:text-white shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] ${className}`}
+        className={`flex items-center gap-2 px-4 py-2 border transition-all bg-surface-card text-txt-primary border-border-strong hover:bg-black hover:text-white shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] ${className}`}
       >
         <Coffee size={18} />
         <span className="text-sm font-bold">커피챗 신청하기</span>
@@ -150,7 +150,7 @@ export const CoffeeChatButton: React.FC<CoffeeChatButtonProps> = ({
       {/* Request Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-surface-card shadow-brutal border-2 border-border-strong w-full max-w-md">
+          <div className="bg-surface-card shadow-brutal border border-border-strong w-full max-w-md">
             <div className="p-4 border-b border-border-strong flex items-center justify-between">
               <h3 className="font-bold text-txt-primary flex items-center gap-2">
                 <Coffee size={20} className="text-[#4F46E5]" />
@@ -178,7 +178,7 @@ export const CoffeeChatButton: React.FC<CoffeeChatButtonProps> = ({
                   placeholder="홍길동"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-3 py-2 border-2 border-border-strong bg-surface-card focus:outline-none focus:border-[#4F46E5]"
+                  className="w-full px-3 py-2 border border-border-strong bg-surface-card focus:outline-none focus:border-[#4F46E5]"
                 />
               </div>
 
@@ -191,7 +191,7 @@ export const CoffeeChatButton: React.FC<CoffeeChatButtonProps> = ({
                   placeholder="email@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-3 py-2 border-2 border-border-strong bg-surface-card focus:outline-none focus:border-[#4F46E5]"
+                  className="w-full px-3 py-2 border border-border-strong bg-surface-card focus:outline-none focus:border-[#4F46E5]"
                 />
               </div>
 
@@ -203,7 +203,7 @@ export const CoffeeChatButton: React.FC<CoffeeChatButtonProps> = ({
                   placeholder="간단한 자기소개나 관심 포인트를 적어주세요"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  className="w-full px-3 py-2 border-2 border-border-strong bg-surface-card focus:outline-none focus:border-[#4F46E5] resize-none"
+                  className="w-full px-3 py-2 border border-border-strong bg-surface-card focus:outline-none focus:border-[#4F46E5] resize-none"
                   rows={3}
                   maxLength={300}
                 />
@@ -224,7 +224,7 @@ export const CoffeeChatButton: React.FC<CoffeeChatButtonProps> = ({
                 <button
                   onClick={handleSubmit}
                   disabled={submitting}
-                  className="flex-1 px-4 py-2.5 bg-[#4F46E5] text-white border-2 border-[#4F46E5] hover:bg-[#4338CA] text-sm font-bold shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-40 disabled:pointer-events-none flex items-center justify-center gap-2"
+                  className="flex-1 px-4 py-2.5 bg-[#4F46E5] text-white border border-[#4F46E5] hover:bg-[#4338CA] text-sm font-bold shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-40 disabled:pointer-events-none flex items-center justify-center gap-2"
                 >
                   {submitting ? (
                     <Loader2 size={16} className="animate-spin" />

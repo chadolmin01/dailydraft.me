@@ -89,10 +89,10 @@ export const Documents: React.FC = () => {
                 <input
                    type="text"
                    placeholder="Search..."
-                   className="pl-9 pr-4 py-2 bg-surface-card border-2 border-border-strong text-sm focus:outline-none focus:border-[#4F46E5] transition-colors w-64"
+                   className="pl-9 pr-4 py-2 bg-surface-card border border-border-strong text-sm focus:outline-none focus:border-[#4F46E5] transition-colors w-64"
                 />
              </div>
-             <button className="bg-[#4F46E5] text-white border-2 border-[#4F46E5] px-4 py-2 text-sm font-medium hover:bg-[#4338CA] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex items-center gap-2">
+             <button className="bg-[#4F46E5] text-white border border-[#4F46E5] px-4 py-2 text-sm font-medium hover:bg-[#4338CA] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex items-center gap-2">
                 <Plus size={16} /> New Doc
              </button>
           </div>

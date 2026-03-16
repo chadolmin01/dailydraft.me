@@ -71,7 +71,7 @@ export const CalendarView: React.FC = () => {
               </div>
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="px-4 py-2 bg-[#4F46E5] text-white border-2 border-[#4F46E5] text-sm font-bold hover:bg-[#4338CA] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex items-center gap-2"
+                className="px-4 py-2 bg-[#4F46E5] text-white border border-[#4F46E5] text-sm font-bold hover:bg-[#4338CA] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex items-center gap-2"
               >
                  <Plus size={16} /> Add Event
               </button>
@@ -219,7 +219,7 @@ export const CalendarView: React.FC = () => {
                             value={newEventTitle}
                             onChange={(e) => setNewEventTitle(e.target.value)}
                             placeholder="e.g. Project Meeting"
-                            className="w-full p-3 bg-surface-sunken border-2 border-border-strong text-sm focus:outline-none focus:border-[#4F46E5] transition-colors"
+                            className="w-full p-3 bg-surface-sunken border border-border-strong text-sm focus:outline-none focus:border-[#4F46E5] transition-colors"
                             autoFocus
                         />
                     </div>
@@ -233,7 +233,7 @@ export const CalendarView: React.FC = () => {
                                     type="date"
                                     value={newEventDate}
                                     onChange={(e) => setNewEventDate(e.target.value)}
-                                    className="w-full pl-10 pr-3 py-3 bg-surface-sunken border-2 border-border-strong text-sm focus:outline-none focus:border-[#4F46E5] transition-colors"
+                                    className="w-full pl-10 pr-3 py-3 bg-surface-sunken border border-border-strong text-sm focus:outline-none focus:border-[#4F46E5] transition-colors"
                                 />
                             </div>
                         </div>
@@ -245,7 +245,7 @@ export const CalendarView: React.FC = () => {
                                     type="time"
                                     value={newEventTime}
                                     onChange={(e) => setNewEventTime(e.target.value)}
-                                    className="w-full pl-10 pr-3 py-3 bg-surface-sunken border-2 border-border-strong text-sm focus:outline-none focus:border-[#4F46E5] transition-colors"
+                                    className="w-full pl-10 pr-3 py-3 bg-surface-sunken border border-border-strong text-sm focus:outline-none focus:border-[#4F46E5] transition-colors"
                                 />
                             </div>
                         </div>
@@ -259,7 +259,7 @@ export const CalendarView: React.FC = () => {
                                     key={t}
                                     type="button"
                                     onClick={() => setNewEventType(t)}
-                                    className={`py-2 text-xs font-bold uppercase border-2 transition-all ${
+                                    className={`py-2 text-xs font-bold uppercase border transition-all ${
                                         newEventType === t
                                         ? 'bg-black text-white border-black'
                                         : 'bg-surface-card text-txt-tertiary border-border-strong hover:border-txt-secondary'
@@ -274,7 +274,7 @@ export const CalendarView: React.FC = () => {
                     <div className="pt-4 mt-2">
                         <button
                             type="submit"
-                            className="w-full bg-[#4F46E5] text-white border-2 border-[#4F46E5] py-3.5 font-bold text-sm hover:bg-[#4338CA] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                            className="w-full bg-[#4F46E5] text-white border border-[#4F46E5] py-3.5 font-bold text-sm hover:bg-[#4338CA] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
                         >
                             Create Event
                         </button>

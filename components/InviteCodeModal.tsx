@@ -79,7 +79,7 @@ export const InviteCodeModal: React.FC<InviteCodeModalProps> = ({
       className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       onClick={handleBackdropClick}
     >
-      <div className="bg-surface-card shadow-brutal border-2 border-border-strong max-w-md w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="bg-surface-card shadow-brutal border border-border-strong max-w-md w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-border-strong">
           <div className="flex items-center gap-2">
@@ -137,7 +137,7 @@ export const InviteCodeModal: React.FC<InviteCodeModalProps> = ({
                     value={code}
                     onChange={handleCodeChange}
                     placeholder="예: ABC12DEF"
-                    className={`w-full px-4 py-3 text-center text-xl font-mono tracking-wider border-2 focus:outline-none focus:border-border-strong bg-surface-card text-txt-primary ${
+                    className={`w-full px-4 py-3 text-center text-xl font-mono tracking-wider border focus:outline-none focus:border-border-strong bg-surface-card text-txt-primary ${
                       error ? 'border-red-500' : 'border-border-strong'
                     }`}
                     disabled={isSubmitting}
@@ -160,7 +160,7 @@ export const InviteCodeModal: React.FC<InviteCodeModalProps> = ({
                 <button
                   type="submit"
                   disabled={code.length !== 8 || isSubmitting}
-                  className="w-full py-3 bg-black text-white font-bold border-2 border-black hover:bg-[#333] disabled:bg-surface-sunken disabled:text-txt-disabled disabled:border-border-strong disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                  className="w-full py-3 bg-black text-white font-bold border border-black hover:bg-[#333] disabled:bg-surface-sunken disabled:text-txt-disabled disabled:border-border-strong disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
                 >
                   {isSubmitting ? (
                     <>
