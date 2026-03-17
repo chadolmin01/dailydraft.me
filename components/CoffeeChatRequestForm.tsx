@@ -50,7 +50,7 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
   if (sent) {
     return (
       <div className="text-center py-4">
-        <div className="w-14 h-14 bg-status-success-bg rounded-sm border border-green-300 flex items-center justify-center mb-4 mx-auto shadow-solid-sm">
+        <div className="w-14 h-14 bg-status-success-bg rounded-sm border border-status-success-text/20 flex items-center justify-center mb-4 mx-auto shadow-solid-sm">
           <Coffee size={24} className="text-status-success-text" />
         </div>
         <h3 className="text-xl font-bold text-txt-primary mb-2">커피챗 신청 완료!</h3>
@@ -94,17 +94,17 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
         onChange={(e) => setMessage(e.target.value)}
         placeholder="안녕하세요! 프로젝트에 관심이 있어서 연락드립니다..."
         rows={4}
-        className="w-full px-4 py-3 border border-border-strong rounded-sm text-sm text-left bg-surface-card focus:outline-none focus:border-[#4F46E5] resize-none mb-4"
+        className="w-full px-4 py-3 border border-border-strong rounded-sm text-sm text-left bg-surface-card focus:outline-none focus:border-brand resize-none mb-4"
       />
 
       {error && (
-        <p className="text-xs text-red-500 mb-3">{error}</p>
+        <p className="text-xs text-status-danger-text mb-3">{error}</p>
       )}
 
       <button
         onClick={handleSubmit}
         disabled={!message.trim() || requestChat.isPending}
-        className="w-full bg-[#4F46E5] text-white border border-[#4F46E5] py-3 rounded-sm font-bold text-sm flex items-center justify-center gap-2 hover:bg-[#4338CA] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-40 disabled:cursor-not-allowed mb-3"
+        className="w-full bg-brand text-white border border-brand py-3 rounded-sm font-bold text-sm flex items-center justify-center gap-2 hover:bg-brand-hover shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-40 disabled:cursor-not-allowed mb-3"
       >
         {requestChat.isPending ? (
           <><Loader2 size={14} className="animate-spin" /> 전송 중...</>

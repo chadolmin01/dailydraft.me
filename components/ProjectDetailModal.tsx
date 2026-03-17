@@ -9,7 +9,7 @@ import {
   Eye, ExternalLink, Github, FileText, Globe, Edit3, Code
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useOpportunity } from '@/src/hooks/useOpportunities'
+import { useOpportunity, useUpdateOpportunity } from '@/src/hooks/useOpportunities'
 import { useProfileByUserId } from '@/src/hooks/usePublicProfiles'
 import { useProjectUpdates } from '@/src/hooks/useProjectUpdates'
 import { useAuth } from '@/src/context/AuthContext'
@@ -25,9 +25,9 @@ interface ProjectDetailModalProps {
 }
 
 const updateTypeColors: Record<string, string> = {
-  ideation: 'bg-amber-500',
-  design: 'bg-blue-500',
-  development: 'bg-emerald-500',
+  ideation: 'bg-indicator-premium',
+  design: 'bg-status-info-text',
+  development: 'bg-indicator-online',
   launch: 'bg-purple-500',
   general: 'bg-txt-disabled',
 }
@@ -56,7 +56,9 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
   const [shareCopied, setShareCopied] = useState(false)
   const [showWriteUpdate, setShowWriteUpdate] = useState(false)
   const [hasInterested, setHasInterested] = useState(false)
+  const [showTypeSelector, setShowTypeSelector] = useState(false)
   const { user } = useAuth()
+  const updateOpportunity = useUpdateOpportunity()
   const { expressInterest, loading: interestLoading } = useInterests({ opportunityId: projectId ?? '' })
   const { data: myChatsForProject = [] } = useCoffeeChats({
     opportunityId: projectId ?? undefined,
@@ -74,6 +76,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
     setShowCta(false)
     setShowCoffeeChatForm(false)
     setHasInterested(false)
+    setShowTypeSelector(false)
   }, [projectId])
 
   useEffect(() => {
@@ -189,14 +192,54 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                 </div>
                 {!loading && opportunity && (
                   <div className="flex items-center gap-2">
-                    <span className="text-[0.625rem] font-mono font-bold px-2 py-0.5 bg-surface-sunken text-txt-tertiary border border-border uppercase tracking-wider">
-                      {opportunity.type === 'side_project' ? 'SIDE PROJECT' :
-                       opportunity.type === 'startup' ? 'STARTUP' :
-                       opportunity.type === 'study' ? 'STUDY' : opportunity.type?.toUpperCase() || 'PROJECT'}
-                    </span>
+                    {isOwner ? (
+                      <div className="relative">
+                        <button
+                          onClick={() => setShowTypeSelector(!showTypeSelector)}
+                          className="text-[0.625rem] font-mono font-bold px-2 py-0.5 bg-surface-sunken text-txt-tertiary border border-border uppercase tracking-wider hover:border-border-strong hover:text-txt-secondary transition-colors flex items-center gap-1"
+                        >
+                          {opportunity.type === 'side_project' ? 'SIDE PROJECT' :
+                           opportunity.type === 'startup' ? 'STARTUP' :
+                           opportunity.type === 'study' ? 'STUDY' : 'PROJECT'}
+                          <Edit3 size={8} />
+                        </button>
+                        {showTypeSelector && (
+                          <div className="absolute top-full left-0 mt-1 bg-surface-card border border-border-strong shadow-sharp z-10 min-w-[8rem]">
+                            {[
+                              { value: 'side_project', label: 'SIDE PROJECT' },
+                              { value: 'startup', label: 'STARTUP' },
+                              { value: 'study', label: 'STUDY' },
+                            ].map((opt) => (
+                              <button
+                                key={opt.value}
+                                onClick={() => {
+                                  updateOpportunity.mutate(
+                                    { id: opportunity.id, updates: { type: opt.value as 'side_project' | 'startup' | 'study' } },
+                                  )
+                                  setShowTypeSelector(false)
+                                }}
+                                className={`w-full text-left px-3 py-1.5 text-[0.625rem] font-mono font-bold uppercase tracking-wider transition-colors ${
+                                  opportunity.type === opt.value
+                                    ? 'bg-surface-inverse text-txt-inverse'
+                                    : 'text-txt-secondary hover:bg-surface-sunken'
+                                }`}
+                              >
+                                {opt.label}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-[0.625rem] font-mono font-bold px-2 py-0.5 bg-surface-sunken text-txt-tertiary border border-border uppercase tracking-wider">
+                        {opportunity.type === 'side_project' ? 'SIDE PROJECT' :
+                         opportunity.type === 'startup' ? 'STARTUP' :
+                         opportunity.type === 'study' ? 'STUDY' : opportunity.type?.toUpperCase() || 'PROJECT'}
+                      </span>
+                    )}
                     {opportunity.status === 'active' && (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-status-success-bg text-status-success-text text-[0.625rem] font-bold border border-status-success-text/30">
-                        <span className="w-1.5 h-1.5 bg-emerald-500 animate-pulse" />
+                        <span className="w-1.5 h-1.5 bg-indicator-online animate-pulse" />
                         모집 중
                       </span>
                     )}
@@ -304,8 +347,8 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                               disabled={isOwner || interestLoading}
                               className={`inline-flex items-center gap-1.5 px-3 py-1.5 border text-xs font-bold transition-all ${
                                 hasInterested
-                                  ? 'border-red-300 bg-red-50 text-red-500'
-                                  : 'border-border-strong bg-surface-card text-txt-secondary hover:border-red-300 hover:text-red-500'
+                                  ? 'border-status-danger-text/20 bg-status-danger-bg text-status-danger-text'
+                                  : 'border-border-strong bg-surface-card text-txt-secondary hover:border-status-danger-text/20 hover:text-status-danger-text'
                               } disabled:opacity-40 disabled:cursor-default`}
                             >
                               <Heart size={12} className={hasInterested ? 'fill-current' : ''} />
@@ -384,8 +427,8 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                             disabled={isOwner || interestLoading}
                             className={`inline-flex items-center gap-1.5 px-3 py-1.5 border text-xs font-bold transition-all ${
                               hasInterested
-                                ? 'border-red-300 bg-red-50 text-red-500'
-                                : 'border-border-strong bg-surface-card text-txt-secondary hover:border-red-300 hover:text-red-500'
+                                ? 'border-status-danger-text/20 bg-status-danger-bg text-status-danger-text'
+                                : 'border-border-strong bg-surface-card text-txt-secondary hover:border-status-danger-text/20 hover:text-status-danger-text'
                             } disabled:opacity-40 disabled:cursor-default`}
                           >
                             <Heart size={12} className={hasInterested ? 'fill-current' : ''} />
@@ -538,8 +581,8 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                                     </div>
                                     {existingChat ? (
                                       <span className={`text-xs ${
-                                        existingChat.status === 'pending' ? 'text-amber-500' :
-                                        existingChat.status === 'accepted' ? 'text-green-600' : 'text-txt-disabled'
+                                        existingChat.status === 'pending' ? 'text-indicator-premium' :
+                                        existingChat.status === 'accepted' ? 'text-status-success-text' : 'text-txt-disabled'
                                       }`}>
                                         {existingChat.status === 'pending' ? '대기 중' :
                                          existingChat.status === 'accepted' ? '수락됨' : '거절됨'}

@@ -156,7 +156,7 @@ export default function PlanPage() {
 
   const getRoleColor = (role: Role) => {
       switch(role) {
-          case Role.PM: return "text-blue-600 bg-blue-50";
+          case Role.PM: return "text-status-info-text bg-status-info-bg";
           case Role.DESIGNER: return "text-pink-600 bg-pink-50";
           case Role.DEV: return "text-emerald-600 bg-emerald-50";
       }

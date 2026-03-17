@@ -95,14 +95,14 @@ export const OpportunitySection: React.FC = () => {
     : mockProjects.slice(0, 3)
 
   return (
-    <section id="projects" className="w-full py-32 px-6 md:px-12 bg-surface-sunken">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-16">
+    <section id="projects" className="w-full py-20 px-6 md:px-10 bg-surface-sunken">
+      <div className="max-w-5xl mx-auto">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-10">
           <div>
-            <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-2 block">
+            <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-1.5 block">
               LIVE PROJECTS
             </span>
-            <h2 className="text-3xl md:text-4xl font-bold text-txt-primary">
+            <h2 className="text-2xl md:text-3xl font-bold text-txt-primary">
               지금 올라온 프로젝트
             </h2>
           </div>
@@ -123,7 +123,7 @@ export const OpportunitySection: React.FC = () => {
             {displayProjects.map((project) => (
               <div
                 key={project.id}
-                className="group bg-surface-card border border-border p-6 hover:border-border-strong hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col h-full"
+                className="group bg-surface-card border border-border p-4 hover:border-border-strong hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col h-full"
                 onClick={() => project.isReal ? setSelectedProjectId(project.id) : router.push('/explore')}
               >
                 {/* Header */}
@@ -133,8 +133,8 @@ export const OpportunitySection: React.FC = () => {
                       <Zap size={20} />
                     </div>
                     {project.isReal && (
-                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-green-50 border border-green-200 text-green-700 text-[0.625rem] font-bold">
-                        <span className="w-1.5 h-1.5 bg-green-500 animate-pulse" />
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-status-success-bg border border-status-success-text/20 text-status-success-text text-[0.625rem] font-bold">
+                        <span className="w-1.5 h-1.5 bg-indicator-online animate-pulse" />
                         NEW
                       </span>
                     )}
@@ -152,7 +152,7 @@ export const OpportunitySection: React.FC = () => {
                 </div>
 
                 {/* Title */}
-                <h3 className="font-bold text-txt-primary mb-2 group-hover:text-[#4F46E5] transition-colors truncate">
+                <h3 className="font-bold text-txt-primary mb-2 group-hover:text-brand transition-colors truncate">
                   {project.title}
                 </h3>
 
@@ -172,7 +172,7 @@ export const OpportunitySection: React.FC = () => {
                         {project.needed_roles.slice(0, 2).map((role) => (
                           <span
                             key={role}
-                            className="text-[0.625rem] bg-[#4F46E5]/5 border border-[#4F46E5]/20 text-[#4F46E5] px-1.5 py-0.5 font-bold"
+                            className="text-[0.625rem] bg-brand-bg border border-brand-border text-brand px-1.5 py-0.5 font-bold"
                           >
                             {role}
                           </span>
@@ -200,13 +200,13 @@ export const OpportunitySection: React.FC = () => {
             {/* + Add Project Card */}
             <div
               onClick={() => router.push('/login')}
-              className="group bg-surface-card border border-dashed border-border-strong p-6 hover:border-[#4F46E5] hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col items-center justify-center h-full min-h-[13.75rem] gap-4"
+              className="group bg-surface-card border border-dashed border-border-strong p-6 hover:border-brand hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col items-center justify-center h-full min-h-[13.75rem] gap-4"
             >
-              <div className="w-14 h-14 bg-surface-sunken border border-border flex items-center justify-center group-hover:bg-[#4F46E5] group-hover:border-[#4F46E5] transition-colors">
+              <div className="w-14 h-14 bg-surface-sunken border border-border flex items-center justify-center group-hover:bg-brand group-hover:border-brand transition-colors">
                 <Plus size={24} className="text-txt-disabled group-hover:text-white transition-colors" />
               </div>
               <div className="text-center">
-                <p className="font-bold text-txt-secondary group-hover:text-[#4F46E5] transition-colors mb-1">
+                <p className="font-bold text-txt-secondary group-hover:text-brand transition-colors mb-1">
                   내 아이디어 등록하기
                 </p>
                 <p className="text-xs text-txt-disabled">
@@ -218,16 +218,16 @@ export const OpportunitySection: React.FC = () => {
         )}
 
         {/* CTA Banner */}
-        <div className="mt-16 bg-black text-white p-10 flex flex-col md:flex-row items-center justify-between gap-8">
+        <div className="mt-10 bg-black text-white p-6 flex flex-col md:flex-row items-center justify-between gap-6">
           <div>
-            <h3 className="text-xl font-bold mb-2">나도 프로젝트 올리기</h3>
+            <h3 className="text-base font-bold mb-1.5">나도 프로젝트 올리기</h3>
             <p className="text-txt-disabled text-sm">
               아이디어 단계부터 MVP까지, 어떤 단계든 공유하고 피드백 받으세요
             </p>
           </div>
           <button
             onClick={() => router.push('/login')}
-            className="group flex items-center gap-2 bg-white text-black px-6 py-3 font-bold text-sm hover:bg-surface-sunken transition-colors shrink-0 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            className="group flex items-center gap-2 bg-white text-black px-5 py-2.5 font-bold text-xs hover:bg-surface-sunken transition-colors shrink-0 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
           >
             시작하기
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />

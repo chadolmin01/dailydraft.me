@@ -39,12 +39,11 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   return (
     <div
       className={cn(
-        'mx-auto w-full px-4 sm:px-6 lg:px-8 py-6',
-        sizeMap[size],
+        'w-full px-4 sm:px-8 lg:px-16 xl:px-24 py-6',
         className
       )}
     >
-      <div className="flex gap-6">
+      <div className="flex gap-8 lg:gap-10">
         {/* Sidebar */}
         {sidebar && (
           <aside className="hidden lg:block w-56 shrink-0 sticky top-20 self-start">

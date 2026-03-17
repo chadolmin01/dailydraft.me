@@ -36,12 +36,12 @@ export const ValidationSourceBadge: React.FC<ValidationSourceBadgeProps> = ({
     'vc-feedback': {
       label: 'VC 피드백',
       icon: <User size={compact ? 10 : 12} />,
-      color: 'bg-green-50 text-green-700 border-green-200',
+      color: 'bg-status-success-bg text-status-success-text border-status-success-text/20',
     },
     'developer-feedback': {
       label: '개발자 피드백',
       icon: <User size={compact ? 10 : 12} />,
-      color: 'bg-blue-50 text-blue-700 border-blue-200',
+      color: 'bg-status-info-bg text-status-info-text border-status-info-text/20',
     },
     'designer-feedback': {
       label: '디자이너 피드백',
@@ -120,12 +120,12 @@ export const ValidationFeedbackModal: React.FC<ValidationFeedbackModalProps> = (
     'vc-feedback': {
       title: 'VC 페르소나 피드백',
       description: '투자자 관점에서의 피드백입니다.',
-      headerBg: 'bg-green-500',
+      headerBg: 'bg-status-success-text',
     },
     'developer-feedback': {
       title: '개발자 페르소나 피드백',
       description: '기술 실현 가능성 관점의 피드백입니다.',
-      headerBg: 'bg-blue-500',
+      headerBg: 'bg-status-info-text',
     },
     'designer-feedback': {
       title: '디자이너 페르소나 피드백',

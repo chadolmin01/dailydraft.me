@@ -57,7 +57,7 @@ export const CalendarView: React.FC = () => {
         <div className="flex justify-between items-end border-b border-dashed border-border pb-6">
            <div>
              <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-2 flex items-center gap-2">
-                 <span className="w-2 h-2 bg-[#4F46E5]"></span>
+                 <span className="w-2 h-2 bg-brand"></span>
                  WORKSPACE / SCHEDULE
              </div>
              <h1 className="text-3xl font-bold text-txt-primary tracking-tight">Schedule</h1>
@@ -71,7 +71,7 @@ export const CalendarView: React.FC = () => {
               </div>
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="px-4 py-2 bg-[#4F46E5] text-white border border-[#4F46E5] text-sm font-bold hover:bg-[#4338CA] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex items-center gap-2"
+                className="px-4 py-2 bg-brand text-white border border-brand text-sm font-bold hover:bg-brand-hover shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex items-center gap-2"
               >
                  <Plus size={16} /> Add Event
               </button>
@@ -87,7 +87,7 @@ export const CalendarView: React.FC = () => {
                    {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map((day, i) => (
                       <div key={day} className={`
                          py-3 text-center text-[0.625rem] font-bold font-mono uppercase tracking-widest
-                         ${i === 0 ? 'text-red-500' : (i === 6 ? 'text-blue-500' : 'text-txt-disabled')}
+                         ${i === 0 ? 'text-status-danger-text' : (i === 6 ? 'text-status-info-text' : 'text-txt-disabled')}
                       `}>
                          {day}
                       </div>
@@ -108,15 +108,15 @@ export const CalendarView: React.FC = () => {
                          <div key={day} className={`
                             min-h-[10rem] border-r border-b border-border p-2 relative group hover:bg-surface-sunken transition-colors
                             ${(day + startDayOffset) % 7 === 0 ? 'border-r-0' : ''}
-                            ${isToday ? 'bg-blue-50/20' : ''}
+                            ${isToday ? 'bg-brand-bg' : ''}
                          `}>
                             <div className="flex justify-between items-start">
                                 <span className={`
                                    text-xs font-bold font-mono block mb-3 pl-1
-                                   ${(day + startDayOffset - 1) % 7 === 0 ? 'text-red-500' : ((day + startDayOffset - 1) % 7 === 6 ? 'text-blue-500' : 'text-txt-secondary')}
-                                   ${isToday ? 'text-[#4F46E5]' : ''}
+                                   ${(day + startDayOffset - 1) % 7 === 0 ? 'text-status-danger-text' : ((day + startDayOffset - 1) % 7 === 6 ? 'text-status-info-text' : 'text-txt-secondary')}
+                                   ${isToday ? 'text-brand' : ''}
                                 `}>
-                                   {day} {isToday && <span className="ml-1 w-1.5 h-1.5 bg-[#4F46E5] inline-block mb-0.5"></span>}
+                                   {day} {isToday && <span className="ml-1 w-1.5 h-1.5 bg-brand inline-block mb-0.5"></span>}
                                 </span>
                                 <button
                                     onClick={() => {
@@ -134,8 +134,8 @@ export const CalendarView: React.FC = () => {
                                     <div
                                         key={event.id}
                                         className={`px-2 py-1 text-[0.625rem] font-mono font-bold border cursor-pointer hover:opacity-80 truncate flex items-center gap-1
-                                            ${event.type === 'deadline' ? 'bg-red-50 text-red-600 border-red-100' :
-                                              event.type === 'meeting' ? 'bg-blue-50 text-[#4F46E5] border-blue-100' :
+                                            ${event.type === 'deadline' ? 'bg-status-danger-bg text-status-danger-text border-status-danger-text/20' :
+                                              event.type === 'meeting' ? 'bg-brand-bg text-brand border-brand-border' :
                                               'bg-surface-sunken text-txt-secondary border-border'}
                                         `}
                                     >
@@ -157,7 +157,7 @@ export const CalendarView: React.FC = () => {
                 <div className="flex items-center gap-2 mb-6">
                    <Calendar size={18} className="text-txt-primary" />
                    <h2 className="text-[0.625rem] font-bold font-mono text-txt-tertiary uppercase tracking-widest flex items-center gap-2">
-                     <span className="w-2 h-2 bg-red-500"></span>
+                     <span className="w-2 h-2 bg-indicator-alert"></span>
                      Upcoming Deadlines
                    </h2>
                 </div>
@@ -170,12 +170,12 @@ export const CalendarView: React.FC = () => {
                       return (
                       <div key={prog.id} className="group border border-border p-4 hover:border-border-strong hover:shadow-sharp transition-all bg-surface-card cursor-pointer">
                          <div className="flex justify-between items-start mb-2">
-                            <span className="text-[0.625rem] font-mono font-bold text-red-500 bg-red-50 px-1.5 py-0.5 border border-red-100">
+                            <span className="text-[0.625rem] font-mono font-bold text-status-danger-text bg-status-danger-bg px-1.5 py-0.5 border border-status-danger-text/20">
                                {dDayStr}
                             </span>
                             <Bookmark size={14} className="text-txt-disabled group-hover:text-txt-primary transition-colors" />
                          </div>
-                         <h3 className="text-sm font-bold text-txt-primary leading-snug mb-2 group-hover:text-[#4F46E5] transition-colors">
+                         <h3 className="text-sm font-bold text-txt-primary leading-snug mb-2 group-hover:text-brand transition-colors">
                             {prog.title}
                          </h3>
                          <div className="flex items-center gap-1.5 text-xs text-txt-tertiary">
@@ -219,7 +219,7 @@ export const CalendarView: React.FC = () => {
                             value={newEventTitle}
                             onChange={(e) => setNewEventTitle(e.target.value)}
                             placeholder="e.g. Project Meeting"
-                            className="w-full p-3 bg-surface-sunken border border-border-strong text-sm focus:outline-none focus:border-[#4F46E5] transition-colors"
+                            className="w-full p-3 bg-surface-sunken border border-border-strong text-sm focus:outline-none focus:border-brand transition-colors"
                             autoFocus
                         />
                     </div>
@@ -233,7 +233,7 @@ export const CalendarView: React.FC = () => {
                                     type="date"
                                     value={newEventDate}
                                     onChange={(e) => setNewEventDate(e.target.value)}
-                                    className="w-full pl-10 pr-3 py-3 bg-surface-sunken border border-border-strong text-sm focus:outline-none focus:border-[#4F46E5] transition-colors"
+                                    className="w-full pl-10 pr-3 py-3 bg-surface-sunken border border-border-strong text-sm focus:outline-none focus:border-brand transition-colors"
                                 />
                             </div>
                         </div>
@@ -245,7 +245,7 @@ export const CalendarView: React.FC = () => {
                                     type="time"
                                     value={newEventTime}
                                     onChange={(e) => setNewEventTime(e.target.value)}
-                                    className="w-full pl-10 pr-3 py-3 bg-surface-sunken border border-border-strong text-sm focus:outline-none focus:border-[#4F46E5] transition-colors"
+                                    className="w-full pl-10 pr-3 py-3 bg-surface-sunken border border-border-strong text-sm focus:outline-none focus:border-brand transition-colors"
                                 />
                             </div>
                         </div>
@@ -274,7 +274,7 @@ export const CalendarView: React.FC = () => {
                     <div className="pt-4 mt-2">
                         <button
                             type="submit"
-                            className="w-full bg-[#4F46E5] text-white border border-[#4F46E5] py-3.5 font-bold text-sm hover:bg-[#4338CA] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                            className="w-full bg-brand text-white border border-brand py-3.5 font-bold text-sm hover:bg-brand-hover shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
                         >
                             Create Event
                         </button>

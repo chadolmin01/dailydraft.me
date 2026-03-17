@@ -1,7 +1,8 @@
 'use client'
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
-import { ArrowRight, ArrowLeft, X, Send, User, Building2, MapPin, Code2, Target, Sparkles, Loader2, CheckCircle2, MessageCircle, ChevronDown, Briefcase, Clock, Users, Lightbulb, Zap, Heart } from 'lucide-react'
+import { ArrowRight, ArrowLeft, X, Send, User, Building2, MapPin, Code2, Target, Sparkles, Loader2, CheckCircle2, MessageCircle, ChevronDown, Briefcase, Clock, Users, Lightbulb, Zap, Heart, LogOut } from 'lucide-react'
+import { useAuth } from '@/src/context/AuthContext'
 
 interface OnboardingProps {
   onComplete: () => void
@@ -131,6 +132,7 @@ const ONBOARDING_TIPS = [
 // ── Component ──
 
 export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
+  const { signOut } = useAuth()
   const [step, setStep] = useState<Step>('greeting')
   const [bubbles, setBubbles] = useState<Bubble[]>([])
   const [isTyping, setIsTyping] = useState(false)
@@ -661,6 +663,15 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
         .ob-hover:active { transform:scale(0.96) }
       `}} />
 
+      {/* Logout button */}
+      <button
+        onClick={signOut}
+        className="fixed top-4 right-4 z-[60] flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-mono text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken border border-border transition-colors"
+      >
+        <LogOut size={12} />
+        로그아웃
+      </button>
+
       {/* Deep chat transition overlay */}
       {deepChatTransition && (
         <div className="fixed inset-0 z-50 bg-surface-bg flex flex-col items-center justify-center px-6" style={{ animation: 'ob-bubble-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both' }}>
@@ -708,7 +719,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
         {step !== 'done' && (
           <div className="flex justify-center py-2 shrink-0 border-b border-border bg-surface-sunken/50">
             <p className="text-[10px] font-mono text-txt-tertiary animate-in fade-in slide-in-from-bottom-1 duration-500" key={tipIndex}>
-              <span className="font-bold text-[#4F46E5] mr-1">tip:</span>
+              <span className="font-bold text-brand mr-1">tip:</span>
               <span className="animate-[typing_0.6s_steps(30)_both] inline-block overflow-hidden whitespace-nowrap">{ONBOARDING_TIPS[tipIndex]}</span>
             </p>
           </div>
@@ -747,7 +758,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                         <div className="ob-form w-full">
                           {bubble.attachment === 'cta' && (
                             <div className="mt-3">
-                              <button onClick={handleCtaClick} className="ob-cta ob-hover inline-flex items-center gap-2.5 px-6 py-3 bg-[#4F46E5] text-white text-[13px] font-bold shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] border border-[#4F46E5]">
+                              <button onClick={handleCtaClick} className="ob-cta ob-hover inline-flex items-center gap-2.5 px-6 py-3 bg-brand text-white text-[13px] font-bold shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] border border-brand">
                                 프로필 입력하기 <ArrowRight size={15} />
                               </button>
                               <p className="text-[11px] text-txt-tertiary mt-2.5 ml-1 font-mono">1분이면 끝나요</p>
@@ -832,7 +843,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                                   <p className="text-[10px] text-txt-tertiary font-mono mt-1">{profile.locations.join(', ')} 선택됨</p>
                                 )}
                               </div>
-                              <button onClick={handleInfoSubmit} disabled={!profile.name.trim()} className="w-full py-2.5 bg-[#4F46E5] text-white text-[13px] font-bold hover:bg-[#4338CA] transition-all flex items-center justify-center gap-2 disabled:opacity-20 disabled:cursor-not-allowed ob-hover shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] border border-[#4F46E5]">
+                              <button onClick={handleInfoSubmit} disabled={!profile.name.trim()} className="w-full py-2.5 bg-brand text-white text-[13px] font-bold hover:bg-brand-hover transition-all flex items-center justify-center gap-2 disabled:opacity-20 disabled:cursor-not-allowed ob-hover shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] border border-brand">
                                 입력 완료 <ArrowRight size={14} />
                               </button>
                               <p className="text-[10px] text-txt-tertiary text-center font-mono">닉네임만 필수예요 · 나중에 수정 가능</p>
@@ -863,8 +874,8 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                           {bubble.attachment === 'skills-input' && (
                             <div className="mt-3 bg-surface-card border border-border-strong p-4 shadow-sharp space-y-3">
                               <div className="flex items-center gap-1.5 mb-1">
-                                <Sparkles size={10} className="text-[#4F46E5]" />
-                                <span className="text-[10px] font-mono font-medium text-[#4F46E5]">AI가 자동으로 정리해드려요</span>
+                                <Sparkles size={10} className="text-brand" />
+                                <span className="text-[10px] font-mono font-medium text-brand">AI가 자동으로 정리해드려요</span>
                               </div>
                               <div className="relative">
                                 <input type="text" value={skillInput} onChange={(e) => setSkillInput(e.target.value)} placeholder="예: 리액트, 파이썬, 피그마 등" className="w-full pl-3.5 pr-10 py-2.5 bg-surface-sunken border border-border text-sm font-medium focus:outline-none focus:border-border-strong focus:bg-surface-card transition-all placeholder:text-txt-disabled" autoFocus onKeyDown={(e) => e.key === 'Enter' && handleSkillInputSubmit()} />
@@ -881,11 +892,11 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                               {selectedSkills.length > 0 && (
                                 <div className="flex flex-wrap gap-1 pt-1">
                                   {selectedSkills.map(s => (
-                                    <span key={s} className="ob-tag-pop inline-flex items-center gap-1 px-2.5 py-1 bg-[#4F46E5] text-white text-[11px] font-medium">{s}<button onClick={() => removeSkill(s)} className="hover:text-white/60 transition-colors"><X size={11} /></button></span>
+                                    <span key={s} className="ob-tag-pop inline-flex items-center gap-1 px-2.5 py-1 bg-brand text-white text-[11px] font-medium">{s}<button onClick={() => removeSkill(s)} className="hover:text-white/60 transition-colors"><X size={11} /></button></span>
                                   ))}
                                 </div>
                               )}
-                              <button onClick={handleSkillInputSubmit} className="w-full py-2.5 bg-[#4F46E5] text-white text-[13px] font-bold hover:bg-[#4338CA] transition-all flex items-center justify-center gap-2 ob-hover shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] border border-[#4F46E5]">
+                              <button onClick={handleSkillInputSubmit} className="w-full py-2.5 bg-brand text-white text-[13px] font-bold hover:bg-brand-hover transition-all flex items-center justify-center gap-2 ob-hover shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] border border-brand">
                                 {skillInput.trim() || selectedSkills.length > 0 ? '다음' : '건너뛰기'} <ArrowRight size={14} />
                               </button>
                             </div>
@@ -895,7 +906,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                             <div className="mt-3 space-y-3">
                               <div className="flex flex-wrap gap-1.5">
                                 {selectedSkills.map((skill, idx) => (
-                                  <span key={skill} className="ob-chip inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#4F46E5] text-white text-[13px] font-medium" style={{ animationDelay: `${idx * 40}ms` }}>{skill}<button onClick={() => removeSkill(skill)} className="hover:text-white/60 transition-colors"><X size={13} /></button></span>
+                                  <span key={skill} className="ob-chip inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand text-white text-[13px] font-medium" style={{ animationDelay: `${idx * 40}ms` }}>{skill}<button onClick={() => removeSkill(skill)} className="hover:text-white/60 transition-colors"><X size={13} /></button></span>
                                 ))}
                               </div>
                               <button onClick={handleSkillsConfirm} className="ob-hover px-5 py-2 bg-black text-white text-[13px] font-bold flex items-center gap-2 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">
@@ -907,8 +918,8 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                           {bubble.attachment === 'interests-input' && (
                             <div className="mt-3 bg-surface-card border border-border-strong p-4 shadow-sharp space-y-3">
                               <div className="flex items-center gap-1.5 mb-1">
-                                <Sparkles size={10} className="text-[#4F46E5]" />
-                                <span className="text-[10px] font-mono font-medium text-[#4F46E5]">AI가 자동으로 정리해드려요</span>
+                                <Sparkles size={10} className="text-brand" />
+                                <span className="text-[10px] font-mono font-medium text-brand">AI가 자동으로 정리해드려요</span>
                               </div>
                               <div className="relative">
                                 <input type="text" value={interestInput} onChange={(e) => setInterestInput(e.target.value)} placeholder="예: AI, 게임, 교육 등" className="w-full pl-3.5 pr-10 py-2.5 bg-surface-sunken border border-border text-sm font-medium focus:outline-none focus:border-border-strong focus:bg-surface-card transition-all placeholder:text-txt-disabled" autoFocus onKeyDown={(e) => e.key === 'Enter' && handleInterestInputSubmit()} />
@@ -925,11 +936,11 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                               {selectedInterests.length > 0 && (
                                 <div className="flex flex-wrap gap-1 pt-1">
                                   {selectedInterests.map(t => (
-                                    <span key={t} className="ob-tag-pop inline-flex items-center gap-1 px-2.5 py-1 bg-[#4F46E5] text-white text-[11px] font-medium">{t}<button onClick={() => removeInterest(t)} className="hover:text-white/60 transition-colors"><X size={11} /></button></span>
+                                    <span key={t} className="ob-tag-pop inline-flex items-center gap-1 px-2.5 py-1 bg-brand text-white text-[11px] font-medium">{t}<button onClick={() => removeInterest(t)} className="hover:text-white/60 transition-colors"><X size={11} /></button></span>
                                   ))}
                                 </div>
                               )}
-                              <button onClick={handleInterestInputSubmit} className="w-full py-2.5 bg-[#4F46E5] text-white text-[13px] font-bold hover:bg-[#4338CA] transition-all flex items-center justify-center gap-2 ob-hover shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] border border-[#4F46E5]">
+                              <button onClick={handleInterestInputSubmit} className="w-full py-2.5 bg-brand text-white text-[13px] font-bold hover:bg-brand-hover transition-all flex items-center justify-center gap-2 ob-hover shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] border border-brand">
                                 {interestInput.trim() || selectedInterests.length > 0 ? '다음' : '건너뛰기'} <ArrowRight size={14} />
                               </button>
                             </div>
@@ -939,7 +950,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                             <div className="mt-3 space-y-3">
                               <div className="flex flex-wrap gap-1.5">
                                 {selectedInterests.map((tag, idx) => (
-                                  <span key={tag} className="ob-chip inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#4F46E5] text-white text-[13px] font-medium" style={{ animationDelay: `${idx * 40}ms` }}>{tag}<button onClick={() => removeInterest(tag)} className="hover:text-white/60 transition-colors"><X size={13} /></button></span>
+                                  <span key={tag} className="ob-chip inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand text-white text-[13px] font-medium" style={{ animationDelay: `${idx * 40}ms` }}>{tag}<button onClick={() => removeInterest(tag)} className="hover:text-white/60 transition-colors"><X size={13} /></button></span>
                                 ))}
                               </div>
                               <button onClick={handleInterestsConfirm} className="ob-hover px-5 py-2 bg-black text-white text-[13px] font-bold flex items-center gap-2 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">
@@ -950,7 +961,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
                           {bubble.attachment === 'deep-chat-offer' && (
                             <div className="mt-3 space-y-2">
-                              <button onClick={handleDeepChatAccept} className="ob-chip ob-hover w-full text-left px-4 py-3.5 bg-[#4F46E5] text-white border border-[#4F46E5] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all" style={{ animationDelay: '0ms' }}>
+                              <button onClick={handleDeepChatAccept} className="ob-chip ob-hover w-full text-left px-4 py-3.5 bg-brand text-white border border-brand shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all" style={{ animationDelay: '0ms' }}>
                                 <div className="flex items-center gap-3">
                                   <div className="w-9 h-9 bg-white/15 flex items-center justify-center shrink-0">
                                     <MessageCircle size={16} />
@@ -978,7 +989,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
                           {bubble.attachment === ('deep-chat-offer-finish') && (
                             <div className="mt-3 space-y-2">
-                              <button onClick={() => { setBubbles(prev => prev.filter(b => b.attachment !== ('deep-chat-offer-finish'))) }} className="ob-chip ob-hover w-full text-left px-4 py-2.5 bg-[#4F46E5] text-white border border-[#4F46E5] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all text-[13px] font-bold" style={{ animationDelay: '0ms' }}>
+                              <button onClick={() => { setBubbles(prev => prev.filter(b => b.attachment !== ('deep-chat-offer-finish'))) }} className="ob-chip ob-hover w-full text-left px-4 py-2.5 bg-brand text-white border border-brand shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all text-[13px] font-bold" style={{ animationDelay: '0ms' }}>
                                 조금 더 대화하기
                               </button>
                               <button onClick={forceFinishDeepChat} className="ob-chip ob-hover w-full text-left px-4 py-2.5 bg-surface-card border border-border-strong hover:border-border-strong transition-all text-[13px] font-bold text-txt-primary" style={{ animationDelay: '60ms' }}>
@@ -1005,7 +1016,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                       <div className="w-[7px] h-[7px] bg-txt-disabled ob-dot" style={{ animationDelay: '400ms' }} />
                     </div>
                     {aiActivity && (
-                      <span className="text-[11px] text-[#4F46E5] font-medium font-mono flex items-center gap-1">
+                      <span className="text-[11px] text-brand font-medium font-mono flex items-center gap-1">
                         <Sparkles size={10} />
                         {aiActivity}
                       </span>
@@ -1073,7 +1084,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                     <input ref={deepChatInputRef} type="text" value={deepChatInput} onChange={(e) => setDeepChatInput(e.target.value)} placeholder={userMsgCount === 0 ? '첫 번째 질문에 답해보세요...' : '이어서 이야기해주세요...'} className="w-full pl-4 pr-11 py-3 bg-surface-sunken border border-border-strong text-sm font-medium focus:outline-none focus:border-border-strong focus:bg-surface-card transition-all placeholder:text-txt-disabled" onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleDeepChatSend()} disabled={isTyping} />
                     <button onClick={handleDeepChatSend} disabled={isTyping || !deepChatInput.trim()} className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-txt-disabled hover:text-black transition-colors disabled:opacity-30"><Send size={16} /></button>
                   </div>
-                  <button onClick={handleDeepChatFinish} disabled={isTyping} className={`ob-hover px-4 py-3 text-[13px] font-bold flex items-center gap-1.5 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] disabled:opacity-50 shrink-0 transition-all ${userMsgCount >= 3 ? 'bg-[#4F46E5] text-white border border-[#4F46E5]' : 'bg-black text-white'}`}>
+                  <button onClick={handleDeepChatFinish} disabled={isTyping} className={`ob-hover px-4 py-3 text-[13px] font-bold flex items-center gap-1.5 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] disabled:opacity-50 shrink-0 transition-all ${userMsgCount >= 3 ? 'bg-brand text-white border border-brand' : 'bg-black text-white'}`}>
                     <CheckCircle2 size={14} />완료
                   </button>
                 </div>
@@ -1083,7 +1094,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                     {DEEP_CHAT_TOPICS.slice(0, 6).map(topic => {
                       const covered = coveredTopics.includes(topic.id)
                       return (
-                        <div key={topic.id} title={topic.label} className={`w-1.5 h-1.5 transition-all duration-500 ${covered ? 'bg-[#4F46E5]' : 'bg-border'}`} />
+                        <div key={topic.id} title={topic.label} className={`w-1.5 h-1.5 transition-all duration-500 ${covered ? 'bg-brand' : 'bg-border'}`} />
                       )
                     })}
                     <span className="text-[10px] font-mono text-txt-disabled ml-1.5">
@@ -1152,13 +1163,13 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                 {(profile.skills.length > 0 || selectedSkills.length > 0) && (
                   <div className="pt-2 border-t border-border-subtle">
                     <label className="text-[10px] font-bold text-txt-disabled uppercase font-mono mb-1.5 flex items-center gap-1"><Code2 size={9} /> Skills</label>
-                    <div className="flex flex-wrap gap-1">{(profile.skills.length > 0 ? profile.skills : selectedSkills).map(s => <span key={s} className="px-2 py-0.5 bg-[#4F46E5] text-white text-[10px] font-medium">{s}</span>)}</div>
+                    <div className="flex flex-wrap gap-1">{(profile.skills.length > 0 ? profile.skills : selectedSkills).map(s => <span key={s} className="px-2 py-0.5 bg-brand text-white text-[10px] font-medium">{s}</span>)}</div>
                   </div>
                 )}
                 {(profile.interests.length > 0 || selectedInterests.length > 0) && (
                   <div className="pt-2 border-t border-border-subtle">
                     <label className="text-[10px] font-bold text-txt-disabled uppercase font-mono mb-1.5 flex items-center gap-1"><Target size={9} /> Interests</label>
-                    <div className="flex flex-wrap gap-1">{(profile.interests.length > 0 ? profile.interests : selectedInterests).map(t => <span key={t} className="px-2 py-0.5 bg-[#4F46E5]/5 border border-[#4F46E5]/20 text-[#4F46E5] text-[10px] font-medium">{t}</span>)}</div>
+                    <div className="flex flex-wrap gap-1">{(profile.interests.length > 0 ? profile.interests : selectedInterests).map(t => <span key={t} className="px-2 py-0.5 bg-brand-bg border border-brand-border text-brand text-[10px] font-medium">{t}</span>)}</div>
                   </div>
                 )}
                 {step === 'deep-chat' && deepChatMessages.length > 0 && (
@@ -1170,15 +1181,15 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                         const Icon = topic.icon
                         return (
                           <div key={topic.id} className="flex items-center gap-2">
-                            <Icon size={10} className={covered ? 'text-[#4F46E5]' : 'text-txt-disabled'} />
+                            <Icon size={10} className={covered ? 'text-brand' : 'text-txt-disabled'} />
                             <span className={`text-[10px] font-mono ${covered ? 'text-txt-primary' : 'text-txt-disabled'}`}>{topic.label}</span>
-                            {covered && <div className="w-1 h-1 bg-[#4F46E5] ml-auto" />}
+                            {covered && <div className="w-1 h-1 bg-brand ml-auto" />}
                           </div>
                         )
                       })}
                     </div>
                     <div className="flex items-center gap-1.5 mt-2 pt-1.5 border-t border-border-subtle">
-                      <div className="w-1.5 h-1.5 bg-[#4F46E5] animate-pulse" />
+                      <div className="w-1.5 h-1.5 bg-brand animate-pulse" />
                       <span className="text-[10px] text-txt-tertiary font-mono">{userMsgCount}회 대화 · {coveredTopics.length}개 분석</span>
                     </div>
                   </div>
@@ -1187,7 +1198,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
               <div className="bg-surface-inverse px-4 py-2 flex justify-between items-center">
                 <span className="text-[9px] font-mono text-txt-tertiary uppercase tracking-wider">Draft Profile</span>
                 {step === 'done' ? (
-                  <div className="flex items-center gap-1 text-green-400"><Sparkles size={10} fill="currentColor" /><span className="text-[10px] font-bold uppercase">Done</span></div>
+                  <div className="flex items-center gap-1 text-status-success-text/70"><Sparkles size={10} fill="currentColor" /><span className="text-[10px] font-bold uppercase">Done</span></div>
                 ) : step === 'deep-chat' ? (
                   <div className="flex items-center gap-1 text-[#818CF8]"><MessageCircle size={10} /><span className="text-[10px] font-bold uppercase font-mono">AI Chat</span></div>
                 ) : (
@@ -1209,7 +1220,7 @@ function ProgressBar({ step }: { step: Step }) {
   return (
     <div className="flex items-center gap-2">
       <div className="w-16 h-[5px] bg-surface-sunken border border-border overflow-hidden">
-        <div className="h-full bg-[#4F46E5] transition-all duration-700 ease-out" style={{ width: `${pct}%` }} />
+        <div className="h-full bg-brand transition-all duration-700 ease-out" style={{ width: `${pct}%` }} />
       </div>
       <span className="text-[10px] font-mono text-txt-disabled tabular-nums w-7 text-right">{pct}%</span>
     </div>

@@ -6,7 +6,6 @@ import { NextResponse, type NextRequest } from 'next/server'
 const hiddenRoutes = [
   '/dashboard',
   '/calendar',
-  '/messages',
   '/documents',
   '/network',
   '/usage',
@@ -21,6 +20,7 @@ const hiddenRoutes = [
 // API routes hidden in MVP mode — returns 404
 const hiddenApiRoutes = [
   '/api/ai-chat',
+  '/api/dev',
   '/api/applications',
   '/api/boosts',
   '/api/business-plan',
@@ -110,7 +110,7 @@ export async function middleware(request: NextRequest) {
 
   // Protected routes - redirect to login if not authenticated
   // Only active routes that require auth
-  const protectedPaths = ['/profile', '/projects', '/admin']
+  const protectedPaths = ['/profile', '/projects', '/admin', '/messages', '/onboarding', '/dashboard', '/documents', '/calendar', '/network', '/usage', '/workflow']
   const isProtectedPath = protectedPaths.some(path => request.nextUrl.pathname.startsWith(path))
 
   if (isProtectedPath && !user) {
@@ -131,14 +131,28 @@ export async function middleware(request: NextRequest) {
   const needsOnboardingCheck = user && !onboardingExemptPaths.some(p => pathname.startsWith(p)) && pathname !== '/'
 
   if (needsOnboardingCheck) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('onboarding_completed')
-      .eq('user_id', user.id)
-      .single()
+    // Cookie 캐싱: onboarding 완료 후에는 DB 쿼리 스킵
+    const onboardingCookie = request.cookies.get('onboarding_completed')?.value
+    if (onboardingCookie !== 'true') {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('onboarding_completed')
+        .eq('user_id', user.id)
+        .single()
 
-    if (profile && !profile.onboarding_completed) {
-      return NextResponse.redirect(new URL('/onboarding', request.url))
+      if (profile && !profile.onboarding_completed) {
+        return NextResponse.redirect(new URL('/onboarding', request.url))
+      }
+
+      // 완료된 경우 쿠키에 캐싱 (세션 동안 유지)
+      if (profile?.onboarding_completed) {
+        supabaseResponse.cookies.set('onboarding_completed', 'true', {
+          path: '/',
+          httpOnly: true,
+          sameSite: 'lax',
+          maxAge: 60 * 60 * 24, // 24시간
+        })
+      }
     }
   }
 

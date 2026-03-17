@@ -29,8 +29,8 @@ const getTaskStyles = (type: TaskType) => {
       };
     case 'FRONTEND':
       return {
-        card: 'bg-blue-50 hover:bg-blue-100 border-blue-200',
-        badge: 'bg-white/80 text-blue-700 ring-1 ring-blue-200'
+        card: 'bg-status-info-bg hover:bg-status-info-bg border-status-info-text/20',
+        badge: 'bg-white/80 text-status-info-text ring-1 ring-status-info-text/20'
       };
     case 'BACKEND':
       return {
@@ -57,9 +57,9 @@ const getTaskStyles = (type: TaskType) => {
 
 const getPriorityColor = (p: string) => {
   switch (p) {
-    case 'HIGH': return 'text-red-500';
-    case 'MEDIUM': return 'text-yellow-600';
-    case 'LOW': return 'text-blue-500';
+    case 'HIGH': return 'text-status-danger-text';
+    case 'MEDIUM': return 'text-status-warning-text';
+    case 'LOW': return 'text-status-info-text';
     default: return 'text-txt-disabled';
   }
 };

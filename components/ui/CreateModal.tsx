@@ -89,7 +89,7 @@ export const CreateModal: React.FC<CreateModalProps> = ({
           {/* AI 옵션 - 추천 */}
           <button
             onClick={handleAI}
-            className="w-full p-4 bg-[#4F46E5] text-left group hover:bg-[#4338CA] transition-colors relative overflow-hidden border border-[#4F46E5] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            className="w-full p-4 bg-brand text-left group hover:bg-brand-hover transition-colors relative overflow-hidden border border-brand shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
           >
             <div className="absolute top-3 right-3 px-2 py-0.5 bg-white/20 text-white text-[0.625rem] font-mono font-bold uppercase">
               추천

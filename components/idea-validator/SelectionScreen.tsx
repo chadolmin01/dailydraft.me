@@ -84,16 +84,16 @@ const SelectionScreen: React.FC<SelectionScreenProps> = ({ onSelect, skipToLevel
   }) => {
     const themeClasses = {
       yellow: {
-        border: 'hover:border-yellow-500',
-        iconBg: 'bg-yellow-50 text-yellow-600 border-yellow-200',
+        border: 'hover:border-status-warning-text',
+        iconBg: 'bg-status-warning-bg text-status-warning-text border-status-warning-text/20',
       },
       blue: {
         border: 'hover:border-border-strong',
         iconBg: 'bg-surface-sunken text-txt-primary border-border',
       },
       red: {
-        border: 'hover:border-red-500',
-        iconBg: 'bg-red-50 text-red-600 border-red-200',
+        border: 'hover:border-status-danger-text',
+        iconBg: 'bg-status-danger-bg text-status-danger-text border-status-danger-text/20',
       }
     };
 
@@ -134,7 +134,7 @@ const SelectionScreen: React.FC<SelectionScreenProps> = ({ onSelect, skipToLevel
              {/* Left Text Area */}
              <div className="col-span-5 space-y-6 lg:space-y-8">
                 <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-surface-card border border-border">
-                  <span className="w-1.5 h-1.5 bg-green-500 animate-pulse"></span>
+                  <span className="w-1.5 h-1.5 bg-indicator-online animate-pulse"></span>
                   <span className="text-[0.5625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest">System Operational</span>
                 </div>
 

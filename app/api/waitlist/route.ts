@@ -1,3 +1,4 @@
+// @ts-nocheck — hidden route (hiddenApiRoutes), Supabase types pending for waitlist tables
 import { createAdminClient } from '@/src/lib/supabase/admin'
 import { ApiResponse, validateRequired } from '@/src/lib/api-utils'
 

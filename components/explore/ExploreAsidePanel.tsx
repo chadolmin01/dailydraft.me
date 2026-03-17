@@ -34,21 +34,21 @@ export function ExploreAsidePanel({
         <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-black/20" />
         <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-black/20" />
         <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-2">
-          <span className="w-4 h-4 bg-[#4F46E5] text-white flex items-center justify-center text-[0.5rem] font-bold">P</span>
+          <span className="w-4 h-4 bg-brand text-white flex items-center justify-center text-[0.5rem] font-bold">P</span>
           {isAuthenticated && sidebarRecs.length > 0 ? 'AI RECOMMENDED' : 'PEOPLE'}
         </h3>
         <div className="space-y-1">
           {isAuthenticated && sidebarRecs.length > 0 ? (
             sidebarRecs.map((rec) => (
               <div key={rec.user_id} onClick={() => onSelectProfile(rec.user_id, true)} className="relative flex items-center gap-3 p-2 border border-transparent hover:border-border hover:bg-surface-sunken transition-all cursor-pointer group">
-                <div className="w-9 h-9 bg-[#4F46E5]/10 border border-[#4F46E5]/20 flex items-center justify-center text-xs font-bold text-[#4F46E5]">
+                <div className="w-9 h-9 bg-brand-bg border border-brand-border flex items-center justify-center text-xs font-bold text-brand">
                   {(rec.nickname || '??').substring(0, 2)}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-txt-primary">{rec.nickname}</p>
                   <p className="text-[0.625rem] font-mono text-txt-disabled truncate">{rec.match_reason}</p>
                 </div>
-                <span className="text-[0.625rem] font-mono font-bold px-1.5 py-0.5 bg-[#4F46E5]/10 text-[#4F46E5] border border-[#4F46E5]/20">
+                <span className="text-[0.625rem] font-mono font-bold px-1.5 py-0.5 bg-brand-bg text-brand border border-brand-border">
                   {rec.match_score}%
                 </span>
               </div>
@@ -64,7 +64,7 @@ export function ExploreAsidePanel({
                   <p className="text-[0.625rem] font-mono text-txt-disabled">{t.role}</p>
                 </div>
                 <span className={`text-[0.625rem] font-mono font-bold px-1.5 py-0.5 border ${
-                  t.status === 'OPEN' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-surface-sunken text-txt-tertiary border-border'
+                  t.status === 'OPEN' ? 'bg-status-success-bg text-indicator-online border-indicator-online/20' : 'bg-surface-sunken text-txt-tertiary border-border'
                 }`}>
                   {t.status}
                 </span>
@@ -75,7 +75,7 @@ export function ExploreAsidePanel({
         <div className="mt-3 pt-2 border-t border-dashed border-border">
           <button
             onClick={onSelectPeople}
-            className="w-full text-[0.625rem] font-mono text-txt-tertiary hover:text-[#4F46E5] flex items-center justify-center gap-1 py-1 transition-colors"
+            className="w-full text-[0.625rem] font-mono text-txt-tertiary hover:text-brand flex items-center justify-center gap-1 py-1 transition-colors"
           >
             VIEW ALL PEOPLE <ChevronRight size={10} />
           </button>
@@ -83,7 +83,7 @@ export function ExploreAsidePanel({
       </div>
 
       {/* CTA 배너 */}
-      <div className="relative bg-[#4F46E5] p-5 text-white border border-[#4F46E5] shadow-[4px_4px_0px_0px_rgba(79,70,229,0.3)] overflow-hidden">
+      <div className="relative bg-brand p-5 text-white border border-brand shadow-solid-sm overflow-hidden">
         <div className="absolute inset-0 opacity-10" style={{
           backgroundImage: 'linear-gradient(to right, white 1px, transparent 1px), linear-gradient(to bottom, white 1px, transparent 1px)',
           backgroundSize: '20px 20px'
@@ -103,7 +103,7 @@ export function ExploreAsidePanel({
           <p className="text-white/60 text-xs mb-4 font-mono">팀을 구성하고 프로젝트를 시작하세요</p>
           <Link
             href={isAuthenticated ? '/projects/new' : '/login'}
-            className="w-full bg-white text-[#4F46E5] text-sm font-bold py-2.5 hover:bg-[#4F46E5]/10 transition-colors block text-center border border-white shadow-[2px_2px_0px_0px_rgba(255,255,255,0.3)]"
+            className="w-full bg-white text-brand text-sm font-bold py-2.5 hover:bg-brand-bg transition-colors block text-center border border-white shadow-[2px_2px_0px_0px_rgba(255,255,255,0.3)]"
           >
             {isAuthenticated ? '프로젝트 시작하기' : '로그인하고 시작하기'}
           </Link>
@@ -113,14 +113,14 @@ export function ExploreAsidePanel({
       {/* 스탯 카드 */}
       <div className="relative bg-surface-card border border-border-strong p-4 shadow-sharp">
         <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-2">
-          <span className="w-4 h-4 bg-amber-500 text-white flex items-center justify-center text-[0.5rem] font-bold">S</span>
+          <span className="w-4 h-4 bg-indicator-premium text-white flex items-center justify-center text-[0.5rem] font-bold">S</span>
           STATS
         </h3>
         <div className="space-y-2.5">
           {[
-            { label: 'PROJECTS', value: totalProjectCount || projectCardCount, color: 'bg-[#4F46E5]' },
-            { label: 'PEOPLE', value: talentCards.length, color: 'bg-emerald-500' },
-            { label: 'CATEGORIES', value: categoriesCount, color: 'bg-amber-500' },
+            { label: 'PROJECTS', value: totalProjectCount || projectCardCount, color: 'bg-brand' },
+            { label: 'PEOPLE', value: talentCards.length, color: 'bg-indicator-online' },
+            { label: 'CATEGORIES', value: categoriesCount, color: 'bg-indicator-premium' },
           ].map((stat) => (
             <div key={stat.label} className="flex items-center justify-between">
               <span className="text-[0.625rem] font-mono text-txt-disabled">{stat.label}</span>
@@ -135,7 +135,7 @@ export function ExploreAsidePanel({
         </div>
         <div className="mt-3 pt-2 border-t border-dashed border-border">
           <p className="text-[0.625rem] font-mono text-txt-disabled flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 bg-green-500 animate-pulse" />
+            <span className="w-1.5 h-1.5 bg-indicator-online animate-pulse" />
             LIVE DATA
           </p>
         </div>

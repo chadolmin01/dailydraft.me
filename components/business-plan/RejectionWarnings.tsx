@@ -72,16 +72,16 @@ export const RejectionWarnings: React.FC<RejectionWarningsProps> = ({
     <div className="bg-surface-card border border-border overflow-hidden">
       {/* Header */}
       <div className={`p-3 flex items-center justify-between ${
-        severityCounts.high > 0 ? 'bg-red-50 border-b border-red-100' :
-        severityCounts.medium > 0 ? 'bg-yellow-50 border-b border-yellow-100' :
+        severityCounts.high > 0 ? 'bg-status-danger-bg border-b border-status-danger-text/20' :
+        severityCounts.medium > 0 ? 'bg-status-warning-bg border-b border-status-warning-text/20' :
         'bg-surface-sunken border-b border-border-subtle'
       }`}>
         <div className="flex items-center gap-2">
           <AlertTriangle
             size={16}
             className={
-              severityCounts.high > 0 ? 'text-red-500' :
-              severityCounts.medium > 0 ? 'text-yellow-500' :
+              severityCounts.high > 0 ? 'text-status-danger-text' :
+              severityCounts.medium > 0 ? 'text-status-warning-text' :
               'text-txt-tertiary'
             }
           />
@@ -92,12 +92,12 @@ export const RejectionWarnings: React.FC<RejectionWarningsProps> = ({
 
         <div className="flex items-center gap-2">
           {severityCounts.high > 0 && (
-            <span className="px-2 py-0.5 bg-red-100 text-red-700 text-[0.625rem] font-bold">
+            <span className="px-2 py-0.5 bg-status-danger-bg text-status-danger-text text-[0.625rem] font-bold">
               심각 {severityCounts.high}
             </span>
           )}
           {severityCounts.medium > 0 && (
-            <span className="px-2 py-0.5 bg-yellow-100 text-yellow-700 text-[0.625rem] font-bold">
+            <span className="px-2 py-0.5 bg-status-warning-bg text-status-warning-text text-[0.625rem] font-bold">
               주의 {severityCounts.medium}
             </span>
           )}
@@ -146,14 +146,14 @@ const WarningItem: React.FC<WarningItemProps> = ({
 
   const severityConfig = {
     high: {
-      icon: <XCircle size={16} className="text-red-500" />,
-      badge: 'bg-red-100 text-red-700',
-      bg: 'hover:bg-red-50',
+      icon: <XCircle size={16} className="text-status-danger-text" />,
+      badge: 'bg-status-danger-bg text-status-danger-text',
+      bg: 'hover:bg-status-danger-bg',
     },
     medium: {
-      icon: <AlertTriangle size={16} className="text-yellow-500" />,
-      badge: 'bg-yellow-100 text-yellow-700',
-      bg: 'hover:bg-yellow-50',
+      icon: <AlertTriangle size={16} className="text-status-warning-text" />,
+      badge: 'bg-status-warning-bg text-status-warning-text',
+      bg: 'hover:bg-status-warning-bg',
     },
     low: {
       icon: <Info size={16} className="text-txt-tertiary" />,
@@ -191,7 +191,7 @@ const WarningItem: React.FC<WarningItemProps> = ({
 
           <div className="flex items-center gap-2 shrink-0">
             {autoFixAvailable && (
-              <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[0.625rem] font-medium">
+              <span className="px-2 py-0.5 bg-status-info-bg text-status-info-text text-[0.625rem] font-medium">
                 자동 수정 가능
               </span>
             )}
@@ -233,11 +233,11 @@ const WarningItem: React.FC<WarningItemProps> = ({
 
           {/* Auto Fix Suggestion */}
           {autoFixAvailable && suggestedFix && (
-            <div className="mb-3 p-3 bg-blue-50 border border-blue-100">
-              <div className="text-[0.625rem] font-mono text-blue-600 uppercase mb-1.5">
+            <div className="mb-3 p-3 bg-status-info-bg border border-status-info-text/20">
+              <div className="text-[0.625rem] font-mono text-status-info-text uppercase mb-1.5">
                 수정 제안
               </div>
-              <p className="text-xs text-blue-800">{suggestedFix}</p>
+              <p className="text-xs text-brand">{suggestedFix}</p>
             </div>
           )}
 
@@ -306,8 +306,8 @@ const CompactWarningBadge: React.FC<CompactWarningBadgeProps> = ({
 
   return (
     <div className={`inline-flex items-center gap-1.5 px-2 py-1 text-xs font-medium ${
-      severityCounts.high > 0 ? 'bg-red-100 text-red-700' :
-      severityCounts.medium > 0 ? 'bg-yellow-100 text-yellow-700' :
+      severityCounts.high > 0 ? 'bg-status-danger-bg text-status-danger-text' :
+      severityCounts.medium > 0 ? 'bg-status-warning-bg text-status-warning-text' :
       'bg-surface-sunken text-txt-secondary'
     }`}>
       <AlertTriangle size={12} />
@@ -337,8 +337,8 @@ export const InlineWarningHighlight: React.FC<InlineWarningHighlightProps> = ({
   const [showTooltip, setShowTooltip] = useState(false)
 
   const highlightClass = {
-    high: 'bg-red-100 border-b border-red-400',
-    medium: 'bg-yellow-100 border-b border-yellow-400',
+    high: 'bg-status-danger-bg border-b border-status-danger-text',
+    medium: 'bg-status-warning-bg border-b border-status-warning-text',
     low: 'bg-surface-sunken border-b border-border-strong',
   }
 

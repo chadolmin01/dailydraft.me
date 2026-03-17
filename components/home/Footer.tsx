@@ -5,8 +5,8 @@ import Link from 'next/link'
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="bg-surface-card border-t border-border-subtle py-16 px-6 md:px-12 relative z-10">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+    <footer className="bg-surface-card border-t border-border-subtle py-10 px-6 md:px-10 relative z-10">
+      <div className="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
           <div className="flex items-center gap-2 mb-4">
              <div className="w-6 h-6 bg-black flex items-center justify-center">
@@ -34,7 +34,7 @@ export const Footer: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2 border border-border px-3 py-1.5 bg-surface-sunken">
-             <div className="w-1.5 h-1.5 bg-green-500"></div>
+             <div className="w-1.5 h-1.5 bg-indicator-online"></div>
              <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">OPEN BETA</span>
         </div>
       </div>

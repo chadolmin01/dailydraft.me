@@ -261,7 +261,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
   }
 
   return (
-    <div className="flex h-screen bg-[#FAFAFA]">
+    <div className="flex h-screen bg-surface-bg">
       {/* Sidebar */}
       <div className="w-72 bg-surface-card border-r border-border flex flex-col">
         {/* Header */}
@@ -274,8 +274,8 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
             돌아가기
           </button>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-100 flex items-center justify-center">
-              <FileText size={20} className="text-blue-600" />
+            <div className="w-10 h-10 bg-status-info-bg flex items-center justify-center">
+              <FileText size={20} className="text-status-info-text" />
             </div>
             <div>
               <h1 className="font-bold text-txt-primary text-sm">{template.shortName}</h1>
@@ -302,17 +302,17 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
           {validationResult && (
             <div className={`p-3 ${
               validationResult.percentage >= passingScore
-                ? 'bg-green-50 border border-green-100'
+                ? 'bg-status-success-bg border border-status-success-text/20'
                 : validationResult.percentage >= 50
-                  ? 'bg-yellow-50 border border-yellow-100'
-                  : 'bg-red-50 border border-red-100'
+                  ? 'bg-status-warning-bg border border-status-warning-text/20'
+                  : 'bg-status-danger-bg border border-status-danger-text/20'
             }`}>
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-1.5">
                   {validationResult.percentage >= passingScore ? (
-                    <CheckCircle2 size={14} className="text-green-500" />
+                    <CheckCircle2 size={14} className="text-status-success-text" />
                   ) : (
-                    <Target size={14} className="text-yellow-500" />
+                    <Target size={14} className="text-status-warning-text" />
                   )}
                   <span className="text-xs font-medium text-txt-secondary">
                     {isValidating ? '분석 중...' : '실시간 점수'}
@@ -320,8 +320,8 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
                 </div>
                 <span className={`text-lg font-bold ${
                   validationResult.percentage >= passingScore
-                    ? 'text-green-600'
-                    : 'text-yellow-600'
+                    ? 'text-status-success-text'
+                    : 'text-status-warning-text'
                 }`}>
                   {validationResult.totalScore}/{validationResult.maxScore}
                 </span>
@@ -329,9 +329,9 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
               <div className="h-1.5 bg-surface-sunken overflow-hidden">
                 <div
                   className={`h-full transition-all duration-500 ${
-                    validationResult.percentage >= passingScore ? 'bg-green-500' :
-                    validationResult.percentage >= 50 ? 'bg-yellow-500' :
-                    'bg-red-500'
+                    validationResult.percentage >= passingScore ? 'bg-status-success-text' :
+                    validationResult.percentage >= 50 ? 'bg-status-warning-text' :
+                    'bg-indicator-alert'
                   }`}
                   style={{ width: `${validationResult.percentage}%` }}
                 />
@@ -350,16 +350,16 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
           {/* Warning indicator */}
           {totalWarningCounts.total > 0 && (
             <div className={`p-2 flex items-center justify-between ${
-              totalWarningCounts.high > 0 ? 'bg-red-50' : 'bg-yellow-50'
+              totalWarningCounts.high > 0 ? 'bg-status-danger-bg' : 'bg-status-warning-bg'
             }`}>
               <div className="flex items-center gap-1.5">
                 <AlertTriangle size={12} className={
-                  totalWarningCounts.high > 0 ? 'text-red-500' : 'text-yellow-500'
+                  totalWarningCounts.high > 0 ? 'text-status-danger-text' : 'text-status-warning-text'
                 } />
                 <span className="text-xs text-txt-secondary">탈락 위험 요소</span>
               </div>
               <span className={`text-xs font-bold ${
-                totalWarningCounts.high > 0 ? 'text-red-600' : 'text-yellow-600'
+                totalWarningCounts.high > 0 ? 'text-status-danger-text' : 'text-status-warning-text'
               }`}>
                 {totalWarningCounts.total}개
               </span>
@@ -491,7 +491,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
                 className={`
                   w-2 h-2 transition-colors
                   ${step.id === currentStep
-                    ? 'bg-blue-600'
+                    ? 'bg-brand'
                     : completedSteps.includes(step.id)
                       ? 'bg-black'
                       : 'bg-surface-sunken'
@@ -512,7 +512,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
           ) : (
             <button
               onClick={() => setShowPreview(true)}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-brand text-white hover:bg-brand-hover transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
             >
               <Eye size={16} />
               완료 및 미리보기

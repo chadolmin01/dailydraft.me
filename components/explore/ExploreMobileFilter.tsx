@@ -51,7 +51,7 @@ export function ExploreMobileFilter({
                   onClick={() => { onCategoryChange(cat.id); onToggle() }}
                   className={`flex items-center gap-1.5 px-3 py-2 text-xs font-bold border transition-all ${
                     selectedCategory === cat.id
-                      ? 'bg-[#4F46E5] text-white border-[#4F46E5]'
+                      ? 'bg-brand text-white border-brand'
                       : 'bg-surface-sunken text-txt-secondary border-border hover:border-border-strong'
                   }`}
                 >
@@ -69,7 +69,7 @@ export function ExploreMobileFilter({
                 <button
                   key={item.tag}
                   onClick={() => { onTagClick(item.tag); onToggle() }}
-                  className="px-3 py-1.5 text-xs font-medium bg-surface-sunken text-txt-secondary border border-border hover:border-orange-400 hover:text-orange-600 transition-colors"
+                  className="px-3 py-1.5 text-xs font-medium bg-surface-sunken text-txt-secondary border border-border hover:border-indicator-trending hover:text-indicator-trending transition-colors"
                 >
                   {item.tag}
                 </button>
@@ -80,7 +80,7 @@ export function ExploreMobileFilter({
           <div className="pt-3 border-t border-dashed border-border">
             <label className="flex items-center gap-2.5 text-sm text-txt-secondary cursor-pointer">
               <div className={`w-4 h-4 border flex items-center justify-center transition-all ${
-                recruitingOnly ? 'bg-emerald-600 border-emerald-600' : 'border-border-strong'
+                recruitingOnly ? 'bg-indicator-online border-indicator-online' : 'border-border-strong'
               }`}>
                 {recruitingOnly && <Check size={10} className="text-white" strokeWidth={3} />}
               </div>

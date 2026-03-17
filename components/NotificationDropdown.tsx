@@ -37,15 +37,15 @@ interface NotificationsResponse {
 }
 
 const typeConfig: Record<string, { icon: React.ElementType; color: string; readColor: string }> = {
-  application_received: { icon: FileText, color: 'text-blue-600 bg-blue-100', readColor: 'text-txt-disabled bg-surface-sunken' },
-  application_accepted: { icon: UserCheck, color: 'text-green-600 bg-green-100', readColor: 'text-txt-disabled bg-surface-sunken' },
-  application_rejected: { icon: UserX, color: 'text-red-500 bg-red-100', readColor: 'text-txt-disabled bg-surface-sunken' },
+  application_received: { icon: FileText, color: 'text-status-info-text bg-status-info-bg', readColor: 'text-txt-disabled bg-surface-sunken' },
+  application_accepted: { icon: UserCheck, color: 'text-status-success-text bg-status-success-bg', readColor: 'text-txt-disabled bg-surface-sunken' },
+  application_rejected: { icon: UserX, color: 'text-status-danger-text bg-status-danger-bg', readColor: 'text-txt-disabled bg-surface-sunken' },
   connection: { icon: Link2, color: 'text-purple-600 bg-purple-100', readColor: 'text-txt-disabled bg-surface-sunken' },
-  deadline: { icon: Clock, color: 'text-orange-600 bg-orange-100', readColor: 'text-txt-disabled bg-surface-sunken' },
-  coffee_chat: { icon: Coffee, color: 'text-amber-600 bg-amber-100', readColor: 'text-txt-disabled bg-surface-sunken' },
+  deadline: { icon: Clock, color: 'text-indicator-trending bg-status-warning-bg', readColor: 'text-txt-disabled bg-surface-sunken' },
+  coffee_chat: { icon: Coffee, color: 'text-indicator-premium-border bg-status-warning-bg', readColor: 'text-txt-disabled bg-surface-sunken' },
   comment: { icon: MessageSquare, color: 'text-txt-secondary bg-surface-sunken', readColor: 'text-txt-disabled bg-surface-sunken' },
   recommendation: { icon: Check, color: 'text-cyan-600 bg-cyan-100', readColor: 'text-txt-disabled bg-surface-sunken' },
-  new_match: { icon: Check, color: 'text-emerald-600 bg-emerald-100', readColor: 'text-txt-disabled bg-surface-sunken' },
+  new_match: { icon: Check, color: 'text-indicator-online bg-status-success-bg', readColor: 'text-txt-disabled bg-surface-sunken' },
 }
 
 const defaultConfig = { icon: Bell, color: 'text-txt-secondary bg-surface-sunken', readColor: 'text-txt-disabled bg-surface-sunken' }
@@ -190,11 +190,11 @@ export function NotificationDropdown() {
         onClick={() => setIsOpen(!isOpen)}
         aria-label="알림"
         aria-expanded={isOpen}
-        className="relative w-8 h-8 flex items-center justify-center text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken rounded-full transition-colors"
+        className="relative w-8 h-8 flex items-center justify-center text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken transition-colors"
       >
         <Bell size={20} />
         {unreadCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full leading-none animate-in zoom-in duration-200">
+          <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 flex items-center justify-center bg-indicator-alert text-white text-[10px] font-bold rounded-full leading-none animate-in zoom-in duration-200">
             {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         )}
@@ -288,7 +288,7 @@ export function NotificationDropdown() {
                         : 'opacity-50 hover:opacity-70'
                     }`}
                   >
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${
+                    <div className={`w-8 h-8 flex items-center justify-center shrink-0 mt-0.5 ${
                       isUnread ? config.color : config.readColor
                     }`}>
                       <Icon size={14} />
@@ -303,7 +303,7 @@ export function NotificationDropdown() {
                           {n.title}
                         </p>
                         {isUnread && (
-                          <span className="w-1.5 h-1.5 bg-blue-500 rounded-full shrink-0" />
+                          <span className="w-1.5 h-1.5 bg-brand rounded-full shrink-0" />
                         )}
                       </div>
                       <p className={`text-[11px] line-clamp-2 mt-0.5 ${

@@ -29,7 +29,7 @@ import InviteCodeModal from '@/components/InviteCodeModal'
 export const Sidebar: React.FC = () => {
   const router = useRouter()
   const pathname = usePathname()
-  const { signOut } = useAuth()
+  const { signOut, user, profile } = useAuth()
   const { isAdmin } = useAdmin()
   const { isPremium, refetch: refetchPremium } = usePremium()
   const { data: unreadMessages = 0 } = useUnreadCount()
@@ -100,7 +100,7 @@ export const Sidebar: React.FC = () => {
       {/* Home / Logo Button - Now goes to Dashboard */}
       <div
         className="mb-8 cursor-pointer group relative"
-        onClick={() => router.push('/dashboard')}
+        onClick={() => router.push('/explore')}
       >
         <div
           className={`w-10 h-10 flex items-center justify-center rounded-sm transition-colors
@@ -127,13 +127,13 @@ export const Sidebar: React.FC = () => {
             className={`w-10 h-10 flex items-center justify-center transition-all duration-200 mx-auto rounded-sm relative group
               ${
                 getActiveTab() === item.id
-                  ? 'bg-[#4F46E5]/5 text-[#4F46E5] border border-[#4F46E5] shadow-solid-sm'
+                  ? 'bg-brand-bg text-brand border border-brand shadow-solid-sm'
                   : 'text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken border border-transparent'
               }`}
           >
             <item.icon size={20} strokeWidth={1.5} />
             {item.id === 'messages' && unreadMessages > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[#4F46E5] text-white text-[0.5rem] font-bold flex items-center justify-center">
+              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-brand text-white text-[0.5rem] font-bold flex items-center justify-center">
                 {unreadMessages > 9 ? '9+' : unreadMessages}
               </span>
             )}
@@ -154,15 +154,15 @@ export const Sidebar: React.FC = () => {
             {/* User Info */}
             <div className="px-3 py-2.5 mb-1 border-b border-dashed border-border">
               <div className="flex items-center gap-2">
-                <span className="font-bold text-sm text-txt-primary">User</span>
+                <span className="font-bold text-sm text-txt-primary">{profile?.nickname || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}</span>
                 {isPremium && (
-                  <span className="flex items-center gap-0.5 px-1.5 py-0.5 bg-amber-500 text-white text-[0.5625rem] font-mono font-bold rounded-sm border border-amber-600">
+                  <span className="flex items-center gap-0.5 px-1.5 py-0.5 bg-indicator-premium text-white text-[0.5625rem] font-mono font-bold rounded-sm border border-indicator-premium-border">
                     <Crown size={10} />
                     PRO
                   </span>
                 )}
               </div>
-              <div className="text-[0.625rem] text-txt-tertiary font-mono mt-0.5">user@draft.io</div>
+              <div className="text-[0.625rem] text-txt-tertiary font-mono mt-0.5">{user?.email || ''}</div>
             </div>
 
             {/* Menu Items */}
@@ -180,21 +180,24 @@ export const Sidebar: React.FC = () => {
               <BarChart3 size={14} /> Usage & Billing
             </button>
             */}
-            <button className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary rounded-sm transition-colors text-left w-full">
-              <Settings size={14} /> Settings
+            <button disabled className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-disabled cursor-not-allowed rounded-sm transition-colors text-left w-full">
+              <Settings size={14} /> Settings <span className="ml-auto text-[0.5625rem] font-mono text-txt-disabled">Coming soon</span>
             </button>
-            <button className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary rounded-sm transition-colors text-left w-full">
+            <button disabled className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-disabled cursor-not-allowed rounded-sm transition-colors text-left w-full">
               <Bell size={14} /> Notifications{' '}
-              <span className="ml-auto bg-status-danger-bg text-status-danger-text px-1.5 py-0.5 rounded-sm text-[0.5625rem] font-mono font-bold border border-status-danger-accent">
-                2
-              </span>
+              {unreadMessages > 0 && (
+                <span className="ml-auto bg-status-danger-bg text-status-danger-text px-1.5 py-0.5 rounded-sm text-[0.5625rem] font-mono font-bold border border-status-danger-accent">
+                  {unreadMessages > 9 ? '9+' : unreadMessages}
+                </span>
+              )}
+              {unreadMessages === 0 && <span className="ml-auto text-[0.5625rem] font-mono text-txt-disabled">Coming soon</span>}
             </button>
 
             {/* Invite Code - Only show for non-premium users */}
             {!isPremium && (
               <button
                 onClick={() => handleMenuAction('invite-code')}
-                className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-[#4F46E5] hover:bg-[#4F46E5]/5 rounded-sm transition-colors text-left w-full"
+                className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-brand hover:bg-brand-bg rounded-sm transition-colors text-left w-full"
               >
                 <Gift size={14} /> 초대 코드 입력
               </button>
@@ -240,14 +243,16 @@ export const Sidebar: React.FC = () => {
               isMenuOpen
                 ? 'bg-black text-white border-black shadow-solid-sm'
                 : isPremium
-                  ? 'bg-amber-500 text-white border-amber-600 shadow-solid-sm'
+                  ? 'bg-indicator-premium text-white border-indicator-premium-border shadow-solid-sm'
                   : 'bg-surface-sunken text-txt-secondary border-border-strong hover:border-border-strong shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
             }`}
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
-          {isPremium ? <Crown size={16} /> : 'U'}
-          {/* Notification Dot */}
-          <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-red-500 rounded-sm border border-surface-card"></div>
+          {isPremium ? <Crown size={16} /> : (profile?.nickname?.[0] || user?.email?.[0] || 'U').toUpperCase()}
+          {/* Notification Dot — only show when there are unread messages */}
+          {unreadMessages > 0 && (
+            <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-indicator-alert rounded-sm border border-surface-card"></div>
+          )}
         </button>
       </div>
 

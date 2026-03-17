@@ -165,7 +165,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
         className={`
           relative border border-dashed p-8 text-center cursor-pointer transition-all
           ${isDragging
-            ? 'border-[#4F46E5] bg-[#4F46E5]/5'
+            ? 'border-brand bg-brand-bg'
             : 'border-border hover:border-border-strong hover:bg-surface-sunken'
           }
         `}
@@ -183,7 +183,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
           <div className="space-y-2">
             <Upload
               size={32}
-              className={`mx-auto ${isDragging ? 'text-[#4F46E5]' : 'text-txt-tertiary'}`}
+              className={`mx-auto ${isDragging ? 'text-brand' : 'text-txt-tertiary'}`}
             />
             <p className="text-sm text-txt-secondary">
               <span className="font-medium text-txt-primary">클릭</span>하거나{' '}
@@ -196,15 +196,15 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
         )}
 
         {isDragging && (
-          <div className="absolute inset-0 bg-[#4F46E5]/10 flex items-center justify-center">
-            <p className="text-sm font-medium text-[#4F46E5]">여기에 놓으세요</p>
+          <div className="absolute inset-0 bg-brand-bg flex items-center justify-center">
+            <p className="text-sm font-medium text-brand">여기에 놓으세요</p>
           </div>
         )}
       </div>
 
       {/* Error Message */}
       {error && (
-        <div className="mt-2 flex items-center gap-2 text-sm text-red-600">
+        <div className="mt-2 flex items-center gap-2 text-sm text-status-danger-text">
           <AlertCircle size={14} />
           <span>{error}</span>
         </div>
@@ -222,7 +222,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
                 e.stopPropagation()
                 clearAll()
               }}
-              className="text-xs text-txt-tertiary hover:text-red-500 transition-colors"
+              className="text-xs text-txt-tertiary hover:text-status-danger-text transition-colors"
             >
               전체 삭제
             </button>
@@ -261,7 +261,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
                   aria-label="파일 삭제"
                   className="p-1 hover:bg-surface-sunken transition-colors"
                 >
-                  <X size={16} className="text-txt-tertiary hover:text-red-500" />
+                  <X size={16} className="text-txt-tertiary hover:text-status-danger-text" />
                 </button>
               </div>
             ))}

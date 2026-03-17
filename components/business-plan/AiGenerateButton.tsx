@@ -92,7 +92,7 @@ export const AiGenerateButton: React.FC<AiGenerateButtonProps> = ({
             ${disabled
               ? 'bg-surface-sunken text-txt-tertiary cursor-not-allowed'
               : isGenerating
-                ? 'bg-blue-100 text-blue-600 cursor-wait'
+                ? 'bg-status-info-bg text-status-info-text cursor-wait'
                 : 'bg-black text-white hover:bg-[#333] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
             }
           `}
@@ -180,7 +180,7 @@ export const AiFieldButton: React.FC<AiFieldButtonProps> = ({
           ? 'bg-surface-sunken text-txt-tertiary cursor-wait'
           : disabled
             ? 'bg-surface-sunken text-txt-tertiary cursor-not-allowed'
-            : 'bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200'
+            : 'bg-status-info-bg text-status-info-text hover:bg-status-info-bg border border-status-info-text/20'
         }
       `}
       title={disabled ? '기본 정보를 먼저 입력하세요' : 'AI로 작성'}
@@ -225,7 +225,7 @@ export const AiAssistantFloating: React.FC<AiAssistantFloatingProps> = ({
             disabled={isGenerating}
             className="w-full flex items-center gap-2 p-3 hover:bg-surface-sunken transition-colors text-left text-sm"
           >
-            <Wand2 size={14} className="text-blue-600" />
+            <Wand2 size={14} className="text-status-info-text" />
             <span>섹션 생성</span>
           </button>
           <button
@@ -239,7 +239,7 @@ export const AiAssistantFloating: React.FC<AiAssistantFloatingProps> = ({
             onClick={() => { onSuggest(); setIsExpanded(false); }}
             className="w-full flex items-center gap-2 p-3 hover:bg-surface-sunken transition-colors text-left text-sm border-t border-border-subtle"
           >
-            <Sparkles size={14} className="text-green-600" />
+            <Sparkles size={14} className="text-status-success-text" />
             <span>개선 제안</span>
           </button>
         </div>

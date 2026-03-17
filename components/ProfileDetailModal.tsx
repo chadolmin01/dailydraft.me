@@ -123,8 +123,8 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                       <div className="flex-1 min-w-0">
                         <h2 className="text-xl font-bold text-txt-primary mb-1 flex items-center gap-2">
                           {profile.nickname}
-                          {(profile as Record<string, unknown>).is_uni_verified && (
-                            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-emerald-600 text-white text-[0.5rem] font-bold uppercase tracking-wider">
+                          {(profile as Record<string, unknown>).is_uni_verified as boolean && (
+                            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-indicator-online text-white text-[0.5rem] font-bold uppercase tracking-wider">
                               <ShieldCheck size={10} /> 인증
                             </span>
                           )}
@@ -164,7 +164,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                   <div className="px-6 sm:px-8 py-5 space-y-6">
                     {/* Vision */}
                     {profile.vision_summary && (() => {
-                      let summary = profile.vision_summary
+                      let summary: string = profile.vision_summary as string
                       let parsed: Record<string, unknown> | null = null
                       try {
                         parsed = JSON.parse(profile.vision_summary as string)
@@ -179,10 +179,10 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                           <p className="text-sm text-txt-secondary leading-relaxed whitespace-pre-line">
                             {summary}
                           </p>
-                          {parsed?.goals && Array.isArray(parsed.goals) && parsed.goals.length > 0 && (
+                          {Array.isArray(parsed?.goals) && (parsed.goals as string[]).length > 0 && (
                             <div className="flex flex-wrap gap-1.5 mt-2">
                               {(parsed.goals as string[]).map((g: string) => (
-                                <span key={g} className="px-2 py-0.5 text-[11px] font-medium bg-[#4F46E5]/5 text-[#4F46E5] border border-[#4F46E5]/20">{g}</span>
+                                <span key={g} className="px-2 py-0.5 text-[11px] font-medium bg-brand-bg text-brand border border-brand-border">{g}</span>
                               ))}
                             </div>
                           )}
@@ -386,7 +386,7 @@ function DirectMessageBox({ receiverId }: { receiverId: string }) {
         <Send size={10} /> SEND MESSAGE
       </h4>
       {sent ? (
-        <p className="text-sm text-emerald-600 font-medium py-2">쪽지가 전송되었습니다!</p>
+        <p className="text-sm text-indicator-online font-medium py-2">쪽지가 전송되었습니다!</p>
       ) : (
         <>
           <textarea

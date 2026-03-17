@@ -72,7 +72,7 @@ const MockDashboardUI = () => (
         <div className="flex flex-wrap justify-between items-end mb-6 border-b border-border-subtle pb-4 gap-4">
           <div>
              <div className="flex items-center gap-2 mb-1">
-                <span className="w-2 h-2 bg-green-500 animate-pulse"></span>
+                <span className="w-2 h-2 bg-indicator-online animate-pulse"></span>
                 <span className="text-[0.625rem] text-txt-disabled font-mono tracking-widest whitespace-nowrap">WORKSPACE / MAIN</span>
              </div>
              <h3 className="text-lg sm:text-xl font-bold text-txt-primary tracking-tight">Dashboard</h3>
@@ -103,20 +103,20 @@ const MockDashboardUI = () => (
               <div className="text-[0.625rem] text-txt-disabled font-mono uppercase tracking-wider">Total Views</div>
               <div>
                 <div className="text-2xl font-bold text-txt-primary font-mono tracking-tighter">1,240</div>
-                <div className="text-[0.625rem] text-green-600 mt-1 font-mono">+12%</div>
+                <div className="text-[0.625rem] text-status-success-text mt-1 font-mono">+12%</div>
               </div>
            </div>
 
            {/* Card 3 */}
-           <div className="bg-[#4F46E5]/5 p-3 sm:p-4 flex flex-col justify-between relative overflow-hidden sm:col-span-2 lg:col-span-1">
-               <div className="absolute top-0 right-0 w-8 h-8 border-l border-b border-[#4F46E5]/20"></div>
+           <div className="bg-brand-bg p-3 sm:p-4 flex flex-col justify-between relative overflow-hidden sm:col-span-2 lg:col-span-1">
+               <div className="absolute top-0 right-0 w-8 h-8 border-l border-b border-brand-border"></div>
                <div className="flex justify-between items-start">
-                  <div className="text-[0.625rem] text-[#4F46E5] font-mono uppercase tracking-wider">Req</div>
-                  <span className="w-2 h-2 bg-[#4F46E5]"></span>
+                  <div className="text-[0.625rem] text-brand font-mono uppercase tracking-wider">Req</div>
+                  <span className="w-2 h-2 bg-brand"></span>
                </div>
                <div>
-                  <div className="text-2xl font-bold text-[#4F46E5] font-mono tracking-tighter">04</div>
-                  <div className="text-[0.625rem] text-[#4F46E5] mt-1 font-mono">WAITING</div>
+                  <div className="text-2xl font-bold text-brand font-mono tracking-tighter">04</div>
+                  <div className="text-[0.625rem] text-brand mt-1 font-mono">WAITING</div>
                </div>
            </div>
         </div>
@@ -130,7 +130,7 @@ const MockDashboardUI = () => (
            <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
               {/* Dark Card */}
               <div className="bg-[#111] p-4 text-white relative group">
-                 <div className="absolute top-3 right-3 border border-white/15 px-1.5 py-0.5 text-[0.625rem] font-mono text-green-400">98%</div>
+                 <div className="absolute top-3 right-3 border border-white/15 px-1.5 py-0.5 text-[0.625rem] font-mono text-status-success-text/70">98%</div>
                  <div className="mb-3">
                     <span className="text-[0.625rem] font-mono text-txt-tertiary block mb-1">SEED STAGE</span>
                     <h5 className="font-bold text-sm leading-tight break-keep">AI Pet Health<br/>Platform</h5>
@@ -138,8 +138,8 @@ const MockDashboardUI = () => (
               </div>
 
                {/* Indigo Card */}
-               <div className="bg-[#4F46E5] p-4 text-white relative">
-                 <div className="absolute top-3 right-3 bg-[#4338CA] px-1.5 py-0.5 text-[0.625rem] font-mono border border-[#4F46E5]">85%</div>
+               <div className="bg-brand p-4 text-white relative">
+                 <div className="absolute top-3 right-3 bg-brand-hover px-1.5 py-0.5 text-[0.625rem] font-mono border border-brand">85%</div>
                  <div className="mb-3">
                     <span className="text-[0.625rem] font-mono text-indigo-200 block mb-1">GOV SUPPORT</span>
                     <h5 className="font-bold text-sm leading-tight break-keep">2026 예비창업<br/>패키지 모집</h5>
@@ -156,7 +156,7 @@ const MockAICard = () => (
    <div className="bg-surface-card border border-border-strong shadow-brutal max-w-sm w-full relative overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
       <div className="bg-black p-4 text-white flex items-center justify-between">
          <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-yellow-400" />
+            <Sparkles className="w-4 h-4 text-status-warning-text" />
             <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest">AI ANALYSIS</span>
          </div>
          <span className="text-[0.625rem] font-mono text-txt-disabled">v2.4</span>
@@ -171,20 +171,20 @@ const MockAICard = () => (
             </div>
 
             {/* Match Item 1 */}
-            <div className="bg-surface-card border border-[#4F46E5]/20 p-2.5 mb-2 relative hover:border-[#4F46E5] transition-colors cursor-pointer group shadow-sm">
-               <div className="absolute -left-[1px] top-0 bottom-0 w-1 bg-[#4F46E5]"></div>
+            <div className="bg-surface-card border border-brand-border p-2.5 mb-2 relative hover:border-brand transition-colors cursor-pointer group shadow-sm">
+               <div className="absolute -left-[1px] top-0 bottom-0 w-1 bg-brand"></div>
                <div className="flex justify-between items-start mb-2 pl-2">
                   <div className="flex items-center gap-3">
                      <div className="w-8 h-8 bg-surface-sunken flex items-center justify-center font-bold text-xs shrink-0">SJ</div>
                      <div>
-                        <div className="font-bold text-sm text-txt-primary group-hover:text-[#4F46E5]">Sarah Jin</div>
+                        <div className="font-bold text-sm text-txt-primary group-hover:text-brand">Sarah Jin</div>
                         <div className="text-[0.625rem] text-txt-tertiary font-mono">ANGEL INVESTOR</div>
                      </div>
                   </div>
-                  <div className="text-[#4F46E5] text-sm font-mono font-bold">94%</div>
+                  <div className="text-brand text-sm font-mono font-bold">94%</div>
                </div>
                <div className="pl-2 w-full bg-surface-sunken h-1 mt-2">
-                  <div className="bg-[#4F46E5] h-full w-[94%]"></div>
+                  <div className="bg-brand h-full w-[94%]"></div>
                </div>
             </div>
 
@@ -313,13 +313,13 @@ const Hero: React.FC = () => {
   const getButtonStyle = () => {
     switch (status) {
       case 'success':
-        return 'bg-green-600 hover:bg-green-600'
+        return 'bg-status-success-text hover:bg-status-success-text'
       case 'duplicate':
         return 'bg-yellow-600 hover:bg-yellow-600'
       case 'error':
-        return 'bg-red-600 hover:bg-red-500'
+        return 'bg-indicator-alert hover:bg-indicator-alert/80'
       default:
-        return 'bg-[#4F46E5] hover:bg-[#4338CA]'
+        return 'bg-brand hover:bg-brand-hover'
     }
   }
 
@@ -339,13 +339,13 @@ const Hero: React.FC = () => {
         className="w-full lg:w-1/2 text-center lg:text-left relative z-10"
       >
         <div className="inline-flex items-center px-3 py-1 bg-surface-card border border-border-strong mb-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] lg:mx-0 mx-auto">
-          <span className="w-2 h-2 bg-green-500 mr-2 animate-pulse"></span>
+          <span className="w-2 h-2 bg-indicator-online mr-2 animate-pulse"></span>
           <span className="text-[0.625rem] font-mono font-bold tracking-widest uppercase">System Operational v2.0</span>
         </div>
 
         <h1 className="text-5xl sm:text-6xl xl:text-7xl font-bold tracking-tighter text-txt-primary mb-8 leading-[1.1] break-keep">
           완벽한 팀은<br />
-          첫 번째 <span className="relative inline-block text-[#4F46E5] mx-2">Draft<svg className="absolute w-full h-3 bottom-1 left-0 text-[#4F46E5]/30 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" opacity="0.5" /></svg></span>에서 시작됩니다
+          첫 번째 <span className="relative inline-block text-brand mx-2">Draft<svg className="absolute w-full h-3 bottom-1 left-0 text-brand/30 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" opacity="0.5" /></svg></span>에서 시작됩니다
         </h1>
 
         <p className="text-lg text-txt-secondary mb-10 leading-relaxed break-keep lg:mx-0 mx-auto max-w-xl lg:max-w-none">
@@ -375,7 +375,7 @@ const Hero: React.FC = () => {
         </form>
 
         {errorMessage && (
-          <div className="text-red-500 text-sm mb-4 lg:text-left text-center">
+          <div className="text-status-danger-text text-sm mb-4 lg:text-left text-center">
             {errorMessage}
           </div>
         )}
@@ -457,8 +457,8 @@ const PainPoints: React.FC = () => {
                variants={fadeInUp}
                className="mb-20 text-center"
             >
-                <div className="inline-flex items-center gap-2 px-3 py-1 border border-red-500/30 bg-red-500/10 text-red-400 mb-6 backdrop-blur-sm">
-                    <div className="w-1.5 h-1.5 bg-red-500 animate-pulse"></div>
+                <div className="inline-flex items-center gap-2 px-3 py-1 border border-indicator-alert/30 bg-indicator-alert/10 text-indicator-alert mb-6 backdrop-blur-sm">
+                    <div className="w-1.5 h-1.5 bg-indicator-alert animate-pulse"></div>
                     <span className="text-[0.625rem] font-mono font-bold tracking-widest uppercase">SYSTEM CRITICAL WARNING</span>
                 </div>
 
@@ -489,14 +489,14 @@ const PainPoints: React.FC = () => {
                        <div className="border-b border-white/10 p-3 flex justify-between items-center bg-[#0a0a0a] group-hover:bg-[#151515] transition-colors">
                           <span className="text-[0.625rem] font-mono text-white/40 group-hover:text-txt-disabled transition-colors truncate max-w-[9.375rem]">{item.path}</span>
                           <div className="flex gap-1.5 opacity-50 group-hover:opacity-100 transition-opacity">
-                             <div className="w-2.5 h-2.5 bg-red-500/80"></div>
-                             <div className="w-2.5 h-2.5 bg-yellow-500/80"></div>
-                             <div className="w-2.5 h-2.5 bg-green-500/80"></div>
+                             <div className="w-2.5 h-2.5 bg-indicator-alert/80"></div>
+                             <div className="w-2.5 h-2.5 bg-status-warning-text/80"></div>
+                             <div className="w-2.5 h-2.5 bg-indicator-online/80"></div>
                           </div>
                        </div>
 
                        <div className="p-6 flex-1 flex flex-col">
-                           <div className="mb-4 font-mono text-[0.625rem] text-red-400 bg-red-950/20 border border-red-900/30 px-2 py-1 self-start inline-block">
+                           <div className="mb-4 font-mono text-[0.625rem] text-status-danger-text/70 bg-red-950/20 border border-red-900/30 px-2 py-1 self-start inline-block">
                              &gt; ERROR_CODE: {item.code}
                            </div>
                            <h3 className="text-xl font-bold mb-3 text-white">{item.title}</h3>
@@ -533,12 +533,12 @@ const Features: React.FC = () => {
         >
            <div className="flex-1">
               <div className="flex items-center gap-2 mb-4">
-                 <Target className="w-4 h-4 text-[#4F46E5]" />
-                 <span className="text-[#4F46E5] font-mono text-[0.625rem] font-bold tracking-widest uppercase">AI MATCHING ENGINE</span>
+                 <Target className="w-4 h-4 text-brand" />
+                 <span className="text-brand font-mono text-[0.625rem] font-bold tracking-widest uppercase">AI MATCHING ENGINE</span>
               </div>
               <h2 className="text-3xl sm:text-4xl font-bold text-txt-primary mb-6 leading-tight break-keep">
                  단순 연결이 아닌,<br/>
-                 정밀한 <span className="bg-yellow-100 px-1">팀 설계</span>입니다.
+                 정밀한 <span className="bg-status-warning-bg px-1">팀 설계</span>입니다.
               </h2>
               <p className="text-txt-secondary leading-relaxed mb-8 break-keep">
                  Draft의 AI는 단순한 스킬 매칭을 넘어섭니다. 프로젝트 이력, 작업 스타일, 비전 정렬도(Alignment)를 분석하여 퍼즐처럼 완벽하게 들어맞는 공동 창업자를 제안합니다.
@@ -579,12 +579,12 @@ const Features: React.FC = () => {
         >
            <div className="flex-1">
               <div className="flex items-center gap-2 mb-4">
-                 <LayoutGrid className="w-4 h-4 text-green-600" />
-                 <span className="text-green-600 font-mono text-[0.625rem] font-bold tracking-widest uppercase">STARTUP OS</span>
+                 <LayoutGrid className="w-4 h-4 text-status-success-text" />
+                 <span className="text-status-success-text font-mono text-[0.625rem] font-bold tracking-widest uppercase">STARTUP OS</span>
               </div>
               <h2 className="text-3xl sm:text-4xl font-bold text-txt-primary mb-6 leading-tight break-keep">
                  아이디어 구상부터 IR까지,<br/>
-                 <span className="bg-green-100 px-1">자동화된 워크스페이스</span>
+                 <span className="bg-status-success-bg px-1">자동화된 워크스페이스</span>
               </h2>
               <p className="text-txt-secondary leading-relaxed mb-8 break-keep">
                  문서 양식 때문에 고민하지 마세요. 예비창업패키지용 PSST 사업계획서부터 주주간 계약서까지, 스타트업 표준 양식을 AI가 초안(Draft)으로 작성해줍니다.
@@ -592,15 +592,15 @@ const Features: React.FC = () => {
 
               <ul className="space-y-4 font-medium text-txt-secondary">
                  <li className="flex items-center gap-3 p-3 bg-surface-sunken border border-transparent hover:border-border transition-colors">
-                    <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
+                    <CheckCircle2 className="w-5 h-5 text-indicator-online shrink-0" />
                     <span className="text-sm">PSST 표준 사업계획서 자동 생성</span>
                  </li>
                  <li className="flex items-center gap-3 p-3 bg-surface-sunken border border-transparent hover:border-border transition-colors">
-                    <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
+                    <CheckCircle2 className="w-5 h-5 text-indicator-online shrink-0" />
                     <span className="text-sm">정부지원사업 마감일 자동 트래킹</span>
                  </li>
                  <li className="flex items-center gap-3 p-3 bg-surface-sunken border border-transparent hover:border-border transition-colors">
-                    <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
+                    <CheckCircle2 className="w-5 h-5 text-indicator-online shrink-0" />
                     <span className="text-sm">법률 검토된 공동창업 계약서 템플릿</span>
                  </li>
               </ul>
@@ -619,9 +619,9 @@ const Features: React.FC = () => {
                        { name: '헬스케어 시장 SOM 분석 데이터', tag: '#Research', status: 'Final', date: 'Feb 10' },
                        { name: '서비스 소개서 (Landing Page Copy)', tag: '#Marketing', status: 'Draft', date: 'Feb 08' }
                     ].map((doc, i) => (
-                       <div key={i} className="p-4 flex items-center justify-between hover:bg-[#4F46E5]/5 transition-colors group cursor-pointer">
+                       <div key={i} className="p-4 flex items-center justify-between hover:bg-brand-bg transition-colors group cursor-pointer">
                           <div className="flex items-center gap-3 overflow-hidden">
-                             <div className="w-8 h-8 bg-surface-sunken border border-border text-txt-tertiary flex items-center justify-center group-hover:bg-[#4F46E5] group-hover:text-white transition-colors shrink-0"><FileText className="w-4 h-4" /></div>
+                             <div className="w-8 h-8 bg-surface-sunken border border-border text-txt-tertiary flex items-center justify-center group-hover:bg-brand group-hover:text-white transition-colors shrink-0"><FileText className="w-4 h-4" /></div>
                              <div className="min-w-0">
                                 <div className="text-sm font-bold text-txt-primary mb-0.5 truncate">{doc.name}</div>
                                 <div className="text-[0.625rem] text-txt-disabled font-mono">{doc.tag}</div>
@@ -629,8 +629,8 @@ const Features: React.FC = () => {
                           </div>
                           <div className="flex items-center gap-3 shrink-0">
                              <span className={`text-[0.625rem] px-2 py-0.5 border font-mono ${
-                                doc.status === 'Final' ? 'bg-green-50 border-green-200 text-green-700' :
-                                doc.status === 'Review' ? 'bg-yellow-50 border-yellow-200 text-yellow-700' :
+                                doc.status === 'Final' ? 'bg-status-success-bg border-status-success-text/20 text-status-success-text' :
+                                doc.status === 'Review' ? 'bg-status-warning-bg border-status-warning-text/20 text-status-warning-text' :
                                 'bg-surface-sunken border-border text-txt-tertiary'
                              }`}>{doc.status}</span>
                           </div>
@@ -659,7 +659,7 @@ const LiveFeed: React.FC = () => {
     <section className="py-12 border-t border-border bg-surface-sunken overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
         <div className="flex items-center gap-2 justify-center">
-            <span className="w-2 h-2 bg-red-500 animate-pulse"></span>
+            <span className="w-2 h-2 bg-indicator-alert animate-pulse"></span>
             <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">LIVE SYSTEM ACTIVITY</span>
         </div>
       </div>
@@ -679,9 +679,9 @@ const LiveFeed: React.FC = () => {
               <div key={i} className="flex-shrink-0 bg-surface-card border border-border p-4 w-72 shadow-sm hover:border-border-strong transition-colors group">
                  <div className="flex justify-between items-start mb-2">
                     <span className={`text-[0.625rem] font-mono px-1.5 py-0.5 border ${
-                      activity.type === 'MATCH' ? 'bg-[#4F46E5]/5 border-[#4F46E5]/20 text-[#4F46E5]' :
-                      activity.type === 'CREATE' ? 'bg-green-50 border-green-200 text-green-600' :
-                      activity.type === 'FUNDING' ? 'bg-yellow-50 border-yellow-200 text-yellow-600' :
+                      activity.type === 'MATCH' ? 'bg-brand-bg border-brand-border text-brand' :
+                      activity.type === 'CREATE' ? 'bg-status-success-bg border-status-success-text/20 text-status-success-text' :
+                      activity.type === 'FUNDING' ? 'bg-status-warning-bg border-status-warning-text/20 text-status-warning-text' :
                       'bg-surface-sunken border-border text-txt-tertiary'
                     }`}>{activity.type}</span>
                     <span className="text-[0.625rem] font-mono text-txt-disabled">{activity.time}</span>
@@ -707,7 +707,7 @@ const FinalCTA: React.FC = () => {
 
             <div className="max-w-4xl mx-auto px-4 relative z-10 text-center">
                 <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-8 tracking-tighter">
-                    Ready to launch<br/>your <span className="text-[#4F46E5]">Draft</span>?
+                    Ready to launch<br/>your <span className="text-brand">Draft</span>?
                 </h2>
                 <p className="text-txt-disabled mb-10 text-lg max-w-2xl mx-auto leading-relaxed break-keep">
                     지금 시작하고, 초기 창업자를 위한 모든 기능을<br className="hidden sm:block"/>
@@ -717,7 +717,7 @@ const FinalCTA: React.FC = () => {
                 <div className="flex flex-col sm:flex-row justify-center gap-4 max-w-md mx-auto">
                   <Link
                     href="/login"
-                    className="bg-[#4F46E5] text-white px-8 py-4 font-bold text-lg hover:bg-[#4338CA] transition-colors flex items-center justify-center gap-2 group w-full sm:w-auto shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                    className="bg-brand text-white px-8 py-4 font-bold text-lg hover:bg-brand-hover transition-colors flex items-center justify-center gap-2 group w-full sm:w-auto shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
                   >
                     GET STARTED <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
@@ -806,7 +806,7 @@ const Footer: React.FC = () => {
 
 export const LandingPage: React.FC = () => {
   return (
-    <div className="min-h-screen font-sans selection:bg-[#4F46E5]/10 text-txt-primary bg-surface-card">
+    <div className="min-h-screen font-sans selection:bg-brand-bg text-txt-primary bg-surface-card">
       <Header />
       <main>
         <Hero />

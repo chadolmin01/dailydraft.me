@@ -1,8 +1,15 @@
 import { chatModel } from '@/src/lib/ai/gemini-client'
+import { createClient } from '@/src/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
   try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+    }
+
     const { text, type } = await request.json()
 
     if (!text || typeof text !== 'string' || !['skills', 'interests'].includes(type)) {
@@ -48,7 +55,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ items: [] })
     }
 
-    const items: string[] = JSON.parse(match[0])
+    let items: string[]
+    try {
+      items = JSON.parse(match[0])
+    } catch {
+      console.error('Parse JSON failed. Raw:', raw.slice(0, 200))
+      return NextResponse.json({ items: [] })
+    }
     // Sanitize: only strings, max 20 items
     const clean = items.filter((v): v is string => typeof v === 'string' && v.length < 50).slice(0, 20)
 

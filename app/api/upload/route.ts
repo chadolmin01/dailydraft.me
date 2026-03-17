@@ -45,7 +45,8 @@ export async function POST(request: Request) {
         continue
       }
 
-      const ext = file.name.split('.').pop() || 'jpg'
+      const typeToExt: Record<string, string> = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif' }
+      const ext = typeToExt[file.type] || 'jpg'
       const path = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
 
       const { error: uploadError } = await supabase.storage

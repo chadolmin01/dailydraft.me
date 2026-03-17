@@ -32,7 +32,10 @@ export async function GET(request: Request) {
       .select('user_id, nickname, university, contact_email, location, desired_position, skills, interest_tags, onboarding_completed, is_premium, created_at, updated_at', { count: 'exact' })
 
     if (search) {
-      query = query.or(`nickname.ilike.%${search}%,university.ilike.%${search}%,contact_email.ilike.%${search}%`)
+      const sanitized = search.replace(/[^a-zA-Z0-9가-힣\s@.\-]/g, '').replace(/%/g, '\\%').replace(/_/g, '\\_')
+      if (sanitized) {
+        query = query.or(`nickname.ilike.%${sanitized}%,university.ilike.%${sanitized}%,contact_email.ilike.%${sanitized}%`)
+      }
     }
 
     query = query.order('created_at', { ascending: false }).range(offset, offset + limit - 1)

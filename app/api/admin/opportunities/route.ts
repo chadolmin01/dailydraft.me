@@ -34,7 +34,10 @@ export async function GET(request: Request) {
       .select('id, title, type, status, creator_id, views_count, applications_count, created_at, updated_at', { count: 'exact' })
 
     if (search) {
-      query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`)
+      const sanitized = search.replace(/[^a-zA-Z0-9가-힣\s@.\-]/g, '').replace(/%/g, '\\%').replace(/_/g, '\\_')
+      if (sanitized) {
+        query = query.or(`title.ilike.%${sanitized}%,description.ilike.%${sanitized}%`)
+      }
     }
 
     if (status) {

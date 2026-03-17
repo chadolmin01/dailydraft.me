@@ -52,13 +52,13 @@ export const RealtimeScorePanel: React.FC<RealtimeScorePanelProps> = ({
     const { percentage, passingScore } = validationResult
 
     if (percentage >= 90) {
-      return { color: 'green', label: '우수', icon: <CheckCircle2 className="text-green-500" size={18} /> }
+      return { color: 'green', label: '우수', icon: <CheckCircle2 className="text-status-success-text" size={18} /> }
     } else if (percentage >= passingScore) {
-      return { color: 'blue', label: '합격선', icon: <Target className="text-blue-500" size={18} /> }
+      return { color: 'blue', label: '합격선', icon: <Target className="text-status-info-text" size={18} /> }
     } else if (percentage >= 50) {
-      return { color: 'yellow', label: '개선 필요', icon: <AlertTriangle className="text-yellow-500" size={18} /> }
+      return { color: 'yellow', label: '개선 필요', icon: <AlertTriangle className="text-status-warning-text" size={18} /> }
     } else {
-      return { color: 'red', label: '보완 필수', icon: <AlertTriangle className="text-red-500" size={18} /> }
+      return { color: 'red', label: '보완 필수', icon: <AlertTriangle className="text-status-danger-text" size={18} /> }
     }
   }, [validationResult])
 
@@ -82,10 +82,10 @@ export const RealtimeScorePanel: React.FC<RealtimeScorePanelProps> = ({
     <div className="bg-surface-card border border-border overflow-hidden">
       {/* Header - Overall Score */}
       <div className={`p-4 ${
-        percentage >= 90 ? 'bg-green-50 border-b border-green-100' :
-        percentage >= passingScore ? 'bg-blue-50 border-b border-blue-100' :
-        percentage >= 50 ? 'bg-yellow-50 border-b border-yellow-100' :
-        'bg-red-50 border-b border-red-100'
+        percentage >= 90 ? 'bg-status-success-bg border-b border-status-success-text/20' :
+        percentage >= passingScore ? 'bg-status-info-bg border-b border-status-info-text/20' :
+        percentage >= 50 ? 'bg-status-warning-bg border-b border-status-warning-text/20' :
+        'bg-status-danger-bg border-b border-status-danger-text/20'
       }`}>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
@@ -99,7 +99,7 @@ export const RealtimeScorePanel: React.FC<RealtimeScorePanelProps> = ({
           </div>
           <div className="flex items-baseline gap-1">
             <span className={`text-3xl font-bold ${
-              percentage >= passingScore ? 'text-green-600' : 'text-red-600'
+              percentage >= passingScore ? 'text-status-success-text' : 'text-status-danger-text'
             }`}>
               {totalScore}
             </span>
@@ -124,10 +124,10 @@ export const RealtimeScorePanel: React.FC<RealtimeScorePanelProps> = ({
           {/* Score bar */}
           <div
             className={`h-full transition-all duration-500 ease-out ${
-              percentage >= 90 ? 'bg-green-500' :
-              percentage >= passingScore ? 'bg-blue-500' :
-              percentage >= 50 ? 'bg-yellow-500' :
-              'bg-red-500'
+              percentage >= 90 ? 'bg-status-success-text' :
+              percentage >= passingScore ? 'bg-status-info-text' :
+              percentage >= 50 ? 'bg-status-warning-text' :
+              'bg-indicator-alert'
             }`}
             style={{ width: `${percentage}%` }}
           />
@@ -135,7 +135,7 @@ export const RealtimeScorePanel: React.FC<RealtimeScorePanelProps> = ({
 
         <div className="mt-2 flex justify-between text-xs">
           <span className={`font-medium ${
-            percentage >= passingScore ? 'text-green-600' : 'text-red-600'
+            percentage >= passingScore ? 'text-status-success-text' : 'text-status-danger-text'
           }`}>
             {percentage >= passingScore ? '합격 기준 충족' : `합격까지 ${passingScore - percentage}점 필요`}
           </span>
@@ -166,7 +166,7 @@ export const RealtimeScorePanel: React.FC<RealtimeScorePanelProps> = ({
       {topImprovements.length > 0 && (
         <div className="p-4">
           <h4 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-1">
-            <Zap size={12} className="text-yellow-500" />
+            <Zap size={12} className="text-status-warning-text" />
             점수 향상 팁
           </h4>
 
@@ -179,8 +179,8 @@ export const RealtimeScorePanel: React.FC<RealtimeScorePanelProps> = ({
               >
                 <div className="flex items-start gap-2">
                   <div className={`shrink-0 mt-0.5 w-5 h-5 flex items-center justify-center text-[0.625rem] font-bold ${
-                    improvement.priority === 'high' ? 'bg-red-100 text-red-600' :
-                    improvement.priority === 'medium' ? 'bg-yellow-100 text-yellow-600' :
+                    improvement.priority === 'high' ? 'bg-status-danger-bg text-status-danger-text' :
+                    improvement.priority === 'medium' ? 'bg-status-warning-bg text-status-warning-text' :
                     'bg-surface-sunken text-txt-secondary'
                   }`}>
                     +{improvement.potentialGain}
@@ -252,18 +252,18 @@ const SectionScoreRow: React.FC<SectionScoreRowProps> = ({
           <div className="w-20 h-2 bg-surface-sunken overflow-hidden">
             <div
               className={`h-full transition-all duration-300 ${
-                percentage >= 80 ? 'bg-green-500' :
-                percentage >= 60 ? 'bg-yellow-500' :
-                'bg-red-500'
+                percentage >= 80 ? 'bg-status-success-text' :
+                percentage >= 60 ? 'bg-status-warning-text' :
+                'bg-indicator-alert'
               }`}
               style={{ width: `${percentage}%` }}
             />
           </div>
 
           <span className={`text-sm font-bold ${
-            percentage >= 80 ? 'text-green-600' :
-            percentage >= 60 ? 'text-yellow-600' :
-            'text-red-600'
+            percentage >= 80 ? 'text-status-success-text' :
+            percentage >= 60 ? 'text-status-warning-text' :
+            'text-status-danger-text'
           }`}>
             {score}/{maxScore}
           </span>
@@ -286,9 +286,9 @@ const SectionScoreRow: React.FC<SectionScoreRowProps> = ({
                 className="flex items-start gap-2 text-xs py-1"
               >
                 {check.passed ? (
-                  <CheckCircle2 size={14} className="text-green-500 mt-0.5 shrink-0" />
+                  <CheckCircle2 size={14} className="text-indicator-online mt-0.5 shrink-0" />
                 ) : (
-                  <AlertTriangle size={14} className="text-red-400 mt-0.5 shrink-0" />
+                  <AlertTriangle size={14} className="text-status-danger-text/70 mt-0.5 shrink-0" />
                 )}
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
@@ -296,7 +296,7 @@ const SectionScoreRow: React.FC<SectionScoreRowProps> = ({
                       {check.name}
                     </span>
                     {!check.passed && check.potentialGain && (
-                      <span className="text-[0.625rem] font-medium text-green-600 bg-green-50 px-1.5 py-0.5">
+                      <span className="text-[0.625rem] font-medium text-status-success-text bg-status-success-bg px-1.5 py-0.5">
                         +{check.potentialGain}점
                       </span>
                     )}
@@ -314,7 +314,7 @@ const SectionScoreRow: React.FC<SectionScoreRowProps> = ({
               e.stopPropagation()
               onClick()
             }}
-            className="mt-3 w-full py-2 text-xs font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 transition-colors"
+            className="mt-3 w-full py-2 text-xs font-medium text-status-info-text hover:text-status-info-text hover:bg-status-info-bg transition-colors"
           >
             이 섹션 편집하기 →
           </button>

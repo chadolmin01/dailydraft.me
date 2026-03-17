@@ -371,7 +371,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
     switch (role) {
       case 'Developer': return 'bg-draft-blue/10 border-draft-blue/20 text-draft-blue';
       case 'Designer': return 'bg-draft-accent/10 border-draft-accent/20 text-draft-accent';
-      case 'VC': return 'bg-emerald-50 border-emerald-200 text-emerald-600';
+      case 'VC': return 'bg-status-success-bg border-indicator-online/20 text-indicator-online';
       default: return 'bg-surface-sunken border-border text-txt-secondary';
     }
   };
@@ -396,7 +396,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
   const isLimitReached = turnCount >= FREE_TURNS;
 
   return (
-    <div className="flex h-full w-full bg-[#FAFAFA]">
+    <div className="flex h-full w-full bg-surface-bg">
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col h-full relative min-w-0">
         <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 scrollbar-hide">
@@ -533,30 +533,30 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
 
             {/* AI Error with Retry */}
             {aiError && !isTyping && (
-              <div className="ml-10 p-4 bg-red-50 border border-red-200">
+              <div className="ml-10 p-4 bg-status-danger-bg border border-status-danger-text/20">
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-red-100 flex items-center justify-center shrink-0">
-                    <span className="text-red-500 text-sm">!</span>
+                  <div className="w-8 h-8 bg-status-danger-bg flex items-center justify-center shrink-0">
+                    <span className="text-status-danger-text text-sm">!</span>
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-red-800 mb-1">
+                    <p className="text-sm font-medium text-status-danger-text mb-1">
                       AI 응답 중 오류가 발생했습니다
                     </p>
-                    <p className="text-xs text-red-600 mb-3">
+                    <p className="text-xs text-status-danger-text mb-3">
                       {aiError.message}
                     </p>
                     <div className="flex gap-2">
                       <button
                         type="button"
                         onClick={handleRetry}
-                        className="px-3 py-1.5 bg-red-600 text-white text-xs font-medium hover:bg-red-700 transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                        className="px-3 py-1.5 bg-status-danger-text text-white text-xs font-medium hover:bg-status-danger-text/90 transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
                       >
                         다시 시도
                       </button>
                       <button
                         type="button"
                         onClick={() => setAiError(null)}
-                        className="px-3 py-1.5 bg-surface-card text-red-600 text-xs font-medium border border-red-200 hover:bg-red-50 transition-colors"
+                        className="px-3 py-1.5 bg-surface-card text-status-danger-text text-xs font-medium border border-status-danger-text/20 hover:bg-status-danger-bg transition-colors"
                       >
                         무시
                       </button>
@@ -636,8 +636,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
            <div className="text-[0.5625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">Current Session</div>
            <div className="flex items-center gap-3">
               <div className={`p-2 border ${
-                  level === ValidationLevel.SKETCH ? 'bg-yellow-50 border-yellow-200 text-yellow-600' :
-                  level === ValidationLevel.DEFENSE ? 'bg-red-50 border-red-200 text-red-600' :
+                  level === ValidationLevel.SKETCH ? 'bg-status-warning-bg border-status-warning-text/20 text-status-warning-text' :
+                  level === ValidationLevel.DEFENSE ? 'bg-status-danger-bg border-status-danger-text/20 text-status-danger-text' :
                   'bg-surface-sunken border-border text-txt-primary'
               }`}>
                   {level === ValidationLevel.SKETCH ? <Zap size={14}/> : level === ValidationLevel.DEFENSE ? <Sword size={14}/> : <Layers size={14}/>}
@@ -651,7 +651,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
          {/* Live Status */}
          <div className="flex items-center justify-between mb-5">
              <div className="flex items-center gap-2">
-                 <div className="w-1.5 h-1.5 bg-green-500 animate-pulse"></div>
+                 <div className="w-1.5 h-1.5 bg-indicator-online animate-pulse"></div>
                  <span className="text-[0.5625rem] font-bold font-mono text-txt-tertiary uppercase tracking-widest">Live Analysis</span>
              </div>
          </div>
@@ -702,7 +702,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
                      <div className="space-y-1.5">
                         {metrics.keyStrengths.map((str, i) => (
                             <div key={i} className="flex gap-2 text-xs text-txt-secondary bg-surface-sunken p-2.5 border border-border-subtle">
-                                <Check size={12} className="text-green-600 shrink-0 mt-0.5" />
+                                <Check size={12} className="text-status-success-text shrink-0 mt-0.5" />
                                 <span className="leading-relaxed break-keep">{str}</span>
                             </div>
                         ))}
@@ -713,8 +713,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
                      <h4 className="text-[0.5625rem] font-bold font-mono text-txt-tertiary uppercase tracking-widest mb-2">Risks</h4>
                      <div className="space-y-1.5">
                         {metrics.keyRisks.map((risk, i) => (
-                            <div key={i} className="flex gap-2 text-xs text-txt-secondary bg-red-50 p-2.5 border border-red-100">
-                                <AlertTriangle size={12} className="text-red-500 shrink-0 mt-0.5" />
+                            <div key={i} className="flex gap-2 text-xs text-txt-secondary bg-status-danger-bg p-2.5 border border-status-danger-text/20">
+                                <AlertTriangle size={12} className="text-status-danger-text shrink-0 mt-0.5" />
                                 <span className="leading-relaxed break-keep">{risk}</span>
                             </div>
                         ))}
@@ -802,7 +802,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
               {messages.find(m => m.id === reflectionModal.msgId)?.responses?.[reflectionModal.respIdx].isReflected && (
                 <button
                   onClick={removeReflection}
-                  className="mr-auto text-red-500 text-[0.625rem] font-bold font-mono uppercase hover:underline"
+                  className="mr-auto text-status-danger-text text-[0.625rem] font-bold font-mono uppercase hover:underline"
                 >
                   Cancel
                 </button>
