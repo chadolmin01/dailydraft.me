@@ -1,42 +1,9 @@
 {
-  "name": "draft-nextjs",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+  "devDependencies": {
+    "md-to-pdf": "^5.2.5"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.78.0",
-    "@google/generative-ai": "^0.24.1",
-    "@supabase/ssr": "^0.5.0",
-    "@supabase/supabase-js": "^2.95.3",
-    "@tanstack/react-query": "^5.90.21",
-    "@tosspayments/payment-widget-sdk": "^0.12.1",
-    "@upstash/redis": "^1.36.2",
-    "clsx": "^2.1.1",
-    "framer-motion": "^12.34.0",
-    "lucide-react": "^0.563.0",
-    "next": "^15.0.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-easy-crop": "^5.5.6",
-    "resend": "^6.9.1",
-    "sonner": "^2.0.7",
-    "tailwind-merge": "^3.4.1",
-    "zod": "^4.3.6"
-  },
-  "devDependencies": {
-    "@tanstack/react-query-devtools": "^5.91.3",
-    "@types/node": "^22.14.0",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
-    "eslint": "^9.0.0",
-    "eslint-config-next": "^15.0.0",
-    "postcss": "^8.0.0",
-    "tailwindcss": "^3.4.0",
-    "typescript": "^5.8.0"
+    "hwp.js": "^0.0.3",
+    "mammoth": "^1.11.0"
   }
 }

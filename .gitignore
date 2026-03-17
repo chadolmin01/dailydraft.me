@@ -1,28 +1,60 @@
-# dependencies
+# Dependencies
 node_modules/
 .pnp
 .pnp.js
 
-# next.js
+# Build
 .next/
 out/
-
-# production
 build/
 dist/
 
-# env
+# Environment
 .env
 .env.local
-.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# debug
+# Debug
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# misc
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
 .DS_Store
-*.tsbuildinfo
-next-env.d.ts
+Thumbs.db
 
-# vercel
-.vercel/
+# Temp
+temp-*/
+nul
+
+# Cache
+.cache/
+*.tsbuildinfo
+
+# Screenshots
+*.png
+
+# Plan docs
+PHASE1_PLAN.md
+SERVICE_PLAN.md
+AI_MATCHING_PLAN.md
+
+# Scripts
+main/scripts/
+
+# Unused feature files (hidden in Phase 1)
+main/src/hooks/useProfileAnalysis.ts
+main/src/hooks/useStartupIdeas.ts
+main/src/lib/ai/profile-analyzer.ts
+main/src/lib/schemas/
+main/src/types/profile-analysis.ts
+main/app/api/profile/analyze/
+main/app/(dashboard)/design/reference.tsx

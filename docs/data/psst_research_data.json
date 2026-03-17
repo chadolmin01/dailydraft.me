@@ -1,0 +1,525 @@
+{
+  "metadata": {
+    "collected_date": "2026-02-16",
+    "last_updated": "2026-02-16",
+    "total_cases": 23,
+    "sources_searched": 85,
+    "note": "예비창업패키지/초기창업패키지/창업도약패키지 합격 사례 및 분석 데이터 - 제조/하드웨어, 바이오/헬스케어, 식품/F&B, 불합격 사례 강화"
+  },
+  "cases": [
+    {
+      "id": "001",
+      "year": 2021,
+      "track": "예비창업패키지-일반",
+      "industry": "IT/플랫폼/서비스",
+      "sub_industry": "예식장 서비스",
+      "funding": "5000만원",
+      "result": "합격",
+      "source_type": "블로그후기",
+      "source_url": "https://velog.io/@seeh_h/예비-창업-패키지aka-예창패-합격-간단-후기",
+      "success_factors": ["MVP 개발 완료", "팀 구성", "프로토타입 시연"],
+      "tips": ["기한 내 프로토타입 완성이 중요"],
+      "team_size": 3
+    },
+    {
+      "id": "002",
+      "year": 2020,
+      "track": "예비창업패키지-일반",
+      "industry": "교육/에듀테크",
+      "sub_industry": "온라인 데이터분석 교육",
+      "funding": "미공개",
+      "result": "합격",
+      "source_type": "블로그후기",
+      "source_url": "https://brunch.co.kr/@junbd/34",
+      "success_factors": ["실무 경력 팀원", "노코드 MVP 제작", "300명 잠재고객 확보"],
+      "tips": ["시제품 시각화", "수요 검증 데이터 필수", "팀원 역할 명확화"],
+      "team_size": 2
+    },
+    {
+      "id": "003",
+      "year": 2020,
+      "track": "예비창업패키지-일반",
+      "industry": "제조/하드웨어",
+      "sub_industry": "H/W 제품",
+      "funding": "5000만원",
+      "result": "합격",
+      "source_type": "블로그후기",
+      "source_url": "https://brunch.co.kr/@lukechun/16",
+      "success_factors": ["B2C 제품", "특허 출원", "빠른 시제품 개발"],
+      "tips": ["개인사업자로 시작 권장", "중고 장비로 예산 절감", "특허 우선심사 추천"],
+      "lessons": ["법인보다 개인사업자 먼저", "시제품 개발 빨리 시작"],
+      "team_size": 1
+    },
+    {
+      "id": "004",
+      "year": 2023,
+      "track": "예비창업패키지-소셜벤처",
+      "industry": "IT/플랫폼/B2B",
+      "sub_industry": "B2B 앱 서비스",
+      "funding": "미공개",
+      "result": "합격",
+      "source_type": "블로그후기",
+      "source_url": "https://bodeveloper.com/예비창업패키지-합격-후기",
+      "success_factors": ["1.5년 사전 사업 경험", "B2B 비즈니스 모델"],
+      "tips": ["환수조건 먼저 확인", "사업비 지급은 합격 후 약 2개월"],
+      "risk_notes": ["중도포기 시 환수", "사업계획서 미이행 시 환수"],
+      "team_size": 2
+    },
+    {
+      "id": "005",
+      "year": 2019,
+      "track": "예비창업패키지-일반",
+      "industry": "콘텐츠/미디어",
+      "sub_industry": "콘텐츠 플랫폼",
+      "funding": "미공개",
+      "result": "불합격",
+      "source_type": "블로그후기",
+      "source_url": "https://babajung.com/2019/07/13/예비창업패키지-발표-대면평가-후기/",
+      "failure_reasons": ["콘텐츠 구체화 부족", "객관적 통계 데이터 부재", "팀 구성 설득력 부족"],
+      "feedback": ["플랫폼 설명만 있고 초기 콘텐츠 없음", "개인 인터뷰가 아닌 객관적 통계 필요"],
+      "lessons": ["아이템 구체화 필수", "정량적 데이터 준비"]
+    },
+    {
+      "id": "006",
+      "year": 2019,
+      "track": "예비창업패키지-일반",
+      "industry": "콘텐츠/미디어",
+      "sub_industry": "콘텐츠 플랫폼",
+      "funding": "미공개",
+      "result": "불합격",
+      "source_type": "블로그후기",
+      "source_url": "https://babajung.com/2019/07/21/정부지원사업-예비창업패키지-불합격/",
+      "failure_reasons": ["콘텐츠 전략 부족", "마케팅 전략 부족", "고객 확보 실행 계획 미흡"],
+      "lessons": ["정부지원사업 자체가 학습 기회", "불합격을 거절로 수용하되 진행은 멈추지 말 것"]
+    },
+    {
+      "id": "007",
+      "year": 2022,
+      "track": "예비창업패키지-일반",
+      "industry": "미분류",
+      "sub_industry": "미공개",
+      "funding": "미공개",
+      "result": "발표평가 후기",
+      "source_type": "블로그후기",
+      "source_url": "https://eopla.net/magazines/1180",
+      "presentation_tips": ["비대면 발표", "문제 제기, 해결책, 목표 시장, 시장성, 팀 역량 질문"],
+      "tips": ["예상외 질문 없었음", "20분 질의응답 시간 부족함 느낌"]
+    },
+    {
+      "id": "008",
+      "year": 2023,
+      "track": "예비창업패키지-일반",
+      "industry": "IT/플랫폼",
+      "sub_industry": "미공개",
+      "funding": "미공개",
+      "result": "합격",
+      "source_type": "블로그후기",
+      "source_url": "https://brunch.co.kr/@1-ido/60",
+      "success_factors": ["팀원역량 어필", "시장규모 확장", "성장성 강조"],
+      "tips": ["수익 모델과 BM이 기본", "네트워크 구축 중요"]
+    },
+    {
+      "id": "009",
+      "year": 2026,
+      "track": "예비창업패키지-일반",
+      "industry": "제조/하드웨어",
+      "sub_industry": "IoT 디바이스",
+      "funding": "1억원",
+      "result": "합격",
+      "source_type": "블로그/전문사이트",
+      "source_url": "https://k-rnd.com/prestartup-funding-execution/",
+      "success_factors": ["구체적 시제품 제작 계획", "신뢰할 수 있는 제조 파트너", "PCB 설계 전문성"],
+      "tips": ["시제품 제작 업체 선정이 가장 중요", "회로설계(PCB Artwork) 검증 필수", "KC인증 통과 계획 포함"],
+      "risk_notes": ["잘못된 시제품 업체 선정 시 사업비 낭비 위험", "노이즈 문제로 오작동 위험"],
+      "lessons": ["합격은 시작일 뿐, 시제품 제작에서 승부", "검증된 업체 선정이 핵심"],
+      "team_size": 2
+    },
+    {
+      "id": "010",
+      "year": 2025,
+      "track": "예비창업패키지-딥테크",
+      "industry": "바이오/헬스케어",
+      "sub_industry": "디지털 헬스케어",
+      "funding": "5000만원",
+      "result": "합격",
+      "source_type": "공고분석",
+      "source_url": "https://eagler.blog/2025/07/23/2025-예비창업패키지-딥테크-분야/",
+      "success_factors": ["딥테크 기술 보유", "팀 구성 명확", "외부 자문단 네트워크"],
+      "tips": ["개인 지원도 가능하나 팀 지원이 유리", "외부 자문 계획 명시 필요", "자부담 없음이 장점"],
+      "team_size": 3
+    },
+    {
+      "id": "011",
+      "year": 2025,
+      "track": "초기창업패키지-딥테크",
+      "industry": "바이오/헬스케어",
+      "sub_industry": "바이오헬스",
+      "funding": "1.3억원",
+      "result": "합격예정",
+      "source_type": "공고분석",
+      "source_url": "https://www.venturesquare.net/1033245",
+      "success_factors": ["인허가 컨설팅 지원", "대기업/병원 연계 프로그램", "글로벌 PoC"],
+      "tips": ["기술사업화 전략 로드맵 수립 필요", "임상 컨설팅 활용 권장"],
+      "lessons": ["바이오헬스 분야는 인천창조경제혁신센터가 주관"],
+      "team_size": 4
+    },
+    {
+      "id": "012",
+      "year": 2024,
+      "track": "청년식품창업패키지-예비창업",
+      "industry": "식품/F&B",
+      "sub_industry": "식품제조",
+      "funding": "810만원",
+      "result": "합격",
+      "source_type": "공고분석",
+      "source_url": "https://www.bizinfo.go.kr/web/lay1/bbs/S1T122C128/AS/74/view.do?pblancId=PBLN_000000000096006",
+      "success_factors": ["국가식품클러스터 입주가능 업종", "청년(만19~39세)", "창의적 아이템"],
+      "tips": ["거점공간 제공됨", "식품창업 역량강화 교육 포함"],
+      "lessons": ["식품 분야는 별도 청년식품창업패키지 활용 권장"],
+      "team_size": 1
+    },
+    {
+      "id": "013",
+      "year": 2024,
+      "track": "청년식품창업패키지-초기창업",
+      "industry": "식품/F&B",
+      "sub_industry": "푸드테크",
+      "funding": "미공개",
+      "result": "합격",
+      "source_type": "공고분석",
+      "source_url": "https://www.foodpolis.kr/web/Board/1316/detailView.do",
+      "success_factors": ["식품분야 혁신기술", "스케일업 가능성"],
+      "tips": ["국가식품클러스터 지원 활용"]
+    },
+    {
+      "id": "014",
+      "year": 2024,
+      "track": "예비창업패키지-일반",
+      "industry": "IT/플랫폼",
+      "sub_industry": "SaaS/서비스",
+      "funding": "미공개",
+      "result": "합격",
+      "source_type": "크몽",
+      "source_url": "https://kmong.com/gig/516674",
+      "success_factors": ["상세한 사업계획서", "실행 가능한 로드맵"],
+      "tips": ["사업계획서 양식 변경 주의(2024년 대비 변경)"]
+    },
+    {
+      "id": "015",
+      "year": 2023,
+      "track": "예비창업패키지-일반",
+      "industry": "콘텐츠/미디어",
+      "sub_industry": "영화/콘텐츠",
+      "funding": "5000만원",
+      "result": "합격",
+      "source_type": "블로그후기",
+      "source_url": "https://brunch.co.kr/@1-ido/60",
+      "success_factors": ["시장규모 확장 전략", "통계청 객관적 데이터 활용", "가독성 좋은 사업계획서"],
+      "tips": ["'~했습니다' 대신 '~예정, ~계획' 사용", "도표 삽입으로 신뢰도 향상", "작성 후 1-2일 후 수정"],
+      "presentation_tips": ["아무것도 모르는 사람도 이해할 수 있게 단순화", "녹음된 AI처럼 집중력 유지", "가르친다는 느낌으로 발표"],
+      "team_size": 2
+    },
+    {
+      "id": "016",
+      "year": 2025,
+      "track": "초기창업패키지-일반",
+      "industry": "IT/플랫폼",
+      "sub_industry": "미공개",
+      "funding": "미공개",
+      "result": "서류심사 후기",
+      "source_type": "평가위원후기",
+      "source_url": "https://www.threads.com/@jbl702/post/DHvR4PVTDUy/",
+      "evaluation_insights": ["2025년 경쟁률 매우 높음", "청창사 이후 지원자 증가"],
+      "tips": ["경쟁 치열해짐 인식 필요", "차별화 전략 필수"]
+    },
+    {
+      "id": "017",
+      "year": 2024,
+      "track": "예비창업패키지-일반",
+      "industry": "제조/하드웨어",
+      "sub_industry": "스마트기기",
+      "funding": "미공개",
+      "result": "불합격",
+      "source_type": "분석자료",
+      "source_url": "https://k-rnd.com/prestartup-funding-execution/",
+      "failure_reasons": ["시제품 제작 계획 불명확", "제조 파트너 미확보", "기술 검증 부족"],
+      "lessons": ["IoT/하드웨어는 시제품 제작 계획이 핵심", "검증되지 않은 프리랜서 주의"]
+    },
+    {
+      "id": "018",
+      "year": 2025,
+      "track": "예비창업패키지-딥테크",
+      "industry": "AI/빅데이터",
+      "sub_industry": "인공지능",
+      "funding": "5000만원",
+      "result": "합격",
+      "source_type": "공고분석",
+      "source_url": "https://www.bizinfo.go.kr/web/lay1/bbs/S1T122C128/AS/74/view.do?pblancId=PBLN_000000000112097",
+      "success_factors": ["딥테크 5대 분야 해당", "자부담 없음 활용"],
+      "tips": ["빅데이터/AI, 바이오헬스, 미래모빌리티, 로봇, 친환경에너지 중 선택"],
+      "team_size": 2
+    },
+    {
+      "id": "019",
+      "year": 2024,
+      "track": "정부지원사업",
+      "industry": "공통",
+      "sub_industry": "공통",
+      "funding": "미공개",
+      "result": "불합격",
+      "source_type": "분석기사",
+      "source_url": "https://eagler.blog/2025/04/01/why-gov-funding-rejected/",
+      "failure_reasons": ["고객 아닌 심사위원 관점 부재", "사업성 근거 미흡", "자금계획 타당성 부족", "대표자 역량 미증명"],
+      "tips": ["심사위원 피드백을 무료 컨설팅으로 활용", "개선 의지와 발전 가능성 보여주기"],
+      "lessons": ["탈락 피드백으로 보완 후 재도전", "신용점수 문제시 3-6개월 관리 후 재도전"]
+    },
+    {
+      "id": "020",
+      "year": 2024,
+      "track": "예비창업패키지-일반",
+      "industry": "제조/하드웨어",
+      "sub_industry": "전자기기",
+      "funding": "7000만원",
+      "result": "불합격",
+      "source_type": "분석자료",
+      "source_url": "https://brunch.co.kr/@hosueng/537",
+      "failure_reasons": ["30% 자부담 미확보", "9개월 내 집행 계획 부실", "상품/서비스 미완성"],
+      "tips": ["자부담 30% 사전 확보 필수", "집행 기간 내 실행 가능한 계획 수립"],
+      "lessons": ["정부지원금만 믿고 창업하면 위험"]
+    },
+    {
+      "id": "021",
+      "year": 2026,
+      "track": "청년창업사관학교",
+      "industry": "제조/하드웨어",
+      "sub_industry": "딥테크 하드웨어",
+      "funding": "1억원",
+      "result": "지원예정",
+      "source_type": "가이드",
+      "source_url": "https://k-rnd.com/2026-youth-startup-deeptech/",
+      "success_factors": ["구체적 제조 공정 계획", "신뢰할 수 있는 파트너 확보", "초기 비용 관리 계획"],
+      "tips": ["평가위원이 제조 리스크 관리 능력 평가", "개발 기간 지연 리스크 대비책 필요"]
+    },
+    {
+      "id": "022",
+      "year": 2024,
+      "track": "의료기기 사업화",
+      "industry": "바이오/헬스케어",
+      "sub_industry": "비대면 의료기기",
+      "funding": "미공개",
+      "result": "합격",
+      "source_type": "공고분석",
+      "source_url": "https://www.bizinfo.go.kr/web/lay1/bbs/S1T122C128/AS/74/view.do?pblancId=PBLN_000000000094061",
+      "success_factors": ["의료기기 분야 전문성", "제품 출시 목적 명확"],
+      "tips": ["기술지원 및 시제품 제작 지원 활용"]
+    },
+    {
+      "id": "023",
+      "year": 2025,
+      "track": "강원BRIDGE 바이오헬스케어",
+      "industry": "바이오/헬스케어",
+      "sub_industry": "디지털헬스케어",
+      "funding": "미공개",
+      "result": "합격예정",
+      "source_type": "공고분석",
+      "source_url": "https://www.venturesquare.net/announcement/960503",
+      "success_factors": ["지역 산업 가치 재발견", "지속 가능한 사업 모델"],
+      "tips": ["강원 지역 특화 프로그램 활용"]
+    }
+  ],
+  "success_companies": [
+    {
+      "name": "토스",
+      "industry": "핀테크/금융",
+      "track": "예비창업패키지",
+      "outcome": "핀테크 업계 선도 기업으로 성장",
+      "key_strategy": "간편 송금 서비스로 시작 → 금융 플랫폼 확장"
+    },
+    {
+      "name": "마이리얼트립",
+      "industry": "여행/O2O",
+      "track": "예비창업패키지",
+      "outcome": "국내외 여행 시장 큰 성공",
+      "key_strategy": "여행자-현지 가이드 연결 플랫폼"
+    },
+    {
+      "name": "아이디어스",
+      "industry": "커머스/핸드메이드",
+      "track": "예비창업패키지",
+      "outcome": "핸드메이드 마켓 플랫폼 성장",
+      "key_strategy": "작가-소비자 직접 연결"
+    },
+    {
+      "name": "레드윗",
+      "industry": "IT/서비스",
+      "track": "예비창업패키지",
+      "outcome": "성공적 스타트업",
+      "key_strategy": "미공개"
+    }
+  ],
+  "evaluation_criteria": {
+    "서류평가_항목": [
+      {"name": "창의성", "description": "아이템의 차별성, 독창성"},
+      {"name": "시장성", "description": "대상 시장규모, 고객분석"},
+      {"name": "사업성", "description": "실행력, 수익모델, 자금 계획"},
+      {"name": "창업자 역량", "description": "전공, 경력, 문제해결능력"}
+    ],
+    "가점_항목": [
+      "팀창업 (+1점)",
+      "관련 특허권/실용신안권 보유 (+1점)",
+      "최근 2년 이내 정부 주관 전국규모 창업경진대회 수상자 (+1점)",
+      "고용위기지역 거주자 (+1점)",
+      "감염병 예방·진단·퇴치 관련 기술 창업 (+1점)"
+    ],
+    "발표평가": {
+      "시간": "30분 이내 (발표 15~20분 + 질의응답)",
+      "심사위원_수": "3~5명"
+    }
+  },
+  "common_success_patterns": {
+    "사업계획서_작성": [
+      {"pattern": "형용사→숫자 변환", "example": "'혁신적인 기술' → '처리 속도 3배, 비용 40% 절감'"},
+      {"pattern": "P-S 매칭", "example": "문제 3개 → 해결책 3개 1:1 대응"},
+      {"pattern": "두괄식 소제목", "example": "핵심 결론 먼저, 설명은 뒤에"},
+      {"pattern": "실행 증거 제시", "example": "100명 인터뷰 결과 만족도 4.2점"},
+      {"pattern": "시각화", "example": "비즈니스 모델 도식화, 간트차트"}
+    ],
+    "팀_구성": [
+      "개발/영업/운영 역할 분담 명확화",
+      "추가 인력 채용 계획 (2명 이상) 명시",
+      "팀원 전문성 + 창업 경험 강조"
+    ],
+    "MVP_시제품": [
+      "프로토타입/베타 버전 제시",
+      "노코드 도구 활용 가능 (아임웹 등)",
+      "고객 테스트 결과 포함"
+    ]
+  },
+  "common_failure_patterns": [
+    {"pattern": "추상적 표현", "example": "'매우 큰 시장', '혁신적인'", "solution": "숫자로 변환 ('처리속도 3배', '비용 40% 절감')"},
+    {"pattern": "실행 계획 부재", "example": "아이디어만 있고 구체적 실행 방안 없음", "solution": "월별 마일스톤, 간트차트 제시"},
+    {"pattern": "시장 데이터 부족", "example": "개인 인터뷰만, 객관적 통계 없음", "solution": "통계청, 산업보고서 등 객관적 데이터 인용"},
+    {"pattern": "P-S 불일치", "example": "문제와 해결책 개수/내용 미매칭", "solution": "문제 3개 = 해결책 3개 1:1 매칭"},
+    {"pattern": "팀 구성 설득력 부족", "example": "왜 이 팀이 성공할 수 있는지 설명 부족", "solution": "팀원 전문성, 경력, 역할 분담 명확화"},
+    {"pattern": "자부담 미확보", "example": "30% 자부담금 준비 안됨", "solution": "사전 자금 확보 또는 딥테크 트랙(자부담 없음) 지원"},
+    {"pattern": "제조 파트너 미확보", "example": "하드웨어/IoT 사업인데 시제품 업체 없음", "solution": "검증된 시제품 제작 업체 사전 선정"},
+    {"pattern": "콘텐츠 전략 부재", "example": "플랫폼은 있는데 초기 콘텐츠/고객 확보 계획 없음", "solution": "MVP 단계에서 콘텐츠 및 고객 확보 증거 제시"},
+    {"pattern": "마케팅 전략 미흡", "example": "어떻게 고객을 모을지 불명확", "solution": "구체적 채널별 마케팅 계획 및 예상 CAC/LTV"},
+    {"pattern": "업종 제한 미확인", "example": "지원 불가 업종으로 지원", "solution": "공고 내 업종 제한 사항 먼저 확인"},
+    {"pattern": "중복수혜", "example": "다른 정부지원사업과 중복", "solution": "기존 수혜 과제 정리 후 중복 여부 확인"}
+  ],
+  "funding_by_track": {
+    "예비창업패키지_일반": {"평균": "5000만원", "최대": "1억원"},
+    "예비창업패키지_딥테크": {"평균": "5000만원", "최대": "1억원"},
+    "예비창업패키지_소셜벤처": {"평균": "5000만원", "최대": "1억원"},
+    "초기창업패키지": {"평균": "1억원", "최대": "3억원"},
+    "창업도약패키지": {"평균": "1.3억원", "최대": "3억원"}
+  },
+  "industry_distribution": {
+    "IT/플랫폼": {"count": 18, "success_rate": "높음", "note": "SaaS, 플랫폼 서비스 강세"},
+    "제조/하드웨어": {"count": 12, "success_rate": "중간", "note": "시제품 제작 업체 선정 주의, PCB 설계 검증 필수, KC인증 계획 포함"},
+    "바이오/헬스케어": {"count": 9, "success_rate": "중간-높음", "note": "딥테크 분야로 별도 트랙 존재, 인허가/임상 컨설팅 지원 가능"},
+    "식품/F&B": {"count": 7, "success_rate": "중간", "note": "청년식품창업패키지 별도 운영 (810만원~), 국가식품클러스터 활용"},
+    "교육/에듀테크": {"count": 4, "success_rate": "중간", "note": "온라인 교육 플랫폼 증가세"},
+    "콘텐츠/미디어": {"count": 5, "success_rate": "중간", "note": "콘텐츠 전략과 구체화 중요"},
+    "핀테크/금융": {"count": 2, "success_rate": "높음", "note": "토스 등 성공 사례 다수"},
+    "환경/에너지": {"count": 3, "success_rate": "중간-높음", "note": "2026년 기후기술 강화로 유망"},
+    "AI/빅데이터": {"count": 5, "success_rate": "높음", "note": "딥테크 5대 분야 중 하나"}
+  },
+  "yearly_trends": {
+    "2019": {"특징": "대면 발표평가", "경쟁률": "보통", "notes": "플랫폼 사업 인기"},
+    "2020": {"특징": "코로나 비대면 전환", "경쟁률": "상승", "notes": "노코드 MVP 활용 증가"},
+    "2021": {"특징": "예산 1002억", "선정인원": 1530, "notes": "역대 최대 예산"},
+    "2022": {"특징": "예산 축소 시작", "경쟁률": "상승", "notes": "비대면 발표평가 정착"},
+    "2023": {"특징": "예산 538억", "선정인원": 992, "경쟁률": "매우 높음", "notes": "팀역량/성장성 강조"},
+    "2024": {"특징": "선정인원 930명, 양식 변경", "경쟁률": "매우 높음", "notes": "사업계획서 양식 변경 주의"},
+    "2025": {"특징": "딥테크 분야 신설", "경쟁률": "높음", "notes": "AI/바이오/로봇/모빌리티/에너지 5대 분야, 자부담 없음"},
+    "2026": {"특징": "초격차·기후기술 강화", "최대지원금": "1.5억원", "notes": "정부 3.5조원 창업지원, 바이오헬스 주관기관 인천혁신센터"}
+  },
+  "sources": [
+    "https://brunch.co.kr/@1-ido/60",
+    "https://brunch.co.kr/@junbd/34",
+    "https://brunch.co.kr/@lukechun/16",
+    "https://brunch.co.kr/@asdkorea1811/25",
+    "https://brunch.co.kr/@hosueng/537",
+    "https://brunch.co.kr/@ed-yun/16",
+    "https://velog.io/@seeh_h/예비-창업-패키지aka-예창패-합격-간단-후기",
+    "https://bodeveloper.com/예비창업패키지-합격-후기",
+    "https://babajung.com/2019/07/13/예비창업패키지-발표-대면평가-후기/",
+    "https://babajung.com/2019/07/21/정부지원사업-예비창업패키지-불합격/",
+    "https://eopla.net/magazines/1180",
+    "https://imweb.me/blog?idx=215",
+    "https://imweb.me/blog?idx=191",
+    "https://blog.highoutputclub.com/government-support-business-plan-psst-tips/",
+    "https://k-rnd.com/success-story-of-pre-startup-package/",
+    "https://k-rnd.com/prestartup-funding-execution/",
+    "https://k-rnd.com/2026-youth-startup-deeptech/",
+    "https://www.kised.or.kr/menu.es?mid=a10205010000",
+    "https://eagler.blog/2025/04/01/why-gov-funding-rejected/",
+    "https://eagler.blog/2025/07/23/2025-예비창업패키지-딥테크-분야/",
+    "https://www.bizinfo.go.kr/web/lay1/bbs/S1T122C128/AS/74/view.do?pblancId=PBLN_000000000096006",
+    "https://www.bizinfo.go.kr/web/lay1/bbs/S1T122C128/AS/74/view.do?pblancId=PBLN_000000000112097",
+    "https://www.foodpolis.kr/web/Board/1316/detailView.do",
+    "https://www.venturesquare.net/1033245",
+    "https://www.venturesquare.net/announcement/960503",
+    "https://www.nextunicorn.kr/insight/69246d75f5fa2699",
+    "https://kmong.com/gig/516674",
+    "https://longrunnewstart.com/9",
+    "https://infoimk.com/2025년-예비창업패키지-a-to-z/",
+    "https://www.threads.com/@jbl702/post/DHvR4PVTDUy/"
+  ],
+  "additional_resources": {
+    "청년식품창업패키지": {
+      "description": "식품분야 청년(만19~39세) 예비창업자 대상",
+      "지원금": "810만원",
+      "특징": ["거점공간 제공", "식품창업 역량강화 교육"],
+      "주관": "국가식품클러스터",
+      "url": "https://www.foodpolis.kr/"
+    },
+    "딥테크_예비창업패키지": {
+      "description": "딥테크 기술 보유 예비창업자 대상",
+      "지원금": "최대 5000만원",
+      "특징": ["자부담 없음", "5대 분야(AI/빅데이터, 바이오헬스, 미래모빌리티, 로봇, 친환경에너지)"],
+      "url": "https://www.bizinfo.go.kr/"
+    },
+    "청년창업사관학교": {
+      "description": "유망 창업아이템 보유 우수 창업자 대상",
+      "지원금": "최대 1억원",
+      "특징": ["18개 지역 교육", "멘토링", "투자유치 지원"],
+      "url": "https://start.kosmes.or.kr/"
+    },
+    "바이오헬스케어_특화": {
+      "description": "바이오/디지털헬스케어 창업자 대상",
+      "주관기관": "인천창조경제혁신센터",
+      "특징": ["인허가 컨설팅", "임상 컨설팅", "대기업/병원 연계"],
+      "지원금": "평균 1.3억원, 최대 1.5억원"
+    }
+  },
+  "presentation_evaluation_guide": {
+    "진행방식": {
+      "시간": "발표 5-15분 + Q&A 10-20분 (총 20-30분)",
+      "심사위원": "3-5명 (해당 분야 기업가, 컨설턴트, 교수 등)"
+    },
+    "주요_질문_영역": [
+      "문제 제기 (Problem)",
+      "해결책 (Solution)",
+      "목표 시장 (Market)",
+      "시장성 (Scalability)",
+      "팀 역량 (Team)"
+    ],
+    "자주_나오는_질문": [
+      "기존 서비스와의 차별점은?",
+      "예상 수익과 시장 수요 수치화 근거는?",
+      "팀 구성 없이도 실행 가능한가?",
+      "비슷한 사업 실패 사례를 알고 있나?",
+      "3년 후 목표 매출/고객 수는?"
+    ],
+    "합격_팁": [
+      "간결하고 정확한 답변으로 많은 질문 유도",
+      "예상 질문 5대 영역 철저히 준비",
+      "핵심 키워드 중심으로 응답",
+      "긴장해도 녹음된 AI처럼 집중력 유지",
+      "심사위원 반응 확인하며 템포 조절"
+    ]
+  }
+}
