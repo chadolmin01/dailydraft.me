@@ -73,7 +73,8 @@ async function generatePdfFromHtml(htmlContent: string): Promise<Buffer> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let puppeteer: any
   try {
-    puppeteer = await import(/* webpackIgnore: true */ 'puppeteer')
+    const mod = 'puppeteer'
+    puppeteer = await (Function('m', 'return import(m)')(mod))
   } catch {
     throw new Error('PDF 생성은 현재 서버 환경에서 지원되지 않습니다.')
   }
