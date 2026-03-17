@@ -43,7 +43,7 @@ export const Network: React.FC = () => {
           <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-dashed border-border pb-6">
              <div>
                 <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-2 flex items-center gap-2">
-                   <span className="w-2 h-2 bg-[#4F46E5]"></span>
+                   <span className="w-2 h-2 bg-brand"></span>
                    CRM / CONTACTS
                 </div>
                 <h1 className="text-3xl font-bold text-txt-primary tracking-tight">My Network</h1>
@@ -53,7 +53,7 @@ export const Network: React.FC = () => {
                 <button className="border border-border-strong px-4 py-2 text-sm font-medium hover:bg-black hover:text-white transition-colors flex items-center gap-2">
                    <Upload size={16} /> Import
                 </button>
-                <button className="bg-[#4F46E5] text-white border-2 border-[#4F46E5] px-4 py-2 text-sm font-medium hover:bg-[#4338CA] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex items-center gap-2">
+                <button className="bg-brand text-white border border-brand px-4 py-2 text-sm font-medium hover:bg-brand-hover shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex items-center gap-2">
                    <UserPlus size={16} /> Add Contact
                 </button>
              </div>
@@ -70,7 +70,7 @@ export const Network: React.FC = () => {
                    <input
                       type="text"
                       placeholder="Search contacts..."
-                      className="flex-1 py-2 bg-transparent text-sm focus:outline-none placeholder:text-txt-disabled border-2 border-transparent focus:border-[#4F46E5]"
+                      className="flex-1 py-2 bg-transparent text-sm focus:outline-none placeholder:text-txt-disabled border border-transparent focus:border-brand"
                    />
                    <div className="h-6 w-px bg-border mx-2"></div>
                    <div className="flex gap-2 pr-2">
@@ -149,7 +149,7 @@ export const Network: React.FC = () => {
                 {/* AI Discovery */}
                 <div className="bg-black text-white p-6 shadow-brutal relative overflow-hidden group border border-black">
                    <div className="relative z-10">
-                      <div className="flex items-center gap-2 mb-4 text-[#4F46E5]">
+                      <div className="flex items-center gap-2 mb-4 text-brand">
                          <Sparkles size={16} fill="currentColor" />
                          <span className="text-[0.625rem] font-bold font-mono uppercase tracking-widest">AI Analysis</span>
                       </div>
@@ -164,7 +164,7 @@ export const Network: React.FC = () => {
                             <div key={rec.id} className="bg-[#111] border border-white/10 p-3 hover:border-white/30 transition-colors cursor-pointer">
                                <div className="flex justify-between items-start mb-1">
                                   <div className="font-bold text-sm text-white/90">{rec.name}</div>
-                                  <span className="text-[0.625rem] font-mono font-bold text-[#4F46E5]">{rec.match}% FIT</span>
+                                  <span className="text-[0.625rem] font-mono font-bold text-brand">{rec.match}% FIT</span>
                                </div>
                                <div className="text-[0.625rem] text-white/40 font-mono mb-2">{rec.role}</div>
                                <div className="text-[0.625rem] text-white/50">
@@ -185,7 +185,7 @@ export const Network: React.FC = () => {
                    <div className="flex items-center gap-2 mb-4">
                       <TrendingUp size={16} />
                       <h3 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary flex items-center gap-2">
-                        <span className="w-2 h-2 bg-[#4F46E5]"></span>
+                        <span className="w-2 h-2 bg-brand"></span>
                         Network Health
                       </h3>
                    </div>
@@ -202,7 +202,7 @@ export const Network: React.FC = () => {
                       </div>
 
                       <div className="flex items-center gap-3 pt-4 border-t border-dashed border-border">
-                         <div className="text-2xl font-bold font-mono text-[#4F46E5]">+3</div>
+                         <div className="text-2xl font-bold font-mono text-brand">+3</div>
                          <div className="text-xs text-txt-secondary leading-tight">
                             Coffee Chats<br/>this month
                          </div>

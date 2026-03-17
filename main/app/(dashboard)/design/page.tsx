@@ -190,7 +190,7 @@ export default function DesignPage() {
                     <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-xs font-medium">Frontend</span>
                     <span className="text-xs bg-green-50 text-green-600 px-2 py-0.5 rounded-xs font-medium">모집중</span>
                     <span className="text-xs bg-violet-50 text-violet-600 px-2 py-0.5 rounded-xs font-medium">커피챗</span>
-                    <span className="text-xs bg-amber-50 text-amber-600 px-2 py-0.5 rounded-xs font-medium">마감임박</span>
+                    <span className="text-xs bg-amber-50 text-indicator-premium-border px-2 py-0.5 rounded-xs font-medium">마감임박</span>
                     <span className="text-xs bg-pink-50 text-pink-600 px-2 py-0.5 rounded-xs font-medium">인기</span>
                   </div>
                 </div>

@@ -16,8 +16,8 @@ const variantStyles: Record<ButtonVariant, string> = {
   primary: 'bg-black text-white hover:bg-[#333] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]',
   secondary: 'bg-surface-card border border-border-strong text-black hover:bg-black hover:text-white',
   ghost: 'text-black hover:bg-surface-sunken',
-  blue: 'bg-[#4F46E5] text-white hover:bg-[#4338CA] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]',
-  danger: 'bg-red-600 text-white hover:bg-red-700 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]',
+  blue: 'bg-brand text-white hover:bg-brand-hover shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]',
+  danger: 'bg-status-danger-text text-white hover:bg-status-danger-text/90 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]',
 }
 
 const sizeStyles: Record<ButtonSize, string> = {

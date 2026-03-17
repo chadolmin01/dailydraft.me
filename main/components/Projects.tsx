@@ -96,20 +96,20 @@ export const Projects: React.FC = () => {
               {/* 필터 */}
               <div className="bg-surface-card border border-border-strong p-4">
                 <h3 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-3 flex items-center gap-2">
-                  <span className="w-2 h-2 bg-[#4F46E5]" />
+                  <span className="w-2 h-2 bg-brand" />
                   필터
                 </h3>
                 <div className="space-y-2">
                   <label className="flex items-center gap-2 text-sm text-txt-secondary cursor-pointer">
-                    <input type="checkbox" className="border-2 border-border-strong" />
+                    <input type="checkbox" className="border border-border-strong" />
                     팀원 모집 중
                   </label>
                   <label className="flex items-center gap-2 text-sm text-txt-secondary cursor-pointer">
-                    <input type="checkbox" className="border-2 border-border-strong" />
+                    <input type="checkbox" className="border border-border-strong" />
                     커피챗 가능
                   </label>
                   <label className="flex items-center gap-2 text-sm text-txt-secondary cursor-pointer">
-                    <input type="checkbox" className="border-2 border-border-strong" />
+                    <input type="checkbox" className="border border-border-strong" />
                     이번 주 신규
                   </label>
                 </div>
@@ -129,7 +129,7 @@ export const Projects: React.FC = () => {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 bg-surface-card border-2 border-border-strong text-sm font-mono focus:outline-none focus:border-[#4F46E5] placeholder:text-txt-disabled"
+                  className="w-full pl-11 pr-4 py-3 bg-surface-card border border-border-strong text-sm font-mono focus:outline-none focus:border-brand placeholder:text-txt-disabled"
                   placeholder="프로젝트, 역할, 기술 스택 검색..."
                 />
               </div>
@@ -284,7 +284,7 @@ export const Projects: React.FC = () => {
                 <p className="text-txt-disabled text-xs mb-4 font-mono">프로젝트를 등록하고 함께할 팀원을 모집하세요</p>
                 <Link
                   href="/projects/new"
-                  className="w-full bg-white text-surface-inverse text-sm font-bold py-2 border-2 border-white hover:bg-surface-sunken transition-all flex items-center justify-center gap-1.5 shadow-[2px_2px_0px_0px_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                  className="w-full bg-white text-surface-inverse text-sm font-bold py-2 border border-white hover:bg-surface-sunken transition-all flex items-center justify-center gap-1.5 shadow-[2px_2px_0px_0px_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
                 >
                   <Plus size={16} />
                   프로젝트 등록하기

@@ -76,7 +76,7 @@ export function HelpWidget() {
         className={`fixed bottom-6 right-6 z-fixed w-12 h-12 flex items-center justify-center transition-all duration-300 ${
           isOpen
             ? 'bg-surface-inverse text-txt-inverse rotate-90'
-            : 'bg-[#4F46E5] text-white border-2 border-[#4F46E5] shadow-brutal hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
+            : 'bg-brand text-white border border-brand shadow-brutal hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
         }`}
         aria-label="도움말"
       >
@@ -86,7 +86,7 @@ export function HelpWidget() {
       {/* Panel */}
       {isOpen && (
         <div
-          className="fixed bottom-20 right-6 z-fixed w-[22rem] sm:w-[24rem] max-h-[min(32rem,calc(100vh-8rem))] bg-surface-card border-2 border-border-strong shadow-brutal-xl flex flex-col"
+          className="fixed bottom-20 right-6 z-fixed w-[22rem] sm:w-[24rem] max-h-[min(32rem,calc(100vh-8rem))] bg-surface-card border border-border-strong shadow-brutal-xl flex flex-col"
           style={{ animation: 'helpWidgetIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) both' }}
         >
           <style dangerouslySetInnerHTML={{ __html: `
@@ -96,7 +96,7 @@ export function HelpWidget() {
           {/* Header */}
           <div className="px-4 py-3 border-b border-border bg-surface-card shrink-0">
             <div className="flex items-center gap-2 mb-2.5">
-              <div className="w-7 h-7 bg-[#4F46E5] flex items-center justify-center shrink-0">
+              <div className="w-7 h-7 bg-brand flex items-center justify-center shrink-0">
                 <span className="text-white text-[10px] font-black">D</span>
               </div>
               <div>
@@ -117,7 +117,7 @@ export function HelpWidget() {
                   onClick={() => setTab(t.key)}
                   className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 text-[11px] font-bold transition-all ${
                     tab === t.key
-                      ? 'bg-[#4F46E5] text-white'
+                      ? 'bg-brand text-white'
                       : 'bg-surface-sunken text-txt-tertiary hover:text-txt-secondary hover:bg-surface-card border border-border'
                   }`}
                 >
@@ -280,12 +280,12 @@ function ChatTab() {
             onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send()}
             placeholder="질문을 입력하세요..."
             disabled={isLoading}
-            className="flex-1 px-3 py-2 text-[12px] bg-surface-card border border-border focus:outline-none focus:border-[#4F46E5] transition-colors placeholder:text-txt-disabled disabled:opacity-50"
+            className="flex-1 px-3 py-2 text-[12px] bg-surface-card border border-border focus:outline-none focus:border-brand transition-colors placeholder:text-txt-disabled disabled:opacity-50"
           />
           <button
             onClick={send}
             disabled={isLoading || !input.trim()}
-            className="w-8 h-8 flex items-center justify-center bg-[#4F46E5] text-white border-2 border-[#4F46E5] hover:bg-[#4338CA] disabled:opacity-30 transition-colors shrink-0"
+            className="w-8 h-8 flex items-center justify-center bg-brand text-white border border-brand hover:bg-brand-hover disabled:opacity-30 transition-colors shrink-0"
           >
             <Send size={14} />
           </button>
@@ -342,7 +342,7 @@ function ReportTab() {
         <p className="text-[12px] text-txt-tertiary text-center">빠르게 확인하고 처리하겠습니다.<br />감사합니다!</p>
         <button
           onClick={() => setSubmitted(false)}
-          className="mt-2 px-4 py-2 text-[12px] font-bold bg-surface-card border-2 border-border-strong text-txt-secondary hover:bg-black hover:text-white hover:border-border-strong transition-colors"
+          className="mt-2 px-4 py-2 text-[12px] font-bold bg-surface-card border border-border-strong text-txt-secondary hover:bg-black hover:text-white hover:border-border-strong transition-colors"
         >
           새 리포트 작성
         </button>
@@ -362,7 +362,7 @@ function ReportTab() {
               onClick={() => setCategory(cat.value)}
               className={`flex items-center gap-2 px-3 py-2 text-[11px] font-medium border transition-all ${
                 category === cat.value
-                  ? 'bg-[#4F46E5] text-white border-[#4F46E5]'
+                  ? 'bg-brand text-white border-brand'
                   : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong'
               }`}
             >
@@ -382,7 +382,7 @@ function ReportTab() {
           onChange={e => setTitle(e.target.value)}
           placeholder="간단히 요약해주세요"
           maxLength={200}
-          className="w-full px-3 py-2 text-[12px] bg-surface-card border border-border focus:outline-none focus:border-[#4F46E5] transition-colors placeholder:text-txt-disabled"
+          className="w-full px-3 py-2 text-[12px] bg-surface-card border border-border focus:outline-none focus:border-brand transition-colors placeholder:text-txt-disabled"
         />
       </div>
 
@@ -395,7 +395,7 @@ function ReportTab() {
           placeholder="어떤 상황에서 발생했는지, 기대했던 동작은 무엇인지 알려주세요"
           rows={4}
           maxLength={5000}
-          className="w-full px-3 py-2 text-[12px] bg-surface-sunken border border-border focus:outline-none focus:border-[#4F46E5] transition-colors resize-none placeholder:text-txt-disabled"
+          className="w-full px-3 py-2 text-[12px] bg-surface-sunken border border-border focus:outline-none focus:border-brand transition-colors resize-none placeholder:text-txt-disabled"
         />
         <p className="text-[9px] text-txt-disabled text-right mt-0.5 font-mono">{description.length}/5000</p>
       </div>
@@ -411,7 +411,7 @@ function ReportTab() {
       <button
         onClick={handleSubmit}
         disabled={!category || !title.trim() || !description.trim() || isSubmitting}
-        className="w-full py-2.5 text-[12px] font-bold bg-[#4F46E5] text-white border-2 border-[#4F46E5] hover:bg-[#4338CA] disabled:opacity-30 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+        className="w-full py-2.5 text-[12px] font-bold bg-brand text-white border border-brand hover:bg-brand-hover disabled:opacity-30 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
       >
         {isSubmitting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
         리포트 제출

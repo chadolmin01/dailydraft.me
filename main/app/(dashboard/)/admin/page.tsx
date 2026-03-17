@@ -64,7 +64,7 @@ export default function AdminDashboardPage() {
   if (!isAdmin) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center h-screen bg-surface-sunken">
-        <ShieldX size={48} className="text-red-400 mb-4" />
+        <ShieldX size={48} className="text-status-danger-text/70 mb-4" />
         <p className="text-txt-secondary">접근 권한이 없습니다</p>
       </div>
     )
@@ -107,7 +107,7 @@ export default function AdminDashboardPage() {
           </div>
         ) : isError ? (
           <Card padding="p-8" className="text-center">
-            <AlertCircle size={48} className="mx-auto text-red-400 mb-4" />
+            <AlertCircle size={48} className="mx-auto text-status-danger-text/70 mb-4" />
             <p className="text-txt-secondary">통계를 불러올 수 없습니다</p>
           </Card>
         ) : (

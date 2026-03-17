@@ -49,20 +49,20 @@ const FOUNDER_TYPE_CONFIG: Record<FounderType, { icon: React.ReactNode; label: s
 }
 
 function getScoreColor(score: number): string {
-  if (score >= 80) return 'text-green-600'
+  if (score >= 80) return 'text-status-success-text'
   if (score >= 60) return 'text-txt-primary'
-  if (score >= 40) return 'text-yellow-600'
-  return 'text-red-600'
+  if (score >= 40) return 'text-status-warning-text'
+  return 'text-status-danger-text'
 }
 
 function getDifficultyConfig(difficulty: 'easy' | 'medium' | 'hard') {
   switch (difficulty) {
     case 'easy':
-      return { label: '쉬움', desc: '빠르게 진입 가능', color: 'text-green-600 bg-green-50 border-green-200' }
+      return { label: '쉬움', desc: '빠르게 진입 가능', color: 'text-status-success-text bg-status-success-bg border-status-success-text/20' }
     case 'medium':
       return { label: '보통', desc: '적절한 준비 필요', color: 'text-txt-secondary bg-surface-sunken border-border' }
     case 'hard':
-      return { label: '어려움', desc: '높은 진입 장벽', color: 'text-red-600 bg-red-50 border-red-200' }
+      return { label: '어려움', desc: '높은 진입 장벽', color: 'text-status-danger-text bg-status-danger-bg border-status-danger-text/20' }
   }
 }
 
@@ -86,7 +86,7 @@ export const StartupIdeaModal: React.FC<StartupIdeaModalProps> = ({
       />
 
       {/* Modal */}
-      <div className="relative bg-surface-card shadow-brutal w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col border-2 border-border-strong">
+      <div className="relative bg-surface-card shadow-brutal w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col border border-border-strong">
         {/* Header */}
         <div className="flex items-start justify-between p-6 border-b border-border-strong">
           <div className="flex items-center gap-4">
@@ -191,11 +191,11 @@ export const StartupIdeaModal: React.FC<StartupIdeaModalProps> = ({
                 )}
 
                 {!analysis.korea_exists && (
-                  <div className="flex items-start gap-2 p-3 bg-status-success-bg border border-green-300">
+                  <div className="flex items-start gap-2 p-3 bg-status-success-bg border border-status-success-text/20">
                     <CheckCircle size={16} className="text-status-success-text mt-0.5 shrink-0" />
                     <div>
-                      <div className="text-xs font-bold text-green-800">유사 서비스 없음</div>
-                      <div className="text-xs text-green-700 mt-0.5">한국 시장에 직접 경쟁자가 없습니다</div>
+                      <div className="text-xs font-bold text-status-success-text">유사 서비스 없음</div>
+                      <div className="text-xs text-status-success-text mt-0.5">한국 시장에 직접 경쟁자가 없습니다</div>
                     </div>
                   </div>
                 )}
@@ -279,7 +279,7 @@ export const StartupIdeaModal: React.FC<StartupIdeaModalProps> = ({
 
           <button
             onClick={onStartBuilding}
-            className="px-6 py-2.5 bg-black text-white text-sm font-bold hover:bg-[#333] transition-colors flex items-center gap-2 border-2 border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            className="px-6 py-2.5 bg-black text-white text-sm font-bold hover:bg-[#333] transition-colors flex items-center gap-2 border border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
           >
             이 아이디어로 빌딩 시작
             <ArrowUpRight size={16} />

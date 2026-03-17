@@ -40,17 +40,17 @@ interface ErrorLog {
 
 const levelConfig = {
   debug: { icon: Bug, color: 'text-txt-tertiary', bg: 'bg-surface-sunken' },
-  info: { icon: Info, color: 'text-blue-500', bg: 'bg-blue-50' },
-  warn: { icon: AlertTriangle, color: 'text-yellow-600', bg: 'bg-yellow-50' },
-  error: { icon: AlertCircle, color: 'text-red-500', bg: 'bg-red-50' },
-  fatal: { icon: Skull, color: 'text-red-700', bg: 'bg-red-100' },
+  info: { icon: Info, color: 'text-status-info-text', bg: 'bg-status-info-bg' },
+  warn: { icon: AlertTriangle, color: 'text-status-warning-text', bg: 'bg-status-warning-bg' },
+  error: { icon: AlertCircle, color: 'text-status-danger-text', bg: 'bg-status-danger-bg' },
+  fatal: { icon: Skull, color: 'text-status-danger-text', bg: 'bg-status-danger-bg' },
 }
 
 const sourceColors = {
-  api: 'border border-blue-600 text-blue-700',
+  api: 'border border-status-info-text text-status-info-text',
   webhook: 'border border-purple-600 text-purple-700',
-  cron: 'border border-green-600 text-green-700',
-  client: 'border border-orange-600 text-orange-700',
+  cron: 'border border-status-success-text text-status-success-text',
+  client: 'border border-indicator-trending text-indicator-trending',
 }
 
 export default function ErrorLogsPage() {
@@ -63,32 +63,7 @@ export default function ErrorLogsPage() {
 
   const supabase = createClient()
 
-  // Redirect non-admins
-  useEffect(() => {
-    if (!isAdminLoading && !isAdmin) {
-      router.push('/dashboard')
-    }
-  }, [isAdmin, isAdminLoading, router])
-
-  // Show loading while checking admin status
-  if (isAdminLoading) {
-    return (
-      <div className="flex-1 flex items-center justify-center h-screen bg-surface-sunken">
-        <Loader2 className="animate-spin text-txt-disabled" size={32} />
-      </div>
-    )
-  }
-
-  // Show access denied (brief flash before redirect)
-  if (!isAdmin) {
-    return (
-      <div className="flex-1 flex flex-col items-center justify-center h-screen bg-surface-sunken">
-        <ShieldX size={48} className="text-red-400 mb-4" />
-        <p className="text-txt-secondary">접근 권한이 없습니다</p>
-      </div>
-    )
-  }
-
+  // useQuery must be called before any conditional returns (React hooks rules)
   const { data: logs, isLoading, isError, refetch } = useQuery({
     queryKey: ['error-logs', levelFilter, sourceFilter],
     queryFn: async () => {
@@ -109,7 +84,34 @@ export default function ErrorLogsPage() {
       if (error) throw error
       return data as ErrorLog[]
     },
+    enabled: isAdmin && !isAdminLoading,
   })
+
+  // Redirect non-admins
+  useEffect(() => {
+    if (!isAdminLoading && !isAdmin) {
+      router.push('/explore')
+    }
+  }, [isAdmin, isAdminLoading, router])
+
+  // Show loading while checking admin status
+  if (isAdminLoading) {
+    return (
+      <div className="flex-1 flex items-center justify-center h-screen bg-surface-sunken">
+        <Loader2 className="animate-spin text-txt-disabled" size={32} />
+      </div>
+    )
+  }
+
+  // Show access denied (brief flash before redirect)
+  if (!isAdmin) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center h-screen bg-surface-sunken">
+        <ShieldX size={48} className="text-status-danger-text/70 mb-4" />
+        <p className="text-txt-secondary">접근 권한이 없습니다</p>
+      </div>
+    )
+  }
 
   const filteredLogs = (logs || []).filter(log => {
     if (!searchQuery) return true
@@ -143,7 +145,7 @@ export default function ErrorLogsPage() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-border-strong pb-6">
           <div>
             <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-2 flex items-center gap-2">
-              <span className="w-2 h-2 bg-red-500"></span>
+              <span className="w-2 h-2 bg-indicator-alert"></span>
               ADMIN / MONITORING
             </div>
             <h1 className="text-3xl font-bold text-txt-primary tracking-tight">Error Logs</h1>
@@ -151,7 +153,7 @@ export default function ErrorLogsPage() {
 
           <button
             onClick={() => refetch()}
-            className="flex items-center gap-2 px-4 py-2 bg-black text-white text-sm font-medium border-2 border-black hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            className="flex items-center gap-2 px-4 py-2 bg-black text-white text-sm font-medium border border-black hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
           >
             <RefreshCw size={16} />
             새로고침
@@ -167,7 +169,7 @@ export default function ErrorLogsPage() {
               placeholder="메시지, 엔드포인트 검색..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-surface-card border-2 border-border-strong text-sm focus:outline-none focus:border-[#4F46E5]"
+              className="w-full pl-10 pr-4 py-2 bg-surface-card border border-border-strong text-sm focus:outline-none focus:border-brand"
             />
           </div>
 
@@ -176,7 +178,7 @@ export default function ErrorLogsPage() {
             <select
               value={levelFilter}
               onChange={(e) => setLevelFilter(e.target.value)}
-              className="px-3 py-2 bg-surface-card border-2 border-border-strong text-sm focus:outline-none focus:border-[#4F46E5]"
+              className="px-3 py-2 bg-surface-card border border-border-strong text-sm focus:outline-none focus:border-brand"
             >
               <option value="all">모든 레벨</option>
               <option value="debug">Debug</option>
@@ -189,7 +191,7 @@ export default function ErrorLogsPage() {
             <select
               value={sourceFilter}
               onChange={(e) => setSourceFilter(e.target.value)}
-              className="px-3 py-2 bg-surface-card border-2 border-border-strong text-sm focus:outline-none focus:border-[#4F46E5]"
+              className="px-3 py-2 bg-surface-card border border-border-strong text-sm focus:outline-none focus:border-brand"
             >
               <option value="all">모든 소스</option>
               <option value="api">API</option>
@@ -227,7 +229,7 @@ export default function ErrorLogsPage() {
           </div>
         ) : isError ? (
           <Card padding="p-8" className="text-center">
-            <AlertCircle size={48} className="mx-auto text-red-400 mb-4" />
+            <AlertCircle size={48} className="mx-auto text-status-danger-text/70 mb-4" />
             <p className="text-txt-secondary mb-4">에러 로그를 불러올 수 없습니다</p>
             <button
               onClick={() => refetch()}

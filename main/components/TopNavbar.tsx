@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { PenTool, User, LogOut, Bell, Menu, X, Plus, Settings, Search, Moon, Sun, ChevronRight, Shield, FolderOpen, FileText, Users, Compass, Lightbulb, BarChart3 } from 'lucide-react'
+import { PenTool, User, LogOut, Bell, Menu, X, Plus, Settings, Search, ChevronRight, Shield, FolderOpen, Compass } from 'lucide-react'
 import Link from 'next/link'
 import { useAuth } from '@/src/context/AuthContext'
 import { useAdmin } from '@/src/hooks/useAdmin'
@@ -47,7 +47,7 @@ const DropdownItem = ({ icon: Icon, children, onClick, disabled, danger }: {
   <button
     onClick={onClick}
     disabled={disabled}
-    className={`w-full flex items-center gap-2.5 px-2.5 py-2 text-xs rounded-lg transition-colors text-left ${
+    className={`w-full flex items-center gap-2.5 px-2.5 py-2 text-xs rounded-sm transition-colors text-left ${
       disabled ? 'text-txt-disabled cursor-not-allowed'
         : danger ? 'text-status-danger-text hover:bg-status-danger-bg'
         : 'text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary'
@@ -62,7 +62,7 @@ const DropdownItem = ({ icon: Icon, children, onClick, disabled, danger }: {
 const MobileNavItem = ({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) => (
   <Link
     href={href}
-    className={`block px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+    className={`block px-4 py-2.5 rounded-sm text-sm font-medium transition-colors ${
       active ? 'bg-surface-sunken text-txt-primary' : 'text-txt-secondary hover:bg-surface-sunken'
     }`}
   >
@@ -78,7 +78,6 @@ export const TopNavbar: React.FC = () => {
 
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isDarkMode, setIsDarkMode] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -133,11 +132,6 @@ export const TopNavbar: React.FC = () => {
     { label: '마이페이지', href: '/profile', icon: User, keywords: ['프로필', 'profile', '마이페이지', '내정보'] },
     { label: '새 프로젝트', href: '/projects/new', icon: Plus, keywords: ['새 프로젝트', 'new', '만들기', '생성'] },
     { label: '내 프로젝트', href: '/projects', icon: FolderOpen, keywords: ['프로젝트', 'projects', '내 프로젝트'] },
-    { label: '아이디어 검증', href: '/idea-validator', icon: Lightbulb, keywords: ['아이디어', 'idea', '검증', 'validator'] },
-    { label: '사업계획서', href: '/business-plan', icon: FileText, keywords: ['사업', 'business', '계획서', 'plan'] },
-    { label: '네트워크', href: '/network', icon: Users, keywords: ['네트워크', 'network', '인맥'] },
-    { label: '사용량', href: '/usage', icon: BarChart3, keywords: ['사용량', 'usage', '통계'] },
-    { label: '설정', href: '', icon: Settings, keywords: ['설정', 'settings', '환경설정'], disabled: true },
   ]
 
   const filteredNav = searchQuery.trim()
@@ -166,12 +160,12 @@ export const TopNavbar: React.FC = () => {
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 right-0 h-14 z-fixed transition-all duration-300 ${
+      <nav className={`fixed top-0 left-0 right-0 h-20 z-fixed transition-all duration-300 ${
         isScrolled
           ? 'bg-surface-card/80 backdrop-blur-xl shadow-soft'
           : 'bg-surface-card/60 backdrop-blur-md'
       }`}>
-        <div className="max-w-container-wide mx-auto px-4 lg:px-6 h-full flex items-center gap-3">
+        <div className="w-full px-4 sm:px-8 lg:px-16 xl:px-24 h-full flex items-center gap-3">
 
           {/* ===== 좌측: 로고 ===== */}
           <Link href="/explore" className="flex items-center gap-2.5 shrink-0 group mr-1">
@@ -216,7 +210,7 @@ export const TopNavbar: React.FC = () => {
                 />
               )}
               {isSearchOpen && searchQuery && (
-                <button onClick={(e) => { e.stopPropagation(); setSearchQuery('') }} className="p-1 mr-2 text-txt-disabled hover:text-txt-secondary rounded-full transition-colors">
+                <button onClick={(e) => { e.stopPropagation(); setSearchQuery('') }} className="p-1 mr-2 text-txt-disabled hover:text-txt-secondary transition-colors">
                   <X size={14} />
                 </button>
               )}
@@ -236,20 +230,14 @@ export const TopNavbar: React.FC = () => {
                       filteredNav.map((item) => (
                         <button
                           key={item.href || item.label}
-                          onClick={() => !item.disabled && handleNavClick(item.href)}
-                          disabled={item.disabled}
-                          className={`w-full flex items-center gap-3 px-2.5 py-2 rounded-xl text-sm transition-colors text-left ${
-                            item.disabled
-                              ? 'text-txt-disabled cursor-not-allowed'
-                              : 'text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary'
-                          }`}
+                          onClick={() => handleNavClick(item.href)}
+                          className="w-full flex items-center gap-3 px-2.5 py-2 rounded-sm text-sm transition-colors text-left text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary"
                         >
-                          <div className="w-7 h-7 rounded-lg bg-surface-sunken flex items-center justify-center shrink-0">
+                          <div className="w-7 h-7 rounded-sm bg-surface-sunken flex items-center justify-center shrink-0">
                             <item.icon size={14} />
                           </div>
                           <span>{item.label}</span>
-                          {item.disabled && <span className="text-[10px] text-txt-disabled ml-auto">준비중</span>}
-                          {!item.disabled && <ChevronRight size={12} className="ml-auto text-txt-disabled" />}
+                          <ChevronRight size={12} className="ml-auto text-txt-disabled" />
                         </button>
                       ))
                     ) : (
@@ -265,9 +253,9 @@ export const TopNavbar: React.FC = () => {
                         <p className="px-2.5 pt-1 pb-1.5 text-[10px] font-mono uppercase tracking-widest text-txt-disabled">콘텐츠 검색</p>
                         <button
                           onClick={handleSearch}
-                          className="w-full flex items-center gap-3 px-2.5 py-2 rounded-xl text-sm text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary transition-colors text-left"
+                          className="w-full flex items-center gap-3 px-2.5 py-2 rounded-sm text-sm text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary transition-colors text-left"
                         >
-                          <div className="w-7 h-7 rounded-lg bg-surface-inverse text-txt-inverse flex items-center justify-center shrink-0">
+                          <div className="w-7 h-7 rounded-sm bg-surface-inverse text-txt-inverse flex items-center justify-center shrink-0">
                             <Search size={14} />
                           </div>
                           <span>&ldquo;{searchQuery.trim()}&rdquo; 탐색에서 검색</span>
@@ -308,15 +296,6 @@ export const TopNavbar: React.FC = () => {
                   <span>새 프로젝트</span>
                 </button>
 
-                {/* 다크모드 */}
-                <GnbIconBtn
-                  label={isDarkMode ? '라이트 모드' : '다크 모드'}
-                  onClick={() => setIsDarkMode(!isDarkMode)}
-                  className="hidden sm:flex"
-                >
-                  {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
-                </GnbIconBtn>
-
                 {/* 알림 */}
                 <NotificationDropdown />
 
@@ -337,7 +316,7 @@ export const TopNavbar: React.FC = () => {
 
                   {/* 드롭다운 */}
                   {isMenuOpen && (
-                    <div className="absolute right-0 top-11 w-60 bg-surface-card shadow-brutal border border-border-strong py-1.5 animate-in fade-in zoom-in-95 duration-150 z-dropdown">
+                    <div className="absolute right-0 top-11 w-[calc(100vw-2rem)] sm:w-60 max-w-60 bg-surface-card shadow-brutal border border-border-strong py-1.5 animate-in fade-in zoom-in-95 duration-150 z-dropdown">
                       {/* 유저 헤더 */}
                       <div className="px-4 pt-3 pb-3">
                         <div className="flex items-center gap-3">
@@ -406,7 +385,7 @@ export const TopNavbar: React.FC = () => {
             className="md:hidden fixed inset-0 bg-black/20 backdrop-blur-sm z-[299] animate-in fade-in duration-200"
             onClick={() => setIsMobileMenuOpen(false)}
           />
-          <div className="md:hidden fixed top-14 left-0 right-0 bg-surface-card/95 backdrop-blur-xl border-b border-border-strong shadow-brutal z-fixed animate-in slide-in-from-bottom-2 duration-200">
+          <div className="md:hidden fixed top-20 left-0 right-0 bg-surface-card/95 backdrop-blur-xl border-b border-border-strong shadow-brutal z-fixed animate-in slide-in-from-bottom-2 duration-200">
             <div className="px-4 py-4 space-y-1.5">
               <form
                 className="relative mb-3"
@@ -421,7 +400,7 @@ export const TopNavbar: React.FC = () => {
                   name="mq"
                   type="text"
                   placeholder="검색..."
-                  className="w-full pl-10 pr-4 py-2.5 bg-surface-sunken rounded-xl text-sm placeholder:text-txt-disabled focus:outline-none focus:bg-surface-card focus:ring-1 focus:ring-border transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 bg-surface-sunken rounded-sm text-sm placeholder:text-txt-disabled focus:outline-none focus:bg-surface-card focus:ring-1 focus:ring-border transition-all"
                 />
               </form>
               <MobileNavItem href="/explore" active={pathname === '/explore'}>탐색</MobileNavItem>

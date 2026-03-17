@@ -292,16 +292,16 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
 
   const getScoreColor = (score: number, max: number) => {
     const percentage = (score / max) * 100
-    if (percentage >= 80) return 'text-green-600'
-    if (percentage >= 60) return 'text-yellow-600'
-    return 'text-red-600'
+    if (percentage >= 80) return 'text-status-success-text'
+    if (percentage >= 60) return 'text-status-warning-text'
+    return 'text-status-danger-text'
   }
 
   const getScoreBg = (score: number, max: number) => {
     const percentage = (score / max) * 100
-    if (percentage >= 80) return 'bg-green-50 border-green-200'
-    if (percentage >= 60) return 'bg-yellow-50 border-yellow-200'
-    return 'bg-red-50 border-red-200'
+    if (percentage >= 80) return 'bg-status-success-bg border-status-success-text/20'
+    if (percentage >= 60) return 'bg-status-warning-bg border-status-warning-text/20'
+    return 'bg-status-danger-bg border-status-danger-text/20'
   }
 
   return (
@@ -318,10 +318,10 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
           <div
             className={`h-full transition-all duration-500 ${
               (validationResult.totalScore / validationResult.maxScore) >= 0.8
-                ? 'bg-green-500'
+                ? 'bg-status-success-text'
                 : (validationResult.totalScore / validationResult.maxScore) >= 0.6
-                  ? 'bg-yellow-500'
-                  : 'bg-red-500'
+                  ? 'bg-status-warning-text'
+                  : 'bg-indicator-alert'
             }`}
             style={{ width: `${(validationResult.totalScore / validationResult.maxScore) * 100}%` }}
           />
@@ -359,7 +359,7 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
                   <AlertTriangle
                     size={14}
                     className={`mt-0.5 shrink-0 ${
-                      imp.priority === 'high' ? 'text-red-500' : 'text-yellow-500'
+                      imp.priority === 'high' ? 'text-status-danger-text' : 'text-status-warning-text'
                     }`}
                   />
                   <div className="flex-1 min-w-0">
@@ -405,11 +405,11 @@ const SectionScore: React.FC<SectionScoreProps> = ({ section }) => {
       >
         <div className="flex items-center gap-2">
           {percentage >= 80 ? (
-            <CheckCircle2 size={16} className="text-green-500" />
+            <CheckCircle2 size={16} className="text-status-success-text" />
           ) : percentage >= 60 ? (
-            <AlertTriangle size={16} className="text-yellow-500" />
+            <AlertTriangle size={16} className="text-status-warning-text" />
           ) : (
-            <XCircle size={16} className="text-red-500" />
+            <XCircle size={16} className="text-status-danger-text" />
           )}
           <span className="text-sm font-medium text-txt-secondary">
             {sectionNames[section.section]}
@@ -418,10 +418,10 @@ const SectionScore: React.FC<SectionScoreProps> = ({ section }) => {
         <div className="flex items-center gap-2">
           <span className={`text-sm font-bold ${
             percentage >= 80
-              ? 'text-green-600'
+              ? 'text-status-success-text'
               : percentage >= 60
-                ? 'text-yellow-600'
-                : 'text-red-600'
+                ? 'text-status-warning-text'
+                : 'text-status-danger-text'
           }`}>
             {section.score}/{section.maxScore}
           </span>
@@ -441,9 +441,9 @@ const SectionScore: React.FC<SectionScoreProps> = ({ section }) => {
                 className="flex items-start gap-2 text-xs"
               >
                 {check.passed ? (
-                  <CheckCircle2 size={12} className="text-green-500 mt-0.5 shrink-0" />
+                  <CheckCircle2 size={12} className="text-indicator-online mt-0.5 shrink-0" />
                 ) : (
-                  <XCircle size={12} className="text-red-500 mt-0.5 shrink-0" />
+                  <XCircle size={12} className="text-status-danger-text mt-0.5 shrink-0" />
                 )}
                 <div>
                   <span className={check.passed ? 'text-txt-secondary' : 'text-txt-tertiary'}>

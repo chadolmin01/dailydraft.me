@@ -40,7 +40,7 @@ export function ExploreSidebar({
               onClick={() => onCategoryChange(cat.id)}
               className={`w-full flex items-center justify-between px-2.5 py-2 text-sm transition-all border ${
                 selectedCategory === cat.id
-                  ? 'bg-[#4F46E5] text-white border-[#4F46E5] shadow-[2px_2px_0px_0px_rgba(79,70,229,0.3)]'
+                  ? 'bg-brand text-white border-brand shadow-solid-sm'
                   : 'text-txt-secondary border-transparent hover:bg-surface-sunken hover:border-border'
               }`}
             >
@@ -64,7 +64,7 @@ export function ExploreSidebar({
       {/* 트렌딩 태그 */}
       <div className="relative bg-surface-card border border-border-strong p-4 shadow-sharp">
         <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-2">
-          <span className="w-4 h-4 bg-orange-500 text-white flex items-center justify-center text-[0.5rem] font-bold">T</span>
+          <span className="w-4 h-4 bg-indicator-trending text-white flex items-center justify-center text-[0.5rem] font-bold">T</span>
           TRENDING
         </h3>
         <div className="space-y-1.5">
@@ -84,7 +84,7 @@ export function ExploreSidebar({
                   <span className="text-[0.625rem] font-mono text-txt-disabled">{item.count}</span>
                 </div>
                 <div className="w-full h-1 bg-surface-sunken border border-border overflow-hidden">
-                  <div className="h-full bg-orange-400/60 transition-all group-hover:bg-orange-500" style={{ width: `${barWidth}%` }} />
+                  <div className="h-full bg-indicator-trending/60 transition-all group-hover:bg-indicator-trending" style={{ width: `${barWidth}%` }} />
                 </div>
               </button>
             )
@@ -95,12 +95,12 @@ export function ExploreSidebar({
       {/* 필터 */}
       <div className="relative bg-surface-card border border-border-strong p-4 shadow-sharp">
         <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-2">
-          <span className="w-4 h-4 bg-emerald-600 text-white flex items-center justify-center text-[0.5rem] font-bold">F</span>
+          <span className="w-4 h-4 bg-indicator-online text-white flex items-center justify-center text-[0.5rem] font-bold">F</span>
           FILTER
         </h3>
         <label className="flex items-center gap-2.5 text-sm text-txt-secondary cursor-pointer group">
-          <div className={`w-4 h-4 border-2 flex items-center justify-center transition-all ${
-            recruitingOnly ? 'bg-emerald-600 border-emerald-600' : 'border-border-strong group-hover:border-txt-secondary'
+          <div className={`w-4 h-4 border flex items-center justify-center transition-all ${
+            recruitingOnly ? 'bg-indicator-online border-indicator-online' : 'border-border-strong group-hover:border-txt-secondary'
           }`}>
             {recruitingOnly && <Check size={10} className="text-white" strokeWidth={3} />}
           </div>
@@ -114,7 +114,7 @@ export function ExploreSidebar({
         </label>
         <div className="mt-3 pt-3 border-t border-dashed border-border">
           <p className="text-[0.625rem] font-mono text-txt-disabled flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 bg-emerald-500 animate-pulse" />
+            <span className="w-1.5 h-1.5 bg-indicator-online animate-pulse" />
             {recruitingOnly ? 'ACTIVE FILTER ON' : 'NO FILTER APPLIED'}
           </p>
         </div>

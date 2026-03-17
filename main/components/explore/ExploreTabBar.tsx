@@ -36,22 +36,22 @@ export function ExploreTabBar({
           <button
             onClick={() => onTabChange('projects')}
             className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-bold border-b-2 -mb-[2px] transition-colors focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1 ${
-              activeTab === 'projects' ? 'border-[#4F46E5] text-[#4F46E5]' : 'border-transparent text-txt-tertiary hover:text-txt-secondary'
+              activeTab === 'projects' ? 'border-brand text-brand' : 'border-transparent text-txt-tertiary hover:text-txt-secondary'
             }`}
           >
             <LayoutGrid size={14} />
             프로젝트
-            {query && <span className="ml-1 text-[0.625rem] font-mono bg-[#4F46E5]/10 text-[#4F46E5] px-1.5 py-0.5">{projectCount}</span>}
+            {query && <span className="ml-1 text-[0.625rem] font-mono bg-brand-bg text-brand px-1.5 py-0.5">{projectCount}</span>}
           </button>
           <button
             onClick={() => onTabChange('people')}
             className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-bold border-b-2 -mb-[2px] transition-colors focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1 ${
-              activeTab === 'people' ? 'border-[#4F46E5] text-[#4F46E5]' : 'border-transparent text-txt-tertiary hover:text-txt-secondary'
+              activeTab === 'people' ? 'border-brand text-brand' : 'border-transparent text-txt-tertiary hover:text-txt-secondary'
             }`}
           >
             <Users size={14} />
             사람
-            {query && <span className="ml-1 text-[0.625rem] font-mono bg-[#4F46E5]/10 text-[#4F46E5] px-1.5 py-0.5">{peopleCount}</span>}
+            {query && <span className="ml-1 text-[0.625rem] font-mono bg-brand-bg text-brand px-1.5 py-0.5">{peopleCount}</span>}
           </button>
         </div>
 

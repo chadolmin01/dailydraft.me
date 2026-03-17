@@ -79,11 +79,11 @@ export const InviteCodeModal: React.FC<InviteCodeModalProps> = ({
       className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       onClick={handleBackdropClick}
     >
-      <div className="bg-surface-card shadow-brutal border-2 border-border-strong max-w-md w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="bg-surface-card shadow-brutal border border-border-strong max-w-md w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-border-strong">
           <div className="flex items-center gap-2">
-            <Gift size={20} className="text-[#4F46E5]" />
+            <Gift size={20} className="text-brand" />
             <h2 className="text-lg font-bold text-txt-primary">초대 코드 입력</h2>
           </div>
           <button
@@ -99,8 +99,8 @@ export const InviteCodeModal: React.FC<InviteCodeModalProps> = ({
         <div className="p-6">
           {success ? (
             <div className="text-center py-8">
-              <div className="w-16 h-16 bg-green-100 border border-green-300 flex items-center justify-center mx-auto mb-4">
-                <CheckCircle size={32} className="text-green-600" />
+              <div className="w-16 h-16 bg-status-success-bg border border-status-success-text/20 flex items-center justify-center mx-auto mb-4">
+                <CheckCircle size={32} className="text-status-success-text" />
               </div>
               <h3 className="text-xl font-bold text-txt-primary mb-2">
                 프리미엄 활성화 완료!
@@ -112,11 +112,11 @@ export const InviteCodeModal: React.FC<InviteCodeModalProps> = ({
           ) : (
             <>
               {/* Description */}
-              <div className="bg-[#4F46E5]/5 border border-[#4F46E5] p-4 mb-6">
+              <div className="bg-brand-bg border border-brand p-4 mb-6">
                 <div className="flex items-start gap-3">
-                  <Sparkles size={20} className="text-[#4F46E5] flex-shrink-0 mt-0.5" />
+                  <Sparkles size={20} className="text-brand flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm text-[#4F46E5] font-medium mb-1">
+                    <p className="text-sm text-brand font-medium mb-1">
                       프리미엄 초대 코드
                     </p>
                     <p className="text-sm text-txt-secondary">
@@ -137,8 +137,8 @@ export const InviteCodeModal: React.FC<InviteCodeModalProps> = ({
                     value={code}
                     onChange={handleCodeChange}
                     placeholder="예: ABC12DEF"
-                    className={`w-full px-4 py-3 text-center text-xl font-mono tracking-wider border-2 focus:outline-none focus:border-border-strong bg-surface-card text-txt-primary ${
-                      error ? 'border-red-500' : 'border-border-strong'
+                    className={`w-full px-4 py-3 text-center text-xl font-mono tracking-wider border focus:outline-none focus:border-border-strong bg-surface-card text-txt-primary ${
+                      error ? 'border-status-danger-text' : 'border-border-strong'
                     }`}
                     disabled={isSubmitting}
                     autoFocus
@@ -148,7 +148,7 @@ export const InviteCodeModal: React.FC<InviteCodeModalProps> = ({
                       {code.length}/8 자리
                     </span>
                     {error && (
-                      <span className="flex items-center gap-1 text-xs text-red-600">
+                      <span className="flex items-center gap-1 text-xs text-status-danger-text">
                         <AlertCircle size={12} />
                         {error}
                       </span>
@@ -160,7 +160,7 @@ export const InviteCodeModal: React.FC<InviteCodeModalProps> = ({
                 <button
                   type="submit"
                   disabled={code.length !== 8 || isSubmitting}
-                  className="w-full py-3 bg-black text-white font-bold border-2 border-black hover:bg-[#333] disabled:bg-surface-sunken disabled:text-txt-disabled disabled:border-border-strong disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                  className="w-full py-3 bg-black text-white font-bold border border-black hover:bg-[#333] disabled:bg-surface-sunken disabled:text-txt-disabled disabled:border-border-strong disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
                 >
                   {isSubmitting ? (
                     <>
@@ -178,7 +178,7 @@ export const InviteCodeModal: React.FC<InviteCodeModalProps> = ({
                 초대 코드가 없으신가요?{' '}
                 <a
                   href="mailto:support@dailydraft.io"
-                  className="text-[#4F46E5] hover:underline"
+                  className="text-brand hover:underline"
                 >
                   문의하기
                 </a>

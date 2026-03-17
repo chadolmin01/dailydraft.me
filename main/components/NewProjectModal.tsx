@@ -171,9 +171,9 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({ isOpen, onClos
 
   const getRoleColor = (role: Role) => {
       switch(role) {
-          case Role.PM: return "text-blue-600 bg-blue-50";
+          case Role.PM: return "text-status-info-text bg-status-info-bg";
           case Role.DESIGNER: return "text-pink-600 bg-pink-50";
-          case Role.DEV: return "text-emerald-600 bg-emerald-50";
+          case Role.DEV: return "text-indicator-online bg-status-success-bg";
       }
   }
 
@@ -188,7 +188,7 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({ isOpen, onClos
       />
 
       {/* Modal Content */}
-      <div className="relative bg-surface-card w-[98vw] max-w-[100rem] h-[92vh] shadow-brutal flex flex-col overflow-hidden border-2 border-border-strong">
+      <div className="relative bg-surface-card w-[98vw] max-w-[100rem] h-[92vh] shadow-brutal flex flex-col overflow-hidden border border-border-strong">
         {/* Header */}
         <div className="flex-shrink-0 border-b border-border-strong px-6 py-4 flex items-center justify-between bg-surface-card">
           <div className="flex items-center gap-3">
@@ -201,8 +201,8 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({ isOpen, onClos
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <span className={`flex items-center gap-1.5 text-xs font-medium ${hasInitialSynthesis ? 'text-emerald-600' : 'text-txt-tertiary'}`}>
-              <div className={`w-1.5 h-1.5 ${hasInitialSynthesis ? 'bg-emerald-500 animate-pulse' : 'bg-txt-disabled'}`}></div>
+            <span className={`flex items-center gap-1.5 text-xs font-medium ${hasInitialSynthesis ? 'text-indicator-online' : 'text-txt-tertiary'}`}>
+              <div className={`w-1.5 h-1.5 ${hasInitialSynthesis ? 'bg-indicator-online animate-pulse' : 'bg-txt-disabled'}`}></div>
               {hasInitialSynthesis ? 'Live Sync Active' : `Waiting (${inputs.filter(i => i.isSubmitted).length}/3)`}
             </span>
             <button
@@ -291,7 +291,7 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({ isOpen, onClos
           <div className="flex-shrink-0 border-t border-border-strong px-6 py-4 bg-surface-card flex justify-between items-center">
             <button
               onClick={() => setSelectedView('PRD')}
-              className="flex items-center gap-1.5 px-4 py-2 bg-[#4F46E5] text-white text-sm font-bold border-2 border-[#4F46E5] hover:bg-[#4338CA] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+              className="flex items-center gap-1.5 px-4 py-2 bg-brand text-white text-sm font-bold border border-brand hover:bg-brand-hover shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
             >
               <FileText className="w-4 h-4" />
               PRD 보기
@@ -308,7 +308,7 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({ isOpen, onClos
                   onClose();
                   onProceedToBuild?.(prdResult);
                 }}
-                className="px-6 py-2 bg-black text-white text-sm font-bold border-2 border-black hover:bg-[#333] transition-colors flex items-center gap-2 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                className="px-6 py-2 bg-black text-white text-sm font-bold border border-black hover:bg-[#333] transition-colors flex items-center gap-2 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
               >
                 다음: Build
                 <span className="text-[0.625rem] bg-amber-400 text-amber-900 px-1.5 py-0.5 font-bold font-mono">BETA</span>

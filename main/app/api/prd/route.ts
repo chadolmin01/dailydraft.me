@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { createClient } from '@/src/lib/supabase/server';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
@@ -70,6 +71,16 @@ JSON 스키마:
 
 export async function POST(request: NextRequest) {
   try {
+    if (!process.env.GEMINI_API_KEY) {
+      return NextResponse.json({ success: false, error: 'AI 서비스를 사용할 수 없습니다.' }, { status: 503 });
+    }
+
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ success: false, error: '로그인이 필요합니다' }, { status: 401 });
+    }
+
     const { pm, designer, developer } = await request.json();
 
     if (!pm && !designer && !developer) {
@@ -79,7 +90,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const rawInput = `[PM/기획자] ${pm || '(없음)'}\n[디자이너] ${designer || '(없음)'}\n[개발자] ${developer || '(없음)'}`;
+    // 입력 길이 제한 (각 2000자)
+    const safePm = typeof pm === 'string' ? pm.slice(0, 2000) : '';
+    const safeDesigner = typeof designer === 'string' ? designer.slice(0, 2000) : '';
+    const safeDeveloper = typeof developer === 'string' ? developer.slice(0, 2000) : '';
+
+    const rawInput = `[PM/기획자] ${safePm || '(없음)'}\n[디자이너] ${safeDesigner || '(없음)'}\n[개발자] ${safeDeveloper || '(없음)'}`;
 
     // 1단계: 분석
     const analysisModel = genAI.getGenerativeModel({
@@ -90,7 +106,15 @@ export async function POST(request: NextRequest) {
 
     const analysisResponse = await analysisModel.generateContent(rawInput);
     const analysisText = analysisResponse.response.text();
-    const analysis = JSON.parse(analysisText);
+    let analysis;
+    try {
+      analysis = JSON.parse(analysisText);
+    } catch {
+      return NextResponse.json(
+        { success: false, error: 'AI 분석 결과를 파싱할 수 없습니다. 다시 시도해주세요.' },
+        { status: 502 }
+      );
+    }
 
     // 2단계: PRD 생성
     const prdModel = genAI.getGenerativeModel({
@@ -108,13 +132,21 @@ PM/기획자: ${analysis.pm_intent?.core_idea || '미정'}, BM: ${analysis.pm_in
 
     const prdResponse = await prdModel.generateContent(prdPrompt);
     const prdText = prdResponse.response.text();
-    const prd = JSON.parse(prdText);
+    let prd;
+    try {
+      prd = JSON.parse(prdText);
+    } catch {
+      return NextResponse.json(
+        { success: false, error: 'PRD 생성 결과를 파싱할 수 없습니다. 다시 시도해주세요.' },
+        { status: 502 }
+      );
+    }
 
     return NextResponse.json({ success: true, data: prd, analysis });
   } catch (error) {
     console.error('PRD Generation Error:', error);
     return NextResponse.json(
-      { success: false, error: error instanceof Error ? error.message : 'PRD 생성 중 오류가 발생했습니다.' },
+      { success: false, error: 'PRD 생성 중 오류가 발생했습니다.' },
       { status: 500 }
     );
   }

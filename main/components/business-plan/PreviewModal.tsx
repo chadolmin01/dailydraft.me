@@ -144,7 +144,7 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
                 <button
                   type="button"
                   onClick={onComplete}
-                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-status-success-text hover:bg-status-success-text/90 transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
                 >
                   워크플로우 완료
                 </button>

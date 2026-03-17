@@ -57,7 +57,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
       ></div>
 
       {/* Modal Content */}
-      <div className="relative bg-surface-card w-full max-w-4xl h-[85vh] border-2 border-border-strong shadow-brutal flex flex-col overflow-hidden animate-[scale-in_0.2s_ease-out]">
+      <div className="relative bg-surface-card w-full max-w-4xl h-[85vh] border border-border-strong shadow-brutal flex flex-col overflow-hidden animate-[scale-in_0.2s_ease-out]">
         {/* Header */}
         <div className="bg-surface-card border-b border-dashed border-border sticky top-0 z-10 shrink-0">
           <div className="flex justify-between items-start p-6 pb-4">
@@ -105,13 +105,13 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
               onClick={() => setActiveTab('analysis')}
               className={`pb-3 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 ${
                 activeTab === 'analysis'
-                  ? 'text-[#4F46E5] border-[#4F46E5]'
+                  ? 'text-brand border-brand'
                   : 'text-txt-disabled border-transparent hover:text-txt-secondary'
               }`}
             >
               <Sparkles size={16} /> AI Fit Analysis
               {data.matchPercent && (
-                <span className="bg-[#4F46E5]/10 text-[#4F46E5] border border-[#4F46E5]/20 px-1.5 py-0.5 text-[0.625rem] font-mono font-bold">
+                <span className="bg-brand-bg text-brand border border-brand-border px-1.5 py-0.5 text-[0.625rem] font-mono font-bold">
                   {data.matchPercent}%
                 </span>
               )}
@@ -148,7 +148,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
                       {data.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="px-3 py-1.5 bg-[#4F46E5]/5 border border-[#4F46E5]/20 text-xs font-medium text-[#4F46E5] font-mono"
+                          className="px-3 py-1.5 bg-brand-bg border border-brand-border text-xs font-medium text-brand font-mono"
                         >
                           #{tag}
                         </span>
@@ -161,14 +161,14 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
               {/* TAB 2: AI Analysis */}
               {activeTab === 'analysis' && (
                 <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                  <div className="bg-[#4F46E5]/5 p-6 border border-[#4F46E5]/20 relative overflow-hidden">
+                  <div className="bg-brand-bg p-6 border border-brand-border relative overflow-hidden">
                     <div className="absolute top-0 right-0 p-6 opacity-10">
                       <Sparkles size={120} className="text-draft-blue" />
                     </div>
 
                     <div className="relative z-10 flex items-start gap-4">
-                      <div className="w-16 h-16 bg-surface-card flex items-center justify-center border border-[#4F46E5]/30 shadow-solid-sm shrink-0">
-                        <span className="text-2xl font-bold text-[#4F46E5] font-mono">
+                      <div className="w-16 h-16 bg-surface-card flex items-center justify-center border border-brand/30 shadow-solid-sm shrink-0">
+                        <span className="text-2xl font-bold text-brand font-mono">
                           {data.matchPercent}%
                         </span>
                       </div>
@@ -199,9 +199,9 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
                         <Users size={16} /> Culture Fit
                       </h4>
                       <div className="space-y-4">
-                        <MetricBar label="Team Size Preference" score={80} color="bg-green-500" />
-                        <MetricBar label="Work Style" score={90} color="bg-green-500" />
-                        <MetricBar label="Growth Stage" score={85} color="bg-green-500" />
+                        <MetricBar label="Team Size Preference" score={80} color="bg-indicator-online" />
+                        <MetricBar label="Work Style" score={90} color="bg-indicator-online" />
+                        <MetricBar label="Growth Stage" score={85} color="bg-indicator-online" />
                       </div>
                     </div>
                   </div>
@@ -212,7 +212,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
             {/* Sidebar */}
             <div className="w-full md:w-80 bg-surface-sunken border-l border-border-strong p-6 md:p-8 space-y-6 flex flex-col h-full overflow-y-auto custom-scrollbar">
               <div className="space-y-3">
-                <button className="w-full bg-[#4F46E5] text-white py-3 text-sm font-bold hover:bg-[#4338CA] transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] flex items-center justify-center gap-2 border-2 border-[#4F46E5]">
+                <button className="w-full bg-brand text-white py-3 text-sm font-bold hover:bg-brand-hover transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] flex items-center justify-center gap-2 border border-brand">
                   Apply Now <ArrowUpRight size={16} />
                 </button>
                 <div className="flex gap-2">
@@ -236,7 +236,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
                     <div className="text-[0.5rem] text-txt-disabled font-mono uppercase tracking-widest mb-1">
                       Deadline
                     </div>
-                    <div className="font-bold text-sm text-red-600 flex items-center gap-1 font-mono">
+                    <div className="font-bold text-sm text-status-danger-text flex items-center gap-1 font-mono">
                       <Calendar size={12} /> D-{data.daysLeft}
                     </div>
                   </div>

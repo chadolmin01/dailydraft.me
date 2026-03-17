@@ -9,7 +9,7 @@ interface HeroProps {
 
 export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
   return (
-    <section className="relative w-full pt-16 sm:pt-24 pb-24 sm:pb-40 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto flex flex-col items-center">
+    <section className="relative w-full pt-10 sm:pt-16 pb-16 sm:pb-28 px-4 sm:px-6 md:px-10 max-w-6xl mx-auto flex flex-col items-center">
 
       {/* Background Decor Elements - Blueprint style cards */}
       <div className="absolute top-0 w-full h-full max-w-6xl mx-auto pointer-events-none z-0 hidden lg:block">
@@ -39,7 +39,7 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
         </div>
 
         {/* Card 2: Team Building */}
-        <div className="absolute top-32 -right-24 w-72 bg-[#4F46E5] p-5 shadow-brutal animate-float-delayed rotate-[1deg] ring-1 ring-offset-4 ring-indigo-100">
+        <div className="absolute top-32 -right-24 w-72 bg-brand p-5 shadow-brutal animate-float-delayed rotate-[1deg] ring-1 ring-offset-4 ring-brand-border">
             <div className="absolute top-0 right-0 p-1">
                 <div className="w-2 h-2 border border-white/50"></div>
             </div>
@@ -67,7 +67,7 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
             <div className="absolute bottom-0 right-0 w-2 h-2 border-r border-b border-border-strong"></div>
 
             <div className="flex items-center gap-2 mb-3">
-                <div className="w-2 h-2 bg-green-500 animate-pulse"></div>
+                <div className="w-2 h-2 bg-indicator-online animate-pulse"></div>
                 <span className="text-xs font-mono text-black font-bold">TEAM SYNERGY</span>
             </div>
             <div className="space-y-2">
@@ -94,29 +94,29 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
              <h3 className="text-white font-bold text-lg mb-1">학식 알리미</h3>
              <p className="text-txt-tertiary text-xs border-b border-white/10 pb-2 mb-2">대학 식당 메뉴 알림 서비스</p>
              <div className="flex gap-2">
-                <div className="w-2 h-2 bg-green-500"></div>
+                <div className="w-2 h-2 bg-indicator-online"></div>
                 <span className="text-[0.5rem] text-txt-tertiary font-mono">3명이 함께 만들었어요</span>
              </div>
         </div>
       </div>
 
-      <div className="relative z-10 flex flex-col items-center text-center mt-16 sm:mt-24 md:mt-40 max-w-3xl mx-auto">
+      <div className="relative z-10 flex flex-col items-center text-center mt-10 sm:mt-16 md:mt-28 max-w-2xl mx-auto">
         <div className="inline-flex items-center gap-2 px-3 py-1 bg-surface-card border border-border-strong shadow-solid-sm mb-8">
             <Ruler size={14} className="text-black" />
             <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-black">DRAFT COMMUNITY</span>
         </div>
 
-        <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold tracking-tight leading-[1.2] mb-6 text-txt-primary">
+        <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-[1.2] mb-5 text-txt-primary">
           모든 프로젝트는<br />
           <span className="text-txt-disabled relative">
             Draft에서 시작됩니다.
-            <svg className="absolute -bottom-2 left-0 w-full h-3 text-indigo-500 opacity-50" viewBox="0 0 100 10" preserveAspectRatio="none">
+            <svg className="absolute -bottom-2 left-0 w-full h-3 text-brand opacity-50" viewBox="0 0 100 10" preserveAspectRatio="none">
                 <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="2" fill="none" strokeDasharray="4 2" />
             </svg>
           </span>
         </h1>
 
-        <p className="text-lg md:text-xl text-txt-secondary mb-12 max-w-2xl leading-relaxed break-keep">
+        <p className="text-sm md:text-base text-txt-secondary mb-8 max-w-xl leading-relaxed break-keep">
           프로젝트를 공유하고, 피드백 받고,<br className="hidden md:inline" />
           함께할 사람을 만나세요.
         </p>
@@ -124,7 +124,7 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
         <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
           <button
             onClick={onCtaClick}
-            className="group w-full sm:w-auto flex items-center justify-center gap-2 bg-black text-white px-8 py-4 font-bold text-sm hover:bg-[#333] transition-all duration-200 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] border border-black"
+            className="group w-full sm:w-auto flex items-center justify-center gap-2 bg-black text-white px-6 py-3 font-bold text-xs hover:bg-[#333] transition-all duration-200 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] border border-black"
           >
             프로젝트 올리기
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
@@ -132,7 +132,7 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
 
           <button
             onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
-            className="group w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 font-bold text-sm border-2 border-border-strong bg-surface-card text-txt-secondary hover:bg-black hover:text-white transition-all duration-200"
+            className="group w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 font-bold text-xs border border-border-strong bg-surface-card text-txt-secondary hover:bg-black hover:text-white transition-all duration-200"
           >
             프로젝트 둘러보기
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />

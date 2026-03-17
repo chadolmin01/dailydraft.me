@@ -9,7 +9,7 @@ import {
   Eye, ExternalLink, Github, FileText, Globe, Edit3, Code
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useOpportunity } from '@/src/hooks/useOpportunities'
+import { useOpportunity, useUpdateOpportunity } from '@/src/hooks/useOpportunities'
 import { useProfileByUserId } from '@/src/hooks/usePublicProfiles'
 import { useProjectUpdates } from '@/src/hooks/useProjectUpdates'
 import { useAuth } from '@/src/context/AuthContext'
@@ -25,9 +25,9 @@ interface ProjectDetailModalProps {
 }
 
 const updateTypeColors: Record<string, string> = {
-  ideation: 'bg-amber-500',
-  design: 'bg-blue-500',
-  development: 'bg-emerald-500',
+  ideation: 'bg-indicator-premium',
+  design: 'bg-status-info-text',
+  development: 'bg-indicator-online',
   launch: 'bg-purple-500',
   general: 'bg-txt-disabled',
 }
@@ -56,7 +56,9 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
   const [shareCopied, setShareCopied] = useState(false)
   const [showWriteUpdate, setShowWriteUpdate] = useState(false)
   const [hasInterested, setHasInterested] = useState(false)
+  const [showTypeSelector, setShowTypeSelector] = useState(false)
   const { user } = useAuth()
+  const updateOpportunity = useUpdateOpportunity()
   const { expressInterest, loading: interestLoading } = useInterests({ opportunityId: projectId ?? '' })
   const { data: myChatsForProject = [] } = useCoffeeChats({
     opportunityId: projectId ?? undefined,
@@ -74,6 +76,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
     setShowCta(false)
     setShowCoffeeChatForm(false)
     setHasInterested(false)
+    setShowTypeSelector(false)
   }, [projectId])
 
   useEffect(() => {
@@ -173,30 +176,70 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl max-h-[95vh] md:max-h-[90vh] bg-surface-card shadow-brutal-xl border-2 border-border-strong overflow-hidden flex flex-col relative"
+              className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl max-h-[95vh] md:max-h-[90vh] bg-surface-card shadow-brutal-xl border border-border-strong overflow-hidden flex flex-col relative"
               role="dialog"
               aria-modal="true"
               aria-label={opportunity?.title || '프로젝트 상세'}
             >
               {/* macOS-style Window Bar */}
-              <div className="bg-surface-sunken border-b border-border-strong px-3 sm:px-5 py-1.5 flex items-center justify-between shrink-0">
+              <div className="bg-surface-sunken border-b border-border-strong px-3 sm:px-4 h-10 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-2">
-                  <button onClick={onClose} className="group w-5 h-5 sm:w-3 sm:h-3 rounded-full bg-[#FF5F57] hover:brightness-90 transition-all relative flex items-center justify-center" aria-label="닫기">
-                    <X size={10} className="text-[#FF5F57] group-hover:text-[#4A0002] transition-colors sm:w-[0.4375rem] sm:h-[0.4375rem]" />
+                  <button onClick={onClose} className="group w-3 h-3 rounded-full bg-[#FF5F57] hover:brightness-90 transition-all relative flex items-center justify-center" aria-label="닫기">
+                    <X size={7} className="text-[#FF5F57] group-hover:text-[#4A0002] transition-colors" />
                   </button>
-                  <div className="w-3 h-3 rounded-full bg-[#FEBC2E] hidden sm:block" />
-                  <div className="w-3 h-3 rounded-full bg-[#28C840] hidden sm:block" />
+                  <div className="w-3 h-3 rounded-full bg-[#FEBC2E]" />
+                  <div className="w-3 h-3 rounded-full bg-[#28C840]" />
                 </div>
                 {!loading && opportunity && (
                   <div className="flex items-center gap-2">
-                    <span className="text-[0.625rem] font-mono font-bold px-2 py-0.5 bg-surface-sunken text-txt-tertiary border border-border uppercase tracking-wider">
-                      {opportunity.type === 'side_project' ? 'SIDE PROJECT' :
-                       opportunity.type === 'startup' ? 'STARTUP' :
-                       opportunity.type === 'study' ? 'STUDY' : opportunity.type?.toUpperCase() || 'PROJECT'}
-                    </span>
+                    {isOwner ? (
+                      <div className="relative">
+                        <button
+                          onClick={() => setShowTypeSelector(!showTypeSelector)}
+                          className="text-[0.625rem] font-mono font-bold px-2 py-0.5 bg-surface-sunken text-txt-tertiary border border-border uppercase tracking-wider hover:border-border-strong hover:text-txt-secondary transition-colors flex items-center gap-1"
+                        >
+                          {opportunity.type === 'side_project' ? 'SIDE PROJECT' :
+                           opportunity.type === 'startup' ? 'STARTUP' :
+                           opportunity.type === 'study' ? 'STUDY' : 'PROJECT'}
+                          <Edit3 size={8} />
+                        </button>
+                        {showTypeSelector && (
+                          <div className="absolute top-full left-0 mt-1 bg-surface-card border border-border-strong shadow-sharp z-10 min-w-[8rem]">
+                            {[
+                              { value: 'side_project', label: 'SIDE PROJECT' },
+                              { value: 'startup', label: 'STARTUP' },
+                              { value: 'study', label: 'STUDY' },
+                            ].map((opt) => (
+                              <button
+                                key={opt.value}
+                                onClick={() => {
+                                  updateOpportunity.mutate(
+                                    { id: opportunity.id, updates: { type: opt.value as 'side_project' | 'startup' | 'study' } },
+                                  )
+                                  setShowTypeSelector(false)
+                                }}
+                                className={`w-full text-left px-3 py-1.5 text-[0.625rem] font-mono font-bold uppercase tracking-wider transition-colors ${
+                                  opportunity.type === opt.value
+                                    ? 'bg-surface-inverse text-txt-inverse'
+                                    : 'text-txt-secondary hover:bg-surface-sunken'
+                                }`}
+                              >
+                                {opt.label}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-[0.625rem] font-mono font-bold px-2 py-0.5 bg-surface-sunken text-txt-tertiary border border-border uppercase tracking-wider">
+                        {opportunity.type === 'side_project' ? 'SIDE PROJECT' :
+                         opportunity.type === 'startup' ? 'STARTUP' :
+                         opportunity.type === 'study' ? 'STUDY' : opportunity.type?.toUpperCase() || 'PROJECT'}
+                      </span>
+                    )}
                     {opportunity.status === 'active' && (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-status-success-bg text-status-success-text text-[0.625rem] font-bold border border-status-success-text/30">
-                        <span className="w-1.5 h-1.5 bg-emerald-500 animate-pulse" />
+                        <span className="w-1.5 h-1.5 bg-indicator-online animate-pulse" />
                         모집 중
                       </span>
                     )}
@@ -304,8 +347,8 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                               disabled={isOwner || interestLoading}
                               className={`inline-flex items-center gap-1.5 px-3 py-1.5 border text-xs font-bold transition-all ${
                                 hasInterested
-                                  ? 'border-red-300 bg-red-50 text-red-500'
-                                  : 'border-border-strong bg-surface-card text-txt-secondary hover:border-red-300 hover:text-red-500'
+                                  ? 'border-status-danger-text/20 bg-status-danger-bg text-status-danger-text'
+                                  : 'border-border-strong bg-surface-card text-txt-secondary hover:border-status-danger-text/20 hover:text-status-danger-text'
                               } disabled:opacity-40 disabled:cursor-default`}
                             >
                               <Heart size={12} className={hasInterested ? 'fill-current' : ''} />
@@ -384,8 +427,8 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                             disabled={isOwner || interestLoading}
                             className={`inline-flex items-center gap-1.5 px-3 py-1.5 border text-xs font-bold transition-all ${
                               hasInterested
-                                ? 'border-red-300 bg-red-50 text-red-500'
-                                : 'border-border-strong bg-surface-card text-txt-secondary hover:border-red-300 hover:text-red-500'
+                                ? 'border-status-danger-text/20 bg-status-danger-bg text-status-danger-text'
+                                : 'border-border-strong bg-surface-card text-txt-secondary hover:border-status-danger-text/20 hover:text-status-danger-text'
                             } disabled:opacity-40 disabled:cursor-default`}
                           >
                             <Heart size={12} className={hasInterested ? 'fill-current' : ''} />
@@ -538,8 +581,8 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                                     </div>
                                     {existingChat ? (
                                       <span className={`text-xs ${
-                                        existingChat.status === 'pending' ? 'text-amber-500' :
-                                        existingChat.status === 'accepted' ? 'text-green-600' : 'text-txt-disabled'
+                                        existingChat.status === 'pending' ? 'text-indicator-premium' :
+                                        existingChat.status === 'accepted' ? 'text-status-success-text' : 'text-txt-disabled'
                                       }`}>
                                         {existingChat.status === 'pending' ? '대기 중' :
                                          existingChat.status === 'accepted' ? '수락됨' : '거절됨'}
@@ -679,7 +722,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
 
                           {/* CTA Card */}
                           {!isOwner && (
-                          <div className="bg-surface-inverse p-5 text-white border-2 border-black shadow-solid">
+                          <div className="bg-surface-inverse p-5 text-white border border-black shadow-solid">
                             {existingChat ? (
                               <>
                                 <h3 className="font-bold text-sm mb-1">
@@ -705,7 +748,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                                 </p>
                                 <button
                                   onClick={() => handleAction()}
-                                  className="w-full bg-white text-txt-primary py-2.5 font-bold text-sm hover:bg-surface-sunken transition-colors flex items-center justify-center gap-2 border-2 border-white"
+                                  className="w-full bg-white text-txt-primary py-2.5 font-bold text-sm hover:bg-surface-sunken transition-colors flex items-center justify-center gap-2 border border-white"
                                 >
                                   <Coffee size={14} />
                                   커피챗 신청하기
@@ -733,7 +776,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: 20 }}
                           transition={{ delay: 0.1 }}
-                          className="w-full max-w-sm sm:max-w-md bg-surface-card border-2 border-border-strong p-6 sm:p-8 shadow-brutal-xl"
+                          className="w-full max-w-sm sm:max-w-md bg-surface-card border border-border-strong p-6 sm:p-8 shadow-brutal-xl"
                         >
                           <CoffeeChatRequestForm
                             opportunityId={opportunity.id}
@@ -769,7 +812,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: 20 }}
                           transition={{ delay: 0.1 }}
-                          className="w-full max-w-sm sm:max-w-md bg-surface-card border-2 border-border-strong p-6 sm:p-8 shadow-brutal-xl"
+                          className="w-full max-w-sm sm:max-w-md bg-surface-card border border-border-strong p-6 sm:p-8 shadow-brutal-xl"
                         >
                           <div className="w-14 h-14 bg-black flex items-center justify-center mb-6 mx-auto">
                             <span className="text-white font-black text-xl font-mono">D</span>
@@ -783,7 +826,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                           </p>
                           <button
                             onClick={handleSignup}
-                            className="bg-black hover:bg-[#333] text-white px-8 py-3.5 font-bold text-sm flex items-center gap-2 transition-colors mx-auto mb-3 border-2 border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                            className="bg-black hover:bg-[#333] text-white px-8 py-3.5 font-bold text-sm flex items-center gap-2 transition-colors mx-auto mb-3 border border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
                           >
                             무료로 시작하기
                             <ArrowRight size={16} />

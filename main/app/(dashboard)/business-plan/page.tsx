@@ -226,7 +226,7 @@ function TemplateCard({ id, name, description, pages, features, recommended, onC
     <button
       onClick={onClick}
       className={`text-left p-5 bg-surface-card border hover:shadow-sharp transition-all group ${
-        recommended ? 'border-[#4F46E5] ring-2 ring-[#4F46E5]/20' : 'border-border-strong hover:border-border-strong'
+        recommended ? 'border-brand ring-2 ring-brand-border' : 'border-border-strong hover:border-border-strong'
       }`}
     >
       <div className="flex items-start justify-between mb-3">
@@ -235,7 +235,7 @@ function TemplateCard({ id, name, description, pages, features, recommended, onC
           <h3 className="font-semibold text-txt-primary">{name}</h3>
         </div>
         {recommended && (
-          <span className="px-2 py-0.5 border border-[#4F46E5] text-[#4F46E5] text-[0.625rem] font-mono font-bold">
+          <span className="px-2 py-0.5 border border-brand text-brand text-[0.625rem] font-mono font-bold">
             추천
           </span>
         )}

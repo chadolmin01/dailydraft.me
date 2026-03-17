@@ -55,7 +55,7 @@ export const WorkflowSidebar: React.FC<WorkflowSidebarProps> = ({
         </div>
         <div className="h-2 bg-surface-sunken overflow-hidden">
           <div
-            className="h-full bg-[#4F46E5] transition-all duration-500"
+            className="h-full bg-brand transition-all duration-500"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -78,7 +78,7 @@ export const WorkflowSidebar: React.FC<WorkflowSidebarProps> = ({
               aria-label={`${step.label} - ${completed ? '완료됨' : current ? '진행 중' : '대기 중'}`}
               className={`
                 w-full px-6 py-4 flex items-start gap-4 text-left transition-all
-                ${current ? 'bg-[#4F46E5]/5 border-l-4 border-[#4F46E5]' : 'border-l-4 border-transparent'}
+                ${current ? 'bg-brand-bg border-l-4 border-brand' : 'border-l-4 border-transparent'}
                 ${clickable && !current ? 'hover:bg-surface-sunken cursor-pointer' : ''}
                 ${!clickable ? 'opacity-50 cursor-not-allowed' : ''}
               `}
@@ -87,8 +87,8 @@ export const WorkflowSidebar: React.FC<WorkflowSidebarProps> = ({
               <div
                 className={`
                   w-8 h-8 flex items-center justify-center shrink-0 border
-                  ${completed ? 'border-green-600 text-green-600 bg-green-50' : ''}
-                  ${current && !completed ? 'border-[#4F46E5] text-[#4F46E5] bg-[#4F46E5]/5' : ''}
+                  ${completed ? 'border-status-success-text text-status-success-text bg-status-success-bg' : ''}
+                  ${current && !completed ? 'border-brand text-brand bg-brand-bg' : ''}
                   ${!current && !completed ? 'border-border-strong text-txt-disabled bg-surface-sunken' : ''}
                 `}
               >
@@ -101,15 +101,15 @@ export const WorkflowSidebar: React.FC<WorkflowSidebarProps> = ({
                   <span
                     className={`
                       text-[0.625rem] font-mono font-bold uppercase tracking-widest
-                      ${completed ? 'text-green-600' : ''}
-                      ${current && !completed ? 'text-[#4F46E5]' : ''}
+                      ${completed ? 'text-status-success-text' : ''}
+                      ${current && !completed ? 'text-brand' : ''}
                       ${!current && !completed ? 'text-txt-disabled' : ''}
                     `}
                   >
                     Step {index + 1}
                   </span>
                   {current && !completed && (
-                    <span className="px-1.5 py-0.5 border border-[#4F46E5] text-[#4F46E5] text-[0.625rem] font-mono font-bold">
+                    <span className="px-1.5 py-0.5 border border-brand text-brand text-[0.625rem] font-mono font-bold">
                       진행 중
                     </span>
                   )}

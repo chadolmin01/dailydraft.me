@@ -52,15 +52,15 @@ interface UsageData {
 
 const planColors: Record<string, { bg: string; text: string; border: string }> = {
   free: { bg: 'bg-surface-sunken', text: 'text-txt-secondary', border: 'border-border-strong' },
-  pro: { bg: 'bg-[#4F46E5]/5', text: 'text-[#4F46E5]', border: 'border-[#4F46E5]' },
+  pro: { bg: 'bg-brand-bg', text: 'text-brand', border: 'border-brand' },
   team: { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-600' },
 }
 
 function ProgressBar({ used, limit, unlimited = false }: { used: number; limit: number; unlimited?: boolean }) {
   if (unlimited) {
     return (
-      <div className="w-full h-2 bg-green-50 overflow-hidden">
-        <div className="h-full bg-green-500 w-full" />
+      <div className="w-full h-2 bg-status-success-bg overflow-hidden">
+        <div className="h-full bg-status-success-text w-full" />
       </div>
     )
   }
@@ -73,7 +73,7 @@ function ProgressBar({ used, limit, unlimited = false }: { used: number; limit: 
     <div className="w-full h-2 bg-surface-sunken overflow-hidden">
       <div
         className={`h-full transition-all duration-300 ${
-          isDanger ? 'bg-red-500' : isWarning ? 'bg-yellow-500' : 'bg-blue-500'
+          isDanger ? 'bg-indicator-alert' : isWarning ? 'bg-status-warning-text' : 'bg-status-info-text'
         }`}
         style={{ width: `${percentage}%` }}
       />
@@ -106,8 +106,8 @@ function UsageCard({
   return (
     <div className="bg-surface-card p-4 border border-border-strong shadow-sharp hover:shadow-brutal transition-shadow">
       <div className="flex items-center gap-3 mb-3">
-        <div className={`p-2 border ${isDanger ? 'border-red-600 bg-red-50' : isWarning ? 'border-yellow-600 bg-yellow-50' : 'border-[#4F46E5] bg-[#4F46E5]/5'}`}>
-          <Icon className={`w-5 h-5 ${isDanger ? 'text-red-600' : isWarning ? 'text-yellow-600' : 'text-[#4F46E5]'}`} />
+        <div className={`p-2 border ${isDanger ? 'border-status-danger-text bg-status-danger-bg' : isWarning ? 'border-status-warning-text bg-status-warning-bg' : 'border-brand bg-brand-bg'}`}>
+          <Icon className={`w-5 h-5 ${isDanger ? 'text-status-danger-text' : isWarning ? 'text-status-warning-text' : 'text-brand'}`} />
         </div>
         <span className="font-medium text-txt-secondary">{title}</span>
       </div>
@@ -120,7 +120,7 @@ function UsageCard({
             {safeUsed.toLocaleString()}{suffix} 사용
           </span>
           <span className={`font-medium ${
-            unlimited ? 'text-green-600' : isDanger ? 'text-red-600' : isWarning ? 'text-yellow-600' : 'text-txt-secondary'
+            unlimited ? 'text-status-success-text' : isDanger ? 'text-status-danger-text' : isWarning ? 'text-status-warning-text' : 'text-txt-secondary'
           }`}>
             {unlimited ? '무제한' : `${remaining.toLocaleString()}${suffix} 남음`}
           </span>
@@ -251,11 +251,11 @@ export function UsageDashboard() {
   if (error || !data) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[25rem] gap-4">
-        <AlertCircle className="w-12 h-12 text-red-500" />
+        <AlertCircle className="w-12 h-12 text-status-danger-text" />
         <p className="text-txt-secondary">{error || '데이터를 불러올 수 없습니다.'}</p>
         <button
           onClick={fetchUsage}
-          className="px-4 py-2 bg-[#4F46E5] text-white border-2 border-[#4F46E5] hover:bg-[#4338CA] transition-colors"
+          className="px-4 py-2 bg-brand text-white border border-brand hover:bg-brand-hover transition-colors"
         >
           다시 시도
         </button>
@@ -304,12 +304,12 @@ export function UsageDashboard() {
               <p className="text-txt-secondary text-sm mt-1">
                 {data.plan.status === 'active' ? (
                   <>
-                    <CheckCircle className="w-4 h-4 inline text-green-500 mr-1" />
+                    <CheckCircle className="w-4 h-4 inline text-indicator-online mr-1" />
                     활성화됨 · 갱신까지 {daysLeft}일
                   </>
                 ) : (
                   <>
-                    <AlertCircle className="w-4 h-4 inline text-yellow-500 mr-1" />
+                    <AlertCircle className="w-4 h-4 inline text-status-warning-text mr-1" />
                     {data.plan.status}
                   </>
                 )}
@@ -318,7 +318,7 @@ export function UsageDashboard() {
           </div>
 
           {data.plan.type === 'free' && (
-            <button className="px-4 py-2 bg-[#4F46E5] text-white border-2 border-[#4F46E5] font-medium hover:bg-[#4338CA] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">
+            <button className="px-4 py-2 bg-brand text-white border border-brand font-medium hover:bg-brand-hover transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">
               Pro로 업그레이드
             </button>
           )}

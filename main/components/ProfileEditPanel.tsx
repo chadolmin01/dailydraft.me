@@ -334,7 +334,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
         <button
           onClick={handleSave}
           disabled={updateProfile.isPending}
-          className="flex items-center gap-1.5 px-4 py-2 bg-[#4F46E5] text-white text-xs font-bold border-2 border-[#4F46E5] hover:bg-[#4338CA] disabled:opacity-50 transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+          className="flex items-center gap-1.5 px-4 py-2 bg-brand text-white text-xs font-bold border border-brand hover:bg-brand-hover disabled:opacity-50 transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
         >
           {updateProfile.isPending ? (
             <Loader2 size={14} className="animate-spin" />
@@ -347,7 +347,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
     >
       <div className="px-6 py-6 space-y-8">
         {saveError && (
-          <div className="p-3 bg-red-600/5 border border-red-600/20 text-sm text-status-danger-text">
+          <div className="p-3 bg-status-danger-text/5 border border-status-danger-text/20 text-sm text-status-danger-text">
             {saveError}
           </div>
         )}
@@ -468,7 +468,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
                 maxLength={200}
                 className="w-full px-3 py-2.5 text-sm border border-border bg-surface-card focus:outline-none focus:border-accent resize-none transition-colors"
               />
-              <p className={`text-xs mt-1 text-right font-mono ${vision.length >= 180 ? 'text-status-danger-text font-bold' : vision.length >= 150 ? 'text-amber-500' : 'text-txt-disabled'}`}>{vision.length}/200</p>
+              <p className={`text-xs mt-1 text-right font-mono ${vision.length >= 180 ? 'text-status-danger-text font-bold' : vision.length >= 150 ? 'text-status-warning-text' : 'text-txt-disabled'}`}>{vision.length}/200</p>
             </div>
           </div>
         </section>
@@ -486,7 +486,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
                 onClick={() => setCurrentSituation(currentSituation === opt.value ? '' : opt.value)}
                 className={`w-full text-left px-3 py-2.5 text-xs border transition-colors ${
                   currentSituation === opt.value
-                    ? 'bg-[#4F46E5] text-white border-[#4F46E5]'
+                    ? 'bg-brand text-white border-brand'
                     : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong'
                 }`}
               >
@@ -513,7 +513,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
                     onClick={() => setAffiliationType(opt.value)}
                     className={`px-3 py-1.5 text-xs font-medium border transition-colors ${
                       affiliationType === opt.value
-                        ? 'bg-[#4F46E5] text-white border-[#4F46E5]'
+                        ? 'bg-brand text-white border-brand'
                         : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong'
                     }`}
                   >
@@ -534,7 +534,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
                     onClick={() => setPosition(opt)}
                     className={`px-2.5 py-1 text-xs font-medium border transition-colors ${
                       position === opt
-                        ? 'bg-[#4F46E5] text-white border-[#4F46E5]'
+                        ? 'bg-brand text-white border-brand'
                         : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong'
                     }`}
                   >
@@ -603,7 +603,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
                     onClick={() => setLocation(location === loc ? '' : loc)}
                     className={`px-2.5 py-1 text-xs font-medium border transition-colors ${
                       location === loc
-                        ? 'bg-[#4F46E5] text-white border-[#4F46E5]'
+                        ? 'bg-brand text-white border-brand'
                         : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong'
                     }`}
                   >
@@ -617,17 +617,17 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
             {(affiliationType === 'student' || affiliationType === 'graduate') && (
               <div className="mt-4 p-3 border border-border bg-surface-sunken">
                 <div className="flex items-center gap-2 mb-2">
-                  <ShieldCheck size={14} className={uniVerified ? 'text-emerald-600' : 'text-txt-disabled'} />
+                  <ShieldCheck size={14} className={uniVerified ? 'text-indicator-online' : 'text-txt-disabled'} />
                   <span className="text-xs font-bold text-txt-secondary">
                     대학 인증
                   </span>
                   {uniVerified && (
-                    <span className="px-1.5 py-0.5 text-[0.625rem] font-bold bg-emerald-600 text-white">VERIFIED</span>
+                    <span className="px-1.5 py-0.5 text-[0.625rem] font-bold bg-indicator-online text-white">VERIFIED</span>
                   )}
                 </div>
 
                 {uniVerified ? (
-                  <p className="text-xs text-emerald-600">대학 인증이 완료되었습니다.</p>
+                  <p className="text-xs text-indicator-online">대학 인증이 완료되었습니다.</p>
                 ) : verifyStep === 'idle' ? (
                   <div className="space-y-2">
                     <p className="text-xs text-txt-tertiary">대학 이메일(.ac.kr)로 인증하면 프로필에 인증 배지가 표시됩니다.</p>
@@ -751,7 +751,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
                         onClick={() => updateSkillLevel(skill.name, level)}
                         className={`px-1.5 py-0.5 text-[0.625rem]transition-colors ${
                           skill.level === level
-                            ? 'bg-[#4F46E5] text-white'
+                            ? 'bg-brand text-white'
                             : 'text-txt-disabled hover:text-txt-secondary'
                         }`}
                       >
@@ -878,7 +878,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
                 onClick={() => toggleTag(tag)}
                 className={`px-2.5 py-1 text-xs font-medium border transition-colors ${
                   interestTags.includes(tag)
-                    ? 'bg-[#4F46E5] text-white border-[#4F46E5]'
+                    ? 'bg-brand text-white border-brand'
                     : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong'
                 }`}
               >
@@ -893,7 +893,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
               {interestTags.filter(t => !INTEREST_OPTIONS.includes(t)).map((tag) => (
                 <span
                   key={tag}
-                  className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium bg-[#4F46E5] text-white"
+                  className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium bg-brand text-white"
                 >
                   {tag}
                   <button onClick={() => toggleTag(tag)} className="hover:opacity-70">
@@ -950,7 +950,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
                   min={1} max={10} step={1}
                   value={personality[item.key]}
                   onChange={e => setPersonality(p => ({ ...p, [item.key]: parseInt(e.target.value) }))}
-                  className="w-full h-1.5 accent-[#4F46E5] cursor-pointer"
+                  className="w-full h-1.5 accent-brand cursor-pointer"
                 />
                 <div className="flex justify-between">
                   <span className="text-[9px] text-txt-disabled font-mono">{item.low}</span>
@@ -978,7 +978,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
                   min={1} max={10} step={1}
                   value={workStyle[item.key]}
                   onChange={e => setWorkStyle(p => ({ ...p, [item.key]: parseInt(e.target.value) }))}
-                  className="w-full h-1.5 accent-[#4F46E5] cursor-pointer"
+                  className="w-full h-1.5 accent-brand cursor-pointer"
                 />
                 <div className="flex justify-between">
                   <span className="text-[9px] text-txt-disabled font-mono">{item.low}</span>
@@ -996,7 +996,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
               <div className="flex gap-1.5">
                 {['리더', '팔로워', '유연'].map(r => (
                   <button key={r} type="button" onClick={() => setTeamRole(r)}
-                    className={`px-3 py-1.5 text-xs font-medium border transition-colors ${teamRole === r ? 'bg-[#4F46E5] text-white border-[#4F46E5]' : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong'}`}
+                    className={`px-3 py-1.5 text-xs font-medium border transition-colors ${teamRole === r ? 'bg-brand text-white border-brand' : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong'}`}
                   >{r}</button>
                 ))}
               </div>
@@ -1006,7 +1006,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
               <div className="flex gap-1.5">
                 {['2-3명', '4-5명', '6명+'].map(s => (
                   <button key={s} type="button" onClick={() => setTeamSize(s)}
-                    className={`px-3 py-1.5 text-xs font-medium border transition-colors ${teamSize === s ? 'bg-[#4F46E5] text-white border-[#4F46E5]' : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong'}`}
+                    className={`px-3 py-1.5 text-xs font-medium border transition-colors ${teamSize === s ? 'bg-brand text-white border-brand' : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong'}`}
                   >{s}</button>
                 ))}
               </div>
@@ -1016,7 +1016,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
               <div className="flex gap-1.5">
                 {['실무형', '캐주얼', '균형'].map(a => (
                   <button key={a} type="button" onClick={() => setTeamAtmosphere(a)}
-                    className={`px-3 py-1.5 text-xs font-medium border transition-colors ${teamAtmosphere === a ? 'bg-[#4F46E5] text-white border-[#4F46E5]' : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong'}`}
+                    className={`px-3 py-1.5 text-xs font-medium border transition-colors ${teamAtmosphere === a ? 'bg-brand text-white border-brand' : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong'}`}
                   >{a}</button>
                 ))}
               </div>
@@ -1041,7 +1041,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
             </div>
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" checked={preferOnline} onChange={e => setPreferOnline(e.target.checked)}
-                className="w-4 h-4 accent-[#4F46E5]" />
+                className="w-4 h-4 accent-brand" />
               <span className="text-xs text-txt-secondary">비대면(온라인) 선호</span>
             </label>
           </div>
@@ -1064,7 +1064,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
           <button
             onClick={handleSave}
             disabled={updateProfile.isPending}
-            className="flex items-center gap-1.5 px-5 py-2.5 bg-[#4F46E5] text-white text-sm font-bold border-2 border-[#4F46E5] hover:bg-[#4338CA] disabled:opacity-50 transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            className="flex items-center gap-1.5 px-5 py-2.5 bg-brand text-white text-sm font-bold border border-brand hover:bg-brand-hover disabled:opacity-50 transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
           >
             {updateProfile.isPending ? (
               <Loader2 size={14} className="animate-spin" />
@@ -1080,7 +1080,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
     {/* 이미지 크롭 모달 */}
     {cropImage && (
       <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm">
-        <div className="bg-surface-card border-2 border-border-strong shadow-brutal-xl w-full max-w-lg mx-4 flex flex-col">
+        <div className="bg-surface-card border border-border-strong shadow-brutal-xl w-full max-w-lg mx-4 flex flex-col">
           {/* 헤더 */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-border-strong bg-surface-sunken">
             <span className="text-xs font-mono font-bold uppercase tracking-widest text-txt-tertiary">
@@ -1117,7 +1117,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
                 min={1} max={3} step={0.1}
                 value={zoom}
                 onChange={e => setZoom(Number(e.target.value))}
-                className="flex-1 h-1.5 accent-[#4F46E5] cursor-pointer"
+                className="flex-1 h-1.5 accent-brand cursor-pointer"
               />
               <span className="text-[0.625rem] font-mono text-txt-disabled w-8 text-right">{zoom.toFixed(1)}x</span>
             </div>
@@ -1133,7 +1133,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
             </button>
             <button
               onClick={handleCropConfirm}
-              className="flex items-center gap-1.5 px-4 py-2 bg-[#4F46E5] text-white text-xs font-bold border-2 border-[#4F46E5] hover:bg-[#4338CA] transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+              className="flex items-center gap-1.5 px-4 py-2 bg-brand text-white text-xs font-bold border border-brand hover:bg-brand-hover transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
             >
               <Camera size={12} /> 적용
             </button>
@@ -1156,7 +1156,7 @@ function TagEditor({ label, tags, onChange, suggestions }: { label: string; tags
       {tags.length > 0 && (
         <div className="flex flex-wrap gap-1 mb-2">
           {tags.map(tag => (
-            <span key={tag} className="flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-[#4F46E5] text-white">
+            <span key={tag} className="flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-brand text-white">
               {tag}
               <button onClick={() => remove(tag)} className="hover:opacity-70"><X size={10} /></button>
             </span>

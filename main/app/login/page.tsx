@@ -9,7 +9,7 @@ import { useAuth } from '@/src/context/AuthContext'
 const showcaseItems = [
   { type: 'project', title: '캠퍼스 중고거래', desc: 'React Native 앱 개발', tag: '모집 중', color: 'bg-surface-inverse text-white' },
   { type: 'talent', title: '김민수', desc: '프론트엔드 개발자', tag: 'OPEN', color: 'bg-surface-card border-border-strong text-txt-primary' },
-  { type: 'project', title: 'AI 스터디 플래너', desc: 'GPT 기반 학습 도우미', tag: '팀빌딩 중', color: 'bg-[#4F46E5] text-white' },
+  { type: 'project', title: 'AI 스터디 플래너', desc: 'GPT 기반 학습 도우미', tag: '팀빌딩 중', color: 'bg-brand text-white' },
   { type: 'talent', title: '박지영', desc: 'UI/UX 디자이너', tag: 'OPEN', color: 'bg-surface-card border-border-strong text-txt-primary' },
   { type: 'project', title: '학식 알리미', desc: '대학 식당 메뉴 알림', tag: '런칭 완료', color: 'bg-surface-inverse text-white' },
   { type: 'talent', title: '이준호', desc: '백엔드 개발자', tag: 'OPEN', color: 'bg-surface-card border-border-strong text-txt-primary' },
@@ -190,7 +190,7 @@ function LoginContent() {
                         type="text"
                         value={nickname}
                         onChange={(e) => setNickname(e.target.value)}
-                        className="w-full px-4 py-3 bg-surface-sunken border-2 border-border-strong text-sm font-medium focus:outline-none focus:border-[#4F46E5] focus:bg-surface-card transition-all placeholder:text-txt-disabled"
+                        className="w-full px-4 py-3 bg-surface-sunken border border-border-strong text-sm font-medium focus:outline-none focus:border-brand focus:bg-surface-card transition-all placeholder:text-txt-disabled"
                         placeholder="닉네임을 입력하세요"
                         required={isSignUp}
                      />
@@ -203,7 +203,7 @@ function LoginContent() {
                      type="email"
                      value={email}
                      onChange={(e) => setEmail(e.target.value)}
-                     className="w-full px-4 py-3 bg-surface-sunken border-2 border-border-strong text-sm font-medium focus:outline-none focus:border-[#4F46E5] focus:bg-surface-card transition-all placeholder:text-txt-disabled font-mono"
+                     className="w-full px-4 py-3 bg-surface-sunken border border-border-strong text-sm font-medium focus:outline-none focus:border-brand focus:bg-surface-card transition-all placeholder:text-txt-disabled font-mono"
                      placeholder="email@example.com"
                      required
                   />
@@ -215,7 +215,7 @@ function LoginContent() {
                      type="password"
                      value={password}
                      onChange={(e) => setPassword(e.target.value)}
-                     className="w-full px-4 py-3 bg-surface-sunken border-2 border-border-strong text-sm font-medium focus:outline-none focus:border-[#4F46E5] focus:bg-surface-card transition-all placeholder:text-txt-disabled"
+                     className="w-full px-4 py-3 bg-surface-sunken border border-border-strong text-sm font-medium focus:outline-none focus:border-brand focus:bg-surface-card transition-all placeholder:text-txt-disabled"
                      placeholder="비밀번호를 입력하세요"
                      required
                      minLength={6}
@@ -225,7 +225,7 @@ function LoginContent() {
                <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-[#4F46E5] text-white py-3.5 text-sm font-bold border-2 border-[#4F46E5] hover:bg-[#4338CA] transition-all flex items-center justify-center gap-2 group shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-solid-sm"
+                  className="w-full bg-brand text-white py-3.5 text-sm font-bold border border-brand hover:bg-brand-hover transition-all flex items-center justify-center gap-2 group shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-solid-sm"
                >
                   {isSubmitting ? (
                      <Loader2 size={16} className="animate-spin" />
@@ -263,7 +263,7 @@ function LoginContent() {
                <button
                   onClick={handleGoogleLogin}
                   type="button"
-                  className="flex items-center justify-center gap-2 px-4 py-3 border-2 border-border-strong hover:bg-surface-inverse hover:text-txt-inverse transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                  className="flex items-center justify-center gap-2 px-4 py-3 border border-border-strong hover:bg-surface-inverse hover:text-txt-inverse transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
                >
                   <Chrome size={16} />
                   <span className="text-xs font-bold font-mono">Google</span>
@@ -271,7 +271,7 @@ function LoginContent() {
                <button
                   onClick={handleGithubLogin}
                   type="button"
-                  className="flex items-center justify-center gap-2 px-4 py-3 border-2 border-border-strong hover:bg-surface-inverse hover:text-txt-inverse transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                  className="flex items-center justify-center gap-2 px-4 py-3 border border-border-strong hover:bg-surface-inverse hover:text-txt-inverse transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
                >
                   <Github size={16} />
                   <span className="text-xs font-bold font-mono">GitHub</span>
@@ -355,16 +355,16 @@ const ShowcaseCard = ({ item }: { item: typeof showcaseItems[0] }) => (
     <span className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-current opacity-30 pointer-events-none" />
     <span className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-current opacity-30 pointer-events-none" />
     <div className="flex justify-between items-start mb-4">
-       <div className={`w-8 h-8 flex items-center justify-center border ${item.color.includes('bg-surface-inverse') ? 'border-white/30 bg-white/10' : item.color.includes('bg-[#4F46E5]') ? 'border-white/30 bg-white/10' : 'border-border-strong bg-surface-sunken text-txt-primary'}`}>
+       <div className={`w-8 h-8 flex items-center justify-center border ${item.color.includes('bg-surface-inverse') ? 'border-white/30 bg-white/10' : item.color.includes('bg-brand') ? 'border-white/30 bg-white/10' : 'border-border-strong bg-surface-sunken text-txt-primary'}`}>
           {item.type === 'startup' ? <Rocket size={14}/> : item.type === 'talent' ? <Users size={14}/> : <Zap size={14}/>}
        </div>
-       <span className={`text-[0.5625rem] font-mono font-bold uppercase border px-1.5 py-0.5 ${item.color.includes('bg-surface-inverse') ? 'border-white/30' : item.color.includes('bg-[#4F46E5]') ? 'border-white/30' : 'border-border-strong'}`}>
+       <span className={`text-[0.5625rem] font-mono font-bold uppercase border px-1.5 py-0.5 ${item.color.includes('bg-surface-inverse') ? 'border-white/30' : item.color.includes('bg-brand') ? 'border-white/30' : 'border-border-strong'}`}>
          {item.tag}
        </span>
     </div>
     <div>
        <h4 className="font-bold text-lg mb-1">{item.title}</h4>
-       <p className={`text-xs font-mono ${item.color.includes('bg-surface-inverse') ? 'text-txt-disabled' : item.color.includes('bg-[#4F46E5]') ? 'text-white/70' : 'text-txt-secondary'}`}>{item.desc}</p>
+       <p className={`text-xs font-mono ${item.color.includes('bg-surface-inverse') ? 'text-txt-disabled' : item.color.includes('bg-brand') ? 'text-white/70' : 'text-txt-secondary'}`}>{item.desc}</p>
     </div>
   </div>
 )

@@ -81,7 +81,7 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
               min={1}
               value={weekNumber}
               onChange={(e) => setWeekNumber(Number(e.target.value))}
-              className="w-full px-3 py-2 border-2 border-border-strong text-sm focus:outline-none focus:border-border-strong bg-surface-card text-txt-primary"
+              className="w-full px-3 py-2 border border-border-strong text-sm focus:outline-none focus:border-border-strong bg-surface-card text-txt-primary"
             />
           </div>
           <div className="flex-1">
@@ -92,7 +92,7 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
                   key={t.value}
                   type="button"
                   onClick={() => setUpdateType(t.value)}
-                  className={`px-3 py-1.5 text-xs border-2 transition-colors ${
+                  className={`px-3 py-1.5 text-xs border transition-colors ${
                     updateType === t.value
                       ? 'bg-black text-white border-black'
                       : 'bg-surface-card text-txt-secondary border-border-strong hover:border-border-strong'
@@ -114,7 +114,7 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
             onChange={(e) => setTitle(e.target.value)}
             placeholder="이번 주에 무엇을 했나요?"
             maxLength={100}
-            className="w-full px-3 py-2 border-2 border-border-strong text-sm focus:outline-none focus:border-border-strong bg-surface-card text-txt-primary placeholder-txt-disabled"
+            className="w-full px-3 py-2 border border-border-strong text-sm focus:outline-none focus:border-border-strong bg-surface-card text-txt-primary placeholder-txt-disabled"
           />
         </div>
 
@@ -127,16 +127,16 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
             placeholder="진행 상황, 배운 점, 다음 계획 등을 자유롭게 적어주세요"
             rows={4}
             maxLength={2000}
-            className="w-full px-3 py-2 border-2 border-border-strong text-sm focus:outline-none focus:border-border-strong resize-none bg-surface-card text-txt-primary placeholder-txt-disabled"
+            className="w-full px-3 py-2 border border-border-strong text-sm focus:outline-none focus:border-border-strong resize-none bg-surface-card text-txt-primary placeholder-txt-disabled"
           />
         </div>
 
-        {error && <p className="text-xs text-red-500">{error}</p>}
+        {error && <p className="text-xs text-status-danger-text">{error}</p>}
 
         <button
           onClick={handleSubmit}
           disabled={createUpdate.isPending}
-          className="w-full py-2.5 bg-black text-white text-sm font-bold border-2 border-black hover:bg-[#333] transition-colors disabled:opacity-50 flex items-center justify-center gap-2 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+          className="w-full py-2.5 bg-black text-white text-sm font-bold border border-black hover:bg-[#333] transition-colors disabled:opacity-50 flex items-center justify-center gap-2 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
         >
           {createUpdate.isPending ? (
             <><Loader2 size={14} className="animate-spin" /> 저장 중...</>

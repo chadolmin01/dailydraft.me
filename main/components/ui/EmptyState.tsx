@@ -40,8 +40,8 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
     )
 
     const buttonClass = isCompact
-      ? 'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-[#4F46E5] text-white border-2 border-[#4F46E5] hover:bg-[#4338CA] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
-      : 'inline-flex items-center gap-2 px-4 py-2.5 text-sm font-bold bg-[#4F46E5] text-white border-2 border-[#4F46E5] hover:bg-[#4338CA] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
+      ? 'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-brand text-white border border-brand hover:bg-brand-hover transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
+      : 'inline-flex items-center gap-2 px-4 py-2.5 text-sm font-bold bg-brand text-white border border-brand hover:bg-brand-hover transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
 
     if (actionHref) {
       return <Link href={actionHref} className={buttonClass}>{buttonContent}</Link>
@@ -65,7 +65,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
         </div>
         {hasAction && (
           <div className={`
-            absolute -top-1 -right-1 bg-[#4F46E5] text-white flex items-center justify-center
+            absolute -top-1 -right-1 bg-brand text-white flex items-center justify-center
             ${isCompact ? 'w-4 h-4' : 'w-5 h-5'}
           `}>
             <Plus size={isCompact ? 10 : 12} strokeWidth={3} />

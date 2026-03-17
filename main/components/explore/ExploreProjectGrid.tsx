@@ -83,7 +83,7 @@ export function ExploreProjectGrid({
               tabIndex={0}
               onClick={() => onSelectProject(p.id)}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectProject(p.id) } }}
-              className="relative bg-surface-card border border-border-strong overflow-hidden group hover:shadow-[4px_4px_0px_0px_rgba(79,70,229,0.12)] hover:border-[#4F46E5]/30 transition-all cursor-pointer h-[21.25rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none"
+              className="relative bg-surface-card border border-border-strong overflow-hidden group hover:shadow-solid-sm hover:border-brand/30 transition-all cursor-pointer h-[21.25rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none"
             >
               {/* 코너 마크 */}
               <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-black/15 z-20" />
@@ -98,9 +98,9 @@ export function ExploreProjectGrid({
                 )}
                 <div className="absolute top-3 left-3 z-[1]">
                   {isUrgent ? (
-                    <span className="text-[0.625rem] font-mono font-bold bg-red-600 text-white px-2 py-0.5 border border-red-600">D-{p.daysLeft} URGENT</span>
+                    <span className="text-[0.625rem] font-mono font-bold bg-status-danger-text text-white px-2 py-0.5 border border-status-danger-text">D-{p.daysLeft} URGENT</span>
                   ) : (
-                    <span className="text-[0.625rem] font-mono font-bold bg-emerald-600 text-white px-2 py-0.5 border border-emerald-600 flex items-center gap-1">
+                    <span className="text-[0.625rem] font-mono font-bold bg-indicator-online text-white px-2 py-0.5 border border-indicator-online flex items-center gap-1">
                       <span className="w-1 h-1 bg-white animate-pulse" />
                       모집중
                     </span>
@@ -108,7 +108,7 @@ export function ExploreProjectGrid({
                 </div>
                 <div className="absolute top-3 right-3 flex gap-1 z-[1]">
                   {updateBadge && (
-                    <span className="text-[0.625rem] font-mono bg-amber-400 text-black px-2 py-0.5 font-bold border border-amber-500">{updateBadge}</span>
+                    <span className="text-[0.625rem] font-mono bg-amber-400 text-black px-2 py-0.5 font-bold border border-indicator-premium-border">{updateBadge}</span>
                   )}
                   {!updateBadge && p.tags.slice(0, 2).map(tag => (
                     <span key={tag} className="text-[0.625rem] font-mono bg-black/60 backdrop-blur-sm text-white px-2 py-0.5 border border-white/10">{tag}</span>
@@ -122,7 +122,7 @@ export function ExploreProjectGrid({
               <div className="px-4 pt-4 h-[7.5rem] shrink-0 overflow-hidden">
                 <h3 className="font-bold text-base text-txt-primary mb-1.5 truncate">{p.title}</h3>
                 <div className="flex items-center gap-1.5 mb-2 overflow-hidden">
-                  <span className="text-[0.625rem] font-mono font-bold text-[#4F46E5] uppercase tracking-wide shrink-0 bg-[#4F46E5]/10 px-1.5 py-0.5 border border-[#4F46E5]/20">NEED</span>
+                  <span className="text-[0.625rem] font-mono font-bold text-brand uppercase tracking-wide shrink-0 bg-brand-bg px-1.5 py-0.5 border border-brand-border">NEED</span>
                   {p.roles.slice(0, 2).map(role => (
                     <span key={role} className="text-xs bg-surface-sunken text-txt-secondary px-2 py-0.5 border border-border font-medium shrink-0">{role}</span>
                   ))}
@@ -140,7 +140,7 @@ export function ExploreProjectGrid({
                   </div>
                   <div className="flex items-center gap-3 text-[0.625rem] font-mono text-txt-tertiary">
                     {p.daysLeft > 0 && (
-                      <span className={isUrgent ? 'text-red-600 font-bold' : ''}>D-{p.daysLeft}</span>
+                      <span className={isUrgent ? 'text-status-danger-text font-bold' : ''}>D-{p.daysLeft}</span>
                     )}
                   </div>
                 </div>

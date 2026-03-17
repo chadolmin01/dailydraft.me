@@ -95,7 +95,7 @@ export const ComboBox: React.FC<ComboBoxProps> = ({
               key={opt}
               onClick={() => handleSelect(opt)}
               className={`w-full text-left px-3 py-2 text-sm hover:bg-surface-sunken transition-colors ${
-                value === opt ? 'text-[#4F46E5] font-medium bg-[#4F46E5]/5' : 'text-txt-secondary'
+                value === opt ? 'text-brand font-medium bg-brand-bg' : 'text-txt-secondary'
               }`}
             >
               {opt}

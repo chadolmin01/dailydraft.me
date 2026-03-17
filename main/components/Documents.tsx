@@ -55,7 +55,7 @@ export const Documents: React.FC = () => {
       {/* Pro Tip */}
       <div className={`fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-lg transition-all duration-500 ${showProTip ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0 pointer-events-none'}`}>
         <div className="bg-[#222] text-white p-4 shadow-brutal flex items-start gap-4 mx-4 border border-black">
-            <div className="mt-0.5"><Lightbulb size={16} className="text-yellow-400" /></div>
+            <div className="mt-0.5"><Lightbulb size={16} className="text-status-warning-text" /></div>
             <div className="flex-1">
                 <div className="flex justify-between items-start">
                     <h4 className="text-[0.625rem] font-bold font-mono uppercase tracking-widest mb-1 text-white/80">Pro Tip</h4>
@@ -77,7 +77,7 @@ export const Documents: React.FC = () => {
         <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-dashed border-border pb-6">
           <div>
             <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-2 flex items-center gap-2">
-               <span className="w-2 h-2 bg-[#4F46E5]"></span>
+               <span className="w-2 h-2 bg-brand"></span>
                WORKSPACE / DOCS
             </div>
             <h1 className="text-3xl font-bold text-txt-primary tracking-tight">Documents</h1>
@@ -89,10 +89,10 @@ export const Documents: React.FC = () => {
                 <input
                    type="text"
                    placeholder="Search..."
-                   className="pl-9 pr-4 py-2 bg-surface-card border-2 border-border-strong text-sm focus:outline-none focus:border-[#4F46E5] transition-colors w-64"
+                   className="pl-9 pr-4 py-2 bg-surface-card border border-border-strong text-sm focus:outline-none focus:border-brand transition-colors w-64"
                 />
              </div>
-             <button className="bg-[#4F46E5] text-white border-2 border-[#4F46E5] px-4 py-2 text-sm font-medium hover:bg-[#4338CA] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex items-center gap-2">
+             <button className="bg-brand text-white border border-brand px-4 py-2 text-sm font-medium hover:bg-brand-hover shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex items-center gap-2">
                 <Plus size={16} /> New Doc
              </button>
           </div>
@@ -107,11 +107,11 @@ export const Documents: React.FC = () => {
            ].map((item, i) => (
               <div key={i} className={`group p-6 border transition-all cursor-pointer flex flex-col h-full
                  ${item.theme === 'blue'
-                    ? 'bg-blue-50/30 border-blue-100 hover:border-blue-300'
+                    ? 'bg-brand-bg border-brand-border hover:border-brand'
                     : 'bg-surface-card border-border-strong hover:border-border-strong hover:shadow-sharp'}
               `}>
                  <div className={`w-10 h-10 flex items-center justify-center mb-4 border
-                    ${item.theme === 'blue' ? 'bg-surface-card text-[#4F46E5] border-blue-100' : 'bg-surface-sunken text-txt-secondary border-border group-hover:bg-black group-hover:text-white group-hover:border-border-strong transition-colors'}
+                    ${item.theme === 'blue' ? 'bg-surface-card text-brand border-brand-border' : 'bg-surface-sunken text-txt-secondary border-border group-hover:bg-black group-hover:text-white group-hover:border-border-strong transition-colors'}
                  `}>
                     <item.icon size={20} />
                  </div>
@@ -152,8 +152,8 @@ export const Documents: React.FC = () => {
                           </div>
                           <div className="col-span-2">
                              <span className={`px-2 py-0.5 text-[0.625rem] font-mono font-bold border ${
-                                doc.status === 'Final' ? 'bg-green-50 text-green-700 border-green-200' :
-                                doc.status === 'Review' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
+                                doc.status === 'Final' ? 'bg-status-success-bg text-status-success-text border-status-success-text/20' :
+                                doc.status === 'Review' ? 'bg-status-warning-bg text-status-warning-text border-status-warning-text/20' :
                                 'bg-surface-sunken text-txt-secondary border-border'
                              }`}>
                                 {doc.status}
@@ -179,7 +179,7 @@ export const Documents: React.FC = () => {
            {/* Templates */}
            <div className="lg:col-span-4 space-y-4">
               <h2 className="text-[0.625rem] font-bold font-mono text-txt-tertiary uppercase tracking-widest flex items-center gap-2">
-                <span className="w-2 h-2 bg-[#4F46E5]"></span>
+                <span className="w-2 h-2 bg-brand"></span>
                 Templates
               </h2>
 

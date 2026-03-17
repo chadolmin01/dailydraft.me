@@ -13,7 +13,7 @@ export default function DevOnboardingPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center font-mono text-sm text-gray-400">
+      <div className="min-h-screen bg-surface-bg flex items-center justify-center font-mono text-sm text-gray-400">
         Loading...
       </div>
     )
@@ -21,7 +21,7 @@ export default function DevOnboardingPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-[#FAFAFA] flex flex-col items-center justify-center gap-4 font-mono">
+      <div className="min-h-screen bg-surface-bg flex flex-col items-center justify-center gap-4 font-mono">
         <p className="text-sm text-gray-500">로그인이 필요합니다</p>
         <button
           onClick={() => router.push('/login')}
@@ -61,7 +61,7 @@ export default function DevOnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-surface-bg flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-white border border-gray-200 rounded-xl p-6 shadow-sm font-mono">
         <div className="flex items-center gap-2 mb-6">
           <div className="px-2 py-0.5 bg-yellow-100 border border-yellow-300 rounded text-[10px] font-bold uppercase text-yellow-700">

@@ -87,7 +87,7 @@ export const Chat: React.FC = () => {
 
     const userMessage = input.trim()
     const newUserMsg: Message = {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       role: 'user',
       content: userMessage,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -104,20 +104,20 @@ export const Chat: React.FC = () => {
       })
 
       const aiResponse: Message = {
-        id: (Date.now() + 1).toString(),
+        id: crypto.randomUUID(),
         role: 'ai',
         content: result.response,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }
       setMessages(prev => [...prev, aiResponse])
     } catch {
-      const aiResponse: Message = {
-        id: (Date.now() + 1).toString(),
+      const errorResponse: Message = {
+        id: crypto.randomUUID(),
         role: 'ai',
-        content: '요청하신 내용을 바탕으로 분석 중입니다...\n\n스타트업 초기 팀 빌딩 시 고려해야 할 핵심 지표 3가지를 정리해드릴까요?\n\n(참고: AI 서비스에 연결되지 않아 샘플 응답입니다. Edge Functions 배포 후 정상 작동합니다.)',
+        content: '⚠ AI 서비스에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }
-      setMessages(prev => [...prev, aiResponse])
+      setMessages(prev => [...prev, errorResponse])
     } finally {
       setIsLoading(false)
     }
@@ -159,12 +159,12 @@ export const Chat: React.FC = () => {
       onClick={onClick}
       className={`flex flex-col items-start p-5 border hover:shadow-sharp transition-all duration-300 text-left group w-full relative ${
         variant === 'ai'
-          ? 'bg-[#4F46E5] border-[#4F46E5] hover:bg-[#4338CA]'
+          ? 'bg-brand border-brand hover:bg-brand-hover'
           : 'bg-surface-card border-border-strong hover:border-border-strong'
       } ${className}`}
     >
       {badge && (
-        <div className="absolute -top-2 -right-2 px-2 py-0.5 bg-surface-card text-[#4F46E5] text-[0.625rem] font-bold shadow-solid-sm border border-border-strong">
+        <div className="absolute -top-2 -right-2 px-2 py-0.5 bg-surface-card text-brand text-[0.625rem] font-bold shadow-solid-sm border border-border-strong">
           {badge}
         </div>
       )}
@@ -199,7 +199,7 @@ export const Chat: React.FC = () => {
   }
 
   return (
-    <div className="flex h-screen bg-[#FAFAFA] bg-grid-engineering overflow-hidden">
+    <div className="flex h-screen bg-surface-bg bg-grid-engineering overflow-hidden">
 
       {/* Left Sidebar: Session History */}
       <div className="w-80 border-r border-border-strong bg-surface-card hidden lg:flex flex-col z-10">
@@ -246,7 +246,7 @@ export const Chat: React.FC = () => {
                     {result.projectIdea.slice(0, 35)}...
                   </div>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-[0.5625rem] font-mono text-green-600 uppercase">✓ Validated</span>
+                    <span className="text-[0.5625rem] font-mono text-status-success-text uppercase">✓ Validated</span>
                   </div>
                 </div>
               ))}
@@ -256,7 +256,7 @@ export const Chat: React.FC = () => {
 
         <div className="p-4 border-t border-border-strong bg-surface-sunken">
            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 bg-green-500 animate-pulse"></div>
+              <div className="w-2 h-2 bg-indicator-online animate-pulse"></div>
               <span className="text-xs text-txt-tertiary font-mono">Draft AI v2.0 Online</span>
            </div>
         </div>
@@ -277,8 +277,8 @@ export const Chat: React.FC = () => {
             <p className="text-[0.625rem] text-txt-disabled mt-0.5 font-mono uppercase tracking-wider">AI-Powered Startup Tools</p>
           </div>
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1.5 px-2 py-1 bg-status-success-bg border border-green-300">
-              <span className="w-1.5 h-1.5 bg-green-500 animate-pulse"></span>
+            <div className="flex items-center gap-1.5 px-2 py-1 bg-status-success-bg border border-status-success-text/20">
+              <span className="w-1.5 h-1.5 bg-indicator-online animate-pulse"></span>
               <span className="text-[0.5625rem] font-mono text-status-success-text font-bold uppercase">Online</span>
             </div>
             <button className="p-2 hover:bg-surface-sunken text-txt-disabled hover:text-black transition-colors">
@@ -292,7 +292,7 @@ export const Chat: React.FC = () => {
 
           {/* Onboarding State */}
           {promptState === 'onboarding' && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#FAFAFA] bg-grid-engineering z-20">
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-surface-bg bg-grid-engineering z-20">
               <div className="flex flex-col items-center">
                 <div className="mb-8">
                   <div className="w-16 h-16 bg-black flex items-center justify-center shadow-sharp">
@@ -301,7 +301,7 @@ export const Chat: React.FC = () => {
                 </div>
 
                 <div className="flex items-center gap-2 px-3 py-1.5 bg-surface-card border border-border-strong shadow-solid-sm mb-6">
-                  <span className="w-1.5 h-1.5 bg-green-500 animate-pulse"></span>
+                  <span className="w-1.5 h-1.5 bg-indicator-online animate-pulse"></span>
                   <span className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-wider">
                     Initializing System
                   </span>
@@ -479,7 +479,7 @@ export const Chat: React.FC = () => {
                     p-4 text-sm leading-relaxed whitespace-pre-wrap shadow-solid-sm break-keep border
                     ${msg.role === 'user'
                       ? 'bg-surface-card border-border-strong text-txt-primary'
-                      : 'bg-surface-card border-[#4F46E5]/30 text-txt-primary'}
+                      : 'bg-surface-card border-brand-border text-txt-primary'}
                   `}
                 >
                   {msg.content}
@@ -517,14 +517,14 @@ export const Chat: React.FC = () => {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Draft AI에게 업무를 요청하세요..."
-              className="w-full h-11 pl-4 pr-12 bg-surface-sunken border-2 border-border-strong focus:outline-none focus:bg-surface-card focus:border-[#4F46E5] text-sm transition-all"
+              className="w-full h-11 pl-4 pr-12 bg-surface-sunken border border-border-strong focus:outline-none focus:bg-surface-card focus:border-brand text-sm transition-all"
             />
             <button
               onClick={handleUnifiedSend}
               disabled={!input.trim() || isLoading}
               className={`absolute right-1.5 top-1.5 p-2 transition-colors
                 ${input.trim() && !isLoading
-                  ? 'bg-black text-white hover:bg-[#4F46E5]'
+                  ? 'bg-black text-white hover:bg-brand'
                   : 'bg-surface-sunken text-txt-disabled cursor-not-allowed'}
               `}
             >

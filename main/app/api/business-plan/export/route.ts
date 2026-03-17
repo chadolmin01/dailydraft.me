@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
-import puppeteer from 'puppeteer'
+import { createClient } from '@/src/lib/supabase/server'
 
 // Export business plan as PDF (server-side generation with Puppeteer)
 
 export async function POST(req: NextRequest) {
   try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+    }
+
     const body = await req.json()
     const { format, data, sectionData, template } = body
 
@@ -63,7 +69,14 @@ export async function POST(req: NextRequest) {
 }
 
 async function generatePdfFromHtml(htmlContent: string): Promise<Buffer> {
-  const browser = await puppeteer.launch({
+  // Dynamic import — puppeteer is not available on Vercel serverless
+  let puppeteer: typeof import('puppeteer')
+  try {
+    puppeteer = await import('puppeteer')
+  } catch {
+    throw new Error('PDF 생성은 현재 서버 환경에서 지원되지 않습니다.')
+  }
+  const browser = await puppeteer.default.launch({
     headless: true,
     args: [
       '--no-sandbox',

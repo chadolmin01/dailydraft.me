@@ -176,7 +176,7 @@ export default function InviteCodesAdminPage() {
                 setSelectedEmail(e.target.value)
                 setSendError(null)
               }}
-              className="w-full px-3 py-2 border-2 border-border-strong focus:outline-none focus:border-[#4F46E5]"
+              className="w-full px-3 py-2 border border-border-strong focus:outline-none focus:border-brand"
               disabled={eligibleLoading}
             >
               <option value="">이메일 선택...</option>
@@ -190,7 +190,7 @@ export default function InviteCodesAdminPage() {
           <button
             onClick={() => selectedEmail && sendMutation.mutate(selectedEmail)}
             disabled={!selectedEmail || sendMutation.isPending}
-            className="px-4 py-2 bg-[#4F46E5] text-white border-2 border-[#4F46E5] hover:bg-[#4338CA] disabled:bg-surface-sunken disabled:border-border disabled:text-txt-disabled disabled:cursor-not-allowed flex items-center gap-2"
+            className="px-4 py-2 bg-brand text-white border border-brand hover:bg-brand-hover disabled:bg-surface-sunken disabled:border-border disabled:text-txt-disabled disabled:cursor-not-allowed flex items-center gap-2"
           >
             {sendMutation.isPending ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -202,7 +202,7 @@ export default function InviteCodesAdminPage() {
         </div>
 
         {sendError && (
-          <div className="mt-3 p-3 bg-red-50 border border-red-300 flex items-center gap-2 text-red-700 text-sm">
+          <div className="mt-3 p-3 bg-status-danger-bg border border-status-danger-text/20 flex items-center gap-2 text-status-danger-text text-sm">
             <AlertCircle className="w-4 h-4" />
             {sendError}
           </div>
@@ -264,7 +264,7 @@ export default function InviteCodesAdminPage() {
                     </td>
                     <td className="px-4 py-3">
                       {code.used_by ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 border border-green-600 text-green-700 text-[0.625rem] font-mono font-bold">
+                        <span className="inline-flex items-center gap-1 px-2 py-1 border border-status-success-text text-status-success-text text-[0.625rem] font-mono font-bold">
                           <Check className="w-3 h-3" />
                           사용됨
                         </span>
@@ -274,12 +274,12 @@ export default function InviteCodesAdminPage() {
                           비활성
                         </span>
                       ) : isExpired(code.expires_at) ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 border border-red-600 text-red-700 text-[0.625rem] font-mono font-bold">
+                        <span className="inline-flex items-center gap-1 px-2 py-1 border border-status-danger-text/20 text-status-danger-text text-[0.625rem] font-mono font-bold">
                           <Clock className="w-3 h-3" />
                           만료됨
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 border border-blue-600 text-blue-700 text-[0.625rem] font-mono font-bold">
+                        <span className="inline-flex items-center gap-1 px-2 py-1 border border-brand-border text-brand text-[0.625rem] font-mono font-bold">
                           <Clock className="w-3 h-3" />
                           대기 중
                         </span>
@@ -296,7 +296,7 @@ export default function InviteCodesAdminPage() {
                         <button
                           onClick={() => deleteMutation.mutate(code.id)}
                           disabled={deleteMutation.isPending}
-                          className="p-1 hover:bg-red-50 text-red-600 transition-colors"
+                          className="p-1 hover:bg-status-danger-bg text-status-danger-text transition-colors"
                           title="비활성화"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -353,11 +353,11 @@ export default function InviteCodesAdminPage() {
                             {user.existing_invite_code}
                           </code>
                           {user.invite_code_used ? (
-                            <span className="text-green-600 text-xs">사용됨</span>
+                            <span className="text-status-success-text text-xs">사용됨</span>
                           ) : user.invite_code_expired ? (
-                            <span className="text-red-600 text-xs">만료됨</span>
+                            <span className="text-status-danger-text text-xs">만료됨</span>
                           ) : (
-                            <span className="text-blue-600 text-xs">대기 중</span>
+                            <span className="text-status-info-text text-xs">대기 중</span>
                           )}
                         </div>
                       ) : (

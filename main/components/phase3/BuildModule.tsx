@@ -185,7 +185,7 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
         {/* Content */}
         <div className="flex-1 overflow-hidden flex flex-col relative">
           {error && (
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-red-50 text-red-600 px-3 py-1.5 shadow-sharp border border-red-200 flex items-center gap-2 z-50 text-xs">
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-status-danger-bg text-status-danger-text px-3 py-1.5 shadow-sharp border border-status-danger-text/20 flex items-center gap-2 z-50 text-xs">
               <AlertCircle size={14} />
               {error}
             </div>
@@ -199,7 +199,7 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-mono font-medium border border-green-200">PHASE 2 완료</span>
+                        <span className="px-2 py-0.5 bg-status-success-bg text-status-success-text text-xs font-mono font-medium border border-status-success-text/20">PHASE 2 완료</span>
                         <span className="text-xs text-txt-disabled font-mono">v1.2 FINAL</span>
                       </div>
                       <h2 className="text-xl font-bold text-txt-primary">{prd.title}</h2>

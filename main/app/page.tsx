@@ -24,7 +24,7 @@ export default function HomePage() {
 
       <Navbar onLoginClick={handleLoginClick} />
 
-      <main className="relative pt-20">
+      <main className="relative pt-14">
         <Hero onCtaClick={handleLoginClick} />
         <HowItWorks />
         <CommunityFeedback />

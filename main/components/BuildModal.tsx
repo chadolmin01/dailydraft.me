@@ -23,7 +23,7 @@ export const BuildModal: React.FC<BuildModalProps> = ({ isOpen, onClose, prdData
       />
 
       {/* Modal Content */}
-      <div className="relative bg-surface-card w-[98vw] max-w-[100rem] h-[92vh] shadow-brutal border-2 border-border-strong flex flex-col overflow-hidden">
+      <div className="relative bg-surface-card w-[98vw] max-w-[100rem] h-[92vh] shadow-brutal border border-border-strong flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex-shrink-0 border-b border-border-strong px-6 py-4 flex items-center justify-between bg-surface-card">
           <div className="flex items-center gap-3">
@@ -32,7 +32,7 @@ export const BuildModal: React.FC<BuildModalProps> = ({ isOpen, onClose, prdData
             </div>
             <div className="flex items-center gap-2">
               <h2 className="font-bold text-lg text-txt-primary">Phase 3: Build</h2>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#4F46E5]/10 text-[#4F46E5] text-[0.625rem] font-bold font-mono border border-[#4F46E5]">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-brand-bg text-brand text-[0.625rem] font-bold font-mono border border-brand">
                 <FlaskConical size={10} />
                 BETA
               </span>

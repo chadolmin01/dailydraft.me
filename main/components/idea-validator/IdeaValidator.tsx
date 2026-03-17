@@ -147,7 +147,7 @@ const IdeaValidator: React.FC<IdeaValidatorProps> = ({ onClose, onComplete, embe
   };
 
   return (
-    <div className="h-full flex flex-col font-sans text-draft-black selection:bg-blue-100 selection:text-blue-900 bg-surface-card overflow-hidden">
+    <div className="h-full flex flex-col font-sans text-draft-black selection:bg-brand-bg selection:text-brand bg-surface-card overflow-hidden">
       {/* Top Navigation Bar - Hidden when embedded */}
       {!embedded && (
         <nav className="w-full h-12 border-b border-border bg-surface-card flex shrink-0 items-center justify-between px-4 z-50">
@@ -157,8 +157,8 @@ const IdeaValidator: React.FC<IdeaValidatorProps> = ({ onClose, onComplete, embe
           </div>
 
           <div className="flex items-center space-x-3">
-            <div className="hidden md:flex items-center space-x-2 text-[0.625rem] font-mono text-green-600 bg-green-50 px-2 py-1 border border-green-200">
-              <span className="w-1.5 h-1.5 bg-green-500 animate-pulse"></span>
+            <div className="hidden md:flex items-center space-x-2 text-[0.625rem] font-mono text-status-success-text bg-status-success-bg px-2 py-1 border border-status-success-text/20">
+              <span className="w-1.5 h-1.5 bg-indicator-online animate-pulse"></span>
               <span>SYSTEM OPERATIONAL</span>
             </div>
             {onClose && (

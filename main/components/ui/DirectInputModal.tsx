@@ -175,7 +175,7 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
         onClick={handleClose}
       />
 
-      <div className="relative bg-surface-card w-full max-w-lg border-2 border-border-strong shadow-brutal overflow-hidden max-h-[85vh] flex flex-col">
+      <div className="relative bg-surface-card w-full max-w-lg border border-border-strong shadow-brutal overflow-hidden max-h-[85vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-6 pb-0 shrink-0">
           <div className="flex items-center gap-3">
@@ -217,7 +217,7 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
               className={`
-                relative p-12 border-2 border-dashed text-center cursor-pointer transition-all duration-200
+                relative p-12 border border-dashed text-center cursor-pointer transition-all duration-200
                 ${isDragging
                   ? 'border-border-strong bg-surface-sunken'
                   : 'border-border hover:border-border-strong hover:bg-surface-sunken'
@@ -253,7 +253,7 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
           {/* Structured Step */}
           {step === 'structured' && (
             <div className="space-y-5">
-              <div className="flex items-center gap-2 text-emerald-600 bg-emerald-600/5 px-4 py-3 border border-emerald-600/20">
+              <div className="flex items-center gap-2 text-indicator-online bg-status-success-bg px-4 py-3 border border-indicator-online/20">
                 <CheckCircle2 size={18} />
                 <span className="text-sm font-medium">분석이 완료되었습니다</span>
               </div>
@@ -267,7 +267,7 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
                 <textarea
                   value={structuredData.problem}
                   onChange={(e) => setStructuredData(prev => ({ ...prev, problem: e.target.value }))}
-                  className="w-full h-24 px-4 py-3 bg-surface-sunken border border-border focus:border-border-strong resize-none focus:outline-none focus:ring-2 focus:ring-[#4F46E5] text-sm placeholder:text-txt-disabled transition-shadow"
+                  className="w-full h-24 px-4 py-3 bg-surface-sunken border border-border focus:border-border-strong resize-none focus:outline-none focus:ring-2 focus:ring-brand text-sm placeholder:text-txt-disabled transition-shadow"
                   placeholder="해결하려는 문제를 입력하세요..."
                 />
               </div>
@@ -281,7 +281,7 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
                 <textarea
                   value={structuredData.solution}
                   onChange={(e) => setStructuredData(prev => ({ ...prev, solution: e.target.value }))}
-                  className="w-full h-24 px-4 py-3 bg-surface-sunken border border-border focus:border-border-strong resize-none focus:outline-none focus:ring-2 focus:ring-[#4F46E5] text-sm placeholder:text-txt-disabled transition-shadow"
+                  className="w-full h-24 px-4 py-3 bg-surface-sunken border border-border focus:border-border-strong resize-none focus:outline-none focus:ring-2 focus:ring-brand text-sm placeholder:text-txt-disabled transition-shadow"
                   placeholder="핵심 솔루션을 입력하세요..."
                 />
               </div>
@@ -295,7 +295,7 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
                 <textarea
                   value={structuredData.target}
                   onChange={(e) => setStructuredData(prev => ({ ...prev, target: e.target.value }))}
-                  className="w-full h-24 px-4 py-3 bg-surface-sunken border border-border focus:border-border-strong resize-none focus:outline-none focus:ring-2 focus:ring-[#4F46E5] text-sm placeholder:text-txt-disabled transition-shadow"
+                  className="w-full h-24 px-4 py-3 bg-surface-sunken border border-border focus:border-border-strong resize-none focus:outline-none focus:ring-2 focus:ring-brand text-sm placeholder:text-txt-disabled transition-shadow"
                   placeholder="타겟 고객을 입력하세요..."
                 />
               </div>
@@ -315,7 +315,7 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
 
           {/* Error Message */}
           {error && (
-            <div className="mt-4 px-4 py-3 bg-red-600/5 border border-red-600/20 text-sm text-red-600 flex items-center gap-2">
+            <div className="mt-4 px-4 py-3 bg-status-danger-text/5 border border-status-danger-text/20 text-sm text-status-danger-text flex items-center gap-2">
               <AlertCircle size={16} />
               {error}
             </div>

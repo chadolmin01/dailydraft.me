@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { createClient } from '@/src/lib/supabase/server';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
@@ -41,20 +42,42 @@ function getAnalyzeSystemInstruction(level: string) {
 
 export async function POST(request: NextRequest) {
   try {
+    if (!process.env.GEMINI_API_KEY) {
+      return NextResponse.json({ success: false, error: 'AI 서비스를 사용할 수 없습니다.' }, { status: 503 });
+    }
+
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ success: false, error: '로그인이 필요합니다' }, { status: 401 });
+    }
+
     const { idea, conversationHistory = [], level = 'mvp' } = await request.json();
 
-    if (!idea || idea.trim().length === 0) {
+    if (!idea || typeof idea !== 'string' || idea.trim().length === 0) {
       return NextResponse.json(
         { success: false, error: '아이디어를 입력해주세요.' },
         { status: 400 }
       );
     }
 
-    const historyContext = conversationHistory.length > 0
-      ? `[이전 대화 및 결정 내역]:\n${conversationHistory.join('\n')}\n\n`
+    // 입력 길이 제한
+    const sanitizedIdea = idea.slice(0, 5000);
+
+    // level 검증
+    const validLevels = ['sketch', 'mvp', 'investor'];
+    const sanitizedLevel = validLevels.includes(level) ? level : 'mvp';
+
+    // conversationHistory 검증 + 제한
+    const validHistory = Array.isArray(conversationHistory)
+      ? conversationHistory.filter((h: unknown) => typeof h === 'string').slice(0, 20).map((h: string) => h.slice(0, 2000))
+      : [];
+
+    const historyContext = validHistory.length > 0
+      ? `[이전 대화 및 결정 내역]:\n${validHistory.join('\n')}\n\n`
       : '';
 
-    const prompt = `${historyContext}사용자 입력(결정사항): "${idea}"
+    const prompt = `${historyContext}사용자 입력(결정사항): <USER_INPUT>${sanitizedIdea}</USER_INPUT>
 
 위 입력을 바탕으로 세 가지 관점(개발자, 디자이너, VC)에서 분석하세요. 사용자가 내린 결정들을 통합하여 프로젝트를 발전시키고, 점수를 갱신하세요. 한국어로 말하세요.
 
@@ -99,7 +122,7 @@ export async function POST(request: NextRequest) {
 
     const model = genAI.getGenerativeModel({
       model: 'gemini-2.0-flash',
-      systemInstruction: getAnalyzeSystemInstruction(level),
+      systemInstruction: getAnalyzeSystemInstruction(sanitizedLevel),
       generationConfig: {
         responseMimeType: 'application/json',
         maxOutputTokens: maxTokens,

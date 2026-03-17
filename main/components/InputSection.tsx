@@ -26,9 +26,9 @@ const InputSection: React.FC<InputSectionProps> = ({ inputs, logs, onChange, onS
   const roleLogs = logs.filter(l => l.role === activeTab);
 
   const tabs = [
-    { role: Role.PM, icon: Briefcase, label: "PM", fullLabel: "기획/전략", color: "text-blue-600", bg: "bg-blue-50" },
+    { role: Role.PM, icon: Briefcase, label: "PM", fullLabel: "기획/전략", color: "text-status-info-text", bg: "bg-status-info-bg" },
     { role: Role.DESIGNER, icon: Paintbrush, label: "Design", fullLabel: "디자인/UX", color: "text-pink-600", bg: "bg-pink-50" },
-    { role: Role.DEV, icon: Terminal, label: "Dev", fullLabel: "개발/테크", color: "text-emerald-600", bg: "bg-emerald-50" }
+    { role: Role.DEV, icon: Terminal, label: "Dev", fullLabel: "개발/테크", color: "text-indicator-online", bg: "bg-status-success-bg" }
   ];
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -73,7 +73,7 @@ const InputSection: React.FC<InputSectionProps> = ({ inputs, logs, onChange, onS
 
                 {/* Submitted Indicator dot */}
                 {isTabSubmitted && (
-                    <div className="w-1.5 h-1.5 bg-green-500 ml-1"></div>
+                    <div className="w-1.5 h-1.5 bg-indicator-online ml-1"></div>
                 )}
 
                 {/* Active Underline */}
@@ -88,7 +88,7 @@ const InputSection: React.FC<InputSectionProps> = ({ inputs, logs, onChange, onS
       <div className="flex-1 overflow-y-auto p-4 bg-surface-card relative flex flex-col gap-4">
 
         {/* 1. Text Input */}
-        <div className="relative border-2 border-border-strong bg-surface-sunken focus-within:bg-surface-card focus-within:border-border-strong focus-within:shadow-sharp transition-all duration-200 flex-shrink-0">
+        <div className="relative border border-border-strong bg-surface-sunken focus-within:bg-surface-card focus-within:border-border-strong focus-within:shadow-sharp transition-all duration-200 flex-shrink-0">
             <textarea
                 value={activeInput}
                 onChange={(e) => onChange(activeTab, e.target.value)}
@@ -111,10 +111,10 @@ const InputSection: React.FC<InputSectionProps> = ({ inputs, logs, onChange, onS
                     className={`
                         flex items-center gap-2 pl-4 pr-5 py-2 font-bold text-xs transition-all
                         ${isSubmitted && hasInitialSynthesis
-                            ? 'bg-surface-sunken text-txt-secondary hover:bg-surface-card border-2 border-border-strong'
+                            ? 'bg-surface-sunken text-txt-secondary hover:bg-surface-card border border-border-strong'
                             : (isSubmitted
-                                ? 'bg-green-50 text-green-700 border-2 border-green-200'
-                                : 'bg-black text-white hover:bg-[#333] border-2 border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]')
+                                ? 'bg-status-success-bg text-status-success-text border border-status-success-text/20'
+                                : 'bg-black text-white hover:bg-[#333] border border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]')
                         }
                         ${(isAnalyzing || !activeInput.trim()) && 'opacity-50 cursor-not-allowed shadow-none'}
                     `}
@@ -163,7 +163,7 @@ const InputSection: React.FC<InputSectionProps> = ({ inputs, logs, onChange, onS
 
                             <button
                                 onClick={() => onUndo(log.id)}
-                                className="opacity-0 group-hover:opacity-100 p-1.5 text-txt-disabled hover:text-red-500 hover:bg-red-50 transition-all"
+                                className="opacity-0 group-hover:opacity-100 p-1.5 text-txt-disabled hover:text-status-danger-text hover:bg-status-danger-bg transition-all"
                                 title="Undo / Delete"
                             >
                                 <RotateCcw className="w-3.5 h-3.5" />

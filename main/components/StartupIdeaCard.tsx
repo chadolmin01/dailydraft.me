@@ -69,7 +69,7 @@ export const StartupIdeaCard: React.FC<StartupIdeaCardProps> = ({
               </div>
             )}
             <div className="min-w-0">
-              <h3 className="font-bold text-sm text-txt-primary truncate group-hover:text-[#4F46E5] transition-colors">
+              <h3 className="font-bold text-sm text-txt-primary truncate group-hover:text-brand transition-colors">
                 {name}
               </h3>
               <p className="text-[0.625rem] font-mono text-txt-disabled uppercase">
@@ -152,7 +152,7 @@ export const StartupIdeaCard: React.FC<StartupIdeaCardProps> = ({
           {onStartBuilding && hasAnalysis && (
             <button
               onClick={() => onStartBuilding(id)}
-              className="px-4 py-2 bg-black text-white text-xs font-bold hover:bg-[#333] transition-colors flex items-center gap-1 border-2 border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+              className="px-4 py-2 bg-black text-white text-xs font-bold hover:bg-[#333] transition-colors flex items-center gap-1 border border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
             >
               빌딩 시작
               <ArrowUpRight size={12} />

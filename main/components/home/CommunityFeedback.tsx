@@ -35,26 +35,26 @@ export const CommunityFeedback: React.FC = () => {
   const router = useRouter()
 
   return (
-    <section className="w-full py-32 px-6 md:px-12">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-20">
-          <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-4 block">
+    <section className="w-full py-20 px-6 md:px-10">
+      <div className="max-w-5xl mx-auto">
+        <div className="text-center mb-12">
+          <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-3 block">
             COMMUNITY FEEDBACK
           </span>
-          <h2 className="text-3xl md:text-4xl font-bold text-txt-primary mb-4">
+          <h2 className="text-2xl md:text-3xl font-bold text-txt-primary mb-3">
             다양한 시각의 피드백
           </h2>
-          <p className="text-txt-secondary max-w-xl mx-auto">
+          <p className="text-txt-secondary text-sm max-w-xl mx-auto">
             프로젝트를 올리면 다른 유저들이 자유롭게 피드백을 남깁니다
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           {/* Project Card */}
-          <div className="bg-surface-card border border-border-strong p-6 shadow-brutal">
-            <div className="flex items-start justify-between mb-4">
+          <div className="bg-surface-card border border-border-strong p-5 shadow-brutal">
+            <div className="flex items-start justify-between mb-3">
               <div>
-                <h3 className="text-xl font-bold text-txt-primary mb-2">
+                <h3 className="text-base font-bold text-txt-primary mb-1.5">
                   {mockProject.title}
                 </h3>
                 <p className="text-txt-secondary text-sm">
@@ -80,7 +80,7 @@ export const CommunityFeedback: React.FC = () => {
               {mockProject.needRoles.map((role) => (
                 <span
                   key={role}
-                  className="px-2 py-1 bg-[#4F46E5]/5 border border-[#4F46E5]/20 text-[#4F46E5] text-xs font-bold"
+                  className="px-2 py-1 bg-brand-bg border border-brand-border text-brand text-xs font-bold"
                 >
                   NEED: {role}
                 </span>
@@ -130,10 +130,10 @@ export const CommunityFeedback: React.FC = () => {
         </div>
 
         {/* CTA */}
-        <div className="text-center mt-16">
+        <div className="text-center mt-10">
           <button
             onClick={() => router.push('/login')}
-            className="group inline-flex items-center gap-2 bg-black text-white px-8 py-4 font-bold text-sm hover:bg-[#333] transition-all duration-200 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] border border-black"
+            className="group inline-flex items-center gap-2 bg-black text-white px-6 py-3 font-bold text-xs hover:bg-[#333] transition-all duration-200 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] border border-black"
           >
             나도 프로젝트 올리기
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />

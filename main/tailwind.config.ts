@@ -20,11 +20,11 @@ const config: Config = {
       maxWidth: {
         'container-narrow': '48rem',
         'container-standard': '72rem',
-        'container-wide': '82rem',
+        'container-wide': '90rem',
       },
       fontFamily: {
-        sans: ['"Noto Sans KR"', 'sans-serif'],
-        mono: ['"JetBrains Mono"', '"Nanum Gothic Coding"', 'monospace'],
+        sans: ['var(--font-noto-sans-kr)', '"Noto Sans KR"', 'sans-serif'],
+        mono: ['var(--font-jetbrains-mono)', 'var(--font-nanum-gothic-coding)', '"JetBrains Mono"', '"Nanum Gothic Coding"', 'monospace'],
       },
       colors: {
         // ── Design System Tokens ──
@@ -71,6 +71,19 @@ const config: Config = {
           'default-text': 'var(--tag-default-text)',
           'strong-bg': 'var(--tag-strong-bg)',
           'strong-text': 'var(--tag-strong-text)',
+        },
+        brand: {
+          DEFAULT: 'var(--brand)',
+          hover: 'var(--brand-hover)',
+          bg: 'var(--brand-bg)',
+          border: 'var(--brand-border)',
+        },
+        indicator: {
+          online: 'var(--indicator-online)',
+          premium: 'var(--indicator-premium)',
+          'premium-border': 'var(--indicator-premium-border)',
+          alert: 'var(--indicator-alert)',
+          trending: 'var(--indicator-trending)',
         },
       },
       borderRadius: {

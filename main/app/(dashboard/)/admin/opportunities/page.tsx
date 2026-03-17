@@ -43,9 +43,9 @@ interface OpportunitiesResponse {
 }
 
 const statusLabels: Record<string, { label: string; cls: string }> = {
-  active: { label: '활성', cls: 'border-2 border-green-600 text-green-700' },
-  closed: { label: '마감', cls: 'border-2 border-border-strong text-txt-tertiary' },
-  draft: { label: '임시', cls: 'border-2 border-yellow-600 text-yellow-700' },
+  active: { label: '활성', cls: 'border border-status-success-text text-status-success-text' },
+  closed: { label: '마감', cls: 'border border-border-strong text-txt-tertiary' },
+  draft: { label: '임시', cls: 'border border-status-warning-text text-status-warning-text' },
 }
 
 const typeLabels: Record<string, string> = {
@@ -120,7 +120,7 @@ export default function AdminOpportunitiesPage() {
   if (!isAdmin) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center h-screen bg-surface-sunken">
-        <ShieldX size={48} className="text-red-400 mb-4" />
+        <ShieldX size={48} className="text-status-danger-text/70 mb-4" />
         <p className="text-txt-secondary">접근 권한이 없습니다</p>
       </div>
     )
@@ -153,7 +153,7 @@ export default function AdminOpportunitiesPage() {
             </div>
             <button
               onClick={() => refetch()}
-              className="flex items-center gap-2 px-4 py-2 bg-black text-white text-sm font-medium border-2 border-black hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+              className="flex items-center gap-2 px-4 py-2 bg-black text-white text-sm font-medium border border-black hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
             >
               <RefreshCw size={16} />
               새로고침
@@ -171,7 +171,7 @@ export default function AdminOpportunitiesPage() {
                 placeholder="제목, 설명 검색..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-surface-card border-2 border-border-strong text-sm focus:outline-none focus:border-[#4F46E5] transition-colors"
+                className="w-full pl-10 pr-4 py-2.5 bg-surface-card border border-border-strong text-sm focus:outline-none focus:border-brand transition-colors"
               />
             </div>
             <div className="flex items-center gap-2">
@@ -179,7 +179,7 @@ export default function AdminOpportunitiesPage() {
               <select
                 value={statusFilter}
                 onChange={(e) => { setStatusFilter(e.target.value); setPage(1) }}
-                className="px-3 py-2.5 bg-surface-card border-2 border-border-strong text-sm focus:outline-none focus:border-[#4F46E5]"
+                className="px-3 py-2.5 bg-surface-card border border-border-strong text-sm focus:outline-none focus:border-brand"
               >
                 <option value="">전체 상태</option>
                 <option value="active">활성</option>
@@ -189,7 +189,7 @@ export default function AdminOpportunitiesPage() {
               <select
                 value={sort}
                 onChange={(e) => { setSort(e.target.value); setPage(1) }}
-                className="px-3 py-2.5 bg-surface-card border-2 border-border-strong text-sm focus:outline-none focus:border-[#4F46E5]"
+                className="px-3 py-2.5 bg-surface-card border border-border-strong text-sm focus:outline-none focus:border-brand"
               >
                 <option value="recent">최신순</option>
                 <option value="views">조회순</option>
@@ -230,7 +230,7 @@ export default function AdminOpportunitiesPage() {
                 </thead>
                 <tbody className="divide-y divide-dashed divide-border">
                   {data.opportunities.map((opp) => {
-                    const statusInfo = statusLabels[opp.status] || { label: opp.status, cls: 'border-2 border-border-strong text-txt-tertiary' }
+                    const statusInfo = statusLabels[opp.status] || { label: opp.status, cls: 'border border-border-strong text-txt-tertiary' }
                     return (
                       <tr key={opp.id} className="hover:bg-surface-sunken transition-colors">
                         <td className="px-4 py-3">
@@ -263,7 +263,7 @@ export default function AdminOpportunitiesPage() {
                         <td className="px-4 py-3 text-right">
                           <button
                             onClick={() => setDeleteTarget(opp)}
-                            className="p-1.5 hover:bg-red-50 text-txt-disabled hover:text-red-600 transition-colors"
+                            className="p-1.5 hover:bg-status-danger-bg text-txt-disabled hover:text-status-danger-text transition-colors"
                             title="삭제"
                           >
                             <Trash2 size={14} />
@@ -312,26 +312,26 @@ export default function AdminOpportunitiesPage() {
             <p className="text-sm text-txt-secondary mb-1">
               <span className="font-semibold">&ldquo;{deleteTarget.title}&rdquo;</span> 를 삭제하시겠습니까?
             </p>
-            <p className="text-xs text-red-600 mb-6">이 작업은 되돌릴 수 없습니다.</p>
+            <p className="text-xs text-status-danger-text mb-6">이 작업은 되돌릴 수 없습니다.</p>
             <div className="flex items-center justify-end gap-3">
               <button
                 onClick={() => setDeleteTarget(null)}
                 disabled={deleteMutation.isPending}
-                className="px-4 py-2 text-sm text-txt-secondary border-2 border-border-strong hover:bg-black hover:text-white transition-colors"
+                className="px-4 py-2 text-sm text-txt-secondary border border-border-strong hover:bg-black hover:text-white transition-colors"
               >
                 취소
               </button>
               <button
                 onClick={() => deleteMutation.mutate(deleteTarget.id)}
                 disabled={deleteMutation.isPending}
-                className="px-4 py-2 text-sm bg-red-600 text-white border-2 border-red-600 hover:bg-red-700 disabled:opacity-50 transition-colors flex items-center gap-2"
+                className="px-4 py-2 text-sm bg-status-danger-text text-white border border-status-danger-text hover:bg-status-danger-text/90 disabled:opacity-50 transition-colors flex items-center gap-2"
               >
                 {deleteMutation.isPending && <Loader2 size={14} className="animate-spin" />}
                 삭제
               </button>
             </div>
             {deleteMutation.isError && (
-              <p className="text-xs text-red-600 mt-3">삭제에 실패했습니다. 다시 시도해주세요.</p>
+              <p className="text-xs text-status-danger-text mt-3">삭제에 실패했습니다. 다시 시도해주세요.</p>
             )}
           </Card>
         </div>

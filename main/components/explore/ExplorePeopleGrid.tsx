@@ -120,13 +120,13 @@ export function ExplorePeopleGrid({
               tabIndex={0}
               onClick={() => onSelectProfile(t.id, false)}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectProfile(t.id, false) } }}
-              className="relative bg-surface-card border border-border-strong overflow-hidden group hover:shadow-[4px_4px_0px_0px_rgba(79,70,229,0.12)] hover:border-[#4F46E5]/30 transition-all cursor-pointer h-[13.75rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none"
+              className="relative bg-surface-card border border-border-strong overflow-hidden group hover:shadow-solid-sm hover:border-brand/30 transition-all cursor-pointer h-[13.75rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none"
             >
               <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-black/15" />
               <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-black/15" />
               <div className="px-4 pt-4 h-[4.75rem] shrink-0">
                 <div className="flex gap-3">
-                  <div className="w-12 h-12 bg-[#4F46E5]/10 border border-[#4F46E5]/20 flex items-center justify-center text-base font-bold text-[#4F46E5] shrink-0 overflow-hidden">
+                  <div className="w-12 h-12 bg-brand-bg border border-brand-border flex items-center justify-center text-base font-bold text-brand shrink-0 overflow-hidden">
                     {t.avatarUrl ? (
                       <img src={t.avatarUrl} alt={t.name} className="w-full h-full object-cover" />
                     ) : (
@@ -164,7 +164,7 @@ export function ExplorePeopleGrid({
                 <div className="flex items-center justify-between w-full pt-2 border-t border-dashed border-border">
                   <span className="text-[0.625rem] font-mono text-txt-tertiary">{t.role}</span>
                   {t.status === 'OPEN' ? (
-                    <span className="text-[0.625rem] font-mono text-emerald-600 flex items-center gap-1 bg-emerald-50 px-1.5 py-0.5 border border-emerald-200"><Coffee size={9} /> AVAILABLE</span>
+                    <span className="text-[0.625rem] font-mono text-indicator-online flex items-center gap-1 bg-status-success-bg px-1.5 py-0.5 border border-indicator-online/20"><Coffee size={9} /> AVAILABLE</span>
                   ) : (
                     <span className="text-[0.625rem] font-mono text-txt-tertiary flex items-center gap-1 bg-surface-sunken px-1.5 py-0.5 border border-border">{t.status}</span>
                   )}

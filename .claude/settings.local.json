@@ -174,7 +174,30 @@
       "Bash(/tmp/fix-borders.awk:*)",
       "Bash(for f in \"main/app/\\(dashboard/\\)/admin/users/page.tsx\" \"main/app/\\(dashboard/\\)/admin/page.tsx\")",
       "Bash(do echo \"=== $f ===\")",
-      "Read(//c/project/Draft/**)"
+      "Read(//c/project/Draft/**)",
+      "Bash(rm:*)",
+      "Bash(cp:*)",
+      "Bash(mkdir:*)",
+      "Bash(gh pr:*)",
+      "WebFetch(domain:vercel.com)",
+      "Read(//c/Users/chado/.local/share/com.vercel.cli/**)",
+      "Read(//c/Users/chado/AppData/Roaming/com.vercel.cli/**)",
+      "Read(//c/Users/chado/AppData/Local/com.vercel.cli/**)",
+      "Read(//c/project/Draft/main/**)",
+      "Read(//c/project/Draft/main/$APPDATA/**)",
+      "Read(//c/project/Draft/main/$HOME/.config/**)",
+      "Read(//c/project/Draft/main/$HOME/**)",
+      "Bash(psql:*)",
+      "Read(//c/Users/chado/.supabase/**)",
+      "Read(//c/Users/chado/AppData/Roaming/supabase/**)",
+      "Read(//c/project/Draft/main/$APPDATA/supabase/**)",
+      "Read(//c/Users/chado/**)",
+      "Read(//c/Users/chado/.config/**)",
+      "Read(//c/project/Draft/main/$LOCALAPPDATA/**)",
+      "Bash(mv:*)",
+      "Bash(while read f)",
+      "Bash(\"C:/project/Draft/main/.env.local\":*)",
+      "Bash(sed:*)"
     ]
   }
 }

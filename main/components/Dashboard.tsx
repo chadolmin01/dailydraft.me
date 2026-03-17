@@ -86,7 +86,7 @@ const myProjects = [
   {
     id: 'p1',
     status: '진행중',
-    statusColor: 'bg-green-500',
+    statusColor: 'bg-indicator-online',
     title: 'Project Alpha:\nAI 법률 어시스턴트',
     stage: 'SEED STAGE',
     dDay: '런칭 D-14',
@@ -126,7 +126,7 @@ const myProjects = [
   {
     id: 'p3',
     status: '모집중',
-    statusColor: 'bg-blue-500',
+    statusColor: 'bg-status-info-text',
     title: '글로벌 SaaS\n마케팅 팀 빌딩',
     stage: 'PRE-A',
     dDay: '마감 D-5',
@@ -244,12 +244,12 @@ export const Dashboard: React.FC = () => {
       case 'PROGRAM':
         return {
           variant: 'solid' as const,
-          cardClass: 'bg-[#0052CC] border border-blue-600 hover:border-blue-400 text-white',
+          cardClass: 'bg-[#0052CC] border border-brand hover:border-brand-hover text-white',
           badgeClass: 'bg-white text-[#0052CC] border-transparent shadow-sm',
           textClass: 'text-white',
-          subTextClass: 'text-blue-200',
-          organizationClass: 'text-blue-100',
-          fitBadgeClass: 'bg-white text-[#0052CC] border-blue-200',
+          subTextClass: 'text-brand-border',
+          organizationClass: 'text-brand-bg',
+          fitBadgeClass: 'bg-white text-[#0052CC] border-status-info-text/20',
           icon: <Landmark size={10} />,
           text: 'PROGRAM'
         }
@@ -307,7 +307,7 @@ export const Dashboard: React.FC = () => {
           </div>
           <button
             onClick={() => router.push('/projects')}
-            className="bg-[#4F46E5] text-white border-2 border-[#4F46E5] px-4 py-2 text-sm font-medium hover:bg-[#4338CA] transition-colors flex items-center gap-2 shadow-solid-sm"
+            className="bg-brand text-white border border-brand px-4 py-2 text-sm font-medium hover:bg-brand-hover transition-colors flex items-center gap-2 shadow-solid-sm"
           >
              <Plus size={16} /> New Draft
           </button>
@@ -382,7 +382,7 @@ export const Dashboard: React.FC = () => {
                         <div className="text-[0.5625rem] text-txt-disabled font-mono uppercase mb-0.5 flex items-center gap-1">
                              <Users size={10} /> Network
                         </div>
-                        <div className="font-bold text-lg text-[#4F46E5] leading-none">-</div>
+                        <div className="font-bold text-lg text-brand leading-none">-</div>
                       </div>
                   </div>
                 </div>
@@ -441,7 +441,7 @@ export const Dashboard: React.FC = () => {
                           <div className="text-lg font-bold text-txt-primary">{currentProject.stats.applicants}</div>
                           <div className="text-[0.5625rem] text-status-success-text font-bold">{currentProject.stats.applicantsNew}</div>
                       </div>
-                      <div className="text-center p-2 bg-status-info-bg border border-border text-[#4F46E5]">
+                      <div className="text-center p-2 bg-status-info-bg border border-border text-brand">
                           <div className="text-[0.5625rem] font-mono uppercase mb-1 opacity-70">Intv</div>
                           <div className="text-lg font-bold">{currentProject.stats.interviews}</div>
                           <div className="text-[0.5625rem] font-bold">{currentProject.stats.interviewsMsg}</div>
@@ -562,7 +562,7 @@ export const Dashboard: React.FC = () => {
           <div className="flex flex-col gap-3">
              <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-2">
-                  <span className="w-5 h-5 bg-[#4F46E5] text-white flex items-center justify-center text-[0.5rem] font-bold font-mono">R</span>
+                  <span className="w-5 h-5 bg-brand text-white flex items-center justify-center text-[0.5rem] font-bold font-mono">R</span>
                   <h3 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-primary">Recommended Opportunities</h3>
                 </div>
                 <button

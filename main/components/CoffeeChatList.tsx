@@ -152,7 +152,7 @@ const CoffeeChatItem: React.FC<CoffeeChatItemProps> = ({
 
           {/* Status Badge */}
           {chat.status === 'accepted' && (
-            <span className="px-2 py-0.5 bg-status-success-bg text-status-success-text text-[0.625rem] font-mono font-bold rounded-sm border border-green-300">
+            <span className="px-2 py-0.5 bg-status-success-bg text-status-success-text text-[0.625rem] font-mono font-bold rounded-sm border border-status-success-text/20">
               수락됨
             </span>
           )}
@@ -173,7 +173,7 @@ const CoffeeChatItem: React.FC<CoffeeChatItemProps> = ({
 
         {/* Contact Info (if accepted) */}
         {chat.status === 'accepted' && chat.contact_info && (
-          <div className="bg-status-success-bg p-3 rounded-sm mb-3 text-sm text-status-success-text border border-green-300">
+          <div className="bg-status-success-bg p-3 rounded-sm mb-3 text-sm text-status-success-text border border-status-success-text/20">
             <strong>연락처:</strong> {chat.contact_info}
           </div>
         )}
@@ -187,7 +187,7 @@ const CoffeeChatItem: React.FC<CoffeeChatItemProps> = ({
             <button
               onClick={() => setShowAcceptModal(true)}
               disabled={processing}
-              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-[#4F46E5] text-white border-2 border-[#4F46E5] rounded-sm hover:bg-[#4338CA] text-sm font-bold shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-40 disabled:pointer-events-none"
+              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-brand text-white border border-brand rounded-sm hover:bg-brand-hover text-sm font-bold shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-40 disabled:pointer-events-none"
             >
               <Check size={14} />
               수락
@@ -213,7 +213,7 @@ const CoffeeChatItem: React.FC<CoffeeChatItemProps> = ({
       {/* Accept Modal */}
       {showAcceptModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-surface-card rounded-sm shadow-sharp border-2 border-border-strong w-full max-w-sm">
+          <div className="bg-surface-card rounded-sm shadow-sharp border border-border-strong w-full max-w-sm">
             <div className="p-4 border-b border-border-strong">
               <h3 className="font-bold text-txt-primary">커피챗 수락</h3>
             </div>
@@ -232,7 +232,7 @@ const CoffeeChatItem: React.FC<CoffeeChatItemProps> = ({
                   placeholder="010-1234-5678 또는 카카오톡 ID"
                   value={contactInfo}
                   onChange={(e) => setContactInfo(e.target.value)}
-                  className="w-full px-3 py-2 border-2 border-border-strong rounded-sm bg-surface-card focus:outline-none focus:border-[#4F46E5]"
+                  className="w-full px-3 py-2 border border-border-strong rounded-sm bg-surface-card focus:outline-none focus:border-brand"
                 />
               </div>
 
@@ -246,7 +246,7 @@ const CoffeeChatItem: React.FC<CoffeeChatItemProps> = ({
                 <button
                   onClick={handleAccept}
                   disabled={processing || !contactInfo.trim()}
-                  className="flex-1 px-4 py-2 bg-[#4F46E5] text-white border-2 border-[#4F46E5] rounded-sm hover:bg-[#4338CA] text-sm font-bold shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-40 disabled:pointer-events-none flex items-center justify-center gap-2"
+                  className="flex-1 px-4 py-2 bg-brand text-white border border-brand rounded-sm hover:bg-brand-hover text-sm font-bold shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-40 disabled:pointer-events-none flex items-center justify-center gap-2"
                 >
                   {processing ? (
                     <Loader2 size={16} className="animate-spin" />

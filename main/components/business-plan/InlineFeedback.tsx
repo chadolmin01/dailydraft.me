@@ -43,16 +43,16 @@ export const InlineFeedbackBar: React.FC<InlineFeedbackProps> = ({
       return {
         type: 'error' as const,
         message: `심각한 문제 ${highWarnings.length}개 발견`,
-        color: 'text-red-600 bg-red-50 border-red-100',
-        icon: <AlertTriangle size={12} className="text-red-500" />,
+        color: 'text-status-danger-text bg-status-danger-bg border-status-danger-text/20',
+        icon: <AlertTriangle size={12} className="text-status-danger-text" />,
       }
     }
     if (mediumWarnings.length > 0 || failedChecks.length > 0) {
       return {
         type: 'warning' as const,
         message: `개선 필요 ${(mediumWarnings.length + failedChecks.length)}개`,
-        color: 'text-yellow-700 bg-yellow-50 border-yellow-100',
-        icon: <Info size={12} className="text-yellow-500" />,
+        color: 'text-status-warning-text bg-status-warning-bg border-status-warning-text/20',
+        icon: <Info size={12} className="text-status-warning-text" />,
       }
     }
     if (text.length < 50) {
@@ -66,8 +66,8 @@ export const InlineFeedbackBar: React.FC<InlineFeedbackProps> = ({
     return {
       type: 'success' as const,
       message: '잘 작성되었습니다',
-      color: 'text-green-600 bg-green-50 border-green-100',
-      icon: <CheckCircle size={12} className="text-green-500" />,
+      color: 'text-status-success-text bg-status-success-bg border-status-success-text/20',
+      icon: <CheckCircle size={12} className="text-status-success-text" />,
     }
   }, [highWarnings, mediumWarnings, failedChecks, text])
 
@@ -82,7 +82,7 @@ export const InlineFeedbackBar: React.FC<InlineFeedbackProps> = ({
       </div>
 
       {showScoreGain && totalPotentialGain > 0 && (
-        <div className="flex items-center gap-1 text-green-600">
+        <div className="flex items-center gap-1 text-status-success-text">
           <TrendingUp size={12} />
           <span className="font-medium">수정 시 +{totalPotentialGain}점</span>
         </div>
@@ -110,12 +110,12 @@ export const FeedbackTooltip: React.FC<FeedbackTooltipProps> = ({
   const severityConfig = {
     high: {
       bg: 'bg-red-900',
-      badge: 'bg-red-500',
+      badge: 'bg-indicator-alert',
       text: '심각',
     },
     medium: {
       bg: 'bg-yellow-900',
-      badge: 'bg-yellow-500',
+      badge: 'bg-status-warning-text',
       text: '주의',
     },
     low: {
@@ -142,7 +142,7 @@ export const FeedbackTooltip: React.FC<FeedbackTooltipProps> = ({
             {config.text}
           </span>
           {potentialGain && (
-            <span className="px-1.5 py-0.5 bg-green-500 text-[0.625rem] font-bold">
+            <span className="px-1.5 py-0.5 bg-status-success-text text-[0.625rem] font-bold">
               +{potentialGain}점
             </span>
           )}
@@ -234,9 +234,9 @@ export const HighlightedText: React.FC<HighlightedTextProps> = ({
   }, [text, sortedHighlights])
 
   const highlightClasses = {
-    error: 'bg-red-100 border-b border-red-400 hover:bg-red-200 cursor-pointer',
-    warning: 'bg-yellow-100 border-b border-yellow-400 hover:bg-yellow-200 cursor-pointer',
-    info: 'bg-blue-100 border-b border-blue-400 hover:bg-blue-200 cursor-pointer',
+    error: 'bg-status-danger-bg border-b border-status-danger-text hover:bg-status-danger-bg cursor-pointer',
+    warning: 'bg-status-warning-bg border-b border-status-warning-text hover:bg-status-warning-bg/80 cursor-pointer',
+    info: 'bg-status-info-bg border-b border-status-info-text hover:bg-status-info-bg cursor-pointer',
   }
 
   return (
@@ -275,7 +275,7 @@ export const QuickFixButton: React.FC<QuickFixButtonProps> = ({
   size = 'sm',
 }) => {
   const variantClasses = {
-    primary: 'bg-blue-600 text-white hover:bg-blue-700 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]',
+    primary: 'bg-brand text-white hover:bg-brand-hover shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]',
     secondary: 'bg-surface-sunken text-txt-secondary hover:bg-black hover:text-white border border-border-strong',
   }
 
@@ -321,9 +321,9 @@ export const SectionFeedbackSummary: React.FC<SectionFeedbackSummaryProps> = ({
     <div className="flex items-center justify-between p-3 bg-surface-sunken">
       <div className="flex items-center gap-3">
         <div className={`w-10 h-10 flex items-center justify-center text-sm font-bold ${
-          percentage >= 80 ? 'bg-green-100 text-green-700' :
-          percentage >= 60 ? 'bg-yellow-100 text-yellow-700' :
-          'bg-red-100 text-red-700'
+          percentage >= 80 ? 'bg-status-success-bg text-status-success-text' :
+          percentage >= 60 ? 'bg-status-warning-bg text-status-warning-text' :
+          'bg-status-danger-bg text-status-danger-text'
         }`}>
           {score}
         </div>
@@ -341,7 +341,7 @@ export const SectionFeedbackSummary: React.FC<SectionFeedbackSummaryProps> = ({
           <div className="text-xs text-txt-tertiary max-w-[9.375rem] truncate">{topIssue}</div>
         )}
         {potentialGain && potentialGain > 0 && (
-          <div className="text-xs font-medium text-green-600">+{potentialGain}점 가능</div>
+          <div className="text-xs font-medium text-status-success-text">+{potentialGain}점 가능</div>
         )}
       </div>
     </div>

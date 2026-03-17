@@ -46,22 +46,22 @@ export function PaymentWarningBanner() {
 
   const levelStyles = {
     critical: {
-      bg: 'bg-red-50 border-red-500',
-      text: 'text-red-800',
-      icon: 'text-red-500',
-      button: 'bg-red-600 hover:bg-red-700 border-red-600',
+      bg: 'bg-status-danger-bg border-status-danger-text',
+      text: 'text-status-danger-text',
+      icon: 'text-status-danger-text',
+      button: 'bg-status-danger-text hover:bg-red-700 border-status-danger-text',
     },
     warning: {
-      bg: 'bg-yellow-50 border-yellow-500',
+      bg: 'bg-status-warning-bg border-status-warning-text',
       text: 'text-yellow-800',
       icon: 'text-yellow-500',
       button: 'bg-yellow-600 hover:bg-yellow-700 border-yellow-600',
     },
     info: {
-      bg: 'bg-blue-50 border-blue-500',
-      text: 'text-blue-800',
-      icon: 'text-blue-500',
-      button: 'bg-blue-600 hover:bg-blue-700 border-blue-600',
+      bg: 'bg-status-info-bg border-status-info-text',
+      text: 'text-brand',
+      icon: 'text-status-info-text',
+      button: 'bg-brand hover:bg-brand-hover border-brand',
     },
   }
 
@@ -97,7 +97,7 @@ export function PaymentWarningBanner() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.push('/usage')}
-            className={`flex items-center gap-2 px-4 py-1.5 ${styles.button} text-white text-sm font-bold border-2 transition-colors`}
+            className={`flex items-center gap-2 px-4 py-1.5 ${styles.button} text-white text-sm font-bold border transition-colors`}
           >
             <CreditCard className="w-4 h-4" />
             결제 수단 확인

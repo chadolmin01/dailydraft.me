@@ -11,10 +11,10 @@ interface RoleFilterProps {
 
 const ROLES: { id: TaskType | 'ALL'; label: string; color: string }[] = [
   { id: 'ALL', label: '전체 보기', color: 'bg-surface-inverse text-white border-surface-inverse' },
-  { id: 'PLANNING', label: '기획', color: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
+  { id: 'PLANNING', label: '기획', color: 'bg-status-warning-bg text-status-warning-text border-status-warning-text/20' },
   { id: 'DESIGN', label: '디자인', color: 'bg-pink-100 text-pink-800 border-pink-200' },
   { id: 'ARCHITECTURE', label: '아키텍처', color: 'bg-slate-100 text-slate-800 border-slate-200' },
-  { id: 'FRONTEND', label: '프론트엔드', color: 'bg-blue-100 text-blue-800 border-blue-200' },
+  { id: 'FRONTEND', label: '프론트엔드', color: 'bg-status-info-bg text-status-info-text border-status-info-text/20' },
   { id: 'BACKEND', label: '백엔드', color: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
   { id: 'DEVOPS', label: '인프라', color: 'bg-orange-100 text-orange-800 border-orange-200' },
   { id: 'MARKETING', label: '마케팅', color: 'bg-purple-100 text-purple-800 border-purple-200' },

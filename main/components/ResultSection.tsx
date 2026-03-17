@@ -72,7 +72,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
           {/* Core Features */}
           <div className="bg-surface-card p-6 shadow-sharp border border-border-strong">
                 <div className="flex items-center gap-2 mb-6">
-                    <div className="p-2 bg-blue-50 border border-blue-200 text-blue-600">
+                    <div className="p-2 bg-status-info-bg border border-status-info-text/20 text-status-info-text">
                         <Layers className="w-5 h-5" />
                     </div>
                     <h3 className="font-bold text-txt-primary">기능 로드맵</h3>
@@ -80,22 +80,22 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
 
                 <div className="space-y-6">
                     <div>
-                        <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 font-mono uppercase tracking-wider border border-emerald-200">P0 - MVP 핵심</span>
+                        <span className="text-xs font-bold text-indicator-online bg-status-success-bg px-2 py-1 font-mono uppercase tracking-wider border border-indicator-online/20">P0 - MVP 핵심</span>
                         <ul className="mt-3 space-y-3">
                             {result.coreFeatures.p0.map((f, i) => (
                                 <li key={i} className="flex items-start gap-3 text-sm text-txt-primary break-keep group">
-                                    <CheckCircle2 className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                                    <CheckCircle2 className="w-4 h-4 text-indicator-online mt-0.5 flex-shrink-0" />
                                     <span className="leading-snug">{f}</span>
                                 </li>
                             ))}
                         </ul>
                     </div>
                     <div className="pt-4 border-t border-dashed border-border">
-                        <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 font-mono uppercase tracking-wider border border-blue-200">P1 - 고도화</span>
+                        <span className="text-xs font-bold text-status-info-text bg-status-info-bg px-2 py-1 font-mono uppercase tracking-wider border border-status-info-text/20">P1 - 고도화</span>
                         <ul className="mt-3 space-y-3">
                             {result.coreFeatures.p1.map((f, i) => (
                                 <li key={i} className="flex items-start gap-3 text-sm text-txt-tertiary break-keep">
-                                    <span className="w-1.5 h-1.5 bg-blue-300 mt-1.5 flex-shrink-0"></span>
+                                    <span className="w-1.5 h-1.5 bg-status-info-text/40 mt-1.5 flex-shrink-0"></span>
                                     <span className="leading-snug">{f}</span>
                                 </li>
                             ))}
@@ -137,7 +137,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
                 <div className="flex flex-col gap-2">
                     {result.openQuestions.map((q, i) => (
                         <span key={i} className="text-sm text-amber-900 font-medium flex items-center gap-2 break-keep">
-                            <span className="w-1.5 h-1.5 bg-amber-500 flex-shrink-0"></span> {q}
+                            <span className="w-1.5 h-1.5 bg-indicator-premium flex-shrink-0"></span> {q}
                         </span>
                     ))}
                 </div>
@@ -163,7 +163,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
         </div>
 
         {/* Problem / Target / Alternatives */}
-        <div className="bg-surface-card p-6 shadow-sharp border-2 border-border-strong space-y-6">
+        <div className="bg-surface-card p-6 shadow-sharp border border-border-strong space-y-6">
           <div className="grid grid-cols-1 gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-2 text-rose-600 font-semibold text-sm">
@@ -195,7 +195,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
         </div>
 
         {/* Core Features with Priorities */}
-        <div className="bg-surface-card p-6 shadow-sharp border-2 border-border-strong">
+        <div className="bg-surface-card p-6 shadow-sharp border border-border-strong">
           <div className="flex items-center gap-2 mb-6">
             <div className="p-2 bg-violet-50 border border-violet-200 text-violet-600">
               <Layers className="w-5 h-5" />
@@ -206,12 +206,12 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
           <div className="space-y-6">
             {/* P0 Features */}
             <div>
-              <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 font-mono uppercase tracking-wider border border-emerald-200">P0 - MVP 핵심</span>
+              <span className="text-xs font-bold text-indicator-online bg-status-success-bg px-2 py-1 font-mono uppercase tracking-wider border border-indicator-online/20">P0 - MVP 핵심</span>
               <ul className="mt-3 space-y-3">
                 {prdResult.core_features.filter(f => f.priority === 'P0').map((f, i) => (
-                  <li key={i} className="flex flex-col gap-1 text-sm text-txt-primary break-keep group bg-emerald-50/30 p-3 border border-emerald-200">
+                  <li key={i} className="flex flex-col gap-1 text-sm text-txt-primary break-keep group bg-status-success-bg/30 p-3 border border-indicator-online/20">
                     <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                      <CheckCircle2 className="w-4 h-4 text-indicator-online flex-shrink-0" />
                       <span className="font-semibold">{f.feature_name}</span>
                     </div>
                     <span className="text-txt-tertiary text-xs ml-6">{f.user_story}</span>
@@ -222,12 +222,12 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
 
             {/* P1 Features */}
             <div className="pt-4 border-t border-dashed border-border">
-              <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 font-mono uppercase tracking-wider border border-blue-200">P1 - 고도화</span>
+              <span className="text-xs font-bold text-status-info-text bg-status-info-bg px-2 py-1 font-mono uppercase tracking-wider border border-status-info-text/20">P1 - 고도화</span>
               <ul className="mt-3 space-y-3">
                 {prdResult.core_features.filter(f => f.priority === 'P1').map((f, i) => (
                   <li key={i} className="flex flex-col gap-1 text-sm text-txt-tertiary break-keep">
                     <div className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 bg-blue-300 flex-shrink-0"></span>
+                      <span className="w-1.5 h-1.5 bg-status-info-text/40 flex-shrink-0"></span>
                       <span className="font-medium">{f.feature_name}</span>
                     </div>
                     <span className="text-txt-disabled text-xs ml-4">{f.user_story}</span>
@@ -273,14 +273,14 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* MVP Scope */}
-              <div className="bg-emerald-900/30 p-4 border border-emerald-700/30">
-                <span className="text-emerald-300 text-xs font-mono uppercase tracking-wider block mb-2 flex items-center gap-1">
+              <div className="bg-status-success-bg/30 p-4 border border-status-success-text/30">
+                <span className="text-status-success-text text-xs font-mono uppercase tracking-wider block mb-2 flex items-center gap-1">
                   <CheckCircle2 className="w-3 h-3" /> MVP 범위 (2-3개)
                 </span>
                 <ul className="space-y-2">
                   {prdResult.next_steps.mvp_scope.map((item, i) => (
-                    <li key={i} className="text-emerald-100 break-keep flex items-start gap-2">
-                      <span className="text-emerald-400 mt-1">&#8226;</span>
+                    <li key={i} className="text-status-success-text break-keep flex items-start gap-2">
+                      <span className="text-indicator-online mt-1">&#8226;</span>
                       <span>{item}</span>
                     </li>
                   ))}
@@ -288,14 +288,14 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
               </div>
 
               {/* Skip for Now */}
-              <div className="bg-red-900/30 p-4 border border-red-700/30">
-                <span className="text-red-300 text-xs font-mono uppercase tracking-wider block mb-2 flex items-center gap-1">
+              <div className="bg-status-danger-bg/30 p-4 border border-status-danger-text/30">
+                <span className="text-status-danger-text text-xs font-mono uppercase tracking-wider block mb-2 flex items-center gap-1">
                   <XCircle className="w-3 h-3" /> MVP 제외 (Skip for Now)
                 </span>
                 <ul className="space-y-2">
                   {prdResult.next_steps.skip_for_now.map((item, i) => (
-                    <li key={i} className="text-red-200 break-keep flex items-start gap-2 line-through opacity-70">
-                      <span className="text-red-400 mt-1">&#8226;</span>
+                    <li key={i} className="text-status-danger-text break-keep flex items-start gap-2 line-through opacity-70">
+                      <span className="text-status-danger-text/70 mt-1">&#8226;</span>
                       <span>{item}</span>
                     </li>
                   ))}
@@ -314,13 +314,13 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
         </div>
 
         {/* Role Perspectives */}
-        <div className="bg-surface-card p-6 shadow-sharp border-2 border-border-strong">
+        <div className="bg-surface-card p-6 shadow-sharp border border-border-strong">
           <h3 className="font-bold text-txt-primary mb-4">Role Perspectives</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Business */}
-            <div className="bg-blue-50 p-4 border border-blue-200">
-              <span className="text-xs font-bold text-blue-600 font-mono uppercase tracking-wider">Business</span>
+            <div className="bg-status-info-bg p-4 border border-status-info-text/20">
+              <span className="text-xs font-bold text-status-info-text font-mono uppercase tracking-wider">Business</span>
               <div className="mt-2 space-y-2 text-sm">
                 <div>
                   <span className="text-txt-disabled text-xs font-mono">Monetization:</span>
@@ -353,14 +353,14 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
             </div>
 
             {/* Tech */}
-            <div className="bg-emerald-50 p-4 border border-emerald-200">
-              <span className="text-xs font-bold text-emerald-600 font-mono uppercase tracking-wider">Tech</span>
+            <div className="bg-status-success-bg p-4 border border-indicator-online/20">
+              <span className="text-xs font-bold text-indicator-online font-mono uppercase tracking-wider">Tech</span>
               <div className="mt-2 space-y-2 text-sm">
                 <div>
                   <span className="text-txt-disabled text-xs font-mono">Stack:</span>
                   <div className="flex flex-wrap gap-1 mt-1">
                     {prdResult.role_perspectives.tech.expected_stack.map((tech, i) => (
-                      <span key={i} className="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs font-mono border border-emerald-200">{tech}</span>
+                      <span key={i} className="px-2 py-0.5 bg-status-success-bg text-status-success-text text-xs font-mono border border-indicator-online/20">{tech}</span>
                     ))}
                   </div>
                 </div>
@@ -375,16 +375,16 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
 
         {/* Open Questions */}
         {prdResult.open_questions.length > 0 && (
-          <div className="bg-amber-50 border border-amber-200 p-5 space-y-4">
-            <span className="bg-amber-100 text-amber-700 text-xs font-bold font-mono px-2 py-1 border border-amber-300">Open Questions</span>
+          <div className="bg-status-warning-bg border border-status-warning-text/20 p-5 space-y-4">
+            <span className="bg-status-warning-bg text-status-warning-text text-xs font-bold font-mono px-2 py-1 border border-status-warning-text/30">Open Questions</span>
             <div className="space-y-3">
               {prdResult.open_questions.map((q, i) => (
-                <div key={i} className="bg-surface-card p-3 border border-amber-200">
-                  <p className="text-sm text-amber-900 font-medium break-keep">{q.issue}</p>
-                  <div className="mt-2 flex items-center gap-2 text-xs text-amber-600">
-                    <span className="px-1.5 py-0.5 bg-amber-100 border border-amber-200 font-mono">{q.involved_roles.join(', ')}</span>
-                    <span className="text-amber-500">AI 제안:</span>
-                    <span className="text-amber-700">{q.ai_suggestion}</span>
+                <div key={i} className="bg-surface-card p-3 border border-status-warning-text/20">
+                  <p className="text-sm text-status-warning-text font-medium break-keep">{q.issue}</p>
+                  <div className="mt-2 flex items-center gap-2 text-xs text-indicator-premium-border">
+                    <span className="px-1.5 py-0.5 bg-status-warning-bg border border-status-warning-text/20 font-mono">{q.involved_roles.join(', ')}</span>
+                    <span className="text-indicator-premium">AI 제안:</span>
+                    <span className="text-status-warning-text">{q.ai_suggestion}</span>
                   </div>
                 </div>
               ))}
@@ -405,7 +405,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
   if (selectedView === Role.PM) {
       roleTitle = "기획 / 전략 (PM) 관점";
       roleContent = result.rolePerspectives.pmFocus;
-      roleColor = "text-blue-600 bg-blue-50";
+      roleColor = "text-status-info-text bg-status-info-bg";
       roleIcon = <Target className="w-5 h-5" />;
   } else if (selectedView === Role.DESIGNER) {
       roleTitle = "디자인 / UX 관점";
@@ -415,7 +415,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
   } else if (selectedView === Role.DEV) {
       roleTitle = "개발 / 테크 관점";
       roleContent = result.rolePerspectives.devFocus;
-      roleColor = "text-emerald-600 bg-emerald-50";
+      roleColor = "text-indicator-online bg-status-success-bg";
       roleIcon = <Layers className="w-5 h-5" />;
   }
 
