@@ -22,6 +22,9 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
+
+  // Exclude puppeteer from webpack bundling (not available on Vercel serverless)
+  serverExternalPackages: ['puppeteer'],
 }
 
 export default nextConfig

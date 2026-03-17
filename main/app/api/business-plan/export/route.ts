@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
 }
 
 async function generatePdfFromHtml(htmlContent: string): Promise<Buffer> {
-  // Dynamic import — puppeteer is not available on Vercel serverless
+  // Dynamic import — puppeteer is excluded via serverExternalPackages in next.config
   let puppeteer: typeof import('puppeteer')
   try {
     puppeteer = await import('puppeteer')
