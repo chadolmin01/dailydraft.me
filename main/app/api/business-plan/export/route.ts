@@ -69,10 +69,11 @@ export async function POST(req: NextRequest) {
 }
 
 async function generatePdfFromHtml(htmlContent: string): Promise<Buffer> {
-  // Dynamic import — puppeteer is excluded via serverExternalPackages in next.config
-  let puppeteer: typeof import('puppeteer')
+  // Dynamic import — puppeteer is not installed on Vercel, runtime-only dependency
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let puppeteer: any
   try {
-    puppeteer = await import('puppeteer')
+    puppeteer = await import(/* webpackIgnore: true */ 'puppeteer')
   } catch {
     throw new Error('PDF 생성은 현재 서버 환경에서 지원되지 않습니다.')
   }
