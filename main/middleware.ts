@@ -27,7 +27,7 @@ const hiddenApiRoutes = [
   '/api/event-applications',
   '/api/events',
   '/api/idea-validator',
-  '/api/notifications',
+  // '/api/notifications',  // 알림 기능 활성화됨
   '/api/payments',
   '/api/payment-status',
   '/api/pdf-structure',
