@@ -76,7 +76,7 @@ export const PRDResultSection: React.FC<PRDResultSectionProps> = ({ result }) =>
           {/* P1 Features */}
           {result.core_features.filter((f) => f.priority === 'P1').length > 0 && (
             <div className="pt-4 border-t border-dashed border-border">
-              <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 font-mono uppercase border border-blue-200">
+              <span className="text-xs font-bold text-status-info-text bg-status-info-bg px-2 py-1 font-mono uppercase border border-status-info-text/20">
                 P1 - 고도화
               </span>
               <ul className="mt-3 space-y-2">
@@ -84,7 +84,7 @@ export const PRDResultSection: React.FC<PRDResultSectionProps> = ({ result }) =>
                   .filter((f) => f.priority === 'P1')
                   .map((f, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm text-txt-tertiary">
-                      <span className="w-1.5 h-1.5 bg-blue-300 mt-1.5 flex-shrink-0" />
+                      <span className="w-1.5 h-1.5 bg-brand/40 mt-1.5 flex-shrink-0" />
                       <div>
                         <span className="font-medium">{f.feature_name}</span>
                         <p className="text-xs text-txt-disabled">{f.user_story}</p>
@@ -156,7 +156,7 @@ export const PRDResultSection: React.FC<PRDResultSectionProps> = ({ result }) =>
                     key={i}
                     className="text-red-200 flex items-start gap-2 line-through opacity-70"
                   >
-                    <span className="text-red-400 mt-0.5">•</span>
+                    <span className="text-status-danger-text/70 mt-0.5">•</span>
                     <span className="text-sm">{item}</span>
                   </li>
                 ))}
@@ -185,7 +185,7 @@ export const PRDResultSection: React.FC<PRDResultSectionProps> = ({ result }) =>
               {result.open_questions.map((q, i) => (
                 <div key={i} className="bg-surface-card p-3 border border-amber-200">
                   <p className="text-sm text-amber-900 font-medium">{q.issue}</p>
-                  <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-amber-600">
+                  <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-indicator-premium-border">
                     <span className="px-1.5 py-0.5 bg-amber-100 border border-amber-200 font-mono">
                       {q.involved_roles.join(', ')}
                     </span>

@@ -102,7 +102,7 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
         <div className="flex items-center gap-2">
           <label className="font-medium text-txt-primary text-sm">
             {field.label}
-            {field.required && <span className="text-red-500 ml-0.5">*</span>}
+            {field.required && <span className="text-status-danger-text ml-0.5">*</span>}
           </label>
           {field.helpText && (
             <button
@@ -126,7 +126,7 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
                 ? 'bg-surface-sunken text-txt-tertiary cursor-not-allowed'
                 : !basicInfo?.itemName
                   ? 'bg-surface-sunken text-txt-tertiary cursor-not-allowed'
-                  : 'bg-surface-sunken text-[#4F46E5] hover:bg-accent-secondary border border-border'
+                  : 'bg-surface-sunken text-brand hover:bg-accent-secondary border border-border'
               }
             `}
             title={!basicInfo?.itemName ? '기본 정보를 먼저 입력하세요' : 'AI로 작성'}
@@ -167,7 +167,7 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
               focus:outline-none focus:border-border-strong
               transition-all
               ${error
-                ? 'border-red-300 bg-red-50/50'
+                ? 'border-status-danger-text/20 bg-status-danger-bg/50'
                 : 'border-border bg-surface-card hover:border-border-strong'
               }
               ${isGenerating ? 'opacity-50' : ''}
@@ -190,7 +190,7 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
             focus:outline-none focus:border-border-strong
             transition-all
             ${error
-              ? 'border-red-300 bg-red-50/50'
+              ? 'border-status-danger-text/20 bg-status-danger-bg/50'
               : 'border-border bg-surface-card hover:border-border-strong'
             }
           `}
@@ -199,7 +199,7 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
 
       {/* Error message */}
       {error && (
-        <div className="flex items-center gap-1.5 text-xs text-red-600">
+        <div className="flex items-center gap-1.5 text-xs text-status-danger-text">
           <AlertCircle size={12} />
           {error}
         </div>
@@ -207,7 +207,7 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
 
       {/* Validation success */}
       {value && !error && field.required && (
-        <div className="flex items-center gap-1.5 text-xs text-green-600">
+        <div className="flex items-center gap-1.5 text-xs text-status-success-text">
           <Check size={12} />
           필수 항목 입력 완료
         </div>
@@ -252,7 +252,7 @@ export const BasicInfoEditor: React.FC<BasicInfoEditorProps> = ({
       {/* Item Name */}
       <div className="space-y-2">
         <label className="font-medium text-txt-primary text-sm">
-          아이템/서비스명 <span className="text-red-500">*</span>
+          아이템/서비스명 <span className="text-status-danger-text">*</span>
         </label>
         <input
           type="text"
@@ -262,11 +262,11 @@ export const BasicInfoEditor: React.FC<BasicInfoEditorProps> = ({
           className={`
             w-full px-4 py-2.5 border text-sm
             focus:outline-none focus:border-border-strong
-            ${errors.itemName ? 'border-red-300 bg-red-50/50' : 'border-border'}
+            ${errors.itemName ? 'border-status-danger-text/20 bg-status-danger-bg/50' : 'border-border'}
           `}
         />
         {errors.itemName && (
-          <div className="flex items-center gap-1.5 text-xs text-red-600">
+          <div className="flex items-center gap-1.5 text-xs text-status-danger-text">
             <AlertCircle size={12} />
             {errors.itemName}
           </div>
@@ -276,7 +276,7 @@ export const BasicInfoEditor: React.FC<BasicInfoEditorProps> = ({
       {/* One-liner */}
       <div className="space-y-2">
         <label className="font-medium text-txt-primary text-sm">
-          한 줄 설명 <span className="text-red-500">*</span>
+          한 줄 설명 <span className="text-status-danger-text">*</span>
         </label>
         <input
           type="text"
@@ -287,7 +287,7 @@ export const BasicInfoEditor: React.FC<BasicInfoEditorProps> = ({
           className={`
             w-full px-4 py-2.5 border text-sm
             focus:outline-none focus:border-border-strong
-            ${errors.oneLiner ? 'border-red-300 bg-red-50/50' : 'border-border'}
+            ${errors.oneLiner ? 'border-status-danger-text/20 bg-status-danger-bg/50' : 'border-border'}
           `}
         />
         <div className="flex justify-between text-[0.625rem] text-txt-tertiary">
@@ -299,7 +299,7 @@ export const BasicInfoEditor: React.FC<BasicInfoEditorProps> = ({
       {/* Target Customer */}
       <div className="space-y-2">
         <label className="font-medium text-txt-primary text-sm">
-          타겟 고객 <span className="text-red-500">*</span>
+          타겟 고객 <span className="text-status-danger-text">*</span>
         </label>
         <input
           type="text"
@@ -309,7 +309,7 @@ export const BasicInfoEditor: React.FC<BasicInfoEditorProps> = ({
           className={`
             w-full px-4 py-2.5 border text-sm
             focus:outline-none focus:border-border-strong
-            ${errors.targetCustomer ? 'border-red-300 bg-red-50/50' : 'border-border'}
+            ${errors.targetCustomer ? 'border-status-danger-text/20 bg-status-danger-bg/50' : 'border-border'}
           `}
         />
         <p className="text-[0.625rem] text-txt-tertiary">
@@ -320,7 +320,7 @@ export const BasicInfoEditor: React.FC<BasicInfoEditorProps> = ({
       {/* Industry */}
       <div className="space-y-2">
         <label className="font-medium text-txt-primary text-sm">
-          업종 <span className="text-red-500">*</span>
+          업종 <span className="text-status-danger-text">*</span>
         </label>
         <select
           value={data.industry}

@@ -45,7 +45,7 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-4">
               <div className="flex items-center gap-2">
-                <span className="w-5 h-5 bg-[#4F46E5] text-white flex items-center justify-center text-[0.5rem] font-bold font-mono">R</span>
+                <span className="w-5 h-5 bg-brand text-white flex items-center justify-center text-[0.5rem] font-bold font-mono">R</span>
                 <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-secondary">Recommended</span>
               </div>
               {[1, 2, 3].map((i) => (

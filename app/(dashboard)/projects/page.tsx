@@ -10,7 +10,6 @@ import {
   Filter,
   Zap,
   LayoutGrid,
-  Loader2,
   Clock,
   Star,
   Flame,
@@ -20,15 +19,23 @@ import {
   MapPin,
   Coffee,
 } from 'lucide-react'
+import { SkeletonGrid } from '@/components/ui/Skeleton'
 import { useOpportunities, calculateDaysLeft, type OpportunityWithCreator } from '@/src/hooks/useOpportunities'
+import { ProjectDetailModal } from '@/components/ProjectDetailModal'
 
 export default function ProjectsPage() {
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [sortBy, setSortBy] = useState<'latest' | 'popular' | 'deadline'>('latest')
   const [searchQuery, setSearchQuery] = useState('')
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
+  const [filterRecruiting, setFilterRecruiting] = useState(false)
+  const [filterCoffeeChat, setFilterCoffeeChat] = useState(false)
+  const [filterNewThisWeek, setFilterNewThisWeek] = useState(false)
 
   const { data: oppData, isLoading } = useOpportunities({ limit: 20 })
   const opportunities = oppData?.items ?? []
+
+  const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
 
   const filtered = opportunities.filter((opp: OpportunityWithCreator) => {
     if (searchQuery) {
@@ -38,6 +45,9 @@ export default function ProjectsPage() {
     if (selectedCategory !== 'all') {
       if (!opp.interest_tags?.includes(selectedCategory)) return false
     }
+    if (filterRecruiting && opp.status !== 'active') return false
+    if (filterCoffeeChat && opp.type !== 'coffee_chat' && opp.type !== 'project') return false
+    if (filterNewThisWeek && new Date(opp.created_at || '') < oneWeekAgo) return false
     return true
   })
 
@@ -89,20 +99,20 @@ export default function ProjectsPage() {
             {/* 필터 */}
             <div className="bg-surface-card border border-border-strong p-4">
               <h3 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-3 flex items-center gap-2">
-                <span className="w-2 h-2 bg-[#4F46E5]" />
+                <span className="w-2 h-2 bg-brand" />
                 필터
               </h3>
               <div className="space-y-2">
                 <label className="flex items-center gap-2 text-sm text-txt-secondary cursor-pointer">
-                  <input type="checkbox" className="border border-border-strong" />
+                  <input type="checkbox" className="border border-border-strong" checked={filterRecruiting} onChange={(e) => setFilterRecruiting(e.target.checked)} />
                   팀원 모집 중
                 </label>
                 <label className="flex items-center gap-2 text-sm text-txt-secondary cursor-pointer">
-                  <input type="checkbox" className="border border-border-strong" />
+                  <input type="checkbox" className="border border-border-strong" checked={filterCoffeeChat} onChange={(e) => setFilterCoffeeChat(e.target.checked)} />
                   커피챗 가능
                 </label>
                 <label className="flex items-center gap-2 text-sm text-txt-secondary cursor-pointer">
-                  <input type="checkbox" className="border border-border-strong" />
+                  <input type="checkbox" className="border border-border-strong" checked={filterNewThisWeek} onChange={(e) => setFilterNewThisWeek(e.target.checked)} />
                   이번 주 신규
                 </label>
               </div>
@@ -175,7 +185,7 @@ export default function ProjectsPage() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 bg-surface-card border border-border-strong text-sm font-mono focus:outline-none focus:border-[#4F46E5] placeholder:text-txt-disabled"
+              className="w-full pl-11 pr-4 py-3 bg-surface-card border border-border-strong text-sm font-mono focus:outline-none focus:border-brand placeholder:text-txt-disabled"
               placeholder="프로젝트, 역할, 기술 스택 검색..."
             />
           </div>
@@ -208,9 +218,7 @@ export default function ProjectsPage() {
 
         {/* 프로젝트 그리드 */}
         {isLoading ? (
-          <div className="flex items-center justify-center py-16">
-            <Loader2 className="animate-spin text-txt-tertiary" size={24} />
-          </div>
+          <SkeletonGrid count={4} cols={2} />
         ) : sorted.length === 0 ? (
           <Card className="text-center py-12 border-dashed" padding="p-6">
             <LayoutGrid className="mx-auto mb-4 text-txt-disabled" size={40} />
@@ -223,7 +231,7 @@ export default function ProjectsPage() {
             {sorted.map((opp: OpportunityWithCreator) => {
               const daysLeft = calculateDaysLeft(opp.created_at)
               return (
-                <Card key={opp.id} className="group hover:shadow-sharp relative" padding="p-4">
+                <Card key={opp.id} className="group hover:shadow-sharp relative cursor-pointer" padding="p-4" onClick={() => setSelectedProjectId(opp.id)}>
                   {/* Corner marks */}
                   <span className="absolute top-0 left-0 w-2 h-2 border-t border-l border-border-strong pointer-events-none" />
                   <span className="absolute top-0 right-0 w-2 h-2 border-t border-r border-border-strong pointer-events-none" />
@@ -278,6 +286,11 @@ export default function ProjectsPage() {
           </div>
         )}
       </DashboardLayout>
+
+      <ProjectDetailModal
+        projectId={selectedProjectId}
+        onClose={() => setSelectedProjectId(null)}
+      />
     </div>
   )
 }

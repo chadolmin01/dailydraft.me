@@ -134,7 +134,7 @@ export default function MessagesPage() {
                         onClick={() => selectPartner(conv.partnerId)}
                         className={`w-full flex items-center gap-3 p-3 text-left transition-colors ${
                           isSelected
-                            ? 'bg-[#4F46E5]/5 border border-[#4F46E5]/20'
+                            ? 'bg-brand-bg border border-brand-border'
                             : 'hover:bg-surface-sunken border border-transparent'
                         }`}
                       >
@@ -155,7 +155,7 @@ export default function MessagesPage() {
                           </p>
                         </div>
                         {conv.unreadCount > 0 && (
-                          <span className="px-1.5 py-0.5 text-[0.625rem] font-bold bg-[#4F46E5] text-white shrink-0">
+                          <span className="px-1.5 py-0.5 text-[0.625rem] font-bold bg-brand text-white shrink-0">
                             {conv.unreadCount}
                           </span>
                         )}
@@ -224,7 +224,7 @@ export default function MessagesPage() {
                                 {timeAgo(msg.created_at)}
                               </span>
                               {isMine && msg.is_read && (
-                                <span className="text-[0.5625rem] font-mono text-[#4F46E5]">읽음</span>
+                                <span className="text-[0.5625rem] font-mono text-brand">읽음</span>
                               )}
                               <button
                                 onClick={() => deleteMessage.mutate(msg.id)}

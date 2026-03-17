@@ -1,21 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { createClient } from '@/src/lib/supabase/server';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 export async function POST(request: NextRequest) {
   try {
+    if (!process.env.GEMINI_API_KEY) {
+      return NextResponse.json({ success: false, error: 'AI 서비스를 사용할 수 없습니다.' }, { status: 503 });
+    }
+
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ success: false, error: '로그인이 필요합니다' }, { status: 401 });
+    }
+
     const { idea, fullConversation, reflectedAdvice = [] } = await request.json();
 
-    if (!idea) {
+    if (!idea || typeof idea !== 'string') {
       return NextResponse.json(
         { success: false, error: '아이디어가 필요합니다.' },
         { status: 400 }
       );
     }
 
-    const reflectedContext = reflectedAdvice.length > 0
-      ? `\n\n[창업자가 수용하고 반영하기로 결정한 핵심 조언들]:\n- ${reflectedAdvice.join('\n- ')}`
+    // 입력 길이 제한
+    const sanitizedIdea = idea.slice(0, 5000);
+    const sanitizedConversation = typeof fullConversation === 'string'
+      ? fullConversation.slice(0, 30000)
+      : '대화 내용 없음';
+    const validAdvice = Array.isArray(reflectedAdvice)
+      ? reflectedAdvice.filter((a: unknown) => typeof a === 'string').slice(0, 20).map((a: string) => a.slice(0, 1000))
+      : [];
+
+    const reflectedContext = validAdvice.length > 0
+      ? `\n\n[창업자가 수용하고 반영하기로 결정한 핵심 조언들]:\n- ${validAdvice.join('\n- ')}`
       : '';
 
     const prompt = `
@@ -28,11 +48,11 @@ export async function POST(request: NextRequest) {
 
       출력은 반드시 한국어로 해야 합니다.
 
-      원본 아이디어: ${idea}
+      원본 아이디어: <USER_INPUT>${sanitizedIdea}</USER_INPUT>
       ${reflectedContext}
 
       검증 세션 대화 내용:
-      ${fullConversation || '대화 내용 없음'}
+      <USER_INPUT>${sanitizedConversation}</USER_INPUT>
 
       JSON Schema:
       {

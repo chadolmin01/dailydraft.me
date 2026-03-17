@@ -20,7 +20,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
 }) => {
   if (variant === 'inline') {
     return (
-      <div className={`flex items-center gap-2 text-red-600 ${className}`}>
+      <div className={`flex items-center gap-2 text-status-danger-text ${className}`}>
         <AlertCircle size={16} />
         <span className="text-sm">{title}</span>
         {onRetry && (
@@ -38,7 +38,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
   if (variant === 'compact') {
     return (
       <div className={`flex flex-col items-center justify-center py-8 text-center ${className}`}>
-        <AlertCircle size={32} className="text-red-400 mb-3" />
+        <AlertCircle size={32} className="text-status-danger-text/70 mb-3" />
         <p className="text-sm font-medium text-txt-secondary mb-1">{title}</p>
         <p className="text-xs text-txt-tertiary mb-3">{message}</p>
         {onRetry && (
@@ -56,8 +56,8 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
 
   return (
     <div className={`flex flex-col items-center justify-center py-16 text-center ${className}`}>
-      <div className="w-16 h-16 bg-red-600/10 border border-red-600/20 flex items-center justify-center mb-4">
-        <ServerCrash size={32} className="text-red-400" />
+      <div className="w-16 h-16 bg-status-danger-text/10 border border-status-danger-text/20 flex items-center justify-center mb-4">
+        <ServerCrash size={32} className="text-status-danger-text/70" />
       </div>
       <h3 className="text-lg font-bold text-txt-primary mb-2">{title}</h3>
       <p className="text-sm text-txt-tertiary max-w-sm mb-6">{message}</p>
@@ -122,8 +122,8 @@ export const NetworkError: React.FC<NetworkErrorProps> = ({
 }) => {
   return (
     <div className={`flex flex-col items-center justify-center py-16 text-center ${className}`}>
-      <div className="w-16 h-16 bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-4">
-        <WifiOff size={32} className="text-amber-500" />
+      <div className="w-16 h-16 bg-indicator-premium/10 border border-indicator-premium-border/20 flex items-center justify-center mb-4">
+        <WifiOff size={32} className="text-indicator-premium" />
       </div>
       <h3 className="text-lg font-bold text-txt-primary mb-2">연결할 수 없습니다</h3>
       <p className="text-sm text-txt-tertiary max-w-sm mb-6">

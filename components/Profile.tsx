@@ -52,7 +52,7 @@ const UPDATE_TYPE_STYLES: Record<string, string> = {
   ideation: 'bg-status-warning-bg text-status-warning-text border border-status-warning-text/20',
   design: 'bg-status-info-bg text-status-info-text border border-status-info-text/20',
   development: 'bg-status-success-bg text-status-success-text border border-status-success-text/20',
-  launch: 'bg-[#4F46E5]/5 text-[#4F46E5] border border-[#4F46E5]/20',
+  launch: 'bg-brand-bg text-brand border border-brand-border',
   general: 'bg-surface-sunken text-txt-tertiary border border-border',
 }
 
@@ -156,7 +156,11 @@ export const Profile: React.FC = () => {
               {/* 프로필 미니 카드 */}
               <div className="bg-surface-card border border-border-strong p-5">
                 <div className="flex flex-col items-center text-center">
-                  <div className="relative w-16 h-16 border border-border-strong overflow-hidden mb-3">
+                  <button
+                    onClick={() => setIsEditOpen(true)}
+                    className="relative w-16 h-16 border border-border-strong overflow-hidden mb-3 group cursor-pointer"
+                    title="프로필 사진 변경"
+                  >
                     {profile?.avatar_url ? (
                       <Image src={profile.avatar_url} alt="avatar" fill className="object-cover" />
                     ) : (
@@ -164,7 +168,10 @@ export const Profile: React.FC = () => {
                         {profile?.nickname?.slice(0, 2).toUpperCase() || user?.email?.slice(0, 2).toUpperCase() || 'U'}
                       </div>
                     )}
-                  </div>
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <Edit3 size={16} className="text-white" />
+                    </div>
+                  </button>
                   <h3 className="font-bold text-sm text-txt-primary">{profile?.nickname || 'User'}</h3>
                   <p className="text-xs text-txt-tertiary mt-0.5">{profile?.desired_position || '포지션 미설정'}</p>
                   {(profile?.university || affLabel.tag) && (
@@ -229,7 +236,11 @@ export const Profile: React.FC = () => {
               <div className="px-5 pb-5">
                 {/* 아바타 + 이름 영역 */}
                 <div className="flex items-end gap-4 -mt-10 mb-4">
-                  <div className="relative w-20 h-20 border border-surface-card overflow-hidden flex-shrink-0 bg-surface-sunken">
+                  <button
+                    onClick={() => setIsEditOpen(true)}
+                    className="relative w-20 h-20 border border-surface-card overflow-hidden flex-shrink-0 bg-surface-sunken group cursor-pointer"
+                    title="프로필 사진 변경"
+                  >
                     {profile?.avatar_url ? (
                       <Image src={profile.avatar_url} alt="avatar" fill className="object-cover" />
                     ) : (
@@ -237,7 +248,10 @@ export const Profile: React.FC = () => {
                         {profile?.nickname?.slice(0, 2).toUpperCase() || user?.email?.slice(0, 2).toUpperCase() || 'U'}
                       </div>
                     )}
-                  </div>
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <Edit3 size={18} className="text-white" />
+                    </div>
+                  </button>
                   <div className="flex-1 min-w-0 pb-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <h2 className="text-base font-bold text-txt-primary">{profile?.nickname || 'User'}</h2>
@@ -309,7 +323,7 @@ export const Profile: React.FC = () => {
                 {profile?.interest_tags && profile.interest_tags.length > 0 && (
                   <div className="flex gap-1.5 flex-wrap mt-3">
                     {profile.interest_tags.map((tag, idx) => (
-                      <span key={idx} className="text-xs bg-[#4F46E5]/5 border border-[#4F46E5]/20 text-[#4F46E5] px-2 py-0.5 font-medium font-mono">
+                      <span key={idx} className="text-xs bg-brand-bg border border-brand-border text-brand px-2 py-0.5 font-medium font-mono">
                         {tag}
                       </span>
                     ))}
@@ -322,12 +336,12 @@ export const Profile: React.FC = () => {
             <section>
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-primary flex items-center gap-2">
-                  <span className="w-2 h-2 bg-[#4F46E5]" />
+                  <span className="w-2 h-2 bg-brand" />
                   <Zap size={12} /> 내 프로젝트
                 </h3>
                 <Link
                   href="/projects/new"
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-[#4F46E5] text-white border border-[#4F46E5] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-brand text-white border border-brand shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
                 >
                   <Plus size={14} /> 새 프로젝트
                 </Link>
@@ -345,7 +359,7 @@ export const Profile: React.FC = () => {
                   <p className="text-txt-tertiary text-sm mb-3">아직 등록한 프로젝트가 없습니다</p>
                   <Link
                     href="/projects/new"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold bg-[#4F46E5] text-white border border-[#4F46E5] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold bg-brand text-white border border-brand shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
                   >
                     <Plus size={16} /> 프로젝트 만들기
                   </Link>
@@ -400,11 +414,11 @@ export const Profile: React.FC = () => {
                               value={contactInput}
                               onChange={(e) => setContactInput(e.target.value)}
                               placeholder="연락처 입력"
-                              className="w-24 sm:w-32 px-2 py-1.5 text-xs border border-border-strong focus:outline-none focus:border-[#4F46E5]"
+                              className="w-24 sm:w-32 px-2 py-1.5 text-xs border border-border-strong focus:outline-none focus:border-brand"
                             />
                             <button
                               onClick={() => handleAcceptChat(chat.id)}
-                              className="p-2 bg-[#4F46E5] text-white hover:bg-[#4338CA]"
+                              className="p-2 bg-brand text-white hover:bg-brand-hover"
                             >
                               <Check size={14} />
                             </button>
@@ -419,7 +433,7 @@ export const Profile: React.FC = () => {
                           <div className="flex items-center gap-2 flex-shrink-0">
                             <button
                               onClick={() => setAcceptingChatId(chat.id)}
-                              className="px-3 py-1.5 text-xs font-semibold bg-[#4F46E5] text-white hover:bg-[#4338CA]"
+                              className="px-3 py-1.5 text-xs font-semibold bg-brand text-white hover:bg-brand-hover"
                             >
                               수락
                             </button>
@@ -548,7 +562,7 @@ export const Profile: React.FC = () => {
             {/* 기술 스택 */}
             <section>
               <h3 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-primary flex items-center gap-2 mb-6">
-                <span className="w-2 h-2 bg-[#4F46E5]" />
+                <span className="w-2 h-2 bg-brand" />
                 <CheckSquare size={12} /> 기술 스택
               </h3>
               {skills && skills.length > 0 ? (
@@ -559,7 +573,7 @@ export const Profile: React.FC = () => {
                       {skills.map((skill, idx) => (
                         <div key={idx} className="flex items-center justify-between">
                           <span className="flex items-center gap-2 text-sm text-txt-secondary">
-                            <CheckSquare size={14} className="text-[#4F46E5]" />
+                            <CheckSquare size={14} className="text-brand" />
                             {skill.name}
                           </span>
                           <span className="text-xs text-txt-disabled uppercase">{skill.level}</span>
@@ -623,7 +637,7 @@ function AiProfileSection({ visionSummary, personality }: { visionSummary?: stri
   return (
     <section>
       <h3 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-primary flex items-center gap-2 mb-6">
-        <span className="w-2 h-2 bg-[#4F46E5]" />
+        <span className="w-2 h-2 bg-brand" />
         <Sparkles size={12} /> AI 프로필 분석
       </h3>
 
@@ -642,7 +656,7 @@ function AiProfileSection({ visionSummary, personality }: { visionSummary?: stri
                     <span className="text-xs font-mono text-txt-disabled">{value}/10</span>
                   </div>
                   <div className="w-full h-1.5 bg-surface-sunken border border-border overflow-hidden">
-                    <div className="h-full bg-[#4F46E5] transition-all" style={{ width: `${(value / 10) * 100}%` }} />
+                    <div className="h-full bg-brand transition-all" style={{ width: `${(value / 10) * 100}%` }} />
                   </div>
                 </div>
               ))}
@@ -666,7 +680,7 @@ function AiProfileSection({ visionSummary, personality }: { visionSummary?: stri
                       <span className="text-xs font-mono text-txt-disabled">{value}/10</span>
                     </div>
                     <div className="relative w-full h-1.5 bg-surface-sunken border border-border overflow-hidden">
-                      <div className="h-full bg-[#4F46E5] transition-all" style={{ width: `${((value as number) / 10) * 100}%` }} />
+                      <div className="h-full bg-brand transition-all" style={{ width: `${((value as number) / 10) * 100}%` }} />
                     </div>
                     {meta && (
                       <div className="flex justify-between mt-0.5">
@@ -736,7 +750,7 @@ function AiProfileSection({ visionSummary, personality }: { visionSummary?: stri
       {(visionData?.goals?.length || visionData?.strengths?.length || visionData?.wants_from_team?.length || visionData?.project_interests?.length) && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
           {[
-            { label: '목표', data: visionData?.goals, color: 'bg-[#4F46E5]/5 text-[#4F46E5] border-[#4F46E5]/20' },
+            { label: '목표', data: visionData?.goals, color: 'bg-brand-bg text-brand border-brand-border' },
             { label: '강점', data: visionData?.strengths, color: 'bg-status-success-bg text-status-success-text border-status-success-text/20' },
             { label: '팀원에게 기대하는 것', data: visionData?.wants_from_team, color: 'bg-status-warning-bg text-status-warning-text border-status-warning-text/20' },
             { label: '관심 프로젝트', data: visionData?.project_interests, color: 'bg-status-info-bg text-status-info-text border-status-info-text/20' },
@@ -904,7 +918,7 @@ function ProjectCardWithUpdates({ opp }: ProjectCardProps) {
                 {(isExpanded ? updates : updates.slice(-2)).map((update) => (
                   <div key={update.id} className="flex justify-end">
                     <div className="max-w-[85%]">
-                      <div className="bg-[#4F46E5]/[0.07] border border-[#4F46E5]/15 rounded-2xl rounded-br-sm px-3.5 py-2.5">
+                      <div className="bg-brand/[0.07] border border-brand/15 rounded-2xl rounded-br-sm px-3.5 py-2.5">
                         <div className="flex items-center gap-2 mb-1">
                           <span className={`text-[0.5625rem] font-semibold font-mono px-1.5 py-px rounded-full ${UPDATE_TYPE_STYLES[update.update_type]}`}>
                             {UPDATE_TYPE_LABELS[update.update_type]}
@@ -967,7 +981,7 @@ function ProjectCardWithUpdates({ opp }: ProjectCardProps) {
             </div>
           ) : (
             /* 입력 바 (열린 상태) */
-            <div className="bg-surface-card border border-[#4F46E5]/40 rounded-2xl overflow-hidden">
+            <div className="bg-surface-card border border-brand/40 rounded-2xl overflow-hidden">
               {/* 유형 + 템플릿 */}
               <div className="px-3 pt-2.5 pb-1.5 flex items-center gap-1 border-b border-border-subtle">
                 {INLINE_UPDATE_TYPES.map((t) => (
@@ -1035,7 +1049,7 @@ function ProjectCardWithUpdates({ opp }: ProjectCardProps) {
                   <button
                     onClick={handleSubmit}
                     disabled={!title.trim() || createUpdate.isPending}
-                    className="w-7 h-7 rounded-full flex items-center justify-center bg-[#4F46E5] text-white hover:bg-[#4338CA] disabled:opacity-30 transition-colors"
+                    className="w-7 h-7 rounded-full flex items-center justify-center bg-brand text-white hover:bg-brand-hover disabled:opacity-30 transition-colors"
                   >
                     {createUpdate.isPending ? <Loader2 size={14} className="animate-spin" /> : <ArrowUp size={14} />}
                   </button>

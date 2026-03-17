@@ -26,7 +26,8 @@ export const runtime = 'nodejs';
  */
 export async function GET(request: NextRequest) {
   try {
-    // 1. Auth check
+    // SECURITY: Uses service-role key. Currently blocked by middleware hiddenApiRoutes.
+    // TODO: Add per-user auth guard before removing from hiddenApiRoutes.
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
@@ -90,8 +91,10 @@ export async function GET(request: NextRequest) {
     }
 
     if (search) {
-      // Full-text search on name, tagline, description
-      query = query.or(`name.ilike.%${search}%,tagline.ilike.%${search}%,description.ilike.%${search}%`);
+      const sanitized = search.replace(/[^a-zA-Z0-9가-힣\s@.\-]/g, '')
+      if (sanitized) {
+        query = query.or(`name.ilike.%${sanitized}%,tagline.ilike.%${sanitized}%,description.ilike.%${sanitized}%`);
+      }
     }
 
     // Filter by analysis status

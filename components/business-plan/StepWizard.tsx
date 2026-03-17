@@ -71,7 +71,7 @@ const StepItem: React.FC<StepItemProps> = ({
           ${isCompleted
             ? 'bg-black text-white'
             : isActive
-              ? 'bg-[#4F46E5] text-txt-inverse ring-4 ring-[#4F46E5]/20'
+              ? 'bg-brand text-txt-inverse ring-4 ring-brand-border'
               : 'bg-surface-sunken text-txt-tertiary border border-border'
           }
         `}
@@ -88,7 +88,7 @@ const StepItem: React.FC<StepItemProps> = ({
         <div
           className={`
             text-xs font-bold
-            ${isActive ? 'text-[#4F46E5]' : isCompleted ? 'text-txt-primary' : 'text-txt-tertiary'}
+            ${isActive ? 'text-brand' : isCompleted ? 'text-txt-primary' : 'text-txt-tertiary'}
           `}
         >
           {step.title}
@@ -140,7 +140,7 @@ export const StepWizardCompact: React.FC<StepWizardProps> = ({
             className={`
               w-full flex items-center gap-3 p-3 transition-all
               ${isActive
-                ? 'bg-[#4F46E5]/5 border border-[#4F46E5]/20'
+                ? 'bg-brand-bg border border-brand-border'
                 : 'border border-transparent hover:bg-surface-sunken'
               }
               ${isClickable ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}
@@ -153,7 +153,7 @@ export const StepWizardCompact: React.FC<StepWizardProps> = ({
                 ${isCompleted
                   ? 'bg-black text-white'
                   : isActive
-                    ? 'bg-[#4F46E5] text-txt-inverse'
+                    ? 'bg-brand text-txt-inverse'
                     : 'bg-surface-sunken text-txt-tertiary border border-border'
                 }
               `}
@@ -170,7 +170,7 @@ export const StepWizardCompact: React.FC<StepWizardProps> = ({
               <div
                 className={`
                   text-sm font-medium
-                  ${isActive ? 'text-[#4F46E5]' : isCompleted ? 'text-txt-primary' : 'text-txt-tertiary'}
+                  ${isActive ? 'text-brand' : isCompleted ? 'text-txt-primary' : 'text-txt-tertiary'}
                 `}
               >
                 {step.title}
@@ -184,7 +184,7 @@ export const StepWizardCompact: React.FC<StepWizardProps> = ({
               </span>
             )}
             {isActive && !isCompleted && (
-              <span className="text-[0.625rem] font-mono text-[#4F46E5] bg-[#4F46E5]/5 px-2 py-0.5 animate-pulse">
+              <span className="text-[0.625rem] font-mono text-brand bg-brand-bg px-2 py-0.5 animate-pulse">
                 IN PROGRESS
               </span>
             )}

@@ -96,7 +96,7 @@ export const Projects: React.FC = () => {
               {/* 필터 */}
               <div className="bg-surface-card border border-border-strong p-4">
                 <h3 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-3 flex items-center gap-2">
-                  <span className="w-2 h-2 bg-[#4F46E5]" />
+                  <span className="w-2 h-2 bg-brand" />
                   필터
                 </h3>
                 <div className="space-y-2">
@@ -129,7 +129,7 @@ export const Projects: React.FC = () => {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 bg-surface-card border border-border-strong text-sm font-mono focus:outline-none focus:border-[#4F46E5] placeholder:text-txt-disabled"
+                  className="w-full pl-11 pr-4 py-3 bg-surface-card border border-border-strong text-sm font-mono focus:outline-none focus:border-brand placeholder:text-txt-disabled"
                   placeholder="프로젝트, 역할, 기술 스택 검색..."
                 />
               </div>

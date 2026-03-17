@@ -187,14 +187,14 @@ const ResultView: React.FC<ResultViewProps> = ({
       <div className="bg-gradient-to-b from-surface-sunken to-surface-card border-b border-border px-8 py-8 md:px-12 md:py-10">
          <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
             <div>
-               <div className="flex items-center gap-2 mb-2 text-blue-600 font-bold text-xs uppercase tracking-widest">
+               <div className="flex items-center gap-2 mb-2 text-brand font-bold text-xs uppercase tracking-widest">
                   <FileText size={14} /> Product Requirements Document
                </div>
                <h1 className="text-3xl md:text-4xl font-black text-txt-primary tracking-tight mb-2">{prd.projectName}</h1>
                <p className="text-lg text-txt-tertiary font-medium">{prd.tagline}</p>
             </div>
             <div className="flex flex-col items-end gap-2">
-               <span className="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-bold">Ver {prd.version}</span>
+               <span className="px-3 py-1 bg-brand-bg text-brand text-xs font-bold">Ver {prd.version}</span>
                <span className="text-xs text-txt-tertiary font-mono">Last Updated: {new Date().toLocaleDateString()}</span>
             </div>
          </div>
@@ -249,7 +249,7 @@ const ResultView: React.FC<ResultViewProps> = ({
          {/* Features Grid */}
          <section>
             <h2 className="text-xl font-bold text-txt-primary mb-6 flex items-center gap-2">
-               <Zap size={20} className="text-yellow-500" /> Core Features
+               <Zap size={20} className="text-status-warning-text" /> Core Features
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                {prd.coreFeatures.map((feature, i) => (
@@ -258,9 +258,9 @@ const ResultView: React.FC<ResultViewProps> = ({
                         <h3 className="font-bold text-txt-primary">{feature.name}</h3>
                         <div className="flex gap-2">
                            <span className={`px-2 py-0.5 text-[0.625rem] font-bold uppercase tracking-wider ${
-                              feature.priority === 'High' ? 'bg-red-100 text-red-700' :
-                              feature.priority === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
-                              'bg-green-100 text-green-700'
+                              feature.priority === 'High' ? 'bg-status-danger-bg text-status-danger-text' :
+                              feature.priority === 'Medium' ? 'bg-status-warning-bg text-status-warning-text' :
+                              'bg-status-success-bg text-status-success-text'
                            }`}>
                               {feature.priority}
                            </span>
@@ -275,7 +275,7 @@ const ResultView: React.FC<ResultViewProps> = ({
                                   (feature.effort === 'High' && bar <= 3) ||
                                   (feature.effort === 'Medium' && bar <= 2) ||
                                   (feature.effort === 'Low' && bar <= 1)
-                                  ? 'bg-blue-500' : 'bg-surface-sunken'
+                                  ? 'bg-brand' : 'bg-surface-sunken'
                                }`} />
                             ))}
                          </div>
@@ -288,7 +288,7 @@ const ResultView: React.FC<ResultViewProps> = ({
          {/* Tech Stack */}
          <section>
              <h2 className="text-xl font-bold text-txt-primary mb-4 flex items-center gap-2">
-               <Server size={20} className="text-indigo-500" /> Recommended Stack
+               <Server size={20} className="text-brand" /> Recommended Stack
             </h2>
             <div className="flex flex-wrap gap-2">
                {prd.techStack.map((tech, i) => (
@@ -341,7 +341,7 @@ const ResultView: React.FC<ResultViewProps> = ({
                     onClick={() => handleCopy(JSON.stringify(jd))}
                     className="p-3 border border-border-strong hover:bg-black hover:text-white text-txt-secondary transition-colors"
                  >
-                    {copied ? <Check size={20} className="text-green-500" /> : <Share2 size={20} />}
+                    {copied ? <Check size={20} className="text-status-success-text" /> : <Share2 size={20} />}
                  </button>
               </div>
            </div>
@@ -362,7 +362,7 @@ const ResultView: React.FC<ResultViewProps> = ({
                  <ul className="space-y-3">
                     {jd.responsibilities.map((item, i) => (
                        <li key={i} className="flex items-start gap-3 text-txt-secondary leading-relaxed">
-                          <Check size={18} className="text-blue-500 mt-1 shrink-0" />
+                          <Check size={18} className="text-brand mt-1 shrink-0" />
                           <span>{item}</span>
                        </li>
                     ))}
@@ -386,7 +386,7 @@ const ResultView: React.FC<ResultViewProps> = ({
            <div className="space-y-8">
               <div className="bg-surface-sunken p-6 border border-border">
                  <h3 className="flex items-center gap-2 font-bold text-txt-primary mb-4">
-                    <Award size={18} className="text-yellow-500" /> Preferred Skills
+                    <Award size={18} className="text-status-warning-text" /> Preferred Skills
                  </h3>
                  <div className="flex flex-wrap gap-2">
                     {jd.preferred.map((skill, i) => (
@@ -397,14 +397,14 @@ const ResultView: React.FC<ResultViewProps> = ({
                  </div>
               </div>
 
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 border border-blue-100">
-                 <h3 className="flex items-center gap-2 font-bold text-blue-900 mb-4">
-                    <Star size={18} className="text-blue-500" /> Benefits
+              <div className="bg-gradient-to-br from-brand-bg to-indigo-50 p-6 border border-brand-border">
+                 <h3 className="flex items-center gap-2 font-bold text-brand mb-4">
+                    <Star size={18} className="text-brand" /> Benefits
                  </h3>
                  <ul className="space-y-3">
                     {jd.benefits.map((benefit, i) => (
-                       <li key={i} className="text-sm text-blue-800 font-medium flex items-center gap-2">
-                          <span className="w-1 h-1 bg-blue-400" /> {benefit}
+                       <li key={i} className="text-sm text-brand font-medium flex items-center gap-2">
+                          <span className="w-1 h-1 bg-brand" /> {benefit}
                        </li>
                     ))}
                  </ul>
@@ -588,7 +588,7 @@ const ResultView: React.FC<ResultViewProps> = ({
                 label="Tech Feasibility"
                 score={scores.developer}
                 colorClass="bg-indigo-500"
-                icon={<Cpu size={16} className="text-indigo-500" />}
+                icon={<Cpu size={16} className="text-brand" />}
               />
 
               <ScoreBar

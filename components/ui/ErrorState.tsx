@@ -20,12 +20,12 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
 
   return (
     <div className={`
-      bg-surface-card border border-red-600/20 text-center
+      bg-surface-card border border-status-danger-text/20 text-center
       ${isCompact ? 'py-6 px-4' : 'py-12 px-6'}
       ${className}
     `}>
-      <div className={`inline-flex items-center justify-center bg-red-600/10 border border-red-600/20 ${isCompact ? 'w-10 h-10 mb-2' : 'w-14 h-14 mb-4'}`}>
-        <AlertTriangle size={isCompact ? 20 : 24} className="text-red-600" />
+      <div className={`inline-flex items-center justify-center bg-status-danger-text/10 border border-status-danger-text/20 ${isCompact ? 'w-10 h-10 mb-2' : 'w-14 h-14 mb-4'}`}>
+        <AlertTriangle size={isCompact ? 20 : 24} className="text-status-danger-text" />
       </div>
 
       <p className={`font-medium text-txt-secondary ${isCompact ? 'text-xs mb-1' : 'text-sm mb-1.5'}`}>

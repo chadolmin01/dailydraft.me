@@ -1,3 +1,4 @@
+// @ts-nocheck — Supabase types pending for subscription tables (hidden feature)
 /**
  * 사용량 체크 및 구독 관리 유틸리티
  */

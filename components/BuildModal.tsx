@@ -32,7 +32,7 @@ export const BuildModal: React.FC<BuildModalProps> = ({ isOpen, onClose, prdData
             </div>
             <div className="flex items-center gap-2">
               <h2 className="font-bold text-lg text-txt-primary">Phase 3: Build</h2>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#4F46E5]/10 text-[#4F46E5] text-[0.625rem] font-bold font-mono border border-[#4F46E5]">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-brand-bg text-brand text-[0.625rem] font-bold font-mono border border-brand">
                 <FlaskConical size={10} />
                 BETA
               </span>

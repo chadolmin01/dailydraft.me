@@ -10,6 +10,7 @@ import { useOpportunities, type OpportunityWithCreator, calculateDaysLeft } from
 import { usePublicProfiles, type PublicProfile } from '@/src/hooks/usePublicProfiles'
 import { useUserRecommendations } from '@/src/hooks/useUserRecommendations'
 import { FALLBACK_CATEGORIES, FALLBACK_TRENDING_TAGS } from '@/src/lib/fallbacks/explore'
+import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/src/context/AuthContext'
 import { CATEGORY_ICONS, PAGE_SIZE, PEOPLE_PAGE_SIZE } from '@/components/explore/constants'
 import {
@@ -72,7 +73,11 @@ function ExplorePageContent() {
     if (searchQuery) params.set('q', searchQuery)
     if (searchScope !== 'all') params.set('scope', searchScope)
     const qs = params.toString()
-    router.replace(`${pathname}${qs ? `?${qs}` : ''}`, { scroll: false })
+    const newPath = `${pathname}${qs ? `?${qs}` : ''}`
+    const currentPath = `${pathname}${window.location.search}`
+    if (newPath !== currentPath) {
+      router.replace(newPath, { scroll: false })
+    }
   }, [searchQuery, searchScope, pathname, router])
 
   // ── Data ──
@@ -91,7 +96,8 @@ function ExplorePageContent() {
   // ── Derived: project cards ──
   const projectCards = opportunities
     .filter((opp: OpportunityWithCreator) => {
-      if (typeFilter !== 'all' && opp.type !== typeFilter) return false
+      const normalizedType = opp.type === 'team_building' ? 'startup' : (opp.type || 'side_project')
+      if (typeFilter !== 'all' && normalizedType !== typeFilter) return false
       if (recruitingOnly && opp.status !== 'active') return false
       if (selectedCategory !== 'all') {
         const tags = (opp.interest_tags || []).map(t => t.toLowerCase())
@@ -159,7 +165,17 @@ function ExplorePageContent() {
     return { ...cat, count, icon: CATEGORY_ICONS[cat.id] || LayoutGrid }
   })
 
-  const trendingTags = FALLBACK_TRENDING_TAGS
+  const { data: liveTrending } = useQuery({
+    queryKey: ['explore', 'trending'],
+    queryFn: async () => {
+      const res = await fetch('/api/explore/trending')
+      if (!res.ok) return null
+      const data = await res.json()
+      return data.tags as { tag: string; count: number }[]
+    },
+    staleTime: 5 * 60_000,
+  })
+  const trendingTags = liveTrending && liveTrending.length > 0 ? liveTrending : FALLBACK_TRENDING_TAGS
 
   // ── Prop groups ──
   const filterProps = {

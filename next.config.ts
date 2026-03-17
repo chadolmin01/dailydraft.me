@@ -4,14 +4,23 @@ const nextConfig: NextConfig = {
   // Enable React strict mode
   reactStrictMode: true,
 
-  // Disable image optimization for external images if needed
+  // Image optimization with allowed remote patterns
   images: {
-    unoptimized: true,
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'prxqjiuibfrmuwwmkhqb.supabase.co',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+    ],
   },
 
-  // Skip type checking during build — checked during dev
+  // Type checking during build
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
 }
 

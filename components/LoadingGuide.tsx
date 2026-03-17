@@ -71,7 +71,7 @@ export const LoadingGuide: React.FC<LoadingGuideProps> = ({ onComplete }) => {
   const CurrentIcon = TIPS[currentTipIndex].icon
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#FAFAFA] bg-grid-engineering flex flex-col items-center justify-center font-sans p-6">
+    <div className="fixed inset-0 z-50 bg-surface-bg bg-grid-engineering flex flex-col items-center justify-center font-sans p-6">
 
       <div className="w-full max-w-md relative">
          <div className="bg-surface-card border border-border-strong shadow-brutal overflow-hidden relative z-10 animate-slide-up-fade">
@@ -84,8 +84,8 @@ export const LoadingGuide: React.FC<LoadingGuideProps> = ({ onComplete }) => {
                    <Zap size={32} className="text-white fill-white animate-pulse" />
                 </div>
 
-                <div className="absolute top-4 left-10 w-1 h-1 bg-blue-500 animate-ping"></div>
-                <div className="absolute bottom-4 right-10 w-1.5 h-1.5 bg-green-500 animate-pulse"></div>
+                <div className="absolute top-4 left-10 w-1 h-1 bg-brand animate-ping"></div>
+                <div className="absolute bottom-4 right-10 w-1.5 h-1.5 bg-indicator-online animate-pulse"></div>
             </div>
 
             <div className="p-8">
@@ -127,7 +127,7 @@ export const LoadingGuide: React.FC<LoadingGuideProps> = ({ onComplete }) => {
             </div>
          </div>
 
-         <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 blur-2xl -z-10"></div>
+         <div className="absolute -inset-4 bg-gradient-to-r from-brand/10 to-purple-500/10 blur-2xl -z-10"></div>
       </div>
     </div>
   )

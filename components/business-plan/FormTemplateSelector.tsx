@@ -19,10 +19,10 @@ const TEMPLATE_ICONS: Record<FormTemplateType, React.ReactNode> = {
 }
 
 const TEMPLATE_COLORS: Record<FormTemplateType, { bg: string; border: string; icon: string }> = {
-  'yebi-chogi': { bg: 'bg-blue-50', border: 'border-blue-200 hover:border-blue-400', icon: 'text-blue-600' },
+  'yebi-chogi': { bg: 'bg-status-info-bg', border: 'border-status-info-text/20 hover:border-status-info-text', icon: 'text-status-info-text' },
   'student-300': { bg: 'bg-purple-50', border: 'border-purple-200 hover:border-purple-400', icon: 'text-purple-600' },
-  'saengae-chungnyeon': { bg: 'bg-green-50', border: 'border-green-200 hover:border-green-400', icon: 'text-green-600' },
-  'oneul-jeongtong': { bg: 'bg-amber-50', border: 'border-amber-200 hover:border-amber-400', icon: 'text-amber-600' },
+  'saengae-chungnyeon': { bg: 'bg-status-success-bg', border: 'border-status-success-text/20 hover:border-status-success-text', icon: 'text-status-success-text' },
+  'oneul-jeongtong': { bg: 'bg-amber-50', border: 'border-amber-200 hover:border-amber-400', icon: 'text-indicator-premium-border' },
   'gyeonggi-g-star': { bg: 'bg-rose-50', border: 'border-rose-200 hover:border-rose-400', icon: 'text-rose-600' },
 }
 
@@ -67,7 +67,7 @@ export const FormTemplateSelector: React.FC<FormTemplateSelectorProps> = ({
           {/* Recommended */}
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-3">
-              <span className="text-[0.625rem] font-bold font-mono text-blue-600 bg-blue-50 px-2 py-0.5 border border-blue-100">
+              <span className="text-[0.625rem] font-bold font-mono text-status-info-text bg-status-info-bg px-2 py-0.5 border border-status-info-text/20">
                 RECOMMENDED
               </span>
               <span className="text-xs text-txt-tertiary">가장 범용적인 PSST 표준 양식</span>
@@ -132,13 +132,13 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onSelect, feature
       onClick={() => onSelect(template)}
       className={`
         w-full text-left p-4 border transition-all group
-        ${featured ? 'border-blue-300 hover:border-blue-500 bg-blue-50/30' : `${colors.border} bg-surface-card hover:shadow-sharp`}
+        ${featured ? 'border-status-info-text/30 hover:border-status-info-text bg-status-info-bg/30' : `${colors.border} bg-surface-card hover:shadow-sharp`}
       `}
     >
       <div className="flex items-start gap-4">
         <div className={`
           w-12 h-12 flex items-center justify-center shrink-0
-          ${featured ? 'bg-blue-100 text-blue-600' : `${colors.bg} ${colors.icon}`}
+          ${featured ? 'bg-status-info-bg text-status-info-text' : `${colors.bg} ${colors.icon}`}
         `}>
           {icon}
         </div>

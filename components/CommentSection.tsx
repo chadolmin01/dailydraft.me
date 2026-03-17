@@ -238,8 +238,8 @@ const CommentItem: React.FC<CommentItemProps> = ({
           disabled={hasVoted}
           className={`flex items-center gap-1.5 text-xs transition-colors ${
             hasVoted
-              ? 'text-[#4F46E5] font-bold cursor-default'
-              : 'text-txt-disabled hover:text-[#4F46E5]'
+              ? 'text-brand font-bold cursor-default'
+              : 'text-txt-disabled hover:text-brand'
           }`}
         >
           <ThumbsUp size={14} />
@@ -250,7 +250,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
           onClick={onReport}
           disabled={hasReported}
           className={`flex items-center gap-1.5 text-xs transition-colors ${
-            hasReported ? 'text-red-400 cursor-default' : 'text-txt-disabled hover:text-red-500'
+            hasReported ? 'text-status-danger-text cursor-default' : 'text-txt-disabled hover:text-status-danger-text'
           }`}
         >
           <Flag size={12} />

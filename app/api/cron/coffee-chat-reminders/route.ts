@@ -4,18 +4,22 @@ import { resend, FROM_EMAIL, isEmailEnabled } from '@/src/lib/email/client'
 import { renderCoffeeChatReminderEmail } from '@/src/lib/email/templates/coffee-chat-reminder'
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-)
-
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://dailydraft.me'
+
+function getAdminClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { autoRefreshToken: false, persistSession: false } }
+  )
+}
 
 // Cron: send reminders for pending coffee chats older than 48 hours
 export async function GET(req: NextRequest) {
-  // Verify cron secret
+  // Verify cron secret (null-safe: reject if CRON_SECRET is unset)
+  const cronSecret = process.env.CRON_SECRET
   const authHeader = req.headers.get('authorization')
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
   }
 
@@ -24,6 +28,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    const supabaseAdmin = getAdminClient()
     const fortyEightHoursAgo = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString()
 
     // Find pending chats older than 48 hours that haven't been reminded yet

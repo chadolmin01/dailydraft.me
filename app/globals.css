@@ -56,6 +56,20 @@
   --tag-outline-border: #D4D4D8;
   --tag-outline-text: #52525B;
 
+  /* ── Brand (인디고 — CTA, 활성 상태, 강조) ── */
+  --brand: #4F46E5;
+  --brand-hover: #4338CA;
+  --brand-bg: rgba(79, 70, 229, 0.05);
+  --brand-border: rgba(79, 70, 229, 0.2);
+  --brand-shadow: rgba(79, 70, 229, 0.3);
+
+  /* ── Indicator (상태 표시등) ── */
+  --indicator-online: #22C55E;
+  --indicator-premium: #F59E0B;
+  --indicator-premium-border: #D97706;
+  --indicator-alert: #EF4444;
+  --indicator-trending: #F97316;
+
   /* ── Misc ── */
   --grid-color: rgba(0, 0, 0, 0.04);
   --focus-ring: rgba(24, 24, 27, 0.5);
@@ -85,7 +99,7 @@
    ============================================================ */
 
 html {
-  font-size: 100%;         /* 16px 기본 — 모든 rem 단위 표준 크기 */
+  font-size: 80%;          /* 12.8px 기본 — 전체 UI 80% 컴팩트화 */
   scroll-behavior: smooth;
 }
 

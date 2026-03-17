@@ -40,7 +40,7 @@ const BusinessPlanEditor = dynamic(
 function LoadingSpinner({ message }: { message: string }) {
   return (
     <div className="flex flex-col items-center justify-center h-full min-h-[25rem]">
-      <div className="w-12 h-12 border-4 border-border border-t-[#4F46E5] animate-spin mb-4" />
+      <div className="w-12 h-12 border-4 border-border border-t-brand animate-spin mb-4" />
       <p className="text-sm text-txt-tertiary">{message}</p>
     </div>
   );
@@ -237,7 +237,7 @@ function WorkflowContent() {
               key={step}
               className={`flex-1 h-1.5 transition-colors ${
                 completedSteps.includes(step)
-                  ? 'bg-green-500'
+                  ? 'bg-status-success-text'
                   : currentStep === step
                   ? 'bg-draft-blue'
                   : 'bg-border'
@@ -282,7 +282,7 @@ function WorkflowContent() {
               />
             ) : (
               <div className="flex flex-col items-center justify-center h-full min-h-[25rem] text-center">
-                <div className="w-16 h-16 bg-yellow-50 border border-yellow-400 flex items-center justify-center mb-4">
+                <div className="w-16 h-16 bg-status-warning-bg border border-status-warning-text flex items-center justify-center mb-4">
                   <span className="text-2xl">⚠️</span>
                 </div>
                 <h3 className="text-lg font-semibold text-txt-primary mb-2">
@@ -294,7 +294,7 @@ function WorkflowContent() {
                 <button
                   type="button"
                   onClick={() => setCurrentStep('validation')}
-                  className="px-4 py-2 bg-[#4F46E5] text-white border border-[#4F46E5] text-sm font-medium hover:bg-[#4338CA] transition-colors"
+                  className="px-4 py-2 bg-brand text-white border border-brand text-sm font-medium hover:bg-brand-hover transition-colors"
                 >
                   아이디어 검증으로 돌아가기
                 </button>

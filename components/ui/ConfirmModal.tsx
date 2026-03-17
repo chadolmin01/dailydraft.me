@@ -56,16 +56,16 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
 
   const variantStyles = {
     danger: {
-      icon: 'bg-red-100 text-red-600',
-      button: 'bg-red-600 hover:bg-red-700 text-white',
+      icon: 'bg-status-danger-bg text-status-danger-text',
+      button: 'bg-status-danger-text hover:bg-status-danger-text/90 text-white',
     },
     warning: {
-      icon: 'bg-yellow-100 text-yellow-600',
-      button: 'bg-yellow-600 hover:bg-yellow-700 text-white',
+      icon: 'bg-status-warning-bg text-status-warning-text',
+      button: 'bg-status-warning-text hover:bg-status-warning-text/90 text-white',
     },
     info: {
-      icon: 'bg-blue-100 text-blue-600',
-      button: 'bg-blue-600 hover:bg-blue-700 text-white',
+      icon: 'bg-status-info-bg text-status-info-text',
+      button: 'bg-status-info-text hover:bg-status-info-text/90 text-white',
     },
   }
 

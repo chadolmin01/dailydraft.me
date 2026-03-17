@@ -126,10 +126,10 @@ export const InterestButton: React.FC<InterestButtonProps> = ({
                 placeholder="이메일을 입력하세요"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 border border-border-strong bg-surface-card focus:outline-none focus:border-[#4F46E5] mb-2"
+                className="w-full px-3 py-2 border border-border-strong bg-surface-card focus:outline-none focus:border-brand mb-2"
               />
 
-              {error && <p className="text-xs text-red-500 mb-2">{error}</p>}
+              {error && <p className="text-xs text-status-danger-text mb-2">{error}</p>}
 
               <p className="text-xs text-txt-disabled mb-4">
                 * 이메일은 프로젝트 오너에게만 공개됩니다
@@ -145,7 +145,7 @@ export const InterestButton: React.FC<InterestButtonProps> = ({
                 <button
                   onClick={() => handleSubmit()}
                   disabled={submitting}
-                  className="flex-1 px-4 py-2 bg-[#4F46E5] text-white border border-[#4F46E5] hover:bg-[#4338CA] text-sm font-bold shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-40 flex items-center justify-center gap-2"
+                  className="flex-1 px-4 py-2 bg-brand text-white border border-brand hover:bg-brand-hover text-sm font-bold shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-40 flex items-center justify-center gap-2"
                 >
                   {submitting ? (
                     <Loader2 size={16} className="animate-spin" />

@@ -69,7 +69,7 @@ export const StartupIdeaCard: React.FC<StartupIdeaCardProps> = ({
               </div>
             )}
             <div className="min-w-0">
-              <h3 className="font-bold text-sm text-txt-primary truncate group-hover:text-[#4F46E5] transition-colors">
+              <h3 className="font-bold text-sm text-txt-primary truncate group-hover:text-brand transition-colors">
                 {name}
               </h3>
               <p className="text-[0.625rem] font-mono text-txt-disabled uppercase">

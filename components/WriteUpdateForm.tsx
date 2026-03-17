@@ -131,7 +131,7 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
           />
         </div>
 
-        {error && <p className="text-xs text-red-500">{error}</p>}
+        {error && <p className="text-xs text-status-danger-text">{error}</p>}
 
         <button
           onClick={handleSubmit}

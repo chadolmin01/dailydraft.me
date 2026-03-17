@@ -109,8 +109,8 @@ const TYPE_THEMES: Record<string, {
   },
   startup: {
     badge: 'bg-surface-inverse text-txt-inverse',
-    status: 'bg-emerald-100/70 text-emerald-600',
-    statusDot: 'bg-emerald-500',
+    status: 'bg-status-success-bg/70 text-indicator-online',
+    statusDot: 'bg-indicator-online',
     roleOn: 'bg-surface-inverse text-txt-inverse border-surface-inverse',
     roleIconOn: 'text-txt-tertiary',
     chipOn: 'bg-surface-inverse text-txt-inverse border-surface-inverse',
@@ -163,7 +163,7 @@ function NewProjectContent() {
 
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
-  const [type, setType] = useState('startup')
+  const [type, setType] = useState('side_project')
   const [selectedRoles, setSelectedRoles] = useState<string[]>([])
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [locationType, setLocationType] = useState('remote')

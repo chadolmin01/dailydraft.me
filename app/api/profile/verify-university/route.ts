@@ -1,9 +1,16 @@
 import { createClient } from '@/src/lib/supabase/server'
+import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
 import { resend, FROM_EMAIL, isEmailEnabled } from '@/src/lib/email/client'
+import crypto from 'crypto'
 
-// 인증 코드 저장소 (메모리, 프로덕션에서는 Redis 권장)
-const verificationCodes = new Map<string, { code: string; email: string; expiresAt: number }>()
+function getAdminClient() {
+  return createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { autoRefreshToken: false, persistSession: false } }
+  )
+}
 
 // 유효한 대학 이메일 도메인
 const UNIVERSITY_DOMAINS = [
@@ -31,10 +38,10 @@ function isUniversityEmail(email: string): boolean {
 }
 
 function generateCode(): string {
-  return Math.floor(100000 + Math.random() * 900000).toString()
+  return crypto.randomInt(100000, 999999).toString()
 }
 
-// POST: 인증 코드 발송
+// POST: 인증 코드 발송 / 검증
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient()
@@ -44,6 +51,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
     }
 
+    const admin = getAdminClient()
     const body = await request.json()
     const { action, email, code } = body as { action: string; email?: string; code?: string }
 
@@ -70,22 +78,64 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: '이미 인증된 계정입니다' }, { status: 400 })
       }
 
-      // Rate limit: 1분에 1번
-      const existing = verificationCodes.get(user.id)
-      if (existing && Date.now() - (existing.expiresAt - 10 * 60 * 1000) < 60 * 1000) {
-        return NextResponse.json({ error: '1분 후에 다시 시도해주세요' }, { status: 429 })
+      // DB에서 기존 인증 코드 조회 (rate limit + 재발송 간격 체크)
+      const now = new Date()
+      const { data: existing } = await admin
+        .from('verification_codes')
+        .select('*')
+        .eq('user_id', user.id)
+        .single()
+
+      if (existing) {
+        // 잠금 상태 확인
+        if (existing.locked_until && new Date(existing.locked_until) > now) {
+          return NextResponse.json({ error: '인증 시도 횟수를 초과했습니다. 15분 후 다시 시도해주세요' }, { status: 429 })
+        }
+
+        // 시간당 발송 횟수 제한 (5회)
+        const sendResetAt = new Date(existing.send_reset_at)
+        if (now < sendResetAt && existing.send_count >= 5) {
+          return NextResponse.json({ error: '요청 횟수를 초과했습니다. 1시간 후 다시 시도해주세요' }, { status: 429 })
+        }
+
+        // 1분 재발송 간격
+        const updatedAt = new Date(existing.updated_at)
+        if (now.getTime() - updatedAt.getTime() < 60 * 1000) {
+          return NextResponse.json({ error: '1분 후에 다시 시도해주세요' }, { status: 429 })
+        }
       }
 
       const verificationCode = generateCode()
-      verificationCodes.set(user.id, {
-        code: verificationCode,
-        email: trimmedEmail,
-        expiresAt: Date.now() + 10 * 60 * 1000, // 10분
-      })
+      const expiresAt = new Date(now.getTime() + 10 * 60 * 1000) // 10분
+      const sendResetAt = (existing && new Date(existing.send_reset_at) > now)
+        ? existing.send_reset_at
+        : new Date(now.getTime() + 60 * 60 * 1000).toISOString() // 1시간
+
+      const newSendCount = (existing && new Date(existing.send_reset_at) > now)
+        ? existing.send_count + 1
+        : 1
+
+      // DB에 upsert
+      const { error: upsertError } = await admin
+        .from('verification_codes')
+        .upsert({
+          user_id: user.id,
+          code: verificationCode,
+          email: trimmedEmail,
+          attempts: 0,
+          send_count: newSendCount,
+          expires_at: expiresAt.toISOString(),
+          send_reset_at: sendResetAt,
+          locked_until: null,
+          updated_at: now.toISOString(),
+        }, { onConflict: 'user_id' })
+
+      if (upsertError) {
+        return NextResponse.json({ error: '서버 오류가 발생했습니다' }, { status: 500 })
+      }
 
       // 이메일 발송
       if (!isEmailEnabled() || !resend) {
-        // 이메일 서비스 미설정 시 개발용 로그
         console.log(`[DEV] Verification code for ${trimmedEmail}: ${verificationCode}`)
         return NextResponse.json({ success: true, dev: true })
       }
@@ -107,7 +157,8 @@ export async function POST(request: NextRequest) {
       })
 
       if (sendError) {
-        verificationCodes.delete(user.id)
+        // 발송 실패 시 DB 코드 삭제
+        await admin.from('verification_codes').delete().eq('user_id', user.id)
         return NextResponse.json({ error: '이메일 발송에 실패했습니다' }, { status: 500 })
       }
 
@@ -120,21 +171,61 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: '인증 코드를 입력해주세요' }, { status: 400 })
       }
 
-      const stored = verificationCodes.get(user.id)
+      const now = new Date()
+
+      // DB에서 저장된 코드 조회
+      const { data: stored } = await admin
+        .from('verification_codes')
+        .select('*')
+        .eq('user_id', user.id)
+        .single()
+
       if (!stored) {
         return NextResponse.json({ error: '인증 코드를 먼저 요청해주세요' }, { status: 400 })
       }
 
-      if (Date.now() > stored.expiresAt) {
-        verificationCodes.delete(user.id)
+      // 잠금 상태 확인
+      if (stored.locked_until && new Date(stored.locked_until) > now) {
+        return NextResponse.json({ error: '인증 시도 횟수를 초과했습니다. 15분 후 다시 시도해주세요' }, { status: 429 })
+      }
+
+      // 만료 확인
+      if (new Date(stored.expires_at) < now) {
+        await admin.from('verification_codes').delete().eq('user_id', user.id)
         return NextResponse.json({ error: '인증 코드가 만료되었습니다. 다시 요청해주세요' }, { status: 400 })
       }
 
-      if (stored.code !== code.trim()) {
-        return NextResponse.json({ error: '인증 코드가 일치하지 않습니다' }, { status: 400 })
+      // 코드 비교 (타이밍 공격 방지)
+      const codeMatch = crypto.timingSafeEqual(
+        Buffer.from(stored.code),
+        Buffer.from(code.trim().padEnd(stored.code.length))
+      ) && stored.code.length === code.trim().length
+
+      if (!codeMatch) {
+        const newAttempts = (stored.attempts || 0) + 1
+
+        if (newAttempts >= 5) {
+          // 5회 실패 → 15분 잠금 + 코드 무효화
+          await admin
+            .from('verification_codes')
+            .update({
+              attempts: newAttempts,
+              locked_until: new Date(now.getTime() + 15 * 60 * 1000).toISOString(),
+              code: '', // 코드 무효화
+              updated_at: now.toISOString(),
+            })
+            .eq('user_id', user.id)
+          return NextResponse.json({ error: '인증 시도 횟수를 초과했습니다. 15분 후 다시 시도해주세요' }, { status: 429 })
+        }
+
+        await admin
+          .from('verification_codes')
+          .update({ attempts: newAttempts, updated_at: now.toISOString() })
+          .eq('user_id', user.id)
+        return NextResponse.json({ error: `인증 코드가 일치하지 않습니다 (${newAttempts}/5)` }, { status: 400 })
       }
 
-      // 인증 성공 → DB 업데이트 (users + profiles 양쪽)
+      // 인증 성공 → DB 업데이트 + 코드 삭제
       const [usersResult, profilesResult] = await Promise.all([
         supabase.from('users').update({ is_uni_verified: true } as never).eq('id', user.id),
         supabase.from('profiles').update({ is_uni_verified: true } as never).eq('user_id', user.id),
@@ -144,7 +235,9 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: '인증 상태 저장에 실패했습니다' }, { status: 500 })
       }
 
-      verificationCodes.delete(user.id)
+      // 인증 완료 → 코드 레코드 삭제
+      await admin.from('verification_codes').delete().eq('user_id', user.id)
+
       return NextResponse.json({ success: true, verified: true })
     }
 

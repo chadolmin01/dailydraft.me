@@ -37,7 +37,7 @@ export function ExploreSearchBar({
     <div ref={searchRef} className="relative mb-6">
       <div className={`relative transition-all duration-200 ${
         isSearchExpanded
-          ? 'bg-surface-card shadow-[3px_3px_0px_0px_rgba(79,70,229,0.15)] border border-[#4F46E5]/40'
+          ? 'bg-surface-card shadow-solid-sm border border-brand/40'
           : 'bg-surface-sunken border border-border hover:bg-surface-card hover:shadow-sharp hover:border-border-strong'
       }`}>
         <div className="relative flex items-center">
@@ -104,7 +104,7 @@ export function ExploreSearchBar({
                         }}
                         className={`group/chip flex items-center gap-2 pl-2.5 pr-3.5 py-2 text-xs font-medium transition-all border ${
                           isActive
-                            ? 'bg-[#4F46E5] text-white border-[#4F46E5] shadow-[2px_2px_0px_0px_rgba(79,70,229,0.3)]'
+                            ? 'bg-brand text-white border-brand shadow-solid-sm'
                             : 'bg-surface-sunken text-txt-secondary border-border hover:bg-surface-card hover:border-border-strong hover:shadow-sharp'
                         }`}
                       >

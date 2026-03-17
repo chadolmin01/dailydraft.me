@@ -22,7 +22,7 @@ export default function DesignPage() {
   const [modalSize, setModalSize] = useState<'sm' | 'md' | 'lg' | 'xl'>('md')
 
   return (
-    <div className="bg-[#FAFAFA] min-h-full pb-20">
+    <div className="bg-surface-bg min-h-full pb-20">
 
       {/* ============================================================
          PAGE HEADER
@@ -167,7 +167,7 @@ export default function DesignPage() {
             size="wide"
             sidebar={
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-center">
-                <p className="text-xs font-medium text-amber-600">Sidebar</p>
+                <p className="text-xs font-medium text-indicator-premium-border">Sidebar</p>
                 <p className="text-[0.625rem] text-amber-400 mt-1">w-56, lg:block</p>
                 <div className="mt-3 space-y-2">
                   {['필터 1', '필터 2', '필터 3'].map(f => (
@@ -193,7 +193,7 @@ export default function DesignPage() {
             size="wide"
             sidebar={
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-center">
-                <p className="text-xs font-medium text-amber-600">Sidebar</p>
+                <p className="text-xs font-medium text-indicator-premium-border">Sidebar</p>
                 <p className="text-[0.625rem] text-amber-400 mt-1">w-56, lg:block</p>
                 <div className="mt-3 space-y-2">
                   {['카테고리', '필터', '태그'].map(f => (
@@ -662,10 +662,10 @@ export default function DesignPage() {
 
           <div className="bg-white border border-gray-200 rounded-xl p-4 group hover:border-gray-400 hover:shadow-sm transition-all cursor-pointer">
             <div className="flex flex-col items-center text-center">
-              <div className="w-16 h-16 bg-amber-100 rounded-xl flex items-center justify-center text-lg font-bold text-amber-600 mb-3">최유</div>
+              <div className="w-16 h-16 bg-amber-100 rounded-xl flex items-center justify-center text-lg font-bold text-indicator-premium-border mb-3">최유</div>
               <h3 className="font-bold text-sm text-gray-900">최유진</h3>
               <p className="text-xs text-gray-500 mt-0.5">디자이너</p>
-              <span className="text-[0.625rem] bg-amber-50 text-amber-600 px-1.5 py-0.5 rounded mt-2">프로젝트 1개 진행중</span>
+              <span className="text-[0.625rem] bg-amber-50 text-indicator-premium-border px-1.5 py-0.5 rounded mt-2">프로젝트 1개 진행중</span>
             </div>
           </div>
         </div>
@@ -677,7 +677,7 @@ export default function DesignPage() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
           {[
             { label: '내 프로젝트', value: '3', icon: Zap, color: 'bg-blue-50 text-blue-600' },
-            { label: '받은 커피챗', value: '7', icon: Coffee, color: 'bg-amber-50 text-amber-600' },
+            { label: '받은 커피챗', value: '7', icon: Coffee, color: 'bg-amber-50 text-indicator-premium-border' },
             { label: '총 조회수', value: '1.2k', icon: Users, color: 'bg-green-50 text-green-600' },
             { label: '프로필 완성도', value: '80%', icon: Star, color: 'bg-violet-50 text-violet-600' },
           ].map((stat) => (
