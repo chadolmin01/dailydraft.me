@@ -1,9 +1,11 @@
 import type { MetadataRoute } from 'next'
+import { createClient } from '@supabase/supabase-js'
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://dailydraft.me'
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://dailydraft.me'
 
-  return [
+  // 정적 페이지
+  const staticPages: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
       lastModified: new Date(),
@@ -22,5 +24,42 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly',
       priority: 0.5,
     },
+    {
+      url: `${baseUrl}/waitlist`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.4,
+    },
   ]
+
+  // 동적 페이지: /p/[id] — 공개 opportunities
+  let dynamicPages: MetadataRoute.Sitemap = []
+
+  try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+    if (supabaseUrl && supabaseKey) {
+      const supabase = createClient(supabaseUrl, supabaseKey)
+      const { data: opportunities } = await supabase
+        .from('opportunities')
+        .select('id, updated_at')
+        .eq('status', 'published')
+        .order('updated_at', { ascending: false })
+        .limit(500)
+
+      if (opportunities) {
+        dynamicPages = opportunities.map((opp) => ({
+          url: `${baseUrl}/p/${opp.id}`,
+          lastModified: opp.updated_at ? new Date(opp.updated_at) : new Date(),
+          changeFrequency: 'weekly' as const,
+          priority: 0.7,
+        }))
+      }
+    }
+  } catch (error) {
+    console.error('Sitemap: Failed to fetch opportunities:', error)
+  }
+
+  return [...staticPages, ...dynamicPages]
 }
