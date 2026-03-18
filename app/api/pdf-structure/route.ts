@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { genAI } from '@/src/lib/ai/gemini-client'
+import { ApiResponse } from '@/src/lib/api-utils'
 import { applyRateLimit } from '@/src/lib/rate-limit'
 import { logError } from '@/src/lib/error-logging'
 
@@ -26,7 +27,7 @@ export async function POST(request: Request) {
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     const rateLimitResponse = applyRateLimit(user.id)
@@ -36,11 +37,11 @@ export async function POST(request: Request) {
     const file = formData.get('file') as File | null
 
     if (!file) {
-      return NextResponse.json({ error: 'No file provided' }, { status: 400 })
+      return ApiResponse.badRequest('No file provided')
     }
 
     if (file.size > 10 * 1024 * 1024) {
-      return NextResponse.json({ error: 'File too large (max 10MB)' }, { status: 400 })
+      return ApiResponse.badRequest('File too large (max 10MB)')
     }
 
     // 파일 MIME 타입 결정
@@ -75,7 +76,7 @@ export async function POST(request: Request) {
     const jsonMatch = responseText.match(/\{[\s\S]*\}/)
 
     if (!jsonMatch) {
-      return NextResponse.json({ error: 'AI 응답 파싱 실패' }, { status: 500 })
+      return ApiResponse.internalError('AI 응답 파싱 실패')
     }
 
     const structured: StructuredIdea = JSON.parse(jsonMatch[0])
@@ -92,6 +93,7 @@ export async function POST(request: Request) {
       endpoint: '/api/pdf-structure',
       method: 'POST',
     })
-    return NextResponse.json({ error: err.message }, { status: 500 })
+    console.error('pdf-structure error:', err.message)
+    return ApiResponse.internalError()
   }
 }

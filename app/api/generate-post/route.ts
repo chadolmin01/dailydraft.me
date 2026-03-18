@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
+import { ApiResponse } from '@/src/lib/api-utils'
 import { cookies } from 'next/headers'
 import Anthropic from '@anthropic-ai/sdk'
 import { applyRateLimit, getClientIp } from '@/src/lib/rate-limit/api-rate-limiter'
@@ -58,7 +59,7 @@ export async function POST(request: NextRequest) {
     )
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     // Rate limit: prevent API credit abuse
@@ -68,21 +69,18 @@ export async function POST(request: NextRequest) {
     const body: RequestBody = await request.json()
 
     if (!body.role || !body.neededRoles || !body.field || !body.description) {
-      return NextResponse.json(
-        { error: 'Missing required fields: role, neededRoles, field, description' },
-        { status: 400 }
-      )
+      return ApiResponse.badRequest('Missing required fields: role, neededRoles, field, description')
     }
 
     // Input length validation
     if (body.description.length > 500) {
-      return NextResponse.json({ error: 'Description too long (max 500 chars)' }, { status: 400 })
+      return ApiResponse.badRequest('Description too long (max 500 chars)')
     }
     if (body.neededRoles.length > 10) {
-      return NextResponse.json({ error: 'Too many roles (max 10)' }, { status: 400 })
+      return ApiResponse.badRequest('Too many roles (max 10)')
     }
     if (body.field.length > 50 || body.role.length > 50) {
-      return NextResponse.json({ error: 'Field/role too long (max 50 chars)' }, { status: 400 })
+      return ApiResponse.badRequest('Field/role too long (max 50 chars)')
     }
 
     const userPrompt = `
@@ -148,6 +146,6 @@ ${body.painPoint ? `고민 포인트: ${body.painPoint}` : ''}
   } catch (error) {
     logApiError(error, request).catch(() => {})
 
-    return NextResponse.json({ error: '서버 오류가 발생했습니다' }, { status: 500 })
+    return ApiResponse.internalError()
   }
 }

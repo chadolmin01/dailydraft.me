@@ -1,12 +1,13 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { NextResponse } from 'next/server'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 // GET: 대화 상대 목록 (최근 메시지 기준 정렬)
 export async function GET() {
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+    if (!user) return ApiResponse.unauthorized()
 
     // 내가 보내거나 받은 모든 메시지 (삭제되지 않은 것만)
     const { data: messages, error } = await supabase
@@ -64,6 +65,6 @@ export async function GET() {
 
     return NextResponse.json({ conversations, profiles })
   } catch {
-    return NextResponse.json({ error: '서버 오류가 발생했습니다' }, { status: 500 })
+    return ApiResponse.internalError()
   }
 }

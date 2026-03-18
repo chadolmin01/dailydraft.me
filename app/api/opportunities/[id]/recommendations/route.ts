@@ -1,5 +1,6 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 // 이 Opportunity에 적합한 다른 사용자 추천
 export async function GET(
@@ -15,7 +16,7 @@ export async function GET(
       data: { user },
     } = await supabase.auth.getUser()
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     // Opportunity 정보 가져오기
@@ -26,10 +27,7 @@ export async function GET(
       .single()
 
     if (oppError || !opportunityData) {
-      return NextResponse.json(
-        { error: 'Opportunity not found' },
-        { status: 404 }
-      )
+      return ApiResponse.notFound('Opportunity not found')
     }
 
     const opportunity = opportunityData as {
@@ -63,10 +61,7 @@ export async function GET(
       .limit(50)
 
     if (profileError) {
-      return NextResponse.json(
-        { error: 'Failed to fetch profiles' },
-        { status: 500 }
-      )
+      return ApiResponse.internalError('Failed to fetch profiles')
     }
 
     interface ProfileData {
@@ -159,9 +154,6 @@ export async function GET(
 
     return NextResponse.json(scoredProfiles)
   } catch (_error) {
-    return NextResponse.json(
-      { error: '서버 오류가 발생했습니다' },
-      { status: 500 }
-    )
+    return ApiResponse.internalError()
   }
 }

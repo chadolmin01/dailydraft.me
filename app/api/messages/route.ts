@@ -1,12 +1,13 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 // GET: 쪽지 목록 (받은/보낸/전체)
 export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+    if (!user) return ApiResponse.unauthorized()
 
     const { searchParams } = new URL(request.url)
     const type = searchParams.get('type') || 'received' // received | sent | all
@@ -63,7 +64,7 @@ export async function GET(request: NextRequest) {
       unread_count: unreadCount || 0,
     })
   } catch {
-    return NextResponse.json({ error: '서버 오류가 발생했습니다' }, { status: 500 })
+    return ApiResponse.internalError()
   }
 }
 
@@ -72,22 +73,22 @@ export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+    if (!user) return ApiResponse.unauthorized()
 
     const body = await request.json()
     const { receiver_id, content } = body as { receiver_id: string; content: string }
 
     if (!receiver_id || !content?.trim()) {
-      return NextResponse.json({ error: '받는 사람과 내용을 입력해주세요' }, { status: 400 })
+      return ApiResponse.badRequest('받는 사람과 내용을 입력해주세요')
     }
 
     if (receiver_id === user.id) {
-      return NextResponse.json({ error: '자신에게 쪽지를 보낼 수 없습니다' }, { status: 400 })
+      return ApiResponse.badRequest('자신에게 쪽지를 보낼 수 없습니다')
     }
 
     const trimmed = content.trim()
     if (trimmed.length > 2000) {
-      return NextResponse.json({ error: '쪽지는 2000자까지 가능합니다' }, { status: 400 })
+      return ApiResponse.badRequest('쪽지는 2000자까지 가능합니다')
     }
 
     // Rate limit: 같은 상대에게 1분 내 5개 제한
@@ -100,7 +101,7 @@ export async function POST(request: NextRequest) {
       .gte('created_at', oneMinAgo)
 
     if ((recentCount || 0) >= 5) {
-      return NextResponse.json({ error: '잠시 후 다시 시도해주세요' }, { status: 429 })
+      return ApiResponse.rateLimited('잠시 후 다시 시도해주세요')
     }
 
     // 수신자 존재 확인
@@ -111,7 +112,7 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (!receiverProfile) {
-      return NextResponse.json({ error: '존재하지 않는 사용자입니다' }, { status: 404 })
+      return ApiResponse.notFound('존재하지 않는 사용자입니다')
     }
 
     // 쪽지 생성
@@ -148,6 +149,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ message }, { status: 201 })
   } catch {
-    return NextResponse.json({ error: '서버 오류가 발생했습니다' }, { status: 500 })
+    return ApiResponse.internalError()
   }
 }
