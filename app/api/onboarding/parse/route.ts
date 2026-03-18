@@ -2,13 +2,14 @@ import { chatModel } from '@/src/lib/ai/gemini-client'
 import { createClient } from '@/src/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 export async function POST(request: Request) {
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     const rateLimitResponse = await checkAIRateLimit(user.id, getClientIp(request))
@@ -17,7 +18,7 @@ export async function POST(request: Request) {
     const { text, type } = await request.json()
 
     if (!text || typeof text !== 'string' || !['skills', 'interests'].includes(type)) {
-      return NextResponse.json({ error: 'Invalid input' }, { status: 400 })
+      return ApiResponse.badRequest('Invalid input')
     }
 
     const trimmed = text.trim().slice(0, 500) // limit input

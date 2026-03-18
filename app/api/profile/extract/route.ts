@@ -3,6 +3,8 @@ import { createClient } from '@/src/lib/supabase/server'
 import { chatModel } from '@/src/lib/ai/gemini-client'
 import { logError } from '@/src/lib/error-logging'
 import type { ExtractedProfile } from '@/src/types/extracted-profile'
+import type { Json } from '@/src/types/database'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 const EXTRACTION_PROMPT = `당신은 대화 내용에서 사용자의 프로필 정보를 추출하는 전문가입니다.
 
@@ -62,7 +64,7 @@ export async function POST(request: Request) {
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     // 동의 여부 확인
@@ -73,27 +75,18 @@ export async function POST(request: Request) {
       .single()
 
     if (!profile?.data_consent) {
-      return NextResponse.json(
-        { error: '맞춤형 추천 동의가 필요합니다.' },
-        { status: 403 }
-      )
+      return ApiResponse.forbidden('맞춤형 추천 동의가 필요합니다.')
     }
 
     // Rate limit 확인
     if (!checkExtractionRateLimit(user.id)) {
-      return NextResponse.json(
-        { error: '일일 추출 한도(10회)를 초과했습니다.' },
-        { status: 429 }
-      )
+      return ApiResponse.rateLimited('일일 추출 한도(10회)를 초과했습니다.')
     }
 
     const { conversationHistory } = await request.json()
 
     if (!conversationHistory || !Array.isArray(conversationHistory)) {
-      return NextResponse.json(
-        { error: 'conversationHistory 필드가 필요합니다.' },
-        { status: 400 }
-      )
+      return ApiResponse.badRequest('conversationHistory 필드가 필요합니다.')
     }
 
     // 최소 메시지 수 확인
@@ -101,10 +94,7 @@ export async function POST(request: Request) {
       (msg: { role: string }) => msg.role === 'user'
     )
     if (userMessages.length < 3) {
-      return NextResponse.json(
-        { error: '프로필 추출에 최소 3개 이상의 메시지가 필요합니다.' },
-        { status: 400 }
-      )
+      return ApiResponse.badRequest('프로필 추출에 최소 3개 이상의 메시지가 필요합니다.')
     }
 
     // 대화 내용 포맷팅
@@ -137,10 +127,7 @@ export async function POST(request: Request) {
     try {
       extractedData = JSON.parse(responseText)
     } catch {
-      return NextResponse.json(
-        { error: 'AI 응답을 파싱할 수 없습니다.' },
-        { status: 500 }
-      )
+      return ApiResponse.internalError()
     }
 
     // 신뢰도 계산 (채워진 필드 비율)
@@ -196,17 +183,15 @@ export async function POST(request: Request) {
     const { error: updateError } = await supabase
       .from('profiles')
       .update({
-        extracted_profile: extractedProfile,
+        extracted_profile: extractedProfile as unknown as Json,
         extraction_confidence: confidence,
         last_extraction_at: new Date().toISOString(),
       })
       .eq('user_id', user.id)
 
     if (updateError) {
-      return NextResponse.json(
-        { error: '프로필 저장에 실패했습니다.' },
-        { status: 500 }
-      )
+      console.error('Profile extract update error:', updateError.message)
+      return ApiResponse.internalError()
     }
 
     return NextResponse.json({
@@ -225,6 +210,6 @@ export async function POST(request: Request) {
       endpoint: '/api/profile/extract',
       method: 'POST',
     })
-    return NextResponse.json({ error: err.message }, { status: 500 })
+    return ApiResponse.internalError()
   }
 }

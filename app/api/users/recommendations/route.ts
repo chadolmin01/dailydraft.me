@@ -3,6 +3,7 @@ import { createClient } from '@/src/lib/supabase/server'
 import { rankUserMatches, generateAIMatchReasons } from '@/src/lib/ai/user-matcher'
 import type { Profile } from '@/src/types/profile'
 import type { ProfileAnalysisResult } from '@/src/types/profile-analysis'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 export async function GET() {
   try {
@@ -13,7 +14,7 @@ export async function GET() {
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     // Get current user's profile
@@ -24,12 +25,12 @@ export async function GET() {
       .single()
 
     if (profileError || !profileData) {
-      return NextResponse.json({ error: '프로필을 찾을 수 없습니다' }, { status: 404 })
+      return ApiResponse.notFound('프로필을 찾을 수 없습니다')
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const myProfile = profileData as any as Profile & {
-      vision_embedding?: number[]
+      vision_embedding?: string
       profile_analysis?: { founder_type?: ProfileAnalysisResult['founder_type'] } | null
     }
 
@@ -42,8 +43,7 @@ export async function GET() {
 
     // Try pgvector path if user has embedding
     if (myProfile.vision_embedding) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: similarUsers, error: rpcError } = await (supabase as any).rpc('match_users', {
+      const { data: similarUsers, error: rpcError } = await supabase.rpc('match_users', {
         query_embedding: myProfile.vision_embedding,
         match_threshold: 0.3,
         match_count: 50,
@@ -67,7 +67,7 @@ export async function GET() {
         .limit(50)
 
       if (fallbackError) {
-        return NextResponse.json({ error: '추천 사용자를 불러오는데 실패했습니다' }, { status: 500 })
+        return ApiResponse.internalError()
       }
 
       candidates = fallbackUsers || []
@@ -141,9 +141,7 @@ export async function GET() {
 
     return NextResponse.json(results)
   } catch (error) {
-    return NextResponse.json(
-      { error: '사용자 추천 조회 중 오류가 발생했습니다' },
-      { status: 500 }
-    )
+    console.error('User recommendations error:', error)
+    return ApiResponse.internalError()
   }
 }

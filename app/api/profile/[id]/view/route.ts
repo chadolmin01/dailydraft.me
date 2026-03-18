@@ -2,6 +2,7 @@ import { createClient } from '@/src/lib/supabase/server'
 import { notifyProfileViewMilestone } from '@/src/lib/notifications/create-notification'
 import { NextRequest, NextResponse } from 'next/server'
 import { checkViewRateLimit } from '@/src/lib/rate-limit/redis-rate-limiter'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 // IP 기반 중복 조회 방지 (메모리 캐시, 15분 TTL)
 const recentViews = new Map<string, number>()
@@ -53,7 +54,7 @@ export async function POST(
       .single()
 
     if (fetchError) {
-      return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
+      return ApiResponse.notFound('Profile not found')
     }
 
     const typedProfile = profile as { profile_views: number | null; user_id: string }
@@ -65,7 +66,7 @@ export async function POST(
       .eq('id', id)
 
     if (updateError) {
-      return NextResponse.json({ error: 'Failed to update' }, { status: 500 })
+      return ApiResponse.internalError()
     }
 
     // 10단위 마일스톤 알림 (10, 20, 30, ...)
@@ -76,7 +77,7 @@ export async function POST(
     recentViews.set(viewKey, Date.now())
     return NextResponse.json({ success: true, profile_views: newViews })
   } catch {
-    return NextResponse.json({ error: '서버 오류가 발생했습니다' }, { status: 500 })
+    return ApiResponse.internalError()
   }
 }
 
@@ -96,13 +97,13 @@ export async function GET(
       .single()
 
     if (error) {
-      return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
+      return ApiResponse.notFound('Profile not found')
     }
 
     return NextResponse.json({
       profile_views: (profile as { profile_views: number | null }).profile_views || 0,
     })
   } catch {
-    return NextResponse.json({ error: '서버 오류가 발생했습니다' }, { status: 500 })
+    return ApiResponse.internalError()
   }
 }
