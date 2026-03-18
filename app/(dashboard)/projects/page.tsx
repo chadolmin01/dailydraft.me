@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { Card } from '@/components/ui/Card'
 import { PageContainer } from '@/components/ui/PageContainer'
@@ -21,7 +22,11 @@ import {
 } from 'lucide-react'
 import { SkeletonGrid } from '@/components/ui/Skeleton'
 import { useOpportunities, calculateDaysLeft, type OpportunityWithCreator } from '@/src/hooks/useOpportunities'
-import { ProjectDetailModal } from '@/components/ProjectDetailModal'
+
+const ProjectDetailModal = dynamic(
+  () => import('@/components/ProjectDetailModal').then(m => ({ default: m.ProjectDetailModal })),
+  { ssr: false }
+)
 
 export default function ProjectsPage() {
   const [selectedCategory, setSelectedCategory] = useState('all')
