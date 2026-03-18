@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 interface OpportunityData {
   id: string
@@ -27,7 +28,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       .single()
 
     if (error) {
-      return NextResponse.json({ error: 'Opportunity not found' }, { status: 404 })
+      return ApiResponse.notFound('Opportunity not found')
     }
 
     const data = oppData as OpportunityData
@@ -59,8 +60,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
     // Increment views count (only if not owner)
     if (!isOwner) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (supabase.from('opportunities') as any)
+      await supabase.from('opportunities')
         .update({ views_count: (data.views_count || 0) + 1 })
         .eq('id', id)
     }
@@ -72,10 +72,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       isOwner,
     })
   } catch (error) {
-    return NextResponse.json(
-      { error: '서버 오류가 발생했습니다' },
-      { status: 500 }
-    )
+    console.error('Opportunity route error:', error)
+    return ApiResponse.internalError()
   }
 }
 
@@ -90,7 +88,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     // Check if user is the creator
@@ -103,7 +101,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     const opportunity = opportunityData as { creator_id: string } | null
 
     if (!opportunity || opportunity.creator_id !== user.id) {
-      return NextResponse.json({ error: '접근 권한이 없습니다' }, { status: 403 })
+      return ApiResponse.forbidden()
     }
 
     const body = await request.json()
@@ -136,29 +134,23 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     }
 
     if (Object.keys(updateData).length === 0) {
-      return NextResponse.json(
-        { error: 'No valid fields to update' },
-        { status: 400 }
-      )
+      return ApiResponse.badRequest('No valid fields to update')
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (supabase.from('opportunities') as any)
+    const { data, error } = await supabase.from('opportunities')
       .update(updateData)
       .eq('id', id)
       .select()
       .single()
 
     if (error) {
-      return NextResponse.json({ error: 'Operation failed' }, { status: 500 })
+      return ApiResponse.internalError()
     }
 
     return NextResponse.json(data)
   } catch (error) {
-    return NextResponse.json(
-      { error: '서버 오류가 발생했습니다' },
-      { status: 500 }
-    )
+    console.error('Opportunity route error:', error)
+    return ApiResponse.internalError()
   }
 }
 
@@ -173,7 +165,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     // Check if user is the creator
@@ -186,21 +178,18 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
     const opportunity = oppData as { creator_id: string } | null
 
     if (!opportunity || opportunity.creator_id !== user.id) {
-      return NextResponse.json({ error: '접근 권한이 없습니다' }, { status: 403 })
+      return ApiResponse.forbidden()
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (supabase.from('opportunities') as any).delete().eq('id', id)
+    const { error } = await supabase.from('opportunities').delete().eq('id', id)
 
     if (error) {
-      return NextResponse.json({ error: 'Operation failed' }, { status: 500 })
+      return ApiResponse.internalError()
     }
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    return NextResponse.json(
-      { error: '서버 오류가 발생했습니다' },
-      { status: 500 }
-    )
+    console.error('Opportunity route error:', error)
+    return ApiResponse.internalError()
   }
 }
