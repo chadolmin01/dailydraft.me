@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
+import { ApiResponse } from '@/src/lib/api-utils'
 import {
   notifyApplicationAccepted,
   notifyApplicationRejected,
@@ -20,14 +21,14 @@ export async function PATCH(
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     const body = await request.json()
     const { status } = body
 
     if (!status || !['accepted', 'rejected'].includes(status)) {
-      return NextResponse.json({ error: '올바르지 않은 상태값입니다' }, { status: 400 })
+      return ApiResponse.badRequest('올바르지 않은 상태값입니다')
     }
 
     // Get application with opportunity and applicant info
@@ -62,22 +63,22 @@ export async function PATCH(
     } | null
 
     if (!application) {
-      return NextResponse.json({ error: '지원서를 찾을 수 없습니다' }, { status: 404 })
+      return ApiResponse.notFound('지원서를 찾을 수 없습니다')
     }
 
     // Check if user is the opportunity creator
     if (application.opportunities?.creator_id !== user.id) {
-      return NextResponse.json({ error: '접근 권한이 없습니다' }, { status: 403 })
+      return ApiResponse.forbidden()
     }
 
     // Update application status
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error: updateError } = await (supabase.from('applications') as any)
+    const { error: updateError } = await supabase.from('applications')
       .update({ status })
       .eq('id', id)
 
     if (updateError) {
-      return NextResponse.json({ error: updateError.message }, { status: 500 })
+      console.error('Application update error:', updateError.message)
+      return ApiResponse.internalError()
     }
 
     const opportunityTitle = application.opportunities?.title || '프로젝트'
@@ -85,8 +86,7 @@ export async function PATCH(
 
     // If accepted, create connection and send notifications
     if (status === 'accepted') {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error: connectionError } = await (supabase.from('accepted_connections') as any)
+      const { error: connectionError } = await supabase.from('accepted_connections')
         .insert({
           application_id: id,
           opportunity_creator_id: user.id,
@@ -123,9 +123,7 @@ export async function PATCH(
 
     return NextResponse.json({ success: true, status })
   } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
-    )
+    console.error('Application error:', error)
+    return ApiResponse.internalError()
   }
 }

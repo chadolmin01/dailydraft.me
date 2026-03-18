@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 // GET: 내 북마크 목록
 export async function GET() {
@@ -8,7 +9,7 @@ export async function GET() {
 
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     const { data: bookmarks, error } = await supabase
@@ -24,12 +25,12 @@ export async function GET() {
       .order('created_at', { ascending: false })
 
     if (error) {
-      return NextResponse.json({ error: 'Operation failed' }, { status: 500 })
+      return ApiResponse.internalError()
     }
 
     return NextResponse.json(bookmarks)
   } catch (_err) {
-    return NextResponse.json({ error: '서버 오류가 발생했습니다' }, { status: 500 })
+    return ApiResponse.internalError()
   }
 }
 
@@ -40,14 +41,14 @@ export async function POST(request: NextRequest) {
 
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     const body = await request.json()
     const { event_id, notify_before_days = 3 } = body
 
     if (!event_id) {
-      return NextResponse.json({ error: 'event_id is required' }, { status: 400 })
+      return ApiResponse.badRequest('event_id is required')
     }
 
     // 이벤트 존재 확인
@@ -58,12 +59,11 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (!event) {
-      return NextResponse.json({ error: 'Event not found' }, { status: 404 })
+      return ApiResponse.notFound('Event not found')
     }
 
     // 북마크 추가 (upsert)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: bookmark, error } = await (supabase.from('event_bookmarks') as any)
+    const { data: bookmark, error } = await supabase.from('event_bookmarks')
       .upsert({
         user_id: user.id,
         event_id,
@@ -75,11 +75,11 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (error) {
-      return NextResponse.json({ error: 'Operation failed' }, { status: 500 })
+      return ApiResponse.internalError()
     }
 
     return NextResponse.json(bookmark, { status: 201 })
   } catch (_err) {
-    return NextResponse.json({ error: '서버 오류가 발생했습니다' }, { status: 500 })
+    return ApiResponse.internalError()
   }
 }
