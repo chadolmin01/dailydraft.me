@@ -55,6 +55,5 @@ main/src/hooks/useProfileAnalysis.ts
 main/src/hooks/useStartupIdeas.ts
 main/src/lib/ai/profile-analyzer.ts
 main/src/lib/schemas/
-main/src/types/profile-analysis.ts
 main/app/api/profile/analyze/
 main/app/(dashboard)/design/reference.tsx
