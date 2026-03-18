@@ -1,5 +1,6 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 // PATCH: Update an announcement
 export async function PATCH(
@@ -15,7 +16,7 @@ export async function PATCH(
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     // Verify user is the opportunity creator
@@ -25,8 +26,8 @@ export async function PATCH(
       .eq('id', id)
       .single()
 
-    if (!opportunity || (opportunity as any).creator_id !== user.id) {
-      return NextResponse.json({ error: '접근 권한이 없습니다' }, { status: 403 })
+    if (!opportunity || opportunity.creator_id !== user.id) {
+      return ApiResponse.forbidden()
     }
 
     const body = await request.json()
@@ -38,11 +39,10 @@ export async function PATCH(
     if (is_pinned !== undefined) updateData.is_pinned = is_pinned
 
     if (Object.keys(updateData).length === 0) {
-      return NextResponse.json({ error: 'No fields to update' }, { status: 400 })
+      return ApiResponse.badRequest('No fields to update')
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('team_announcements')
       .update(updateData)
       .eq('id', announcementId)
@@ -51,12 +51,12 @@ export async function PATCH(
       .single()
 
     if (error) {
-      return NextResponse.json({ error: 'Operation failed' }, { status: 500 })
+      return ApiResponse.internalError()
     }
 
     return NextResponse.json(data)
   } catch (_error) {
-    return NextResponse.json({ error: '서버 오류가 발생했습니다' }, { status: 500 })
+    return ApiResponse.internalError()
   }
 }
 
@@ -74,7 +74,7 @@ export async function DELETE(
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     // Verify user is the opportunity creator
@@ -84,23 +84,22 @@ export async function DELETE(
       .eq('id', id)
       .single()
 
-    if (!opportunity || (opportunity as any).creator_id !== user.id) {
-      return NextResponse.json({ error: '접근 권한이 없습니다' }, { status: 403 })
+    if (!opportunity || opportunity.creator_id !== user.id) {
+      return ApiResponse.forbidden()
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (supabase as any)
+    const { error } = await supabase
       .from('team_announcements')
       .delete()
       .eq('id', announcementId)
       .eq('opportunity_id', id)
 
     if (error) {
-      return NextResponse.json({ error: 'Operation failed' }, { status: 500 })
+      return ApiResponse.internalError()
     }
 
     return NextResponse.json({ success: true })
   } catch (_error) {
-    return NextResponse.json({ error: '서버 오류가 발생했습니다' }, { status: 500 })
+    return ApiResponse.internalError()
   }
 }

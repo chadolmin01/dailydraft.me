@@ -1,5 +1,6 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 // GET: Get all checklists for an opportunity
 export async function GET(
@@ -15,7 +16,7 @@ export async function GET(
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     // Verify user is the opportunity creator or team member
@@ -26,25 +27,24 @@ export async function GET(
       .single()
 
     if (!opportunity) {
-      return NextResponse.json({ error: 'Opportunity not found' }, { status: 404 })
+      return ApiResponse.notFound('Opportunity not found')
     }
 
     // Verify user is the creator or a team member
-    const isCreator = (opportunity as any).creator_id === user.id
+    const isCreator = opportunity.creator_id === user.id
     if (!isCreator) {
-      const { data: membership } = await (supabase.from('accepted_connections') as any)
+      const { data: membership } = await supabase.from('accepted_connections')
         .select('id')
         .eq('opportunity_id', id)
         .eq('applicant_id', user.id)
         .limit(1)
         .single()
       if (!membership) {
-        return NextResponse.json({ error: '접근 권한이 없습니다' }, { status: 403 })
+        return ApiResponse.forbidden()
       }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: checklists, error } = await (supabase as any)
+    const { data: checklists, error } = await supabase
       .from('team_checklists')
       .select('*')
       .eq('opportunity_id', id)
@@ -52,7 +52,7 @@ export async function GET(
       .order('created_at', { ascending: true })
 
     if (error) {
-      return NextResponse.json({ error: 'Operation failed' }, { status: 500 })
+      return ApiResponse.internalError()
     }
 
     const completed = (checklists || []).filter((c: any) => c.is_completed).length
@@ -67,7 +67,7 @@ export async function GET(
       },
     })
   } catch (_error) {
-    return NextResponse.json({ error: '서버 오류가 발생했습니다' }, { status: 500 })
+    return ApiResponse.internalError()
   }
 }
 
@@ -85,7 +85,7 @@ export async function POST(
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     // Verify user is the opportunity creator
@@ -95,20 +95,19 @@ export async function POST(
       .eq('id', id)
       .single()
 
-    if (!opportunity || (opportunity as any).creator_id !== user.id) {
-      return NextResponse.json({ error: '접근 권한이 없습니다' }, { status: 403 })
+    if (!opportunity || opportunity.creator_id !== user.id) {
+      return ApiResponse.forbidden()
     }
 
     const body = await request.json()
     const { title, description } = body
 
     if (!title) {
-      return NextResponse.json({ error: 'Title is required' }, { status: 400 })
+      return ApiResponse.badRequest('Title is required')
     }
 
     // Get max sort order
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: maxOrder } = await (supabase as any)
+    const { data: maxOrder } = await supabase
       .from('team_checklists')
       .select('sort_order')
       .eq('opportunity_id', id)
@@ -116,10 +115,9 @@ export async function POST(
       .limit(1)
       .single()
 
-    const sortOrder = maxOrder ? (maxOrder as any).sort_order + 1 : 0
+    const sortOrder = maxOrder ? maxOrder.sort_order + 1 : 0
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('team_checklists')
       .insert({
         opportunity_id: id,
@@ -131,11 +129,11 @@ export async function POST(
       .single()
 
     if (error) {
-      return NextResponse.json({ error: 'Operation failed' }, { status: 500 })
+      return ApiResponse.internalError()
     }
 
     return NextResponse.json(data, { status: 201 })
   } catch (_error) {
-    return NextResponse.json({ error: '서버 오류가 발생했습니다' }, { status: 500 })
+    return ApiResponse.internalError()
   }
 }

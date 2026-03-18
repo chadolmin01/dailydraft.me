@@ -1,5 +1,6 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 interface TeamMember {
   id: string
@@ -35,7 +36,7 @@ export async function GET(
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     // Verify user is the opportunity creator
@@ -46,11 +47,11 @@ export async function GET(
       .single()
 
     if (!opportunity) {
-      return NextResponse.json({ error: 'Opportunity not found' }, { status: 404 })
+      return ApiResponse.notFound('Opportunity not found')
     }
 
-    if ((opportunity as { creator_id: string }).creator_id !== user.id) {
-      return NextResponse.json({ error: '접근 권한이 없습니다' }, { status: 403 })
+    if (opportunity.creator_id !== user.id) {
+      return ApiResponse.forbidden()
     }
 
     // Get accepted team members
@@ -75,9 +76,9 @@ export async function GET(
     if (!connections || connections.length === 0) {
       return NextResponse.json({
         opportunity: {
-          id: (opportunity as any).id,
-          title: (opportunity as any).title,
-          status: (opportunity as any).status,
+          id: opportunity.id,
+          title: opportunity.title,
+          status: opportunity.status,
         },
         members: [],
         stats: {
@@ -121,14 +122,14 @@ export async function GET(
 
     return NextResponse.json({
       opportunity: {
-        id: (opportunity as any).id,
-        title: (opportunity as any).title,
-        status: (opportunity as any).status,
+        id: opportunity.id,
+        title: opportunity.title,
+        status: opportunity.status,
       },
       members,
       stats,
     })
   } catch (_error) {
-    return NextResponse.json({ error: '서버 오류가 발생했습니다' }, { status: 500 })
+    return ApiResponse.internalError()
   }
 }
