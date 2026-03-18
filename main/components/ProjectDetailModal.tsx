@@ -91,6 +91,13 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
     setShowTypeSelector(false)
   }, [projectId])
 
+  // 조회수 트래킹
+  useEffect(() => {
+    if (projectId) {
+      fetch(`/api/opportunities/${projectId}/view`, { method: 'POST' }).catch(() => {})
+    }
+  }, [projectId])
+
   useEffect(() => {
     if (projectId) {
       document.body.style.overflow = 'hidden'

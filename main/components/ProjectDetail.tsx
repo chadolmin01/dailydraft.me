@@ -120,6 +120,13 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
   const { data: realUpdates = [] } = useProjectUpdates(id)
 
+  // 조회수 트래킹
+  useEffect(() => {
+    if (id) {
+      fetch(`/api/opportunities/${id}/view`, { method: 'POST' }).catch(() => {})
+    }
+  }, [id])
+
   useEffect(() => {
     let cancelled = false
     const fetchData = async () => {
