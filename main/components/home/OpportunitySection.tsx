@@ -1,11 +1,11 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Zap, ArrowRight, MessageCircle, Heart, Loader2, Plus,
 } from 'lucide-react'
-import { supabase } from '@/src/lib/supabase/client'
+import { useOpportunities } from '@/src/hooks/useOpportunities'
 import { ProjectDetailModal } from '@/components/ProjectDetailModal'
 
 interface DisplayProject {
@@ -30,41 +30,17 @@ function seededNumber(id: string, min: number, max: number): number {
 // --- Main Component ---
 export const OpportunitySection: React.FC = () => {
   const router = useRouter()
-  const [projects, setProjects] = useState<DisplayProject[]>([])
-  const [loading, setLoading] = useState(true)
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
 
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('opportunities')
-          .select('id, title, description, needed_roles, interest_tags')
-          .eq('status', 'active')
-          .order('created_at', { ascending: false })
-          .limit(3)
-
-        if (error) throw error
-
-        const oppProjects: DisplayProject[] = (data || []).map((opp) => ({
-          id: opp.id,
-          title: opp.title || '',
-          description: opp.description || '',
-          needed_roles: opp.needed_roles || [],
-          interest_tags: opp.interest_tags || [],
-          isReal: true,
-        }))
-
-        setProjects(oppProjects)
-      } catch (err) {
-        console.warn('Failed to fetch projects, using mock data')
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchProjects()
-  }, [])
+  const { data: oppData, isLoading: loading } = useOpportunities({ limit: 3 })
+  const projects: DisplayProject[] = (oppData?.items ?? []).map((opp) => ({
+    id: opp.id,
+    title: opp.title || '',
+    description: opp.description || '',
+    needed_roles: opp.needed_roles || [],
+    interest_tags: opp.interest_tags || [],
+    isReal: true,
+  }))
 
   const mockProjects: DisplayProject[] = [
     {
