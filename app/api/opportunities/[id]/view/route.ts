@@ -1,5 +1,6 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { checkViewRateLimit } from '@/src/lib/rate-limit/redis-rate-limiter'
 
 // IP 기반 중복 조회 방지 (메모리 캐시, 15분 TTL)
 const recentViews = new Map<string, number>()
@@ -30,6 +31,10 @@ export async function POST(
   try {
     const { id } = await params
     const ip = getClientIP(request)
+
+    const rateLimitResponse = await checkViewRateLimit(ip)
+    if (rateLimitResponse) return rateLimitResponse
+
     const viewKey = `${ip}:opp:${id}`
 
     // 같은 IP에서 15분 내 중복 조회 무시

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { sendChatMessage } from '@/src/lib/ai/chat-manager'
 import type { ChatMessage } from '@/src/types/profile'
+import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
 
 export async function POST(request: Request) {
   try {
@@ -15,6 +16,9 @@ export async function POST(request: Request) {
     if (!user) {
       return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
     }
+
+    const rateLimitResponse = await checkAIRateLimit(user.id, getClientIp(request))
+    if (rateLimitResponse) return rateLimitResponse
 
     const { message, conversationHistory } = await request.json()
 
