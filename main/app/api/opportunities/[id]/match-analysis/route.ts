@@ -264,10 +264,10 @@ export async function GET(
         role: matchResult.roleMatch,
       },
       weights: {
-        skill: 40,
-        vision: 30,
+        skill: 35,
+        vision: 15,
         practical: 20,
-        role: 10,
+        role: 30,
       },
       skillAnalysis,
       missingSkills,

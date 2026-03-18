@@ -23,7 +23,7 @@ const steps = [
 
 export const HowItWorks: React.FC = () => {
   return (
-    <section id="how-it-works" className="w-full py-20 px-6 md:px-10 bg-surface-sunken">
+    <section id="how-it-works" className="w-full py-20 px-6 md:px-10 bg-surface-card">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-12">
           <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-3 block">
@@ -46,7 +46,7 @@ export const HowItWorks: React.FC = () => {
               </div>
 
               {/* Icon */}
-              <div className="w-12 h-12 bg-surface-sunken border border-border flex items-center justify-center mb-4">
+              <div className="w-12 h-12 bg-surface-card border border-border flex items-center justify-center mb-4">
                 <step.icon size={22} className="text-txt-secondary" />
               </div>
 

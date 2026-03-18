@@ -100,8 +100,7 @@ export async function POST(request: NextRequest) {
     }
 
     // upsert: 없으면 생성, 있으면 업데이트
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (supabase.from('notification_settings') as any).upsert(
+    const { data, error } = await supabase.from('notification_settings').upsert(
         {
           user_id: user.id,
           ...updateData,

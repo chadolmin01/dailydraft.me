@@ -1,4 +1,5 @@
 import { createClient } from '@/src/lib/supabase/server'
+import { notifyProfileViewMilestone } from '@/src/lib/notifications/create-notification'
 import { NextRequest, NextResponse } from 'next/server'
 
 // IP 기반 중복 조회 방지 (메모리 캐시, 15분 TTL)
@@ -42,7 +43,7 @@ export async function POST(
     // 현재 조회수 가져와서 +1
     const { data: profile, error: fetchError } = await supabase
       .from('profiles')
-      .select('profile_views')
+      .select('profile_views, user_id')
       .eq('id', id)
       .single()
 
@@ -50,18 +51,25 @@ export async function POST(
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
     }
 
-    const currentViews = (profile as { profile_views: number | null }).profile_views || 0
+    const typedProfile = profile as { profile_views: number | null; user_id: string }
+    const currentViews = typedProfile.profile_views || 0
+    const newViews = currentViews + 1
     const { error: updateError } = await supabase
       .from('profiles')
-      .update({ profile_views: currentViews + 1 } as never)
+      .update({ profile_views: newViews } as never)
       .eq('id', id)
 
     if (updateError) {
       return NextResponse.json({ error: 'Failed to update' }, { status: 500 })
     }
 
+    // 10단위 마일스톤 알림 (10, 20, 30, ...)
+    if (newViews % 10 === 0) {
+      notifyProfileViewMilestone(typedProfile.user_id, newViews).catch(() => {})
+    }
+
     recentViews.set(viewKey, Date.now())
-    return NextResponse.json({ success: true, profile_views: currentViews + 1 })
+    return NextResponse.json({ success: true, profile_views: newViews })
   } catch {
     return NextResponse.json({ error: '서버 오류가 발생했습니다' }, { status: 500 })
   }

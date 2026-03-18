@@ -107,8 +107,7 @@ export async function POST(request: Request) {
       })
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (supabase.from('profiles') as any)
+    await supabase.from('profiles')
       .update(updateData)
       .eq('user_id', user.id)
 

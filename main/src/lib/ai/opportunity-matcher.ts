@@ -268,10 +268,10 @@ export function calculateMatchScore(
 
   // Weighted score
   const finalScore =
-    skillMatch * 0.4 +
-    visionSimilarity * 0.3 +
+    skillMatch * 0.35 +
+    visionSimilarity * 0.15 +
     practicalCompatibility * 0.2 +
-    roleMatch * 0.1
+    roleMatch * 0.3
 
   const reason = generateMatchReason(profile, opportunity, {
     skillMatch,

@@ -2,11 +2,12 @@
 
 import React from 'react'
 import { Filter, X, ChevronRight, Check } from 'lucide-react'
-import type { CategoryItem, TrendingTag } from './types'
+import type { CategoryItem, TrendingTag, ActiveTab } from './types'
 
 interface ExploreMobileFilterProps {
   isOpen: boolean
   onToggle: () => void
+  activeTab: ActiveTab
   categories: CategoryItem[]
   selectedCategory: string
   onCategoryChange: (id: string) => void
@@ -19,6 +20,7 @@ interface ExploreMobileFilterProps {
 export function ExploreMobileFilter({
   isOpen,
   onToggle,
+  activeTab,
   categories,
   selectedCategory,
   onCategoryChange,
@@ -43,7 +45,7 @@ export function ExploreMobileFilter({
         <div className="mt-2 bg-surface-card border border-border-strong p-4 space-y-4 animate-in slide-in-from-top duration-200 shadow-sharp">
           {/* 카테고리 */}
           <div>
-            <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-2">CATEGORY</h3>
+            <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-2">{activeTab === 'projects' ? 'CATEGORY' : 'ROLE'}</h3>
             <div className="flex flex-wrap gap-1.5">
               {categories.map((cat) => (
                 <button
@@ -63,7 +65,7 @@ export function ExploreMobileFilter({
           </div>
           {/* 트렌딩 태그 */}
           <div>
-            <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-2">TRENDING</h3>
+            <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-2">{activeTab === 'projects' ? 'TRENDING' : 'POPULAR SKILLS'}</h3>
             <div className="flex flex-wrap gap-1.5">
               {trendingTags.map((item) => (
                 <button
@@ -77,17 +79,19 @@ export function ExploreMobileFilter({
             </div>
           </div>
           {/* 필터 */}
-          <div className="pt-3 border-t border-dashed border-border">
-            <label className="flex items-center gap-2.5 text-sm text-txt-secondary cursor-pointer">
-              <div className={`w-4 h-4 border flex items-center justify-center transition-all ${
-                recruitingOnly ? 'bg-indicator-online border-indicator-online' : 'border-border-strong'
-              }`}>
-                {recruitingOnly && <Check size={10} className="text-white" strokeWidth={3} />}
-              </div>
-              <input type="checkbox" className="sr-only" checked={recruitingOnly} onChange={(e) => onRecruitingOnlyChange(e.target.checked)} />
-              모집 중만 보기
-            </label>
-          </div>
+          {activeTab === 'projects' && (
+            <div className="pt-3 border-t border-dashed border-border">
+              <label className="flex items-center gap-2.5 text-sm text-txt-secondary cursor-pointer">
+                <div className={`w-4 h-4 border flex items-center justify-center transition-all ${
+                  recruitingOnly ? 'bg-indicator-online border-indicator-online' : 'border-border-strong'
+                }`}>
+                  {recruitingOnly && <Check size={10} className="text-white" strokeWidth={3} />}
+                </div>
+                <input type="checkbox" className="sr-only" checked={recruitingOnly} onChange={(e) => onRecruitingOnlyChange(e.target.checked)} />
+                모집 중만 보기
+              </label>
+            </div>
+          )}
         </div>
       )}
     </div>

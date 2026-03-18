@@ -23,8 +23,7 @@ export async function POST(request: Request) {
       return ApiResponse.badRequest('Invalid category')
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (supabase.from('support_tickets') as any).insert({
+    const { error } = await supabase.from('support_tickets').insert({
       user_id: user.id,
       category,
       title: title.trim().slice(0, 200),
@@ -50,8 +49,7 @@ export async function GET(request: Request) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return ApiResponse.unauthorized()
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (supabase.from('support_tickets') as any)
+    const { data, error } = await supabase.from('support_tickets')
       .select('id, category, title, status, created_at')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })

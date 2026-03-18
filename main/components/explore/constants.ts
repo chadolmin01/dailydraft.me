@@ -1,4 +1,4 @@
-import { LayoutGrid, Users, Sparkles, Zap, Star, Flame, Clock, FolderOpen, User, Code2 } from 'lucide-react'
+import { LayoutGrid, Users, Sparkles, Zap, Star, Flame, Clock, FolderOpen, User, Code2, TrendingUp, Palette, ClipboardList, Megaphone } from 'lucide-react'
 
 export const CATEGORY_ICONS: Record<string, React.ElementType> = {
   all: LayoutGrid,
@@ -9,15 +9,24 @@ export const CATEGORY_ICONS: Record<string, React.ElementType> = {
   Social: Users,
 }
 
+export const PEOPLE_CATEGORY_ICONS: Record<string, React.ElementType> = {
+  all: Users,
+  developer: Code2,
+  designer: Palette,
+  pm: ClipboardList,
+  marketer: Megaphone,
+}
+
 export const TABS = [
   { id: 'projects', label: '프로젝트', icon: LayoutGrid },
   { id: 'people', label: '사람', icon: Users },
 ] as const
 
 export const SORT_OPTIONS = [
-  { id: 'trending', label: '트렌딩', icon: Flame },
-  { id: 'latest', label: '최신', icon: Clock },
-  { id: 'popular', label: '인기', icon: Star },
+  { id: 'ai', label: 'AI 추천', icon: Sparkles, beta: true },
+  { id: 'trending', label: '트렌딩', icon: Flame, beta: false },
+  { id: 'latest', label: '최신', icon: Clock, beta: false },
+  { id: 'popular', label: '인기', icon: Star, beta: false },
 ] as const
 
 export const TYPE_FILTERS = [
@@ -25,6 +34,20 @@ export const TYPE_FILTERS = [
   { id: 'side_project', label: '사이드프로젝트' },
   { id: 'startup', label: '스타트업' },
   { id: 'study', label: '스터디' },
+] as const
+
+export const PEOPLE_ROLE_FILTERS = [
+  { id: 'all', label: '전체' },
+  { id: 'developer', label: '개발자', keywords: ['개발', 'developer', 'engineer', 'frontend', 'backend', 'fullstack', 'ios', 'android', 'web'] },
+  { id: 'designer', label: '디자이너', keywords: ['디자인', 'designer', 'ux', 'ui', 'graphic', '그래픽'] },
+  { id: 'pm', label: '기획자', keywords: ['기획', 'pm', 'product', 'planner', '매니저', 'manager'] },
+  { id: 'marketer', label: '마케터', keywords: ['마케팅', 'marketer', 'marketing', 'growth', '그로스'] },
+] as const
+
+export const PEOPLE_SORT_OPTIONS = [
+  { id: 'ai', label: 'AI 추천', icon: Sparkles, beta: true },
+  { id: 'latest', label: '최신', icon: Clock, beta: false },
+  { id: 'popular', label: '인기', icon: TrendingUp, beta: false },
 ] as const
 
 export const SEARCH_SCOPES = [

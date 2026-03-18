@@ -16,8 +16,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     const supabase = await createClient()
 
     // Get opportunities linked via event_opportunity_links table
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: links, error: linksError } = await (supabase as any)
+    const { data: links, error: linksError } = await supabase
       .from('event_opportunity_links')
       .select(`
         id,
@@ -134,8 +133,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     }
 
     // Verify user owns the opportunity
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: opportunity } = await (supabase as any)
+    const { data: opportunity } = await supabase
       .from('opportunities')
       .select('id, creator_id')
       .eq('id', opportunity_id)
@@ -150,8 +148,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     }
 
     // Check if event exists
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: event } = await (supabase as any)
+    const { data: event } = await supabase
       .from('startup_events')
       .select('id')
       .eq('id', eventId)
@@ -162,8 +159,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     }
 
     // Create link
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: link, error } = await (supabase as any)
+    const { data: link, error } = await supabase
       .from('event_opportunity_links')
       .insert({
         event_id: eventId,
@@ -210,8 +206,7 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
     }
 
     // Delete link (RLS will verify ownership)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (supabase as any)
+    const { error } = await supabase
       .from('event_opportunity_links')
       .delete()
       .eq('event_id', eventId)

@@ -29,7 +29,7 @@ export async function GET() {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const myProfile = profileData as any as Profile & {
-      vision_embedding?: number[]
+      vision_embedding?: string
       profile_analysis?: { founder_type?: ProfileAnalysisResult['founder_type'] } | null
     }
 
@@ -42,8 +42,7 @@ export async function GET() {
 
     // Try pgvector path if user has embedding
     if (myProfile.vision_embedding) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: similarUsers, error: rpcError } = await (supabase as any).rpc('match_users', {
+      const { data: similarUsers, error: rpcError } = await supabase.rpc('match_users', {
         query_embedding: myProfile.vision_embedding,
         match_threshold: 0.3,
         match_count: 50,

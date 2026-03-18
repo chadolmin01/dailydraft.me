@@ -24,7 +24,7 @@ const config: Config = {
       },
       fontFamily: {
         sans: ['var(--font-noto-sans-kr)', '"Noto Sans KR"', 'sans-serif'],
-        mono: ['var(--font-jetbrains-mono)', 'var(--font-nanum-gothic-coding)', '"JetBrains Mono"', '"Nanum Gothic Coding"', 'monospace'],
+        mono: ['var(--font-jetbrains-mono)', '"JetBrains Mono"', 'monospace'],
       },
       colors: {
         // ── Design System Tokens ──

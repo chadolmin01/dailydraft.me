@@ -81,8 +81,7 @@ export async function PATCH(request: Request) {
       return ApiResponse.badRequest('업데이트할 항목이 없습니다')
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (supabase.from('profiles') as any)
+    const { data, error } = await supabase.from('profiles')
       .update(updateData)
       .eq('user_id', user.id)
       .select()

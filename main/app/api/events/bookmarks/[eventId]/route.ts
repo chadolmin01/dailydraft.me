@@ -52,8 +52,7 @@ export async function PATCH(
       return NextResponse.json({ error: '알림 일수를 지정해주세요' }, { status: 400 })
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: bookmark, error } = await (supabase.from('event_bookmarks') as any)
+    const { data: bookmark, error } = await supabase.from('event_bookmarks')
       .update({ notify_before_days })
       .eq('user_id', user.id)
       .eq('event_id', eventId)

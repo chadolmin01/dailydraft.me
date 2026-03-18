@@ -117,8 +117,7 @@ export async function sendWeeklyDigestEmails(): Promise<DigestResult> {
 
       try {
         // 4. Get recommended events for this user
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: digestEvents } = await (supabase as any).rpc(
+        const { data: digestEvents } = await supabase.rpc(
           'get_weekly_digest_events',
           {
             p_user_id: userId,

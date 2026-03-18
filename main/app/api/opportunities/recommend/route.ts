@@ -27,15 +27,14 @@ export async function GET() {
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
     }
 
-    const profile = profileData as unknown as Profile & { vision_embedding?: number[] }
+    const profile = profileData as unknown as Profile & { vision_embedding?: string }
 
     let opportunities: Opportunity[] = []
 
     // If user has vision_embedding, use pgvector similarity search
     if (profile.vision_embedding) {
       // Get opportunities with similarity score from pgvector
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: similarOpps, error: similarError } = await (supabase as any).rpc('match_opportunities', {
+      const { data: similarOpps, error: similarError } = await supabase.rpc('match_opportunities', {
           query_embedding: profile.vision_embedding,
           match_threshold: 0.3,
           match_count: 50,

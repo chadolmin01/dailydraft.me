@@ -59,8 +59,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
     // Increment views count (only if not owner)
     if (!isOwner) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (supabase.from('opportunities') as any)
+      await supabase.from('opportunities')
         .update({ views_count: (data.views_count || 0) + 1 })
         .eq('id', id)
     }
@@ -142,8 +141,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       )
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (supabase.from('opportunities') as any)
+    const { data, error } = await supabase.from('opportunities')
       .update(updateData)
       .eq('id', id)
       .select()
@@ -189,8 +187,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
       return NextResponse.json({ error: '접근 권한이 없습니다' }, { status: 403 })
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (supabase.from('opportunities') as any).delete().eq('id', id)
+    const { error } = await supabase.from('opportunities').delete().eq('id', id)
 
     if (error) {
       return NextResponse.json({ error: 'Operation failed' }, { status: 500 })

@@ -30,9 +30,9 @@ export async function GET(
     }
 
     // Verify user is the creator or a team member
-    const isCreator = (opportunity as any).creator_id === user.id
+    const isCreator = opportunity.creator_id === user.id
     if (!isCreator) {
-      const { data: membership } = await (supabase.from('accepted_connections') as any)
+      const { data: membership } = await supabase.from('accepted_connections')
         .select('id')
         .eq('opportunity_id', id)
         .eq('applicant_id', user.id)
@@ -43,8 +43,7 @@ export async function GET(
       }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: checklists, error } = await (supabase as any)
+    const { data: checklists, error } = await supabase
       .from('team_checklists')
       .select('*')
       .eq('opportunity_id', id)
@@ -95,7 +94,7 @@ export async function POST(
       .eq('id', id)
       .single()
 
-    if (!opportunity || (opportunity as any).creator_id !== user.id) {
+    if (!opportunity || opportunity.creator_id !== user.id) {
       return NextResponse.json({ error: '접근 권한이 없습니다' }, { status: 403 })
     }
 
@@ -107,8 +106,7 @@ export async function POST(
     }
 
     // Get max sort order
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: maxOrder } = await (supabase as any)
+    const { data: maxOrder } = await supabase
       .from('team_checklists')
       .select('sort_order')
       .eq('opportunity_id', id)
@@ -116,10 +114,9 @@ export async function POST(
       .limit(1)
       .single()
 
-    const sortOrder = maxOrder ? (maxOrder as any).sort_order + 1 : 0
+    const sortOrder = maxOrder ? maxOrder.sort_order + 1 : 0
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('team_checklists')
       .insert({
         opportunity_id: id,

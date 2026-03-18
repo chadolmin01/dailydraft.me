@@ -48,7 +48,7 @@ export const Card: React.FC<CardProps> = ({
       className={`
         ${baseClasses}
         ${variantClasses}
-        ${onClick ? 'cursor-pointer' : ''}
+        ${onClick ? 'cursor-pointer active:scale-[0.985] active:shadow-none' : ''}
         ${className}
       `}
     >

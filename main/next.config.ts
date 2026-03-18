@@ -7,13 +7,48 @@ const nextConfig: NextConfig = {
   // Image optimization with allowed remote patterns
   images: {
     remotePatterns: [
+      // Supabase Storage
       {
         protocol: 'https',
         hostname: 'prxqjiuibfrmuwwmkhqb.supabase.co',
       },
+      // Unsplash
       {
         protocol: 'https',
         hostname: 'images.unsplash.com',
+      },
+      // Google OAuth avatar
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+      },
+      // GitHub OAuth avatar
+      {
+        protocol: 'https',
+        hostname: 'avatars.githubusercontent.com',
+      },
+      // Kakao OAuth avatar
+      {
+        protocol: 'https',
+        hostname: 'k.kakaocdn.net',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.kakaocdn.net',
+      },
+      // Naver OAuth avatar
+      {
+        protocol: 'https',
+        hostname: 'phinf.pstatic.net',
+      },
+      {
+        protocol: 'https',
+        hostname: 'ssl.pstatic.net',
+      },
+      // User-uploaded portfolio/demo images (any HTTPS source)
+      {
+        protocol: 'https',
+        hostname: '**',
       },
     ],
   },

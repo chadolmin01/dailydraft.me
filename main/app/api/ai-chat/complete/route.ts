@@ -106,8 +106,7 @@ export async function POST(request: Request) {
     }
 
     // Update profile with summary, embedding, and onboarding data
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error: updateError } = await (supabase.from('profiles') as any)
+    const { error: updateError } = await supabase.from('profiles')
       .update(updateData)
       .eq('user_id', user.id)
 
