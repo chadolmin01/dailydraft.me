@@ -1,6 +1,7 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 import { checkViewRateLimit } from '@/src/lib/rate-limit/redis-rate-limiter'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 // IP 기반 중복 조회 방지 (메모리 캐시, 15분 TTL)
 const recentViews = new Map<string, number>()
@@ -60,7 +61,7 @@ export async function POST(
         .single()
 
       if (fetchError) {
-        return NextResponse.json({ error: 'Opportunity not found' }, { status: 404 })
+        return ApiResponse.notFound('Opportunity not found')
       }
 
       const newCount = ((currentOpp as { views_count: number | null }).views_count || 0) + 1
@@ -76,6 +77,6 @@ export async function POST(
     recentViews.set(viewKey, Date.now())
     return NextResponse.json({ success: true, views_count: data })
   } catch (_error) {
-    return NextResponse.json({ error: '서버 오류가 발생했습니다' }, { status: 500 })
+    return ApiResponse.internalError()
   }
 }
