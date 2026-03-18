@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { updateSession } from '@/src/lib/supabase/middleware'
+import { signCookie, verifyCookie } from '@/src/lib/cookie-signature'
 
 // Routes that are hidden in MVP mode (code preserved, UI hidden)
 // Remove routes from this array to restore access
@@ -135,8 +136,11 @@ export async function middleware(request: NextRequest) {
 
   if (needsOnboardingCheck) {
     // Cookie 캐싱: onboarding 완료 후에는 DB 쿼리 스킵
+    // HMAC-SHA256 서명으로 쿠키 위조 방지
     const onboardingCookie = request.cookies.get('onboarding_completed')?.value
-    if (onboardingCookie !== 'true') {
+    const verified = onboardingCookie ? await verifyCookie(onboardingCookie) : null
+
+    if (verified !== 'true') {
       const { data: profile } = await supabase
         .from('profiles')
         .select('onboarding_completed')
@@ -147,9 +151,10 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL('/onboarding', request.url))
       }
 
-      // 완료된 경우 쿠키에 캐싱 (세션 동안 유지)
+      // 완료된 경우 서명된 쿠키로 캐싱 (24시간)
       if (profile?.onboarding_completed) {
-        response.cookies.set('onboarding_completed', 'true', {
+        const signedValue = await signCookie('true')
+        response.cookies.set('onboarding_completed', signedValue, {
           path: '/',
           httpOnly: true,
           sameSite: 'lax',
