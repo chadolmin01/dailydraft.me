@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 // GET: Get count of pending applications for user's opportunities
 export async function GET() {
@@ -11,7 +12,7 @@ export async function GET() {
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     // Get user's opportunities
@@ -36,14 +37,13 @@ export async function GET() {
       .eq('status', 'pending')
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      console.error('pending-count error:', error.message)
+      return ApiResponse.internalError()
     }
 
     return NextResponse.json({ count: count || 0 })
   } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
-    )
+    console.error('pending-count error:', error)
+    return ApiResponse.internalError()
   }
 }

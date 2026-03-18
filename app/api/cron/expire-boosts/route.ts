@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/src/lib/supabase/admin'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 /**
  * Cron job to expire boosts
@@ -12,7 +13,7 @@ export async function POST(request: NextRequest) {
     const cronSecret = process.env.CRON_SECRET
 
     if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     const supabase = createAdminClient()
@@ -22,10 +23,7 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error('Error expiring boosts:', error)
-      return NextResponse.json(
-        { error: 'Failed to expire boosts' },
-        { status: 500 }
-      )
+      return ApiResponse.internalError('Failed to expire boosts')
     }
 
     const expiredCount = data || 0
@@ -39,10 +37,7 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error('Error in expire-boosts cron:', error)
-    return NextResponse.json(
-      { error: 'Cron job failed' },
-      { status: 500 }
-    )
+    return ApiResponse.internalError('Cron job failed')
   }
 }
 

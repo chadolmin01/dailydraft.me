@@ -1,5 +1,6 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 export async function GET(
   request: NextRequest,
@@ -12,7 +13,7 @@ export async function GET(
     // 인증 확인
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     // 태그 파라미터 파싱
@@ -57,7 +58,7 @@ export async function GET(
       .limit(20)
 
     if (error) {
-      return NextResponse.json({ error: 'Database error' }, { status: 500 })
+      return ApiResponse.internalError('Database error')
     }
 
     // 매칭 점수 계산 및 정렬
@@ -106,9 +107,6 @@ export async function GET(
       total_found: scoredOpportunities.length,
     })
   } catch (_error) {
-    return NextResponse.json(
-      { error: '서버 오류가 발생했습니다' },
-      { status: 500 }
-    )
+    return ApiResponse.internalError()
   }
 }

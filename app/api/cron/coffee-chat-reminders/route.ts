@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { ApiResponse } from '@/src/lib/api-utils'
 import { logError } from '@/src/lib/error-logging'
 import { resend, FROM_EMAIL, isEmailEnabled } from '@/src/lib/email/client'
 import { renderCoffeeChatReminderEmail } from '@/src/lib/email/templates/coffee-chat-reminder'
@@ -20,7 +21,7 @@ export async function GET(req: NextRequest) {
   const cronSecret = process.env.CRON_SECRET
   const authHeader = req.headers.get('authorization')
   if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
-    return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+    return ApiResponse.unauthorized()
   }
 
   if (!isEmailEnabled()) {
@@ -43,7 +44,7 @@ export async function GET(req: NextRequest) {
 
     if (error) {
       console.error('Failed to fetch pending chats:', error)
-      return NextResponse.json({ error: 'Database error' }, { status: 500 })
+      return ApiResponse.internalError('Database error')
     }
 
     if (!pendingChats || pendingChats.length === 0) {
@@ -118,6 +119,6 @@ export async function GET(req: NextRequest) {
       endpoint: '/api/cron/coffee-chat-reminders',
       method: 'GET',
     }).catch(() => {})
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+    return ApiResponse.internalError()
   }
 }
