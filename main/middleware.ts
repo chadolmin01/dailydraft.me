@@ -1,5 +1,5 @@
-import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { updateSession } from '@/src/lib/supabase/middleware'
 
 // Routes that are hidden in MVP mode (code preserved, UI hidden)
 // Remove routes from this array to restore access
@@ -52,6 +52,23 @@ const hiddenApiRoutes = [
   '/api/cron/weekly-digest',
 ]
 
+// 퍼블릭 라우트 — Supabase auth 완전 스킵
+const publicRoutes = [
+  '/',
+  '/explore',
+  '/guide',
+  '/auth/',
+  '/p/',
+]
+
+function addSecurityHeaders(response: NextResponse) {
+  response.headers.set('X-Content-Type-Options', 'nosniff')
+  response.headers.set('X-Frame-Options', 'DENY')
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
+  return response
+}
+
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
 
@@ -79,39 +96,21 @@ export async function middleware(request: NextRequest) {
   if (hiddenRoutes.some(route => pathname === route.replace(/\/$/, '') || pathname.startsWith(route))) {
     return NextResponse.redirect(new URL('/explore', request.url))
   }
-  let supabaseResponse = NextResponse.next({
-    request,
-  })
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll()
-        },
-        setAll(cookiesToSet: { name: string; value: string; options?: Record<string, unknown> }[]) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-          supabaseResponse = NextResponse.next({
-            request,
-          })
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          )
-        },
-      },
-    }
+  // 퍼블릭 라우트 → Supabase 클라이언트 생성 자체를 스킵, 즉시 반환
+  const isPublicRoute = publicRoutes.some(route =>
+    pathname === route || pathname.startsWith(route)
   )
+  if (isPublicRoute) {
+    return addSecurityHeaders(NextResponse.next({ request }))
+  }
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  // 비-퍼블릭 라우트만 auth 플로우 실행
+  const { response, supabase, user } = await updateSession(request)
 
   // Protected routes - redirect to login if not authenticated
-  // Only active routes that require auth
-  const protectedPaths = ['/profile', '/projects', '/admin', '/messages', '/onboarding', '/dashboard', '/documents', '/calendar', '/network', '/usage', '/workflow']
-  const isProtectedPath = protectedPaths.some(path => request.nextUrl.pathname.startsWith(path))
+  const protectedPaths = ['/profile', '/projects', '/admin', '/messages', '/notifications', '/onboarding', '/dashboard', '/documents', '/calendar', '/network', '/usage', '/workflow']
+  const isProtectedPath = protectedPaths.some(path => pathname.startsWith(path))
 
   if (isProtectedPath && !user) {
     const url = request.nextUrl.clone()
@@ -120,7 +119,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // If logged in and trying to access login page, redirect to explore
-  if (user && request.nextUrl.pathname === '/login') {
+  if (user && pathname === '/login') {
     const url = request.nextUrl.clone()
     url.pathname = '/explore'
     return NextResponse.redirect(url)
@@ -146,7 +145,7 @@ export async function middleware(request: NextRequest) {
 
       // 완료된 경우 쿠키에 캐싱 (세션 동안 유지)
       if (profile?.onboarding_completed) {
-        supabaseResponse.cookies.set('onboarding_completed', 'true', {
+        response.cookies.set('onboarding_completed', 'true', {
           path: '/',
           httpOnly: true,
           sameSite: 'lax',
@@ -156,13 +155,7 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Security headers
-  supabaseResponse.headers.set('X-Content-Type-Options', 'nosniff')
-  supabaseResponse.headers.set('X-Frame-Options', 'DENY')
-  supabaseResponse.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
-  supabaseResponse.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
-
-  return supabaseResponse
+  return addSecurityHeaders(response)
 }
 
 export const config = {

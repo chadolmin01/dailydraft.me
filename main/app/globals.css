@@ -12,7 +12,7 @@
   --surface-bg: #FAFAFA;
   --surface-card: #FFFFFF;
   --surface-elevated: #FFFFFF;
-  --surface-sunken: #F4F4F5;
+  --surface-sunken: #F0F0F1;
   --surface-inverse: #18181B;
   --surface-overlay: rgba(0, 0, 0, 0.5);
 
@@ -20,14 +20,14 @@
   --text-primary: #18181B;
   --text-secondary: #52525B;
   --text-tertiary: #71717A;
-  --text-disabled: #D4D4D8;
+  --text-disabled: #A1A1AA;
   --text-inverse: #FFFFFF;
   --text-link: #18181B;
 
   /* ── Border ── */
-  --border-default: #D4D4D8;
+  --border-default: #A1A1AA;
   --border-strong: #3F3F46;
-  --border-subtle: #E4E4E7;
+  --border-subtle: #EDEEF0;
 
   /* ── Accent (최소 사용) ── */
   --accent-primary: #18181B;
@@ -177,6 +177,61 @@ select:focus-visible,
 [tabindex]:focus-visible {
   outline: 2px solid var(--accent-primary);
   outline-offset: 2px;
+}
+
+/* ============================================================
+   INTERACTIVE FEEDBACK — 클릭 반응성
+   ============================================================ */
+
+/* 모든 버튼/인터랙티브 요소 — 클릭 시 눌림 효과 */
+button:not(:disabled):active,
+[role="button"]:not(:disabled):active,
+a[class*="px-"]:active {
+  transform: scale(0.97);
+  transition: transform 80ms ease-out;
+}
+
+/* shadow-solid 버튼 전용 — 눌림 시 그림자 제거 + 이동 */
+button[class*="shadow-solid"]:not(:disabled):active {
+  transform: translate(2px, 2px) scale(0.98) !important;
+  box-shadow: none !important;
+}
+
+/* 카드 클릭 눌림 */
+[role="button"][class*="border-border-strong"]:active {
+  transform: scale(0.985);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: transform 80ms ease-out, box-shadow 80ms ease-out;
+}
+
+/* ============================================================
+   ROUTE PROGRESS BAR
+   ============================================================ */
+
+@keyframes progressIndeterminate {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(0%); }
+  100% { transform: translateX(200%); }
+}
+
+.route-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 9999;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.route-progress-bar::after {
+  content: '';
+  display: block;
+  width: 50%;
+  height: 100%;
+  background: var(--accent-primary);
+  animation: progressIndeterminate 1s cubic-bezier(0.65, 0, 0.35, 1) infinite;
 }
 
 /* ============================================================

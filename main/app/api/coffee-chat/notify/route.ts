@@ -4,7 +4,7 @@ import { logApiError } from '@/src/lib/error-logging'
 import { resend, FROM_EMAIL, isEmailEnabled } from '@/src/lib/email/client'
 import { renderCoffeeChatRequestEmail } from '@/src/lib/email/templates/coffee-chat-request'
 import { renderCoffeeChatResponseEmail } from '@/src/lib/email/templates/coffee-chat-response'
-import { notifyCoffeeChatRequest, notifyCoffeeChatResponse } from '@/src/lib/notifications/create-notification'
+import { notifyCoffeeChatRequest, notifyCoffeeChatResponse, notifyPersonCoffeeChatRequest, notifyPersonCoffeeChatResponse } from '@/src/lib/notifications/create-notification'
 import { createClient } from '@supabase/supabase-js'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
@@ -79,14 +79,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: '접근 권한이 없습니다' }, { status: 403 })
     }
 
-    // Fetch opportunity title
-    const { data: opportunity } = await supabaseAdmin
-      .from('opportunities')
-      .select('title, creator_id')
-      .eq('id', chat.opportunity_id)
-      .single()
+    const isPersonMode = !chat.opportunity_id && !!chat.target_user_id
 
-    const projectTitle = opportunity?.title || '프로젝트'
+    // Fetch opportunity title (only for project mode)
+    let projectTitle = '프로젝트'
+    if (!isPersonMode && chat.opportunity_id) {
+      const { data: opportunity } = await supabaseAdmin
+        .from('opportunities')
+        .select('title, creator_id')
+        .eq('id', chat.opportunity_id)
+        .single()
+      projectTitle = opportunity?.title || '프로젝트'
+    }
 
     // Fetch owner profile
     const { data: ownerProfile } = await supabaseAdmin
@@ -107,11 +111,12 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: false, error: 'Owner email not found' }, { status: 422 })
       }
 
+      const emailTitle = isPersonMode ? '개인 커피챗' : projectTitle
       const html = renderCoffeeChatRequestEmail({
         ownerName,
         requesterName,
         requesterMessage: chat.message || '(메시지 없음)',
-        projectTitle,
+        projectTitle: emailTitle,
         appUrl: APP_URL,
       })
 
@@ -123,16 +128,21 @@ export async function POST(req: NextRequest) {
       })
 
       // In-app notification
-      await notifyCoffeeChatRequest(chat.owner_user_id, requesterName, projectTitle)
+      if (isPersonMode) {
+        await notifyPersonCoffeeChatRequest(chat.owner_user_id, requesterName)
+      } else {
+        await notifyCoffeeChatRequest(chat.owner_user_id, requesterName, projectTitle)
+      }
     } else if (type === 'accepted' || type === 'declined') {
       if (!requesterEmail) {
         return NextResponse.json({ success: false, error: 'Requester email not found' }, { status: 422 })
       }
 
+      const emailTitle = isPersonMode ? '개인 커피챗' : projectTitle
       const html = renderCoffeeChatResponseEmail({
         requesterName,
         ownerName,
-        projectTitle,
+        projectTitle: emailTitle,
         accepted: type === 'accepted',
         contactInfo: type === 'accepted' ? chat.contact_info : undefined,
         appUrl: APP_URL,
@@ -146,12 +156,20 @@ export async function POST(req: NextRequest) {
       })
 
       // In-app notification
-      await notifyCoffeeChatResponse(
-        chat.requester_user_id,
-        ownerName,
-        projectTitle,
-        type === 'accepted'
-      )
+      if (isPersonMode) {
+        await notifyPersonCoffeeChatResponse(
+          chat.requester_user_id,
+          ownerName,
+          type === 'accepted'
+        )
+      } else {
+        await notifyCoffeeChatResponse(
+          chat.requester_user_id,
+          ownerName,
+          projectTitle,
+          type === 'accepted'
+        )
+      }
     }
 
     return NextResponse.json({ success: true })

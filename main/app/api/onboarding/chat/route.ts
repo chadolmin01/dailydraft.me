@@ -73,8 +73,7 @@ export async function POST(request: Request) {
         content: m.content,
         timestamp: new Date().toISOString(),
       }))
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (supabase.from('profiles') as any)
+      await supabase.from('profiles')
         .update({ ai_chat_transcript: transcript })
         .eq('user_id', user.id)
     }

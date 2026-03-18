@@ -35,7 +35,7 @@ export async function GET(request: Request) {
 
     let query = supabase
       .from('opportunities')
-      .select('id, type, title, description, status, creator_id, needed_roles, needed_skills, interest_tags, location_type, location, time_commitment, compensation_type, compensation_details, applications_count, views_count, is_boosted, boost_type, created_at, updated_at')
+      .select('id, type, title, description, status, creator_id, needed_roles, needed_skills, interest_tags, location_type, location, time_commitment, compensation_type, compensation_details, applications_count, views_count, created_at, updated_at')
       .eq('status', 'active')
 
     // Apply filters
@@ -153,8 +153,7 @@ export async function POST(request: Request) {
     }
 
     // Insert opportunity
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (supabase.from('opportunities') as any).insert({
+    const { data, error } = await supabase.from('opportunities').insert({
         creator_id: user.id,
         type: body.type,
         title: body.title.trim(),
@@ -167,7 +166,7 @@ export async function POST(request: Request) {
         time_commitment: body.timeCommitment || null,
         compensation_type: body.compensationType || null,
         compensation_details: body.compensationDetails || null,
-        vision_embedding: embedding,
+        vision_embedding: embedding ? JSON.stringify(embedding) : null,
       })
       .select()
       .single()

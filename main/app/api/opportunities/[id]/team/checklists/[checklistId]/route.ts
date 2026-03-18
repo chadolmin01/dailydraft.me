@@ -25,7 +25,7 @@ export async function PATCH(
       .eq('id', id)
       .single()
 
-    if (!opportunity || (opportunity as any).creator_id !== user.id) {
+    if (!opportunity || opportunity.creator_id !== user.id) {
       return NextResponse.json({ error: '접근 권한이 없습니다' }, { status: 403 })
     }
 
@@ -52,8 +52,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'No fields to update' }, { status: 400 })
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('team_checklists')
       .update(updateData)
       .eq('id', checklistId)
@@ -95,12 +94,11 @@ export async function DELETE(
       .eq('id', id)
       .single()
 
-    if (!opportunity || (opportunity as any).creator_id !== user.id) {
+    if (!opportunity || opportunity.creator_id !== user.id) {
       return NextResponse.json({ error: '접근 권한이 없습니다' }, { status: 403 })
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (supabase as any)
+    const { error } = await supabase
       .from('team_checklists')
       .delete()
       .eq('id', checklistId)

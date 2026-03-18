@@ -9,7 +9,7 @@ interface HeroProps {
 
 export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
   return (
-    <section className="relative w-full pt-10 sm:pt-16 pb-16 sm:pb-28 px-4 sm:px-6 md:px-10 max-w-6xl mx-auto flex flex-col items-center">
+    <section className="relative w-full pt-16 sm:pt-24 pb-20 sm:pb-32 px-4 sm:px-6 md:px-10 max-w-6xl mx-auto flex flex-col items-center">
 
       {/* Background Decor Elements - Blueprint style cards */}
       <div className="absolute top-0 w-full h-full max-w-6xl mx-auto pointer-events-none z-0 hidden lg:block">
@@ -28,10 +28,10 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
             <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-black"></div>
 
             <div className="flex justify-between items-start mb-3 border-b border-dashed border-border pb-2">
-                <div className="w-8 h-8 border border-border-strong bg-surface-sunken flex items-center justify-center">
+                <div className="w-8 h-8 border border-border-strong bg-surface-card flex items-center justify-center">
                     <Users size={16} className="text-black" />
                 </div>
-                <span className="text-[0.625rem] font-mono border border-border-strong px-1 text-black bg-surface-sunken">모집 중</span>
+                <span className="text-[0.625rem] font-mono border border-border-strong px-1 text-black bg-surface-card">모집 중</span>
             </div>
             <h3 className="text-sm font-bold mb-1">캠퍼스 중고거래</h3>
             <p className="text-xs text-txt-tertiary">React Native / Node.js</p>
@@ -84,7 +84,7 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
             </div>
         </div>
          {/* Card 4: Launched Project */}
-        <div className="absolute bottom-40 -right-8 w-64 bg-[#111] p-5 shadow-brutal animate-float rotate-[-1deg] border border-white/15">
+        <div className="absolute bottom-10 -right-8 w-64 bg-[#111] p-5 shadow-brutal animate-float rotate-[-1deg] border border-white/15">
              <div className="flex justify-between items-start mb-6">
                 <div className="w-8 h-8 bg-white/10 flex items-center justify-center border border-white/10">
                     <Sparkles size={14} className="text-txt-disabled" />

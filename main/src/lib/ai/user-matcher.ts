@@ -64,9 +64,17 @@ function calculateVisionSimilarity(
  */
 function calculateSkillComplementarity(
   mySkills: Skill[],
-  theirSkills: Skill[]
+  theirSkills: Skill[],
+  myPosition?: string | null,
+  theirPosition?: string | null
 ): number {
-  if (theirSkills.length === 0) return 30
+  if (theirSkills.length === 0) {
+    // Fallback: use desired_position when skills are empty
+    if (myPosition && theirPosition) {
+      return myPosition !== theirPosition ? 70 : 30
+    }
+    return 30
+  }
 
   const mySkillNames = new Set(mySkills.map((s) => s.name))
   const levelWeight = { '초급': 1, '중급': 2, '고급': 3 }
@@ -268,7 +276,9 @@ function calculateUserMatch(
   )
   const skill = calculateSkillComplementarity(
     myProfile.skills || [],
-    candidate.skills || []
+    candidate.skills || [],
+    myProfile.desired_position,
+    candidate.desired_position
   )
   const founder = calculateFounderSynergy(
     myProfile.profile_analysis?.founder_type,

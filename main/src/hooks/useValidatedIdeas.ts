@@ -1,6 +1,7 @@
 'use client'
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import type { Json } from '../types/database'
 import { supabase } from '../lib/supabase/client'
 import { useAuth } from '../context/AuthContext'
 import type { Tables, TablesInsert, TablesUpdate } from '../types/database'
@@ -180,7 +181,7 @@ export function useUpdateValidatedIdeaArtifacts() {
     mutationFn: async ({ id, artifacts }: { id: string; artifacts: ValidatedIdeaArtifacts }) => {
       const { data, error } = await supabase
         .from('validated_ideas')
-        .update({ artifacts })
+        .update({ artifacts: artifacts as unknown as Json })
         .eq('id', id)
         .select()
         .single()

@@ -71,8 +71,7 @@ export async function PATCH(
     }
 
     // Update application status
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error: updateError } = await (supabase.from('applications') as any)
+    const { error: updateError } = await supabase.from('applications')
       .update({ status })
       .eq('id', id)
 
@@ -85,8 +84,7 @@ export async function PATCH(
 
     // If accepted, create connection and send notifications
     if (status === 'accepted') {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error: connectionError } = await (supabase.from('accepted_connections') as any)
+      const { error: connectionError } = await supabase.from('accepted_connections')
         .insert({
           application_id: id,
           opportunity_creator_id: user.id,

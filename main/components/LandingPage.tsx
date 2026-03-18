@@ -265,7 +265,7 @@ const Hero: React.FC = () => {
 
     try {
       const { error } = await supabase
-        .from('waitlist')
+        .from('waitlist_signups')
         .insert({ email: email.toLowerCase().trim() })
 
       if (error) {

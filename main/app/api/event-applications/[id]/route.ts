@@ -8,14 +8,16 @@ import type {
 
 interface EventApplicationUpdate {
   status?: string;
-  applied_at?: string;
-  applied_url?: string;
-  result_notes?: string;
-  personal_notes?: string;
-  preparation_checklist?: ChecklistItem[];
+  applied_at?: string | null;
+  applied_url?: string | null;
+  result_notes?: string | null;
+  personal_notes?: string | null;
+  preparation_checklist?: Json | null;
   reminder_date?: string | null;
-  reminder_sent?: boolean;
+  reminder_sent?: boolean | null;
 }
+
+type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
 interface RouteContext {
   params: Promise<{ id: string }>;
@@ -35,8 +37,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       return ApiResponse.unauthorized();
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: application, error } = await (supabase as any)
+    const { data: application, error } = await supabase
       .from('event_applications')
       .select(`
         *,
@@ -60,8 +61,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     }
 
     // Get status history
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: history } = await (supabase as any)
+    const { data: history } = await supabase
       .from('event_application_history')
       .select('*')
       .eq('application_id', id)
@@ -94,8 +94,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     const body: UpdateEventApplicationRequest = await request.json();
 
     // Check if application exists and belongs to user
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: existing, error: findError } = await (supabase as any)
+    const { data: existing, error: findError } = await supabase
       .from('event_applications')
       .select('id, status')
       .eq('id', id)
@@ -130,7 +129,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     }
 
     if (body.preparation_checklist !== undefined) {
-      updateData.preparation_checklist = body.preparation_checklist;
+      updateData.preparation_checklist = body.preparation_checklist as unknown as Json;
     }
 
     if (body.reminder_date !== undefined) {
@@ -144,8 +143,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     }
 
     // Update application
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: application, error } = await (supabase as any)
+    const { data: application, error } = await supabase
       .from('event_applications')
       .update(updateData)
       .eq('id', id)
@@ -189,8 +187,7 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
     }
 
     // Check if application exists and belongs to user
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: existing } = await (supabase as any)
+    const { data: existing } = await supabase
       .from('event_applications')
       .select('id')
       .eq('id', id)
@@ -202,8 +199,7 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
     }
 
     // Delete application
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (supabase as any)
+    const { error } = await supabase
       .from('event_applications')
       .delete()
       .eq('id', id);

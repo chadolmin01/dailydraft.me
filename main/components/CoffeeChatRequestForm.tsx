@@ -4,22 +4,28 @@ import React, { useState } from 'react'
 import { Coffee, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAuth } from '@/src/context/AuthContext'
-import { useRequestCoffeeChat } from '@/src/hooks/useCoffeeChats'
-import { COFFEE_CHAT_TEMPLATES } from '@/src/lib/constants/coffee-chat-templates'
+import { useRequestCoffeeChat, useRequestPersonCoffeeChat } from '@/src/hooks/useCoffeeChats'
+import { COFFEE_CHAT_TEMPLATES, PERSON_COFFEE_CHAT_TEMPLATES } from '@/src/lib/constants/coffee-chat-templates'
 
 interface CoffeeChatRequestFormProps {
-  opportunityId: string
+  opportunityId?: string
+  targetUserId?: string
   onClose: () => void
   selectedRole?: string
 }
 
 export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
   opportunityId,
+  targetUserId,
   onClose,
   selectedRole,
 }) => {
   const { user } = useAuth()
   const requestChat = useRequestCoffeeChat()
+  const requestPersonChat = useRequestPersonCoffeeChat()
+  const isPersonMode = !!targetUserId && !opportunityId
+
+  const templates = isPersonMode ? PERSON_COFFEE_CHAT_TEMPLATES : COFFEE_CHAT_TEMPLATES
   const [message, setMessage] = useState(
     selectedRole
       ? `안녕하세요! ${selectedRole} 포지션에 관심이 있어 연락드립니다. 제 경험과 스킬이 팀에 도움이 될 수 있을 것 같아요.`
@@ -28,16 +34,28 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
   const [sent, setSent] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  const isPending = isPersonMode ? requestPersonChat.isPending : requestChat.isPending
+
   const handleSubmit = async () => {
     if (!message.trim() || !user?.email) return
     setError(null)
     try {
-      await requestChat.mutateAsync({
-        opportunityId,
-        email: user.email,
-        name: user.user_metadata?.full_name || user.email.split('@')[0],
-        message: message.trim(),
-      })
+      const name = user.user_metadata?.full_name || user.email.split('@')[0]
+      if (isPersonMode && targetUserId) {
+        await requestPersonChat.mutateAsync({
+          targetUserId,
+          email: user.email,
+          name,
+          message: message.trim(),
+        })
+      } else if (opportunityId) {
+        await requestChat.mutateAsync({
+          opportunityId,
+          email: user.email,
+          name,
+          message: message.trim(),
+        })
+      }
       setSent(true)
       toast.success('커피챗이 신청되었습니다')
     } catch (err) {
@@ -54,7 +72,11 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
           <Coffee size={24} className="text-status-success-text" />
         </div>
         <h3 className="text-xl font-bold text-txt-primary mb-2">커피챗 신청 완료!</h3>
-        <p className="text-txt-tertiary text-sm mb-6">메이커에게 알림이 전송되었습니다. 수락되면 연락처를 받을 수 있어요.</p>
+        <p className="text-txt-tertiary text-sm mb-6">
+          {isPersonMode
+            ? '상대방에게 알림이 전송되었습니다. 수락되면 연락처를 받을 수 있어요.'
+            : '메이커에게 알림이 전송되었습니다. 수락되면 연락처를 받을 수 있어요.'}
+        </p>
         <button
           onClick={() => { setSent(false); setMessage(''); onClose() }}
           className="text-sm text-txt-disabled hover:text-txt-secondary transition-colors"
@@ -68,17 +90,21 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
   return (
     <div className="text-center py-4">
       <Coffee size={28} className="text-txt-primary mb-4 mx-auto" />
-      <h3 className="text-lg font-bold text-txt-primary mb-1">커피챗 신청</h3>
+      <h3 className="text-lg font-bold text-txt-primary mb-1">
+        {isPersonMode ? '커피챗 신청' : '커피챗 신청'}
+      </h3>
       {selectedRole && (
         <span className="inline-block px-2.5 py-1 bg-surface-sunken text-txt-secondary text-xs font-medium border border-border-strong mb-2">
           {selectedRole} 포지션
         </span>
       )}
-      <p className="text-txt-tertiary text-xs mb-5">메이커에게 보낼 메시지를 작성해주세요</p>
+      <p className="text-txt-tertiary text-xs mb-5">
+        {isPersonMode ? '상대방에게 보낼 메시지를 작성해주세요' : '메이커에게 보낼 메시지를 작성해주세요'}
+      </p>
 
       {/* Template buttons */}
       <div className="flex flex-wrap gap-2 justify-center mb-4">
-        {COFFEE_CHAT_TEMPLATES.map((tpl) => (
+        {templates.map((tpl) => (
           <button
             key={tpl.id}
             onClick={() => setMessage(tpl.message)}
@@ -92,7 +118,10 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
       <textarea
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        placeholder="안녕하세요! 프로젝트에 관심이 있어서 연락드립니다..."
+        placeholder={isPersonMode
+          ? '안녕하세요! 프로필을 보고 연락드립니다...'
+          : '안녕하세요! 프로젝트에 관심이 있어서 연락드립니다...'
+        }
         rows={4}
         className="w-full px-4 py-3 border border-border-strong rounded-sm text-sm text-left bg-surface-card focus:outline-none focus:border-brand resize-none mb-4"
       />
@@ -103,10 +132,10 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
 
       <button
         onClick={handleSubmit}
-        disabled={!message.trim() || requestChat.isPending}
+        disabled={!message.trim() || isPending}
         className="w-full bg-brand text-white border border-brand py-3 rounded-sm font-bold text-sm flex items-center justify-center gap-2 hover:bg-brand-hover shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-40 disabled:cursor-not-allowed mb-3"
       >
-        {requestChat.isPending ? (
+        {isPending ? (
           <><Loader2 size={14} className="animate-spin" /> 전송 중...</>
         ) : (
           <><Coffee size={14} /> 신청하기</>

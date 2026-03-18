@@ -25,7 +25,7 @@ export async function PATCH(
       .eq('id', id)
       .single()
 
-    if (!opportunity || (opportunity as any).creator_id !== user.id) {
+    if (!opportunity || opportunity.creator_id !== user.id) {
       return NextResponse.json({ error: '접근 권한이 없습니다' }, { status: 403 })
     }
 
@@ -41,8 +41,8 @@ export async function PATCH(
       return NextResponse.json({ error: 'No fields to update' }, { status: 400 })
     }
 
-    const { data, error } = await (supabase
-      .from('accepted_connections') as any)
+    const { data, error } = await supabase
+      .from('accepted_connections')
       .update(updateData)
       .eq('id', memberId)
       .eq('opportunity_id', id)
@@ -83,13 +83,13 @@ export async function DELETE(
       .eq('id', id)
       .single()
 
-    if (!opportunity || (opportunity as any).creator_id !== user.id) {
+    if (!opportunity || opportunity.creator_id !== user.id) {
       return NextResponse.json({ error: '접근 권한이 없습니다' }, { status: 403 })
     }
 
     // Set status to 'left' instead of deleting
-    const { error } = await (supabase
-      .from('accepted_connections') as any)
+    const { error } = await supabase
+      .from('accepted_connections')
       .update({ status: 'left' })
       .eq('id', memberId)
       .eq('opportunity_id', id)

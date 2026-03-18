@@ -95,7 +95,7 @@ export const OpportunitySection: React.FC = () => {
     : mockProjects.slice(0, 3)
 
   return (
-    <section id="projects" className="w-full py-20 px-6 md:px-10 bg-surface-sunken">
+    <section id="projects" className="w-full py-20 px-6 md:px-10 bg-surface-card">
       <div className="max-w-5xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-10">
           <div>
@@ -129,7 +129,7 @@ export const OpportunitySection: React.FC = () => {
                 {/* Header */}
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 bg-surface-sunken border border-border-subtle flex items-center justify-center text-txt-primary group-hover:bg-black group-hover:text-white transition-colors">
+                    <div className="w-10 h-10 bg-surface-card border border-border-subtle flex items-center justify-center text-txt-primary group-hover:bg-black group-hover:text-white transition-colors">
                       <Zap size={20} />
                     </div>
                     {project.isReal && (
@@ -202,7 +202,7 @@ export const OpportunitySection: React.FC = () => {
               onClick={() => router.push('/login')}
               className="group bg-surface-card border border-dashed border-border-strong p-6 hover:border-brand hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col items-center justify-center h-full min-h-[13.75rem] gap-4"
             >
-              <div className="w-14 h-14 bg-surface-sunken border border-border flex items-center justify-center group-hover:bg-brand group-hover:border-brand transition-colors">
+              <div className="w-14 h-14 bg-surface-card border border-border flex items-center justify-center group-hover:bg-brand group-hover:border-brand transition-colors">
                 <Plus size={24} className="text-txt-disabled group-hover:text-white transition-colors" />
               </div>
               <div className="text-center">

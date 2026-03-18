@@ -38,7 +38,7 @@ export function ExploreSearchBar({
       <div className={`relative transition-all duration-200 ${
         isSearchExpanded
           ? 'bg-surface-card shadow-solid-sm border border-brand/40'
-          : 'bg-surface-sunken border border-border hover:bg-surface-card hover:shadow-sharp hover:border-border-strong'
+          : 'bg-surface-card border border-border hover:shadow-sharp hover:border-border-strong'
       }`}>
         <div className="relative flex items-center">
           <div className={`absolute left-4 transition-colors ${isSearchExpanded ? 'text-txt-secondary' : 'text-txt-disabled'}`}>

@@ -109,8 +109,7 @@ export async function POST(request: Request) {
     const match = calculateMatchScore(profile, opportunity)
 
     // Create application
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (supabase.from('applications') as any)
+    const { data, error } = await supabase.from('applications')
       .insert({
         opportunity_id: opportunityId,
         applicant_id: user.id,
@@ -128,8 +127,7 @@ export async function POST(request: Request) {
     }
 
     // Increment applications_count
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (supabase.from('opportunities') as any)
+    await supabase.from('opportunities')
       .update({
         applications_count: (opportunity.applications_count || 0) + 1,
       })

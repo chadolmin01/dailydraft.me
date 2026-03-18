@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { PenTool, User, LogOut, Bell, Menu, X, Plus, Settings, Search, ChevronRight, Shield, FolderOpen, Compass } from 'lucide-react'
+import { PenTool, User, LogOut, Bell, Menu, X, Plus, Settings, Search, ChevronRight, Shield, FolderOpen, Compass, Briefcase, AlertTriangle } from 'lucide-react'
 import Link from 'next/link'
 import { useAuth } from '@/src/context/AuthContext'
 import { useAdmin } from '@/src/hooks/useAdmin'
@@ -73,7 +73,7 @@ const MobileNavItem = ({ href, active, children }: { href: string; active: boole
 export const TopNavbar: React.FC = () => {
   const router = useRouter()
   const pathname = usePathname()
-  const { signOut, user, isAuthenticated } = useAuth()
+  const { signOut, user, isAuthenticated, profile } = useAuth()
   const { isAdmin } = useAdmin()
 
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -155,7 +155,7 @@ export const TopNavbar: React.FC = () => {
     setSearchQuery('')
   }
 
-  const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'U'
+  const displayName = profile?.nickname || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'U'
   const initials = displayName.substring(0, 2).toUpperCase()
 
   return (
@@ -165,7 +165,7 @@ export const TopNavbar: React.FC = () => {
           ? 'bg-surface-card/80 backdrop-blur-xl shadow-soft'
           : 'bg-surface-card/60 backdrop-blur-md'
       }`}>
-        <div className="w-full px-4 sm:px-8 lg:px-16 xl:px-24 h-full flex items-center gap-3">
+        <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-24 h-full flex items-center gap-3">
 
           {/* ===== 좌측: 로고 ===== */}
           <Link href="/explore" className="flex items-center gap-2.5 shrink-0 group mr-1">
@@ -189,7 +189,7 @@ export const TopNavbar: React.FC = () => {
               className={`flex items-center transition-all duration-200 cursor-text ${
                 isSearchOpen
                   ? 'bg-surface-card shadow-sharp border border-border-strong'
-                  : 'bg-surface-sunken border border-border hover:bg-surface-card hover:shadow-soft hover:border-border-strong'
+                  : 'bg-surface-card border border-border hover:shadow-soft hover:border-border-strong'
               }`}
             >
               <Search size={15} className={`ml-3.5 shrink-0 transition-colors ${isSearchOpen ? 'text-txt-secondary' : 'text-txt-disabled'}`} />
@@ -284,13 +284,13 @@ export const TopNavbar: React.FC = () => {
           </div>
 
           {/* ===== 우측 액션 ===== */}
-          <div className="flex items-center gap-0.5 shrink-0 ml-auto">
+          <div className="flex items-center gap-2 shrink-0 ml-auto">
             {isAuthenticated ? (
               <>
                 {/* 새 프로젝트 CTA */}
                 <button
                   onClick={() => router.push('/projects/new')}
-                  className="hidden md:flex items-center gap-1.5 px-3.5 py-1.5 bg-surface-inverse text-txt-inverse text-xs font-bold hover:bg-accent-hover transition-all border border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                  className="hidden md:flex items-center gap-1.5 px-3.5 py-1.5 bg-surface-inverse text-txt-inverse text-xs font-bold hover:bg-accent-hover transition-all border border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none active:scale-[0.97]"
                 >
                   <Plus size={14} strokeWidth={2.5} />
                   <span>새 프로젝트</span>
@@ -341,7 +341,9 @@ export const TopNavbar: React.FC = () => {
                             <p className="px-2.5 py-1 text-[0.625rem] font-mono text-txt-disabled uppercase tracking-widest">Admin</p>
                             <DropdownItem icon={Shield} onClick={() => router.push('/admin')}>관리자 대시보드</DropdownItem>
                             <DropdownItem icon={User} onClick={() => router.push('/admin/users')}>사용자 관리</DropdownItem>
+                            <DropdownItem icon={Briefcase} onClick={() => router.push('/admin/opportunities')}>기회 관리</DropdownItem>
                             <DropdownItem icon={Settings} onClick={() => router.push('/admin/invite-codes')}>초대 코드 관리</DropdownItem>
+                            <DropdownItem icon={AlertTriangle} onClick={() => router.push('/admin/error-logs')}>에러 로그</DropdownItem>
                           </div>
                         </>
                       )}

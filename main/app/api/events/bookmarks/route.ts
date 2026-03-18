@@ -62,8 +62,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 북마크 추가 (upsert)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: bookmark, error } = await (supabase.from('event_bookmarks') as any)
+    const { data: bookmark, error } = await supabase.from('event_bookmarks')
       .upsert({
         user_id: user.id,
         event_id,

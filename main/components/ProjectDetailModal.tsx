@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import {
   ArrowRight, Heart, Coffee, Users, Clock,
@@ -68,6 +69,17 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
   const { data: opportunity, isLoading: loading } = useOpportunity(projectId ?? undefined)
   const { data: creator } = useProfileByUserId(opportunity?.creator_id ?? undefined)
   const { data: updates = [] } = useProjectUpdates(opportunity?.id)
+
+  // Match analysis — lightweight fetch, only for logged-in non-owners
+  const [matchScore, setMatchScore] = useState<number | null>(null)
+  useEffect(() => {
+    setMatchScore(null)
+    if (!projectId || !user) return
+    fetch(`/api/opportunities/${projectId}/match-analysis`)
+      .then(res => res.ok ? res.json() : null)
+      .then(data => { if (data?.overallScore != null) setMatchScore(data.overallScore) })
+      .catch(() => {})
+  }, [projectId, user])
 
   const isOwner = !!(user && opportunity && user.id === opportunity.creator_id)
   const existingChat = myChatsForProject.length > 0 ? myChatsForProject[0] : null
@@ -196,7 +208,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                       <div className="relative">
                         <button
                           onClick={() => setShowTypeSelector(!showTypeSelector)}
-                          className="text-[0.625rem] font-mono font-bold px-2 py-0.5 bg-surface-sunken text-txt-tertiary border border-border uppercase tracking-wider hover:border-border-strong hover:text-txt-secondary transition-colors flex items-center gap-1"
+                          className="text-[0.625rem] font-mono font-bold px-2 py-0.5 bg-surface-card text-txt-tertiary border border-border uppercase tracking-wider hover:border-border-strong hover:text-txt-secondary transition-colors flex items-center gap-1"
                         >
                           {opportunity.type === 'side_project' ? 'SIDE PROJECT' :
                            opportunity.type === 'startup' ? 'STARTUP' :
@@ -231,7 +243,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                         )}
                       </div>
                     ) : (
-                      <span className="text-[0.625rem] font-mono font-bold px-2 py-0.5 bg-surface-sunken text-txt-tertiary border border-border uppercase tracking-wider">
+                      <span className="text-[0.625rem] font-mono font-bold px-2 py-0.5 bg-surface-card text-txt-tertiary border border-border uppercase tracking-wider">
                         {opportunity.type === 'side_project' ? 'SIDE PROJECT' :
                          opportunity.type === 'startup' ? 'STARTUP' :
                          opportunity.type === 'study' ? 'STUDY' : opportunity.type?.toUpperCase() || 'PROJECT'}
@@ -287,18 +299,33 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                       <>
                         {/* Hero Cover — first image as background */}
                         <div className="relative h-48 sm:h-56 overflow-hidden">
-                          <img
+                          <Image
                             src={opportunity.demo_images[0]}
                             alt={opportunity.title}
-                            className="w-full h-full object-cover"
+                            fill
+                            priority
+                            sizes="(max-width:768px) 100vw, 768px"
+                            className="object-cover"
+                            quality={90}
+                            onError={(e) => { e.currentTarget.style.display = 'none' }}
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
 
                           {/* Title & Meta overlay */}
                           <div className="absolute bottom-0 left-0 right-0 px-4 sm:px-8 pb-4 sm:pb-5">
-                            <h2 className="text-xl sm:text-2xl font-bold text-white mb-2 break-keep leading-tight drop-shadow-sm">
-                              {opportunity.title}
-                            </h2>
+                            <div className="flex items-start gap-2 mb-2">
+                              <h2 className="text-xl sm:text-2xl font-bold text-white break-keep leading-tight drop-shadow-sm">
+                                {opportunity.title}
+                              </h2>
+                              {!isOwner && matchScore != null && matchScore >= 60 && (
+                                <span className={`text-[0.625rem] font-mono font-bold px-1.5 py-0.5 border shrink-0 mt-1 ${
+                                  matchScore >= 80 ? 'bg-status-success-bg text-status-success-text border-indicator-online/20'
+                                  : 'bg-white/20 text-white/80 border-white/30'
+                                }`}>
+                                  {matchScore >= 80 ? '잘 맞는 프로젝트' : '관심 가능'}
+                                </span>
+                              )}
+                            </div>
                             <div className="flex flex-wrap items-center gap-3 text-sm text-white/70">
                               {creator ? (
                                 <span className="flex items-center gap-2">
@@ -335,7 +362,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                           {opportunity.interest_tags && opportunity.interest_tags.length > 0 && (
                             <div className="flex flex-wrap gap-1.5">
                               {opportunity.interest_tags.map((tag) => (
-                                <span key={tag} className="px-2.5 py-1 bg-surface-sunken text-txt-tertiary text-xs border border-border">
+                                <span key={tag} className="px-2.5 py-1 bg-surface-card text-txt-tertiary text-xs border border-border">
                                   {tag}
                                 </span>
                               ))}
@@ -367,12 +394,17 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                           <div className="px-4 sm:px-8 pb-3">
                             <div className="flex gap-2 overflow-x-auto">
                               {opportunity.demo_images.slice(1).map((src, idx) => (
-                                <img
-                                  key={idx}
-                                  src={src}
-                                  alt={`${opportunity.title} 이미지 ${idx + 2}`}
-                                  className="h-24 w-auto border border-border-strong object-cover shrink-0"
-                                />
+                                <div key={idx} className="relative h-24 w-32 shrink-0 border border-border-strong">
+                                  <Image
+                                    src={src}
+                                    alt={`${opportunity.title} 이미지 ${idx + 2}`}
+                                    fill
+                                    sizes="128px"
+                                    className="object-cover"
+                                    quality={85}
+                                    onError={(e) => { e.currentTarget.style.display = 'none' }}
+                                  />
+                                </div>
                               ))}
                             </div>
                           </div>
@@ -381,9 +413,19 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                     ) : (
                       /* Plain Header — no images */
                       <div className="px-4 sm:px-8 pt-4 sm:pt-6 pb-3">
-                        <h2 className="text-2xl font-bold text-txt-primary mb-3 break-keep leading-tight">
-                          {opportunity.title}
-                        </h2>
+                        <div className="flex items-start gap-2 mb-3">
+                          <h2 className="text-2xl font-bold text-txt-primary break-keep leading-tight">
+                            {opportunity.title}
+                          </h2>
+                          {!isOwner && matchScore != null && matchScore >= 60 && (
+                            <span className={`text-[0.625rem] font-mono font-bold px-1.5 py-0.5 border shrink-0 mt-1 ${
+                              matchScore >= 80 ? 'bg-status-success-bg text-status-success-text border-indicator-online/20'
+                              : 'bg-brand-bg text-brand border-brand-border'
+                            }`}>
+                              {matchScore >= 80 ? '잘 맞는 프로젝트' : '관심 가능'}
+                            </span>
+                          )}
+                        </div>
                         <div className="flex flex-wrap items-center gap-4 text-sm text-txt-tertiary">
                           {creator ? (
                             <span className="flex items-center gap-2">
@@ -415,7 +457,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                         {opportunity.interest_tags && opportunity.interest_tags.length > 0 && (
                           <div className="flex flex-wrap gap-1.5 mt-3">
                             {opportunity.interest_tags.map((tag) => (
-                              <span key={tag} className="px-2.5 py-1 bg-surface-sunken text-txt-tertiary text-xs border border-border">
+                              <span key={tag} className="px-2.5 py-1 bg-surface-card text-txt-tertiary text-xs border border-border">
                                 {tag}
                               </span>
                             ))}
@@ -463,7 +505,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
 
                           {/* Pain Point */}
                           {opportunity.pain_point && (
-                            <section className="bg-surface-sunken border border-border-strong p-5">
+                            <section className="bg-surface-card border border-border-strong p-5">
                               <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-2">
                                 해결하려는 문제
                               </h3>
@@ -574,7 +616,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                               </h3>
                               <div className="space-y-2">
                                 {opportunity.needed_roles.map((role) => (
-                                  <div key={role} className="flex items-center justify-between py-2.5 px-3 bg-surface-sunken border border-border-strong">
+                                  <div key={role} className="flex items-center justify-between py-2.5 px-3 bg-surface-card border border-border-strong">
                                     <div className="flex items-center gap-2">
                                       <Briefcase size={14} className="text-txt-disabled" />
                                       <span className="text-sm text-txt-secondary">{role}</span>
@@ -611,7 +653,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                                 {(opportunity.needed_skills as Array<{ name: string; level?: string }>).map((skill, i) => (
                                   <span
                                     key={i}
-                                    className="inline-flex items-center gap-1 px-2 py-1 bg-surface-sunken border border-border text-xs text-txt-secondary"
+                                    className="inline-flex items-center gap-1 px-2 py-1 bg-surface-card border border-border text-xs text-txt-secondary"
                                   >
                                     <Code size={10} className="text-txt-disabled" />
                                     {skill.name}
@@ -695,7 +737,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                                       href={link.url}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className="flex items-center gap-2.5 py-2 px-3 bg-surface-sunken border border-border hover:border-border-strong transition-colors group"
+                                      className="flex items-center gap-2.5 py-2 px-3 bg-surface-card border border-border hover:border-border-strong transition-colors group"
                                     >
                                       <LinkIcon size={14} className="text-txt-disabled group-hover:text-txt-primary transition-colors shrink-0" />
                                       <span className="text-sm text-txt-secondary group-hover:text-txt-primary transition-colors truncate">

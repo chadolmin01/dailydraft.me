@@ -3,6 +3,7 @@ import { createClient } from '@/src/lib/supabase/server'
 import { chatModel } from '@/src/lib/ai/gemini-client'
 import { logError } from '@/src/lib/error-logging'
 import type { ExtractedProfile } from '@/src/types/extracted-profile'
+import type { Json } from '@/src/types/database'
 
 const EXTRACTION_PROMPT = `당신은 대화 내용에서 사용자의 프로필 정보를 추출하는 전문가입니다.
 
@@ -196,7 +197,7 @@ export async function POST(request: Request) {
     const { error: updateError } = await supabase
       .from('profiles')
       .update({
-        extracted_profile: extractedProfile,
+        extracted_profile: extractedProfile as unknown as Json,
         extraction_confidence: confidence,
         last_extraction_at: new Date().toISOString(),
       })

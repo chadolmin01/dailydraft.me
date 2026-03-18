@@ -49,7 +49,7 @@ export async function GET(
       return NextResponse.json({ error: 'Opportunity not found' }, { status: 404 })
     }
 
-    if ((opportunity as { creator_id: string }).creator_id !== user.id) {
+    if (opportunity.creator_id !== user.id) {
       return NextResponse.json({ error: '접근 권한이 없습니다' }, { status: 403 })
     }
 
@@ -75,9 +75,9 @@ export async function GET(
     if (!connections || connections.length === 0) {
       return NextResponse.json({
         opportunity: {
-          id: (opportunity as any).id,
-          title: (opportunity as any).title,
-          status: (opportunity as any).status,
+          id: opportunity.id,
+          title: opportunity.title,
+          status: opportunity.status,
         },
         members: [],
         stats: {
@@ -121,9 +121,9 @@ export async function GET(
 
     return NextResponse.json({
       opportunity: {
-        id: (opportunity as any).id,
-        title: (opportunity as any).title,
-        status: (opportunity as any).status,
+        id: opportunity.id,
+        title: opportunity.title,
+        status: opportunity.status,
       },
       members,
       stats,
