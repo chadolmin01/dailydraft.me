@@ -42,7 +42,7 @@ export async function sendDeadlineNotificationEmails(): Promise<{
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://dailydraft.vercel.app'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://dailydraft.me'
 
   if (!supabaseUrl || !supabaseKey) {
     return {
