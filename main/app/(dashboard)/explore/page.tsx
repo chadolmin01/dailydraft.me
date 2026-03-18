@@ -244,7 +244,7 @@ function ExplorePageContent() {
         avatarUrl: profile.avatar_url,
         matchScore: rec?.match_score ?? null,
         matchReason: rec?.match_reason ?? null,
-        profileViews: profile.profile_views || 0,
+        interestCount: profile.interest_count || 0,
         createdAt: profile.created_at,
       }
     })
@@ -255,7 +255,7 @@ function ExplorePageContent() {
         return bScore - aScore
       }
       if (peopleSortBy === 'popular')
-        return (b.profileViews || 0) - (a.profileViews || 0)
+        return (b.interestCount || 0) - (a.interestCount || 0)
       // 'latest': sort by created_at (newest first)
       return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
     }),

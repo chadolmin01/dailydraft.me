@@ -20,7 +20,7 @@ async function withRetry<T>(fn: () => Promise<T>, retries = 1): Promise<T> {
 }
 
 export type PublicProfile = Pick<Profile,
-  'id' | 'user_id' | 'nickname' | 'desired_position' | 'interest_tags' | 'location' | 'profile_visibility' | 'vision_summary' | 'avatar_url' | 'profile_views' | 'created_at'
+  'id' | 'user_id' | 'nickname' | 'desired_position' | 'interest_tags' | 'location' | 'profile_visibility' | 'vision_summary' | 'avatar_url' | 'interest_count' | 'created_at'
 >
 
 // Query keys
@@ -42,7 +42,7 @@ export function usePublicProfiles(options?: {
     queryFn: () => withRetry(async () => {
       let query = supabase
         .from('profiles')
-        .select('id, user_id, nickname, desired_position, interest_tags, location, profile_visibility, vision_summary, avatar_url, profile_views, created_at')
+        .select('id, user_id, nickname, desired_position, interest_tags, location, profile_visibility, vision_summary, avatar_url, interest_count, created_at')
         .eq('profile_visibility', 'public')
         .order('updated_at', { ascending: false })
 
