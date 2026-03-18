@@ -1,10 +1,11 @@
 // @ts-nocheck — dev-only route, blocked by middleware in production
 import { createAdminClient } from '@/src/lib/supabase/admin'
 import { NextResponse } from 'next/server'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 export async function GET() {
   if (process.env.NODE_ENV === 'production') {
-    return NextResponse.json({ error: 'Not available in production' }, { status: 403 })
+    return ApiResponse.forbidden('Not available in production')
   }
 
   try {
@@ -15,18 +16,20 @@ export async function GET() {
       .order('created_at', { ascending: false })
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      console.error('dev/fix-types GET error:', error.message)
+      return ApiResponse.internalError()
     }
 
     return NextResponse.json({ count: data?.length, opportunities: data })
   } catch (err) {
-    return NextResponse.json({ error: String(err) }, { status: 500 })
+    console.error('dev/fix-types GET error:', err)
+    return ApiResponse.internalError()
   }
 }
 
 export async function POST(request: Request) {
   if (process.env.NODE_ENV === 'production') {
-    return NextResponse.json({ error: 'Not available in production' }, { status: 403 })
+    return ApiResponse.forbidden('Not available in production')
   }
 
   try {
@@ -73,8 +76,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ created: results })
     }
 
-    return NextResponse.json({ error: 'Provide batch or create array' }, { status: 400 })
+    return ApiResponse.badRequest('Provide batch or create array')
   } catch (err) {
-    return NextResponse.json({ error: String(err) }, { status: 500 })
+    console.error('dev/fix-types POST error:', err)
+    return ApiResponse.internalError()
   }
 }

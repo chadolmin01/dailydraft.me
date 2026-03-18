@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
+import { ApiResponse } from '@/src/lib/api-utils'
 import { analyzeProfile } from '@/src/lib/ai/profile-analyzer'
 import { logError } from '@/src/lib/error-logging'
 
@@ -36,15 +37,12 @@ export async function POST() {
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     // Rate limit
     if (!checkRateLimit(user.id)) {
-      return NextResponse.json(
-        { error: '일일 분석 한도(3회)를 초과했습니다.' },
-        { status: 429 }
-      )
+      return ApiResponse.rateLimited('일일 분석 한도(3회)를 초과했습니다.')
     }
 
     // 프로필 fetch
@@ -55,10 +53,7 @@ export async function POST() {
       .single()
 
     if (fetchError || !profile) {
-      return NextResponse.json(
-        { error: '프로필을 찾을 수 없습니다.' },
-        { status: 404 }
-      )
+      return ApiResponse.notFound('프로필을 찾을 수 없습니다.')
     }
 
     // 최소 데이터 검증
@@ -68,10 +63,7 @@ export async function POST() {
       (skills?.length || (profile.interest_tags as string[] | null)?.length)
 
     if (!hasMinimumData) {
-      return NextResponse.json(
-        { error: '분석을 위해 포지션과 스킬 또는 관심 태그가 필요합니다.' },
-        { status: 400 }
-      )
+      return ApiResponse.badRequest('분석을 위해 포지션과 스킬 또는 관심 태그가 필요합니다.')
     }
 
     // AI 분석
@@ -97,10 +89,7 @@ export async function POST() {
 
     if (updateError) {
       console.error('Failed to save analysis:', updateError)
-      return NextResponse.json(
-        { error: '분석 결과 저장에 실패했습니다.' },
-        { status: 500 }
-      )
+      return ApiResponse.internalError('분석 결과 저장에 실패했습니다.')
     }
 
     return NextResponse.json({ success: true, analysis })
@@ -115,6 +104,7 @@ export async function POST() {
       endpoint: '/api/profile/analyze',
       method: 'POST',
     })
-    return NextResponse.json({ error: err.message }, { status: 500 })
+    console.error('profile/analyze error:', err.message)
+    return ApiResponse.internalError()
   }
 }
