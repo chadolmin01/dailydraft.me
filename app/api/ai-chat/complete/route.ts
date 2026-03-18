@@ -3,6 +3,7 @@ import { createClient } from '@/src/lib/supabase/server'
 import { generateConversationSummary } from '@/src/lib/ai/chat-manager'
 import { generateProfileEmbedding } from '@/src/lib/ai/embeddings'
 import type { ChatMessage } from '@/src/types/profile'
+import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
 
 interface OnboardingData {
   nickname?: string
@@ -32,6 +33,9 @@ export async function POST(request: Request) {
     if (!user) {
       return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
     }
+
+    const rateLimitResponse = await checkAIRateLimit(user.id, getClientIp(request))
+    if (rateLimitResponse) return rateLimitResponse
 
     const { conversationHistory, onboardingData } = await request.json()
 
@@ -106,8 +110,7 @@ export async function POST(request: Request) {
     }
 
     // Update profile with summary, embedding, and onboarding data
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error: updateError } = await (supabase.from('profiles') as any)
+    const { error: updateError } = await supabase.from('profiles')
       .update(updateData)
       .eq('user_id', user.id)
 

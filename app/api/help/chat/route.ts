@@ -1,6 +1,7 @@
 import { chatModel } from '@/src/lib/ai/gemini-client'
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
 
 interface Message {
   role: 'user' | 'assistant'
@@ -43,6 +44,9 @@ export async function POST(request: Request) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return ApiResponse.unauthorized()
+
+    const rateLimitResponse = await checkAIRateLimit(user.id, getClientIp(request))
+    if (rateLimitResponse) return rateLimitResponse
 
     const body = await request.json()
     const { messages } = body as { messages: Message[] }

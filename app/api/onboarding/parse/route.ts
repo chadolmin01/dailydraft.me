@@ -1,6 +1,7 @@
 import { chatModel } from '@/src/lib/ai/gemini-client'
 import { createClient } from '@/src/lib/supabase/server'
 import { NextResponse } from 'next/server'
+import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
 
 export async function POST(request: Request) {
   try {
@@ -9,6 +10,9 @@ export async function POST(request: Request) {
     if (!user) {
       return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
     }
+
+    const rateLimitResponse = await checkAIRateLimit(user.id, getClientIp(request))
+    if (rateLimitResponse) return rateLimitResponse
 
     const { text, type } = await request.json()
 
