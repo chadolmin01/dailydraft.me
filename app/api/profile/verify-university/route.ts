@@ -1,6 +1,7 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
+import { ApiResponse } from '@/src/lib/api-utils'
 import { resend, FROM_EMAIL, isEmailEnabled } from '@/src/lib/email/client'
 import crypto from 'crypto'
 
@@ -48,7 +49,7 @@ export async function POST(request: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     const admin = getAdminClient()
@@ -58,13 +59,13 @@ export async function POST(request: NextRequest) {
     // === 인증 코드 발송 ===
     if (action === 'send') {
       if (!email || typeof email !== 'string') {
-        return NextResponse.json({ error: '이메일을 입력해주세요' }, { status: 400 })
+        return ApiResponse.badRequest('이메일을 입력해주세요')
       }
 
       const trimmedEmail = email.trim().toLowerCase()
 
       if (!isUniversityEmail(trimmedEmail)) {
-        return NextResponse.json({ error: '대학 이메일(.ac.kr, .edu)만 인증 가능합니다' }, { status: 400 })
+        return ApiResponse.badRequest('대학 이메일(.ac.kr, .edu)만 인증 가능합니다')
       }
 
       // 이미 인증된 유저인지 확인
@@ -75,7 +76,7 @@ export async function POST(request: NextRequest) {
         .single()
 
       if ((userData as { is_uni_verified: boolean | null } | null)?.is_uni_verified) {
-        return NextResponse.json({ error: '이미 인증된 계정입니다' }, { status: 400 })
+        return ApiResponse.badRequest('이미 인증된 계정입니다')
       }
 
       // DB에서 기존 인증 코드 조회 (rate limit + 재발송 간격 체크)
@@ -89,19 +90,19 @@ export async function POST(request: NextRequest) {
       if (existing) {
         // 잠금 상태 확인
         if (existing.locked_until && new Date(existing.locked_until) > now) {
-          return NextResponse.json({ error: '인증 시도 횟수를 초과했습니다. 15분 후 다시 시도해주세요' }, { status: 429 })
+          return ApiResponse.rateLimited('인증 시도 횟수를 초과했습니다. 15분 후 다시 시도해주세요')
         }
 
         // 시간당 발송 횟수 제한 (5회)
         const sendResetAt = new Date(existing.send_reset_at)
         if (now < sendResetAt && existing.send_count >= 5) {
-          return NextResponse.json({ error: '요청 횟수를 초과했습니다. 1시간 후 다시 시도해주세요' }, { status: 429 })
+          return ApiResponse.rateLimited('요청 횟수를 초과했습니다. 1시간 후 다시 시도해주세요')
         }
 
         // 1분 재발송 간격
         const updatedAt = new Date(existing.updated_at)
         if (now.getTime() - updatedAt.getTime() < 60 * 1000) {
-          return NextResponse.json({ error: '1분 후에 다시 시도해주세요' }, { status: 429 })
+          return ApiResponse.rateLimited('1분 후에 다시 시도해주세요')
         }
       }
 
@@ -131,7 +132,7 @@ export async function POST(request: NextRequest) {
         }, { onConflict: 'user_id' })
 
       if (upsertError) {
-        return NextResponse.json({ error: '서버 오류가 발생했습니다' }, { status: 500 })
+        return ApiResponse.internalError()
       }
 
       // 이메일 발송
@@ -159,7 +160,7 @@ export async function POST(request: NextRequest) {
       if (sendError) {
         // 발송 실패 시 DB 코드 삭제
         await admin.from('verification_codes').delete().eq('user_id', user.id)
-        return NextResponse.json({ error: '이메일 발송에 실패했습니다' }, { status: 500 })
+        return ApiResponse.internalError()
       }
 
       return NextResponse.json({ success: true })
@@ -168,7 +169,7 @@ export async function POST(request: NextRequest) {
     // === 인증 코드 확인 ===
     if (action === 'verify') {
       if (!code || typeof code !== 'string') {
-        return NextResponse.json({ error: '인증 코드를 입력해주세요' }, { status: 400 })
+        return ApiResponse.badRequest('인증 코드를 입력해주세요')
       }
 
       const now = new Date()
@@ -181,18 +182,18 @@ export async function POST(request: NextRequest) {
         .single()
 
       if (!stored) {
-        return NextResponse.json({ error: '인증 코드를 먼저 요청해주세요' }, { status: 400 })
+        return ApiResponse.badRequest('인증 코드를 먼저 요청해주세요')
       }
 
       // 잠금 상태 확인
       if (stored.locked_until && new Date(stored.locked_until) > now) {
-        return NextResponse.json({ error: '인증 시도 횟수를 초과했습니다. 15분 후 다시 시도해주세요' }, { status: 429 })
+        return ApiResponse.rateLimited('인증 시도 횟수를 초과했습니다. 15분 후 다시 시도해주세요')
       }
 
       // 만료 확인
       if (new Date(stored.expires_at) < now) {
         await admin.from('verification_codes').delete().eq('user_id', user.id)
-        return NextResponse.json({ error: '인증 코드가 만료되었습니다. 다시 요청해주세요' }, { status: 400 })
+        return ApiResponse.badRequest('인증 코드가 만료되었습니다. 다시 요청해주세요')
       }
 
       // 코드 비교 (타이밍 공격 방지)
@@ -215,14 +216,14 @@ export async function POST(request: NextRequest) {
               updated_at: now.toISOString(),
             })
             .eq('user_id', user.id)
-          return NextResponse.json({ error: '인증 시도 횟수를 초과했습니다. 15분 후 다시 시도해주세요' }, { status: 429 })
+          return ApiResponse.rateLimited('인증 시도 횟수를 초과했습니다. 15분 후 다시 시도해주세요')
         }
 
         await admin
           .from('verification_codes')
           .update({ attempts: newAttempts, updated_at: now.toISOString() })
           .eq('user_id', user.id)
-        return NextResponse.json({ error: `인증 코드가 일치하지 않습니다 (${newAttempts}/5)` }, { status: 400 })
+        return ApiResponse.badRequest(`인증 코드가 일치하지 않습니다 (${newAttempts}/5)`)
       }
 
       // 인증 성공 → DB 업데이트 + 코드 삭제
@@ -232,7 +233,7 @@ export async function POST(request: NextRequest) {
       ])
 
       if (usersResult.error && profilesResult.error) {
-        return NextResponse.json({ error: '인증 상태 저장에 실패했습니다' }, { status: 500 })
+        return ApiResponse.internalError()
       }
 
       // 인증 완료 → 코드 레코드 삭제
@@ -241,9 +242,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, verified: true })
     }
 
-    return NextResponse.json({ error: '잘못된 요청입니다' }, { status: 400 })
+    return ApiResponse.badRequest('잘못된 요청입니다')
   } catch {
-    return NextResponse.json({ error: '서버 오류가 발생했습니다' }, { status: 500 })
+    return ApiResponse.internalError()
   }
 }
 
@@ -254,7 +255,7 @@ export async function GET() {
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     const { data: userData } = await supabase
@@ -270,6 +271,6 @@ export async function GET() {
       university: d?.university || null,
     })
   } catch {
-    return NextResponse.json({ error: '서버 오류가 발생했습니다' }, { status: 500 })
+    return ApiResponse.internalError()
   }
 }

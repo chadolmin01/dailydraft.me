@@ -1,19 +1,20 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { chatModel } from '@/src/lib/ai/gemini-client'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 export async function POST(request: Request) {
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     const { title, type, painPoint, roles, locationType, timeCommitment, compensationType } = await request.json()
 
     if (!title?.trim()) {
-      return NextResponse.json({ error: '프로젝트 이름을 입력해주세요' }, { status: 400 })
+      return ApiResponse.badRequest('프로젝트 이름을 입력해주세요')
     }
 
     const typeLabel: Record<string, string> = {
@@ -79,9 +80,6 @@ ${infoLines.join('\n')}
     return NextResponse.json({ description })
   } catch (error) {
     console.error('Generate description error:', error)
-    return NextResponse.json(
-      { error: '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.' },
-      { status: 500 }
-    )
+    return ApiResponse.internalError()
   }
 }
