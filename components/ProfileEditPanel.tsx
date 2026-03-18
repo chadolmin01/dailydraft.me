@@ -2,8 +2,10 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import Image from 'next/image'
-import Cropper from 'react-easy-crop'
+import dynamic from 'next/dynamic'
 import type { Area } from 'react-easy-crop'
+
+const Cropper = dynamic(() => import('react-easy-crop').then(m => m.default), { ssr: false }) as unknown as React.ComponentType<Partial<import('react-easy-crop').CropperProps>>
 import {
   Save,
   Loader2,
@@ -354,7 +356,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
 
         {/* 사진 */}
         <section>
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-disabled uppercase tracking-widest mb-4 flex items-center gap-2">
+          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4 flex items-center gap-2">
             <Camera size={14} /> 사진
           </h3>
 
@@ -369,7 +371,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
                 <Image src={profile.cover_image_url} alt="cover" fill className="object-cover" />
               ) : (
                 <div className="w-full h-full bg-gradient-to-br from-surface-sunken to-border flex items-center justify-center">
-                  <ImageIcon size={20} className="text-txt-disabled" />
+                  <ImageIcon size={20} className="text-txt-tertiary" />
                 </div>
               )}
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 flex items-center justify-center transition-colors">
@@ -396,7 +398,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
                 {profile?.avatar_url ? (
                   <Image src={profile.avatar_url} alt="avatar" fill className="object-cover" />
                 ) : (
-                  <div className="w-full h-full bg-surface-sunken flex items-center justify-center text-xl font-bold text-txt-disabled">
+                  <div className="w-full h-full bg-surface-sunken flex items-center justify-center text-xl font-bold text-txt-tertiary">
                     {profile?.nickname?.slice(0, 2).toUpperCase() || 'U'}
                   </div>
                 )}
@@ -411,7 +413,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
               </button>
               <div className="text-xs text-txt-tertiary">
                 <p>클릭하여 사진을 변경하세요</p>
-                <p className="text-txt-disabled mt-0.5">최대 5MB, JPG/PNG</p>
+                <p className="text-txt-tertiary mt-0.5">최대 5MB, JPG/PNG</p>
               </div>
             </div>
           </div>
@@ -443,7 +445,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
 
         {/* 기본 정보 */}
         <section>
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-disabled uppercase tracking-widest mb-4 flex items-center gap-2">
+          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4 flex items-center gap-2">
             <User size={14} /> 기본 정보
           </h3>
           <div className="space-y-4">
@@ -468,14 +470,14 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
                 maxLength={200}
                 className="w-full px-3 py-2.5 text-sm border border-border bg-surface-card focus:outline-none focus:border-accent resize-none transition-colors"
               />
-              <p className={`text-xs mt-1 text-right font-mono ${vision.length >= 180 ? 'text-status-danger-text font-bold' : vision.length >= 150 ? 'text-status-warning-text' : 'text-txt-disabled'}`}>{vision.length}/200</p>
+              <p className={`text-xs mt-1 text-right font-mono ${vision.length >= 180 ? 'text-status-danger-text font-bold' : vision.length >= 150 ? 'text-status-warning-text' : 'text-txt-tertiary'}`}>{vision.length}/200</p>
             </div>
           </div>
         </section>
 
         {/* 현재 상황 */}
         <section>
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-disabled uppercase tracking-widest mb-4 flex items-center gap-2">
+          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4 flex items-center gap-2">
             <Target size={14} /> 현재 상황
           </h3>
           <div className="space-y-1.5">
@@ -498,7 +500,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
 
         {/* 소속 & 포지션 */}
         <section>
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-disabled uppercase tracking-widest mb-4 flex items-center gap-2">
+          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4 flex items-center gap-2">
             <Briefcase size={14} /> 소속 & 포지션
           </h3>
           <div className="space-y-4">
@@ -617,7 +619,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
             {(affiliationType === 'student' || affiliationType === 'graduate') && (
               <div className="mt-4 p-3 border border-border bg-surface-sunken">
                 <div className="flex items-center gap-2 mb-2">
-                  <ShieldCheck size={14} className={uniVerified ? 'text-indicator-online' : 'text-txt-disabled'} />
+                  <ShieldCheck size={14} className={uniVerified ? 'text-indicator-online' : 'text-txt-tertiary'} />
                   <span className="text-xs font-bold text-txt-secondary">
                     대학 인증
                   </span>
@@ -719,7 +721,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
 
         {/* 기술 스택 */}
         <section>
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-disabled uppercase tracking-widest mb-4 flex items-center gap-2">
+          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4 flex items-center gap-2">
             <CheckSquare size={14} /> 기술 스택
           </h3>
 
@@ -752,7 +754,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
                         className={`px-1.5 py-0.5 text-[0.625rem]transition-colors ${
                           skill.level === level
                             ? 'bg-brand text-white'
-                            : 'text-txt-disabled hover:text-txt-secondary'
+                            : 'text-txt-tertiary hover:text-txt-secondary'
                         }`}
                       >
                         {level}
@@ -761,7 +763,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
                   </div>
                   <button
                     onClick={() => removeSkill(skill.name)}
-                    className="p-0.5 text-txt-disabled hover:text-txt-secondary transition-colors"
+                    className="p-0.5 text-txt-tertiary hover:text-txt-secondary transition-colors"
                   >
                     <X size={12} />
                   </button>
@@ -802,7 +804,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
 
         {/* 연락처 */}
         <section>
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-disabled uppercase tracking-widest mb-4 flex items-center gap-2">
+          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4 flex items-center gap-2">
             <Mail size={14} /> 연락처
           </h3>
           <div>
@@ -814,13 +816,13 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
               placeholder={user?.email || 'email@example.com'}
               className="w-full px-3 py-2.5 text-sm border border-border bg-surface-card focus:outline-none focus:border-accent transition-colors"
             />
-            <p className="text-xs text-txt-disabled mt-1">커피챗 수락 시 상대방에게 공개됩니다</p>
+            <p className="text-xs text-txt-tertiary mt-1">커피챗 수락 시 상대방에게 공개됩니다</p>
           </div>
         </section>
 
         {/* 소셜 링크 */}
         <section>
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-disabled uppercase tracking-widest mb-4 flex items-center gap-2">
+          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4 flex items-center gap-2">
             <Link size={14} /> 소셜 링크
           </h3>
           <div className="space-y-3">
@@ -861,12 +863,12 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
               />
             </div>
           </div>
-          <p className="text-xs text-txt-disabled mt-2">프로필에 표시되어 다른 사용자가 볼 수 있습니다</p>
+          <p className="text-xs text-txt-tertiary mt-2">프로필에 표시되어 다른 사용자가 볼 수 있습니다</p>
         </section>
 
         {/* 관심 분야 */}
         <section>
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-disabled uppercase tracking-widest mb-4 flex items-center gap-2">
+          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4 flex items-center gap-2">
             <Hash size={14} /> 관심 분야
           </h3>
 
@@ -926,7 +928,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
 
         {/* AI 프로필 분석 */}
         <section>
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-disabled uppercase tracking-widest mb-4 flex items-center gap-2">
+          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4 flex items-center gap-2">
             <Sparkles size={14} /> AI 프로필 분석
           </h3>
           <p className="text-xs text-txt-tertiary mb-4">온보딩 AI 대화에서 분석된 데이터입니다. 직접 수정할 수 있어요.</p>
@@ -943,7 +945,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
               <div key={item.key}>
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-xs text-txt-secondary">{item.label}</span>
-                  <span className="text-xs font-mono text-txt-disabled">{personality[item.key]}/10</span>
+                  <span className="text-xs font-mono text-txt-tertiary">{personality[item.key]}/10</span>
                 </div>
                 <input
                   type="range"
@@ -953,8 +955,8 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
                   className="w-full h-1.5 accent-brand cursor-pointer"
                 />
                 <div className="flex justify-between">
-                  <span className="text-[9px] text-txt-disabled font-mono">{item.low}</span>
-                  <span className="text-[9px] text-txt-disabled font-mono">{item.high}</span>
+                  <span className="text-[9px] text-txt-tertiary font-mono">{item.low}</span>
+                  <span className="text-[9px] text-txt-tertiary font-mono">{item.high}</span>
                 </div>
               </div>
             ))}
@@ -971,7 +973,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
               <div key={item.key}>
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-xs text-txt-secondary">{item.label}</span>
-                  <span className="text-xs font-mono text-txt-disabled">{workStyle[item.key]}/10</span>
+                  <span className="text-xs font-mono text-txt-tertiary">{workStyle[item.key]}/10</span>
                 </div>
                 <input
                   type="range"
@@ -981,8 +983,8 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
                   className="w-full h-1.5 accent-brand cursor-pointer"
                 />
                 <div className="flex justify-between">
-                  <span className="text-[9px] text-txt-disabled font-mono">{item.low}</span>
-                  <span className="text-[9px] text-txt-disabled font-mono">{item.high}</span>
+                  <span className="text-[9px] text-txt-tertiary font-mono">{item.low}</span>
+                  <span className="text-[9px] text-txt-tertiary font-mono">{item.high}</span>
                 </div>
               </div>
             ))}
@@ -1036,7 +1038,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
                   placeholder="예: 15"
                   className="w-32 px-3 py-2 text-sm border border-border bg-surface-card focus:outline-none focus:border-accent transition-colors"
                 />
-                <span className="text-xs text-txt-disabled">시간</span>
+                <span className="text-xs text-txt-tertiary">시간</span>
               </div>
             </div>
             <label className="flex items-center gap-2 cursor-pointer">
@@ -1079,7 +1081,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
 
     {/* 이미지 크롭 모달 */}
     {cropImage && (
-      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm">
+      <div className="fixed inset-0 z-popover flex items-center justify-center bg-black/70 backdrop-blur-sm">
         <div className="bg-surface-card border border-border-strong shadow-brutal-xl w-full max-w-lg mx-4 flex flex-col">
           {/* 헤더 */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-border-strong bg-surface-sunken">
@@ -1111,7 +1113,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
           {/* 줌 슬라이더 */}
           <div className="px-4 py-3 border-t border-border">
             <div className="flex items-center gap-3">
-              <span className="text-[0.625rem] font-mono text-txt-disabled">ZOOM</span>
+              <span className="text-[0.625rem] font-mono text-txt-tertiary">ZOOM</span>
               <input
                 type="range"
                 min={1} max={3} step={0.1}
@@ -1119,7 +1121,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
                 onChange={e => setZoom(Number(e.target.value))}
                 className="flex-1 h-1.5 accent-brand cursor-pointer"
               />
-              <span className="text-[0.625rem] font-mono text-txt-disabled w-8 text-right">{zoom.toFixed(1)}x</span>
+              <span className="text-[0.625rem] font-mono text-txt-tertiary w-8 text-right">{zoom.toFixed(1)}x</span>
             </div>
           </div>
 

@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import {
   ArrowRight, Heart, Coffee, Users, Clock,
@@ -8,7 +9,6 @@ import {
   Sparkles, X, Share2,
   Eye, ExternalLink, Github, FileText, Globe, Edit3, Code
 } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { useOpportunity, useUpdateOpportunity } from '@/src/hooks/useOpportunities'
 import { useProfileByUserId } from '@/src/hooks/usePublicProfiles'
 import { useProjectUpdates } from '@/src/hooks/useProjectUpdates'
@@ -69,6 +69,17 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
   const { data: creator } = useProfileByUserId(opportunity?.creator_id ?? undefined)
   const { data: updates = [] } = useProjectUpdates(opportunity?.id)
 
+  // Match analysis — lightweight fetch, only for logged-in non-owners
+  const [matchScore, setMatchScore] = useState<number | null>(null)
+  useEffect(() => {
+    setMatchScore(null)
+    if (!projectId || !user) return
+    fetch(`/api/opportunities/${projectId}/match-analysis`)
+      .then(res => res.ok ? res.json() : null)
+      .then(data => { if (data?.overallScore != null) setMatchScore(data.overallScore) })
+      .catch(() => {})
+  }, [projectId, user])
+
   const isOwner = !!(user && opportunity && user.id === opportunity.creator_id)
   const existingChat = myChatsForProject.length > 0 ? myChatsForProject[0] : null
 
@@ -77,6 +88,13 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
     setShowCoffeeChatForm(false)
     setHasInterested(false)
     setShowTypeSelector(false)
+  }, [projectId])
+
+  // 조회수 트래킹
+  useEffect(() => {
+    if (projectId) {
+      fetch(`/api/opportunities/${projectId}/view`, { method: 'POST' }).catch(() => {})
+    }
   }, [projectId])
 
   useEffect(() => {
@@ -153,25 +171,18 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
     : 0
 
   return (
-    <AnimatePresence>
+    <>
       {projectId && (
         <>
           {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+          <div
             onClick={onClose}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-modal-backdrop"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-modal-backdrop animate-backdrop-in"
           />
 
           {/* Modal */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed inset-0 z-modal flex items-center justify-center p-4 md:p-8"
+          <div
+            className="fixed inset-0 z-modal flex items-center justify-center p-4 md:p-8 animate-modal-in"
             onClick={onClose}
           >
             <div
@@ -182,13 +193,13 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
               aria-label={opportunity?.title || '프로젝트 상세'}
             >
               {/* macOS-style Window Bar */}
-              <div className="bg-surface-sunken border-b border-border-strong px-3 sm:px-5 py-1.5 flex items-center justify-between shrink-0">
+              <div className="bg-surface-sunken border-b border-border-strong px-3 sm:px-4 h-10 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-2">
-                  <button onClick={onClose} className="group w-5 h-5 sm:w-3 sm:h-3 rounded-full bg-[#FF5F57] hover:brightness-90 transition-all relative flex items-center justify-center" aria-label="닫기">
-                    <X size={10} className="text-[#FF5F57] group-hover:text-[#4A0002] transition-colors sm:w-[0.4375rem] sm:h-[0.4375rem]" />
+                  <button onClick={onClose} className="group w-3 h-3 rounded-full bg-[#FF5F57] hover:brightness-90 transition-all relative flex items-center justify-center" aria-label="닫기">
+                    <X size={7} className="text-[#FF5F57] group-hover:text-[#4A0002] transition-colors" />
                   </button>
-                  <div className="w-3 h-3 rounded-full bg-[#FEBC2E] hidden sm:block" />
-                  <div className="w-3 h-3 rounded-full bg-[#28C840] hidden sm:block" />
+                  <div className="w-3 h-3 rounded-full bg-[#FEBC2E]" />
+                  <div className="w-3 h-3 rounded-full bg-[#28C840]" />
                 </div>
                 {!loading && opportunity && (
                   <div className="flex items-center gap-2">
@@ -196,7 +207,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                       <div className="relative">
                         <button
                           onClick={() => setShowTypeSelector(!showTypeSelector)}
-                          className="text-[0.625rem] font-mono font-bold px-2 py-0.5 bg-surface-sunken text-txt-tertiary border border-border uppercase tracking-wider hover:border-border-strong hover:text-txt-secondary transition-colors flex items-center gap-1"
+                          className="text-[0.625rem] font-mono font-bold px-2 py-0.5 bg-surface-card text-txt-tertiary border border-border uppercase tracking-wider hover:border-border-strong hover:text-txt-secondary transition-colors flex items-center gap-1"
                         >
                           {opportunity.type === 'side_project' ? 'SIDE PROJECT' :
                            opportunity.type === 'startup' ? 'STARTUP' :
@@ -231,7 +242,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                         )}
                       </div>
                     ) : (
-                      <span className="text-[0.625rem] font-mono font-bold px-2 py-0.5 bg-surface-sunken text-txt-tertiary border border-border uppercase tracking-wider">
+                      <span className="text-[0.625rem] font-mono font-bold px-2 py-0.5 bg-surface-card text-txt-tertiary border border-border uppercase tracking-wider">
                         {opportunity.type === 'side_project' ? 'SIDE PROJECT' :
                          opportunity.type === 'startup' ? 'STARTUP' :
                          opportunity.type === 'study' ? 'STUDY' : opportunity.type?.toUpperCase() || 'PROJECT'}
@@ -287,18 +298,33 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                       <>
                         {/* Hero Cover — first image as background */}
                         <div className="relative h-48 sm:h-56 overflow-hidden">
-                          <img
+                          <Image
                             src={opportunity.demo_images[0]}
                             alt={opportunity.title}
-                            className="w-full h-full object-cover"
+                            fill
+                            priority
+                            sizes="(max-width:768px) 100vw, 768px"
+                            className="object-cover"
+                            quality={90}
+                            onError={(e) => { e.currentTarget.style.display = 'none' }}
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
 
                           {/* Title & Meta overlay */}
                           <div className="absolute bottom-0 left-0 right-0 px-4 sm:px-8 pb-4 sm:pb-5">
-                            <h2 className="text-xl sm:text-2xl font-bold text-white mb-2 break-keep leading-tight drop-shadow-sm">
-                              {opportunity.title}
-                            </h2>
+                            <div className="flex items-start gap-2 mb-2">
+                              <h2 className="text-xl sm:text-2xl font-bold text-white break-keep leading-tight drop-shadow-sm">
+                                {opportunity.title}
+                              </h2>
+                              {!isOwner && matchScore != null && matchScore >= 60 && (
+                                <span className={`text-[0.625rem] font-mono font-bold px-1.5 py-0.5 border shrink-0 mt-1 ${
+                                  matchScore >= 80 ? 'bg-status-success-bg text-status-success-text border-indicator-online/20'
+                                  : 'bg-white/20 text-white/80 border-white/30'
+                                }`}>
+                                  {matchScore >= 80 ? '잘 맞는 프로젝트' : '관심 가능'}
+                                </span>
+                              )}
+                            </div>
                             <div className="flex flex-wrap items-center gap-3 text-sm text-white/70">
                               {creator ? (
                                 <span className="flex items-center gap-2">
@@ -335,7 +361,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                           {opportunity.interest_tags && opportunity.interest_tags.length > 0 && (
                             <div className="flex flex-wrap gap-1.5">
                               {opportunity.interest_tags.map((tag) => (
-                                <span key={tag} className="px-2.5 py-1 bg-surface-sunken text-txt-tertiary text-xs border border-border">
+                                <span key={tag} className="px-2.5 py-1 bg-surface-card text-txt-tertiary text-xs border border-border">
                                   {tag}
                                 </span>
                               ))}
@@ -367,12 +393,17 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                           <div className="px-4 sm:px-8 pb-3">
                             <div className="flex gap-2 overflow-x-auto">
                               {opportunity.demo_images.slice(1).map((src, idx) => (
-                                <img
-                                  key={idx}
-                                  src={src}
-                                  alt={`${opportunity.title} 이미지 ${idx + 2}`}
-                                  className="h-24 w-auto border border-border-strong object-cover shrink-0"
-                                />
+                                <div key={idx} className="relative h-24 w-32 shrink-0 border border-border-strong">
+                                  <Image
+                                    src={src}
+                                    alt={`${opportunity.title} 이미지 ${idx + 2}`}
+                                    fill
+                                    sizes="128px"
+                                    className="object-cover"
+                                    quality={85}
+                                    onError={(e) => { e.currentTarget.style.display = 'none' }}
+                                  />
+                                </div>
                               ))}
                             </div>
                           </div>
@@ -381,9 +412,19 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                     ) : (
                       /* Plain Header — no images */
                       <div className="px-4 sm:px-8 pt-4 sm:pt-6 pb-3">
-                        <h2 className="text-2xl font-bold text-txt-primary mb-3 break-keep leading-tight">
-                          {opportunity.title}
-                        </h2>
+                        <div className="flex items-start gap-2 mb-3">
+                          <h2 className="text-2xl font-bold text-txt-primary break-keep leading-tight">
+                            {opportunity.title}
+                          </h2>
+                          {!isOwner && matchScore != null && matchScore >= 60 && (
+                            <span className={`text-[0.625rem] font-mono font-bold px-1.5 py-0.5 border shrink-0 mt-1 ${
+                              matchScore >= 80 ? 'bg-status-success-bg text-status-success-text border-indicator-online/20'
+                              : 'bg-brand-bg text-brand border-brand-border'
+                            }`}>
+                              {matchScore >= 80 ? '잘 맞는 프로젝트' : '관심 가능'}
+                            </span>
+                          )}
+                        </div>
                         <div className="flex flex-wrap items-center gap-4 text-sm text-txt-tertiary">
                           {creator ? (
                             <span className="flex items-center gap-2">
@@ -415,7 +456,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                         {opportunity.interest_tags && opportunity.interest_tags.length > 0 && (
                           <div className="flex flex-wrap gap-1.5 mt-3">
                             {opportunity.interest_tags.map((tag) => (
-                              <span key={tag} className="px-2.5 py-1 bg-surface-sunken text-txt-tertiary text-xs border border-border">
+                              <span key={tag} className="px-2.5 py-1 bg-surface-card text-txt-tertiary text-xs border border-border">
                                 {tag}
                               </span>
                             ))}
@@ -463,7 +504,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
 
                           {/* Pain Point */}
                           {opportunity.pain_point && (
-                            <section className="bg-surface-sunken border border-border-strong p-5">
+                            <section className="bg-surface-card border border-border-strong p-5">
                               <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-2">
                                 해결하려는 문제
                               </h3>
@@ -574,7 +615,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                               </h3>
                               <div className="space-y-2">
                                 {opportunity.needed_roles.map((role) => (
-                                  <div key={role} className="flex items-center justify-between py-2.5 px-3 bg-surface-sunken border border-border-strong">
+                                  <div key={role} className="flex items-center justify-between py-2.5 px-3 bg-surface-card border border-border-strong">
                                     <div className="flex items-center gap-2">
                                       <Briefcase size={14} className="text-txt-disabled" />
                                       <span className="text-sm text-txt-secondary">{role}</span>
@@ -611,7 +652,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                                 {(opportunity.needed_skills as Array<{ name: string; level?: string }>).map((skill, i) => (
                                   <span
                                     key={i}
-                                    className="inline-flex items-center gap-1 px-2 py-1 bg-surface-sunken border border-border text-xs text-txt-secondary"
+                                    className="inline-flex items-center gap-1 px-2 py-1 bg-surface-card border border-border text-xs text-txt-secondary"
                                   >
                                     <Code size={10} className="text-txt-disabled" />
                                     {skill.name}
@@ -695,7 +736,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                                       href={link.url}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className="flex items-center gap-2.5 py-2 px-3 bg-surface-sunken border border-border hover:border-border-strong transition-colors group"
+                                      className="flex items-center gap-2.5 py-2 px-3 bg-surface-card border border-border hover:border-border-strong transition-colors group"
                                     >
                                       <LinkIcon size={14} className="text-txt-disabled group-hover:text-txt-primary transition-colors shrink-0" />
                                       <span className="text-sm text-txt-secondary group-hover:text-txt-primary transition-colors truncate">
@@ -763,30 +804,17 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                   </div>
 
                   {/* Coffee Chat Form Overlay (Authenticated) */}
-                  <AnimatePresence>
-                    {showCoffeeChatForm && opportunity && (
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="absolute inset-0 bg-black/60 z-20 flex flex-col items-center justify-center p-4 sm:p-8 overflow-y-auto"
-                      >
-                        <motion.div
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: 20 }}
-                          transition={{ delay: 0.1 }}
-                          className="w-full max-w-sm sm:max-w-md bg-surface-card border border-border-strong p-6 sm:p-8 shadow-brutal-xl"
-                        >
-                          <CoffeeChatRequestForm
-                            opportunityId={opportunity.id}
-                            onClose={() => { setShowCoffeeChatForm(false); setSelectedRole(undefined) }}
-                            selectedRole={selectedRole}
-                          />
-                        </motion.div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                  {showCoffeeChatForm && opportunity && (
+                    <div className="absolute inset-0 bg-black/60 z-20 flex flex-col items-center justify-center p-4 sm:p-8 overflow-y-auto animate-backdrop-in">
+                      <div className="w-full max-w-sm sm:max-w-md bg-surface-card border border-border-strong p-6 sm:p-8 shadow-brutal-xl animate-modal-in">
+                        <CoffeeChatRequestForm
+                          opportunityId={opportunity.id}
+                          onClose={() => { setShowCoffeeChatForm(false); setSelectedRole(undefined) }}
+                          selectedRole={selectedRole}
+                        />
+                      </div>
+                    </div>
+                  )}
 
                   {/* Write Update Modal (Owner) */}
                   {opportunity && (
@@ -799,57 +827,44 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                   )}
 
                   {/* Signup CTA Overlay (Non-authenticated) */}
-                  <AnimatePresence>
-                    {showCta && (
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="absolute inset-0 bg-black/60 z-20 flex flex-col items-center justify-center p-4 sm:p-8 text-center overflow-y-auto"
-                      >
-                        <motion.div
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: 20 }}
-                          transition={{ delay: 0.1 }}
-                          className="w-full max-w-sm sm:max-w-md bg-surface-card border border-border-strong p-6 sm:p-8 shadow-brutal-xl"
+                  {showCta && (
+                    <div className="absolute inset-0 bg-black/60 z-20 flex flex-col items-center justify-center p-4 sm:p-8 text-center overflow-y-auto animate-backdrop-in">
+                      <div className="w-full max-w-sm sm:max-w-md bg-surface-card border border-border-strong p-6 sm:p-8 shadow-brutal-xl animate-modal-in">
+                        <div className="w-14 h-14 bg-black flex items-center justify-center mb-6 mx-auto">
+                          <span className="text-white font-black text-xl font-mono">D</span>
+                        </div>
+                        <h3 className="text-xl font-bold text-txt-primary mb-2">
+                          이 프로젝트에 관심이 있으신가요?
+                        </h3>
+                        <p className="text-txt-tertiary mb-8 leading-relaxed break-keep max-w-sm text-sm mx-auto">
+                          Draft에 가입하면 관심 표현, 커피챗 신청,
+                          피드백 주고받기까지 모두 가능해요.
+                        </p>
+                        <button
+                          onClick={handleSignup}
+                          className="bg-black hover:bg-[#333] text-white px-8 py-3.5 font-bold text-sm flex items-center gap-2 transition-colors mx-auto mb-3 border border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
                         >
-                          <div className="w-14 h-14 bg-black flex items-center justify-center mb-6 mx-auto">
-                            <span className="text-white font-black text-xl font-mono">D</span>
-                          </div>
-                          <h3 className="text-xl font-bold text-txt-primary mb-2">
-                            이 프로젝트에 관심이 있으신가요?
-                          </h3>
-                          <p className="text-txt-tertiary mb-8 leading-relaxed break-keep max-w-sm text-sm mx-auto">
-                            Draft에 가입하면 관심 표현, 커피챗 신청,
-                            피드백 주고받기까지 모두 가능해요.
-                          </p>
-                          <button
-                            onClick={handleSignup}
-                            className="bg-black hover:bg-[#333] text-white px-8 py-3.5 font-bold text-sm flex items-center gap-2 transition-colors mx-auto mb-3 border border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
-                          >
-                            무료로 시작하기
-                            <ArrowRight size={16} />
-                          </button>
-                          <p className="text-[0.625rem] font-mono text-txt-disabled uppercase tracking-wider mb-6">
-                            가입 30초 · 무료 · 바로 사용 가능
-                          </p>
-                          <button
-                            onClick={() => setShowCta(false)}
-                            className="text-sm text-txt-disabled hover:text-txt-secondary transition-colors"
-                          >
-                            돌아가기
-                          </button>
-                        </motion.div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                          무료로 시작하기
+                          <ArrowRight size={16} />
+                        </button>
+                        <p className="text-[0.625rem] font-mono text-txt-disabled uppercase tracking-wider mb-6">
+                          가입 30초 · 무료 · 바로 사용 가능
+                        </p>
+                        <button
+                          onClick={() => setShowCta(false)}
+                          className="text-sm text-txt-disabled hover:text-txt-secondary transition-colors"
+                        >
+                          돌아가기
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </>
               )}
             </div>
-          </motion.div>
+          </div>
         </>
       )}
-    </AnimatePresence>
+    </>
   )
 }

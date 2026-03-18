@@ -3,7 +3,10 @@
 import React, { useState, useEffect, useCallback, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ArrowLeft, Loader2, Plus, X, Sparkles, ImagePlus, Code2, Palette, Lightbulb, Megaphone, Users, BarChart3, MapPin, Clock, Calendar, Crop, Check, Star, AlertCircle } from 'lucide-react'
-import Cropper, { Area } from 'react-easy-crop'
+import dynamic from 'next/dynamic'
+import type { Area } from 'react-easy-crop'
+
+const Cropper = dynamic(() => import('react-easy-crop').then(m => m.default), { ssr: false }) as unknown as React.ComponentType<Partial<import('react-easy-crop').CropperProps>>
 import { toast } from 'sonner'
 import { useCreateOpportunity } from '@/src/hooks/useOpportunities'
 

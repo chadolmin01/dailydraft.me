@@ -8,9 +8,9 @@ import {
   Briefcase, MapPin, Calendar, ChevronRight, Loader2, AlertCircle,
   MessageCircle, ExternalLink, Sparkles
 } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { supabase } from '@/src/lib/supabase/client'
 import { useAuth } from '@/src/context/AuthContext'
+import { useOpportunity } from '@/src/hooks/useOpportunities'
+import { useProfileByUserId } from '@/src/hooks/usePublicProfiles'
 import { useCoffeeChats } from '@/src/hooks/useCoffeeChats'
 import { useProjectUpdates } from '@/src/hooks/useProjectUpdates'
 import { WriteUpdateForm } from '@/components/WriteUpdateForm'
@@ -60,20 +60,13 @@ const updateTypeConfig: Record<string, { label: string; color: string }> = {
 
 // CTA Overlay Component
 const SignupCTA: React.FC<{ onClose: () => void; onSignup: () => void }> = ({ onClose, onSignup }) => (
-  <motion.div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0 }}
-    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+  <div
+    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 animate-backdrop-in"
     onClick={onClose}
   >
-    <motion.div
-      initial={{ scale: 0.95, y: 20 }}
-      animate={{ scale: 1, y: 0 }}
-      exit={{ scale: 0.95, y: 20 }}
-      transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+    <div
       onClick={(e) => e.stopPropagation()}
-      className="bg-surface-card w-full max-w-sm p-8 text-center shadow-brutal border border-border-strong"
+      className="bg-surface-card w-full max-w-sm p-8 text-center shadow-brutal border border-border-strong animate-modal-in"
     >
       <div className="w-16 h-16 bg-black flex items-center justify-center mx-auto mb-6">
         <span className="text-white font-black text-2xl font-mono">D</span>
@@ -101,64 +94,40 @@ const SignupCTA: React.FC<{ onClose: () => void; onSignup: () => void }> = ({ on
       >
         돌아가기
       </button>
-    </motion.div>
-  </motion.div>
+    </div>
+  </div>
 )
 
 // Main Component
 export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
   const router = useRouter()
   const { user } = useAuth()
-  const [opportunity, setOpportunity] = useState<OpportunityData | null>(null)
-  const [creator, setCreator] = useState<CreatorProfile | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [showCta, setShowCta] = useState(false)
   const [showCoffeeChatForm, setShowCoffeeChatForm] = useState(false)
   const [copied, setCopied] = useState(false)
   const [showWriteUpdate, setShowWriteUpdate] = useState(false)
 
+  const { data: oppData, isLoading: loading, isError } = useOpportunity(id)
+  const opportunity = oppData as OpportunityData | null
+  const error = isError ? '프로젝트를 찾을 수 없습니다.' : null
+
+  const { data: creatorProfile } = useProfileByUserId(opportunity?.creator_id)
+  const creator = creatorProfile ? {
+    nickname: creatorProfile.nickname,
+    user_id: creatorProfile.user_id,
+    skills: creatorProfile.skills,
+    desired_position: creatorProfile.desired_position,
+    university: creatorProfile.university,
+    location: creatorProfile.location,
+  } as CreatorProfile : null
+
   const { data: realUpdates = [] } = useProjectUpdates(id)
 
+  // 조회수 트래킹
   useEffect(() => {
-    let cancelled = false
-    const fetchData = async () => {
-      try {
-        const { data: oppData, error: oppError } = await supabase
-          .from('opportunities')
-          .select('*')
-          .eq('id', id)
-          .single()
-
-        if (cancelled) return
-
-        if (oppError) {
-          setError('프로젝트를 찾을 수 없습니다.')
-          return
-        }
-
-        setOpportunity(oppData as OpportunityData)
-
-        if (oppData.creator_id) {
-          const { data: profileData } = await supabase
-            .from('profiles')
-            .select('nickname, user_id, skills, desired_position, university, location')
-            .eq('user_id', oppData.creator_id)
-            .single()
-
-          if (!cancelled && profileData) {
-            setCreator(profileData as CreatorProfile)
-          }
-        }
-      } catch {
-        if (!cancelled) setError('데이터를 불러오는 중 오류가 발생했습니다.')
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
+    if (id) {
+      fetch(`/api/opportunities/${id}/view`, { method: 'POST' }).catch(() => {})
     }
-
-    fetchData()
-    return () => { cancelled = true }
   }, [id])
 
   // ESC to close CTA
@@ -689,9 +658,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
       )}
 
       {/* Signup CTA Overlay (Non-authenticated) */}
-      <AnimatePresence>
-        {showCta && <SignupCTA onClose={() => setShowCta(false)} onSignup={handleSignup} />}
-      </AnimatePresence>
+      {showCta && <SignupCTA onClose={() => setShowCta(false)} onSignup={handleSignup} />}
     </div>
   )
 }
