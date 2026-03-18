@@ -9,8 +9,9 @@ import {
   MessageCircle, ExternalLink, Sparkles
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { supabase } from '@/src/lib/supabase/client'
 import { useAuth } from '@/src/context/AuthContext'
+import { useOpportunity } from '@/src/hooks/useOpportunities'
+import { useProfileByUserId } from '@/src/hooks/usePublicProfiles'
 import { useCoffeeChats } from '@/src/hooks/useCoffeeChats'
 import { useProjectUpdates } from '@/src/hooks/useProjectUpdates'
 import { WriteUpdateForm } from '@/components/WriteUpdateForm'
@@ -109,14 +110,24 @@ const SignupCTA: React.FC<{ onClose: () => void; onSignup: () => void }> = ({ on
 export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
   const router = useRouter()
   const { user } = useAuth()
-  const [opportunity, setOpportunity] = useState<OpportunityData | null>(null)
-  const [creator, setCreator] = useState<CreatorProfile | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [showCta, setShowCta] = useState(false)
   const [showCoffeeChatForm, setShowCoffeeChatForm] = useState(false)
   const [copied, setCopied] = useState(false)
   const [showWriteUpdate, setShowWriteUpdate] = useState(false)
+
+  const { data: oppData, isLoading: loading, isError } = useOpportunity(id)
+  const opportunity = oppData as OpportunityData | null
+  const error = isError ? '프로젝트를 찾을 수 없습니다.' : null
+
+  const { data: creatorProfile } = useProfileByUserId(opportunity?.creator_id)
+  const creator = creatorProfile ? {
+    nickname: creatorProfile.nickname,
+    user_id: creatorProfile.user_id,
+    skills: creatorProfile.skills,
+    desired_position: creatorProfile.desired_position,
+    university: creatorProfile.university,
+    location: creatorProfile.location,
+  } as CreatorProfile : null
 
   const { data: realUpdates = [] } = useProjectUpdates(id)
 
@@ -125,47 +136,6 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
     if (id) {
       fetch(`/api/opportunities/${id}/view`, { method: 'POST' }).catch(() => {})
     }
-  }, [id])
-
-  useEffect(() => {
-    let cancelled = false
-    const fetchData = async () => {
-      try {
-        const { data: oppData, error: oppError } = await supabase
-          .from('opportunities')
-          .select('*')
-          .eq('id', id)
-          .single()
-
-        if (cancelled) return
-
-        if (oppError) {
-          setError('프로젝트를 찾을 수 없습니다.')
-          return
-        }
-
-        setOpportunity(oppData as OpportunityData)
-
-        if (oppData.creator_id) {
-          const { data: profileData } = await supabase
-            .from('profiles')
-            .select('nickname, user_id, skills, desired_position, university, location')
-            .eq('user_id', oppData.creator_id)
-            .single()
-
-          if (!cancelled && profileData) {
-            setCreator(profileData as CreatorProfile)
-          }
-        }
-      } catch {
-        if (!cancelled) setError('데이터를 불러오는 중 오류가 발생했습니다.')
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
-
-    fetchData()
-    return () => { cancelled = true }
   }, [id])
 
   // ESC to close CTA
