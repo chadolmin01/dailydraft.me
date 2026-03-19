@@ -1,4 +1,3 @@
-// @ts-nocheck — Supabase types pending for subscription/payment tables (hidden feature)
 /**
  * 결제 실패 처리 시스템
  * - 유예 기간 관리

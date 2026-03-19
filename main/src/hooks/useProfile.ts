@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase/client'
 import { useAuth } from '../context/AuthContext'
 import type { Tables, TablesUpdate } from '../types/database'
+import { withRetry } from '../lib/query-utils'
 
 type Profile = Tables<'profiles'>
 type ProfileUpdate = TablesUpdate<'profiles'>
@@ -12,19 +13,6 @@ type ProfileUpdate = TablesUpdate<'profiles'>
 export const profileKeys = {
   all: ['profiles'] as const,
   detail: (userId: string) => [...profileKeys.all, userId] as const,
-}
-
-// AbortError 방어: 실패 시 1회 재시도
-async function withRetry<T>(fn: () => Promise<T>, retries = 1): Promise<T> {
-  try {
-    return await fn()
-  } catch (err) {
-    if (retries > 0 && err instanceof DOMException && err.name === 'AbortError') {
-      await new Promise(r => setTimeout(r, 300))
-      return withRetry(fn, retries - 1)
-    }
-    throw err
-  }
 }
 
 // Fetch current user's profile

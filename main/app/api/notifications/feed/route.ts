@@ -1,5 +1,6 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { NextResponse } from 'next/server'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 export interface NotificationItem {
   id: string
@@ -18,7 +19,7 @@ export async function GET() {
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     const notifications: NotificationItem[] = []
@@ -186,6 +187,6 @@ export async function GET() {
     return NextResponse.json(notifications.slice(0, 10))
   } catch (error) {
     console.error('Failed to fetch notifications:', error)
-    return NextResponse.json({ error: '알림 피드를 불러올 수 없습니다' }, { status: 500 })
+    return ApiResponse.internalError('알림 피드를 불러올 수 없습니다')
   }
 }

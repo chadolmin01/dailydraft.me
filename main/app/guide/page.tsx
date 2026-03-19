@@ -6,5 +6,5 @@ import { LoadingGuide } from '@/components/LoadingGuide'
 export default function GuidePage() {
   const router = useRouter()
 
-  return <LoadingGuide onComplete={() => router.push('/dashboard')} />
+  return <LoadingGuide onComplete={() => router.push('/explore')} />
 }

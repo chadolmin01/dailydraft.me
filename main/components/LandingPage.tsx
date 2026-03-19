@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import {
   Sparkles, Users, Calendar, FileText, ArrowRight, CheckCircle2,
@@ -8,7 +8,6 @@ import {
   ChevronRight, Plus, Minus, Search, Settings, Share2, BarChart3,
   AlertTriangle, FileQuestion, Unplug, XCircle, Rocket, Loader2
 } from 'lucide-react'
-import { motion, type Variants } from 'framer-motion'
 import { supabase } from '@/src/lib/supabase/client'
 
 // --- Components Helpers ---
@@ -32,20 +31,22 @@ const TechnicalDivider = () => (
   </div>
 )
 
-// Animation Variants
-const fadeInUp: Variants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
-}
-
-const staggerContainer: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
+// Scroll-triggered fade-in component (replaces framer-motion whileInView)
+const FadeInView: React.FC<{ children: React.ReactNode; className?: string; delay?: number }> = ({ children, className, delay }) => {
+  const ref = useRef<HTMLDivElement>(null)
+  const [visible, setVisible] = useState(false)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect() } }, { rootMargin: '-100px' })
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [])
+  return (
+    <div ref={ref} className={`${visible ? 'animate-fade-in-up' : 'opacity-0'} ${className || ''}`} style={delay ? { animationDelay: `${delay}s` } : undefined}>
+      {children}
+    </div>
+  )
 }
 
 // --- Mock UI Components ---
@@ -332,12 +333,7 @@ const Hero: React.FC = () => {
       <div className="absolute right-10 top-0 bottom-0 w-px bg-border-subtle hidden 2xl:block"></div>
 
       {/* Left Column: Text Content */}
-      <motion.div
-        initial={{ opacity: 0, x: -30 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="w-full lg:w-1/2 text-center lg:text-left relative z-10"
-      >
+      <div className="w-full lg:w-1/2 text-center lg:text-left relative z-10 animate-fade-in-up">
         <div className="inline-flex items-center px-3 py-1 bg-surface-card border border-border-strong mb-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] lg:mx-0 mx-auto">
           <span className="w-2 h-2 bg-indicator-online mr-2 animate-pulse"></span>
           <span className="text-[0.625rem] font-mono font-bold tracking-widest uppercase">System Operational v2.0</span>
@@ -387,35 +383,22 @@ const Hero: React.FC = () => {
            <span className="hidden sm:inline">.</span>
            <span>Cancel Anytime</span>
         </div>
-      </motion.div>
+      </div>
 
       {/* Right Column: Product Visual */}
-      <motion.div
-         initial={{ opacity: 0, x: 30 }}
-         animate={{ opacity: 1, x: 0 }}
-         transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
-         className="w-full lg:w-1/2 relative px-4 lg:px-0"
-      >
+      <div className="w-full lg:w-1/2 relative px-4 lg:px-0 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
          <div className="relative group perspective-1000">
             {/* Main Dashboard */}
-            <motion.div
-              animate={{ y: [0, -10, 0] }}
-              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-            >
+            <div className="animate-float">
                <MockDashboardUI />
-            </motion.div>
+            </div>
 
             {/* Floating Elements */}
-            <motion.div
-               className="absolute -left-6 -bottom-10 z-20 hidden xl:block"
-               initial={{ opacity: 0, y: 20 }}
-               animate={{ opacity: 1, y: 0 }}
-               transition={{ delay: 1, duration: 0.8 }}
-            >
+            <div className="absolute -left-6 -bottom-10 z-20 hidden xl:block animate-fade-in-up" style={{ animationDelay: '1s' }}>
                <MockAICard />
-            </motion.div>
+            </div>
          </div>
-      </motion.div>
+      </div>
     </section>
   )
 }
@@ -450,13 +433,7 @@ const PainPoints: React.FC = () => {
         <div className="absolute top-0 right-4 sm:right-10 bottom-0 w-px bg-white/5"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <motion.div
-               initial="hidden"
-               whileInView="visible"
-               viewport={{ once: true, margin: "-100px" }}
-               variants={fadeInUp}
-               className="mb-20 text-center"
-            >
+            <FadeInView className="mb-20 text-center">
                 <div className="inline-flex items-center gap-2 px-3 py-1 border border-indicator-alert/30 bg-indicator-alert/10 text-indicator-alert mb-6 backdrop-blur-sm">
                     <div className="w-1.5 h-1.5 bg-indicator-alert animate-pulse"></div>
                     <span className="text-[0.625rem] font-mono font-bold tracking-widest uppercase">SYSTEM CRITICAL WARNING</span>
@@ -471,19 +448,13 @@ const PainPoints: React.FC = () => {
                     열정만으로는 넘어설 수 없는 현실적인 문제들.<br className="hidden sm:block"/>
                     많은 초기 창업자들이 제품을 만들기도 전에 '죽음의 계곡'을 마주합니다.
                 </p>
-            </motion.div>
+            </FadeInView>
 
-            <motion.div
-               variants={staggerContainer}
-               initial="hidden"
-               whileInView="visible"
-               viewport={{ once: true }}
-               className="grid grid-cols-1 md:grid-cols-3 gap-6"
-            >
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                {problems.map((item, i) => (
-                   <motion.div
+                   <FadeInView
                      key={i}
-                     variants={fadeInUp}
+                     delay={i * 0.1}
                      className="bg-black border border-white/10 hover:border-white/30 transition-colors group relative flex flex-col"
                    >
                        <div className="border-b border-white/10 p-3 flex justify-between items-center bg-[#0a0a0a] group-hover:bg-[#151515] transition-colors">
@@ -507,9 +478,9 @@ const PainPoints: React.FC = () => {
 
                        <div className="absolute top-0 left-0 w-2 h-2 border-l border-t border-white/15 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                        <div className="absolute bottom-0 right-0 w-2 h-2 border-r border-b border-white/15 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                   </motion.div>
+                   </FadeInView>
                ))}
-            </motion.div>
+            </div>
         </div>
     </section>
   )
@@ -524,13 +495,7 @@ const Features: React.FC = () => {
         <TechnicalDivider />
 
         {/* Feature 1: Matching */}
-        <motion.div
-           initial="hidden"
-           whileInView="visible"
-           viewport={{ once: true, margin: "-100px" }}
-           variants={fadeInUp}
-           className="flex flex-col md:flex-row items-center gap-16 mb-32"
-        >
+        <FadeInView className="flex flex-col md:flex-row items-center gap-16 mb-32">
            <div className="flex-1">
               <div className="flex items-center gap-2 mb-4">
                  <Target className="w-4 h-4 text-brand" />
@@ -567,16 +532,10 @@ const Features: React.FC = () => {
                  <MockAICard />
               </div>
            </div>
-        </motion.div>
+        </FadeInView>
 
         {/* Feature 2: Docs & Management */}
-        <motion.div
-           initial="hidden"
-           whileInView="visible"
-           viewport={{ once: true, margin: "-100px" }}
-           variants={fadeInUp}
-           className="flex flex-col md:flex-row-reverse items-center gap-16"
-        >
+        <FadeInView className="flex flex-col md:flex-row-reverse items-center gap-16">
            <div className="flex-1">
               <div className="flex items-center gap-2 mb-4">
                  <LayoutGrid className="w-4 h-4 text-status-success-text" />
@@ -639,7 +598,7 @@ const Features: React.FC = () => {
                  </div>
               </div>
            </div>
-        </motion.div>
+        </FadeInView>
 
       </div>
     </section>
@@ -669,10 +628,8 @@ const LiveFeed: React.FC = () => {
         <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-surface-sunken to-transparent z-10 pointer-events-none"></div>
 
         <div className="flex overflow-hidden">
-          <motion.div
-            className="flex gap-4 flex-nowrap pl-4"
-            animate={{ x: ["0%", "-50%"] }}
-            transition={{ repeat: Infinity, duration: 30, ease: "linear" }}
+          <div
+            className="flex gap-4 flex-nowrap pl-4 animate-marquee"
             style={{ width: "max-content" }}
           >
             {[...activities, ...activities, ...activities, ...activities].map((activity, i) => (
@@ -689,7 +646,7 @@ const LiveFeed: React.FC = () => {
                  <p className="text-xs font-medium text-txt-primary line-clamp-2">{activity.text}</p>
               </div>
             ))}
-          </motion.div>
+          </div>
         </div>
       </div>
     </section>

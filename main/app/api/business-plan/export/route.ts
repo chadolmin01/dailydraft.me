@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 // Export business plan as PDF (server-side generation with Puppeteer)
 
@@ -8,24 +9,18 @@ export async function POST(req: NextRequest) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     const body = await req.json()
     const { format, data, sectionData, template } = body
 
     if (!format || !data) {
-      return NextResponse.json(
-        { error: '필수 파라미터가 누락되었습니다.' },
-        { status: 400 }
-      )
+      return ApiResponse.badRequest('필수 파라미터가 누락되었습니다.')
     }
 
     if (format !== 'pdf' && format !== 'docx') {
-      return NextResponse.json(
-        { error: '지원하지 않는 형식입니다. (pdf, docx만 지원)' },
-        { status: 400 }
-      )
+      return ApiResponse.badRequest('지원하지 않는 형식입니다. (pdf, docx만 지원)')
     }
 
     // Generate structured content for export
@@ -61,10 +56,7 @@ export async function POST(req: NextRequest) {
 
   } catch (error) {
     console.error('Export error:', error)
-    return NextResponse.json(
-      { error: '내보내기 중 오류가 발생했습니다.' },
-      { status: 500 }
-    )
+    return ApiResponse.internalError()
   }
 }
 

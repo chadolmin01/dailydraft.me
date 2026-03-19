@@ -3,6 +3,7 @@ import { createClient } from '@/src/lib/supabase/server'
 import { rankOpportunities } from '@/src/lib/ai/opportunity-matcher'
 import type { Opportunity } from '@/src/types/opportunity'
 import type { Profile } from '@/src/types/profile'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 export async function GET() {
   try {
@@ -13,7 +14,7 @@ export async function GET() {
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     // Get user profile with vision_embedding
@@ -24,7 +25,7 @@ export async function GET() {
       .single()
 
     if (profileError || !profileData) {
-      return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
+      return ApiResponse.notFound('Profile not found')
     }
 
     const profile = profileData as unknown as Profile & { vision_embedding?: string }
@@ -57,7 +58,7 @@ export async function GET() {
         .limit(50)
 
       if (oppError) {
-        return NextResponse.json({ error: 'Failed to fetch opportunities' }, { status: 500 })
+        return ApiResponse.internalError()
       }
 
       opportunities = (fallbackOpps || []) as unknown as Opportunity[]
@@ -73,9 +74,7 @@ export async function GET() {
     // Return top 20
     return NextResponse.json(ranked.slice(0, 20))
   } catch (error) {
-    return NextResponse.json(
-      { error: '서버 오류가 발생했습니다' },
-      { status: 500 }
-    )
+    console.error('Opportunity recommend error:', error)
+    return ApiResponse.internalError()
   }
 }

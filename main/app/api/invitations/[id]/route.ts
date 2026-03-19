@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { notifyInvitationResponse } from '@/src/lib/notifications/create-notification'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 // PATCH: Accept or decline invitation
 export async function PATCH(
@@ -13,14 +14,14 @@ export async function PATCH(
 
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     const body = await request.json()
     const { status } = body
 
     if (!status || !['accepted', 'declined'].includes(status)) {
-      return NextResponse.json({ error: '올바르지 않은 상태값입니다' }, { status: 400 })
+      return ApiResponse.badRequest('올바르지 않은 상태값입니다')
     }
 
     // Fetch invitation
@@ -30,16 +31,16 @@ export async function PATCH(
       .single()
 
     if (!invitation) {
-      return NextResponse.json({ error: '초대를 찾을 수 없습니다' }, { status: 404 })
+      return ApiResponse.notFound('초대를 찾을 수 없습니다')
     }
 
     // Only invited user can respond
     if (invitation.invited_user_id !== user.id) {
-      return NextResponse.json({ error: '접근 권한이 없습니다' }, { status: 403 })
+      return ApiResponse.forbidden()
     }
 
     if (invitation.status !== 'pending') {
-      return NextResponse.json({ error: '이미 처리된 초대입니다' }, { status: 400 })
+      return ApiResponse.badRequest('이미 처리된 초대입니다')
     }
 
     // Update status
@@ -48,7 +49,8 @@ export async function PATCH(
       .eq('id', id)
 
     if (updateError) {
-      return NextResponse.json({ error: updateError.message }, { status: 500 })
+      console.error('Invitation update error:', updateError.message)
+      return ApiResponse.internalError()
     }
 
     // If accepted, create connection
@@ -85,9 +87,7 @@ export async function PATCH(
 
     return NextResponse.json({ success: true, status })
   } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
-    )
+    console.error('Invitation response error:', error)
+    return ApiResponse.internalError()
   }
 }

@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
       if (error.code === '42P01' || error.message?.includes('does not exist')) {
         return ApiResponse.ok([])
       }
-      return ApiResponse.internalError(error.message)
+      return ApiResponse.internalError('포트폴리오를 조회할 수 없습니다', error.message)
     }
 
     return ApiResponse.ok(data || [])
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (error) {
-      return ApiResponse.internalError(error.message)
+      return ApiResponse.internalError('포트폴리오 생성에 실패했습니다', error.message)
     }
 
     return ApiResponse.created(data)

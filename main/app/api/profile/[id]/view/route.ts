@@ -1,26 +1,12 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { notifyProfileViewMilestone } from '@/src/lib/notifications/create-notification'
 import { NextRequest, NextResponse } from 'next/server'
+import { checkViewRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
+import { ApiResponse } from '@/src/lib/api-utils'
+import { Redis } from '@upstash/redis'
 
-// IP 기반 중복 조회 방지 (메모리 캐시, 15분 TTL)
-const recentViews = new Map<string, number>()
-const VIEW_COOLDOWN_MS = 15 * 60 * 1000
-
-setInterval(() => {
-  const now = Date.now()
-  for (const [key, timestamp] of recentViews) {
-    if (now - timestamp > VIEW_COOLDOWN_MS) recentViews.delete(key)
-  }
-}, 5 * 60 * 1000)
-
-function getClientIP(request: NextRequest): string {
-  return (
-    request.headers.get('cf-connecting-ip') ||
-    request.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
-    request.headers.get('x-real-ip') ||
-    'unknown'
-  )
-}
+const redis = Redis.fromEnv()
+const VIEW_COOLDOWN_SEC = 15 * 60 // 15분
 
 // 프로필 조회수 증가
 export async function POST(
@@ -29,49 +15,72 @@ export async function POST(
 ) {
   try {
     const { id } = await params
-    const ip = getClientIP(request)
-    const viewKey = `${ip}:profile:${id}`
+    const ip = getClientIp(request)
 
-    // 같은 IP에서 15분 내 중복 조회 무시
-    const lastView = recentViews.get(viewKey)
-    if (lastView && Date.now() - lastView < VIEW_COOLDOWN_MS) {
-      return NextResponse.json({ success: true, deduplicated: true })
+    const rateLimitResponse = await checkViewRateLimit(ip)
+    if (rateLimitResponse) return rateLimitResponse
+
+    // Redis 기반 중복 조회 방지 (15분 TTL)
+    const dedupeKey = `view:profile:${ip}:${id}`
+    try {
+      const wasSet = await redis.set(dedupeKey, '1', { ex: VIEW_COOLDOWN_SEC, nx: true })
+      if (!wasSet) {
+        return NextResponse.json({ success: true, deduplicated: true })
+      }
+    } catch {
+      // Redis 실패 시 중복 체크 스킵 (graceful degradation)
     }
 
     const supabase = await createClient()
 
-    // 현재 조회수 가져와서 +1
-    const { data: profile, error: fetchError } = await supabase
-      .from('profiles')
-      .select('profile_views, user_id')
-      .eq('id', id)
-      .single()
+    // 원자적 조회수 증가 (RPC)
+    const { data: newViews, error: rpcError } = await supabase.rpc('increment_view_count', {
+      table_name: 'profiles',
+      row_id: id,
+    })
 
-    if (fetchError) {
-      return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
+    if (rpcError) {
+      // RPC 실패 시 fallback: 직접 업데이트
+      const { data: profile, error: fetchError } = await supabase
+        .from('profiles')
+        .select('profile_views, user_id')
+        .eq('id', id)
+        .single()
+
+      if (fetchError) {
+        return ApiResponse.notFound('프로필을 찾을 수 없습니다')
+      }
+
+      const typedProfile = profile as { profile_views: number | null; user_id: string }
+      const currentViews = typedProfile.profile_views || 0
+      const fallbackViews = currentViews + 1
+      await supabase
+        .from('profiles')
+        .update({ profile_views: fallbackViews } as never)
+        .eq('id', id)
+
+      if (fallbackViews % 10 === 0) {
+        notifyProfileViewMilestone(typedProfile.user_id, fallbackViews).catch(() => {})
+      }
+
+      return NextResponse.json({ success: true, profile_views: fallbackViews })
     }
 
-    const typedProfile = profile as { profile_views: number | null; user_id: string }
-    const currentViews = typedProfile.profile_views || 0
-    const newViews = currentViews + 1
-    const { error: updateError } = await supabase
-      .from('profiles')
-      .update({ profile_views: newViews } as never)
-      .eq('id', id)
-
-    if (updateError) {
-      return NextResponse.json({ error: 'Failed to update' }, { status: 500 })
+    // RPC 성공 — 마일스톤 체크를 위해 user_id 조회
+    if (newViews && newViews % 10 === 0) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('user_id')
+        .eq('id', id)
+        .single()
+      if (profile) {
+        notifyProfileViewMilestone((profile as { user_id: string }).user_id, newViews).catch(() => {})
+      }
     }
 
-    // 10단위 마일스톤 알림 (10, 20, 30, ...)
-    if (newViews % 10 === 0) {
-      notifyProfileViewMilestone(typedProfile.user_id, newViews).catch(() => {})
-    }
-
-    recentViews.set(viewKey, Date.now())
     return NextResponse.json({ success: true, profile_views: newViews })
   } catch {
-    return NextResponse.json({ error: '서버 오류가 발생했습니다' }, { status: 500 })
+    return ApiResponse.internalError()
   }
 }
 
@@ -91,13 +100,13 @@ export async function GET(
       .single()
 
     if (error) {
-      return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
+      return ApiResponse.notFound('Profile not found')
     }
 
     return NextResponse.json({
       profile_views: (profile as { profile_views: number | null }).profile_views || 0,
     })
   } catch {
-    return NextResponse.json({ error: '서버 오류가 발생했습니다' }, { status: 500 })
+    return ApiResponse.internalError()
   }
 }

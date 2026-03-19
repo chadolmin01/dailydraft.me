@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { notifyProjectInvitation } from '@/src/lib/notifications/create-notification'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 // POST: Create a new project invitation
 export async function POST(request: NextRequest) {
@@ -9,19 +10,19 @@ export async function POST(request: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     const body = await request.json()
     const { opportunity_id, invited_user_id, role, message } = body
 
     if (!opportunity_id || !invited_user_id || !role) {
-      return NextResponse.json({ error: '필수 항목이 누락되었습니다' }, { status: 400 })
+      return ApiResponse.badRequest('필수 항목이 누락되었습니다')
     }
 
     // Self-invite check
     if (invited_user_id === user.id) {
-      return NextResponse.json({ error: '자기 자신을 초대할 수 없습니다' }, { status: 400 })
+      return ApiResponse.badRequest('자기 자신을 초대할 수 없습니다')
     }
 
     // Verify user is the opportunity creator
@@ -32,11 +33,11 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (!opportunity) {
-      return NextResponse.json({ error: '프로젝트를 찾을 수 없습니다' }, { status: 404 })
+      return ApiResponse.notFound('프로젝트를 찾을 수 없습니다')
     }
 
     if (opportunity.creator_id !== user.id) {
-      return NextResponse.json({ error: '프로젝트 생성자만 초대할 수 있습니다' }, { status: 403 })
+      return ApiResponse.forbidden('프로젝트 생성자만 초대할 수 있습니다')
     }
 
     // Duplicate check
@@ -48,7 +49,7 @@ export async function POST(request: NextRequest) {
 
     if (existing) {
       if (existing.status === 'pending') {
-        return NextResponse.json({ error: '이미 초대를 보냈습니다' }, { status: 409 })
+        return ApiResponse.badRequest('이미 초대를 보냈습니다')
       }
       // If previously declined, allow re-invite by updating
       if (existing.status === 'declined') {
@@ -57,7 +58,8 @@ export async function POST(request: NextRequest) {
           .eq('id', existing.id)
 
         if (updateError) {
-          return NextResponse.json({ error: updateError.message }, { status: 500 })
+          console.error('Invitation update error:', updateError.message)
+          return ApiResponse.internalError()
         }
 
         // Fetch inviter profile for notification
@@ -91,7 +93,8 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (insertError) {
-      return NextResponse.json({ error: insertError.message }, { status: 500 })
+      console.error('Invitation insert error:', insertError.message)
+      return ApiResponse.internalError()
     }
 
     // Send notification
@@ -110,10 +113,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, id: invitation.id })
   } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
-    )
+    console.error('Invitation error:', error)
+    return ApiResponse.internalError()
   }
 }
 
@@ -124,7 +125,7 @@ export async function GET(request: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     const { searchParams } = new URL(request.url)
@@ -147,14 +148,13 @@ export async function GET(request: NextRequest) {
       if (error.code === '42P01' || error.message?.includes('does not exist')) {
         return NextResponse.json({ invitations: [] })
       }
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      console.error('Invitation query error:', error.message)
+      return ApiResponse.internalError()
     }
 
     return NextResponse.json({ invitations: data || [] })
   } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
-    )
+    console.error('Invitation error:', error)
+    return ApiResponse.internalError()
   }
 }

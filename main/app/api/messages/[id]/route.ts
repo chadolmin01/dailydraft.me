@@ -1,5 +1,6 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 // PATCH: 읽음 처리 또는 삭제
 export async function PATCH(
@@ -10,7 +11,7 @@ export async function PATCH(
     const { id } = await params
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+    if (!user) return ApiResponse.unauthorized()
 
     const body = await request.json()
     const { action } = body as { action: 'read' | 'delete' }
@@ -34,7 +35,7 @@ export async function PATCH(
         .eq('id', id)
         .single()
 
-      if (!msg) return NextResponse.json({ error: '쪽지를 찾을 수 없습니다' }, { status: 404 })
+      if (!msg) return ApiResponse.notFound('쪽지를 찾을 수 없습니다')
 
       const typedMsg = msg as { sender_id: string; receiver_id: string }
       const updateField = typedMsg.sender_id === user.id
@@ -43,7 +44,7 @@ export async function PATCH(
           ? { deleted_by_receiver: true }
           : null
 
-      if (!updateField) return NextResponse.json({ error: '권한이 없습니다' }, { status: 403 })
+      if (!updateField) return ApiResponse.forbidden()
 
       const { error } = await supabase
         .from('direct_messages')
@@ -54,8 +55,8 @@ export async function PATCH(
       return NextResponse.json({ success: true })
     }
 
-    return NextResponse.json({ error: '잘못된 요청입니다' }, { status: 400 })
+    return ApiResponse.badRequest('잘못된 요청입니다')
   } catch {
-    return NextResponse.json({ error: '서버 오류가 발생했습니다' }, { status: 500 })
+    return ApiResponse.internalError()
   }
 }

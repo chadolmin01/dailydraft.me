@@ -3,6 +3,8 @@ import { createClient } from '@/src/lib/supabase/server'
 import { generateConversationSummary } from '@/src/lib/ai/chat-manager'
 import { generateProfileEmbedding } from '@/src/lib/ai/embeddings'
 import type { ChatMessage } from '@/src/types/profile'
+import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 interface OnboardingData {
   nickname?: string
@@ -30,13 +32,16 @@ export async function POST(request: Request) {
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
+
+    const rateLimitResponse = await checkAIRateLimit(user.id, getClientIp(request))
+    if (rateLimitResponse) return rateLimitResponse
 
     const { conversationHistory, onboardingData } = await request.json()
 
     if (!conversationHistory || conversationHistory.length === 0) {
-      return NextResponse.json({ error: 'No conversation history' }, { status: 400 })
+      return ApiResponse.badRequest('No conversation history')
     }
 
     // Generate summary
@@ -61,7 +66,7 @@ export async function POST(request: Request) {
         .single()
 
       if (!profileData) {
-        return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
+        return ApiResponse.notFound('Profile not found')
       }
 
       const profile = profileData as {
@@ -111,7 +116,8 @@ export async function POST(request: Request) {
       .eq('user_id', user.id)
 
     if (updateError) {
-      return NextResponse.json({ error: updateError.message }, { status: 500 })
+      console.error('Profile update error:', updateError.message)
+      return ApiResponse.internalError()
     }
 
     return NextResponse.json({
@@ -119,9 +125,7 @@ export async function POST(request: Request) {
       success: true,
     })
   } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
-    )
+    console.error('AI chat complete error:', error)
+    return ApiResponse.internalError()
   }
 }

@@ -1,6 +1,6 @@
-// @ts-nocheck — hidden route (hiddenApiRoutes), Supabase types pending for payment tables
 import { createAdminClient } from '@/src/lib/supabase/admin'
 import { NextRequest, NextResponse } from 'next/server'
+import { ApiResponse } from '@/src/lib/api-utils'
 import {
   getPayment,
   verifyWebhookSignature,
@@ -19,16 +19,13 @@ export async function POST(request: NextRequest) {
     const webhookSecret = process.env.TOSSPAYMENTS_WEBHOOK_SECRET
     if (!webhookSecret) {
       console.error('TOSSPAYMENTS_WEBHOOK_SECRET is not configured')
-      return NextResponse.json(
-        { error: 'Webhook configuration error' },
-        { status: 500 }
-      )
+      return ApiResponse.internalError()
     }
 
     const isValid = verifyWebhookSignature(payload, signature, webhookSecret)
     if (!isValid) {
       console.error('Invalid webhook signature')
-      return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
+      return ApiResponse.unauthorized('Invalid signature')
     }
 
     const event = JSON.parse(payload)
@@ -151,10 +148,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ received: true })
   } catch (error) {
     console.error('[Webhook] Error processing webhook:', error)
-    return NextResponse.json(
-      { error: 'Webhook processing failed' },
-      { status: 500 }
-    )
+    return ApiResponse.internalError()
   }
 }
 

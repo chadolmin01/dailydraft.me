@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { createClient } from '@/src/lib/supabase/server';
+import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
@@ -15,6 +16,9 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return NextResponse.json({ success: false, error: '로그인이 필요합니다' }, { status: 401 });
     }
+
+    const rateLimitResponse = await checkAIRateLimit(user.id, getClientIp(request));
+    if (rateLimitResponse) return rateLimitResponse;
 
     const { idea, fullConversation, reflectedAdvice = [] } = await request.json();
 

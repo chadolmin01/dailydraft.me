@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { applyRateLimit, getClientIp } from '@/src/lib/rate-limit/api-rate-limiter'
+import { ApiResponse } from '@/src/lib/api-utils'
 import { logApiError } from '@/src/lib/error-logging'
 import { resend, FROM_EMAIL, isEmailEnabled } from '@/src/lib/email/client'
 import { renderCoffeeChatRequestEmail } from '@/src/lib/email/templates/coffee-chat-request'
@@ -36,7 +37,7 @@ export async function POST(req: NextRequest) {
     )
     const { data: { user }, error: authError } = await supabaseAuth.auth.getUser()
     if (authError || !user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     // Rate limit
@@ -44,14 +45,14 @@ export async function POST(req: NextRequest) {
     if (rateLimitResponse) return rateLimitResponse
 
     if (!isEmailEnabled()) {
-      return NextResponse.json({ success: false, error: 'Email not configured' }, { status: 503 })
+      return ApiResponse.serviceUnavailable('Email not configured')
     }
 
     const body = await req.json()
     const { type, chatId } = body as { type: 'request' | 'accepted' | 'declined'; chatId: string }
 
     if (!type || !chatId) {
-      return NextResponse.json({ error: 'Missing type or chatId' }, { status: 400 })
+      return ApiResponse.badRequest('Missing type or chatId')
     }
 
     // Fetch chat with related data
@@ -62,21 +63,21 @@ export async function POST(req: NextRequest) {
       .single()
 
     if (chatError || !chat) {
-      return NextResponse.json({ error: '채팅을 찾을 수 없습니다' }, { status: 404 })
+      return ApiResponse.notFound('채팅을 찾을 수 없습니다')
     }
 
     // 소유권 + 역할 검증: type별로 적절한 사용자만 트리거 가능
     const isRequester = chat.requester_user_id === user.id
     const isOwner = chat.owner_user_id === user.id
     if (!isRequester && !isOwner) {
-      return NextResponse.json({ error: '접근 권한이 없습니다' }, { status: 403 })
+      return ApiResponse.forbidden()
     }
     // request는 요청자만, accepted/declined는 오너만 트리거 가능
     if (type === 'request' && !isRequester) {
-      return NextResponse.json({ error: '접근 권한이 없습니다' }, { status: 403 })
+      return ApiResponse.forbidden()
     }
     if ((type === 'accepted' || type === 'declined') && !isOwner) {
-      return NextResponse.json({ error: '접근 권한이 없습니다' }, { status: 403 })
+      return ApiResponse.forbidden()
     }
 
     const isPersonMode = !chat.opportunity_id && !!chat.target_user_id
@@ -175,6 +176,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true })
   } catch (error) {
     logApiError(error, req).catch(() => {})
-    return NextResponse.json({ success: false, error: 'Internal error' }, { status: 500 })
+    return ApiResponse.internalError()
   }
 }

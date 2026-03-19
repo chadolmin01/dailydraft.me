@@ -7,6 +7,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { useAuth } from '@/src/context/AuthContext'
 import { getUpdateBadge } from './constants'
+import { Badges } from '@/components/ui/Badge'
 import type { ProjectCard } from './types'
 
 interface ExploreProjectGridProps {
@@ -123,6 +124,7 @@ export function ExploreProjectGrid({
               <div className="px-4 pt-4 h-[7.5rem] shrink-0 overflow-hidden">
                 <div className="flex items-center gap-2 mb-1.5">
                   <h3 className="font-bold text-base text-txt-primary truncate">{p.title}</h3>
+                  <Badges badges={p.badges} />
                   {p.matchLabel && (
                     <span className={`text-[0.625rem] font-mono font-bold px-1.5 py-0.5 border shrink-0 ${
                       p.matchLabel === '잘 맞는 프로젝트' ? 'bg-status-success-bg text-status-success-text border-indicator-online/20'

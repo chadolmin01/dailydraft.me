@@ -1,12 +1,17 @@
 'use client'
 
 import React, { useState } from 'react'
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
 import {
   Zap, ArrowRight, MessageCircle, Heart, Loader2, Plus,
 } from 'lucide-react'
 import { useOpportunities } from '@/src/hooks/useOpportunities'
-import { ProjectDetailModal } from '@/components/ProjectDetailModal'
+
+const ProjectDetailModal = dynamic(
+  () => import('@/components/ProjectDetailModal').then(m => ({ default: m.ProjectDetailModal })),
+  { ssr: false }
+)
 
 interface DisplayProject {
   id: string

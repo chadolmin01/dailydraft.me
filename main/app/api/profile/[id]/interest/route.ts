@@ -1,6 +1,7 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { notifyProfileInterest } from '@/src/lib/notifications/create-notification'
 import { NextRequest, NextResponse } from 'next/server'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 // POST: Toggle profile interest (like/unlike)
 export async function POST(
@@ -16,7 +17,7 @@ export async function POST(
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     // Check if already interested
@@ -58,7 +59,7 @@ export async function POST(
         } as never)
 
       if (insertError) {
-        return NextResponse.json({ error: 'Failed to express interest' }, { status: 500 })
+        return ApiResponse.internalError()
       }
 
       // Increment count
@@ -90,7 +91,7 @@ export async function POST(
       return NextResponse.json({ interested: true, interest_count: currentCount + 1 })
     }
   } catch {
-    return NextResponse.json({ error: '서버 오류가 발생했습니다' }, { status: 500 })
+    return ApiResponse.internalError()
   }
 }
 
@@ -129,6 +130,6 @@ export async function GET(
 
     return NextResponse.json({ interested: !!existing, interest_count: count })
   } catch {
-    return NextResponse.json({ error: '서버 오류가 발생했습니다' }, { status: 500 })
+    return ApiResponse.internalError()
   }
 }

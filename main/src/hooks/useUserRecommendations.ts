@@ -3,6 +3,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '../context/AuthContext'
 import type { Skill } from '../types/profile'
+import { withRetry } from '../lib/query-utils'
 
 export interface UserRecommendation {
   user_id: string
@@ -22,19 +23,6 @@ export interface UserRecommendation {
     founder: number
     interest: number
     situation: number
-  }
-}
-
-// AbortError retry
-async function withRetry<T>(fn: () => Promise<T>, retries = 1): Promise<T> {
-  try {
-    return await fn()
-  } catch (err) {
-    if (retries > 0 && err instanceof DOMException && err.name === 'AbortError') {
-      await new Promise((r) => setTimeout(r, 300))
-      return withRetry(fn, retries - 1)
-    }
-    throw err
   }
 }
 

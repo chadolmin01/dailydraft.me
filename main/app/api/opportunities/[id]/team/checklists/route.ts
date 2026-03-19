@@ -1,5 +1,6 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 // GET: Get all checklists for an opportunity
 export async function GET(
@@ -15,7 +16,7 @@ export async function GET(
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     // Verify user is the opportunity creator or team member
@@ -26,7 +27,7 @@ export async function GET(
       .single()
 
     if (!opportunity) {
-      return NextResponse.json({ error: 'Opportunity not found' }, { status: 404 })
+      return ApiResponse.notFound('Opportunity not found')
     }
 
     // Verify user is the creator or a team member
@@ -39,7 +40,7 @@ export async function GET(
         .limit(1)
         .single()
       if (!membership) {
-        return NextResponse.json({ error: '접근 권한이 없습니다' }, { status: 403 })
+        return ApiResponse.forbidden()
       }
     }
 
@@ -51,7 +52,7 @@ export async function GET(
       .order('created_at', { ascending: true })
 
     if (error) {
-      return NextResponse.json({ error: 'Operation failed' }, { status: 500 })
+      return ApiResponse.internalError()
     }
 
     const completed = (checklists || []).filter((c: any) => c.is_completed).length
@@ -66,7 +67,7 @@ export async function GET(
       },
     })
   } catch (_error) {
-    return NextResponse.json({ error: '서버 오류가 발생했습니다' }, { status: 500 })
+    return ApiResponse.internalError()
   }
 }
 
@@ -84,7 +85,7 @@ export async function POST(
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     // Verify user is the opportunity creator
@@ -95,14 +96,14 @@ export async function POST(
       .single()
 
     if (!opportunity || opportunity.creator_id !== user.id) {
-      return NextResponse.json({ error: '접근 권한이 없습니다' }, { status: 403 })
+      return ApiResponse.forbidden()
     }
 
     const body = await request.json()
     const { title, description } = body
 
     if (!title) {
-      return NextResponse.json({ error: 'Title is required' }, { status: 400 })
+      return ApiResponse.badRequest('Title is required')
     }
 
     // Get max sort order
@@ -128,11 +129,11 @@ export async function POST(
       .single()
 
     if (error) {
-      return NextResponse.json({ error: 'Operation failed' }, { status: 500 })
+      return ApiResponse.internalError()
     }
 
     return NextResponse.json(data, { status: 201 })
   } catch (_error) {
-    return NextResponse.json({ error: '서버 오류가 발생했습니다' }, { status: 500 })
+    return ApiResponse.internalError()
   }
 }

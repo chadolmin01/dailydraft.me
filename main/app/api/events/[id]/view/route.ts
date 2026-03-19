@@ -1,5 +1,6 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 // IP 기반 중복 조회 방지 (메모리 캐시, 15분 TTL)
 const recentViews = new Map<string, number>()
@@ -54,7 +55,7 @@ export async function POST(
         .single()
 
       if (fetchError || !currentEvent) {
-        return NextResponse.json({ error: 'Event not found' }, { status: 404 })
+        return ApiResponse.notFound('Event not found')
       }
 
       const newCount = ((currentEvent as { views_count: number | null }).views_count || 0) + 1

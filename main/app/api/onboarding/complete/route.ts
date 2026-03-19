@@ -84,10 +84,7 @@ export async function POST(request: Request) {
 
     if (result.error) {
       console.error('[onboarding/complete] Supabase error:', JSON.stringify(result.error))
-      return NextResponse.json(
-        { error: { message: `프로필 저장 실패: ${result.error.message}` } },
-        { status: 500 }
-      )
+      return ApiResponse.internalError('프로필 저장에 실패했습니다', result.error.message)
     }
 
     return ApiResponse.ok({

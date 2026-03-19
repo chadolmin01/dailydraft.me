@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 export async function POST() {
   try {
@@ -11,7 +12,7 @@ export async function POST() {
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     // First AI message
@@ -26,7 +27,8 @@ export async function POST() {
       message: firstMessage,
       conversationId: `chat_${user.id}_${Date.now()}`,
     })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch (error) {
+    console.error('ai-chat/start error:', error)
+    return ApiResponse.internalError()
   }
 }

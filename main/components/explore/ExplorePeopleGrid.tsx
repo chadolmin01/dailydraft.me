@@ -6,6 +6,7 @@ import { Users, Coffee } from 'lucide-react'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { getMatchColorClass } from './constants'
+import { Badges } from '@/components/ui/Badge'
 import type { TalentCard, PeopleSortBy } from './types'
 
 interface ExplorePeopleGridProps {
@@ -77,6 +78,7 @@ export function ExplorePeopleGrid({
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
                       <h3 className="font-semibold text-base text-txt-primary truncate">{t.name}</h3>
+                      <Badges badges={t.badges} />
                       {peopleSortBy === 'ai' && t.matchScore != null && t.matchScore > 0 ? (
                         <span className={`text-[0.625rem] font-mono font-bold px-1.5 py-0.5 shrink-0 border ${getMatchColorClass(t.matchScore)}`}>
                           {t.matchScore}%

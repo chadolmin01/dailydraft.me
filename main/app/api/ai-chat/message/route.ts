@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { sendChatMessage } from '@/src/lib/ai/chat-manager'
 import type { ChatMessage } from '@/src/types/profile'
+import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 export async function POST(request: Request) {
   try {
@@ -13,13 +15,16 @@ export async function POST(request: Request) {
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
+
+    const rateLimitResponse = await checkAIRateLimit(user.id, getClientIp(request))
+    if (rateLimitResponse) return rateLimitResponse
 
     const { message, conversationHistory } = await request.json()
 
     if (!message || !conversationHistory) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+      return ApiResponse.badRequest('Missing required fields')
     }
 
     // Send message to Gemini
@@ -34,8 +39,8 @@ export async function POST(request: Request) {
     return NextResponse.json({
       message: aiMessage,
     })
-  } catch (error: any) {
-    const errorMessage = error?.message || error?.toString() || 'Unknown error'
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+  } catch (error) {
+    console.error('AI chat message error:', error)
+    return ApiResponse.internalError()
   }
 }

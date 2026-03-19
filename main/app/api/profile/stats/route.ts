@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 type SupabaseClient = Awaited<ReturnType<typeof createClient>>
 
@@ -28,7 +29,7 @@ export async function GET() {
 
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     // 병렬로 모든 통계 가져오기
@@ -105,10 +106,7 @@ export async function GET() {
     })
 
   } catch (_error) {
-    return NextResponse.json(
-      { error: '서버 오류가 발생했습니다' },
-      { status: 500 }
-    )
+    return ApiResponse.internalError()
   }
 }
 

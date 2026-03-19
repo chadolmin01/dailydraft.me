@@ -85,19 +85,31 @@ export async function middleware(request: NextRequest) {
   if (pathname.startsWith('/api/') && ['POST', 'PATCH', 'PUT', 'DELETE'].includes(request.method)) {
     const origin = request.headers.get('origin')
     const host = request.headers.get('host')
-    // Allow requests with no origin (server-to-server, cron jobs)
-    // Block requests where origin doesn't match host
+
     if (origin && host) {
+      // Cross-origin check: block if origin doesn't match host
       const originHost = new URL(origin).host
       if (originHost !== host) {
-        return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+        return NextResponse.json({ error: { code: 'FORBIDDEN', message: '요청이 거부되었습니다' } }, { status: 403 })
+      }
+    } else if (!origin && pathname.startsWith('/api/cron/')) {
+      // Cron routes without origin header must provide CRON_SECRET
+      const authHeader = request.headers.get('authorization')
+      const cronSecret = process.env.CRON_SECRET
+      if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+        return NextResponse.json({ error: { code: 'FORBIDDEN', message: '인증이 필요합니다' } }, { status: 403 })
       }
     }
   }
 
   // Block hidden API routes — return 404
   if (hiddenApiRoutes.some(route => pathname.startsWith(route))) {
-    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    return NextResponse.json({ error: { code: 'NOT_FOUND', message: '페이지를 찾을 수 없습니다' } }, { status: 404 })
+  }
+
+  // /settings → /profile/edit redirect (설정 페이지 미구현, 프로필 편집으로 대체)
+  if (pathname === '/settings' || pathname.startsWith('/settings/')) {
+    return NextResponse.redirect(new URL('/profile/edit', request.url))
   }
 
   // Block hidden pages — redirect to /explore

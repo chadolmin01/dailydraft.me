@@ -4,6 +4,9 @@ import { chatModel } from '@/src/lib/ai/gemini-client'
 import { logError } from '@/src/lib/error-logging'
 import type { ExtractedProfile } from '@/src/types/extracted-profile'
 import type { Json } from '@/src/types/database'
+import { ApiResponse } from '@/src/lib/api-utils'
+import { Ratelimit } from '@upstash/ratelimit'
+import { Redis } from '@upstash/redis'
 
 const EXTRACTION_PROMPT = `당신은 대화 내용에서 사용자의 프로필 정보를 추출하는 전문가입니다.
 
@@ -30,29 +33,12 @@ const EXTRACTION_PROMPT = `당신은 대화 내용에서 사용자의 프로필 
 ## 대화 내용
 `
 
-// Rate limit: 하루 10회
-const DAILY_LIMIT = 10
-const extractionCounts = new Map<string, { count: number; resetAt: number }>()
-
-function checkExtractionRateLimit(userId: string): boolean {
-  const now = Date.now()
-  const record = extractionCounts.get(userId)
-
-  if (!record || now > record.resetAt) {
-    extractionCounts.set(userId, {
-      count: 1,
-      resetAt: now + 24 * 60 * 60 * 1000, // 24시간 후
-    })
-    return true
-  }
-
-  if (record.count >= DAILY_LIMIT) {
-    return false
-  }
-
-  record.count++
-  return true
-}
+// Redis 기반 Rate limit: 하루 10회
+const extractionRatelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(10, '24 h'),
+  prefix: 'ratelimit:extraction',
+})
 
 export async function POST(request: Request) {
   try {
@@ -63,7 +49,7 @@ export async function POST(request: Request) {
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
 
     // 동의 여부 확인
@@ -74,27 +60,23 @@ export async function POST(request: Request) {
       .single()
 
     if (!profile?.data_consent) {
-      return NextResponse.json(
-        { error: '맞춤형 추천 동의가 필요합니다.' },
-        { status: 403 }
-      )
+      return ApiResponse.forbidden('맞춤형 추천 동의가 필요합니다.')
     }
 
-    // Rate limit 확인
-    if (!checkExtractionRateLimit(user.id)) {
-      return NextResponse.json(
-        { error: '일일 추출 한도(10회)를 초과했습니다.' },
-        { status: 429 }
-      )
+    // Redis rate limit 확인
+    try {
+      const { success } = await extractionRatelimit.limit(`user:${user.id}`)
+      if (!success) {
+        return ApiResponse.rateLimited('일일 추출 한도(10회)를 초과했습니다.')
+      }
+    } catch {
+      // Redis 실패 시 요청 허용 (graceful degradation)
     }
 
     const { conversationHistory } = await request.json()
 
     if (!conversationHistory || !Array.isArray(conversationHistory)) {
-      return NextResponse.json(
-        { error: 'conversationHistory 필드가 필요합니다.' },
-        { status: 400 }
-      )
+      return ApiResponse.badRequest('conversationHistory 필드가 필요합니다.')
     }
 
     // 최소 메시지 수 확인
@@ -102,10 +84,7 @@ export async function POST(request: Request) {
       (msg: { role: string }) => msg.role === 'user'
     )
     if (userMessages.length < 3) {
-      return NextResponse.json(
-        { error: '프로필 추출에 최소 3개 이상의 메시지가 필요합니다.' },
-        { status: 400 }
-      )
+      return ApiResponse.badRequest('프로필 추출에 최소 3개 이상의 메시지가 필요합니다.')
     }
 
     // 대화 내용 포맷팅
@@ -138,10 +117,7 @@ export async function POST(request: Request) {
     try {
       extractedData = JSON.parse(responseText)
     } catch {
-      return NextResponse.json(
-        { error: 'AI 응답을 파싱할 수 없습니다.' },
-        { status: 500 }
-      )
+      return ApiResponse.internalError()
     }
 
     // 신뢰도 계산 (채워진 필드 비율)
@@ -204,10 +180,8 @@ export async function POST(request: Request) {
       .eq('user_id', user.id)
 
     if (updateError) {
-      return NextResponse.json(
-        { error: '프로필 저장에 실패했습니다.' },
-        { status: 500 }
-      )
+      console.error('Profile extract update error:', updateError.message)
+      return ApiResponse.internalError()
     }
 
     return NextResponse.json({
@@ -226,6 +200,6 @@ export async function POST(request: Request) {
       endpoint: '/api/profile/extract',
       method: 'POST',
     })
-    return NextResponse.json({ error: err.message }, { status: 500 })
+    return ApiResponse.internalError()
   }
 }

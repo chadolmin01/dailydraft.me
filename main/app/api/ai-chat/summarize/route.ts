@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { chatModel } from '@/src/lib/ai/gemini-client'
+import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 const SUMMARY_PROMPT = `스타트업 팀 빌딩 인터뷰 내용을 전문적인 프로필 요약으로 작성해주세요.
 
@@ -23,8 +25,11 @@ export async function POST(request: Request) {
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+      return ApiResponse.unauthorized()
     }
+
+    const rateLimitResponse = await checkAIRateLimit(user.id, getClientIp(request))
+    if (rateLimitResponse) return rateLimitResponse
 
     const { messages } = await request.json()
 
@@ -48,9 +53,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ summary })
   } catch (error) {
     console.error('Summarize error:', error)
-    return NextResponse.json(
-      { summary: '', error: '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.' },
-      { status: 500 }
-    )
+    return ApiResponse.internalError()
   }
 }

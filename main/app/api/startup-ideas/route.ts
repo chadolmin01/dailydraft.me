@@ -165,9 +165,10 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error('[startup-ideas] GET error:', errorMessage);
 
     return NextResponse.json(
-      { success: false, error: errorMessage },
+      { success: false, error: '스타트업 아이디어 조회에 실패했습니다' },
       { status: 500 }
     );
   }

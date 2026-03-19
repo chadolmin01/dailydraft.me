@@ -45,10 +45,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'ssl.pstatic.net',
       },
-      // User-uploaded portfolio/demo images (any HTTPS source)
+      // GitHub raw content
       {
         protocol: 'https',
-        hostname: '**',
+        hostname: 'github.com',
       },
     ],
   },
