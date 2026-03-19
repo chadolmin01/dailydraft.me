@@ -6,9 +6,10 @@
  *   const value  = await verifyCookie(signed)     // → "value" | null
  */
 
-const COOKIE_SECRET = process.env.COOKIE_SECRET || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+const COOKIE_SECRET = process.env.COOKIE_SECRET
 
-async function getKey(): Promise<CryptoKey> {
+async function getKey(): Promise<CryptoKey | null> {
+  if (!COOKIE_SECRET) return null
   const enc = new TextEncoder()
   return crypto.subtle.importKey(
     'raw',
@@ -33,9 +34,10 @@ function hexToBuf(hex: string): ArrayBuffer {
   return bytes.buffer as ArrayBuffer
 }
 
-/** Sign a value → "value.hexSignature" */
+/** Sign a value → "value.hexSignature". Returns plain value if no secret configured. */
 export async function signCookie(value: string): Promise<string> {
   const key = await getKey()
+  if (!key) return value // No secret → skip signing
   const enc = new TextEncoder()
   const sig = await crypto.subtle.sign('HMAC', key, enc.encode(value))
   return `${value}.${bufToHex(sig)}`
@@ -43,6 +45,12 @@ export async function signCookie(value: string): Promise<string> {
 
 /** Verify a signed cookie → original value or null if tampered */
 export async function verifyCookie(signed: string): Promise<string | null> {
+  const key = await getKey()
+  if (!key) {
+    // No secret configured → accept unsigned cookies (graceful degradation)
+    return signed
+  }
+
   const idx = signed.lastIndexOf('.')
   if (idx === -1) return null
 
@@ -53,7 +61,6 @@ export async function verifyCookie(signed: string): Promise<string | null> {
   if (sigHex.length !== 64) return null
 
   try {
-    const key = await getKey()
     const enc = new TextEncoder()
     const valid = await crypto.subtle.verify(
       'HMAC',

@@ -5,6 +5,8 @@ import { logError } from '@/src/lib/error-logging'
 import type { ExtractedProfile } from '@/src/types/extracted-profile'
 import type { Json } from '@/src/types/database'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { Ratelimit } from '@upstash/ratelimit'
+import { Redis } from '@upstash/redis'
 
 const EXTRACTION_PROMPT = `당신은 대화 내용에서 사용자의 프로필 정보를 추출하는 전문가입니다.
 
@@ -31,29 +33,12 @@ const EXTRACTION_PROMPT = `당신은 대화 내용에서 사용자의 프로필 
 ## 대화 내용
 `
 
-// Rate limit: 하루 10회
-const DAILY_LIMIT = 10
-const extractionCounts = new Map<string, { count: number; resetAt: number }>()
-
-function checkExtractionRateLimit(userId: string): boolean {
-  const now = Date.now()
-  const record = extractionCounts.get(userId)
-
-  if (!record || now > record.resetAt) {
-    extractionCounts.set(userId, {
-      count: 1,
-      resetAt: now + 24 * 60 * 60 * 1000, // 24시간 후
-    })
-    return true
-  }
-
-  if (record.count >= DAILY_LIMIT) {
-    return false
-  }
-
-  record.count++
-  return true
-}
+// Redis 기반 Rate limit: 하루 10회
+const extractionRatelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(10, '24 h'),
+  prefix: 'ratelimit:extraction',
+})
 
 export async function POST(request: Request) {
   try {
@@ -78,9 +63,14 @@ export async function POST(request: Request) {
       return ApiResponse.forbidden('맞춤형 추천 동의가 필요합니다.')
     }
 
-    // Rate limit 확인
-    if (!checkExtractionRateLimit(user.id)) {
-      return ApiResponse.rateLimited('일일 추출 한도(10회)를 초과했습니다.')
+    // Redis rate limit 확인
+    try {
+      const { success } = await extractionRatelimit.limit(`user:${user.id}`)
+      if (!success) {
+        return ApiResponse.rateLimited('일일 추출 한도(10회)를 초과했습니다.')
+      }
+    } catch {
+      // Redis 실패 시 요청 허용 (graceful degradation)
     }
 
     const { conversationHistory } = await request.json()
