@@ -132,8 +132,9 @@ const ONBOARDING_TIPS = [
 // ── Component ──
 
 export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
-  const { signOut } = useAuth()
+  const { signOut, profile: authProfile } = useAuth()
   const [step, setStep] = useState<Step>('greeting')
+  const [resumed, setResumed] = useState(false)
   const [bubbles, setBubbles] = useState<Bubble[]>([])
   const [isTyping, setIsTyping] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
@@ -220,7 +221,40 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     setBubbles(prev => [...prev, { id: `user-${Date.now()}`, role: 'user', content }])
   }, [])
 
-  // ── Greeting ──
+  // ── Resume from DB if profile exists (e.g. page refresh during deep chat) ──
+  useEffect(() => {
+    if (resumed || !authProfile) return
+    const p = authProfile as Record<string, unknown>
+    // Profile has basic data saved → skip to deep chat
+    if (p.onboarding_completed && !p.ai_chat_completed && p.nickname) {
+      setResumed(true)
+      queueRef.current = true
+      const skills = Array.isArray(p.skills)
+        ? (p.skills as Array<{ name?: string }>).map(s => (typeof s === 'string' ? s : s?.name || '')).filter(Boolean)
+        : []
+      const interests = Array.isArray(p.interest_tags) ? (p.interest_tags as string[]) : []
+      setProfile({
+        name: p.nickname as string,
+        affiliationType: (p.affiliation_type as string) || 'student',
+        university: (p.university as string) || '',
+        major: (p.major as string) || '',
+        locations: (p.location as string)?.split(', ').filter(Boolean) || [],
+        position: (p.desired_position as string) || '',
+        situation: (p.current_situation as string) || 'exploring',
+        skills, interests,
+      })
+      setSelectedSkills(skills)
+      setSelectedInterests(interests)
+      const run = async () => {
+        await new Promise(r => setTimeout(r, 400))
+        await pushAi(`${p.nickname}님, 돌아오셨군요!\n이어서 AI 대화를 진행할까요?`, 'deep-chat-offer', 600)
+        setStep('deep-chat-offer')
+      }
+      run()
+    }
+  }, [authProfile, resumed, pushAi])
+
+  // ── Greeting (only if not resuming) ──
   useEffect(() => {
     if (queueRef.current) return
     queueRef.current = true
