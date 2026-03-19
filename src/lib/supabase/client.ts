@@ -1,4 +1,5 @@
 import { createBrowserClient } from '@supabase/ssr'
+import type { Database } from '@/src/types/database'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -15,20 +16,20 @@ const clientOptions = {
     flowType: 'pkce' as const,
     persistSession: true,
     detectSessionInUrl: true,
-    lock: async (_name: string, _acquireTimeout: number, fn: () => Promise<unknown>) => await fn(),
+    lock: async <R>(_name: string, _acquireTimeout: number, fn: () => Promise<R>): Promise<R> => await fn(),
   },
 }
 
 export function createClient() {
-  return createBrowserClient(supabaseUrl!, supabaseAnonKey!, clientOptions)
+  return createBrowserClient<Database>(supabaseUrl!, supabaseAnonKey!, clientOptions)
 }
 
 // Export a singleton for client-side use
-let browserClient: ReturnType<typeof createBrowserClient> | null = null
+let browserClient: ReturnType<typeof createBrowserClient<Database>> | null = null
 
 export const supabase = (() => {
   if (typeof window === 'undefined') {
-    return createBrowserClient(
+    return createBrowserClient<Database>(
       supabaseUrl || 'http://placeholder.supabase.co',
       supabaseAnonKey || 'placeholder',
       clientOptions
@@ -36,7 +37,7 @@ export const supabase = (() => {
   }
 
   if (!browserClient) {
-    browserClient = createBrowserClient(supabaseUrl!, supabaseAnonKey!, clientOptions)
+    browserClient = createBrowserClient<Database>(supabaseUrl!, supabaseAnonKey!, clientOptions)
   }
 
   return browserClient

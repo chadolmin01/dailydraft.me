@@ -69,8 +69,7 @@ export async function PATCH(request: NextRequest) {
     const { action } = body // 'mark_all_read'
 
     if (action === 'mark_all_read') {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase.from('event_notifications') as any)
+      const { error } = await supabase.from('event_notifications')
         .update({
           status: 'read',
           read_at: new Date().toISOString(),

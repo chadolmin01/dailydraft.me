@@ -1,11 +1,20 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient, SupabaseClient } from '@supabase/supabase-js'
 import { NextRequest } from 'next/server'
 
-// Use service role for server-side logging
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+// Lazy-init: 클라이언트 사이드에서 import 시 크래시 방지
+let _supabaseAdmin: SupabaseClient | null = null
+function getAdminClient(): SupabaseClient | null {
+  if (typeof window !== 'undefined') return null // 브라우저에서는 로깅 스킵
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) return null
+  if (!_supabaseAdmin) {
+    _supabaseAdmin = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { autoRefreshToken: false, persistSession: false } }
+    )
+  }
+  return _supabaseAdmin
+}
 
 export type ErrorLevel = 'debug' | 'info' | 'warn' | 'error' | 'fatal'
 export type ErrorSource = 'api' | 'webhook' | 'cron' | 'client'
@@ -57,7 +66,13 @@ export async function logError(options: LogErrorOptions): Promise<void> {
       ? sanitizeBody(requestBody)
       : undefined
 
-    await supabaseAdmin.from('error_logs').insert({
+    const admin = getAdminClient()
+    if (!admin) {
+      console.error('[ErrorLogger] Server-side only. Skipping DB log:', options.message)
+      return
+    }
+
+    await admin.from('error_logs').insert({
       level,
       source,
       error_code: errorCode,

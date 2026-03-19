@@ -514,19 +514,44 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                             </section>
                           )}
 
-                          {/* Weekly Updates Timeline */}
+                          {/* Weekly Updates Timeline — owner always sees, others only when show_updates */}
+                          {(isOwner || opportunity.show_updates) && (
                           <section>
                             <div className="flex items-center justify-between mb-5">
-                              <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest">
-                                주간 업데이트
-                              </h3>
+                              <div className="flex items-center gap-2">
+                                <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest">
+                                  주간 업데이트
+                                </h3>
+                                {!opportunity.show_updates && isOwner && (
+                                  <span className="text-[0.5rem] font-mono text-txt-disabled px-1.5 py-0.5 border border-dashed border-border">
+                                    비공개
+                                  </span>
+                                )}
+                              </div>
                               {isOwner && (
-                                <button
-                                  onClick={() => setShowWriteUpdate(true)}
-                                  className="text-xs text-txt-tertiary hover:text-txt-primary transition-colors font-medium"
-                                >
-                                  + 작성하기
-                                </button>
+                                <div className="flex items-center gap-3">
+                                  <button
+                                    onClick={() => {
+                                      updateOpportunity.mutate({
+                                        id: opportunity.id,
+                                        updates: { show_updates: !opportunity.show_updates },
+                                      })
+                                    }}
+                                    className={`text-[0.625rem] font-mono px-2 py-0.5 border transition-colors ${
+                                      opportunity.show_updates
+                                        ? 'bg-status-success-bg text-status-success-text border-status-success-text/30'
+                                        : 'bg-surface-sunken text-txt-disabled border-border hover:border-border-strong'
+                                    }`}
+                                  >
+                                    {opportunity.show_updates ? '공개 중' : '비공개'}
+                                  </button>
+                                  <button
+                                    onClick={() => setShowWriteUpdate(true)}
+                                    className="text-xs text-txt-tertiary hover:text-txt-primary transition-colors font-medium"
+                                  >
+                                    + 작성하기
+                                  </button>
+                                </div>
                               )}
                             </div>
 
@@ -566,6 +591,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                               </div>
                             )}
                           </section>
+                          )}
 
                           {/* Feedback Comments */}
                           <section>

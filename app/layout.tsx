@@ -1,28 +1,23 @@
 import type { Metadata } from 'next'
-import { Noto_Sans_KR, JetBrains_Mono, Nanum_Gothic_Coding } from 'next/font/google'
+import { Noto_Sans_KR, JetBrains_Mono } from 'next/font/google'
 import Script from 'next/script'
 import { Providers } from '@/src/context/Providers'
 import './globals.css'
 
 const notoSansKR = Noto_Sans_KR({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
+  weight: ['400', '500', '600', '700'],
   variable: '--font-noto-sans-kr',
   display: 'swap',
+  preload: true,
 })
 
 const jetBrainsMono = JetBrains_Mono({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600'],
+  weight: ['400', '700'],
   variable: '--font-jetbrains-mono',
   display: 'swap',
-})
-
-const nanumGothicCoding = Nanum_Gothic_Coding({
-  subsets: ['latin'],
-  weight: ['400', '700'],
-  variable: '--font-nanum-gothic-coding',
-  display: 'swap',
+  preload: true,
 })
 
 export const metadata: Metadata = {
@@ -55,7 +50,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ko" className={`${notoSansKR.variable} ${jetBrainsMono.variable} ${nanumGothicCoding.variable}`}>
+    <html lang="ko" className={`${notoSansKR.variable} ${jetBrainsMono.variable}`}>
       <body>
         <Providers>{children}</Providers>
         {/* Google Analytics */}

@@ -49,6 +49,7 @@ export function useProfile() {
       return data as Profile | null
     }),
     enabled: !!user?.id,
+    staleTime: 1000 * 60 * 2,
     retry: (failureCount) => failureCount < 3,
     retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
   })
@@ -74,6 +75,7 @@ export function useProfileById(userId: string | undefined) {
       return data as Profile | null
     }),
     enabled: !!userId,
+    staleTime: 1000 * 60 * 2,
     retry: (failureCount) => failureCount < 3,
     retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
   })

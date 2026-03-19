@@ -68,7 +68,7 @@ export const CommunityFeedback: React.FC = () => {
               {mockProject.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="px-2 py-1 bg-surface-sunken text-txt-secondary text-xs font-mono border border-border"
+                  className="px-2 py-1 bg-surface-card text-txt-secondary text-xs font-mono border border-border"
                 >
                   {tag}
                 </span>
@@ -105,7 +105,7 @@ export const CommunityFeedback: React.FC = () => {
             {mockComments.map((comment, index) => (
               <div
                 key={index}
-                className="bg-surface-sunken border border-border p-4 relative"
+                className="bg-surface-card border border-border p-4 relative"
               >
                 {/* Comment number */}
                 <div className="absolute -top-2 -left-2 w-6 h-6 bg-black text-white flex items-center justify-center text-xs font-bold">

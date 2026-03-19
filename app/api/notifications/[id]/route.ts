@@ -28,8 +28,7 @@ export async function PATCH(
       updateData.read_at = new Date().toISOString()
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: notification, error } = await (supabase.from('event_notifications') as any)
+    const { data: notification, error } = await supabase.from('event_notifications')
       .update(updateData)
       .eq('id', id)
       .eq('user_id', user.id)

@@ -9,7 +9,7 @@ import {
   MessageCircle, ExternalLink, Sparkles
 } from 'lucide-react'
 import { useAuth } from '@/src/context/AuthContext'
-import { useOpportunity } from '@/src/hooks/useOpportunities'
+import { useOpportunity, useUpdateOpportunity } from '@/src/hooks/useOpportunities'
 import { useProfileByUserId } from '@/src/hooks/usePublicProfiles'
 import { useCoffeeChats } from '@/src/hooks/useCoffeeChats'
 import { useProjectUpdates } from '@/src/hooks/useProjectUpdates'
@@ -34,6 +34,7 @@ interface OpportunityData {
   compensation_details: string | null
   pain_point: string | null
   project_links: any | null
+  show_updates: boolean | null
   interest_count: number | null
   applications_count: number | null
   views_count: number | null
@@ -108,6 +109,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
   const [showWriteUpdate, setShowWriteUpdate] = useState(false)
 
   const { data: oppData, isLoading: loading, isError } = useOpportunity(id)
+  const updateOpportunity = useUpdateOpportunity()
   const opportunity = oppData as OpportunityData | null
   const error = isError ? '프로젝트를 찾을 수 없습니다.' : null
 
@@ -360,13 +362,38 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
               </section>
             )}
 
-            {/* Weekly Updates Timeline (Maker Log style) */}
+            {/* Weekly Updates Timeline — owner always sees, others only when show_updates */}
+            {(isOwner || opportunity.show_updates) && (
             <section>
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest">
-                  주간 업데이트
-                </h2>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest">
+                    주간 업데이트
+                  </h2>
+                  {!opportunity.show_updates && isOwner && (
+                    <span className="text-[0.5rem] font-mono text-txt-disabled px-1.5 py-0.5 border border-dashed border-border">
+                      비공개
+                    </span>
+                  )}
+                </div>
                 <div className="flex items-center gap-3">
+                  {isOwner && (
+                    <button
+                      onClick={() => {
+                        updateOpportunity.mutate({
+                          id: opportunity.id,
+                          updates: { show_updates: !opportunity.show_updates },
+                        })
+                      }}
+                      className={`text-[0.625rem] font-mono px-2 py-0.5 border transition-colors ${
+                        opportunity.show_updates
+                          ? 'bg-status-success-bg text-status-success-text border-status-success-text/30'
+                          : 'bg-surface-sunken text-txt-disabled border-border hover:border-border-strong'
+                      }`}
+                    >
+                      {opportunity.show_updates ? '공개 중' : '비공개'}
+                    </button>
+                  )}
                   <span className="text-[0.625rem] font-mono text-txt-disabled">
                     {realUpdates.length}개의 업데이트
                   </span>
@@ -430,6 +457,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                 </div>
               )}
             </section>
+            )}
 
             {/* Write Update Modal (Owner) */}
             {opportunity && isOwner && (

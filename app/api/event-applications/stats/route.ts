@@ -16,8 +16,7 @@ export async function GET() {
     }
 
     // Get all applications for the user
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: applications, error } = await (supabase as any)
+    const { data: applications, error } = await supabase
       .from('event_applications')
       .select('status, created_at')
       .eq('user_id', user.id) as { data: { status: string; created_at: string }[] | null; error: Error | null };

@@ -7,7 +7,8 @@ export type CoffeeChatOutcome = 'team_formed' | 'pending' | 'no_match'
 
 export interface CoffeeChat {
   id: string
-  opportunity_id: string
+  opportunity_id: string | null
+  target_user_id: string | null
   requester_email: string
   requester_user_id: string | null
   requester_name: string | null
@@ -25,24 +26,28 @@ export const coffeeChatKeys = {
   owner: () => [...coffeeChatKeys.all, 'owner'] as const,
   requester: () => [...coffeeChatKeys.all, 'requester'] as const,
   byOpportunity: (id: string) => [...coffeeChatKeys.all, 'opportunity', id] as const,
+  byTargetUser: (userId: string) => [...coffeeChatKeys.all, 'target_user', userId] as const,
 }
 
 interface UseCoffeeChatsOptions {
   opportunityId?: string
+  targetUserId?: string
   asOwner?: boolean
   enabled?: boolean
 }
 
 // ── Query: fetch coffee chats ──
 export function useCoffeeChats(options: UseCoffeeChatsOptions = {}) {
-  const { opportunityId, asOwner = false, enabled = true } = options
+  const { opportunityId, targetUserId, asOwner = false, enabled = true } = options
 
   return useQuery({
-    queryKey: opportunityId
-      ? coffeeChatKeys.byOpportunity(opportunityId)
-      : asOwner
-        ? coffeeChatKeys.owner()
-        : coffeeChatKeys.requester(),
+    queryKey: targetUserId
+      ? coffeeChatKeys.byTargetUser(targetUserId)
+      : opportunityId
+        ? coffeeChatKeys.byOpportunity(opportunityId)
+        : asOwner
+          ? coffeeChatKeys.owner()
+          : coffeeChatKeys.requester(),
     queryFn: async () => {
       const { data: userData, error: authError } = await supabase.auth.getUser()
       if (authError) throw authError
@@ -50,11 +55,14 @@ export function useCoffeeChats(options: UseCoffeeChatsOptions = {}) {
 
       let query = supabase.from('coffee_chats').select('*')
 
-      if (opportunityId) {
+      if (targetUserId) {
+        // Person mode: 내가 이 사람에게 보낸 커피챗 조회
+        query = query
+          .eq('target_user_id', targetUserId)
+          .eq('requester_user_id', userData.user.id)
+      } else if (opportunityId) {
         query = query.eq('opportunity_id', opportunityId)
-      }
-
-      if (asOwner) {
+      } else if (asOwner) {
         query = query.eq('owner_user_id', userData.user.id)
       } else {
         query = query.eq('requester_user_id', userData.user.id)
@@ -188,6 +196,58 @@ export function useDeclineCoffeeChat() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type: 'declined', chatId }),
       }).catch((err) => console.warn('[CoffeeChat] 알림 이메일 전송 실패 (커피챗은 정상 처리됨):', err))
+      queryClient.invalidateQueries({ queryKey: coffeeChatKeys.all })
+    },
+  })
+}
+
+// ── Mutation: request a person-to-person coffee chat ──
+export function useRequestPersonCoffeeChat() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (data: {
+      targetUserId: string
+      email: string
+      name: string
+      message?: string
+    }) => {
+      const { data: userData } = await supabase.auth.getUser()
+
+      // Duplicate check
+      if (userData?.user) {
+        const { data: existing } = await supabase
+          .from('coffee_chats')
+          .select('id')
+          .eq('target_user_id', data.targetUserId)
+          .eq('requester_user_id', userData.user.id)
+          .eq('status', 'pending')
+          .maybeSingle()
+
+        if (existing) {
+          throw new Error('이미 이 사람에게 커피챗을 신청했습니다')
+        }
+      }
+
+      const { data: result, error } = await supabase.rpc('request_person_coffee_chat', {
+        p_target_user_id: data.targetUserId,
+        p_requester_email: data.email,
+        p_requester_name: data.name,
+        p_message: data.message || null,
+        p_requester_user_id: userData?.user?.id || null,
+      })
+
+      if (error) throw error
+      return result as string
+    },
+    onSuccess: (chatId) => {
+      if (chatId) {
+        fetch('/api/coffee-chat/notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'request', chatId }),
+        }).catch((err) => console.warn('[CoffeeChat] 알림 이메일 전송 실패 (커피챗은 정상 처리됨):', err))
+      }
       queryClient.invalidateQueries({ queryKey: coffeeChatKeys.all })
     },
   })

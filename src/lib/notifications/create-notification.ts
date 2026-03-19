@@ -9,7 +9,10 @@ export type NotificationType =
   | 'recommendation'
   | 'new_match'
   | 'coffee_chat'
+  | 'project_invitation'
   | 'comment'
+  | 'profile_interest'
+  | 'profile_milestone'
 
 interface CreateNotificationParams {
   userId: string
@@ -179,6 +182,67 @@ export async function notifyCoffeeChatResponse(
   })
 }
 
+export async function notifyPersonCoffeeChatRequest(
+  targetUserId: string,
+  requesterName: string
+) {
+  return createNotification({
+    userId: targetUserId,
+    type: 'coffee_chat',
+    title: '개인 커피챗 요청이 도착했습니다',
+    message: `${requesterName}님이 커피챗을 요청했습니다.`,
+    link: '/profile?tab=coffee-chats',
+  })
+}
+
+export async function notifyPersonCoffeeChatResponse(
+  requesterId: string,
+  targetName: string,
+  accepted: boolean
+) {
+  return createNotification({
+    userId: requesterId,
+    type: 'coffee_chat',
+    title: accepted ? '커피챗이 수락되었습니다!' : '커피챗 결과 안내',
+    message: accepted
+      ? `${targetName}님이 커피챗을 수락했습니다. 연락처를 확인하세요.`
+      : `${targetName}님이 커피챗을 거절했습니다.`,
+    link: '/profile?tab=coffee-chats',
+  })
+}
+
+export async function notifyProjectInvitation(
+  invitedUserId: string,
+  inviterName: string,
+  projectTitle: string,
+  role: string
+) {
+  return createNotification({
+    userId: invitedUserId,
+    type: 'project_invitation',
+    title: '프로젝트 초대가 도착했습니다',
+    message: `${inviterName}님이 "${projectTitle}" 프로젝트에 ${role} 역할로 초대했습니다.`,
+    link: '/profile?tab=invitations',
+  })
+}
+
+export async function notifyInvitationResponse(
+  inviterId: string,
+  invitedName: string,
+  projectTitle: string,
+  accepted: boolean
+) {
+  return createNotification({
+    userId: inviterId,
+    type: 'project_invitation',
+    title: accepted ? '프로젝트 초대가 수락되었습니다!' : '프로젝트 초대 결과 안내',
+    message: accepted
+      ? `${invitedName}님이 "${projectTitle}" 초대를 수락했습니다.`
+      : `${invitedName}님이 "${projectTitle}" 초대를 거절했습니다.`,
+    link: '/profile?tab=invitations',
+  })
+}
+
 export async function notifyNewComment(
   creatorId: string,
   commenterName: string,
@@ -194,5 +258,31 @@ export async function notifyNewComment(
     metadata: {
       opportunity_id: opportunityId,
     },
+  })
+}
+
+export async function notifyProfileInterest(
+  targetUserId: string,
+  likerName: string
+) {
+  return createNotification({
+    userId: targetUserId,
+    type: 'profile_interest',
+    title: '누군가 관심을 표현했습니다',
+    message: `${likerName}님이 회원님의 프로필에 관심을 표현했습니다.`,
+    link: '/profile',
+  })
+}
+
+export async function notifyProfileViewMilestone(
+  userId: string,
+  views: number
+) {
+  return createNotification({
+    userId,
+    type: 'profile_milestone',
+    title: `프로필 조회수 ${views}회 돌파!`,
+    message: `회원님의 프로필이 ${views}회 조회되었습니다. 관심이 높아지고 있어요!`,
+    link: '/profile',
   })
 }
