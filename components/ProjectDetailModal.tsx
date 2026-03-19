@@ -9,6 +9,7 @@ import {
   Sparkles, X, Share2,
   Eye, ExternalLink, Github, FileText, Globe, Edit3, Code
 } from 'lucide-react'
+import { Badges } from '@/components/ui/Badge'
 import { useOpportunity, useUpdateOpportunity } from '@/src/hooks/useOpportunities'
 import { useProfileByUserId } from '@/src/hooks/usePublicProfiles'
 import { useProjectUpdates } from '@/src/hooks/useProjectUpdates'
@@ -316,6 +317,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                               <h2 className="text-xl sm:text-2xl font-bold text-white break-keep leading-tight drop-shadow-sm">
                                 {opportunity.title}
                               </h2>
+                              <Badges badges={(opportunity as Record<string, unknown>).badges as string[] | null} className="mt-1" />
                               {!isOwner && matchScore != null && matchScore >= 60 && (
                                 <span className={`text-[0.625rem] font-mono font-bold px-1.5 py-0.5 border shrink-0 mt-1 ${
                                   matchScore >= 80 ? 'bg-status-success-bg text-status-success-text border-indicator-online/20'
@@ -416,6 +418,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                           <h2 className="text-2xl font-bold text-txt-primary break-keep leading-tight">
                             {opportunity.title}
                           </h2>
+                          <Badges badges={(opportunity as Record<string, unknown>).badges as string[] | null} className="mt-1" />
                           {!isOwner && matchScore != null && matchScore >= 60 && (
                             <span className={`text-[0.625rem] font-mono font-bold px-1.5 py-0.5 border shrink-0 mt-1 ${
                               matchScore >= 80 ? 'bg-status-success-bg text-status-success-text border-indicator-online/20'

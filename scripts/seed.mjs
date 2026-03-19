@@ -72,6 +72,7 @@ const SEED_USERS = [
         team_preference: { role: '유연', preferred_size: '2-3명', atmosphere: '균형' },
         availability: { hours_per_week: 15, prefer_online: true },
       }),
+      badges: ['sample'],
       profile_visibility: 'public',
       onboarding_completed: true,
     },
@@ -147,6 +148,7 @@ const SEED_USERS = [
         team_preference: { role: '리더', preferred_size: '4-5명', atmosphere: '실무형' },
         availability: { hours_per_week: 20, prefer_online: false },
       }),
+      badges: ['sample'],
       profile_visibility: 'public',
       onboarding_completed: true,
     },
@@ -203,6 +205,7 @@ const SEED_USERS = [
         team_preference: { role: '팔로워', preferred_size: '2-3명', atmosphere: '실무형' },
         availability: { hours_per_week: 25, prefer_online: true },
       }),
+      badges: ['sample'],
       profile_visibility: 'public',
       onboarding_completed: true,
     },
@@ -278,6 +281,7 @@ const SEED_USERS = [
         team_preference: { role: '리더', preferred_size: '2-3명', atmosphere: '캐주얼' },
         availability: { hours_per_week: 12, prefer_online: false },
       }),
+      badges: ['sample'],
       profile_visibility: 'public',
       onboarding_completed: true,
     },
@@ -337,6 +341,7 @@ const SEED_USERS = [
         team_preference: { role: '유연', preferred_size: '4-5명', atmosphere: '캐주얼' },
         availability: { hours_per_week: 15, prefer_online: true },
       }),
+      badges: ['sample'],
       profile_visibility: 'public',
       onboarding_completed: true,
     },
@@ -374,6 +379,7 @@ const SEED_USERS = [
         team_preference: { role: '팔로워', preferred_size: '2-3명', atmosphere: '실무형' },
         availability: { hours_per_week: 20, prefer_online: true },
       }),
+      badges: ['sample'],
       profile_visibility: 'public',
       onboarding_completed: true,
     },
@@ -455,12 +461,13 @@ async function seed() {
       console.error(`     프로필 에러: ${profileError.message}`)
     }
 
-    // 4. Projects 생성
+    // 4. Projects 생성 (sample 뱃지 자동 추가)
     for (const project of userData.projects) {
       const { error: projError } = await supabase
         .from('opportunities')
         .insert({
           creator_id: userId,
+          badges: ['sample'],
           ...project,
         })
 

@@ -11,6 +11,7 @@ export interface ProjectCard {
   updatedAt?: string
   status: string | null
   matchLabel?: string | null
+  badges?: string[] | null
 }
 
 export interface TalentCard {
@@ -24,6 +25,7 @@ export interface TalentCard {
   avatarUrl?: string | null
   matchScore?: number | null
   matchReason?: string | null
+  badges?: string[] | null
 }
 
 export interface CategoryItem {

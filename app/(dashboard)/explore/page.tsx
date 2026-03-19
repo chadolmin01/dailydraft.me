@@ -161,6 +161,7 @@ function ExplorePageContent() {
       updatedAt: opp.updated_at ?? undefined,
       status: opp.status,
       matchLabel,
+      badges: (opp as Record<string, unknown>).badges as string[] | null ?? null,
     })
 
     // AI sort: pre-ranked data, but still apply filters
@@ -244,6 +245,7 @@ function ExplorePageContent() {
         avatarUrl: profile.avatar_url,
         matchScore: rec?.match_score ?? null,
         matchReason: rec?.match_reason ?? null,
+        badges: (profile as Record<string, unknown>).badges as string[] | null ?? null,
         interestCount: profile.interest_count || 0,
         createdAt: profile.created_at,
       }
