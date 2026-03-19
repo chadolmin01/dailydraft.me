@@ -186,12 +186,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Sign out
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut()
-    if (error) {
-      console.error('Sign out error (clearing local state anyway):', error.message)
+    try {
+      await supabase.auth.signOut({ scope: 'local' })
+    } catch (e) {
+      console.error('Sign out error (clearing local state anyway):', e)
     }
     setUser(null)
     setProfile(null)
+
+    // Force-clear all Supabase auth cookies in case the client missed any
+    if (typeof document !== 'undefined') {
+      document.cookie.split(';').forEach(c => {
+        const name = c.trim().split('=')[0]
+        if (name.startsWith('sb-')) {
+          document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`
+        }
+      })
+    }
   }
 
   const value: AuthContextType = {
