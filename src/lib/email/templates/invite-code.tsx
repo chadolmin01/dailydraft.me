@@ -9,7 +9,7 @@ export function renderInviteCodeEmail({
   recipientName,
   inviteCode,
   expiresAt,
-  appUrl = 'https://dailydraft.me',
+  appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://dailydraft.me',
 }: InviteCodeEmailProps): string {
   const formattedDate = new Date(expiresAt).toLocaleDateString('ko-KR', {
     year: 'numeric',

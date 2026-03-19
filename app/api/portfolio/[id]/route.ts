@@ -40,7 +40,7 @@ export async function PATCH(
       .single()
 
     if (error) {
-      return ApiResponse.internalError(error.message)
+      return ApiResponse.internalError('포트폴리오 수정에 실패했습니다', error.message)
     }
 
     if (!data) {
@@ -74,7 +74,7 @@ export async function DELETE(
       .eq('user_id', user.id)
 
     if (error) {
-      return ApiResponse.internalError(error.message)
+      return ApiResponse.internalError('포트폴리오 삭제에 실패했습니다', error.message)
     }
 
     return ApiResponse.ok({ success: true })

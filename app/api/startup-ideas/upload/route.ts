@@ -186,11 +186,12 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error('[startup-ideas/upload] Error:', errorMessage);
 
     return NextResponse.json(
       {
         success: false,
-        error: errorMessage,
+        error: '업로드 처리 중 오류가 발생했습니다',
         duration_ms: Date.now() - startTime,
       },
       { status: 500 }

@@ -21,14 +21,14 @@ const jetBrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://dailydraft.me'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://dailydraft.me'),
   title: 'Draft - 모든 프로젝트는 여기서 시작됩니다',
   description: '프로젝트를 공유하고, 피드백 받고, 함께할 사람을 만나세요.',
   keywords: ['스타트업', '프로젝트', '커뮤니티', '피드백', '사이드프로젝트', '팀빌딩'],
   openGraph: {
     title: 'Draft - 모든 프로젝트는 여기서 시작됩니다',
     description: '프로젝트를 공유하고, 피드백 받고, 함께할 사람을 만나세요.',
-    url: 'https://dailydraft.me',
+    url: process.env.NEXT_PUBLIC_APP_URL || 'https://dailydraft.me',
     siteName: 'Draft',
     type: 'website',
     locale: 'ko_KR',

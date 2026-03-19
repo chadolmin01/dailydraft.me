@@ -1,4 +1,3 @@
-// @ts-nocheck — dev-only route, blocked by middleware in production
 import { createAdminClient } from '@/src/lib/supabase/admin'
 import { NextResponse } from 'next/server'
 import { ApiResponse } from '@/src/lib/api-utils'

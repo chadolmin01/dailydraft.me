@@ -1,6 +1,6 @@
 import { createClient } from '@/src/lib/supabase/server'
-import { NextResponse } from 'next/server'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
 
 export async function POST(request: Request) {
   try {
@@ -10,6 +10,10 @@ export async function POST(request: Request) {
     if (!user) {
       return ApiResponse.unauthorized()
     }
+
+    // Rate limit
+    const rateLimitResponse = await checkAIRateLimit(user.id, getClientIp(request))
+    if (rateLimitResponse) return rateLimitResponse
 
     const body = await request.json()
     const {
@@ -33,13 +37,6 @@ export async function POST(request: Request) {
     if (!nickname || !location || !currentSituation) {
       return ApiResponse.badRequest('닉네임, 지역, 현재 상황은 필수 입력 항목입니다')
     }
-
-    // Check if profile exists
-    const { data: existingProfile } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('user_id', user.id)
-      .maybeSingle()
 
     // 기본 프로필 데이터
     const profileData: Record<string, unknown> = {
@@ -69,25 +66,18 @@ export async function POST(request: Request) {
     const db = supabase.from('profiles') as any
     const fullData = { ...profileData, ...optionalFields }
 
-    // 첫 시도: 모든 필드 포함
-    let result = existingProfile
-      ? await db.update(fullData).eq('user_id', user.id)
-      : await db.insert(fullData)
+    // Upsert: INSERT or UPDATE based on user_id conflict
+    let result = await db.upsert(fullData, { onConflict: 'user_id' })
 
     // schema cache 에러 → optional 필드 제거 후 재시도
     if (result.error?.message?.includes('column') || result.error?.message?.includes('schema cache')) {
       console.warn('[onboarding/complete] Retrying without optional fields:', result.error.message)
-      result = existingProfile
-        ? await db.update(profileData).eq('user_id', user.id)
-        : await db.insert(profileData)
+      result = await db.upsert(profileData, { onConflict: 'user_id' })
     }
 
     if (result.error) {
       console.error('[onboarding/complete] Supabase error:', JSON.stringify(result.error))
-      return NextResponse.json(
-        { error: { message: `프로필 저장 실패: ${result.error.message}` } },
-        { status: 500 }
-      )
+      return ApiResponse.internalError('프로필 저장에 실패했습니다', result.error.message)
     }
 
     return ApiResponse.ok({
