@@ -67,9 +67,13 @@ function addSecurityHeaders(response: NextResponse) {
   response.headers.set('X-Frame-Options', 'DENY')
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
+  const isDev = process.env.NODE_ENV === 'development'
+  const scriptSrc = isDev
+    ? "'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com"
+    : "'self' 'unsafe-inline' https://www.googletagmanager.com"
   response.headers.set(
     'Content-Security-Policy',
-    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.anthropic.com https://generativelanguage.googleapis.com; frame-ancestors 'none'"
+    `default-src 'self'; script-src ${scriptSrc}; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.anthropic.com https://generativelanguage.googleapis.com; frame-ancestors 'none'`
   )
   return response
 }

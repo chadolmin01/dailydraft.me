@@ -1,28 +1,12 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { notifyProfileViewMilestone } from '@/src/lib/notifications/create-notification'
 import { NextRequest, NextResponse } from 'next/server'
-import { checkViewRateLimit } from '@/src/lib/rate-limit/redis-rate-limiter'
+import { checkViewRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { Redis } from '@upstash/redis'
 
-// IP 기반 중복 조회 방지 (메모리 캐시, 15분 TTL)
-const recentViews = new Map<string, number>()
-const VIEW_COOLDOWN_MS = 15 * 60 * 1000
-
-setInterval(() => {
-  const now = Date.now()
-  for (const [key, timestamp] of recentViews) {
-    if (now - timestamp > VIEW_COOLDOWN_MS) recentViews.delete(key)
-  }
-}, 5 * 60 * 1000)
-
-function getClientIP(request: NextRequest): string {
-  return (
-    request.headers.get('cf-connecting-ip') ||
-    request.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
-    request.headers.get('x-real-ip') ||
-    'unknown'
-  )
-}
+const redis = Redis.fromEnv()
+const VIEW_COOLDOWN_SEC = 15 * 60 // 15분
 
 // 프로필 조회수 증가
 export async function POST(
@@ -31,17 +15,20 @@ export async function POST(
 ) {
   try {
     const { id } = await params
-    const ip = getClientIP(request)
+    const ip = getClientIp(request)
 
     const rateLimitResponse = await checkViewRateLimit(ip)
     if (rateLimitResponse) return rateLimitResponse
 
-    const viewKey = `${ip}:profile:${id}`
-
-    // 같은 IP에서 15분 내 중복 조회 무시
-    const lastView = recentViews.get(viewKey)
-    if (lastView && Date.now() - lastView < VIEW_COOLDOWN_MS) {
-      return NextResponse.json({ success: true, deduplicated: true })
+    // Redis 기반 중복 조회 방지 (15분 TTL)
+    const dedupeKey = `view:profile:${ip}:${id}`
+    try {
+      const wasSet = await redis.set(dedupeKey, '1', { ex: VIEW_COOLDOWN_SEC, nx: true })
+      if (!wasSet) {
+        return NextResponse.json({ success: true, deduplicated: true })
+      }
+    } catch {
+      // Redis 실패 시 중복 체크 스킵 (graceful degradation)
     }
 
     const supabase = await createClient()
@@ -74,7 +61,6 @@ export async function POST(
       notifyProfileViewMilestone(typedProfile.user_id, newViews).catch(() => {})
     }
 
-    recentViews.set(viewKey, Date.now())
     return NextResponse.json({ success: true, profile_views: newViews })
   } catch {
     return ApiResponse.internalError()
