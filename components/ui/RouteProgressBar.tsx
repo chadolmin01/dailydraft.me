@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useTransition } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 
 /**
@@ -10,17 +10,16 @@ import { usePathname } from 'next/navigation'
 export function RouteProgressBar() {
   const pathname = usePathname()
   const [visible, setVisible] = useState(false)
-  const [prevPath, setPrevPath] = useState(pathname)
+  const prevPathRef = useRef(pathname)
 
   useEffect(() => {
-    if (pathname !== prevPath) {
-      // 경로가 바뀌면 바를 보여주고 잠시 후 숨김
+    if (pathname !== prevPathRef.current) {
+      prevPathRef.current = pathname
       setVisible(true)
-      setPrevPath(pathname)
       const timer = setTimeout(() => setVisible(false), 500)
       return () => clearTimeout(timer)
     }
-  }, [pathname, prevPath])
+  }, [pathname])
 
   if (!visible) return null
 
