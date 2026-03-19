@@ -534,6 +534,7 @@ export type Database = {
           pain_point: string | null
           project_links: Json | null
           project_stage: string | null
+          show_updates: boolean | null
           source_event_id: string | null
           status: string | null
           team_size: number | null
@@ -564,6 +565,7 @@ export type Database = {
           pain_point?: string | null
           project_links?: Json | null
           project_stage?: string | null
+          show_updates?: boolean | null
           source_event_id?: string | null
           status?: string | null
           team_size?: number | null
@@ -594,6 +596,7 @@ export type Database = {
           pain_point?: string | null
           project_links?: Json | null
           project_stage?: string | null
+          show_updates?: boolean | null
           source_event_id?: string | null
           status?: string | null
           team_size?: number | null

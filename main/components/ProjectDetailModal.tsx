@@ -9,7 +9,6 @@ import {
   Sparkles, X, Share2,
   Eye, ExternalLink, Github, FileText, Globe, Edit3, Code
 } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { useOpportunity, useUpdateOpportunity } from '@/src/hooks/useOpportunities'
 import { useProfileByUserId } from '@/src/hooks/usePublicProfiles'
 import { useProjectUpdates } from '@/src/hooks/useProjectUpdates'
@@ -172,25 +171,18 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
     : 0
 
   return (
-    <AnimatePresence>
+    <>
       {projectId && (
         <>
           {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+          <div
             onClick={onClose}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-modal-backdrop"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-modal-backdrop animate-backdrop-in"
           />
 
           {/* Modal */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed inset-0 z-modal flex items-center justify-center p-4 md:p-8"
+          <div
+            className="fixed inset-0 z-modal flex items-center justify-center p-4 md:p-8 animate-modal-in"
             onClick={onClose}
           >
             <div
@@ -522,19 +514,44 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                             </section>
                           )}
 
-                          {/* Weekly Updates Timeline */}
+                          {/* Weekly Updates Timeline — owner always sees, others only when show_updates */}
+                          {(isOwner || opportunity.show_updates) && (
                           <section>
                             <div className="flex items-center justify-between mb-5">
-                              <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest">
-                                주간 업데이트
-                              </h3>
+                              <div className="flex items-center gap-2">
+                                <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest">
+                                  주간 업데이트
+                                </h3>
+                                {!opportunity.show_updates && isOwner && (
+                                  <span className="text-[0.5rem] font-mono text-txt-disabled px-1.5 py-0.5 border border-dashed border-border">
+                                    비공개
+                                  </span>
+                                )}
+                              </div>
                               {isOwner && (
-                                <button
-                                  onClick={() => setShowWriteUpdate(true)}
-                                  className="text-xs text-txt-tertiary hover:text-txt-primary transition-colors font-medium"
-                                >
-                                  + 작성하기
-                                </button>
+                                <div className="flex items-center gap-3">
+                                  <button
+                                    onClick={() => {
+                                      updateOpportunity.mutate({
+                                        id: opportunity.id,
+                                        updates: { show_updates: !opportunity.show_updates },
+                                      })
+                                    }}
+                                    className={`text-[0.625rem] font-mono px-2 py-0.5 border transition-colors ${
+                                      opportunity.show_updates
+                                        ? 'bg-status-success-bg text-status-success-text border-status-success-text/30'
+                                        : 'bg-surface-sunken text-txt-disabled border-border hover:border-border-strong'
+                                    }`}
+                                  >
+                                    {opportunity.show_updates ? '공개 중' : '비공개'}
+                                  </button>
+                                  <button
+                                    onClick={() => setShowWriteUpdate(true)}
+                                    className="text-xs text-txt-tertiary hover:text-txt-primary transition-colors font-medium"
+                                  >
+                                    + 작성하기
+                                  </button>
+                                </div>
                               )}
                             </div>
 
@@ -574,6 +591,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                               </div>
                             )}
                           </section>
+                          )}
 
                           {/* Feedback Comments */}
                           <section>
@@ -812,30 +830,17 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                   </div>
 
                   {/* Coffee Chat Form Overlay (Authenticated) */}
-                  <AnimatePresence>
-                    {showCoffeeChatForm && opportunity && (
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="absolute inset-0 bg-black/60 z-20 flex flex-col items-center justify-center p-4 sm:p-8 overflow-y-auto"
-                      >
-                        <motion.div
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: 20 }}
-                          transition={{ delay: 0.1 }}
-                          className="w-full max-w-sm sm:max-w-md bg-surface-card border border-border-strong p-6 sm:p-8 shadow-brutal-xl"
-                        >
-                          <CoffeeChatRequestForm
-                            opportunityId={opportunity.id}
-                            onClose={() => { setShowCoffeeChatForm(false); setSelectedRole(undefined) }}
-                            selectedRole={selectedRole}
-                          />
-                        </motion.div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                  {showCoffeeChatForm && opportunity && (
+                    <div className="absolute inset-0 bg-black/60 z-20 flex flex-col items-center justify-center p-4 sm:p-8 overflow-y-auto animate-backdrop-in">
+                      <div className="w-full max-w-sm sm:max-w-md bg-surface-card border border-border-strong p-6 sm:p-8 shadow-brutal-xl animate-modal-in">
+                        <CoffeeChatRequestForm
+                          opportunityId={opportunity.id}
+                          onClose={() => { setShowCoffeeChatForm(false); setSelectedRole(undefined) }}
+                          selectedRole={selectedRole}
+                        />
+                      </div>
+                    </div>
+                  )}
 
                   {/* Write Update Modal (Owner) */}
                   {opportunity && (
@@ -848,57 +853,44 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                   )}
 
                   {/* Signup CTA Overlay (Non-authenticated) */}
-                  <AnimatePresence>
-                    {showCta && (
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="absolute inset-0 bg-black/60 z-20 flex flex-col items-center justify-center p-4 sm:p-8 text-center overflow-y-auto"
-                      >
-                        <motion.div
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: 20 }}
-                          transition={{ delay: 0.1 }}
-                          className="w-full max-w-sm sm:max-w-md bg-surface-card border border-border-strong p-6 sm:p-8 shadow-brutal-xl"
+                  {showCta && (
+                    <div className="absolute inset-0 bg-black/60 z-20 flex flex-col items-center justify-center p-4 sm:p-8 text-center overflow-y-auto animate-backdrop-in">
+                      <div className="w-full max-w-sm sm:max-w-md bg-surface-card border border-border-strong p-6 sm:p-8 shadow-brutal-xl animate-modal-in">
+                        <div className="w-14 h-14 bg-black flex items-center justify-center mb-6 mx-auto">
+                          <span className="text-white font-black text-xl font-mono">D</span>
+                        </div>
+                        <h3 className="text-xl font-bold text-txt-primary mb-2">
+                          이 프로젝트에 관심이 있으신가요?
+                        </h3>
+                        <p className="text-txt-tertiary mb-8 leading-relaxed break-keep max-w-sm text-sm mx-auto">
+                          Draft에 가입하면 관심 표현, 커피챗 신청,
+                          피드백 주고받기까지 모두 가능해요.
+                        </p>
+                        <button
+                          onClick={handleSignup}
+                          className="bg-black hover:bg-[#333] text-white px-8 py-3.5 font-bold text-sm flex items-center gap-2 transition-colors mx-auto mb-3 border border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
                         >
-                          <div className="w-14 h-14 bg-black flex items-center justify-center mb-6 mx-auto">
-                            <span className="text-white font-black text-xl font-mono">D</span>
-                          </div>
-                          <h3 className="text-xl font-bold text-txt-primary mb-2">
-                            이 프로젝트에 관심이 있으신가요?
-                          </h3>
-                          <p className="text-txt-tertiary mb-8 leading-relaxed break-keep max-w-sm text-sm mx-auto">
-                            Draft에 가입하면 관심 표현, 커피챗 신청,
-                            피드백 주고받기까지 모두 가능해요.
-                          </p>
-                          <button
-                            onClick={handleSignup}
-                            className="bg-black hover:bg-[#333] text-white px-8 py-3.5 font-bold text-sm flex items-center gap-2 transition-colors mx-auto mb-3 border border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
-                          >
-                            무료로 시작하기
-                            <ArrowRight size={16} />
-                          </button>
-                          <p className="text-[0.625rem] font-mono text-txt-disabled uppercase tracking-wider mb-6">
-                            가입 30초 · 무료 · 바로 사용 가능
-                          </p>
-                          <button
-                            onClick={() => setShowCta(false)}
-                            className="text-sm text-txt-disabled hover:text-txt-secondary transition-colors"
-                          >
-                            돌아가기
-                          </button>
-                        </motion.div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                          무료로 시작하기
+                          <ArrowRight size={16} />
+                        </button>
+                        <p className="text-[0.625rem] font-mono text-txt-disabled uppercase tracking-wider mb-6">
+                          가입 30초 · 무료 · 바로 사용 가능
+                        </p>
+                        <button
+                          onClick={() => setShowCta(false)}
+                          className="text-sm text-txt-disabled hover:text-txt-secondary transition-colors"
+                        >
+                          돌아가기
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </>
               )}
             </div>
-          </motion.div>
+          </div>
         </>
       )}
-    </AnimatePresence>
+    </>
   )
 }
