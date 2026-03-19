@@ -30,8 +30,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     const minSimilarity = parseFloat(searchParams.get('min_similarity') || '0.3')
 
     // Check if event exists
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: event, error: eventError } = await (supabase as any)
+    const { data: event, error: eventError } = await supabase
       .from('startup_events')
       .select('id, content_embedding')
       .eq('id', eventId)
@@ -49,8 +48,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     }
 
     // Call the find_similar_events function
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: similarEvents, error: rpcError } = await (supabase as any).rpc(
+    const { data: similarEvents, error: rpcError } = await supabase.rpc(
       'find_similar_events',
       {
         p_event_id: eventId,
@@ -72,8 +70,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     }
 
     const eventIds = similarEvents.map((e: SimilarEvent) => e.event_id)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: fullEvents } = await (supabase as any)
+    const { data: fullEvents } = await supabase
       .from('startup_events')
       .select('id, title, organizer, event_type, registration_end_date, registration_url, interest_tags')
       .in('id', eventIds)
@@ -108,8 +105,7 @@ async function fallbackSimilarEvents(
 ) {
   try {
     // Get source event
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: sourceEvent } = await (supabase as any)
+    const { data: sourceEvent } = await supabase
       .from('startup_events')
       .select('interest_tags, event_type')
       .eq('id', eventId)
@@ -120,8 +116,7 @@ async function fallbackSimilarEvents(
     }
 
     // Find events with overlapping tags
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let query = (supabase as any)
+    let query = supabase
       .from('startup_events')
       .select('id, title, organizer, event_type, registration_end_date, registration_url, interest_tags')
       .eq('status', 'active')
@@ -143,7 +138,7 @@ async function fallbackSimilarEvents(
     // Calculate similarity based on tag overlap
     const sourceTagsLower = (sourceEvent.interest_tags || []).map((t: string) => t.toLowerCase())
 
-    const scored = candidates.map((event: { interest_tags?: string[] }) => {
+    const scored = candidates.map((event) => {
       const eventTagsLower = (event.interest_tags || []).map((t: string) => t.toLowerCase())
       const commonTags = sourceTagsLower.filter((t: string) => eventTagsLower.includes(t))
       const totalTags = new Set([...sourceTagsLower, ...eventTagsLower]).size

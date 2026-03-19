@@ -20,7 +20,7 @@ async function withRetry<T>(fn: () => Promise<T>, retries = 1): Promise<T> {
 }
 
 export type PublicProfile = Pick<Profile,
-  'id' | 'user_id' | 'nickname' | 'desired_position' | 'interest_tags' | 'location' | 'profile_visibility' | 'vision_summary' | 'avatar_url'
+  'id' | 'user_id' | 'nickname' | 'desired_position' | 'interest_tags' | 'location' | 'profile_visibility' | 'vision_summary' | 'avatar_url' | 'interest_count' | 'created_at'
 >
 
 // Query keys
@@ -42,7 +42,7 @@ export function usePublicProfiles(options?: {
     queryFn: () => withRetry(async () => {
       let query = supabase
         .from('profiles')
-        .select('id, user_id, nickname, desired_position, interest_tags, location, profile_visibility, vision_summary, avatar_url')
+        .select('id, user_id, nickname, desired_position, interest_tags, location, profile_visibility, vision_summary, avatar_url, interest_count, created_at')
         .eq('profile_visibility', 'public')
         .order('updated_at', { ascending: false })
 
@@ -91,7 +91,7 @@ export type DetailedPublicProfile = Pick<Profile,
   'id' | 'user_id' | 'nickname' | 'desired_position' | 'interest_tags' | 'location' |
   'profile_visibility' | 'vision_summary' | 'skills' | 'university' | 'major' |
   'current_situation' | 'personality' | 'contact_email' | 'avatar_url' |
-  'portfolio_url' | 'github_url' | 'linkedin_url'
+  'portfolio_url' | 'github_url' | 'linkedin_url' | 'affiliation_type' | 'cover_image_url' | 'is_uni_verified'
 >
 
 export function useDetailedPublicProfile(
@@ -109,7 +109,7 @@ export function useDetailedPublicProfile(
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, user_id, nickname, desired_position, interest_tags, location, profile_visibility, vision_summary, skills, university, major, current_situation, personality, contact_email, avatar_url, portfolio_url, github_url, linkedin_url, is_uni_verified')
+        .select('id, user_id, nickname, desired_position, interest_tags, location, profile_visibility, vision_summary, skills, university, major, current_situation, personality, contact_email, avatar_url, portfolio_url, github_url, linkedin_url, is_uni_verified, affiliation_type, cover_image_url')
         .eq(field, identifier)
         .eq('profile_visibility', 'public')
         .maybeSingle()

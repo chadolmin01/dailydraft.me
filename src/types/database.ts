@@ -41,6 +41,7 @@ export type Database = {
           deleted_by_sender?: boolean
           deleted_by_receiver?: boolean
         }
+        Relationships: []
       }
       subscriptions: {
         Row: {
@@ -255,23 +256,35 @@ export type Database = {
         Row: {
           applicant_id: string
           application_id: string
+          assigned_role: string | null
           connected_at: string | null
           id: string
+          notes: string | null
           opportunity_creator_id: string
+          opportunity_id: string | null
+          status: string | null
         }
         Insert: {
           applicant_id: string
           application_id: string
+          assigned_role?: string | null
           connected_at?: string | null
           id?: string
+          notes?: string | null
           opportunity_creator_id: string
+          opportunity_id?: string | null
+          status?: string | null
         }
         Update: {
           applicant_id?: string
           application_id?: string
+          assigned_role?: string | null
           connected_at?: string | null
           id?: string
+          notes?: string | null
           opportunity_creator_id?: string
+          opportunity_id?: string | null
+          status?: string | null
         }
         Relationships: [
           {
@@ -507,18 +520,24 @@ export type Database = {
           compensation_type: string | null
           created_at: string | null
           creator_id: string
+          deadline: string | null
           demo_images: string[] | null
           description: string
           id: string
           interest_count: number | null
           interest_tags: string[] | null
+          is_boosted: boolean | null
           location: string | null
           location_type: string | null
           needed_roles: string[] | null
           needed_skills: Json | null
           pain_point: string | null
           project_links: Json | null
+          project_stage: string | null
+          show_updates: boolean | null
+          source_event_id: string | null
           status: string | null
+          team_size: number | null
           time_commitment: string | null
           title: string
           type: string
@@ -532,18 +551,24 @@ export type Database = {
           compensation_type?: string | null
           created_at?: string | null
           creator_id: string
+          deadline?: string | null
           demo_images?: string[] | null
           description: string
           id?: string
           interest_count?: number | null
           interest_tags?: string[] | null
+          is_boosted?: boolean | null
           location?: string | null
           location_type?: string | null
           needed_roles?: string[] | null
           needed_skills?: Json | null
           pain_point?: string | null
           project_links?: Json | null
+          project_stage?: string | null
+          show_updates?: boolean | null
+          source_event_id?: string | null
           status?: string | null
+          team_size?: number | null
           time_commitment?: string | null
           title: string
           type: string
@@ -557,18 +582,24 @@ export type Database = {
           compensation_type?: string | null
           created_at?: string | null
           creator_id?: string
+          deadline?: string | null
           demo_images?: string[] | null
           description?: string
           id?: string
           interest_count?: number | null
           interest_tags?: string[] | null
+          is_boosted?: boolean | null
           location?: string | null
           location_type?: string | null
           needed_roles?: string[] | null
           needed_skills?: Json | null
           pain_point?: string | null
           project_links?: Json | null
+          project_stage?: string | null
+          show_updates?: boolean | null
+          source_event_id?: string | null
           status?: string | null
+          team_size?: number | null
           time_commitment?: string | null
           title?: string
           type?: string
@@ -578,17 +609,49 @@ export type Database = {
         }
         Relationships: []
       }
+      profile_interests: {
+        Row: {
+          id: string
+          user_id: string
+          target_profile_id: string
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          target_profile_id: string
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          target_profile_id?: string
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_interests_target_profile_id_fkey"
+            columns: ["target_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           age_range: string | null
           ai_chat_completed: boolean | null
           ai_chat_transcript: Json | null
           avatar_url: string | null
+          bio: string | null
           contact_email: string | null
           contact_kakao: string | null
           cover_image_url: string | null
           created_at: string | null
+          data_consent: boolean | null
           affiliation_type: string | null
+          extracted_profile: Json | null
           portfolio_url: string | null
           linkedin_url: string | null
           github_url: string | null
@@ -608,6 +671,7 @@ export type Database = {
           premium_activated_at: string | null
           profile_analysis: Json | null
           profile_analysis_at: string | null
+          interest_count: number | null
           profile_views: number | null
           profile_visibility: string | null
           skills: Json | null
@@ -623,11 +687,14 @@ export type Database = {
           ai_chat_transcript?: Json | null
           affiliation_type?: string | null
           avatar_url?: string | null
+          bio?: string | null
           contact_email?: string | null
           contact_kakao?: string | null
           cover_image_url?: string | null
           created_at?: string | null
+          data_consent?: boolean | null
           current_situation?: string | null
+          extracted_profile?: Json | null
           portfolio_url?: string | null
           linkedin_url?: string | null
           github_url?: string | null
@@ -660,11 +727,14 @@ export type Database = {
           ai_chat_transcript?: Json | null
           affiliation_type?: string | null
           avatar_url?: string | null
+          bio?: string | null
           contact_email?: string | null
           contact_kakao?: string | null
           cover_image_url?: string | null
           created_at?: string | null
+          data_consent?: boolean | null
           current_situation?: string | null
+          extracted_profile?: Json | null
           portfolio_url?: string | null
           linkedin_url?: string | null
           github_url?: string | null
@@ -690,6 +760,39 @@ export type Database = {
           user_id?: string
           vision_embedding?: string | null
           vision_summary?: string | null
+        }
+        Relationships: []
+      }
+      portfolio_items: {
+        Row: {
+          id: string
+          user_id: string
+          title: string
+          description: string | null
+          image_url: string | null
+          link_url: string | null
+          display_order: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          title: string
+          description?: string | null
+          image_url?: string | null
+          link_url?: string | null
+          display_order?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          title?: string
+          description?: string | null
+          image_url?: string | null
+          link_url?: string | null
+          display_order?: number
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1371,7 +1474,9 @@ export type Database = {
           requester_user_id: string | null
           requester_name: string | null
           owner_user_id: string
+          target_user_id: string | null
           status: 'pending' | 'accepted' | 'declined'
+          outcome: string | null
           contact_info: string | null
           message: string | null
           created_at: string | null
@@ -1384,7 +1489,9 @@ export type Database = {
           requester_user_id?: string | null
           requester_name?: string | null
           owner_user_id: string
+          target_user_id?: string | null
           status?: 'pending' | 'accepted' | 'declined'
+          outcome?: string | null
           contact_info?: string | null
           message?: string | null
           created_at?: string | null
@@ -1397,7 +1504,9 @@ export type Database = {
           requester_user_id?: string | null
           requester_name?: string | null
           owner_user_id?: string
+          target_user_id?: string | null
           status?: 'pending' | 'accepted' | 'declined'
+          outcome?: string | null
           contact_info?: string | null
           message?: string | null
           created_at?: string | null
@@ -1470,6 +1579,399 @@ export type Database = {
           from_startup_idea?: boolean | null
           startup_source?: string | null
           created_at?: string | null
+        }
+        Relationships: []
+      }
+      error_logs: {
+        Row: {
+          id: string
+          created_at: string | null
+          level: string
+          source: string
+          error_code: string | null
+          message: string
+          stack_trace: string | null
+          endpoint: string | null
+          method: string | null
+          user_id: string | null
+          request_body: Json | null
+          metadata: Json | null
+          ip_address: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          id?: string
+          created_at?: string | null
+          level: string
+          source: string
+          error_code?: string | null
+          message: string
+          stack_trace?: string | null
+          endpoint?: string | null
+          method?: string | null
+          user_id?: string | null
+          request_body?: Json | null
+          metadata?: Json | null
+          ip_address?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          id?: string
+          created_at?: string | null
+          level?: string
+          source?: string
+          error_code?: string | null
+          message?: string
+          stack_trace?: string | null
+          endpoint?: string | null
+          method?: string | null
+          user_id?: string | null
+          request_body?: Json | null
+          metadata?: Json | null
+          ip_address?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+      project_invitations: {
+        Row: {
+          id: string
+          opportunity_id: string
+          inviter_user_id: string
+          invited_user_id: string
+          role: string
+          message: string | null
+          status: string
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          opportunity_id: string
+          inviter_user_id: string
+          invited_user_id: string
+          role: string
+          message?: string | null
+          status?: string
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          opportunity_id?: string
+          inviter_user_id?: string
+          invited_user_id?: string
+          role?: string
+          message?: string | null
+          status?: string
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_invitations_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      event_applications: {
+        Row: {
+          id: string
+          user_id: string
+          event_id: string
+          status: string
+          status_updated_at: string | null
+          applied_at: string | null
+          applied_url: string | null
+          result_notes: string | null
+          personal_notes: string | null
+          preparation_checklist: Json | null
+          reminder_date: string | null
+          reminder_sent: boolean | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          event_id: string
+          status?: string
+          status_updated_at?: string | null
+          applied_at?: string | null
+          applied_url?: string | null
+          result_notes?: string | null
+          personal_notes?: string | null
+          preparation_checklist?: Json | null
+          reminder_date?: string | null
+          reminder_sent?: boolean | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          event_id?: string
+          status?: string
+          status_updated_at?: string | null
+          applied_at?: string | null
+          applied_url?: string | null
+          result_notes?: string | null
+          personal_notes?: string | null
+          preparation_checklist?: Json | null
+          reminder_date?: string | null
+          reminder_sent?: boolean | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_applications_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "startup_events"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      event_application_history: {
+        Row: {
+          id: string
+          application_id: string
+          previous_status: string | null
+          new_status: string
+          changed_at: string | null
+        }
+        Insert: {
+          id?: string
+          application_id: string
+          previous_status?: string | null
+          new_status: string
+          changed_at?: string | null
+        }
+        Update: {
+          id?: string
+          application_id?: string
+          previous_status?: string | null
+          new_status?: string
+          changed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_application_history_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "event_applications"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      event_opportunity_links: {
+        Row: {
+          id: string
+          event_id: string
+          opportunity_id: string
+          created_by: string
+          link_type: string
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          event_id: string
+          opportunity_id: string
+          created_by: string
+          link_type?: string
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          event_id?: string
+          opportunity_id?: string
+          created_by?: string
+          link_type?: string
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_opportunity_links_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "startup_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_opportunity_links_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      team_checklists: {
+        Row: {
+          id: string
+          opportunity_id: string
+          title: string
+          description: string | null
+          is_completed: boolean
+          sort_order: number
+          assigned_to: string | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          opportunity_id: string
+          title: string
+          description?: string | null
+          is_completed?: boolean
+          sort_order?: number
+          assigned_to?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          opportunity_id?: string
+          title?: string
+          description?: string | null
+          is_completed?: boolean
+          sort_order?: number
+          assigned_to?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_checklists_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      team_announcements: {
+        Row: {
+          id: string
+          opportunity_id: string
+          author_id: string
+          title: string
+          content: string
+          is_pinned: boolean
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          opportunity_id: string
+          author_id: string
+          title: string
+          content: string
+          is_pinned?: boolean
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          opportunity_id?: string
+          author_id?: string
+          title?: string
+          content?: string
+          is_pinned?: boolean
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_announcements_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      project_updates: {
+        Row: {
+          id: string
+          opportunity_id: string
+          author_id: string
+          week_number: number
+          title: string
+          content: string
+          update_type: string
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          opportunity_id: string
+          author_id: string
+          week_number: number
+          title: string
+          content: string
+          update_type?: string
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          opportunity_id?: string
+          author_id?: string
+          week_number?: number
+          title?: string
+          content?: string
+          update_type?: string
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_updates_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      support_tickets: {
+        Row: {
+          id: string
+          user_id: string
+          category: string
+          title: string
+          description: string
+          page_url: string | null
+          status: string
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          category: string
+          title: string
+          description: string
+          page_url?: string | null
+          status?: string
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          category?: string
+          title?: string
+          description?: string
+          page_url?: string | null
+          status?: string
+          created_at?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -1758,6 +2260,77 @@ export type Database = {
           avg_turns: number
           top_categories: string[]
           avg_final_score: number
+        }[]
+      }
+      find_similar_events: {
+        Args: {
+          p_event_id: string
+          p_limit: number
+          p_min_similarity: number
+        }
+        Returns: {
+          event_id: string
+          title: string
+          event_type: string
+          registration_end_date: string
+          similarity_score: number
+        }[]
+      }
+      increment_view_count: {
+        Args: {
+          table_name: string
+          row_id: string
+        }
+        Returns: number
+      }
+      match_users: {
+        Args: {
+          query_embedding: string
+          match_threshold: number
+          match_count: number
+          exclude_user_id: string
+        }
+        Returns: {
+          id: string
+          user_id: string
+          nickname: string
+          desired_position: string | null
+          skills: Json | null
+          interest_tags: string[] | null
+          personality: Json | null
+          current_situation: string | null
+          vision_summary: string | null
+          location: string | null
+          profile_analysis: Json | null
+          extracted_profile: Json | null
+          similarity: number
+        }[]
+      }
+      request_person_coffee_chat: {
+        Args: {
+          p_target_user_id: string
+          p_requester_email: string
+          p_requester_name: string
+          p_message: string | null
+          p_requester_user_id: string | null
+        }
+        Returns: string
+      }
+      get_weekly_digest_events: {
+        Args: {
+          p_user_id: string
+          p_recommended_limit: number
+          p_popular_limit: number
+        }
+        Returns: {
+          id: string
+          title: string
+          organizer: string
+          event_type: string | null
+          registration_end_date: string
+          registration_url: string | null
+          interest_tags: string[] | null
+          category: string
         }[]
       }
     }

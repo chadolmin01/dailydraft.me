@@ -114,8 +114,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create link in event_opportunity_links table
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error: _linkError } = await (supabase as any)
+    const { error: _linkError } = await supabase
       .from('event_opportunity_links')
       .insert({
         event_id: body.event_id,

@@ -2,9 +2,10 @@
 
 import React from 'react'
 import { Check } from 'lucide-react'
-import type { CategoryItem, TrendingTag, SearchScope, ActiveTab } from './types'
+import type { CategoryItem, TrendingTag, ActiveTab } from './types'
 
 interface ExploreSidebarProps {
+  activeTab: ActiveTab
   categories: CategoryItem[]
   selectedCategory: string
   onCategoryChange: (id: string) => void
@@ -15,6 +16,7 @@ interface ExploreSidebarProps {
 }
 
 export function ExploreSidebar({
+  activeTab,
   categories,
   selectedCategory,
   onCategoryChange,
@@ -30,8 +32,8 @@ export function ExploreSidebar({
         <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-black/20" />
         <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-black/20" />
         <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-2">
-          <span className="w-4 h-4 bg-black text-white flex items-center justify-center text-[0.5rem] font-bold">C</span>
-          CATEGORY
+          <span className="w-4 h-4 bg-black text-white flex items-center justify-center text-[0.5rem] font-bold">{activeTab === 'projects' ? 'C' : 'R'}</span>
+          {activeTab === 'projects' ? 'CATEGORY' : 'ROLE'}
         </h3>
         <nav className="space-y-0.5">
           {categories.map((cat, idx) => (
@@ -64,8 +66,8 @@ export function ExploreSidebar({
       {/* 트렌딩 태그 */}
       <div className="relative bg-surface-card border border-border-strong p-4 shadow-sharp">
         <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-2">
-          <span className="w-4 h-4 bg-indicator-trending text-white flex items-center justify-center text-[0.5rem] font-bold">T</span>
-          TRENDING
+          <span className="w-4 h-4 bg-indicator-trending text-white flex items-center justify-center text-[0.5rem] font-bold">{activeTab === 'projects' ? 'T' : 'S'}</span>
+          {activeTab === 'projects' ? 'TRENDING' : 'POPULAR SKILLS'}
         </h3>
         <div className="space-y-1.5">
           {trendingTags.map((item, idx) => {
@@ -93,32 +95,65 @@ export function ExploreSidebar({
       </div>
 
       {/* 필터 */}
-      <div className="relative bg-surface-card border border-border-strong p-4 shadow-sharp">
-        <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-2">
-          <span className="w-4 h-4 bg-indicator-online text-white flex items-center justify-center text-[0.5rem] font-bold">F</span>
-          FILTER
-        </h3>
-        <label className="flex items-center gap-2.5 text-sm text-txt-secondary cursor-pointer group">
-          <div className={`w-4 h-4 border flex items-center justify-center transition-all ${
-            recruitingOnly ? 'bg-indicator-online border-indicator-online' : 'border-border-strong group-hover:border-txt-secondary'
-          }`}>
-            {recruitingOnly && <Check size={10} className="text-white" strokeWidth={3} />}
+      {activeTab === 'projects' && (
+        <div className="relative bg-surface-card border border-border-strong p-4 shadow-sharp">
+          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-2">
+            <span className="w-4 h-4 bg-indicator-online text-white flex items-center justify-center text-[0.5rem] font-bold">F</span>
+            FILTER
+          </h3>
+          <label className="flex items-center gap-2.5 text-sm text-txt-secondary cursor-pointer group">
+            <div className={`w-4 h-4 border flex items-center justify-center transition-all ${
+              recruitingOnly ? 'bg-indicator-online border-indicator-online' : 'border-border-strong group-hover:border-txt-secondary'
+            }`}>
+              {recruitingOnly && <Check size={10} className="text-white" strokeWidth={3} />}
+            </div>
+            <input
+              type="checkbox"
+              className="sr-only"
+              checked={recruitingOnly}
+              onChange={(e) => onRecruitingOnlyChange(e.target.checked)}
+            />
+            모집 중만 보기
+          </label>
+          <div className="mt-3 pt-3 border-t border-dashed border-border">
+            <p className="text-[0.625rem] font-mono text-txt-disabled flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 bg-indicator-online animate-pulse" />
+              {recruitingOnly ? 'ACTIVE FILTER ON' : 'NO FILTER APPLIED'}
+            </p>
           </div>
-          <input
-            type="checkbox"
-            className="sr-only"
-            checked={recruitingOnly}
-            onChange={(e) => onRecruitingOnlyChange(e.target.checked)}
-          />
-          모집 중만 보기
-        </label>
-        <div className="mt-3 pt-3 border-t border-dashed border-border">
-          <p className="text-[0.625rem] font-mono text-txt-disabled flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 bg-indicator-online animate-pulse" />
-            {recruitingOnly ? 'ACTIVE FILTER ON' : 'NO FILTER APPLIED'}
-          </p>
         </div>
-      </div>
+      )}
+
+      {activeTab === 'people' && (
+        <div className="relative bg-surface-card border border-border-strong p-4 shadow-sharp">
+          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-2">
+            <span className="w-4 h-4 bg-brand text-white flex items-center justify-center text-[0.5rem] font-bold">i</span>
+            INFO
+          </h3>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-txt-tertiary">공개 프로필</span>
+              <span className="text-[0.625rem] font-mono font-bold bg-surface-sunken px-1.5 py-0.5 text-txt-primary">
+                {categories.find(c => c.id === 'all')?.count ?? 0}
+              </span>
+            </div>
+            {selectedCategory !== 'all' && (
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-txt-tertiary">필터 결과</span>
+                <span className="text-[0.625rem] font-mono font-bold bg-brand-bg px-1.5 py-0.5 text-brand">
+                  {categories.find(c => c.id === selectedCategory)?.count ?? 0}
+                </span>
+              </div>
+            )}
+          </div>
+          <div className="mt-3 pt-3 border-t border-dashed border-border">
+            <p className="text-[0.625rem] font-mono text-txt-disabled flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 bg-brand animate-pulse" />
+              {selectedCategory !== 'all' ? 'ROLE FILTER ON' : 'ALL ROLES'}
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

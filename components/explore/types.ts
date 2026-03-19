@@ -10,6 +10,7 @@ export interface ProjectCard {
   daysLeft: number
   updatedAt?: string
   status: string | null
+  matchLabel?: string | null
 }
 
 export interface TalentCard {
@@ -21,6 +22,8 @@ export interface TalentCard {
   visionSummary?: string | null
   location?: string | null
   avatarUrl?: string | null
+  matchScore?: number | null
+  matchReason?: string | null
 }
 
 export interface CategoryItem {
@@ -35,9 +38,11 @@ export interface TrendingTag {
   count: number
 }
 
-export type SortBy = 'latest' | 'popular' | 'trending'
+export type SortBy = 'latest' | 'popular' | 'trending' | 'ai'
 export type TypeFilter = 'all' | 'side_project' | 'startup' | 'study'
 export type SearchScope = 'all' | 'projects' | 'people' | 'skills'
 export type ActiveTab = 'projects' | 'people'
+export type PeopleRoleFilter = 'all' | 'developer' | 'designer' | 'pm' | 'marketer'
+export type PeopleSortBy = 'latest' | 'ai' | 'popular'
 
 export type { UserRecommendation }

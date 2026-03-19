@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Image from 'next/image'
 import { Rocket, Users, FolderOpen } from 'lucide-react'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { ErrorState } from '@/components/ui/ErrorState'
@@ -45,12 +46,12 @@ export function ExploreProjectGrid({
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {[1,2,3,4,5,6].map((i) => (
-          <div key={i} className="bg-surface-card border border-border overflow-hidden h-[21.25rem] flex flex-col animate-pulse">
+          <div key={i} className="bg-surface-card border border-border-strong overflow-hidden h-[21.25rem] flex flex-col animate-pulse">
             <div className="h-36 shrink-0 bg-surface-sunken" />
             <div className="px-4 pt-4 flex-1 space-y-3">
-              <div className="h-4 bg-surface-sunken rounded w-3/4" />
-              <div className="h-3 bg-surface-sunken rounded w-full" />
-              <div className="h-3 bg-surface-sunken rounded w-1/2" />
+              <div className="h-4 bg-surface-sunken w-3/4" />
+              <div className="h-3 bg-surface-sunken w-full" />
+              <div className="h-3 bg-surface-sunken w-1/2" />
             </div>
           </div>
         ))}
@@ -83,7 +84,7 @@ export function ExploreProjectGrid({
               tabIndex={0}
               onClick={() => onSelectProject(p.id)}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectProject(p.id) } }}
-              className="relative bg-surface-card border border-border-strong overflow-hidden group hover:shadow-solid-sm hover:border-brand/30 transition-all cursor-pointer h-[21.25rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none"
+              className="relative bg-surface-card border border-border-strong overflow-hidden group hover:shadow-solid-sm hover:border-brand/30 transition-all cursor-pointer h-[21.25rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985] active:shadow-none active:border-brand/50"
             >
               {/* 코너 마크 */}
               <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-black/15 z-20" />
@@ -92,7 +93,7 @@ export function ExploreProjectGrid({
               <div className="relative h-36 shrink-0 bg-surface-inverse flex items-end p-4">
                 {p.coverImage && (
                   <>
-                    <img src={p.coverImage} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                    <Image src={p.coverImage} alt="" fill sizes="(max-width:768px) 100vw, 50vw" className="object-cover" quality={85} onError={(e) => { e.currentTarget.style.display = 'none' }} />
                     <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/30" />
                   </>
                 )}
@@ -120,7 +121,17 @@ export function ExploreProjectGrid({
               </div>
               {/* 본문 */}
               <div className="px-4 pt-4 h-[7.5rem] shrink-0 overflow-hidden">
-                <h3 className="font-bold text-base text-txt-primary mb-1.5 truncate">{p.title}</h3>
+                <div className="flex items-center gap-2 mb-1.5">
+                  <h3 className="font-bold text-base text-txt-primary truncate">{p.title}</h3>
+                  {p.matchLabel && (
+                    <span className={`text-[0.625rem] font-mono font-bold px-1.5 py-0.5 border shrink-0 ${
+                      p.matchLabel === '잘 맞는 프로젝트' ? 'bg-status-success-bg text-status-success-text border-indicator-online/20'
+                      : 'bg-brand-bg text-brand border-brand-border'
+                    }`}>
+                      {p.matchLabel}
+                    </span>
+                  )}
+                </div>
                 <div className="flex items-center gap-1.5 mb-2 overflow-hidden">
                   <span className="text-[0.625rem] font-mono font-bold text-brand uppercase tracking-wide shrink-0 bg-brand-bg px-1.5 py-0.5 border border-brand-border">NEED</span>
                   {p.roles.slice(0, 2).map(role => (
@@ -154,7 +165,7 @@ export function ExploreProjectGrid({
         <div className="text-center mt-6">
           <button
             onClick={onLoadMore}
-            className="px-6 py-2.5 text-sm font-bold text-txt-secondary border border-border-strong hover:bg-surface-sunken hover:shadow-sharp transition-all"
+            className="px-6 py-2.5 text-sm font-bold text-txt-secondary border border-border-strong hover:bg-surface-sunken hover:shadow-sharp transition-all active:scale-[0.97] active:shadow-none"
           >
             더 보기{!searchQuery && selectedCategory === 'all' && !recruitingOnly ? ` (${totalCount - projectCards.length}개 남음)` : ''}
           </button>

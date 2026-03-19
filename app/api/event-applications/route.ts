@@ -29,8 +29,7 @@ export async function GET(request: NextRequest) {
     const offset = parseInt(searchParams.get('offset') || '0', 10);
 
     // Build query
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let query = (supabase as any)
+    let query = supabase
       .from('event_applications')
       .select(`
         *,
@@ -64,13 +63,13 @@ export async function GET(request: NextRequest) {
 
     if (eventType) {
       filteredApplications = filteredApplications.filter(
-        (app: EventApplication) => app.event?.event_type === eventType
+        (app) => app.event?.event_type === eventType
       );
     }
 
     if (search) {
       const searchLower = search.toLowerCase();
-      filteredApplications = filteredApplications.filter((app: EventApplication) =>
+      filteredApplications = filteredApplications.filter((app) =>
         app.event?.title?.toLowerCase().includes(searchLower) ||
         app.event?.organizer?.toLowerCase().includes(searchLower)
       );
@@ -121,8 +120,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if application already exists
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: existing } = await (supabase as any)
+    const { data: existing } = await supabase
       .from('event_applications')
       .select('id')
       .eq('user_id', user.id)
@@ -134,8 +132,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create application
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: application, error } = await (supabase as any)
+    const { data: application, error } = await supabase
       .from('event_applications')
       .insert({
         user_id: user.id,

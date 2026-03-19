@@ -17,6 +17,7 @@ import {
   MessageSquare,
   Loader2,
   X,
+  UserPlus,
 } from 'lucide-react'
 
 interface Notification {
@@ -43,6 +44,7 @@ const typeConfig: Record<string, { icon: React.ElementType; color: string; readC
   connection: { icon: Link2, color: 'text-purple-600 bg-purple-100', readColor: 'text-txt-disabled bg-surface-sunken' },
   deadline: { icon: Clock, color: 'text-indicator-trending bg-status-warning-bg', readColor: 'text-txt-disabled bg-surface-sunken' },
   coffee_chat: { icon: Coffee, color: 'text-indicator-premium-border bg-status-warning-bg', readColor: 'text-txt-disabled bg-surface-sunken' },
+  project_invitation: { icon: UserPlus, color: 'text-brand bg-brand-bg', readColor: 'text-txt-disabled bg-surface-sunken' },
   comment: { icon: MessageSquare, color: 'text-txt-secondary bg-surface-sunken', readColor: 'text-txt-disabled bg-surface-sunken' },
   recommendation: { icon: Check, color: 'text-cyan-600 bg-cyan-100', readColor: 'text-txt-disabled bg-surface-sunken' },
   new_match: { icon: Check, color: 'text-indicator-online bg-status-success-bg', readColor: 'text-txt-disabled bg-surface-sunken' },
@@ -95,7 +97,10 @@ export function NotificationDropdown() {
       return res.json()
     },
     enabled: !!user,
-    refetchInterval: 30000,
+    refetchInterval: isOpen ? 15_000 : 5 * 60_000,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+    staleTime: 10_000,
   })
 
   // Mark single as read

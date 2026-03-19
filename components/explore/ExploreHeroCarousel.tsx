@@ -92,7 +92,7 @@ export function ExploreHeroCarousel() {
                   ].map((step) => (
                     <div key={step.num} className="relative border border-border bg-surface-card/80 p-3">
                       <div className="absolute -top-1.5 -left-1.5 w-5 h-5 bg-black text-white flex items-center justify-center text-[0.625rem] font-bold">{step.num}</div>
-                      <div className="w-8 h-8 bg-surface-sunken border border-border flex items-center justify-center mb-2">
+                      <div className="w-8 h-8 bg-surface-card border border-border flex items-center justify-center mb-2">
                         <step.icon size={15} className="text-txt-secondary" />
                       </div>
                       <h3 className="font-bold text-xs text-txt-primary mb-0.5">{step.title}</h3>
@@ -115,7 +115,7 @@ export function ExploreHeroCarousel() {
                     { school: '고대 컴공', name: '박OO', content: '학교 인증 기능이 핵심이 될 것 같은데, 인증 방식이 궁금해요.' },
                     { school: '경희대 산공', name: '이OO', content: '에브리타임 연동부터 해보는 건 어때요? 이미 인증된 유저풀이 있잖아요.' },
                   ].map((c, idx) => (
-                    <div key={idx} className="relative border border-border bg-surface-sunken/80 p-3">
+                    <div key={idx} className="relative border border-border bg-surface-card p-3">
                       <div className="absolute -top-1.5 -left-1.5 w-5 h-5 bg-black text-white flex items-center justify-center text-[0.625rem] font-bold">{idx + 1}</div>
                       <div className="flex items-center gap-1.5 mb-1.5">
                         <span className="text-[0.625rem] font-mono text-txt-tertiary">{c.school}</span>
@@ -166,7 +166,7 @@ export function ExploreHeroCarousel() {
 /* ── 오른쪽 미리보기 카드 콘텐츠 ── */
 function SlidePreview({ index, isAuthenticated, tone = 'white' }: { index: number; isAuthenticated: boolean; tone?: 'white' | 'gray' | 'black' }) {
   const colors = {
-    white: { title: 'text-txt-primary', sub: 'text-txt-tertiary', tag: 'bg-surface-sunken border-border text-txt-secondary', badge: 'bg-surface-card border-border-strong', label: 'text-black' },
+    white: { title: 'text-txt-primary', sub: 'text-txt-tertiary', tag: 'bg-surface-card border-border text-txt-secondary', badge: 'bg-surface-card border-border-strong', label: 'text-black' },
     gray:  { title: 'text-white', sub: 'text-white/70', tag: 'bg-white/15 border-white/25 text-white/80', badge: 'bg-white/15 border-white/25', label: 'text-white' },
     black: { title: 'text-white', sub: 'text-white/50', tag: 'bg-white/10 border-white/15 text-white/60', badge: 'bg-white/10 border-white/15', label: 'text-white' },
   }

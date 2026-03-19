@@ -2,8 +2,8 @@
 
 import React from 'react'
 import { LayoutGrid, Users } from 'lucide-react'
-import { SORT_OPTIONS, TYPE_FILTERS } from './constants'
-import type { ActiveTab, SortBy, TypeFilter } from './types'
+import { SORT_OPTIONS, TYPE_FILTERS, PEOPLE_ROLE_FILTERS, PEOPLE_SORT_OPTIONS } from './constants'
+import type { ActiveTab, SortBy, TypeFilter, PeopleRoleFilter, PeopleSortBy } from './types'
 
 interface ExploreTabBarProps {
   activeTab: ActiveTab
@@ -12,6 +12,10 @@ interface ExploreTabBarProps {
   onSortChange: (sort: SortBy) => void
   typeFilter: TypeFilter
   onTypeFilterChange: (filter: TypeFilter) => void
+  peopleRoleFilter: PeopleRoleFilter
+  onPeopleRoleFilterChange: (filter: PeopleRoleFilter) => void
+  peopleSortBy: PeopleSortBy
+  onPeopleSortChange: (sort: PeopleSortBy) => void
   query: string
   projectCount: number
   peopleCount: number
@@ -24,6 +28,10 @@ export function ExploreTabBar({
   onSortChange,
   typeFilter,
   onTypeFilterChange,
+  peopleRoleFilter,
+  onPeopleRoleFilterChange,
+  peopleSortBy,
+  onPeopleSortChange,
   query,
   projectCount,
   peopleCount,
@@ -67,6 +75,29 @@ export function ExploreTabBar({
               >
                 <tab.icon size={12} />
                 {tab.label}
+                {tab.beta && (
+                  <span className="text-[0.5rem] font-mono font-bold bg-brand text-white px-1 py-px leading-none uppercase">beta</span>
+                )}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {activeTab === 'people' && (
+          <div className="flex items-center gap-1">
+            {PEOPLE_SORT_OPTIONS.map((opt) => (
+              <button
+                key={opt.id}
+                onClick={() => onPeopleSortChange(opt.id as PeopleSortBy)}
+                className={`flex items-center gap-1 px-3 py-1.5 text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1 ${
+                  peopleSortBy === opt.id ? 'bg-surface-sunken text-txt-primary' : 'text-txt-tertiary hover:text-txt-secondary'
+                }`}
+              >
+                <opt.icon size={12} />
+                {opt.label}
+                {opt.beta && (
+                  <span className="text-[0.5rem] font-mono font-bold bg-brand text-white px-1 py-px leading-none uppercase">beta</span>
+                )}
               </button>
             ))}
           </div>
@@ -87,6 +118,25 @@ export function ExploreTabBar({
               }`}
             >
               {t.label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* People role filter chips */}
+      {activeTab === 'people' && (
+        <div className="flex items-center gap-1.5 mb-4">
+          {PEOPLE_ROLE_FILTERS.map((r) => (
+            <button
+              key={r.id}
+              onClick={() => onPeopleRoleFilterChange(r.id as PeopleRoleFilter)}
+              className={`px-3 py-1.5 text-xs font-bold border transition-all ${
+                peopleRoleFilter === r.id
+                  ? 'bg-black text-white border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]'
+                  : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]'
+              }`}
+            >
+              {r.label}
             </button>
           ))}
         </div>
