@@ -22,6 +22,16 @@ const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
 
 // ── 시드 데이터 ──
 
+// 프로필 사진 URLs (randomuser.me — 안정적인 고정 URL)
+const AVATAR_URLS = {
+  'seed-minji@draft.test': 'https://randomuser.me/api/portraits/women/44.jpg',
+  'seed-jiwon@draft.test': 'https://randomuser.me/api/portraits/women/65.jpg',
+  'seed-hyunwoo@draft.test': 'https://randomuser.me/api/portraits/men/32.jpg',
+  'seed-soyeon@draft.test': 'https://randomuser.me/api/portraits/women/17.jpg',
+  'seed-donghyuk@draft.test': 'https://randomuser.me/api/portraits/men/75.jpg',
+  'seed-yuna@draft.test': 'https://randomuser.me/api/portraits/women/90.jpg',
+}
+
 const SEED_USERS = [
   {
     email: 'seed-minji@draft.test',
@@ -384,10 +394,10 @@ async function seed() {
         if (existing) {
           console.log(`  ⏭️  ${userData.profile.nickname} (${userData.email}) — 이미 존재, 프로필 업데이트`)
           createdUserIds.push(existing.id)
-          // 프로필 업데이트
+          const avatarUrl = AVATAR_URLS[userData.email]
           const { error: profileError } = await supabase
             .from('profiles')
-            .upsert({ user_id: existing.id, ...userData.profile }, { onConflict: 'user_id' })
+            .upsert({ user_id: existing.id, ...userData.profile, ...(avatarUrl ? { avatar_url: avatarUrl } : {}) }, { onConflict: 'user_id' })
           if (profileError) console.error(`     프로필 에러: ${profileError.message}`)
           continue
         }
@@ -400,19 +410,21 @@ async function seed() {
     createdUserIds.push(userId)
     console.log(`  ✅ ${userData.profile.nickname} (${userId.slice(0, 8)}...)`)
 
-    // 2. Profile 생성
+    // 2. Profile 생성 (아바타 URL 포함)
+    const avatarUrl = AVATAR_URLS[userData.email]
     const { error: profileError } = await supabase
       .from('profiles')
       .upsert({
         user_id: userId,
         ...userData.profile,
+        ...(avatarUrl ? { avatar_url: avatarUrl } : {}),
       }, { onConflict: 'user_id' })
 
     if (profileError) {
       console.error(`     프로필 에러: ${profileError.message}`)
     }
 
-    // 3. Projects 생성
+    // 4. Projects 생성
     for (const project of userData.projects) {
       const { error: projError } = await supabase
         .from('opportunities')

@@ -50,6 +50,11 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'github.com',
       },
+      // RandomUser.me (seed 프로필 사진)
+      {
+        protocol: 'https',
+        hostname: 'randomuser.me',
+      },
     ],
   },
 
