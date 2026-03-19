@@ -4,23 +4,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase/client'
 import { useAuth } from '../context/AuthContext'
 import type { Tables, TablesInsert, TablesUpdate } from '../types/database'
+import { withRetry } from '../lib/query-utils'
 
 type Opportunity = Tables<'opportunities'>
 type OpportunityInsert = TablesInsert<'opportunities'>
 type OpportunityUpdate = TablesUpdate<'opportunities'>
-
-// AbortError 방어: 실패 시 1회 재시도
-async function withRetry<T>(fn: () => Promise<T>, retries = 1): Promise<T> {
-  try {
-    return await fn()
-  } catch (err) {
-    if (retries > 0 && err instanceof DOMException && err.name === 'AbortError') {
-      await new Promise(r => setTimeout(r, 300))
-      return withRetry(fn, retries - 1)
-    }
-    throw err
-  }
-}
 
 // Extended type with creator profile
 export type OpportunityWithCreator = Opportunity & {

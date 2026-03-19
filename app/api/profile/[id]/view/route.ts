@@ -33,32 +33,49 @@ export async function POST(
 
     const supabase = await createClient()
 
-    // 현재 조회수 가져와서 +1
-    const { data: profile, error: fetchError } = await supabase
-      .from('profiles')
-      .select('profile_views, user_id')
-      .eq('id', id)
-      .single()
+    // 원자적 조회수 증가 (RPC)
+    const { data: newViews, error: rpcError } = await supabase.rpc('increment_view_count', {
+      table_name: 'profiles',
+      row_id: id,
+    })
 
-    if (fetchError) {
-      return ApiResponse.notFound('Profile not found')
+    if (rpcError) {
+      // RPC 실패 시 fallback: 직접 업데이트
+      const { data: profile, error: fetchError } = await supabase
+        .from('profiles')
+        .select('profile_views, user_id')
+        .eq('id', id)
+        .single()
+
+      if (fetchError) {
+        return ApiResponse.notFound('프로필을 찾을 수 없습니다')
+      }
+
+      const typedProfile = profile as { profile_views: number | null; user_id: string }
+      const currentViews = typedProfile.profile_views || 0
+      const fallbackViews = currentViews + 1
+      await supabase
+        .from('profiles')
+        .update({ profile_views: fallbackViews } as never)
+        .eq('id', id)
+
+      if (fallbackViews % 10 === 0) {
+        notifyProfileViewMilestone(typedProfile.user_id, fallbackViews).catch(() => {})
+      }
+
+      return NextResponse.json({ success: true, profile_views: fallbackViews })
     }
 
-    const typedProfile = profile as { profile_views: number | null; user_id: string }
-    const currentViews = typedProfile.profile_views || 0
-    const newViews = currentViews + 1
-    const { error: updateError } = await supabase
-      .from('profiles')
-      .update({ profile_views: newViews } as never)
-      .eq('id', id)
-
-    if (updateError) {
-      return ApiResponse.internalError()
-    }
-
-    // 10단위 마일스톤 알림 (10, 20, 30, ...)
-    if (newViews % 10 === 0) {
-      notifyProfileViewMilestone(typedProfile.user_id, newViews).catch(() => {})
+    // RPC 성공 — 마일스톤 체크를 위해 user_id 조회
+    if (newViews && newViews % 10 === 0) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('user_id')
+        .eq('id', id)
+        .single()
+      if (profile) {
+        notifyProfileViewMilestone((profile as { user_id: string }).user_id, newViews).catch(() => {})
+      }
     }
 
     return NextResponse.json({ success: true, profile_views: newViews })

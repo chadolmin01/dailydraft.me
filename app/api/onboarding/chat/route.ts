@@ -64,22 +64,9 @@ export async function POST(request: Request) {
     if (rateLimitResponse) return rateLimitResponse
 
     const body = await request.json()
-    const { messages, profile, saveTranscript } = body as {
+    const { messages, profile } = body as {
       messages: Message[]
       profile: ProfileContext
-      saveTranscript?: boolean
-    }
-
-    // Auto-save transcript to DB on each exchange
-    if (saveTranscript && Array.isArray(messages) && messages.length > 0) {
-      const transcript = messages.map(m => ({
-        role: m.role,
-        content: m.content,
-        timestamp: new Date().toISOString(),
-      }))
-      await supabase.from('profiles')
-        .update({ ai_chat_transcript: transcript })
-        .eq('user_id', user.id)
     }
 
     if (!Array.isArray(messages)) {
@@ -90,14 +77,22 @@ export async function POST(request: Request) {
 
     // Build chat history for Gemini (exclude the last user message since we'll send it separately)
     const historyMessages = messages.slice(0, -1)
-    const chatHistory = historyMessages.map(m => ({
+    let chatHistory = historyMessages.map(m => ({
       role: m.role === 'user' ? 'user' as const : 'model' as const,
       parts: [{ text: m.content }],
     }))
 
+    // Gemini requires history to start with 'user' — prepend trigger if first is 'model'
+    if (chatHistory.length > 0 && chatHistory[0].role === 'model') {
+      chatHistory = [
+        { role: 'user' as const, parts: [{ text: '프로필 분석 대화를 시작해주세요' }] },
+        ...chatHistory,
+      ]
+    }
+
     const chat = chatModel.startChat({
       history: chatHistory.length > 0 ? chatHistory : undefined,
-      systemInstruction: { role: 'user', parts: [{ text: systemPrompt }] },
+      systemInstruction: systemPrompt,
     })
 
     // Send the last user message, or a trigger for the first question

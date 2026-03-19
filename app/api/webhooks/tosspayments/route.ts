@@ -1,4 +1,3 @@
-// @ts-nocheck — hidden route (hiddenApiRoutes), Supabase types pending for payment tables
 import { createAdminClient } from '@/src/lib/supabase/admin'
 import { NextRequest, NextResponse } from 'next/server'
 import { ApiResponse } from '@/src/lib/api-utils'
