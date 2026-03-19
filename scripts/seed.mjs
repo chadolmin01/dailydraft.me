@@ -22,14 +22,20 @@ const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
 
 // ── 시드 데이터 ──
 
-// 프로필 사진 URLs (randomuser.me — 안정적인 고정 URL)
+// 프로필 사진 URLs (Unsplash — 한국/아시안 젊은 사람 포트레이트)
 const AVATAR_URLS = {
-  'seed-minji@draft.test': 'https://randomuser.me/api/portraits/women/44.jpg',
-  'seed-jiwon@draft.test': 'https://randomuser.me/api/portraits/women/65.jpg',
-  'seed-hyunwoo@draft.test': 'https://randomuser.me/api/portraits/men/32.jpg',
-  'seed-soyeon@draft.test': 'https://randomuser.me/api/portraits/women/17.jpg',
-  'seed-donghyuk@draft.test': 'https://randomuser.me/api/portraits/men/75.jpg',
-  'seed-yuna@draft.test': 'https://randomuser.me/api/portraits/women/90.jpg',
+  // 여 — 흰 블라우스 프로페셔널 느낌
+  'seed-minji@draft.test': 'https://images.unsplash.com/photo-1554641111-0ff288c2bf71?w=400&h=400&fit=crop&crop=face&auto=format&q=80',
+  // 여 — 캐주얼 오렌지 체어
+  'seed-jiwon@draft.test': 'https://images.unsplash.com/photo-1545367288-630c0e371c41?w=400&h=400&fit=crop&crop=face&auto=format&q=80',
+  // 남 — 안경 지적인 느낌
+  'seed-hyunwoo@draft.test': 'https://images.unsplash.com/photo-1642599235990-0e6ee6e8eaba?w=400&h=400&fit=crop&crop=face&auto=format&q=80',
+  // 여 — 계단 앞 감각적
+  'seed-soyeon@draft.test': 'https://images.unsplash.com/photo-1623517006691-00db997b4c58?w=400&h=400&fit=crop&crop=face&auto=format&q=80',
+  // 남 — 깔끔한 캐주얼 빌딩 앞
+  'seed-donghyuk@draft.test': 'https://images.unsplash.com/photo-1548682690-ed05ed4f2d95?w=400&h=400&fit=crop&crop=face&auto=format&q=80',
+  // 여 — 모던 테크 느낌
+  'seed-yuna@draft.test': 'https://images.unsplash.com/photo-1632719708243-24d34dba666e?w=400&h=400&fit=crop&crop=face&auto=format&q=80',
 }
 
 const SEED_USERS = [
