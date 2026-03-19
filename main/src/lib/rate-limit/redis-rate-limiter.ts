@@ -10,10 +10,10 @@ import { NextResponse } from 'next/server'
 // Upstash Redis 클라이언트 (환경변수에서 자동 로드)
 const redis = Redis.fromEnv()
 
-// 기본 정책: slidingWindow(10, "60 s")
+// 기본 정책: slidingWindow(30, "60 s") — 온보딩 AI 대화 플로우 고려
 const ratelimit = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(10, '60 s'),
+  limiter: Ratelimit.slidingWindow(30, '60 s'),
   analytics: true,
   prefix: 'ratelimit:api',
 })

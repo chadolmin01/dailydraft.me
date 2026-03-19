@@ -92,8 +92,8 @@ async function aiDeepChat(messages: DeepChatMessage[], profileCtx: Record<string
     if (!res.ok) {
       return '죄송해요, 일시적인 오류가 발생했어요. 다시 말씀해주세요!'
     }
-    const { data } = await res.json()
-    return data?.reply || '어떤 프로젝트 경험이 있으신지 알려주세요!'
+    const json = await res.json()
+    return json?.reply || '어떤 프로젝트 경험이 있으신지 알려주세요!'
   } catch {
     return '죄송해요, 네트워크 오류가 발생했어요. 인터넷 연결을 확인하고 다시 시도해주세요.'
   }
@@ -500,8 +500,8 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
           }),
         })
         if (res.ok) {
-          const { data } = await res.json()
-          const summary = data?.profile?.summary
+          const json = await res.json()
+          const summary = json?.profile?.summary
           setIsTyping(false)
           setAiActivity(null)
           if (summary) {

@@ -42,9 +42,23 @@ export async function GET(request: Request) {
           .from('profiles')
           .select('onboarding_completed')
           .eq('user_id', user.id)
-          .single()
+          .maybeSingle()
 
-        if (profile?.onboarding_completed) {
+        // OAuth 유저는 profile 행이 없을 수 있음 → 생성
+        if (!profile) {
+          const nickname = user.user_metadata?.full_name
+            || user.user_metadata?.name
+            || user.email?.split('@')[0]
+            || '사용자'
+          await supabase.from('profiles').insert({
+            user_id: user.id,
+            nickname,
+            contact_email: user.email || null,
+          })
+          return NextResponse.redirect(`${origin}/onboarding`)
+        }
+
+        if (profile.onboarding_completed) {
           return NextResponse.redirect(`${origin}/explore`)
         } else {
           return NextResponse.redirect(`${origin}/onboarding`)
