@@ -89,7 +89,10 @@ const SEED_USERS = [
         compensation_type: 'equity',
         compensation_details: '공동창업 (지분 협의)',
         pain_point: '대학생들이 같은 과목을 듣는 사람을 찾기 어려운 문제',
-
+        demo_images: [
+          'https://images.unsplash.com/photo-1661520995859-270deb9f929e?w=800&h=450&fit=crop&auto=format&q=80',
+          'https://images.unsplash.com/photo-1626855428287-7ae49119eda6?w=800&h=450&fit=crop&auto=format&q=80',
+        ],
         project_links: [{ label: 'Figma', url: 'https://figma.com/campusmate' }],
       },
       {
@@ -105,6 +108,10 @@ const SEED_USERS = [
         compensation_type: 'equity',
         compensation_details: '초기 팀원 지분 배분',
         pain_point: '디자이너들의 작업 과정 공유가 정적 이미지에 한정된 문제',
+        demo_images: [
+          'https://images.unsplash.com/photo-1634383501063-e83de849937e?w=800&h=450&fit=crop&auto=format&q=80',
+          'https://images.unsplash.com/photo-1674210606362-a48e28595eda?w=800&h=450&fit=crop&auto=format&q=80',
+        ],
       },
     ],
   },
@@ -157,6 +164,9 @@ const SEED_USERS = [
         compensation_type: 'equity',
         compensation_details: '공동창업자 모집 (지분 20~30%)',
         pain_point: '혼자 운동하면 작심삼일, 파트너를 찾기 어려운 문제',
+        demo_images: [
+          'https://images.unsplash.com/photo-1723485633150-1bbcf4e0a82b?w=800&h=450&fit=crop&auto=format&q=80',
+        ],
         project_links: [{ label: '랜딩페이지', url: 'https://fitbuddy.kr' }],
       },
     ],
@@ -210,6 +220,10 @@ const SEED_USERS = [
         compensation_type: 'unpaid',
         compensation_details: 'AI 연구 경험 + 논문 공저 기회',
         pain_point: '연구자들이 쏟아지는 논문을 효율적으로 소화하기 어려운 문제',
+        demo_images: [
+          'https://images.unsplash.com/photo-1694160744683-54646352f15b?w=800&h=450&fit=crop&auto=format&q=80',
+          'https://images.unsplash.com/photo-1570929057588-6952f7dd2305?w=800&h=450&fit=crop&auto=format&q=80',
+        ],
         project_links: [{ label: 'GitHub', url: 'https://github.com/studylens-ai' }],
       },
       {
@@ -225,6 +239,9 @@ const SEED_USERS = [
         compensation_type: 'unpaid',
         compensation_details: '사이드 프로젝트 (포트폴리오)',
         pain_point: '수업 필기를 디지털로 정리하는 게 번거로운 문제',
+        demo_images: [
+          'https://images.unsplash.com/photo-1507764923504-cd90bf7da772?w=800&h=450&fit=crop&auto=format&q=80',
+        ],
       },
     ],
   },
@@ -278,6 +295,10 @@ const SEED_USERS = [
         compensation_type: 'equity',
         compensation_details: '초기 멤버 지분 배분 (15~25%)',
         pain_point: '인테리어를 꾸미고 싶지만 자기 취향을 정리하기 어려운 문제',
+        demo_images: [
+          'https://images.unsplash.com/photo-1616126393142-e00ab126efc4?w=800&h=450&fit=crop&auto=format&q=80',
+          'https://images.unsplash.com/photo-1555209183-8facf96a4349?w=800&h=450&fit=crop&auto=format&q=80',
+        ],
         project_links: [
           { label: 'Figma 프로토타입', url: 'https://figma.com/moodboard-app' },
         ],
@@ -370,6 +391,10 @@ const SEED_USERS = [
         compensation_type: 'unpaid',
         compensation_details: '사이드 프로젝트 (포트폴리오 + 오픈소스)',
         pain_point: '개발 학습 기록을 체계적으로 관리하고 공유하기 어려운 문제',
+        demo_images: [
+          'https://images.unsplash.com/photo-1619682508024-64c66726a373?w=800&h=450&fit=crop&auto=format&q=80',
+          'https://images.unsplash.com/photo-1562907550-096d3bf9b25c?w=800&h=450&fit=crop&auto=format&q=80',
+        ],
         project_links: [{ label: 'GitHub', url: 'https://github.com/devlog-platform' }],
       },
     ],
