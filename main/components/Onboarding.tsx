@@ -769,7 +769,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                             <div className="mt-3 bg-surface-card border border-border-strong p-4 shadow-sharp space-y-3">
                               <div>
                                 <label className="text-[10px] font-bold text-txt-tertiary uppercase tracking-wider mb-1.5 block font-mono">닉네임 *</label>
-                                <input type="text" value={profile.name} onChange={(e) => setProfile(p => ({ ...p, name: e.target.value }))} placeholder="어떻게 불러드릴까요?" className="w-full px-3.5 py-2.5 bg-surface-sunken border border-border text-sm font-medium focus:outline-none focus:border-border-strong focus:bg-surface-card transition-all placeholder:text-txt-disabled" autoFocus onKeyDown={(e) => e.key === 'Enter' && profile.name.trim() && handleInfoSubmit()} />
+                                <input type="text" value={profile.name} onChange={(e) => setProfile(p => ({ ...p, name: e.target.value }))} placeholder="어떻게 불러드릴까요?" className="w-full px-3.5 py-2.5 bg-surface-card border border-border-strong text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-all placeholder:text-txt-tertiary" autoFocus onKeyDown={(e) => e.key === 'Enter' && profile.name.trim() && handleInfoSubmit()} />
                               </div>
                               {/* 소속 유형 */}
                               <div>
@@ -783,7 +783,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                                       className={`px-2.5 py-1.5 text-[11px] font-medium border transition-all ${
                                         profile.affiliationType === aff.value
                                           ? 'bg-black text-white border-black'
-                                          : 'bg-surface-sunken text-txt-tertiary border-border hover:border-border-strong hover:text-txt-primary'
+                                          : 'bg-surface-card text-txt-primary border-border-strong hover:bg-black hover:text-white'
                                       }`}
                                     >
                                       {aff.label}
@@ -806,12 +806,12 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                                           placeholder={aff.orgPlaceholder}
                                         />
                                       ) : (
-                                        <input type="text" value={profile.university} onChange={(e) => setProfile(p => ({ ...p, university: e.target.value }))} placeholder={aff.orgPlaceholder} className="w-full px-3.5 py-2.5 bg-surface-sunken border border-border text-sm font-medium focus:outline-none focus:border-border-strong focus:bg-surface-card transition-all placeholder:text-txt-disabled" />
+                                        <input type="text" value={profile.university} onChange={(e) => setProfile(p => ({ ...p, university: e.target.value }))} placeholder={aff.orgPlaceholder} className="w-full px-3.5 py-2.5 bg-surface-card border border-border-strong text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-all placeholder:text-txt-tertiary" />
                                       )}
                                     </div>
                                     <div>
                                       <label className="text-[10px] font-bold text-txt-tertiary uppercase tracking-wider mb-1.5 block font-mono">{aff.rolePlaceholder.replace(' (선택)', '')}</label>
-                                      <input type="text" value={profile.major} onChange={(e) => setProfile(p => ({ ...p, major: e.target.value }))} placeholder={aff.rolePlaceholder} className="w-full px-3.5 py-2.5 bg-surface-sunken border border-border text-sm font-medium focus:outline-none focus:border-border-strong focus:bg-surface-card transition-all placeholder:text-txt-disabled" />
+                                      <input type="text" value={profile.major} onChange={(e) => setProfile(p => ({ ...p, major: e.target.value }))} placeholder={aff.rolePlaceholder} className="w-full px-3.5 py-2.5 bg-surface-card border border-border-strong text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-all placeholder:text-txt-tertiary" />
                                     </div>
                                   </div>
                                 )
@@ -832,7 +832,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                                       className={`px-2 py-1 text-[11px] font-medium border transition-all ${
                                         profile.locations.includes(loc)
                                           ? 'bg-black text-white border-black'
-                                          : 'bg-surface-sunken text-txt-tertiary border-border hover:border-border-strong hover:text-txt-primary'
+                                          : 'bg-surface-card text-txt-primary border-border-strong hover:bg-black hover:text-white'
                                       }`}
                                     >
                                       {loc}
@@ -853,7 +853,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                           {bubble.attachment === 'position' && (
                             <div className="mt-3 flex flex-wrap gap-1.5">
                               {POSITION_OPTIONS.map((pos, idx) => (
-                                <button key={pos} onClick={() => handlePositionSelect(pos)} className="ob-chip ob-hover px-3.5 py-2 bg-surface-card border border-border-strong text-[13px] font-medium text-txt-secondary hover:border-border-strong hover:bg-black hover:text-white" style={{ animationDelay: `${idx * 40}ms` }}>
+                                <button key={pos} onClick={() => handlePositionSelect(pos)} className="ob-chip ob-hover px-3.5 py-2 bg-surface-card border border-border-strong text-[13px] font-medium text-txt-primary hover:bg-black hover:text-white" style={{ animationDelay: `${idx * 40}ms` }}>
                                   {pos}
                                 </button>
                               ))}
@@ -878,14 +878,14 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                                 <span className="text-[10px] font-mono font-medium text-brand">AI가 자동으로 정리해드려요</span>
                               </div>
                               <div className="relative">
-                                <input type="text" value={skillInput} onChange={(e) => setSkillInput(e.target.value)} placeholder="예: 리액트, 파이썬, 피그마 등" className="w-full pl-3.5 pr-10 py-2.5 bg-surface-sunken border border-border text-sm font-medium focus:outline-none focus:border-border-strong focus:bg-surface-card transition-all placeholder:text-txt-disabled" autoFocus onKeyDown={(e) => e.key === 'Enter' && handleSkillInputSubmit()} />
-                                <button onClick={handleSkillInputSubmit} className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center text-txt-disabled hover:text-black transition-colors"><Send size={15} /></button>
+                                <input type="text" value={skillInput} onChange={(e) => setSkillInput(e.target.value)} placeholder="예: 리액트, 파이썬, 피그마 등" className="w-full pl-3.5 pr-10 py-2.5 bg-surface-card border border-border-strong text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-all placeholder:text-txt-tertiary" autoFocus onKeyDown={(e) => e.key === 'Enter' && handleSkillInputSubmit()} />
+                                <button onClick={handleSkillInputSubmit} className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center text-txt-secondary hover:text-black transition-colors"><Send size={15} /></button>
                               </div>
                               <div>
                                 <p className="text-[10px] font-bold text-txt-tertiary uppercase tracking-wider mb-2 font-mono">빠른 선택</p>
                                 <div className="flex flex-wrap gap-1.5">
                                   {POPULAR_SKILLS.map((skill, idx) => (
-                                    <button key={skill} onClick={() => toggleSkill(skill)} className={`ob-chip ob-hover px-3 py-1.5 text-[12px] font-medium border transition-all ${selectedSkills.includes(skill) ? 'bg-black text-white border-black' : 'bg-surface-sunken text-txt-secondary border-border-strong hover:border-border-strong'}`} style={{ animationDelay: `${idx * 30}ms` }}>{skill}</button>
+                                    <button key={skill} onClick={() => toggleSkill(skill)} className={`ob-chip ob-hover px-3 py-1.5 text-[12px] font-medium border transition-all ${selectedSkills.includes(skill) ? 'bg-black text-white border-black' : 'bg-surface-card text-txt-primary border-border-strong hover:bg-black hover:text-white'}`} style={{ animationDelay: `${idx * 30}ms` }}>{skill}</button>
                                   ))}
                                 </div>
                               </div>
@@ -922,14 +922,14 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                                 <span className="text-[10px] font-mono font-medium text-brand">AI가 자동으로 정리해드려요</span>
                               </div>
                               <div className="relative">
-                                <input type="text" value={interestInput} onChange={(e) => setInterestInput(e.target.value)} placeholder="예: AI, 게임, 교육 등" className="w-full pl-3.5 pr-10 py-2.5 bg-surface-sunken border border-border text-sm font-medium focus:outline-none focus:border-border-strong focus:bg-surface-card transition-all placeholder:text-txt-disabled" autoFocus onKeyDown={(e) => e.key === 'Enter' && handleInterestInputSubmit()} />
-                                <button onClick={handleInterestInputSubmit} className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center text-txt-disabled hover:text-black transition-colors"><Send size={15} /></button>
+                                <input type="text" value={interestInput} onChange={(e) => setInterestInput(e.target.value)} placeholder="예: AI, 게임, 교육 등" className="w-full pl-3.5 pr-10 py-2.5 bg-surface-card border border-border-strong text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-all placeholder:text-txt-tertiary" autoFocus onKeyDown={(e) => e.key === 'Enter' && handleInterestInputSubmit()} />
+                                <button onClick={handleInterestInputSubmit} className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center text-txt-secondary hover:text-black transition-colors"><Send size={15} /></button>
                               </div>
                               <div>
                                 <p className="text-[10px] font-bold text-txt-tertiary uppercase tracking-wider mb-2 font-mono">빠른 선택</p>
                                 <div className="flex flex-wrap gap-1.5">
                                   {INTEREST_OPTIONS.map((tag, idx) => (
-                                    <button key={tag} onClick={() => toggleInterest(tag)} className={`ob-chip ob-hover px-3 py-1.5 text-[12px] font-medium border transition-all ${selectedInterests.includes(tag) ? 'bg-black text-white border-black' : 'bg-surface-sunken text-txt-secondary border-border-strong hover:border-border-strong'}`} style={{ animationDelay: `${idx * 25}ms` }}>{tag}</button>
+                                    <button key={tag} onClick={() => toggleInterest(tag)} className={`ob-chip ob-hover px-3 py-1.5 text-[12px] font-medium border transition-all ${selectedInterests.includes(tag) ? 'bg-black text-white border-black' : 'bg-surface-card text-txt-primary border-border-strong hover:bg-black hover:text-white'}`} style={{ animationDelay: `${idx * 25}ms` }}>{tag}</button>
                                   ))}
                                 </div>
                               </div>
@@ -1066,7 +1066,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                       <button
                         key={i}
                         onClick={() => sendDeepChatMessage(suggestion)}
-                        className="ob-chip text-[12px] px-3 py-1.5 bg-surface-sunken border border-border text-txt-secondary hover:border-border-strong hover:text-txt-primary transition-all"
+                        className="ob-chip text-[12px] px-3 py-1.5 bg-surface-card border border-border-strong text-txt-primary hover:bg-black hover:text-white transition-all"
                         style={{ animationDelay: `${i * 50}ms` }}
                       >
                         {suggestion}
@@ -1081,8 +1081,8 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
               <div className="max-w-2xl mx-auto">
                 <div className="flex items-center gap-2">
                   <div className="flex-1 relative">
-                    <input ref={deepChatInputRef} type="text" value={deepChatInput} onChange={(e) => setDeepChatInput(e.target.value)} placeholder={userMsgCount === 0 ? '첫 번째 질문에 답해보세요...' : '이어서 이야기해주세요...'} className="w-full pl-4 pr-11 py-3 bg-surface-sunken border border-border-strong text-sm font-medium focus:outline-none focus:border-border-strong focus:bg-surface-card transition-all placeholder:text-txt-disabled" onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleDeepChatSend()} disabled={isTyping} />
-                    <button onClick={handleDeepChatSend} disabled={isTyping || !deepChatInput.trim()} className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-txt-disabled hover:text-black transition-colors disabled:opacity-30"><Send size={16} /></button>
+                    <input ref={deepChatInputRef} type="text" value={deepChatInput} onChange={(e) => setDeepChatInput(e.target.value)} placeholder={userMsgCount === 0 ? '첫 번째 질문에 답해보세요...' : '이어서 이야기해주세요...'} className="w-full pl-4 pr-11 py-3 bg-surface-card border border-border-strong text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-all placeholder:text-txt-tertiary" onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleDeepChatSend()} disabled={isTyping} />
+                    <button onClick={handleDeepChatSend} disabled={isTyping || !deepChatInput.trim()} className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-txt-secondary hover:text-black transition-colors disabled:opacity-30"><Send size={16} /></button>
                   </div>
                   <button onClick={handleDeepChatFinish} disabled={isTyping} className={`ob-hover px-4 py-3 text-[13px] font-bold flex items-center gap-1.5 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] disabled:opacity-50 shrink-0 transition-all ${userMsgCount >= 3 ? 'bg-brand text-white border border-brand' : 'bg-black text-white'}`}>
                     <CheckCircle2 size={14} />완료
@@ -1249,7 +1249,7 @@ function OnboardingComboBox({ value, onChange, options, placeholder }: {
 
   return (
     <div ref={containerRef} className="relative">
-      <div className="flex items-center bg-surface-sunken border border-border focus-within:border-border-strong focus-within:bg-surface-card transition-all">
+      <div className="flex items-center bg-surface-card border border-border-strong focus-within:border-black focus-within:bg-white transition-all">
         <input
           type="text"
           value={isOpen ? search || value : value}
@@ -1257,12 +1257,12 @@ function OnboardingComboBox({ value, onChange, options, placeholder }: {
           onFocus={() => { setIsOpen(true); setSearch(value) }}
           placeholder={placeholder}
           maxLength={50}
-          className="flex-1 px-3.5 py-2.5 text-sm font-medium bg-transparent focus:outline-none placeholder:text-txt-disabled min-w-0"
+          className="flex-1 px-3.5 py-2.5 text-sm font-medium bg-transparent focus:outline-none placeholder:text-txt-tertiary min-w-0"
         />
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="pr-3 text-txt-disabled hover:text-txt-secondary transition-colors"
+          className="pr-3 text-txt-secondary hover:text-txt-primary transition-colors"
         >
           <ChevronDown size={14} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
         </button>
