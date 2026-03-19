@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { updateSession } from '@/src/lib/supabase/middleware'
+import { signCookie, verifyCookie } from '@/src/lib/cookie-signature'
 
 // Routes that are hidden in MVP mode (code preserved, UI hidden)
 // Remove routes from this array to restore access
@@ -66,6 +67,14 @@ function addSecurityHeaders(response: NextResponse) {
   response.headers.set('X-Frame-Options', 'DENY')
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
+  const isDev = process.env.NODE_ENV === 'development'
+  const scriptSrc = isDev
+    ? "'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com"
+    : "'self' 'unsafe-inline' https://www.googletagmanager.com"
+  response.headers.set(
+    'Content-Security-Policy',
+    `default-src 'self'; script-src ${scriptSrc}; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.anthropic.com https://generativelanguage.googleapis.com; frame-ancestors 'none'`
+  )
   return response
 }
 
@@ -131,21 +140,25 @@ export async function middleware(request: NextRequest) {
 
   if (needsOnboardingCheck) {
     // Cookie 캐싱: onboarding 완료 후에는 DB 쿼리 스킵
+    // HMAC-SHA256 서명으로 쿠키 위조 방지
     const onboardingCookie = request.cookies.get('onboarding_completed')?.value
-    if (onboardingCookie !== 'true') {
+    const verified = onboardingCookie ? await verifyCookie(onboardingCookie) : null
+
+    if (verified !== 'true') {
       const { data: profile } = await supabase
         .from('profiles')
         .select('onboarding_completed')
         .eq('user_id', user.id)
         .single()
 
-      if (profile && !profile.onboarding_completed) {
+      if (!profile || !profile.onboarding_completed) {
         return NextResponse.redirect(new URL('/onboarding', request.url))
       }
 
-      // 완료된 경우 쿠키에 캐싱 (세션 동안 유지)
+      // 완료된 경우 서명된 쿠키로 캐싱 (24시간)
       if (profile?.onboarding_completed) {
-        response.cookies.set('onboarding_completed', 'true', {
+        const signedValue = await signCookie('true')
+        response.cookies.set('onboarding_completed', signedValue, {
           path: '/',
           httpOnly: true,
           sameSite: 'lax',
