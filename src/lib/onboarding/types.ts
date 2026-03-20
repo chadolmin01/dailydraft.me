@@ -75,6 +75,8 @@ export interface OnboardingState {
   aiActivity: string | null
   // Rotating tip
   tipIndex: number
+  // Dynamic suggestions from AI
+  dynamicSuggestions: string[]
 }
 
 // ── Reducer Actions ──
@@ -107,3 +109,4 @@ export type OnboardingAction =
   | { type: 'SET_SHOW_SUGGESTIONS'; value: boolean }
   | { type: 'SET_AI_ACTIVITY'; label: string | null }
   | { type: 'SET_TIP_INDEX'; index: number }
+  | { type: 'SET_DYNAMIC_SUGGESTIONS'; suggestions: string[] }

@@ -54,6 +54,16 @@ const SYSTEM_PROMPT = (profile: ProfileContext) => `당신은 Draft 플랫폼의
 - 대화가 5회 이상 진행되면 "거의 다 파악한 것 같아요!" 같이 자연스럽게 마무리 유도. 완료 버튼을 누르라고 직접 언급하지 말 것
 - 답변 끝에 이모지 남용 금지. 최대 1개
 
+## 추천 답변 생성 (반드시 지킬 것)
+
+- 모든 응답의 **마지막 줄**에 반드시 아래 형식으로 추천 답변 2~3개를 추가하세요:
+  [SUGGESTIONS: "추천답변1", "추천답변2", "추천답변3"]
+- 추천 답변은 **방금 한 질문에 대한 자연스러운 답변**이어야 합니다
+- 짧고 구체적으로 (10~25자). 너무 길거나 추상적이면 안 됨
+- 사용자가 바로 클릭해서 보낼 수 있는 실제 답변이어야 합니다
+- 첫 메시지 예시: [SUGGESTIONS: "아직 해본 적 없어요", "학교 팀프로젝트 해봤어요", "개인 프로젝트 진행 중이에요"]
+- 대화 맥락에 맞는 다양한 선택지를 제공하세요 (긍정/부정/중간 등)
+
 ## 가드레일 (반드시 지킬 것)
 - 사용자가 팀 매칭/프로젝트/프로필과 **전혀 관련 없는 질문**을 하면 (예: 코딩 과제 풀어줘, 날씨 알려줘, 숙제 도와줘, 번역해줘, 일반 상식 질문 등), 반드시 응답 맨 앞에 **[OFF_TOPIC]** 태그를 붙이고 정중히 거절한 뒤 본 대화로 유도하세요.
 - 예시: "[OFF_TOPIC] 저는 팀 매칭을 위한 프로필 분석 전문이에요! 그 질문은 제가 도와드리기 어렵지만, 이어서 프로젝트 경험에 대해 얘기해볼까요?"
@@ -119,7 +129,19 @@ export async function POST(request: Request) {
       reply = reply.replace('[OFF_TOPIC]', '').trim()
     }
 
-    return ApiResponse.ok({ reply, offTopic })
+    // Extract [SUGGESTIONS: ...] from the reply
+    let suggestions: string[] = []
+    const sugMatch = reply.match(/\[SUGGESTIONS:\s*(.+?)\]\s*$/)
+    if (sugMatch) {
+      reply = reply.replace(sugMatch[0], '').trim()
+      // Parse "item1", "item2", "item3" format
+      const items = sugMatch[1].match(/"([^"]+)"/g)
+      if (items) {
+        suggestions = items.map(s => s.replace(/^"|"$/g, ''))
+      }
+    }
+
+    return ApiResponse.ok({ reply, offTopic, suggestions })
   } catch (error) {
     console.error('Onboarding chat error:', error)
     return ApiResponse.internalError('채팅 처리 중 오류가 발생했습니다')

@@ -20,7 +20,7 @@ export async function aiParse(text: string, type: 'skills' | 'interests'): Promi
 export async function aiDeepChat(
   messages: DeepChatMessage[],
   profileCtx: Record<string, unknown>,
-): Promise<{ reply: string; offTopic: boolean }> {
+): Promise<{ reply: string; offTopic: boolean; suggestions: string[] }> {
   try {
     const res = await fetch('/api/onboarding/chat', {
       method: 'POST',
@@ -28,15 +28,17 @@ export async function aiDeepChat(
       body: JSON.stringify({ messages, profile: profileCtx }),
     })
     if (!res.ok) {
-      return { reply: '죄송해요, 일시적인 오류가 발생했어요. 다시 말씀해주세요!', offTopic: false }
+      return { reply: '죄송해요, 일시적인 오류가 발생했어요. 다시 말씀해주세요!', offTopic: false, suggestions: [] }
     }
     const json = await res.json()
+    const data = json?.data || json
     return {
-      reply: json?.data?.reply || json?.reply || '어떤 프로젝트 경험이 있으신지 알려주세요!',
-      offTopic: !!(json?.data?.offTopic || json?.offTopic),
+      reply: data?.reply || '어떤 프로젝트 경험이 있으신지 알려주세요!',
+      offTopic: !!data?.offTopic,
+      suggestions: Array.isArray(data?.suggestions) ? data.suggestions : [],
     }
   } catch {
-    return { reply: '죄송해요, 네트워크 오류가 발생했어요. 인터넷 연결을 확인하고 다시 시도해주세요.', offTopic: false }
+    return { reply: '죄송해요, 네트워크 오류가 발생했어요. 인터넷 연결을 확인하고 다시 시도해주세요.', offTopic: false, suggestions: [] }
   }
 }
 

@@ -281,12 +281,13 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     // Checkpoint save
     try { await saveProfileCheckpoint(s.profile) } catch { /* continue anyway */ }
 
-    const { reply: firstQ } = await aiDeepChat([], profileCtx)
+    const { reply: firstQ, suggestions: firstSuggestions } = await aiDeepChat([], profileCtx)
 
     await new Promise(r => setTimeout(r, 800))
     dispatch({ type: 'SET_BUBBLES', bubbles: [] })
     dispatch({ type: 'SET_STEP', step: 'deep-chat' })
     dispatch({ type: 'SET_DEEP_CHAT_TRANSITION', value: false })
+    dispatch({ type: 'SET_DYNAMIC_SUGGESTIONS', suggestions: firstSuggestions })
 
     await new Promise(r => setTimeout(r, 300))
     const aiMsg: DeepChatMessage = { role: 'assistant', content: firstQ }
@@ -307,6 +308,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     if (s.isTyping || !text.trim() || s.step !== 'deep-chat') return
     dispatch({ type: 'SET_DEEP_CHAT_INPUT', value: '' })
     dispatch({ type: 'SET_SHOW_SUGGESTIONS', value: false })
+    dispatch({ type: 'SET_DYNAMIC_SUGGESTIONS', suggestions: [] })
     pushUser(text.trim())
     const userMsg: DeepChatMessage = { role: 'user', content: text.trim() }
     const updatedMessages = [...s.deepChatMessages, userMsg]
@@ -316,7 +318,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     const activityLabel = AI_ACTIVITY_LABELS[Math.min(msgCount - 1, AI_ACTIVITY_LABELS.length - 1)]
     dispatch({ type: 'SET_AI_ACTIVITY', label: activityLabel })
     dispatch({ type: 'SET_TYPING', isTyping: true })
-    const { reply, offTopic } = await aiDeepChat(updatedMessages, profileCtx)
+    const { reply, offTopic, suggestions } = await aiDeepChat(updatedMessages, profileCtx)
     dispatch({ type: 'SET_TYPING', isTyping: false })
     dispatch({ type: 'SET_AI_ACTIVITY', label: null })
 
@@ -330,6 +332,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       dispatch({ type: 'SET_DEEP_CHAT_MESSAGES', messages: finalMessages })
       await pushAi(reply, undefined, 300)
     }
+    dispatch({ type: 'SET_DYNAMIC_SUGGESTIONS', suggestions })
     dispatch({ type: 'SET_SHOW_SUGGESTIONS', value: true })
     setTimeout(() => deepChatInputRef.current?.focus(), 200)
   }
