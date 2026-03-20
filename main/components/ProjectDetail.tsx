@@ -476,7 +476,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                   {creator.skills && (
                     <div className="flex flex-wrap gap-1.5">
                       {(Array.isArray(creator.skills) ? creator.skills : []).slice(0, 5).map((skill, i) => {
-                        const label = typeof skill === 'string' ? skill : skill?.name || ''
+                        const label = typeof skill === 'string' ? skill : (skill as any)?.name || ''
                         return (
                           <span key={label || i} className="text-[0.625rem] bg-surface-sunken text-txt-secondary px-2 py-0.5 font-medium border border-border">
                             {label}
