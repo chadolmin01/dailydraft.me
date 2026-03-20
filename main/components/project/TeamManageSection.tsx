@@ -2,8 +2,10 @@
 
 import React, { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Users, Loader2, UserMinus, ChevronDown, Mail, MessageCircle } from 'lucide-react'
+import { Users, Loader2, UserMinus, UserPlus, ChevronDown, Mail, MessageCircle, Coffee } from 'lucide-react'
 import { toast } from 'sonner'
+import { supabase } from '@/src/lib/supabase/client'
+import { useAuth } from '@/src/context/AuthContext'
 import { ROLE_OPTIONS } from '@/app/(dashboard)/projects/new/constants'
 
 interface TeamMember {
@@ -32,10 +34,24 @@ interface TeamData {
   stats: { total: number; active: number; rolesAssigned: number }
 }
 
+interface AcceptedChat {
+  id: string
+  requester_user_id: string
+  requester_name: string | null
+  message: string | null
+  created_at: string
+  profile: {
+    nickname: string
+    desired_position: string | null
+  } | null
+}
+
 export function TeamManageSection({ opportunityId }: { opportunityId: string }) {
   const queryClient = useQueryClient()
+  const { user } = useAuth()
   const [removingId, setRemovingId] = useState<string | null>(null)
 
+  // Fetch team members
   const { data, isLoading } = useQuery<TeamData>({
     queryKey: ['team', opportunityId],
     queryFn: async () => {
@@ -43,6 +59,74 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
       if (!res.ok) throw new Error('Failed to fetch team')
       const json = await res.json()
       return json.data
+    },
+  })
+
+  // Fetch accepted coffee chats (not yet added to team)
+  const { data: acceptedChats = [] as AcceptedChat[], isLoading: chatsLoading } = useQuery({
+    queryKey: ['accepted-chats', opportunityId],
+    queryFn: async (): Promise<AcceptedChat[]> => {
+      // Get accepted coffee chats for this opportunity
+      const { data: chats, error } = await supabase
+        .from('coffee_chats')
+        .select('id, requester_user_id, requester_name, message, created_at')
+        .eq('opportunity_id', opportunityId)
+        .eq('status', 'accepted')
+        .order('created_at', { ascending: false })
+      if (error || !chats) return []
+
+      // Get team member user IDs to filter out already-added
+      const { data: existing } = await supabase
+        .from('accepted_connections')
+        .select('applicant_id')
+        .eq('opportunity_id', opportunityId)
+        .eq('status', 'active')
+      const addedUserIds = new Set((existing || []).map((e: any) => e.applicant_id))
+
+      // Filter: only chats not yet in team
+      const available = chats.filter(
+        (c: any) => c.requester_user_id && !addedUserIds.has(c.requester_user_id)
+      )
+      if (available.length === 0) return []
+
+      // Fetch profiles
+      const userIds = available.map((c: any) => c.requester_user_id).filter(Boolean) as string[]
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('user_id, nickname, desired_position')
+        .in('user_id', userIds)
+      const profileMap = new Map((profiles || []).map((p: any) => [p.user_id, p]))
+
+      return available.map((c: any) => ({
+        ...c,
+        profile: profileMap.get(c.requester_user_id) || null,
+      }))
+    },
+    enabled: !!user,
+  })
+
+  // Add to team mutation
+  const addToTeam = useMutation({
+    mutationFn: async (chat: AcceptedChat) => {
+      const { error } = await supabase
+        .from('accepted_connections')
+        .insert({
+          coffee_chat_id: chat.id,
+          opportunity_creator_id: user!.id,
+          applicant_id: chat.requester_user_id,
+          opportunity_id: opportunityId,
+          status: 'active',
+        } as any)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['team', opportunityId] })
+      queryClient.invalidateQueries({ queryKey: ['accepted-chats', opportunityId] })
+      queryClient.invalidateQueries({ queryKey: ['team-public', opportunityId] })
+      toast.success('팀원이 추가되었습니다')
+    },
+    onError: () => {
+      toast.error('팀원 추가에 실패했습니다')
     },
   })
 
@@ -71,6 +155,7 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['team', opportunityId] })
+      queryClient.invalidateQueries({ queryKey: ['team-public', opportunityId] })
       toast.success('팀원이 제거되었습니다')
       setRemovingId(null)
     },
@@ -104,31 +189,81 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
         </div>
       </div>
 
-      {/* Active Members */}
-      {members.length > 0 ? (
-        <div className="space-y-3">
-          {members.map(member => (
-            <MemberCard
-              key={member.id}
-              member={member}
-              removingId={removingId}
-              onRoleChange={(role) => {
-                updateMember.mutate({ memberId: member.id, updates: { assigned_role: role } })
-              }}
-              onRemoveClick={() => setRemovingId(member.id)}
-              onRemoveConfirm={() => removeMember.mutate(member.id)}
-              onRemoveCancel={() => setRemovingId(null)}
-              isUpdating={updateMember.isPending}
-            />
-          ))}
+      {/* Accepted Coffee Chats — Add to Team */}
+      {acceptedChats.length > 0 && (
+        <div>
+          <h4 className="text-[0.625rem] font-mono font-bold text-status-success-text uppercase tracking-widest mb-2 flex items-center gap-1.5">
+            <Coffee size={11} />
+            수락된 커피챗 ({acceptedChats.length})
+          </h4>
+          <div className="space-y-2">
+            {acceptedChats.map(chat => (
+              <div key={chat.id} className="flex items-center gap-3 px-4 py-3 bg-status-success-bg/30 border border-status-success-text/20">
+                <div className="w-9 h-9 bg-status-success-text text-white flex items-center justify-center font-bold text-xs shrink-0">
+                  {(chat.profile?.nickname || chat.requester_name || '?').charAt(0)}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium text-sm text-txt-primary">
+                    {chat.profile?.nickname || chat.requester_name || '알 수 없음'}
+                  </p>
+                  <p className="text-xs text-txt-disabled truncate">
+                    {chat.profile?.desired_position || '포지션 미설정'}
+                    {' · '}
+                    {new Date(chat.created_at).toLocaleDateString('ko-KR')} 커피챗
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => addToTeam.mutate(chat)}
+                  disabled={addToTeam.isPending}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-surface-inverse text-white text-xs font-bold hover:opacity-90 transition-opacity disabled:opacity-50 shrink-0"
+                >
+                  {addToTeam.isPending ? (
+                    <Loader2 size={12} className="animate-spin" />
+                  ) : (
+                    <UserPlus size={12} />
+                  )}
+                  팀에 추가
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
-      ) : (
+      )}
+
+      {/* No accepted chats, no members */}
+      {acceptedChats.length === 0 && members.length === 0 && !chatsLoading && (
         <div className="border border-dashed border-border py-12 flex flex-col items-center justify-center">
           <div className="w-12 h-12 bg-surface-sunken flex items-center justify-center mb-3">
             <Users size={20} className="text-txt-disabled" />
           </div>
           <p className="text-sm text-txt-tertiary font-medium mb-1">아직 팀원이 없습니다</p>
-          <p className="text-xs text-txt-disabled">커피챗이 수락되면 여기에 팀원이 표시됩니다</p>
+          <p className="text-xs text-txt-disabled">커피챗이 수락되면 여기서 팀에 추가할 수 있습니다</p>
+        </div>
+      )}
+
+      {/* Active Members */}
+      {members.length > 0 && (
+        <div>
+          <h4 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-2">
+            현재 팀원 ({members.length})
+          </h4>
+          <div className="space-y-3">
+            {members.map(member => (
+              <MemberCard
+                key={member.id}
+                member={member}
+                removingId={removingId}
+                onRoleChange={(role) => {
+                  updateMember.mutate({ memberId: member.id, updates: { assigned_role: role } })
+                }}
+                onRemoveClick={() => setRemovingId(member.id)}
+                onRemoveConfirm={() => removeMember.mutate(member.id)}
+                onRemoveCancel={() => setRemovingId(null)}
+                isUpdating={updateMember.isPending}
+              />
+            ))}
+          </div>
         </div>
       )}
 
