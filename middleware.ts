@@ -55,7 +55,6 @@ const hiddenApiRoutes = [
 
 // 퍼블릭 라우트 — Supabase auth 완전 스킵
 const publicRoutes = [
-  '/',
   '/explore',
   '/guide',
   '/auth/',
@@ -126,6 +125,15 @@ export async function middleware(request: NextRequest) {
   // Match exact path or path with trailing segments (e.g. /project/ matches /project/abc but not /projects)
   if (hiddenRoutes.some(route => pathname === route.replace(/\/$/, '') || pathname.startsWith(route))) {
     return NextResponse.redirect(new URL('/explore', request.url))
+  }
+
+  // 랜딩페이지(`/`): 로그인 상태면 /explore로 리다이렉트
+  if (pathname === '/') {
+    const { user } = await updateSession(request)
+    if (user) {
+      return NextResponse.redirect(new URL('/explore', request.url))
+    }
+    return addSecurityHeaders(NextResponse.next({ request }))
   }
 
   // 퍼블릭 라우트 → Supabase 클라이언트 생성 자체를 스킵, 즉시 반환
