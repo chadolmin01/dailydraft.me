@@ -135,10 +135,32 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-surface-bg flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="animate-spin text-txt-disabled" size={32} />
-          <p className="text-sm text-txt-tertiary">프로젝트 로딩 중...</p>
+      <div className="min-h-screen bg-surface-bg">
+        <div className="max-w-4xl mx-auto px-4 py-6 animate-pulse">
+          {/* Hero skeleton */}
+          <div className="h-56 bg-surface-sunken border border-border-strong mb-6" />
+          {/* Title */}
+          <div className="h-7 w-2/3 bg-surface-sunken border border-border mb-3" />
+          <div className="h-4 w-1/3 bg-surface-sunken border border-border mb-6" />
+          {/* Tags */}
+          <div className="flex gap-2 mb-6">
+            <div className="h-6 w-16 bg-surface-sunken border border-border" />
+            <div className="h-6 w-20 bg-surface-sunken border border-border" />
+            <div className="h-6 w-14 bg-surface-sunken border border-border" />
+          </div>
+          {/* Content */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="md:col-span-2 space-y-3">
+              <div className="h-4 bg-surface-sunken border border-border" />
+              <div className="h-4 bg-surface-sunken border border-border w-5/6" />
+              <div className="h-4 bg-surface-sunken border border-border w-4/6" />
+              <div className="h-4 bg-surface-sunken border border-border w-3/4" />
+            </div>
+            <div className="space-y-3">
+              <div className="h-24 bg-surface-sunken border border-border-strong" />
+              <div className="h-20 bg-surface-sunken border border-border-strong" />
+            </div>
+          </div>
         </div>
       </div>
     )
