@@ -644,6 +644,7 @@ export type Database = {
           ai_chat_completed: boolean | null
           ai_chat_transcript: Json | null
           avatar_url: string | null
+          badges: string[] | null
           bio: string | null
           contact_email: string | null
           contact_kakao: string | null
@@ -687,6 +688,7 @@ export type Database = {
           ai_chat_transcript?: Json | null
           affiliation_type?: string | null
           avatar_url?: string | null
+          badges?: string[] | null
           bio?: string | null
           contact_email?: string | null
           contact_kakao?: string | null
@@ -727,6 +729,7 @@ export type Database = {
           ai_chat_transcript?: Json | null
           affiliation_type?: string | null
           avatar_url?: string | null
+          badges?: string[] | null
           bio?: string | null
           contact_email?: string | null
           contact_kakao?: string | null
