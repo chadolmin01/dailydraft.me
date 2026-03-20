@@ -10,46 +10,13 @@ import {
 } from 'lucide-react'
 import { useAuth } from '@/src/context/AuthContext'
 import { useOpportunity, useUpdateOpportunity } from '@/src/hooks/useOpportunities'
-import { useProfileByUserId } from '@/src/hooks/usePublicProfiles'
+import { useProfileByUserId, type CreatorProfile } from '@/src/hooks/usePublicProfiles'
 import { useCoffeeChats } from '@/src/hooks/useCoffeeChats'
 import { useProjectUpdates } from '@/src/hooks/useProjectUpdates'
 import { WriteUpdateForm } from '@/components/WriteUpdateForm'
 import { CoffeeChatRequestForm } from '@/components/CoffeeChatRequestForm'
 import { Modal } from '@/components/ui/Modal'
-
-// Types
-interface OpportunityData {
-  id: string
-  title: string
-  description: string
-  type: string
-  status: string | null
-  needed_roles: string[] | null
-  needed_skills: any | null
-  interest_tags: string[] | null
-  location: string | null
-  location_type: string | null
-  time_commitment: string | null
-  compensation_type: string | null
-  compensation_details: string | null
-  pain_point: string | null
-  project_links: any | null
-  show_updates: boolean | null
-  interest_count: number | null
-  applications_count: number | null
-  views_count: number | null
-  created_at: string | null
-  creator_id: string
-}
-
-interface CreatorProfile {
-  nickname: string
-  user_id: string
-  skills: any | null
-  desired_position: string | null
-  university: string | null
-  location: string | null
-}
+import type { Opportunity } from '@/src/types/opportunity'
 
 const updateTypeConfig: Record<string, { label: string; color: string }> = {
   ideation: { label: '고민', color: 'bg-status-warning-bg text-status-warning-text border-status-warning-text/20' },
@@ -110,18 +77,11 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
   const { data: oppData, isLoading: loading, isError } = useOpportunity(id)
   const updateOpportunity = useUpdateOpportunity()
-  const opportunity = oppData as OpportunityData | null
+  const opportunity = oppData as Opportunity | null
   const error = isError ? '프로젝트를 찾을 수 없습니다.' : null
 
   const { data: creatorProfile } = useProfileByUserId(opportunity?.creator_id)
-  const creator = creatorProfile ? {
-    nickname: creatorProfile.nickname,
-    user_id: creatorProfile.user_id,
-    skills: creatorProfile.skills,
-    desired_position: creatorProfile.desired_position,
-    university: creatorProfile.university,
-    location: creatorProfile.location,
-  } as CreatorProfile : null
+  const creator = creatorProfile ?? null
 
   const { data: realUpdates = [] } = useProjectUpdates(id)
 
@@ -307,7 +267,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
               {opportunity.interest_tags.map((tag) => (
                 <span
                   key={tag}
-                  className="px-3 py-1 bg-surface-sunken border border-border text-txt-secondary text-xs font-medium"
+                  className="px-3 py-1 bg-white border border-border text-txt-secondary text-xs font-medium"
                 >
                   {tag}
                 </span>
@@ -515,7 +475,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
                   {creator.skills && (
                     <div className="flex flex-wrap gap-1.5">
-                      {(Array.isArray(creator.skills) ? creator.skills : []).slice(0, 5).map((skill: string) => (
+                      {(Array.isArray(creator.skills) ? creator.skills as string[] : []).slice(0, 5).map((skill) => (
                         <span key={skill} className="text-[0.625rem] bg-surface-sunken text-txt-secondary px-2 py-0.5 font-medium border border-border">
                           {skill}
                         </span>

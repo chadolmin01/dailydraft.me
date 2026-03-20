@@ -8,7 +8,7 @@ import { withRetry } from '../lib/query-utils'
 type Profile = Tables<'profiles'>
 
 export type PublicProfile = Pick<Profile,
-  'id' | 'user_id' | 'nickname' | 'desired_position' | 'interest_tags' | 'location' | 'profile_visibility' | 'vision_summary' | 'avatar_url' | 'interest_count' | 'created_at'
+  'id' | 'user_id' | 'nickname' | 'desired_position' | 'interest_tags' | 'location' | 'profile_visibility' | 'vision_summary' | 'avatar_url' | 'interest_count' | 'created_at' | 'badges'
 >
 
 // Query keys
@@ -30,7 +30,7 @@ export function usePublicProfiles(options?: {
     queryFn: () => withRetry(async () => {
       let query = supabase
         .from('profiles')
-        .select('id, user_id, nickname, desired_position, interest_tags, location, profile_visibility, vision_summary, avatar_url, interest_count, created_at')
+        .select('id, user_id, nickname, desired_position, interest_tags, location, profile_visibility, vision_summary, avatar_url, interest_count, created_at, badges')
         .eq('profile_visibility', 'public')
         .order('updated_at', { ascending: false })
 
@@ -79,7 +79,7 @@ export type DetailedPublicProfile = Pick<Profile,
   'id' | 'user_id' | 'nickname' | 'desired_position' | 'interest_tags' | 'location' |
   'profile_visibility' | 'vision_summary' | 'skills' | 'university' | 'major' |
   'current_situation' | 'personality' | 'contact_email' | 'avatar_url' |
-  'portfolio_url' | 'github_url' | 'linkedin_url' | 'affiliation_type' | 'cover_image_url' | 'is_uni_verified'
+  'portfolio_url' | 'github_url' | 'linkedin_url' | 'affiliation_type' | 'cover_image_url' | 'is_uni_verified' | 'badges'
 >
 
 export function useDetailedPublicProfile(
@@ -97,7 +97,7 @@ export function useDetailedPublicProfile(
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, user_id, nickname, desired_position, interest_tags, location, profile_visibility, vision_summary, skills, university, major, current_situation, personality, contact_email, avatar_url, portfolio_url, github_url, linkedin_url, is_uni_verified, affiliation_type, cover_image_url')
+        .select('id, user_id, nickname, desired_position, interest_tags, location, profile_visibility, vision_summary, skills, university, major, current_situation, personality, contact_email, avatar_url, portfolio_url, github_url, linkedin_url, is_uni_verified, affiliation_type, cover_image_url, badges')
         .eq(field, identifier)
         .eq('profile_visibility', 'public')
         .maybeSingle()

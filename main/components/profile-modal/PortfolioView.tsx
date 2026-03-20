@@ -135,7 +135,7 @@ export function PortfolioView({
               {skills.map((skill) => (
                 <span
                   key={skill.name}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-tag-default-bg text-tag-default-text text-xs border border-border font-medium"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white text-tag-default-text text-xs border border-border font-medium"
                 >
                   {skill.name}
                   <span className="text-txt-tertiary">·</span>

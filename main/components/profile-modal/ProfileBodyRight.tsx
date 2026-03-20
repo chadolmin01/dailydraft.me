@@ -122,7 +122,7 @@ export function ProfileBodyRight({
             {skills.map((skill) => (
               <span
                 key={skill.name}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-tag-default-bg text-tag-default-text text-xs border border-border"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white text-tag-default-text text-xs border border-border"
               >
                 {skill.name}
                 <span className="text-txt-tertiary">·</span>

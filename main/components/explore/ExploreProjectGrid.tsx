@@ -137,7 +137,7 @@ export function ExploreProjectGrid({
                 <div className="flex items-center gap-1.5 mb-2 overflow-hidden">
                   <span className="text-[0.625rem] font-mono font-bold text-brand uppercase tracking-wide shrink-0 bg-brand-bg px-1.5 py-0.5 border border-brand-border">NEED</span>
                   {p.roles.slice(0, 2).map(role => (
-                    <span key={role} className="text-xs bg-surface-sunken text-txt-secondary px-2 py-0.5 border border-border font-medium shrink-0">{role}</span>
+                    <span key={role} className="text-xs bg-white text-txt-secondary px-2 py-0.5 border border-border font-medium shrink-0">{role}</span>
                   ))}
                 </div>
                 <p className="text-sm text-txt-secondary line-clamp-2">{p.desc}</p>

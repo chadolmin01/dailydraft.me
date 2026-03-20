@@ -193,7 +193,7 @@ export function ProfileBodyLeft({
                     {(project.interest_tags || []).length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-2">
                         {(project.interest_tags as string[]).slice(0, 3).map((tag: string) => (
-                          <span key={tag} className="text-[0.625rem] font-mono bg-surface-sunken text-txt-tertiary px-1.5 py-0.5">{tag}</span>
+                          <span key={tag} className="text-[0.625rem] font-mono bg-white text-txt-tertiary px-1.5 py-0.5 border border-border">{tag}</span>
                         ))}
                       </div>
                     )}
