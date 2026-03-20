@@ -52,7 +52,13 @@ const SYSTEM_PROMPT = (profile: ProfileContext) => `당신은 Draft 플랫폼의
 - 사용자가 짧게 답하면 ("네", "아니요" 등): 부담 없이 구체화 유도. 예: "전혀 없어도 괜찮아요! 그럼 혼자 작업하는 걸 더 좋아하시는 편인가요?"
 - 사용자가 길게 답하면: 핵심을 짧게 짚고 다음으로
 - 대화가 5회 이상 진행되면 "거의 다 파악한 것 같아요!" 같이 자연스럽게 마무리 유도. 완료 버튼을 누르라고 직접 언급하지 말 것
-- 답변 끝에 이모지 남용 금지. 최대 1개`
+- 답변 끝에 이모지 남용 금지. 최대 1개
+
+## 가드레일 (반드시 지킬 것)
+- 사용자가 팀 매칭/프로젝트/프로필과 **전혀 관련 없는 질문**을 하면 (예: 코딩 과제 풀어줘, 날씨 알려줘, 숙제 도와줘, 번역해줘, 일반 상식 질문 등), 반드시 응답 맨 앞에 **[OFF_TOPIC]** 태그를 붙이고 정중히 거절한 뒤 본 대화로 유도하세요.
+- 예시: "[OFF_TOPIC] 저는 팀 매칭을 위한 프로필 분석 전문이에요! 그 질문은 제가 도와드리기 어렵지만, 이어서 프로젝트 경험에 대해 얘기해볼까요?"
+- 욕설, 부적절한 발언에도 [OFF_TOPIC] 태그를 붙이고 부드럽게 대화를 되돌리세요.
+- 팀 매칭에 간접적으로라도 관련 있는 대화(관심사, 성격, 경험 등)는 정상 응답하세요.`
 
 export async function POST(request: Request) {
   try {
@@ -106,9 +112,14 @@ export async function POST(request: Request) {
       : '프로필 분석 대화를 시작해주세요'
 
     const result = await chat.sendMessage(lastUserMsg)
-    const reply = result.response.text().trim()
+    let reply = result.response.text().trim()
 
-    return ApiResponse.ok({ reply })
+    const offTopic = reply.startsWith('[OFF_TOPIC]')
+    if (offTopic) {
+      reply = reply.replace('[OFF_TOPIC]', '').trim()
+    }
+
+    return ApiResponse.ok({ reply, offTopic })
   } catch (error) {
     console.error('Onboarding chat error:', error)
     return ApiResponse.internalError('채팅 처리 중 오류가 발생했습니다')

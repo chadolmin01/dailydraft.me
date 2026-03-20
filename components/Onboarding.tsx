@@ -281,7 +281,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     // Checkpoint save
     try { await saveProfileCheckpoint(s.profile) } catch { /* continue anyway */ }
 
-    const firstQ = await aiDeepChat([], profileCtx)
+    const { reply: firstQ } = await aiDeepChat([], profileCtx)
 
     await new Promise(r => setTimeout(r, 800))
     dispatch({ type: 'SET_BUBBLES', bubbles: [] })
@@ -316,14 +316,20 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     const activityLabel = AI_ACTIVITY_LABELS[Math.min(msgCount - 1, AI_ACTIVITY_LABELS.length - 1)]
     dispatch({ type: 'SET_AI_ACTIVITY', label: activityLabel })
     dispatch({ type: 'SET_TYPING', isTyping: true })
-    const reply = await aiDeepChat(updatedMessages, profileCtx)
+    const { reply, offTopic } = await aiDeepChat(updatedMessages, profileCtx)
     dispatch({ type: 'SET_TYPING', isTyping: false })
     dispatch({ type: 'SET_AI_ACTIVITY', label: null })
-    const aiMsg: DeepChatMessage = { role: 'assistant', content: reply }
-    // Build final messages locally to avoid stale closure (#2)
-    const finalMessages = [...updatedMessages, aiMsg]
-    dispatch({ type: 'SET_DEEP_CHAT_MESSAGES', messages: finalMessages })
-    await pushAi(reply, undefined, 300)
+
+    if (offTopic) {
+      // Don't add off-topic exchange to history — rollback to previous state
+      dispatch({ type: 'SET_DEEP_CHAT_MESSAGES', messages: s.deepChatMessages })
+      await pushAi(reply, undefined, 300)
+    } else {
+      const aiMsg: DeepChatMessage = { role: 'assistant', content: reply }
+      const finalMessages = [...updatedMessages, aiMsg]
+      dispatch({ type: 'SET_DEEP_CHAT_MESSAGES', messages: finalMessages })
+      await pushAi(reply, undefined, 300)
+    }
     dispatch({ type: 'SET_SHOW_SUGGESTIONS', value: true })
     setTimeout(() => deepChatInputRef.current?.focus(), 200)
   }

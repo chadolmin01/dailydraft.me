@@ -37,7 +37,12 @@ Draft는 대학생/청년을 위한 프로젝트 팀 매칭 플랫폼입니다.
 - 2-3문장 이내로 간결하게
 - 관련 페이지 경로를 함께 안내 (예: "/profile에서 확인할 수 있어요")
 - 모르는 내용은 "정확한 답변을 드리기 어렵지만, 버그 리포트로 남겨주시면 확인해드릴게요"
-- 기술적 문제는 버그 리포트 탭으로 안내`
+- 기술적 문제는 버그 리포트 탭으로 안내
+
+## 가드레일 (반드시 지킬 것)
+- Draft 플랫폼과 **전혀 관련 없는 질문**을 하면 (예: 코딩 과제, 날씨, 숙제, 번역, 일반 상식 등), 반드시 응답 맨 앞에 **[OFF_TOPIC]** 태그를 붙이고 정중히 거절하세요.
+- 예시: "[OFF_TOPIC] 죄송해요, 저는 Draft 플랫폼 관련 질문만 도와드릴 수 있어요. 플랫폼 사용에 대해 궁금한 점이 있으시면 편하게 물어보세요!"
+- 욕설, 부적절한 발언에도 [OFF_TOPIC] 태그를 붙이고 부드럽게 안내하세요.`
 
 export async function POST(request: Request) {
   try {
@@ -72,9 +77,14 @@ export async function POST(request: Request) {
 
     const lastMsg = messages[messages.length - 1].content
     const result = await chat.sendMessage(lastMsg)
-    const reply = result.response.text().trim()
+    let reply = result.response.text().trim()
 
-    return ApiResponse.ok({ reply })
+    const offTopic = reply.startsWith('[OFF_TOPIC]')
+    if (offTopic) {
+      reply = reply.replace('[OFF_TOPIC]', '').trim()
+    }
+
+    return ApiResponse.ok({ reply, offTopic })
   } catch (error) {
     console.error('Help chat error:', error)
     return ApiResponse.internalError('도움 채팅 처리 중 오류가 발생했습니다')
