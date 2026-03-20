@@ -1,5 +1,9 @@
-import type { Skill } from './profile'
+import type { Tables } from './database'
 
+// Re-export the DB Opportunity type as the canonical Opportunity type
+export type Opportunity = Tables<'opportunities'>
+
+// Narrowed union types for use in UI forms and validation
 export type OpportunityType = 'side_project' | 'startup' | 'study'
 export type LocationType = 'remote' | 'hybrid' | 'onsite'
 export type TimeCommitment = 'part_time' | 'full_time'
@@ -12,28 +16,23 @@ export interface ProjectLink {
   label?: string
 }
 
-export interface Opportunity {
-  id: string
-  creator_id: string
-  type: OpportunityType
-  title: string
-  description: string
-  needed_roles: string[]
-  needed_skills: Skill[]
-  interest_tags: string[]
-  location_type: LocationType | null
-  location: string | null
-  time_commitment: TimeCommitment | null
-  compensation_type: CompensationType | null
-  compensation_details: string | null
-  project_links: ProjectLink[]
-  demo_images: string[]
-  vision_embedding: number[] | null
-  status: OpportunityStatus
-  views_count: number
-  applications_count: number
-  created_at: string
-  updated_at: string
+// Opportunity with creator profile info (joined query)
+export interface OpportunityWithCreator extends Opportunity {
+  creator?: {
+    nickname: string
+    user_id: string
+    skills?: unknown
+    location?: string | null
+    contact_email?: string | null
+    desired_position?: string | null
+    university?: string | null
+  }
+}
+
+// Opportunity with AI match scoring
+export interface OpportunityWithMatch extends Opportunity {
+  match_score?: number
+  match_reason?: string
 }
 
 export type ApplicationStatus = 'pending' | 'accepted' | 'rejected'
@@ -64,9 +63,4 @@ export interface AcceptedConnection {
   opportunity_creator_id: string
   applicant_id: string
   connected_at: string
-}
-
-export interface OpportunityWithMatch extends Opportunity {
-  match_score?: number
-  match_reason?: string
 }
