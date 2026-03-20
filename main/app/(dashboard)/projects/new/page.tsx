@@ -7,7 +7,7 @@ import type { Area } from 'react-easy-crop'
 import { toast } from 'sonner'
 import { useCreateOpportunity } from '@/src/hooks/useOpportunities'
 import { TYPE_OPTIONS, CATEGORY_TAGS, TYPE_THEMES } from './constants'
-import { getCroppedImg, ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE } from './utils'
+import { getCroppedImg, ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE, uploadImagesToSupabase } from './utils'
 import { ImageUploadSection } from './components/ImageUploadSection'
 import { CropModal } from './components/CropModal'
 import { ProjectInfoSidebar } from './components/ProjectInfoSidebar'
@@ -192,16 +192,7 @@ function NewProjectContent() {
     if (imageFiles.length === 0) return []
     setImageUploading(true)
     try {
-      const urls: string[] = []
-      for (const file of imageFiles) {
-        const formData = new FormData()
-        formData.append('files', file)
-        const res = await fetch('/api/upload', { method: 'POST', body: formData })
-        if (!res.ok) throw new Error('업로드 실패')
-        const { urls: uploaded } = await res.json()
-        if (uploaded?.length) urls.push(...uploaded)
-      }
-      return urls
+      return await uploadImagesToSupabase(imageFiles)
     } finally {
       setImageUploading(false)
     }

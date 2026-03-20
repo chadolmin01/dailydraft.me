@@ -16,6 +16,7 @@
     "@tosspayments/payment-widget-sdk": "^0.12.1",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.36.2",
+    "browser-image-compression": "^2.0.2",
     "clsx": "^2.1.1",
     "framer-motion": "^12.34.0",
     "hwp.js": "^0.0.3",

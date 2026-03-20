@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 import { useOpportunity, useUpdateOpportunity, useDeleteOpportunity } from '@/src/hooks/useOpportunities'
 import { useAuth } from '@/src/context/AuthContext'
 import { TYPE_OPTIONS, CATEGORY_TAGS, TYPE_THEMES } from '../../new/constants'
-import { getCroppedImg, ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE } from '../../new/utils'
+import { getCroppedImg, ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE, uploadImagesToSupabase } from '../../new/utils'
 import { ImageUploadSection } from '../../new/components/ImageUploadSection'
 import { CropModal } from '../../new/components/CropModal'
 import { ProjectInfoSidebar } from '../../new/components/ProjectInfoSidebar'
@@ -235,16 +235,7 @@ function EditProjectContent() {
     if (imageFiles.length === 0) return []
     setImageUploading(true)
     try {
-      const urls: string[] = []
-      for (const file of imageFiles) {
-        const formData = new FormData()
-        formData.append('files', file)
-        const res = await fetch('/api/upload', { method: 'POST', body: formData })
-        if (!res.ok) throw new Error('업로드 실패')
-        const { urls: uploaded } = await res.json()
-        if (uploaded?.length) urls.push(...uploaded)
-      }
-      return urls
+      return await uploadImagesToSupabase(imageFiles)
     } finally {
       setImageUploading(false)
     }
