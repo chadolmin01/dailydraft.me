@@ -5,6 +5,7 @@ import {
   X, Briefcase, Share2, Heart,
   Loader2, AlertCircle, ShieldCheck,
 } from 'lucide-react'
+import { toast } from 'sonner'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/src/lib/supabase/client'
 import { useDetailedPublicProfile } from '@/src/hooks/usePublicProfiles'
@@ -86,7 +87,9 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
   }, [profile?.id, user])
 
   const handleInterest = async () => {
-    if (!user || !profile?.id || interestLoading) return
+    if (!user) return
+    if (user.id === profile?.user_id) { toast.error('내 프로필에는 관심 표시를 할 수 없어요'); return }
+    if (!profile?.id || interestLoading) return
     setInterestLoading(true)
     try {
       const res = await fetch(`/api/profile/${profile.id}/interest`, { method: 'POST' })
@@ -94,8 +97,13 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
       if (res.ok) {
         setHasInterested(data.interested)
         setInterestCount(data.interest_count ?? 0)
+        toast.success(data.interested ? '관심을 표시했어요' : '관심 표시를 취소했어요')
+      } else {
+        toast.error('관심 표시에 실패했어요')
       }
-    } catch { /* ignore */ }
+    } catch {
+      toast.error('네트워크 오류가 발생했어요')
+    }
     setInterestLoading(false)
   }
 

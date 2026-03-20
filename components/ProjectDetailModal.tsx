@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation'
 import {
   Loader2, AlertCircle, X, Share2, Edit3,
 } from 'lucide-react'
+import { toast } from 'sonner'
+import { useQuery } from '@tanstack/react-query'
+import { supabase } from '@/src/lib/supabase/client'
 import { useOpportunity, useUpdateOpportunity } from '@/src/hooks/useOpportunities'
 import { useProfileByUserId } from '@/src/hooks/usePublicProfiles'
 import { useProjectUpdates } from '@/src/hooks/useProjectUpdates'
@@ -42,16 +45,35 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
   const { data: creator } = useProfileByUserId(opportunity?.creator_id ?? undefined)
   const { data: updates = [] } = useProjectUpdates(opportunity?.id)
 
-  // Match analysis -- lightweight fetch, only for logged-in non-owners
-  const [matchScore, setMatchScore] = useState<number | null>(null)
-  useEffect(() => {
-    setMatchScore(null)
-    if (!projectId || !user) return
-    fetch(`/api/opportunities/${projectId}/match-analysis`)
-      .then(res => res.ok ? res.json() : null)
-      .then(data => { if (data?.overallScore != null) setMatchScore(data.overallScore) })
-      .catch(() => {})
-  }, [projectId, user])
+  // Fetch team members (accepted connections)
+  const { data: teamMembers = [] } = useQuery({
+    queryKey: ['team-public', projectId],
+    queryFn: async () => {
+      if (!projectId) return []
+      const { data: connections } = await supabase
+        .from('accepted_connections')
+        .select('id, applicant_id, assigned_role, status')
+        .eq('opportunity_id', projectId)
+        .eq('status', 'active')
+      if (!connections || connections.length === 0) return []
+      const userIds = connections.map(c => c.applicant_id)
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('user_id, nickname, desired_position')
+        .in('user_id', userIds)
+      const profileMap = new Map((profiles || []).map(p => [p.user_id, p]))
+      return connections.map(c => ({
+        id: c.id,
+        nickname: profileMap.get(c.applicant_id)?.nickname || '알 수 없음',
+        role: c.assigned_role || profileMap.get(c.applicant_id)?.desired_position || null,
+      }))
+    },
+    enabled: !!projectId,
+    staleTime: 1000 * 60 * 2,
+  })
+
+  // Match analysis — API not yet implemented, placeholder for future
+  const matchScore: number | null = null
 
   const isOwner = !!(user && opportunity && user.id === opportunity.creator_id)
   const existingChat = myChatsForProject.length > 0 ? myChatsForProject[0] : null
@@ -105,9 +127,16 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
       setShowCta(true)
       return
     }
-    if (hasInterested || interestLoading) return
+    if (isOwner) { toast.error('내 프로젝트에는 관심 표시를 할 수 없어요'); return }
+    if (hasInterested) { toast('이미 관심을 표시했어요'); return }
+    if (interestLoading) return
     const success = await expressInterest(user.email ?? '')
-    if (success) setHasInterested(true)
+    if (success) {
+      setHasInterested(true)
+      toast.success('관심을 표시했어요')
+    } else {
+      toast.error('관심 표시에 실패했어요')
+    }
   }
 
   const handleSignup = () => {
@@ -199,6 +228,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                                 onClick={() => {
                                   updateOpportunity.mutate(
                                     { id: opportunity.id, updates: { type: opt.value as 'side_project' | 'startup' | 'study' } },
+                                    { onSuccess: () => toast.success('프로젝트 유형이 변경되었습니다'), onError: () => toast.error('변경에 실패했어요') },
                                   )
                                   setShowTypeSelector(false)
                                 }}
@@ -302,6 +332,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                           handleAction={handleAction}
                           onClose={onClose}
                           router={router}
+                          teamMembers={teamMembers}
                         />
                       </div>
                     </div>

@@ -3,6 +3,7 @@ import Image from 'next/image'
 import {
   Heart, Calendar, MapPin, Eye,
 } from 'lucide-react'
+import { toast } from 'sonner'
 import { Badges } from '@/components/ui/Badge'
 import { ProjectHeaderProps } from './types'
 
@@ -95,8 +96,8 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
           )}
           <div className="flex items-center gap-3 mt-3">
             <button
-              onClick={handleInterest}
-              disabled={isOwner || interestLoading}
+              onClick={() => { if (isOwner) { toast('내 프로젝트에는 관심 표시를 할 수 없어요'); return } handleInterest() }}
+              disabled={interestLoading}
               className={`inline-flex items-center gap-1.5 px-3 py-1.5 border text-xs font-bold transition-all ${
                 hasInterested
                   ? 'border-status-danger-text/20 bg-status-danger-bg text-status-danger-text'

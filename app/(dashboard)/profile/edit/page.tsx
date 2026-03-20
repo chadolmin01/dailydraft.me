@@ -514,7 +514,7 @@ export default function ProfileEditPage() {
                         {item.link_url && (
                           <a href={item.link_url} target="_blank" rel="noopener noreferrer" className="p-1 text-txt-tertiary hover:text-txt-secondary"><ExternalLink size={14} /></a>
                         )}
-                        <button onClick={() => { if (confirm('이 항목을 삭제하시겠습니까?')) deletePortfolio.mutate(item.id) }} className="p-1 text-txt-tertiary hover:text-status-danger-text transition-colors"><Trash2 size={14} /></button>
+                        <button onClick={() => { if (confirm('이 항목을 삭제하시겠습니까?')) deletePortfolio.mutate(item.id, { onSuccess: () => toast.success('포트폴리오 항목이 삭제되었습니다'), onError: () => toast.error('삭제에 실패했어요') }) }} className="p-1 text-txt-tertiary hover:text-status-danger-text transition-colors"><Trash2 size={14} /></button>
                       </div>
                     ))}
                   </div>
@@ -599,6 +599,7 @@ export default function ProfileEditPage() {
                             const res = await fetch('/api/profile/verify-university', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'send', email: verifyEmail.trim() }) })
                             const data = await res.json(); if (!res.ok) { setVerifyError(data.error); return }
                             setVerifyStep('sent')
+                            toast.success('인증 코드가 발송되었습니다')
                           } catch { setVerifyError('요청에 실패했습니다') } finally { setVerifySending(false) }
                         }} className="px-4 py-3 text-xs font-bold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 disabled:opacity-50 transition-colors">{verifySending ? '전송 중...' : '인증 코드 전송'}</button>
                       </div>
