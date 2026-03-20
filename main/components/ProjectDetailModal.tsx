@@ -71,16 +71,8 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
     staleTime: 1000 * 60 * 2,
   })
 
-  // Match analysis -- lightweight fetch, only for logged-in non-owners
-  const [matchScore, setMatchScore] = useState<number | null>(null)
-  useEffect(() => {
-    setMatchScore(null)
-    if (!projectId || !user) return
-    fetch(`/api/opportunities/${projectId}/match-analysis`)
-      .then(res => res.ok ? res.json() : null)
-      .then(data => { if (data?.overallScore != null) setMatchScore(data.overallScore) })
-      .catch(() => {})
-  }, [projectId, user])
+  // Match analysis — API not yet implemented, placeholder for future
+  const matchScore: number | null = null
 
   const isOwner = !!(user && opportunity && user.id === opportunity.creator_id)
   const existingChat = myChatsForProject.length > 0 ? myChatsForProject[0] : null
