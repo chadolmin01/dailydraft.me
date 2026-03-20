@@ -68,6 +68,7 @@ export const Sidebar: React.FC = () => {
 
   const handleMenuAction = async (action: string) => {
     if (action === 'profile') router.push('/profile')
+    if (action === 'settings') router.push('/profile/edit')
     if (action === 'usage') router.push('/usage')
     if (action === 'error-logs') router.push('/admin/error-logs')
     if (action === 'invite-codes-admin') router.push('/admin/invite-codes')
@@ -180,8 +181,11 @@ export const Sidebar: React.FC = () => {
               <BarChart3 size={14} /> Usage & Billing
             </button>
             */}
-            <button disabled className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-disabled cursor-not-allowed rounded-sm transition-colors text-left w-full">
-              <Settings size={14} /> Settings <span className="ml-auto text-[0.5625rem] font-mono text-txt-disabled">Coming soon</span>
+            <button
+              onClick={() => handleMenuAction('settings')}
+              className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary rounded-sm transition-colors text-left w-full"
+            >
+              <Settings size={14} /> Settings
             </button>
             <button disabled className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-disabled cursor-not-allowed rounded-sm transition-colors text-left w-full">
               <Bell size={14} /> Notifications{' '}

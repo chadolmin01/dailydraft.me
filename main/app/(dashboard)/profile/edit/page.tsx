@@ -514,7 +514,7 @@ export default function ProfileEditPage() {
                         {item.link_url && (
                           <a href={item.link_url} target="_blank" rel="noopener noreferrer" className="p-1 text-txt-tertiary hover:text-txt-secondary"><ExternalLink size={14} /></a>
                         )}
-                        <button onClick={() => { if (confirm('이 항목을 삭제하시겠습니까?')) deletePortfolio.mutate(item.id) }} className="p-1 text-txt-tertiary hover:text-status-danger-text transition-colors"><Trash2 size={14} /></button>
+                        <button onClick={() => { if (confirm('이 항목을 삭제하시겠습니까?')) deletePortfolio.mutate(item.id, { onSuccess: () => toast.success('포트폴리오 항목이 삭제되었습니다'), onError: () => toast.error('삭제에 실패했어요') }) }} className="p-1 text-txt-tertiary hover:text-status-danger-text transition-colors"><Trash2 size={14} /></button>
                       </div>
                     ))}
                   </div>
@@ -599,6 +599,7 @@ export default function ProfileEditPage() {
                             const res = await fetch('/api/profile/verify-university', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'send', email: verifyEmail.trim() }) })
                             const data = await res.json(); if (!res.ok) { setVerifyError(data.error); return }
                             setVerifyStep('sent')
+                            toast.success('인증 코드가 발송되었습니다')
                           } catch { setVerifyError('요청에 실패했습니다') } finally { setVerifySending(false) }
                         }} className="px-4 py-3 text-xs font-bold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 disabled:opacity-50 transition-colors">{verifySending ? '전송 중...' : '인증 코드 전송'}</button>
                       </div>
@@ -630,7 +631,17 @@ export default function ProfileEditPage() {
           {/* ═══ AI 분석 탭 ═══ */}
           {activeTab === 'ai' && (
                 <div className="space-y-6">
-                  <p className="text-xs text-txt-tertiary -mb-2">온보딩 AI 대화에서 분석된 데이터입니다. 직접 수정할 수 있어요.</p>
+                  <div className="flex items-center justify-between -mb-2">
+                    <p className="text-xs text-txt-tertiary">온보딩 AI 대화에서 분석된 데이터입니다. 직접 수정할 수 있어요.</p>
+                    <button
+                      type="button"
+                      onClick={() => router.push('/onboarding')}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-[0.625rem] font-mono font-bold uppercase tracking-wider border border-border text-txt-secondary hover:bg-surface-sunken hover:border-border-strong transition-colors shrink-0"
+                    >
+                      <Sparkles size={12} />
+                      AI 온보딩 다시하기
+                    </button>
+                  </div>
 
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <Card title="성향 점수">
