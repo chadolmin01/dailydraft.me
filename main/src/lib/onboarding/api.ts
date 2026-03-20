@@ -20,7 +20,7 @@ export async function aiParse(text: string, type: 'skills' | 'interests'): Promi
 export async function aiDeepChat(
   messages: DeepChatMessage[],
   profileCtx: Record<string, unknown>,
-): Promise<{ reply: string; offTopic: boolean }> {
+): Promise<{ reply: string; offTopic: boolean; suggestions: string[] }> {
   try {
     const res = await fetch('/api/onboarding/chat', {
       method: 'POST',
@@ -28,15 +28,17 @@ export async function aiDeepChat(
       body: JSON.stringify({ messages, profile: profileCtx }),
     })
     if (!res.ok) {
-      return { reply: '죄송해요, 일시적인 오류가 발생했어요. 다시 말씀해주세요!', offTopic: false }
+      return { reply: '죄송해요, 일시적인 오류가 발생했어요. 다시 말씀해주세요!', offTopic: false, suggestions: [] }
     }
     const json = await res.json()
+    const data = json?.data || json
     return {
-      reply: json?.data?.reply || json?.reply || '어떤 프로젝트 경험이 있으신지 알려주세요!',
-      offTopic: !!(json?.data?.offTopic || json?.offTopic),
+      reply: data?.reply || '어떤 프로젝트 경험이 있으신지 알려주세요!',
+      offTopic: !!data?.offTopic,
+      suggestions: Array.isArray(data?.suggestions) ? data.suggestions : [],
     }
   } catch {
-    return { reply: '죄송해요, 네트워크 오류가 발생했어요. 인터넷 연결을 확인하고 다시 시도해주세요.', offTopic: false }
+    return { reply: '죄송해요, 네트워크 오류가 발생했어요. 인터넷 연결을 확인하고 다시 시도해주세요.', offTopic: false, suggestions: [] }
   }
 }
 
@@ -55,7 +57,7 @@ export function buildProfileCtx(profile: ProfileDraft): Record<string, unknown> 
 
 /** Save profile checkpoint (basic data, onboarding_completed: true) */
 export async function saveProfileCheckpoint(profile: ProfileDraft): Promise<void> {
-  await fetch('/api/onboarding/complete', {
+  const res = await fetch('/api/onboarding/complete', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -71,6 +73,9 @@ export async function saveProfileCheckpoint(profile: ProfileDraft): Promise<void
       personality: { risk: 5, time: 5, communication: 5, decision: 5 },
     }),
   })
+  if (!res.ok) {
+    throw new Error('Checkpoint save failed')
+  }
 }
 
 /** Final save: profile + transcript + aiChatCompleted */
@@ -78,7 +83,8 @@ export async function saveProfileFinal(
   profile: ProfileDraft,
   deepChatMessages: DeepChatMessage[],
 ): Promise<void> {
-  const transcript = deepChatMessages.length > 0
+  const hasDeepChat = deepChatMessages.length > 0
+  const transcript = hasDeepChat
     ? deepChatMessages.map(m => ({ role: m.role, content: m.content, timestamp: new Date().toISOString() }))
     : undefined
 
@@ -95,9 +101,10 @@ export async function saveProfileFinal(
       currentSituation: profile.situation || 'exploring',
       skills: profile.skills.map(s => ({ name: s, level: '중급' })),
       interestTags: profile.interests,
-      personality: { risk: 5, time: 5, communication: 5, decision: 5 },
-      // BUG FIX: Always send aiChatCompleted: true at done step
-      aiChatCompleted: true,
+      // Only send default personality when deep chat was skipped.
+      // When deep chat was done, summarize API already wrote AI-analyzed values — don't overwrite.
+      ...(!hasDeepChat && { personality: { risk: 5, time: 5, communication: 5, decision: 5 } }),
+      aiChatCompleted: hasDeepChat,
       ...(transcript && { aiChatTranscript: transcript }),
     }),
   })

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { MessageCircle, ThumbsUp, Flag, Send, Loader2, ArrowRight } from 'lucide-react'
+import { toast } from 'sonner'
 import { useComments, Comment } from '@/src/hooks/useComments'
 import { useAuth } from '@/src/context/AuthContext'
 import { COMMENT_LABEL, COMMENT_VERB } from '@/src/constants/labels'
@@ -58,12 +59,15 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
 
     if (success) {
       setContent('')
+      toast.success('댓글이 등록되었습니다')
+    } else {
+      toast.error('댓글 등록에 실패했어요')
     }
     setSubmitting(false)
   }
 
   const handleVote = async (commentId: string) => {
-    if (votedComments.has(commentId)) return
+    if (votedComments.has(commentId)) { toast('이미 평가한 댓글이에요'); return }
 
     const identifier = getVoterIdentifier()
     const success = await voteHelpful(commentId, identifier)
@@ -72,11 +76,12 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
       const newVoted = new Set(votedComments).add(commentId)
       setVotedComments(newVoted)
       localStorage.setItem(`voted_${opportunityId}`, JSON.stringify([...newVoted]))
+      toast.success('도움이 됐어요!')
     }
   }
 
   const handleReport = async (commentId: string) => {
-    if (reportedComments.has(commentId)) return
+    if (reportedComments.has(commentId)) { toast('이미 신고한 댓글이에요'); return }
 
     const identifier = getVoterIdentifier()
     const success = await reportComment(commentId, identifier, 'inappropriate')
@@ -85,6 +90,9 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
       const newReported = new Set(reportedComments).add(commentId)
       setReportedComments(newReported)
       localStorage.setItem(`reported_${opportunityId}`, JSON.stringify([...newReported]))
+      toast.success('신고가 접수되었습니다')
+    } else {
+      toast.error('신고 처리에 실패했어요')
     }
   }
 

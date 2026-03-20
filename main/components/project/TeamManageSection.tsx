@@ -142,6 +142,10 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['team', opportunityId] })
+      toast.success('역할이 수정되었습니다')
+    },
+    onError: () => {
+      toast.error('역할 수정에 실패했어요')
     },
   })
 
@@ -157,6 +161,10 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
       queryClient.invalidateQueries({ queryKey: ['team', opportunityId] })
       queryClient.invalidateQueries({ queryKey: ['team-public', opportunityId] })
       toast.success('팀원이 제거되었습니다')
+      setRemovingId(null)
+    },
+    onError: () => {
+      toast.error('팀원 제거에 실패했어요')
       setRemovingId(null)
     },
   })

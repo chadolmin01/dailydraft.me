@@ -1,6 +1,6 @@
 import { useReducer, useMemo } from 'react'
 import type { OnboardingState, OnboardingAction, ProfileDraft } from '@/src/lib/onboarding/types'
-import { DEEP_CHAT_TOPICS, DEEP_CHAT_SUGGESTIONS, ONBOARDING_TIPS } from '@/src/lib/onboarding/constants'
+import { DEEP_CHAT_TOPICS, ONBOARDING_TIPS } from '@/src/lib/onboarding/constants'
 
 const INITIAL_PROFILE: ProfileDraft = {
   name: '', affiliationType: 'student', university: '', major: '',
@@ -25,6 +25,7 @@ const INITIAL_STATE: OnboardingState = {
   showSuggestions: true,
   aiActivity: null,
   tipIndex: 0,
+  dynamicSuggestions: [],
 }
 
 function onboardingReducer(state: OnboardingState, action: OnboardingAction): OnboardingState {
@@ -151,6 +152,9 @@ function onboardingReducer(state: OnboardingState, action: OnboardingAction): On
       // -1 sentinel = auto-increment (avoids stale closure from setInterval)
       return { ...state, tipIndex: action.index === -1 ? (state.tipIndex + 1) % ONBOARDING_TIPS.length : action.index }
 
+    case 'SET_DYNAMIC_SUGGESTIONS':
+      return { ...state, dynamicSuggestions: action.suggestions }
+
     default:
       return state
   }
@@ -171,9 +175,8 @@ export function useDerivedState(state: OnboardingState) {
   )
 
   const currentSuggestions = useMemo(() => {
-    const idx = Math.min(userMsgCount, Object.keys(DEEP_CHAT_SUGGESTIONS).length - 1)
-    return DEEP_CHAT_SUGGESTIONS[idx] || []
-  }, [userMsgCount])
+    return state.dynamicSuggestions
+  }, [state.dynamicSuggestions])
 
   const canGoBack = !['greeting', 'cta', 'info', 'deep-chat', 'done'].includes(state.step)
     && !state.isTyping && !state.isSaving && state.stepHistory.length > 0

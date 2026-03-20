@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import {
   Loader2, AlertCircle, X, Share2, Edit3,
 } from 'lucide-react'
+import { toast } from 'sonner'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/src/lib/supabase/client'
 import { useOpportunity, useUpdateOpportunity } from '@/src/hooks/useOpportunities'
@@ -126,9 +127,16 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
       setShowCta(true)
       return
     }
-    if (hasInterested || interestLoading) return
+    if (isOwner) { toast.error('내 프로젝트에는 관심 표시를 할 수 없어요'); return }
+    if (hasInterested) { toast('이미 관심을 표시했어요'); return }
+    if (interestLoading) return
     const success = await expressInterest(user.email ?? '')
-    if (success) setHasInterested(true)
+    if (success) {
+      setHasInterested(true)
+      toast.success('관심을 표시했어요')
+    } else {
+      toast.error('관심 표시에 실패했어요')
+    }
   }
 
   const handleSignup = () => {
@@ -220,6 +228,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                                 onClick={() => {
                                   updateOpportunity.mutate(
                                     { id: opportunity.id, updates: { type: opt.value as 'side_project' | 'startup' | 'study' } },
+                                    { onSuccess: () => toast.success('프로젝트 유형이 변경되었습니다'), onError: () => toast.error('변경에 실패했어요') },
                                   )
                                   setShowTypeSelector(false)
                                 }}
