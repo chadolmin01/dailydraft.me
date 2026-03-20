@@ -1,6 +1,5 @@
-import { NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
-import { rankUserMatches, generateAIMatchReasons } from '@/src/lib/ai/user-matcher'
+import { rankUserMatches, generateAIMatchReasons, type CandidateProfile } from '@/src/lib/ai/user-matcher'
 import type { Profile } from '@/src/types/profile'
 import type { ProfileAnalysisResult } from '@/src/types/profile-analysis'
 import { ApiResponse } from '@/src/lib/api-utils'
@@ -28,18 +27,18 @@ export async function GET() {
       return ApiResponse.notFound('프로필을 찾을 수 없습니다')
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const myProfile = profileData as any as Profile & {
+    const myProfile = profileData as unknown as Profile & {
       vision_embedding?: string
       profile_analysis?: { founder_type?: ProfileAnalysisResult['founder_type'] } | null
     }
 
     if (!myProfile.onboarding_completed) {
-      return NextResponse.json([])
+      return ApiResponse.ok([])
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let candidates: any[] = []
+    // CandidateProfile extends Profile but Supabase returns partial shape;
+    // the ranking algorithm handles missing fields gracefully
+    let candidates: CandidateProfile[] = []
 
     // Try pgvector path if user has embedding
     if (myProfile.vision_embedding) {
@@ -51,7 +50,7 @@ export async function GET() {
       })
 
       if (!rpcError && similarUsers && similarUsers.length > 0) {
-        candidates = similarUsers
+        candidates = similarUsers as unknown as CandidateProfile[]
       }
     }
 
@@ -70,11 +69,11 @@ export async function GET() {
         return ApiResponse.internalError()
       }
 
-      candidates = fallbackUsers || []
+      candidates = (fallbackUsers || []) as unknown as CandidateProfile[]
     }
 
     if (candidates.length === 0) {
-      return NextResponse.json([])
+      return ApiResponse.ok([])
     }
 
     // Exclude already-connected users
@@ -139,7 +138,7 @@ export async function GET() {
       match_reason: aiReasons.get(r.user_id) || r.match_reason,
     }))
 
-    return NextResponse.json(results)
+    return ApiResponse.ok(results)
   } catch (error) {
     console.error('User recommendations error:', error)
     return ApiResponse.internalError()

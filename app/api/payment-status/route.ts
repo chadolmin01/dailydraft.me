@@ -3,11 +3,11 @@
  * GET /api/payment-status - 현재 사용자의 결제 상태 및 유예 기간 정보
  */
 
-import { NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { createAdminClient } from '@/src/lib/supabase/admin'
 import { getPaymentStatus, GRACE_PERIOD } from '@/src/lib/subscription/payment-failure-handler'
 import { getUserSubscription } from '@/src/lib/subscription/usage-checker'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 export async function GET() {
   try {
@@ -15,10 +15,7 @@ export async function GET() {
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json(
-        { error: '로그인이 필요합니다' },
-        { status: 401 }
-      )
+      return ApiResponse.unauthorized()
     }
 
     const adminClient = createAdminClient()
@@ -37,7 +34,7 @@ export async function GET() {
       .order('created_at', { ascending: false })
       .limit(5)
 
-    return NextResponse.json({
+    return ApiResponse.ok({
       success: true,
       data: {
         subscription: {
@@ -76,9 +73,6 @@ export async function GET() {
     })
   } catch (error) {
     console.error('Error fetching payment status:', error)
-    return NextResponse.json(
-      { error: '결제 정보 조회 중 오류가 발생했습니다' },
-      { status: 500 }
-    )
+    return ApiResponse.internalError('결제 정보를 불러올 수 없습니다')
   }
 }

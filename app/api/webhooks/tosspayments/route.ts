@@ -1,5 +1,5 @@
 import { createAdminClient } from '@/src/lib/supabase/admin'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import {
   getPayment,
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
 
         if (!paymentRecord) {
           console.warn(`Payment record not found for key: ${paymentKey}`)
-          return NextResponse.json({ received: true })
+          return ApiResponse.ok({ received: true })
         }
 
         // Map Toss status to our status
@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
         console.log(`[Webhook] Unhandled event type: ${eventType}`)
     }
 
-    return NextResponse.json({ received: true })
+    return ApiResponse.ok({ received: true })
   } catch (error) {
     console.error('[Webhook] Error processing webhook:', error)
     return ApiResponse.internalError()

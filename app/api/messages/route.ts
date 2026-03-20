@@ -1,5 +1,5 @@
 import { createClient } from '@/src/lib/supabase/server'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 
 // GET: 쪽지 목록 (받은/보낸/전체)
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
       .eq('is_read', false)
       .eq('deleted_by_receiver', false)
 
-    return NextResponse.json({
+    return ApiResponse.ok({
       messages: messages || [],
       profiles,
       unread_count: unreadCount || 0,
@@ -147,7 +147,7 @@ export async function POST(request: NextRequest) {
       metadata: { sender_id: user.id, message_id: message.id },
     })
 
-    return NextResponse.json({ message }, { status: 201 })
+    return ApiResponse.created({ message })
   } catch {
     return ApiResponse.internalError()
   }

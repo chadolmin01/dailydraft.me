@@ -3,12 +3,12 @@
  * GET /api/usage - 현재 사용자의 전체 사용량 조회
  */
 
-import { NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { createAdminClient } from '@/src/lib/supabase/admin'
 import { getUserUsageWithLimits } from '@/src/lib/subscription/usage-checker'
 import { getUsageStats, RATE_LIMITS } from '@/src/lib/rate-limit'
 import { PLAN_INFO } from '@/src/lib/subscription/constants'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 export async function GET() {
   try {
@@ -16,10 +16,7 @@ export async function GET() {
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json(
-        { error: '로그인이 필요합니다' },
-        { status: 401 }
-      )
+      return ApiResponse.unauthorized()
     }
 
     const adminClient = createAdminClient()
@@ -58,7 +55,7 @@ export async function GET() {
 
     const planInfo = PLAN_INFO[usageWithLimits.planType]
 
-    return NextResponse.json({
+    return ApiResponse.ok({
       success: true,
       data: {
         // 플랜 정보
@@ -126,9 +123,6 @@ export async function GET() {
     })
   } catch (error) {
     console.error('Error fetching usage:', error)
-    return NextResponse.json(
-      { error: '서버 오류가 발생했습니다' },
-      { status: 500 }
-    )
+    return ApiResponse.internalError('사용량 정보를 불러올 수 없습니다')
   }
 }

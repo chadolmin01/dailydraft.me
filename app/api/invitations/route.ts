@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { notifyProjectInvitation } from '@/src/lib/notifications/create-notification'
 import { ApiResponse } from '@/src/lib/api-utils'
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
           role
         )
 
-        return NextResponse.json({ success: true, id: existing.id })
+        return ApiResponse.ok({ success: true, id: existing.id })
       }
     }
 
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
       role
     )
 
-    return NextResponse.json({ success: true, id: invitation.id })
+    return ApiResponse.ok({ success: true, id: invitation.id })
   } catch (error) {
     console.error('Invitation error:', error)
     return ApiResponse.internalError()
@@ -146,13 +146,13 @@ export async function GET(request: NextRequest) {
     if (error) {
       // Table might not exist yet (migration not applied)
       if (error.code === '42P01' || error.message?.includes('does not exist')) {
-        return NextResponse.json({ invitations: [] })
+        return ApiResponse.ok({ invitations: [] })
       }
       console.error('Invitation query error:', error.message)
       return ApiResponse.internalError()
     }
 
-    return NextResponse.json({ invitations: data || [] })
+    return ApiResponse.ok({ invitations: data || [] })
   } catch (error) {
     console.error('Invitation error:', error)
     return ApiResponse.internalError()

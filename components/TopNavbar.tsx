@@ -122,7 +122,11 @@ export const TopNavbar: React.FC = () => {
   }, [isMenuOpen])
 
   const handleSignOut = async () => {
-    await signOut()
+    try {
+      await signOut()
+    } catch {
+      // ignore — redirect regardless
+    }
     window.location.href = '/'
   }
 

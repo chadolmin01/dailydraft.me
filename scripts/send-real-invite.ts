@@ -34,7 +34,7 @@ async function sendInvite() {
     recipientName: '이성민',
     inviteCode,
     expiresAt,
-    appUrl: 'https://dailydraft.me',
+    appUrl: process.env.NEXT_PUBLIC_APP_URL || 'https://dailydraft.me',
   })
 
   console.log('Sending real invite email...')

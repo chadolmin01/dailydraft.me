@@ -21,7 +21,7 @@ import {
   Filter,
 } from 'lucide-react'
 
-interface Opportunity {
+interface AdminOpportunityRow {
   id: string
   title: string
   type: string
@@ -35,7 +35,7 @@ interface Opportunity {
 }
 
 interface OpportunitiesResponse {
-  opportunities: Opportunity[]
+  opportunities: AdminOpportunityRow[]
   total: number
   page: number
   limit: number
@@ -66,7 +66,7 @@ export default function AdminOpportunitiesPage() {
   const [page, setPage] = useState(1)
   const [statusFilter, setStatusFilter] = useState('')
   const [sort, setSort] = useState('recent')
-  const [deleteTarget, setDeleteTarget] = useState<Opportunity | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<AdminOpportunityRow | null>(null)
 
   useEffect(() => {
     if (!isAdminLoading && !isAdmin) {

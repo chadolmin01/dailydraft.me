@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import {
   syncStartupsToDatabase,
@@ -6,6 +6,7 @@ import {
   type CollectedStartup,
   type StartupSource,
 } from '@/src/lib/startups';
+import { ApiResponse } from '@/src/lib/api-utils';
 
 export const runtime = 'nodejs';
 export const maxDuration = 120;
@@ -75,41 +76,26 @@ export async function POST(request: NextRequest) {
     }
 
     if (!isAuthorizedCron && !isAdmin) {
-      return NextResponse.json(
-        { error: 'Unauthorized. Admin access required.' },
-        { status: 401 }
-      );
+      return ApiResponse.unauthorized('관리자 권한이 필요합니다');
     }
 
     // 2. Parse request body
     const body = await request.json() as ManualUploadRequest;
 
     if (!body.source || !body.ideas || !Array.isArray(body.ideas)) {
-      return NextResponse.json(
-        { error: 'Invalid request body. Required: source (string), ideas (array)' },
-        { status: 400 }
-      );
+      return ApiResponse.badRequest('Invalid request body. Required: source (string), ideas (array)');
     }
 
     if (!VALID_SOURCES.includes(body.source)) {
-      return NextResponse.json(
-        { error: `Invalid source. Must be one of: ${VALID_SOURCES.join(', ')}` },
-        { status: 400 }
-      );
+      return ApiResponse.badRequest(`Invalid source. Must be one of: ${VALID_SOURCES.join(', ')}`);
     }
 
     if (body.ideas.length === 0) {
-      return NextResponse.json(
-        { error: 'ideas array cannot be empty' },
-        { status: 400 }
-      );
+      return ApiResponse.badRequest('ideas array cannot be empty');
     }
 
     if (body.ideas.length > 100) {
-      return NextResponse.json(
-        { error: 'Maximum 100 ideas per request' },
-        { status: 400 }
-      );
+      return ApiResponse.badRequest('Maximum 100 ideas per request');
     }
 
     // 3. Validate and transform ideas
@@ -155,13 +141,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (validationErrors.length > 0) {
-      return NextResponse.json(
-        {
-          error: 'Validation errors in ideas',
-          validation_errors: validationErrors,
-        },
-        { status: 400 }
-      );
+      return ApiResponse.badRequest('Validation errors in ideas');
     }
 
     // 4. Sync to database
@@ -171,7 +151,7 @@ export async function POST(request: NextRequest) {
 
     const duration = Date.now() - startTime;
 
-    return NextResponse.json({
+    return ApiResponse.ok({
       success: true,
       timestamp: new Date().toISOString(),
       source: body.source,
@@ -185,17 +165,8 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error('[startup-ideas/upload] Error:', errorMessage);
-
-    return NextResponse.json(
-      {
-        success: false,
-        error: '업로드 처리 중 오류가 발생했습니다',
-        duration_ms: Date.now() - startTime,
-      },
-      { status: 500 }
-    );
+    console.error('[startup-ideas/upload] Error:', error);
+    return ApiResponse.internalError('업로드 처리 중 오류가 발생했습니다');
   }
 }
 
@@ -204,7 +175,7 @@ export async function POST(request: NextRequest) {
  * Returns upload format documentation
  */
 export async function GET() {
-  return NextResponse.json({
+  return ApiResponse.ok({
     endpoint: 'POST /api/startup-ideas/upload',
     description: 'Manual upload endpoint for startup ideas (Admin only)',
     valid_sources: VALID_SOURCES,

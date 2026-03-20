@@ -47,11 +47,11 @@ export const analyzeIdea = async (
     console.error("Analysis Error:", error);
     return {
       responses: [{
-        role: 'System' as any,
+        role: 'System',
         name: '시스템',
         avatar: '',
         content: '일시적인 오류가 발생했어요. 잠시 후 다시 시도해주세요.',
-        tone: 'Neutral' as any,
+        tone: 'Neutral',
         suggestedActions: ['잠시 후 다시 시도해주세요']
       }],
       metrics: {

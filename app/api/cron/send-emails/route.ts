@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { sendDeadlineNotificationEmails } from '@/src/lib/email/send-deadline-notifications'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 export const runtime = 'nodejs'
 export const maxDuration = 60 // 1 minute
@@ -19,19 +20,13 @@ export async function POST(request: NextRequest) {
     const cronSecret = process.env.CRON_SECRET
 
     if (!cronSecret) {
-      return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 500 }
-      )
+      return ApiResponse.internalError('Server configuration error')
     }
 
     const expectedAuth = `Bearer ${cronSecret}`
 
     if (authHeader !== expectedAuth) {
-      return NextResponse.json(
-        { error: '로그인이 필요합니다' },
-        { status: 401 }
-      )
+      return ApiResponse.unauthorized()
     }
 
     // 2. Send deadline notification emails
@@ -39,7 +34,7 @@ export async function POST(request: NextRequest) {
 
     const duration = Date.now() - startTime
 
-    return NextResponse.json({
+    return ApiResponse.ok({
       success: result.success,
       timestamp: new Date().toISOString(),
       result: {
@@ -51,14 +46,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error)
 
-    return NextResponse.json(
-      {
-        success: false,
-        timestamp: new Date().toISOString(),
-        duration_ms: Date.now() - startTime,
-      },
-      { status: 500 }
-    )
+    return ApiResponse.internalError('이메일 발송 처리 중 오류가 발생했습니다.')
   }
 }
 
@@ -67,7 +55,7 @@ export async function POST(request: NextRequest) {
  * GET /api/cron/send-emails
  */
 export async function GET() {
-  return NextResponse.json({
+  return ApiResponse.ok({
     status: 'ready',
     timestamp: new Date().toISOString(),
   })

@@ -1,5 +1,4 @@
 import { createClient } from '@/src/lib/supabase/server'
-import { NextResponse } from 'next/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 
 interface Activity {
@@ -175,7 +174,7 @@ export async function GET() {
       (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     )
 
-    return NextResponse.json(activities.slice(0, 10))
+    return ApiResponse.ok(activities.slice(0, 10))
   } catch (_error) {
     return ApiResponse.internalError()
   }

@@ -1,5 +1,5 @@
 import { createClient } from '@/src/lib/supabase/server'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 
 export async function GET(
@@ -23,7 +23,7 @@ export async function GET(
     const limit = parseInt(searchParams.get('limit') || '4')
 
     if (eventTags.length === 0) {
-      return NextResponse.json({ opportunities: [] })
+      return ApiResponse.ok({ opportunities: [] })
     }
 
     // 사용자 프로필 가져오기 (매칭 점수 계산용)
@@ -101,7 +101,7 @@ export async function GET(
     // 매칭 점수 순으로 정렬
     scoredOpportunities.sort((a, b) => b.match_score - a.match_score)
 
-    return NextResponse.json({
+    return ApiResponse.ok({
       opportunities: scoredOpportunities.slice(0, limit),
       event_id: eventId,
       total_found: scoredOpportunities.length,

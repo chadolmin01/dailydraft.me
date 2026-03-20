@@ -1,5 +1,4 @@
 import { createClient } from '@/src/lib/supabase/server'
-import { NextResponse } from 'next/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 
 // GET: 대화 상대 목록 (최근 메시지 기준 정렬)
@@ -63,7 +62,7 @@ export async function GET() {
       }
     }
 
-    return NextResponse.json({ conversations, profiles })
+    return ApiResponse.ok({ conversations, profiles })
   } catch {
     return ApiResponse.internalError()
   }

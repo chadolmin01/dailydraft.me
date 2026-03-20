@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import {
@@ -121,7 +121,7 @@ export async function PATCH(
       )
     }
 
-    return NextResponse.json({ success: true, status })
+    return ApiResponse.ok({ success: true, status })
   } catch (error) {
     console.error('Application error:', error)
     return ApiResponse.internalError()

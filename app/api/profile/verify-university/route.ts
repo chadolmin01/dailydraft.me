@@ -1,6 +1,6 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { resend, FROM_EMAIL, isEmailEnabled } from '@/src/lib/email/client'
 import crypto from 'crypto'
@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
       // 이메일 발송
       if (!isEmailEnabled() || !resend) {
         console.log(`[DEV] Verification code for ${trimmedEmail}: ${verificationCode}`)
-        return NextResponse.json({ success: true, dev: true })
+        return ApiResponse.ok({ success: true, dev: true })
       }
 
       const { error: sendError } = await resend.emails.send({
@@ -163,7 +163,7 @@ export async function POST(request: NextRequest) {
         return ApiResponse.internalError()
       }
 
-      return NextResponse.json({ success: true })
+      return ApiResponse.ok({ success: true })
     }
 
     // === 인증 코드 확인 ===
@@ -239,7 +239,7 @@ export async function POST(request: NextRequest) {
       // 인증 완료 → 코드 레코드 삭제
       await admin.from('verification_codes').delete().eq('user_id', user.id)
 
-      return NextResponse.json({ success: true, verified: true })
+      return ApiResponse.ok({ success: true, verified: true })
     }
 
     return ApiResponse.badRequest('잘못된 요청입니다')
@@ -266,7 +266,7 @@ export async function GET() {
 
     const d = userData as { is_uni_verified: boolean | null; university: string | null } | null
 
-    return NextResponse.json({
+    return ApiResponse.ok({
       is_verified: d?.is_uni_verified || false,
       university: d?.university || null,
     })

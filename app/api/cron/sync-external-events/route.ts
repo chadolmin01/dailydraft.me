@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { collectDevpostHackathons } from '@/src/lib/events/collectors';
+import { ApiResponse } from '@/src/lib/api-utils';
 import { syncEventsToDatabase } from '@/src/lib/events/event-sync-manager';
 import { createClient } from '@supabase/supabase-js';
 
@@ -21,19 +22,13 @@ export async function POST(request: NextRequest) {
     const cronSecret = process.env.CRON_SECRET;
 
     if (!cronSecret) {
-      return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 500 }
-      );
+      return ApiResponse.internalError('Server configuration error');
     }
 
     const expectedAuth = `Bearer ${cronSecret}`;
 
     if (authHeader !== expectedAuth) {
-      return NextResponse.json(
-        { error: '로그인이 필요합니다' },
-        { status: 401 }
-      );
+      return ApiResponse.unauthorized();
     }
 
     // 2. Collect from Devpost
@@ -44,7 +39,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (devpostEvents.length === 0) {
-      return NextResponse.json({
+      return ApiResponse.ok({
         success: true,
         timestamp: new Date().toISOString(),
         result: {
@@ -74,7 +69,7 @@ export async function POST(request: NextRequest) {
 
     const duration = Date.now() - startTime;
 
-    return NextResponse.json({
+    return ApiResponse.ok({
       success: true,
       timestamp: new Date().toISOString(),
       result: {
@@ -93,15 +88,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
 
-    return NextResponse.json(
-      {
-        success: false,
-        timestamp: new Date().toISOString(),
-        error: errorMessage,
-        duration_ms: Date.now() - startTime,
-      },
-      { status: 500 }
-    );
+    return ApiResponse.internalError('외부 이벤트 동기화 중 오류가 발생했습니다.');
   }
 }
 
@@ -110,7 +97,7 @@ export async function POST(request: NextRequest) {
  * GET /api/cron/sync-external-events
  */
 export async function GET() {
-  return NextResponse.json({
+  return ApiResponse.ok({
     status: 'ready',
     sources: ['devpost'],
     timestamp: new Date().toISOString(),

@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
 
     if (format === 'docx') {
       // TODO: Implement DOCX generation
-      return NextResponse.json({
+      return ApiResponse.ok({
         format: 'docx',
         content: exportContent,
         fileName: `${data.basicInfo?.itemName || '사업계획서'}_${template?.shortName || ''}.docx`,

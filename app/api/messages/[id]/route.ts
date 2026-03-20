@@ -1,5 +1,5 @@
 import { createClient } from '@/src/lib/supabase/server'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 
 // PATCH: 읽음 처리 또는 삭제
@@ -24,7 +24,7 @@ export async function PATCH(
         .eq('receiver_id', user.id)
 
       if (error) throw error
-      return NextResponse.json({ success: true })
+      return ApiResponse.ok({ success: true })
     }
 
     if (action === 'delete') {
@@ -52,7 +52,7 @@ export async function PATCH(
         .eq('id', id)
 
       if (error) throw error
-      return NextResponse.json({ success: true })
+      return ApiResponse.ok({ success: true })
     }
 
     return ApiResponse.badRequest('잘못된 요청입니다')

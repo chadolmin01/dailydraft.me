@@ -1,4 +1,3 @@
-import { NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { rankOpportunities } from '@/src/lib/ai/opportunity-matcher'
 import type { Opportunity } from '@/src/types/opportunity'
@@ -65,14 +64,14 @@ export async function GET() {
     }
 
     if (opportunities.length === 0) {
-      return NextResponse.json([])
+      return ApiResponse.ok([])
     }
 
     // Rank opportunities with full matching algorithm
     const ranked = rankOpportunities(profile as Profile, opportunities)
 
     // Return top 20
-    return NextResponse.json(ranked.slice(0, 20))
+    return ApiResponse.ok(ranked.slice(0, 20))
   } catch (error) {
     console.error('Opportunity recommend error:', error)
     return ApiResponse.internalError()

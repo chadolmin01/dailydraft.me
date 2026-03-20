@@ -15,7 +15,7 @@ export interface UserMatchResult {
 
 type FounderType = ProfileAnalysisResult['founder_type']
 
-interface CandidateProfile extends Profile {
+export interface CandidateProfile extends Profile {
   profile_analysis?: { founder_type?: FounderType } | null
   extracted_profile?: Record<string, unknown> | null
   similarity?: number

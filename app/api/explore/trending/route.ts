@@ -1,5 +1,5 @@
 import { createClient } from '@/src/lib/supabase/server'
-import { NextResponse } from 'next/server'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 // 캐시: 10분 유지
 let cache: { tags: { tag: string; count: number }[]; at: number } | null = null
@@ -9,7 +9,7 @@ export async function GET() {
   try {
     // 캐시 히트
     if (cache && Date.now() - cache.at < CACHE_TTL) {
-      return NextResponse.json({ tags: cache.tags })
+      return ApiResponse.ok({ tags: cache.tags })
     }
 
     const supabase = await createClient()
@@ -41,8 +41,8 @@ export async function GET() {
     // 캐시 저장
     cache = { tags: sorted, at: Date.now() }
 
-    return NextResponse.json({ tags: sorted })
+    return ApiResponse.ok({ tags: sorted })
   } catch {
-    return NextResponse.json({ tags: [] })
+    return ApiResponse.ok({ tags: [] })
   }
 }

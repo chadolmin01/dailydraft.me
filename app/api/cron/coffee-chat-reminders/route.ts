@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { logError } from '@/src/lib/error-logging'
 import { resend, FROM_EMAIL, isEmailEnabled } from '@/src/lib/email/client'
@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
   }
 
   if (!isEmailEnabled()) {
-    return NextResponse.json({ success: false, error: 'Email not configured' })
+    return ApiResponse.serviceUnavailable('Email not configured')
   }
 
   try {
@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
     }
 
     if (!pendingChats || pendingChats.length === 0) {
-      return NextResponse.json({ success: true, sentCount: 0 })
+      return ApiResponse.ok({ success: true, sentCount: 0 })
     }
 
     // Batch fetch opportunities and profiles to avoid N+1
@@ -110,7 +110,7 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({ success: true, sentCount })
+    return ApiResponse.ok({ success: true, sentCount })
   } catch (error) {
     logError({
       source: 'cron',

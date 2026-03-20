@@ -1,4 +1,3 @@
-import { NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 
@@ -23,7 +22,7 @@ export async function POST() {
       timestamp: new Date().toISOString(),
     }
 
-    return NextResponse.json({
+    return ApiResponse.ok({
       message: firstMessage,
       conversationId: `chat_${user.id}_${Date.now()}`,
     })

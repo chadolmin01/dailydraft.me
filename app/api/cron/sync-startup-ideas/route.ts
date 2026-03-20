@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import {
   getAutomatedCollectors,
   syncStartupsToDatabase,
@@ -6,6 +6,7 @@ import {
   type StartupSource,
 } from '@/src/lib/startups';
 import { logCronError } from '@/src/lib/error-logging';
+import { ApiResponse } from '@/src/lib/api-utils';
 
 export const runtime = 'nodejs';
 export const maxDuration = 300; // 5 minutes
@@ -27,17 +28,11 @@ export async function POST(request: NextRequest) {
     const cronSecret = process.env.CRON_SECRET;
 
     if (!cronSecret) {
-      return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 500 }
-      );
+      return ApiResponse.internalError('Server configuration error');
     }
 
     if (authHeader !== `Bearer ${cronSecret}`) {
-      return NextResponse.json(
-        { error: '로그인이 필요합니다' },
-        { status: 401 }
-      );
+      return ApiResponse.unauthorized();
     }
 
     // 2. Parse query params
@@ -52,7 +47,7 @@ export async function POST(request: NextRequest) {
       : collectors;
 
     if (collectorsToRun.length === 0) {
-      return NextResponse.json({
+      return ApiResponse.ok({
         success: true,
         message: sourceParam ? `No collector found for source: ${sourceParam}` : 'No automated collectors available',
         results: [],
@@ -107,7 +102,7 @@ export async function POST(request: NextRequest) {
 
     const duration = Date.now() - startTime;
 
-    return NextResponse.json({
+    return ApiResponse.ok({
       success: true,
       timestamp: new Date().toISOString(),
       summary: {
@@ -124,15 +119,7 @@ export async function POST(request: NextRequest) {
     const err = error instanceof Error ? error : new Error(String(error));
     await logCronError(err, 'sync-startup-ideas');
 
-    return NextResponse.json(
-      {
-        success: false,
-        timestamp: new Date().toISOString(),
-        error: err.message,
-        duration_ms: Date.now() - startTime,
-      },
-      { status: 500 }
-    );
+    return ApiResponse.internalError('스타트업 아이디어 동기화 중 오류가 발생했습니다.');
   }
 }
 
@@ -143,7 +130,7 @@ export async function POST(request: NextRequest) {
 export async function GET() {
   const collectors = getAutomatedCollectors();
 
-  return NextResponse.json({
+  return ApiResponse.ok({
     status: 'ready',
     timestamp: new Date().toISOString(),
     available_collectors: collectors.map(c => ({

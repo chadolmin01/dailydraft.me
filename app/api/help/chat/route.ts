@@ -63,8 +63,7 @@ export async function POST(request: Request) {
 
     const chat = chatModel.startChat({
       history: chatHistory.length > 0 ? chatHistory : undefined,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] } as any,
+      systemInstruction: { role: 'system' as const, parts: [{ text: SYSTEM_PROMPT }] },
     })
 
     const lastMsg = messages[messages.length - 1].content

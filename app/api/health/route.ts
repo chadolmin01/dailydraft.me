@@ -1,5 +1,5 @@
 import { createClient } from '@/src/lib/supabase/server'
-import { NextResponse } from 'next/server'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 export async function GET() {
   try {
@@ -11,13 +11,11 @@ export async function GET() {
       .select('id', { count: 'exact', head: true })
       .limit(1)
 
-    return NextResponse.json({
+    return ApiResponse.ok({
       status: error ? 'degraded' : 'ok',
       timestamp: new Date().toISOString()
     })
   } catch {
-    return NextResponse.json({
-      status: 'error'
-    }, { status: 500 })
+    return ApiResponse.internalError('서버 상태를 확인할 수 없습니다')
   }
 }

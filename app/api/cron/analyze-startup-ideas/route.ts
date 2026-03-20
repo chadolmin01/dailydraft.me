@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import {
   analyzeStartupKoreaFit,
   calculateFinalScore,
 } from '@/src/lib/ai/startup-korea-analyzer';
 import { logCronError } from '@/src/lib/error-logging';
+import { ApiResponse } from '@/src/lib/api-utils';
 import type { StartupIdea } from '@/src/lib/startups/types';
 
 // Create untyped admin client for startup_ideas table (not in generated types yet)
@@ -50,17 +51,11 @@ export async function POST(request: NextRequest) {
     const cronSecret = process.env.CRON_SECRET;
 
     if (!cronSecret) {
-      return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 500 }
-      );
+      return ApiResponse.internalError('Server configuration error');
     }
 
     if (authHeader !== `Bearer ${cronSecret}`) {
-      return NextResponse.json(
-        { error: '로그인이 필요합니다' },
-        { status: 401 }
-      );
+      return ApiResponse.unauthorized();
     }
 
     // 2. Parse query params
@@ -90,7 +85,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!startups || startups.length === 0) {
-      return NextResponse.json({
+      return ApiResponse.ok({
         success: true,
         message: 'No startups to analyze',
         results: [],
@@ -161,7 +156,7 @@ export async function POST(request: NextRequest) {
     const failCount = results.filter(r => !r.success).length;
     const duration = Date.now() - startTime;
 
-    return NextResponse.json({
+    return ApiResponse.ok({
       success: true,
       timestamp: new Date().toISOString(),
       summary: {
@@ -180,15 +175,7 @@ export async function POST(request: NextRequest) {
     const err = error instanceof Error ? error : new Error(String(error));
     await logCronError(err, 'analyze-startup-ideas');
 
-    return NextResponse.json(
-      {
-        success: false,
-        timestamp: new Date().toISOString(),
-        error: err.message,
-        duration_ms: Date.now() - startTime,
-      },
-      { status: 500 }
-    );
+    return ApiResponse.internalError('분석 처리 중 오류가 발생했습니다.');
   }
 }
 
@@ -211,7 +198,7 @@ export async function GET() {
     .eq('status', 'active')
     .not('korea_deep_analysis', 'is', null);
 
-  return NextResponse.json({
+  return ApiResponse.ok({
     status: 'ready',
     timestamp: new Date().toISOString(),
     stats: {

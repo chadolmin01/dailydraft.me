@@ -1,5 +1,4 @@
 import { createClient } from '@/src/lib/supabase/server'
-import { NextResponse } from 'next/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 
 export interface NotificationItem {
@@ -184,7 +183,7 @@ export async function GET() {
       new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     )
 
-    return NextResponse.json(notifications.slice(0, 10))
+    return ApiResponse.ok(notifications.slice(0, 10))
   } catch (error) {
     console.error('Failed to fetch notifications:', error)
     return ApiResponse.internalError('알림 피드를 불러올 수 없습니다')

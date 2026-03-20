@@ -1,5 +1,5 @@
 import { createClient } from '@/src/lib/supabase/server'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 
 // GET: Get all announcements for an opportunity
@@ -70,7 +70,7 @@ export async function GET(
       author_id: a.author_id,
     }))
 
-    return NextResponse.json(formattedAnnouncements)
+    return ApiResponse.ok(formattedAnnouncements)
   } catch (_error) {
     return ApiResponse.internalError()
   }
@@ -127,7 +127,7 @@ export async function POST(
       return ApiResponse.internalError()
     }
 
-    return NextResponse.json(data, { status: 201 })
+    return ApiResponse.created(data)
   } catch (_error) {
     return ApiResponse.internalError()
   }

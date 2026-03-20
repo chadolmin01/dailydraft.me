@@ -1,6 +1,7 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
+import type { TablesInsert } from '@/src/types/database'
 
 export async function POST(request: Request) {
   try {
@@ -62,17 +63,22 @@ export async function POST(request: Request) {
       graduation_year: graduationYear ? parseInt(graduationYear) : null,
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const db = supabase.from('profiles') as any
     const fullData = { ...profileData, ...optionalFields }
 
     // Upsert: INSERT or UPDATE based on user_id conflict
-    let result = await db.upsert(fullData, { onConflict: 'user_id' })
+    // Dynamic fields require type assertion since optional DB columns may not be in generated types
+    let result = await supabase.from('profiles').upsert(
+      fullData as unknown as TablesInsert<'profiles'>,
+      { onConflict: 'user_id' }
+    )
 
     // schema cache 에러 → optional 필드 제거 후 재시도
     if (result.error?.message?.includes('column') || result.error?.message?.includes('schema cache')) {
       console.warn('[onboarding/complete] Retrying without optional fields:', result.error.message)
-      result = await db.upsert(profileData, { onConflict: 'user_id' })
+      result = await supabase.from('profiles').upsert(
+        profileData as unknown as TablesInsert<'profiles'>,
+        { onConflict: 'user_id' }
+      )
     }
 
     if (result.error) {

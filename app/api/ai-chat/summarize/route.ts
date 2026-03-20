@@ -1,4 +1,3 @@
-import { NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { chatModel } from '@/src/lib/ai/gemini-client'
 import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
@@ -34,7 +33,7 @@ export async function POST(request: Request) {
     const { messages } = await request.json()
 
     if (!messages || messages.length < 2) {
-      return NextResponse.json({ summary: '' })
+      return ApiResponse.ok({ summary: '' })
     }
 
     // Extract only user messages
@@ -44,13 +43,13 @@ export async function POST(request: Request) {
       .join('\n')
 
     if (!userMessages.trim()) {
-      return NextResponse.json({ summary: '' })
+      return ApiResponse.ok({ summary: '' })
     }
 
     const result = await chatModel.generateContent(SUMMARY_PROMPT + userMessages)
     const summary = result.response.text().trim()
 
-    return NextResponse.json({ summary })
+    return ApiResponse.ok({ summary })
   } catch (error) {
     console.error('Summarize error:', error)
     return ApiResponse.internalError()

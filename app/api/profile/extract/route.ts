@@ -1,4 +1,3 @@
-import { NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { chatModel } from '@/src/lib/ai/gemini-client'
 import { logError } from '@/src/lib/error-logging'
@@ -184,7 +183,7 @@ export async function POST(request: Request) {
       return ApiResponse.internalError()
     }
 
-    return NextResponse.json({
+    return ApiResponse.ok({
       success: true,
       profile: extractedProfile,
       confidence,

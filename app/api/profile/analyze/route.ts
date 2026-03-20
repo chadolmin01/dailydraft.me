@@ -1,4 +1,3 @@
-import { NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { analyzeProfile } from '@/src/lib/ai/profile-analyzer'
@@ -92,7 +91,7 @@ export async function POST() {
       return ApiResponse.internalError('분석 결과 저장에 실패했습니다.')
     }
 
-    return NextResponse.json({ success: true, analysis })
+    return ApiResponse.ok({ success: true, analysis })
   } catch (error: unknown) {
     const err = error instanceof Error ? error : new Error(String(error))
     await logError({

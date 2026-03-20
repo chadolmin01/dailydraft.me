@@ -1,5 +1,5 @@
 import { createClient } from '@/src/lib/supabase/server'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 
 interface TeamMember {
@@ -74,7 +74,7 @@ export async function GET(
       .eq('applications.opportunity_id', id)
 
     if (!connections || connections.length === 0) {
-      return NextResponse.json({
+      return ApiResponse.ok({
         opportunity: {
           id: opportunity.id,
           title: opportunity.title,
@@ -120,7 +120,7 @@ export async function GET(
       rolesAssigned: members.filter((m) => m.assigned_role).length,
     }
 
-    return NextResponse.json({
+    return ApiResponse.ok({
       opportunity: {
         id: opportunity.id,
         title: opportunity.title,

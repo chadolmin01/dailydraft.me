@@ -1,20 +1,21 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { createClient } from '@/src/lib/supabase/server';
 import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter';
+import { ApiResponse } from '@/src/lib/api-utils';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 export async function POST(request: NextRequest) {
   try {
     if (!process.env.GEMINI_API_KEY) {
-      return NextResponse.json({ success: false, error: 'AI 서비스를 사용할 수 없습니다.' }, { status: 503 });
+      return ApiResponse.serviceUnavailable('AI 서비스를 사용할 수 없습니다.');
     }
 
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      return NextResponse.json({ success: false, error: '로그인이 필요합니다' }, { status: 401 });
+      return ApiResponse.unauthorized('로그인이 필요합니다');
     }
 
     const rateLimitResponse = await checkAIRateLimit(user.id, getClientIp(request));
@@ -23,10 +24,7 @@ export async function POST(request: NextRequest) {
     const { idea, fullConversation, reflectedAdvice = [] } = await request.json();
 
     if (!idea || typeof idea !== 'string') {
-      return NextResponse.json(
-        { success: false, error: '아이디어가 필요합니다.' },
-        { status: 400 }
-      );
+      return ApiResponse.badRequest('아이디어가 필요합니다.');
     }
 
     // 입력 길이 제한
@@ -86,18 +84,12 @@ export async function POST(request: NextRequest) {
       parsed = JSON.parse(text);
     } catch {
       console.error('Generate Artifacts JSON parse failed. Raw:', text.slice(0, 200));
-      return NextResponse.json(
-        { success: false, error: 'AI 응답을 파싱하지 못했습니다. 다시 시도해주세요.' },
-        { status: 502 }
-      );
+      return ApiResponse.internalError('AI 응답을 파싱하지 못했습니다. 다시 시도해주세요.');
     }
 
-    return NextResponse.json({ success: true, result: parsed });
+    return ApiResponse.ok({ success: true, result: parsed });
   } catch (error) {
     console.error('Generate Artifacts Error:', error);
-    return NextResponse.json(
-      { success: false, error: '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.' },
-      { status: 500 }
-    );
+    return ApiResponse.internalError('일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
   }
 }

@@ -1,13 +1,6 @@
-import { NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
-
-interface OpportunityData {
-  id: string
-  creator_id: string
-  views_count: number
-  [key: string]: unknown
-}
+import type { Opportunity } from '@/src/types/opportunity'
 
 // GET: Get opportunity by ID
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -31,7 +24,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       return ApiResponse.notFound('Opportunity not found')
     }
 
-    const data = oppData as OpportunityData
+    const data = oppData as Opportunity
 
     // Fetch creator profile separately
     const { data: creatorProfile } = await supabase
@@ -65,7 +58,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         .eq('id', id)
     }
 
-    return NextResponse.json({
+    return ApiResponse.ok({
       ...data,
       creator: creatorProfile,
       userApplication,
@@ -147,7 +140,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       return ApiResponse.internalError()
     }
 
-    return NextResponse.json(data)
+    return ApiResponse.ok(data)
   } catch (error) {
     console.error('Opportunity route error:', error)
     return ApiResponse.internalError()
@@ -187,7 +180,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
       return ApiResponse.internalError()
     }
 
-    return NextResponse.json({ success: true })
+    return ApiResponse.ok({ success: true })
   } catch (error) {
     console.error('Opportunity route error:', error)
     return ApiResponse.internalError()

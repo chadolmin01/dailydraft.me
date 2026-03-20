@@ -35,7 +35,7 @@ async function sendTestEmail() {
     recipientName: '이성민',
     inviteCode: testCode,
     expiresAt: expiresAt.toISOString(),
-    appUrl: 'https://dailydraft.me',
+    appUrl: process.env.NEXT_PUBLIC_APP_URL || 'https://dailydraft.me',
   })
 
   // Debug: check HTML

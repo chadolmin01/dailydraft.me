@@ -1,6 +1,6 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { notifyProfileViewMilestone } from '@/src/lib/notifications/create-notification'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { checkViewRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { Redis } from '@upstash/redis'
@@ -25,7 +25,7 @@ export async function POST(
     try {
       const wasSet = await redis.set(dedupeKey, '1', { ex: VIEW_COOLDOWN_SEC, nx: true })
       if (!wasSet) {
-        return NextResponse.json({ success: true, deduplicated: true })
+        return ApiResponse.ok({ success: true, deduplicated: true })
       }
     } catch {
       // Redis 실패 시 중복 체크 스킵 (graceful degradation)
@@ -63,7 +63,7 @@ export async function POST(
         notifyProfileViewMilestone(typedProfile.user_id, fallbackViews).catch(() => {})
       }
 
-      return NextResponse.json({ success: true, profile_views: fallbackViews })
+      return ApiResponse.ok({ success: true, profile_views: fallbackViews })
     }
 
     // RPC 성공 — 마일스톤 체크를 위해 user_id 조회
@@ -78,7 +78,7 @@ export async function POST(
       }
     }
 
-    return NextResponse.json({ success: true, profile_views: newViews })
+    return ApiResponse.ok({ success: true, profile_views: newViews })
   } catch {
     return ApiResponse.internalError()
   }
@@ -103,7 +103,7 @@ export async function GET(
       return ApiResponse.notFound('Profile not found')
     }
 
-    return NextResponse.json({
+    return ApiResponse.ok({
       profile_views: (profile as { profile_views: number | null }).profile_views || 0,
     })
   } catch {

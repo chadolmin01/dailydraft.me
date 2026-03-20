@@ -1,4 +1,3 @@
-import { NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { generateConversationSummary } from '@/src/lib/ai/chat-manager'
 import { generateProfileEmbedding } from '@/src/lib/ai/embeddings'
@@ -120,7 +119,7 @@ export async function POST(request: Request) {
       return ApiResponse.internalError()
     }
 
-    return NextResponse.json({
+    return ApiResponse.ok({
       summary,
       success: true,
     })

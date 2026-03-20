@@ -1,5 +1,5 @@
 import { createClient } from '@/src/lib/supabase/server'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { checkViewRateLimit } from '@/src/lib/rate-limit/redis-rate-limiter'
 import { ApiResponse } from '@/src/lib/api-utils'
 
@@ -41,7 +41,7 @@ export async function POST(
     // 같은 IP에서 15분 내 중복 조회 무시
     const lastView = recentViews.get(viewKey)
     if (lastView && Date.now() - lastView < VIEW_COOLDOWN_MS) {
-      return NextResponse.json({ success: true, deduplicated: true })
+      return ApiResponse.ok({ success: true, deduplicated: true })
     }
 
     const supabase = await createClient()
@@ -71,11 +71,11 @@ export async function POST(
         .eq('id', id)
 
       recentViews.set(viewKey, Date.now())
-      return NextResponse.json({ success: true, views_count: newCount })
+      return ApiResponse.ok({ success: true, views_count: newCount })
     }
 
     recentViews.set(viewKey, Date.now())
-    return NextResponse.json({ success: true, views_count: data })
+    return ApiResponse.ok({ success: true, views_count: data })
   } catch (_error) {
     return ApiResponse.internalError()
   }

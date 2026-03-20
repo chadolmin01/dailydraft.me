@@ -6,7 +6,7 @@ if (!process.env.GEMINI_API_KEY) {
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
 
-// Gemini 2.0 Flash 모델 (빠르고 저렴)
+// Gemini 2.5 Flash Lite 모델 (빠르고 저렴)
 export const chatModel = genAI.getGenerativeModel({ model: 'gemini-2.5-flash-lite' })
 
 // Text Embedding 모델 (768 차원 - pgvector 인덱스 지원)

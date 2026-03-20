@@ -12,10 +12,23 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'prxqjiuibfrmuwwmkhqb.supabase.co',
       },
+      // Allow any *.supabase.co subdomain (e.g. different project refs)
+      {
+        protocol: 'https',
+        hostname: '*.supabase.co',
+      },
       // Unsplash
       {
         protocol: 'https',
         hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'source.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'plus.unsplash.com',
       },
       // Google OAuth avatar
       {

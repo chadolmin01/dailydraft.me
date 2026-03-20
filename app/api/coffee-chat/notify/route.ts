@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { applyRateLimit, getClientIp } from '@/src/lib/rate-limit/api-rate-limiter'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { logApiError } from '@/src/lib/error-logging'
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
           getAll() { return cookieStore.getAll() },
           setAll(cookiesToSet: { name: string; value: string; options?: Record<string, unknown> }[]) {
             cookiesToSet.forEach(({ name, value, options }) => {
-              try { cookieStore.set(name, value, options as any) } catch { /* read-only in some contexts */ }
+              try { cookieStore.set(name, value, options as Parameters<typeof cookieStore.set>[2]) } catch { /* read-only in some contexts */ }
             })
           },
         },
@@ -109,7 +109,7 @@ export async function POST(req: NextRequest) {
 
     if (type === 'request') {
       if (!ownerEmail) {
-        return NextResponse.json({ success: false, error: 'Owner email not found' }, { status: 422 })
+        return ApiResponse.validationError('Owner email not found')
       }
 
       const emailTitle = isPersonMode ? '개인 커피챗' : projectTitle
@@ -136,7 +136,7 @@ export async function POST(req: NextRequest) {
       }
     } else if (type === 'accepted' || type === 'declined') {
       if (!requesterEmail) {
-        return NextResponse.json({ success: false, error: 'Requester email not found' }, { status: 422 })
+        return ApiResponse.validationError('Requester email not found')
       }
 
       const emailTitle = isPersonMode ? '개인 커피챗' : projectTitle
@@ -173,7 +173,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({ success: true })
+    return ApiResponse.ok({ success: true })
   } catch (error) {
     logApiError(error, req).catch(() => {})
     return ApiResponse.internalError()

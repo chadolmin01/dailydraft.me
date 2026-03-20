@@ -1,5 +1,4 @@
 import { createAdminClient } from '@/src/lib/supabase/admin'
-import { NextResponse } from 'next/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 
 export async function GET() {
@@ -19,7 +18,7 @@ export async function GET() {
       return ApiResponse.internalError()
     }
 
-    return NextResponse.json({ count: data?.length, opportunities: data })
+    return ApiResponse.ok({ count: data?.length, opportunities: data })
   } catch (err) {
     console.error('dev/fix-types GET error:', err)
     return ApiResponse.internalError()
@@ -53,7 +52,7 @@ export async function POST(request: Request) {
           results.push(data)
         }
       }
-      return NextResponse.json({ updated: results })
+      return ApiResponse.ok({ updated: results })
     }
 
     // 새 프로젝트 생성
@@ -72,7 +71,7 @@ export async function POST(request: Request) {
           results.push(data)
         }
       }
-      return NextResponse.json({ created: results })
+      return ApiResponse.ok({ created: results })
     }
 
     return ApiResponse.badRequest('Provide batch or create array')

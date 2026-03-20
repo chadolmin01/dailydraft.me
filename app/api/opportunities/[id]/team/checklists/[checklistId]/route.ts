@@ -1,5 +1,5 @@
 import { createClient } from '@/src/lib/supabase/server'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 
 // PATCH: Update a checklist item
@@ -65,7 +65,7 @@ export async function PATCH(
       return ApiResponse.internalError()
     }
 
-    return NextResponse.json(data)
+    return ApiResponse.ok(data)
   } catch (_error) {
     return ApiResponse.internalError()
   }
@@ -109,7 +109,7 @@ export async function DELETE(
       return ApiResponse.internalError()
     }
 
-    return NextResponse.json({ success: true })
+    return ApiResponse.ok({ success: true })
   } catch (_error) {
     return ApiResponse.internalError()
   }

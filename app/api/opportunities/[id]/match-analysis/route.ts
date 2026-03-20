@@ -1,5 +1,5 @@
 import { createClient } from '@/src/lib/supabase/server'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { calculateMatchScore } from '@/src/lib/ai/opportunity-matcher'
 import { ApiResponse } from '@/src/lib/api-utils'
 import type { Profile, Skill } from '@/src/types/profile'
@@ -97,8 +97,8 @@ export async function GET(
     const matchResult = calculateMatchScore(profile, opportunity)
 
     // Detailed skill analysis
-    const neededSkills = (opportunity.needed_skills || []) as Skill[]
-    const userSkills = (profile.skills || []) as Skill[]
+    const neededSkills = (opportunity.needed_skills || []) as unknown as Skill[]
+    const userSkills = (profile.skills || []) as unknown as Skill[]
 
     const levelScore: Record<string, number> = { '초급': 1, '중급': 2, '고급': 3 }
 
@@ -162,9 +162,9 @@ export async function GET(
       recommendations.push('AI 채팅을 완료하면 비전 매칭 정확도가 향상됩니다')
     }
 
-    if (matchResult.roleMatch < 50 && opportunity.needed_roles.length > 0) {
+    if (matchResult.roleMatch < 50 && (opportunity.needed_roles?.length ?? 0) > 0) {
       recommendations.push(
-        `이 기회는 ${opportunity.needed_roles.slice(0, 2).join(', ')} 역할을 찾고 있습니다`
+        `이 기회는 ${opportunity.needed_roles!.slice(0, 2).join(', ')} 역할을 찾고 있습니다`
       )
     }
 
@@ -236,7 +236,7 @@ export async function GET(
           (opportunity.interest_tags || []).includes(t)
         ).length
 
-        const skillOverlap = ((opp.needed_skills || []) as Skill[]).filter((s) =>
+        const skillOverlap = ((opp.needed_skills || []) as unknown as Skill[]).filter((s) =>
           neededSkills.some((ns) => ns.name === s.name)
         ).length
 
@@ -282,7 +282,7 @@ export async function GET(
       similarOpportunities: rankedSimilar,
     }
 
-    return NextResponse.json(analysis)
+    return ApiResponse.ok(analysis)
   } catch (_error) {
     return ApiResponse.internalError()
   }

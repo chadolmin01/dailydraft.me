@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { getKSTDate } from '@/src/lib/utils'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 export const runtime = 'nodejs'
 
@@ -65,10 +66,7 @@ export async function GET(request: NextRequest) {
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
     if (!supabaseUrl || !supabaseKey) {
-      return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 500 }
-      )
+      return ApiResponse.internalError('서버 설정 오류가 발생했습니다')
     }
 
     const supabase = createClient(supabaseUrl, supabaseKey)
@@ -145,7 +143,7 @@ export async function GET(request: NextRequest) {
       // 유사도 높은 순 정렬
       scoredEvents.sort((a, b) => b.similarity_score - a.similarity_score)
 
-      return NextResponse.json(scoredEvents.slice(0, limit))
+      return ApiResponse.ok(scoredEvents.slice(0, limit))
     } else if (tagsParam) {
       // 비로그인: 태그 기반 추천
       const tags = tagsParam.split(',').map((t) => t.trim())
@@ -190,7 +188,7 @@ export async function GET(request: NextRequest) {
 
       if (error) throw error
 
-      return NextResponse.json(
+      return ApiResponse.ok(
         (data as EventFromDB[] || []).map((item) => ({
           id: item.id,
           title: item.title,
@@ -233,16 +231,14 @@ export async function GET(request: NextRequest) {
       }))
     }
 
-    return NextResponse.json({
+    return ApiResponse.ok({
       success: true,
       count: recommendations.length,
       recommendations,
     })
-  } catch (_error) {
-    return NextResponse.json(
-      { error: 'Failed to get recommendations' },
-      { status: 500 }
-    )
+  } catch (error) {
+    console.error('Error getting event recommendations:', error)
+    return ApiResponse.internalError('추천 이벤트를 불러올 수 없습니다')
   }
 }
 

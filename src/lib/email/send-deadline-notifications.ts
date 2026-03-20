@@ -127,8 +127,25 @@ export async function sendDeadlineNotificationEmails(): Promise<{
     // 4. 사용자별로 이벤트 그룹화 (설정에 따라 필터링)
     const userEventsMap = new Map<string, UserWithDeadlineEvents>()
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    for (const bookmark of bookmarksData as any[]) {
+    interface BookmarkWithJoins {
+      user_id: string
+      event_id: string
+      startup_events: {
+        id: string
+        title: string
+        organizer: string
+        registration_end_date: string
+        registration_url: string | null
+        status: string | null
+      }
+      profiles: {
+        user_id: string
+        nickname: string
+        contact_email: string | null
+      }
+    }
+
+    for (const bookmark of bookmarksData as unknown as BookmarkWithJoins[]) {
       const userId = bookmark.user_id
       const profile = bookmark.profiles
       const event = bookmark.startup_events

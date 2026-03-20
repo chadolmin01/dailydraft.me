@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { cookies } from 'next/headers'
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
           getAll() { return cookieStore.getAll() },
           setAll(cookiesToSet: { name: string; value: string; options?: Record<string, unknown> }[]) {
             cookiesToSet.forEach(({ name, value, options }) => {
-              try { cookieStore.set(name, value, options as any) } catch { /* read-only */ }
+              try { cookieStore.set(name, value, options as Parameters<typeof cookieStore.set>[2]) } catch { /* read-only */ }
             })
           },
         },
@@ -139,7 +139,7 @@ ${body.painPoint ? `고민 포인트: ${body.painPoint}` : ''}
       throw new Error('Failed to parse AI response as JSON')
     }
 
-    return NextResponse.json({
+    return ApiResponse.ok({
       success: true,
       data: generatedPost,
     })
