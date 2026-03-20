@@ -1,4 +1,4 @@
-import { chatModel } from '@/src/lib/ai/gemini-client'
+import { genAI } from '@/src/lib/ai/gemini-client'
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
@@ -61,9 +61,13 @@ export async function POST(request: Request) {
       parts: [{ text: m.content }],
     }))
 
-    const chat = chatModel.startChat({
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-2.5-flash-lite',
+      systemInstruction: SYSTEM_PROMPT,
+    })
+
+    const chat = model.startChat({
       history: chatHistory.length > 0 ? chatHistory : undefined,
-      systemInstruction: { role: 'system' as const, parts: [{ text: SYSTEM_PROMPT }] },
     })
 
     const lastMsg = messages[messages.length - 1].content

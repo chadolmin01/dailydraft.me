@@ -1,4 +1,4 @@
-import { chatModel } from '@/src/lib/ai/gemini-client'
+import { genAI } from '@/src/lib/ai/gemini-client'
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
@@ -75,6 +75,12 @@ export async function POST(request: Request) {
 
     const systemPrompt = SYSTEM_PROMPT(profile)
 
+    // Create model instance per request with dynamic system instruction
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-2.5-flash-lite',
+      systemInstruction: systemPrompt,
+    })
+
     // Build chat history for Gemini (exclude the last user message since we'll send it separately)
     const historyMessages = messages.slice(0, -1)
     let chatHistory = historyMessages.map(m => ({
@@ -90,9 +96,8 @@ export async function POST(request: Request) {
       ]
     }
 
-    const chat = chatModel.startChat({
+    const chat = model.startChat({
       history: chatHistory.length > 0 ? chatHistory : undefined,
-      systemInstruction: systemPrompt,
     })
 
     // Send the last user message, or a trigger for the first question
