@@ -73,7 +73,7 @@ const MobileNavItem = ({ href, active, children }: { href: string; active: boole
 export const TopNavbar: React.FC = () => {
   const router = useRouter()
   const pathname = usePathname()
-  const { signOut, user, isAuthenticated, profile } = useAuth()
+  const { signOut, user, isAuthenticated, isLoading: authLoading, profile } = useAuth()
   const { isAdmin } = useAdmin()
 
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -289,7 +289,14 @@ export const TopNavbar: React.FC = () => {
 
           {/* ===== 우측 액션 ===== */}
           <div className="flex items-center gap-2 shrink-0 ml-auto">
-            {isAuthenticated ? (
+            {authLoading ? (
+              <>
+                {/* 스켈레톤: auth 로딩 중 레이아웃 점프 방지 */}
+                <div className="hidden md:block w-[100px] h-8 bg-surface-sunken animate-pulse" />
+                <div className="w-8 h-8 bg-surface-sunken animate-pulse" />
+                <div className="w-8 h-8 bg-surface-sunken animate-pulse" />
+              </>
+            ) : isAuthenticated ? (
               <>
                 {/* 새 프로젝트 CTA */}
                 <button
@@ -410,7 +417,12 @@ export const TopNavbar: React.FC = () => {
                 />
               </form>
               <MobileNavItem href="/explore" active={pathname === '/explore'}>탐색</MobileNavItem>
-              {isAuthenticated ? (
+              {authLoading ? (
+                <div className="space-y-2 mt-2">
+                  <div className="h-10 bg-surface-sunken animate-pulse rounded-sm" />
+                  <div className="h-10 bg-surface-sunken animate-pulse rounded-sm" />
+                </div>
+              ) : isAuthenticated ? (
                 <>
                   <MobileNavItem href="/profile" active={pathname === '/profile'}>마이페이지</MobileNavItem>
                   <button

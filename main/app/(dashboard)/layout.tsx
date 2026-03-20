@@ -1,5 +1,3 @@
-'use client'
-
 import { TopNavbar } from '@/components/TopNavbar'
 import { HelpWidget } from '@/components/HelpWidget'
 import { RouteProgressBar } from '@/components/ui/RouteProgressBar'

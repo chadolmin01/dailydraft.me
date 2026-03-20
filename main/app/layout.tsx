@@ -10,6 +10,7 @@ const notoSansKR = Noto_Sans_KR({
   variable: '--font-noto-sans-kr',
   display: 'swap',
   preload: true,
+  adjustFontFallback: true,
 })
 
 const jetBrainsMono = JetBrains_Mono({
@@ -18,6 +19,7 @@ const jetBrainsMono = JetBrains_Mono({
   variable: '--font-jetbrains-mono',
   display: 'swap',
   preload: true,
+  adjustFontFallback: true,
 })
 
 export const metadata: Metadata = {
