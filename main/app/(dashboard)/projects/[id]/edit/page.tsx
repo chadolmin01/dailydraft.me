@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, Suspense } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { ArrowLeft, Loader2, Plus, X, Sparkles, AlertCircle, Trash2, Save } from 'lucide-react'
+import { ArrowLeft, Loader2, Plus, X, Sparkles, AlertCircle, Trash2, Save, Check } from 'lucide-react'
 import type { Area } from 'react-easy-crop'
 import { toast } from 'sonner'
 import { useOpportunity, useUpdateOpportunity, useDeleteOpportunity } from '@/src/hooks/useOpportunities'
@@ -52,6 +52,7 @@ function EditProjectContent() {
   const [imageUploading, setImageUploading] = useState(false)
   const [initialized, setInitialized] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null)
 
   // Crop state
   const [cropSrc, setCropSrc] = useState<string | null>(null)
@@ -282,8 +283,13 @@ function EditProjectContent() {
           demo_images: allImages.length > 0 ? allImages : null,
         },
       })
+      setLastSavedAt(new Date())
+      // 새로 업로드한 이미지를 existing으로 전환 (재저장 시 중복 업로드 방지)
+      if (newUploadedImages.length > 0) {
+        setExistingImages(allImages)
+        setImageFiles([])
+      }
       toast.success('프로젝트가 수정되었습니다')
-      router.push(`/p/${id}`)
     } catch {
       setError('프로젝트 수정에 실패했습니다. 다시 시도해주세요.')
       toast.error('프로젝트 수정에 실패했습니다')
@@ -367,10 +373,18 @@ function EditProjectContent() {
               </button>
             </div>
 
-            <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[0.625rem] font-bold transition-colors ${theme.status}`}>
-              <span className={`w-1.5 h-1.5 animate-pulse ${theme.statusDot}`} />
-              수정 중
-            </span>
+            <div className="flex items-center gap-2">
+              {lastSavedAt && (
+                <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 text-[0.625rem] font-mono text-status-success-text bg-status-success-bg border border-status-success-text/20">
+                  <Check size={9} />
+                  {lastSavedAt.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })} 저장됨
+                </span>
+              )}
+              <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[0.625rem] font-bold transition-colors ${theme.status}`}>
+                <span className={`w-1.5 h-1.5 animate-pulse ${theme.statusDot}`} />
+                수정 중
+              </span>
+            </div>
           </div>
         </div>
 
