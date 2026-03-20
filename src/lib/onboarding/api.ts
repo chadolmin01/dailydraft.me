@@ -57,7 +57,7 @@ export function buildProfileCtx(profile: ProfileDraft): Record<string, unknown> 
 
 /** Save profile checkpoint (basic data, onboarding_completed: true) */
 export async function saveProfileCheckpoint(profile: ProfileDraft): Promise<void> {
-  await fetch('/api/onboarding/complete', {
+  const res = await fetch('/api/onboarding/complete', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -73,6 +73,9 @@ export async function saveProfileCheckpoint(profile: ProfileDraft): Promise<void
       personality: { risk: 5, time: 5, communication: 5, decision: 5 },
     }),
   })
+  if (!res.ok) {
+    throw new Error('Checkpoint save failed')
+  }
 }
 
 /** Final save: profile + transcript + aiChatCompleted */
@@ -80,7 +83,8 @@ export async function saveProfileFinal(
   profile: ProfileDraft,
   deepChatMessages: DeepChatMessage[],
 ): Promise<void> {
-  const transcript = deepChatMessages.length > 0
+  const hasDeepChat = deepChatMessages.length > 0
+  const transcript = hasDeepChat
     ? deepChatMessages.map(m => ({ role: m.role, content: m.content, timestamp: new Date().toISOString() }))
     : undefined
 
@@ -97,9 +101,10 @@ export async function saveProfileFinal(
       currentSituation: profile.situation || 'exploring',
       skills: profile.skills.map(s => ({ name: s, level: '중급' })),
       interestTags: profile.interests,
-      personality: { risk: 5, time: 5, communication: 5, decision: 5 },
-      // BUG FIX: Always send aiChatCompleted: true at done step
-      aiChatCompleted: true,
+      // Only send default personality when deep chat was skipped.
+      // When deep chat was done, summarize API already wrote AI-analyzed values — don't overwrite.
+      ...(!hasDeepChat && { personality: { risk: 5, time: 5, communication: 5, decision: 5 } }),
+      aiChatCompleted: hasDeepChat,
       ...(transcript && { aiChatTranscript: transcript }),
     }),
   })

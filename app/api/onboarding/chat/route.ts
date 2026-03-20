@@ -18,15 +18,27 @@ interface ProfileContext {
   interests?: string[]
 }
 
+/** Sanitize user-provided string to prevent prompt injection */
+function sanitize(val: string | undefined, maxLen = 50): string {
+  if (!val) return '미설정'
+  // Strip newlines, control chars, and common injection patterns
+  return val.replace(/[\n\r\t]/g, ' ').replace(/[#*\[\]{}()<>]/g, '').trim().slice(0, maxLen) || '미설정'
+}
+
+function sanitizeList(arr: string[] | undefined, maxItems = 10, maxLen = 30): string {
+  if (!arr || arr.length === 0) return '미설정'
+  return arr.slice(0, maxItems).map(s => sanitize(s, maxLen)).join(', ')
+}
+
 const SYSTEM_PROMPT = (profile: ProfileContext) => `당신은 Draft 플랫폼의 AI 프로필 분석가입니다. 대학생/청년의 프로젝트 팀 매칭을 위해 깊이 있는 정보를 수집하는 역할입니다.
 
 ## 사용자 기본 프로필
-- 이름: ${profile.name || '미설정'}
-- 소속: ${profile.university || '미설정'}${profile.major ? ` ${profile.major}` : ''}
-- 포지션: ${profile.position || '미설정'}
-- 현재 상황: ${profile.situation || '미설정'}
-- 기술: ${profile.skills?.join(', ') || '미설정'}
-- 관심 분야: ${profile.interests?.join(', ') || '미설정'}
+- 이름: ${sanitize(profile.name, 20)}
+- 소속: ${sanitize(profile.university)}${profile.major ? ` ${sanitize(profile.major)}` : ''}
+- 포지션: ${sanitize(profile.position)}
+- 현재 상황: ${sanitize(profile.situation)}
+- 기술: ${sanitizeList(profile.skills)}
+- 관심 분야: ${sanitizeList(profile.interests)}
 
 ## 수집해야 할 핵심 정보 (팀 매칭에 직접 활용됨)
 
@@ -43,7 +55,7 @@ const SYSTEM_PROMPT = (profile: ProfileContext) => `당신은 Draft 플랫폼의
 
 ## 대화 규칙
 
-- 첫 메시지: ${profile.name}님의 프로필을 봤다는 걸 살짝 언급하며 자연스럽게 첫 질문. 예: "${profile.name}님, ${profile.position || '개발'}${profile.university ? ` (${profile.university})` : ''}이시군요! 혹시 지금까지 프로젝트를 해본 적 있으세요?"
+- 첫 메시지: ${sanitize(profile.name, 20)}님의 프로필을 봤다는 걸 살짝 언급하며 자연스럽게 첫 질문. 예: "${sanitize(profile.name, 20)}님, ${sanitize(profile.position) || '개발'}${profile.university ? ` (${sanitize(profile.university)})` : ''}이시군요! 혹시 지금까지 프로젝트를 해본 적 있으세요?"
 - 한 번에 질문 1개만. 절대 2개 이상 동시에 묻지 않기
 - 사용자 답변에 구체적으로 반응하기. "그렇군요" 대신 답변 내용을 반영한 반응. 예: "팀프 경험이 있으시군요! 그때 어떤 부분을 맡으셨어요?"
 - 이미 프로필에 있는 정보(포지션, 기술 등)는 다시 묻지 않기
@@ -89,6 +101,14 @@ export async function POST(request: Request) {
       return ApiResponse.badRequest('Invalid messages')
     }
 
+    // Limit message count and individual message length to prevent abuse
+    const MAX_MESSAGES = 30
+    const MAX_MSG_LENGTH = 2000
+    const trimmedMessages = messages.slice(-MAX_MESSAGES).map(m => ({
+      ...m,
+      content: typeof m.content === 'string' ? m.content.slice(0, MAX_MSG_LENGTH) : '',
+    }))
+
     const systemPrompt = SYSTEM_PROMPT(profile)
 
     // Create model instance per request with dynamic system instruction
@@ -98,7 +118,7 @@ export async function POST(request: Request) {
     })
 
     // Build chat history for Gemini (exclude the last user message since we'll send it separately)
-    const historyMessages = messages.slice(0, -1)
+    const historyMessages = trimmedMessages.slice(0, -1)
     let chatHistory = historyMessages.map(m => ({
       role: m.role === 'user' ? 'user' as const : 'model' as const,
       parts: [{ text: m.content }],
@@ -117,8 +137,8 @@ export async function POST(request: Request) {
     })
 
     // Send the last user message, or a trigger for the first question
-    const lastUserMsg = messages.length > 0
-      ? messages[messages.length - 1].content
+    const lastUserMsg = trimmedMessages.length > 0
+      ? trimmedMessages[trimmedMessages.length - 1].content
       : '프로필 분석 대화를 시작해주세요'
 
     const result = await chat.sendMessage(lastUserMsg)

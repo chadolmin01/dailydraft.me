@@ -287,19 +287,26 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     // Checkpoint save
     try { await saveProfileCheckpoint(s.profile) } catch { /* continue anyway */ }
 
-    const { reply: firstQ, suggestions: firstSuggestions } = await aiDeepChat([], profileCtx)
+    try {
+      const { reply: firstQ, suggestions: firstSuggestions } = await aiDeepChat([], profileCtx)
 
-    await new Promise(r => setTimeout(r, 800))
-    dispatch({ type: 'SET_BUBBLES', bubbles: [] })
-    dispatch({ type: 'SET_STEP', step: 'deep-chat' })
-    dispatch({ type: 'SET_DEEP_CHAT_TRANSITION', value: false })
-    dispatch({ type: 'SET_DYNAMIC_SUGGESTIONS', suggestions: firstSuggestions })
+      await new Promise(r => setTimeout(r, 800))
+      dispatch({ type: 'SET_BUBBLES', bubbles: [] })
+      dispatch({ type: 'SET_STEP', step: 'deep-chat' })
+      dispatch({ type: 'SET_DEEP_CHAT_TRANSITION', value: false })
+      dispatch({ type: 'SET_DYNAMIC_SUGGESTIONS', suggestions: firstSuggestions })
 
-    await new Promise(r => setTimeout(r, 300))
-    const aiMsg: DeepChatMessage = { role: 'assistant', content: firstQ }
-    dispatch({ type: 'SET_DEEP_CHAT_MESSAGES', messages: [aiMsg] })
-    await pushAi(firstQ, undefined, 600)
-    setTimeout(() => deepChatInputRef.current?.focus(), 200)
+      await new Promise(r => setTimeout(r, 300))
+      const aiMsg: DeepChatMessage = { role: 'assistant', content: firstQ }
+      dispatch({ type: 'SET_DEEP_CHAT_MESSAGES', messages: [aiMsg] })
+      await pushAi(firstQ, undefined, 600)
+      setTimeout(() => deepChatInputRef.current?.focus(), 200)
+    } catch {
+      // Escape the transition overlay on any failure
+      dispatch({ type: 'SET_DEEP_CHAT_TRANSITION', value: false })
+      await pushAi('AI 연결에 문제가 있어요. 다시 시도해주세요!', 'deep-chat-offer', 400)
+      dispatch({ type: 'SET_STEP', step: 'deep-chat-offer' })
+    }
   }
 
   const handleDeepChatSkip = async () => {
@@ -324,23 +331,28 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     const activityLabel = AI_ACTIVITY_LABELS[Math.min(msgCount - 1, AI_ACTIVITY_LABELS.length - 1)]
     dispatch({ type: 'SET_AI_ACTIVITY', label: activityLabel })
     dispatch({ type: 'SET_TYPING', isTyping: true })
-    const { reply, offTopic, suggestions } = await aiDeepChat(updatedMessages, profileCtx)
-    dispatch({ type: 'SET_TYPING', isTyping: false })
-    dispatch({ type: 'SET_AI_ACTIVITY', label: null })
+    try {
+      const { reply, offTopic, suggestions } = await aiDeepChat(updatedMessages, profileCtx)
 
-    if (offTopic) {
-      // Don't add off-topic exchange to history — rollback to previous state
-      dispatch({ type: 'SET_DEEP_CHAT_MESSAGES', messages: s.deepChatMessages })
-      await pushAi(reply, undefined, 300)
-    } else {
-      const aiMsg: DeepChatMessage = { role: 'assistant', content: reply }
-      const finalMessages = [...updatedMessages, aiMsg]
-      dispatch({ type: 'SET_DEEP_CHAT_MESSAGES', messages: finalMessages })
-      await pushAi(reply, undefined, 300)
+      if (offTopic) {
+        // Don't add off-topic exchange to history — rollback to previous state
+        dispatch({ type: 'SET_DEEP_CHAT_MESSAGES', messages: s.deepChatMessages })
+        await pushAi(reply, undefined, 300)
+      } else {
+        const aiMsg: DeepChatMessage = { role: 'assistant', content: reply }
+        const finalMessages = [...updatedMessages, aiMsg]
+        dispatch({ type: 'SET_DEEP_CHAT_MESSAGES', messages: finalMessages })
+        await pushAi(reply, undefined, 300)
+      }
+      dispatch({ type: 'SET_DYNAMIC_SUGGESTIONS', suggestions })
+    } catch {
+      await pushAi('일시적인 오류가 발생했어요. 다시 말씀해주세요!', undefined, 300)
+    } finally {
+      dispatch({ type: 'SET_TYPING', isTyping: false })
+      dispatch({ type: 'SET_AI_ACTIVITY', label: null })
+      dispatch({ type: 'SET_SHOW_SUGGESTIONS', value: true })
+      setTimeout(() => deepChatInputRef.current?.focus(), 200)
     }
-    dispatch({ type: 'SET_DYNAMIC_SUGGESTIONS', suggestions })
-    dispatch({ type: 'SET_SHOW_SUGGESTIONS', value: true })
-    setTimeout(() => deepChatInputRef.current?.focus(), 200)
   }
 
   const handleDeepChatFinish = async () => {
