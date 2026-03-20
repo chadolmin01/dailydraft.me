@@ -31,19 +31,33 @@ export async function getCroppedImg(src: string, cropArea: Area): Promise<File> 
   })
 }
 
+/** 버킷 존재 확인 및 생성 (최초 1회) */
+async function ensureBucket() {
+  const { data: buckets } = await supabase.storage.listBuckets()
+  if (buckets?.find(b => b.name === BUCKET)) return
+
+  await supabase.storage.createBucket(BUCKET, {
+    public: true,
+    fileSizeLimit: 10 * 1024 * 1024,
+    allowedMimeTypes: ALLOWED_IMAGE_TYPES,
+  })
+}
+
 /** 클라이언트에서 이미지 압축 후 Supabase Storage에 직접 업로드 */
 export async function uploadImagesToSupabase(files: File[]): Promise<string[]> {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('로그인이 필요합니다')
 
+  await ensureBucket()
+
   const urls: string[] = []
 
   for (const file of files) {
-    // 1. 이미지 압축
+    // 1. 이미지 압축 (메인 스레드에서 실행 — CSP blob worker 차단 회피)
     const compressed = await imageCompression(file, {
       maxSizeMB: 2,
       maxWidthOrHeight: 1920,
-      useWebWorker: true,
+      useWebWorker: false,
     })
 
     // 2. Supabase Storage에 직접 업로드

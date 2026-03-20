@@ -77,6 +77,7 @@ function addSecurityHeaders(response: NextResponse) {
       `script-src ${scriptSrc}`,
       `style-src 'self' 'unsafe-inline'`,
       `img-src 'self' data: blob: https://*.supabase.co https://images.unsplash.com https://source.unsplash.com https://plus.unsplash.com https://picsum.photos https://avatars.githubusercontent.com https://lh3.googleusercontent.com https://k.kakaocdn.net https://phinf.pstatic.net https://ssl.pstatic.net https://www.googletagmanager.com`,
+      `worker-src 'self' blob:`,
       `font-src 'self' https://fonts.gstatic.com`,
       `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://generativelanguage.googleapis.com https://www.google-analytics.com https://www.googletagmanager.com`,
       `frame-ancestors 'none'`,
