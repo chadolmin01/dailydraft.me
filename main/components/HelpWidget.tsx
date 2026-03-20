@@ -210,7 +210,16 @@ function ChatTab() {
       })
       if (!res.ok) throw new Error()
       const { data } = await res.json()
-      setMessages(prev => [...prev, { role: 'assistant', content: data?.reply || '답변을 생성하지 못했어요. 다시 질문해주세요.' }])
+      const reply = data?.reply || '답변을 생성하지 못했어요. 다시 질문해주세요.'
+      const isOffTopic = !!data?.offTopic
+
+      if (isOffTopic) {
+        // Don't keep off-topic exchange in history — rollback and show warning
+        setMessages(prev => prev.slice(0, -1))
+        setMessages(prev => [...prev, { role: 'assistant', content: reply }])
+      } else {
+        setMessages(prev => [...prev, { role: 'assistant', content: reply }])
+      }
     } catch {
       setMessages(prev => [...prev, {
         role: 'assistant',

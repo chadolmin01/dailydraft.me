@@ -193,7 +193,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
       {/* Owner Edit Button */}
       {isOwner && (
         <button
-          onClick={() => { onClose(); router.push('/projects') }}
+          onClick={() => { onClose(); router.push(`/projects/${opportunity.id}/edit`) }}
           className="w-full py-2.5 border border-border-strong text-txt-secondary font-medium text-sm hover:bg-black hover:text-white transition-colors flex items-center justify-center gap-2"
         >
           <Edit3 size={14} />

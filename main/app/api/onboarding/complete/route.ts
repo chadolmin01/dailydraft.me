@@ -39,15 +39,6 @@ export async function POST(request: Request) {
       return ApiResponse.badRequest('닉네임, 지역, 현재 상황은 필수 입력 항목입니다')
     }
 
-    // contact_email이 없으면 로그인 이메일을 기본값으로 사용
-    const { data: existingProfile } = await supabase
-      .from('profiles')
-      .select('contact_email')
-      .eq('user_id', user.id)
-      .maybeSingle()
-
-    const contactEmail = existingProfile?.contact_email || user.email || null
-
     // 기본 프로필 데이터
     const profileData: Record<string, unknown> = {
       user_id: user.id,
@@ -60,7 +51,6 @@ export async function POST(request: Request) {
       interest_tags: interestTags || [],
       desired_position: desiredPosition,
       personality: personality || { risk: 5, time: 5, communication: 5, decision: 5 },
-      contact_email: contactEmail,
       onboarding_completed: true,
       ...(aiChatTranscript && { ai_chat_transcript: aiChatTranscript }),
       ...(aiChatCompleted && { ai_chat_completed: true }),
