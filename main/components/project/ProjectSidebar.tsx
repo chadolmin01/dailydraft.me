@@ -15,6 +15,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
   handleAction,
   onClose,
   router,
+  teamMembers = [],
 }) => {
   return (
     <div className="md:col-span-2 space-y-7">
@@ -43,6 +44,28 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
               <p className="font-semibold text-txt-primary text-sm">익명 메이커</p>
               <p className="text-xs text-txt-disabled">프로필 비공개</p>
             </div>
+          </div>
+        )}
+
+        {/* Team Members */}
+        {teamMembers.length > 0 && (
+          <div className="mt-3 space-y-2">
+            <span className="text-[0.5rem] font-mono font-bold text-txt-disabled uppercase tracking-widest">
+              멤버 ({teamMembers.length})
+            </span>
+            {teamMembers.map(member => (
+              <div key={member.id} className="flex items-center gap-2.5">
+                <div className="w-8 h-8 bg-surface-inverse text-white flex items-center justify-center font-bold text-xs shrink-0">
+                  {member.nickname.charAt(0)}
+                </div>
+                <div className="min-w-0">
+                  <p className="font-medium text-txt-primary text-sm truncate">{member.nickname}</p>
+                  {member.role && (
+                    <p className="text-xs text-txt-disabled truncate">{member.role}</p>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>

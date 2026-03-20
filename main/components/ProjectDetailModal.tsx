@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import {
   Loader2, AlertCircle, X, Share2, Edit3,
 } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
+import { supabase } from '@/src/lib/supabase/client'
 import { useOpportunity, useUpdateOpportunity } from '@/src/hooks/useOpportunities'
 import { useProfileByUserId } from '@/src/hooks/usePublicProfiles'
 import { useProjectUpdates } from '@/src/hooks/useProjectUpdates'
@@ -41,6 +43,33 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
   const { data: opportunity, isLoading: loading } = useOpportunity(projectId ?? undefined)
   const { data: creator } = useProfileByUserId(opportunity?.creator_id ?? undefined)
   const { data: updates = [] } = useProjectUpdates(opportunity?.id)
+
+  // Fetch team members (accepted connections)
+  const { data: teamMembers = [] } = useQuery({
+    queryKey: ['team-public', projectId],
+    queryFn: async () => {
+      if (!projectId) return []
+      const { data: connections } = await supabase
+        .from('accepted_connections')
+        .select('id, applicant_id, assigned_role, status')
+        .eq('opportunity_id', projectId)
+        .eq('status', 'active')
+      if (!connections || connections.length === 0) return []
+      const userIds = connections.map(c => c.applicant_id)
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('user_id, nickname, desired_position')
+        .in('user_id', userIds)
+      const profileMap = new Map((profiles || []).map(p => [p.user_id, p]))
+      return connections.map(c => ({
+        id: c.id,
+        nickname: profileMap.get(c.applicant_id)?.nickname || '알 수 없음',
+        role: c.assigned_role || profileMap.get(c.applicant_id)?.desired_position || null,
+      }))
+    },
+    enabled: !!projectId,
+    staleTime: 1000 * 60 * 2,
+  })
 
   // Match analysis -- lightweight fetch, only for logged-in non-owners
   const [matchScore, setMatchScore] = useState<number | null>(null)
@@ -302,6 +331,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                           handleAction={handleAction}
                           onClose={onClose}
                           router={router}
+                          teamMembers={teamMembers}
                         />
                       </div>
                     </div>
