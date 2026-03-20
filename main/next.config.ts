@@ -30,6 +30,11 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'plus.unsplash.com',
       },
+      // Picsum (placeholder images)
+      {
+        protocol: 'https',
+        hostname: 'picsum.photos',
+      },
       // Google OAuth avatar
       {
         protocol: 'https',
