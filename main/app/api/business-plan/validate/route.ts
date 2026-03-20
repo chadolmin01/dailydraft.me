@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import {
   getEvaluationCriteria,
   DISQUALIFICATION_CONDITIONS,
   FormEvaluationCriteria
 } from '@/src/lib/evaluation-criteria'
+import { ApiResponse } from '@/src/lib/api-utils'
 import { FormTemplateType } from '@/src/types/business-plan'
 
 // Validation rules based on PSST framework (2025년 공고문 기반)
@@ -286,10 +287,7 @@ export async function POST(req: NextRequest) {
     const { sectionData, basicInfo, templateType = 'yebi-chogi' } = body
 
     if (!sectionData) {
-      return NextResponse.json(
-        { error: '검증할 데이터가 필요합니다.' },
-        { status: 400 }
-      )
+      return ApiResponse.badRequest('검증할 데이터가 필요합니다.')
     }
 
     // 양식별 평가기준 가져오기
@@ -395,7 +393,7 @@ export async function POST(req: NextRequest) {
     // 60점이 최소 기준
     const minimumThreshold = formCriteria.minimumScore
 
-    return NextResponse.json({
+    return ApiResponse.ok({
       totalScore,
       maxScore: totalMaxScore,
       percentage: Math.round(percentage),
@@ -423,9 +421,6 @@ export async function POST(req: NextRequest) {
 
   } catch (error) {
     console.error('Validation error:', error)
-    return NextResponse.json(
-      { error: '검증 중 오류가 발생했습니다.' },
-      { status: 500 }
-    )
+    return ApiResponse.internalError('검증 중 오류가 발생했습니다.')
   }
 }

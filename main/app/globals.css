@@ -304,3 +304,26 @@ button[class*="shadow-solid"]:not(:disabled):active {
   animation: expandDown 200ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
   overflow: hidden;
 }
+
+/* ============================================================
+   ONBOARDING ANIMATIONS
+   ============================================================ */
+
+@keyframes ob-bubble-in { 0% { opacity:0;transform:translateY(18px) scale(0.94) } 55% { opacity:1;transform:translateY(-3px) scale(1.01) } 100% { opacity:1;transform:translateY(0) scale(1) } }
+@keyframes ob-chip-in { 0% { opacity:0;transform:scale(0.85) translateY(6px) } 70% { opacity:1;transform:scale(1.04) translateY(0) } 100% { opacity:1;transform:scale(1) translateY(0) } }
+@keyframes ob-form-in { 0% { opacity:0;max-height:0;margin-top:0 } 100% { opacity:1;max-height:800px;margin-top:12px } }
+@keyframes ob-cta-glow { 0%,100% { box-shadow:0 0 0 0 rgba(0,0,0,0.08) } 50% { box-shadow:0 0 0 8px rgba(0,0,0,0) } }
+@keyframes ob-dot { 0%,80%,100% { transform:scale(0.6);opacity:0.4 } 40% { transform:scale(1);opacity:1 } }
+@keyframes ob-avatar-pulse { 0%,100% { box-shadow:0 0 0 0 rgba(0,0,0,0.06) } 50% { box-shadow:0 0 0 6px rgba(0,0,0,0) } }
+@keyframes ob-tag-pop { 0% { opacity:0;transform:scale(0.5) } 60% { transform:scale(1.1) } 100% { opacity:1;transform:scale(1) } }
+@keyframes typing { 0% { max-width:0 } 100% { max-width:100% } }
+.ob-bubble { animation:ob-bubble-in 0.5s cubic-bezier(0.34,1.4,0.64,1) both }
+.ob-chip { animation:ob-chip-in 0.35s cubic-bezier(0.34,1.4,0.64,1) both }
+.ob-form { animation:ob-form-in 0.5s cubic-bezier(0.16,1,0.3,1) both;overflow:hidden }
+.ob-cta { animation:ob-cta-glow 2s ease-in-out infinite }
+.ob-dot { animation:ob-dot 1.4s ease-in-out infinite }
+.ob-avatar { animation:ob-avatar-pulse 3s ease-in-out infinite }
+.ob-tag-pop { animation:ob-tag-pop 0.3s cubic-bezier(0.34,1.4,0.64,1) both }
+.ob-hover { transition:all 0.2s cubic-bezier(0.34,1.4,0.64,1) }
+.ob-hover:hover { transform:scale(1.06) translateY(-1px) }
+.ob-hover:active { transform:scale(0.96) }

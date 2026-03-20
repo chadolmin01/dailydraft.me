@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { notifyInvitationResponse } from '@/src/lib/notifications/create-notification'
 import { ApiResponse } from '@/src/lib/api-utils'
@@ -85,7 +85,7 @@ export async function PATCH(
       status === 'accepted'
     )
 
-    return NextResponse.json({ success: true, status })
+    return ApiResponse.ok({ success: true, status })
   } catch (error) {
     console.error('Invitation response error:', error)
     return ApiResponse.internalError()

@@ -1,4 +1,3 @@
-import { NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { sendChatMessage } from '@/src/lib/ai/chat-manager'
 import type { ChatMessage } from '@/src/types/profile'
@@ -36,7 +35,7 @@ export async function POST(request: Request) {
       timestamp: new Date().toISOString(),
     }
 
-    return NextResponse.json({
+    return ApiResponse.ok({
       message: aiMessage,
     })
   } catch (error) {

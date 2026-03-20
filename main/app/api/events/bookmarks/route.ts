@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 
@@ -28,7 +28,7 @@ export async function GET() {
       return ApiResponse.internalError()
     }
 
-    return NextResponse.json(bookmarks)
+    return ApiResponse.ok(bookmarks)
   } catch (_err) {
     return ApiResponse.internalError()
   }
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
       return ApiResponse.internalError()
     }
 
-    return NextResponse.json(bookmark, { status: 201 })
+    return ApiResponse.created(bookmark)
   } catch (_err) {
     return ApiResponse.internalError()
   }

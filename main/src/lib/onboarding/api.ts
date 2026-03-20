@@ -1,0 +1,127 @@
+import type { DeepChatMessage, ProfileDraft } from './types'
+
+/** Parse free-text skills/interests via AI */
+export async function aiParse(text: string, type: 'skills' | 'interests'): Promise<string[] | null> {
+  try {
+    const res = await fetch('/api/onboarding/parse', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, type }),
+    })
+    if (!res.ok) return null
+    const { items } = await res.json()
+    return Array.isArray(items) ? items : null
+  } catch {
+    return null
+  }
+}
+
+/** Send a deep chat message and get AI reply */
+export async function aiDeepChat(
+  messages: DeepChatMessage[],
+  profileCtx: Record<string, unknown>,
+): Promise<string> {
+  try {
+    const res = await fetch('/api/onboarding/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages, profile: profileCtx }),
+    })
+    if (!res.ok) {
+      return '죄송해요, 일시적인 오류가 발생했어요. 다시 말씀해주세요!'
+    }
+    const json = await res.json()
+    return json?.reply || '어떤 프로젝트 경험이 있으신지 알려주세요!'
+  } catch {
+    return '죄송해요, 네트워크 오류가 발생했어요. 인터넷 연결을 확인하고 다시 시도해주세요.'
+  }
+}
+
+/** Build profile context object for AI calls */
+export function buildProfileCtx(profile: ProfileDraft): Record<string, unknown> {
+  return {
+    name: profile.name,
+    university: profile.university,
+    major: profile.major,
+    position: profile.position,
+    situation: profile.situation,
+    skills: profile.skills,
+    interests: profile.interests,
+  }
+}
+
+/** Save profile checkpoint (basic data, onboarding_completed: true) */
+export async function saveProfileCheckpoint(profile: ProfileDraft): Promise<void> {
+  await fetch('/api/onboarding/complete', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      nickname: profile.name.trim(),
+      desiredPosition: profile.position,
+      affiliationType: profile.affiliationType || 'student',
+      university: profile.university || undefined,
+      major: profile.major || undefined,
+      location: profile.locations.length > 0 ? profile.locations.join(', ') : '미설정',
+      currentSituation: profile.situation || 'exploring',
+      skills: profile.skills.map(s => ({ name: s, level: '중급' })),
+      interestTags: profile.interests,
+      personality: { risk: 5, time: 5, communication: 5, decision: 5 },
+    }),
+  })
+}
+
+/** Final save: profile + transcript + aiChatCompleted */
+export async function saveProfileFinal(
+  profile: ProfileDraft,
+  deepChatMessages: DeepChatMessage[],
+): Promise<void> {
+  const transcript = deepChatMessages.length > 0
+    ? deepChatMessages.map(m => ({ role: m.role, content: m.content, timestamp: new Date().toISOString() }))
+    : undefined
+
+  const res = await fetch('/api/onboarding/complete', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      nickname: profile.name.trim(),
+      desiredPosition: profile.position,
+      affiliationType: profile.affiliationType || 'student',
+      university: profile.university || undefined,
+      major: profile.major || undefined,
+      location: profile.locations.length > 0 ? profile.locations.join(', ') : '미설정',
+      currentSituation: profile.situation || 'exploring',
+      skills: profile.skills.map(s => ({ name: s, level: '중급' })),
+      interestTags: profile.interests,
+      personality: { risk: 5, time: 5, communication: 5, decision: 5 },
+      // BUG FIX: Always send aiChatCompleted: true at done step
+      aiChatCompleted: true,
+      ...(transcript && { aiChatTranscript: transcript }),
+    }),
+  })
+
+  if (!res.ok) {
+    const errData = await res.json().catch(() => null)
+    const errMsg = errData?.error?.message || errData?.error || 'Save failed'
+    throw new Error(typeof errMsg === 'string' ? errMsg : JSON.stringify(errMsg))
+  }
+}
+
+/** Summarize deep chat transcript */
+export async function summarizeTranscript(
+  messages: DeepChatMessage[],
+): Promise<{ summary?: string } | null> {
+  try {
+    const res = await fetch('/api/onboarding/summarize', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        transcript: messages.map(m => ({ role: m.role, content: m.content })),
+      }),
+    })
+    if (!res.ok) return null
+    const json = await res.json()
+    return { summary: json?.profile?.summary }
+  } catch {
+    return null
+  }
+}

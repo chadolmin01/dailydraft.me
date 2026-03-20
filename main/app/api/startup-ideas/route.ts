@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import type { StartupSource } from '@/src/lib/startups';
+import { ApiResponse } from '@/src/lib/api-utils';
 
 export const runtime = 'nodejs';
 
@@ -32,10 +33,7 @@ export async function GET(request: NextRequest) {
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
     if (!supabaseUrl || !supabaseKey) {
-      return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 500 }
-      );
+      return ApiResponse.internalError('서버 설정 오류가 발생했습니다');
     }
 
     const supabase = createClient(supabaseUrl, supabaseKey);
@@ -134,7 +132,7 @@ export async function GET(request: NextRequest) {
     // 5. Return response
     const totalPages = Math.ceil((count || 0) / limit);
 
-    return NextResponse.json({
+    return ApiResponse.ok({
       success: true,
       data: data || [],
       pagination: {
@@ -164,12 +162,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error('[startup-ideas] GET error:', errorMessage);
-
-    return NextResponse.json(
-      { success: false, error: '스타트업 아이디어 조회에 실패했습니다' },
-      { status: 500 }
-    );
+    console.error('[startup-ideas] GET error:', error);
+    return ApiResponse.internalError('스타트업 아이디어 조회에 실패했습니다');
   }
 }

@@ -10,6 +10,7 @@ import {
   ExtraSectionType,
   BusinessPlanData,
   BusinessPlanBasicInfo,
+  type IndustryType,
 } from '../../src/types/business-plan'
 
 interface SectionEditorProps {
@@ -324,7 +325,7 @@ export const BasicInfoEditor: React.FC<BasicInfoEditorProps> = ({
         </label>
         <select
           value={data.industry}
-          onChange={(e) => onChange({ ...data, industry: e.target.value as any })}
+          onChange={(e) => onChange({ ...data, industry: e.target.value as IndustryType })}
           className="w-full px-4 py-2.5 border border-border text-sm focus:outline-none focus:border-border-strong bg-surface-card"
         >
           {industries.map((ind) => (

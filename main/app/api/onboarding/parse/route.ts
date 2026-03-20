@@ -1,6 +1,5 @@
 import { chatModel } from '@/src/lib/ai/gemini-client'
 import { createClient } from '@/src/lib/supabase/server'
-import { NextResponse } from 'next/server'
 import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
 import { ApiResponse } from '@/src/lib/api-utils'
 
@@ -57,7 +56,7 @@ export async function POST(request: Request) {
     // Extract JSON array from response
     const match = raw.match(/\[[\s\S]*?\]/)
     if (!match) {
-      return NextResponse.json({ items: [] })
+      return ApiResponse.ok({ items: [] })
     }
 
     let items: string[]
@@ -65,14 +64,14 @@ export async function POST(request: Request) {
       items = JSON.parse(match[0])
     } catch {
       console.error('Parse JSON failed. Raw:', raw.slice(0, 200))
-      return NextResponse.json({ items: [] })
+      return ApiResponse.ok({ items: [] })
     }
     // Sanitize: only strings, max 20 items
     const clean = items.filter((v): v is string => typeof v === 'string' && v.length < 50).slice(0, 20)
 
-    return NextResponse.json({ items: clean })
+    return ApiResponse.ok({ items: clean })
   } catch (error) {
     console.error('Parse error:', error)
-    return NextResponse.json({ items: [] })
+    return ApiResponse.internalError('스킬/관심분야 파싱 중 오류가 발생했습니다')
   }
 }

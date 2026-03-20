@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { logError } from '@/src/lib/error-logging'
+import { ApiResponse } from '@/src/lib/api-utils'
 import {
   getEvaluationCriteria,
   getFormSpecificPrompt,
@@ -215,19 +216,13 @@ export async function POST(req: NextRequest) {
     const { basicInfo, existingData } = context || {}
 
     if (!basicInfo?.itemName || !basicInfo?.targetCustomer) {
-      return NextResponse.json(
-        { error: '기본 정보(아이템명, 타겟 고객)가 필요합니다.' },
-        { status: 400 }
-      )
+      return ApiResponse.badRequest('기본 정보(아이템명, 타겟 고객)가 필요합니다.')
     }
 
     // Get section prompt configuration
     const sectionConfig = SECTION_PROMPTS[section]
     if (!sectionConfig) {
-      return NextResponse.json(
-        { error: '지원하지 않는 섹션입니다.' },
-        { status: 400 }
-      )
+      return ApiResponse.badRequest('지원하지 않는 섹션입니다.')
     }
 
     // Get industry-specific keywords
@@ -243,7 +238,7 @@ export async function POST(req: NextRequest) {
     if (!anthropicApiKey) {
       // Return mock data for development
       const mockContent = generateMockContent(section, basicInfo, fieldId)
-      return NextResponse.json({
+      return ApiResponse.ok({
         content: mockContent,
         data: fieldId ? { [fieldId]: mockContent } : mockContent,
         suggestions: [],
@@ -277,7 +272,7 @@ export async function POST(req: NextRequest) {
 
     // Parse the response based on field or section
     if (fieldId) {
-      return NextResponse.json({
+      return ApiResponse.ok({
         content: generatedContent,
         data: { [fieldId]: generatedContent },
         suggestions: [],
@@ -288,7 +283,7 @@ export async function POST(req: NextRequest) {
     // Parse section-level response into individual fields
     const parsedData = parseGeneratedContent(section, generatedContent, templateType)
 
-    return NextResponse.json({
+    return ApiResponse.ok({
       content: generatedContent,
       data: parsedData,
       suggestions: [],
@@ -307,10 +302,7 @@ export async function POST(req: NextRequest) {
       endpoint: '/api/business-plan/generate',
       method: 'POST',
     })
-    return NextResponse.json(
-      { error: '생성 중 오류가 발생했습니다.' },
-      { status: 500 }
-    )
+    return ApiResponse.internalError('생성 중 오류가 발생했습니다.')
   }
 }
 

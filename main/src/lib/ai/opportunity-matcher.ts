@@ -186,7 +186,7 @@ function generateMatchReason(
   // Skill match
   if (scores.skillMatch >= 80) {
     const matchedSkills = (profile.skills || [])
-      .filter(s => (opportunity.needed_skills || []).some(ns => ns.name === s.name))
+      .filter(s => ((opportunity.needed_skills || []) as unknown as Skill[]).some(ns => ns.name === s.name))
       .slice(0, 2)
       .map(s => s.name)
 
@@ -251,20 +251,20 @@ export function calculateMatchScore(
   opportunity: Opportunity & { similarity?: number }
 ): MatchResult {
   const skillMatch = calculateSkillMatch(
-    profile.skills as Skill[],
-    (opportunity.needed_skills as Skill[]) || []
+    profile.skills as unknown as Skill[],
+    ((opportunity.needed_skills as unknown as Skill[]) || [])
   )
 
   // Use pgvector similarity if available (from RPC result)
   const visionSimilarity = calculateVisionSimilarity(
-    profile.vision_embedding,
-    opportunity.vision_embedding,
+    profile.vision_embedding as unknown as number[] | null,
+    opportunity.vision_embedding as unknown as number[] | null,
     opportunity.similarity
   )
 
   const practicalCompatibility = calculatePracticalCompatibility(profile, opportunity)
 
-  const roleMatch = calculateRoleMatch(profile.desired_position, opportunity.needed_roles)
+  const roleMatch = calculateRoleMatch(profile.desired_position, opportunity.needed_roles || [])
 
   // Weighted score
   const finalScore =

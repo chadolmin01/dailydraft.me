@@ -1,6 +1,6 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { notifyProfileInterest } from '@/src/lib/notifications/create-notification'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 
 // POST: Toggle profile interest (like/unlike)
@@ -48,7 +48,7 @@ export async function POST(
         .update({ interest_count: Math.max(0, currentCount - 1) } as never)
         .eq('id', targetProfileId)
 
-      return NextResponse.json({ interested: false, interest_count: Math.max(0, currentCount - 1) })
+      return ApiResponse.ok({ interested: false, interest_count: Math.max(0, currentCount - 1) })
     } else {
       // Like — add interest
       const { error: insertError } = await supabase
@@ -88,7 +88,7 @@ export async function POST(
         notifyProfileInterest(targetUserId, likerName).catch(() => {})
       }
 
-      return NextResponse.json({ interested: true, interest_count: currentCount + 1 })
+      return ApiResponse.ok({ interested: true, interest_count: currentCount + 1 })
     }
   } catch {
     return ApiResponse.internalError()
@@ -109,7 +109,7 @@ export async function GET(
     } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json({ interested: false, interest_count: 0 })
+      return ApiResponse.ok({ interested: false, interest_count: 0 })
     }
 
     const { data: existing } = await supabase
@@ -128,7 +128,7 @@ export async function GET(
 
     const count = (profile as { interest_count: number | null } | null)?.interest_count || 0
 
-    return NextResponse.json({ interested: !!existing, interest_count: count })
+    return ApiResponse.ok({ interested: !!existing, interest_count: count })
   } catch {
     return ApiResponse.internalError()
   }

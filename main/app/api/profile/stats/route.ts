@@ -1,4 +1,3 @@
-import { NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 
@@ -96,7 +95,7 @@ export async function GET() {
       rejected: sentApps.filter(a => a.status === 'rejected').length,
     }
 
-    return NextResponse.json({
+    return ApiResponse.ok({
       bookmarks: bookmarksResult.count || 0,
       sentApplications,
       receivedApplications,

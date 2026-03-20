@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { generateOpportunityEmbedding } from '@/src/lib/ai/embeddings'
 import { ApiResponse, validateRequired } from '@/src/lib/api-utils'
+import type { Tables } from '@/src/types/database'
 
 interface CreateFromEventRequest {
   event_id: string
@@ -55,8 +56,7 @@ export async function POST(request: NextRequest) {
       return ApiResponse.notFound('행사를 찾을 수 없습니다')
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const event = eventData as any
+    const event = eventData as Tables<'startup_events'>
 
     // Use event data to fill in missing fields
     const title = body.title?.trim() || `${event.title} 팀원 모집`

@@ -1,5 +1,4 @@
 import { createClient } from '@/src/lib/supabase/server'
-import { NextResponse } from 'next/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 
 export async function GET() {
@@ -103,7 +102,7 @@ export async function GET() {
       40 + (profileStrength * 0.4) + (topMatchingSkills.length * 5)
     )
 
-    return NextResponse.json({
+    return ApiResponse.ok({
       profileViews: profileData?.profile_views || 0,
       matchedOpportunities: matchedCount,
       topMatchingSkills,

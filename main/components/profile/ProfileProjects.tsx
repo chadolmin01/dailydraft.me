@@ -4,9 +4,7 @@ import Link from 'next/link'
 import { Plus, Rocket, Clock, FolderOpen } from 'lucide-react'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { calculateDaysLeft } from '@/src/hooks/useOpportunities'
-import type { Tables } from '@/src/types/database'
-
-type Opportunity = Tables<'opportunities'>
+import type { Opportunity } from '@/src/types/opportunity'
 
 interface ProfileProjectsProps {
   opportunities: Opportunity[]

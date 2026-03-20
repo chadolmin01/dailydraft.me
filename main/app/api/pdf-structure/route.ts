@@ -1,4 +1,3 @@
-import { NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { genAI } from '@/src/lib/ai/gemini-client'
 import { ApiResponse } from '@/src/lib/api-utils'
@@ -80,7 +79,7 @@ export async function POST(request: Request) {
     }
 
     const structured: StructuredIdea = JSON.parse(jsonMatch[0])
-    return NextResponse.json({ data: structured })
+    return ApiResponse.ok({ data: structured })
 
   } catch (error: unknown) {
     const err = error instanceof Error ? error : new Error(String(error))

@@ -1,4 +1,3 @@
-import { NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { chatModel } from '@/src/lib/ai/gemini-client'
 import { ApiResponse } from '@/src/lib/api-utils'
@@ -77,7 +76,7 @@ ${infoLines.join('\n')}
 
     const description = result.response.text().trim()
 
-    return NextResponse.json({ description })
+    return ApiResponse.ok({ description })
   } catch (error) {
     console.error('Generate description error:', error)
     return ApiResponse.internalError()

@@ -49,7 +49,7 @@ export default function InviteCodesAdminPage() {
   // Redirect if not admin
   React.useEffect(() => {
     if (!isAdminLoading && !isAdmin) {
-      router.push('/dashboard')
+      router.push('/explore')
     }
   }, [isAdmin, isAdminLoading, router])
 

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { createAdminClient } from '@/src/lib/supabase/admin'
 import { ApiResponse } from '@/src/lib/api-utils'
 
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
 
     console.log(`[Cron] Expired ${expiredCount} boosts`)
 
-    return NextResponse.json({
+    return ApiResponse.ok({
       success: true,
       expired_count: expiredCount,
       timestamp: new Date().toISOString(),

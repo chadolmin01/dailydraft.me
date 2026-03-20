@@ -64,22 +64,9 @@ export async function POST(request: Request) {
     if (rateLimitResponse) return rateLimitResponse
 
     const body = await request.json()
-    const { messages, profile, saveTranscript } = body as {
+    const { messages, profile } = body as {
       messages: Message[]
       profile: ProfileContext
-      saveTranscript?: boolean
-    }
-
-    // Auto-save transcript to DB on each exchange
-    if (saveTranscript && Array.isArray(messages) && messages.length > 0) {
-      const transcript = messages.map(m => ({
-        role: m.role,
-        content: m.content,
-        timestamp: new Date().toISOString(),
-      }))
-      await supabase.from('profiles')
-        .update({ ai_chat_transcript: transcript })
-        .eq('user_id', user.id)
     }
 
     if (!Array.isArray(messages)) {

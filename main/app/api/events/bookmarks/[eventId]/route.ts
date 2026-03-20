@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 
@@ -23,7 +23,7 @@ export async function GET(
       .eq('event_id', eventId)
       .single()
 
-    return NextResponse.json({
+    return ApiResponse.ok({
       bookmarked: !!bookmark,
       bookmark,
     })
@@ -64,7 +64,7 @@ export async function PATCH(
       return ApiResponse.internalError()
     }
 
-    return NextResponse.json(bookmark)
+    return ApiResponse.ok(bookmark)
   } catch (_err) {
     return ApiResponse.internalError()
   }
@@ -94,7 +94,7 @@ export async function DELETE(
       return ApiResponse.internalError()
     }
 
-    return NextResponse.json({ success: true })
+    return ApiResponse.ok({ success: true })
   } catch (_err) {
     return ApiResponse.internalError()
   }

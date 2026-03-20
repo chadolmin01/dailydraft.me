@@ -1,5 +1,5 @@
 import { createClient } from '@/src/lib/supabase/server'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 
 // GET: Get all checklists for an opportunity
@@ -58,7 +58,7 @@ export async function GET(
     const completed = (checklists || []).filter((c: any) => c.is_completed).length
     const total = (checklists || []).length
 
-    return NextResponse.json({
+    return ApiResponse.ok({
       checklists: checklists || [],
       progress: {
         completed,
@@ -132,7 +132,7 @@ export async function POST(
       return ApiResponse.internalError()
     }
 
-    return NextResponse.json(data, { status: 201 })
+    return ApiResponse.created(data)
   } catch (_error) {
     return ApiResponse.internalError()
   }

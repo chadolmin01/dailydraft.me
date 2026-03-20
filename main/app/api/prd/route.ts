@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { createClient } from '@/src/lib/supabase/server';
+import { ApiResponse } from '@/src/lib/api-utils';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
@@ -72,22 +73,19 @@ JSON 스키마:
 export async function POST(request: NextRequest) {
   try {
     if (!process.env.GEMINI_API_KEY) {
-      return NextResponse.json({ success: false, error: 'AI 서비스를 사용할 수 없습니다.' }, { status: 503 });
+      return ApiResponse.serviceUnavailable('AI 서비스를 사용할 수 없습니다.');
     }
 
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      return NextResponse.json({ success: false, error: '로그인이 필요합니다' }, { status: 401 });
+      return ApiResponse.unauthorized('로그인이 필요합니다');
     }
 
     const { pm, designer, developer } = await request.json();
 
     if (!pm && !designer && !developer) {
-      return NextResponse.json(
-        { success: false, error: '최소 하나 이상의 역할 입력이 필요합니다.' },
-        { status: 400 }
-      );
+      return ApiResponse.badRequest('최소 하나 이상의 역할 입력이 필요합니다.');
     }
 
     // 입력 길이 제한 (각 2000자)
@@ -110,10 +108,7 @@ export async function POST(request: NextRequest) {
     try {
       analysis = JSON.parse(analysisText);
     } catch {
-      return NextResponse.json(
-        { success: false, error: 'AI 분석 결과를 파싱할 수 없습니다. 다시 시도해주세요.' },
-        { status: 502 }
-      );
+      return ApiResponse.internalError('AI 분석 결과를 파싱할 수 없습니다. 다시 시도해주세요.');
     }
 
     // 2단계: PRD 생성
@@ -136,18 +131,12 @@ PM/기획자: ${analysis.pm_intent?.core_idea || '미정'}, BM: ${analysis.pm_in
     try {
       prd = JSON.parse(prdText);
     } catch {
-      return NextResponse.json(
-        { success: false, error: 'PRD 생성 결과를 파싱할 수 없습니다. 다시 시도해주세요.' },
-        { status: 502 }
-      );
+      return ApiResponse.internalError('PRD 생성 결과를 파싱할 수 없습니다. 다시 시도해주세요.');
     }
 
-    return NextResponse.json({ success: true, data: prd, analysis });
+    return ApiResponse.ok({ success: true, data: prd, analysis });
   } catch (error) {
     console.error('PRD Generation Error:', error);
-    return NextResponse.json(
-      { success: false, error: 'PRD 생성 중 오류가 발생했습니다.' },
-      { status: 500 }
-    );
+    return ApiResponse.internalError('PRD 생성 중 오류가 발생했습니다.');
   }
 }

@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { ApiResponse } from '@/src/lib/api-utils';
 import { geminiRateLimiter } from '@/src/lib/ai/rate-limiter';
 import { classifyEventTags } from '@/src/lib/ai/event-tag-classifier';
 import { generateEventEmbedding } from '@/src/lib/ai/embeddings';
@@ -69,17 +70,11 @@ export async function POST(request: NextRequest) {
     const cronSecret = process.env.CRON_SECRET;
 
     if (!cronSecret) {
-      return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 500 }
-      );
+      return ApiResponse.internalError('Server configuration error');
     }
 
     if (authHeader !== `Bearer ${cronSecret}`) {
-      return NextResponse.json(
-        { error: '로그인이 필요합니다' },
-        { status: 401 }
-      );
+      return ApiResponse.unauthorized();
     }
 
     // 2. Parse request body
@@ -92,18 +87,12 @@ export async function POST(request: NextRequest) {
 
     // Validate source
     if (!VALID_CRAWLED_SOURCES.includes(source)) {
-      return NextResponse.json(
-        { error: `Invalid source: ${source}. Valid sources: ${VALID_CRAWLED_SOURCES.join(', ')}` },
-        { status: 400 }
-      );
+      return ApiResponse.badRequest(`Invalid source: ${source}. Valid sources: ${VALID_CRAWLED_SOURCES.join(', ')}`);
     }
 
     // Validate events array
     if (!Array.isArray(events) || events.length === 0) {
-      return NextResponse.json(
-        { error: 'Events array is required and must not be empty' },
-        { status: 400 }
-      );
+      return ApiResponse.badRequest('Events array is required and must not be empty');
     }
 
     // 3. Process events
@@ -126,7 +115,7 @@ export async function POST(request: NextRequest) {
 
     const duration = Date.now() - startTime;
 
-    return NextResponse.json({
+    return ApiResponse.ok({
       success: true,
       timestamp: new Date().toISOString(),
       result: {
@@ -139,15 +128,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
 
-    return NextResponse.json(
-      {
-        success: false,
-        timestamp: new Date().toISOString(),
-        error: errorMessage,
-        duration_ms: Date.now() - startTime,
-      },
-      { status: 500 }
-    );
+    return ApiResponse.internalError('이벤트 수집 처리 중 오류가 발생했습니다.');
   }
 }
 
@@ -346,7 +327,7 @@ async function ingestEvents(
  * GET /api/cron/ingest-crawled-events
  */
 export async function GET() {
-  return NextResponse.json({
+  return ApiResponse.ok({
     status: 'ready',
     valid_sources: VALID_CRAWLED_SOURCES,
     timestamp: new Date().toISOString(),

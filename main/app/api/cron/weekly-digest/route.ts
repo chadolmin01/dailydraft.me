@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { sendWeeklyDigestEmails } from '@/src/lib/email/send-weekly-digest';
+import { ApiResponse } from '@/src/lib/api-utils';
 
 export const runtime = 'nodejs';
 export const maxDuration = 300; // 5 minutes
@@ -19,26 +20,20 @@ export async function POST(request: NextRequest) {
     const cronSecret = process.env.CRON_SECRET;
 
     if (!cronSecret) {
-      return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 500 }
-      );
+      return ApiResponse.internalError('Server configuration error');
     }
 
     const expectedAuth = `Bearer ${cronSecret}`;
 
     if (authHeader !== expectedAuth) {
-      return NextResponse.json(
-        { error: '로그인이 필요합니다' },
-        { status: 401 }
-      );
+      return ApiResponse.unauthorized();
     }
 
     const result = await sendWeeklyDigestEmails();
 
     const duration = Date.now() - startTime;
 
-    return NextResponse.json({
+    return ApiResponse.ok({
       success: result.success,
       timestamp: new Date().toISOString(),
       result: {
@@ -52,14 +47,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
 
-    return NextResponse.json(
-      {
-        success: false,
-        timestamp: new Date().toISOString(),
-        duration_ms: Date.now() - startTime,
-      },
-      { status: 500 }
-    );
+    return ApiResponse.internalError('주간 다이제스트 발송 중 오류가 발생했습니다.');
   }
 }
 
@@ -68,7 +56,7 @@ export async function POST(request: NextRequest) {
  * Health check endpoint
  */
 export async function GET() {
-  return NextResponse.json({
+  return ApiResponse.ok({
     status: 'ready',
     timestamp: new Date().toISOString(),
   });

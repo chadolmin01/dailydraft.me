@@ -55,7 +55,6 @@ const hiddenApiRoutes = [
 
 // 퍼블릭 라우트 — Supabase auth 완전 스킵
 const publicRoutes = [
-  '/',
   '/explore',
   '/guide',
   '/auth/',
@@ -73,7 +72,17 @@ function addSecurityHeaders(response: NextResponse) {
     : "'self' 'unsafe-inline' https://www.googletagmanager.com"
   response.headers.set(
     'Content-Security-Policy',
-    `default-src 'self'; script-src ${scriptSrc}; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.anthropic.com https://generativelanguage.googleapis.com; frame-ancestors 'none'`
+    [
+      `default-src 'self'`,
+      `script-src ${scriptSrc}`,
+      `style-src 'self' 'unsafe-inline'`,
+      `img-src 'self' data: blob: https://*.supabase.co https://images.unsplash.com https://source.unsplash.com https://plus.unsplash.com https://avatars.githubusercontent.com https://lh3.googleusercontent.com https://k.kakaocdn.net https://phinf.pstatic.net https://ssl.pstatic.net https://www.googletagmanager.com`,
+      `font-src 'self' https://fonts.gstatic.com`,
+      `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://generativelanguage.googleapis.com https://www.google-analytics.com https://www.googletagmanager.com`,
+      `frame-ancestors 'none'`,
+      `base-uri 'self'`,
+      `form-action 'self'`,
+    ].join('; ')
   )
   return response
 }
@@ -116,6 +125,15 @@ export async function middleware(request: NextRequest) {
   // Match exact path or path with trailing segments (e.g. /project/ matches /project/abc but not /projects)
   if (hiddenRoutes.some(route => pathname === route.replace(/\/$/, '') || pathname.startsWith(route))) {
     return NextResponse.redirect(new URL('/explore', request.url))
+  }
+
+  // 랜딩페이지(`/`): 로그인 상태면 /explore로 리다이렉트
+  if (pathname === '/') {
+    const { user } = await updateSession(request)
+    if (user) {
+      return NextResponse.redirect(new URL('/explore', request.url))
+    }
+    return addSecurityHeaders(NextResponse.next({ request }))
   }
 
   // 퍼블릭 라우트 → Supabase 클라이언트 생성 자체를 스킵, 즉시 반환

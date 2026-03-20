@@ -1,5 +1,5 @@
 import { createClient } from '@/src/lib/supabase/server'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 
 // 이 Opportunity에 적합한 다른 사용자 추천
@@ -152,7 +152,7 @@ export async function GET(
       .sort((a, b) => b.match_score - a.match_score)
       .slice(0, 5) // 상위 5명
 
-    return NextResponse.json(scoredProfiles)
+    return ApiResponse.ok(scoredProfiles)
   } catch (_error) {
     return ApiResponse.internalError()
   }

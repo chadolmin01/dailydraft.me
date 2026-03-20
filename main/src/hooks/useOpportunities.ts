@@ -3,25 +3,15 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase/client'
 import { useAuth } from '../context/AuthContext'
-import type { Tables, TablesInsert, TablesUpdate } from '../types/database'
+import type { TablesInsert, TablesUpdate } from '../types/database'
+import type { Opportunity, OpportunityWithCreator } from '../types/opportunity'
 import { withRetry } from '../lib/query-utils'
 
-type Opportunity = Tables<'opportunities'>
 type OpportunityInsert = TablesInsert<'opportunities'>
 type OpportunityUpdate = TablesUpdate<'opportunities'>
 
-// Extended type with creator profile
-export type OpportunityWithCreator = Opportunity & {
-  creator?: {
-    nickname: string
-    user_id: string
-    skills?: unknown
-    location?: string | null
-    contact_email?: string | null
-    desired_position?: string | null
-    university?: string | null
-  }
-}
+// Re-export for consumers that import from this hook
+export type { OpportunityWithCreator } from '../types/opportunity'
 
 // Query keys
 export const opportunityKeys = {

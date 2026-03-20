@@ -1,0 +1,37 @@
+name: Sync Startup Events
+
+on:
+  # Schedule: Daily at 5 AM KST (8 PM UTC previous day)
+  schedule:
+    - cron: '0 20 * * *'
+
+  # Allow manual trigger
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Trigger event sync
+        run: |
+          response=$(curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json" \
+            -w "\n%{http_code}" \
+            -s \
+            ${{ secrets.APP_URL }}/api/cron/sync-events)
+
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | sed '$d')
+
+          echo "HTTP Status: $http_code"
+          echo "Response: $body"
+
+          if [ "$http_code" != "200" ]; then
+            echo "Error: Sync failed with status $http_code"
+            exit 1
+          fi
+
+          echo "Sync completed successfully"

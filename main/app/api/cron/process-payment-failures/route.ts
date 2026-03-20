@@ -6,10 +6,11 @@
  * 권장 실행 주기: 매일 1회 (예: 오전 6시)
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { createAdminClient } from '@/src/lib/supabase/admin'
 import { processExpiredGracePeriods } from '@/src/lib/subscription/payment-failure-handler'
 import { logCronError } from '@/src/lib/error-logging'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
@@ -23,10 +24,7 @@ export async function GET(request: NextRequest) {
     const cronSecret = process.env.CRON_SECRET
 
     if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
-      return NextResponse.json(
-        { error: '로그인이 필요합니다' },
-        { status: 401 }
-      )
+      return ApiResponse.unauthorized()
     }
 
     const supabase = createAdminClient()
@@ -36,7 +34,7 @@ export async function GET(request: NextRequest) {
 
     const duration = Date.now() - startTime
 
-    return NextResponse.json({
+    return ApiResponse.ok({
       success: true,
       timestamp: new Date().toISOString(),
       result,
@@ -46,15 +44,7 @@ export async function GET(request: NextRequest) {
     const err = error instanceof Error ? error : new Error(String(error))
     await logCronError(err, 'process-payment-failures')
 
-    return NextResponse.json(
-      {
-        success: false,
-        error: err.message,
-        timestamp: new Date().toISOString(),
-        duration_ms: Date.now() - startTime,
-      },
-      { status: 500 }
-    )
+    return ApiResponse.internalError('결제 실패 처리 중 오류가 발생했습니다.')
   }
 }
 

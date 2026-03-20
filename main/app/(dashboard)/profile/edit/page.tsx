@@ -3,8 +3,10 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import Cropper from 'react-easy-crop'
+import dynamic from 'next/dynamic'
 import type { Area } from 'react-easy-crop'
+
+const Cropper = dynamic(() => import('react-easy-crop').then(m => m.default), { ssr: false }) as unknown as React.ComponentType<Partial<import('react-easy-crop').CropperProps>>
 import {
   Save, Loader2, User, Briefcase, Mail, Plus, X,
   CheckSquare, Target, Camera, ImageIcon, Sparkles, Link, Github, Linkedin,

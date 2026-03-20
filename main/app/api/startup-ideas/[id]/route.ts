@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { ApiResponse } from '@/src/lib/api-utils';
 
 export const runtime = 'nodejs';
 
@@ -15,20 +16,14 @@ export async function GET(
     const { id } = await params;
 
     if (!id) {
-      return NextResponse.json(
-        { success: false, error: 'ID is required' },
-        { status: 400 }
-      );
+      return ApiResponse.badRequest('ID is required');
     }
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
     if (!supabaseUrl || !supabaseKey) {
-      return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 500 }
-      );
+      return ApiResponse.internalError('서버 설정 오류가 발생했습니다');
     }
 
     const supabase = createClient(supabaseUrl, supabaseKey);
@@ -41,25 +36,18 @@ export async function GET(
 
     if (error) {
       if (error.code === 'PGRST116') {
-        return NextResponse.json(
-          { success: false, error: 'Startup idea not found' },
-          { status: 404 }
-        );
+        return ApiResponse.notFound('스타트업 아이디어를 찾을 수 없습니다');
       }
       throw error;
     }
 
-    return NextResponse.json({
+    return ApiResponse.ok({
       success: true,
       data,
     });
 
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error('[startup-ideas] GET by ID error:', errorMessage);
-    return NextResponse.json(
-      { success: false, error: '스타트업 아이디어 조회에 실패했습니다' },
-      { status: 500 }
-    );
+    console.error('[startup-ideas] GET by ID error:', error);
+    return ApiResponse.internalError('스타트업 아이디어 조회에 실패했습니다');
   }
 }

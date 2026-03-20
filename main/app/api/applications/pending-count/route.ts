@@ -1,4 +1,3 @@
-import { NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 
@@ -24,7 +23,7 @@ export async function GET() {
     const myOpportunities = myOpportunitiesData as { id: string }[] | null
 
     if (!myOpportunities || myOpportunities.length === 0) {
-      return NextResponse.json({ count: 0 })
+      return ApiResponse.ok({ count: 0 })
     }
 
     const opportunityIds = myOpportunities.map((o) => o.id)
@@ -41,7 +40,7 @@ export async function GET() {
       return ApiResponse.internalError()
     }
 
-    return NextResponse.json({ count: count || 0 })
+    return ApiResponse.ok({ count: count || 0 })
   } catch (error) {
     console.error('pending-count error:', error)
     return ApiResponse.internalError()
