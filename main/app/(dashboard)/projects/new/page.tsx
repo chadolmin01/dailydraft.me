@@ -192,12 +192,16 @@ function NewProjectContent() {
     if (imageFiles.length === 0) return []
     setImageUploading(true)
     try {
-      const formData = new FormData()
-      imageFiles.forEach(f => formData.append('files', f))
-      const res = await fetch('/api/upload', { method: 'POST', body: formData })
-      if (!res.ok) throw new Error('업로드 실패')
-      const { urls } = await res.json()
-      return urls || []
+      const urls: string[] = []
+      for (const file of imageFiles) {
+        const formData = new FormData()
+        formData.append('files', file)
+        const res = await fetch('/api/upload', { method: 'POST', body: formData })
+        if (!res.ok) throw new Error('업로드 실패')
+        const { urls: uploaded } = await res.json()
+        if (uploaded?.length) urls.push(...uploaded)
+      }
+      return urls
     } finally {
       setImageUploading(false)
     }
