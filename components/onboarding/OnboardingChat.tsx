@@ -13,6 +13,7 @@ interface OnboardingChatProps {
   aiActivity: string | null
   step: Step
   chatEndRef: React.RefObject<HTMLDivElement | null>
+  scrollContainerRef: React.RefObject<HTMLDivElement | null>
   onRetrySave: () => void
   /** Render function for attachment content */
   renderAttachment: (bubble: Bubble) => React.ReactNode
@@ -27,10 +28,10 @@ function isActiveBubble(bubbles: Bubble[], id: string, attachment: BubbleAttachm
 
 export const OnboardingChat: React.FC<OnboardingChatProps> = ({
   bubbles, isTyping, isSaving, saveError, aiActivity, step,
-  chatEndRef, onRetrySave, renderAttachment,
+  chatEndRef, scrollContainerRef, onRetrySave, renderAttachment,
 }) => {
   return (
-    <div className="flex-1 overflow-y-auto">
+    <div ref={scrollContainerRef} className="flex-1 overflow-y-auto">
       <div className="max-w-2xl mx-auto px-4 sm:px-5 py-6 space-y-1">
         {bubbles.map((bubble, i) => {
           const isAi = bubble.role === 'ai'

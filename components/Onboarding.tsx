@@ -30,6 +30,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   const { coveredTopics, userMsgCount, currentSuggestions, canGoBack } = useDerivedState(state)
 
   const chatEndRef = useRef<HTMLDivElement>(null)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
   const deepChatInputRef = useRef<HTMLInputElement>(null)
   const queueRef = useRef(false)
   const onCompleteTimerRef = useRef<ReturnType<typeof setTimeout>>(null)
@@ -42,7 +43,12 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
   // ── Scroll on bubble change ──
   useEffect(() => {
-    const t = setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 80)
+    const t = setTimeout(() => {
+      const container = scrollContainerRef.current
+      if (container) {
+        container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' })
+      }
+    }, 80)
     return () => clearTimeout(t)
   }, [state.bubbles, state.isTyping])
 
@@ -526,6 +532,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
         aiActivity={state.aiActivity}
         step={state.step}
         chatEndRef={chatEndRef}
+        scrollContainerRef={scrollContainerRef}
         onRetrySave={handleSave}
         renderAttachment={renderAttachment}
       />
