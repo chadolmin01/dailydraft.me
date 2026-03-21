@@ -174,7 +174,7 @@ export const TopNavbar: React.FC = () => {
           ? 'bg-surface-card/80 backdrop-blur-xl shadow-soft'
           : 'bg-surface-card/60 backdrop-blur-md'
       }`}>
-        <div className="w-full px-4 sm:px-10 lg:px-16 xl:px-24 h-full flex items-center gap-3">
+        <div className="w-full px-2.5 sm:px-10 lg:px-16 xl:px-24 h-full flex items-center gap-2 sm:gap-3">
 
           {/* ===== 좌측: 로고 ===== */}
           <Link href="/explore" className="flex items-center gap-2.5 shrink-0 group mr-1">
