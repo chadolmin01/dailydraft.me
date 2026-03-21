@@ -39,8 +39,8 @@ export function ExploreTabBar({
   return (
     <>
       {/* 탭 + 정렬 */}
-      <div className="flex items-center justify-between border-b-2 border-border-strong mb-6">
-        <div className="flex items-center">
+      <div className="flex items-center justify-between border-b-2 border-border-strong mb-6 overflow-x-auto scrollbar-hide">
+        <div className="flex items-center shrink-0">
           <button
             onClick={() => onTabChange('projects')}
             className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-bold border-b-2 -mb-[2px] transition-colors focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1 ${
@@ -64,7 +64,7 @@ export function ExploreTabBar({
         </div>
 
         {activeTab === 'projects' && (
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 shrink-0">
             {SORT_OPTIONS.map((tab) => (
               <button
                 key={tab.id}
@@ -84,7 +84,7 @@ export function ExploreTabBar({
         )}
 
         {activeTab === 'people' && (
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 shrink-0">
             {PEOPLE_SORT_OPTIONS.map((opt) => (
               <button
                 key={opt.id}
@@ -106,7 +106,7 @@ export function ExploreTabBar({
 
       {/* Type filter chips */}
       {activeTab === 'projects' && (
-        <div className="flex items-center gap-1.5 mb-4">
+        <div className="flex items-center gap-1.5 mb-4 overflow-x-auto scrollbar-hide">
           {TYPE_FILTERS.map((t) => (
             <button
               key={t.id}
@@ -125,7 +125,7 @@ export function ExploreTabBar({
 
       {/* People role filter chips */}
       {activeTab === 'people' && (
-        <div className="flex items-center gap-1.5 mb-4">
+        <div className="flex items-center gap-1.5 mb-4 overflow-x-auto scrollbar-hide">
           {PEOPLE_ROLE_FILTERS.map((r) => (
             <button
               key={r.id}
