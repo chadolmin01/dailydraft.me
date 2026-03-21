@@ -34,7 +34,7 @@ export function ExploreSearchBar({
   }, [isSearchExpanded])
 
   return (
-    <div ref={searchRef} className="relative mb-6">
+    <div ref={searchRef} className="relative mb-3 sm:mb-6">
       <div className={`relative transition-all duration-200 ${
         isSearchExpanded
           ? 'bg-surface-card shadow-solid-sm border border-brand/40'

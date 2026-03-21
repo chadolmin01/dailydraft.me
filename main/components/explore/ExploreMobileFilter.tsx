@@ -38,7 +38,7 @@ export function ExploreMobileFilter({
     <div className="lg:hidden mb-4">
       <button
         onClick={onToggle}
-        className={`flex items-center gap-2 px-4 py-2.5 text-sm font-bold border transition-all w-full justify-center ${
+        className={`flex items-center gap-2 px-3 py-2 text-xs font-bold border transition-all w-full justify-center ${
           isOpen ? 'bg-black text-white border-black' : 'bg-surface-card text-txt-secondary border-border-strong hover:border-border-strong'
         }`}
       >

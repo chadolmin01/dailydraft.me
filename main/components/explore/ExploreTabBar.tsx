@@ -33,7 +33,7 @@ function SortButtons({ options, current, onChange }: {
         <button
           key={tab.id}
           onClick={() => onChange(tab.id)}
-          className={`shrink-0 flex items-center gap-1 px-3 py-1.5 text-xs font-medium transition-colors ${
+          className={`shrink-0 flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-1.5 text-[0.625rem] sm:text-xs font-medium transition-colors ${
             current === tab.id ? 'bg-surface-sunken text-txt-primary' : 'text-txt-tertiary hover:text-txt-secondary'
           }`}
         >
@@ -70,21 +70,21 @@ export function ExploreTabBar({
         <div className="flex items-center shrink-0">
           <button
             onClick={() => onTabChange('projects')}
-            className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-bold border-b-2 -mb-[2px] transition-colors ${
+            className={`flex items-center gap-1 sm:gap-1.5 px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-bold border-b-2 -mb-[2px] transition-colors ${
               activeTab === 'projects' ? 'border-brand text-brand' : 'border-transparent text-txt-tertiary hover:text-txt-secondary'
             }`}
           >
-            <LayoutGrid size={14} />
+            <LayoutGrid size={13} />
             프로젝트
             {query && <span className="ml-1 text-[0.625rem] font-mono bg-brand-bg text-brand px-1.5 py-0.5">{projectCount}</span>}
           </button>
           <button
             onClick={() => onTabChange('people')}
-            className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-bold border-b-2 -mb-[2px] transition-colors ${
+            className={`flex items-center gap-1 sm:gap-1.5 px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-bold border-b-2 -mb-[2px] transition-colors ${
               activeTab === 'people' ? 'border-brand text-brand' : 'border-transparent text-txt-tertiary hover:text-txt-secondary'
             }`}
           >
-            <Users size={14} />
+            <Users size={13} />
             사람
             {query && <span className="ml-1 text-[0.625rem] font-mono bg-brand-bg text-brand px-1.5 py-0.5">{peopleCount}</span>}
           </button>
@@ -122,7 +122,7 @@ export function ExploreTabBar({
             <button
               key={t.id}
               onClick={() => onTypeFilterChange(t.id as TypeFilter)}
-              className={`shrink-0 px-3 py-1.5 text-xs font-bold border transition-all ${
+              className={`shrink-0 px-2 py-1 sm:px-3 sm:py-1.5 text-[0.625rem] sm:text-xs font-bold border transition-all ${
                 typeFilter === t.id
                   ? 'bg-black text-white border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]'
                   : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]'
@@ -141,7 +141,7 @@ export function ExploreTabBar({
             <button
               key={r.id}
               onClick={() => onPeopleRoleFilterChange(r.id as PeopleRoleFilter)}
-              className={`shrink-0 px-3 py-1.5 text-xs font-bold border transition-all ${
+              className={`shrink-0 px-2 py-1 sm:px-3 sm:py-1.5 text-[0.625rem] sm:text-xs font-bold border transition-all ${
                 peopleRoleFilter === r.id
                   ? 'bg-black text-white border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]'
                   : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]'
