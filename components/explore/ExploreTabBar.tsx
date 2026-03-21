@@ -38,75 +38,78 @@ export function ExploreTabBar({
 }: ExploreTabBarProps) {
   return (
     <>
-      {/* 탭 + 정렬 */}
-      <div className="flex items-center justify-between border-b-2 border-border-strong mb-6 overflow-x-auto whitespace-nowrap">
-        <div className="flex items-center shrink-0">
-          <button
-            onClick={() => onTabChange('projects')}
-            className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-bold border-b-2 -mb-[2px] transition-colors focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1 ${
-              activeTab === 'projects' ? 'border-brand text-brand' : 'border-transparent text-txt-tertiary hover:text-txt-secondary'
-            }`}
-          >
-            <LayoutGrid size={14} />
-            프로젝트
-            {query && <span className="ml-1 text-[0.625rem] font-mono bg-brand-bg text-brand px-1.5 py-0.5">{projectCount}</span>}
-          </button>
-          <button
-            onClick={() => onTabChange('people')}
-            className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-bold border-b-2 -mb-[2px] transition-colors focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1 ${
-              activeTab === 'people' ? 'border-brand text-brand' : 'border-transparent text-txt-tertiary hover:text-txt-secondary'
-            }`}
-          >
-            <Users size={14} />
-            사람
-            {query && <span className="ml-1 text-[0.625rem] font-mono bg-brand-bg text-brand px-1.5 py-0.5">{peopleCount}</span>}
-          </button>
+      {/* 탭 + 정렬 — 모바일에서 세로 배치 */}
+      <div className="border-b-2 border-border-strong mb-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center shrink-0">
+            <button
+              onClick={() => onTabChange('projects')}
+              className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-bold border-b-2 -mb-[2px] transition-colors ${
+                activeTab === 'projects' ? 'border-brand text-brand' : 'border-transparent text-txt-tertiary hover:text-txt-secondary'
+              }`}
+            >
+              <LayoutGrid size={14} />
+              프로젝트
+              {query && <span className="ml-1 text-[0.625rem] font-mono bg-brand-bg text-brand px-1.5 py-0.5">{projectCount}</span>}
+            </button>
+            <button
+              onClick={() => onTabChange('people')}
+              className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-bold border-b-2 -mb-[2px] transition-colors ${
+                activeTab === 'people' ? 'border-brand text-brand' : 'border-transparent text-txt-tertiary hover:text-txt-secondary'
+              }`}
+            >
+              <Users size={14} />
+              사람
+              {query && <span className="ml-1 text-[0.625rem] font-mono bg-brand-bg text-brand px-1.5 py-0.5">{peopleCount}</span>}
+            </button>
+          </div>
         </div>
-
-        {activeTab === 'projects' && (
-          <div className="flex items-center gap-1 shrink-0">
-            {SORT_OPTIONS.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => onSortChange(tab.id as SortBy)}
-                className={`flex items-center gap-1 px-3 py-1.5 text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1 ${
-                  sortBy === tab.id ? 'bg-surface-sunken text-txt-primary' : 'text-txt-tertiary hover:text-txt-secondary'
-                }`}
-              >
-                <tab.icon size={12} />
-                {tab.label}
-                {tab.beta && (
-                  <span className="text-[0.5rem] font-mono font-bold bg-brand text-white px-1 py-px leading-none uppercase">beta</span>
-                )}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {activeTab === 'people' && (
-          <div className="flex items-center gap-1 shrink-0">
-            {PEOPLE_SORT_OPTIONS.map((opt) => (
-              <button
-                key={opt.id}
-                onClick={() => onPeopleSortChange(opt.id as PeopleSortBy)}
-                className={`flex items-center gap-1 px-3 py-1.5 text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1 ${
-                  peopleSortBy === opt.id ? 'bg-surface-sunken text-txt-primary' : 'text-txt-tertiary hover:text-txt-secondary'
-                }`}
-              >
-                <opt.icon size={12} />
-                {opt.label}
-                {opt.beta && (
-                  <span className="text-[0.5rem] font-mono font-bold bg-brand text-white px-1 py-px leading-none uppercase">beta</span>
-                )}
-              </button>
-            ))}
-          </div>
-        )}
       </div>
+
+      {/* 정렬 옵션 — 별도 줄 */}
+      {activeTab === 'projects' && (
+        <div className="flex items-center gap-1 mb-3 overflow-x-auto">
+          {SORT_OPTIONS.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => onSortChange(tab.id as SortBy)}
+              className={`shrink-0 flex items-center gap-1 px-3 py-1.5 text-xs font-medium transition-colors ${
+                sortBy === tab.id ? 'bg-surface-sunken text-txt-primary' : 'text-txt-tertiary hover:text-txt-secondary'
+              }`}
+            >
+              <tab.icon size={12} />
+              {tab.label}
+              {tab.beta && (
+                <span className="text-[0.5rem] font-mono font-bold bg-brand text-white px-1 py-px leading-none uppercase">beta</span>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {activeTab === 'people' && (
+        <div className="flex items-center gap-1 mb-3 overflow-x-auto">
+          {PEOPLE_SORT_OPTIONS.map((opt) => (
+            <button
+              key={opt.id}
+              onClick={() => onPeopleSortChange(opt.id as PeopleSortBy)}
+              className={`shrink-0 flex items-center gap-1 px-3 py-1.5 text-xs font-medium transition-colors ${
+                peopleSortBy === opt.id ? 'bg-surface-sunken text-txt-primary' : 'text-txt-tertiary hover:text-txt-secondary'
+              }`}
+            >
+              <opt.icon size={12} />
+              {opt.label}
+              {opt.beta && (
+                <span className="text-[0.5rem] font-mono font-bold bg-brand text-white px-1 py-px leading-none uppercase">beta</span>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Type filter chips */}
       {activeTab === 'projects' && (
-        <div className="flex items-center gap-1.5 mb-4 overflow-x-auto whitespace-nowrap">
+        <div className="flex items-center gap-1.5 mb-4 overflow-x-auto">
           {TYPE_FILTERS.map((t) => (
             <button
               key={t.id}
@@ -125,7 +128,7 @@ export function ExploreTabBar({
 
       {/* People role filter chips */}
       {activeTab === 'people' && (
-        <div className="flex items-center gap-1.5 mb-4 overflow-x-auto whitespace-nowrap">
+        <div className="flex items-center gap-1.5 mb-4 overflow-x-auto">
           {PEOPLE_ROLE_FILTERS.map((r) => (
             <button
               key={r.id}
