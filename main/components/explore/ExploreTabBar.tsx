@@ -1,5 +1,6 @@
 'use client'
 
+// ExploreTabBar — 탐색 탭 + 정렬 + 필터
 import React from 'react'
 import { LayoutGrid, Users } from 'lucide-react'
 import { SORT_OPTIONS, TYPE_FILTERS, PEOPLE_ROLE_FILTERS, PEOPLE_SORT_OPTIONS } from './constants'
