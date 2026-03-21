@@ -17,7 +17,16 @@ function getAI(): GoogleGenAI {
   const location = process.env.GOOGLE_LOCATION || 'us-central1'
 
   if (!project) {
-    throw new Error('GOOGLE_PROJECT_ID is not set in environment variables')
+    console.warn('[gemini-client] GOOGLE_PROJECT_ID is not set — AI calls will fail at runtime')
+    // Return a stub that throws on actual use, so build doesn't fail
+    _ai = new Proxy({} as GoogleGenAI, {
+      get(_, prop) {
+        return (...args: any[]) => {
+          throw new Error('GOOGLE_PROJECT_ID is not set in environment variables')
+        }
+      },
+    })
+    return _ai
   }
 
   _ai = new GoogleGenAI({
