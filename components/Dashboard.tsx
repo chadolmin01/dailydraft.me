@@ -294,7 +294,7 @@ export const Dashboard: React.FC = () => {
          data={selectedOpportunity}
       />
 
-      <div className="max-w-[100rem] mx-auto p-8 lg:p-12 space-y-6 flex-1 flex flex-col w-full">
+      <div className="max-w-[100rem] mx-auto px-4 py-6 sm:p-8 lg:p-12 space-y-6 flex-1 flex flex-col w-full">
 
         {/* Header */}
         <div className="flex justify-between items-end border-b border-dashed border-border pb-6 shrink-0">

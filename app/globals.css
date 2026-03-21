@@ -111,7 +111,7 @@ body {
 /* ── Mobile readability ── */
 @media (max-width: 639px) {
   html {
-    font-size: 87.5%;            /* 14px base (데스크탑 12.8px) */
+    font-size: 100%;             /* 16px base — 모바일 정상 크기 */
   }
   .text-\[0\.625rem\] {
     font-size: 0.75rem;          /* 10.5px — 라벨/캡션 가독성 확보 */
