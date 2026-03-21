@@ -79,7 +79,13 @@ export function ExploreAsidePanel({
                   <div className="h-5 w-10 bg-surface-sunken border border-border" />
                 </div>
               ))}
-              <p className="text-[0.625rem] font-mono text-txt-disabled text-center pt-2">추천 분석 중...</p>
+              <div className="flex items-center justify-center gap-2 pt-3">
+                <svg className="w-3.5 h-3.5 animate-spin text-brand" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+                  <path className="opacity-80" d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                </svg>
+                <p className="text-[0.625rem] font-mono text-txt-disabled">추천 분석 중...</p>
+              </div>
             </div>
           )
         ) : (
