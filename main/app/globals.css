@@ -103,6 +103,26 @@ html {
   scroll-behavior: smooth;
 }
 
+/* ── Mobile readability ── */
+@media (max-width: 639px) {
+  html {
+    font-size: 87.5%;            /* 14px base (데스크탑 12.8px) */
+  }
+  .text-\[0\.625rem\] {
+    font-size: 0.75rem;          /* 10.5px — 라벨/캡션 가독성 확보 */
+  }
+  .text-\[0\.5rem\] {
+    font-size: 0.5625rem;        /* 7.875px — 뱃지 보수적 보정 */
+  }
+}
+
+/* ── iOS safe area (노치/홈바) ── */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
 body {
   background-color: var(--surface-bg);
   color: var(--text-primary);

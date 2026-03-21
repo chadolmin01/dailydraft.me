@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Noto_Sans_KR, JetBrains_Mono } from 'next/font/google'
 import Script from 'next/script'
 import { Providers } from '@/src/context/Providers'
@@ -44,6 +44,14 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  viewportFit: 'cover',
 }
 
 export default function RootLayout({
