@@ -13,6 +13,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
         defaultOptions: {
           queries: {
             staleTime: 1000 * 60 * 5, // 5 minutes
+            refetchOnMount: true,
+            refetchOnWindowFocus: true,
+            refetchOnReconnect: true,
             retry: (failureCount, error) => {
               // AbortError(StrictMode 더블마운트)도 무조건 재시도
               return failureCount < 3
