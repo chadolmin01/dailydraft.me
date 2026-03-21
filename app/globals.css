@@ -101,6 +101,11 @@
 html {
   font-size: 80%;          /* 12.8px 기본 — 전체 UI 80% 컴팩트화 */
   scroll-behavior: smooth;
+  overflow-x: hidden;      /* 모바일 가로 흔들림 방지 */
+}
+
+body {
+  overflow-x: hidden;      /* 모바일 가로 오버플로우 차단 */
 }
 
 /* ── Mobile readability ── */
