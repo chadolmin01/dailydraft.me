@@ -190,12 +190,12 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
 
           {/* Modal */}
           <div
-            className="fixed inset-0 z-modal flex items-center justify-center p-4 md:p-8 animate-modal-in"
+            className="fixed inset-0 z-modal flex items-end sm:items-center justify-center pt-12 px-0 pb-0 sm:p-4 md:p-8 animate-modal-in"
             onClick={onClose}
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl max-h-[95vh] md:max-h-[90vh] bg-surface-card shadow-brutal-xl border border-border-strong overflow-hidden flex flex-col relative"
+              className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl max-h-[85vh] sm:max-h-[90vh] bg-surface-card shadow-brutal-xl border border-border-strong overflow-hidden flex flex-col relative"
               role="dialog"
               aria-modal="true"
               aria-label={opportunity?.title || '프로젝트 상세'}
