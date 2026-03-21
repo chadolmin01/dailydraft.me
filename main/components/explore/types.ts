@@ -41,7 +41,7 @@ export interface TrendingTag {
   count: number
 }
 
-export type SortBy = 'latest' | 'popular' | 'trending'
+export type SortBy = 'latest' | 'popular' | 'trending' | 'ai'
 export type TypeFilter = 'all' | 'side_project' | 'startup' | 'study'
 export type SearchScope = 'all' | 'projects' | 'people' | 'skills'
 export type ActiveTab = 'projects' | 'people'
