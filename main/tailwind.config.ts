@@ -129,6 +129,7 @@ const config: Config = {
         'backdrop-in': 'backdropIn 0.2s ease-out forwards',
         'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
         'page-enter': 'pageEnter 0.15s ease-out forwards',
+        fadeIn: 'fadeIn 0.35s ease-out both',
       },
       keyframes: {
         marquee: {
@@ -176,6 +177,10 @@ const config: Config = {
         pageEnter: {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' },
+        },
+        fadeIn: {
+          '0%': { opacity: '0', transform: 'translateY(4px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
         },
       },
     },

@@ -46,8 +46,13 @@ export function ExploreAsidePanel({
           /* 로그인 상태 */
           sidebarRecs.length > 0 ? (
             <div className="space-y-1">
-              {sidebarRecs.map((rec) => (
-                <div key={rec.user_id} onClick={() => onSelectProfile(rec.user_id, true)} className="relative flex items-center gap-3 p-2 border border-transparent hover:border-border hover:bg-surface-sunken transition-all cursor-pointer group">
+              {sidebarRecs.map((rec, idx) => (
+                <div
+                  key={rec.user_id}
+                  onClick={() => onSelectProfile(rec.user_id, true)}
+                  className="relative flex items-center gap-3 p-2 border border-transparent hover:border-border hover:bg-surface-sunken transition-all cursor-pointer group animate-fadeIn"
+                  style={{ animationDelay: `${idx * 60}ms` }}
+                >
                   <div className="w-9 h-9 bg-brand-bg border border-brand-border flex items-center justify-center text-xs font-bold text-brand">
                     {(rec.nickname || '??').substring(0, 2)}
                   </div>

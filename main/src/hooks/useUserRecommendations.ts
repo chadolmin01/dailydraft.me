@@ -33,6 +33,30 @@ export const userRecommendationKeys = {
     [...userRecommendationKeys.all, 'list', options] as const,
 }
 
+const CACHE_KEY = 'draft_user_recs'
+const CACHE_MAX_AGE = 1000 * 60 * 30 // 30 minutes
+
+function getCachedRecs(): UserRecommendation[] | undefined {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY)
+    if (!raw) return undefined
+    const { data, ts } = JSON.parse(raw) as { data: UserRecommendation[]; ts: number }
+    if (Date.now() - ts > CACHE_MAX_AGE) {
+      localStorage.removeItem(CACHE_KEY)
+      return undefined
+    }
+    return data
+  } catch {
+    return undefined
+  }
+}
+
+function setCachedRecs(data: UserRecommendation[]) {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ data, ts: Date.now() }))
+  } catch { /* quota exceeded — ignore */ }
+}
+
 export function useUserRecommendations(options?: { limit?: number }) {
   const { user } = useAuth()
 
@@ -42,6 +66,11 @@ export function useUserRecommendations(options?: { limit?: number }) {
     retry: (failureCount) => failureCount < 3,
     retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
     enabled: !!user,
+    placeholderData: () => {
+      const cached = getCachedRecs()
+      if (!cached) return undefined
+      return options?.limit ? cached.slice(0, options.limit) : cached
+    },
     queryFn: () =>
       withRetry(async () => {
         const res = await fetch('/api/users/recommendations')
@@ -49,6 +78,7 @@ export function useUserRecommendations(options?: { limit?: number }) {
           throw new Error(`Failed to fetch recommendations: ${res.status}`)
         }
         const data: UserRecommendation[] = await res.json()
+        setCachedRecs(data)
         if (options?.limit) {
           return data.slice(0, options.limit)
         }
