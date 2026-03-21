@@ -1,9 +1,9 @@
 import { NextRequest } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { genAI } from '@/src/lib/ai/gemini-client';
 import { createClient } from '@/src/lib/supabase/server';
 import { ApiResponse } from '@/src/lib/api-utils';
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+import { safeGenerate } from '@/src/lib/ai/safe-generate';
+import { IdeaAnalyzeSchema } from '@/src/lib/ai/schemas';
 
 function getAnalyzeSystemInstruction(level: string) {
   const baseInstruction = `당신은 "Draft." 스타트업 아이디어 검증 엔진입니다. 사용자가 아이디어를 입력하면 세 가지 페르소나(개발자, 디자이너, VC)로 응답합니다. 한국어로 응답하십시오.`;
@@ -43,7 +43,7 @@ function getAnalyzeSystemInstruction(level: string) {
 
 export async function POST(request: NextRequest) {
   try {
-    if (!process.env.GEMINI_API_KEY) {
+    if (!process.env.GOOGLE_PROJECT_ID) {
       return ApiResponse.serviceUnavailable('AI 서비스를 사용할 수 없습니다');
     }
 
@@ -128,16 +128,9 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    const result = await model.generateContent(prompt);
-    const text = result.response.text();
-
-    let parsed;
-    try {
-      parsed = JSON.parse(text);
-    } catch {
-      console.error('Analyze JSON parse failed. Raw:', text.slice(0, 200));
-      return ApiResponse.internalError('AI 응답을 파싱하지 못했습니다. 다시 시도해주세요');
-    }
+    const { data: parsed } = await safeGenerate({
+      model, prompt, schema: IdeaAnalyzeSchema,
+    });
 
     return ApiResponse.ok({ success: true, result: parsed });
   } catch (error) {

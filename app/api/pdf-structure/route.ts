@@ -3,6 +3,8 @@ import { genAI } from '@/src/lib/ai/gemini-client'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { applyRateLimit } from '@/src/lib/rate-limit'
 import { logError } from '@/src/lib/error-logging'
+import { safeGenerate } from '@/src/lib/ai/safe-generate'
+import { PdfStructureSchema } from '@/src/lib/ai/schemas'
 
 const SYSTEM_PROMPT = `당신은 스타트업 PM입니다. 업로드된 PDF 문서를 분석하여 다음 3가지를 추출하세요.
 문서에 명시되지 않은 내용은 "내용 없음"으로 표기하세요.
@@ -59,26 +61,22 @@ export async function POST(request: Request) {
 
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
 
-    const result = await model.generateContent({
-      contents: [{
-        role: 'user',
-        parts: [
-          { inlineData: { mimeType, data: base64Data } },
-          { text: '이 문서를 분석해주세요.' }
-        ]
-      }],
-      systemInstruction: { role: 'user', parts: [{ text: SYSTEM_PROMPT }] },
-      generationConfig: { temperature: 0.3, maxOutputTokens: 2000 }
+    const { data: structured } = await safeGenerate({
+      model,
+      prompt: {
+        contents: [{
+          role: 'user',
+          parts: [
+            { inlineData: { mimeType, data: base64Data } },
+            { text: '이 문서를 분석해주세요.' }
+          ]
+        }],
+        systemInstruction: { role: 'user', parts: [{ text: SYSTEM_PROMPT }] },
+        generationConfig: { temperature: 0.3, maxOutputTokens: 2000 }
+      },
+      schema: PdfStructureSchema,
+      extractJson: 'object',
     })
-
-    const responseText = result.response.text()
-    const jsonMatch = responseText.match(/\{[\s\S]*\}/)
-
-    if (!jsonMatch) {
-      return ApiResponse.internalError('AI 응답 파싱 실패')
-    }
-
-    const structured: StructuredIdea = JSON.parse(jsonMatch[0])
     return ApiResponse.ok({ data: structured })
 
   } catch (error: unknown) {

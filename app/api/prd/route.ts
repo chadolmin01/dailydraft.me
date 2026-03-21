@@ -1,9 +1,9 @@
 import { NextRequest } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { genAI } from '@/src/lib/ai/gemini-client';
 import { createClient } from '@/src/lib/supabase/server';
 import { ApiResponse } from '@/src/lib/api-utils';
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+import { safeGenerate } from '@/src/lib/ai/safe-generate';
+import { PrdAnalysisSchema, PrdGenerationSchema } from '@/src/lib/ai/schemas';
 
 const ANALYSIS_PROMPT = `당신은 스타트업 아이디어 분석가입니다. 3명의 팀원이 제출한 텍스트에서 핵심 정보를 추출하세요.
 
@@ -72,7 +72,7 @@ JSON 스키마:
 
 export async function POST(request: NextRequest) {
   try {
-    if (!process.env.GEMINI_API_KEY) {
+    if (!process.env.GOOGLE_PROJECT_ID) {
       return ApiResponse.serviceUnavailable('AI 서비스를 사용할 수 없습니다.');
     }
 
@@ -102,14 +102,9 @@ export async function POST(request: NextRequest) {
       generationConfig: { responseMimeType: 'application/json' }
     });
 
-    const analysisResponse = await analysisModel.generateContent(rawInput);
-    const analysisText = analysisResponse.response.text();
-    let analysis;
-    try {
-      analysis = JSON.parse(analysisText);
-    } catch {
-      return ApiResponse.internalError('AI 분석 결과를 파싱할 수 없습니다. 다시 시도해주세요.');
-    }
+    const { data: analysis } = await safeGenerate({
+      model: analysisModel, prompt: rawInput, schema: PrdAnalysisSchema,
+    });
 
     // 2단계: PRD 생성
     const prdModel = genAI.getGenerativeModel({
@@ -125,14 +120,9 @@ PM/기획자: ${analysis.pm_intent?.core_idea || '미정'}, BM: ${analysis.pm_in
 플랫폼: ${analysis.developer_intent?.platforms?.join(', ') || '미정'}
 충돌: ${analysis.conflicts?.length > 0 ? analysis.conflicts.map((c: { description: string }) => c.description).join(', ') : '없음'}`;
 
-    const prdResponse = await prdModel.generateContent(prdPrompt);
-    const prdText = prdResponse.response.text();
-    let prd;
-    try {
-      prd = JSON.parse(prdText);
-    } catch {
-      return ApiResponse.internalError('PRD 생성 결과를 파싱할 수 없습니다. 다시 시도해주세요.');
-    }
+    const { data: prd } = await safeGenerate({
+      model: prdModel, prompt: prdPrompt, schema: PrdGenerationSchema,
+    });
 
     return ApiResponse.ok({ success: true, data: prd, analysis });
   } catch (error) {

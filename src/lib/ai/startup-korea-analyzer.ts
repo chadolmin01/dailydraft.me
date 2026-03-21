@@ -5,6 +5,8 @@
 
 import { chatModel } from './gemini-client'
 import type { StartupIdea, StartupKoreaAnalysis, FounderType } from '../startups/types'
+import { safeGenerate } from './safe-generate'
+import { StartupKoreaSchema } from './schemas'
 
 interface AnalysisInput {
   startup: StartupIdea
@@ -74,71 +76,6 @@ JSON만 출력하세요. 다른 텍스트는 포함하지 마세요.`
 }
 
 /**
- * AI 응답을 파싱하여 StartupKoreaAnalysis 객체로 변환
- */
-function parseAnalysisResponse(response: string): StartupKoreaAnalysis {
-  try {
-    // JSON 블록 추출 (```json ... ``` 형식 처리)
-    let jsonStr = response
-    const jsonMatch = response.match(/```(?:json)?\s*([\s\S]*?)```/)
-    if (jsonMatch) {
-      jsonStr = jsonMatch[1]
-    }
-
-    const parsed = JSON.parse(jsonStr.trim())
-
-    // Founder type 유효성 검사
-    const validFounderTypes: FounderType[] = [
-      'Blitz Builder',
-      'Market Sniper',
-      'Tech Pioneer',
-      'Community Builder',
-    ]
-    const targetFounderType = (parsed.target_founder_type || [])
-      .filter((t: string) => validFounderTypes.includes(t as FounderType))
-      .slice(0, 2) as FounderType[]
-
-    // difficulty 유효성 검사
-    const validDifficulties = ['easy', 'medium', 'hard'] as const
-    const difficulty = validDifficulties.includes(parsed.difficulty)
-      ? parsed.difficulty
-      : 'medium'
-
-    return {
-      korean_summary: parsed.korean_summary || '분석 결과를 확인해주세요.',
-      problem: parsed.problem || '정보 없음',
-      business_model: parsed.business_model || '정보 없음',
-      korea_exists: Boolean(parsed.korea_exists),
-      korea_competitors: (parsed.korea_competitors || []).slice(0, 3),
-      korea_fit_score: Math.min(100, Math.max(0, Math.round(parsed.korea_fit_score || 50))),
-      korea_fit_reason: parsed.korea_fit_reason || '분석 결과를 확인해주세요.',
-      suggested_localization: parsed.suggested_localization || '추가 분석이 필요합니다.',
-      target_founder_type: targetFounderType.length > 0
-        ? targetFounderType
-        : ['Blitz Builder'],
-      difficulty,
-      tags: (parsed.tags || []).slice(0, 5),
-    }
-  } catch (error) {
-    console.error('Failed to parse startup analysis response:', error, response)
-    // 파싱 실패 시 기본값 반환
-    return {
-      korean_summary: '분석을 완료할 수 없습니다.',
-      problem: '정보 없음',
-      business_model: '정보 없음',
-      korea_exists: false,
-      korea_competitors: [],
-      korea_fit_score: 50,
-      korea_fit_reason: '분석 오류가 발생했습니다.',
-      suggested_localization: '수동 분석이 필요합니다.',
-      target_founder_type: ['Blitz Builder'],
-      difficulty: 'medium',
-      tags: [],
-    }
-  }
-}
-
-/**
  * 스타트업의 한국 시장 적합성을 AI로 분석
  */
 export async function analyzeStartupKoreaFit(
@@ -147,10 +84,16 @@ export async function analyzeStartupKoreaFit(
   const prompt = buildAnalysisPrompt({ startup })
 
   try {
-    const result = await chatModel.generateContent(prompt)
-    const response = result.response.text()
-
-    return parseAnalysisResponse(response)
+    const { data } = await safeGenerate({
+      model: chatModel,
+      prompt,
+      schema: StartupKoreaSchema,
+      extractJson: 'object',
+    })
+    return {
+      ...data,
+      target_founder_type: data.target_founder_type as FounderType[],
+    }
   } catch (error) {
     console.error('Startup Korea analysis error:', error)
     throw new Error('스타트업 한국 적합도 분석 중 오류가 발생했습니다.')
