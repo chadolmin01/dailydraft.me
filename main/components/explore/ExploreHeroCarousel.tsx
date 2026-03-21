@@ -83,8 +83,23 @@ export function ExploreHeroCarousel() {
             <div className={`absolute inset-0 px-4 sm:px-6 flex items-center transition-all duration-300 ${order[0] === 1 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
               <div className="w-full">
                 <span className="text-[0.625rem] font-mono font-bold text-txt-tertiary tracking-wider block">HOW IT WORKS</span>
-                <h2 className="text-2xl md:text-3xl font-bold text-txt-primary mt-1 mb-6">간단한 3단계</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
+                <h2 className="text-2xl md:text-3xl font-bold text-txt-primary mt-1 mb-4 sm:mb-6">간단한 3단계</h2>
+                {/* Mobile: compact inline tags */}
+                <div className="flex gap-2 sm:hidden">
+                  {[
+                    { icon: Upload, title: '올리기' },
+                    { icon: MessageCircle, title: '피드백' },
+                    { icon: Coffee, title: '만나기' },
+                  ].map((step, i) => (
+                    <div key={i} className="flex items-center gap-1.5 px-2.5 py-1.5 border border-border bg-surface-card/80">
+                      <div className="w-4 h-4 bg-black text-white flex items-center justify-center text-[0.5rem] font-bold">{i + 1}</div>
+                      <step.icon size={12} className="text-txt-secondary" />
+                      <span className="text-xs font-bold text-txt-primary">{step.title}</span>
+                    </div>
+                  ))}
+                </div>
+                {/* Desktop: full cards */}
+                <div className="hidden sm:grid grid-cols-3 gap-3">
                   {[
                     { num: 1, icon: Upload, title: '올리기', desc: '아이디어와 고민을 공유' },
                     { num: 2, icon: MessageCircle, title: '피드백', desc: '다양한 시각의 조언' },
@@ -108,8 +123,18 @@ export function ExploreHeroCarousel() {
               <div className="w-full">
                 <span className="text-[0.625rem] font-mono font-bold text-txt-tertiary tracking-wider block">FEEDBACK</span>
                 <h2 className="text-2xl md:text-3xl font-bold text-txt-primary mt-1 mb-2">솔직한 피드백</h2>
-                <p className="text-xs text-txt-tertiary mb-5 break-keep">프로젝트를 올리면 다양한 관점의 피드백을 받을 수 있어요</p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
+                <p className="text-xs text-txt-tertiary mb-3 sm:mb-5 break-keep">프로젝트를 올리면 다양한 관점의 피드백을 받을 수 있어요</p>
+                {/* Mobile: single compact quote */}
+                <div className="sm:hidden border border-border bg-surface-card p-3">
+                  <div className="flex items-center gap-1.5 mb-1.5">
+                    <span className="text-[0.625rem] font-mono text-txt-tertiary">연대 경영</span>
+                    <span className="text-[0.625rem] text-txt-disabled">|</span>
+                    <span className="text-[0.625rem] font-bold text-txt-secondary">김OO</span>
+                  </div>
+                  <p className="text-xs text-txt-secondary leading-relaxed break-keep line-clamp-2">타겟을 대학생으로 좁히는 게 낫지 않을까요? 차별점이 필요할 것 같아요.</p>
+                </div>
+                {/* Desktop: full 3-col cards */}
+                <div className="hidden sm:grid grid-cols-3 gap-3">
                   {[
                     { school: '연대 경영', name: '김OO', content: '타겟을 대학생으로 좁히는 게 낫지 않을까요? 차별점이 필요할 것 같아요.' },
                     { school: '고대 컴공', name: '박OO', content: '학교 인증 기능이 핵심이 될 것 같은데, 인증 방식이 궁금해요.' },
