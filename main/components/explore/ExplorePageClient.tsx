@@ -245,6 +245,7 @@ function ExplorePageContent() {
         avatarUrl: profile.avatar_url,
         matchScore: rec?.match_score ?? null,
         matchReason: rec?.match_reason ?? null,
+        matchReasonDetail: rec?.match_reason_detail ?? null,
         badges: profile.badges ?? null,
         interestCount: profile.interest_count || 0,
         createdAt: profile.created_at,

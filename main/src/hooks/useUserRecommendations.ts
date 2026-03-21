@@ -17,6 +17,7 @@ export interface UserRecommendation {
   current_situation: string | null
   match_score: number
   match_reason: string
+  match_reason_detail: string
   match_details: {
     vision: number
     skill: number

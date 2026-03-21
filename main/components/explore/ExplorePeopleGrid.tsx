@@ -99,7 +99,13 @@ export function ExplorePeopleGrid({
               </div>
               <div className="px-4 h-[5.75rem] shrink-0 overflow-hidden">
                 {peopleSortBy === 'ai' && t.matchReason ? (
-                  <p className="text-sm text-txt-tertiary line-clamp-2 mb-2">{t.matchReason}</p>
+                  <div className="mb-2">
+                    {t.matchReasonDetail ? (
+                      <p className="text-sm text-txt-tertiary line-clamp-3">{t.matchReasonDetail}</p>
+                    ) : (
+                      <p className="text-sm text-txt-tertiary line-clamp-2">{t.matchReason}</p>
+                    )}
+                  </div>
                 ) : t.visionSummary ? (
                   <p className="text-sm text-txt-tertiary line-clamp-2 mb-2">{t.visionSummary}</p>
                 ) : null}

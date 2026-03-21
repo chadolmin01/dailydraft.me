@@ -185,7 +185,10 @@ export const ProfileAnalysisSchema = z.object({
 
 // ── 6. User Matcher: Match Reasons ──
 
-export const MatchReasonsSchema = z.record(z.string(), z.string())
+export const MatchReasonsSchema = z.record(z.string(), z.object({
+  short: z.string().default(''),
+  detail: z.string().default(''),
+}))
 
 // ── 7. Profile Extraction ──
 

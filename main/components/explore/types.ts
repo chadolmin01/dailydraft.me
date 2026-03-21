@@ -25,6 +25,7 @@ export interface TalentCard {
   avatarUrl?: string | null
   matchScore?: number | null
   matchReason?: string | null
+  matchReasonDetail?: string | null
   badges?: string[] | null
 }
 
