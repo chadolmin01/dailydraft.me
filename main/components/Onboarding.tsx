@@ -33,6 +33,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const deepChatInputRef = useRef<HTMLInputElement>(null)
   const queueRef = useRef(false)
+  const savingRef = useRef(false)
   const onCompleteTimerRef = useRef<ReturnType<typeof setTimeout>>(null)
 
   // Refs to avoid stale closures in async callbacks
@@ -276,7 +277,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
   const handleDeepChatAccept = async () => {
     const s = stateRef.current
-    if (s.isTyping || s.step !== 'deep-chat-offer') return
+    if (s.isTyping || savingRef.current || s.step !== 'deep-chat-offer') return
     pushUser('좋아요, 해볼게요!')
 
     await new Promise(r => setTimeout(r, 400))
@@ -311,7 +312,8 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
   const handleDeepChatSkip = async () => {
     const s = stateRef.current
-    if (s.isTyping || s.step !== 'deep-chat-offer') return
+    if (s.isTyping || savingRef.current || s.step !== 'deep-chat-offer') return
+    savingRef.current = true
     pushUser('건너뛰기')
     await finishOnboarding()
   }
@@ -420,6 +422,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       onCompleteTimerRef.current = setTimeout(onComplete, 1500)
     } catch (err) {
       console.error('[Onboarding] save error:', err)
+      savingRef.current = false
       dispatch({ type: 'SET_SAVE_ERROR', error: err instanceof Error ? err.message : '저장에 실패했습니다.' })
       dispatch({ type: 'SET_SAVING', isSaving: false })
     }

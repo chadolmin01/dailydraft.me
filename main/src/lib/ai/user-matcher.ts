@@ -1,6 +1,8 @@
 import type { Profile, Skill, CurrentSituation } from '@/src/types/profile'
 import type { ProfileAnalysisResult } from '@/src/types/profile-analysis'
 import { chatModel } from './gemini-client'
+import { safeGenerate } from './safe-generate'
+import { MatchReasonsSchema } from './schemas'
 
 export interface UserMatchResult {
   userId: string
@@ -472,24 +474,21 @@ ${candidateSummaries}
 }`
 
   try {
-    const result = await chatModel.generateContent({
-      contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      generationConfig: {
-        temperature: 0.7,
-        topP: 0.9,
-        maxOutputTokens: 2000,
-        responseMimeType: 'application/json',
+    const { data: parsed } = await safeGenerate({
+      model: chatModel,
+      prompt: {
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        generationConfig: {
+          temperature: 0.7,
+          topP: 0.9,
+          maxOutputTokens: 2000,
+          responseMimeType: 'application/json',
+        },
       },
+      schema: MatchReasonsSchema,
     })
 
-    const text = result.response.text()
-    let jsonStr = text
-    const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/)
-    if (jsonMatch) jsonStr = jsonMatch[1]
-
-    const parsed = JSON.parse(jsonStr.trim()) as Record<string, string>
     const reasonMap = new Map<string, string>()
-
     for (const [userId, reason] of Object.entries(parsed)) {
       if (typeof reason === 'string' && reason.length > 0) {
         reasonMap.set(userId, reason.slice(0, 40))

@@ -1,5 +1,7 @@
 import { chatModel } from './gemini-client'
 import type { ProfileAnalysisResult } from '@/src/types/profile-analysis'
+import { safeGenerate } from './safe-generate'
+import { ProfileAnalysisSchema } from './schemas'
 
 interface ProfileInput {
   desired_position: string | null
@@ -75,78 +77,24 @@ function buildProfileAnalysisPrompt(profile: ProfileInput): string {
 - JSON만 출력하세요. 다른 텍스트는 포함하지 마세요.`
 }
 
-function parseProfileAnalysisResponse(text: string): ProfileAnalysisResult {
-  try {
-    let jsonStr = text
-    const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/)
-    if (jsonMatch) {
-      jsonStr = jsonMatch[1]
-    }
-
-    const parsed = JSON.parse(jsonStr.trim())
-
-    const clamp = (v: unknown) => Math.min(100, Math.max(0, Math.round(Number(v) || 50)))
-
-    const validFounderTypes = ['Blitz Builder', 'Market Sniper', 'Tech Pioneer', 'Community Builder'] as const
-    const founderType = validFounderTypes.includes(parsed.founder_type)
-      ? parsed.founder_type
-      : 'Blitz Builder'
-
-    return {
-      scores: {
-        market_fit: clamp(parsed.scores?.market_fit),
-        execution_power: clamp(parsed.scores?.execution_power),
-        technical_depth: clamp(parsed.scores?.technical_depth),
-        team_synergy: clamp(parsed.scores?.team_synergy),
-        founder_readiness: clamp(parsed.scores?.founder_readiness),
-      },
-      recommended_fields: (parsed.recommended_fields || []).slice(0, 3).map((f: Record<string, unknown>) => ({
-        name: String(f.name || '미분류'),
-        score: clamp(f.score),
-        reason: String(f.reason || '').slice(0, 30),
-      })),
-      strengths: (parsed.strengths || ['분석 중']).slice(0, 3),
-      growth_areas: (parsed.growth_areas || ['분석 중']).slice(0, 3),
-      founder_type: founderType,
-      one_liner: parsed.one_liner || '프로필 분석 완료',
-    }
-  } catch (error) {
-    console.error('Failed to parse profile analysis response:', error, text)
-    return {
-      scores: {
-        market_fit: 50,
-        execution_power: 50,
-        technical_depth: 50,
-        team_synergy: 50,
-        founder_readiness: 50,
-      },
-      recommended_fields: [
-        { name: '일반 스타트업', score: 50, reason: '분석 오류' },
-      ],
-      strengths: ['분석을 다시 시도해주세요'],
-      growth_areas: ['분석을 다시 시도해주세요'],
-      founder_type: 'Blitz Builder',
-      one_liner: '프로필 분석에 실패했습니다.',
-    }
-  }
-}
-
 export async function analyzeProfile(profile: ProfileInput): Promise<ProfileAnalysisResult> {
   const prompt = buildProfileAnalysisPrompt(profile)
 
   try {
-    const result = await chatModel.generateContent({
-      contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      generationConfig: {
-        temperature: 0.5,
-        topP: 0.9,
-        maxOutputTokens: 1500,
-        responseMimeType: 'application/json',
+    const { data } = await safeGenerate({
+      model: chatModel,
+      prompt: {
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        generationConfig: {
+          temperature: 0.5,
+          topP: 0.9,
+          maxOutputTokens: 1500,
+          responseMimeType: 'application/json',
+        },
       },
+      schema: ProfileAnalysisSchema,
     })
-
-    const responseText = result.response.text()
-    return parseProfileAnalysisResponse(responseText)
+    return data as ProfileAnalysisResult
   } catch (error) {
     console.error('Profile analysis error:', error)
     throw new Error('프로필 분석 중 오류가 발생했습니다.')

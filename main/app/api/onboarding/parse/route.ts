@@ -2,6 +2,8 @@ import { chatModel } from '@/src/lib/ai/gemini-client'
 import { createClient } from '@/src/lib/supabase/server'
 import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { safeGenerate } from '@/src/lib/ai/safe-generate'
+import { OnboardingParseSchema } from '@/src/lib/ai/schemas'
 
 export async function POST(request: Request) {
   try {
@@ -50,24 +52,18 @@ export async function POST(request: Request) {
 
 예시: ["AI/ML", "Sustainability", "Game", "로봇공학"]`
 
-    const result = await chatModel.generateContent(prompt)
-    const raw = result.response.text().trim()
-
-    // Extract JSON array from response
-    const match = raw.match(/\[[\s\S]*?\]/)
-    if (!match) {
-      return ApiResponse.ok({ items: [] })
-    }
-
-    let items: string[]
+    let items: string[] = []
     try {
-      items = JSON.parse(match[0])
+      const result = await safeGenerate({
+        model: chatModel, prompt,
+        schema: OnboardingParseSchema,
+        extractJson: 'array',
+      })
+      items = result.data
     } catch {
-      console.error('Parse JSON failed. Raw:', raw.slice(0, 200))
-      return ApiResponse.ok({ items: [] })
+      // AI 파싱 실패 시 빈 배열 반환
     }
-    // Sanitize: only strings, max 20 items
-    const clean = items.filter((v): v is string => typeof v === 'string' && v.length < 50).slice(0, 20)
+    const clean = items.filter(v => typeof v === 'string' && v.length < 50).slice(0, 20)
 
     return ApiResponse.ok({ items: clean })
   } catch (error) {

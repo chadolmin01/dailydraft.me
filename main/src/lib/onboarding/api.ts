@@ -111,8 +111,8 @@ export async function saveProfileFinal(
 
   if (!res.ok) {
     const errData = await res.json().catch(() => null)
-    const errMsg = errData?.error?.message || errData?.error || 'Save failed'
-    throw new Error(typeof errMsg === 'string' ? errMsg : JSON.stringify(errMsg))
+    const errMsg = errData?.error?.message || (typeof errData?.error === 'string' ? errData.error : null) || '저장에 실패했습니다. 다시 시도해주세요.'
+    throw new Error(errMsg)
   }
 }
 

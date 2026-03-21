@@ -1,14 +1,14 @@
 import { NextRequest } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { genAI } from '@/src/lib/ai/gemini-client';
 import { createClient } from '@/src/lib/supabase/server';
 import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter';
 import { ApiResponse } from '@/src/lib/api-utils';
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+import { safeGenerate } from '@/src/lib/ai/safe-generate';
+import { GenerateArtifactsSchema } from '@/src/lib/ai/schemas';
 
 export async function POST(request: NextRequest) {
   try {
-    if (!process.env.GEMINI_API_KEY) {
+    if (!process.env.GOOGLE_PROJECT_ID) {
       return ApiResponse.serviceUnavailable('AI 서비스를 사용할 수 없습니다.');
     }
 
@@ -76,16 +76,9 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    const result = await model.generateContent(prompt);
-    const text = result.response.text();
-
-    let parsed;
-    try {
-      parsed = JSON.parse(text);
-    } catch {
-      console.error('Generate Artifacts JSON parse failed. Raw:', text.slice(0, 200));
-      return ApiResponse.internalError('AI 응답을 파싱하지 못했습니다. 다시 시도해주세요.');
-    }
+    const { data: parsed } = await safeGenerate({
+      model, prompt, schema: GenerateArtifactsSchema,
+    });
 
     return ApiResponse.ok({ success: true, result: parsed });
   } catch (error) {

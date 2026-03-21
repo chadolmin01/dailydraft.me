@@ -2,6 +2,8 @@ import { chatModel } from '@/src/lib/ai/gemini-client'
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
+import { safeGenerate } from '@/src/lib/ai/safe-generate'
+import { OnboardingSummarySchema } from '@/src/lib/ai/schemas'
 
 interface TranscriptMessage {
   role: 'user' | 'assistant'
@@ -71,33 +73,22 @@ export async function POST(request: Request) {
 
     const prompt = `${SUMMARIZE_PROMPT}\n\n## 대화 내용\n\n${conversationText}`
 
-    const result = await chatModel.generateContent(prompt)
-    const raw = result.response.text().trim()
+    const { data: parsed } = await safeGenerate({
+      model: chatModel,
+      prompt,
+      schema: OnboardingSummarySchema,
+      extractJson: 'object',
+    })
 
-    // Extract JSON from response
-    const jsonMatch = raw.match(/\{[\s\S]*\}/)
-    if (!jsonMatch) {
-      return ApiResponse.internalError('Failed to parse AI response')
-    }
-
-    const parsed = JSON.parse(jsonMatch[0])
-
-    // Save to DB: personality + vision_summary
+    // Save to DB: personality + vision_summary (스키마가 클램핑 완료)
     const updateData: Record<string, unknown> = {
       ai_chat_completed: true,
     }
 
-    // Update personality scores
     if (parsed.personality) {
-      updateData.personality = {
-        risk: clamp(parsed.personality.risk),
-        time: clamp(parsed.personality.time),
-        communication: clamp(parsed.personality.communication),
-        decision: clamp(parsed.personality.decision),
-      }
+      updateData.personality = parsed.personality
     }
 
-    // Store full structured data in vision_summary as JSON string
     if (parsed.summary || parsed.work_style) {
       updateData.vision_summary = JSON.stringify({
         work_style: parsed.work_style || null,
@@ -122,7 +113,3 @@ export async function POST(request: Request) {
   }
 }
 
-function clamp(v: unknown): number {
-  const n = typeof v === 'number' ? v : 5
-  return Math.max(1, Math.min(10, Math.round(n)))
-}

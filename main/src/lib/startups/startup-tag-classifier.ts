@@ -3,8 +3,10 @@
  * Uses Gemini 2.0 Flash to classify startup ideas into relevant tags
  */
 
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { genAI } from '@/src/lib/ai/gemini-client';
 import { INTEREST_TAGS, STARTUP_CATEGORIES } from './types';
+import { safeGenerate } from '@/src/lib/ai/safe-generate';
+import { StartupTagsSchema, StartupCategorySchema } from '@/src/lib/ai/schemas';
 
 interface StartupInput {
   name: string;
@@ -17,21 +19,23 @@ interface StartupInput {
  * Classify startup interest tags using Gemini AI
  */
 export async function classifyStartupTags(startup: StartupInput): Promise<string[]> {
-  const apiKey = process.env.GEMINI_API_KEY;
-
-  if (!apiKey) {
-    return getFallbackTags(startup);
-  }
-
   try {
-    const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
-
     const prompt = buildPrompt(startup);
-    const result = await model.generateContent(prompt);
-    const response = result.response.text();
 
-    return parseTagsFromResponse(response);
+    const { data } = await safeGenerate({
+      model, prompt,
+      schema: StartupTagsSchema,
+      extractJson: 'array',
+    });
+
+    const validTags = data
+      .map(tag => tag.toLowerCase().replace(/[^a-z-]/g, ''))
+      .filter(tag => (INTEREST_TAGS as readonly string[]).includes(tag))
+      .slice(0, 6);
+
+    if (validTags.length < 2) return getFallbackTags(startup);
+    return validTags;
   } catch (error) {
     console.warn('Tag classification failed:', error);
     return getFallbackTags(startup);
@@ -62,50 +66,6 @@ Rules:
 4. Example: ["automation", "api", "enterprise", "productivity"]
 
 Tags array:`;
-}
-
-/**
- * Parse tags from Gemini response
- */
-function parseTagsFromResponse(response: string): string[] {
-  try {
-    // Remove markdown code blocks if present
-    const cleaned = response
-      .replace(/```json\s*/g, '')
-      .replace(/```\s*/g, '')
-      .trim();
-
-    // Extract JSON array
-    const match = cleaned.match(/\[[\s\S]*\]/);
-    if (!match) {
-      throw new Error('No JSON array found in response');
-    }
-
-    const tags: unknown = JSON.parse(match[0]);
-
-    if (!Array.isArray(tags)) {
-      throw new Error('Response is not an array');
-    }
-
-    // Validate and filter tags
-    const validTags = tags
-      .filter((tag): tag is string => typeof tag === 'string')
-      .map(tag => tag.toLowerCase().replace(/[^a-z-]/g, ''))
-      .filter(tag => (INTEREST_TAGS as readonly string[]).includes(tag))
-      .slice(0, 6);
-
-    if (validTags.length < 2) {
-      // Try to salvage by keyword matching
-      return getFallbackTags({
-        ...{ name: '', tagline: null, description: null, category: [] },
-        description: response,
-      });
-    }
-
-    return validTags;
-  } catch {
-    return [];
-  }
 }
 
 /**
@@ -156,14 +116,11 @@ function getFallbackTags(startup: StartupInput): string[] {
  * Classify startup into primary categories
  */
 export async function classifyStartupCategory(startup: StartupInput): Promise<string[]> {
-  const apiKey = process.env.GEMINI_API_KEY;
-
-  if (!apiKey || !startup.description) {
+  if (!startup.description) {
     return startup.category.length > 0 ? startup.category : ['Other'];
   }
 
   try {
-    const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
     const categoryList = STARTUP_CATEGORIES.join(', ');
@@ -177,13 +134,12 @@ Description: ${startup.description.substring(0, 300)}
 
 Return ONLY a JSON array of category names. Example: ["AI/ML", "SaaS", "B2B"]`;
 
-    const result = await model.generateContent(prompt);
-    const response = result.response.text();
+    const { data: categories } = await safeGenerate({
+      model, prompt,
+      schema: StartupCategorySchema,
+      extractJson: 'array',
+    });
 
-    const match = response.match(/\[[\s\S]*\]/);
-    if (!match) return startup.category;
-
-    const categories = JSON.parse(match[0]) as string[];
     return categories
       .filter(c => (STARTUP_CATEGORIES as readonly string[]).includes(c))
       .slice(0, 3);

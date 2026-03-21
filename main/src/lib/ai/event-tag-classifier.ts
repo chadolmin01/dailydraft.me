@@ -1,6 +1,8 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { genAI } from './gemini-client';
 import { geminiRateLimiter } from './rate-limiter';
 import type { TransformedEvent } from '@/src/types/startup-events';
+import { safeGenerate } from './safe-generate';
+import { EventTagsSchema } from './schemas';
 
 const AVAILABLE_TAGS = [
   // 분야
@@ -19,22 +21,30 @@ const AVAILABLE_TAGS = [
  * Classify event tags using Gemini AI
  */
 export async function classifyEventTags(event: TransformedEvent): Promise<string[]> {
-  const apiKey = process.env.GEMINI_API_KEY;
-
-  if (!apiKey) {
+  if (!process.env.GOOGLE_PROJECT_ID) {
     return getFallbackTags(event);
   }
 
   try {
     const tags = await geminiRateLimiter.schedule(async () => {
-      const genAI = new GoogleGenerativeAI(apiKey);
       const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
-
       const prompt = buildPrompt(event);
-      const result = await model.generateContent(prompt);
-      const response = result.response.text();
 
-      return parseTagsFromResponse(response);
+      const { data } = await safeGenerate({
+        model, prompt,
+        schema: EventTagsSchema,
+        extractJson: 'array',
+      });
+
+      const validTags = data
+        .filter(tag => AVAILABLE_TAGS.includes(tag))
+        .slice(0, 7);
+
+      if (validTags.length < 3) {
+        throw new Error(`Too few valid tags: ${validTags.length}`);
+      }
+
+      return validTags;
     });
 
     return tags;
@@ -66,46 +76,6 @@ ${AVAILABLE_TAGS.join(', ')}
 4. 예시: ["AI", "딥테크", "투자유치", "청년창업"]
 
 태그 배열:`;
-}
-
-/**
- * Parse tags from Gemini response
- */
-function parseTagsFromResponse(response: string): string[] {
-  try {
-    // Remove markdown code blocks if present
-    const cleaned = response
-      .replace(/```json\s*/g, '')
-      .replace(/```\s*/g, '')
-      .trim();
-
-    // Extract JSON array
-    const match = cleaned.match(/\[[\s\S]*\]/);
-    if (!match) {
-      throw new Error('No JSON array found in response');
-    }
-
-    const tags: unknown = JSON.parse(match[0]);
-
-    if (!Array.isArray(tags)) {
-      throw new Error('Response is not an array');
-    }
-
-    // Validate and filter tags
-    const validTags = tags
-      .filter((tag): tag is string => typeof tag === 'string')
-      .filter(tag => AVAILABLE_TAGS.includes(tag))
-      .slice(0, 7);
-
-    if (validTags.length < 3) {
-      throw new Error(`Too few valid tags: ${validTags.length}`);
-    }
-
-    return validTags;
-
-  } catch (error) {
-    throw error;
-  }
 }
 
 /**
