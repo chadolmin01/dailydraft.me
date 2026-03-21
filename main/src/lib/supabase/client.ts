@@ -10,16 +10,27 @@ if (typeof window !== 'undefined' && (!supabaseUrl || !supabaseAnonKey)) {
   )
 }
 
-// Shared config
-// NOTE: navigator.locks MUST be enabled (default) to prevent auth race conditions.
-// Without it, concurrent getSession()/getUser() calls corrupt internal auth state,
-// causing data queries to fire with malformed auth headers → empty responses.
-// AbortError from StrictMode double-mount is handled by withRetry + React Query retry.
+// In-memory mutex: serializes auth operations within a single page load
+// without blocking across rapid page refreshes (unlike navigator.locks
+// which is shared per-origin and blocks new pages until old locks release).
+let lockPromise: Promise<void> = Promise.resolve()
+
 const clientOptions = {
   auth: {
     flowType: 'pkce' as const,
     persistSession: true,
     detectSessionInUrl: true,
+    lock: async <R>(_name: string, _acquireTimeout: number, fn: () => Promise<R>): Promise<R> => {
+      const prevLock = lockPromise
+      let resolve: () => void
+      lockPromise = new Promise<void>(r => { resolve = r })
+      await prevLock
+      try {
+        return await fn()
+      } finally {
+        resolve!()
+      }
+    },
   },
 }
 
