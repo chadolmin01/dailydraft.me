@@ -22,9 +22,10 @@ import {
 } from 'lucide-react'
 import { SkeletonGrid } from '@/components/ui/Skeleton'
 import { useOpportunities, calculateDaysLeft, type OpportunityWithCreator } from '@/src/hooks/useOpportunities'
+import { retryImport } from '@/src/lib/retry-import'
 
 const ProjectDetailModal = dynamic(
-  () => import('@/components/ProjectDetailModal').then(m => ({ default: m.ProjectDetailModal })),
+  () => retryImport(() => import('@/components/ProjectDetailModal').then(m => ({ default: m.ProjectDetailModal }))),
   { ssr: false }
 )
 

@@ -10,6 +10,7 @@ import {
   ValidationLevel,
 } from '@/src/types/workflow';
 import { useValidatedIdea } from '@/src/hooks/useValidatedIdeas';
+import { retryImport } from '@/src/lib/retry-import';
 
 // ValidationLevel 런타임 검증
 const VALID_LEVELS: readonly string[] = ['SKETCH', 'MVP', 'DEFENSE'];
@@ -22,17 +23,17 @@ const toValidationLevel = (value: string | null | undefined): ValidationLevel | 
 
 // 동적 임포트 (코드 분할)
 const IdeaValidator = dynamic(
-  () => import('@/components/idea-validator/IdeaValidator'),
+  () => retryImport(() => import('@/components/idea-validator/IdeaValidator')),
   { loading: () => <LoadingSpinner message="아이디어 검증 모듈 로딩 중..." /> }
 );
 
 const ResultView = dynamic(
-  () => import('@/components/idea-validator/ResultView'),
+  () => retryImport(() => import('@/components/idea-validator/ResultView')),
   { loading: () => <LoadingSpinner message="결과 뷰 로딩 중..." /> }
 );
 
 const BusinessPlanEditor = dynamic(
-  () => import('@/components/business-plan/BusinessPlanEditor'),
+  () => retryImport(() => import('@/components/business-plan/BusinessPlanEditor')),
   { loading: () => <LoadingSpinner message="사업계획서 에디터 로딩 중..." /> }
 );
 

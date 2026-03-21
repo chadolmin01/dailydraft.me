@@ -14,12 +14,14 @@ const ModalLoadingFallback = () => (
   </div>
 )
 
+import { retryImport } from '@/src/lib/retry-import'
+
 const ProjectDetailModal = dynamic(
-  () => import('@/components/ProjectDetailModal').then(m => ({ default: m.ProjectDetailModal })),
+  () => retryImport(() => import('@/components/ProjectDetailModal').then(m => ({ default: m.ProjectDetailModal }))),
   { ssr: false, loading: ModalLoadingFallback }
 )
 const ProfileDetailModal = dynamic(
-  () => import('@/components/ProfileDetailModal').then(m => ({ default: m.ProfileDetailModal })),
+  () => retryImport(() => import('@/components/ProfileDetailModal').then(m => ({ default: m.ProfileDetailModal }))),
   { ssr: false, loading: ModalLoadingFallback }
 )
 import { useOpportunities, type OpportunityWithCreator, calculateDaysLeft } from '@/src/hooks/useOpportunities'
