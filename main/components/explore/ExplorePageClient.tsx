@@ -112,7 +112,7 @@ function ExplorePageContent() {
   const { data: allRecs = [] } = useUserRecommendations({ limit: 15 })
   const sidebarRecs = allRecs.slice(0, 4)
 
-  // AI recommended projects
+  // AI recommended projects — used for match labels in all sort modes
   const { data: aiProjects = [] } = useQuery({
     queryKey: ['ai_project_recommendations'],
     queryFn: async () => {
@@ -121,8 +121,13 @@ function ExplorePageContent() {
       return res.json() as Promise<Array<OpportunityWithCreator & { match_score: number; match_reason: string }>>
     },
     staleTime: 1000 * 60 * 5,
-    enabled: sortBy === 'ai' && !!user,
+    enabled: !!user,
   })
+  const aiScoreMap = useMemo(() => {
+    const map = new Map<string, number>()
+    for (const p of aiProjects) map.set(p.id, p.match_score)
+    return map
+  }, [aiProjects])
 
   const query = searchQuery.toLowerCase().trim()
 
@@ -152,28 +157,24 @@ function ExplorePageContent() {
       return true
     }
 
-    const toCard = (opp: OpportunityWithCreator, matchLabel: string | null = null) => ({
-      id: opp.id,
-      title: opp.title,
-      desc: opp.description || '',
-      roles: opp.needed_roles || [],
-      tags: (opp.interest_tags || []).slice(0, 3),
-      coverImage: (opp.demo_images && opp.demo_images.length > 0) ? opp.demo_images[0] : null,
-      daysLeft: calculateDaysLeft(opp.created_at),
-      updatedAt: opp.updated_at ?? undefined,
-      status: opp.status,
-      matchLabel,
-      badges: (opp as unknown as { badges?: string[] | null }).badges ?? null,
-    })
-
-    // AI sort: pre-ranked data, but still apply filters
-    if (sortBy === 'ai' && aiProjects.length > 0) {
-      return aiProjects
-        .filter(filterOpp)
-        .map((opp) => toCard(
-          opp,
-          opp.match_score >= 80 ? '잘 맞는 프로젝트' : opp.match_score >= 60 ? '관심 가능' : null,
-        ))
+    const toCard = (opp: OpportunityWithCreator) => {
+      const aiScore = aiScoreMap.get(opp.id)
+      const matchLabel = aiScore != null && aiScore >= 80 ? '잘 맞는 프로젝트'
+        : aiScore != null && aiScore >= 60 ? '관심 가능'
+        : null
+      return {
+        id: opp.id,
+        title: opp.title,
+        desc: opp.description || '',
+        roles: opp.needed_roles || [],
+        tags: (opp.interest_tags || []).slice(0, 3),
+        coverImage: (opp.demo_images && opp.demo_images.length > 0) ? opp.demo_images[0] : null,
+        daysLeft: calculateDaysLeft(opp.created_at),
+        updatedAt: opp.updated_at ?? undefined,
+        status: opp.status,
+        matchLabel,
+        badges: (opp as unknown as { badges?: string[] | null }).badges ?? null,
+      }
     }
 
     // Popularity score helper
@@ -199,7 +200,7 @@ function ExplorePageContent() {
       })
       .map((opp: OpportunityWithCreator) => toCard(opp))
   },
-    [opportunities, typeFilter, recruitingOnly, selectedCategory, query, searchScope, sortBy, aiProjects]
+    [opportunities, typeFilter, recruitingOnly, selectedCategory, query, searchScope, sortBy, aiScoreMap]
   )
 
   // ── Derived: talent cards ──

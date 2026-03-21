@@ -23,7 +23,6 @@ export const TABS = [
 ] as const
 
 export const SORT_OPTIONS = [
-  { id: 'ai', label: 'AI 추천', icon: Sparkles, beta: true },
   { id: 'trending', label: '트렌딩', icon: Flame, beta: false },
   { id: 'latest', label: '최신', icon: Clock, beta: false },
   { id: 'popular', label: '인기', icon: Star, beta: false },
