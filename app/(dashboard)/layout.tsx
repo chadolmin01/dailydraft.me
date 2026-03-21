@@ -9,7 +9,7 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="min-h-screen bg-surface-bg w-full max-w-full overflow-x-hidden">
+    <div className="min-h-screen bg-surface-bg">
       <RouteProgressBar />
       <TopNavbar />
       <main className="pt-14 sm:pt-20">

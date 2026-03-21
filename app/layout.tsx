@@ -60,8 +60,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ko" className={`${notoSansKR.variable} ${jetBrainsMono.variable} overflow-x-hidden`}>
-      <body className="overflow-x-hidden max-w-[100vw]">
+    <html lang="ko" className={`${notoSansKR.variable} ${jetBrainsMono.variable}`}>
+      <body>
         <Providers>{children}</Providers>
         {/* Google Analytics */}
         {process.env.NEXT_PUBLIC_GA_ID && (
