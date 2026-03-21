@@ -69,21 +69,24 @@ export function ExplorePeopleGrid({
               <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-black/15" />
               <div className="px-4 pt-4 h-[4.75rem] shrink-0">
                 <div className="flex gap-3">
-                  <div className="relative w-12 h-12 bg-brand-bg border border-brand-border flex items-center justify-center text-base font-bold text-brand shrink-0 overflow-hidden">
-                    {t.name.substring(0, 2)}
-                    {t.avatarUrl && (
-                      <Image src={t.avatarUrl} alt={t.name} width={48} height={48} className="absolute inset-0 w-full h-full object-cover" quality={85} onError={(e) => { e.currentTarget.style.display = 'none' }} />
-                    )}
-                  </div>
+                  {peopleSortBy === 'ai' && t.matchScore != null && t.matchScore > 0 ? (
+                    <div className={`relative w-12 h-12 flex items-center justify-center shrink-0 border ${getMatchColorClass(t.matchScore)}`}>
+                      <span className="text-lg font-black font-mono leading-none">{t.matchScore}</span>
+                      <span className="text-[0.5rem] font-mono font-bold absolute bottom-0.5 right-1">%</span>
+                    </div>
+                  ) : (
+                    <div className="relative w-12 h-12 bg-brand-bg border border-brand-border flex items-center justify-center text-base font-bold text-brand shrink-0 overflow-hidden">
+                      {t.name.substring(0, 2)}
+                      {t.avatarUrl && (
+                        <Image src={t.avatarUrl} alt={t.name} width={48} height={48} className="absolute inset-0 w-full h-full object-cover" quality={85} onError={(e) => { e.currentTarget.style.display = 'none' }} />
+                      )}
+                    </div>
+                  )}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
                       <h3 className="font-semibold text-base text-txt-primary truncate">{t.name}</h3>
                       <Badges badges={t.badges} />
-                      {peopleSortBy === 'ai' && t.matchScore != null && t.matchScore > 0 ? (
-                        <span className={`text-[0.625rem] font-mono font-bold px-1.5 py-0.5 shrink-0 border ${getMatchColorClass(t.matchScore)}`}>
-                          {t.matchScore}%
-                        </span>
-                      ) : (
+                      {peopleSortBy !== 'ai' && (
                         <span className={`text-[0.625rem] font-mono font-bold px-1.5 py-0.5 shrink-0 border ${
                           t.status === 'OPEN' ? 'bg-status-success-bg text-status-success-text border-indicator-online/20'
                           : t.status === 'BUSY' ? 'bg-status-neutral-bg text-status-neutral-text border-border'
@@ -120,7 +123,11 @@ export function ExplorePeopleGrid({
               <div className="px-4 pb-4 h-[3.25rem] shrink-0 flex items-end">
                 <div className="flex items-center justify-between w-full pt-2 border-t border-dashed border-border">
                   <span className="text-[0.625rem] font-mono text-txt-tertiary">{t.role}</span>
-                  {t.status === 'OPEN' ? (
+                  {peopleSortBy === 'ai' && t.matchScore != null && t.matchScore > 0 ? (
+                    <span className={`text-[0.625rem] font-mono font-bold flex items-center gap-1 px-1.5 py-0.5 border ${getMatchColorClass(t.matchScore)}`}>
+                      MATCH {t.matchScore}%
+                    </span>
+                  ) : t.status === 'OPEN' ? (
                     <span className="text-[0.625rem] font-mono text-indicator-online flex items-center gap-1 bg-status-success-bg px-1.5 py-0.5 border border-indicator-online/20"><Coffee size={9} /> AVAILABLE</span>
                   ) : (
                     <span className="text-[0.625rem] font-mono text-txt-tertiary flex items-center gap-1 bg-surface-sunken px-1.5 py-0.5 border border-border">{t.status}</span>

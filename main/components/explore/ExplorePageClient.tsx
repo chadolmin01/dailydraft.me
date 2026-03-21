@@ -253,11 +253,13 @@ function ExplorePageContent() {
         createdAt: profile.created_at,
       }
     })
+    .filter((card) => {
+      if (peopleSortBy === 'ai') return card.matchScore != null && card.matchScore > 0
+      return true
+    })
     .sort((a, b) => {
       if (peopleSortBy === 'ai') {
-        const aScore = a.matchScore ?? -1
-        const bScore = b.matchScore ?? -1
-        return bScore - aScore
+        return (b.matchScore ?? 0) - (a.matchScore ?? 0)
       }
       if (peopleSortBy === 'popular')
         return (b.interestCount || 0) - (a.interestCount || 0)
