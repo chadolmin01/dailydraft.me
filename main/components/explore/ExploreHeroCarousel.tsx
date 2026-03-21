@@ -83,16 +83,18 @@ export function ExploreHeroCarousel() {
                 <h2 className="text-2xl md:text-3xl font-bold text-txt-primary mb-2 break-keep leading-tight tracking-tight">
                   모든 프로젝트는 <span className="text-txt-tertiary">Draft에서 시작됩니다.</span>
                 </h2>
-                <p className="text-sm text-txt-tertiary break-keep mb-6">
+                <p className="text-sm text-txt-tertiary break-keep mb-4">
                   프로젝트를 공유하고, 피드백 받고, 함께할 사람을 만나세요.
                 </p>
-                <Link
-                  href={isAuthenticated ? '/projects/new' : '/login'}
-                  className="group inline-flex items-center gap-2 px-5 py-2.5 bg-black text-white text-sm font-bold hover:bg-surface-inverse transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] border border-black"
-                >
-                  {isAuthenticated ? '프로젝트 올리기' : '시작하기'}
-                  <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                </Link>
+                <div className="flex justify-end sm:justify-start">
+                  <Link
+                    href={isAuthenticated ? '/projects/new' : '/login'}
+                    className="group inline-flex items-center gap-2 px-5 py-2.5 bg-black text-white text-sm font-bold hover:bg-surface-inverse transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] border border-black"
+                  >
+                    {isAuthenticated ? '프로젝트 올리기' : '시작하기'}
+                    <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </div>
               </div>
             </div>
 
