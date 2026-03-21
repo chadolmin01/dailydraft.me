@@ -1,0 +1,8 @@
+export { EditPhotos } from './EditPhotos'
+export { EditBasicInfo } from './EditBasicInfo'
+export { EditAffiliation } from './EditAffiliation'
+export { EditSkills } from './EditSkills'
+export { EditContact } from './EditContact'
+export { EditInterests } from './EditInterests'
+export { EditAIProfile } from './EditAIProfile'
+export { CropModal } from './CropModal'
