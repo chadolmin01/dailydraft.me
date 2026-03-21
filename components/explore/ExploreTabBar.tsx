@@ -39,7 +39,7 @@ export function ExploreTabBar({
   return (
     <>
       {/* 탭 + 정렬 */}
-      <div className="flex items-center justify-between border-b-2 border-border-strong mb-6 overflow-x-auto scrollbar-hide">
+      <div className="flex items-center justify-between border-b-2 border-border-strong mb-6 overflow-x-auto whitespace-nowrap">
         <div className="flex items-center shrink-0">
           <button
             onClick={() => onTabChange('projects')}
@@ -106,12 +106,12 @@ export function ExploreTabBar({
 
       {/* Type filter chips */}
       {activeTab === 'projects' && (
-        <div className="flex items-center gap-1.5 mb-4 overflow-x-auto scrollbar-hide">
+        <div className="flex items-center gap-1.5 mb-4 overflow-x-auto whitespace-nowrap">
           {TYPE_FILTERS.map((t) => (
             <button
               key={t.id}
               onClick={() => onTypeFilterChange(t.id as TypeFilter)}
-              className={`px-3 py-1.5 text-xs font-bold border transition-all ${
+              className={`shrink-0 px-3 py-1.5 text-xs font-bold border transition-all ${
                 typeFilter === t.id
                   ? 'bg-black text-white border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]'
                   : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]'
@@ -125,12 +125,12 @@ export function ExploreTabBar({
 
       {/* People role filter chips */}
       {activeTab === 'people' && (
-        <div className="flex items-center gap-1.5 mb-4 overflow-x-auto scrollbar-hide">
+        <div className="flex items-center gap-1.5 mb-4 overflow-x-auto whitespace-nowrap">
           {PEOPLE_ROLE_FILTERS.map((r) => (
             <button
               key={r.id}
               onClick={() => onPeopleRoleFilterChange(r.id as PeopleRoleFilter)}
-              className={`px-3 py-1.5 text-xs font-bold border transition-all ${
+              className={`shrink-0 px-3 py-1.5 text-xs font-bold border transition-all ${
                 peopleRoleFilter === r.id
                   ? 'bg-black text-white border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]'
                   : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]'
