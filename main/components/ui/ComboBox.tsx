@@ -76,7 +76,7 @@ export const ComboBox: React.FC<ComboBoxProps> = ({
           className="flex-1 px-3 py-2.5 text-sm bg-transparent focus:outline-none placeholder:text-txt-disabled min-w-0"
         />
         {value && (
-          <button onClick={handleClear} className="p-1.5 text-txt-disabled hover:text-txt-secondary transition-colors">
+          <button onClick={handleClear} className="p-3 sm:p-1.5 text-txt-disabled hover:text-txt-secondary transition-colors">
             <X size={12} />
           </button>
         )}

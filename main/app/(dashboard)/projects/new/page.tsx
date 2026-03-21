@@ -256,10 +256,10 @@ function NewProjectContent() {
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="flex items-center gap-1 text-xs text-txt-tertiary hover:text-txt-secondary transition-colors"
+                className="hidden sm:flex items-center gap-1 text-xs text-txt-tertiary hover:text-txt-secondary transition-colors"
               >
                 <ArrowLeft size={14} />
-                <span className="hidden sm:inline">돌아가기</span>
+                <span>돌아가기</span>
               </button>
               <div className="w-px h-3 bg-border hidden sm:block" />
               <div className="flex items-center gap-1.5 hidden sm:flex">

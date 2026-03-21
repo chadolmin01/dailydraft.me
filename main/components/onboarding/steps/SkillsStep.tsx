@@ -62,7 +62,7 @@ export const SkillsInputStep: React.FC<SkillsInputStepProps> = ({
           {skills.map(s => (
             <span key={s} className="ob-tag-pop inline-flex items-center gap-1 px-2.5 py-1 bg-brand text-white text-[11px] font-medium">
               {s}
-              <button onClick={() => onRemoveSkill(s)} className="hover:text-white/60 transition-colors"><X size={11} /></button>
+              <button onClick={() => onRemoveSkill(s)} className="hover:text-white/60 transition-colors p-2 sm:p-0 -m-1 sm:m-0"><X size={11} /></button>
             </span>
           ))}
         </div>

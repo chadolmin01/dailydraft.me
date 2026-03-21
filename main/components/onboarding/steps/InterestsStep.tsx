@@ -62,7 +62,7 @@ export const InterestsInputStep: React.FC<InterestsInputStepProps> = ({
           {interests.map(t => (
             <span key={t} className="ob-tag-pop inline-flex items-center gap-1 px-2.5 py-1 bg-brand text-white text-[11px] font-medium">
               {t}
-              <button onClick={() => onRemoveInterest(t)} className="hover:text-white/60 transition-colors"><X size={11} /></button>
+              <button onClick={() => onRemoveInterest(t)} className="hover:text-white/60 transition-colors p-2 sm:p-0 -m-1 sm:m-0"><X size={11} /></button>
             </span>
           ))}
         </div>

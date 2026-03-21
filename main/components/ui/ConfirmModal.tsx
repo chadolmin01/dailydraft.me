@@ -3,6 +3,7 @@
 import React, { useEffect } from 'react'
 import { AlertTriangle, X } from 'lucide-react'
 import { Button } from './Button'
+import { useBackHandler } from '@/src/hooks/useBackHandler'
 
 interface ConfirmModalProps {
   isOpen: boolean
@@ -26,6 +27,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   variant = 'danger',
 }) => {
   const [isLoading, setIsLoading] = React.useState(false)
+  useBackHandler(isOpen, onClose)
   // ESC 키로 모달 닫기
   useEffect(() => {
     if (!isOpen) return

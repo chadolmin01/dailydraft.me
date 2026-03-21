@@ -243,7 +243,7 @@ export default function ProfileEditPage() {
         <div className="max-w-7xl mx-auto px-6 sm:px-10 pt-6">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <button onClick={() => router.push('/profile')} className="p-2 border border-border-strong text-txt-secondary hover:bg-surface-sunken transition-colors">
+              <button onClick={() => router.push('/profile')} className="hidden sm:flex p-2 border border-border-strong text-txt-secondary hover:bg-surface-sunken transition-colors">
                 <ArrowLeft size={14} />
               </button>
               <h1 className="text-lg font-bold text-txt-primary">프로필 편집</h1>

@@ -1,7 +1,10 @@
 'use client'
 
+'use client'
+
 import React from 'react'
 import { Filter, X, ChevronRight, Check } from 'lucide-react'
+import { useBackHandler } from '@/src/hooks/useBackHandler'
 import type { CategoryItem, TrendingTag, ActiveTab } from './types'
 
 interface ExploreMobileFilterProps {
@@ -29,6 +32,8 @@ export function ExploreMobileFilter({
   recruitingOnly,
   onRecruitingOnlyChange,
 }: ExploreMobileFilterProps) {
+  useBackHandler(isOpen, onToggle, 'explore-filter')
+
   return (
     <div className="lg:hidden mb-4">
       <button
@@ -81,8 +86,8 @@ export function ExploreMobileFilter({
           {/* 필터 */}
           {activeTab === 'projects' && (
             <div className="pt-3 border-t border-dashed border-border">
-              <label className="flex items-center gap-2.5 text-sm text-txt-secondary cursor-pointer">
-                <div className={`w-4 h-4 border flex items-center justify-center transition-all ${
+              <label className="flex items-center gap-2.5 text-sm text-txt-secondary cursor-pointer min-h-[44px]">
+                <div className={`w-5 h-5 sm:w-4 sm:h-4 border flex items-center justify-center transition-all ${
                   recruitingOnly ? 'bg-indicator-online border-indicator-online' : 'border-border-strong'
                 }`}>
                   {recruitingOnly && <Check size={10} className="text-white" strokeWidth={3} />}

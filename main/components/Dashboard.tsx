@@ -403,7 +403,7 @@ export const Dashboard: React.FC = () => {
                       <div className="flex items-center gap-1">
                           <button
                             onClick={prevProject}
-                            className="p-1 hover:bg-surface-sunken text-txt-disabled hover:text-txt-primary transition-colors"
+                            className="p-2.5 sm:p-1 hover:bg-surface-sunken text-txt-disabled hover:text-txt-primary transition-colors"
                           >
                             <ChevronLeft size={14} />
                           </button>
@@ -412,7 +412,7 @@ export const Dashboard: React.FC = () => {
                           </span>
                           <button
                             onClick={nextProject}
-                            className="p-1 hover:bg-surface-sunken text-txt-disabled hover:text-txt-primary transition-colors"
+                            className="p-2.5 sm:p-1 hover:bg-surface-sunken text-txt-disabled hover:text-txt-primary transition-colors"
                           >
                             <ChevronRight size={14} />
                           </button>

@@ -22,7 +22,7 @@ export function PortfolioView({
       <div className="px-4 sm:px-8 py-4 border-b border-dashed border-border flex items-center gap-3">
         <button
           onClick={onBack}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold border border-border-strong hover:bg-black hover:text-white transition-all"
+          className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold border border-border-strong hover:bg-black hover:text-white transition-all"
         >
           <ArrowLeft size={12} />
           프로필로 돌아가기

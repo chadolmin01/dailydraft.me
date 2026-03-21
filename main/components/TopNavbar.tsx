@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { useAuth } from '@/src/context/AuthContext'
 import { useAdmin } from '@/src/hooks/useAdmin'
 import { NotificationDropdown } from '@/components/NotificationDropdown'
+import { useBackHandler } from '@/src/hooks/useBackHandler'
 
 // 데스크탑 pill 형태 네비 탭
 const NavPill = ({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) => (
@@ -80,6 +81,10 @@ export const TopNavbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+
+  useBackHandler(isMobileMenuOpen, () => setIsMobileMenuOpen(false), 'mobile-menu')
+  useBackHandler(isSearchOpen, () => setIsSearchOpen(false), 'search')
+  useBackHandler(isMenuOpen, () => setIsMenuOpen(false), 'profile-menu')
   const [searchQuery, setSearchQuery] = useState('')
   const menuRef = useRef<HTMLDivElement>(null)
   const searchRef = useRef<HTMLDivElement>(null)
@@ -169,7 +174,7 @@ export const TopNavbar: React.FC = () => {
           ? 'bg-surface-card/80 backdrop-blur-xl shadow-soft'
           : 'bg-surface-card/60 backdrop-blur-md'
       }`}>
-        <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-24 h-full flex items-center gap-3">
+        <div className="w-full px-4 sm:px-10 lg:px-16 xl:px-24 h-full flex items-center gap-3">
 
           {/* ===== 좌측: 로고 ===== */}
           <Link href="/explore" className="flex items-center gap-2.5 shrink-0 group mr-1">
@@ -214,7 +219,7 @@ export const TopNavbar: React.FC = () => {
                 />
               )}
               {isSearchOpen && searchQuery && (
-                <button onClick={(e) => { e.stopPropagation(); setSearchQuery('') }} className="p-1 mr-2 text-txt-disabled hover:text-txt-secondary transition-colors">
+                <button onClick={(e) => { e.stopPropagation(); setSearchQuery('') }} className="p-3 sm:p-1 mr-2 text-txt-disabled hover:text-txt-secondary transition-colors">
                   <X size={14} />
                 </button>
               )}

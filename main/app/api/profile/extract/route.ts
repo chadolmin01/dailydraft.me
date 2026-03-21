@@ -6,6 +6,8 @@ import type { Json } from '@/src/types/database'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { Ratelimit } from '@upstash/ratelimit'
 import { Redis } from '@upstash/redis'
+import { safeGenerate } from '@/src/lib/ai/safe-generate'
+import { ProfileExtractionSchema } from '@/src/lib/ai/schemas'
 
 const EXTRACTION_PROMPT = `당신은 대화 내용에서 사용자의 프로필 정보를 추출하는 전문가입니다.
 
@@ -95,29 +97,24 @@ export async function POST(request: Request) {
       .join('\n\n')
 
     // Gemini로 프로필 추출
-    const result = await chatModel.generateContent({
-      contents: [
-        {
-          role: 'user',
-          parts: [{ text: EXTRACTION_PROMPT + conversationText }],
+    const { data: extractedData } = await safeGenerate({
+      model: chatModel,
+      prompt: {
+        contents: [
+          {
+            role: 'user',
+            parts: [{ text: EXTRACTION_PROMPT + conversationText }],
+          },
+        ],
+        generationConfig: {
+          temperature: 0.3,
+          topP: 0.8,
+          maxOutputTokens: 1000,
+          responseMimeType: 'application/json',
         },
-      ],
-      generationConfig: {
-        temperature: 0.3,
-        topP: 0.8,
-        maxOutputTokens: 1000,
-        responseMimeType: 'application/json',
       },
+      schema: ProfileExtractionSchema,
     })
-
-    const responseText = result.response.text()
-    let extractedData: Partial<ExtractedProfile>
-
-    try {
-      extractedData = JSON.parse(responseText)
-    } catch {
-      return ApiResponse.internalError()
-    }
 
     // 신뢰도 계산 (채워진 필드 비율)
     const fields = [
@@ -132,18 +129,17 @@ export async function POST(request: Request) {
     let filledCount = 0
     let totalWeight = 0
 
+    const data = extractedData as Record<string, unknown>
     for (const field of fields) {
       totalWeight += 1
-      if (extractedData[field as keyof ExtractedProfile]) {
+      if (data[field]) {
         filledCount += 1
       }
     }
 
     for (const field of arrayFields) {
       totalWeight += 1
-      const arr = extractedData[field as keyof ExtractedProfile] as
-        | string[]
-        | undefined
+      const arr = data[field] as string[] | undefined
       if (arr && Array.isArray(arr) && arr.length > 0) {
         filledCount += 1
       }
@@ -151,19 +147,18 @@ export async function POST(request: Request) {
 
     const confidence = Math.round((filledCount / totalWeight) * 100)
 
-    // 완성된 프로필 객체
+    // 완성된 프로필 객체 (스키마가 기본값 처리 완료)
     const extractedProfile: ExtractedProfile = {
-      role: extractedData.role || '',
-      experience_level: extractedData.experience_level || null,
-      preferred_market: extractedData.preferred_market || null,
-      decision_style: extractedData.decision_style || null,
-      skills: Array.isArray(extractedData.skills) ? extractedData.skills : [],
-      tools: Array.isArray(extractedData.tools) ? extractedData.tools : [],
-      personality_tags: Array.isArray(extractedData.personality_tags)
-        ? extractedData.personality_tags
-        : [],
-      collaboration_preference:
-        extractedData.collaboration_preference || null,
+      role: extractedData.role,
+      experience_level: extractedData.experience_level,
+      preferred_market: (['B2B', 'B2C', 'B2B2C'].includes(extractedData.preferred_market as string)
+        ? extractedData.preferred_market
+        : null) as ExtractedProfile['preferred_market'],
+      decision_style: extractedData.decision_style,
+      skills: extractedData.skills,
+      tools: extractedData.tools,
+      personality_tags: extractedData.personality_tags,
+      collaboration_preference: extractedData.collaboration_preference,
       extraction_version: '1.0',
       extracted_at: new Date().toISOString(),
     }

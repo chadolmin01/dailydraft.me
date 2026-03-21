@@ -76,7 +76,7 @@ export function ExploreSearchBar({
             {searchInput && (
               <button
                 onClick={() => onSearchInputChange('')}
-                className="p-1.5 text-txt-disabled hover:text-txt-secondary hover:bg-surface-sunken transition-colors"
+                className="p-3 sm:p-1.5 text-txt-disabled hover:text-txt-secondary hover:bg-surface-sunken transition-colors"
                 aria-label="검색어 지우기"
               >
                 <X size={14} />

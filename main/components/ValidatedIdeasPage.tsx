@@ -158,7 +158,7 @@ export const ValidatedIdeasPage: React.FC = () => {
     <div className="max-w-6xl mx-auto p-6">
       {/* Header */}
       <div className="mb-8">
-        <button type="button" onClick={() => router.back()} className="flex items-center gap-1 text-sm text-txt-tertiary hover:text-txt-primary mb-4 transition-colors">
+        <button type="button" onClick={() => router.back()} className="hidden sm:flex items-center gap-1 text-sm text-txt-tertiary hover:text-txt-primary mb-4 transition-colors">
           <ArrowLeft size={16} /> 뒤로가기
         </button>
         <div className="flex items-center justify-between">
@@ -260,7 +260,7 @@ export const ValidatedIdeasPage: React.FC = () => {
                     {hasArtifacts(idea) && (<span className="flex items-center gap-1 text-status-info-text"><FileText size={12} />문서</span>)}
                   </div>
                 </div>
-                <button type="button" onClick={e => { e.stopPropagation(); setDeleteTarget(idea.id) }} disabled={deleteIdea.isPending} className="p-2 opacity-0 group-hover:opacity-100 hover:bg-status-danger-bg transition-all disabled:opacity-50 border border-transparent hover:border-status-danger-text/20" title="삭제"><Trash2 size={16} className="text-status-danger-text/70 hover:text-status-danger-text" /></button>
+                <button type="button" onClick={e => { e.stopPropagation(); setDeleteTarget(idea.id) }} disabled={deleteIdea.isPending} className="p-2 sm:opacity-0 sm:group-hover:opacity-100 hover:bg-status-danger-bg transition-all disabled:opacity-50 border border-transparent hover:border-status-danger-text/20" title="삭제"><Trash2 size={16} className="text-status-danger-text/70 hover:text-status-danger-text" /></button>
               </div>
               {adviceList.length > 0 && (<div className="mt-3 pt-3 border-t border-dashed border-border"><p className="text-xs text-txt-tertiary line-clamp-2">{adviceList[0]}</p></div>)}
             </div>

@@ -268,7 +268,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
         <div className="p-4 border-b border-border">
           <button
             onClick={onClose}
-            className="flex items-center gap-2 text-sm text-txt-secondary hover:text-txt-primary mb-3"
+            className="hidden sm:flex items-center gap-2 text-sm text-txt-secondary hover:text-txt-primary mb-3"
           >
             <ArrowLeft size={16} />
             돌아가기

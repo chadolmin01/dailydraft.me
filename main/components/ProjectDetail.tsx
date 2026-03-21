@@ -197,7 +197,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
         <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-sm text-txt-secondary hover:text-txt-primary transition-colors"
+            className="hidden sm:flex items-center gap-2 text-sm text-txt-secondary hover:text-txt-primary transition-colors"
           >
             <ArrowLeft size={16} />
             뒤로
