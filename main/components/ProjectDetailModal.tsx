@@ -190,7 +190,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
 
           {/* Modal */}
           <div
-            className="fixed inset-0 z-modal flex items-end sm:items-center justify-center pt-12 px-0 pb-0 sm:p-4 md:p-8 animate-modal-in"
+            className="fixed inset-0 z-modal flex items-end sm:items-center justify-center pt-6 px-0 pb-0 sm:p-4 md:p-8 animate-modal-in"
             onClick={onClose}
           >
             <div
