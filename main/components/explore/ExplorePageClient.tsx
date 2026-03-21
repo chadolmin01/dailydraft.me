@@ -373,6 +373,7 @@ function ExplorePageContent() {
 
       <DashboardLayout
         size="wide"
+        className="pt-3"
         sidebar={<ExploreSidebar {...filterProps} />}
         aside={
           <ExploreAsidePanel
