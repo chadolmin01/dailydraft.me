@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect, useMemo, Suspense } from 'react'
 import dynamic from 'next/dynamic'
-import { LayoutGrid, Users } from 'lucide-react'
+import { LayoutGrid, Users, Sparkles } from 'lucide-react'
+import Link from 'next/link'
 import { useSearchParams as useNextSearchParams, useRouter, usePathname } from 'next/navigation'
 import { DashboardLayout } from '@/components/ui/DashboardLayout'
 
@@ -399,6 +400,16 @@ function ExplorePageContent() {
           {...filterProps}
         />
         <ExploreTabBar {...tabProps} />
+
+        {!isAuthenticated && ((activeTab === 'projects' && sortBy === 'ai') || (activeTab === 'people' && peopleSortBy === 'ai')) && (
+          <div className="flex items-center gap-3 px-4 py-3 mb-4 border border-brand-border bg-brand-bg">
+            <Sparkles size={16} className="text-brand shrink-0" />
+            <p className="text-xs text-txt-secondary flex-1">로그인하면 내 관심사에 맞는 AI 추천을 받을 수 있어요</p>
+            <Link href="/login" className="shrink-0 px-3 py-1.5 bg-black text-white text-xs font-bold border border-black hover:bg-surface-inverse transition-colors">
+              로그인
+            </Link>
+          </div>
+        )}
 
         {activeTab === 'projects' && (
           <ExploreProjectGrid
