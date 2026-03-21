@@ -1,6 +1,14 @@
 import Image from 'next/image'
-import { MapPin, Building2, Target } from 'lucide-react'
+import { MapPin, Building2, Target, Sparkles } from 'lucide-react'
 import { SITUATION_LABELS, AFFILIATION_LABELS, type MatchData } from './types'
+
+const DETAIL_LABELS = [
+  { key: 'vision', label: '비전' },
+  { key: 'skill', label: '스킬' },
+  { key: 'founder', label: '시너지' },
+  { key: 'interest', label: '관심사' },
+  { key: 'situation', label: '상황' },
+] as const
 
 export function ProfileHeader({
   profile,
@@ -114,6 +122,48 @@ export function ProfileHeader({
           </div>
         )}
       </div>
+
+      {/* AI 매칭 말풍선 */}
+      {matchData && matchData.match_score > 0 && (
+        <div className="mx-4 sm:mx-8 mb-3">
+          <div className="relative bg-brand-bg border border-brand-border p-4">
+            {/* 말풍선 꼬리 */}
+            <div className="absolute -top-2 left-8 w-3 h-3 bg-brand-bg border-l border-t border-brand-border rotate-45" />
+
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 bg-brand border border-brand flex items-center justify-center shrink-0">
+                <Sparkles size={14} className="text-white" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[0.625rem] font-mono font-bold text-brand uppercase tracking-wider">AI MATCH</span>
+                  <span className="text-lg font-black font-mono text-brand">{matchData.match_score}%</span>
+                </div>
+                {(matchData.match_reason_detail || matchData.match_reason) && (
+                  <p className="text-sm text-txt-secondary leading-relaxed mb-3">
+                    {matchData.match_reason_detail || matchData.match_reason}
+                  </p>
+                )}
+                {/* 세부 점수 바 */}
+                <div className="flex gap-1.5 flex-wrap">
+                  {DETAIL_LABELS.map(({ key, label }) => {
+                    const score = matchData.match_details[key]
+                    if (score <= 0) return null
+                    return (
+                      <div key={key} className="flex items-center gap-1">
+                        <span className="text-[0.5rem] font-mono text-txt-disabled uppercase">{label}</span>
+                        <div className="w-10 h-1.5 bg-white border border-brand-border overflow-hidden">
+                          <div className="h-full bg-brand transition-all" style={{ width: `${Math.min(100, score)}%` }} />
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="mx-4 sm:mx-8 border-t border-dashed border-border" />
     </>
