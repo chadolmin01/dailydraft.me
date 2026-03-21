@@ -169,7 +169,7 @@ export const TopNavbar: React.FC = () => {
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 right-0 h-20 z-fixed transition-all duration-300 ${
+      <nav className={`fixed top-0 left-0 right-0 h-14 sm:h-20 z-fixed transition-all duration-300 ${
         isScrolled
           ? 'bg-surface-card/80 backdrop-blur-xl shadow-soft'
           : 'bg-surface-card/60 backdrop-blur-md'
@@ -403,7 +403,7 @@ export const TopNavbar: React.FC = () => {
             className="md:hidden fixed inset-0 bg-black/20 backdrop-blur-sm z-[299] animate-in fade-in duration-200"
             onClick={() => setIsMobileMenuOpen(false)}
           />
-          <div className="md:hidden fixed top-20 left-0 right-0 bg-surface-card/95 backdrop-blur-xl border-b border-border-strong shadow-brutal z-fixed animate-in slide-in-from-bottom-2 duration-200">
+          <div className="md:hidden fixed top-14 sm:top-20 left-0 right-0 bg-surface-card/95 backdrop-blur-xl border-b border-border-strong shadow-brutal z-fixed animate-in slide-in-from-bottom-2 duration-200">
             <div className="px-4 py-4 space-y-1.5">
               <form
                 className="relative mb-3"
