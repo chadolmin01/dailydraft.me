@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { ArrowRight, Upload, MessageCircle, Coffee } from 'lucide-react'
 import Link from 'next/link'
 import { PageContainer } from '@/components/ui/PageContainer'
@@ -11,12 +11,27 @@ const SLIDE_COUNT = 3
 export function ExploreHeroCarousel() {
   const [active, setActive] = useState(0)
   const { isAuthenticated } = useAuth()
+  const touchRef = useRef<{ x: number; y: number } | null>(null)
 
   useEffect(() => {
     const timer = setInterval(() => {
       setActive((prev) => (prev + 1) % SLIDE_COUNT)
     }, 6000)
     return () => clearInterval(timer)
+  }, [])
+
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
+    touchRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+  }, [])
+
+  const onTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (!touchRef.current) return
+    const dx = e.changedTouches[0].clientX - touchRef.current.x
+    const dy = e.changedTouches[0].clientY - touchRef.current.y
+    touchRef.current = null
+    if (Math.abs(dx) < 50 || Math.abs(dy) > Math.abs(dx)) return // 수직 스크롤이면 무시
+    if (dx < 0) setActive((prev) => (prev + 1) % SLIDE_COUNT) // 왼쪽 스와이프 → 다음
+    else setActive((prev) => (prev - 1 + SLIDE_COUNT) % SLIDE_COUNT) // 오른쪽 스와이프 → 이전
   }, [])
 
   const order = [active, (active + 1) % SLIDE_COUNT, (active + 2) % SLIDE_COUNT]
@@ -29,6 +44,8 @@ export function ExploreHeroCarousel() {
         <div
           className="relative flex-[2] min-w-0 bg-surface-card border border-border-strong overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,0.08)] cursor-pointer transition-all duration-300"
           onClick={() => setActive((prev) => (prev + 1) % SLIDE_COUNT)}
+          onTouchStart={onTouchStart}
+          onTouchEnd={onTouchEnd}
         >
           <div className="absolute inset-0 bg-grid-engineering opacity-40" />
           <div className="absolute inset-0 bg-gradient-to-r from-surface-card via-surface-card/80 to-transparent" />
