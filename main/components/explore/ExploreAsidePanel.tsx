@@ -42,24 +42,41 @@ export function ExploreAsidePanel({
           AI RECOMMENDED
         </h3>
 
-        {isAuthenticated && sidebarRecs.length > 0 ? (
-          /* 로그인 + 추천 있음: 실제 추천 */
-          <div className="space-y-1">
-            {sidebarRecs.map((rec) => (
-              <div key={rec.user_id} onClick={() => onSelectProfile(rec.user_id, true)} className="relative flex items-center gap-3 p-2 border border-transparent hover:border-border hover:bg-surface-sunken transition-all cursor-pointer group">
-                <div className="w-9 h-9 bg-brand-bg border border-brand-border flex items-center justify-center text-xs font-bold text-brand">
-                  {(rec.nickname || '??').substring(0, 2)}
+        {isAuthenticated ? (
+          /* 로그인 상태 */
+          sidebarRecs.length > 0 ? (
+            <div className="space-y-1">
+              {sidebarRecs.map((rec) => (
+                <div key={rec.user_id} onClick={() => onSelectProfile(rec.user_id, true)} className="relative flex items-center gap-3 p-2 border border-transparent hover:border-border hover:bg-surface-sunken transition-all cursor-pointer group">
+                  <div className="w-9 h-9 bg-brand-bg border border-brand-border flex items-center justify-center text-xs font-bold text-brand">
+                    {(rec.nickname || '??').substring(0, 2)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-txt-primary">{rec.nickname}</p>
+                    <p className="text-[0.625rem] font-mono text-txt-disabled truncate">{rec.match_reason}</p>
+                  </div>
+                  <span className="text-[0.625rem] font-mono font-bold px-1.5 py-0.5 bg-brand-bg text-brand border border-brand-border">
+                    {rec.match_score}%
+                  </span>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-txt-primary">{rec.nickname}</p>
-                  <p className="text-[0.625rem] font-mono text-txt-disabled truncate">{rec.match_reason}</p>
+              ))}
+            </div>
+          ) : (
+            /* 로그인 됐지만 추천 데이터 로딩/없음 */
+            <div className="space-y-1">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="flex items-center gap-3 p-2 animate-pulse">
+                  <div className="w-9 h-9 bg-surface-sunken border border-border" />
+                  <div className="flex-1 min-w-0 space-y-1.5">
+                    <div className="h-3.5 bg-surface-sunken w-16" />
+                    <div className="h-2.5 bg-surface-sunken w-24" />
+                  </div>
+                  <div className="h-5 w-10 bg-surface-sunken border border-border" />
                 </div>
-                <span className="text-[0.625rem] font-mono font-bold px-1.5 py-0.5 bg-brand-bg text-brand border border-brand-border">
-                  {rec.match_score}%
-                </span>
-              </div>
-            ))}
-          </div>
+              ))}
+              <p className="text-[0.625rem] font-mono text-txt-disabled text-center pt-2">추천 분석 중...</p>
+            </div>
+          )
         ) : (
           /* 비로그인: 잠금 상태 placeholder */
           <div className="relative">
