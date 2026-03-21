@@ -125,7 +125,7 @@ function BusinessPlanPageContent() {
         <div className="mb-8">
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-sm text-txt-secondary hover:text-txt-primary mb-4"
+            className="hidden sm:flex items-center gap-2 text-sm text-txt-secondary hover:text-txt-primary mb-4"
           >
             <ArrowLeft size={16} />
             돌아가기

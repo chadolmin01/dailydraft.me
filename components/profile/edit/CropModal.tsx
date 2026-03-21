@@ -4,6 +4,7 @@ import React from 'react'
 import dynamic from 'next/dynamic'
 import { X, Camera } from 'lucide-react'
 import type { CropModalProps } from './types'
+import { useBackHandler } from '@/src/hooks/useBackHandler'
 
 const Cropper = dynamic(() => import('react-easy-crop').then(m => m.default), { ssr: false }) as unknown as React.ComponentType<Partial<import('react-easy-crop').CropperProps>>
 
@@ -18,6 +19,7 @@ export const CropModal: React.FC<CropModalProps> = ({
   onCropComplete,
   handleCropConfirm,
 }) => {
+  useBackHandler(!!cropImage, () => setCropImage(null), 'crop')
   if (!cropImage) return null
 
   return (

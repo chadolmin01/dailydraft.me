@@ -19,6 +19,7 @@ import {
   Download,
 } from 'lucide-react'
 import { Opportunity } from '@/types'
+import { useBackHandler } from '@/src/hooks/useBackHandler'
 
 interface DetailModalProps {
   isOpen: boolean
@@ -28,6 +29,7 @@ interface DetailModalProps {
 
 export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data }) => {
   const [activeTab, setActiveTab] = useState<'details' | 'analysis'>('details')
+  useBackHandler(isOpen, onClose, 'detail')
 
   // Reset tab when modal opens/changes
   useEffect(() => {

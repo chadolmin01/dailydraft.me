@@ -7,7 +7,7 @@ import type { Area } from 'react-easy-crop'
 import { toast } from 'sonner'
 import { useCreateOpportunity } from '@/src/hooks/useOpportunities'
 import { TYPE_OPTIONS, CATEGORY_TAGS, TYPE_THEMES } from './constants'
-import { getCroppedImg, ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE } from './utils'
+import { getCroppedImg, ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE, uploadImagesToSupabase } from './utils'
 import { ImageUploadSection } from './components/ImageUploadSection'
 import { CropModal } from './components/CropModal'
 import { ProjectInfoSidebar } from './components/ProjectInfoSidebar'
@@ -192,12 +192,7 @@ function NewProjectContent() {
     if (imageFiles.length === 0) return []
     setImageUploading(true)
     try {
-      const formData = new FormData()
-      imageFiles.forEach(f => formData.append('files', f))
-      const res = await fetch('/api/upload', { method: 'POST', body: formData })
-      if (!res.ok) throw new Error('업로드 실패')
-      const { urls } = await res.json()
-      return urls || []
+      return await uploadImagesToSupabase(imageFiles)
     } finally {
       setImageUploading(false)
     }
@@ -261,10 +256,10 @@ function NewProjectContent() {
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="flex items-center gap-1 text-xs text-txt-tertiary hover:text-txt-secondary transition-colors"
+                className="hidden sm:flex items-center gap-1 text-xs text-txt-tertiary hover:text-txt-secondary transition-colors"
               >
                 <ArrowLeft size={14} />
-                <span className="hidden sm:inline">돌아가기</span>
+                <span>돌아가기</span>
               </button>
               <div className="w-px h-3 bg-border hidden sm:block" />
               <div className="flex items-center gap-1.5 hidden sm:flex">

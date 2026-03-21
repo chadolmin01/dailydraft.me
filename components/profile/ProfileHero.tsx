@@ -423,7 +423,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
           <div className="flex gap-1.5 flex-wrap">
             <span className="text-[0.5rem] font-mono text-txt-disabled uppercase tracking-widest self-center mr-1">TAGS</span>
             {profile.interest_tags.map((tag, idx) => (
-              <span key={idx} className="text-[0.625rem] font-mono bg-tag-default-bg text-tag-default-text border border-border px-2 py-0.5 font-medium">
+              <span key={idx} className="text-[0.625rem] font-mono bg-white text-tag-default-text border border-border px-2 py-0.5 font-medium">
                 {tag}
               </span>
             ))}

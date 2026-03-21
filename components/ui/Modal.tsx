@@ -5,6 +5,7 @@ import { X } from 'lucide-react'
 import { cn } from '@/src/lib/utils'
 import { useScrollLock } from '@/src/hooks/useScrollLock'
 import { useFocusTrap } from '@/src/hooks/useFocusTrap'
+import { useBackHandler } from '@/src/hooks/useBackHandler'
 
 interface ModalProps {
   isOpen: boolean
@@ -46,6 +47,7 @@ export const Modal: React.FC<ModalProps> = ({
   className,
 }) => {
   useScrollLock(isOpen)
+  useBackHandler(isOpen, onClose)
   const containerRef = useFocusTrap<HTMLDivElement>(isOpen)
 
   const handleKeyDown = useCallback(

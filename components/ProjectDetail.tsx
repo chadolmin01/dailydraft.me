@@ -135,10 +135,32 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-surface-bg flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="animate-spin text-txt-disabled" size={32} />
-          <p className="text-sm text-txt-tertiary">프로젝트 로딩 중...</p>
+      <div className="min-h-screen bg-surface-bg">
+        <div className="max-w-4xl mx-auto px-4 py-6 animate-pulse">
+          {/* Hero skeleton */}
+          <div className="h-56 bg-surface-sunken border border-border-strong mb-6" />
+          {/* Title */}
+          <div className="h-7 w-2/3 bg-surface-sunken border border-border mb-3" />
+          <div className="h-4 w-1/3 bg-surface-sunken border border-border mb-6" />
+          {/* Tags */}
+          <div className="flex gap-2 mb-6">
+            <div className="h-6 w-16 bg-surface-sunken border border-border" />
+            <div className="h-6 w-20 bg-surface-sunken border border-border" />
+            <div className="h-6 w-14 bg-surface-sunken border border-border" />
+          </div>
+          {/* Content */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="md:col-span-2 space-y-3">
+              <div className="h-4 bg-surface-sunken border border-border" />
+              <div className="h-4 bg-surface-sunken border border-border w-5/6" />
+              <div className="h-4 bg-surface-sunken border border-border w-4/6" />
+              <div className="h-4 bg-surface-sunken border border-border w-3/4" />
+            </div>
+            <div className="space-y-3">
+              <div className="h-24 bg-surface-sunken border border-border-strong" />
+              <div className="h-20 bg-surface-sunken border border-border-strong" />
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -175,7 +197,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
         <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-sm text-txt-secondary hover:text-txt-primary transition-colors"
+            className="hidden sm:flex items-center gap-2 text-sm text-txt-secondary hover:text-txt-primary transition-colors"
           >
             <ArrowLeft size={16} />
             뒤로
@@ -267,7 +289,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
               {opportunity.interest_tags.map((tag) => (
                 <span
                   key={tag}
-                  className="px-3 py-1 bg-surface-sunken border border-border text-txt-secondary text-xs font-medium"
+                  className="px-3 py-1 bg-white border border-border text-txt-secondary text-xs font-medium"
                 >
                   {tag}
                 </span>
@@ -475,11 +497,14 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
                   {creator.skills && (
                     <div className="flex flex-wrap gap-1.5">
-                      {(Array.isArray(creator.skills) ? creator.skills as string[] : []).slice(0, 5).map((skill) => (
-                        <span key={skill} className="text-[0.625rem] bg-surface-sunken text-txt-secondary px-2 py-0.5 font-medium border border-border">
-                          {skill}
-                        </span>
-                      ))}
+                      {(Array.isArray(creator.skills) ? creator.skills : []).slice(0, 5).map((skill, i) => {
+                        const label = typeof skill === 'string' ? skill : (skill as any)?.name || ''
+                        return (
+                          <span key={label || i} className="text-[0.625rem] bg-surface-sunken text-txt-secondary px-2 py-0.5 font-medium border border-border">
+                            {label}
+                          </span>
+                        )
+                      })}
                     </div>
                   )}
                 </div>

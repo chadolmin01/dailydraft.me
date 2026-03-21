@@ -128,6 +128,7 @@ const config: Config = {
         'modal-in': 'modalIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'backdrop-in': 'backdropIn 0.2s ease-out forwards',
         'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
+        'page-enter': 'pageEnter 0.15s ease-out forwards',
       },
       keyframes: {
         marquee: {
@@ -171,6 +172,10 @@ const config: Config = {
         fadeInUp: {
           '0%': { opacity: '0', transform: 'translateY(40px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        pageEnter: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
         },
       },
     },

@@ -106,7 +106,7 @@ export function ExplorePeopleGrid({
                 {t.tags.length > 0 && (
                   <div className="flex items-center gap-1.5 overflow-hidden">
                     {t.tags.map(tag => (
-                      <span key={tag} className="text-xs bg-tag-default-bg text-tag-default-text px-2 py-0.5 border border-border font-medium shrink-0">{tag}</span>
+                      <span key={tag} className="text-xs bg-white text-tag-default-text px-2 py-0.5 border border-border font-medium shrink-0">{tag}</span>
                     ))}
                   </div>
                 )}

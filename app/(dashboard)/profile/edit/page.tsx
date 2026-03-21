@@ -243,7 +243,7 @@ export default function ProfileEditPage() {
         <div className="max-w-7xl mx-auto px-6 sm:px-10 pt-6">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <button onClick={() => router.push('/profile')} className="p-2 border border-border-strong text-txt-secondary hover:bg-surface-sunken transition-colors">
+              <button onClick={() => router.push('/profile')} className="hidden sm:flex p-2 border border-border-strong text-txt-secondary hover:bg-surface-sunken transition-colors">
                 <ArrowLeft size={14} />
               </button>
               <h1 className="text-lg font-bold text-txt-primary">프로필 편집</h1>
@@ -631,7 +631,17 @@ export default function ProfileEditPage() {
           {/* ═══ AI 분석 탭 ═══ */}
           {activeTab === 'ai' && (
                 <div className="space-y-6">
-                  <p className="text-xs text-txt-tertiary -mb-2">온보딩 AI 대화에서 분석된 데이터입니다. 직접 수정할 수 있어요.</p>
+                  <div className="flex items-center justify-between -mb-2">
+                    <p className="text-xs text-txt-tertiary">온보딩 AI 대화에서 분석된 데이터입니다. 직접 수정할 수 있어요.</p>
+                    <button
+                      type="button"
+                      onClick={() => router.push('/onboarding')}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-[0.625rem] font-mono font-bold uppercase tracking-wider border border-border text-txt-secondary hover:bg-surface-sunken hover:border-border-strong transition-colors shrink-0"
+                    >
+                      <Sparkles size={12} />
+                      AI 온보딩 다시하기
+                    </button>
+                  </div>
 
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <Card title="성향 점수">

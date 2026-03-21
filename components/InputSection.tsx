@@ -163,7 +163,7 @@ const InputSection: React.FC<InputSectionProps> = ({ inputs, logs, onChange, onS
 
                             <button
                                 onClick={() => onUndo(log.id)}
-                                className="opacity-0 group-hover:opacity-100 p-1.5 text-txt-disabled hover:text-status-danger-text hover:bg-status-danger-bg transition-all"
+                                className="sm:opacity-0 sm:group-hover:opacity-100 p-1.5 text-txt-disabled hover:text-status-danger-text hover:bg-status-danger-bg transition-all"
                                 title="Undo / Delete"
                             >
                                 <RotateCcw className="w-3.5 h-3.5" />

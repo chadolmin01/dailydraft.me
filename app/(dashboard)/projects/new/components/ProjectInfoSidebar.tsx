@@ -17,6 +17,7 @@ interface ProjectInfoSidebarProps {
   onSetCompensationDetails: (value: string) => void
   isPending: boolean
   imageUploading: boolean
+  submitLabel?: string
 }
 
 export function ProjectInfoSidebar({
@@ -33,6 +34,7 @@ export function ProjectInfoSidebar({
   onSetCompensationDetails,
   isPending,
   imageUploading,
+  submitLabel,
 }: ProjectInfoSidebarProps) {
   return (
     <div className="md:col-span-2 space-y-6">
@@ -166,7 +168,7 @@ export function ProjectInfoSidebar({
           ) : isPending ? (
             <><Loader2 size={14} className="animate-spin" /> 생성 중...</>
           ) : (
-            '프로젝트 등록하기'
+            submitLabel || '프로젝트 등록하기'
           )}
         </button>
       </div>

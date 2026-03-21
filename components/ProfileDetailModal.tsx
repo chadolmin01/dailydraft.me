@@ -17,6 +17,7 @@ import { ProfileBodyLeft } from './profile-modal/ProfileBodyLeft'
 import { ProfileBodyRight } from './profile-modal/ProfileBodyRight'
 import { ProfileSidePanel } from './profile-modal/ProfileSidePanel'
 import { PortfolioView } from './profile-modal/PortfolioView'
+import { useBackHandler } from '@/src/hooks/useBackHandler'
 
 export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileId, byUserId, matchData, onClose, onSelectProject }) => {
   const { isAuthenticated, user } = useAuth()
@@ -28,6 +29,11 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
   const [hasInterested, setHasInterested] = useState(false)
   const [interestCount, setInterestCount] = useState(0)
   const [interestLoading, setInterestLoading] = useState(false)
+  useBackHandler(!!profileId, onClose, 'profile-detail')
+  useBackHandler(showCoffeeChatForm, () => setShowCoffeeChatForm(false), 'profile-coffee')
+  useBackHandler(showInviteModal, () => setShowInviteModal(false), 'profile-invite')
+  useBackHandler(!!sidePanel, () => setSidePanel(null), 'profile-side')
+
   const { data: profile, isLoading: loading } = useDetailedPublicProfile(
     profileId ?? undefined,
     byUserId ? { byUserId: true } : undefined
@@ -187,7 +193,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
               {/* macOS-style Window Bar */}
               <div className="bg-surface-sunken border-b border-border-strong px-3 sm:px-4 h-10 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-2">
-                  <button onClick={onClose} className="group w-3 h-3 rounded-full bg-[#FF5F57] hover:brightness-90 transition-all relative flex items-center justify-center" aria-label="닫기">
+                  <button onClick={onClose} className="group w-3 h-3 rounded-full bg-[#FF5F57] hover:brightness-90 transition-all relative flex items-center justify-center after:absolute after:inset-[-16px] after:content-[''] sm:after:hidden" aria-label="닫기">
                     <X size={7} className="text-[#FF5F57] group-hover:text-[#4A0002] transition-colors" />
                   </button>
                   <div className="w-3 h-3 rounded-full bg-[#FEBC2E]" />

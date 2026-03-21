@@ -44,7 +44,7 @@ export const EditInterests: React.FC<EditInterestsProps> = ({
               className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium bg-brand text-white"
             >
               {tag}
-              <button onClick={() => toggleTag(tag)} className="hover:opacity-70">
+              <button onClick={() => toggleTag(tag)} className="hover:opacity-70 p-2 sm:p-0 -m-1 sm:m-0">
                 <X size={10} />
               </button>
             </span>

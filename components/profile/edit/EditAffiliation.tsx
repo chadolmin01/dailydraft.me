@@ -93,7 +93,7 @@ export const EditAffiliation: React.FC<EditAffiliationProps> = ({
           const affConfig = AFFILIATION_OPTIONS.find(a => a.value === affiliationType) || AFFILIATION_OPTIONS[0]
           const showUnivCombo = affiliationType === 'student' || affiliationType === 'graduate'
           return (
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-medium text-txt-secondary mb-1.5">{affConfig.orgLabel}</label>
                 {showUnivCombo ? (

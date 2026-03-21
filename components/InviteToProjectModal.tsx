@@ -5,6 +5,7 @@ import { X, Loader2, Check, FolderOpen } from 'lucide-react'
 import { toast } from 'sonner'
 import { useMyOpportunities } from '@/src/hooks/useOpportunities'
 import { useCreateInvitation } from '@/src/hooks/useProjectInvitations'
+import { useBackHandler } from '@/src/hooks/useBackHandler'
 
 interface InviteToProjectModalProps {
   targetUserId: string
@@ -17,6 +18,8 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
   targetName,
   onClose,
 }) => {
+  useBackHandler(true, onClose, 'invite-project')
+
   const { data: myOpportunities = [], isLoading: loadingProjects } = useMyOpportunities()
   const createInvitation = useCreateInvitation()
 
@@ -79,7 +82,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-border-strong bg-surface-sunken shrink-0">
           <h3 className="text-sm font-bold text-txt-primary">프로젝트에 초대</h3>
-          <button onClick={onClose} className="p-1 hover:bg-surface-card transition-colors">
+          <button onClick={onClose} className="p-2.5 sm:p-1 hover:bg-surface-card transition-colors">
             <X size={16} className="text-txt-disabled" />
           </button>
         </div>

@@ -139,7 +139,7 @@ export default function AdminOpportunitiesPage() {
       <div className="max-w-[87.5rem] mx-auto p-8 lg:p-12 space-y-6">
         {/* Header */}
         <div className="border-b border-border pb-6">
-          <Link href="/admin" className="inline-flex items-center gap-1 text-sm text-txt-tertiary hover:text-txt-primary mb-3 transition-colors">
+          <Link href="/admin" className="hidden sm:inline-flex items-center gap-1 text-sm text-txt-tertiary hover:text-txt-primary mb-3 transition-colors">
             <ArrowLeft size={14} />
             대시보드
           </Link>

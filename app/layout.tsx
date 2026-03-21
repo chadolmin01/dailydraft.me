@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Noto_Sans_KR, JetBrains_Mono } from 'next/font/google'
 import Script from 'next/script'
 import { Providers } from '@/src/context/Providers'
@@ -10,6 +10,7 @@ const notoSansKR = Noto_Sans_KR({
   variable: '--font-noto-sans-kr',
   display: 'swap',
   preload: true,
+  adjustFontFallback: true,
 })
 
 const jetBrainsMono = JetBrains_Mono({
@@ -18,6 +19,7 @@ const jetBrainsMono = JetBrains_Mono({
   variable: '--font-jetbrains-mono',
   display: 'swap',
   preload: true,
+  adjustFontFallback: true,
 })
 
 export const metadata: Metadata = {
@@ -42,6 +44,14 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  viewportFit: 'cover',
 }
 
 export default function RootLayout({

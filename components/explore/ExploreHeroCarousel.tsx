@@ -23,7 +23,7 @@ export function ExploreHeroCarousel() {
 
   return (
     <PageContainer size="wide" className="pt-4 pb-4">
-      <div className="flex gap-3 h-[20rem]">
+      <div className="flex gap-3 h-[14rem] sm:h-[20rem]">
 
         {/* ===== 왼쪽: 메인 강조 슬라이드 ===== */}
         <div
@@ -57,7 +57,7 @@ export function ExploreHeroCarousel() {
           {/* 메인 슬라이드 콘텐츠 */}
           <div className="relative z-10 h-full">
             {/* Slide 0: CTA */}
-            <div className={`absolute inset-0 px-6 flex items-center transition-all duration-300 ${order[0] === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+            <div className={`absolute inset-0 px-4 sm:px-6 flex items-center transition-all duration-300 ${order[0] === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
               <div className="w-full">
                 <div className="inline-flex items-center gap-2 px-2 py-0.5 bg-surface-card border border-border-strong mb-4">
                   <div className="w-1.5 h-1.5 bg-indicator-online animate-pulse" />
@@ -80,11 +80,11 @@ export function ExploreHeroCarousel() {
             </div>
 
             {/* Slide 1: How it works */}
-            <div className={`absolute inset-0 px-6 flex items-center transition-all duration-300 ${order[0] === 1 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+            <div className={`absolute inset-0 px-4 sm:px-6 flex items-center transition-all duration-300 ${order[0] === 1 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
               <div className="w-full">
                 <span className="text-[0.625rem] font-mono font-bold text-txt-tertiary tracking-wider block">HOW IT WORKS</span>
                 <h2 className="text-2xl md:text-3xl font-bold text-txt-primary mt-1 mb-6">간단한 3단계</h2>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
                   {[
                     { num: 1, icon: Upload, title: '올리기', desc: '아이디어와 고민을 공유' },
                     { num: 2, icon: MessageCircle, title: '피드백', desc: '다양한 시각의 조언' },
@@ -104,12 +104,12 @@ export function ExploreHeroCarousel() {
             </div>
 
             {/* Slide 2: Feedback */}
-            <div className={`absolute inset-0 px-6 flex items-center transition-all duration-300 ${order[0] === 2 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+            <div className={`absolute inset-0 px-4 sm:px-6 flex items-center transition-all duration-300 ${order[0] === 2 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
               <div className="w-full">
                 <span className="text-[0.625rem] font-mono font-bold text-txt-tertiary tracking-wider block">FEEDBACK</span>
                 <h2 className="text-2xl md:text-3xl font-bold text-txt-primary mt-1 mb-2">솔직한 피드백</h2>
                 <p className="text-xs text-txt-tertiary mb-5 break-keep">프로젝트를 올리면 다양한 관점의 피드백을 받을 수 있어요</p>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
                   {[
                     { school: '연대 경영', name: '김OO', content: '타겟을 대학생으로 좁히는 게 낫지 않을까요? 차별점이 필요할 것 같아요.' },
                     { school: '고대 컴공', name: '박OO', content: '학교 인증 기능이 핵심이 될 것 같은데, 인증 방식이 궁금해요.' },

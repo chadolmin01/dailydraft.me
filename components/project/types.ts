@@ -27,6 +27,12 @@ export interface ProjectContentProps {
   }
 }
 
+export interface TeamMemberPublic {
+  id: string
+  nickname: string
+  role: string | null
+}
+
 export interface ProjectSidebarProps {
   opportunity: OpportunityWithCreator
   creator: CreatorProfile | null | undefined
@@ -36,6 +42,7 @@ export interface ProjectSidebarProps {
   handleAction: (role?: string) => void
   onClose: () => void
   router: { push: (url: string) => void }
+  teamMembers?: TeamMemberPublic[]
 }
 
 export interface ProjectOverlaysProps {

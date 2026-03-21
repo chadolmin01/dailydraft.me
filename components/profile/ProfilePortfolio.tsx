@@ -125,7 +125,7 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
               <button
                 onClick={() => handleDelete(item.id)}
                 disabled={deletingId === item.id}
-                className="absolute top-2 right-2 z-20 w-6 h-6 bg-white/90 border border-border-strong flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-status-danger-bg hover:border-status-danger-text/30 hover:text-status-danger-text"
+                className="absolute top-2 right-2 z-20 w-6 h-6 bg-white/90 border border-border-strong flex items-center justify-center sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:bg-status-danger-bg hover:border-status-danger-text/30 hover:text-status-danger-text"
               >
                 {deletingId === item.id ? <Loader2 size={10} className="animate-spin" /> : <Trash2 size={10} />}
               </button>

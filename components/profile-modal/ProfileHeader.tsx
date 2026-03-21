@@ -107,7 +107,7 @@ export function ProfileHeader({
         {profile.interest_tags && profile.interest_tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mt-3">
             {profile.interest_tags.map((tag) => (
-              <span key={tag} className="px-2.5 py-1 bg-tag-default-bg text-tag-default-text text-xs font-medium border border-border-strong">
+              <span key={tag} className="px-2.5 py-1 bg-white text-tag-default-text text-xs font-medium border border-border-strong">
                 {tag}
               </span>
             ))}

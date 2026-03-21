@@ -2,6 +2,7 @@ import React from 'react';
 import { X, Check, Sparkles } from 'lucide-react';
 import { ChatMessage } from './types';
 import { getPersonaIcon } from './personaUtils';
+import { useBackHandler } from '@/src/hooks/useBackHandler';
 
 interface ReflectionModalState {
   msgId: string;
@@ -30,6 +31,7 @@ const ReflectionModal: React.FC<ReflectionModalProps> = ({
   onRemove,
   onClose,
 }) => {
+  useBackHandler(true, onClose, 'reflection');
   const isAlreadyReflected = messages.find(m => m.id === reflectionModal.msgId)?.responses?.[reflectionModal.respIdx].isReflected;
 
   return (
@@ -79,7 +81,7 @@ const ReflectionModal: React.FC<ReflectionModalProps> = ({
                                }`}
                            >
                                <div className="flex items-start gap-3">
-                                   <div className={`mt-0.5 w-4 h-4 border flex items-center justify-center shrink-0 ${
+                                   <div className={`mt-0.5 w-5 h-5 sm:w-4 sm:h-4 border flex items-center justify-center shrink-0 ${
                                        reflectionText === action ? 'border-black bg-black' : 'border-border-strong'
                                    }`}>
                                        {reflectionText === action && <Check size={10} className="text-white" />}

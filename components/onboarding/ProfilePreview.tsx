@@ -62,7 +62,7 @@ export const ProfilePreview: React.FC<ProfilePreviewProps> = ({
               {profile.skills.length > 0 && (
                 <div className="pt-2 border-t border-border-subtle">
                   <label className="text-[10px] font-bold text-txt-disabled uppercase font-mono mb-1.5 flex items-center gap-1"><Code2 size={9} /> Skills</label>
-                  <div className="flex flex-wrap gap-1">{profile.skills.map(s => <span key={s} className="px-2 py-0.5 bg-brand text-white text-[10px] font-medium">{s}</span>)}</div>
+                  <div className="flex flex-wrap gap-1">{profile.skills.map((s, i) => { const label = typeof s === 'string' ? s : (s as any)?.name || ''; return <span key={label || i} className="px-2 py-0.5 bg-brand text-white text-[10px] font-medium">{label}</span> })}</div>
                 </div>
               )}
               {profile.interests.length > 0 && (

@@ -7,6 +7,7 @@ import {
   FormTemplate,
   getIndustryName,
 } from '../../src/types/business-plan'
+import { useBackHandler } from '@/src/hooks/useBackHandler'
 
 interface PreviewModalProps {
   data: BusinessPlanData
@@ -27,6 +28,7 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
   const [isExporting, setIsExporting] = useState(false)
   const [exportFormat, setExportFormat] = useState<'pdf' | 'docx' | null>(null)
   const previewRef = useRef<HTMLDivElement>(null)
+  useBackHandler(!!template, onClose, 'preview')
 
   if (!template) return null
 

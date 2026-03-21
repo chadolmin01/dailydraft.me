@@ -59,7 +59,7 @@ export const EditSkills: React.FC<EditSkillsProps> = ({
               </div>
               <button
                 onClick={() => removeSkill(skill.name)}
-                className="p-0.5 text-txt-tertiary hover:text-txt-secondary transition-colors"
+                className="p-2 sm:p-0.5 -m-1 sm:m-0 text-txt-tertiary hover:text-txt-secondary transition-colors"
               >
                 <X size={12} />
               </button>

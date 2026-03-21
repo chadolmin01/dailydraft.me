@@ -33,8 +33,8 @@ export const EditPhotos: React.FC<EditPhotosProps> = ({
               <ImageIcon size={20} className="text-txt-tertiary" />
             </div>
           )}
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 flex items-center justify-center transition-colors">
-            <span className="flex items-center gap-1.5 px-3 py-1.5 bg-black/60 text-white text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="absolute inset-0 bg-black/20 sm:bg-black/0 sm:group-hover:bg-black/30 flex items-center justify-center transition-colors">
+            <span className="flex items-center gap-1.5 px-3 py-1.5 bg-black/60 text-white text-xs font-medium opacity-70 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
               <Camera size={12} /> 변경
             </span>
           </div>
@@ -61,8 +61,8 @@ export const EditPhotos: React.FC<EditPhotosProps> = ({
                 {profile?.nickname?.slice(0, 2).toUpperCase() || 'U'}
               </div>
             )}
-            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 flex items-center justify-center transition-colors">
-              <Camera size={16} className="text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute inset-0 bg-black/20 sm:bg-black/0 sm:group-hover:bg-black/40 flex items-center justify-center transition-colors">
+              <Camera size={16} className="text-white opacity-70 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity" />
             </div>
             {uploadingAvatar && (
               <div className="absolute inset-0 bg-black/50 flex items-center justify-center">

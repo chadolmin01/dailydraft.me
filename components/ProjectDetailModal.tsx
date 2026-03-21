@@ -18,6 +18,7 @@ import { ProjectHeader } from '@/components/project/ProjectHeader'
 import { ProjectContent } from '@/components/project/ProjectContent'
 import { ProjectSidebar } from '@/components/project/ProjectSidebar'
 import { ProjectOverlays } from '@/components/project/ProjectOverlays'
+import { useBackHandler } from '@/src/hooks/useBackHandler'
 
 interface ProjectDetailModalProps {
   projectId: string | null
@@ -40,6 +41,11 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
     opportunityId: projectId ?? undefined,
     enabled: !!projectId,
   })
+
+  useBackHandler(!!projectId, onClose, 'project-detail')
+  useBackHandler(showCoffeeChatForm, () => setShowCoffeeChatForm(false), 'coffee-chat')
+  useBackHandler(showWriteUpdate, () => setShowWriteUpdate(false), 'write-update')
+  useBackHandler(showCta, () => setShowCta(false), 'project-cta')
 
   const { data: opportunity, isLoading: loading } = useOpportunity(projectId ?? undefined)
   const { data: creator } = useProfileByUserId(opportunity?.creator_id ?? undefined)
@@ -197,7 +203,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
               {/* macOS-style Window Bar */}
               <div className="bg-surface-sunken border-b border-border-strong px-3 sm:px-4 h-10 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-2">
-                  <button onClick={onClose} className="group w-3 h-3 rounded-full bg-[#FF5F57] hover:brightness-90 transition-all relative flex items-center justify-center" aria-label="닫기">
+                  <button onClick={onClose} className="group w-3 h-3 rounded-full bg-[#FF5F57] hover:brightness-90 transition-all relative flex items-center justify-center after:absolute after:inset-[-16px] after:content-[''] sm:after:hidden" aria-label="닫기">
                     <X size={7} className="text-[#FF5F57] group-hover:text-[#4A0002] transition-colors" />
                   </button>
                   <div className="w-3 h-3 rounded-full bg-[#FEBC2E]" />

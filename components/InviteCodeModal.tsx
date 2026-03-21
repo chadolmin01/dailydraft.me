@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { X, Gift, Sparkles, CheckCircle, AlertCircle, Loader2 } from 'lucide-react'
+import { useBackHandler } from '@/src/hooks/useBackHandler'
 
 interface InviteCodeModalProps {
   isOpen: boolean
@@ -14,6 +15,8 @@ export const InviteCodeModal: React.FC<InviteCodeModalProps> = ({
   onClose,
   onSuccess,
 }) => {
+  useBackHandler(isOpen, onClose, 'invite-code')
+
   const [code, setCode] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)

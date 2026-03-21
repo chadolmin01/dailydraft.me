@@ -1,8 +1,7 @@
-'use client'
-
 import { TopNavbar } from '@/components/TopNavbar'
 import { HelpWidget } from '@/components/HelpWidget'
 import { RouteProgressBar } from '@/components/ui/RouteProgressBar'
+import { PageTransition } from '@/components/ui/PageTransition'
 
 export default function DashboardLayout({
   children,
@@ -15,7 +14,7 @@ export default function DashboardLayout({
       <TopNavbar />
       <main className="pt-20">
         <div className="min-h-[calc(100vh-5rem)]">
-          {children}
+          <PageTransition>{children}</PageTransition>
         </div>
       </main>
       <HelpWidget />
