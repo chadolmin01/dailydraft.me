@@ -10,13 +10,16 @@ if (typeof window !== 'undefined' && (!supabaseUrl || !supabaseAnonKey)) {
   )
 }
 
-// Shared config: disable navigator.locks to prevent AbortError in React Strict Mode
+// Shared config
+// NOTE: navigator.locks MUST be enabled (default) to prevent auth race conditions.
+// Without it, concurrent getSession()/getUser() calls corrupt internal auth state,
+// causing data queries to fire with malformed auth headers → empty responses.
+// AbortError from StrictMode double-mount is handled by withRetry + React Query retry.
 const clientOptions = {
   auth: {
     flowType: 'pkce' as const,
     persistSession: true,
     detectSessionInUrl: true,
-    lock: async <R>(_name: string, _acquireTimeout: number, fn: () => Promise<R>): Promise<R> => await fn(),
   },
 }
 
