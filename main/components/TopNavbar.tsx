@@ -380,6 +380,14 @@ export const TopNavbar: React.FC = () => {
                 >
                   로그인
                 </Link>
+                {/* 모바일: 로그인 아이콘 */}
+                <Link
+                  href="/login"
+                  className="md:hidden w-8 h-8 flex items-center justify-center bg-surface-inverse text-txt-inverse border border-black"
+                  aria-label="로그인"
+                >
+                  <User size={14} />
+                </Link>
               </>
             )}
 
