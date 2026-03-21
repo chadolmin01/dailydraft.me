@@ -23,7 +23,7 @@ export function ExploreHeroCarousel() {
 
   return (
     <PageContainer size="wide" className="pt-4 pb-4">
-      <div className="flex gap-3 h-[14rem] sm:h-[20rem]">
+      <div className="flex gap-3 min-h-[14rem] sm:h-[20rem]">
 
         {/* ===== 왼쪽: 메인 강조 슬라이드 ===== */}
         <div
