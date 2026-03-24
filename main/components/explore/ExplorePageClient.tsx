@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useMemo, Suspense } from 'react'
+import React, { useState, useEffect, useMemo, useCallback, Suspense } from 'react'
 import dynamic from 'next/dynamic'
 import { LayoutGrid, Users, Sparkles } from 'lucide-react'
 import Link from 'next/link'
@@ -69,11 +69,12 @@ function ExplorePageContent() {
   const initialQuery = urlParams.get('q') || ''
   const initialScope = urlParams.get('scope') as SearchScope || 'all'
 
+  // ── Modal state (URL-driven — survives client-side navigation) ──
+  const selectedProjectId = urlParams.get('project')
+  const selectedProfileId = urlParams.get('profile')
+  const profileByUserId = urlParams.get('profileBy') === 'userId'
+
   // ── State ──
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
-  const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null)
-  const [profileByUserId, setProfileByUserId] = useState(false)
-  const [selectedMatchData, setSelectedMatchData] = useState<UserRecommendation | null>(null)
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [sortBy, setSortBy] = useState<SortBy>('trending')
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all')
@@ -90,11 +91,24 @@ function ExplorePageContent() {
   const searchQuery = useDebouncedValue(searchInput, 300)
   const { isAuthenticated, user } = useAuth()
 
-  // Sync search to URL
+  // URL helper — builds a URL preserving existing params while applying updates
+  const buildUrl = useCallback((updates: Record<string, string | null>) => {
+    const params = new URLSearchParams(window.location.search)
+    for (const [key, value] of Object.entries(updates)) {
+      if (value === null) params.delete(key)
+      else params.set(key, value)
+    }
+    const qs = params.toString()
+    return `${pathname}${qs ? `?${qs}` : ''}`
+  }, [pathname])
+
+  // Sync search to URL (preserves modal params)
   useEffect(() => {
-    const params = new URLSearchParams()
+    const params = new URLSearchParams(window.location.search)
     if (searchQuery) params.set('q', searchQuery)
+    else params.delete('q')
     if (searchScope !== 'all') params.set('scope', searchScope)
+    else params.delete('scope')
     const qs = params.toString()
     const newPath = `${pathname}${qs ? `?${qs}` : ''}`
     const currentPath = `${pathname}${window.location.search}`
@@ -206,6 +220,11 @@ function ExplorePageContent() {
 
   // ── Derived: talent cards ──
   const recsMap = useMemo(() => new Map(allRecs.map(r => [r.user_id, r])), [allRecs])
+  const selectedMatchData = useMemo(() => {
+    if (!selectedProfileId) return null
+    const userId = profileByUserId ? selectedProfileId : publicProfiles.find(p => p.id === selectedProfileId)?.user_id
+    return userId ? recsMap.get(userId) ?? null : null
+  }, [selectedProfileId, profileByUserId, publicProfiles, recsMap])
   const talentCards = useMemo(() => publicProfiles
     .filter((profile: PublicProfile) => {
       // Role filter
@@ -366,12 +385,13 @@ function ExplorePageContent() {
     peopleCount: talentCards.length,
   } as const
 
-  const handleSelectProfile = (id: string, byUserId: boolean) => {
-    setSelectedProfileId(id)
-    setProfileByUserId(byUserId)
-    const userId = byUserId ? id : publicProfiles.find(p => p.id === id)?.user_id
-    setSelectedMatchData(userId ? recsMap.get(userId) ?? null : null)
-  }
+  const handleSelectProject = useCallback((id: string) => {
+    router.push(buildUrl({ project: id, profile: null, profileBy: null }), { scroll: false })
+  }, [router, buildUrl])
+
+  const handleSelectProfile = useCallback((id: string, byUserId: boolean) => {
+    router.push(buildUrl({ profile: id, profileBy: byUserId ? 'userId' : null, project: null }), { scroll: false })
+  }, [router, buildUrl])
 
   return (
     <div className="bg-surface-bg min-h-full">
@@ -423,7 +443,7 @@ function ExplorePageContent() {
             selectedCategory={selectedCategory}
             recruitingOnly={recruitingOnly}
             onLoadMore={() => setDisplayLimit(prev => prev + PAGE_SIZE)}
-            onSelectProject={setSelectedProjectId}
+            onSelectProject={handleSelectProject}
           />
         )}
 
@@ -444,7 +464,7 @@ function ExplorePageContent() {
       {selectedProjectId && (
         <ProjectDetailModal
           projectId={selectedProjectId}
-          onClose={() => setSelectedProjectId(null)}
+          onClose={() => router.replace(buildUrl({ project: null }), { scroll: false })}
         />
       )}
 
@@ -453,11 +473,9 @@ function ExplorePageContent() {
           profileId={selectedProfileId}
           byUserId={profileByUserId}
           matchData={selectedMatchData}
-          onClose={() => { setSelectedProfileId(null); setSelectedMatchData(null) }}
+          onClose={() => router.replace(buildUrl({ profile: null, profileBy: null }), { scroll: false })}
           onSelectProject={(projectId) => {
-            setSelectedProfileId(null)
-            setSelectedMatchData(null)
-            setSelectedProjectId(projectId)
+            router.replace(buildUrl({ project: projectId, profile: null, profileBy: null }), { scroll: false })
           }}
         />
       )}

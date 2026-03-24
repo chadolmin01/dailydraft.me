@@ -42,7 +42,6 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
     enabled: !!projectId,
   })
 
-  useBackHandler(!!projectId, onClose, 'project-detail')
   useBackHandler(showCoffeeChatForm, () => setShowCoffeeChatForm(false), 'coffee-chat')
   useBackHandler(showWriteUpdate, () => setShowWriteUpdate(false), 'write-update')
   useBackHandler(showCta, () => setShowCta(false), 'project-cta')
@@ -154,6 +153,23 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
   const handleShare = async () => {
     const appUrl = window.location.origin
     const url = `${appUrl}/p/${projectId}`
+    const shareData = {
+      title: opportunity?.title || 'Draft 프로젝트',
+      text: opportunity?.needed_roles?.length
+        ? `${opportunity.title} — ${opportunity.needed_roles.slice(0, 2).join(', ')} 모집 중`
+        : opportunity?.title || 'Draft에서 프로젝트를 확인해보세요',
+      url,
+    }
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData)
+        return
+      } catch (err) {
+        if ((err as Error).name === 'AbortError') return
+      }
+    }
+
     try {
       await navigator.clipboard.writeText(url)
       setShareCopied(true)
