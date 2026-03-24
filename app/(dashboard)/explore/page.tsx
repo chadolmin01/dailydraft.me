@@ -1,16 +1,21 @@
 import { QueryClient, dehydrate, HydrationBoundary } from '@tanstack/react-query'
-import { createClient } from '@/src/lib/supabase/server'
+import { createClient } from '@supabase/supabase-js'
 import ExplorePageClient from '@/components/explore/ExplorePageClient'
 
-// Revalidate every 60 seconds
+// ISR: revalidate every 60 seconds (no cookies() → truly static/ISR)
 export const revalidate = 60
 
 const PAGE_SIZE = 12
 const PEOPLE_PAGE_SIZE = 12
 
+// Lightweight anon client for server prefetch — no cookies, enables ISR caching
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
+
 export default async function ExplorePage() {
   const queryClient = new QueryClient()
-  const supabase = await createClient()
 
   // Prefetch opportunities (initial page)
   await Promise.all([

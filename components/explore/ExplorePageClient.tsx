@@ -1,8 +1,9 @@
 'use client'
 
-import React, { useState, useEffect, useMemo, Suspense } from 'react'
+import React, { useState, useEffect, useMemo, useCallback, Suspense } from 'react'
 import dynamic from 'next/dynamic'
-import { LayoutGrid, Users } from 'lucide-react'
+import { LayoutGrid, Users, Sparkles } from 'lucide-react'
+import Link from 'next/link'
 import { useSearchParams as useNextSearchParams, useRouter, usePathname } from 'next/navigation'
 import { DashboardLayout } from '@/components/ui/DashboardLayout'
 
@@ -14,12 +15,14 @@ const ModalLoadingFallback = () => (
   </div>
 )
 
+import { retryImport } from '@/src/lib/retry-import'
+
 const ProjectDetailModal = dynamic(
-  () => import('@/components/ProjectDetailModal').then(m => ({ default: m.ProjectDetailModal })),
+  () => retryImport(() => import('@/components/ProjectDetailModal').then(m => ({ default: m.ProjectDetailModal }))),
   { ssr: false, loading: ModalLoadingFallback }
 )
 const ProfileDetailModal = dynamic(
-  () => import('@/components/ProfileDetailModal').then(m => ({ default: m.ProfileDetailModal })),
+  () => retryImport(() => import('@/components/ProfileDetailModal').then(m => ({ default: m.ProfileDetailModal }))),
   { ssr: false, loading: ModalLoadingFallback }
 )
 import { useOpportunities, type OpportunityWithCreator, calculateDaysLeft } from '@/src/hooks/useOpportunities'
@@ -51,9 +54,31 @@ function useDebouncedValue<T>(value: T, delay: number): T {
   return debounced
 }
 
+function ExploreSkeleton() {
+  return (
+    <div className="bg-surface-bg min-h-full">
+      <div className="max-w-7xl mx-auto px-4 pt-6">
+        <div className="h-40 bg-surface-sunken border border-border-strong animate-pulse mb-6" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[1,2,3,4].map(i => (
+            <div key={i} className="bg-surface-card border border-border-strong h-[21.25rem] animate-pulse">
+              <div className="h-36 bg-surface-sunken" />
+              <div className="p-4 space-y-3">
+                <div className="h-4 bg-surface-sunken w-3/4" />
+                <div className="h-3 bg-surface-sunken w-full" />
+                <div className="h-3 bg-surface-sunken w-1/2" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function ExplorePageClient() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<ExploreSkeleton />}>
       <ExplorePageContent />
     </Suspense>
   )
@@ -66,11 +91,47 @@ function ExplorePageContent() {
   const initialQuery = urlParams.get('q') || ''
   const initialScope = urlParams.get('scope') as SearchScope || 'all'
 
+  // ── Modal state (local state + URL sync via window.history) ──
+  // Using window.history directly avoids triggering Next.js server re-renders
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
+    () => typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('project') : null
+  )
+  const [selectedProfileId, setSelectedProfileId] = useState<string | null>(
+    () => typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('profile') : null
+  )
+  const [profileByUserId, setProfileByUserId] = useState(
+    () => typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('profileBy') === 'userId' : false
+  )
+
+  // Sync modal state → URL (without Next.js navigation)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (selectedProjectId) params.set('project', selectedProjectId)
+    else params.delete('project')
+    if (selectedProfileId) params.set('profile', selectedProfileId)
+    else params.delete('profile')
+    if (profileByUserId && selectedProfileId) params.set('profileBy', 'userId')
+    else params.delete('profileBy')
+    const qs = params.toString()
+    const newUrl = `${window.location.pathname}${qs ? `?${qs}` : ''}`
+    if (newUrl !== `${window.location.pathname}${window.location.search}`) {
+      window.history.replaceState(null, '', newUrl)
+    }
+  }, [selectedProjectId, selectedProfileId, profileByUserId])
+
+  // Handle browser back/forward
+  useEffect(() => {
+    const onPopState = () => {
+      const params = new URLSearchParams(window.location.search)
+      setSelectedProjectId(params.get('project'))
+      setSelectedProfileId(params.get('profile'))
+      setProfileByUserId(params.get('profileBy') === 'userId')
+    }
+    window.addEventListener('popstate', onPopState)
+    return () => window.removeEventListener('popstate', onPopState)
+  }, [])
+
   // ── State ──
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
-  const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null)
-  const [profileByUserId, setProfileByUserId] = useState(false)
-  const [selectedMatchData, setSelectedMatchData] = useState<UserRecommendation | null>(null)
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [sortBy, setSortBy] = useState<SortBy>('trending')
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all')
@@ -87,11 +148,13 @@ function ExplorePageContent() {
   const searchQuery = useDebouncedValue(searchInput, 300)
   const { isAuthenticated, user } = useAuth()
 
-  // Sync search to URL
+  // Sync search to URL (preserves modal params)
   useEffect(() => {
-    const params = new URLSearchParams()
+    const params = new URLSearchParams(window.location.search)
     if (searchQuery) params.set('q', searchQuery)
+    else params.delete('q')
     if (searchScope !== 'all') params.set('scope', searchScope)
+    else params.delete('scope')
     const qs = params.toString()
     const newPath = `${pathname}${qs ? `?${qs}` : ''}`
     const currentPath = `${pathname}${window.location.search}`
@@ -110,7 +173,7 @@ function ExplorePageContent() {
   const { data: allRecs = [] } = useUserRecommendations({ limit: 15 })
   const sidebarRecs = allRecs.slice(0, 4)
 
-  // AI recommended projects
+  // AI recommended projects — used for match labels in all sort modes
   const { data: aiProjects = [] } = useQuery({
     queryKey: ['ai_project_recommendations'],
     queryFn: async () => {
@@ -119,8 +182,13 @@ function ExplorePageContent() {
       return res.json() as Promise<Array<OpportunityWithCreator & { match_score: number; match_reason: string }>>
     },
     staleTime: 1000 * 60 * 5,
-    enabled: sortBy === 'ai' && !!user,
+    enabled: !!user,
   })
+  const aiScoreMap = useMemo(() => {
+    const map = new Map<string, number>()
+    for (const p of aiProjects) map.set(p.id, p.match_score)
+    return map
+  }, [aiProjects])
 
   const query = searchQuery.toLowerCase().trim()
 
@@ -150,28 +218,24 @@ function ExplorePageContent() {
       return true
     }
 
-    const toCard = (opp: OpportunityWithCreator, matchLabel: string | null = null) => ({
-      id: opp.id,
-      title: opp.title,
-      desc: opp.description || '',
-      roles: opp.needed_roles || [],
-      tags: (opp.interest_tags || []).slice(0, 3),
-      coverImage: (opp.demo_images && opp.demo_images.length > 0) ? opp.demo_images[0] : null,
-      daysLeft: calculateDaysLeft(opp.created_at),
-      updatedAt: opp.updated_at ?? undefined,
-      status: opp.status,
-      matchLabel,
-      badges: (opp as unknown as { badges?: string[] | null }).badges ?? null,
-    })
-
-    // AI sort: pre-ranked data, but still apply filters
-    if (sortBy === 'ai' && aiProjects.length > 0) {
-      return aiProjects
-        .filter(filterOpp)
-        .map((opp) => toCard(
-          opp,
-          opp.match_score >= 80 ? '잘 맞는 프로젝트' : opp.match_score >= 60 ? '관심 가능' : null,
-        ))
+    const toCard = (opp: OpportunityWithCreator) => {
+      const aiScore = aiScoreMap.get(opp.id)
+      const matchLabel = aiScore != null && aiScore >= 80 ? '잘 맞는 프로젝트'
+        : aiScore != null && aiScore >= 60 ? '관심 가능'
+        : null
+      return {
+        id: opp.id,
+        title: opp.title,
+        desc: opp.description || '',
+        roles: opp.needed_roles || [],
+        tags: (opp.interest_tags || []).slice(0, 3),
+        coverImage: (opp.demo_images && opp.demo_images.length > 0) ? opp.demo_images[0] : null,
+        daysLeft: calculateDaysLeft(opp.created_at),
+        updatedAt: opp.updated_at ?? undefined,
+        status: opp.status,
+        matchLabel,
+        badges: (opp as unknown as { badges?: string[] | null }).badges ?? null,
+      }
     }
 
     // Popularity score helper
@@ -197,11 +261,16 @@ function ExplorePageContent() {
       })
       .map((opp: OpportunityWithCreator) => toCard(opp))
   },
-    [opportunities, typeFilter, recruitingOnly, selectedCategory, query, searchScope, sortBy, aiProjects]
+    [opportunities, typeFilter, recruitingOnly, selectedCategory, query, searchScope, sortBy, aiScoreMap]
   )
 
   // ── Derived: talent cards ──
   const recsMap = useMemo(() => new Map(allRecs.map(r => [r.user_id, r])), [allRecs])
+  const selectedMatchData = useMemo(() => {
+    if (!selectedProfileId) return null
+    const userId = profileByUserId ? selectedProfileId : publicProfiles.find(p => p.id === selectedProfileId)?.user_id
+    return userId ? recsMap.get(userId) ?? null : null
+  }, [selectedProfileId, profileByUserId, publicProfiles, recsMap])
   const talentCards = useMemo(() => publicProfiles
     .filter((profile: PublicProfile) => {
       // Role filter
@@ -245,16 +314,19 @@ function ExplorePageContent() {
         avatarUrl: profile.avatar_url,
         matchScore: rec?.match_score ?? null,
         matchReason: rec?.match_reason ?? null,
+        matchReasonDetail: rec?.match_reason_detail ?? null,
         badges: profile.badges ?? null,
         interestCount: profile.interest_count || 0,
         createdAt: profile.created_at,
       }
     })
+    .filter((card) => {
+      if (peopleSortBy === 'ai') return card.matchScore != null && card.matchScore > 0
+      return true
+    })
     .sort((a, b) => {
       if (peopleSortBy === 'ai') {
-        const aScore = a.matchScore ?? -1
-        const bScore = b.matchScore ?? -1
-        return bScore - aScore
+        return (b.matchScore ?? 0) - (a.matchScore ?? 0)
       }
       if (peopleSortBy === 'popular')
         return (b.interestCount || 0) - (a.interestCount || 0)
@@ -359,12 +431,17 @@ function ExplorePageContent() {
     peopleCount: talentCards.length,
   } as const
 
-  const handleSelectProfile = (id: string, byUserId: boolean) => {
+  const handleSelectProject = useCallback((id: string) => {
+    setSelectedProfileId(null)
+    setProfileByUserId(false)
+    setSelectedProjectId(id)
+  }, [])
+
+  const handleSelectProfile = useCallback((id: string, byUserId: boolean) => {
+    setSelectedProjectId(null)
     setSelectedProfileId(id)
     setProfileByUserId(byUserId)
-    const userId = byUserId ? id : publicProfiles.find(p => p.id === id)?.user_id
-    setSelectedMatchData(userId ? recsMap.get(userId) ?? null : null)
-  }
+  }, [])
 
   return (
     <div className="bg-surface-bg min-h-full">
@@ -372,6 +449,7 @@ function ExplorePageContent() {
 
       <DashboardLayout
         size="wide"
+        className="pt-3"
         sidebar={<ExploreSidebar {...filterProps} />}
         aside={
           <ExploreAsidePanel
@@ -393,6 +471,16 @@ function ExplorePageContent() {
         />
         <ExploreTabBar {...tabProps} />
 
+        {!isAuthenticated && ((activeTab === 'projects' && sortBy === 'ai') || (activeTab === 'people' && peopleSortBy === 'ai')) && (
+          <div className="flex items-center gap-3 px-4 py-3 mb-4 border border-brand-border bg-brand-bg">
+            <Sparkles size={16} className="text-brand shrink-0" />
+            <p className="text-xs text-txt-secondary flex-1">로그인하면 내 관심사에 맞는 AI 추천을 받을 수 있어요</p>
+            <Link href="/login" className="shrink-0 px-3 py-1.5 bg-black text-white text-xs font-bold border border-black hover:bg-surface-inverse transition-colors">
+              로그인
+            </Link>
+          </div>
+        )}
+
         {activeTab === 'projects' && (
           <ExploreProjectGrid
             projectCards={projectCards}
@@ -405,7 +493,7 @@ function ExplorePageContent() {
             selectedCategory={selectedCategory}
             recruitingOnly={recruitingOnly}
             onLoadMore={() => setDisplayLimit(prev => prev + PAGE_SIZE)}
-            onSelectProject={setSelectedProjectId}
+            onSelectProject={handleSelectProject}
           />
         )}
 
@@ -435,10 +523,10 @@ function ExplorePageContent() {
           profileId={selectedProfileId}
           byUserId={profileByUserId}
           matchData={selectedMatchData}
-          onClose={() => { setSelectedProfileId(null); setSelectedMatchData(null) }}
+          onClose={() => { setSelectedProfileId(null); setProfileByUserId(false) }}
           onSelectProject={(projectId) => {
             setSelectedProfileId(null)
-            setSelectedMatchData(null)
+            setProfileByUserId(false)
             setSelectedProjectId(projectId)
           }}
         />

@@ -29,7 +29,6 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
   const [hasInterested, setHasInterested] = useState(false)
   const [interestCount, setInterestCount] = useState(0)
   const [interestLoading, setInterestLoading] = useState(false)
-  useBackHandler(!!profileId, onClose, 'profile-detail')
   useBackHandler(showCoffeeChatForm, () => setShowCoffeeChatForm(false), 'profile-coffee')
   useBackHandler(showInviteModal, () => setShowInviteModal(false), 'profile-invite')
   useBackHandler(!!sidePanel, () => setSidePanel(null), 'profile-side')
@@ -178,12 +177,12 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
 
           {/* Modal */}
           <div
-            className="fixed inset-0 z-modal flex items-center justify-center p-4 md:p-8 animate-modal-in"
+            className="fixed inset-0 z-modal flex items-end sm:items-center justify-center pt-6 px-0 pb-0 sm:p-4 md:p-8 animate-modal-in"
             onClick={onClose}
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className={`flex gap-4 max-h-[95vh] md:max-h-[90vh] transition-all duration-300 ${sidePanel ? 'w-full max-w-[90rem]' : 'w-full max-w-lg md:max-w-2xl lg:max-w-3xl'}`}
+              className={`flex gap-4 max-h-[85vh] sm:max-h-[90vh] transition-all duration-300 ${sidePanel ? 'w-full max-w-[90rem]' : 'w-full max-w-lg md:max-w-2xl lg:max-w-3xl'}`}
               role="dialog"
               aria-modal="true"
               aria-label={profile?.nickname || '프로필'}

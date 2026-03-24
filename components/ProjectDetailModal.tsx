@@ -42,7 +42,6 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
     enabled: !!projectId,
   })
 
-  useBackHandler(!!projectId, onClose, 'project-detail')
   useBackHandler(showCoffeeChatForm, () => setShowCoffeeChatForm(false), 'coffee-chat')
   useBackHandler(showWriteUpdate, () => setShowWriteUpdate(false), 'write-update')
   useBackHandler(showCta, () => setShowCta(false), 'project-cta')
@@ -154,6 +153,23 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
   const handleShare = async () => {
     const appUrl = window.location.origin
     const url = `${appUrl}/p/${projectId}`
+    const shareData = {
+      title: opportunity?.title || 'Draft 프로젝트',
+      text: opportunity?.needed_roles?.length
+        ? `${opportunity.title} — ${opportunity.needed_roles.slice(0, 2).join(', ')} 모집 중`
+        : opportunity?.title || 'Draft에서 프로젝트를 확인해보세요',
+      url,
+    }
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData)
+        return
+      } catch (err) {
+        if ((err as Error).name === 'AbortError') return
+      }
+    }
+
     try {
       await navigator.clipboard.writeText(url)
       setShareCopied(true)
@@ -190,12 +206,12 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
 
           {/* Modal */}
           <div
-            className="fixed inset-0 z-modal flex items-center justify-center p-4 md:p-8 animate-modal-in"
+            className="fixed inset-0 z-modal flex items-end sm:items-center justify-center pt-6 px-0 pb-0 sm:p-4 md:p-8 animate-modal-in"
             onClick={onClose}
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl max-h-[95vh] md:max-h-[90vh] bg-surface-card shadow-brutal-xl border border-border-strong overflow-hidden flex flex-col relative"
+              className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl max-h-[85vh] sm:max-h-[90vh] bg-surface-card shadow-brutal-xl border border-border-strong overflow-hidden flex flex-col relative"
               role="dialog"
               aria-modal="true"
               aria-label={opportunity?.title || '프로젝트 상세'}
