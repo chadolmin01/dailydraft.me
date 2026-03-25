@@ -132,6 +132,7 @@ function ExplorePageContent() {
   const [searchInput, setSearchInput] = useState(initialQuery)
   const [searchScope, setSearchScope] = useState<SearchScope>(initialScope)
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
   const [displayLimit, setDisplayLimit] = useState(PAGE_SIZE)
   const [peopleDisplayLimit, setPeopleDisplayLimit] = useState(PEOPLE_PAGE_SIZE)
 
@@ -462,13 +463,26 @@ function ExplorePageContent() {
           />
         }
       >
-        <ExploreSearchBar {...searchProps} />
+        {/* 검색바: 모바일 숨김, 데스크톱만 */}
+        <div className="hidden md:block">
+          <ExploreSearchBar {...searchProps} />
+        </div>
+
+        <ExploreTabBar
+          {...tabProps}
+          mobileSearchOpen={mobileSearchOpen}
+          onMobileSearchToggle={() => setMobileSearchOpen(prev => !prev)}
+          searchInput={searchInput}
+          onSearchInputChange={setSearchInput}
+          isMobileFilterOpen={isMobileFilterOpen}
+          onMobileFilterToggle={() => setIsMobileFilterOpen(prev => !prev)}
+        />
+
         <ExploreMobileFilter
           isOpen={isMobileFilterOpen}
-          onToggle={() => setIsMobileFilterOpen(prev => !prev)}
+          onToggle={() => setIsMobileFilterOpen(false)}
           {...filterProps}
         />
-        <ExploreTabBar {...tabProps} />
 
         {!isAuthenticated && ((activeTab === 'projects' && sortBy === 'ai') || (activeTab === 'people' && peopleSortBy === 'ai')) && (
           <div className="flex items-center gap-3 px-4 py-3 mb-4 border border-brand-border bg-brand-bg">

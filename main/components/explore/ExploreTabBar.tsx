@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { LayoutGrid, Users } from 'lucide-react'
+import { LayoutGrid, Users, Search, X, Filter } from 'lucide-react'
 import { SORT_OPTIONS, TYPE_FILTERS, PEOPLE_ROLE_FILTERS, PEOPLE_SORT_OPTIONS } from './constants'
 import type { ActiveTab, SortBy, TypeFilter, PeopleRoleFilter, PeopleSortBy } from './types'
 
@@ -19,6 +19,12 @@ interface ExploreTabBarProps {
   query: string
   projectCount: number
   peopleCount: number
+  mobileSearchOpen?: boolean
+  onMobileSearchToggle?: () => void
+  searchInput?: string
+  onSearchInputChange?: (v: string) => void
+  isMobileFilterOpen?: boolean
+  onMobileFilterToggle?: () => void
 }
 
 export function ExploreTabBar({
@@ -35,10 +41,16 @@ export function ExploreTabBar({
   query,
   projectCount,
   peopleCount,
+  mobileSearchOpen,
+  onMobileSearchToggle,
+  searchInput,
+  onSearchInputChange,
+  isMobileFilterOpen,
+  onMobileFilterToggle,
 }: ExploreTabBarProps) {
   return (
     <>
-      {/* 탭 + 정렬 — 모바일에서 세로 배치 */}
+      {/* 탭 + 모바일 검색 아이콘 */}
       <div className="border-b-2 border-border-strong mb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center shrink-0">
@@ -63,10 +75,46 @@ export function ExploreTabBar({
               {query && <span className="ml-1 text-[0.625rem] font-mono bg-brand-bg text-brand px-1.5 py-0.5">{peopleCount}</span>}
             </button>
           </div>
+          {onMobileSearchToggle && (
+            <button
+              onClick={onMobileSearchToggle}
+              className={`md:hidden w-10 h-10 flex items-center justify-center transition-colors ${
+                mobileSearchOpen ? 'text-brand bg-brand-bg' : 'text-txt-tertiary hover:text-txt-secondary'
+              }`}
+              aria-label="검색"
+            >
+              {mobileSearchOpen ? <X size={18} /> : <Search size={18} />}
+            </button>
+          )}
         </div>
       </div>
 
-      {/* 정렬 옵션 — 별도 줄 */}
+      {/* 모바일 인라인 검색 */}
+      {mobileSearchOpen && onSearchInputChange && (
+        <div className="md:hidden mb-3 animate-in slide-in-from-top-2 duration-150">
+          <div className="relative flex items-center bg-surface-card border border-border-strong">
+            <Search size={16} className="absolute left-3 text-txt-disabled" />
+            <input
+              type="text"
+              value={searchInput ?? ''}
+              onChange={(e) => onSearchInputChange(e.target.value)}
+              autoFocus
+              className="w-full pl-10 pr-10 py-2.5 text-sm bg-transparent focus:outline-none"
+              placeholder="프로젝트, 사람, 기술 검색..."
+            />
+            {searchInput && (
+              <button
+                onClick={() => onSearchInputChange('')}
+                className="absolute right-3 p-1 text-txt-disabled hover:text-txt-secondary"
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* 정렬 옵션 */}
       {activeTab === 'projects' && (
         <div className="flex items-center gap-1 mb-3 overflow-x-auto">
           {SORT_OPTIONS.map((tab) => (
@@ -107,7 +155,7 @@ export function ExploreTabBar({
         </div>
       )}
 
-      {/* Type filter chips */}
+      {/* Type filter chips + 모바일 필터 */}
       {activeTab === 'projects' && (
         <div className="flex items-center gap-1.5 mb-4 overflow-x-auto">
           {TYPE_FILTERS.map((t) => (
@@ -123,10 +171,23 @@ export function ExploreTabBar({
               {t.label}
             </button>
           ))}
+          {onMobileFilterToggle && (
+            <button
+              onClick={onMobileFilterToggle}
+              className={`lg:hidden shrink-0 ml-auto px-3 py-1.5 text-xs font-bold border transition-all flex items-center gap-1 ${
+                isMobileFilterOpen
+                  ? 'bg-black text-white border-black'
+                  : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong'
+              }`}
+            >
+              <Filter size={12} />
+              필터
+            </button>
+          )}
         </div>
       )}
 
-      {/* People role filter chips */}
+      {/* People role filter chips + 모바일 필터 */}
       {activeTab === 'people' && (
         <div className="flex items-center gap-1.5 mb-4 overflow-x-auto">
           {PEOPLE_ROLE_FILTERS.map((r) => (
@@ -142,6 +203,19 @@ export function ExploreTabBar({
               {r.label}
             </button>
           ))}
+          {onMobileFilterToggle && (
+            <button
+              onClick={onMobileFilterToggle}
+              className={`lg:hidden shrink-0 ml-auto px-3 py-1.5 text-xs font-bold border transition-all flex items-center gap-1 ${
+                isMobileFilterOpen
+                  ? 'bg-black text-white border-black'
+                  : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong'
+              }`}
+            >
+              <Filter size={12} />
+              필터
+            </button>
+          )}
         </div>
       )}
     </>
