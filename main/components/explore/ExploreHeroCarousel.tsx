@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { ArrowRight, Upload, MessageCircle, Coffee } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import { PageContainer } from '@/components/ui/PageContainer'
 import { useAuth } from '@/src/context/AuthContext'
@@ -82,50 +82,30 @@ export function ExploreHeroCarousel() {
             {/* Slide 1: How it works */}
             <div className={`absolute inset-0 px-4 sm:px-6 flex items-center transition-all duration-300 ${order[0] === 1 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
               <div className="w-full">
-                <span className="text-[0.625rem] font-mono font-bold text-txt-tertiary tracking-wider block">HOW IT WORKS</span>
-                <h2 className="text-2xl md:text-3xl font-bold text-txt-primary mt-1 mb-6">간단한 3단계</h2>
-                <div className="flex gap-2 sm:grid sm:grid-cols-3 sm:gap-3 overflow-x-auto">
-                  {[
-                    { num: 1, icon: Upload, title: '올리기', desc: '아이디어와 고민을 공유' },
-                    { num: 2, icon: MessageCircle, title: '피드백', desc: '다양한 시각의 조언' },
-                    { num: 3, icon: Coffee, title: '만나기', desc: '커피챗으로 팀빌딩' },
-                  ].map((step) => (
-                    <div key={step.num} className="relative border border-border bg-surface-card/80 p-2 sm:p-3 min-w-[7rem] sm:min-w-0">
-                      <div className="absolute -top-1.5 -left-1.5 w-5 h-5 bg-black text-white flex items-center justify-center text-[0.625rem] font-bold">{step.num}</div>
-                      <div className="w-8 h-8 bg-surface-card border border-border flex items-center justify-center mb-2">
-                        <step.icon size={15} className="text-txt-secondary" />
-                      </div>
-                      <h3 className="font-bold text-xs text-txt-primary mb-0.5">{step.title}</h3>
-                      <p className="text-[0.625rem] text-txt-tertiary leading-snug break-keep">{step.desc}</p>
-                    </div>
-                  ))}
+                <div className="inline-flex items-center gap-2 px-2 py-0.5 bg-surface-card border border-border-strong mb-4">
+                  <span className="text-[0.625rem] font-mono font-bold text-black tracking-wider">HOW IT WORKS</span>
                 </div>
+                <h2 className="text-2xl md:text-3xl font-bold text-txt-primary mb-2 break-keep leading-tight tracking-tight">
+                  올리고, 피드백 받고, <span className="text-txt-tertiary">함께 만들어가세요.</span>
+                </h2>
+                <p className="text-sm text-txt-tertiary break-keep">
+                  아이디어 공유부터 팀빌딩까지, 간단한 3단계로 시작합니다.
+                </p>
               </div>
             </div>
 
             {/* Slide 2: Feedback */}
             <div className={`absolute inset-0 px-4 sm:px-6 flex items-center transition-all duration-300 ${order[0] === 2 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
               <div className="w-full">
-                <span className="text-[0.625rem] font-mono font-bold text-txt-tertiary tracking-wider block">FEEDBACK</span>
-                <h2 className="text-2xl md:text-3xl font-bold text-txt-primary mt-1 mb-2">솔직한 피드백</h2>
-                <p className="text-xs text-txt-tertiary mb-5 break-keep">프로젝트를 올리면 다양한 관점의 피드백을 받을 수 있어요</p>
-                <div className="flex gap-2 sm:grid sm:grid-cols-3 sm:gap-3 overflow-x-auto">
-                  {[
-                    { school: '연대 경영', name: '김OO', content: '타겟을 대학생으로 좁히는 게 낫지 않을까요? 차별점이 필요할 것 같아요.' },
-                    { school: '고대 컴공', name: '박OO', content: '학교 인증 기능이 핵심이 될 것 같은데, 인증 방식이 궁금해요.' },
-                    { school: '경희대 산공', name: '이OO', content: '에브리타임 연동부터 해보는 건 어때요? 이미 인증된 유저풀이 있잖아요.' },
-                  ].map((c, idx) => (
-                    <div key={idx} className="relative border border-border bg-surface-card p-2 sm:p-3 min-w-[9rem] sm:min-w-0">
-                      <div className="absolute -top-1.5 -left-1.5 w-5 h-5 bg-black text-white flex items-center justify-center text-[0.625rem] font-bold">{idx + 1}</div>
-                      <div className="flex items-center gap-1.5 mb-1.5">
-                        <span className="text-[0.625rem] font-mono text-txt-tertiary">{c.school}</span>
-                        <span className="text-[0.625rem] text-txt-disabled">|</span>
-                        <span className="text-[0.625rem] font-bold text-txt-secondary">{c.name}</span>
-                      </div>
-                      <p className="text-xs text-txt-secondary leading-relaxed break-keep line-clamp-2">{c.content}</p>
-                    </div>
-                  ))}
+                <div className="inline-flex items-center gap-2 px-2 py-0.5 bg-surface-card border border-border-strong mb-4">
+                  <span className="text-[0.625rem] font-mono font-bold text-black tracking-wider">FEEDBACK</span>
                 </div>
+                <h2 className="text-2xl md:text-3xl font-bold text-txt-primary mb-2 break-keep leading-tight tracking-tight">
+                  혼자 고민하지 마세요. <span className="text-txt-tertiary">솔직한 피드백이 기다립니다.</span>
+                </h2>
+                <p className="text-sm text-txt-tertiary break-keep">
+                  다양한 전공, 다양한 시각에서 프로젝트를 함께 점검합니다.
+                </p>
               </div>
             </div>
           </div>
@@ -192,23 +172,29 @@ function SlidePreview({ index, isAuthenticated, tone = 'white' }: { index: numbe
   if (index === 1) {
     return (
       <div>
-        <span className={`text-[0.5rem] font-mono font-bold tracking-wider block ${c.sub}`}>HOW IT WORKS</span>
-        <h3 className={`text-sm font-bold mt-1 ${c.title}`}>간단한 3단계</h3>
-        <div className="flex gap-2 mt-2">
-          {['올리기', '피드백', '만나기'].map((t, i) => (
-            <span key={i} className={`px-1.5 py-0.5 border text-[0.5rem] font-mono ${c.tag}`}>{i + 1}. {t}</span>
-          ))}
+        <div className={`inline-flex items-center gap-1.5 px-1.5 py-0.5 border mb-2 ${c.badge}`}>
+          <span className={`text-[0.5rem] font-mono font-bold tracking-wider ${c.label}`}>HOW IT WORKS</span>
         </div>
+        <h3 className={`text-sm font-bold leading-snug break-keep ${c.title}`}>
+          올리고, 피드백 받고, 함께 만들어가세요.
+        </h3>
+        <p className={`text-[0.625rem] mt-1 break-keep ${c.sub}`}>
+          간단한 3단계로 시작합니다
+        </p>
       </div>
     )
   }
 
   return (
     <div>
-      <span className={`text-[0.5rem] font-mono font-bold tracking-wider block ${c.sub}`}>FEEDBACK</span>
-      <h3 className={`text-sm font-bold mt-1 ${c.title}`}>솔직한 피드백</h3>
-      <p className={`text-[0.625rem] mt-1 break-keep line-clamp-2 ${c.sub}`}>
-        다양한 관점의 피드백을 받아보세요
+      <div className={`inline-flex items-center gap-1.5 px-1.5 py-0.5 border mb-2 ${c.badge}`}>
+        <span className={`text-[0.5rem] font-mono font-bold tracking-wider ${c.label}`}>FEEDBACK</span>
+      </div>
+      <h3 className={`text-sm font-bold leading-snug break-keep ${c.title}`}>
+        혼자 고민하지 마세요.
+      </h3>
+      <p className={`text-[0.625rem] mt-1 break-keep ${c.sub}`}>
+        솔직한 피드백이 기다립니다
       </p>
     </div>
   )
