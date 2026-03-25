@@ -54,28 +54,18 @@ const store: RateLimitStore = {
   day: new Map(),
 }
 
-// 정리 인터벌 (5분마다 만료된 항목 정리)
-let cleanupInterval: NodeJS.Timeout | null = null
-
-function startCleanup() {
-  if (cleanupInterval) return
-
-  cleanupInterval = setInterval(() => {
-    const now = Date.now()
-
-    for (const [key, map] of Object.entries(store)) {
-      for (const [id, entry] of (map as Map<string, RateLimitEntry>).entries()) {
-        if (entry.resetAt < now) {
-          (map as Map<string, RateLimitEntry>).delete(id)
-        }
+// Lazy cleanup: runs when total entries exceed threshold (no setInterval leak)
+function lazyCleanupStore() {
+  const totalSize = store.minute.size + store.hour.size + store.day.size
+  if (totalSize <= 3000) return
+  const now = Date.now()
+  for (const [, map] of Object.entries(store)) {
+    for (const [id, entry] of (map as Map<string, RateLimitEntry>).entries()) {
+      if (entry.resetAt < now) {
+        (map as Map<string, RateLimitEntry>).delete(id)
       }
     }
-  }, 5 * 60 * 1000)
-}
-
-// 서버 시작 시 정리 시작
-if (typeof window === 'undefined') {
-  startCleanup()
+  }
 }
 
 // ================================================
@@ -97,6 +87,7 @@ export function checkRateLimit(
   identifier: string, // userId 또는 IP
   planType: PlanType | 'anonymous' = 'anonymous'
 ): RateLimitResult {
+  lazyCleanupStore()
   const now = Date.now()
   const limits = RATE_LIMITS[planType]
 

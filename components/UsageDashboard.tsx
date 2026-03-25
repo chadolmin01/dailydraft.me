@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import {
   Activity,
   Zap,
@@ -210,7 +210,7 @@ export function UsageDashboard() {
   const [error, setError] = useState<string | null>(null)
   const [refreshing, setRefreshing] = useState(false)
 
-  const fetchUsage = async () => {
+  const fetchUsage = useCallback(async () => {
     try {
       const response = await fetch('/api/usage')
       if (!response.ok) {
@@ -226,14 +226,14 @@ export function UsageDashboard() {
       setLoading(false)
       setRefreshing(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
     fetchUsage()
     // 30초마다 자동 갱신
     const interval = setInterval(fetchUsage, 30000)
     return () => clearInterval(interval)
-  }, [])
+  }, [fetchUsage])
 
   const handleRefresh = () => {
     setRefreshing(true)

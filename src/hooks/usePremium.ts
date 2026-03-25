@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { supabase } from '@/src/lib/supabase/client'
 
 interface UsePremiumReturn {
@@ -14,10 +14,17 @@ export function usePremium(): UsePremiumReturn {
   const [isPremium, setIsPremium] = useState(false)
   const [premiumActivatedAt, setPremiumActivatedAt] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const mountedRef = useRef(true)
+
+  useEffect(() => {
+    mountedRef.current = true
+    return () => { mountedRef.current = false }
+  }, [])
 
   const fetchPremiumStatus = useCallback(async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser()
+      if (!mountedRef.current) return
       if (!user) {
         setIsPremium(false)
         setPremiumActivatedAt(null)
@@ -30,6 +37,8 @@ export function usePremium(): UsePremiumReturn {
         .select('is_premium, premium_activated_at')
         .eq('user_id', user.id)
         .single()
+
+      if (!mountedRef.current) return
 
       if (profile?.is_premium) {
         setIsPremium(true)
@@ -45,10 +54,13 @@ export function usePremium(): UsePremiumReturn {
         .eq('status', 'active')
         .single()
 
+      if (!mountedRef.current) return
+
       const hasActiveSubscription = !!subscription && subscription.plan_type !== 'free'
       setIsPremium(hasActiveSubscription)
       setPremiumActivatedAt(null)
     } catch (error: unknown) {
+      if (!mountedRef.current) return
       // Silently ignore AbortError from React Strict Mode (navigator.locks abort)
       const msg = error instanceof Error ? error.message : String(error)
       if (!msg.includes('AbortError')) {
@@ -57,7 +69,9 @@ export function usePremium(): UsePremiumReturn {
       setIsPremium(false)
       setPremiumActivatedAt(null)
     } finally {
-      setIsLoading(false)
+      if (mountedRef.current) {
+        setIsLoading(false)
+      }
     }
   }, [])
 
