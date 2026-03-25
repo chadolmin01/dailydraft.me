@@ -105,19 +105,19 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
     enabled: !!user,
   })
 
-  // Add to team mutation
+  // Add to team mutation — uses API so notification is sent server-side
   const addToTeam = useMutation({
     mutationFn: async (chat: AcceptedChat) => {
-      const { error } = await supabase
-        .from('accepted_connections')
-        .insert({
-          coffee_chat_id: chat.id,
-          opportunity_creator_id: user!.id,
+      const res = await fetch(`/api/opportunities/${opportunityId}/team`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           applicant_id: chat.requester_user_id,
-          opportunity_id: opportunityId,
-          status: 'active',
-        } as any)
-      if (error) throw error
+          coffee_chat_id: chat.id,
+        }),
+      })
+      if (!res.ok) throw new Error('Failed to add team member')
+      return res.json()
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['team', opportunityId] })

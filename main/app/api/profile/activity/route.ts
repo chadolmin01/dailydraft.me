@@ -68,9 +68,9 @@ export async function GET() {
             id: `accepted-${app.id}`,
             type: 'application_accepted',
             title: app.opportunities.title,
-            subtitle: '연락처를 확인할 수 있습니다',
+            subtitle: '프로젝트를 확인하세요',
             timestamp: app.updated_at,
-            href: '/connections',
+            href: `/opportunities/${app.opportunities.id}`,
           })
         } else if (app.status === 'rejected') {
           activities.push({
@@ -163,9 +163,9 @@ export async function GET() {
         id: `conn-${conn.id}`,
         type: 'connection',
         title: conn.applications?.opportunities?.title || '새로운 연결',
-        subtitle: '연락처가 공유되었습니다',
+        subtitle: '커피챗을 확인하세요',
         timestamp: conn.connected_at,
-        href: '/connections',
+        href: '/profile?tab=coffee-chats',
       })
     })
 

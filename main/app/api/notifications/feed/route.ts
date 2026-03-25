@@ -139,7 +139,7 @@ export async function GET() {
           type: 'connection',
           title: '연결 완료',
           message: `${otherNickname}님과 연결되었습니다`,
-          link: '/connections',
+          link: '/profile?tab=coffee-chats',
           createdAt: conn.connected_at || new Date().toISOString(),
           read: false,
         })

@@ -2,32 +2,9 @@ import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { analyzeProfile } from '@/src/lib/ai/profile-analyzer'
 import { logError } from '@/src/lib/error-logging'
+import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
 
-// Rate limit: 하루 3회
-const DAILY_LIMIT = 3
-const analysisCounts = new Map<string, { count: number; resetAt: number }>()
-
-function checkRateLimit(userId: string): boolean {
-  const now = Date.now()
-  const record = analysisCounts.get(userId)
-
-  if (!record || now > record.resetAt) {
-    analysisCounts.set(userId, {
-      count: 1,
-      resetAt: now + 24 * 60 * 60 * 1000,
-    })
-    return true
-  }
-
-  if (record.count >= DAILY_LIMIT) {
-    return false
-  }
-
-  record.count++
-  return true
-}
-
-export async function POST() {
+export async function POST(request: Request) {
   try {
     const supabase = await createClient()
 
@@ -39,10 +16,9 @@ export async function POST() {
       return ApiResponse.unauthorized()
     }
 
-    // Rate limit
-    if (!checkRateLimit(user.id)) {
-      return ApiResponse.rateLimited('일일 분석 한도(3회)를 초과했습니다.')
-    }
+    // Rate limit (Redis-based, serverless-safe)
+    const rateLimitResponse = await checkAIRateLimit(user.id, getClientIp(request))
+    if (rateLimitResponse) return rateLimitResponse
 
     // 프로필 fetch
     const { data: profile, error: fetchError } = await supabase

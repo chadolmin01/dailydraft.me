@@ -91,6 +91,7 @@ export async function PATCH(
           application_id: id,
           opportunity_creator_id: user.id,
           applicant_id: application.applicant_id,
+          opportunity_id: application.opportunity_id,
         })
 
       if (connectionError) {

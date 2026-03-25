@@ -1,0 +1,54 @@
+diff --git a/main/supabase/migrations/20260325130000_enhance_project_updates.sql b/main/supabase/migrations/20260325130000_enhance_project_updates.sql
+new file mode 100644
+index 0000000..961ab5b
+--- /dev/null
++++ b/main/supabase/migrations/20260325130000_enhance_project_updates.sql
+@@ -0,0 +1,48 @@
++-- Enhance project_updates table for weekly standup format + public feed
++-- New columns: is_public, done_text, next_text, blocker_text, image_url
++
++DO $$ BEGIN
++  IF NOT EXISTS (
++    SELECT 1 FROM information_schema.columns
++    WHERE table_name = 'project_updates' AND column_name = 'is_public'
++  ) THEN
++    ALTER TABLE project_updates ADD COLUMN is_public boolean NOT NULL DEFAULT false;
++  END IF;
++
++  IF NOT EXISTS (
++    SELECT 1 FROM information_schema.columns
++    WHERE table_name = 'project_updates' AND column_name = 'done_text'
++  ) THEN
++    ALTER TABLE project_updates ADD COLUMN done_text text;
++  END IF;
++
++  IF NOT EXISTS (
++    SELECT 1 FROM information_schema.columns
++    WHERE table_name = 'project_updates' AND column_name = 'next_text'
++  ) THEN
++    ALTER TABLE project_updates ADD COLUMN next_text text;
++  END IF;
++
++  IF NOT EXISTS (
++    SELECT 1 FROM information_schema.columns
++    WHERE table_name = 'project_updates' AND column_name = 'blocker_text'
++  ) THEN
++    ALTER TABLE project_updates ADD COLUMN blocker_text text;
++  END IF;
++
++  IF NOT EXISTS (
++    SELECT 1 FROM information_schema.columns
++    WHERE table_name = 'project_updates' AND column_name = 'image_url'
++  ) THEN
++    ALTER TABLE project_updates ADD COLUMN image_url text;
++  END IF;
++END $$;
++
++-- Index for public feed queries (is_public + created_at desc)
++CREATE INDEX IF NOT EXISTS idx_project_updates_public_feed
++  ON project_updates (is_public, created_at DESC)
++  WHERE is_public = true;
++
++-- Index for streak calculation (opportunity_id + week_number)
++CREATE INDEX IF NOT EXISTS idx_project_updates_streak
++  ON project_updates (opportunity_id, week_number DESC);

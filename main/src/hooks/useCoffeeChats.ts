@@ -16,9 +16,15 @@ export interface CoffeeChat {
   status: 'pending' | 'accepted' | 'declined'
   contact_info: string | null
   message: string | null
+  invitation_message: string | null
   outcome: CoffeeChatOutcome | null
   created_at: string
   updated_at: string
+}
+
+export interface ParsedInvitation {
+  message: string
+  requirements: string
 }
 
 export const coffeeChatKeys = {
@@ -132,11 +138,17 @@ export function useRequestCoffeeChat() {
 }
 
 // ── Mutation: accept a coffee chat ──
+export interface AcceptCoffeeChatParams {
+  chatId: string
+  contactInfo: string
+  invitationMessage?: string
+}
+
 export function useAcceptCoffeeChat() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ chatId, contactInfo }: { chatId: string; contactInfo: string }) => {
+    mutationFn: async ({ chatId, contactInfo }: AcceptCoffeeChatParams) => {
       const { data, error } = await supabase.rpc('accept_coffee_chat', {
         p_chat_id: chatId,
         p_contact_info: contactInfo,
@@ -150,7 +162,11 @@ export function useAcceptCoffeeChat() {
       fetch('/api/coffee-chat/notify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'accepted', chatId: variables.chatId }),
+        body: JSON.stringify({
+          type: 'accepted',
+          chatId: variables.chatId,
+          invitationMessage: variables.invitationMessage,
+        }),
       }).catch((err) => console.warn('[CoffeeChat] 알림 이메일 전송 실패 (커피챗은 정상 처리됨):', err))
       queryClient.invalidateQueries({ queryKey: coffeeChatKeys.all })
     },
