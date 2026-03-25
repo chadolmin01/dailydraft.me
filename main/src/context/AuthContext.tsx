@@ -66,11 +66,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!mounted) return
       if (session?.user) {
         setUser(session.user)
-        // Show UI immediately, fetch profile in parallel
+        setIsLoading(false)
+        // Fetch profile in background — UI already shows auth state
         fetchProfile(session.user.id)
           .then(p => { if (mounted) setProfile(p) })
           .catch(() => { if (mounted) setProfile(null) })
-          .finally(() => { if (mounted) setIsLoading(false) })
       } else {
         setIsLoading(false)
       }

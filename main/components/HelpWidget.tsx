@@ -197,9 +197,9 @@ function ChatTab() {
     inputRef.current?.focus()
   }, [])
 
-  const send = useCallback(async () => {
-    if (!input.trim() || isLoading) return
-    const text = input.trim()
+  const send = useCallback(async (overrideText?: string) => {
+    const text = (overrideText ?? input).trim()
+    if (!text || isLoading) return
     setInput('')
     const userMsg: ChatMsg = { role: 'user', content: text }
     const updated = [...messages, userMsg]
@@ -247,7 +247,7 @@ function ChatTab() {
               {['프로젝트 등록 방법', '커피챗이 뭐예요?', 'AI 매칭 원리'].map(q => (
                 <button
                   key={q}
-                  onClick={() => { setInput(q); setTimeout(() => send(), 50) }}
+                  onClick={() => send(q)}
                   className="px-2.5 py-1 text-[10px] font-medium bg-surface-sunken border border-border text-txt-tertiary hover:border-border-strong hover:text-txt-secondary transition-colors"
                 >
                   {q}
