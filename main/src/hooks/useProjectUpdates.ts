@@ -81,3 +81,59 @@ export function useCreateProjectUpdate() {
     },
   })
 }
+
+// Update an existing update
+export function useUpdateProjectUpdate() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (input: {
+      id: string
+      opportunity_id: string
+      title?: string
+      content?: string
+      update_type?: ProjectUpdate['update_type']
+      week_number?: number
+    }) => {
+      const { id, opportunity_id, ...rest } = input
+      const res = await fetch(`/api/project-updates/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(rest),
+      })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err?.error?.message || '업데이트 수정에 실패했습니다')
+      }
+      return { ...(await res.json()) as ProjectUpdate, opportunity_id }
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: projectUpdateKeys.byOpportunity(data.opportunity_id),
+      })
+    },
+  })
+}
+
+// Delete an update
+export function useDeleteProjectUpdate() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (input: { id: string; opportunity_id: string }) => {
+      const res = await fetch(`/api/project-updates/${input.id}`, {
+        method: 'DELETE',
+      })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err?.error?.message || '업데이트 삭제에 실패했습니다')
+      }
+      return input
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: projectUpdateKeys.byOpportunity(data.opportunity_id),
+      })
+    },
+  })
+}
