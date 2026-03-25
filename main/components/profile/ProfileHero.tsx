@@ -21,6 +21,7 @@ import {
 import { useUpdateProfile } from '@/src/hooks/useProfile'
 import { useAuth } from '@/src/context/AuthContext'
 import { supabase } from '@/src/lib/supabase/client'
+import { cleanNickname } from '@/src/lib/clean-nickname'
 import type { Profile } from './types'
 import { SITUATION_LABELS } from './types'
 
@@ -208,7 +209,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
         {profile?.avatar_url ? (
           <Image src={profile.avatar_url} alt="" width={72} height={72} className="object-cover w-full h-full" onError={(e) => { e.currentTarget.style.display = 'none' }} />
         ) : (
-          <span>{profile?.nickname?.slice(0, 2).toUpperCase() || 'U'}</span>
+          <span>{cleanNickname(profile?.nickname || '').slice(0, 2).toUpperCase() || 'U'}</span>
         )}
         {isEditable && (
           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/avatar:opacity-100 transition-opacity flex flex-col items-center justify-center gap-0.5">
@@ -281,7 +282,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
           />
         </h2>
       ) : (
-        <h2 className="text-lg sm:text-xl font-bold text-txt-primary truncate">{profile?.nickname || 'User'}</h2>
+        <h2 className="text-lg sm:text-xl font-bold text-txt-primary truncate">{cleanNickname(profile?.nickname || '') || 'User'}</h2>
       )}
       {uniVerified && (
         <span className="flex items-center gap-0.5 px-1 py-0.5 bg-indicator-online/20 border border-indicator-online/40 text-indicator-online text-[0.5rem] font-mono font-bold shrink-0">
@@ -305,7 +306,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
       ) : (
         <>{profile?.desired_position || '포지션 미설정'}</>
       )}
-      {profile?.university && ` · ${profile.university}${profile?.major ? ` ${profile.major}` : ''}`}
+      {profile?.university && ` · ${profile.university}`}
     </p>
   )
 

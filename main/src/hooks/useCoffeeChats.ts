@@ -111,8 +111,8 @@ export function useRequestCoffeeChat() {
         p_opportunity_id: data.opportunityId,
         p_requester_email: data.email,
         p_requester_name: data.name,
-        p_message: data.message || null,
-        p_requester_user_id: userData?.user?.id || null,
+        p_message: data.message || undefined,
+        p_requester_user_id: userData?.user?.id || undefined,
       })
 
       if (error) throw error
@@ -163,7 +163,7 @@ export function useUpdateChatOutcome() {
 
   return useMutation({
     mutationFn: async ({ chatId, outcome }: { chatId: string; outcome: CoffeeChatOutcome }) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('coffee_chats')
         .update({ outcome })
         .eq('id', chatId)
@@ -233,8 +233,8 @@ export function useRequestPersonCoffeeChat() {
         p_target_user_id: data.targetUserId,
         p_requester_email: data.email,
         p_requester_name: data.name,
-        p_message: data.message || null,
-        p_requester_user_id: userData?.user?.id || null,
+        p_message: data.message || undefined,
+        p_requester_user_id: userData?.user?.id || undefined,
       })
 
       if (error) throw error

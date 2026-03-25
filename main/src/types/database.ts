@@ -7,256 +7,19 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "14.1"
   }
   public: {
     Tables: {
-      direct_messages: {
-        Row: {
-          id: string
-          sender_id: string
-          receiver_id: string
-          content: string
-          is_read: boolean
-          read_at: string | null
-          deleted_by_sender: boolean
-          deleted_by_receiver: boolean
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          sender_id: string
-          receiver_id: string
-          content: string
-          is_read?: boolean
-          read_at?: string | null
-          deleted_by_sender?: boolean
-          deleted_by_receiver?: boolean
-          created_at?: string
-        }
-        Update: {
-          is_read?: boolean
-          read_at?: string | null
-          deleted_by_sender?: boolean
-          deleted_by_receiver?: boolean
-        }
-        Relationships: []
-      }
-      subscriptions: {
-        Row: {
-          id: string
-          user_id: string
-          plan_type: 'free' | 'pro' | 'team'
-          status: 'active' | 'canceled' | 'past_due' | 'trialing'
-          billing_cycle: 'monthly' | 'yearly' | null
-          current_period_start: string | null
-          current_period_end: string | null
-          cancel_at_period_end: boolean | null
-          payment_provider: string | null
-          external_subscription_id: string | null
-          external_customer_id: string | null
-          billing_key: string | null
-          created_at: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          plan_type?: 'free' | 'pro' | 'team'
-          status?: 'active' | 'canceled' | 'past_due' | 'trialing'
-          billing_cycle?: 'monthly' | 'yearly' | null
-          current_period_start?: string | null
-          current_period_end?: string | null
-          cancel_at_period_end?: boolean | null
-          payment_provider?: string | null
-          external_subscription_id?: string | null
-          external_customer_id?: string | null
-          billing_key?: string | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          plan_type?: 'free' | 'pro' | 'team'
-          status?: 'active' | 'canceled' | 'past_due' | 'trialing'
-          billing_cycle?: 'monthly' | 'yearly' | null
-          current_period_start?: string | null
-          current_period_end?: string | null
-          cancel_at_period_end?: boolean | null
-          payment_provider?: string | null
-          external_subscription_id?: string | null
-          external_customer_id?: string | null
-          billing_key?: string | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      usage_limits: {
-        Row: {
-          id: string
-          user_id: string
-          period_start: string
-          period_end: string
-          applications_used: number
-          opportunities_created: number
-          boosts_purchased: number
-          created_at: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          period_start: string
-          period_end: string
-          applications_used?: number
-          opportunities_created?: number
-          boosts_purchased?: number
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          period_start?: string
-          period_end?: string
-          applications_used?: number
-          opportunities_created?: number
-          boosts_purchased?: number
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      boosts: {
-        Row: {
-          id: string
-          user_id: string
-          opportunity_id: string | null
-          boost_type: 'opportunity_boost' | 'opportunity_premium' | 'profile_spotlight' | 'weekly_feature'
-          status: 'active' | 'expired' | 'canceled'
-          starts_at: string | null
-          expires_at: string
-          amount_paid: number
-          payment_id: string | null
-          created_at: string | null
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          opportunity_id?: string | null
-          boost_type: 'opportunity_boost' | 'opportunity_premium' | 'profile_spotlight' | 'weekly_feature'
-          status?: 'active' | 'expired' | 'canceled'
-          starts_at?: string | null
-          expires_at: string
-          amount_paid: number
-          payment_id?: string | null
-          created_at?: string | null
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          opportunity_id?: string | null
-          boost_type?: 'opportunity_boost' | 'opportunity_premium' | 'profile_spotlight' | 'weekly_feature'
-          status?: 'active' | 'expired' | 'canceled'
-          starts_at?: string | null
-          expires_at?: string
-          amount_paid?: number
-          payment_id?: string | null
-          created_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "boosts_opportunity_id_fkey"
-            columns: ["opportunity_id"]
-            isOneToOne: false
-            referencedRelation: "opportunities"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      payment_history: {
-        Row: {
-          id: string
-          user_id: string
-          subscription_id: string | null
-          boost_id: string | null
-          payment_type: 'subscription' | 'boost' | 'one_time'
-          amount: number
-          currency: string | null
-          status: 'pending' | 'completed' | 'failed' | 'refunded' | 'canceled'
-          payment_provider: string | null
-          external_payment_id: string | null
-          payment_key: string | null
-          order_id: string | null
-          receipt_url: string | null
-          failure_reason: string | null
-          metadata: Json | null
-          created_at: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          subscription_id?: string | null
-          boost_id?: string | null
-          payment_type: 'subscription' | 'boost' | 'one_time'
-          amount: number
-          currency?: string | null
-          status?: 'pending' | 'completed' | 'failed' | 'refunded' | 'canceled'
-          payment_provider?: string | null
-          external_payment_id?: string | null
-          payment_key?: string | null
-          order_id?: string | null
-          receipt_url?: string | null
-          failure_reason?: string | null
-          metadata?: Json | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          subscription_id?: string | null
-          boost_id?: string | null
-          payment_type?: 'subscription' | 'boost' | 'one_time'
-          amount?: number
-          currency?: string | null
-          status?: 'pending' | 'completed' | 'failed' | 'refunded' | 'canceled'
-          payment_provider?: string | null
-          external_payment_id?: string | null
-          payment_key?: string | null
-          order_id?: string | null
-          receipt_url?: string | null
-          failure_reason?: string | null
-          metadata?: Json | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "payment_history_subscription_id_fkey"
-            columns: ["subscription_id"]
-            isOneToOne: false
-            referencedRelation: "subscriptions"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "payment_history_boost_id_fkey"
-            columns: ["boost_id"]
-            isOneToOne: false
-            referencedRelation: "boosts"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
       accepted_connections: {
         Row: {
           applicant_id: string
-          application_id: string
+          application_id: string | null
           assigned_role: string | null
+          coffee_chat_id: string | null
           connected_at: string | null
           id: string
           notes: string | null
@@ -266,8 +29,9 @@ export type Database = {
         }
         Insert: {
           applicant_id: string
-          application_id: string
+          application_id?: string | null
           assigned_role?: string | null
+          coffee_chat_id?: string | null
           connected_at?: string | null
           id?: string
           notes?: string | null
@@ -277,8 +41,9 @@ export type Database = {
         }
         Update: {
           applicant_id?: string
-          application_id?: string
+          application_id?: string | null
           assigned_role?: string | null
+          coffee_chat_id?: string | null
           connected_at?: string | null
           id?: string
           notes?: string | null
@@ -292,6 +57,20 @@ export type Database = {
             columns: ["application_id"]
             isOneToOne: false
             referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "accepted_connections_coffee_chat_id_fkey"
+            columns: ["coffee_chat_id"]
+            isOneToOne: false
+            referencedRelation: "coffee_chats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "accepted_connections_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
             referencedColumns: ["id"]
           },
         ]
@@ -342,6 +121,396 @@ export type Database = {
             columns: ["opportunity_id"]
             isOneToOne: false
             referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      boosts: {
+        Row: {
+          amount_paid: number
+          boost_type: string
+          created_at: string | null
+          expires_at: string
+          id: string
+          opportunity_id: string | null
+          payment_id: string | null
+          starts_at: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          amount_paid: number
+          boost_type: string
+          created_at?: string | null
+          expires_at: string
+          id?: string
+          opportunity_id?: string | null
+          payment_id?: string | null
+          starts_at?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          amount_paid?: number
+          boost_type?: string
+          created_at?: string | null
+          expires_at?: string
+          id?: string
+          opportunity_id?: string | null
+          payment_id?: string | null
+          starts_at?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "boosts_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      business_plans: {
+        Row: {
+          basic_info: Json | null
+          created_at: string | null
+          extra_sections: Json | null
+          id: string
+          problem_data: Json | null
+          scaleup_data: Json | null
+          solution_data: Json | null
+          status: string
+          team_data: Json | null
+          template_type: string
+          title: string | null
+          updated_at: string | null
+          user_id: string
+          validated_idea_id: string | null
+          validation_score: number | null
+        }
+        Insert: {
+          basic_info?: Json | null
+          created_at?: string | null
+          extra_sections?: Json | null
+          id?: string
+          problem_data?: Json | null
+          scaleup_data?: Json | null
+          solution_data?: Json | null
+          status?: string
+          team_data?: Json | null
+          template_type: string
+          title?: string | null
+          updated_at?: string | null
+          user_id: string
+          validated_idea_id?: string | null
+          validation_score?: number | null
+        }
+        Update: {
+          basic_info?: Json | null
+          created_at?: string | null
+          extra_sections?: Json | null
+          id?: string
+          problem_data?: Json | null
+          scaleup_data?: Json | null
+          solution_data?: Json | null
+          status?: string
+          team_data?: Json | null
+          template_type?: string
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string
+          validated_idea_id?: string | null
+          validation_score?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_plans_validated_idea_id_fkey"
+            columns: ["validated_idea_id"]
+            isOneToOne: false
+            referencedRelation: "validated_ideas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coffee_chats: {
+        Row: {
+          contact_info: string | null
+          created_at: string | null
+          id: string
+          message: string | null
+          opportunity_id: string | null
+          owner_user_id: string
+          requester_email: string
+          requester_name: string | null
+          requester_user_id: string | null
+          status: string
+          target_user_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          contact_info?: string | null
+          created_at?: string | null
+          id?: string
+          message?: string | null
+          opportunity_id?: string | null
+          owner_user_id: string
+          requester_email: string
+          requester_name?: string | null
+          requester_user_id?: string | null
+          status?: string
+          target_user_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          contact_info?: string | null
+          created_at?: string | null
+          id?: string
+          message?: string | null
+          opportunity_id?: string | null
+          owner_user_id?: string
+          requester_email?: string
+          requester_name?: string | null
+          requester_user_id?: string | null
+          status?: string
+          target_user_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coffee_chats_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      comment_reports: {
+        Row: {
+          comment_id: string
+          created_at: string | null
+          id: string
+          reason: string | null
+          reporter_identifier: string
+        }
+        Insert: {
+          comment_id: string
+          created_at?: string | null
+          id?: string
+          reason?: string | null
+          reporter_identifier: string
+        }
+        Update: {
+          comment_id?: string
+          created_at?: string | null
+          id?: string
+          reason?: string | null
+          reporter_identifier?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comment_reports_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      comments: {
+        Row: {
+          content: string
+          created_at: string | null
+          helpful_count: number | null
+          id: string
+          is_hidden: boolean | null
+          nickname: string
+          opportunity_id: string
+          report_count: number | null
+          school: string | null
+          user_id: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          helpful_count?: number | null
+          id?: string
+          is_hidden?: boolean | null
+          nickname: string
+          opportunity_id: string
+          report_count?: number | null
+          school?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          helpful_count?: number | null
+          id?: string
+          is_hidden?: boolean | null
+          nickname?: string
+          opportunity_id?: string
+          report_count?: number | null
+          school?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      direct_messages: {
+        Row: {
+          content: string
+          created_at: string | null
+          deleted_by_receiver: boolean | null
+          deleted_by_sender: boolean | null
+          id: string
+          is_read: boolean | null
+          read_at: string | null
+          receiver_id: string
+          sender_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          deleted_by_receiver?: boolean | null
+          deleted_by_sender?: boolean | null
+          id?: string
+          is_read?: boolean | null
+          read_at?: string | null
+          receiver_id: string
+          sender_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          deleted_by_receiver?: boolean | null
+          deleted_by_sender?: boolean | null
+          id?: string
+          is_read?: boolean | null
+          read_at?: string | null
+          receiver_id?: string
+          sender_id?: string
+        }
+        Relationships: []
+      }
+      error_logs: {
+        Row: {
+          created_at: string | null
+          endpoint: string | null
+          error_code: string | null
+          id: string
+          ip_address: string | null
+          level: string
+          message: string
+          metadata: Json | null
+          method: string | null
+          request_body: Json | null
+          request_headers: Json | null
+          source: string
+          stack_trace: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          endpoint?: string | null
+          error_code?: string | null
+          id?: string
+          ip_address?: string | null
+          level?: string
+          message: string
+          metadata?: Json | null
+          method?: string | null
+          request_body?: Json | null
+          request_headers?: Json | null
+          source: string
+          stack_trace?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          endpoint?: string | null
+          error_code?: string | null
+          id?: string
+          ip_address?: string | null
+          level?: string
+          message?: string
+          metadata?: Json | null
+          method?: string | null
+          request_body?: Json | null
+          request_headers?: Json | null
+          source?: string
+          stack_trace?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      event_applications: {
+        Row: {
+          applied_at: string | null
+          applied_url: string | null
+          created_at: string | null
+          event_id: string
+          id: string
+          personal_notes: string | null
+          preparation_checklist: Json | null
+          reminder_date: string | null
+          reminder_sent: boolean | null
+          result_notes: string | null
+          status: string
+          status_updated_at: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          applied_at?: string | null
+          applied_url?: string | null
+          created_at?: string | null
+          event_id: string
+          id?: string
+          personal_notes?: string | null
+          preparation_checklist?: Json | null
+          reminder_date?: string | null
+          reminder_sent?: boolean | null
+          result_notes?: string | null
+          status?: string
+          status_updated_at?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          applied_at?: string | null
+          applied_url?: string | null
+          created_at?: string | null
+          event_id?: string
+          id?: string
+          personal_notes?: string | null
+          preparation_checklist?: Json | null
+          reminder_date?: string | null
+          reminder_sent?: boolean | null
+          result_notes?: string | null
+          status?: string
+          status_updated_at?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_applications_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "startup_events"
             referencedColumns: ["id"]
           },
         ]
@@ -441,6 +610,371 @@ export type Database = {
           },
         ]
       }
+      event_opportunity_links: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          event_id: string
+          id: string
+          link_type: string
+          opportunity_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by: string
+          event_id: string
+          id?: string
+          link_type?: string
+          opportunity_id: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          event_id?: string
+          id?: string
+          link_type?: string
+          opportunity_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_opportunity_links_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "startup_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_opportunity_links_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fragments: {
+        Row: {
+          captured_at: string | null
+          content: string | null
+          created_at: string | null
+          id: string
+          location: Json | null
+          photo_url: string | null
+          status: string | null
+          thumbnail_url: string | null
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          captured_at?: string | null
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          location?: Json | null
+          photo_url?: string | null
+          status?: string | null
+          thumbnail_url?: string | null
+          type: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          captured_at?: string | null
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          location?: Json | null
+          photo_url?: string | null
+          status?: string | null
+          thumbnail_url?: string | null
+          type?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      helpful_votes: {
+        Row: {
+          comment_id: string
+          created_at: string | null
+          id: string
+          voter_identifier: string
+        }
+        Insert: {
+          comment_id: string
+          created_at?: string | null
+          id?: string
+          voter_identifier: string
+        }
+        Update: {
+          comment_id?: string
+          created_at?: string | null
+          id?: string
+          voter_identifier?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "helpful_votes_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      institution_members: {
+        Row: {
+          id: string
+          institution_id: string
+          joined_at: string
+          notes: string | null
+          role: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          institution_id: string
+          joined_at?: string
+          notes?: string | null
+          role?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          institution_id?: string
+          joined_at?: string
+          notes?: string | null
+          role?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "institution_members_institution_id_fkey"
+            columns: ["institution_id"]
+            isOneToOne: false
+            referencedRelation: "institutions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      institution_programs: {
+        Row: {
+          created_at: string
+          description: string | null
+          end_date: string | null
+          id: string
+          institution_id: string
+          max_participants: number | null
+          name: string
+          start_date: string | null
+          status: string
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          institution_id: string
+          max_participants?: number | null
+          name: string
+          start_date?: string | null
+          status?: string
+          type?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          institution_id?: string
+          max_participants?: number | null
+          name?: string
+          start_date?: string | null
+          status?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "institution_programs_institution_id_fkey"
+            columns: ["institution_id"]
+            isOneToOne: false
+            referencedRelation: "institutions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      institutions: {
+        Row: {
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string
+          description: string | null
+          id: string
+          logo_url: string | null
+          name: string
+          settings: Json | null
+          type: string
+          university: string
+          updated_at: string
+        }
+        Insert: {
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          logo_url?: string | null
+          name: string
+          settings?: Json | null
+          type?: string
+          university: string
+          updated_at?: string
+        }
+        Update: {
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          logo_url?: string | null
+          name?: string
+          settings?: Json | null
+          type?: string
+          university?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      interests: {
+        Row: {
+          created_at: string | null
+          id: string
+          opportunity_id: string
+          user_email: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          opportunity_id: string
+          user_email: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          opportunity_id?: string
+          user_email?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interests_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invite_codes: {
+        Row: {
+          code: string
+          created_at: string | null
+          created_by: string | null
+          expires_at: string | null
+          id: string
+          is_active: boolean | null
+          recipient_email: string | null
+          used_at: string | null
+          used_by: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string | null
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          recipient_email?: string | null
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string | null
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          recipient_email?: string | null
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Relationships: []
+      }
+      korea_startup_references: {
+        Row: {
+          category: string[] | null
+          created_at: string | null
+          description: string | null
+          external_id: string | null
+          id: string
+          name: string
+          raw_data: Json | null
+          source: string
+          updated_at: string | null
+          website_url: string | null
+        }
+        Insert: {
+          category?: string[] | null
+          created_at?: string | null
+          description?: string | null
+          external_id?: string | null
+          id?: string
+          name: string
+          raw_data?: Json | null
+          source: string
+          updated_at?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          category?: string[] | null
+          created_at?: string | null
+          description?: string | null
+          external_id?: string | null
+          id?: string
+          name?: string
+          raw_data?: Json | null
+          source?: string
+          updated_at?: string | null
+          website_url?: string | null
+        }
+        Relationships: []
+      }
+      landing_subscribers: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: string
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+        }
+        Relationships: []
+      }
       notification_settings: {
         Row: {
           created_at: string | null
@@ -476,6 +1010,42 @@ export type Database = {
           inapp_new_match?: boolean | null
           preferred_time?: string | null
           updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string | null
+          data: Json | null
+          id: string
+          message: string
+          priority: string
+          read: boolean
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          data?: Json | null
+          id?: string
+          message: string
+          priority?: string
+          read?: boolean
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          data?: Json | null
+          id?: string
+          message?: string
+          priority?: string
+          read?: boolean
+          title?: string
+          type?: string
           user_id?: string
         }
         Relationships: []
@@ -516,28 +1086,24 @@ export type Database = {
       opportunities: {
         Row: {
           applications_count: number | null
+          badges: string[] | null
           compensation_details: string | null
           compensation_type: string | null
           created_at: string | null
           creator_id: string
-          deadline: string | null
           demo_images: string[] | null
           description: string
           id: string
           interest_count: number | null
           interest_tags: string[] | null
-          is_boosted: boolean | null
           location: string | null
           location_type: string | null
           needed_roles: string[] | null
           needed_skills: Json | null
           pain_point: string | null
           project_links: Json | null
-          project_stage: string | null
           show_updates: boolean | null
-          source_event_id: string | null
           status: string | null
-          team_size: number | null
           time_commitment: string | null
           title: string
           type: string
@@ -547,59 +1113,51 @@ export type Database = {
         }
         Insert: {
           applications_count?: number | null
+          badges?: string[] | null
           compensation_details?: string | null
           compensation_type?: string | null
           created_at?: string | null
           creator_id: string
-          deadline?: string | null
           demo_images?: string[] | null
           description: string
           id?: string
           interest_count?: number | null
           interest_tags?: string[] | null
-          is_boosted?: boolean | null
           location?: string | null
           location_type?: string | null
           needed_roles?: string[] | null
           needed_skills?: Json | null
           pain_point?: string | null
           project_links?: Json | null
-          project_stage?: string | null
           show_updates?: boolean | null
-          source_event_id?: string | null
           status?: string | null
-          team_size?: number | null
           time_commitment?: string | null
           title: string
-          type: string
+          type?: string
           updated_at?: string | null
           views_count?: number | null
           vision_embedding?: string | null
         }
         Update: {
           applications_count?: number | null
+          badges?: string[] | null
           compensation_details?: string | null
           compensation_type?: string | null
           created_at?: string | null
           creator_id?: string
-          deadline?: string | null
           demo_images?: string[] | null
           description?: string
           id?: string
           interest_count?: number | null
           interest_tags?: string[] | null
-          is_boosted?: boolean | null
           location?: string | null
           location_type?: string | null
           needed_roles?: string[] | null
           needed_skills?: Json | null
           pain_point?: string | null
           project_links?: Json | null
-          project_stage?: string | null
           show_updates?: boolean | null
-          source_event_id?: string | null
           status?: string | null
-          team_size?: number | null
           time_commitment?: string | null
           title?: string
           type?: string
@@ -609,24 +1167,248 @@ export type Database = {
         }
         Relationships: []
       }
-      profile_interests: {
+      payment_failures: {
         Row: {
-          id: string
-          user_id: string
-          target_profile_id: string
           created_at: string | null
+          downgrade_at: string | null
+          failure_count: number
+          first_failure_at: string
+          grace_period_ends_at: string
+          id: string
+          last_failure_at: string
+          notifications_sent: string[] | null
+          resolved_at: string | null
+          status: string
+          subscription_id: string
+          updated_at: string | null
+          user_id: string
         }
         Insert: {
-          id?: string
-          user_id: string
-          target_profile_id: string
           created_at?: string | null
+          downgrade_at?: string | null
+          failure_count?: number
+          first_failure_at?: string
+          grace_period_ends_at: string
+          id?: string
+          last_failure_at?: string
+          notifications_sent?: string[] | null
+          resolved_at?: string | null
+          status?: string
+          subscription_id: string
+          updated_at?: string | null
+          user_id: string
         }
         Update: {
-          id?: string
-          user_id?: string
-          target_profile_id?: string
           created_at?: string | null
+          downgrade_at?: string | null
+          failure_count?: number
+          first_failure_at?: string
+          grace_period_ends_at?: string
+          id?: string
+          last_failure_at?: string
+          notifications_sent?: string[] | null
+          resolved_at?: string | null
+          status?: string
+          subscription_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_failures_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_history: {
+        Row: {
+          amount: number
+          boost_id: string | null
+          created_at: string | null
+          currency: string | null
+          external_payment_id: string | null
+          failure_reason: string | null
+          id: string
+          metadata: Json | null
+          order_id: string | null
+          payment_key: string | null
+          payment_provider: string | null
+          payment_type: string
+          receipt_url: string | null
+          status: string
+          subscription_id: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          boost_id?: string | null
+          created_at?: string | null
+          currency?: string | null
+          external_payment_id?: string | null
+          failure_reason?: string | null
+          id?: string
+          metadata?: Json | null
+          order_id?: string | null
+          payment_key?: string | null
+          payment_provider?: string | null
+          payment_type: string
+          receipt_url?: string | null
+          status?: string
+          subscription_id?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          boost_id?: string | null
+          created_at?: string | null
+          currency?: string | null
+          external_payment_id?: string | null
+          failure_reason?: string | null
+          id?: string
+          metadata?: Json | null
+          order_id?: string | null
+          payment_key?: string | null
+          payment_provider?: string | null
+          payment_type?: string
+          receipt_url?: string | null
+          status?: string
+          subscription_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_history_boost_id_fkey"
+            columns: ["boost_id"]
+            isOneToOne: false
+            referencedRelation: "boosts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_history_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      portfolio_items: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          display_order: number | null
+          id: string
+          image_url: string | null
+          link_url: string | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          image_url?: string | null
+          link_url?: string | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          image_url?: string | null
+          link_url?: string | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      prd_usage: {
+        Row: {
+          created_at: string
+          id: string
+          level: string
+          score: number | null
+          user_email: string
+          validation_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          level: string
+          score?: number | null
+          user_email: string
+          validation_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          level?: string
+          score?: number | null
+          user_email?: string
+          validation_id?: string | null
+        }
+        Relationships: []
+      }
+      prd_users: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          name: string
+          organization: string
+          privacy_consent: boolean
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          organization: string
+          privacy_consent?: boolean
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          organization?: string
+          privacy_consent?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profile_interests: {
+        Row: {
+          created_at: string | null
+          id: string
+          target_profile_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          target_profile_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          target_profile_id?: string
+          user_id?: string
         }
         Relationships: [
           {
@@ -640,6 +1422,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          affiliation_type: string | null
           age_range: string | null
           ai_chat_completed: boolean | null
           ai_chat_transcript: Json | null
@@ -650,29 +1433,32 @@ export type Database = {
           contact_kakao: string | null
           cover_image_url: string | null
           created_at: string | null
-          data_consent: boolean | null
-          affiliation_type: string | null
-          extracted_profile: Json | null
-          portfolio_url: string | null
-          linkedin_url: string | null
-          github_url: string | null
           current_situation: string | null
+          data_consent: boolean | null
+          data_consent_at: string | null
           desired_position: string | null
+          extracted_profile: Json | null
+          extraction_confidence: number | null
+          github_url: string | null
           graduation_year: number | null
           id: string
+          interest_count: number | null
           interest_tags: string[] | null
           invite_code_used: string | null
+          is_admin: boolean | null
           is_premium: boolean | null
           is_uni_verified: boolean | null
+          last_extraction_at: string | null
+          linkedin_url: string | null
           location: string | null
           major: string | null
           nickname: string
           onboarding_completed: boolean | null
           personality: Json | null
+          portfolio_url: string | null
           premium_activated_at: string | null
           profile_analysis: Json | null
           profile_analysis_at: string | null
-          interest_count: number | null
           profile_views: number | null
           profile_visibility: string | null
           skills: Json | null
@@ -683,10 +1469,10 @@ export type Database = {
           vision_summary: string | null
         }
         Insert: {
+          affiliation_type?: string | null
           age_range?: string | null
           ai_chat_completed?: boolean | null
           ai_chat_transcript?: Json | null
-          affiliation_type?: string | null
           avatar_url?: string | null
           badges?: string[] | null
           bio?: string | null
@@ -694,27 +1480,33 @@ export type Database = {
           contact_kakao?: string | null
           cover_image_url?: string | null
           created_at?: string | null
-          data_consent?: boolean | null
           current_situation?: string | null
-          extracted_profile?: Json | null
-          portfolio_url?: string | null
-          linkedin_url?: string | null
-          github_url?: string | null
+          data_consent?: boolean | null
+          data_consent_at?: string | null
           desired_position?: string | null
+          extracted_profile?: Json | null
+          extraction_confidence?: number | null
+          github_url?: string | null
           graduation_year?: number | null
           id?: string
+          interest_count?: number | null
           interest_tags?: string[] | null
           invite_code_used?: string | null
+          is_admin?: boolean | null
           is_premium?: boolean | null
           is_uni_verified?: boolean | null
+          last_extraction_at?: string | null
+          linkedin_url?: string | null
           location?: string | null
           major?: string | null
           nickname: string
           onboarding_completed?: boolean | null
           personality?: Json | null
+          portfolio_url?: string | null
           premium_activated_at?: string | null
           profile_analysis?: Json | null
           profile_analysis_at?: string | null
+          profile_views?: number | null
           profile_visibility?: string | null
           skills?: Json | null
           university?: string | null
@@ -724,10 +1516,10 @@ export type Database = {
           vision_summary?: string | null
         }
         Update: {
+          affiliation_type?: string | null
           age_range?: string | null
           ai_chat_completed?: boolean | null
           ai_chat_transcript?: Json | null
-          affiliation_type?: string | null
           avatar_url?: string | null
           badges?: string[] | null
           bio?: string | null
@@ -735,27 +1527,33 @@ export type Database = {
           contact_kakao?: string | null
           cover_image_url?: string | null
           created_at?: string | null
-          data_consent?: boolean | null
           current_situation?: string | null
-          extracted_profile?: Json | null
-          portfolio_url?: string | null
-          linkedin_url?: string | null
-          github_url?: string | null
+          data_consent?: boolean | null
+          data_consent_at?: string | null
           desired_position?: string | null
+          extracted_profile?: Json | null
+          extraction_confidence?: number | null
+          github_url?: string | null
           graduation_year?: number | null
           id?: string
+          interest_count?: number | null
           interest_tags?: string[] | null
           invite_code_used?: string | null
+          is_admin?: boolean | null
           is_premium?: boolean | null
           is_uni_verified?: boolean | null
+          last_extraction_at?: string | null
+          linkedin_url?: string | null
           location?: string | null
           major?: string | null
           nickname?: string
           onboarding_completed?: boolean | null
           personality?: Json | null
+          portfolio_url?: string | null
           premium_activated_at?: string | null
           profile_analysis?: Json | null
           profile_analysis_at?: string | null
+          profile_views?: number | null
           profile_visibility?: string | null
           skills?: Json | null
           university?: string | null
@@ -766,72 +1564,160 @@ export type Database = {
         }
         Relationships: []
       }
-      portfolio_items: {
+      project_invitations: {
         Row: {
-          id: string
-          user_id: string
-          title: string
-          description: string | null
-          image_url: string | null
-          link_url: string | null
-          display_order: number
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          title: string
-          description?: string | null
-          image_url?: string | null
-          link_url?: string | null
-          display_order?: number
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          title?: string
-          description?: string | null
-          image_url?: string | null
-          link_url?: string | null
-          display_order?: number
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      invite_codes: {
-        Row: {
-          id: string
-          code: string
-          created_by: string | null
-          recipient_email: string | null
-          used_by: string | null
-          used_at: string | null
-          expires_at: string | null
-          is_active: boolean
           created_at: string | null
+          id: string
+          invited_user_id: string
+          inviter_user_id: string
+          message: string | null
+          opportunity_id: string
+          role: string
+          status: string
+          updated_at: string | null
         }
         Insert: {
-          id?: string
-          code: string
-          created_by?: string | null
-          recipient_email?: string | null
-          used_by?: string | null
-          used_at?: string | null
-          expires_at?: string | null
-          is_active?: boolean
           created_at?: string | null
+          id?: string
+          invited_user_id: string
+          inviter_user_id: string
+          message?: string | null
+          opportunity_id: string
+          role: string
+          status?: string
+          updated_at?: string | null
         }
         Update: {
-          id?: string
-          code?: string
-          created_by?: string | null
-          recipient_email?: string | null
-          used_by?: string | null
-          used_at?: string | null
-          expires_at?: string | null
-          is_active?: boolean
           created_at?: string | null
+          id?: string
+          invited_user_id?: string
+          inviter_user_id?: string
+          message?: string | null
+          opportunity_id?: string
+          role?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_invitations_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_updates: {
+        Row: {
+          author_id: string
+          content: string
+          created_at: string | null
+          id: string
+          opportunity_id: string
+          title: string
+          update_type: string
+          updated_at: string | null
+          week_number: number
+        }
+        Insert: {
+          author_id: string
+          content: string
+          created_at?: string | null
+          id?: string
+          opportunity_id: string
+          title: string
+          update_type?: string
+          updated_at?: string | null
+          week_number: number
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          created_at?: string | null
+          id?: string
+          opportunity_id?: string
+          title?: string
+          update_type?: string
+          updated_at?: string | null
+          week_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_updates_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      session_analytics: {
+        Row: {
+          advice_reflected_count: number
+          advice_shown_count: number
+          client_fingerprint: string | null
+          completion_status: string
+          created_at: string
+          dropoff_point: string | null
+          final_score: number | null
+          id: string
+          idea_categories: string[]
+          interaction_mode: string
+          persona_engagement: Json
+          personas: string[]
+          score_history: Json
+          session_end: string | null
+          session_hash: string
+          session_start: string
+          total_duration_seconds: number | null
+          turn_count: number
+          updated_at: string
+          validation_level: string
+        }
+        Insert: {
+          advice_reflected_count?: number
+          advice_shown_count?: number
+          client_fingerprint?: string | null
+          completion_status?: string
+          created_at?: string
+          dropoff_point?: string | null
+          final_score?: number | null
+          id?: string
+          idea_categories?: string[]
+          interaction_mode?: string
+          persona_engagement?: Json
+          personas?: string[]
+          score_history?: Json
+          session_end?: string | null
+          session_hash: string
+          session_start?: string
+          total_duration_seconds?: number | null
+          turn_count?: number
+          updated_at?: string
+          validation_level: string
+        }
+        Update: {
+          advice_reflected_count?: number
+          advice_shown_count?: number
+          client_fingerprint?: string | null
+          completion_status?: string
+          created_at?: string
+          dropoff_point?: string | null
+          final_score?: number | null
+          id?: string
+          idea_categories?: string[]
+          interaction_mode?: string
+          persona_engagement?: Json
+          personas?: string[]
+          score_history?: Json
+          session_end?: string | null
+          session_hash?: string
+          session_start?: string
+          total_duration_seconds?: number | null
+          turn_count?: number
+          updated_at?: string
+          validation_level?: string
         }
         Relationships: []
       }
@@ -846,7 +1732,9 @@ export type Database = {
           id: string
           interest_tags: string[] | null
           last_synced_at: string | null
+          location: string | null
           organizer: string
+          prize_amount: number | null
           raw_data: Json | null
           registration_end_date: string
           registration_start_date: string | null
@@ -869,7 +1757,9 @@ export type Database = {
           id?: string
           interest_tags?: string[] | null
           last_synced_at?: string | null
+          location?: string | null
           organizer: string
+          prize_amount?: number | null
           raw_data?: Json | null
           registration_end_date: string
           registration_start_date?: string | null
@@ -892,7 +1782,9 @@ export type Database = {
           id?: string
           interest_tags?: string[] | null
           last_synced_at?: string | null
+          location?: string | null
           organizer?: string
+          prize_amount?: number | null
           raw_data?: Json | null
           registration_end_date?: string
           registration_start_date?: string | null
@@ -904,6 +1796,271 @@ export type Database = {
           title?: string
           updated_at?: string | null
           views_count?: number | null
+        }
+        Relationships: []
+      }
+      startup_ideas: {
+        Row: {
+          category: string[] | null
+          collected_at: string | null
+          comments_count: number | null
+          created_at: string | null
+          description: string | null
+          external_id: string
+          final_score: number | null
+          funding_stage: string | null
+          id: string
+          interest_tags: string[] | null
+          investors: string[] | null
+          korea_deep_analysis: Json | null
+          korea_fit_analysis: Json | null
+          korea_fit_score: number | null
+          logo_url: string | null
+          name: string
+          priority_score: number | null
+          raw_data: Json | null
+          similar_korea_startups: string[] | null
+          source: string
+          source_url: string
+          status: string | null
+          tagline: string | null
+          tier: number | null
+          total_funding: number | null
+          updated_at: string | null
+          upvotes: number | null
+          website_url: string | null
+        }
+        Insert: {
+          category?: string[] | null
+          collected_at?: string | null
+          comments_count?: number | null
+          created_at?: string | null
+          description?: string | null
+          external_id: string
+          final_score?: number | null
+          funding_stage?: string | null
+          id?: string
+          interest_tags?: string[] | null
+          investors?: string[] | null
+          korea_deep_analysis?: Json | null
+          korea_fit_analysis?: Json | null
+          korea_fit_score?: number | null
+          logo_url?: string | null
+          name: string
+          priority_score?: number | null
+          raw_data?: Json | null
+          similar_korea_startups?: string[] | null
+          source: string
+          source_url: string
+          status?: string | null
+          tagline?: string | null
+          tier?: number | null
+          total_funding?: number | null
+          updated_at?: string | null
+          upvotes?: number | null
+          website_url?: string | null
+        }
+        Update: {
+          category?: string[] | null
+          collected_at?: string | null
+          comments_count?: number | null
+          created_at?: string | null
+          description?: string | null
+          external_id?: string
+          final_score?: number | null
+          funding_stage?: string | null
+          id?: string
+          interest_tags?: string[] | null
+          investors?: string[] | null
+          korea_deep_analysis?: Json | null
+          korea_fit_analysis?: Json | null
+          korea_fit_score?: number | null
+          logo_url?: string | null
+          name?: string
+          priority_score?: number | null
+          raw_data?: Json | null
+          similar_korea_startups?: string[] | null
+          source?: string
+          source_url?: string
+          status?: string | null
+          tagline?: string | null
+          tier?: number | null
+          total_funding?: number | null
+          updated_at?: string | null
+          upvotes?: number | null
+          website_url?: string | null
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          billing_cycle: string | null
+          billing_key: string | null
+          cancel_at_period_end: boolean | null
+          created_at: string | null
+          current_period_end: string | null
+          current_period_start: string | null
+          external_customer_id: string | null
+          external_subscription_id: string | null
+          id: string
+          payment_provider: string | null
+          plan_type: string
+          status: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          billing_cycle?: string | null
+          billing_key?: string | null
+          cancel_at_period_end?: boolean | null
+          created_at?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
+          external_customer_id?: string | null
+          external_subscription_id?: string | null
+          id?: string
+          payment_provider?: string | null
+          plan_type?: string
+          status?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          billing_cycle?: string | null
+          billing_key?: string | null
+          cancel_at_period_end?: boolean | null
+          created_at?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
+          external_customer_id?: string | null
+          external_subscription_id?: string | null
+          id?: string
+          payment_provider?: string | null
+          plan_type?: string
+          status?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      team_announcements: {
+        Row: {
+          author_id: string
+          content: string
+          created_at: string | null
+          id: string
+          is_pinned: boolean
+          opportunity_id: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          author_id: string
+          content: string
+          created_at?: string | null
+          id?: string
+          is_pinned?: boolean
+          opportunity_id: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          created_at?: string | null
+          id?: string
+          is_pinned?: boolean
+          opportunity_id?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_announcements_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_checklists: {
+        Row: {
+          assigned_to: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_completed: boolean
+          opportunity_id: string
+          sort_order: number
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_completed?: boolean
+          opportunity_id: string
+          sort_order?: number
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_completed?: boolean
+          opportunity_id?: string
+          sort_order?: number
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_checklists_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      usage_limits: {
+        Row: {
+          applications_used: number
+          boosts_purchased: number
+          created_at: string | null
+          id: string
+          opportunities_created: number
+          period_end: string
+          period_start: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          applications_used?: number
+          boosts_purchased?: number
+          created_at?: string | null
+          id?: string
+          opportunities_created?: number
+          period_end: string
+          period_start: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          applications_used?: number
+          boosts_purchased?: number
+          created_at?: string | null
+          id?: string
+          opportunities_created?: number
+          period_end?: string
+          period_start?: string
+          updated_at?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -982,999 +2139,147 @@ export type Database = {
         }
         Relationships: []
       }
-      waitlist_signups: {
-        Row: {
-          id: string
-          email: string
-          current_situation: 'solo_want_team' | 'has_project_need_member' | 'want_to_join' | 'just_curious' | null
-          created_at: string | null
-        }
-        Insert: {
-          id?: string
-          email: string
-          current_situation?: 'solo_want_team' | 'has_project_need_member' | 'want_to_join' | 'just_curious' | null
-          created_at?: string | null
-        }
-        Update: {
-          id?: string
-          email?: string
-          current_situation?: 'solo_want_team' | 'has_project_need_member' | 'want_to_join' | 'just_curious' | null
-          created_at?: string | null
-        }
-        Relationships: []
-      }
-      payment_failures: {
-        Row: {
-          id: string
-          user_id: string
-          subscription_id: string
-          status: 'initial_failure' | 'retry_failed' | 'final_warning' | 'downgraded'
-          failure_count: number
-          first_failure_at: string
-          last_failure_at: string
-          grace_period_ends_at: string
-          downgrade_at: string | null
-          resolved_at: string | null
-          notifications_sent: string[]
-          created_at: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          subscription_id: string
-          status?: 'initial_failure' | 'retry_failed' | 'final_warning' | 'downgraded'
-          failure_count?: number
-          first_failure_at: string
-          last_failure_at: string
-          grace_period_ends_at: string
-          downgrade_at?: string | null
-          resolved_at?: string | null
-          notifications_sent?: string[]
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          subscription_id?: string
-          status?: 'initial_failure' | 'retry_failed' | 'final_warning' | 'downgraded'
-          failure_count?: number
-          first_failure_at?: string
-          last_failure_at?: string
-          grace_period_ends_at?: string
-          downgrade_at?: string | null
-          resolved_at?: string | null
-          notifications_sent?: string[]
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "payment_failures_subscription_id_fkey"
-            columns: ["subscription_id"]
-            isOneToOne: false
-            referencedRelation: "subscriptions"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      notifications: {
-        Row: {
-          id: string
-          user_id: string
-          type: string
-          title: string
-          message: string
-          priority: string
-          data: Json | null
-          read: boolean
-          created_at: string | null
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          type: string
-          title: string
-          message: string
-          priority?: string
-          data?: Json | null
-          read?: boolean
-          created_at?: string | null
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          type?: string
-          title?: string
-          message?: string
-          priority?: string
-          data?: Json | null
-          read?: boolean
-          created_at?: string | null
-        }
-        Relationships: []
-      }
-      business_plans: {
-        Row: {
-          id: string
-          user_id: string
-          template_type: 'yebi-chogi' | 'student-300' | 'saengae-chungnyeon' | 'oneul-jeongtong' | 'gyeonggi-g-star'
-          status: 'draft' | 'in_progress' | 'completed'
-          title: string | null
-          basic_info: Json | null
-          problem_data: Json | null
-          solution_data: Json | null
-          scaleup_data: Json | null
-          team_data: Json | null
-          extra_sections: Json | null
-          validation_score: number | null
-          validated_idea_id: string | null
-          created_at: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          template_type: 'yebi-chogi' | 'student-300' | 'saengae-chungnyeon' | 'oneul-jeongtong' | 'gyeonggi-g-star'
-          status?: 'draft' | 'in_progress' | 'completed'
-          title?: string | null
-          basic_info?: Json | null
-          problem_data?: Json | null
-          solution_data?: Json | null
-          scaleup_data?: Json | null
-          team_data?: Json | null
-          extra_sections?: Json | null
-          validation_score?: number | null
-          validated_idea_id?: string | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          template_type?: 'yebi-chogi' | 'student-300' | 'saengae-chungnyeon' | 'oneul-jeongtong' | 'gyeonggi-g-star'
-          status?: 'draft' | 'in_progress' | 'completed'
-          title?: string | null
-          basic_info?: Json | null
-          problem_data?: Json | null
-          solution_data?: Json | null
-          scaleup_data?: Json | null
-          team_data?: Json | null
-          extra_sections?: Json | null
-          validation_score?: number | null
-          validated_idea_id?: string | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
       validated_ideas: {
         Row: {
-          id: string
-          user_id: string
-          project_idea: string
-          conversation_history: string | null
-          reflected_advice: string[]
-          artifacts: Json | null
-          score: number | null
-          persona_scores: Json | null
           action_plan: Json | null
-          validation_level: string | null
+          artifacts: Json | null
+          conversation_history: string | null
           created_at: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          id?: string
-          user_id: string
+          id: string
+          persona_scores: Json | null
+          problem: string | null
           project_idea: string
-          conversation_history?: string | null
-          reflected_advice?: string[]
-          artifacts?: Json | null
-          score?: number | null
-          persona_scores?: Json | null
-          action_plan?: Json | null
-          validation_level?: string | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          project_idea?: string
-          conversation_history?: string | null
-          reflected_advice?: string[]
-          artifacts?: Json | null
-          score?: number | null
-          persona_scores?: Json | null
-          action_plan?: Json | null
-          validation_level?: string | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      // ---- Manually added: startup_ideas & korea_startup_references ----
-      // Note: If regenerating via `npx supabase gen types typescript`, these will be overwritten.
-      startup_ideas: {
-        Row: {
-          id: string
-          external_id: string
-          source: string
-          source_url: string
-          name: string
-          tagline: string | null
-          description: string | null
-          category: string[]
-          logo_url: string | null
-          website_url: string | null
-          funding_stage: string | null
-          total_funding: number | null
-          investors: string[]
-          upvotes: number
-          comments_count: number
-          korea_fit_score: number | null
-          korea_fit_analysis: Json | null
-          similar_korea_startups: string[]
-          interest_tags: string[]
-          tier: number
-          priority_score: number
-          status: string
-          raw_data: Json | null
-          korea_deep_analysis: Json | null
-          final_score: number | null
-          collected_at: string | null
-          created_at: string | null
+          reflected_advice: string[] | null
+          score: number | null
+          solution: string | null
+          target: string | null
           updated_at: string | null
-        }
-        Insert: {
-          id?: string
-          external_id: string
-          source: string
-          source_url: string
-          name: string
-          tagline?: string | null
-          description?: string | null
-          category?: string[]
-          logo_url?: string | null
-          website_url?: string | null
-          funding_stage?: string | null
-          total_funding?: number | null
-          investors?: string[]
-          upvotes?: number
-          comments_count?: number
-          korea_fit_score?: number | null
-          korea_fit_analysis?: Json | null
-          similar_korea_startups?: string[]
-          interest_tags?: string[]
-          tier?: number
-          priority_score?: number
-          status?: string
-          raw_data?: Json | null
-          korea_deep_analysis?: Json | null
-          final_score?: number | null
-          collected_at?: string | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          id?: string
-          external_id?: string
-          source?: string
-          source_url?: string
-          name?: string
-          tagline?: string | null
-          description?: string | null
-          category?: string[]
-          logo_url?: string | null
-          website_url?: string | null
-          funding_stage?: string | null
-          total_funding?: number | null
-          investors?: string[]
-          upvotes?: number
-          comments_count?: number
-          korea_fit_score?: number | null
-          korea_fit_analysis?: Json | null
-          similar_korea_startups?: string[]
-          interest_tags?: string[]
-          tier?: number
-          priority_score?: number
-          status?: string
-          raw_data?: Json | null
-          korea_deep_analysis?: Json | null
-          final_score?: number | null
-          collected_at?: string | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      korea_startup_references: {
-        Row: {
-          id: string
-          external_id: string | null
-          source: string
-          name: string
-          description: string | null
-          category: string[]
-          website_url: string | null
-          raw_data: Json | null
-          created_at: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          id?: string
-          external_id?: string | null
-          source: string
-          name: string
-          description?: string | null
-          category?: string[]
-          website_url?: string | null
-          raw_data?: Json | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          id?: string
-          external_id?: string | null
-          source?: string
-          name?: string
-          description?: string | null
-          category?: string[]
-          website_url?: string | null
-          raw_data?: Json | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      // ---- Manually added: comments, helpful_votes, comment_reports, interests, coffee_chats, session_analytics ----
-      comments: {
-        Row: {
-          id: string
-          opportunity_id: string
-          user_id: string | null
-          nickname: string
-          school: string | null
-          content: string
-          helpful_count: number | null
-          report_count: number | null
-          is_hidden: boolean | null
-          created_at: string | null
-        }
-        Insert: {
-          id?: string
-          opportunity_id: string
-          user_id?: string | null
-          nickname: string
-          school?: string | null
-          content: string
-          helpful_count?: number | null
-          report_count?: number | null
-          is_hidden?: boolean | null
-          created_at?: string | null
-        }
-        Update: {
-          id?: string
-          opportunity_id?: string
-          user_id?: string | null
-          nickname?: string
-          school?: string | null
-          content?: string
-          helpful_count?: number | null
-          report_count?: number | null
-          is_hidden?: boolean | null
-          created_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "comments_opportunity_id_fkey"
-            columns: ["opportunity_id"]
-            isOneToOne: false
-            referencedRelation: "opportunities"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      helpful_votes: {
-        Row: {
-          id: string
-          comment_id: string
-          voter_identifier: string
-          created_at: string | null
-        }
-        Insert: {
-          id?: string
-          comment_id: string
-          voter_identifier: string
-          created_at?: string | null
-        }
-        Update: {
-          id?: string
-          comment_id?: string
-          voter_identifier?: string
-          created_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "helpful_votes_comment_id_fkey"
-            columns: ["comment_id"]
-            isOneToOne: false
-            referencedRelation: "comments"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      comment_reports: {
-        Row: {
-          id: string
-          comment_id: string
-          reporter_identifier: string
-          reason: string | null
-          created_at: string | null
-        }
-        Insert: {
-          id?: string
-          comment_id: string
-          reporter_identifier: string
-          reason?: string | null
-          created_at?: string | null
-        }
-        Update: {
-          id?: string
-          comment_id?: string
-          reporter_identifier?: string
-          reason?: string | null
-          created_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "comment_reports_comment_id_fkey"
-            columns: ["comment_id"]
-            isOneToOne: false
-            referencedRelation: "comments"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      interests: {
-        Row: {
-          id: string
-          opportunity_id: string
-          user_email: string
-          user_id: string | null
-          created_at: string | null
-        }
-        Insert: {
-          id?: string
-          opportunity_id: string
-          user_email: string
-          user_id?: string | null
-          created_at?: string | null
-        }
-        Update: {
-          id?: string
-          opportunity_id?: string
-          user_email?: string
-          user_id?: string | null
-          created_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "interests_opportunity_id_fkey"
-            columns: ["opportunity_id"]
-            isOneToOne: false
-            referencedRelation: "opportunities"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      coffee_chats: {
-        Row: {
-          id: string
-          opportunity_id: string
-          requester_email: string
-          requester_user_id: string | null
-          requester_name: string | null
-          owner_user_id: string
-          target_user_id: string | null
-          status: 'pending' | 'accepted' | 'declined'
-          outcome: string | null
-          contact_info: string | null
-          message: string | null
-          created_at: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          id?: string
-          opportunity_id: string
-          requester_email: string
-          requester_user_id?: string | null
-          requester_name?: string | null
-          owner_user_id: string
-          target_user_id?: string | null
-          status?: 'pending' | 'accepted' | 'declined'
-          outcome?: string | null
-          contact_info?: string | null
-          message?: string | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          id?: string
-          opportunity_id?: string
-          requester_email?: string
-          requester_user_id?: string | null
-          requester_name?: string | null
-          owner_user_id?: string
-          target_user_id?: string | null
-          status?: 'pending' | 'accepted' | 'declined'
-          outcome?: string | null
-          contact_info?: string | null
-          message?: string | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "coffee_chats_opportunity_id_fkey"
-            columns: ["opportunity_id"]
-            isOneToOne: false
-            referencedRelation: "opportunities"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      session_analytics: {
-        Row: {
-          id: string
-          session_hash: string
+          user_id: string
           validation_level: string | null
-          total_turns: number | null
-          completed: boolean | null
-          dropped_at_turn: number | null
-          idea_category: string[] | null
-          idea_word_count: number | null
-          score_history: Json | null
-          final_score: Json | null
-          advice_shown: number | null
-          advice_reflected: number | null
-          reflected_categories: string[] | null
-          persona_engagement: Json | null
-          from_startup_idea: boolean | null
-          startup_source: string | null
-          created_at: string | null
         }
         Insert: {
-          id?: string
-          session_hash: string
-          validation_level?: string | null
-          total_turns?: number | null
-          completed?: boolean | null
-          dropped_at_turn?: number | null
-          idea_category?: string[] | null
-          idea_word_count?: number | null
-          score_history?: Json | null
-          final_score?: Json | null
-          advice_shown?: number | null
-          advice_reflected?: number | null
-          reflected_categories?: string[] | null
-          persona_engagement?: Json | null
-          from_startup_idea?: boolean | null
-          startup_source?: string | null
+          action_plan?: Json | null
+          artifacts?: Json | null
+          conversation_history?: string | null
           created_at?: string | null
+          id?: string
+          persona_scores?: Json | null
+          problem?: string | null
+          project_idea: string
+          reflected_advice?: string[] | null
+          score?: number | null
+          solution?: string | null
+          target?: string | null
+          updated_at?: string | null
+          user_id: string
+          validation_level?: string | null
         }
         Update: {
-          id?: string
-          session_hash?: string
-          validation_level?: string | null
-          total_turns?: number | null
-          completed?: boolean | null
-          dropped_at_turn?: number | null
-          idea_category?: string[] | null
-          idea_word_count?: number | null
-          score_history?: Json | null
-          final_score?: Json | null
-          advice_shown?: number | null
-          advice_reflected?: number | null
-          reflected_categories?: string[] | null
-          persona_engagement?: Json | null
-          from_startup_idea?: boolean | null
-          startup_source?: string | null
+          action_plan?: Json | null
+          artifacts?: Json | null
+          conversation_history?: string | null
           created_at?: string | null
+          id?: string
+          persona_scores?: Json | null
+          problem?: string | null
+          project_idea?: string
+          reflected_advice?: string[] | null
+          score?: number | null
+          solution?: string | null
+          target?: string | null
+          updated_at?: string | null
+          user_id?: string
+          validation_level?: string | null
         }
         Relationships: []
       }
-      error_logs: {
+      verification_codes: {
         Row: {
-          id: string
+          attempts: number | null
+          code: string
           created_at: string | null
-          level: string
-          source: string
-          error_code: string | null
-          message: string
-          stack_trace: string | null
-          endpoint: string | null
-          method: string | null
-          user_id: string | null
-          request_body: Json | null
+          email: string
+          expires_at: string
+          locked_until: string | null
+          send_count: number | null
+          send_reset_at: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          attempts?: number | null
+          code: string
+          created_at?: string | null
+          email: string
+          expires_at: string
+          locked_until?: string | null
+          send_count?: number | null
+          send_reset_at?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          attempts?: number | null
+          code?: string
+          created_at?: string | null
+          email?: string
+          expires_at?: string
+          locked_until?: string | null
+          send_count?: number | null
+          send_reset_at?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      waitlist: {
+        Row: {
+          converted_at: string | null
+          created_at: string | null
+          email: string
+          id: string
           metadata: Json | null
-          ip_address: string | null
-          user_agent: string | null
+          source: string | null
         }
         Insert: {
-          id?: string
+          converted_at?: string | null
           created_at?: string | null
-          level: string
-          source: string
-          error_code?: string | null
-          message: string
-          stack_trace?: string | null
-          endpoint?: string | null
-          method?: string | null
-          user_id?: string | null
-          request_body?: Json | null
+          email: string
+          id?: string
           metadata?: Json | null
-          ip_address?: string | null
-          user_agent?: string | null
+          source?: string | null
         }
         Update: {
-          id?: string
+          converted_at?: string | null
           created_at?: string | null
-          level?: string
-          source?: string
-          error_code?: string | null
-          message?: string
-          stack_trace?: string | null
-          endpoint?: string | null
-          method?: string | null
-          user_id?: string | null
-          request_body?: Json | null
+          email?: string
+          id?: string
           metadata?: Json | null
-          ip_address?: string | null
-          user_agent?: string | null
+          source?: string | null
         }
         Relationships: []
       }
-      project_invitations: {
+      waitlist_signups: {
         Row: {
-          id: string
-          opportunity_id: string
-          inviter_user_id: string
-          invited_user_id: string
-          role: string
-          message: string | null
-          status: string
           created_at: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          id?: string
-          opportunity_id: string
-          inviter_user_id: string
-          invited_user_id: string
-          role: string
-          message?: string | null
-          status?: string
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          id?: string
-          opportunity_id?: string
-          inviter_user_id?: string
-          invited_user_id?: string
-          role?: string
-          message?: string | null
-          status?: string
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "project_invitations_opportunity_id_fkey"
-            columns: ["opportunity_id"]
-            isOneToOne: false
-            referencedRelation: "opportunities"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      event_applications: {
-        Row: {
+          current_situation: string | null
+          email: string
           id: string
-          user_id: string
-          event_id: string
-          status: string
-          status_updated_at: string | null
-          applied_at: string | null
-          applied_url: string | null
-          result_notes: string | null
-          personal_notes: string | null
-          preparation_checklist: Json | null
-          reminder_date: string | null
-          reminder_sent: boolean | null
-          created_at: string | null
-          updated_at: string | null
+          opportunity_draft: Json | null
         }
         Insert: {
-          id?: string
-          user_id: string
-          event_id: string
-          status?: string
-          status_updated_at?: string | null
-          applied_at?: string | null
-          applied_url?: string | null
-          result_notes?: string | null
-          personal_notes?: string | null
-          preparation_checklist?: Json | null
-          reminder_date?: string | null
-          reminder_sent?: boolean | null
           created_at?: string | null
-          updated_at?: string | null
+          current_situation?: string | null
+          email: string
+          id?: string
+          opportunity_draft?: Json | null
         }
         Update: {
-          id?: string
-          user_id?: string
-          event_id?: string
-          status?: string
-          status_updated_at?: string | null
-          applied_at?: string | null
-          applied_url?: string | null
-          result_notes?: string | null
-          personal_notes?: string | null
-          preparation_checklist?: Json | null
-          reminder_date?: string | null
-          reminder_sent?: boolean | null
           created_at?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "event_applications_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "startup_events"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      event_application_history: {
-        Row: {
-          id: string
-          application_id: string
-          previous_status: string | null
-          new_status: string
-          changed_at: string | null
-        }
-        Insert: {
+          current_situation?: string | null
+          email?: string
           id?: string
-          application_id: string
-          previous_status?: string | null
-          new_status: string
-          changed_at?: string | null
-        }
-        Update: {
-          id?: string
-          application_id?: string
-          previous_status?: string | null
-          new_status?: string
-          changed_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "event_application_history_application_id_fkey"
-            columns: ["application_id"]
-            isOneToOne: false
-            referencedRelation: "event_applications"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      event_opportunity_links: {
-        Row: {
-          id: string
-          event_id: string
-          opportunity_id: string
-          created_by: string
-          link_type: string
-          created_at: string | null
-        }
-        Insert: {
-          id?: string
-          event_id: string
-          opportunity_id: string
-          created_by: string
-          link_type?: string
-          created_at?: string | null
-        }
-        Update: {
-          id?: string
-          event_id?: string
-          opportunity_id?: string
-          created_by?: string
-          link_type?: string
-          created_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "event_opportunity_links_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "startup_events"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "event_opportunity_links_opportunity_id_fkey"
-            columns: ["opportunity_id"]
-            isOneToOne: false
-            referencedRelation: "opportunities"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      team_checklists: {
-        Row: {
-          id: string
-          opportunity_id: string
-          title: string
-          description: string | null
-          is_completed: boolean
-          sort_order: number
-          assigned_to: string | null
-          created_at: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          id?: string
-          opportunity_id: string
-          title: string
-          description?: string | null
-          is_completed?: boolean
-          sort_order?: number
-          assigned_to?: string | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          id?: string
-          opportunity_id?: string
-          title?: string
-          description?: string | null
-          is_completed?: boolean
-          sort_order?: number
-          assigned_to?: string | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "team_checklists_opportunity_id_fkey"
-            columns: ["opportunity_id"]
-            isOneToOne: false
-            referencedRelation: "opportunities"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      team_announcements: {
-        Row: {
-          id: string
-          opportunity_id: string
-          author_id: string
-          title: string
-          content: string
-          is_pinned: boolean
-          created_at: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          id?: string
-          opportunity_id: string
-          author_id: string
-          title: string
-          content: string
-          is_pinned?: boolean
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          id?: string
-          opportunity_id?: string
-          author_id?: string
-          title?: string
-          content?: string
-          is_pinned?: boolean
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "team_announcements_opportunity_id_fkey"
-            columns: ["opportunity_id"]
-            isOneToOne: false
-            referencedRelation: "opportunities"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      project_updates: {
-        Row: {
-          id: string
-          opportunity_id: string
-          author_id: string
-          week_number: number
-          title: string
-          content: string
-          update_type: string
-          created_at: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          id?: string
-          opportunity_id: string
-          author_id: string
-          week_number: number
-          title: string
-          content: string
-          update_type?: string
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          id?: string
-          opportunity_id?: string
-          author_id?: string
-          week_number?: number
-          title?: string
-          content?: string
-          update_type?: string
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "project_updates_opportunity_id_fkey"
-            columns: ["opportunity_id"]
-            isOneToOne: false
-            referencedRelation: "opportunities"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      support_tickets: {
-        Row: {
-          id: string
-          user_id: string
-          category: string
-          title: string
-          description: string
-          page_url: string | null
-          status: string
-          created_at: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          category: string
-          title: string
-          description: string
-          page_url?: string | null
-          status?: string
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          category?: string
-          title?: string
-          description?: string
-          page_url?: string | null
-          status?: string
-          created_at?: string | null
-          updated_at?: string | null
+          opportunity_draft?: Json | null
         }
         Relationships: []
       }
@@ -1983,60 +2288,46 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      get_or_create_current_usage: {
-        Args: { p_user_id: string }
-        Returns: {
-          id: string
-          user_id: string
-          period_start: string
-          period_end: string
-          applications_used: number
-          opportunities_created: number
-          boosts_purchased: number
-          created_at: string
-          updated_at: string
+      accept_coffee_chat: {
+        Args: { p_chat_id: string; p_contact_info: string }
+        Returns: boolean
+      }
+      accept_project_invitation: {
+        Args: { p_invitation_id: string }
+        Returns: boolean
+      }
+      calculate_context_boost:
+        | {
+            Args: {
+              event_end_date: string
+              event_target: string
+              user_location: string
+            }
+            Returns: number
+          }
+        | {
+            Args: {
+              event_end_date: string
+              event_target: string
+              user_location: string
+            }
+            Returns: number
+          }
+      calculate_final_score: {
+        Args: {
+          p_difficulty: string
+          p_korea_exists: boolean
+          p_korea_fit_score: number
+          p_upvotes: number
         }
-      }
-      increment_usage: {
-        Args: { p_user_id: string; p_type: string }
-        Returns: {
-          id: string
-          user_id: string
-          period_start: string
-          period_end: string
-          applications_used: number
-          opportunities_created: number
-          boosts_purchased: number
-          created_at: string
-          updated_at: string
-        }
-      }
-      get_user_subscription: {
-        Args: { p_user_id: string }
-        Returns: {
-          plan_type: string
-          status: string
-          billing_cycle: string | null
-          current_period_end: string | null
-        }[]
-      }
-      expire_boosts: {
-        Args: Record<string, never>
         Returns: number
       }
-      get_boosted_opportunities: {
-        Args: Record<string, never>
-        Returns: {
-          opportunity_id: string
-          boost_type: string
-          expires_at: string
-        }[]
-      }
-      calculate_context_boost: {
+      calculate_startup_priority: {
         Args: {
-          event_end_date: string
-          event_target: string
-          user_location: string
+          p_korea_fit_score: number
+          p_tier: number
+          p_total_funding: number
+          p_upvotes: number
         }
         Returns: number
       }
@@ -2044,44 +2335,269 @@ export type Database = {
         Args: { event_tags: string[]; user_tags: string[] }
         Returns: number
       }
+      check_defense_unlock: { Args: { p_email: string }; Returns: boolean }
+      cleanup_old_error_logs: { Args: never; Returns: number }
+      decline_coffee_chat: { Args: { p_chat_id: string }; Returns: boolean }
+      decline_project_invitation: {
+        Args: { p_invitation_id: string }
+        Returns: boolean
+      }
+      expire_boosts: { Args: never; Returns: number }
+      express_interest: {
+        Args: {
+          p_opportunity_id: string
+          p_user_email: string
+          p_user_id?: string
+        }
+        Returns: boolean
+      }
+      find_similar_events: {
+        Args: {
+          p_event_id: string
+          p_limit?: number
+          p_min_similarity?: number
+        }
+        Returns: {
+          event_id: string
+          event_type: string
+          registration_end_date: string
+          similarity_score: number
+          title: string
+        }[]
+      }
       generate_deadline_notifications: { Args: never; Returns: number }
+      get_boosted_opportunities: {
+        Args: never
+        Returns: {
+          boost_type: string
+          expires_at: string
+          opportunity_id: string
+        }[]
+      }
+      get_or_create_current_usage: {
+        Args: { p_user_id: string }
+        Returns: {
+          applications_used: number
+          boosts_purchased: number
+          created_at: string | null
+          id: string
+          opportunities_created: number
+          period_end: string
+          period_start: string
+          updated_at: string | null
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "usage_limits"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      get_prd_usage_this_month: {
+        Args: { p_email: string }
+        Returns: {
+          count: number
+          level: string
+        }[]
+      }
+      get_session_analytics_summary: {
+        Args: { p_days?: number }
+        Returns: {
+          avg_final_score: number
+          avg_turns: number
+          completed_sessions: number
+          completion_rate: number
+          top_categories: string[]
+          total_sessions: number
+        }[]
+      }
+      get_top_startup_ideas: {
+        Args: { p_limit?: number; p_sort?: string }
+        Returns: {
+          category: string[]
+          description: string
+          final_score: number
+          id: string
+          korea_deep_analysis: Json
+          korea_fit_score: number
+          logo_url: string
+          name: string
+          source: string
+          source_url: string
+          tagline: string
+          upvotes: number
+          website_url: string
+        }[]
+      }
       get_unread_notification_count: {
         Args: { p_user_id: string }
         Returns: number
       }
-      match_opportunities: {
-        Args: {
-          exclude_creator_id?: string
-          match_count?: number
-          match_threshold?: number
-          query_embedding: string
-        }
+      get_user_subscription: {
+        Args: { p_user_id: string }
         Returns: {
-          applications_count: number
-          compensation_details: string
-          compensation_type: string
-          created_at: string
-          creator_id: string
-          demo_images: string[]
-          description: string
-          id: string
-          interest_tags: string[]
-          location: string
-          location_type: string
-          needed_roles: string[]
-          needed_skills: Json
-          project_links: Json
-          similarity: number
+          billing_cycle: string
+          current_period_end: string
+          plan_type: string
           status: string
-          time_commitment: string
-          title: string
-          type: string
-          updated_at: string
-          views_count: number
-          vision_embedding: string
         }[]
       }
-      match_profiles_for_opportunity: {
+      get_waitlist_count: { Args: never; Returns: number }
+      get_weekly_digest_events: {
+        Args: {
+          p_popular_limit?: number
+          p_recommended_limit?: number
+          p_user_id: string
+        }
+        Returns: {
+          category: string
+          event_type: string
+          id: string
+          interest_tags: string[]
+          organizer: string
+          registration_end_date: string
+          registration_url: string
+          title: string
+        }[]
+      }
+      has_expressed_interest: {
+        Args: { p_opportunity_id: string; p_user_email: string }
+        Returns: boolean
+      }
+      increment_opportunity_views: {
+        Args: { opportunity_id: string }
+        Returns: undefined
+      }
+      increment_usage: {
+        Args: { p_type: string; p_user_id: string }
+        Returns: {
+          applications_used: number
+          boosts_purchased: number
+          created_at: string | null
+          id: string
+          opportunities_created: number
+          period_end: string
+          period_start: string
+          updated_at: string | null
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "usage_limits"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      increment_view_count: {
+        Args: { row_id: string; table_name: string }
+        Returns: number
+      }
+      match_opportunities:
+        | {
+            Args: {
+              exclude_creator_id?: string
+              match_count?: number
+              match_threshold?: number
+              query_embedding: string
+            }
+            Returns: {
+              applications_count: number
+              compensation_details: string
+              compensation_type: string
+              created_at: string
+              creator_id: string
+              demo_images: string[]
+              description: string
+              id: string
+              interest_tags: string[]
+              location: string
+              location_type: string
+              needed_roles: string[]
+              needed_skills: Json
+              project_links: Json
+              similarity: number
+              status: string
+              time_commitment: string
+              title: string
+              type: string
+              updated_at: string
+              views_count: number
+              vision_embedding: string
+            }[]
+          }
+        | {
+            Args: {
+              exclude_creator_id?: string
+              match_count?: number
+              match_threshold?: number
+              query_embedding: string
+            }
+            Returns: {
+              applications_count: number
+              compensation_details: string
+              compensation_type: string
+              created_at: string
+              creator_id: string
+              demo_images: string[]
+              description: string
+              id: string
+              interest_tags: string[]
+              location: string
+              location_type: string
+              needed_roles: string[]
+              needed_skills: Json
+              project_links: Json
+              similarity: number
+              status: string
+              time_commitment: string
+              title: string
+              type: string
+              updated_at: string
+              views_count: number
+              vision_embedding: string
+            }[]
+          }
+      match_profiles_for_opportunity:
+        | {
+            Args: {
+              exclude_user_id?: string
+              match_count?: number
+              match_threshold?: number
+              query_embedding: string
+            }
+            Returns: {
+              desired_position: string
+              id: string
+              interest_tags: string[]
+              location: string
+              nickname: string
+              similarity: number
+              skills: Json
+              user_id: string
+              vision_summary: string
+            }[]
+          }
+        | {
+            Args: {
+              exclude_user_id?: string
+              match_count?: number
+              match_threshold?: number
+              query_embedding: string
+            }
+            Returns: {
+              desired_position: string
+              id: string
+              interest_tags: string[]
+              location: string
+              nickname: string
+              similarity: number
+              skills: Json
+              user_id: string
+              vision_summary: string
+            }[]
+          }
+      match_users: {
         Args: {
           exclude_user_id?: string
           match_count?: number
@@ -2089,14 +2605,19 @@ export type Database = {
           query_embedding: string
         }
         Returns: {
+          current_situation: string
           desired_position: string
+          extracted_profile: Json
           id: string
           interest_tags: string[]
           location: string
           nickname: string
+          personality: Json
+          profile_analysis: Json
           similarity: number
           skills: Json
           user_id: string
+          vision_embedding: string
           vision_summary: string
         }[]
       }
@@ -2121,25 +2642,8 @@ export type Database = {
           context_boost: number
           days_until_deadline: number
           description: string
-          event_id: string
           event_type: string
-          interest_tags: string[]
-          organizer: string
-          registration_end_date: string
-          registration_url: string
-          tag_score: number
-          title: string
-          total_score: number
-        }[]
-      }
-      recommend_events_with_embedding: {
-        Args: { p_limit?: number; p_user_id: string }
-        Returns: {
-          context_boost: number
-          days_until_deadline: number
-          description: string
-          event_id: string
-          event_type: string
+          id: string
           interest_tags: string[]
           organizer: string
           registration_end_date: string
@@ -2150,191 +2654,61 @@ export type Database = {
           vector_score: number
         }[]
       }
-      get_waitlist_count: {
-        Args: Record<string, never>
-        Returns: number
-      }
-      // ---- Manually added: startup_ideas RPC functions ----
-      calculate_final_score: {
-        Args: {
-          p_korea_fit_score: number
-          p_upvotes: number
-          p_korea_exists: boolean
-          p_difficulty: string
-        }
-        Returns: number
-      }
-      update_startup_final_scores: {
-        Args: Record<string, never>
-        Returns: { updated_count: number }[]
-      }
-      get_top_startup_ideas: {
-        Args: {
-          p_limit?: number
-          p_sort?: string
-        }
+      recommend_events_with_embedding: {
+        Args: { p_limit?: number; p_user_id: string }
         Returns: {
+          context_boost: number
+          days_until_deadline: number
+          description: string
+          event_type: string
           id: string
-          name: string
-          tagline: string | null
-          description: string | null
-          category: string[]
-          logo_url: string | null
-          website_url: string | null
-          source: string
-          source_url: string
-          upvotes: number
-          korea_fit_score: number | null
-          final_score: number | null
-          korea_deep_analysis: Json | null
+          interest_tags: string[]
+          organizer: string
+          registration_end_date: string
+          registration_url: string
+          tag_score: number
+          title: string
+          total_score: number
+          vector_score: number
         }[]
-      }
-      calculate_startup_priority: {
-        Args: {
-          p_upvotes: number
-          p_total_funding: number
-          p_korea_fit_score: number
-          p_tier: number
-        }
-        Returns: number
-      }
-      // ---- Manually added: community & analytics RPC functions ----
-      vote_helpful: {
-        Args: {
-          p_comment_id: string
-          p_voter_identifier: string
-        }
-        Returns: boolean
       }
       report_comment: {
         Args: {
           p_comment_id: string
+          p_reason?: string
           p_reporter_identifier: string
-          p_reason?: string | null
-        }
-        Returns: boolean
-      }
-      express_interest: {
-        Args: {
-          p_opportunity_id: string
-          p_user_email: string
-          p_user_id?: string | null
-        }
-        Returns: boolean
-      }
-      has_expressed_interest: {
-        Args: {
-          p_opportunity_id: string
-          p_user_email: string
         }
         Returns: boolean
       }
       request_coffee_chat: {
         Args: {
+          p_message?: string
           p_opportunity_id: string
           p_requester_email: string
           p_requester_name: string
-          p_message?: string | null
-          p_requester_user_id?: string | null
+          p_requester_user_id?: string
         }
         Returns: string
-      }
-      accept_coffee_chat: {
-        Args: {
-          p_chat_id: string
-          p_contact_info: string
-        }
-        Returns: boolean
-      }
-      decline_coffee_chat: {
-        Args: {
-          p_chat_id: string
-        }
-        Returns: boolean
-      }
-      get_session_analytics_summary: {
-        Args: {
-          p_days?: number
-        }
-        Returns: {
-          total_sessions: number
-          completed_sessions: number
-          completion_rate: number
-          avg_turns: number
-          top_categories: string[]
-          avg_final_score: number
-        }[]
-      }
-      find_similar_events: {
-        Args: {
-          p_event_id: string
-          p_limit: number
-          p_min_similarity: number
-        }
-        Returns: {
-          event_id: string
-          title: string
-          event_type: string
-          registration_end_date: string
-          similarity_score: number
-        }[]
-      }
-      increment_view_count: {
-        Args: {
-          table_name: string
-          row_id: string
-        }
-        Returns: number
-      }
-      match_users: {
-        Args: {
-          query_embedding: string
-          match_threshold: number
-          match_count: number
-          exclude_user_id: string
-        }
-        Returns: {
-          id: string
-          user_id: string
-          nickname: string
-          desired_position: string | null
-          skills: Json | null
-          interest_tags: string[] | null
-          personality: Json | null
-          current_situation: string | null
-          vision_summary: string | null
-          location: string | null
-          profile_analysis: Json | null
-          extracted_profile: Json | null
-          similarity: number
-        }[]
       }
       request_person_coffee_chat: {
         Args: {
-          p_target_user_id: string
+          p_message?: string
           p_requester_email: string
           p_requester_name: string
-          p_message: string | null
-          p_requester_user_id: string | null
+          p_requester_user_id?: string
+          p_target_user_id: string
         }
         Returns: string
       }
-      get_weekly_digest_events: {
-        Args: {
-          p_user_id: string
-          p_recommended_limit: number
-          p_popular_limit: number
-        }
+      update_startup_final_scores: {
+        Args: never
         Returns: {
-          id: string
-          title: string
-          organizer: string
-          event_type: string | null
-          registration_end_date: string
-          registration_url: string | null
-          interest_tags: string[] | null
-          category: string
+          updated_count: number
         }[]
+      }
+      vote_helpful: {
+        Args: { p_comment_id: string; p_voter_identifier: string }
+        Returns: boolean
       }
     }
     Enums: {

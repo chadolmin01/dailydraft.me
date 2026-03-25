@@ -52,18 +52,15 @@ export function useMessageThread(partnerId: string | null) {
   return useQuery({
     queryKey: messageKeys.thread(partnerId || ''),
     queryFn: async () => {
-      const res = await fetch(`/api/messages?type=all&limit=50`)
+      const res = await fetch(`/api/messages?type=all&partner_id=${partnerId}&limit=50`)
       if (!res.ok) throw new Error('Failed to fetch messages')
       const data = await res.json() as {
         messages: DirectMessage[]
         profiles: Record<string, ConversationPartner>
         unread_count: number
       }
-      // 해당 상대와의 메시지만 필터
-      const filtered = data.messages.filter(
-        m => m.sender_id === partnerId || m.receiver_id === partnerId
-      ).reverse() // 시간순 정렬
-      return { messages: filtered, profiles: data.profiles, unread_count: data.unread_count }
+      // Messages already filtered server-side, just reverse for chronological order
+      return { messages: data.messages.reverse(), profiles: data.profiles, unread_count: data.unread_count }
     },
     enabled: !!partnerId,
     staleTime: 10_000,

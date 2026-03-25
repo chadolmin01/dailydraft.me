@@ -19,9 +19,11 @@ import {
   AlertCircle,
   Gift,
   Crown,
+  Building2,
 } from 'lucide-react'
 import { useAuth } from '@/src/context/AuthContext'
 import { useAdmin } from '@/src/hooks/useAdmin'
+import { useInstitutionAdmin } from '@/src/hooks/useInstitutionAdmin'
 import { usePremium } from '@/src/hooks/usePremium'
 import { useUnreadCount } from '@/src/hooks/useMessages'
 import InviteCodeModal from '@/components/InviteCodeModal'
@@ -31,6 +33,7 @@ export const Sidebar: React.FC = () => {
   const pathname = usePathname()
   const { signOut, user, profile } = useAuth()
   const { isAdmin } = useAdmin()
+  const { isInstitutionAdmin } = useInstitutionAdmin()
   const { isPremium, refetch: refetchPremium } = usePremium()
   const { data: unreadMessages = 0 } = useUnreadCount()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -70,8 +73,10 @@ export const Sidebar: React.FC = () => {
     if (action === 'profile') router.push('/profile')
     if (action === 'settings') router.push('/profile/edit')
     if (action === 'usage') router.push('/usage')
+    if (action === 'institution') router.push('/institution')
     if (action === 'error-logs') router.push('/admin/error-logs')
     if (action === 'invite-codes-admin') router.push('/admin/invite-codes')
+    if (action === 'notifications') router.push('/notifications')
     if (action === 'invite-code') {
       setIsInviteModalOpen(true)
     }
@@ -79,7 +84,7 @@ export const Sidebar: React.FC = () => {
       try {
         await signOut()
         // Force a hard navigation to clear all client state
-        window.location.href = '/login'
+        window.location.href = '/'
       } catch (error) {
         console.error('Sign out error:', error)
       }
@@ -187,14 +192,16 @@ export const Sidebar: React.FC = () => {
             >
               <Settings size={14} /> Settings
             </button>
-            <button disabled className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-disabled cursor-not-allowed rounded-sm transition-colors text-left w-full">
+            <button
+              onClick={() => handleMenuAction('notifications')}
+              className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary rounded-sm transition-colors text-left w-full"
+            >
               <Bell size={14} /> Notifications{' '}
               {unreadMessages > 0 && (
                 <span className="ml-auto bg-status-danger-bg text-status-danger-text px-1.5 py-0.5 rounded-sm text-[0.5625rem] font-mono font-bold border border-status-danger-accent">
                   {unreadMessages > 9 ? '9+' : unreadMessages}
                 </span>
               )}
-              {unreadMessages === 0 && <span className="ml-auto text-[0.5625rem] font-mono text-txt-disabled">Coming soon</span>}
             </button>
 
             {/* Invite Code - Only show for non-premium users */}
@@ -205,6 +212,22 @@ export const Sidebar: React.FC = () => {
               >
                 <Gift size={14} /> 초대 코드 입력
               </button>
+            )}
+
+            {/* Institution Admin Section */}
+            {isInstitutionAdmin && (
+              <>
+                <div className="h-px border-t border-dashed border-border my-1"></div>
+                <div className="px-3 py-1.5">
+                  <div className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest">Institution</div>
+                </div>
+                <button
+                  onClick={() => handleMenuAction('institution')}
+                  className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary rounded-sm transition-colors text-left w-full"
+                >
+                  <Building2 size={14} /> 기관 대시보드
+                </button>
+              </>
             )}
 
             <div className="h-px border-t border-dashed border-border my-1"></div>

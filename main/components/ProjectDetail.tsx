@@ -640,7 +640,10 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
       </div>
 
       {/* Mobile Fixed CTA */}
-      <div className="fixed bottom-0 left-0 right-0 bg-surface-card border-t border-border-strong p-4 md:hidden z-30">
+      <div
+        className="fixed left-0 right-0 bg-surface-card border-t border-border-strong p-4 md:hidden z-30"
+        style={{ bottom: 'calc(var(--bottom-tab-height) + env(safe-area-inset-bottom, 0px))' }}
+      >
         <button
           onClick={handleCoffeeChatAction}
           className="w-full bg-brand text-white py-3.5 font-bold text-sm flex items-center justify-center gap-2 border border-brand shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
@@ -650,8 +653,8 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
         </button>
       </div>
 
-      {/* Mobile bottom padding */}
-      <div className="h-20 md:hidden" />
+      {/* Mobile bottom padding (CTA ~72px + tab bar 56px + margin) */}
+      <div className="h-36 md:hidden" />
 
       {/* Coffee Chat Form (Authenticated) — uses shared Modal */}
       {opportunity && (

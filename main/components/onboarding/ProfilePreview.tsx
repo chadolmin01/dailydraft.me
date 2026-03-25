@@ -46,7 +46,7 @@ export const ProfilePreview: React.FC<ProfilePreviewProps> = ({
                     <span className="flex items-center gap-1">
                       <Building2 size={10} />
                       {profile.affiliationType !== 'student' ? `${AFFILIATION_OPTIONS.find(a => a.value === profile.affiliationType)?.label || ''} · ` : ''}
-                      {profile.university}{profile.major ? ` · ${profile.major}` : ''}
+                      {profile.university}
                     </span>
                   )}
                   {profile.locations.length > 0 && (

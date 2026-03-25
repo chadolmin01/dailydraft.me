@@ -8,7 +8,7 @@ import { withRetry } from '../lib/query-utils'
 type Profile = Tables<'profiles'>
 
 export type PublicProfile = Pick<Profile,
-  'id' | 'user_id' | 'nickname' | 'desired_position' | 'interest_tags' | 'location' | 'profile_visibility' | 'vision_summary' | 'avatar_url' | 'interest_count' | 'created_at' | 'badges'
+  'id' | 'user_id' | 'nickname' | 'desired_position' | 'interest_tags' | 'location' | 'profile_visibility' | 'vision_summary' | 'avatar_url' | 'interest_count' | 'created_at' | 'badges' | 'university' | 'affiliation_type'
 >
 
 // Query keys
@@ -30,7 +30,7 @@ export function usePublicProfiles(options?: {
     queryFn: () => withRetry(async () => {
       let query = supabase
         .from('profiles')
-        .select('id, user_id, nickname, desired_position, interest_tags, location, profile_visibility, vision_summary, avatar_url, interest_count, created_at, badges')
+        .select('id, user_id, nickname, desired_position, interest_tags, location, profile_visibility, vision_summary, avatar_url, interest_count, created_at, badges, university, affiliation_type')
         .eq('profile_visibility', 'public')
         .order('updated_at', { ascending: false })
 

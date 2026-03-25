@@ -76,7 +76,7 @@ export function HelpWidget() {
       {/* Floating button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        style={{ bottom: 'calc(1.5rem + env(safe-area-inset-bottom, 0px))' }}
+        style={{ bottom: 'calc(1.5rem + var(--bottom-tab-height) + env(safe-area-inset-bottom, 0px))' }}
         className={`fixed right-6 z-fixed w-12 h-12 flex items-center justify-center transition-all duration-300 ${
           isOpen
             ? 'bg-surface-inverse text-txt-inverse rotate-90'
@@ -90,7 +90,7 @@ export function HelpWidget() {
       {/* Panel */}
       {isOpen && (
         <div
-          style={{ bottom: 'calc(5rem + env(safe-area-inset-bottom, 0px))', animation: 'helpWidgetIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) both' }}
+          style={{ bottom: 'calc(5rem + var(--bottom-tab-height) + env(safe-area-inset-bottom, 0px))', animation: 'helpWidgetIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) both' }}
           className="fixed right-6 z-fixed w-[22rem] sm:w-[24rem] max-h-[min(32rem,calc(100vh-8rem))] bg-surface-card border border-border-strong shadow-brutal-xl flex flex-col"
         >
           <style dangerouslySetInnerHTML={{ __html: `

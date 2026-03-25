@@ -16,7 +16,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     // Fetch opportunity with creator profile
     const { data: oppData, error } = await supabase
       .from('opportunities')
-      .select('id, type, title, description, status, creator_id, needed_roles, needed_skills, interest_tags, location_type, location, time_commitment, compensation_type, compensation_details, applications_count, views_count, project_links, deadline, team_size, project_stage, created_at, updated_at')
+      .select('*')
       .eq('id', id)
       .single()
 
@@ -51,12 +51,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       userApplication = application
     }
 
-    // Increment views count (only if not owner)
-    if (!isOwner) {
-      await supabase.from('opportunities')
-        .update({ views_count: (data.views_count || 0) + 1 })
-        .eq('id', id)
-    }
+    // Views count increment is handled by POST /api/opportunities/[id]/view
+    // (called from client-side). No duplicate increment here.
 
     return ApiResponse.ok({
       ...data,

@@ -14,10 +14,9 @@ import {
   ProfileProjects,
   ProfileCoffeeChats,
   ProfileInvitations,
-  ProfileLoadingSkeleton,
 } from '@/components/profile'
 import Link from 'next/link'
-import { Sparkles } from 'lucide-react'
+import { Sparkles, Loader2 } from 'lucide-react'
 
 export default function ProfilePage() {
   const { user } = useAuth()
@@ -46,7 +45,11 @@ export default function ProfilePage() {
     }
   }, [user])
 
-  if (isLoading) return <ProfileLoadingSkeleton />
+  if (isLoading) return (
+    <div className="flex items-center justify-center min-h-[60vh]">
+      <Loader2 className="h-6 w-6 animate-spin text-txt-tertiary" />
+    </div>
+  )
 
   return (
     <div className="bg-surface-bg min-h-full">

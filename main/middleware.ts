@@ -109,6 +109,23 @@ export async function middleware(request: NextRequest) {
       if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
         return NextResponse.json({ error: { code: 'FORBIDDEN', message: '인증이 필요합니다' } }, { status: 403 })
       }
+    } else if (!origin) {
+      // No Origin header — check Referer as fallback (some browsers omit Origin for same-origin requests)
+      const referer = request.headers.get('referer')
+      if (referer) {
+        try {
+          const refererHost = new URL(referer).host
+          if (refererHost !== host) {
+            return NextResponse.json({ error: { code: 'FORBIDDEN', message: '요청이 거부되었습니다' } }, { status: 403 })
+          }
+          // Referer matches host → same-origin, allow
+        } catch {
+          return NextResponse.json({ error: { code: 'FORBIDDEN', message: '요청이 거부되었습니다' } }, { status: 403 })
+        }
+      } else {
+        // No Origin AND no Referer → block non-browser requests
+        return NextResponse.json({ error: { code: 'FORBIDDEN', message: '요청이 거부되었습니다' } }, { status: 403 })
+      }
     }
   }
 
@@ -149,7 +166,7 @@ export async function middleware(request: NextRequest) {
   const { response, supabase, user } = await updateSession(request)
 
   // Protected routes - redirect to login if not authenticated
-  const protectedPaths = ['/profile', '/projects', '/admin', '/messages', '/notifications', '/onboarding', '/dashboard', '/documents', '/calendar', '/network', '/usage', '/workflow']
+  const protectedPaths = ['/profile', '/projects', '/admin', '/messages', '/notifications', '/onboarding', '/dashboard', '/documents', '/calendar', '/network', '/usage', '/workflow', '/institution']
   const isProtectedPath = protectedPaths.some(path => pathname.startsWith(path))
 
   if (isProtectedPath && !user) {
@@ -175,7 +192,7 @@ export async function middleware(request: NextRequest) {
     const onboardingCookie = request.cookies.get('onboarding_completed')?.value
     const verified = onboardingCookie ? await verifyCookie(onboardingCookie) : null
 
-    if (verified !== 'true') {
+    if (verified !== `${user.id}:true`) {
       const { data: profile } = await supabase
         .from('profiles')
         .select('onboarding_completed')
@@ -186,13 +203,14 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL('/onboarding', request.url))
       }
 
-      // 완료된 경우 서명된 쿠키로 캐싱 (24시간)
+      // 완료된 경우 서명된 쿠키로 캐싱 (24시간, user ID 바인딩)
       if (profile?.onboarding_completed) {
-        const signedValue = await signCookie('true')
+        const signedValue = await signCookie(`${user.id}:true`)
         response.cookies.set('onboarding_completed', signedValue, {
           path: '/',
           httpOnly: true,
           sameSite: 'lax',
+          secure: process.env.NODE_ENV === 'production',
           maxAge: 60 * 60 * 24, // 24시간
         })
       }

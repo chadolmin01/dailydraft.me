@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 import { useComments, Comment } from '@/src/hooks/useComments'
 import { useAuth } from '@/src/context/AuthContext'
 import { COMMENT_LABEL, COMMENT_VERB } from '@/src/constants/labels'
+import { cleanNickname } from '@/src/lib/clean-nickname'
 
 const INITIAL_VISIBLE = 5
 
@@ -114,9 +115,9 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
         <form onSubmit={handleSubmit} className="p-4 bg-surface-sunken border-b border-dashed border-border">
           <div className="flex items-center gap-2 mb-3">
             <div className="w-7 h-7 bg-black text-white flex items-center justify-center text-xs font-bold shrink-0">
-              {profile.nickname.charAt(0)}
+              {cleanNickname(profile.nickname).charAt(0)}
             </div>
-            <span className="text-sm font-medium text-txt-primary">{profile.nickname}</span>
+            <span className="text-sm font-medium text-txt-primary">{cleanNickname(profile.nickname)}</span>
             {profile.university && (
               <>
                 <span className="text-border-strong">·</span>
@@ -224,9 +225,9 @@ const CommentItem: React.FC<CommentItemProps> = ({
       {/* Author info */}
       <div className="flex items-center gap-2 mb-2">
         <div className="w-6 h-6 bg-black text-white flex items-center justify-center text-[0.625rem] font-bold shrink-0">
-          {comment.nickname.charAt(0)}
+          {cleanNickname(comment.nickname).charAt(0)}
         </div>
-        <span className="font-bold text-sm text-txt-primary">{comment.nickname}</span>
+        <span className="font-bold text-sm text-txt-primary">{cleanNickname(comment.nickname)}</span>
         {comment.school && (
           <>
             <span className="text-border-strong">·</span>

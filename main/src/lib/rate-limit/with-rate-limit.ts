@@ -118,19 +118,8 @@ async function getIdentifierAndPlan(
       }
     }
 
-    // 쿠키 기반 인증 시도
-    const cookieHeader = request.headers.get('cookie')
-    if (cookieHeader) {
-      // Supabase 세션 쿠키에서 사용자 정보 추출 시도
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        const subscription = await getUserSubscription(supabase, user.id)
-        return {
-          identifier: `user:${user.id}`,
-          planType: subscription.planType,
-        }
-      }
-    }
+    // Note: Cookie-based auth is not supported here because the service role
+    // client cannot read session cookies. Auth falls back to IP-based limiting.
   } catch {
     // 인증 실패 시 IP 기반으로 폴백
   }

@@ -10,27 +10,13 @@ if (typeof window !== 'undefined' && (!supabaseUrl || !supabaseAnonKey)) {
   )
 }
 
-// In-memory mutex: serializes auth operations within a single page load
-// without blocking across rapid page refreshes (unlike navigator.locks
-// which is shared per-origin and blocks new pages until old locks release).
-let lockPromise: Promise<void> = Promise.resolve()
-
+// Shared config: disable navigator.locks to prevent AbortError in React Strict Mode
 const clientOptions = {
   auth: {
     flowType: 'pkce' as const,
     persistSession: true,
     detectSessionInUrl: true,
-    lock: async <R>(_name: string, _acquireTimeout: number, fn: () => Promise<R>): Promise<R> => {
-      const prevLock = lockPromise
-      let resolve: () => void
-      lockPromise = new Promise<void>(r => { resolve = r })
-      await prevLock
-      try {
-        return await fn()
-      } finally {
-        resolve!()
-      }
-    },
+    lock: async <R>(_name: string, _acquireTimeout: number, fn: () => Promise<R>): Promise<R> => await fn(),
   },
 }
 
@@ -41,13 +27,18 @@ export function createClient() {
 // Export a singleton for client-side use
 let browserClient: ReturnType<typeof createBrowserClient<Database>> | null = null
 
-export const supabase = (() => {
+export const supabase: ReturnType<typeof createBrowserClient<Database>> = (() => {
   if (typeof window === 'undefined') {
-    return createBrowserClient<Database>(
-      supabaseUrl || 'http://placeholder.supabase.co',
-      supabaseAnonKey || 'placeholder',
-      clientOptions
-    )
+    // SSR/prerender: return a proxy that defers the error to actual method access
+    // (throwing at module-load time breaks Next.js static generation for 'use client' pages)
+    return new Proxy({} as any, {
+      get(_, prop) {
+        if (prop === 'then') return undefined // prevent thenable detection
+        throw new Error(
+          'supabase client.ts는 클라이언트(브라우저)에서만 사용 가능합니다. 서버에서는 src/lib/supabase/server.ts를 사용하세요.'
+        )
+      },
+    })
   }
 
   if (!browserClient) {

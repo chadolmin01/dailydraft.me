@@ -11,8 +11,15 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url)
     const type = searchParams.get('type') || 'received' // received | sent | all
+    const partnerId = searchParams.get('partner_id')
     const limit = Math.min(parseInt(searchParams.get('limit') || '30'), 50)
     const offset = parseInt(searchParams.get('offset') || '0')
+
+    // Validate partnerId as UUID to prevent PostgREST filter injection
+    const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+    if (partnerId && !UUID_RE.test(partnerId)) {
+      return ApiResponse.badRequest('잘못된 사용자 ID입니다')
+    }
 
     let query = supabase
       .from('direct_messages')
@@ -20,7 +27,10 @@ export async function GET(request: NextRequest) {
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1)
 
-    if (type === 'received') {
+    if (partnerId) {
+      // Conversation mode: show all messages between current user and partner (ignores type filter)
+      query = query.or(`and(sender_id.eq.${user.id},receiver_id.eq.${partnerId}),and(sender_id.eq.${partnerId},receiver_id.eq.${user.id})`)
+    } else if (type === 'received') {
       query = query.eq('receiver_id', user.id).eq('deleted_by_receiver', false)
     } else if (type === 'sent') {
       query = query.eq('sender_id', user.id).eq('deleted_by_sender', false)

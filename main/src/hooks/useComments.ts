@@ -64,7 +64,7 @@ export function useComments({ opportunityId }: UseCommentsOptions): UseCommentsR
     }
   }, [opportunityId, fetchComments])
 
-  const addComment = async (data: { nickname: string; school?: string; content: string }): Promise<boolean> => {
+  const addComment = useCallback(async (data: { nickname: string; school?: string; content: string }): Promise<boolean> => {
     try {
       const { data: userData } = await supabase.auth.getUser()
 
@@ -85,9 +85,9 @@ export function useComments({ opportunityId }: UseCommentsOptions): UseCommentsR
       setError(err instanceof Error ? err.message : 'Failed to add comment')
       return false
     }
-  }
+  }, [opportunityId, fetchComments])
 
-  const voteHelpful = async (commentId: string, voterIdentifier: string): Promise<boolean> => {
+  const voteHelpful = useCallback(async (commentId: string, voterIdentifier: string): Promise<boolean> => {
     try {
       const { data, error: rpcError } = await supabase.rpc('vote_helpful', {
         p_comment_id: commentId,
@@ -111,9 +111,9 @@ export function useComments({ opportunityId }: UseCommentsOptions): UseCommentsR
       setError(err instanceof Error ? err.message : 'Failed to vote')
       return false
     }
-  }
+  }, [])
 
-  const reportComment = async (
+  const reportComment = useCallback(async (
     commentId: string,
     reporterIdentifier: string,
     reason?: string
@@ -122,7 +122,7 @@ export function useComments({ opportunityId }: UseCommentsOptions): UseCommentsR
       const { data, error: rpcError } = await supabase.rpc('report_comment', {
         p_comment_id: commentId,
         p_reporter_identifier: reporterIdentifier,
-        p_reason: reason || null,
+        p_reason: reason || undefined,
       })
 
       if (rpcError) throw rpcError
@@ -136,7 +136,7 @@ export function useComments({ opportunityId }: UseCommentsOptions): UseCommentsR
       setError(err instanceof Error ? err.message : 'Failed to report')
       return false
     }
-  }
+  }, [fetchComments])
 
   return {
     comments,

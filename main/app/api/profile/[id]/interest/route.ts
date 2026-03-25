@@ -20,6 +20,17 @@ export async function POST(
       return ApiResponse.unauthorized()
     }
 
+    // Prevent self-like: check if target profile belongs to current user
+    const { data: targetProfile } = await supabase
+      .from('profiles')
+      .select('user_id')
+      .eq('id', targetProfileId)
+      .single()
+
+    if (targetProfile && (targetProfile as { user_id: string }).user_id === user.id) {
+      return ApiResponse.badRequest('자신의 프로필에는 좋아요를 누를 수 없습니다')
+    }
+
     // Check if already interested
     const { data: existing } = await supabase
       .from('profile_interests')

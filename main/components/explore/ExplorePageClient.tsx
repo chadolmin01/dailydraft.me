@@ -1,11 +1,12 @@
 'use client'
 
-import React, { useState, useEffect, useMemo, Suspense } from 'react'
+import React, { useState, useEffect, useMemo, useCallback, Suspense } from 'react'
 import dynamic from 'next/dynamic'
-import { LayoutGrid, Users, Sparkles } from 'lucide-react'
+import { LayoutGrid, Users, Sparkles, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useSearchParams as useNextSearchParams, useRouter, usePathname } from 'next/navigation'
 import { DashboardLayout } from '@/components/ui/DashboardLayout'
+import { ProfileCompletionBanner } from '@/components/ui/ProfileCompletionBanner'
 
 const ModalLoadingFallback = () => (
   <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-modal-backdrop">
@@ -15,17 +16,16 @@ const ModalLoadingFallback = () => (
   </div>
 )
 
-import { retryImport } from '@/src/lib/retry-import'
-
 const ProjectDetailModal = dynamic(
-  () => retryImport(() => import('@/components/ProjectDetailModal').then(m => ({ default: m.ProjectDetailModal }))),
+  () => import('@/components/ProjectDetailModal').then(m => ({ default: m.ProjectDetailModal })),
   { ssr: false, loading: ModalLoadingFallback }
 )
 const ProfileDetailModal = dynamic(
-  () => retryImport(() => import('@/components/ProfileDetailModal').then(m => ({ default: m.ProfileDetailModal }))),
+  () => import('@/components/ProfileDetailModal').then(m => ({ default: m.ProfileDetailModal })),
   { ssr: false, loading: ModalLoadingFallback }
 )
 import { useOpportunities, type OpportunityWithCreator, calculateDaysLeft } from '@/src/hooks/useOpportunities'
+import { cleanNickname } from '@/src/lib/clean-nickname'
 import { usePublicProfiles, type PublicProfile } from '@/src/hooks/usePublicProfiles'
 import { useUserRecommendations, type UserRecommendation } from '@/src/hooks/useUserRecommendations'
 import { FALLBACK_CATEGORIES, FALLBACK_TRENDING_TAGS } from '@/src/lib/fallbacks/explore'
@@ -56,7 +56,11 @@ function useDebouncedValue<T>(value: T, delay: number): T {
 
 export default function ExplorePageClient() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="h-6 w-6 animate-spin text-txt-tertiary" />
+      </div>
+    }>
       <ExplorePageContent />
     </Suspense>
   )
@@ -69,11 +73,55 @@ function ExplorePageContent() {
   const initialQuery = urlParams.get('q') || ''
   const initialScope = urlParams.get('scope') as SearchScope || 'all'
 
-  // ── State ──
+  // ── Modal state (local state + URL sync via window.history) ──
+  // Initialize as null to avoid SSR/hydration mismatch, then sync from URL in useEffect
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null)
   const [profileByUserId, setProfileByUserId] = useState(false)
-  const [selectedMatchData, setSelectedMatchData] = useState<UserRecommendation | null>(null)
+  const hydratedRef = React.useRef(false)
+
+  // Hydrate modal state from URL on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const project = params.get('project')
+    const profile = params.get('profile')
+    const byUserId = params.get('profileBy') === 'userId'
+    if (project) setSelectedProjectId(project)
+    if (profile) setSelectedProfileId(profile)
+    if (byUserId) setProfileByUserId(byUserId)
+    hydratedRef.current = true
+  }, [])
+
+  // Sync modal state → URL (without Next.js navigation) — only after hydration
+  useEffect(() => {
+    if (!hydratedRef.current) return
+    const params = new URLSearchParams(window.location.search)
+    if (selectedProjectId) params.set('project', selectedProjectId)
+    else params.delete('project')
+    if (selectedProfileId) params.set('profile', selectedProfileId)
+    else params.delete('profile')
+    if (profileByUserId && selectedProfileId) params.set('profileBy', 'userId')
+    else params.delete('profileBy')
+    const qs = params.toString()
+    const newUrl = `${window.location.pathname}${qs ? `?${qs}` : ''}`
+    if (newUrl !== `${window.location.pathname}${window.location.search}`) {
+      window.history.replaceState(null, '', newUrl)
+    }
+  }, [selectedProjectId, selectedProfileId, profileByUserId])
+
+  // Handle browser back/forward
+  useEffect(() => {
+    const onPopState = () => {
+      const params = new URLSearchParams(window.location.search)
+      setSelectedProjectId(params.get('project'))
+      setSelectedProfileId(params.get('profile'))
+      setProfileByUserId(params.get('profileBy') === 'userId')
+    }
+    window.addEventListener('popstate', onPopState)
+    return () => window.removeEventListener('popstate', onPopState)
+  }, [])
+
+  // ── State ──
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [sortBy, setSortBy] = useState<SortBy>('trending')
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all')
@@ -90,11 +138,13 @@ function ExplorePageContent() {
   const searchQuery = useDebouncedValue(searchInput, 300)
   const { isAuthenticated, user } = useAuth()
 
-  // Sync search to URL
+  // Sync search to URL (preserves modal params)
   useEffect(() => {
-    const params = new URLSearchParams()
+    const params = new URLSearchParams(window.location.search)
     if (searchQuery) params.set('q', searchQuery)
+    else params.delete('q')
     if (searchScope !== 'all') params.set('scope', searchScope)
+    else params.delete('scope')
     const qs = params.toString()
     const newPath = `${pathname}${qs ? `?${qs}` : ''}`
     const currentPath = `${pathname}${window.location.search}`
@@ -110,7 +160,7 @@ function ExplorePageContent() {
   const hasMore = displayLimit < totalCount
 
   const { data: publicProfiles = [], isLoading: profilesLoading, isError: profilesError, refetch: refetchProfiles } = usePublicProfiles({ limit: peopleDisplayLimit })
-  const { data: allRecs = [] } = useUserRecommendations({ limit: 15 })
+  const { data: allRecs = [], isLoading: recsLoading } = useUserRecommendations({ limit: 15 })
   const sidebarRecs = allRecs.slice(0, 4)
 
   // AI recommended projects — used for match labels in all sort modes
@@ -175,6 +225,8 @@ function ExplorePageContent() {
         status: opp.status,
         matchLabel,
         badges: (opp as unknown as { badges?: string[] | null }).badges ?? null,
+        viewsCount: opp.views_count || 0,
+        interestCount: opp.interest_count || 0,
       }
     }
 
@@ -206,6 +258,11 @@ function ExplorePageContent() {
 
   // ── Derived: talent cards ──
   const recsMap = useMemo(() => new Map(allRecs.map(r => [r.user_id, r])), [allRecs])
+  const selectedMatchData = useMemo(() => {
+    if (!selectedProfileId) return null
+    const userId = profileByUserId ? selectedProfileId : publicProfiles.find(p => p.id === selectedProfileId)?.user_id
+    return userId ? recsMap.get(userId) ?? null : null
+  }, [selectedProfileId, profileByUserId, publicProfiles, recsMap])
   const talentCards = useMemo(() => publicProfiles
     .filter((profile: PublicProfile) => {
       // Role filter
@@ -240,7 +297,7 @@ function ExplorePageContent() {
       }
       return {
         id: profile.id,
-        name: profile.nickname || 'Anonymous',
+        name: cleanNickname(profile.nickname || 'Anonymous'),
         role: profile.desired_position || 'Explorer',
         tags: (profile.interest_tags || []).slice(0, 3),
         status: 'OPEN' as const,
@@ -249,10 +306,12 @@ function ExplorePageContent() {
         avatarUrl: profile.avatar_url,
         matchScore: rec?.match_score ?? null,
         matchReason: rec?.match_reason ?? null,
-        matchReasonDetail: rec?.match_reason_detail ?? null,
+        matchReasonDetail: (rec as unknown as Record<string, unknown>)?.match_reason_detail ?? null,
         badges: profile.badges ?? null,
         interestCount: profile.interest_count || 0,
         createdAt: profile.created_at,
+        university: profile.university ?? null,
+        affiliationType: profile.affiliation_type ?? null,
       }
     })
     .filter((card) => {
@@ -366,16 +425,25 @@ function ExplorePageContent() {
     peopleCount: talentCards.length,
   } as const
 
-  const handleSelectProfile = (id: string, byUserId: boolean) => {
+  const handleSelectProject = useCallback((id: string) => {
+    setSelectedProfileId(null)
+    setProfileByUserId(false)
+    setSelectedProjectId(id)
+  }, [])
+
+  const handleSelectProfile = useCallback((id: string, byUserId: boolean) => {
+    setSelectedProjectId(null)
     setSelectedProfileId(id)
     setProfileByUserId(byUserId)
-    const userId = byUserId ? id : publicProfiles.find(p => p.id === id)?.user_id
-    setSelectedMatchData(userId ? recsMap.get(userId) ?? null : null)
-  }
+  }, [])
 
   return (
     <div className="bg-surface-bg min-h-full">
       <ExploreHeroCarousel />
+
+      <div className="max-w-screen-xl mx-auto px-4 mt-3">
+        <ProfileCompletionBanner />
+      </div>
 
       <DashboardLayout
         size="wide"
@@ -385,6 +453,7 @@ function ExplorePageContent() {
           <ExploreAsidePanel
             talentCards={talentCards}
             sidebarRecs={sidebarRecs}
+            recsLoading={recsLoading}
             totalProjectCount={totalCount}
             projectCardCount={projectCards.length}
             categoriesCount={filterProps.categories.length}
@@ -423,7 +492,7 @@ function ExplorePageContent() {
             selectedCategory={selectedCategory}
             recruitingOnly={recruitingOnly}
             onLoadMore={() => setDisplayLimit(prev => prev + PAGE_SIZE)}
-            onSelectProject={setSelectedProjectId}
+            onSelectProject={handleSelectProject}
           />
         )}
 
@@ -453,10 +522,10 @@ function ExplorePageContent() {
           profileId={selectedProfileId}
           byUserId={profileByUserId}
           matchData={selectedMatchData}
-          onClose={() => { setSelectedProfileId(null); setSelectedMatchData(null) }}
+          onClose={() => { setSelectedProfileId(null); setProfileByUserId(false) }}
           onSelectProject={(projectId) => {
             setSelectedProfileId(null)
-            setSelectedMatchData(null)
+            setProfileByUserId(false)
             setSelectedProjectId(projectId)
           }}
         />

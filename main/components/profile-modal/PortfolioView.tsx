@@ -2,6 +2,7 @@ import {
   ArrowLeft, ExternalLink, FileText,
   Globe, Github, Linkedin, Code2,
 } from 'lucide-react'
+import { cleanNickname } from '@/src/lib/clean-nickname'
 
 export function PortfolioView({
   profile,
@@ -12,7 +13,8 @@ export function PortfolioView({
   skills: Array<{ name: string; level: string }> | null
   onBack: () => void
 }) {
-  const hasPortfolio = profile.portfolio_url
+  // Only allow https:// URLs for iframe embedding
+  const hasPortfolio = profile.portfolio_url && profile.portfolio_url.startsWith('https://')
   const hasGithub = profile.github_url
   const hasLinkedin = profile.linkedin_url
 
@@ -29,10 +31,10 @@ export function PortfolioView({
         </button>
         <div className="flex items-center gap-2 ml-auto">
           <div className="w-6 h-6 bg-surface-inverse flex items-center justify-center text-[0.5rem] font-bold text-txt-inverse shrink-0">
-            {profile.nickname.substring(0, 2)}
+            {cleanNickname(profile.nickname).substring(0, 2)}
           </div>
           <div>
-            <p className="text-sm font-bold text-txt-primary">{profile.nickname}</p>
+            <p className="text-sm font-bold text-txt-primary">{cleanNickname(profile.nickname)}</p>
             <p className="text-[0.625rem] font-mono text-txt-tertiary">{profile.desired_position || 'Explorer'}</p>
           </div>
         </div>
@@ -63,9 +65,9 @@ export function PortfolioView({
               <div className="relative bg-white" style={{ height: '400px' }}>
                 <iframe
                   src={profile.portfolio_url!}
-                  title={`${profile.nickname}의 포트폴리오`}
+                  title={`${cleanNickname(profile.nickname)}의 포트폴리오`}
                   className="w-full h-full border-0"
-                  sandbox="allow-scripts allow-same-origin allow-popups"
+                  sandbox="allow-scripts allow-popups"
                   loading="lazy"
                 />
               </div>

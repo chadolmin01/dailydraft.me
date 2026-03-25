@@ -34,10 +34,15 @@ function hexToBuf(hex: string): ArrayBuffer {
   return bytes.buffer as ArrayBuffer
 }
 
-/** Sign a value → "value.hexSignature". Returns plain value if no secret configured. */
+/** Sign a value → "value.hexSignature". Returns plain value if no secret configured (warns in prod). */
 export async function signCookie(value: string): Promise<string> {
   const key = await getKey()
-  if (!key) return value // No secret → skip signing
+  if (!key) {
+    if (process.env.NODE_ENV === 'production') {
+      console.error('[SECURITY] COOKIE_SECRET is not set in production. Cookies will not be signed.')
+    }
+    return value // No secret → unsigned fallback
+  }
   const enc = new TextEncoder()
   const sig = await crypto.subtle.sign('HMAC', key, enc.encode(value))
   return `${value}.${bufToHex(sig)}`
@@ -47,8 +52,11 @@ export async function signCookie(value: string): Promise<string> {
 export async function verifyCookie(signed: string): Promise<string | null> {
   const key = await getKey()
   if (!key) {
-    // No secret configured → accept unsigned cookies (graceful degradation)
-    return signed
+    if (process.env.NODE_ENV === 'production') {
+      console.error('[SECURITY] COOKIE_SECRET is not set in production. Rejecting cookie.')
+      return null // Prod without secret → reject all cookies
+    }
+    return signed // Dev: accept unsigned cookies
   }
 
   const idx = signed.lastIndexOf('.')

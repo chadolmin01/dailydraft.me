@@ -7,10 +7,9 @@ import {
   Zap, ArrowRight, MessageCircle, Heart, Loader2, Plus,
 } from 'lucide-react'
 import { useOpportunities } from '@/src/hooks/useOpportunities'
-import { retryImport } from '@/src/lib/retry-import'
 
 const ProjectDetailModal = dynamic(
-  () => retryImport(() => import('@/components/ProjectDetailModal').then(m => ({ default: m.ProjectDetailModal }))),
+  () => import('@/components/ProjectDetailModal').then(m => ({ default: m.ProjectDetailModal })),
   { ssr: false }
 )
 

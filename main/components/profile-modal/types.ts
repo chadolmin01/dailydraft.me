@@ -1,7 +1,6 @@
 export interface MatchData {
   match_score: number
   match_reason: string
-  match_reason_detail?: string
   match_details: {
     vision: number
     skill: number

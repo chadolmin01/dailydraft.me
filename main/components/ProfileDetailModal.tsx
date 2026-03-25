@@ -29,7 +29,6 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
   const [hasInterested, setHasInterested] = useState(false)
   const [interestCount, setInterestCount] = useState(0)
   const [interestLoading, setInterestLoading] = useState(false)
-  useBackHandler(!!profileId, onClose, 'profile-detail')
   useBackHandler(showCoffeeChatForm, () => setShowCoffeeChatForm(false), 'profile-coffee')
   useBackHandler(showInviteModal, () => setShowInviteModal(false), 'profile-invite')
   useBackHandler(!!sidePanel, () => setSidePanel(null), 'profile-side')

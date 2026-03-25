@@ -2,10 +2,11 @@
 
 import React from 'react'
 import Image from 'next/image'
-import { Users, Coffee } from 'lucide-react'
+import { Users, Coffee, Loader2 } from 'lucide-react'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { getMatchColorClass } from './constants'
+import { AFFILIATION_LABELS } from '@/components/profile-modal/types'
 import { Badges } from '@/components/ui/Badge'
 import type { TalentCard, PeopleSortBy } from './types'
 
@@ -35,18 +36,8 @@ export function ExplorePeopleGrid({
       {isError ? (
         <ErrorState message="프로필을 불러오는 데 실패했습니다" onRetry={onRetry} />
       ) : isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {[1,2,3,4,5,6].map((i) => (
-            <div key={i} className="bg-surface-card border border-border-strong overflow-hidden h-[13.75rem] flex flex-col animate-pulse">
-              <div className="px-4 pt-4 h-[4.75rem] shrink-0 flex gap-3">
-                <div className="w-12 h-12 bg-surface-sunken shrink-0" />
-                <div className="flex-1 space-y-2 pt-1">
-                  <div className="h-4 bg-surface-sunken w-1/2" />
-                  <div className="h-3 bg-surface-sunken w-3/4" />
-                </div>
-              </div>
-            </div>
-          ))}
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="h-6 w-6 animate-spin text-txt-tertiary" />
         </div>
       ) : talentCards.length === 0 ? (
         <EmptyState
@@ -69,24 +60,21 @@ export function ExplorePeopleGrid({
               <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-black/15" />
               <div className="px-4 pt-4 h-[4.75rem] shrink-0">
                 <div className="flex gap-3">
-                  {peopleSortBy === 'ai' && t.matchScore != null && t.matchScore > 0 ? (
-                    <div className={`relative w-12 h-12 flex items-center justify-center shrink-0 border ${getMatchColorClass(t.matchScore)}`}>
-                      <span className="text-lg font-black font-mono leading-none">{t.matchScore}</span>
-                      <span className="text-[0.5rem] font-mono font-bold absolute bottom-0.5 right-1">%</span>
-                    </div>
-                  ) : (
-                    <div className="relative w-12 h-12 bg-brand-bg border border-brand-border flex items-center justify-center text-base font-bold text-brand shrink-0 overflow-hidden">
-                      {t.name.substring(0, 2)}
-                      {t.avatarUrl && (
-                        <Image src={t.avatarUrl} alt={t.name} width={48} height={48} className="absolute inset-0 w-full h-full object-cover" quality={85} onError={(e) => { e.currentTarget.style.display = 'none' }} />
-                      )}
-                    </div>
-                  )}
+                  <div className="relative w-12 h-12 bg-brand-bg border border-brand-border flex items-center justify-center text-base font-bold text-brand shrink-0 overflow-hidden">
+                    {t.name.substring(0, 2)}
+                    {t.avatarUrl && (
+                      <Image src={t.avatarUrl} alt={t.name} width={48} height={48} className="absolute inset-0 w-full h-full object-cover" quality={85} onError={(e) => { e.currentTarget.style.display = 'none' }} />
+                    )}
+                  </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
                       <h3 className="font-semibold text-base text-txt-primary truncate">{t.name}</h3>
                       <Badges badges={t.badges} />
-                      {peopleSortBy !== 'ai' && (
+                      {peopleSortBy === 'ai' && t.matchScore != null && t.matchScore > 0 ? (
+                        <span className={`text-[0.625rem] font-mono font-bold px-1.5 py-0.5 shrink-0 border ${getMatchColorClass(t.matchScore)}`}>
+                          {t.matchScore}%
+                        </span>
+                      ) : (
                         <span className={`text-[0.625rem] font-mono font-bold px-1.5 py-0.5 shrink-0 border ${
                           t.status === 'OPEN' ? 'bg-status-success-bg text-status-success-text border-indicator-online/20'
                           : t.status === 'BUSY' ? 'bg-status-neutral-bg text-status-neutral-text border-border'
@@ -96,19 +84,16 @@ export function ExplorePeopleGrid({
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-txt-secondary truncate">{t.role}{t.location ? ` · ${t.location}` : ''}</p>
+                    <p className="text-sm text-txt-secondary truncate">
+                      {t.university || t.role}
+                      {t.affiliationType && AFFILIATION_LABELS[t.affiliationType] ? ` · ${AFFILIATION_LABELS[t.affiliationType]}` : ''}
+                    </p>
                   </div>
                 </div>
               </div>
               <div className="px-4 h-[5.75rem] shrink-0 overflow-hidden">
                 {peopleSortBy === 'ai' && t.matchReason ? (
-                  <div className="mb-2">
-                    {t.matchReasonDetail ? (
-                      <p className="text-sm text-txt-tertiary line-clamp-3">{t.matchReasonDetail}</p>
-                    ) : (
-                      <p className="text-sm text-txt-tertiary line-clamp-2">{t.matchReason}</p>
-                    )}
-                  </div>
+                  <p className="text-sm text-txt-tertiary line-clamp-2 mb-2">{t.matchReason}</p>
                 ) : t.visionSummary ? (
                   <p className="text-sm text-txt-tertiary line-clamp-2 mb-2">{t.visionSummary}</p>
                 ) : null}
@@ -123,11 +108,7 @@ export function ExplorePeopleGrid({
               <div className="px-4 pb-4 h-[3.25rem] shrink-0 flex items-end">
                 <div className="flex items-center justify-between w-full pt-2 border-t border-dashed border-border">
                   <span className="text-[0.625rem] font-mono text-txt-tertiary">{t.role}</span>
-                  {peopleSortBy === 'ai' && t.matchScore != null && t.matchScore > 0 ? (
-                    <span className={`text-[0.625rem] font-mono font-bold flex items-center gap-1 px-1.5 py-0.5 border ${getMatchColorClass(t.matchScore)}`}>
-                      MATCH {t.matchScore}%
-                    </span>
-                  ) : t.status === 'OPEN' ? (
+                  {t.status === 'OPEN' ? (
                     <span className="text-[0.625rem] font-mono text-indicator-online flex items-center gap-1 bg-status-success-bg px-1.5 py-0.5 border border-indicator-online/20"><Coffee size={9} /> AVAILABLE</span>
                   ) : (
                     <span className="text-[0.625rem] font-mono text-txt-tertiary flex items-center gap-1 bg-surface-sunken px-1.5 py-0.5 border border-border">{t.status}</span>
