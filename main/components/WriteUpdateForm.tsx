@@ -61,7 +61,11 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
       setTitle('')
       setContent('')
       setUpdateType('general')
-      toast.success('업데이트가 작성되었습니다')
+      toast.success(
+        weekNumber === 1
+          ? '첫 번째 업데이트! 좋은 시작이에요 🎉'
+          : `Week ${weekNumber} 완료! 꾸준한 기록이 쌓이고 있어요`
+      )
       onClose()
     } catch {
       setError('업데이트 작성에 실패했습니다.')
@@ -112,7 +116,7 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="이번 주에 무엇을 했나요?"
+            placeholder="이번 주의 가장 큰 진전은?"
             maxLength={100}
             className="w-full px-3 py-2 border border-border-strong text-sm focus:outline-none focus:border-border-strong bg-surface-card text-txt-primary placeholder-txt-disabled"
           />
@@ -121,11 +125,12 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
         {/* Content */}
         <div>
           <label className="block text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-1">내용</label>
+          <p className="text-[0.625rem] text-txt-disabled mb-1.5">팁: 구체적인 숫자나 결과물이 있으면 더 좋아요</p>
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder="진행 상황, 배운 점, 다음 계획 등을 자유롭게 적어주세요"
-            rows={4}
+            placeholder={"이번 주 성과:\n\n다음 주 계획:\n\n배운 점 또는 고민 (선택):"}
+            rows={6}
             maxLength={2000}
             className="w-full px-3 py-2 border border-border-strong text-sm focus:outline-none focus:border-border-strong resize-none bg-surface-card text-txt-primary placeholder-txt-disabled"
           />

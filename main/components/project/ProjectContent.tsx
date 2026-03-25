@@ -1,7 +1,9 @@
 import React from 'react'
 import { Clock } from 'lucide-react'
 import { CommentSection } from '@/components/CommentSection'
-import { ProjectContentProps, updateTypeColors, updateTypeLabels } from './types'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { timeAgo } from '@/src/lib/utils'
+import { ProjectContentProps, UPDATE_TYPE_CONFIG } from './types'
 
 export const ProjectContent: React.FC<ProjectContentProps> = ({
   opportunity,
@@ -68,7 +70,7 @@ export const ProjectContent: React.FC<ProjectContentProps> = ({
               </button>
               <button
                 onClick={() => setShowWriteUpdate(true)}
-                className="text-xs text-txt-tertiary hover:text-txt-primary transition-colors font-medium"
+                className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold bg-black text-white border border-black hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]"
               >
                 + 작성하기
               </button>
@@ -82,34 +84,33 @@ export const ProjectContent: React.FC<ProjectContentProps> = ({
             <div className="space-y-5">
               {updates.map((update) => (
                 <div key={update.id} className="relative">
-                  <div className={`absolute -left-6 top-1 w-4 h-4 border-[3px] border-surface-card ${updateTypeColors[update.update_type] || 'bg-txt-disabled'} shadow-sm`} />
+                  <div className={`absolute -left-6 top-1 w-4 h-4 border-[3px] border-surface-card ${UPDATE_TYPE_CONFIG[update.update_type]?.dotColor || 'bg-txt-disabled'} shadow-sm`} />
                   <div>
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-xs font-medium text-txt-tertiary">
-                        {updateTypeLabels[update.update_type] || update.update_type}
+                        {UPDATE_TYPE_CONFIG[update.update_type]?.label || update.update_type}
                       </span>
                       <span className="text-[0.625rem] font-mono text-txt-disabled">Week {update.week_number}</span>
+                      {update.created_at && (
+                        <span className="text-[0.625rem] font-mono text-txt-disabled">· {timeAgo(update.created_at)}</span>
+                      )}
                     </div>
                     <h4 className="font-semibold text-txt-primary text-sm mb-0.5">{update.title}</h4>
-                    <p className="text-xs text-txt-tertiary leading-relaxed break-keep">{update.content}</p>
+                    <p className="text-xs text-txt-tertiary leading-relaxed break-keep whitespace-pre-line">{update.content}</p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
         ) : (
-          <div className="text-center py-6">
-            <Clock size={20} className="text-txt-disabled mx-auto mb-2" />
-            <p className="text-xs text-txt-disabled">아직 업데이트가 없습니다</p>
-            {isOwner && (
-              <button
-                onClick={() => setShowWriteUpdate(true)}
-                className="mt-2 text-xs text-txt-tertiary hover:text-txt-primary transition-colors font-medium"
-              >
-                첫 번째 업데이트를 작성해보세요
-              </button>
-            )}
-          </div>
+          <EmptyState
+            icon={Clock}
+            title="아직 업데이트가 없습니다"
+            description={isOwner ? "첫 업데이트를 작성하면 팀원에게 자동으로 알림이 전송됩니다" : undefined}
+            actionLabel={isOwner ? "업데이트 작성하기" : undefined}
+            onAction={isOwner ? () => setShowWriteUpdate(true) : undefined}
+            size="compact"
+          />
         )}
       </section>
       )}

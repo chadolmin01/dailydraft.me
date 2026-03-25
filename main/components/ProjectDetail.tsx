@@ -17,14 +17,9 @@ import { WriteUpdateForm } from '@/components/WriteUpdateForm'
 import { CoffeeChatRequestForm } from '@/components/CoffeeChatRequestForm'
 import { Modal } from '@/components/ui/Modal'
 import type { Opportunity } from '@/src/types/opportunity'
-
-const updateTypeConfig: Record<string, { label: string; color: string }> = {
-  ideation: { label: '고민', color: 'bg-status-warning-bg text-status-warning-text border-status-warning-text/20' },
-  design: { label: '설계', color: 'bg-status-info-bg text-status-info-text border-status-info-text/20' },
-  development: { label: '구현', color: 'bg-status-success-bg text-status-success-text border-status-success-text/20' },
-  launch: { label: '런칭', color: 'bg-purple-100 text-purple-700 border-purple-200' },
-  general: { label: '일반', color: 'bg-surface-sunken text-txt-secondary border-border' },
-}
+import { UPDATE_TYPE_CONFIG } from '@/components/project/types'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { timeAgo } from '@/src/lib/utils'
 
 // CTA Overlay Component
 const SignupCTA: React.FC<{ onClose: () => void; onSignup: () => void }> = ({ onClose, onSignup }) => (
@@ -382,7 +377,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                   {isOwner && (
                     <button
                       onClick={() => setShowWriteUpdate(true)}
-                      className="text-xs text-txt-tertiary hover:text-txt-primary transition-colors font-medium"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold bg-black text-white border border-black hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]"
                     >
                       + 작성하기
                     </button>
@@ -397,7 +392,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
                   <div className="space-y-6">
                     {realUpdates.map((update, index) => {
-                      const config = updateTypeConfig[update.update_type] || updateTypeConfig.general
+                      const config = UPDATE_TYPE_CONFIG[update.update_type] || UPDATE_TYPE_CONFIG.general
                       return (
                         <div key={update.id} className="relative pl-10">
                           {/* Timeline Dot */}
@@ -407,15 +402,18 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
                           <div className="bg-surface-card border border-border-strong p-5 hover:shadow-sharp transition-all">
                             <div className="flex items-center gap-2 mb-2">
-                              <span className={`text-[0.625rem] font-bold px-2 py-0.5 border ${config.color}`}>
+                              <span className={`text-[0.625rem] font-bold px-2 py-0.5 border ${config.badgeColor}`}>
                                 {config.label}
                               </span>
                               <span className="text-[0.625rem] font-mono text-txt-disabled">
                                 Week {update.week_number}
                               </span>
+                              {update.created_at && (
+                                <span className="text-[0.625rem] font-mono text-txt-disabled">· {timeAgo(update.created_at)}</span>
+                              )}
                             </div>
                             <h3 className="font-bold text-txt-primary mb-1.5">{update.title}</h3>
-                            <p className="text-sm text-txt-secondary leading-relaxed break-keep">
+                            <p className="text-sm text-txt-secondary leading-relaxed break-keep whitespace-pre-line">
                               {update.content}
                             </p>
                           </div>
@@ -425,18 +423,13 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-8">
-                  <Clock size={24} className="text-txt-disabled mx-auto mb-2" />
-                  <p className="text-sm text-txt-disabled">아직 업데이트가 없습니다</p>
-                  {isOwner && (
-                    <button
-                      onClick={() => setShowWriteUpdate(true)}
-                      className="mt-2 text-xs text-txt-tertiary hover:text-txt-primary transition-colors font-medium"
-                    >
-                      첫 번째 업데이트를 작성해보세요
-                    </button>
-                  )}
-                </div>
+                <EmptyState
+                  icon={Clock}
+                  title="아직 업데이트가 없습니다"
+                  description={isOwner ? "첫 업데이트를 작성하면 팀원에게 자동으로 알림이 전송됩니다" : undefined}
+                  actionLabel={isOwner ? "업데이트 작성하기" : undefined}
+                  onAction={isOwner ? () => setShowWriteUpdate(true) : undefined}
+                />
               )}
             </section>
             )}

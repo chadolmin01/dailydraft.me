@@ -58,20 +58,16 @@ export interface ProjectOverlaysProps {
   handleSignup: () => void
 }
 
-export const updateTypeColors: Record<string, string> = {
-  ideation: 'bg-indicator-premium',
-  design: 'bg-status-info-text',
-  development: 'bg-indicator-online',
-  launch: 'bg-purple-500',
-  general: 'bg-txt-disabled',
-}
-
-export const updateTypeLabels: Record<string, string> = {
-  ideation: '고민',
-  design: '설계',
-  development: '구현',
-  launch: '런칭',
-  general: '일반',
+export const UPDATE_TYPE_CONFIG: Record<string, {
+  label: string
+  dotColor: string
+  badgeColor: string
+}> = {
+  ideation: { label: '고민', dotColor: 'bg-indicator-premium', badgeColor: 'bg-status-warning-bg text-status-warning-text border-status-warning-text/20' },
+  design:   { label: '설계', dotColor: 'bg-status-info-text', badgeColor: 'bg-status-info-bg text-status-info-text border-status-info-text/20' },
+  development: { label: '구현', dotColor: 'bg-indicator-online', badgeColor: 'bg-status-success-bg text-status-success-text border-status-success-text/20' },
+  launch:   { label: '런칭', dotColor: 'bg-purple-500', badgeColor: 'bg-purple-100 text-purple-700 border-purple-200' },
+  general:  { label: '일반', dotColor: 'bg-txt-disabled', badgeColor: 'bg-surface-sunken text-txt-secondary border-border' },
 }
 
 export const linkIcons: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {

@@ -37,7 +37,7 @@ export function useProjectUpdates(opportunityId: string | undefined) {
         .from('project_updates')
         .select('*')
         .eq('opportunity_id', opportunityId)
-        .order('week_number', { ascending: true })
+        .order('week_number', { ascending: false })
 
       if (error) throw error
       return data as ProjectUpdate[]
