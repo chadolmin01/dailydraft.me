@@ -213,7 +213,7 @@ function ChatTab() {
         body: JSON.stringify({ messages: updated }),
       })
       if (!res.ok) throw new Error()
-      const { data } = await res.json()
+      const data = await res.json()
       const reply = data?.reply || '답변을 생성하지 못했어요. 다시 질문해주세요.'
       const isOffTopic = !!data?.offTopic
 
@@ -296,7 +296,7 @@ function ChatTab() {
             className="flex-1 px-3 py-2 text-[12px] bg-surface-card border border-border focus:outline-none focus:border-brand transition-colors placeholder:text-txt-disabled disabled:opacity-50"
           />
           <button
-            onClick={send}
+            onClick={() => send()}
             disabled={isLoading || !input.trim()}
             className="w-8 h-8 flex items-center justify-center bg-brand text-white border border-brand hover:bg-brand-hover disabled:opacity-30 transition-colors shrink-0"
           >
