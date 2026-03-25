@@ -11,6 +11,7 @@ import {
   Search,
 } from 'lucide-react'
 import { PageContainer } from '@/components/ui/PageContainer'
+import { cleanNickname } from '@/src/lib/clean-nickname'
 import { useAuth } from '@/src/context/AuthContext'
 import {
   useConversations,
@@ -139,12 +140,12 @@ export default function MessagesPage() {
                         }`}
                       >
                         <div className="w-10 h-10 bg-surface-inverse flex items-center justify-center text-xs font-bold text-txt-inverse shrink-0">
-                          {partner?.nickname?.slice(0, 2) || '??'}
+                          {cleanNickname(partner?.nickname || '').slice(0, 2) || '??'}
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between">
                             <span className="text-sm font-medium text-txt-primary truncate">
-                              {partner?.nickname || 'Unknown'}
+                              {cleanNickname(partner?.nickname || '') || 'Unknown'}
                             </span>
                             <span className="text-[0.625rem] font-mono text-txt-disabled shrink-0 ml-2">
                               {timeAgo(conv.lastAt)}
@@ -186,11 +187,11 @@ export default function MessagesPage() {
                     <ArrowLeft size={18} className="text-txt-secondary" />
                   </button>
                   <div className="w-8 h-8 bg-surface-inverse flex items-center justify-center text-xs font-bold text-txt-inverse shrink-0">
-                    {selectedProfile?.nickname?.slice(0, 2) || '??'}
+                    {cleanNickname(selectedProfile?.nickname || '').slice(0, 2) || '??'}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold text-txt-primary truncate">
-                      {selectedProfile?.nickname || 'Unknown'}
+                      {cleanNickname(selectedProfile?.nickname || '') || 'Unknown'}
                     </p>
                     {selectedProfile?.desired_position && (
                       <p className="text-[0.625rem] font-mono text-txt-disabled uppercase">

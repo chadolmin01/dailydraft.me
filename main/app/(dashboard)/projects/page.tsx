@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Card } from '@/components/ui/Card'
 import { PageContainer } from '@/components/ui/PageContainer'
 import { DashboardLayout } from '@/components/ui/DashboardLayout'
+import { ProfileCompletionBanner } from '@/components/ui/ProfileCompletionBanner'
 import {
   Search,
   Filter,
@@ -19,13 +20,13 @@ import {
   Plus,
   MapPin,
   Coffee,
+  Loader2,
 } from 'lucide-react'
-import { SkeletonGrid } from '@/components/ui/Skeleton'
 import { useOpportunities, calculateDaysLeft, type OpportunityWithCreator } from '@/src/hooks/useOpportunities'
-import { retryImport } from '@/src/lib/retry-import'
+import { cleanNickname } from '@/src/lib/clean-nickname'
 
 const ProjectDetailModal = dynamic(
-  () => retryImport(() => import('@/components/ProjectDetailModal').then(m => ({ default: m.ProjectDetailModal }))),
+  () => import('@/components/ProjectDetailModal').then(m => ({ default: m.ProjectDetailModal })),
   { ssr: false }
 )
 
@@ -145,7 +146,7 @@ export default function ProjectsPage() {
                       <div className="flex items-center gap-2 mt-1">
                         <span className="text-[0.625rem] font-mono text-txt-tertiary">{opp.applications_count || 0}명 지원</span>
                         {opp.creator?.nickname && (
-                          <span className="text-[0.625rem] font-mono text-txt-tertiary">by {opp.creator.nickname}</span>
+                          <span className="text-[0.625rem] font-mono text-txt-tertiary">by {cleanNickname(opp.creator.nickname)}</span>
                         )}
                       </div>
                     </div>
@@ -183,6 +184,7 @@ export default function ProjectsPage() {
           </div>
         }
       >
+        <ProfileCompletionBanner />
         {/* 검색바 */}
         <div className="flex gap-2 mb-4">
           <div className="relative flex-1">
@@ -224,7 +226,9 @@ export default function ProjectsPage() {
 
         {/* 프로젝트 그리드 */}
         {isLoading ? (
-          <SkeletonGrid count={4} cols={2} />
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="h-6 w-6 animate-spin text-txt-tertiary" />
+          </div>
         ) : sorted.length === 0 ? (
           <Card className="text-center py-12 border-dashed" padding="p-6">
             <LayoutGrid className="mx-auto mb-4 text-txt-disabled" size={40} />
@@ -270,7 +274,7 @@ export default function ProjectsPage() {
                           {opp.creator?.nickname && (
                             <span className="flex items-center gap-1">
                               <Users size={10} />
-                              {opp.creator.nickname}
+                              {cleanNickname(opp.creator.nickname)}
                             </span>
                           )}
                           {opp.location && (

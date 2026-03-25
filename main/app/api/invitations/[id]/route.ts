@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
+import { createAdminClient } from '@/src/lib/supabase/admin'
 import { notifyInvitationResponse } from '@/src/lib/notifications/create-notification'
 import { ApiResponse } from '@/src/lib/api-utils'
 
@@ -54,14 +55,19 @@ export async function PATCH(
     }
 
     // If accepted, create connection
+    // Use admin client: RLS requires auth.uid()=opportunity_creator_id,
+    // but here the current user is the invited user (applicant), not the creator.
     if (status === 'accepted') {
-      const { error: _connError } = await supabase.from('accepted_connections')
+      const adminSupabase = createAdminClient()
+      const { error: connError } = await adminSupabase.from('accepted_connections')
         .insert({
-          application_id: id,
           opportunity_creator_id: invitation.inviter_user_id,
           applicant_id: user.id,
+          opportunity_id: invitation.opportunity_id,
         })
-      // connection creation is non-critical, ignore errors
+      if (connError) {
+        console.error('Connection creation error:', connError.message)
+      }
     }
 
     // Fetch profiles for notification

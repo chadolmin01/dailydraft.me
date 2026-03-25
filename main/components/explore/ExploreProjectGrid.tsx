@@ -2,7 +2,7 @@
 
 import React from 'react'
 import Image from 'next/image'
-import { Rocket, Users, FolderOpen } from 'lucide-react'
+import { Rocket, Users, FolderOpen, Eye, Heart, Loader2 } from 'lucide-react'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { useAuth } from '@/src/context/AuthContext'
@@ -45,17 +45,8 @@ export function ExploreProjectGrid({
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {[1,2,3,4,5,6].map((i) => (
-          <div key={i} className="bg-surface-card border border-border-strong overflow-hidden h-[21.25rem] flex flex-col animate-pulse">
-            <div className="h-36 shrink-0 bg-surface-sunken" />
-            <div className="px-4 pt-4 flex-1 space-y-3">
-              <div className="h-4 bg-surface-sunken w-3/4" />
-              <div className="h-3 bg-surface-sunken w-full" />
-              <div className="h-3 bg-surface-sunken w-1/2" />
-            </div>
-          </div>
-        ))}
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="h-6 w-6 animate-spin text-txt-tertiary" />
       </div>
     )
   }
@@ -151,9 +142,15 @@ export function ExploreProjectGrid({
                     </div>
                     <span className="text-[0.625rem] font-mono text-txt-tertiary">팀 모집중</span>
                   </div>
-                  <div className="flex items-center gap-3 text-[0.625rem] font-mono text-txt-tertiary">
+                  <div className="flex items-center gap-2 text-[0.6875rem] font-mono">
+                    {p.viewsCount > 0 && (
+                      <span className="flex items-center gap-1 text-txt-secondary"><Eye size={12} />{p.viewsCount}</span>
+                    )}
+                    {p.interestCount > 0 && (
+                      <span className="flex items-center gap-1 text-status-danger-text/70"><Heart size={12} fill="currentColor" />{p.interestCount}</span>
+                    )}
                     {p.daysLeft > 0 && (
-                      <span className={isUrgent ? 'text-status-danger-text font-bold' : ''}>D-{p.daysLeft}</span>
+                      <span className={`text-txt-tertiary ${isUrgent ? '!text-status-danger-text font-bold' : ''}`}>D-{p.daysLeft}</span>
                     )}
                   </div>
                 </div>

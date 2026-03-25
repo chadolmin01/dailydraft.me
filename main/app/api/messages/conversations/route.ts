@@ -32,7 +32,7 @@ export async function GET() {
         conversationMap.set(partnerId, {
           partnerId,
           lastMessage: msg.content.length > 60 ? msg.content.slice(0, 60) + '...' : msg.content,
-          lastAt: msg.created_at,
+          lastAt: msg.created_at ?? new Date().toISOString(),
           unreadCount: 0,
         })
       }

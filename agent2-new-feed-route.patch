@@ -1,0 +1,211 @@
+diff --git a/main/app/api/project-updates/feed/route.ts b/main/app/api/project-updates/feed/route.ts
+new file mode 100644
+index 0000000..dc15f52
+--- /dev/null
++++ b/main/app/api/project-updates/feed/route.ts
+@@ -0,0 +1,205 @@
++import { NextRequest, NextResponse } from 'next/server'
++import { createClient } from '@/src/lib/supabase/server'
++
++export async function GET(request: NextRequest) {
++  try {
++    const { searchParams } = request.nextUrl
++    const limit = Math.min(Number(searchParams.get('limit') || '20'), 50)
++    const offset = Number(searchParams.get('offset') || '0')
++
++    const supabase = await createClient()
++
++    // Fetch public updates with project and author info
++    const { data: updates, error, count } = await supabase
++      .from('project_updates')
++      .select(`
++        id,
++        week_number,
++        title,
++        content,
++        update_type,
++        done_text,
++        next_text,
++        blocker_text,
++        image_url,
++        is_public,
++        created_at,
++        opportunity_id,
++        author_id,
++        opportunities!project_updates_opportunity_id_fkey (
++          id,
++          title,
++          demo_images
++        ),
++        profiles!project_updates_author_id_fkey (
++          nickname,
++          avatar_url,
++          desired_position
++        )
++      `, { count: 'exact' })
++      .eq('is_public', true)
++      .order('created_at', { ascending: false })
++      .range(offset, offset + limit - 1)
++
++    if (error) {
++      // FK join may not exist yet — fallback to manual join
++      if (error.message?.includes('fkey') || error.code === 'PGRST200') {
++        return await fallbackQuery(supabase, limit, offset)
++      }
++      throw error
++    }
++
++    // Calculate streak for each update's project
++    const opportunityIds = [...new Set((updates || []).map((u: Record<string, unknown>) => u.opportunity_id as string))]
++    const streakMap: Record<string, number> = {}
++
++    if (opportunityIds.length > 0) {
++      const { data: allWeeks } = await supabase
++        .from('project_updates')
++        .select('opportunity_id, week_number')
++        .in('opportunity_id', opportunityIds)
++        .order('week_number', { ascending: false })
++
++      if (allWeeks) {
++        // Group by opportunity
++        const grouped: Record<string, number[]> = {}
++        for (const row of allWeeks) {
++          if (!grouped[row.opportunity_id]) grouped[row.opportunity_id] = []
++          grouped[row.opportunity_id].push(row.week_number)
++        }
++        for (const [oppId, weeks] of Object.entries(grouped)) {
++          const unique = [...new Set(weeks)].sort((a, b) => b - a)
++          let streak = 1
++          for (let i = 1; i < unique.length; i++) {
++            if (unique[i - 1] - unique[i] === 1) streak++
++            else break
++          }
++          streakMap[oppId] = streak
++        }
++      }
++    }
++
++    const formatted = (updates || []).map((u: Record<string, unknown>) => {
++      const opp = u.opportunities as Record<string, unknown> | null
++      const profile = u.profiles as Record<string, unknown> | null
++      return {
++        id: u.id,
++        week_number: u.week_number,
++        done_text: u.done_text,
++        next_text: u.next_text,
++        blocker_text: u.blocker_text,
++        image_url: u.image_url,
++        created_at: u.created_at,
++        title: u.title,
++        content: u.content,
++        update_type: u.update_type,
++        streak_count: streakMap[u.opportunity_id as string] || 0,
++        project: {
++          id: opp?.id || u.opportunity_id,
++          title: opp?.title || 'Unknown Project',
++          cover_image: (opp?.demo_images as string[] | null)?.[0] || null,
++        },
++        author: {
++          nickname: profile?.nickname || 'Anonymous',
++          avatar_url: profile?.avatar_url || null,
++          position: profile?.desired_position || null,
++        },
++      }
++    })
++
++    return NextResponse.json({
++      updates: formatted,
++      total: count || 0,
++    })
++  } catch (error) {
++    console.error('[project-updates/feed] Error:', error)
++    return NextResponse.json(
++      { error: 'Failed to fetch public updates' },
++      { status: 500 }
++    )
++  }
++}
++
++// Fallback if FK-based join doesn't work (project_updates_author_id_fkey not present)
++async function fallbackQuery(
++  supabase: Awaited<ReturnType<typeof createClient>>,
++  limit: number,
++  offset: number
++) {
++  const { data: updates, error, count } = await supabase
++    .from('project_updates')
++    .select('*', { count: 'exact' })
++    .eq('is_public', true)
++    .order('created_at', { ascending: false })
++    .range(offset, offset + limit - 1)
++
++  if (error) throw error
++  if (!updates || updates.length === 0) {
++    return NextResponse.json({ updates: [], total: 0 })
++  }
++
++  // Manual joins
++  const oppIds = [...new Set(updates.map((u) => u.opportunity_id))]
++  const authorIds = [...new Set(updates.map((u) => u.author_id))]
++
++  const [oppResult, profileResult, weekResult] = await Promise.all([
++    supabase.from('opportunities').select('id, title, demo_images').in('id', oppIds),
++    supabase.from('profiles').select('user_id, nickname, avatar_url, desired_position').in('user_id', authorIds),
++    supabase.from('project_updates').select('opportunity_id, week_number').in('opportunity_id', oppIds).order('week_number', { ascending: false }),
++  ])
++
++  const oppMap = new Map((oppResult.data || []).map((o) => [o.id, o]))
++  const profileMap = new Map((profileResult.data || []).map((p) => [p.user_id, p]))
++
++  // Streak calc
++  const streakMap: Record<string, number> = {}
++  if (weekResult.data) {
++    const grouped: Record<string, number[]> = {}
++    for (const row of weekResult.data) {
++      if (!grouped[row.opportunity_id]) grouped[row.opportunity_id] = []
++      grouped[row.opportunity_id].push(row.week_number)
++    }
++    for (const [oppId, weeks] of Object.entries(grouped)) {
++      const unique = [...new Set(weeks)].sort((a, b) => b - a)
++      let streak = 1
++      for (let i = 1; i < unique.length; i++) {
++        if (unique[i - 1] - unique[i] === 1) streak++
++        else break
++      }
++      streakMap[oppId] = streak
++    }
++  }
++
++  const formatted = updates.map((u) => {
++    const opp = oppMap.get(u.opportunity_id)
++    const profile = profileMap.get(u.author_id)
++    return {
++      id: u.id,
++      week_number: u.week_number,
++      done_text: u.done_text,
++      next_text: u.next_text,
++      blocker_text: u.blocker_text,
++      image_url: u.image_url,
++      created_at: u.created_at,
++      title: u.title,
++      content: u.content,
++      update_type: u.update_type,
++      streak_count: streakMap[u.opportunity_id] || 0,
++      project: {
++        id: opp?.id || u.opportunity_id,
++        title: opp?.title || 'Unknown Project',
++        cover_image: (opp?.demo_images as string[] | null)?.[0] || null,
++      },
++      author: {
++        nickname: profile?.nickname || 'Anonymous',
++        avatar_url: profile?.avatar_url || null,
++        position: profile?.desired_position || null,
++      },
++    }
++  })
++
++  return NextResponse.json({
++    updates: formatted,
++    total: count || 0,
++  })
++}

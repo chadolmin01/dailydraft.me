@@ -4,6 +4,7 @@ import { createClient } from '@/src/lib/supabase/server';
 import { ApiResponse } from '@/src/lib/api-utils';
 import { safeGenerate } from '@/src/lib/ai/safe-generate';
 import { PrdAnalysisSchema, PrdGenerationSchema } from '@/src/lib/ai/schemas';
+import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter';
 
 const ANALYSIS_PROMPT = `당신은 스타트업 아이디어 분석가입니다. 3명의 팀원이 제출한 텍스트에서 핵심 정보를 추출하세요.
 
@@ -81,6 +82,10 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return ApiResponse.unauthorized('로그인이 필요합니다');
     }
+
+    // AI rate limit check
+    const rateLimitResponse = await checkAIRateLimit(user.id, getClientIp(request));
+    if (rateLimitResponse) return rateLimitResponse;
 
     const { pm, designer, developer } = await request.json();
 

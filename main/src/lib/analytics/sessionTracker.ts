@@ -130,7 +130,7 @@ export async function trackSessionEnd(
     }
 
     // DB 삽입
-    const { error } = await supabase.from('session_analytics').insert({
+    const { error } = await (supabase as any).from('session_analytics').insert({
       session_hash: generateSessionHash(data.sessionId),
       validation_level: data.level,
       total_turns: data.turns.length,

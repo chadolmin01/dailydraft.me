@@ -73,15 +73,10 @@ export async function GET(
 
     const profile = profileData as unknown as Profile
 
-    // Get opportunity with creator info
+    // Get opportunity
     const { data: opportunityData } = await supabase
       .from('opportunities')
-      .select(`
-        *,
-        profiles!opportunities_creator_id_fkey (
-          nickname
-        )
-      `)
+      .select('*')
       .eq('id', id)
       .single()
 
@@ -89,9 +84,16 @@ export async function GET(
       return ApiResponse.notFound('Opportunity not found')
     }
 
-    const opportunity = opportunityData as unknown as Opportunity & {
-      profiles: { nickname: string } | null
-    }
+    const opportunity = opportunityData as unknown as Opportunity
+
+    // Fetch creator profile separately (FK join not available in DB)
+    const { data: creatorProfile } = await supabase
+      .from('profiles')
+      .select('nickname')
+      .eq('user_id', opportunity.creator_id)
+      .single()
+
+    const creatorNickname = creatorProfile?.nickname ?? null
 
     // Calculate match score
     const matchResult = calculateMatchScore(profile, opportunity)
@@ -210,21 +212,27 @@ export async function GET(
       else yourRank = '평균 이하'
     }
 
-    // Get similar opportunities
+    // Get similar opportunities (fetch creator_id separately, FK join not available)
     const { data: similarOpps } = await supabase
       .from('opportunities')
-      .select(`
-        id, title, needed_skills, needed_roles, interest_tags,
-        profiles!opportunities_creator_id_fkey (nickname)
-      `)
+      .select('id, title, needed_skills, needed_roles, interest_tags, creator_id')
       .eq('status', 'active')
       .neq('id', id)
       .neq('creator_id', user.id)
       .limit(20)
 
     const similarOppsList = (similarOpps || []) as unknown as Array<
-      Opportunity & { profiles: { nickname: string } | null }
+      Opportunity & { creator_id: string }
     >
+
+    // Batch fetch creator nicknames
+    const simCreatorIds = [...new Set(similarOppsList.map(o => o.creator_id))]
+    const { data: simCreatorProfiles } = simCreatorIds.length > 0
+      ? await supabase.from('profiles').select('user_id, nickname').in('user_id', simCreatorIds)
+      : { data: [] }
+    const simCreatorMap = new Map(
+      (simCreatorProfiles || []).map((p: { user_id: string; nickname: string }) => [p.user_id, p.nickname])
+    )
 
     // Rank by overlap with current opportunity
     const rankedSimilar = similarOppsList
@@ -246,7 +254,7 @@ export async function GET(
           id: opp.id,
           title: opp.title,
           matchScore: oppMatch.score,
-          creator: opp.profiles?.nickname || '익명',
+          creator: simCreatorMap.get(opp.creator_id) || '익명',
           similarityScore,
         }
       })

@@ -81,17 +81,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Step 2: Background — validate with server (handles expired tokens)
     supabase.auth.getUser().then(({ data: { user: serverUser }, error }) => {
       if (!mounted) return
-      if (error) {
-        // Only clear on definitive auth errors (401), not network failures
-        // Network errors: keep the locally-cached session from getSession()
-        if ('status' in error && (error as unknown as { status: number }).status === 401) {
-          setUser(null)
-          setProfile(null)
-          setIsLoading(false)
-        }
-        return
-      }
-      if (!serverUser) {
+      if (error || !serverUser) {
+        // Server says invalid — clear state
         setUser(null)
         setProfile(null)
         setIsLoading(false)

@@ -39,7 +39,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   return (
     <div
       className={cn(
-        'w-full px-4 sm:px-8 lg:px-16 xl:px-24 py-6',
+        'w-full max-w-full px-4 sm:px-8 lg:px-16 xl:px-24 py-6 overflow-x-hidden',
         className
       )}
     >

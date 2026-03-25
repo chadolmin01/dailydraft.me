@@ -2,6 +2,7 @@
 
 ## 프로젝트 구조
 - `main/`: Next.js 메인 앱 (포트 3000)
+- `archive/`: 레거시 프로젝트 (idea-snap, idea-validator, draft-documentation, prd)
 - `.claude/skills/`: 설치된 스킬들 (symlink)
 - `.agents/skills/`: 스킬 원본 파일
 

@@ -1,10 +1,11 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
-import { LoadingGuide } from '@/components/LoadingGuide'
+import { useAuth } from '@/src/context/AuthContext'
+import { useProfileCompletion } from '@/src/hooks/useProfileCompletion'
+import { GuideCTA } from '@/components/LoadingGuide'
 
 export default function GuidePage() {
-  const router = useRouter()
-
-  return <LoadingGuide onComplete={() => router.push('/explore')} />
+  const { profile } = useAuth()
+  const completion = useProfileCompletion(profile)
+  return <GuideCTA profile={profile} completion={completion} />
 }

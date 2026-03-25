@@ -133,14 +133,10 @@ export async function GET() {
     )
 
     // Override rule-based reasons with AI reasons where available
-    const results = top15.map((r) => {
-      const ai = aiReasons.get(r.user_id)
-      return {
-        ...r,
-        match_reason: ai?.short || r.match_reason,
-        match_reason_detail: ai?.detail || '',
-      }
-    })
+    const results = top15.map((r) => ({
+      ...r,
+      match_reason: aiReasons.get(r.user_id) || r.match_reason,
+    }))
 
     return ApiResponse.ok(results)
   } catch (error) {

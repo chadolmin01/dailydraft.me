@@ -1,6 +1,7 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
+import { parseNickname } from '@/src/lib/clean-nickname'
 import type { TablesInsert } from '@/src/types/database'
 
 export async function POST(request: Request) {
@@ -39,13 +40,19 @@ export async function POST(request: Request) {
       return ApiResponse.badRequest('닉네임, 지역, 현재 상황은 필수 입력 항목입니다')
     }
 
+    // Sanitize nickname: extract name if it contains [affiliation](department)
+    const parsed = parseNickname(nickname)
+    const cleanName = parsed.name
+    const inferredUniversity = university || parsed.department || null
+    const inferredMajor = major || null
+
     // 기본 프로필 데이터
     const profileData: Record<string, unknown> = {
       user_id: user.id,
       current_situation: currentSituation,
-      nickname,
-      university: university || null,
-      major: major || null,
+      nickname: cleanName,
+      university: inferredUniversity,
+      major: inferredMajor,
       location,
       skills: skills || [],
       interest_tags: interestTags || [],

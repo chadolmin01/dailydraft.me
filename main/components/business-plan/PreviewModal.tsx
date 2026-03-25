@@ -60,14 +60,17 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
       const result = await response.json()
 
       if (format === 'pdf') {
-        // Use browser's print functionality for PDF
-        const printWindow = window.open('', '_blank')
+        // Use Blob URL + sandboxed iframe to avoid XSS from document.write
+        const blob = new Blob([result.htmlContent], { type: 'text/html' })
+        const blobUrl = URL.createObjectURL(blob)
+        const printWindow = window.open(blobUrl, '_blank')
         if (printWindow) {
-          printWindow.document.write(result.htmlContent)
-          printWindow.document.close()
           printWindow.onload = () => {
             printWindow.print()
+            URL.revokeObjectURL(blobUrl)
           }
+        } else {
+          URL.revokeObjectURL(blobUrl)
         }
       } else if (format === 'docx') {
         // For DOCX, we would need to implement client-side generation

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect } from 'react'
 import { ArrowRight, Upload, MessageCircle, Coffee } from 'lucide-react'
 import Link from 'next/link'
 import { PageContainer } from '@/components/ui/PageContainer'
@@ -11,7 +11,6 @@ const SLIDE_COUNT = 3
 export function ExploreHeroCarousel() {
   const [active, setActive] = useState(0)
   const { isAuthenticated } = useAuth()
-  const touchRef = useRef<{ x: number; y: number } | null>(null)
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -20,32 +19,16 @@ export function ExploreHeroCarousel() {
     return () => clearInterval(timer)
   }, [])
 
-  const onTouchStart = useCallback((e: React.TouchEvent) => {
-    touchRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }
-  }, [])
-
-  const onTouchEnd = useCallback((e: React.TouchEvent) => {
-    if (!touchRef.current) return
-    const dx = e.changedTouches[0].clientX - touchRef.current.x
-    const dy = e.changedTouches[0].clientY - touchRef.current.y
-    touchRef.current = null
-    if (Math.abs(dx) < 50 || Math.abs(dy) > Math.abs(dx)) return // 수직 스크롤이면 무시
-    if (dx < 0) setActive((prev) => (prev + 1) % SLIDE_COUNT) // 왼쪽 스와이프 → 다음
-    else setActive((prev) => (prev - 1 + SLIDE_COUNT) % SLIDE_COUNT) // 오른쪽 스와이프 → 이전
-  }, [])
-
   const order = [active, (active + 1) % SLIDE_COUNT, (active + 2) % SLIDE_COUNT]
 
   return (
-    <PageContainer size="wide" className="pt-4 pb-1">
-      <div className="flex gap-3 min-h-[14rem] sm:h-[20rem]">
+    <PageContainer size="wide" className="pt-4 pb-4">
+      <div className="flex gap-3 h-[14rem] sm:h-[20rem]">
 
         {/* ===== 왼쪽: 메인 강조 슬라이드 ===== */}
         <div
           className="relative flex-[2] min-w-0 bg-surface-card border border-border-strong overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,0.08)] cursor-pointer transition-all duration-300"
           onClick={() => setActive((prev) => (prev + 1) % SLIDE_COUNT)}
-          onTouchStart={onTouchStart}
-          onTouchEnd={onTouchEnd}
         >
           <div className="absolute inset-0 bg-grid-engineering opacity-40" />
           <div className="absolute inset-0 bg-gradient-to-r from-surface-card via-surface-card/80 to-transparent" />
@@ -83,18 +66,16 @@ export function ExploreHeroCarousel() {
                 <h2 className="text-2xl md:text-3xl font-bold text-txt-primary mb-2 break-keep leading-tight tracking-tight">
                   모든 프로젝트는 <span className="text-txt-tertiary">Draft에서 시작됩니다.</span>
                 </h2>
-                <p className="text-sm text-txt-tertiary break-keep mb-4">
+                <p className="text-sm text-txt-tertiary break-keep mb-6">
                   프로젝트를 공유하고, 피드백 받고, 함께할 사람을 만나세요.
                 </p>
-                <div className="flex justify-end sm:justify-start">
-                  <Link
-                    href={isAuthenticated ? '/projects/new' : '/login'}
-                    className="group inline-flex items-center gap-2 px-5 py-2.5 bg-black text-white text-sm font-bold hover:bg-surface-inverse transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] border border-black"
-                  >
-                    {isAuthenticated ? '프로젝트 올리기' : '시작하기'}
-                    <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </div>
+                <Link
+                  href={isAuthenticated ? '/projects/new' : '/login'}
+                  className="group inline-flex items-center gap-2 px-5 py-2.5 bg-black text-white text-sm font-bold hover:bg-surface-inverse transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] border border-black"
+                >
+                  {isAuthenticated ? '프로젝트 올리기' : '시작하기'}
+                  <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                </Link>
               </div>
             </div>
 
@@ -102,23 +83,8 @@ export function ExploreHeroCarousel() {
             <div className={`absolute inset-0 px-4 sm:px-6 flex items-center transition-all duration-300 ${order[0] === 1 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
               <div className="w-full">
                 <span className="text-[0.625rem] font-mono font-bold text-txt-tertiary tracking-wider block">HOW IT WORKS</span>
-                <h2 className="text-2xl md:text-3xl font-bold text-txt-primary mt-1 mb-4 sm:mb-6">간단한 3단계</h2>
-                {/* Mobile: compact inline tags */}
-                <div className="flex gap-2 sm:hidden">
-                  {[
-                    { icon: Upload, title: '올리기' },
-                    { icon: MessageCircle, title: '피드백' },
-                    { icon: Coffee, title: '만나기' },
-                  ].map((step, i) => (
-                    <div key={i} className="flex items-center gap-1.5 px-2.5 py-1.5 border border-border bg-surface-card/80">
-                      <div className="w-4 h-4 bg-black text-white flex items-center justify-center text-[0.5rem] font-bold">{i + 1}</div>
-                      <step.icon size={12} className="text-txt-secondary" />
-                      <span className="text-xs font-bold text-txt-primary">{step.title}</span>
-                    </div>
-                  ))}
-                </div>
-                {/* Desktop: full cards */}
-                <div className="hidden sm:grid grid-cols-3 gap-3">
+                <h2 className="text-2xl md:text-3xl font-bold text-txt-primary mt-1 mb-6">간단한 3단계</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
                   {[
                     { num: 1, icon: Upload, title: '올리기', desc: '아이디어와 고민을 공유' },
                     { num: 2, icon: MessageCircle, title: '피드백', desc: '다양한 시각의 조언' },
@@ -142,18 +108,8 @@ export function ExploreHeroCarousel() {
               <div className="w-full">
                 <span className="text-[0.625rem] font-mono font-bold text-txt-tertiary tracking-wider block">FEEDBACK</span>
                 <h2 className="text-2xl md:text-3xl font-bold text-txt-primary mt-1 mb-2">솔직한 피드백</h2>
-                <p className="text-xs text-txt-tertiary mb-3 sm:mb-5 break-keep">프로젝트를 올리면 다양한 관점의 피드백을 받을 수 있어요</p>
-                {/* Mobile: single compact quote */}
-                <div className="sm:hidden border border-border bg-surface-card p-3">
-                  <div className="flex items-center gap-1.5 mb-1.5">
-                    <span className="text-[0.625rem] font-mono text-txt-tertiary">연대 경영</span>
-                    <span className="text-[0.625rem] text-txt-disabled">|</span>
-                    <span className="text-[0.625rem] font-bold text-txt-secondary">김OO</span>
-                  </div>
-                  <p className="text-xs text-txt-secondary leading-relaxed break-keep line-clamp-2">타겟을 대학생으로 좁히는 게 낫지 않을까요? 차별점이 필요할 것 같아요.</p>
-                </div>
-                {/* Desktop: full 3-col cards */}
-                <div className="hidden sm:grid grid-cols-3 gap-3">
+                <p className="text-xs text-txt-tertiary mb-5 break-keep">프로젝트를 올리면 다양한 관점의 피드백을 받을 수 있어요</p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
                   {[
                     { school: '연대 경영', name: '김OO', content: '타겟을 대학생으로 좁히는 게 낫지 않을까요? 차별점이 필요할 것 같아요.' },
                     { school: '고대 컴공', name: '박OO', content: '학교 인증 기능이 핵심이 될 것 같은데, 인증 방식이 궁금해요.' },

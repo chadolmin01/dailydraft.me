@@ -60,8 +60,8 @@ export async function GET(request: NextRequest, context: RouteContext) {
       return ApiResponse.notFound('지원 현황을 찾을 수 없습니다');
     }
 
-    // Get status history
-    const { data: history } = await supabase
+    // Get status history (table may not exist yet in all environments)
+    const { data: history } = await (supabase as any)
       .from('event_application_history')
       .select('*')
       .eq('application_id', id)

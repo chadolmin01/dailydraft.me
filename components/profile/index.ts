@@ -1,7 +1,0 @@
-export { ProfileHero } from './ProfileHero'
-export { ProfileSidebar } from './ProfileSidebar'
-export { ProfilePortfolio } from './ProfilePortfolio'
-export { ProfileProjects } from './ProfileProjects'
-export { ProfileCoffeeChats } from './ProfileCoffeeChats'
-export { ProfileInvitations } from './ProfileInvitations'
-export { ProfileLoadingSkeleton } from './ProfileLoadingSkeleton'

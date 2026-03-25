@@ -425,7 +425,7 @@ export async function generateAIMatchReasons(
     vision_summary: string | null
   },
   matchedUsers: MatchedUser[]
-): Promise<Map<string, { short: string; detail: string }>> {
+): Promise<Map<string, string>> {
   if (matchedUsers.length === 0) return new Map()
 
   const candidateSummaries = matchedUsers.map((u, i) => {
@@ -445,7 +445,7 @@ export async function generateAIMatchReasons(
   const myTags = (myProfile.interest_tags || []).join(', ') || '없음'
 
   const prompt = `당신은 스타트업 팀빌딩 플랫폼 "Draft"의 AI 매칭 어드바이저입니다.
-아래 사용자와 추천 후보들의 프로필/매칭 점수를 보고, 각 후보에 대해 추천 이유를 두 가지 버전으로 작성하세요.
+아래 사용자와 추천 후보들의 프로필/매칭 점수를 보고, 각 후보에 대해 **왜 이 사람과 함께하면 좋은지** 한 줄 추천 이유를 작성하세요.
 
 ## 나의 프로필
 - 닉네임: ${myProfile.nickname}
@@ -460,26 +460,17 @@ export async function generateAIMatchReasons(
 ${candidateSummaries}
 
 ## 규칙
-- 각 후보의 user_id를 키로, { "short": "...", "detail": "..." } 객체를 값으로 반환
-- **short**: 사이드바용 한 줄 요약, **20자 이내**, 핵심 키워드 중심
-- **detail**: 카드용 상세 설명, **2~3문장 (60~120자)**, 왜 이 사람과 협업하면 좋은지 구체적으로 설명
-  - 상대의 강점과 나의 약점이 어떻게 보완되는지
-  - 공통 관심사나 비전이 어떻게 시너지를 낼 수 있는지
-  - 구체적인 스킬명, 분야명을 언급
-- 자연스러운 한국어, 반말 금지, 존댓말 사용
+- 각 후보의 user_id를 키로, 추천 이유를 값으로 하는 JSON 객체를 반환
+- 추천 이유는 **25자 이내**, 자연스러운 한국어, 반말 금지
+- 매칭 점수가 높은 이유를 구체적으로 언급 (예: 보완적 스킬, 비전 유사성, 파운더타입 시너지 등)
+- 상대가 가진 스킬 중 내가 없는 것을 강조
 - 딱딱한 나열이 아니라 협업 관점에서 따뜻하게 작성
 - JSON만 출력하세요
 
 ## 출력 예시
 {
-  "uuid-1": {
-    "short": "AI × 마케팅 시너지",
-    "detail": "당신의 AI 개발 역량과 이 분의 퍼포먼스 마케팅 경험이 만나면 기술과 성장 양쪽을 잡을 수 있어요. EdTech라는 공통 관심사도 협업의 좋은 출발점이 됩니다."
-  },
-  "uuid-2": {
-    "short": "같은 EdTech 비전",
-    "detail": "교육 격차 해소라는 비전이 정확히 일치하고, 백엔드 중심인 당신에게 부족한 UI/UX 설계 능력을 이 분이 채워줄 수 있어요. 실행력 있는 조합이 될 것 같습니다."
-  }
+  "uuid-1": "AI 기술력과 마케팅 감각이 시너지를 만들어요",
+  "uuid-2": "같은 EdTech 비전을 가진 실행력 있는 파트너"
 }`
 
   try {
@@ -497,13 +488,10 @@ ${candidateSummaries}
       schema: MatchReasonsSchema,
     })
 
-    const reasonMap = new Map<string, { short: string; detail: string }>()
-    for (const [userId, reasonObj] of Object.entries(parsed)) {
-      if (reasonObj && typeof reasonObj === 'object' && reasonObj.short) {
-        reasonMap.set(userId, {
-          short: reasonObj.short.slice(0, 30),
-          detail: (reasonObj.detail || '').slice(0, 150),
-        })
+    const reasonMap = new Map<string, string>()
+    for (const [userId, reason] of Object.entries(parsed)) {
+      if (typeof reason === 'string' && reason.length > 0) {
+        reasonMap.set(userId, reason.slice(0, 40))
       }
     }
 

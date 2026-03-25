@@ -3,24 +3,43 @@
  *
  * Drop-in replacement: exports genAI, chatModel, embeddingModel
  * with the same API surface as the old @google/generative-ai SDK.
+ *
+ * Lazy-initialized to avoid build-time errors when env vars are missing.
  */
 import { GoogleGenAI } from '@google/genai'
 
-const project = process.env.GOOGLE_PROJECT_ID
-const location = process.env.GOOGLE_LOCATION || 'us-central1'
+let _ai: GoogleGenAI | null = null
 
-if (!project) {
-  throw new Error('GOOGLE_PROJECT_ID is not set in environment variables')
+function getAI(): GoogleGenAI {
+  if (_ai) return _ai
+
+  const project = process.env.GOOGLE_PROJECT_ID
+  const location = process.env.GOOGLE_LOCATION || 'us-central1'
+
+  if (!project) {
+    console.warn('[gemini-client] GOOGLE_PROJECT_ID is not set — AI calls will fail at runtime')
+    // Return a stub that throws on actual use, so build doesn't fail
+    _ai = new Proxy({} as GoogleGenAI, {
+      get(_, prop) {
+        return (...args: any[]) => {
+          throw new Error('GOOGLE_PROJECT_ID is not set in environment variables')
+        }
+      },
+    })
+    return _ai
+  }
+
+  _ai = new GoogleGenAI({
+    vertexai: true,
+    project,
+    location,
+    googleAuthOptions: process.env.GOOGLE_CREDENTIALS_JSON
+      ? { credentials: JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON) }
+      : undefined,
+  })
+
+  return _ai
 }
-
-const ai = new GoogleGenAI({
-  vertexai: true,
-  project,
-  location,
-  googleAuthOptions: process.env.GOOGLE_CREDENTIALS_JSON
-    ? { credentials: JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON) }
-    : undefined,
-})
 
 /* ── Compat wrapper ──
  * Old SDK: result.response.text()   (method)
@@ -40,6 +59,7 @@ function wrapResponse(response: any): { response: { text: () => string; candidat
 function createModel(modelName: string, modelConfig?: Record<string, any>) {
   return {
     generateContent: async (input: any) => {
+      const ai = getAI()
       let contents: any
       let config: Record<string, any> = modelConfig ? { ...modelConfig } : {}
 
@@ -61,6 +81,7 @@ function createModel(modelName: string, modelConfig?: Record<string, any>) {
     },
 
     startChat: (chatConfig?: Record<string, any>) => {
+      const ai = getAI()
       const mergedConfig = {
         ...modelConfig,
         ...(chatConfig?.systemInstruction && { systemInstruction: chatConfig.systemInstruction }),
@@ -95,6 +116,7 @@ export const chatModel = createModel('gemini-2.5-flash-lite')
 /** Embedding model (backward compat: result.embedding.values) */
 export const embeddingModel = {
   embedContent: async (text: string) => {
+    const ai = getAI()
     const result = await ai.models.embedContent({
       model: 'gemini-embedding-001',
       contents: text,

@@ -206,7 +206,14 @@
       "Read(//c/project/Draft/main/$HOME/.config/gcloud/**)",
       "Bash(python3:*)",
       "Bash(gh run:*)",
-      "WebFetch(domain:dailydraft.me)"
+      "WebFetch(domain:dailydraft.me)",
+      "Bash(/tmp/explore_summary.txt:*)",
+      "Read(//tmp/**)",
+      "Bash(do curl:*)",
+      "Bash(du:*)",
+      "Bash(npm run:*)",
+      "Bash(diff:*)",
+      "Bash(do cp:*)"
     ]
   }
 }

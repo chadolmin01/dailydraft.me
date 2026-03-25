@@ -10,7 +10,6 @@ import {
   ValidationLevel,
 } from '@/src/types/workflow';
 import { useValidatedIdea } from '@/src/hooks/useValidatedIdeas';
-import { retryImport } from '@/src/lib/retry-import';
 
 // ValidationLevel 런타임 검증
 const VALID_LEVELS: readonly string[] = ['SKETCH', 'MVP', 'DEFENSE'];
@@ -23,17 +22,17 @@ const toValidationLevel = (value: string | null | undefined): ValidationLevel | 
 
 // 동적 임포트 (코드 분할)
 const IdeaValidator = dynamic(
-  () => retryImport(() => import('@/components/idea-validator/IdeaValidator')),
+  () => import('@/components/idea-validator/IdeaValidator'),
   { loading: () => <LoadingSpinner message="아이디어 검증 모듈 로딩 중..." /> }
 );
 
 const ResultView = dynamic(
-  () => retryImport(() => import('@/components/idea-validator/ResultView')),
+  () => import('@/components/idea-validator/ResultView'),
   { loading: () => <LoadingSpinner message="결과 뷰 로딩 중..." /> }
 );
 
 const BusinessPlanEditor = dynamic(
-  () => retryImport(() => import('@/components/business-plan/BusinessPlanEditor')),
+  () => import('@/components/business-plan/BusinessPlanEditor'),
   { loading: () => <LoadingSpinner message="사업계획서 에디터 로딩 중..." /> }
 );
 
@@ -150,7 +149,7 @@ function WorkflowContent() {
         validatedIdeaId: existingIdea.id,
         projectIdea: existingIdea.project_idea,
         conversationHistory: existingIdea.conversation_history ?? undefined,
-        reflectedAdvice: existingIdea.reflected_advice,
+        reflectedAdvice: existingIdea.reflected_advice ?? undefined,
         score: existingIdea.score ?? undefined,
         validationLevel: toValidationLevel(existingIdea.validation_level),
       });

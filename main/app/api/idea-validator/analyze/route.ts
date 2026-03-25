@@ -4,6 +4,7 @@ import { createClient } from '@/src/lib/supabase/server';
 import { ApiResponse } from '@/src/lib/api-utils';
 import { safeGenerate } from '@/src/lib/ai/safe-generate';
 import { IdeaAnalyzeSchema } from '@/src/lib/ai/schemas';
+import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter';
 
 function getAnalyzeSystemInstruction(level: string) {
   const baseInstruction = `당신은 "Draft." 스타트업 아이디어 검증 엔진입니다. 사용자가 아이디어를 입력하면 세 가지 페르소나(개발자, 디자이너, VC)로 응답합니다. 한국어로 응답하십시오.`;
@@ -52,6 +53,10 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return ApiResponse.unauthorized();
     }
+
+    // AI rate limit check
+    const rateLimitResponse = await checkAIRateLimit(user.id, getClientIp(request));
+    if (rateLimitResponse) return rateLimitResponse;
 
     const { idea, conversationHistory = [], level = 'mvp' } = await request.json();
 

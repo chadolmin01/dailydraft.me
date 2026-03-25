@@ -27,7 +27,7 @@ export function useInterests({ opportunityId }: UseInterestsOptions): UseInteres
       const { data, error: rpcError } = await supabase.rpc('express_interest', {
         p_opportunity_id: opportunityId,
         p_user_email: email,
-        p_user_id: userData?.user?.id || null,
+        p_user_id: userData?.user?.id || undefined,
       })
 
       if (rpcError) throw rpcError

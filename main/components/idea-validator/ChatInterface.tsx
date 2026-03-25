@@ -57,6 +57,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const [aiError, setAiError] = useState<{ message: string; lastInput: string } | null>(null);
+  const messagesRef = useRef<ChatMessage[]>([]);
 
   const [metrics, setMetrics] = useState<AnalysisMetrics | null>(null);
 
@@ -97,6 +98,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
       }]
     }]);
   }, [level, preloadedContext]);
+
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -184,8 +189,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onComplete, level, extern
     if (!aiError?.lastInput) return;
     const lastInput = aiError.lastInput;
     setAiError(null);
-    processAIResponse(lastInput, messages);
-  }, [aiError, messages]);
+    processAIResponse(lastInput, messagesRef.current);
+  }, [aiError]);
 
   const handleSend = useCallback(async () => {
     if (!input.trim()) return;

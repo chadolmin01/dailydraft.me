@@ -33,6 +33,7 @@ import { Opportunity, CalendarEvent } from '@/types'
 import { useAuth } from '@/src/context/AuthContext'
 import { useRecommendedOpportunities, useMyOpportunities, calculateDaysLeft, OpportunityWithCreator } from '@/src/hooks/useOpportunities'
 import { useProfile } from '@/src/hooks/useProfile'
+import { cleanNickname } from '@/src/lib/clean-nickname'
 import { ErrorState } from './ui/ErrorState'
 
 // Mock Data
@@ -191,7 +192,7 @@ export const Dashboard: React.FC = () => {
       scope,
       type: uiType,
       title: opp.title,
-      organization: opp.creator?.nickname || 'Unknown',
+      organization: cleanNickname(opp.creator?.nickname || '') || 'Unknown',
       tags: opp.needed_roles || [],
       daysLeft,
       matchPercent: 85,
@@ -294,7 +295,7 @@ export const Dashboard: React.FC = () => {
          data={selectedOpportunity}
       />
 
-      <div className="max-w-[100rem] mx-auto p-8 lg:p-12 space-y-6 flex-1 flex flex-col w-full">
+      <div className="max-w-[100rem] mx-auto px-4 py-6 sm:p-8 lg:p-12 space-y-6 flex-1 flex flex-col w-full">
 
         {/* Header */}
         <div className="flex justify-between items-end border-b border-dashed border-border pb-6 shrink-0">
@@ -333,7 +334,7 @@ export const Dashboard: React.FC = () => {
                 <div className="p-5 flex flex-col h-full relative z-10">
                   <div className="flex justify-between items-start mb-5">
                     <div className="w-14 h-14 bg-surface-inverse text-txt-inverse flex items-center justify-center text-xl font-bold border border-surface-card shadow-sharp group-hover:scale-110 transition-transform duration-300">
-                      {profile?.nickname?.slice(0, 2).toUpperCase() || user?.email?.slice(0, 2).toUpperCase() || 'U'}
+                      {cleanNickname(profile?.nickname || '').slice(0, 2).toUpperCase() || user?.email?.slice(0, 2).toUpperCase() || 'U'}
                     </div>
                     <div className="flex flex-col items-end gap-1.5">
                         <div className="px-2 py-0.5 bg-status-success-bg text-status-success-text text-[0.5625rem] font-bold border border-status-success-text/20 font-mono uppercase tracking-tight flex items-center gap-1.5">
@@ -345,7 +346,7 @@ export const Dashboard: React.FC = () => {
 
                   <div className="mb-6">
                       <h2 className="text-xl font-bold text-txt-primary leading-none mb-1.5">
-                        {profile?.nickname || user?.email?.split('@')[0] || 'User'}
+                        {cleanNickname(profile?.nickname || '') || user?.email?.split('@')[0] || 'User'}
                       </h2>
                       <p className="text-xs text-txt-tertiary font-mono flex items-center gap-2">
                         {profile?.desired_position || 'Position not set'}

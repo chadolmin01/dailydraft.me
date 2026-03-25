@@ -169,12 +169,12 @@ export const TopNavbar: React.FC = () => {
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 right-0 h-14 z-fixed transition-all duration-300 ${
+      <nav className={`fixed top-0 left-0 w-full h-14 sm:h-20 z-fixed transition-all duration-300 overflow-hidden ${
         isScrolled
           ? 'bg-surface-card/80 backdrop-blur-xl shadow-soft'
           : 'bg-surface-card/60 backdrop-blur-md'
       }`}>
-        <div className="w-full px-4 sm:px-10 lg:px-16 xl:px-24 h-full flex items-center gap-3">
+        <div className="w-full px-2.5 sm:px-10 lg:px-16 xl:px-24 h-full flex items-center gap-2 sm:gap-3">
 
           {/* ===== 좌측: 로고 ===== */}
           <Link href="/explore" className="flex items-center gap-2.5 shrink-0 group mr-1">
@@ -380,14 +380,6 @@ export const TopNavbar: React.FC = () => {
                 >
                   로그인
                 </Link>
-                {/* 모바일: 로그인 아이콘 */}
-                <Link
-                  href="/login"
-                  className="md:hidden w-8 h-8 flex items-center justify-center bg-surface-inverse text-txt-inverse border border-black"
-                  aria-label="로그인"
-                >
-                  <User size={14} />
-                </Link>
               </>
             )}
 
@@ -411,7 +403,7 @@ export const TopNavbar: React.FC = () => {
             className="md:hidden fixed inset-0 bg-black/20 backdrop-blur-sm z-[299] animate-in fade-in duration-200"
             onClick={() => setIsMobileMenuOpen(false)}
           />
-          <div className="md:hidden fixed top-14 left-0 right-0 bg-surface-card/95 backdrop-blur-xl border-b border-border-strong shadow-brutal z-fixed animate-in slide-in-from-bottom-2 duration-200">
+          <div className="md:hidden fixed top-14 sm:top-20 left-0 right-0 bg-surface-card/95 backdrop-blur-xl border-b border-border-strong shadow-brutal z-fixed animate-in slide-in-from-bottom-2 duration-200">
             <div className="px-4 py-4 space-y-1.5">
               <form
                 className="relative mb-3"

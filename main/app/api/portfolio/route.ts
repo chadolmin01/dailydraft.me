@@ -6,21 +6,14 @@ import { ApiResponse } from '@/src/lib/api-utils'
 export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient()
-    const { searchParams } = new URL(request.url)
-    const requestedUserId = searchParams.get('user_id')
-
-    // user_id 파라미터 없으면 로그인 필요 (자기 포트폴리오 조회)
-    if (!requestedUserId) {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return ApiResponse.unauthorized()
-    }
-
     const { data: { user } } = await supabase.auth.getUser()
-    const userId = requestedUserId || user?.id
 
-    if (!userId) {
+    if (!user) {
       return ApiResponse.unauthorized()
     }
+
+    const { searchParams } = new URL(request.url)
+    const userId = searchParams.get('user_id') || user.id
 
     const { data, error } = await supabase.from('portfolio_items')
       .select('*')
