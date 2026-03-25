@@ -1,16 +1,19 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import { PageContainer } from '@/components/ui/PageContainer'
 import { useAuth } from '@/src/context/AuthContext'
 
 const SLIDE_COUNT = 3
+const SWIPE_THRESHOLD = 50
 
 export function ExploreHeroCarousel() {
   const [active, setActive] = useState(0)
   const { isAuthenticated } = useAuth()
+  const touchStartX = useRef(0)
+  const touchDeltaX = useRef(0)
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -19,16 +22,36 @@ export function ExploreHeroCarousel() {
     return () => clearInterval(timer)
   }, [])
 
+  const goNext = useCallback(() => setActive((prev) => (prev + 1) % SLIDE_COUNT), [])
+  const goPrev = useCallback(() => setActive((prev) => (prev - 1 + SLIDE_COUNT) % SLIDE_COUNT), [])
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX
+    touchDeltaX.current = 0
+  }, [])
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    touchDeltaX.current = e.touches[0].clientX - touchStartX.current
+  }, [])
+
+  const handleTouchEnd = useCallback(() => {
+    if (touchDeltaX.current < -SWIPE_THRESHOLD) goNext()
+    else if (touchDeltaX.current > SWIPE_THRESHOLD) goPrev()
+  }, [goNext, goPrev])
+
   const order = [active, (active + 1) % SLIDE_COUNT, (active + 2) % SLIDE_COUNT]
 
   return (
-    <PageContainer size="wide" className="pt-4 pb-4">
-      <div className="flex gap-3 h-[18rem] sm:h-[20rem]">
+    <PageContainer size="wide" className="pt-3 pb-3">
+      <div className="flex gap-3 h-[14rem] sm:h-[18rem]">
 
         {/* ===== 왼쪽: 메인 강조 슬라이드 ===== */}
         <div
           className="relative flex-[2] min-w-0 bg-surface-card border border-border-strong overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,0.08)] cursor-pointer transition-all duration-300"
-          onClick={() => setActive((prev) => (prev + 1) % SLIDE_COUNT)}
+          onClick={goNext}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         >
           <div className="absolute inset-0 bg-grid-engineering opacity-40" />
           <div className="absolute inset-0 bg-gradient-to-r from-surface-card via-surface-card/80 to-transparent" />
@@ -40,7 +63,7 @@ export function ExploreHeroCarousel() {
           <div className="absolute bottom-2 right-2 w-3 h-3 border-r border-b border-black/30 z-10" />
 
           {/* 인디케이터 */}
-          <div className="absolute bottom-3 left-6 z-20 flex items-center gap-2">
+          <div className="absolute bottom-3 left-4 sm:left-6 z-20 flex items-center gap-2">
             {Array.from({ length: SLIDE_COUNT }).map((_, i) => (
               <button
                 key={i}
@@ -59,14 +82,14 @@ export function ExploreHeroCarousel() {
             {/* Slide 0: CTA */}
             <div className={`absolute inset-0 px-4 sm:px-6 flex items-center transition-all duration-300 ${order[0] === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
               <div className="w-full">
-                <div className="inline-flex items-center gap-2 px-2 py-0.5 bg-surface-card border border-border-strong mb-4">
+                <div className="inline-flex items-center gap-2 px-2 py-0.5 bg-surface-card border border-border-strong mb-3">
                   <div className="w-1.5 h-1.5 bg-indicator-online animate-pulse" />
                   <span className="text-[0.625rem] font-mono font-bold text-black tracking-wider">OPEN BETA</span>
                 </div>
-                <h2 className="text-2xl md:text-3xl font-bold text-txt-primary mb-2 break-keep leading-tight tracking-tight">
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-txt-primary mb-1.5 break-keep leading-tight tracking-tight">
                   모든 프로젝트는 <span className="text-txt-tertiary">Draft에서 시작됩니다.</span>
                 </h2>
-                <p className="text-sm text-txt-tertiary break-keep mb-6">
+                <p className="text-sm text-txt-tertiary break-keep mb-4 sm:mb-6">
                   프로젝트를 공유하고, 피드백 받고, 함께할 사람을 만나세요.
                 </p>
                 <Link
@@ -82,10 +105,10 @@ export function ExploreHeroCarousel() {
             {/* Slide 1: How it works */}
             <div className={`absolute inset-0 px-4 sm:px-6 flex items-center transition-all duration-300 ${order[0] === 1 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
               <div className="w-full">
-                <div className="inline-flex items-center gap-2 px-2 py-0.5 bg-surface-card border border-border-strong mb-4">
+                <div className="inline-flex items-center gap-2 px-2 py-0.5 bg-surface-card border border-border-strong mb-3">
                   <span className="text-[0.625rem] font-mono font-bold text-black tracking-wider">HOW IT WORKS</span>
                 </div>
-                <h2 className="text-2xl md:text-3xl font-bold text-txt-primary mb-2 break-keep leading-tight tracking-tight">
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-txt-primary mb-1.5 break-keep leading-tight tracking-tight">
                   올리고, 피드백 받고, <span className="text-txt-tertiary">함께 만들어가세요.</span>
                 </h2>
                 <p className="text-sm text-txt-tertiary break-keep">
@@ -97,10 +120,10 @@ export function ExploreHeroCarousel() {
             {/* Slide 2: Feedback */}
             <div className={`absolute inset-0 px-4 sm:px-6 flex items-center transition-all duration-300 ${order[0] === 2 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
               <div className="w-full">
-                <div className="inline-flex items-center gap-2 px-2 py-0.5 bg-surface-card border border-border-strong mb-4">
+                <div className="inline-flex items-center gap-2 px-2 py-0.5 bg-surface-card border border-border-strong mb-3">
                   <span className="text-[0.625rem] font-mono font-bold text-black tracking-wider">FEEDBACK</span>
                 </div>
-                <h2 className="text-2xl md:text-3xl font-bold text-txt-primary mb-2 break-keep leading-tight tracking-tight">
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-txt-primary mb-1.5 break-keep leading-tight tracking-tight">
                   혼자 고민하지 마세요. <span className="text-txt-tertiary">솔직한 피드백이 기다립니다.</span>
                 </h2>
                 <p className="text-sm text-txt-tertiary break-keep">
