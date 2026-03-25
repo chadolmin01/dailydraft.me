@@ -1,8 +1,13 @@
 /**
- * Gemini AI Client — Vertex AI backend via @google/genai SDK
+ * Gemini AI Client — @google/genai SDK
  *
  * Drop-in replacement: exports genAI, chatModel, embeddingModel
  * with the same API surface as the old @google/generative-ai SDK.
+ *
+ * Auth priority:
+ *   1. GEMINI_API_KEY  → direct API key auth (simplest, works locally)
+ *   2. GOOGLE_PROJECT_ID + GOOGLE_CREDENTIALS_JSON → Vertex AI with service account
+ *   3. GOOGLE_PROJECT_ID only → Vertex AI with ADC (gcloud auth)
  *
  * Lazy-initialized to avoid build-time errors when env vars are missing.
  */
@@ -13,31 +18,38 @@ let _ai: GoogleGenAI | null = null
 function getAI(): GoogleGenAI {
   if (_ai) return _ai
 
+  const apiKey = process.env.GEMINI_API_KEY
   const project = process.env.GOOGLE_PROJECT_ID
   const location = process.env.GOOGLE_LOCATION || 'us-central1'
 
-  if (!project) {
-    console.warn('[gemini-client] GOOGLE_PROJECT_ID is not set — AI calls will fail at runtime')
-    // Return a stub that throws on actual use, so build doesn't fail
-    _ai = new Proxy({} as GoogleGenAI, {
-      get(_, prop) {
-        return (...args: any[]) => {
-          throw new Error('GOOGLE_PROJECT_ID is not set in environment variables')
-        }
-      },
+  // 1) API key auth (preferred for simplicity)
+  if (apiKey) {
+    _ai = new GoogleGenAI({ apiKey })
+    return _ai
+  }
+
+  // 2) Vertex AI auth
+  if (project) {
+    _ai = new GoogleGenAI({
+      vertexai: true,
+      project,
+      location,
+      googleAuthOptions: process.env.GOOGLE_CREDENTIALS_JSON
+        ? { credentials: JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON) }
+        : undefined,
     })
     return _ai
   }
 
-  _ai = new GoogleGenAI({
-    vertexai: true,
-    project,
-    location,
-    googleAuthOptions: process.env.GOOGLE_CREDENTIALS_JSON
-      ? { credentials: JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON) }
-      : undefined,
+  // 3) No credentials at all — stub that throws on use
+  console.warn('[gemini-client] No GEMINI_API_KEY or GOOGLE_PROJECT_ID — AI calls will fail at runtime')
+  _ai = new Proxy({} as GoogleGenAI, {
+    get(_, prop) {
+      return (...args: any[]) => {
+        throw new Error('No AI credentials configured. Set GEMINI_API_KEY or GOOGLE_PROJECT_ID.')
+      }
+    },
   })
-
   return _ai
 }
 
