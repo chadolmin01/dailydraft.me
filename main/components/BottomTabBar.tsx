@@ -33,7 +33,7 @@ export function BottomTabBar() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-fixed md:hidden bg-surface-card/[0.98] backdrop-blur-md border-t-2 border-border-strong"
+      className="fixed bottom-0 left-0 right-0 z-fixed md:hidden bg-surface-card/[0.99] backdrop-blur-md border-t-2 border-border-strong"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
     >
       <div className="flex items-end h-14 relative">
