@@ -82,7 +82,7 @@ export function ExploreHeroCarousel() {
             {/* Slide 0: CTA */}
             <div className={`absolute inset-0 px-4 sm:px-6 flex items-center transition-all duration-300 ${order[0] === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
               <div className="w-full">
-                <div className="inline-flex items-center gap-2 px-2 py-0.5 bg-surface-card border border-border-strong mb-3">
+                <div className="inline-flex items-center gap-2 px-2 h-6 bg-surface-card border border-border-strong mb-3">
                   <div className="w-1.5 h-1.5 bg-indicator-online animate-pulse" />
                   <span className="text-[0.625rem] font-mono font-bold text-black tracking-wider">OPEN BETA</span>
                 </div>
@@ -105,7 +105,7 @@ export function ExploreHeroCarousel() {
             {/* Slide 1: How it works */}
             <div className={`absolute inset-0 px-4 sm:px-6 flex items-center transition-all duration-300 ${order[0] === 1 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
               <div className="w-full">
-                <div className="inline-flex items-center gap-2 px-2 py-0.5 bg-surface-card border border-border-strong mb-3">
+                <div className="inline-flex items-center gap-2 px-2 h-6 bg-surface-card border border-border-strong mb-3">
                   <span className="text-[0.625rem] font-mono font-bold text-black tracking-wider">HOW IT WORKS</span>
                 </div>
                 <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-txt-primary mb-1.5 break-keep leading-tight tracking-tight">
@@ -120,7 +120,7 @@ export function ExploreHeroCarousel() {
             {/* Slide 2: Feedback */}
             <div className={`absolute inset-0 px-4 sm:px-6 flex items-center transition-all duration-300 ${order[0] === 2 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
               <div className="w-full">
-                <div className="inline-flex items-center gap-2 px-2 py-0.5 bg-surface-card border border-border-strong mb-3">
+                <div className="inline-flex items-center gap-2 px-2 h-6 bg-surface-card border border-border-strong mb-3">
                   <span className="text-[0.625rem] font-mono font-bold text-black tracking-wider">FEEDBACK</span>
                 </div>
                 <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-txt-primary mb-1.5 break-keep leading-tight tracking-tight">
