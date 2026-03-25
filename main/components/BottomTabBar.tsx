@@ -2,13 +2,13 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Compass, Briefcase, User, MessageSquare } from 'lucide-react'
+import { Compass, FolderKanban, User, MessageSquare } from 'lucide-react'
 import { useUnreadCount } from '@/src/hooks/useMessages'
 import { useAuth } from '@/src/context/AuthContext'
 
 const TABS = [
-  { key: 'explore', label: 'FEED', path: '/explore', icon: Compass },
-  { key: 'projects', label: 'PROJECTS', path: '/projects', icon: Briefcase },
+  { key: 'explore', label: 'EXPLORE', path: '/explore', icon: Compass },
+  { key: 'projects', label: 'MY', path: '/projects', icon: FolderKanban },
   { key: 'profile', label: 'PROFILE', path: '/profile', icon: User },
   { key: 'messages', label: 'MESSAGES', path: '/messages', icon: MessageSquare },
 ] as const
