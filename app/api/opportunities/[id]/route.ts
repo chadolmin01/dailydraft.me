@@ -51,12 +51,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       userApplication = application
     }
 
-    // Increment views count (only if not owner)
-    if (!isOwner) {
-      await supabase.from('opportunities')
-        .update({ views_count: (data.views_count || 0) + 1 })
-        .eq('id', id)
-    }
+    // Views count increment is handled by POST /api/opportunities/[id]/view
+    // (called from client-side). No duplicate increment here.
 
     return ApiResponse.ok({
       ...data,

@@ -12,7 +12,8 @@ export function PortfolioView({
   skills: Array<{ name: string; level: string }> | null
   onBack: () => void
 }) {
-  const hasPortfolio = profile.portfolio_url
+  // Only allow https:// URLs for iframe embedding
+  const hasPortfolio = profile.portfolio_url && profile.portfolio_url.startsWith('https://')
   const hasGithub = profile.github_url
   const hasLinkedin = profile.linkedin_url
 
@@ -65,7 +66,7 @@ export function PortfolioView({
                   src={profile.portfolio_url!}
                   title={`${profile.nickname}의 포트폴리오`}
                   className="w-full h-full border-0"
-                  sandbox="allow-scripts allow-same-origin allow-popups"
+                  sandbox="allow-scripts allow-popups"
                   loading="lazy"
                 />
               </div>

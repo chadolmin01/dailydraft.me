@@ -7,13 +7,14 @@ import { ApiResponse } from '@/src/lib/api-utils'
 const recentViews = new Map<string, number>()
 const VIEW_COOLDOWN_MS = 15 * 60 * 1000
 
-// 주기적 정리
-setInterval(() => {
+// Lazy cleanup: runs when map exceeds threshold, no setInterval needed
+function lazyCleanup() {
+  if (recentViews.size <= 1000) return
   const now = Date.now()
   for (const [key, timestamp] of recentViews) {
     if (now - timestamp > VIEW_COOLDOWN_MS) recentViews.delete(key)
   }
-}, 5 * 60 * 1000)
+}
 
 function getClientIP(request: NextRequest): string {
   return (
@@ -37,6 +38,7 @@ export async function POST(
     if (rateLimitResponse) return rateLimitResponse
 
     const viewKey = `${ip}:opp:${id}`
+    lazyCleanup()
 
     // 같은 IP에서 15분 내 중복 조회 무시
     const lastView = recentViews.get(viewKey)

@@ -23,6 +23,20 @@ export async function GET() {
 
     const notifications: NotificationItem[] = []
 
+    // Fetch user's read notification IDs from event_notifications
+    const { data: userNotifications } = await supabase
+      .from('event_notifications')
+      .select('id, notification_type, link, read_at, metadata')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(50)
+
+    const readNotificationLinks = new Set(
+      (userNotifications || [])
+        .filter(n => n.read_at != null)
+        .map(n => n.link)
+    )
+
     // 1. 새 지원서 도착 (내 기회에)
     const { data: myOpportunities } = await supabase
       .from('opportunities')
@@ -62,7 +76,7 @@ export async function GET() {
             message: `${nickname}님이 "${opp?.title || '기회'}"에 지원했습니다`,
             link: `/applications?tab=received`,
             createdAt: app.created_at || new Date().toISOString(),
-            read: false,
+            read: readNotificationLinks.has(`/applications?tab=received`),
           })
         }
       }
@@ -100,7 +114,7 @@ export async function GET() {
             : `"${oppTitle}" 지원이 검토 완료되었습니다`,
           link: `/applications?tab=sent`,
           createdAt: app.updated_at || new Date().toISOString(),
-          read: false,
+          read: readNotificationLinks.has(`/applications?tab=sent`),
         })
       }
     }
@@ -141,7 +155,7 @@ export async function GET() {
           message: `${otherNickname}님과 연결되었습니다`,
           link: '/connections',
           createdAt: conn.connected_at || new Date().toISOString(),
-          read: false,
+          read: readNotificationLinks.has('/connections'),
         })
       }
     }
@@ -173,7 +187,7 @@ export async function GET() {
           message: `"${event.title}" ${daysLeft <= 0 ? '오늘' : `${daysLeft}일 후`} 마감`,
           link: event.registration_url || `/events/${event.id}`,
           createdAt: new Date().toISOString(),
-          read: false,
+          read: readNotificationLinks.has(event.registration_url || `/events/${event.id}`),
         })
       }
     }

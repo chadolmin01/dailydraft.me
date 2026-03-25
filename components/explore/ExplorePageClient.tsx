@@ -15,14 +15,12 @@ const ModalLoadingFallback = () => (
   </div>
 )
 
-import { retryImport } from '@/src/lib/retry-import'
-
 const ProjectDetailModal = dynamic(
-  () => retryImport(() => import('@/components/ProjectDetailModal').then(m => ({ default: m.ProjectDetailModal }))),
+  () => import('@/components/ProjectDetailModal').then(m => ({ default: m.ProjectDetailModal })),
   { ssr: false, loading: ModalLoadingFallback }
 )
 const ProfileDetailModal = dynamic(
-  () => retryImport(() => import('@/components/ProfileDetailModal').then(m => ({ default: m.ProfileDetailModal }))),
+  () => import('@/components/ProfileDetailModal').then(m => ({ default: m.ProfileDetailModal })),
   { ssr: false, loading: ModalLoadingFallback }
 )
 import { useOpportunities, type OpportunityWithCreator, calculateDaysLeft } from '@/src/hooks/useOpportunities'
@@ -92,19 +90,27 @@ function ExplorePageContent() {
   const initialScope = urlParams.get('scope') as SearchScope || 'all'
 
   // ── Modal state (local state + URL sync via window.history) ──
-  // Using window.history directly avoids triggering Next.js server re-renders
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
-    () => typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('project') : null
-  )
-  const [selectedProfileId, setSelectedProfileId] = useState<string | null>(
-    () => typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('profile') : null
-  )
-  const [profileByUserId, setProfileByUserId] = useState(
-    () => typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('profileBy') === 'userId' : false
-  )
+  // Initialize as null to avoid SSR/hydration mismatch, then sync from URL in useEffect
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
+  const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null)
+  const [profileByUserId, setProfileByUserId] = useState(false)
+  const hydratedRef = React.useRef(false)
 
-  // Sync modal state → URL (without Next.js navigation)
+  // Hydrate modal state from URL on mount
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const project = params.get('project')
+    const profile = params.get('profile')
+    const byUserId = params.get('profileBy') === 'userId'
+    if (project) setSelectedProjectId(project)
+    if (profile) setSelectedProfileId(profile)
+    if (byUserId) setProfileByUserId(byUserId)
+    hydratedRef.current = true
+  }, [])
+
+  // Sync modal state → URL (without Next.js navigation) — only after hydration
+  useEffect(() => {
+    if (!hydratedRef.current) return
     const params = new URLSearchParams(window.location.search)
     if (selectedProjectId) params.set('project', selectedProjectId)
     else params.delete('project')
@@ -314,7 +320,7 @@ function ExplorePageContent() {
         avatarUrl: profile.avatar_url,
         matchScore: rec?.match_score ?? null,
         matchReason: rec?.match_reason ?? null,
-        matchReasonDetail: rec?.match_reason_detail ?? null,
+        matchReasonDetail: (rec as unknown as Record<string, unknown>)?.match_reason_detail ?? null,
         badges: profile.badges ?? null,
         interestCount: profile.interest_count || 0,
         createdAt: profile.created_at,

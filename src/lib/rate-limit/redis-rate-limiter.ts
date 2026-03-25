@@ -6,25 +6,49 @@
 import { Ratelimit } from '@upstash/ratelimit'
 import { Redis } from '@upstash/redis'
 import { NextResponse } from 'next/server'
+import { checkRateLimit as checkInMemoryRateLimit, createRateLimitError, getRateLimitHeaders } from './api-rate-limiter'
 
-// Upstash Redis 클라이언트 (환경변수에서 자동 로드)
-const redis = Redis.fromEnv()
+// Lazy-initialized Redis client — avoids crash when env vars are missing
+let _redis: Redis | null = null
+let _ratelimit: Ratelimit | null = null
+let _viewRatelimit: Ratelimit | null = null
 
-// 기본 정책: slidingWindow(30, "60 s") — 온보딩 AI 대화 플로우 고려
-const ratelimit = new Ratelimit({
-  redis,
-  limiter: Ratelimit.slidingWindow(30, '60 s'),
-  analytics: true,
-  prefix: 'ratelimit:api',
-})
+function getRedis(): Redis | null {
+  if (_redis) return _redis
+  try {
+    if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) return null
+    _redis = Redis.fromEnv()
+    return _redis
+  } catch {
+    return null
+  }
+}
 
-// View count 전용 (더 관대한 정책)
-const viewRatelimit = new Ratelimit({
-  redis,
-  limiter: Ratelimit.slidingWindow(30, '60 s'),
-  analytics: true,
-  prefix: 'ratelimit:view',
-})
+function getRatelimit(): Ratelimit | null {
+  if (_ratelimit) return _ratelimit
+  const redis = getRedis()
+  if (!redis) return null
+  _ratelimit = new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(30, '60 s'),
+    analytics: true,
+    prefix: 'ratelimit:api',
+  })
+  return _ratelimit
+}
+
+function getViewRatelimit(): Ratelimit | null {
+  if (_viewRatelimit) return _viewRatelimit
+  const redis = getRedis()
+  if (!redis) return null
+  _viewRatelimit = new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(30, '60 s'),
+    analytics: true,
+    prefix: 'ratelimit:view',
+  })
+  return _viewRatelimit
+}
 
 /**
  * AI 엔드포인트용 rate limit 체크
@@ -35,9 +59,22 @@ export async function checkAIRateLimit(
   ip: string = 'unknown'
 ): Promise<NextResponse | null> {
   const identifier = userId ? `user:${userId}` : `ip:${ip}`
+  const rl = getRatelimit()
+
+  // No Redis available → fall back to in-memory rate limiter
+  if (!rl) {
+    const result = checkInMemoryRateLimit(identifier, userId ? 'free' : 'anonymous')
+    if (!result.allowed) {
+      return NextResponse.json(createRateLimitError(result), {
+        status: 429,
+        headers: getRateLimitHeaders(result),
+      })
+    }
+    return null
+  }
 
   try {
-    const { success, limit, remaining, reset } = await ratelimit.limit(identifier)
+    const { success, limit, remaining, reset } = await rl.limit(identifier)
 
     if (!success) {
       return NextResponse.json(
@@ -58,8 +95,15 @@ export async function checkAIRateLimit(
       )
     }
   } catch (error) {
-    // Redis 연결 실패 시 요청을 차단하지 않음 (graceful degradation)
-    console.warn('Redis rate limit check failed, allowing request:', error)
+    // Redis failure → fall back to in-memory rate limiter instead of open
+    console.warn('Redis rate limit check failed, using in-memory fallback:', error)
+    const result = checkInMemoryRateLimit(identifier, userId ? 'free' : 'anonymous')
+    if (!result.allowed) {
+      return NextResponse.json(createRateLimitError(result), {
+        status: 429,
+        headers: getRateLimitHeaders(result),
+      })
+    }
   }
 
   return null
@@ -72,9 +116,22 @@ export async function checkViewRateLimit(
   ip: string = 'unknown'
 ): Promise<NextResponse | null> {
   const identifier = `ip:${ip}`
+  const rl = getViewRatelimit()
+
+  // No Redis → in-memory fallback
+  if (!rl) {
+    const result = checkInMemoryRateLimit(identifier, 'anonymous')
+    if (!result.allowed) {
+      return NextResponse.json(createRateLimitError(result), {
+        status: 429,
+        headers: getRateLimitHeaders(result),
+      })
+    }
+    return null
+  }
 
   try {
-    const { success, limit, remaining, reset } = await viewRatelimit.limit(identifier)
+    const { success, limit, remaining, reset } = await rl.limit(identifier)
 
     if (!success) {
       return NextResponse.json(
@@ -94,7 +151,14 @@ export async function checkViewRateLimit(
       )
     }
   } catch (error) {
-    console.warn('Redis view rate limit check failed, allowing request:', error)
+    console.warn('Redis view rate limit check failed, using in-memory fallback:', error)
+    const result = checkInMemoryRateLimit(identifier, 'anonymous')
+    if (!result.allowed) {
+      return NextResponse.json(createRateLimitError(result), {
+        status: 429,
+        headers: getRateLimitHeaders(result),
+      })
+    }
   }
 
   return null
