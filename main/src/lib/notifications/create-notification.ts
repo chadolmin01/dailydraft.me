@@ -1,4 +1,4 @@
-import { createClient } from '@/src/lib/supabase/server'
+import { createAdminClient } from '@/src/lib/supabase/admin'
 
 export type NotificationType =
   | 'deadline'
@@ -13,6 +13,7 @@ export type NotificationType =
   | 'comment'
   | 'profile_interest'
   | 'profile_milestone'
+  | 'project_update'
 
 interface CreateNotificationParams {
   userId: string
@@ -32,7 +33,7 @@ export async function createNotification({
   metadata,
 }: CreateNotificationParams): Promise<boolean> {
   try {
-    const supabase = await createClient()
+    const supabase = createAdminClient()
 
     // 사용자의 알림 설정 확인
     const { data: settings } = await supabase
@@ -110,8 +111,8 @@ export async function notifyApplicationAccepted(
     userId: applicantId,
     type: 'application_accepted',
     title: '지원이 수락되었습니다!',
-    message: `"${opportunityTitle}"에 대한 지원이 수락되었습니다. 연결 페이지에서 연락처를 확인하세요.`,
-    link: '/connections',
+    message: `"${opportunityTitle}"에 대한 지원이 수락되었습니다! 프로젝트를 확인하세요.`,
+    link: `/opportunities/${opportunityId}`,
     metadata: {
       opportunity_id: opportunityId,
       opportunity_title: opportunityTitle,
@@ -147,7 +148,7 @@ export async function notifyNewConnection(
     type: 'connection',
     title: '새로운 연결이 생겼습니다!',
     message: `${partnerName}님과 "${opportunityTitle}"를 통해 연결되었습니다.`,
-    link: '/connections',
+    link: '/profile?tab=coffee-chats',
   })
 }
 
@@ -271,6 +272,26 @@ export async function notifyProfileInterest(
     title: '누군가 관심을 표현했습니다',
     message: `${likerName}님이 회원님의 프로필에 관심을 표현했습니다.`,
     link: '/profile',
+  })
+}
+
+export async function notifyProjectUpdate(
+  memberId: string,
+  authorName: string,
+  projectTitle: string,
+  updateTitle: string,
+  opportunityId: string
+) {
+  return createNotification({
+    userId: memberId,
+    type: 'project_update',
+    title: '프로젝트 주간 업데이트',
+    message: `${authorName}님이 "${projectTitle}"에 새 업데이트를 올렸습니다: ${updateTitle}`,
+    link: `/p/${opportunityId}`,
+    metadata: {
+      opportunity_id: opportunityId,
+      update_title: updateTitle,
+    },
   })
 }
 

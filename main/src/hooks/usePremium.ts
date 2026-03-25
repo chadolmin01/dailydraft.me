@@ -52,7 +52,7 @@ export function usePremium(): UsePremiumReturn {
         .select('status, plan_type')
         .eq('user_id', user.id)
         .eq('status', 'active')
-        .single()
+        .maybeSingle()
 
       if (!mountedRef.current) return
 

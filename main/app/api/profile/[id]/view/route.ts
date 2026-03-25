@@ -2,11 +2,19 @@ import { createClient } from '@/src/lib/supabase/server'
 import { notifyProfileViewMilestone } from '@/src/lib/notifications/create-notification'
 import { NextRequest } from 'next/server'
 import { checkViewRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
-import { ApiResponse } from '@/src/lib/api-utils'
+import { ApiResponse, isValidUUID } from '@/src/lib/api-utils'
 import { Redis } from '@upstash/redis'
 
-const redis = Redis.fromEnv()
 const VIEW_COOLDOWN_SEC = 15 * 60 // 15분
+
+function getRedisClient(): Redis | null {
+  try {
+    if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) return null
+    return Redis.fromEnv()
+  } catch {
+    return null
+  }
+}
 
 // 프로필 조회수 증가
 export async function POST(
@@ -15,6 +23,7 @@ export async function POST(
 ) {
   try {
     const { id } = await params
+    if (!isValidUUID(id)) return ApiResponse.badRequest('Invalid ID')
     const ip = getClientIp(request)
 
     const rateLimitResponse = await checkViewRateLimit(ip)
@@ -22,13 +31,16 @@ export async function POST(
 
     // Redis 기반 중복 조회 방지 (15분 TTL)
     const dedupeKey = `view:profile:${ip}:${id}`
-    try {
-      const wasSet = await redis.set(dedupeKey, '1', { ex: VIEW_COOLDOWN_SEC, nx: true })
-      if (!wasSet) {
-        return ApiResponse.ok({ success: true, deduplicated: true })
+    const redis = getRedisClient()
+    if (redis) {
+      try {
+        const wasSet = await redis.set(dedupeKey, '1', { ex: VIEW_COOLDOWN_SEC, nx: true })
+        if (!wasSet) {
+          return ApiResponse.ok({ success: true, deduplicated: true })
+        }
+      } catch {
+        // Redis 실패 시 중복 체크 스킵 (graceful degradation)
       }
-    } catch {
-      // Redis 실패 시 중복 체크 스킵 (graceful degradation)
     }
 
     const supabase = await createClient()
@@ -91,6 +103,7 @@ export async function GET(
 ) {
   try {
     const { id } = await params
+    if (!isValidUUID(id)) return ApiResponse.badRequest('Invalid ID')
     const supabase = await createClient()
 
     const { data: profile, error } = await supabase

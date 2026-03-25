@@ -46,6 +46,7 @@ const typeConfig: Record<string, { icon: React.ElementType; color: string; readC
   coffee_chat: { icon: Coffee, color: 'text-indicator-premium-border bg-status-warning-bg', readColor: 'text-txt-disabled bg-surface-sunken' },
   project_invitation: { icon: UserPlus, color: 'text-brand bg-brand-bg', readColor: 'text-txt-disabled bg-surface-sunken' },
   comment: { icon: MessageSquare, color: 'text-txt-secondary bg-surface-sunken', readColor: 'text-txt-disabled bg-surface-sunken' },
+  project_update: { icon: FileText, color: 'text-brand bg-brand-bg', readColor: 'text-txt-disabled bg-surface-sunken' },
   recommendation: { icon: Check, color: 'text-cyan-600 bg-cyan-100', readColor: 'text-txt-disabled bg-surface-sunken' },
   new_match: { icon: Check, color: 'text-indicator-online bg-status-success-bg', readColor: 'text-txt-disabled bg-surface-sunken' },
 }

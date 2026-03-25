@@ -61,7 +61,7 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = ({
               placeholder="아이디어나 답변을 입력하세요..."
               value={input}
               onChange={(e) => onInputChange(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && onSend()}
+              onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); onSend(); } }}
               disabled={isTyping}
               rows={1}
             />

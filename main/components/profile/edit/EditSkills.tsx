@@ -47,7 +47,7 @@ export const EditSkills: React.FC<EditSkillsProps> = ({
                     key={level}
                     type="button"
                     onClick={() => updateSkillLevel(skill.name, level)}
-                    className={`px-1.5 py-0.5 text-[0.625rem]transition-colors ${
+                    className={`px-1.5 py-0.5 text-[0.625rem] transition-colors ${
                       skill.level === level
                         ? 'bg-brand text-white'
                         : 'text-txt-tertiary hover:text-txt-secondary'

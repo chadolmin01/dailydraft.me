@@ -4,8 +4,10 @@ const nextConfig: NextConfig = {
   // Enable React strict mode
   reactStrictMode: true,
 
-  // Disable dev indicator (bottom-right island icon)
-  devIndicators: false,
+  // Disable dev indicator
+  devIndicators: {
+    position: 'bottom-right',
+  },
 
   // Image optimization with allowed remote patterns
   images: {

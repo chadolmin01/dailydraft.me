@@ -104,6 +104,21 @@ export function withErrorHandler<T>(
   }
 }
 
+// UUID v4 validation
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+export function isValidUUID(id: string): boolean {
+  return UUID_RE.test(id)
+}
+
+// Safe JSON body parser — returns 400 instead of 500 on malformed input
+export async function parseJsonBody<T = Record<string, unknown>>(request: Request): Promise<T | NextResponse> {
+  try {
+    return await request.json() as T
+  } catch {
+    return ApiResponse.badRequest('잘못된 요청 형식입니다')
+  }
+}
+
 // Validate required fields
 export function validateRequired(
   body: Record<string, unknown>,

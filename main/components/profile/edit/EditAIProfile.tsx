@@ -24,7 +24,7 @@ function TagEditor({ label, tags, onChange, suggestions }: { label: string; tags
       <div className="flex flex-wrap gap-1 mb-2">
         {suggestions.filter(s => !tags.includes(s)).map(s => (
           <button key={s} type="button" onClick={() => add(s)}
-            className="px-2 py-0.5 text-xs font-mediumborder border-border bg-surface-card text-txt-secondary hover:border-border-strong transition-colors"
+            className="px-2 py-0.5 text-xs font-medium border border-border bg-surface-card text-txt-secondary hover:border-border-strong transition-colors"
           >+ {s}</button>
         ))}
       </div>

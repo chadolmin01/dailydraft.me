@@ -46,7 +46,7 @@ export function useProjectUpdates(opportunityId: string | undefined) {
   })
 }
 
-// Create a new update
+// Create a new update (via API — triggers team notifications server-side)
 export function useCreateProjectUpdate() {
   const queryClient = useQueryClient()
   const { user } = useAuth()
@@ -61,17 +61,18 @@ export function useCreateProjectUpdate() {
     }) => {
       if (!user?.id) throw new Error('Not authenticated')
 
-      const { data, error } = await supabase
-        .from('project_updates')
-        .insert({
-          ...input,
-          author_id: user.id,
-        })
-        .select()
-        .single()
+      const res = await fetch('/api/project-updates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input),
+      })
 
-      if (error) throw error
-      return data as ProjectUpdate
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err?.error?.message || '업데이트 생성에 실패했습니다')
+      }
+
+      return (await res.json()) as ProjectUpdate
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({

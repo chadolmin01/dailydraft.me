@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json()
-    const { type, chatId } = body as { type: 'request' | 'accepted' | 'declined'; chatId: string }
+    const { type, chatId } = body as { type: 'request' | 'accepted' | 'declined'; chatId: string; invitationMessage?: string }
 
     if (!type || !chatId) {
       return ApiResponse.badRequest('Missing type or chatId')
@@ -170,6 +170,30 @@ export async function POST(req: NextRequest) {
           projectTitle,
           type === 'accepted'
         )
+      }
+
+      // Store invitation message if provided
+      if (type === 'accepted' && body.invitationMessage) {
+        await supabaseAdmin
+          .from('coffee_chats')
+          .update({ invitation_message: body.invitationMessage } as any)
+          .eq('id', chatId)
+      }
+
+      // Auto-add to team when project-based coffee chat is accepted
+      if (type === 'accepted' && !isPersonMode && chat.opportunity_id) {
+        await supabaseAdmin
+          .from('accepted_connections')
+          .upsert(
+            {
+              coffee_chat_id: chatId,
+              opportunity_creator_id: chat.owner_user_id,
+              applicant_id: chat.requester_user_id,
+              opportunity_id: chat.opportunity_id,
+              status: 'active',
+            } as never,
+            { onConflict: 'coffee_chat_id' }
+          )
       }
     }
 

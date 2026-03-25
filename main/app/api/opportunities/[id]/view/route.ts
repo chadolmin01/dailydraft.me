@@ -1,28 +1,18 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { NextRequest } from 'next/server'
-import { checkViewRateLimit } from '@/src/lib/rate-limit/redis-rate-limiter'
-import { ApiResponse } from '@/src/lib/api-utils'
+import { checkViewRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
+import { ApiResponse, isValidUUID } from '@/src/lib/api-utils'
+import { Redis } from '@upstash/redis'
 
-// IP 기반 중복 조회 방지 (메모리 캐시, 15분 TTL)
-const recentViews = new Map<string, number>()
-const VIEW_COOLDOWN_MS = 15 * 60 * 1000
+const VIEW_COOLDOWN_SEC = 15 * 60 // 15분
 
-// Lazy cleanup: runs when map exceeds threshold, no setInterval needed
-function lazyCleanup() {
-  if (recentViews.size <= 1000) return
-  const now = Date.now()
-  for (const [key, timestamp] of recentViews) {
-    if (now - timestamp > VIEW_COOLDOWN_MS) recentViews.delete(key)
+function getRedisClient(): Redis | null {
+  try {
+    if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) return null
+    return Redis.fromEnv()
+  } catch {
+    return null
   }
-}
-
-function getClientIP(request: NextRequest): string {
-  return (
-    request.headers.get('cf-connecting-ip') ||
-    request.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
-    request.headers.get('x-real-ip') ||
-    'unknown'
-  )
 }
 
 // Opportunity 조회수 증가
@@ -32,18 +22,24 @@ export async function POST(
 ) {
   try {
     const { id } = await params
-    const ip = getClientIP(request)
+    if (!isValidUUID(id)) return ApiResponse.badRequest('Invalid ID')
+    const ip = getClientIp(request)
 
     const rateLimitResponse = await checkViewRateLimit(ip)
     if (rateLimitResponse) return rateLimitResponse
 
-    const viewKey = `${ip}:opp:${id}`
-    lazyCleanup()
-
-    // 같은 IP에서 15분 내 중복 조회 무시
-    const lastView = recentViews.get(viewKey)
-    if (lastView && Date.now() - lastView < VIEW_COOLDOWN_MS) {
-      return ApiResponse.ok({ success: true, deduplicated: true })
+    // Redis 기반 중복 조회 방지 (15분 TTL)
+    const dedupeKey = `view:opp:${ip}:${id}`
+    const redis = getRedisClient()
+    if (redis) {
+      try {
+        const wasSet = await redis.set(dedupeKey, '1', { ex: VIEW_COOLDOWN_SEC, nx: true })
+        if (!wasSet) {
+          return ApiResponse.ok({ success: true, deduplicated: true })
+        }
+      } catch {
+        // Redis 실패 시 중복 체크 스킵 (graceful degradation)
+      }
     }
 
     const supabase = await createClient()
@@ -72,11 +68,9 @@ export async function POST(
         .update({ views_count: newCount } as never)
         .eq('id', id)
 
-      recentViews.set(viewKey, Date.now())
       return ApiResponse.ok({ success: true, views_count: newCount })
     }
 
-    recentViews.set(viewKey, Date.now())
     return ApiResponse.ok({ success: true, views_count: data })
   } catch (_error) {
     return ApiResponse.internalError()

@@ -5,12 +5,18 @@ interface InviteCodeEmailProps {
   appUrl?: string
 }
 
+function escapeHtml(str: string): string {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+}
+
 export function renderInviteCodeEmail({
   recipientName,
   inviteCode,
   expiresAt,
   appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://dailydraft.me',
 }: InviteCodeEmailProps): string {
+  const safeName = escapeHtml(recipientName)
+  const safeCode = escapeHtml(inviteCode)
   const formattedDate = new Date(expiresAt).toLocaleDateString('ko-KR', {
     year: 'numeric',
     month: 'long',
@@ -54,7 +60,7 @@ export function renderInviteCodeEmail({
                 You have been<br>drafted.
               </h1>
               <p style="margin:0; font-size:16px; color:#4b5563; line-height:1.7;">
-                안녕하세요 <strong style="color:#111827;">${recipientName}</strong>님,<br>
+                안녕하세요 <strong style="color:#111827;">${safeName}</strong>님,<br>
                 당신의 아이디어에 날개를 달아줄 팀을 찾아보세요.<br>
                 Draft 프리미엄 멤버십이 준비되어 있습니다.
               </p>
@@ -71,7 +77,7 @@ export function renderInviteCodeEmail({
                       Invitation Code
                     </p>
                     <p style="margin:0 0 12px 0; font-family:'Courier New',monospace; font-size:32px; font-weight:700; color:#111827; letter-spacing:4px;">
-                      ${inviteCode}
+                      ${safeCode}
                     </p>
                     <p style="margin:0; font-size:13px; color:#dc2626; font-weight:500;">
                       ${formattedDate}까지 유효
