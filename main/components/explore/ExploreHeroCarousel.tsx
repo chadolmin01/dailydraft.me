@@ -42,8 +42,8 @@ export function ExploreHeroCarousel() {
   const order = [active, (active + 1) % SLIDE_COUNT, (active + 2) % SLIDE_COUNT]
 
   return (
-    <PageContainer size="wide" className="pt-3 pb-3">
-      <div className="flex gap-3 h-[14rem] sm:h-[18rem]">
+    <PageContainer size="wide" className="pt-3 pb-1">
+      <div className="flex gap-3 h-[12rem] sm:h-[18rem]">
 
         {/* ===== 왼쪽: 메인 강조 슬라이드 ===== */}
         <div

@@ -442,13 +442,13 @@ function ExplorePageContent() {
     <div className="bg-surface-bg min-h-full">
       <ExploreHeroCarousel />
 
-      <div className="max-w-screen-xl mx-auto px-4 mt-3">
+      <div className="max-w-screen-xl mx-auto px-4 mt-1">
         <ProfileCompletionBanner />
       </div>
 
       <DashboardLayout
         size="wide"
-        className="pt-3"
+        className="pt-1"
         sidebar={<ExploreSidebar {...filterProps} />}
         aside={
           <ExploreAsidePanel
