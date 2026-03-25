@@ -206,7 +206,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
 
           {/* Modal */}
           <div
-            className="fixed inset-0 z-modal flex items-end sm:items-center justify-center pt-6 px-0 pb-0 sm:p-4 md:p-8 animate-modal-in"
+            className="fixed inset-0 z-modal flex items-end sm:items-center justify-center pt-6 px-0 pb-[env(safe-area-inset-bottom)] sm:p-4 md:p-8 animate-modal-in"
             onClick={onClose}
           >
             <div
@@ -219,11 +219,14 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
               {/* macOS-style Window Bar */}
               <div className="bg-surface-sunken border-b border-border-strong px-3 sm:px-4 h-10 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-2">
-                  <button onClick={onClose} className="group w-3 h-3 rounded-full bg-[#FF5F57] hover:brightness-90 transition-all relative flex items-center justify-center after:absolute after:inset-[-16px] after:content-[''] sm:after:hidden" aria-label="닫기">
+                  <button onClick={onClose} className="sm:hidden p-1.5 -ml-1 hover:bg-surface-card transition-colors" aria-label="닫기">
+                    <X size={18} className="text-txt-tertiary" />
+                  </button>
+                  <button onClick={onClose} className="group hidden sm:flex w-3 h-3 rounded-full bg-[#FF5F57] hover:brightness-90 transition-all items-center justify-center" aria-label="닫기">
                     <X size={7} className="text-[#FF5F57] group-hover:text-[#4A0002] transition-colors" />
                   </button>
-                  <div className="w-3 h-3 rounded-full bg-[#FEBC2E]" />
-                  <div className="w-3 h-3 rounded-full bg-[#28C840]" />
+                  <div className="hidden sm:block w-3 h-3 rounded-full bg-[#FEBC2E]" />
+                  <div className="hidden sm:block w-3 h-3 rounded-full bg-[#28C840]" />
                 </div>
                 {!loading && opportunity && (
                   <div className="flex items-center gap-2">

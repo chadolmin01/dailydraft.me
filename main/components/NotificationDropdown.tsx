@@ -195,7 +195,7 @@ export function NotificationDropdown() {
         onClick={() => setIsOpen(!isOpen)}
         aria-label="알림"
         aria-expanded={isOpen}
-        className="relative w-8 h-8 flex items-center justify-center text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken transition-colors"
+        className="relative w-10 h-10 flex items-center justify-center text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken transition-colors"
       >
         <Bell size={20} />
         {unreadCount > 0 && (

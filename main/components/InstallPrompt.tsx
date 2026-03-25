@@ -97,10 +97,10 @@ export function InstallPrompt() {
 
   return (
     <div
-      className={`fixed top-0 left-0 right-0 z-[400] md:hidden transition-transform duration-300 ease-out ${
+      className={`fixed left-0 right-0 z-[400] md:hidden transition-transform duration-300 ease-out ${
         closing ? '-translate-y-full' : 'translate-y-0 animate-slideDown'
       }`}
-      style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
+      style={{ top: '3.5rem' }}
     >
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes slideDown { from { transform: translateY(-100%); } to { transform: translateY(0); } }

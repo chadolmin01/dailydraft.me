@@ -67,7 +67,7 @@ export const Modal: React.FC<ModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-modal-backdrop flex items-center justify-center p-4"
+      className="fixed inset-0 z-modal-backdrop flex items-end sm:items-center justify-center p-0 pt-6 sm:p-4"
       role="dialog"
       aria-modal="true"
       aria-label={title}
@@ -84,7 +84,7 @@ export const Modal: React.FC<ModalProps> = ({
         ref={containerRef}
         tabIndex={-1}
         className={cn(
-          'relative z-modal bg-surface-elevated w-full shadow-brutal border border-border-strong',
+          'relative z-modal bg-surface-elevated w-full shadow-brutal border border-border-strong pb-[env(safe-area-inset-bottom)] sm:pb-0',
           'animate-in fade-in zoom-in-95 duration-200',
           sizeMap[size],
           className

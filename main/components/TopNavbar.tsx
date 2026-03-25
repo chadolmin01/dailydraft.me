@@ -321,7 +321,7 @@ export const TopNavbar: React.FC = () => {
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
                     aria-label="프로필 메뉴"
                     aria-expanded={isMenuOpen}
-                    className={`w-8 h-8 flex items-center justify-center text-[0.6875rem] font-bold transition-all border ${
+                    className={`w-10 h-10 flex items-center justify-center text-[0.6875rem] font-bold transition-all border ${
                       isMenuOpen
                         ? 'bg-surface-inverse text-txt-inverse border-black scale-95'
                         : 'bg-surface-sunken text-txt-secondary border-border hover:border-border-strong'

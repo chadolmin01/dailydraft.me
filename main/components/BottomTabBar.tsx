@@ -59,7 +59,7 @@ export function BottomTabBar() {
                 )}
               </span>
 
-              <span className="text-[0.5625rem] font-mono font-bold uppercase tracking-wider">
+              <span className="text-[0.625rem] font-mono font-bold uppercase tracking-wider">
                 {tab.label}
               </span>
             </Link>
