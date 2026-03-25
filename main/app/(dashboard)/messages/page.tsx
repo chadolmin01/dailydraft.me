@@ -91,7 +91,7 @@ export default function MessagesPage() {
   return (
     <div className="bg-surface-bg min-h-full">
       <PageContainer size="wide" className="py-6">
-        <div className="flex gap-0 md:gap-4 h-[calc(100vh-120px)]">
+        <div className="flex gap-0 md:gap-4 h-[calc(100vh-7rem-var(--bottom-tab-height))]">
 
           {/* 대화 목록 — 모바일에서는 스레드 열면 숨김 */}
           <div className={`w-full md:w-80 bg-surface-card border border-border-strong shadow-sharp shrink-0 flex flex-col ${mobileShowThread ? 'hidden md:flex' : 'flex'}`}>

@@ -23,7 +23,7 @@ export function ExploreHeroCarousel() {
 
   return (
     <PageContainer size="wide" className="pt-4 pb-4">
-      <div className="flex gap-3 h-[14rem] sm:h-[20rem]">
+      <div className="flex gap-3 h-[18rem] sm:h-[20rem]">
 
         {/* ===== 왼쪽: 메인 강조 슬라이드 ===== */}
         <div
@@ -84,13 +84,13 @@ export function ExploreHeroCarousel() {
               <div className="w-full">
                 <span className="text-[0.625rem] font-mono font-bold text-txt-tertiary tracking-wider block">HOW IT WORKS</span>
                 <h2 className="text-2xl md:text-3xl font-bold text-txt-primary mt-1 mb-6">간단한 3단계</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
+                <div className="grid grid-cols-3 gap-2 sm:gap-3">
                   {[
                     { num: 1, icon: Upload, title: '올리기', desc: '아이디어와 고민을 공유' },
                     { num: 2, icon: MessageCircle, title: '피드백', desc: '다양한 시각의 조언' },
                     { num: 3, icon: Coffee, title: '만나기', desc: '커피챗으로 팀빌딩' },
                   ].map((step) => (
-                    <div key={step.num} className="relative border border-border bg-surface-card/80 p-3">
+                    <div key={step.num} className="relative border border-border bg-surface-card/80 p-2 sm:p-3">
                       <div className="absolute -top-1.5 -left-1.5 w-5 h-5 bg-black text-white flex items-center justify-center text-[0.625rem] font-bold">{step.num}</div>
                       <div className="w-8 h-8 bg-surface-card border border-border flex items-center justify-center mb-2">
                         <step.icon size={15} className="text-txt-secondary" />
@@ -109,13 +109,13 @@ export function ExploreHeroCarousel() {
                 <span className="text-[0.625rem] font-mono font-bold text-txt-tertiary tracking-wider block">FEEDBACK</span>
                 <h2 className="text-2xl md:text-3xl font-bold text-txt-primary mt-1 mb-2">솔직한 피드백</h2>
                 <p className="text-xs text-txt-tertiary mb-5 break-keep">프로젝트를 올리면 다양한 관점의 피드백을 받을 수 있어요</p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
+                <div className="grid grid-cols-3 gap-2 sm:gap-3">
                   {[
                     { school: '연대 경영', name: '김OO', content: '타겟을 대학생으로 좁히는 게 낫지 않을까요? 차별점이 필요할 것 같아요.' },
                     { school: '고대 컴공', name: '박OO', content: '학교 인증 기능이 핵심이 될 것 같은데, 인증 방식이 궁금해요.' },
                     { school: '경희대 산공', name: '이OO', content: '에브리타임 연동부터 해보는 건 어때요? 이미 인증된 유저풀이 있잖아요.' },
                   ].map((c, idx) => (
-                    <div key={idx} className="relative border border-border bg-surface-card p-3">
+                    <div key={idx} className="relative border border-border bg-surface-card p-2 sm:p-3">
                       <div className="absolute -top-1.5 -left-1.5 w-5 h-5 bg-black text-white flex items-center justify-center text-[0.625rem] font-bold">{idx + 1}</div>
                       <div className="flex items-center gap-1.5 mb-1.5">
                         <span className="text-[0.625rem] font-mono text-txt-tertiary">{c.school}</span>

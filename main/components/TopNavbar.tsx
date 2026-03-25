@@ -388,7 +388,7 @@ export const TopNavbar: React.FC = () => {
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label={isMobileMenuOpen ? '메뉴 닫기' : '메뉴 열기'}
               aria-expanded={isMobileMenuOpen}
-              className="md:hidden w-9 h-9 flex items-center justify-center text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken transition-colors border border-border"
+              className="md:hidden w-11 h-11 flex items-center justify-center text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken transition-colors border border-border"
             >
               {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
             </button>

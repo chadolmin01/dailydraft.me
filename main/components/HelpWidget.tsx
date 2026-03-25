@@ -77,7 +77,7 @@ export function HelpWidget() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         style={{ bottom: 'calc(1.5rem + var(--bottom-tab-height) + env(safe-area-inset-bottom, 0px))' }}
-        className={`fixed right-6 z-fixed w-12 h-12 flex items-center justify-center transition-all duration-300 ${
+        className={`fixed right-3 sm:right-6 z-fixed w-12 h-12 flex items-center justify-center transition-all duration-300 ${
           isOpen
             ? 'bg-surface-inverse text-txt-inverse rotate-90'
             : 'bg-brand text-white border border-brand shadow-brutal hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
@@ -91,7 +91,7 @@ export function HelpWidget() {
       {isOpen && (
         <div
           style={{ bottom: 'calc(5rem + var(--bottom-tab-height) + env(safe-area-inset-bottom, 0px))', animation: 'helpWidgetIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) both' }}
-          className="fixed right-6 z-fixed w-[22rem] sm:w-[24rem] max-h-[min(32rem,calc(100vh-8rem))] bg-surface-card border border-border-strong shadow-brutal-xl flex flex-col"
+          className="fixed right-3 sm:right-6 z-fixed w-[calc(100vw-1.5rem)] sm:w-[24rem] max-h-[min(32rem,calc(100vh-8rem))] bg-surface-card border border-border-strong shadow-brutal-xl flex flex-col"
         >
           <style dangerouslySetInnerHTML={{ __html: `
             @keyframes helpWidgetIn { 0% { opacity:0;transform:translateY(12px) scale(0.95) } 100% { opacity:1;transform:translateY(0) scale(1) } }

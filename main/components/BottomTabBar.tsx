@@ -51,7 +51,7 @@ export function BottomTabBar() {
               )}
 
               <span className="relative">
-                <Icon size={20} strokeWidth={isActive ? 2 : 1.5} />
+                <Icon size={22} strokeWidth={isActive ? 2 : 1.5} />
                 {badge && (
                   <span className="absolute -top-1.5 -right-2.5 min-w-[1rem] h-4 flex items-center justify-center px-1 bg-brand text-white text-[0.5625rem] font-bold rounded-full leading-none">
                     {badge}
