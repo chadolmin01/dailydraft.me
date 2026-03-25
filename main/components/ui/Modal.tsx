@@ -84,7 +84,8 @@ export const Modal: React.FC<ModalProps> = ({
         ref={containerRef}
         tabIndex={-1}
         className={cn(
-          'relative z-modal bg-surface-elevated w-full shadow-brutal border border-border-strong pb-[env(safe-area-inset-bottom)] sm:pb-0',
+          'relative z-modal bg-surface-elevated w-full shadow-brutal border border-border-strong',
+          'pb-[max(1rem,env(safe-area-inset-bottom,1rem))] sm:pb-0',
           'animate-in fade-in zoom-in-95 duration-200',
           sizeMap[size],
           className
