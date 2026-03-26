@@ -2,14 +2,14 @@
 
 import React, { useState, Suspense } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { ArrowLeft, Settings, ExternalLink, Clock, Users, MessageCircle, Plus, Zap, Pencil, Trash2, Loader2 } from 'lucide-react'
+import { ArrowLeft, Settings, ExternalLink, Clock, Users, MessageCircle, Pencil, Trash2, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAuth } from '@/src/context/AuthContext'
 import { useOpportunity } from '@/src/hooks/useOpportunities'
 import { useProjectUpdates, useDeleteProjectUpdate, type ProjectUpdate } from '@/src/hooks/useProjectUpdates'
 import { WriteUpdateForm } from '@/components/WriteUpdateForm'
 import { EditUpdateForm } from '@/components/EditUpdateForm'
-import { QuickUpdateForm } from '@/components/QuickUpdateForm'
+import { InlineUpdateEditor } from '@/components/InlineUpdateEditor'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { UPDATE_TYPE_CONFIG } from '@/components/project/types'
 import { timeAgo } from '@/src/lib/utils'
@@ -31,7 +31,6 @@ function ProjectManageContent() {
   const { user } = useAuth()
   const [tab, setTab] = useState<Tab>('updates')
   const [showWriteUpdate, setShowWriteUpdate] = useState(false)
-  const [showQuickUpdate, setShowQuickUpdate] = useState(false)
   const [editingUpdate, setEditingUpdate] = useState<ProjectUpdate | null>(null)
 
   const { data: oppData, isLoading } = useOpportunity(id)
@@ -148,97 +147,76 @@ function ProjectManageContent() {
 
       {/* Tab Content */}
       <div className="max-w-3xl mx-auto px-4 py-6">
-        {tab === 'updates' && (
-          <div>
-            {(() => {
-              const nextWeekNumber = updates.length > 0
-                ? Math.max(...updates.map(u => u.week_number)) + 1
-                : 1
-              return (
-                <>
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest">
-                      주간 업데이트
-                    </h2>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => setShowQuickUpdate(true)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-black text-white border border-black hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]"
-                      >
-                        <Zap size={12} />
-                        빠른 기록
-                      </button>
-                      <button
-                        onClick={() => setShowWriteUpdate(true)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold border border-border-strong text-txt-secondary hover:border-border-strong hover:text-txt-primary transition-colors"
-                      >
-                        <Plus size={12} />
-                        상세 작성
-                      </button>
-                    </div>
-                  </div>
+        {tab === 'updates' && (() => {
+          const nextWeekNumber = updates.length > 0
+            ? Math.max(...updates.map(u => u.week_number)) + 1
+            : 1
+          return (
+            <div>
+              <h2 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4">
+                주간 업데이트
+              </h2>
 
-                  <QuickUpdateForm
-                    opportunityId={id}
-                    nextWeekNumber={nextWeekNumber}
-                    isOpen={showQuickUpdate}
-                    onClose={() => setShowQuickUpdate(false)}
-                  />
-                </>
-              )
-            })()}
+              <InlineUpdateEditor
+                opportunityId={id}
+                nextWeekNumber={nextWeekNumber}
+                onOpenDetail={() => setShowWriteUpdate(true)}
+              />
 
-            {updates.length > 0 ? (
-              <div className="space-y-3">
-                {updates.map((update) => {
-                  const config = UPDATE_TYPE_CONFIG[update.update_type] || UPDATE_TYPE_CONFIG.general
-                  return (
-                    <div key={update.id} className="bg-surface-card border border-border-strong p-4">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1.5">
-                            <span className={`text-[0.625rem] font-bold px-2 py-0.5 border ${config.badgeColor}`}>
-                              {config.label}
-                            </span>
-                            <span className="text-[0.625rem] font-mono text-txt-disabled">Week {update.week_number}</span>
-                            {update.created_at && (
-                              <span className="text-[0.625rem] font-mono text-txt-disabled">· {timeAgo(update.created_at)}</span>
+              {updates.length > 0 ? (
+                <div className="space-y-3">
+                  {updates.map((update) => {
+                    const config = UPDATE_TYPE_CONFIG[update.update_type] || UPDATE_TYPE_CONFIG.general
+                    const [firstLine, ...restLines] = update.content.split('\n')
+                    const restContent = restLines.join('\n').trim()
+                    return (
+                      <div key={update.id} className="bg-surface-card border border-border-strong p-4">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1.5">
+                              <span className={`text-[0.625rem] font-bold px-2 py-0.5 border ${config.badgeColor}`}>
+                                {config.label}
+                              </span>
+                              <span className="text-[0.625rem] font-mono text-txt-disabled">Week {update.week_number}</span>
+                              {update.created_at && (
+                                <span className="text-[0.625rem] font-mono text-txt-disabled">· {timeAgo(update.created_at)}</span>
+                              )}
+                            </div>
+                            <p className="font-semibold text-sm text-txt-primary mb-1">{firstLine}</p>
+                            {restContent && (
+                              <p className="text-xs text-txt-secondary leading-relaxed whitespace-pre-line">{restContent}</p>
                             )}
                           </div>
-                          <p className="font-semibold text-sm text-txt-primary mb-1">{update.title}</p>
-                          <p className="text-xs text-txt-secondary leading-relaxed whitespace-pre-line">{update.content}</p>
-                        </div>
-                        <div className="flex items-center gap-1 shrink-0">
-                          <button
-                            onClick={() => setEditingUpdate(update)}
-                            className="p-1.5 text-txt-disabled hover:text-txt-secondary transition-colors"
-                          >
-                            <Pencil size={13} />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(update)}
-                            disabled={deleteUpdate.isPending}
-                            className="p-1.5 text-txt-disabled hover:text-status-danger-text transition-colors"
-                          >
-                            <Trash2 size={13} />
-                          </button>
+                          <div className="flex items-center gap-1 shrink-0">
+                            <button
+                              onClick={() => setEditingUpdate(update)}
+                              className="p-1.5 text-txt-disabled hover:text-txt-secondary transition-colors"
+                            >
+                              <Pencil size={13} />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(update)}
+                              disabled={deleteUpdate.isPending}
+                              className="p-1.5 text-txt-disabled hover:text-status-danger-text transition-colors"
+                            >
+                              <Trash2 size={13} />
+                            </button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )
-                })}
-              </div>
-            ) : (
-              <EmptyState
-                icon={Clock}
-                title="아직 업데이트가 없습니다"
-                description="첫 업데이트를 작성하면 팀원에게 자동으로 알림이 전송됩니다"
-                actionLabel="첫 업데이트 기록하기"
-                onAction={() => setShowQuickUpdate(true)}
-              />
-            )}
-          </div>
-        )}
+                    )
+                  })}
+                </div>
+              ) : (
+                <EmptyState
+                  icon={Clock}
+                  title="아직 업데이트가 없습니다"
+                  description="위 입력창에 이번 주 성과를 간단히 남겨보세요"
+                />
+              )}
+            </div>
+          )
+        })()}
 
         {tab === 'team' && (
           <div className="text-center py-12 text-txt-disabled text-sm">
