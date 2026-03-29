@@ -332,10 +332,10 @@ export const TopNavbar: React.FC = () => {
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
                     aria-label="프로필 메뉴"
                     aria-expanded={isMenuOpen}
-                    className={`w-10 h-10 flex items-center justify-center text-[0.6875rem] font-bold transition-all border ${
+                    className={`w-10 h-10 rounded-full flex items-center justify-center text-[0.6875rem] font-bold transition-all border ${
                       isMenuOpen
-                        ? 'bg-surface-inverse text-txt-inverse border-black scale-95'
-                        : 'bg-surface-sunken text-txt-secondary border-border hover:border-border-strong'
+                        ? 'bg-surface-inverse text-txt-inverse border-surface-inverse scale-95'
+                        : 'bg-surface-sunken text-txt-secondary border-border-subtle hover:border-border'
                     }`}
                   >
                     {initials}
@@ -347,7 +347,7 @@ export const TopNavbar: React.FC = () => {
                       {/* 유저 헤더 */}
                       <div className="px-4 pt-3 pb-3">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-surface-inverse flex items-center justify-center text-sm font-bold text-txt-inverse shrink-0">
+                          <div className="w-10 h-10 bg-surface-inverse rounded-full flex items-center justify-center text-sm font-bold text-txt-inverse shrink-0">
                             {initials}
                           </div>
                           <div className="min-w-0">

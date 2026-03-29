@@ -59,7 +59,7 @@ export function ExplorePeopleGrid({
                 style={{ animationDelay: `${Math.min(index * 40, 400)}ms` }}
                 className="stagger-item relative bg-surface-card border border-border-strong overflow-hidden flex items-center gap-3 px-3 py-3 cursor-pointer hover:border-brand/30 hover-spring focus-visible:ring-2 focus-visible:ring-accent outline-none active:scale-[0.985] active:border-brand/50"
               >
-                <div className="relative w-10 h-10 bg-brand-bg border border-brand-border flex items-center justify-center text-sm font-bold text-brand shrink-0 overflow-hidden">
+                <div className="relative w-10 h-10 bg-brand-bg border border-brand-border rounded-full flex items-center justify-center text-sm font-bold text-brand shrink-0 overflow-hidden">
                   {t.name.substring(0, 2)}
                   {t.avatarUrl && (
                     <Image src={t.avatarUrl} alt={t.name} width={40} height={40} className="absolute inset-0 w-full h-full object-cover" quality={85} onError={(e) => { e.currentTarget.style.display = 'none' }} />
@@ -121,7 +121,7 @@ export function ExplorePeopleGrid({
                 <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-black/15" />
                 <div className="px-4 pt-4 h-[4.75rem] shrink-0">
                   <div className="flex gap-3">
-                    <div className="relative w-12 h-12 bg-brand-bg border border-brand-border flex items-center justify-center text-base font-bold text-brand shrink-0 overflow-hidden">
+                    <div className="relative w-12 h-12 bg-brand-bg border border-brand-border rounded-full flex items-center justify-center text-base font-bold text-brand shrink-0 overflow-hidden">
                       {t.name.substring(0, 2)}
                       {t.avatarUrl && (
                         <Image src={t.avatarUrl} alt={t.name} width={48} height={48} className="absolute inset-0 w-full h-full object-cover" quality={85} onError={(e) => { e.currentTarget.style.display = 'none' }} />

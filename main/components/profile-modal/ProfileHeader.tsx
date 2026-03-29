@@ -45,7 +45,7 @@ export function ProfileHeader({
       <div className={`px-4 sm:px-8 ${coverUrl ? 'pt-0 -mt-10 relative z-10' : 'pt-4 sm:pt-6'} pb-3`}>
         <div className="flex items-start gap-4">
           {/* Avatar */}
-          <div className={`relative w-20 h-20 bg-surface-inverse flex items-center justify-center text-2xl font-bold text-txt-inverse shrink-0 shadow-solid-sm border-2 ${coverUrl ? 'border-surface-card' : 'border-border-strong'}`}>
+          <div className={`relative w-20 h-20 bg-surface-inverse rounded-full flex items-center justify-center text-2xl font-bold text-txt-inverse shrink-0 shadow-md border-2 ${coverUrl ? 'border-surface-card' : 'border-default'}`}>
             {cleanNickname(profile.nickname).substring(0, 2)}
             {profile.avatar_url && (
               <Image

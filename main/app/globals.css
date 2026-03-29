@@ -24,10 +24,10 @@
   --text-inverse: #FFFFFF;
   --text-link: #00376B;
 
-  /* ── Border ── */
-  --border-default: #DBDBDB;
-  --border-strong: #C7C7C7;
-  --border-subtle: #EFEFEF;
+  /* ── Border (ultra-light, Instagram-like) ── */
+  --border-default: #EFEFEF;
+  --border-strong: #DBDBDB;
+  --border-subtle: #F5F5F5;
 
   /* ── Accent ── */
   --accent-primary: #0095F6;
@@ -85,13 +85,13 @@
   --radius-xl: 20px;
   --radius-full: 9999px;
 
-  /* ── Shadow (Soft & Diffused) ── */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.1);
-  --shadow-xl: 0 8px 32px rgba(0, 0, 0, 0.12);
-  --shadow-solid: 0 4px 12px rgba(0, 0, 0, 0.1);
-  --shadow-solid-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  /* ── Shadow (Minimal, barely-there) ── */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 1px 4px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 2px 12px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0 4px 24px rgba(0, 0, 0, 0.1);
+  --shadow-solid: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-solid-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 /* ── Desktop: collapse bottom tab height ── */
@@ -522,8 +522,53 @@ a[class*="px-"]:active {
 
 /* ============================================================
    CLEAN MODERN OVERRIDES
-   border-dashed → subtle solid dividers (Instagram style)
+   Brutalism → Instagram/Meta style global transforms
    ============================================================ */
+
+/* border-dashed → subtle solid */
 .border-dashed {
   border-style: solid !important;
+}
+
+/* ── Mono uppercase labels → clean sans-serif ── */
+.font-mono.uppercase {
+  font-family: var(--font-noto-sans-kr), 'Noto Sans KR', system-ui, sans-serif !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  font-weight: 500 !important;
+}
+
+/* ── Tracking overrides for brutalist labels ── */
+.tracking-widest,
+.tracking-wider {
+  letter-spacing: 0.02em !important;
+}
+
+/* ── Square avatars → circle (global) ──
+   Targets initial-avatar pattern: fixed size + centered + bold text + shrink-0 */
+[class*="shrink-0"][class*="items-center"][class*="justify-center"][class*="font-bold"]:where(
+  [class*="w-5"][class*="h-5"],
+  [class*="w-6"][class*="h-6"],
+  [class*="w-7"][class*="h-7"],
+  [class*="w-8"][class*="h-8"],
+  [class*="w-9"][class*="h-9"],
+  [class*="w-10"][class*="h-10"],
+  [class*="w-12"][class*="h-12"],
+  [class*="w-14"][class*="h-14"],
+  [class*="w-20"][class*="h-20"]
+):not(button):not(a) {
+  border-radius: 9999px !important;
+}
+
+/* ── Softer borders globally ── */
+.border-border-strong {
+  border-color: var(--border-default) !important;
+}
+
+/* ── Cards: more padding, softer feel ── */
+.shadow-sharp {
+  box-shadow: var(--shadow-md) !important;
+}
+.shadow-brutal {
+  box-shadow: var(--shadow-lg) !important;
 }

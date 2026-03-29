@@ -149,7 +149,7 @@ export default function MessagesPage() {
                             : 'hover:bg-surface-sunken border border-transparent'
                         }`}
                       >
-                        <div className="w-10 h-10 bg-surface-inverse flex items-center justify-center text-xs font-bold text-txt-inverse shrink-0">
+                        <div className="w-10 h-10 bg-surface-inverse rounded-full flex items-center justify-center text-xs font-bold text-txt-inverse shrink-0">
                           {cleanNickname(partner?.nickname || '').slice(0, 2) || '??'}
                         </div>
                         <div className="flex-1 min-w-0">
@@ -196,7 +196,7 @@ export default function MessagesPage() {
                   >
                     <ArrowLeft size={18} className="text-txt-secondary" />
                   </button>
-                  <div className="w-8 h-8 bg-surface-inverse flex items-center justify-center text-xs font-bold text-txt-inverse shrink-0">
+                  <div className="w-8 h-8 bg-surface-inverse rounded-full flex items-center justify-center text-xs font-bold text-txt-inverse shrink-0">
                     {cleanNickname(selectedProfile?.nickname || '').slice(0, 2) || '??'}
                   </div>
                   <div className="flex-1 min-w-0">

@@ -114,7 +114,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
       {user && profile ? (
         <form onSubmit={handleSubmit} className="p-4 bg-surface-sunken border-b border-dashed border-border">
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-7 h-7 bg-black text-white flex items-center justify-center text-xs font-bold shrink-0">
+            <div className="w-7 h-7 bg-surface-inverse text-txt-inverse rounded-full flex items-center justify-center text-xs font-bold shrink-0">
               {cleanNickname(profile.nickname).charAt(0)}
             </div>
             <span className="text-sm font-medium text-txt-primary">{cleanNickname(profile.nickname)}</span>
@@ -224,7 +224,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
     <div className="p-4">
       {/* Author info */}
       <div className="flex items-center gap-2 mb-2">
-        <div className="w-6 h-6 bg-black text-white flex items-center justify-center text-[0.625rem] font-bold shrink-0">
+        <div className="w-6 h-6 bg-surface-inverse text-txt-inverse rounded-full flex items-center justify-center text-[0.625rem] font-bold shrink-0">
           {cleanNickname(comment.nickname).charAt(0)}
         </div>
         <span className="font-bold text-sm text-txt-primary">{cleanNickname(comment.nickname)}</span>

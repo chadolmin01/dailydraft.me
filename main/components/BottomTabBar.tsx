@@ -109,7 +109,7 @@ function TabItem({
         )}
       </span>
 
-      <span className="text-[0.625rem] font-mono font-bold uppercase tracking-wider">
+      <span className="text-[0.5625rem] font-medium">
         {tab.label}
       </span>
     </Link>

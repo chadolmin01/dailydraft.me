@@ -56,14 +56,14 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
             <div className="flex flex-wrap items-center gap-3 text-sm text-white/70">
               {creator ? (
                 <span className="flex items-center gap-2">
-                  <div className="w-5 h-5 bg-white/20 backdrop-blur flex items-center justify-center text-[0.5625rem] font-bold text-white">
+                  <div className="w-5 h-5 bg-white/20 backdrop-blur rounded-full flex items-center justify-center text-[0.5625rem] font-bold text-white">
                     {creator.nickname.charAt(0)}
                   </div>
                   <span className="font-medium text-white/90">{creator.nickname}</span>
                 </span>
               ) : (
                 <span className="flex items-center gap-2">
-                  <div className="w-5 h-5 bg-white/20 backdrop-blur flex items-center justify-center text-[0.5625rem] font-bold text-white/70">?</div>
+                  <div className="w-5 h-5 bg-white/20 backdrop-blur rounded-full flex items-center justify-center text-[0.5625rem] font-bold text-white/70">?</div>
                   <span className="font-medium text-white/90">익명</span>
                 </span>
               )}
@@ -160,7 +160,7 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
       <div className="flex flex-wrap items-center gap-4 text-sm text-txt-tertiary">
         {creator ? (
           <span className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-surface-inverse flex items-center justify-center text-[0.625rem] font-bold text-txt-inverse">
+            <div className="w-6 h-6 bg-surface-inverse rounded-full flex items-center justify-center text-[0.625rem] font-bold text-txt-inverse">
               {creator.nickname.charAt(0)}
             </div>
             <span className="font-medium text-txt-secondary">{creator.nickname}</span>
