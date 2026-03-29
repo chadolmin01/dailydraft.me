@@ -21,7 +21,7 @@ export function useInstitutionAdmin() {
       if (!res.ok) return null
       return res.json()
     },
-    enabled: !!user,
+    enabled: !isAuthLoading && !!user,
     staleTime: 5 * 60 * 1000,
   })
 

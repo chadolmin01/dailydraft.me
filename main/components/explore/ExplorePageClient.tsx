@@ -137,7 +137,7 @@ function ExplorePageContent() {
   const [peopleDisplayLimit, setPeopleDisplayLimit] = useState(PEOPLE_PAGE_SIZE)
 
   const searchQuery = useDebouncedValue(searchInput, 300)
-  const { isAuthenticated, user } = useAuth()
+  const { isAuthenticated, user, isLoading: isAuthLoading } = useAuth()
 
   // Sync search to URL (preserves modal params)
   useEffect(() => {
@@ -173,7 +173,7 @@ function ExplorePageContent() {
       return res.json() as Promise<Array<OpportunityWithCreator & { match_score: number; match_reason: string }>>
     },
     staleTime: 1000 * 60 * 5,
-    enabled: !!user,
+    enabled: !isAuthLoading && !!user,
   })
   const aiScoreMap = useMemo(() => {
     const map = new Map<string, number>()

@@ -11,7 +11,7 @@ export default function OgImage() {
         style={{
           width: '100%',
           height: '100%',
-          background: '#000',
+          background: '#18181B',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
@@ -31,14 +31,14 @@ export default function OgImage() {
           style={{
             width: 80,
             height: 80,
-            background: '#fff',
+            background: '#FAFAFA',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             marginBottom: 40,
           }}
         >
-          <span style={{ color: '#000', fontSize: 48, fontWeight: 900, fontFamily: 'sans-serif' }}>D</span>
+          <span style={{ color: '#18181B', fontSize: 48, fontWeight: 900, fontFamily: 'sans-serif' }}>D</span>
         </div>
 
         {/* Title */}

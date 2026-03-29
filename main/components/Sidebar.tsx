@@ -8,7 +8,6 @@ import {
   Calendar,
   FileText,
   Users,
-  PenTool,
   User,
   LayoutDashboard,
   Briefcase,
@@ -112,12 +111,12 @@ export const Sidebar: React.FC = () => {
           className={`w-10 h-10 flex items-center justify-center rounded-sm transition-colors
             ${
               getActiveTab() === 'dashboard'
-                ? 'bg-black text-white shadow-solid-sm'
-                : 'bg-surface-card text-txt-primary border border-border-strong hover:bg-black hover:text-white hover:border-border-strong shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
+                ? 'bg-surface-inverse text-txt-inverse shadow-solid-sm'
+                : 'bg-surface-card text-txt-primary border border-border-strong hover:bg-surface-inverse hover:text-txt-inverse hover:border-border-strong shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
             }
         `}
         >
-          <PenTool size={20} />
+          <span className="font-black text-base leading-none">D</span>
         </div>
         <div className="absolute left-14 top-1/2 -translate-y-1/2 bg-black text-white text-[0.625rem] font-mono font-bold uppercase tracking-widest px-2 py-1 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-solid-sm">
           MAIN

@@ -41,12 +41,12 @@ const typeConfig: Record<string, { icon: React.ElementType; color: string; readC
   application_received: { icon: FileText, color: 'text-status-info-text bg-status-info-bg', readColor: 'text-txt-disabled bg-surface-sunken' },
   application_accepted: { icon: UserCheck, color: 'text-status-success-text bg-status-success-bg', readColor: 'text-txt-disabled bg-surface-sunken' },
   application_rejected: { icon: UserX, color: 'text-status-danger-text bg-status-danger-bg', readColor: 'text-txt-disabled bg-surface-sunken' },
-  connection: { icon: Link2, color: 'text-purple-600 bg-purple-100', readColor: 'text-txt-disabled bg-surface-sunken' },
+  connection: { icon: Link2, color: 'text-brand bg-brand-bg', readColor: 'text-txt-disabled bg-surface-sunken' },
   deadline: { icon: Clock, color: 'text-indicator-trending bg-status-warning-bg', readColor: 'text-txt-disabled bg-surface-sunken' },
   coffee_chat: { icon: Coffee, color: 'text-indicator-premium-border bg-status-warning-bg', readColor: 'text-txt-disabled bg-surface-sunken' },
   project_invitation: { icon: UserPlus, color: 'text-brand bg-brand-bg', readColor: 'text-txt-disabled bg-surface-sunken' },
   comment: { icon: MessageSquare, color: 'text-txt-secondary bg-surface-sunken', readColor: 'text-txt-disabled bg-surface-sunken' },
-  recommendation: { icon: Check, color: 'text-cyan-600 bg-cyan-100', readColor: 'text-txt-disabled bg-surface-sunken' },
+  recommendation: { icon: Check, color: 'text-status-info-text bg-status-info-bg', readColor: 'text-txt-disabled bg-surface-sunken' },
   new_match: { icon: Check, color: 'text-indicator-online bg-status-success-bg', readColor: 'text-txt-disabled bg-surface-sunken' },
 }
 
@@ -66,7 +66,7 @@ function timeAgo(dateStr: string): string {
 
 export default function NotificationsPage() {
   const router = useRouter()
-  const { user } = useAuth()
+  const { user, isLoading: isAuthLoading } = useAuth()
   const queryClient = useQueryClient()
   const [showAll, setShowAll] = useState(false)
 
@@ -77,7 +77,7 @@ export default function NotificationsPage() {
       if (!res.ok) throw new Error('Failed to fetch')
       return res.json()
     },
-    enabled: !!user,
+    enabled: !isAuthLoading && !!user,
     refetchOnWindowFocus: true,
     staleTime: 10_000,
   })
@@ -213,7 +213,7 @@ export default function NotificationsPage() {
             onClick={() => setShowAll(false)}
             className={`px-4 py-1.5 text-xs font-bold transition-all ${
               !showAll
-                ? 'bg-black text-white'
+                ? 'bg-surface-inverse text-txt-inverse'
                 : 'text-txt-tertiary hover:text-txt-primary border border-transparent hover:border-border'
             }`}
           >
@@ -223,7 +223,7 @@ export default function NotificationsPage() {
             onClick={() => setShowAll(true)}
             className={`px-4 py-1.5 text-xs font-bold transition-all ${
               showAll
-                ? 'bg-black text-white'
+                ? 'bg-surface-inverse text-txt-inverse'
                 : 'text-txt-tertiary hover:text-txt-primary border border-transparent hover:border-border'
             }`}
           >

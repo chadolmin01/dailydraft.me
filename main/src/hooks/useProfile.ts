@@ -17,7 +17,7 @@ export const profileKeys = {
 
 // Fetch current user's profile
 export function useProfile() {
-  const { user } = useAuth()
+  const { user, isLoading: isAuthLoading } = useAuth()
 
   return useQuery({
     queryKey: profileKeys.detail(user?.id ?? ''),
@@ -36,7 +36,7 @@ export function useProfile() {
 
       return data as Profile | null
     }),
-    enabled: !!user?.id,
+    enabled: !isAuthLoading && !!user?.id,
     staleTime: 1000 * 60 * 2,
     retry: (failureCount) => failureCount < 3,
     retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),

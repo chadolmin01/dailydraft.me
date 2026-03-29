@@ -28,7 +28,7 @@ interface UseProjectInvitationsOptions {
 
 export function useProjectInvitations(options: UseProjectInvitationsOptions = {}) {
   const { asSender = false, enabled = true } = options
-  const { user } = useAuth()
+  const { user, isLoading: isAuthLoading } = useAuth()
 
   return useQuery({
     queryKey: asSender ? invitationKeys.sent() : invitationKeys.received(),
@@ -40,7 +40,7 @@ export function useProjectInvitations(options: UseProjectInvitationsOptions = {}
       return (data.invitations || []) as ProjectInvitation[]
     },
     staleTime: 1000 * 60 * 2,
-    enabled: enabled && !!user,
+    enabled: !isAuthLoading && enabled && !!user,
     retry: false,
   })
 }

@@ -48,7 +48,7 @@ interface AcceptedChat {
 
 export function TeamManageSection({ opportunityId }: { opportunityId: string }) {
   const queryClient = useQueryClient()
-  const { user } = useAuth()
+  const { user, isLoading: isAuthLoading } = useAuth()
   const [removingId, setRemovingId] = useState<string | null>(null)
 
   // Fetch team members
@@ -102,7 +102,7 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
         profile: profileMap.get(c.requester_user_id) || null,
       }))
     },
-    enabled: !!user,
+    enabled: !isAuthLoading && !!user,
   })
 
   // Add to team mutation — uses API so notification is sent server-side

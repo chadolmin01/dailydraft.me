@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef, useCallback } from 'react'
 import Image from 'next/image'
 import {
   Heart, Calendar, MapPin, Eye,
@@ -6,6 +6,7 @@ import {
 import { toast } from 'sonner'
 import { Badges } from '@/components/ui/Badge'
 import { ProjectHeaderProps } from './types'
+import { hapticMedium } from '@/src/utils/haptic'
 
 export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
   opportunity,
@@ -96,7 +97,7 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
           )}
           <div className="flex items-center gap-3 mt-3">
             <button
-              onClick={() => { if (isOwner) { toast('내 프로젝트에는 관심 표시를 할 수 없어요'); return } handleInterest() }}
+              onClick={() => { hapticMedium(); if (isOwner) { toast('내 프로젝트에는 관심 표시를 할 수 없어요'); return } handleInterest() }}
               disabled={interestLoading}
               className={`inline-flex items-center gap-1.5 px-3 py-1.5 border text-xs font-bold transition-all ${
                 hasInterested
@@ -104,7 +105,7 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
                   : 'border-border-strong bg-surface-card text-txt-secondary hover:border-status-danger-text/20 hover:text-status-danger-text'
               } disabled:opacity-40 disabled:cursor-default`}
             >
-              <Heart size={12} className={hasInterested ? 'fill-current' : ''} />
+              <Heart size={12} className={`${hasInterested ? 'fill-current heart-burst' : ''} transition-transform`} />
               {hasInterested ? '관심 표현됨' : '관심 있어요'}
               <span className="text-txt-disabled font-mono">{(opportunity.interest_count ?? 0) + (hasInterested ? 1 : 0)}</span>
             </button>
@@ -159,7 +160,7 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
       <div className="flex flex-wrap items-center gap-4 text-sm text-txt-tertiary">
         {creator ? (
           <span className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-black flex items-center justify-center text-[0.625rem] font-bold text-white">
+            <div className="w-6 h-6 bg-surface-inverse flex items-center justify-center text-[0.625rem] font-bold text-txt-inverse">
               {creator.nickname.charAt(0)}
             </div>
             <span className="font-medium text-txt-secondary">{creator.nickname}</span>
@@ -195,7 +196,7 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
       )}
       <div className="flex items-center gap-3 mt-3">
         <button
-          onClick={handleInterest}
+          onClick={() => { hapticMedium(); handleInterest() }}
           disabled={isOwner || interestLoading}
           className={`inline-flex items-center gap-1.5 px-3 py-1.5 border text-xs font-bold transition-all ${
             hasInterested

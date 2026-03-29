@@ -58,10 +58,10 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
       {/* Icon with + badge */}
       <div className={`relative inline-flex items-center justify-center ${isCompact ? 'mb-2' : 'mb-4'}`}>
         <div className={`
-          bg-surface-sunken border border-border flex items-center justify-center
-          ${isCompact ? 'w-10 h-10' : 'w-14 h-14'}
+          bg-surface-sunken border border-dashed border-border flex items-center justify-center animate-pulse
+          ${isCompact ? 'w-10 h-10' : 'w-16 h-16'}
         `}>
-          <Icon size={isCompact ? 20 : 24} className="text-txt-disabled" />
+          <Icon size={isCompact ? 20 : 28} className="text-txt-disabled" />
         </div>
         {hasAction && (
           <div className={`

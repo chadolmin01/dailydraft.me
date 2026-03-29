@@ -60,23 +60,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Initialize auth state
   useEffect(() => {
     let mounted = true
+    let steps = 0
+    const markStep = () => {
+      steps++
+      // Only finish loading after BOTH getSession and getUser complete
+      if (steps >= 2 && mounted) setIsLoading(false)
+    }
 
     // Step 1: Fast path — read local session (no network, instant)
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!mounted) return
       if (session?.user) {
         setUser(session.user)
-        setIsLoading(false)
         // Fetch profile in background — UI already shows auth state
         fetchProfile(session.user.id)
           .then(p => { if (mounted) setProfile(p) })
           .catch(() => { if (mounted) setProfile(null) })
-      } else {
-        setIsLoading(false)
       }
-    }).catch(() => {
-      if (mounted) setIsLoading(false)
-    })
+    }).catch(() => {}).finally(markStep)
 
     // Step 2: Background — validate with server (handles expired tokens)
     supabase.auth.getUser().then(({ data: { user: serverUser }, error }) => {
@@ -85,10 +86,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Server says invalid — clear state
         setUser(null)
         setProfile(null)
-        setIsLoading(false)
       }
       // If valid, getSession already set the correct user
-    }).catch(() => {})
+    }).catch(() => {}).finally(markStep)
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(

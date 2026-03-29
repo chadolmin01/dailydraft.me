@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import {
   Send,
   Loader2,
@@ -65,16 +65,26 @@ export default function MessagesPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages.length])
 
-  // 읽음 처리
+  // 읽음 처리 — ref로 이미 처리한 ID 추적하여 무한 루프 방지
+  const markedIdsRef = useRef<Set<string>>(new Set())
   useEffect(() => {
     if (selectedPartner && messages.length > 0) {
-      const unread = messages.filter(m => m.receiver_id === user?.id && !m.is_read)
-      unread.forEach(m => markRead.mutate(m.id))
+      const unread = messages.filter(m => m.receiver_id === user?.id && !m.is_read && !markedIdsRef.current.has(m.id))
+      unread.forEach(m => {
+        markedIdsRef.current.add(m.id)
+        markRead.mutate(m.id)
+      })
     }
   }, [selectedPartner, messages, user?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // 대화 상대 변경 시 추적 초기화
+  useEffect(() => {
+    markedIdsRef.current.clear()
+  }, [selectedPartner])
+
   const handleSend = () => {
     if (!selectedPartner || !messageInput.trim()) return
+    import('@/src/utils/haptic').then(h => h.hapticLight())
     sendMessage.mutate(
       { receiver_id: selectedPartner, content: messageInput.trim() },
       { onSuccess: () => setMessageInput('') }

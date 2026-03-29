@@ -5,7 +5,7 @@ import React from 'react'
 function Skeleton({ className = '', ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`animate-pulse bg-surface-sunken border border-border ${className}`}
+      className={`skeleton-shimmer border border-border ${className}`}
       {...props}
     />
   )

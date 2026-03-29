@@ -33,14 +33,14 @@ export const userRecommendationKeys = {
 }
 
 export function useUserRecommendations(options?: { limit?: number }) {
-  const { user } = useAuth()
+  const { user, isLoading: isAuthLoading } = useAuth()
 
   return useQuery({
     queryKey: userRecommendationKeys.list(options ?? {}),
     staleTime: 1000 * 60 * 5, // 5 minutes
     retry: (failureCount) => failureCount < 3,
     retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
-    enabled: !!user,
+    enabled: !isAuthLoading && !!user,
     queryFn: () =>
       withRetry(async () => {
         const res = await fetch('/api/users/recommendations')

@@ -49,14 +49,15 @@ export function ExplorePeopleGrid({
         <>
           {/* ── Mobile: compact horizontal list ── */}
           <div className="flex flex-col gap-2 md:hidden">
-            {talentCards.map((t) => (
+            {talentCards.map((t, index) => (
               <div
                 key={t.id}
                 role="button"
                 tabIndex={0}
                 onClick={() => onSelectProfile(t.id, false)}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectProfile(t.id, false) } }}
-                className="relative bg-surface-card border border-border-strong overflow-hidden flex items-center gap-3 px-3 py-3 cursor-pointer hover:border-brand/30 transition-all focus-visible:ring-2 focus-visible:ring-accent outline-none active:scale-[0.985] active:border-brand/50"
+                style={{ animationDelay: `${Math.min(index * 40, 400)}ms` }}
+                className="stagger-item relative bg-surface-card border border-border-strong overflow-hidden flex items-center gap-3 px-3 py-3 cursor-pointer hover:border-brand/30 hover-spring focus-visible:ring-2 focus-visible:ring-accent outline-none active:scale-[0.985] active:border-brand/50"
               >
                 <div className="relative w-10 h-10 bg-brand-bg border border-brand-border flex items-center justify-center text-sm font-bold text-brand shrink-0 overflow-hidden">
                   {t.name.substring(0, 2)}
@@ -89,7 +90,7 @@ export function ExplorePeopleGrid({
                   {t.tags.length > 0 && (
                     <div className="flex items-center gap-1 mt-1 overflow-hidden">
                       {t.tags.slice(0, 3).map(tag => (
-                        <span key={tag} className="text-[0.625rem] bg-white text-tag-default-text px-1.5 py-px border border-border font-medium shrink-0">{tag}</span>
+                        <span key={tag} className="text-[0.625rem] bg-surface-card text-tag-default-text px-1.5 py-px border border-border font-medium shrink-0">{tag}</span>
                       ))}
                       {t.tags.length > 3 && (
                         <span className="text-[0.625rem] text-txt-disabled font-mono">+{t.tags.length - 3}</span>
@@ -106,14 +107,15 @@ export function ExplorePeopleGrid({
 
           {/* ── Desktop: full card grid ── */}
           <div className="hidden md:grid md:grid-cols-2 gap-4">
-            {talentCards.map((t) => (
+            {talentCards.map((t, index) => (
               <div
                 key={t.id}
                 role="button"
                 tabIndex={0}
                 onClick={() => onSelectProfile(t.id, false)}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectProfile(t.id, false) } }}
-                className="relative bg-surface-card border border-border-strong overflow-hidden group hover:shadow-solid-sm hover:border-brand/30 transition-all cursor-pointer h-[13.75rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985] active:shadow-none active:border-brand/50"
+                style={{ animationDelay: `${Math.min(index * 60, 600)}ms` }}
+                className="stagger-item relative bg-surface-card border border-border-strong overflow-hidden group hover:shadow-solid-sm hover:border-brand/30 hover:-translate-y-0.5 hover-spring cursor-pointer h-[13.75rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985] active:shadow-none active:border-brand/50"
               >
                 <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-black/15" />
                 <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-black/15" />
@@ -159,7 +161,7 @@ export function ExplorePeopleGrid({
                   {t.tags.length > 0 && (
                     <div className="flex items-center gap-1.5 overflow-hidden">
                       {t.tags.map(tag => (
-                        <span key={tag} className="text-xs bg-white text-tag-default-text px-2 py-0.5 border border-border font-medium shrink-0">{tag}</span>
+                        <span key={tag} className="text-xs bg-surface-card text-tag-default-text px-2 py-0.5 border border-border font-medium shrink-0">{tag}</span>
                       ))}
                     </div>
                   )}

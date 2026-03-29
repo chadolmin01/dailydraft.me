@@ -5,6 +5,8 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Toaster } from 'sonner'
 import { useState } from 'react'
 import { AuthProvider } from './AuthContext'
+import { ThemeProvider } from './ThemeContext'
+import { SplashScreen } from '@/components/SplashScreen'
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -25,16 +27,23 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>{children}</AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>{children}</AuthProvider>
+      </ThemeProvider>
+      <SplashScreen />
       <Toaster
         position="top-center"
         toastOptions={{
           style: {
-            borderRadius: '0',
-            border: '2px solid var(--border-strong)',
-            boxShadow: 'var(--shadow-solid-sm)',
+            borderRadius: '12px',
+            border: '1px solid var(--border-subtle)',
+            boxShadow: 'var(--shadow-lg)',
             fontFamily: '"Noto Sans KR", sans-serif',
             fontSize: '0.8125rem',
+          },
+          classNames: {
+            success: 'toast-success',
+            error: 'toast-error',
           },
         }}
       />

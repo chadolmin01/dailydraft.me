@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { motion, AnimatePresence } from 'framer-motion'
+import { hapticMedium, hapticSuccess } from '@/src/utils/haptic'
 import {
   Loader2, AlertCircle, X, Share2, Edit3,
 } from 'lucide-react'
@@ -128,6 +130,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
     }
   }
   const handleInterest = async () => {
+    hapticMedium()
     if (!user) {
       setShowCta(true)
       return
@@ -195,18 +198,28 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
     : 0
 
   return (
-    <>
+    <AnimatePresence>
       {projectId && (
         <>
           {/* Backdrop */}
-          <div
+          <motion.div
+            key="project-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-modal-backdrop animate-backdrop-in"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-modal-backdrop"
           />
 
           {/* Modal */}
-          <div
-            className="fixed inset-0 z-modal flex items-end sm:items-center justify-center pt-6 px-0 pb-[env(safe-area-inset-bottom)] sm:p-4 md:p-8 animate-modal-in"
+          <motion.div
+            key="project-modal"
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.97, y: 10 }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed inset-0 z-modal flex items-end sm:items-center justify-center pt-6 px-0 pb-[env(safe-area-inset-bottom)] sm:p-4 md:p-8"
             onClick={onClose}
           >
             <div
@@ -378,9 +391,9 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                 </>
               )}
             </div>
-          </div>
+          </motion.div>
         </>
       )}
-    </>
+    </AnimatePresence>
   )
 }

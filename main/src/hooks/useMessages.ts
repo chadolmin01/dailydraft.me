@@ -1,4 +1,5 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient, type QueryClient } from '@tanstack/react-query'
+import { useAuth } from '../context/AuthContext'
 
 export interface DirectMessage {
   id: string
@@ -32,6 +33,7 @@ const messageKeys = {
 
 // 대화 목록
 export function useConversations() {
+  const { user, isLoading: isAuthLoading } = useAuth()
   return useQuery({
     queryKey: messageKeys.conversations(),
     queryFn: async () => {
@@ -42,6 +44,7 @@ export function useConversations() {
         profiles: Record<string, ConversationPartner>
       }>
     },
+    enabled: !isAuthLoading && !!user,
     staleTime: 30_000,
     refetchInterval: 60_000,
   })
@@ -68,9 +71,11 @@ export function useMessageThread(partnerId: string | null) {
   })
 }
 
-// 쪽지 보내기
+// 쪽지 보내기 (optimistic update)
 export function useSendMessage() {
   const qc = useQueryClient()
+  const { user } = useAuth()
+
   return useMutation({
     mutationFn: async ({ receiver_id, content }: { receiver_id: string; content: string }) => {
       const res = await fetch('/api/messages', {
@@ -84,7 +89,39 @@ export function useSendMessage() {
       }
       return res.json()
     },
-    onSuccess: (_, variables) => {
+    onMutate: async (variables) => {
+      // Cancel outgoing refetches
+      await qc.cancelQueries({ queryKey: messageKeys.thread(variables.receiver_id) })
+
+      // Snapshot previous value
+      const previousThread = qc.getQueryData(messageKeys.thread(variables.receiver_id))
+
+      // Optimistically add the message
+      if (user) {
+        qc.setQueryData(messageKeys.thread(variables.receiver_id), (old: any) => {
+          if (!old) return old
+          const optimisticMsg: DirectMessage = {
+            id: `optimistic-${Date.now()}`,
+            sender_id: user.id,
+            receiver_id: variables.receiver_id,
+            content: variables.content,
+            is_read: false,
+            read_at: null,
+            created_at: new Date().toISOString(),
+          }
+          return { ...old, messages: [...old.messages, optimisticMsg] }
+        })
+      }
+
+      return { previousThread }
+    },
+    onError: (_err, variables, context) => {
+      // Rollback on error
+      if (context?.previousThread) {
+        qc.setQueryData(messageKeys.thread(variables.receiver_id), context.previousThread)
+      }
+    },
+    onSettled: (_, __, variables) => {
       qc.invalidateQueries({ queryKey: messageKeys.conversations() })
       qc.invalidateQueries({ queryKey: messageKeys.thread(variables.receiver_id) })
     },
@@ -131,6 +168,7 @@ export function useDeleteMessage() {
 
 // 읽지 않은 쪽지 수
 export function useUnreadCount() {
+  const { user, isLoading: isAuthLoading } = useAuth()
   return useQuery({
     queryKey: messageKeys.unread(),
     queryFn: async () => {
@@ -139,6 +177,7 @@ export function useUnreadCount() {
       const data = await res.json()
       return (data.unread_count as number) || 0
     },
+    enabled: !isAuthLoading && !!user,
     staleTime: 30_000,
     refetchInterval: 60_000,
   })

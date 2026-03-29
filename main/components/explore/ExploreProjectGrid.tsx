@@ -66,7 +66,7 @@ export function ExploreProjectGrid({
   return (
     <section>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {projectCards.map((p) => {
+        {projectCards.map((p, index) => {
           const updateBadge = getUpdateBadge(p.updatedAt)
           const isUrgent = p.daysLeft > 0 && p.daysLeft <= 3
           return (
@@ -76,7 +76,8 @@ export function ExploreProjectGrid({
               tabIndex={0}
               onClick={() => onSelectProject(p.id)}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectProject(p.id) } }}
-              className="relative bg-surface-card border border-border-strong overflow-hidden group hover:shadow-solid-sm hover:border-brand/30 transition-all cursor-pointer h-[21.25rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985] active:shadow-none active:border-brand/50"
+              style={{ animationDelay: `${Math.min(index * 60, 600)}ms` }}
+              className="stagger-item relative bg-surface-card border border-border-strong overflow-hidden group hover:shadow-solid-sm hover:border-brand/30 hover:-translate-y-0.5 hover-spring cursor-pointer h-[21.25rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985] active:shadow-none active:border-brand/50"
             >
               {/* 코너 마크 */}
               <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-black/15 z-20" />
@@ -128,7 +129,7 @@ export function ExploreProjectGrid({
                 <div className="flex items-center gap-1.5 mb-2 overflow-hidden">
                   <span className="text-[0.625rem] font-mono font-bold text-brand uppercase tracking-wide shrink-0 bg-brand-bg px-1.5 py-0.5 border border-brand-border">NEED</span>
                   {p.roles.slice(0, 2).map(role => (
-                    <span key={role} className="text-xs bg-white text-txt-secondary px-2 py-0.5 border border-border font-medium shrink-0">{role}</span>
+                    <span key={role} className="text-xs bg-surface-card text-txt-secondary px-2 py-0.5 border border-border font-medium shrink-0">{role}</span>
                   ))}
                 </div>
                 <p className="text-sm text-txt-secondary line-clamp-2">{p.desc}</p>

@@ -2,21 +2,22 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { PenTool, User, LogOut, Bell, Menu, X, Plus, Settings, Search, ChevronRight, Shield, FolderOpen, Compass, Briefcase, AlertTriangle } from 'lucide-react'
+import { User, LogOut, Bell, Menu, X, Plus, Settings, Search, ChevronRight, Shield, FolderOpen, Compass, Briefcase, AlertTriangle, Sun, Moon } from 'lucide-react'
 import Link from 'next/link'
 import { useAuth } from '@/src/context/AuthContext'
 import { useAdmin } from '@/src/hooks/useAdmin'
 import { NotificationDropdown } from '@/components/NotificationDropdown'
+import { useTheme } from '@/src/context/ThemeContext'
 import { useBackHandler } from '@/src/hooks/useBackHandler'
 
 // 데스크탑 pill 형태 네비 탭
 const NavPill = ({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) => (
   <Link
     href={href}
-    className={`px-3.5 py-1 text-xs font-medium transition-all ${
+    className={`px-3.5 py-1.5 text-xs font-medium rounded-full transition-all ${
       active
-        ? 'bg-surface-card text-txt-primary shadow-solid-sm border border-border-strong'
-        : 'text-txt-tertiary hover:text-txt-primary'
+        ? 'bg-surface-card text-txt-primary shadow-sm'
+        : 'text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken/50'
     }`}
   >
     {children}
@@ -76,6 +77,7 @@ export const TopNavbar: React.FC = () => {
   const pathname = usePathname()
   const { signOut, user, isAuthenticated, isLoading: authLoading, profile } = useAuth()
   const { isAdmin } = useAdmin()
+  const { theme, toggleTheme } = useTheme()
 
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -178,14 +180,14 @@ export const TopNavbar: React.FC = () => {
 
           {/* ===== 좌측: 로고 ===== */}
           <Link href="/explore" className="flex items-center gap-2.5 shrink-0 group mr-1">
-            <div className="w-8 h-8 bg-surface-inverse flex items-center justify-center group-hover:scale-105 transition-transform shadow-solid-sm">
-              <PenTool size={14} className="text-txt-inverse" />
+            <div className="w-8 h-8 bg-surface-inverse rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform">
+              <span className="text-txt-inverse font-black text-sm leading-none">D</span>
             </div>
             <span className="font-bold text-lg tracking-tight hidden sm:block">Draft</span>
           </Link>
 
           {/* ===== 데스크탑 네비게이션 (pill tabs) ===== */}
-          <div className="hidden md:flex items-center bg-surface-sunken/80 p-0.5 border border-border">
+          <div className="hidden md:flex items-center bg-surface-sunken/60 p-0.5 rounded-full">
             <NavPill href="/explore" active={pathname === '/explore'}>탐색</NavPill>
             <NavPill href="/profile" active={pathname === '/profile'}>마이페이지</NavPill>
           </div>
@@ -310,6 +312,15 @@ export const TopNavbar: React.FC = () => {
                 >
                   <Plus size={14} strokeWidth={2.5} />
                   <span>새 프로젝트</span>
+                </button>
+
+                {/* 다크모드 토글 */}
+                <button
+                  onClick={() => { import('@/src/utils/haptic').then(h => h.hapticLight()); toggleTheme() }}
+                  aria-label={theme === 'dark' ? '라이트 모드' : '다크 모드'}
+                  className="w-9 h-9 flex items-center justify-center rounded-full text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken transition-colors"
+                >
+                  {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
                 </button>
 
                 {/* 알림 */}

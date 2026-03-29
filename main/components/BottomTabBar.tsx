@@ -54,7 +54,7 @@ export function BottomTabBar() {
             className={`relative -mt-4 w-14 h-14 rounded-full flex items-center justify-center border-2 shadow-lg transition-all active:scale-90 ${
               isCenterActive
                 ? 'bg-brand border-brand text-white shadow-brand/30'
-                : 'bg-surface-inverse border-border-strong text-txt-inverse shadow-black/15 hover:shadow-black/25'
+                : 'bg-surface-inverse border-surface-inverse text-txt-inverse shadow-black/15 hover:shadow-black/25'
             }`}
           >
             <Compass size={26} strokeWidth={isCenterActive ? 2.5 : 2} />

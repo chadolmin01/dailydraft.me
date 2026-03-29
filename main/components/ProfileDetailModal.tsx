@@ -1,6 +1,8 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { hapticMedium } from '@/src/utils/haptic'
 import {
   X, Briefcase, Share2, Heart,
   Loader2, AlertCircle, ShieldCheck,
@@ -92,6 +94,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
   }, [profile?.id, user])
 
   const handleInterest = async () => {
+    hapticMedium()
     if (!user) return
     if (user.id === profile?.user_id) { toast.error('내 프로필에는 관심 표시를 할 수 없어요'); return }
     if (!profile?.id || interestLoading) return
@@ -166,18 +169,28 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
   }
 
   return (
-    <>
+    <AnimatePresence>
       {profileId && (
         <>
           {/* Backdrop */}
-          <div
+          <motion.div
+            key="profile-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-modal-backdrop animate-backdrop-in"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-modal-backdrop"
           />
 
           {/* Modal */}
-          <div
-            className="fixed inset-0 z-modal flex items-end sm:items-center justify-center pt-6 px-0 pb-[env(safe-area-inset-bottom)] sm:p-4 md:p-8 animate-modal-in"
+          <motion.div
+            key="profile-modal"
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.97, y: 10 }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed inset-0 z-modal flex items-end sm:items-center justify-center pt-6 px-0 pb-[env(safe-area-inset-bottom)] sm:p-4 md:p-8"
             onClick={onClose}
           >
             <div
@@ -227,8 +240,8 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                       disabled={interestLoading}
                       className={`flex items-center gap-1 px-2 py-1 text-[0.625rem] font-mono font-bold transition-colors border ${
                         hasInterested
-                          ? 'bg-rose-50 text-rose-500 border-rose-200 hover:bg-rose-100'
-                          : 'text-txt-disabled border-transparent hover:bg-surface-sunken hover:border-border hover:text-rose-400'
+                          ? 'bg-status-danger-bg text-status-danger-text border-status-danger-text/20'
+                          : 'text-txt-disabled border-transparent hover:bg-surface-sunken hover:border-border hover:text-status-danger-text'
                       }`}
                       aria-label="관심"
                     >
@@ -328,9 +341,9 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
               />
             )}
             </div>
-          </div>
+          </motion.div>
         </>
       )}
-    </>
+    </AnimatePresence>
   )
 }

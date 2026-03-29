@@ -88,7 +88,7 @@ export default function MyProjectsPage() {
           </div>
         ) : (
           <div className="space-y-3">
-            {myProjects.map((opp: Opportunity) => {
+            {myProjects.map((opp: Opportunity, index: number) => {
               const daysAgo = opp.created_at
                 ? Math.floor((Date.now() - new Date(opp.created_at).getTime()) / (1000 * 60 * 60 * 24))
                 : 0
@@ -100,7 +100,8 @@ export default function MyProjectsPage() {
                   tabIndex={0}
                   onClick={() => setSelectedProjectId(opp.id)}
                   onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedProjectId(opp.id) } }}
-                  className="bg-surface-card border border-border-strong p-4 cursor-pointer hover:shadow-solid-sm hover:border-brand/30 transition-all active:scale-[0.985] group"
+                  style={{ animationDelay: `${Math.min(index * 60, 600)}ms` }}
+                  className="stagger-item bg-surface-card border border-border-strong p-4 cursor-pointer hover:shadow-solid-sm hover:border-brand/30 hover:-translate-y-0.5 hover-spring active:scale-[0.985] group"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
