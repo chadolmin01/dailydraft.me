@@ -43,47 +43,10 @@ export function ExploreSidebar({
   const showLoading = isAuthenticated && recsLoading && sidebarRecs.length === 0
   return (
     <div className="space-y-4">
-      {/* 카테고리 */}
-      <div className="relative bg-surface-card rounded-xl border border-border p-4 shadow-md">
-        <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/20" />
-        <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-surface-inverse/20" />
-        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
-          <span className="w-4 h-4 bg-surface-inverse text-txt-inverse flex items-center justify-center text-[0.5rem] font-bold">{activeTab === 'projects' ? 'C' : 'R'}</span>
-          {activeTab === 'projects' ? 'CATEGORY' : 'ROLE'}
-        </h3>
-        <nav className="space-y-0.5">
-          {categories.map((cat, idx) => (
-            <button
-              key={cat.id}
-              onClick={() => onCategoryChange(cat.id)}
-              className={`w-full flex items-center justify-between px-2.5 py-2 text-sm transition-all border ${
-                selectedCategory === cat.id
-                  ? 'bg-brand text-white border-brand shadow-sm'
-                  : 'text-txt-secondary border-transparent hover:bg-surface-sunken hover:border-border'
-              }`}
-            >
-              <span className="flex items-center gap-2">
-                <span className={`text-[0.625rem] font-mono ${selectedCategory === cat.id ? 'text-white/60' : 'text-txt-disabled'}`}>{String(idx).padStart(2, '0')}</span>
-                <cat.icon size={13} />
-                {cat.label}
-              </span>
-              {cat.count > 0 && (
-                <span className={`text-[0.625rem] font-mono px-1.5 py-0.5 ${
-                  selectedCategory === cat.id ? 'bg-white/20 text-white' : 'bg-surface-sunken text-txt-tertiary'
-                }`}>
-                  {cat.count}
-                </span>
-              )}
-            </button>
-          ))}
-        </nav>
-      </div>
-
       {/* 트렌딩 태그 */}
-      <div className="relative bg-surface-card rounded-xl border border-border p-4 shadow-md">
-        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
-          <span className="w-4 h-4 bg-indicator-trending text-white flex items-center justify-center text-[0.5rem] font-bold">{activeTab === 'projects' ? 'T' : 'S'}</span>
-          {activeTab === 'projects' ? 'TRENDING' : 'POPULAR SKILLS'}
+      <div className="bg-surface-card rounded-xl border border-border p-4">
+        <h3 className="text-[0.6875rem] font-medium text-txt-tertiary mb-3">
+          {activeTab === 'projects' ? '트렌딩' : '인기 스킬'}
         </h3>
         <div className="space-y-1.5">
           {trendingTags.map((item, idx) => {
@@ -112,11 +75,8 @@ export function ExploreSidebar({
 
       {/* 필터 */}
       {activeTab === 'projects' && (
-        <div className="relative bg-surface-card rounded-xl border border-border p-4 shadow-md">
-          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
-            <span className="w-4 h-4 bg-indicator-online text-white flex items-center justify-center text-[0.5rem] font-bold">F</span>
-            FILTER
-          </h3>
+        <div className="bg-surface-card rounded-xl border border-border p-4">
+          <h3 className="text-[0.6875rem] font-medium text-txt-tertiary mb-3">필터</h3>
           <label className="flex items-center gap-2.5 text-sm text-txt-secondary cursor-pointer group">
             <div className={`w-4 h-4 border flex items-center justify-center transition-all ${
               recruitingOnly ? 'bg-indicator-online border-indicator-online' : 'border-border group-hover:border-txt-secondary'
@@ -141,11 +101,8 @@ export function ExploreSidebar({
       )}
 
       {activeTab === 'people' && (
-        <div className="relative bg-surface-card rounded-xl border border-border p-4 shadow-md">
-          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
-            <span className="w-4 h-4 bg-brand text-white flex items-center justify-center text-[0.5rem] font-bold">i</span>
-            INFO
-          </h3>
+        <div className="bg-surface-card rounded-xl border border-border p-4">
+          <h3 className="text-[0.6875rem] font-medium text-txt-tertiary mb-3">정보</h3>
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
               <span className="text-txt-tertiary">공개 프로필</span>
