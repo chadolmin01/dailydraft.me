@@ -29,7 +29,7 @@ export const EditBasicInfo: React.FC<EditBasicInfoProps> = ({
               onChange={(e) => setNickname(e.target.value)}
               maxLength={30}
               placeholder="닉네임을 입력하세요"
-              className="w-full px-3 py-2.5 text-sm border border-border bg-surface-card rounded-xl focus:outline-none focus:border-accent transition-colors"
+              className="w-full px-3 py-2.5 text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:border-accent transition-colors"
             />
           </div>
           <div>
@@ -40,7 +40,7 @@ export const EditBasicInfo: React.FC<EditBasicInfoProps> = ({
               placeholder="자신을 한 줄로 소개해주세요"
               rows={2}
               maxLength={200}
-              className="w-full px-3 py-2.5 text-sm border border-border bg-surface-card rounded-xl focus:outline-none focus:border-accent resize-none transition-colors"
+              className="w-full px-3 py-2.5 text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:border-accent resize-none transition-colors"
             />
             <p className={`text-xs mt-1 text-right font-mono ${vision.length >= 180 ? 'text-status-danger-text font-bold' : vision.length >= 150 ? 'text-status-warning-text' : 'text-txt-tertiary'}`}>{vision.length}/200</p>
           </div>

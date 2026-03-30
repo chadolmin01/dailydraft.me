@@ -29,7 +29,7 @@ const SignupCTA: React.FC<{ onClose: () => void; onSignup: () => void }> = ({ on
   >
     <div
       onClick={(e) => e.stopPropagation()}
-      className="bg-surface-card w-full max-w-sm p-8 text-center shadow-brutal border border-border animate-modal-in"
+      className="bg-surface-card w-full max-w-sm p-8 text-center shadow-lg border border-border animate-modal-in"
     >
       <div className="w-16 h-16 bg-black flex items-center justify-center mx-auto mb-6">
         <span className="text-white font-black text-2xl font-mono">D</span>
@@ -400,7 +400,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                             index === 0 ? 'border-border' : 'border-border'
                           }`} />
 
-                          <div className="bg-surface-card rounded-xl border border-border p-5 hover:shadow-sharp transition-all">
+                          <div className="bg-surface-card rounded-xl border border-border p-5 hover:shadow-md transition-all">
                             <div className="flex items-center gap-2 mb-2">
                               <span className={`text-[0.625rem] font-bold px-2 py-0.5 border ${config.badgeColor}`}>
                                 {config.label}
@@ -615,7 +615,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
             )}
 
             {/* CTA Card */}
-            <div className="bg-surface-inverse text-txt-inverse p-6 border border-surface-inverse shadow-solid">
+            <div className="bg-surface-inverse text-txt-inverse p-6 border border-surface-inverse shadow-md">
               <h3 className="font-bold mb-2">프로젝트에 참여하고 싶나요?</h3>
               <p className="text-txt-inverse/50 text-sm mb-4 break-keep">
                 커피챗으로 메이커와 직접 이야기해보세요.

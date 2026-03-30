@@ -280,7 +280,7 @@ const WarningItem: React.FC<WarningItemProps> = ({
                 e.stopPropagation()
                 onDismiss()
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-surface-card rounded-xl border border-border text-txt-secondary text-xs font-medium hover:bg-black hover:text-white transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-surface-card rounded-lg border border-border text-txt-secondary text-xs font-medium hover:bg-black hover:text-white transition-colors"
             >
               <X size={12} />
               무시
@@ -350,7 +350,7 @@ export const InlineWarningHighlight: React.FC<InlineWarningHighlightProps> = ({
     >
       {text.substring(start, end)}
       {showTooltip && (
-        <div className="absolute left-0 bottom-full mb-2 w-64 p-2 bg-surface-inverse text-white text-xs shadow-brutal z-50">
+        <div className="absolute left-0 bottom-full mb-2 w-64 p-2 bg-surface-inverse text-white text-xs shadow-lg z-50">
           <div className="font-medium mb-1">
             {severity === 'high' ? '심각한 문제' : severity === 'medium' ? '개선 필요' : '참고 사항'}
           </div>

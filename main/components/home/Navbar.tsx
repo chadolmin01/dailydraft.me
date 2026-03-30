@@ -30,13 +30,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
         </div>
         <button
           onClick={onLoginClick}
-          className="text-xs font-medium border border-border bg-surface-card rounded-xl hover:bg-black hover:text-white px-3 py-1.5 transition-all duration-200 font-mono"
+          className="text-xs font-medium border border-border bg-surface-card rounded-lg hover:bg-black hover:text-white px-3 py-1.5 transition-all duration-200 font-mono"
         >
           로그인
         </button>
         <button
           onClick={onLoginClick}
-          className="hidden md:flex items-center gap-1.5 text-xs font-bold bg-surface-inverse text-txt-inverse px-3 py-1.5 hover:bg-surface-inverse/90 transition-all duration-200 shadow-solid-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+          className="hidden md:flex items-center gap-1.5 text-xs font-bold bg-surface-inverse text-txt-inverse px-3 py-1.5 hover:bg-surface-inverse/90 transition-all duration-200 shadow-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
         >
           <span>시작하기</span>
           <Command size={14} />

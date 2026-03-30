@@ -39,7 +39,7 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
         </div>
 
         {/* Card 2: Team Building */}
-        <div className="absolute top-32 -right-24 w-72 bg-brand p-5 shadow-brutal animate-float-delayed rotate-[1deg] ring-1 ring-offset-4 ring-brand-border">
+        <div className="absolute top-32 -right-24 w-72 bg-brand p-5 shadow-lg animate-float-delayed rotate-[1deg] ring-1 ring-offset-4 ring-brand-border">
             <div className="absolute top-0 right-0 p-1">
                 <div className="w-2 h-2 border border-white/50"></div>
             </div>
@@ -84,7 +84,7 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
             </div>
         </div>
          {/* Card 4: Launched Project */}
-        <div className="absolute bottom-10 -right-8 w-64 bg-[#111] p-5 shadow-brutal animate-float rotate-[-1deg] border border-white/15">
+        <div className="absolute bottom-10 -right-8 w-64 bg-[#111] p-5 shadow-lg animate-float rotate-[-1deg] border border-white/15">
              <div className="flex justify-between items-start mb-6">
                 <div className="w-8 h-8 bg-white/10 flex items-center justify-center border border-white/10">
                     <Sparkles size={14} className="text-txt-disabled" />
@@ -101,7 +101,7 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
       </div>
 
       <div className="relative z-10 flex flex-col items-center text-center mt-10 sm:mt-16 md:mt-28 max-w-2xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-3 py-1 bg-surface-card rounded-xl border border-border shadow-solid-sm mb-8">
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-surface-card rounded-xl border border-border shadow-sm mb-8">
             <Ruler size={14} className="text-black" />
             <span className="text-[0.625rem] font-medium text-black">DRAFT COMMUNITY</span>
         </div>
@@ -132,7 +132,7 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
 
           <button
             onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
-            className="group w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 font-bold text-xs border border-border bg-surface-card rounded-xl text-txt-secondary hover:bg-black hover:text-white transition-all duration-200"
+            className="group w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 font-bold text-xs border border-border bg-surface-card rounded-lg text-txt-secondary hover:bg-black hover:text-white transition-all duration-200"
           >
             프로젝트 둘러보기
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />

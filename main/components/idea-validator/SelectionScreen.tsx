@@ -33,8 +33,8 @@ const SelectionScreen: React.FC<SelectionScreenProps> = ({ onSelect, skipToLevel
       onClick={onClick}
       className={`group relative flex flex-col items-start p-6 h-full w-full border transition-all duration-200 text-left
         ${variant === 'ai'
-          ? 'bg-surface-card border-border hover:border-border hover:shadow-sharp'
-          : 'bg-surface-card border-border hover:border-border hover:shadow-sharp'
+          ? 'bg-surface-card border-border hover:border-border hover:shadow-md'
+          : 'bg-surface-card border-border hover:border-border hover:shadow-md'
         }
       `}
     >
@@ -102,7 +102,7 @@ const SelectionScreen: React.FC<SelectionScreenProps> = ({ onSelect, skipToLevel
     return (
       <button
         onClick={() => onSelect('ai', level)}
-        className={`group relative flex flex-col items-start p-5 w-full h-full bg-surface-card border transition-all duration-200 text-left hover:shadow-sharp ${currentTheme.border} ${recommended ? 'border-border ring-1 ring-black' : 'border-border'}`}
+        className={`group relative flex flex-col items-start p-5 w-full h-full bg-surface-card border transition-all duration-200 text-left hover:shadow-md ${currentTheme.border} ${recommended ? 'border-border ring-1 ring-black' : 'border-border'}`}
       >
         {recommended && (
            <div className="absolute -top-2.5 left-5 bg-surface-inverse text-txt-inverse text-[0.5625rem] font-medium px-2 py-0.5">

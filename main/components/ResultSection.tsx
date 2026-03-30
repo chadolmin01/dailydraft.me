@@ -38,7 +38,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
           </div>
 
           {/* Problem / Target / Alternatives Grid */}
-          <div className="bg-surface-card p-6 shadow-sharp border border-border space-y-6">
+          <div className="bg-surface-card p-6 shadow-md border border-border space-y-6">
              <div className="grid grid-cols-1 gap-4">
                <div className="space-y-1">
                  <div className="flex items-center gap-2 text-rose-600 font-semibold text-sm">
@@ -70,7 +70,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
           </div>
 
           {/* Core Features */}
-          <div className="bg-surface-card p-6 shadow-sharp border border-border">
+          <div className="bg-surface-card p-6 shadow-md border border-border">
                 <div className="flex items-center gap-2 mb-6">
                     <div className="p-2 bg-status-info-bg border border-status-info-text/20 text-status-info-text">
                         <Layers className="w-5 h-5" />
@@ -105,7 +105,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
             </div>
 
             {/* Next Steps */}
-            <div className="bg-surface-inverse text-white p-6 shadow-brutal relative overflow-hidden group border border-surface-inverse">
+            <div className="bg-surface-inverse text-white p-6 shadow-lg relative overflow-hidden group border border-surface-inverse">
                 <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
                     <Lightbulb className="w-24 h-24" />
                 </div>
@@ -163,7 +163,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
         </div>
 
         {/* Problem / Target / Alternatives */}
-        <div className="bg-surface-card p-6 shadow-sharp border border-border space-y-6">
+        <div className="bg-surface-card p-6 shadow-md border border-border space-y-6">
           <div className="grid grid-cols-1 gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-2 text-rose-600 font-semibold text-sm">
@@ -195,7 +195,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
         </div>
 
         {/* Core Features with Priorities */}
-        <div className="bg-surface-card p-6 shadow-sharp border border-border">
+        <div className="bg-surface-card p-6 shadow-md border border-border">
           <div className="flex items-center gap-2 mb-6">
             <div className="p-2 bg-violet-50 border border-violet-200 text-violet-600">
               <Layers className="w-5 h-5" />
@@ -254,7 +254,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
         </div>
 
         {/* Next Steps - MVP Focus */}
-        <div className="bg-violet-900 text-white p-6 shadow-brutal relative overflow-hidden group border border-violet-900">
+        <div className="bg-violet-900 text-white p-6 shadow-lg relative overflow-hidden group border border-violet-900">
           <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
             <Zap className="w-24 h-24" />
           </div>
@@ -314,7 +314,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
         </div>
 
         {/* Role Perspectives */}
-        <div className="bg-surface-card p-6 shadow-sharp border border-border">
+        <div className="bg-surface-card p-6 shadow-md border border-border">
           <h3 className="font-bold text-txt-primary mb-4">Role Perspectives</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -425,7 +425,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
   return (
     <div className="animate-fade-in space-y-6 h-full">
         {/* Main Analysis Card */}
-        <div className="bg-surface-card p-8 shadow-brutal border border-border">
+        <div className="bg-surface-card p-8 shadow-lg border border-border">
             <div className={`inline-flex items-center gap-2 px-3 py-1.5 mb-6 ${roleColor}`}>
                 {roleIcon}
                 <span className="font-bold text-sm">{roleTitle}</span>

@@ -103,7 +103,7 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
         {isEditable && !showForm && (
           <button
             onClick={() => setShowForm(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold border border-border hover:bg-black hover:text-white transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold border border-border hover:bg-black hover:text-white transition-colors hover:shadow-md active:scale-[0.97]"
           >
             <Plus size={14} /> 추가
           </button>
@@ -115,7 +115,7 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
         {items.map((item) => (
           <div
             key={item.id}
-            className="relative bg-surface-card rounded-xl border border-border overflow-hidden group hover:shadow-brutal transition-all shadow-sharp"
+            className="relative bg-surface-card rounded-xl border border-border overflow-hidden group hover:shadow-lg transition-all shadow-md"
           >
             <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/20 z-10" />
             <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-surface-inverse/20 z-10" />
@@ -172,7 +172,7 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
 
         {/* Add form card */}
         {showForm && (
-          <div className="relative bg-surface-card border border-brand/30 overflow-hidden shadow-sharp flex flex-col">
+          <div className="relative bg-surface-card border border-brand/30 overflow-hidden shadow-md flex flex-col">
             {/* Image upload area */}
             <div
               className="relative h-36 bg-surface-bg border-b border-border flex items-center justify-center cursor-pointer hover:bg-surface-sunken transition-colors"

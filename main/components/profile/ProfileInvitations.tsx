@@ -29,7 +29,7 @@ export function ProfileInvitations() {
       ) : receivedInvitations.length > 0 ? (
         <div className="space-y-3">
           {receivedInvitations.filter(i => i.status === 'pending').map((inv) => (
-            <div key={inv.id} className="relative bg-surface-card rounded-xl border border-border p-4 border-l-4 border-l-brand shadow-sharp">
+            <div key={inv.id} className="relative bg-surface-card rounded-xl border border-border p-4 border-l-4 border-l-brand shadow-md">
               <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-surface-inverse/20" />
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                 <div className="flex-1 min-w-0">
@@ -65,7 +65,7 @@ export function ProfileInvitations() {
                       } catch { /* handled by mutation */ }
                     }}
                     disabled={respondToInvitation.isPending}
-                    className="px-3 py-1.5 text-xs font-bold border border-border text-txt-secondary hover:bg-surface-sunken shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                    className="px-3 py-1.5 text-xs font-bold border border-border text-txt-secondary hover:bg-surface-sunken hover:shadow-md active:scale-[0.97] transition-all"
                   >
                     거절
                   </button>
@@ -75,7 +75,7 @@ export function ProfileInvitations() {
           ))}
 
           {receivedInvitations.filter(i => i.status !== 'pending').map((inv) => (
-            <div key={inv.id} className="bg-surface-card rounded-xl border border-border p-4 hover:shadow-sharp transition-all">
+            <div key={inv.id} className="bg-surface-card rounded-xl border border-border p-4 hover:shadow-md transition-all">
               <div className="flex items-center gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">

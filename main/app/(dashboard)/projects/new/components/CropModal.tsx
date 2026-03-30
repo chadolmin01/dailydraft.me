@@ -22,7 +22,7 @@ interface CropModalProps {
 export function CropModal({ cropSrc, crop, zoom, cropQueueLength, onCropChange, onZoomChange, onCropComplete, onCropConfirm, onCropCancel }: CropModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
-      <div className="bg-surface-card rounded-xl border border-border w-full max-w-lg flex flex-col overflow-hidden shadow-brutal">
+      <div className="bg-surface-card rounded-xl border border-border w-full max-w-lg flex flex-col overflow-hidden shadow-lg">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-2.5 border-b-2 border-border bg-surface-sunken">
           <div className="flex items-center gap-2">

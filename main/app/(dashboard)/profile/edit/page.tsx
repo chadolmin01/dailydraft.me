@@ -748,7 +748,7 @@ export default function ProfileEditPage() {
       {/* Crop modal */}
       {cropImage && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
-          <div className="bg-surface-card rounded-xl border border-border shadow-brutal w-full max-w-lg mx-4 flex flex-col">
+          <div className="bg-surface-card rounded-xl border border-border shadow-lg w-full max-w-lg mx-4 flex flex-col">
             <div className="flex items-center justify-between px-4 py-2.5 border-b-2 border-border bg-surface-sunken">
               <span className="text-xs font-medium text-txt-secondary">{cropType === 'avatar' ? 'CROP AVATAR' : 'CROP COVER'}</span>
               <button onClick={() => setCropImage(null)} className="p-1 hover:bg-surface-card transition-colors"><X size={16} className="text-txt-tertiary" /></button>
@@ -777,7 +777,7 @@ export default function ProfileEditPage() {
 /* ─── Card wrapper ─── */
 function Card({ title, icon, children }: { title: string; icon?: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div className="bg-surface-card rounded-xl border border-border shadow-sharp">
+    <div className="bg-surface-card rounded-xl border border-border shadow-md">
       <div className="flex items-center gap-2 px-5 sm:px-6 py-3 border-b border-border bg-surface-sunken">
         {icon}
         <h3 className="text-[0.625rem] font-medium text-txt-tertiary">{title}</h3>

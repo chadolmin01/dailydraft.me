@@ -173,7 +173,7 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
               <button
                 onClick={handleSync}
                 disabled={isSyncing}
-                className="px-2 py-1 bg-surface-card rounded-xl border border-border text-xs font-medium text-txt-secondary hover:bg-black hover:text-white flex items-center gap-1.5 transition-all"
+                className="px-2 py-1 bg-surface-card rounded-lg border border-border text-xs font-medium text-txt-secondary hover:bg-black hover:text-white flex items-center gap-1.5 transition-all"
               >
                 <RefreshCw size={12} className={isSyncing ? 'animate-spin' : ''} />
                 {isSyncing ? 'Syncing...' : 'Sync'}
@@ -185,7 +185,7 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
         {/* Content */}
         <div className="flex-1 overflow-hidden flex flex-col relative">
           {error && (
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-status-danger-bg text-status-danger-text px-3 py-1.5 shadow-sharp border border-status-danger-text/20 flex items-center gap-2 z-50 text-xs">
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-status-danger-bg text-status-danger-text px-3 py-1.5 shadow-md border border-status-danger-text/20 flex items-center gap-2 z-50 text-xs">
               <AlertCircle size={14} />
               {error}
             </div>
@@ -195,7 +195,7 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
             <div className="h-full overflow-y-auto p-6">
               <div className="max-w-3xl mx-auto">
                 {/* PRD Viewer */}
-                <div className="bg-surface-card rounded-xl border border-border p-6 shadow-sharp">
+                <div className="bg-surface-card rounded-xl border border-border p-6 shadow-md">
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <div className="flex items-center gap-2 mb-2">

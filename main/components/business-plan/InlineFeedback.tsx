@@ -136,7 +136,7 @@ export const FeedbackTooltip: React.FC<FeedbackTooltipProps> = ({
 
   return (
     <div className={`absolute ${positionClasses[position]} z-50 w-72 animate-in fade-in duration-150`}>
-      <div className={`${config.bg} shadow-brutal p-3 text-white`}>
+      <div className={`${config.bg} shadow-lg p-3 text-white`}>
         <div className="flex items-start gap-2">
           <span className={`px-1.5 py-0.5 ${config.badge} text-[0.625rem] font-bold`}>
             {config.text}

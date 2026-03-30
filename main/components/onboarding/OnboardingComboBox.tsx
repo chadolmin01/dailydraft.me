@@ -50,7 +50,7 @@ export const OnboardingComboBox: React.FC<OnboardingComboBoxProps> = ({
         </button>
       </div>
       {isOpen && filtered.length > 0 && (
-        <div className="absolute z-50 w-full mt-1 bg-surface-card rounded-xl border border-border shadow-sharp max-h-36 overflow-y-auto">
+        <div className="absolute z-50 w-full mt-1 bg-surface-card rounded-lg border border-border shadow-md max-h-36 overflow-y-auto">
           {filtered.map((opt) => (
             <button
               key={opt}

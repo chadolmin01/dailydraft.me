@@ -308,7 +308,7 @@ export const Dashboard: React.FC = () => {
           </div>
           <button
             onClick={() => router.push('/projects')}
-            className="bg-brand text-white border border-brand px-4 py-2 text-sm font-medium hover:bg-brand-hover transition-colors flex items-center gap-2 shadow-solid-sm"
+            className="bg-brand text-white border border-brand px-4 py-2 text-sm font-medium hover:bg-brand-hover transition-colors flex items-center gap-2 shadow-sm"
           >
              <Plus size={16} /> New Draft
           </button>
@@ -333,7 +333,7 @@ export const Dashboard: React.FC = () => {
 
                 <div className="p-5 flex flex-col h-full relative z-10">
                   <div className="flex justify-between items-start mb-5">
-                    <div className="w-14 h-14 bg-surface-inverse text-txt-inverse flex items-center justify-center text-xl font-bold border border-surface-card shadow-sharp group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-14 h-14 bg-surface-inverse text-txt-inverse flex items-center justify-center text-xl font-bold border border-surface-card shadow-md group-hover:scale-110 transition-transform duration-300">
                       {cleanNickname(profile?.nickname || '').slice(0, 2).toUpperCase() || user?.email?.slice(0, 2).toUpperCase() || 'U'}
                     </div>
                     <div className="flex flex-col items-end gap-1.5">
@@ -373,13 +373,13 @@ export const Dashboard: React.FC = () => {
                   </div>
 
                   <div className="grid grid-cols-2 gap-2 mt-auto">
-                      <div className="p-2.5 border border-border bg-surface-card rounded-xl group-hover:shadow-sharp transition-all">
+                      <div className="p-2.5 border border-border bg-surface-card rounded-xl group-hover:shadow-md transition-all">
                         <div className="text-[0.5625rem] text-txt-disabled mb-0.5 flex items-center gap-1">
                              <Eye size={10} /> Views
                         </div>
                         <div className="font-bold text-lg text-txt-primary leading-none">-</div>
                       </div>
-                      <div className="p-2.5 border border-border bg-surface-card rounded-xl group-hover:shadow-sharp transition-all">
+                      <div className="p-2.5 border border-border bg-surface-card rounded-xl group-hover:shadow-md transition-all">
                         <div className="text-[0.5625rem] text-txt-disabled mb-0.5 flex items-center gap-1">
                              <Users size={10} /> Network
                         </div>
@@ -507,7 +507,7 @@ export const Dashboard: React.FC = () => {
                 </div>
               </Card>
 
-              <div className="flex-1 bg-surface-card rounded-xl border border-border p-4 flex flex-col hover:shadow-sharp transition-all shadow-sm relative">
+              <div className="flex-1 bg-surface-card rounded-xl border border-border p-4 flex flex-col hover:shadow-md transition-all shadow-sm relative">
                 <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/20" />
                 <div className="flex justify-between items-center mb-4 border-b border-border pb-2">
                     <span className="text-[0.625rem] font-bold text-txt-primary font-mono flex items-center gap-1.5">

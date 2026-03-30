@@ -17,7 +17,7 @@ export function ProfileSidePanel({
   onSelectProject?: (projectId: string) => void
 }) {
   return (
-    <div className="hidden md:flex w-2/5 bg-surface-card rounded-xl border border-border flex-col overflow-hidden shadow-brutal-xl">
+    <div className="hidden md:flex w-2/5 bg-surface-card rounded-xl border border-border flex-col overflow-hidden shadow-lg-xl">
       {/* Side panel header */}
       <div className="bg-surface-sunken border-b border-border px-4 h-10 flex items-center justify-between shrink-0">
         <h3 className="text-[0.625rem] font-medium text-txt-tertiary">
@@ -44,7 +44,7 @@ export function ProfileSidePanel({
                   onSelectProject(project.id)
                 }
               }}
-              className="w-full text-left px-3 py-3 bg-surface-card rounded-xl border border-border hover:shadow-sharp hover:border-brand/40 transition-all group/proj"
+              className="w-full text-left px-3 py-3 bg-surface-card rounded-xl border border-border hover:shadow-md hover:border-brand/40 transition-all group/proj"
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
@@ -78,7 +78,7 @@ export function ProfileSidePanel({
             href={item.link_url || '#'}
             target={item.link_url ? '_blank' : undefined}
             rel={item.link_url ? 'noopener noreferrer' : undefined}
-            className="block bg-surface-card rounded-xl border border-border overflow-hidden hover:shadow-sharp transition-all"
+            className="block bg-surface-card rounded-xl border border-border overflow-hidden hover:shadow-md transition-all"
           >
             {item.image_url && (
               <div className="relative h-32 bg-surface-sunken">

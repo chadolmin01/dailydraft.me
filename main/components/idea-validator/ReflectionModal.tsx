@@ -36,7 +36,7 @@ const ReflectionModal: React.FC<ReflectionModalProps> = ({
 
   return (
     <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-      <div className="bg-surface-card w-full max-w-xl shadow-brutal flex flex-col max-h-[85vh] overflow-hidden">
+      <div className="bg-surface-card w-full max-w-xl shadow-lg flex flex-col max-h-[85vh] overflow-hidden">
         <div className="px-5 py-4 border-b border-border flex items-center justify-between bg-surface-card shrink-0">
           <div className="flex items-center gap-3">
              <div className="p-2 bg-surface-sunken text-txt-secondary">
@@ -101,7 +101,7 @@ const ReflectionModal: React.FC<ReflectionModalProps> = ({
             <textarea
               value={reflectionText}
               onChange={(e) => onReflectionTextChange(e.target.value)}
-              className="w-full h-28 p-4 bg-surface-card rounded-xl border border-border text-txt-primary text-sm leading-relaxed focus:outline-none focus:border-border focus:ring-1 focus:ring-black/10 resize-none transition-all"
+              className="w-full h-28 p-4 bg-surface-card rounded-lg border border-border text-txt-primary text-sm leading-relaxed focus:outline-none focus:border-border focus:ring-1 focus:ring-black/10 resize-none transition-all"
               placeholder="이 피드백을 어떻게 해결할지 구체적으로 적어주세요..."
             />
           </div>

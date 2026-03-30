@@ -152,14 +152,14 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
       {/* --- 프로필 설정 버튼 --- */}
       <button
         onClick={() => router.push('/profile/edit')}
-        className="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-bold border border-border hover:bg-black hover:text-white transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] bg-surface-card rounded-xl"
+        className="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-bold border border-border hover:bg-black hover:text-white transition-colors hover:shadow-md active:scale-[0.97] bg-surface-card rounded-lg"
       >
         <Edit3 size={12} /> 프로필 설정
       </button>
 
       {/* --- SOCIAL LINKS --- */}
       {showLinksSection && (
-        <div className="relative bg-surface-card rounded-xl border border-border p-4 shadow-sharp">
+        <div className="relative bg-surface-card rounded-xl border border-border p-4 shadow-md">
           <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
             <span className="w-4 h-4 bg-brand text-white flex items-center justify-center text-[0.5rem] font-bold">L</span>
             LINKS
@@ -207,7 +207,7 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
 
       {/* --- TECH STACK --- */}
       {skills && skills.length > 0 && (
-        <div className="relative bg-surface-card rounded-xl border border-border p-4 shadow-sharp">
+        <div className="relative bg-surface-card rounded-xl border border-border p-4 shadow-md">
           <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
             <span className="w-4 h-4 bg-indicator-online text-white flex items-center justify-center text-[0.5rem] font-bold">S</span>
             TECH STACK
@@ -228,7 +228,7 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
 
       {/* --- PERSONALITY --- */}
       {profile?.personality && (
-        <div className="relative bg-surface-card rounded-xl border border-border p-4 shadow-sharp">
+        <div className="relative bg-surface-card rounded-xl border border-border p-4 shadow-md">
           <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
             <span className="w-4 h-4 bg-indicator-premium text-white flex items-center justify-center text-[0.5rem] font-bold">P</span>
             PERSONALITY
@@ -250,7 +250,7 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
       )}
 
       {/* --- COMPLETION --- */}
-      <div className="relative bg-surface-card rounded-xl border border-border p-4 shadow-sharp">
+      <div className="relative bg-surface-card rounded-xl border border-border p-4 shadow-md">
         <div className="absolute bottom-1 left-1 w-2 h-2 border-l border-b border-surface-inverse/20" />
         <div className="absolute bottom-1 right-1 w-2 h-2 border-r border-b border-surface-inverse/20" />
         <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">

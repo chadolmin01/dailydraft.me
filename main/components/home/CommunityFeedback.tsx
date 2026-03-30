@@ -51,7 +51,7 @@ export const CommunityFeedback: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           {/* Project Card */}
-          <div className="bg-surface-card rounded-xl border border-border p-5 shadow-brutal">
+          <div className="bg-surface-card rounded-xl border border-border p-5 shadow-lg">
             <div className="flex items-start justify-between mb-3">
               <div>
                 <h3 className="text-base font-bold text-txt-primary mb-1.5">

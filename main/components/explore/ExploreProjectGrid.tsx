@@ -108,7 +108,7 @@ export function ExploreProjectGrid({
                     <span key={tag} className="text-[0.625rem] font-mono bg-black/60 backdrop-blur-sm text-white px-2 py-0.5 border border-white/10">{tag}</span>
                   ))}
                 </div>
-                <div className="relative z-[1] w-10 h-10 bg-surface-card flex items-center justify-center shadow-solid-sm border border-border">
+                <div className="relative z-[1] w-10 h-10 bg-surface-card flex items-center justify-center shadow-sm border border-border">
                   <Rocket size={18} className="text-black" />
                 </div>
               </div>
@@ -165,7 +165,7 @@ export function ExploreProjectGrid({
         <div className="text-center mt-6">
           <button
             onClick={onLoadMore}
-            className="px-6 py-2.5 text-sm font-bold text-txt-secondary border border-border hover:bg-surface-sunken hover:shadow-sharp transition-all active:scale-[0.97] active:shadow-none"
+            className="px-6 py-2.5 text-sm font-bold text-txt-secondary border border-border hover:bg-surface-sunken hover:shadow-md transition-all active:scale-[0.97] active:shadow-none"
           >
             더 보기{!searchQuery && selectedCategory === 'all' && !recruitingOnly ? ` (${totalCount - projectCards.length}개 남음)` : ''}
           </button>

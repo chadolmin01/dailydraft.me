@@ -326,7 +326,7 @@ export const BasicInfoEditor: React.FC<BasicInfoEditorProps> = ({
         <select
           value={data.industry}
           onChange={(e) => onChange({ ...data, industry: e.target.value as IndustryType })}
-          className="w-full px-4 py-2.5 border border-border text-sm focus:outline-none focus:border-border bg-surface-card rounded-xl"
+          className="w-full px-4 py-2.5 border border-border text-sm focus:outline-none focus:border-border bg-surface-card rounded-lg"
         >
           {industries.map((ind) => (
             <option key={ind.value} value={ind.value}>

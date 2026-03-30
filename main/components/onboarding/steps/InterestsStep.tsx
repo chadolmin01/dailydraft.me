@@ -19,7 +19,7 @@ export const InterestsInputStep: React.FC<InterestsInputStepProps> = ({
   interestInput, interests, onInterestInputChange, onToggleInterest, onRemoveInterest, onSubmit,
 }) => {
   return (
-    <div className="mt-3 bg-surface-card rounded-xl border border-border p-4 shadow-sharp space-y-3">
+    <div className="mt-3 bg-surface-card rounded-xl border border-border p-4 shadow-md space-y-3">
       <div className="flex items-center gap-1.5 mb-1">
         <Sparkles size={10} className="text-brand" />
         <span className="text-[10px] font-mono font-medium text-brand">AI가 자동으로 정리해드려요</span>
@@ -30,7 +30,7 @@ export const InterestsInputStep: React.FC<InterestsInputStepProps> = ({
           value={interestInput}
           onChange={(e) => onInterestInputChange(e.target.value)}
           placeholder="예: AI, 게임, 교육 등"
-          className="w-full pl-3.5 pr-10 py-2.5 bg-surface-card rounded-xl border border-border text-sm font-medium focus:outline-none focus:border-surface-inverse focus:bg-white transition-all placeholder:text-txt-tertiary"
+          className="w-full pl-3.5 pr-10 py-2.5 bg-surface-card rounded-lg border border-border text-sm font-medium focus:outline-none focus:border-surface-inverse focus:bg-white transition-all placeholder:text-txt-tertiary"
           autoFocus
           onKeyDown={(e) => e.key === 'Enter' && onSubmit()}
         />

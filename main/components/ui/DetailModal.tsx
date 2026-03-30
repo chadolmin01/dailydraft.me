@@ -59,7 +59,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
       ></div>
 
       {/* Modal Content */}
-      <div className="relative bg-surface-card w-full max-w-4xl h-[85vh] border border-border shadow-brutal flex flex-col overflow-hidden animate-[scale-in_0.2s_ease-out]">
+      <div className="relative bg-surface-card w-full max-w-4xl h-[85vh] border border-border shadow-lg flex flex-col overflow-hidden animate-[scale-in_0.2s_ease-out]">
         {/* Header */}
         <div className="bg-surface-card border-b border-border sticky top-0 z-10 shrink-0">
           <div className="flex justify-between items-start p-6 pb-4">
@@ -169,7 +169,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
                     </div>
 
                     <div className="relative z-10 flex items-start gap-4">
-                      <div className="w-16 h-16 bg-surface-card flex items-center justify-center border border-brand/30 shadow-solid-sm shrink-0">
+                      <div className="w-16 h-16 bg-surface-card flex items-center justify-center border border-brand/30 shadow-sm shrink-0">
                         <span className="text-2xl font-bold text-brand font-mono">
                           {data.matchPercent}%
                         </span>
@@ -186,7 +186,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-surface-card p-5 border border-border shadow-sharp">
+                    <div className="bg-surface-card p-5 border border-border shadow-md">
                       <h4 className="text-sm font-bold text-txt-primary mb-4 flex items-center gap-2">
                         <BarChart3 size={16} /> Skill Match
                       </h4>
@@ -196,7 +196,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
                         <MetricBar label="Industry Knowledge" score={92} />
                       </div>
                     </div>
-                    <div className="bg-surface-card p-5 border border-border shadow-sharp">
+                    <div className="bg-surface-card p-5 border border-border shadow-md">
                       <h4 className="text-sm font-bold text-txt-primary mb-4 flex items-center gap-2">
                         <Users size={16} /> Culture Fit
                       </h4>
@@ -218,10 +218,10 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
                   Apply Now <ArrowUpRight size={16} />
                 </button>
                 <div className="flex gap-2">
-                  <button className="flex-1 bg-surface-card rounded-xl border border-border py-2.5 text-xs font-bold hover:bg-black hover:text-white transition-all flex items-center justify-center gap-2">
+                  <button className="flex-1 bg-surface-card rounded-lg border border-border py-2.5 text-xs font-bold hover:bg-black hover:text-white transition-all flex items-center justify-center gap-2">
                     <Bookmark size={14} /> Save
                   </button>
-                  <button className="flex-1 bg-surface-card rounded-xl border border-border py-2.5 text-xs font-bold hover:bg-black hover:text-white transition-all flex items-center justify-center gap-2">
+                  <button className="flex-1 bg-surface-card rounded-lg border border-border py-2.5 text-xs font-bold hover:bg-black hover:text-white transition-all flex items-center justify-center gap-2">
                     <Share2 size={14} /> Share
                   </button>
                 </div>
@@ -234,7 +234,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
                   Snapshot
                 </h4>
                 <div className="grid grid-cols-2 gap-2">
-                  <div className="bg-surface-card p-2.5 border border-border hover:shadow-sharp transition-all">
+                  <div className="bg-surface-card p-2.5 border border-border hover:shadow-md transition-all">
                     <div className="text-[0.5rem] text-txt-disabled mb-1">
                       Deadline
                     </div>
@@ -242,7 +242,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
                       <Calendar size={12} /> D-{data.daysLeft}
                     </div>
                   </div>
-                  <div className="bg-surface-card p-2.5 border border-border hover:shadow-sharp transition-all">
+                  <div className="bg-surface-card p-2.5 border border-border hover:shadow-md transition-all">
                     <div className="text-[0.5rem] text-txt-disabled mb-1">Type</div>
                     <div className="font-bold text-sm text-txt-primary truncate font-mono">{data.type}</div>
                   </div>
@@ -254,7 +254,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
                   Resources
                 </h4>
                 <div className="space-y-2">
-                  <button className="w-full flex items-center justify-between p-3 bg-surface-card rounded-xl border border-border hover:shadow-sharp transition-all group">
+                  <button className="w-full flex items-center justify-between p-3 bg-surface-card rounded-xl border border-border hover:shadow-md transition-all group">
                     <div className="flex items-center gap-2 overflow-hidden">
                       <FileText size={14} className="text-txt-tertiary group-hover:text-txt-primary" />
                       <span className="text-xs font-bold text-txt-secondary truncate group-hover:text-txt-primary">

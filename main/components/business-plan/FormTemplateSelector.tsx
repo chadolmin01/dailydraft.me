@@ -47,7 +47,7 @@ export const FormTemplateSelector: React.FC<FormTemplateSelectorProps> = ({
       />
 
       {/* Modal */}
-      <div className="relative bg-surface-card shadow-brutal w-full max-w-4xl max-h-[90vh] overflow-hidden mx-4">
+      <div className="relative bg-surface-card shadow-lg w-full max-w-4xl max-h-[90vh] overflow-hidden mx-4">
         {/* Header */}
         <div className="px-6 py-4 border-b border-border flex items-center justify-between">
           <div>
@@ -132,7 +132,7 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onSelect, feature
       onClick={() => onSelect(template)}
       className={`
         w-full text-left p-4 border transition-all group
-        ${featured ? 'border-status-info-text/30 hover:border-status-info-text bg-status-info-bg/30' : `${colors.border} bg-surface-card hover:shadow-sharp`}
+        ${featured ? 'border-status-info-text/30 hover:border-status-info-text bg-status-info-bg/30' : `${colors.border} bg-surface-card hover:shadow-md`}
       `}
     >
       <div className="flex items-start gap-4">

@@ -36,7 +36,7 @@ const GnbIconBtn = ({ label, onClick, children, className }: {
     >
       {children}
     </button>
-    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2.5 py-1 bg-surface-inverse text-txt-inverse text-[0.625rem] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-tooltip hidden md:block shadow-solid-sm border border-surface-inverse">
+    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2.5 py-1 bg-surface-inverse text-txt-inverse text-[0.625rem] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-tooltip hidden md:block shadow-sm border border-surface-inverse">
       {label}
     </div>
   </div>
@@ -199,7 +199,7 @@ export const TopNavbar: React.FC = () => {
               onClick={() => { if (!isSearchOpen) { setIsSearchOpen(true); setTimeout(() => searchInputRef.current?.focus(), 50) } }}
               className={`flex items-center transition-all duration-200 cursor-text ${
                 isSearchOpen
-                  ? 'bg-surface-card shadow-sharp border border-border'
+                  ? 'bg-surface-card shadow-md border border-border'
                   : 'bg-surface-card rounded-xl border border-border hover:shadow-soft hover:border-border'
               }`}
             >
@@ -230,7 +230,7 @@ export const TopNavbar: React.FC = () => {
             {/* 드롭다운 — 검색바 아래로 자연스럽게 열림 */}
             {isSearchOpen && (
               <div className="absolute top-full left-0 right-0 mt-1.5 z-popover">
-                <div className="bg-surface-card shadow-brutal border border-border overflow-hidden search-expand max-h-[60vh] overflow-y-auto">
+                <div className="bg-surface-card shadow-lg border border-border overflow-hidden search-expand max-h-[60vh] overflow-y-auto">
 
                   {/* 바로가기 */}
                   <div className="px-2 pt-2 pb-1">
@@ -343,7 +343,7 @@ export const TopNavbar: React.FC = () => {
 
                   {/* 드롭다운 */}
                   {isMenuOpen && (
-                    <div className="absolute right-0 top-11 w-[calc(100vw-2rem)] sm:w-60 max-w-60 bg-surface-card shadow-brutal border border-border py-1.5 animate-in fade-in zoom-in-95 duration-150 z-dropdown">
+                    <div className="absolute right-0 top-11 w-[calc(100vw-2rem)] sm:w-60 max-w-60 bg-surface-card shadow-lg border border-border py-1.5 animate-in fade-in zoom-in-95 duration-150 z-dropdown">
                       {/* 유저 헤더 */}
                       <div className="px-4 pt-3 pb-3">
                         <div className="flex items-center gap-3">
@@ -414,7 +414,7 @@ export const TopNavbar: React.FC = () => {
             className="md:hidden fixed inset-0 bg-black/20 backdrop-blur-sm z-[299] animate-in fade-in duration-200"
             onClick={() => setIsMobileMenuOpen(false)}
           />
-          <div className="md:hidden fixed top-14 sm:top-20 left-0 right-0 bg-surface-card/95 backdrop-blur-xl border-b border-border shadow-brutal z-fixed animate-in slide-in-from-bottom-2 duration-200">
+          <div className="md:hidden fixed top-14 sm:top-20 left-0 right-0 bg-surface-card/95 backdrop-blur-xl border-b border-border shadow-lg z-fixed animate-in slide-in-from-bottom-2 duration-200">
             <div className="px-4 py-4 space-y-1.5">
               <form
                 className="relative mb-3"

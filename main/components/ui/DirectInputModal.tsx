@@ -175,11 +175,11 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
         onClick={handleClose}
       />
 
-      <div className="relative bg-surface-card w-full max-w-lg border border-border shadow-brutal overflow-hidden max-h-[85vh] flex flex-col">
+      <div className="relative bg-surface-card w-full max-w-lg border border-border shadow-lg overflow-hidden max-h-[85vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-6 pb-0 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-black flex items-center justify-center text-white shadow-solid-sm">
+            <div className="w-10 h-10 bg-black flex items-center justify-center text-white shadow-sm">
               <FileUp size={18} />
             </div>
             <div>
@@ -267,7 +267,7 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
                 <textarea
                   value={structuredData.problem}
                   onChange={(e) => setStructuredData(prev => ({ ...prev, problem: e.target.value }))}
-                  className="w-full h-24 px-4 py-3 bg-surface-sunken rounded-xl border border-border focus:border-border resize-none focus:outline-none focus:ring-2 focus:ring-brand text-sm placeholder:text-txt-disabled transition-shadow"
+                  className="w-full h-24 px-4 py-3 bg-surface-sunken rounded-lg border border-border focus:border-border resize-none focus:outline-none focus:ring-2 focus:ring-brand text-sm placeholder:text-txt-disabled transition-shadow"
                   placeholder="해결하려는 문제를 입력하세요..."
                 />
               </div>
@@ -281,7 +281,7 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
                 <textarea
                   value={structuredData.solution}
                   onChange={(e) => setStructuredData(prev => ({ ...prev, solution: e.target.value }))}
-                  className="w-full h-24 px-4 py-3 bg-surface-sunken rounded-xl border border-border focus:border-border resize-none focus:outline-none focus:ring-2 focus:ring-brand text-sm placeholder:text-txt-disabled transition-shadow"
+                  className="w-full h-24 px-4 py-3 bg-surface-sunken rounded-lg border border-border focus:border-border resize-none focus:outline-none focus:ring-2 focus:ring-brand text-sm placeholder:text-txt-disabled transition-shadow"
                   placeholder="핵심 솔루션을 입력하세요..."
                 />
               </div>
@@ -295,7 +295,7 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
                 <textarea
                   value={structuredData.target}
                   onChange={(e) => setStructuredData(prev => ({ ...prev, target: e.target.value }))}
-                  className="w-full h-24 px-4 py-3 bg-surface-sunken rounded-xl border border-border focus:border-border resize-none focus:outline-none focus:ring-2 focus:ring-brand text-sm placeholder:text-txt-disabled transition-shadow"
+                  className="w-full h-24 px-4 py-3 bg-surface-sunken rounded-lg border border-border focus:border-border resize-none focus:outline-none focus:ring-2 focus:ring-brand text-sm placeholder:text-txt-disabled transition-shadow"
                   placeholder="타겟 고객을 입력하세요..."
                 />
               </div>

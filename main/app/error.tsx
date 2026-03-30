@@ -25,7 +25,7 @@ export default function GlobalError({
   return (
     <div className="min-h-screen flex items-center justify-center bg-surface-bg px-4">
       <div className="max-w-md w-full">
-        <div className="border-2 border-border bg-surface-card p-10 shadow-brutal text-center">
+        <div className="border-2 border-border bg-surface-card p-10 shadow-lg text-center">
           <div className="w-16 h-16 bg-black flex items-center justify-center mx-auto mb-6">
             <span className="text-white font-black text-2xl font-mono">!</span>
           </div>

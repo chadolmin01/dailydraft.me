@@ -127,7 +127,7 @@ export const InlineUpdateEditor: React.FC<InlineUpdateEditorProps> = ({
           isDragging
             ? 'border-surface-inverse bg-surface-sunken'
             : isExpanded
-            ? 'border-border shadow-solid-sm'
+            ? 'border-border shadow-sm'
             : 'border-border'
         }`}
       >

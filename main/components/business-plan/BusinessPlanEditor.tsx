@@ -398,14 +398,14 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
             <button
               onClick={handleSave}
               disabled={isSaving}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-txt-secondary bg-surface-card rounded-xl border border-border hover:bg-black hover:text-white transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-txt-secondary bg-surface-card rounded-lg border border-border hover:bg-black hover:text-white transition-colors"
             >
               <Save size={16} />
               {isSaving ? '저장 중...' : '저장'}
             </button>
             <button
               onClick={() => setShowPreview(true)}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-txt-secondary bg-surface-card rounded-xl border border-border hover:bg-black hover:text-white transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-txt-secondary bg-surface-card rounded-lg border border-border hover:bg-black hover:text-white transition-colors"
             >
               <Eye size={16} />
               미리보기
@@ -528,7 +528,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
             className="absolute inset-0 bg-black/30"
             onClick={() => setShowValidation(false)}
           />
-          <div className="relative bg-surface-card w-[26.25rem] h-full shadow-brutal overflow-y-auto">
+          <div className="relative bg-surface-card w-[26.25rem] h-full shadow-lg overflow-y-auto">
             <div className="sticky top-0 bg-surface-card border-b border-border px-4 py-3 flex items-center justify-between z-10">
               <h3 className="font-bold text-txt-primary">실시간 점수 분석</h3>
               <button

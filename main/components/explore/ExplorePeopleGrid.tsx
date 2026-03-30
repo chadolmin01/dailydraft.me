@@ -186,7 +186,7 @@ export function ExplorePeopleGrid({
         <div className="text-center mt-6">
           <button
             onClick={onLoadMore}
-            className="px-6 py-2.5 text-sm font-bold text-txt-secondary border border-border hover:bg-surface-sunken hover:shadow-sharp transition-all active:scale-[0.97] active:shadow-none"
+            className="px-6 py-2.5 text-sm font-bold text-txt-secondary border border-border hover:bg-surface-sunken hover:shadow-md transition-all active:scale-[0.97] active:shadow-none"
           >
             더 보기
           </button>

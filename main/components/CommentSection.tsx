@@ -131,7 +131,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
               placeholder={`${COMMENT_VERB}을 남겨주세요...`}
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="flex-1 px-3 py-1.5 text-sm border border-border focus:outline-none focus:border-border bg-surface-card rounded-xl text-txt-primary placeholder-txt-disabled"
+              className="flex-1 px-3 py-1.5 text-sm border border-border focus:outline-none focus:border-border bg-surface-card rounded-lg text-txt-primary placeholder-txt-disabled"
               maxLength={500}
             />
             <button

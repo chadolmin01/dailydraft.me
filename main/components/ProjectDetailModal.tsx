@@ -224,7 +224,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl max-h-[85vh] sm:max-h-[90vh] bg-surface-card shadow-brutal-xl border border-border overflow-hidden flex flex-col relative"
+              className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl max-h-[85vh] sm:max-h-[90vh] bg-surface-card shadow-lg-xl border border-border overflow-hidden flex flex-col relative"
               role="dialog"
               aria-modal="true"
               aria-label={opportunity?.title || '프로젝트 상세'}
@@ -255,7 +255,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                           <Edit3 size={8} />
                         </button>
                         {showTypeSelector && (
-                          <div className="absolute top-full left-0 mt-1 bg-surface-card rounded-xl border border-border shadow-sharp z-10 min-w-[8rem]">
+                          <div className="absolute top-full left-0 mt-1 bg-surface-card rounded-xl border border-border shadow-md z-10 min-w-[8rem]">
                             {[
                               { value: 'side_project', label: 'SIDE PROJECT' },
                               { value: 'startup', label: 'STARTUP' },

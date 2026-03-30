@@ -29,7 +29,7 @@ export const ProfilePreview: React.FC<ProfilePreviewProps> = ({
               </div>
             )}
           </div>
-          <div className={`bg-surface-card rounded-xl border border-border shadow-sharp overflow-hidden transition-all duration-500 ${profile.name ? 'opacity-100 translate-y-0' : 'opacity-30 translate-y-2'}`}>
+          <div className={`bg-surface-card rounded-xl border border-border shadow-md overflow-hidden transition-all duration-500 ${profile.name ? 'opacity-100 translate-y-0' : 'opacity-30 translate-y-2'}`}>
             <div className="p-5 space-y-3.5">
               <div className="flex items-start gap-3">
                 <div className="w-12 h-12 bg-surface-sunken rounded-xl border border-border flex items-center justify-center text-base font-bold text-txt-disabled shrink-0">

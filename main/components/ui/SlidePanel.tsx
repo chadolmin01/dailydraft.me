@@ -51,7 +51,7 @@ export const SlidePanel: React.FC<SlidePanelProps> = ({
 
       {/* Panel */}
       <div
-        className={`fixed top-0 right-0 z-modal h-full ${width} max-w-[calc(100vw-2rem)] bg-surface-bg border-l-2 border-border shadow-brutal flex flex-col transition-transform duration-300 ease-out ${
+        className={`fixed top-0 right-0 z-modal h-full ${width} max-w-[calc(100vw-2rem)] bg-surface-bg border-l-2 border-border shadow-lg flex flex-col transition-transform duration-300 ease-out ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >

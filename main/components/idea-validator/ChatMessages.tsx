@@ -40,7 +40,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
                     {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
                 </div>
-                <div className={`p-4 text-sm leading-relaxed shadow-sharp break-keep
+                <div className={`p-4 text-sm leading-relaxed shadow-md break-keep
                   ${msg.text?.startsWith('[종합 결정 사항]')
                       ? 'bg-surface-inverse text-txt-inverse border border-surface-inverse'
                       : 'bg-surface-card rounded-xl border border-border text-txt-primary'
@@ -66,7 +66,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
                         {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
-                    <div className="p-4 bg-surface-card rounded-xl border border-border text-sm text-txt-secondary leading-relaxed break-keep shadow-sharp">
+                    <div className="p-4 bg-surface-card rounded-xl border border-border text-sm text-txt-secondary leading-relaxed break-keep shadow-md">
                       {msg.responses[0].content}
                     </div>
                   </div>
@@ -90,7 +90,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
                         className={`relative flex flex-col items-start p-5 border transition-all duration-200 text-left group w-full h-full
                           ${resp.isReflected
                             ? 'bg-surface-sunken border-border ring-1 ring-black'
-                            : 'bg-surface-card border-border hover:border-border hover:shadow-sharp'
+                            : 'bg-surface-card border-border hover:border-border hover:shadow-md'
                           }
                         `}
                         style={{ animationDelay: `${idx * 100}ms` }}

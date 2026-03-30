@@ -36,7 +36,7 @@ export function ExploreMobileFilter({
 
   return (
     <div className="lg:hidden mb-4 animate-in slide-in-from-top-2 duration-200">
-      <div className="bg-surface-card rounded-xl border border-border p-4 space-y-4 shadow-sharp">
+      <div className="bg-surface-card rounded-xl border border-border p-4 space-y-4 shadow-md">
         <div>
           <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-2">{activeTab === 'projects' ? 'CATEGORY' : 'ROLE'}</h3>
           <div className="flex flex-wrap gap-1.5">

@@ -118,7 +118,7 @@ export function ProfileBodyLeft({
                   href={item.link_url || '#'}
                   target={item.link_url ? '_blank' : undefined}
                   rel={item.link_url ? 'noopener noreferrer' : undefined}
-                  className="bg-surface-card rounded-xl border border-border overflow-hidden hover:shadow-sharp transition-all"
+                  className="bg-surface-card rounded-xl border border-border overflow-hidden hover:shadow-md transition-all"
                 >
                   {item.image_url && (
                     <div className="relative h-20 bg-surface-card">
@@ -168,7 +168,7 @@ export function ProfileBodyLeft({
                         onSelectProject(project.id)
                       }
                     }}
-                    className="w-full text-left px-3 py-3 bg-surface-card rounded-xl border border-border hover:shadow-sharp hover:border-brand/40 transition-all group/proj"
+                    className="w-full text-left px-3 py-3 bg-surface-card rounded-xl border border-border hover:shadow-md hover:border-brand/40 transition-all group/proj"
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
@@ -263,7 +263,7 @@ export function ProfileBodyLeft({
           )}
         </>
       ) : (
-        <div className="bg-surface-inverse p-5 text-center border border-surface-inverse shadow-solid">
+        <div className="bg-surface-inverse p-5 text-center border border-surface-inverse shadow-md">
           <Coffee size={20} className="text-txt-inverse/50 mx-auto mb-2" />
           <p className="text-sm font-medium text-txt-inverse mb-1">관심 있는 사람인가요?</p>
           <p className="text-xs text-txt-inverse/50 mb-3">로그인하면 쪽지와 커피챗이 가능해요</p>

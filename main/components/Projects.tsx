@@ -83,7 +83,7 @@ export const Projects: React.FC = () => {
                       onClick={() => setSelectedCategory(cat.id)}
                       className={`w-full flex items-center px-3 py-2 text-sm font-medium transition-all ${
                         selectedCategory === cat.id
-                          ? 'bg-surface-inverse text-txt-inverse shadow-solid-sm'
+                          ? 'bg-surface-inverse text-txt-inverse shadow-sm'
                           : 'text-txt-secondary hover:bg-surface-sunken'
                       }`}
                     >
@@ -129,7 +129,7 @@ export const Projects: React.FC = () => {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 bg-surface-card rounded-xl border border-border text-sm font-mono focus:outline-none focus:border-brand placeholder:text-txt-disabled"
+                  className="w-full pl-11 pr-4 py-3 bg-surface-card rounded-lg border border-border text-sm font-mono focus:outline-none focus:border-brand placeholder:text-txt-disabled"
                   placeholder="프로젝트, 역할, 기술 스택 검색..."
                 />
               </div>
@@ -188,7 +188,7 @@ export const Projects: React.FC = () => {
                 {sorted.map((opp: OpportunityWithCreator) => {
                   const daysLeft = calculateDaysLeft(opp.created_at)
                   return (
-                    <Card key={opp.id} className="group hover:shadow-sharp relative" padding="p-4">
+                    <Card key={opp.id} className="group hover:shadow-md relative" padding="p-4">
                       {/* Corner marks */}
                       <span className="absolute top-0 left-0 w-2 h-2 border-t border-l border-border pointer-events-none" />
                       <span className="absolute top-0 right-0 w-2 h-2 border-t border-r border-border pointer-events-none" />
@@ -276,7 +276,7 @@ export const Projects: React.FC = () => {
               </div>
 
               {/* CTA 배너 */}
-              <div className="bg-surface-inverse border border-surface-inverse p-5 text-txt-inverse shadow-brutal">
+              <div className="bg-surface-inverse border border-surface-inverse p-5 text-txt-inverse shadow-lg">
                 <div className="w-10 h-10 border border-white/20 flex items-center justify-center mb-4">
                   <Rocket size={20} />
                 </div>
@@ -284,7 +284,7 @@ export const Projects: React.FC = () => {
                 <p className="text-txt-disabled text-xs mb-4 font-mono">프로젝트를 등록하고 함께할 팀원을 모집하세요</p>
                 <Link
                   href="/projects/new"
-                  className="w-full bg-white text-surface-inverse text-sm font-bold py-2 border border-white hover:bg-surface-sunken transition-all flex items-center justify-center gap-1.5 shadow-[2px_2px_0px_0px_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                  className="w-full bg-white text-surface-inverse text-sm font-bold py-2 border border-white hover:bg-surface-sunken transition-all flex items-center justify-center gap-1.5 hover:opacity-90 active:scale-[0.97]"
                 >
                   <Plus size={16} />
                   프로젝트 등록하기

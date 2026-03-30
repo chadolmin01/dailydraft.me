@@ -160,7 +160,7 @@ const ResultView: React.FC<ResultViewProps> = ({
   );
 
   const ActionCard = ({ title, items, color, icon }: { title: string, items: string[], color: string, icon: React.ReactNode }) => (
-    <div className="bg-surface-card rounded-xl border border-border p-6 shadow-sharp hover:shadow-brutal transition-shadow">
+    <div className="bg-surface-card rounded-xl border border-border p-6 shadow-md hover:shadow-lg transition-shadow">
         <div className="flex items-center gap-3 mb-4">
             <div className={`p-2 ${color}`}>
                 {icon}
@@ -182,7 +182,7 @@ const ResultView: React.FC<ResultViewProps> = ({
   // --- NEW RENDERERS using Structured Data ---
 
   const PrdView = ({ prd }: { prd: PrdStructure }) => (
-    <div className="bg-surface-card shadow-brutal border border-border overflow-hidden mx-auto max-w-5xl">
+    <div className="bg-surface-card shadow-lg border border-border overflow-hidden mx-auto max-w-5xl">
       {/* Header */}
       <div className="bg-gradient-to-b from-surface-sunken to-surface-card border-b border-border px-8 py-8 md:px-12 md:py-10">
          <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
@@ -253,7 +253,7 @@ const ResultView: React.FC<ResultViewProps> = ({
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                {prd.coreFeatures.map((feature, i) => (
-                  <div key={i} className="bg-surface-card rounded-xl border border-border p-5 hover:shadow-sharp transition-shadow">
+                  <div key={i} className="bg-surface-card rounded-xl border border-border p-5 hover:shadow-md transition-shadow">
                      <div className="flex items-start justify-between mb-2">
                         <h3 className="font-bold text-txt-primary">{feature.name}</h3>
                         <div className="flex gap-2">
@@ -308,11 +308,11 @@ const ResultView: React.FC<ResultViewProps> = ({
   );
 
   const JdView = ({ jd }: { jd: JdStructure }) => (
-    <div className="bg-surface-card shadow-brutal border border-border overflow-hidden mx-auto max-w-5xl relative">
+    <div className="bg-surface-card shadow-lg border border-border overflow-hidden mx-auto max-w-5xl relative">
        {/* Decorative Header */}
        <div className="h-40 bg-surface-inverse relative pattern-grid-lg">
           <div className="absolute inset-0 bg-gradient-to-t from-surface-inverse via-transparent to-transparent opacity-90"></div>
-          <div className="absolute -bottom-10 left-8 md:left-12 p-1.5 bg-surface-card shadow-sharp">
+          <div className="absolute -bottom-10 left-8 md:left-12 p-1.5 bg-surface-card shadow-md">
              <div className="w-20 h-20 bg-black flex items-center justify-center text-white font-black text-3xl tracking-tighter">
                 D.
              </div>
@@ -390,7 +390,7 @@ const ResultView: React.FC<ResultViewProps> = ({
                  </h3>
                  <div className="flex flex-wrap gap-2">
                     {jd.preferred.map((skill, i) => (
-                       <span key={i} className="px-3 py-1 bg-surface-card rounded-xl border border-border text-xs font-medium text-txt-secondary shadow-sharp">
+                       <span key={i} className="px-3 py-1 bg-surface-card rounded-xl border border-border text-xs font-medium text-txt-secondary shadow-md">
                           {skill}
                        </span>
                     ))}
@@ -417,7 +417,7 @@ const ResultView: React.FC<ResultViewProps> = ({
   return (
     <div className="w-full py-4 px-3 md:px-4">
       {/* Clean Success Banner */}
-      <div className="mb-8 bg-surface-card rounded-xl border border-border p-6 md:p-8 flex flex-col md:flex-row items-center justify-between shadow-sharp">
+      <div className="mb-8 bg-surface-card rounded-xl border border-border p-6 md:p-8 flex flex-col md:flex-row items-center justify-between shadow-md">
           <div className="flex items-center gap-6">
             <div className="bg-surface-inverse text-txt-inverse p-3 shrink-0">
               <Shield size={24} />
@@ -474,7 +474,7 @@ const ResultView: React.FC<ResultViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setActiveTab('overview')}
-                  className={`w-full flex items-center justify-between px-4 py-3 transition-all ${activeTab === 'overview' ? 'bg-surface-card rounded-xl border border-border shadow-sharp text-draft-black' : 'text-txt-tertiary hover:bg-surface-sunken hover:text-txt-primary'}`}
+                  className={`w-full flex items-center justify-between px-4 py-3 transition-all ${activeTab === 'overview' ? 'bg-surface-card rounded-xl border border-border shadow-md text-draft-black' : 'text-txt-tertiary hover:bg-surface-sunken hover:text-txt-primary'}`}
                 >
                   <div className="flex items-center gap-3">
                     <Layout size={18} />
@@ -486,7 +486,7 @@ const ResultView: React.FC<ResultViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setActiveTab('prd')}
-                  className={`w-full flex items-center justify-between px-4 py-3 transition-all ${activeTab === 'prd' ? 'bg-surface-card rounded-xl border border-border shadow-sharp text-draft-black' : 'text-txt-tertiary hover:bg-surface-sunken hover:text-txt-primary'}`}
+                  className={`w-full flex items-center justify-between px-4 py-3 transition-all ${activeTab === 'prd' ? 'bg-surface-card rounded-xl border border-border shadow-md text-draft-black' : 'text-txt-tertiary hover:bg-surface-sunken hover:text-txt-primary'}`}
                 >
                   <div className="flex items-center gap-3">
                     <FileText size={18} />
@@ -498,7 +498,7 @@ const ResultView: React.FC<ResultViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setActiveTab('jd')}
-                  className={`w-full flex items-center justify-between px-4 py-3 transition-all ${activeTab === 'jd' ? 'bg-surface-card rounded-xl border border-border shadow-sharp text-draft-black' : 'text-txt-tertiary hover:bg-surface-sunken hover:text-txt-primary'}`}
+                  className={`w-full flex items-center justify-between px-4 py-3 transition-all ${activeTab === 'jd' ? 'bg-surface-card rounded-xl border border-border shadow-md text-draft-black' : 'text-txt-tertiary hover:bg-surface-sunken hover:text-txt-primary'}`}
                 >
                   <div className="flex items-center gap-3">
                     <Briefcase size={18} />
@@ -508,7 +508,7 @@ const ResultView: React.FC<ResultViewProps> = ({
                 </button>
 
                 <div className="pt-6 mt-2 border-t border-border space-y-2 px-1">
-                   <button type="button" className="w-full py-2 px-3 border border-border bg-surface-card rounded-xl text-txt-secondary text-xs font-bold hover:bg-black hover:text-white flex items-center justify-center gap-2 transition-all">
+                   <button type="button" className="w-full py-2 px-3 border border-border bg-surface-card rounded-lg text-txt-secondary text-xs font-bold hover:bg-black hover:text-white flex items-center justify-center gap-2 transition-all">
                       <Download size={14} /> PDF
                    </button>
                    <button type="button" className="w-full py-2 px-3 bg-surface-inverse text-txt-inverse text-xs font-bold hover:bg-surface-inverse/90 flex items-center justify-center gap-2 transition-all hover:opacity-90 active:scale-[0.97]">
@@ -523,7 +523,7 @@ const ResultView: React.FC<ResultViewProps> = ({
            <div className="relative">
 
                {activeTab === 'overview' && (
-                   <div className="animate-in fade-in duration-300 space-y-8 bg-surface-card rounded-xl border border-border p-8 md:p-12 shadow-sharp min-h-[50rem]">
+                   <div className="animate-in fade-in duration-300 space-y-8 bg-surface-card rounded-xl border border-border p-8 md:p-12 shadow-md min-h-[50rem]">
                        <div>
                            <h2 className="text-2xl font-bold text-draft-black mb-4">실행 계획 (Action Plan)</h2>
                            <p className="text-txt-tertiary mb-6">
@@ -573,7 +573,7 @@ const ResultView: React.FC<ResultViewProps> = ({
         <div className="col-span-3 space-y-3 sm:space-y-4">
 
            {/* Idea Summary Card */}
-           <div className="bg-surface-card rounded-xl border border-border p-6 shadow-sharp">
+           <div className="bg-surface-card rounded-xl border border-border p-6 shadow-md">
               <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">Project Summary</h3>
               <p className="text-txt-primary text-sm leading-relaxed font-medium">
                 {artifacts?.ideaSummary || "요약 정보를 불러오는 중입니다..."}
@@ -581,7 +581,7 @@ const ResultView: React.FC<ResultViewProps> = ({
            </div>
 
            {/* Persona Scores Card */}
-           <div className="bg-surface-card rounded-xl border border-border p-6 shadow-sharp sticky top-6">
+           <div className="bg-surface-card rounded-xl border border-border p-6 shadow-md sticky top-6">
               <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-6">Validation Scores</h3>
 
               <ScoreBar

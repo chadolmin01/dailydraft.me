@@ -164,7 +164,7 @@ export function ExploreTabBar({
               onClick={() => onTypeFilterChange(t.id as TypeFilter)}
               className={`shrink-0 px-3 py-1.5 text-xs font-bold border transition-all ${
                 typeFilter === t.id
-                  ? 'bg-surface-inverse text-txt-inverse border-surface-inverse shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]'
+                  ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
                   : 'bg-surface-card text-txt-secondary border-border hover:border-border hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]'
               }`}
             >
@@ -196,7 +196,7 @@ export function ExploreTabBar({
               onClick={() => onPeopleRoleFilterChange(r.id as PeopleRoleFilter)}
               className={`shrink-0 px-3 py-1.5 text-xs font-bold border transition-all ${
                 peopleRoleFilter === r.id
-                  ? 'bg-surface-inverse text-txt-inverse border-surface-inverse shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]'
+                  ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
                   : 'bg-surface-card text-txt-secondary border-border hover:border-border hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]'
               }`}
             >

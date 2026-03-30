@@ -84,7 +84,7 @@ export const EditAffiliation: React.FC<EditAffiliationProps> = ({
             onChange={(e) => setPosition(e.target.value)}
             placeholder="또는 직접 입력"
             maxLength={50}
-            className="w-full px-3 py-2.5 text-sm border border-border bg-surface-card rounded-xl focus:outline-none focus:border-accent transition-colors"
+            className="w-full px-3 py-2.5 text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:border-accent transition-colors"
           />
         </div>
 
@@ -110,7 +110,7 @@ export const EditAffiliation: React.FC<EditAffiliationProps> = ({
                     onChange={(e) => setUniversity(e.target.value)}
                     placeholder={affConfig.orgPlaceholder}
                     maxLength={50}
-                    className="w-full px-3 py-2.5 text-sm border border-border bg-surface-card rounded-xl focus:outline-none focus:border-accent transition-colors"
+                    className="w-full px-3 py-2.5 text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:border-accent transition-colors"
                   />
                 )}
               </div>
@@ -122,7 +122,7 @@ export const EditAffiliation: React.FC<EditAffiliationProps> = ({
                   onChange={(e) => setMajor(e.target.value)}
                   placeholder={affConfig.rolePlaceholder}
                   maxLength={50}
-                  className="w-full px-3 py-2.5 text-sm border border-border bg-surface-card rounded-xl focus:outline-none focus:border-accent transition-colors"
+                  className="w-full px-3 py-2.5 text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:border-accent transition-colors"
                 />
               </div>
             </div>
@@ -173,7 +173,7 @@ export const EditAffiliation: React.FC<EditAffiliationProps> = ({
                     value={verifyEmail}
                     onChange={e => { setVerifyEmail(e.target.value); setVerifyError('') }}
                     placeholder="university@snu.ac.kr"
-                    className="flex-1 px-3 py-2 text-sm border border-border bg-surface-card rounded-xl focus:outline-none focus:border-accent transition-colors"
+                    className="flex-1 px-3 py-2 text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:border-accent transition-colors"
                   />
                   <button
                     type="button"
@@ -212,7 +212,7 @@ export const EditAffiliation: React.FC<EditAffiliationProps> = ({
                     onChange={e => { setVerifyCode(e.target.value.replace(/\D/g, '').slice(0, 6)); setVerifyError('') }}
                     placeholder="000000"
                     maxLength={6}
-                    className="w-32 px-3 py-2 text-sm font-mono text-center tracking-widest border border-border bg-surface-card rounded-xl focus:outline-none focus:border-accent transition-colors"
+                    className="w-32 px-3 py-2 text-sm font-mono text-center tracking-widest border border-border bg-surface-card rounded-lg focus:outline-none focus:border-accent transition-colors"
                   />
                   <button
                     type="button"

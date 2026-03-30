@@ -225,7 +225,7 @@ function TemplateCard({ id, name, description, pages, features, recommended, onC
   return (
     <button
       onClick={onClick}
-      className={`text-left p-5 bg-surface-card border hover:shadow-sharp transition-all group ${
+      className={`text-left p-5 bg-surface-card border hover:shadow-md transition-all group ${
         recommended ? 'border-brand ring-2 ring-brand-border' : 'border-border hover:border-border'
       }`}
     >

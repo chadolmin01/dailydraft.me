@@ -142,7 +142,7 @@ export function ProfileCoffeeChats() {
           ) : chats.length > 0 ? (
             <div className="space-y-3">
               {pendingChats.map((chat, chatIdx) => (
-                <div key={chat.id} className="relative bg-surface-card rounded-xl border border-border p-4 border-l-4 border-l-amber-500 shadow-sharp">
+                <div key={chat.id} className="relative bg-surface-card rounded-xl border border-border p-4 border-l-4 border-l-amber-500 shadow-md">
                   <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-surface-inverse/20" />
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                     <div className="flex gap-3 flex-1 min-w-0">
@@ -197,7 +197,7 @@ export function ProfileCoffeeChats() {
                       </button>
                       <button
                         onClick={() => handleDeclineChat(chat.id)}
-                        className="px-3 py-1.5 text-xs font-bold border border-border text-txt-secondary hover:bg-surface-sunken shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                        className="px-3 py-1.5 text-xs font-bold border border-border text-txt-secondary hover:bg-surface-sunken hover:shadow-md active:scale-[0.97] transition-all"
                       >
                         거절
                       </button>
@@ -207,7 +207,7 @@ export function ProfileCoffeeChats() {
               ))}
 
               {otherChats.map((chat) => (
-                <div key={chat.id} className="bg-surface-card rounded-xl border border-border overflow-hidden hover:shadow-sharp transition-all">
+                <div key={chat.id} className="bg-surface-card rounded-xl border border-border overflow-hidden hover:shadow-md transition-all">
                   <div className="flex items-center gap-3 p-4">
                     <button
                       type="button"
@@ -348,7 +348,7 @@ function SentChatCard({ chat }: { chat: CoffeeChat }) {
   }) || []
 
   return (
-    <div className="bg-surface-card rounded-xl border border-border overflow-hidden hover:shadow-sharp transition-all">
+    <div className="bg-surface-card rounded-xl border border-border overflow-hidden hover:shadow-md transition-all">
       {/* Header */}
       <div className="flex items-center gap-3 p-4">
         <div className={`w-9 h-9 border flex items-center justify-center text-xs font-bold flex-shrink-0 ${

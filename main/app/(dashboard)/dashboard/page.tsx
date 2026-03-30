@@ -397,7 +397,7 @@ function StatCard({ index, label, value, icon, href, alert }: {
   alert?: boolean
 }) {
   const content = (
-    <div className={`bg-surface-card rounded-xl border border-border shadow-sharp p-5 relative ${href ? 'cursor-pointer hover:shadow-md hover:-translate-y-0.5 hover-spring group' : ''}`}>
+    <div className={`bg-surface-card rounded-xl border border-border shadow-md p-5 relative ${href ? 'cursor-pointer hover:shadow-md hover:-translate-y-0.5 hover-spring group' : ''}`}>
       <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/20" />
       <div className="flex items-center justify-between mb-3">
         <span className="text-[0.625rem] font-mono text-txt-disabled">{String(index).padStart(2, '0')}</span>

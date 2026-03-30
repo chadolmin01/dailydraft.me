@@ -226,7 +226,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
 
       {/* CTA Card */}
       {!isOwner && (
-      <div className="bg-surface-inverse p-5 text-white border border-surface-inverse shadow-solid">
+      <div className="bg-surface-inverse p-5 text-white border border-surface-inverse shadow-md">
         {existingChat ? (
           <>
             <h3 className="font-bold text-sm mb-1">

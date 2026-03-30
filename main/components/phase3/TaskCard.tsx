@@ -72,7 +72,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onDragStart, onClick }
       draggable
       onDragStart={(e) => onDragStart(e, task.id)}
       onClick={() => onClick(task)}
-      className={`group p-4 border shadow-sharp hover:shadow-brutal transition-all cursor-grab active:cursor-grabbing mb-3 relative ${styles.card}`}
+      className={`group p-4 border shadow-md hover:shadow-lg transition-all cursor-grab active:cursor-grabbing mb-3 relative ${styles.card}`}
     >
       <div className="flex justify-between items-start mb-2">
         <div className="flex items-center gap-2">
@@ -98,7 +98,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onDragStart, onClick }
       </p>
 
       <div className="flex items-center justify-between mt-auto">
-        <span className={`text-[0.625rem] px-2 py-1 font-bold shadow-sharp ${styles.badge}`}>
+        <span className={`text-[0.625rem] px-2 py-1 font-bold shadow-md ${styles.badge}`}>
           {task.type}
         </span>
 
@@ -120,7 +120,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onDragStart, onClick }
           </div>
 
           {task.assignee ? (
-            <div className="w-6 h-6 bg-surface-card rounded-xl border border-border text-txt-secondary flex items-center justify-center text-[0.625rem] font-bold shadow-sharp">
+            <div className="w-6 h-6 bg-surface-card rounded-xl border border-border text-txt-secondary flex items-center justify-center text-[0.625rem] font-bold shadow-md">
               {task.assignee}
             </div>
           ) : (

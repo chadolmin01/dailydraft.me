@@ -61,7 +61,7 @@ export const ComboBox: React.FC<ComboBoxProps> = ({
 
   return (
     <div ref={containerRef} className={`relative ${className}`}>
-      <div className="flex items-center border border-border bg-surface-card rounded-xl focus-within:border-accent transition-colors">
+      <div className="flex items-center border border-border bg-surface-card rounded-lg focus-within:border-accent transition-colors">
         <input
           ref={inputRef}
           type="text"
@@ -89,7 +89,7 @@ export const ComboBox: React.FC<ComboBoxProps> = ({
       </div>
 
       {isOpen && filtered.length > 0 && (
-        <div className="absolute z-50 w-full mt-1 bg-surface-card rounded-xl border border-border shadow-lg max-h-48 overflow-y-auto">
+        <div className="absolute z-50 w-full mt-1 bg-surface-card rounded-lg border border-border shadow-lg max-h-48 overflow-y-auto">
           {filtered.map((opt) => (
             <button
               key={opt}

@@ -77,12 +77,12 @@ export const EditSkills: React.FC<EditSkillsProps> = ({
           onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())}
           placeholder="스킬 직접 입력"
           maxLength={30}
-          className="flex-1 px-3 py-2 text-sm border border-border bg-surface-card rounded-xl focus:outline-none focus:border-accent transition-colors"
+          className="flex-1 px-3 py-2 text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:border-accent transition-colors"
         />
         <select
           value={newSkillLevel}
           onChange={(e) => setNewSkillLevel(e.target.value)}
-          className="px-2 py-2 text-xs border border-border bg-surface-card rounded-xl text-txt-secondary focus:outline-none focus:border-accent transition-colors"
+          className="px-2 py-2 text-xs border border-border bg-surface-card rounded-lg text-txt-secondary focus:outline-none focus:border-accent transition-colors"
         >
           {SKILL_LEVELS.map((level) => (
             <option key={level} value={level}>{level}</option>

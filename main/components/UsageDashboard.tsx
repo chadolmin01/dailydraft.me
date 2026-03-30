@@ -104,7 +104,7 @@ function UsageCard({
   const isDanger = percentage >= 95
 
   return (
-    <div className="bg-surface-card p-4 border border-border shadow-sharp hover:shadow-brutal transition-shadow">
+    <div className="bg-surface-card p-4 border border-border shadow-md hover:shadow-lg transition-shadow">
       <div className="flex items-center gap-3 mb-3">
         <div className={`p-2 border ${isDanger ? 'border-status-danger-text bg-status-danger-bg' : isWarning ? 'border-status-warning-text bg-status-warning-bg' : 'border-brand bg-brand-bg'}`}>
           <Icon className={`w-5 h-5 ${isDanger ? 'text-status-danger-text' : isWarning ? 'text-status-warning-text' : 'text-brand'}`} />
@@ -143,7 +143,7 @@ function ApiUsageSection({ apiUsage }: { apiUsage: UsageData['apiUsage'] }) {
   const percentage = (current.used / current.limit) * 100
 
   return (
-    <div className="bg-surface-card p-6 border border-border shadow-sharp">
+    <div className="bg-surface-card p-6 border border-border shadow-md">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="p-2 border border-violet-600 bg-violet-50">
@@ -288,7 +288,7 @@ export function UsageDashboard() {
       </div>
 
       {/* 플랜 정보 */}
-      <div className={`p-6 ${colors.bg} border ${colors.border} shadow-sharp`}>
+      <div className={`p-6 ${colors.bg} border ${colors.border} shadow-md`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-surface-card rounded-xl border border-border">

@@ -80,7 +80,7 @@ export function HelpWidget() {
         className={`fixed right-3 sm:right-6 z-fixed w-12 h-12 flex items-center justify-center transition-all duration-300 ${
           isOpen
             ? 'bg-surface-inverse text-txt-inverse rotate-90'
-            : 'bg-brand text-white border border-brand shadow-brutal hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
+            : 'bg-brand text-white border border-brand shadow-lg hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
         }`}
         aria-label="도움말"
       >
@@ -91,7 +91,7 @@ export function HelpWidget() {
       {isOpen && (
         <div
           style={{ bottom: 'calc(5rem + var(--bottom-tab-height) + env(safe-area-inset-bottom, 0px))', animation: 'helpWidgetIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) both' }}
-          className="fixed right-3 sm:right-6 z-fixed w-[calc(100vw-1.5rem)] sm:w-[24rem] max-h-[min(32rem,calc(100vh-8rem))] bg-surface-card rounded-xl border border-border shadow-brutal-xl flex flex-col"
+          className="fixed right-3 sm:right-6 z-fixed w-[calc(100vw-1.5rem)] sm:w-[24rem] max-h-[min(32rem,calc(100vh-8rem))] bg-surface-card rounded-xl border border-border shadow-lg-xl flex flex-col"
         >
           <style dangerouslySetInnerHTML={{ __html: `
             @keyframes helpWidgetIn { 0% { opacity:0;transform:translateY(12px) scale(0.95) } 100% { opacity:1;transform:translateY(0) scale(1) } }
@@ -293,7 +293,7 @@ function ChatTab() {
             onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send()}
             placeholder="질문을 입력하세요..."
             disabled={isLoading}
-            className="flex-1 px-3 py-2 text-[12px] bg-surface-card rounded-xl border border-border focus:outline-none focus:border-brand transition-colors placeholder:text-txt-disabled disabled:opacity-50"
+            className="flex-1 px-3 py-2 text-[12px] bg-surface-card rounded-lg border border-border focus:outline-none focus:border-brand transition-colors placeholder:text-txt-disabled disabled:opacity-50"
           />
           <button
             onClick={() => send()}
@@ -355,7 +355,7 @@ function ReportTab() {
         <p className="text-[12px] text-txt-tertiary text-center">빠르게 확인하고 처리하겠습니다.<br />감사합니다!</p>
         <button
           onClick={() => setSubmitted(false)}
-          className="mt-2 px-4 py-2 text-[12px] font-bold bg-surface-card rounded-xl border border-border text-txt-secondary hover:bg-black hover:text-white hover:border-border transition-colors"
+          className="mt-2 px-4 py-2 text-[12px] font-bold bg-surface-card rounded-lg border border-border text-txt-secondary hover:bg-black hover:text-white hover:border-border transition-colors"
         >
           새 리포트 작성
         </button>
@@ -395,7 +395,7 @@ function ReportTab() {
           onChange={e => setTitle(e.target.value)}
           placeholder="간단히 요약해주세요"
           maxLength={200}
-          className="w-full px-3 py-2 text-[12px] bg-surface-card rounded-xl border border-border focus:outline-none focus:border-brand transition-colors placeholder:text-txt-disabled"
+          className="w-full px-3 py-2 text-[12px] bg-surface-card rounded-lg border border-border focus:outline-none focus:border-brand transition-colors placeholder:text-txt-disabled"
         />
       </div>
 
@@ -408,7 +408,7 @@ function ReportTab() {
           placeholder="어떤 상황에서 발생했는지, 기대했던 동작은 무엇인지 알려주세요"
           rows={4}
           maxLength={5000}
-          className="w-full px-3 py-2 text-[12px] bg-surface-sunken rounded-xl border border-border focus:outline-none focus:border-brand transition-colors resize-none placeholder:text-txt-disabled"
+          className="w-full px-3 py-2 text-[12px] bg-surface-sunken rounded-lg border border-border focus:outline-none focus:border-brand transition-colors resize-none placeholder:text-txt-disabled"
         />
         <p className="text-[9px] text-txt-disabled text-right mt-0.5 font-mono">{description.length}/5000</p>
       </div>

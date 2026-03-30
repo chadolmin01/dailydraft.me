@@ -55,9 +55,9 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
   if (sent) {
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-        <div className="bg-surface-card rounded-xl border border-border shadow-brutal w-full max-w-md" onClick={e => e.stopPropagation()}>
+        <div className="bg-surface-card rounded-xl border border-border shadow-lg w-full max-w-md" onClick={e => e.stopPropagation()}>
           <div className="p-6 text-center">
-            <div className="w-14 h-14 bg-status-success-bg border border-status-success-text/20 flex items-center justify-center mb-4 mx-auto shadow-solid-sm">
+            <div className="w-14 h-14 bg-status-success-bg border border-status-success-text/20 flex items-center justify-center mb-4 mx-auto shadow-sm">
               <Check size={24} className="text-status-success-text" />
             </div>
             <h3 className="text-xl font-bold text-txt-primary mb-2">초대 완료!</h3>
@@ -78,7 +78,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-surface-card rounded-xl border border-border shadow-brutal w-full max-w-md max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
+      <div className="bg-surface-card rounded-xl border border-border shadow-lg w-full max-w-md max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-surface-sunken shrink-0">
           <h3 className="text-sm font-bold text-txt-primary">프로젝트에 초대</h3>
@@ -146,7 +146,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
                           onClick={() => setSelectedRole(role)}
                           className={`px-3 py-1.5 text-xs font-bold border transition-all ${
                             selectedRole === role
-                              ? 'bg-brand text-white border-brand shadow-solid-sm'
+                              ? 'bg-brand text-white border-brand shadow-sm'
                               : 'bg-surface-card text-txt-secondary border-border hover:bg-black hover:text-white'
                           }`}
                         >
@@ -160,7 +160,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
                       placeholder="역할을 입력하세요 (예: Frontend Developer)"
                       value={selectedRole || ''}
                       onChange={e => setSelectedRole(e.target.value || null)}
-                      className="w-full px-3 py-2 text-sm border border-border bg-surface-card rounded-xl focus:outline-none focus:border-brand"
+                      className="w-full px-3 py-2 text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:border-brand"
                     />
                   )}
                 </div>
@@ -178,7 +178,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
                     placeholder="함께 하고 싶어서 연락드립니다..."
                     rows={3}
                     maxLength={500}
-                    className="w-full px-3 py-2 text-sm border border-border bg-surface-card rounded-xl focus:outline-none focus:border-brand resize-none"
+                    className="w-full px-3 py-2 text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:border-brand resize-none"
                   />
                 </div>
               )}

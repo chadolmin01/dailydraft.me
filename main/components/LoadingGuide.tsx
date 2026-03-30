@@ -101,7 +101,7 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
       <div className="w-full max-w-md relative">
         {/* ── Welcome Phase ── */}
         {phase === 'welcome' && (
-          <div className="bg-surface-card rounded-xl border border-border shadow-brutal overflow-hidden animate-slide-up-fade">
+          <div className="bg-surface-card rounded-xl border border-border shadow-lg overflow-hidden animate-slide-up-fade">
             <div className="h-28 bg-surface-inverse relative overflow-hidden flex items-center justify-center">
               <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent" />
               <div className="relative z-10 w-14 h-14 bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20">
@@ -130,7 +130,7 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
 
         {/* ── CTA Phase ── */}
         {phase === 'cta' && (
-          <div className="bg-surface-card rounded-xl border border-border shadow-brutal overflow-hidden animate-slide-up-fade">
+          <div className="bg-surface-card rounded-xl border border-border shadow-lg overflow-hidden animate-slide-up-fade">
             {/* Header */}
             <div className="p-8 pb-6">
               <span className="text-[0.625rem] font-medium text-txt-tertiary">
@@ -146,7 +146,7 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
               {/* Primary */}
               <Link
                 href={cta.primary.href}
-                className="block border-2 border-surface-inverse p-4 shadow-solid-sm transition-all hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-black hover:text-white group animate-fade-in"
+                className="block border-2 border-surface-inverse p-4 shadow-sm transition-all hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-black hover:text-white group animate-fade-in"
                 style={{ animationDelay: '200ms', animationFillMode: 'both' }}
               >
                 <div className="flex items-center justify-between">

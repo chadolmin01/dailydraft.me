@@ -203,7 +203,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
 
     return (
       <div
-        className={`relative ${sizeClass} flex items-center justify-center text-lg sm:text-xl font-bold ${textClass} shrink-0 shadow-solid-sm overflow-hidden ${isEditable ? 'group/avatar cursor-pointer' : ''}`}
+        className={`relative ${sizeClass} flex items-center justify-center text-lg sm:text-xl font-bold ${textClass} shrink-0 shadow-sm overflow-hidden ${isEditable ? 'group/avatar cursor-pointer' : ''}`}
         onClick={isEditable ? () => avatarInputRef.current?.click() : undefined}
       >
         {profile?.avatar_url ? (
@@ -450,7 +450,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
   /* ════════════════════════════════════════════════════════ */
   if (coverUrl) {
     return (
-      <div className="relative bg-surface-card text-txt-primary mb-6 border border-border shadow-sharp overflow-hidden">
+      <div className="relative bg-surface-card text-txt-primary mb-6 border border-border shadow-md overflow-hidden">
         <div className="absolute top-1.5 left-1.5 w-2.5 h-2.5 border-l border-t border-border z-20" />
         <div className="absolute top-1.5 right-1.5 w-2.5 h-2.5 border-r border-t border-border z-20" />
         <div className="absolute bottom-1.5 left-1.5 w-2.5 h-2.5 border-l border-b border-border z-20" />
@@ -505,7 +505,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
   /* Variant B: no cover image                              */
   /* ════════════════════════════════════════════════════════ */
   return (
-    <div className="relative bg-surface-card text-txt-primary p-5 pb-6 mb-6 border border-border shadow-sharp">
+    <div className="relative bg-surface-card text-txt-primary p-5 pb-6 mb-6 border border-border shadow-md">
       <div className="absolute top-1.5 left-1.5 w-2.5 h-2.5 border-l border-t border-border" />
       <div className="absolute top-1.5 right-1.5 w-2.5 h-2.5 border-r border-t border-border" />
       <div className="absolute bottom-1.5 left-1.5 w-2.5 h-2.5 border-l border-b border-border" />

@@ -201,7 +201,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
               aria-label={profile?.nickname || '프로필'}
             >
             {/* Main modal */}
-            <div className={`bg-surface-card shadow-brutal-xl border border-border overflow-hidden flex flex-col relative transition-all duration-300 ${sidePanel ? 'w-full sm:w-3/5' : 'w-full'}`}>
+            <div className={`bg-surface-card shadow-lg-xl border border-border overflow-hidden flex flex-col relative transition-all duration-300 ${sidePanel ? 'w-full sm:w-3/5' : 'w-full'}`}>
               {/* macOS-style Window Bar */}
               <div className="bg-surface-sunken border-b border-border px-3 sm:px-4 h-10 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-2">

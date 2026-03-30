@@ -171,7 +171,7 @@ export default function AdminOpportunitiesPage() {
                 placeholder="제목, 설명 검색..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-surface-card rounded-xl border border-border text-sm focus:outline-none focus:border-brand transition-colors"
+                className="w-full pl-10 pr-4 py-2.5 bg-surface-card rounded-lg border border-border text-sm focus:outline-none focus:border-brand transition-colors"
               />
             </div>
             <div className="flex items-center gap-2">
@@ -179,7 +179,7 @@ export default function AdminOpportunitiesPage() {
               <select
                 value={statusFilter}
                 onChange={(e) => { setStatusFilter(e.target.value); setPage(1) }}
-                className="px-3 py-2.5 bg-surface-card rounded-xl border border-border text-sm focus:outline-none focus:border-brand"
+                className="px-3 py-2.5 bg-surface-card rounded-lg border border-border text-sm focus:outline-none focus:border-brand"
               >
                 <option value="">전체 상태</option>
                 <option value="active">활성</option>
@@ -189,7 +189,7 @@ export default function AdminOpportunitiesPage() {
               <select
                 value={sort}
                 onChange={(e) => { setSort(e.target.value); setPage(1) }}
-                className="px-3 py-2.5 bg-surface-card rounded-xl border border-border text-sm focus:outline-none focus:border-brand"
+                className="px-3 py-2.5 bg-surface-card rounded-lg border border-border text-sm focus:outline-none focus:border-brand"
               >
                 <option value="recent">최신순</option>
                 <option value="views">조회순</option>

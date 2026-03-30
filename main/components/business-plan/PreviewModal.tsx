@@ -92,7 +92,7 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-surface-card w-full max-w-5xl h-[95vh] shadow-brutal flex flex-col">
+      <div className="bg-surface-card w-full max-w-5xl h-[95vh] shadow-lg flex flex-col">
         {/* Header */}
         <div className="px-6 py-4 border-b border-border flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
@@ -133,7 +133,7 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
               type="button"
               onClick={() => handleExport('docx')}
               disabled={isExporting}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-txt-secondary bg-surface-card rounded-xl border border-border hover:bg-black hover:text-white transition-colors disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-txt-secondary bg-surface-card rounded-lg border border-border hover:bg-black hover:text-white transition-colors disabled:opacity-50"
             >
               {isExporting && exportFormat === 'docx' ? (
                 <Loader2 size={16} className="animate-spin" />
@@ -173,7 +173,7 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
         <div className="flex-1 overflow-y-auto p-8 bg-surface-sunken print:p-0 print:bg-white">
           <div
             ref={previewRef}
-            className="max-w-[210mm] mx-auto bg-surface-card shadow-sharp print:shadow-none"
+            className="max-w-[210mm] mx-auto bg-surface-card shadow-md print:shadow-none"
           >
             {/* Cover Page */}
             <div className="p-12 min-h-[297mm] flex flex-col print:page-break-after-always">

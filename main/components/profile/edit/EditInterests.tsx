@@ -60,7 +60,7 @@ export const EditInterests: React.FC<EditInterestsProps> = ({
           onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addCustomTag())}
           placeholder="직접 입력"
           maxLength={20}
-          className="flex-1 px-3 py-2 text-sm border border-border bg-surface-card rounded-xl focus:outline-none focus:border-accent transition-colors"
+          className="flex-1 px-3 py-2 text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:border-accent transition-colors"
         />
         <button
           type="button"

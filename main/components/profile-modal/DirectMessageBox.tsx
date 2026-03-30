@@ -32,7 +32,7 @@ export function DirectMessageBox({ receiverId }: { receiverId: string }) {
   }
 
   return (
-    <div className="border border-border p-4 shadow-solid-sm">
+    <div className="border border-border p-4 shadow-sm">
       <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-2 flex items-center gap-1.5">
         <Send size={10} /> SEND MESSAGE
       </h4>

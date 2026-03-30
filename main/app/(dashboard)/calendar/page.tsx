@@ -27,7 +27,7 @@ export default function CalendarPage() {
 
       <Section spacing="sm" bg="transparent">
         <PageContainer size="wide">
-          <div className="bg-surface-card rounded-xl border border-border shadow-sharp p-6">
+          <div className="bg-surface-card rounded-xl border border-border shadow-md p-6">
             <div className="grid grid-cols-7 gap-px bg-border overflow-hidden">
               {['일', '월', '화', '수', '목', '금', '토'].map((day) => (
                 <div key={day} className="bg-surface-sunken p-3 text-center text-[0.625rem] font-medium text-txt-tertiary">

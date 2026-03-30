@@ -52,7 +52,7 @@ const FadeInView: React.FC<{ children: React.ReactNode; className?: string; dela
 // --- Mock UI Components ---
 
 const MockDashboardUI = () => (
-  <div className="w-full bg-surface-card rounded-xl border border-border shadow-brutal overflow-hidden flex flex-col md:flex-row h-full min-h-[25rem]">
+  <div className="w-full bg-surface-card rounded-xl border border-border shadow-lg overflow-hidden flex flex-col md:flex-row h-full min-h-[25rem]">
     {/* Sidebar */}
     <div className="w-16 border-r border-border flex flex-col items-center py-6 gap-6 bg-surface-card hidden md:flex shrink-0">
       <div className="w-8 h-8 bg-black flex items-center justify-center text-white font-bold font-mono">D.</div>
@@ -154,7 +154,7 @@ const MockDashboardUI = () => (
 )
 
 const MockAICard = () => (
-   <div className="bg-surface-card rounded-xl border border-border shadow-brutal max-w-sm w-full relative overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
+   <div className="bg-surface-card rounded-xl border border-border shadow-lg max-w-sm w-full relative overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
       <div className="bg-black p-4 text-white flex items-center justify-between">
          <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-status-warning-text" />
@@ -357,14 +357,14 @@ const Hero: React.FC = () => {
               placeholder="이메일을 입력해주세요"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 bg-surface-card rounded-xl border border-border focus:outline-none focus:border-border focus:ring-1 focus:ring-black transition-all text-sm font-mono placeholder:font-sans"
+              className="w-full px-4 py-3 bg-surface-card rounded-lg border border-border focus:outline-none focus:border-border focus:ring-1 focus:ring-black transition-all text-sm font-mono placeholder:font-sans"
               required
             />
           </div>
           <button
             type="submit"
             disabled={status === 'loading'}
-            className={`w-full sm:w-auto px-8 py-3 text-white font-medium transition-all flex items-center justify-center whitespace-nowrap shadow-sharp shrink-0 disabled:opacity-70 ${getButtonStyle()}`}
+            className={`w-full sm:w-auto px-8 py-3 text-white font-medium transition-all flex items-center justify-center whitespace-nowrap shadow-md shrink-0 disabled:opacity-70 ${getButtonStyle()}`}
           >
             {getButtonContent()}
           </button>
@@ -566,7 +566,7 @@ const Features: React.FC = () => {
            </div>
 
            <div className="flex-1 w-full">
-              <div className="bg-surface-card rounded-xl border border-border shadow-brutal overflow-hidden">
+              <div className="bg-surface-card rounded-xl border border-border shadow-lg overflow-hidden">
                  <div className="bg-surface-sunken border-b border-border p-4 flex justify-between items-center">
                     <h4 className="font-bold text-sm flex items-center gap-2 font-mono"><FileText className="w-4 h-4" /> DOCUMENTS.DIR</h4>
                     <button className="bg-surface-card rounded-xl border border-border text-[0.625rem] px-2 py-1 flex items-center gap-1 font-mono hover:bg-surface-sunken"><Plus className="w-3 h-3"/> NEW</button>

@@ -104,7 +104,7 @@ export default function MessagesPage() {
         <div className="flex gap-0 md:gap-4 h-[calc(100dvh-3.5rem-3rem-var(--bottom-tab-height))]">
 
           {/* 대화 목록 — 모바일에서는 스레드 열면 숨김 */}
-          <div className={`w-full md:w-80 bg-surface-card rounded-xl border border-border shadow-sharp shrink-0 flex flex-col ${mobileShowThread ? 'hidden md:flex' : 'flex'}`}>
+          <div className={`w-full md:w-80 bg-surface-card rounded-xl border border-border shadow-md shrink-0 flex flex-col ${mobileShowThread ? 'hidden md:flex' : 'flex'}`}>
             <div className="p-4 border-b border-border">
               <h2 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
                 <Mail size={12} /> MESSAGES
@@ -179,7 +179,7 @@ export default function MessagesPage() {
           </div>
 
           {/* 메시지 스레드 */}
-          <div className={`flex-1 bg-surface-card rounded-xl border border-border shadow-sharp flex flex-col ${!mobileShowThread ? 'hidden md:flex' : 'flex'}`}>
+          <div className={`flex-1 bg-surface-card rounded-xl border border-border shadow-md flex flex-col ${!mobileShowThread ? 'hidden md:flex' : 'flex'}`}>
             {!selectedPartner ? (
               <div className="flex-1 flex flex-col items-center justify-center text-center px-8">
                 <Mail size={32} className="text-txt-disabled mb-3" />
@@ -225,7 +225,7 @@ export default function MessagesPage() {
                           <div className={`group relative max-w-[75%] ${isMine ? 'order-2' : ''}`}>
                             <div className={`px-3.5 py-2.5 text-sm leading-relaxed ${
                               isMine
-                                ? 'bg-surface-inverse text-txt-inverse border border-surface-inverse shadow-solid-sm'
+                                ? 'bg-surface-inverse text-txt-inverse border border-surface-inverse shadow-sm'
                                 : 'bg-surface-sunken text-txt-primary border border-border'
                             }`}>
                               <p className="whitespace-pre-wrap break-words">{msg.content}</p>

@@ -162,7 +162,7 @@ export default function InviteCodesAdminPage() {
       </div>
 
       {/* Send New Code */}
-      <div className="bg-surface-card rounded-xl border border-border shadow-sharp p-6 mb-8">
+      <div className="bg-surface-card rounded-xl border border-border shadow-md p-6 mb-8">
         <h2 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">새 초대 코드 발송</h2>
 
         <div className="flex gap-4 items-end">
@@ -216,7 +216,7 @@ export default function InviteCodesAdminPage() {
       </div>
 
       {/* Codes List */}
-      <div className="bg-surface-card rounded-xl border border-border shadow-sharp">
+      <div className="bg-surface-card rounded-xl border border-border shadow-md">
         <div className="p-4 border-b border-border flex items-center justify-between">
           <h2 className="text-[0.625rem] font-medium text-txt-tertiary">발송된 초대 코드</h2>
           <button
@@ -312,7 +312,7 @@ export default function InviteCodesAdminPage() {
       </div>
 
       {/* Eligible Users List */}
-      <div className="bg-surface-card rounded-xl border border-border shadow-sharp mt-8">
+      <div className="bg-surface-card rounded-xl border border-border shadow-md mt-8">
         <div className="p-4 border-b border-border">
           <h2 className="text-[0.625rem] font-medium text-txt-tertiary">온보딩 완료 유저 ({eligibleData?.total_count || 0}명)</h2>
         </div>

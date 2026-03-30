@@ -70,7 +70,7 @@ export const ValidationSourceBadge: React.FC<ValidationSourceBadgeProps> = ({
   return (
     <button
       onClick={onClick}
-      className={`inline-flex items-center gap-2 px-3 py-1.5 border text-xs font-medium transition-all hover:shadow-sharp ${config.color}`}
+      className={`inline-flex items-center gap-2 px-3 py-1.5 border text-xs font-medium transition-all hover:shadow-md ${config.color}`}
     >
       {config.icon}
       <span>{config.label}</span>
@@ -143,7 +143,7 @@ export const ValidationFeedbackModal: React.FC<ValidationFeedbackModalProps> = (
         onClick={onClose}
       />
 
-      <div className="relative bg-surface-card shadow-brutal w-full max-w-lg mx-4 overflow-hidden animate-in zoom-in-95 duration-200">
+      <div className="relative bg-surface-card shadow-lg w-full max-w-lg mx-4 overflow-hidden animate-in zoom-in-95 duration-200">
         {/* Header */}
         <div className={`${config.headerBg} text-white p-4`}>
           <div className="flex items-center justify-between">

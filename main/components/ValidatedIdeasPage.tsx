@@ -179,19 +179,19 @@ export const ValidatedIdeasPage: React.FC = () => {
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-surface-card rounded-xl border border-border shadow-sharp p-4">
+        <div className="bg-surface-card rounded-xl border border-border shadow-md p-4">
           <div className="text-2xl font-bold text-txt-primary">{ideas.length}</div>
           <div className="text-[0.625rem] font-medium text-txt-tertiary">전체 아이디어</div>
         </div>
-        <div className="bg-surface-card rounded-xl border border-border shadow-sharp p-4">
+        <div className="bg-surface-card rounded-xl border border-border shadow-md p-4">
           <div className="text-2xl font-bold text-status-info-text">{ideas.filter(i => hasArtifacts(i)).length}</div>
           <div className="text-[0.625rem] font-medium text-txt-tertiary">문서 생성됨</div>
         </div>
-        <div className="bg-surface-card rounded-xl border border-border shadow-sharp p-4">
+        <div className="bg-surface-card rounded-xl border border-border shadow-md p-4">
           <div className="text-2xl font-bold text-indicator-premium-border">{ideas.length > 0 ? Math.round(ideas.reduce((sum, i) => sum + (i.score ?? 0), 0) / ideas.length) : 0}</div>
           <div className="text-[0.625rem] font-medium text-txt-tertiary">평균 점수</div>
         </div>
-        <div className="bg-surface-card rounded-xl border border-border shadow-sharp p-4">
+        <div className="bg-surface-card rounded-xl border border-border shadow-md p-4">
           <div className="text-2xl font-bold text-status-success-text">{ideas.reduce((sum, i) => sum + getAdviceCount(i), 0)}</div>
           <div className="text-[0.625rem] font-medium text-txt-tertiary">총 인사이트</div>
         </div>
@@ -244,7 +244,7 @@ export const ValidatedIdeasPage: React.FC = () => {
         {filteredAndSortedIdeas.map(idea => {
           const adviceList = getAdviceList(idea)
           return (
-            <div key={idea.id} role="listitem" tabIndex={0} onClick={() => setSelectedIdea(idea)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedIdea(idea) } }} className={`bg-surface-card border p-5 cursor-pointer transition-all hover:shadow-sharp focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 group ${selectedIdea?.id === idea.id ? 'border-border ring-1 ring-black' : 'border-border hover:border-border'}`}>
+            <div key={idea.id} role="listitem" tabIndex={0} onClick={() => setSelectedIdea(idea)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedIdea(idea) } }} className={`bg-surface-card border p-5 cursor-pointer transition-all hover:shadow-md focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 group ${selectedIdea?.id === idea.id ? 'border-border ring-1 ring-black' : 'border-border hover:border-border'}`}>
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-2">
@@ -277,7 +277,7 @@ export const ValidatedIdeasPage: React.FC = () => {
 
       {selectedIdea && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-labelledby="modal-title" onClick={(e) => { if (e.target === e.currentTarget) setSelectedIdea(null) }}>
-          <div className="bg-surface-card shadow-brutal max-w-2xl w-full max-h-[85vh] overflow-hidden flex flex-col border border-border">
+          <div className="bg-surface-card shadow-lg max-w-2xl w-full max-h-[85vh] overflow-hidden flex flex-col border border-border">
             <div className="px-6 py-4 border-b border-border flex items-center justify-between shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-status-success-bg border border-status-success-text/20 flex items-center justify-center"><Sparkles size={18} className="text-status-success-text" aria-hidden="true" /></div>

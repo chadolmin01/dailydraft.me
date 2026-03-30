@@ -64,11 +64,11 @@ export const CreateModal: React.FC<CreateModalProps> = ({
         onClick={onClose}
       />
 
-      <div className="relative bg-surface-card w-full max-w-[25rem] border border-border shadow-brutal overflow-hidden">
+      <div className="relative bg-surface-card w-full max-w-[25rem] border border-border shadow-lg overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 pb-2">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-black flex items-center justify-center text-white shadow-solid-sm">
+            <div className="w-10 h-10 bg-black flex items-center justify-center text-white shadow-sm">
               <Icon size={18} />
             </div>
             <div>
@@ -108,7 +108,7 @@ export const CreateModal: React.FC<CreateModalProps> = ({
           {/* 문서 업로드 옵션 */}
           <button
             onClick={handleUpload}
-            className="w-full p-4 border border-border text-left group hover:bg-surface-sunken transition-all shadow-sharp hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            className="w-full p-4 border border-border text-left group hover:bg-surface-sunken transition-all shadow-md hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
           >
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-surface-sunken rounded-xl border border-border flex items-center justify-center text-txt-secondary group-hover:bg-border transition-colors">

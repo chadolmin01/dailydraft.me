@@ -248,7 +248,7 @@ function NewProjectContent() {
     <div className="flex-1 overflow-y-auto bg-surface-bg">
       <div className="max-w-4xl mx-auto px-4 py-2 md:py-4">
 
-        <form onSubmit={handleSubmit} className="bg-surface-card shadow-sharp overflow-hidden border border-border">
+        <form onSubmit={handleSubmit} className="bg-surface-card shadow-md overflow-hidden border border-border">
 
           {/* ─── Window Bar ─── */}
           <div className="bg-surface-sunken border-b-2 border-border px-3 sm:px-5 py-2.5 flex items-center justify-between relative">

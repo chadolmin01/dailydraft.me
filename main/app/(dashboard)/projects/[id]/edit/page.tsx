@@ -329,7 +329,7 @@ function EditProjectContent() {
       <div className="max-w-4xl mx-auto px-4 py-2 md:py-4">
 
         {/* ─── Tab Bar ─── */}
-        <div className="bg-surface-card rounded-xl border border-border border-b-0 shadow-sharp">
+        <div className="bg-surface-card rounded-xl border border-border border-b-0 shadow-md">
           <div className="px-3 sm:px-5 py-2.5 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <button
@@ -390,7 +390,7 @@ function EditProjectContent() {
 
         {/* ─── Tab: Info ─── */}
         {tab === 'info' && (
-          <form onSubmit={handleSubmit} className="bg-surface-card shadow-sharp overflow-hidden border border-border border-t-0">
+          <form onSubmit={handleSubmit} className="bg-surface-card shadow-md overflow-hidden border border-border border-t-0">
 
             {/* Type selector */}
             <div className="bg-surface-sunken border-b-2 border-border px-3 sm:px-5 py-2.5 flex items-center justify-center">
@@ -642,7 +642,7 @@ function EditProjectContent() {
 
         {/* ─── Tab: Team ─── */}
         {tab === 'team' && (
-          <div className="bg-surface-card shadow-sharp overflow-hidden border border-border border-t-0">
+          <div className="bg-surface-card shadow-md overflow-hidden border border-border border-t-0">
             <TeamManageSection opportunityId={id} />
           </div>
         )}

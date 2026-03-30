@@ -10,7 +10,7 @@ import { ProfileCompletionBanner } from '@/components/ui/ProfileCompletionBanner
 
 const ModalLoadingFallback = () => (
   <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-modal-backdrop">
-    <div className="bg-surface-card rounded-xl border border-border px-6 py-4 shadow-brutal">
+    <div className="bg-surface-card rounded-xl border border-border px-6 py-4 shadow-lg">
       <span className="text-sm text-txt-secondary font-mono">로딩 중...</span>
     </div>
   </div>

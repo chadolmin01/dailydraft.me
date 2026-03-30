@@ -25,7 +25,7 @@ export default function DocumentsPage() {
         <PageContainer size="wide">
           <div className="space-y-3">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="bg-surface-card rounded-xl border border-border shadow-sharp p-5 flex items-center gap-4">
+              <div key={i} className="bg-surface-card rounded-xl border border-border shadow-md p-5 flex items-center gap-4">
                 <div className="w-10 h-10 bg-surface-sunken rounded-xl border border-border shrink-0" />
                 <div className="flex-1">
                   <div className="h-5 w-48 bg-surface-sunken mb-1" />

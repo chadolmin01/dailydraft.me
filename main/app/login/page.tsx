@@ -150,12 +150,12 @@ function LoginContent() {
     <div className="fixed inset-0 z-[100] flex h-screen w-screen overflow-hidden bg-surface-card">
 
       {/* LEFT: Login Panel (Fixed Width) */}
-      <div className="w-full lg:w-[30rem] xl:w-[35rem] flex flex-col justify-between bg-surface-card z-20 shadow-brutal shrink-0 h-full relative border-r-2 border-border">
+      <div className="w-full lg:w-[30rem] xl:w-[35rem] flex flex-col justify-between bg-surface-card z-20 shadow-lg shrink-0 h-full relative border-r-2 border-border">
 
          {/* Top Branding */}
          <div className="p-5 sm:p-8 md:p-12 animate-slide-up-fade">
             <div className="flex items-center gap-2 mb-6">
-               <div className="w-8 h-8 bg-surface-inverse text-txt-inverse flex items-center justify-center font-black text-lg shadow-solid-sm">D</div>
+               <div className="w-8 h-8 bg-surface-inverse text-txt-inverse flex items-center justify-center font-black text-lg shadow-sm">D</div>
                <span className="font-bold text-xl tracking-tight text-txt-primary">Draft.</span>
             </div>
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-surface-sunken rounded-xl border border-border">
@@ -190,7 +190,7 @@ function LoginContent() {
                         type="text"
                         value={nickname}
                         onChange={(e) => setNickname(e.target.value)}
-                        className="w-full px-4 py-3 bg-surface-sunken rounded-xl border border-border text-sm font-medium focus:outline-none focus:border-brand focus:bg-surface-card rounded-xl transition-all placeholder:text-txt-disabled"
+                        className="w-full px-4 py-3 bg-surface-sunken rounded-lg border border-border text-sm font-medium focus:outline-none focus:border-brand focus:bg-surface-card rounded-lg transition-all placeholder:text-txt-disabled"
                         placeholder="닉네임을 입력하세요"
                         required={isSignUp}
                      />
@@ -203,7 +203,7 @@ function LoginContent() {
                      type="email"
                      value={email}
                      onChange={(e) => setEmail(e.target.value)}
-                     className="w-full px-4 py-3 bg-surface-sunken rounded-xl border border-border text-sm font-medium focus:outline-none focus:border-brand focus:bg-surface-card rounded-xl transition-all placeholder:text-txt-disabled font-mono"
+                     className="w-full px-4 py-3 bg-surface-sunken rounded-lg border border-border text-sm font-medium focus:outline-none focus:border-brand focus:bg-surface-card rounded-lg transition-all placeholder:text-txt-disabled font-mono"
                      placeholder="email@example.com"
                      required
                   />
@@ -215,7 +215,7 @@ function LoginContent() {
                      type="password"
                      value={password}
                      onChange={(e) => setPassword(e.target.value)}
-                     className="w-full px-4 py-3 bg-surface-sunken rounded-xl border border-border text-sm font-medium focus:outline-none focus:border-brand focus:bg-surface-card rounded-xl transition-all placeholder:text-txt-disabled"
+                     className="w-full px-4 py-3 bg-surface-sunken rounded-lg border border-border text-sm font-medium focus:outline-none focus:border-brand focus:bg-surface-card rounded-lg transition-all placeholder:text-txt-disabled"
                      placeholder="비밀번호를 입력하세요"
                      required
                      minLength={6}
@@ -263,7 +263,7 @@ function LoginContent() {
                <button
                   onClick={handleGoogleLogin}
                   type="button"
-                  className="flex items-center justify-center gap-2 px-4 py-3 border border-border hover:bg-surface-inverse hover:text-txt-inverse transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                  className="flex items-center justify-center gap-2 px-4 py-3 border border-border hover:bg-surface-inverse hover:text-txt-inverse transition-all hover:shadow-md active:scale-[0.97]"
                >
                   <Chrome size={16} />
                   <span className="text-xs font-bold font-mono">Google</span>
@@ -271,7 +271,7 @@ function LoginContent() {
                <button
                   onClick={handleGithubLogin}
                   type="button"
-                  className="flex items-center justify-center gap-2 px-4 py-3 border border-border hover:bg-surface-inverse hover:text-txt-inverse transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                  className="flex items-center justify-center gap-2 px-4 py-3 border border-border hover:bg-surface-inverse hover:text-txt-inverse transition-all hover:shadow-md active:scale-[0.97]"
                >
                   <Github size={16} />
                   <span className="text-xs font-bold font-mono">GitHub</span>
@@ -333,8 +333,8 @@ function LoginContent() {
                <span className="text-txt-tertiary">팀을 만들어보세요.</span>
             </h2>
             <div className="flex justify-end gap-2">
-               <div className="px-3 py-1 bg-surface-card rounded-xl border border-border text-[0.625rem] font-bold font-mono shadow-solid-sm">커피챗</div>
-               <div className="px-3 py-1 bg-surface-card rounded-xl border border-border text-[0.625rem] font-bold font-mono shadow-solid-sm">팀빌딩</div>
+               <div className="px-3 py-1 bg-surface-card rounded-xl border border-border text-[0.625rem] font-bold font-mono shadow-sm">커피챗</div>
+               <div className="px-3 py-1 bg-surface-card rounded-xl border border-border text-[0.625rem] font-bold font-mono shadow-sm">팀빌딩</div>
             </div>
          </div>
       </div>
@@ -346,7 +346,7 @@ function LoginContent() {
 // Helper Component for Marquee Cards
 const ShowcaseCard = ({ item }: { item: typeof showcaseItems[0] }) => (
   <div className={`
-    w-[17.5rem] p-6 border border-border shadow-sharp flex flex-col justify-between transition-transform hover:scale-[1.02] relative
+    w-[17.5rem] p-6 border border-border shadow-md flex flex-col justify-between transition-transform hover:scale-[1.02] relative
     ${item.color}
   `}>
     {/* Corner marks */}
