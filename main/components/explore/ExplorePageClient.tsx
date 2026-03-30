@@ -37,7 +37,6 @@ import {
   ExploreHeroCarousel,
   ExploreSearchBar,
   ExploreSidebar,
-  ExploreAsidePanel,
   ExploreTabBar,
   ExploreMobileFilter,
   ExploreProjectGrid,
@@ -450,18 +449,6 @@ function ExplorePageContent() {
         size="wide"
         className="pt-1"
         sidebar={<ExploreSidebar {...filterProps} />}
-        aside={
-          <ExploreAsidePanel
-            talentCards={talentCards}
-            sidebarRecs={sidebarRecs}
-            recsLoading={recsLoading}
-            totalProjectCount={totalCount}
-            projectCardCount={projectCards.length}
-            categoriesCount={filterProps.categories.length}
-            onSelectPeople={() => setActiveTab('people')}
-            onSelectProfile={handleSelectProfile}
-          />
-        }
       >
         {/* 검색바: 모바일 숨김, 데스크톱만 */}
         <div className="hidden md:block">
