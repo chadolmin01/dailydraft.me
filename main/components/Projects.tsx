@@ -72,7 +72,7 @@ export const Projects: React.FC = () => {
 
               {/* 카테고리 */}
               <div className="bg-surface-card border border-border-strong p-4">
-                <h3 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-3 flex items-center gap-2">
+                <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
                   <span className="w-2 h-2 bg-surface-inverse" />
                   카테고리
                 </h3>
@@ -95,7 +95,7 @@ export const Projects: React.FC = () => {
 
               {/* 필터 */}
               <div className="bg-surface-card border border-border-strong p-4">
-                <h3 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-3 flex items-center gap-2">
+                <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
                   <span className="w-2 h-2 bg-brand" />
                   필터
                 </h3>
@@ -148,7 +148,7 @@ export const Projects: React.FC = () => {
                 <button
                   key={tab.id}
                   onClick={() => setSortBy(tab.id as typeof sortBy)}
-                  className={`flex items-center gap-1.5 px-4 py-2.5 text-[0.625rem] font-mono font-bold uppercase tracking-wider border-b -mb-px transition-colors ${
+                  className={`flex items-center gap-1.5 px-4 py-2.5 text-[0.625rem] font-medium border-b -mb-px transition-colors ${
                     sortBy === tab.id
                       ? 'border-surface-inverse text-txt-primary'
                       : 'border-transparent text-txt-tertiary hover:text-txt-secondary'
@@ -250,7 +250,7 @@ export const Projects: React.FC = () => {
 
               {/* 인기 프로젝트 */}
               <div className="bg-surface-card border border-border-strong p-4">
-                <h3 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-3 flex items-center gap-2">
+                <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
                   <span className="w-2 h-2 bg-status-danger-text" />
                   <Flame size={10} /> 인기 프로젝트
                 </h3>
@@ -293,7 +293,7 @@ export const Projects: React.FC = () => {
 
               {/* 커피챗 안내 */}
               <div className="bg-surface-card border border-dashed border-border p-4">
-                <h3 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-3 flex items-center gap-2">
+                <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
                   <span className="w-2 h-2 bg-status-warning-text" />
                   <Coffee size={10} /> 커피챗
                 </h3>

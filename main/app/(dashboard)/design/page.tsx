@@ -34,7 +34,7 @@ export default function DesignPage() {
       <PageContainer size="wide" className="pt-8 pb-6">
         <div className="flex items-end justify-between border-b border-border pb-6">
           <div>
-            <p className="text-xs font-mono text-txt-tertiary uppercase tracking-widest mb-2">DRAFT DESIGN SYSTEM — BRUTALIST</p>
+            <p className="text-xs text-txt-tertiary mb-2">DRAFT DESIGN SYSTEM — BRUTALIST</p>
             <h1 className="text-xl font-bold text-txt-primary">Layout · Cards · Palette</h1>
             <p className="text-sm text-txt-secondary mt-1">브루탈리즘 · 각진 모서리 · 하드 셰도우 · 모노크롬</p>
           </div>
@@ -65,7 +65,7 @@ export default function DesignPage() {
 
           {/* ── Surface ── */}
           <div>
-            <h3 className="text-xs font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">Surface</h3>
+            <h3 className="text-xs font-medium text-txt-tertiary mb-3">Surface</h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
               {[
                 { name: 'bg', var: '--surface-bg', hex: '#FAFAFA', desc: '페이지 배경' },
@@ -90,7 +90,7 @@ export default function DesignPage() {
 
           {/* ── Text ── */}
           <div>
-            <h3 className="text-xs font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">Text</h3>
+            <h3 className="text-xs font-medium text-txt-tertiary mb-3">Text</h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
               {[
                 { name: 'primary', hex: '#18181B', desc: '제목/본문' },
@@ -116,7 +116,7 @@ export default function DesignPage() {
 
           {/* ── Border ── */}
           <div>
-            <h3 className="text-xs font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">Border</h3>
+            <h3 className="text-xs font-medium text-txt-tertiary mb-3">Border</h3>
             <div className="grid grid-cols-3 md:grid-cols-3 gap-3">
               {[
                 { name: 'default', hex: '#E4E4E7', desc: '기본 보더' },
@@ -135,7 +135,7 @@ export default function DesignPage() {
 
           {/* ── Status ── */}
           <div>
-            <h3 className="text-xs font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">Status (뮤트)</h3>
+            <h3 className="text-xs font-medium text-txt-tertiary mb-3">Status (뮤트)</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
                 { name: 'success', bg: 'var(--status-success-bg)', text: 'var(--status-success-text)', label: '성공/활성', example: 'OPEN' },
@@ -159,11 +159,11 @@ export default function DesignPage() {
 
           {/* ── Tags 비교 ── */}
           <div>
-            <h3 className="text-xs font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">Tags & Badges</h3>
+            <h3 className="text-xs font-medium text-txt-tertiary mb-3">Tags & Badges</h3>
             <div className="bg-surface-card border border-border p-6">
               <div className="space-y-4">
                 <div>
-                  <p className="text-xs font-mono text-txt-tertiary uppercase mb-2">모노크롬 (기본 — 이걸 쓰세요)</p>
+                  <p className="text-xs text-txt-tertiary mb-2">모노크롬 (기본 — 이걸 쓰세요)</p>
                   <div className="flex flex-wrap gap-2">
                     <span className="text-xs bg-tag-default-bg text-tag-default-text px-2 py-0.5 rounded-xs font-medium">Frontend</span>
                     <span className="text-xs bg-tag-default-bg text-tag-default-text px-2 py-0.5 rounded-xs font-medium">React</span>
@@ -173,7 +173,7 @@ export default function DesignPage() {
                   </div>
                 </div>
                 <div className="border-t border-border-subtle pt-4">
-                  <p className="text-xs font-mono text-txt-tertiary uppercase mb-2">시맨틱 (상태 표시 전용)</p>
+                  <p className="text-xs text-txt-tertiary mb-2">시맨틱 (상태 표시 전용)</p>
                   <div className="flex flex-wrap gap-2">
                     <span className="text-xs bg-status-success-bg text-status-success-text px-2 py-0.5 rounded-xs font-medium">모집중</span>
                     <span className="text-xs bg-status-warning-bg text-status-warning-text px-2 py-0.5 rounded-xs font-medium">마감임박</span>
@@ -182,7 +182,7 @@ export default function DesignPage() {
                   </div>
                 </div>
                 <div className="border-t border-border-subtle pt-4">
-                  <p className="text-xs font-mono text-txt-tertiary uppercase mb-2 flex items-center gap-2">
+                  <p className="text-xs text-txt-tertiary mb-2 flex items-center gap-2">
                     <span className="line-through text-txt-disabled">바이브코딩 (쓰지 마세요)</span>
                     <X size={12} className="text-status-danger-text" />
                   </p>
@@ -200,7 +200,7 @@ export default function DesignPage() {
 
           {/* ── Accent / Interactive ── */}
           <div>
-            <h3 className="text-xs font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">Accent & Interactive</h3>
+            <h3 className="text-xs font-medium text-txt-tertiary mb-3">Accent & Interactive</h3>
             <div className="bg-surface-card border border-border p-6">
               <div className="flex flex-wrap gap-3">
                 <button className="px-4 py-2 bg-accent text-txt-inverse text-sm font-semibold hover:bg-accent-hover transition-colors">Primary</button>
@@ -219,7 +219,7 @@ export default function DesignPage() {
 
           {/* ── Radius & Shadow ── */}
           <div>
-            <h3 className="text-xs font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">Radius & Shadow</h3>
+            <h3 className="text-xs font-medium text-txt-tertiary mb-3">Radius & Shadow</h3>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {[
                 { name: 'sm', val: '6px' },
@@ -274,7 +274,7 @@ export default function DesignPage() {
         <div className="border-y border-dashed border-border bg-surface-sunken/50 mb-1">
           <PageContainer size="narrow" className="py-4">
             <div className="bg-surface-card border border-border p-4 text-center">
-              <p className="text-xs font-mono text-txt-tertiary uppercase tracking-widest mb-1">narrow — 768px</p>
+              <p className="text-xs text-txt-tertiary mb-1">narrow — 768px</p>
               <p className="text-sm text-txt-secondary">로그인, 설정, 폼 등 좁은 콘텐츠</p>
             </div>
           </PageContainer>
@@ -284,7 +284,7 @@ export default function DesignPage() {
         <div className="border-y border-dashed border-border bg-surface-sunken/50 mb-1">
           <PageContainer size="standard" className="py-4">
             <div className="bg-surface-card border border-border p-4 text-center">
-              <p className="text-xs font-mono text-txt-tertiary uppercase tracking-widest mb-1">standard — 1200px</p>
+              <p className="text-xs text-txt-tertiary mb-1">standard — 1200px</p>
               <p className="text-sm text-txt-secondary">랜딩 페이지, 일반 콘텐츠</p>
             </div>
           </PageContainer>
@@ -294,7 +294,7 @@ export default function DesignPage() {
         <div className="border-y border-dashed border-border bg-surface-sunken/50 mb-6">
           <PageContainer size="wide" className="py-4">
             <div className="bg-surface-card border border-border p-4 text-center">
-              <p className="text-xs font-mono text-txt-tertiary uppercase tracking-widest mb-1">wide — 1400px</p>
+              <p className="text-xs text-txt-tertiary mb-1">wide — 1400px</p>
               <p className="text-sm text-txt-secondary">대시보드, 3컬럼 레이아웃</p>
             </div>
           </PageContainer>
@@ -312,7 +312,7 @@ export default function DesignPage() {
             <PageContainer size="standard">
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-xs font-mono text-txt-tertiary uppercase">spacing=sm · bg=white</span>
+                  <span className="text-xs text-txt-tertiary">spacing=sm · bg=white</span>
                   <p className="text-sm text-txt-secondary mt-1">py-12 — 컴팩트한 간격</p>
                 </div>
                 <div className="text-xs font-mono text-txt-disabled">py-12</div>
@@ -324,7 +324,7 @@ export default function DesignPage() {
             <PageContainer size="standard">
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-xs font-mono text-txt-tertiary uppercase">spacing=md · bg=gray</span>
+                  <span className="text-xs text-txt-tertiary">spacing=md · bg=gray</span>
                   <p className="text-sm text-txt-secondary mt-1">py-16 md:py-20 — 기본 간격</p>
                 </div>
                 <div className="text-xs font-mono text-txt-disabled">py-16 ~ py-20</div>
@@ -336,7 +336,7 @@ export default function DesignPage() {
             <PageContainer size="standard">
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-xs font-mono text-txt-tertiary uppercase">spacing=lg · bg=white</span>
+                  <span className="text-xs text-txt-tertiary">spacing=lg · bg=white</span>
                   <p className="text-sm text-txt-secondary mt-1">py-20 md:py-28 — 히어로/CTA용</p>
                 </div>
                 <div className="text-xs font-mono text-txt-disabled">py-20 ~ py-28</div>
@@ -355,7 +355,7 @@ export default function DesignPage() {
         {/* 1 Column */}
         <div className="border border-dashed border-border mx-4 sm:mx-6 lg:mx-8 mb-4 overflow-hidden">
           <div className="bg-surface-sunken px-4 py-2 border-b border-dashed border-border">
-            <span className="text-xs font-mono text-txt-tertiary uppercase">1-column — main only</span>
+            <span className="text-xs text-txt-tertiary">1-column — main only</span>
           </div>
           <DashboardLayout size="wide">
             <div className="bg-surface-inverse/5 border border-border p-6 text-center">
@@ -368,7 +368,7 @@ export default function DesignPage() {
         {/* 2 Column */}
         <div className="border border-dashed border-border mx-4 sm:mx-6 lg:mx-8 mb-4 overflow-hidden">
           <div className="bg-surface-sunken px-4 py-2 border-b border-dashed border-border">
-            <span className="text-xs font-mono text-txt-tertiary uppercase">2-column — sidebar + main</span>
+            <span className="text-xs text-txt-tertiary">2-column — sidebar + main</span>
           </div>
           <DashboardLayout
             size="wide"
@@ -394,7 +394,7 @@ export default function DesignPage() {
         {/* 3 Column */}
         <div className="border border-dashed border-border mx-4 sm:mx-6 lg:mx-8 mb-8 overflow-hidden">
           <div className="bg-surface-sunken px-4 py-2 border-b border-dashed border-border">
-            <span className="text-xs font-mono text-txt-tertiary uppercase">3-column — sidebar + main + aside</span>
+            <span className="text-xs text-txt-tertiary">3-column — sidebar + main + aside</span>
           </div>
           <DashboardLayout
             size="wide"
@@ -526,7 +526,7 @@ export default function DesignPage() {
            개별 카드 비교 (레퍼런스)
            ============================================================ */}
         <div className="border-t border-dashed border-border pt-8 mb-4">
-          <p className="text-xs font-mono text-txt-tertiary uppercase tracking-widest mb-6">아래는 개별 카드 변형 레퍼런스</p>
+          <p className="text-xs text-txt-tertiary mb-6">아래는 개별 카드 변형 레퍼런스</p>
         </div>
 
         <SectionLabel label="REF-A. 프로젝트 카드 — 자세히 모드" description="동일 구조, 상태별 변형 3종. 커버는 이미지/그라데이션 모두 대응." />
@@ -551,7 +551,7 @@ export default function DesignPage() {
             <div className="px-4 pt-4 h-[7.5rem] shrink-0 overflow-hidden">
               <h3 className="font-semibold text-base text-txt-primary mb-1.5 truncate">AI 기반 이력서 분석 플랫폼</h3>
               <div className="flex items-center gap-1.5 mb-2 overflow-hidden">
-                <span className="text-xs font-mono text-txt-disabled uppercase tracking-wide shrink-0">NEED</span>
+                <span className="text-xs text-txt-disabled shrink-0">NEED</span>
                 <span className="text-xs bg-tag-default-bg text-tag-default-text px-2 py-0.5 rounded font-medium shrink-0">프론트엔드</span>
                 <span className="text-xs bg-tag-default-bg text-tag-default-text px-2 py-0.5 rounded font-medium shrink-0">백엔드</span>
               </div>
@@ -588,7 +588,7 @@ export default function DesignPage() {
             <div className="px-4 pt-4 h-[7.5rem] shrink-0 overflow-hidden">
               <h3 className="font-semibold text-base text-txt-primary mb-1.5 truncate">헬스케어 데이터 대시보드</h3>
               <div className="flex items-center gap-1.5 mb-2 overflow-hidden">
-                <span className="text-xs font-mono text-txt-disabled uppercase tracking-wide shrink-0">NEED</span>
+                <span className="text-xs text-txt-disabled shrink-0">NEED</span>
                 <span className="text-xs bg-tag-default-bg text-tag-default-text px-2 py-0.5 rounded font-medium shrink-0">데이터 엔지니어</span>
                 <span className="text-xs bg-tag-default-bg text-tag-default-text px-2 py-0.5 rounded font-medium shrink-0">디자이너</span>
               </div>
@@ -627,7 +627,7 @@ export default function DesignPage() {
             <div className="px-4 pt-4 h-[7.5rem] shrink-0 overflow-hidden">
               <h3 className="font-semibold text-base text-txt-primary mb-1.5 truncate">캠퍼스 중고거래 앱</h3>
               <div className="flex items-center gap-1.5 mb-2 overflow-hidden">
-                <span className="text-xs font-mono text-txt-disabled uppercase tracking-wide shrink-0">NEED</span>
+                <span className="text-xs text-txt-disabled shrink-0">NEED</span>
                 <span className="text-xs bg-tag-default-bg text-tag-default-text px-2 py-0.5 rounded font-medium shrink-0">React Native</span>
                 <span className="text-xs bg-tag-default-bg text-tag-default-text px-2 py-0.5 rounded font-medium shrink-0">백엔드</span>
               </div>
@@ -761,7 +761,7 @@ export default function DesignPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
 
           <div className="bg-surface-card border border-border p-4">
-            <h3 className="text-xs font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">카테고리</h3>
+            <h3 className="text-xs font-medium text-txt-tertiary mb-3">카테고리</h3>
             <nav className="space-y-1">
               {['전체', 'AI / ML', 'SaaS', '모바일', '웹'].map((cat, i) => (
                 <button key={cat} className={`w-full flex items-center px-3 py-2 text-sm transition-all ${i === 0 ? 'bg-accent text-txt-inverse font-medium' : 'text-txt-secondary hover:bg-surface-sunken'}`}>
@@ -772,7 +772,7 @@ export default function DesignPage() {
           </div>
 
           <div className="bg-surface-card border border-border p-4">
-            <h3 className="text-xs font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">바로가기</h3>
+            <h3 className="text-xs font-medium text-txt-tertiary mb-3">바로가기</h3>
             <nav className="space-y-1">
               {[
                 { label: '내 프로젝트', icon: Zap, count: 2 },
@@ -788,7 +788,7 @@ export default function DesignPage() {
           </div>
 
           <div className="bg-surface-card border border-border p-4">
-            <h3 className="text-xs font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">프로필 완성도</h3>
+            <h3 className="text-xs font-medium text-txt-tertiary mb-3">프로필 완성도</h3>
             <div className="flex items-center justify-between mb-2">
               <span className="text-base font-semibold text-txt-primary">60%</span>
               <span className="text-xs text-txt-tertiary">3/5</span>
@@ -810,7 +810,7 @@ export default function DesignPage() {
           </div>
 
           <div className="bg-surface-card border border-border p-4">
-            <h3 className="text-xs font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-1"><Flame size={10} /> 트렌딩</h3>
+            <h3 className="text-xs font-medium text-txt-tertiary mb-3 flex items-center gap-1"><Flame size={10} /> 트렌딩</h3>
             <div className="space-y-2">
               {['#AI에이전트', '#사이드프로젝트', '#React', '#커뮤니티', '#EdTech'].map((tag) => (
                 <button key={tag} className="flex items-center justify-between w-full text-sm text-txt-secondary hover:text-txt-primary transition-colors">
@@ -997,7 +997,7 @@ export default function DesignPage() {
               </button>
             </div>
             <div className="p-5">
-              <p className="text-xs font-mono text-txt-disabled uppercase tracking-wide mb-3">STEP 1 — 어떤 목적인가요?</p>
+              <p className="text-xs text-txt-disabled mb-3">STEP 1 — 어떤 목적인가요?</p>
               <div className="space-y-2">
                 {[
                   { icon: '👋', label: '관심 표현', desc: '프로젝트가 흥미로워서 이야기 나눠보고 싶어요' },
@@ -1047,7 +1047,7 @@ export default function DesignPage() {
               </button>
             </div>
             <div className="p-5">
-              <p className="text-xs font-mono text-txt-disabled uppercase tracking-wide mb-3">STEP 2 — 메시지</p>
+              <p className="text-xs text-txt-disabled mb-3">STEP 2 — 메시지</p>
               {/* 자동 생성된 템플릿 */}
               <div className="bg-surface-sunken p-4 mb-4">
                 <p className="text-xs text-txt-tertiary mb-2 flex items-center gap-1"><Star size={10} /> 자동 생성된 메시지</p>
@@ -1125,7 +1125,7 @@ export default function DesignPage() {
           {coffeeChatStep === 'template' ? (
             <>
               <div className="p-5">
-                <p className="text-xs font-mono text-txt-disabled uppercase tracking-wide mb-3">STEP 1 — 어떤 목적인가요?</p>
+                <p className="text-xs text-txt-disabled mb-3">STEP 1 — 어떤 목적인가요?</p>
                 <div className="space-y-2">
                   {[
                     { icon: '👋', label: '관심 표현', desc: '프로젝트가 흥미로워서 이야기 나눠보고 싶어요' },
@@ -1169,7 +1169,7 @@ export default function DesignPage() {
           ) : (
             <>
               <div className="p-5">
-                <p className="text-xs font-mono text-txt-disabled uppercase tracking-wide mb-3">STEP 2 — 메시지</p>
+                <p className="text-xs text-txt-disabled mb-3">STEP 2 — 메시지</p>
                 {coffeeChatTemplate !== 3 && (
                   <div className="bg-surface-sunken p-4 mb-4">
                     <p className="text-xs text-txt-tertiary mb-2 flex items-center gap-1"><Star size={10} /> 자동 생성된 메시지</p>
@@ -1328,7 +1328,7 @@ function ViewModeDemo() {
               <div className="px-4 pt-4 h-[7.5rem] shrink-0 overflow-hidden">
                 <h3 className="font-semibold text-base text-txt-primary mb-1.5 truncate">{p.title}</h3>
                 <div className="flex items-center gap-1.5 mb-2 overflow-hidden">
-                  <span className="text-xs font-mono text-txt-disabled uppercase tracking-wide shrink-0">NEED</span>
+                  <span className="text-xs text-txt-disabled shrink-0">NEED</span>
                   {p.roles.map(r => (
                     <span key={r} className="text-xs bg-tag-default-bg text-tag-default-text px-2 py-0.5 rounded font-medium shrink-0">{r}</span>
                   ))}
@@ -1354,7 +1354,7 @@ function ViewModeDemo() {
           {viewMode === 'compact' && (
             <div>
               {/* 컬럼 헤더 */}
-              <div className="flex items-center gap-6 px-5 py-2.5 border-b border-border text-xs font-bold text-txt-tertiary uppercase tracking-wider">
+              <div className="flex items-center gap-6 px-5 py-2.5 border-b border-border text-xs font-medium text-txt-tertiary">
                 <div className="w-8 shrink-0" />
                 <button onClick={() => toggleSort('title')} className="flex-1 min-w-0 flex items-center gap-1 hover:text-txt-secondary transition-colors text-left">
                   프로젝트명 <SortIcon active={sortKey === 'title'} asc={sortAsc} />
@@ -1469,7 +1469,7 @@ function ViewModeDemo() {
           {viewMode === 'compact' && (
             <div>
               {/* 컬럼 헤더 */}
-              <div className="flex items-center gap-6 px-5 py-2.5 border-b border-border text-xs font-bold text-txt-tertiary uppercase tracking-wider">
+              <div className="flex items-center gap-6 px-5 py-2.5 border-b border-border text-xs font-medium text-txt-tertiary">
                 <div className="w-8 shrink-0" />
                 <button onClick={() => toggleSort('name')} className="flex-1 min-w-0 flex items-center gap-1 hover:text-txt-secondary transition-colors text-left">
                   이름 <SortIcon active={sortKey === 'name'} asc={sortAsc} />

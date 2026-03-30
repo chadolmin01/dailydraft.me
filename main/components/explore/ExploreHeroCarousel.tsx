@@ -57,10 +57,10 @@ export function ExploreHeroCarousel() {
           <div className="absolute inset-0 bg-gradient-to-r from-surface-card via-surface-card/80 to-transparent" />
 
           {/* 코너 마크 */}
-          <div className="absolute top-2 left-2 w-3 h-3 border-l border-t border-black/30 z-10" />
-          <div className="absolute top-2 right-2 w-3 h-3 border-r border-t border-black/30 z-10" />
-          <div className="absolute bottom-2 left-2 w-3 h-3 border-l border-b border-black/30 z-10" />
-          <div className="absolute bottom-2 right-2 w-3 h-3 border-r border-b border-black/30 z-10" />
+          <div className="absolute top-2 left-2 w-3 h-3 border-l border-t border-surface-inverse/30 z-10" />
+          <div className="absolute top-2 right-2 w-3 h-3 border-r border-t border-surface-inverse/30 z-10" />
+          <div className="absolute bottom-2 left-2 w-3 h-3 border-l border-b border-surface-inverse/30 z-10" />
+          <div className="absolute bottom-2 right-2 w-3 h-3 border-r border-b border-surface-inverse/30 z-10" />
 
           {/* 인디케이터 */}
           <div className="absolute bottom-3 left-4 sm:left-6 z-20 flex items-center gap-2">
@@ -94,7 +94,7 @@ export function ExploreHeroCarousel() {
                 </p>
                 <Link
                   href={isAuthenticated ? '/projects/new' : '/login'}
-                  className="group inline-flex items-center gap-2 px-5 py-2.5 bg-black text-white text-sm font-bold hover:bg-surface-inverse transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] border border-black"
+                  className="group inline-flex items-center gap-2 px-5 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-bold hover:bg-surface-inverse transition-all hover:opacity-90 active:scale-[0.97] border border-surface-inverse"
                 >
                   {isAuthenticated ? '프로젝트 올리기' : '시작하기'}
                   <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />

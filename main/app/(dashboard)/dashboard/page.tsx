@@ -74,14 +74,14 @@ export default function DashboardPage() {
         <PageContainer size="wide">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-dashed border-border pb-6">
             <div>
-              <p className="text-[0.625rem] font-mono text-txt-tertiary uppercase tracking-widest mb-1">{greeting}</p>
+              <p className="text-[0.625rem] text-txt-tertiary mb-1">{greeting}</p>
               <h1 className="text-xl font-bold text-txt-primary">
                 {profile?.nickname ?? user?.email?.split('@')[0] ?? '...'}
               </h1>
             </div>
             <Link
               href="/projects/new"
-              className="flex items-center gap-1.5 px-4 py-2 bg-surface-inverse text-txt-inverse text-sm font-bold border border-surface-inverse shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+              className="flex items-center gap-1.5 px-4 py-2 bg-surface-inverse text-txt-inverse text-sm font-bold border border-surface-inverse hover:opacity-90 active:scale-[0.97] transition-all"
             >
               <Plus size={16} />
               새 프로젝트
@@ -96,7 +96,7 @@ export default function DashboardPage() {
           <ScrollReveal>
           <div className="flex items-center gap-2 mb-4">
             <span className="w-5 h-5 bg-surface-inverse text-txt-inverse flex items-center justify-center text-[0.5rem] font-bold font-mono">S</span>
-            <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-secondary">Stats Overview</span>
+            <span className="text-[0.625rem] font-medium text-txt-secondary">Stats Overview</span>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <StatCard
@@ -138,7 +138,7 @@ export default function DashboardPage() {
           <PageContainer size="wide">
             <div className="flex items-center gap-2 mb-4">
               <span className="w-5 h-5 bg-status-danger-text text-white flex items-center justify-center text-[0.5rem] font-bold font-mono">!</span>
-              <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-secondary">Action Required</span>
+              <span className="text-[0.625rem] font-medium text-txt-secondary">Action Required</span>
             </div>
             <div className="space-y-2">
               {pendingCount > 0 && (
@@ -183,7 +183,7 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <span className="w-5 h-5 bg-brand text-white flex items-center justify-center text-[0.5rem] font-bold font-mono">R</span>
-                  <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-secondary">Recommended</span>
+                  <span className="text-[0.625rem] font-medium text-txt-secondary">Recommended</span>
                 </div>
                 <Link href="/explore" className="text-[0.625rem] font-mono text-txt-tertiary hover:text-txt-primary transition-colors flex items-center gap-1">
                   전체보기 <ArrowRight size={10} />
@@ -217,7 +217,7 @@ export default function DashboardPage() {
                       style={{ animationDelay: `${index * 80}ms` }}
                       className="stagger-item bg-surface-card border border-border-strong p-5 cursor-pointer hover:shadow-solid-sm hover:-translate-y-0.5 hover-spring group relative"
                     >
-                      <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-black/15" />
+                      <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/15" />
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
@@ -251,10 +251,10 @@ export default function DashboardPage() {
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <span className="w-5 h-5 bg-surface-inverse text-txt-inverse flex items-center justify-center text-[0.5rem] font-bold font-mono">A</span>
-                <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-secondary">Activity</span>
+                <span className="text-[0.625rem] font-medium text-txt-secondary">Activity</span>
               </div>
               <div className="bg-surface-card border border-border-strong p-5 relative">
-                <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-black/15" />
+                <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/15" />
                 {statsLoading ? (
                   <div className="space-y-4">
                     {[1, 2, 3].map(i => (
@@ -308,7 +308,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <span className="w-5 h-5 bg-[#059669] text-white flex items-center justify-center text-[0.5rem] font-bold font-mono">P</span>
-              <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-secondary">My Projects</span>
+              <span className="text-[0.625rem] font-medium text-txt-secondary">My Projects</span>
             </div>
             {myProjects.length > 0 && (
               <Link href="/projects" className="text-[0.625rem] font-mono text-txt-tertiary hover:text-txt-primary transition-colors flex items-center gap-1">
@@ -337,7 +337,7 @@ export default function DashboardPage() {
               <p className="text-xs text-txt-tertiary mb-4">아이디어를 등록하고 함께할 팀원을 찾아보세요</p>
               <Link
                 href="/projects/new"
-                className="inline-flex items-center gap-1.5 px-5 py-2 bg-surface-inverse text-txt-inverse text-sm font-bold border border-surface-inverse shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                className="inline-flex items-center gap-1.5 px-5 py-2 bg-surface-inverse text-txt-inverse text-sm font-bold border border-surface-inverse hover:opacity-90 active:scale-[0.97] transition-all"
               >
                 <Rocket size={14} />
                 첫 프로젝트 만들기
@@ -352,7 +352,7 @@ export default function DashboardPage() {
                   style={{ animationDelay: `${index * 60}ms` }}
                   className="stagger-item bg-surface-card border border-border-strong p-4 flex items-center gap-4 hover:shadow-solid-sm hover:-translate-y-0.5 hover-spring group relative block"
                 >
-                  <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-black/15" />
+                  <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/15" />
                   <div className="w-10 h-10 bg-surface-inverse flex items-center justify-center shrink-0">
                     <Rocket size={16} className="text-txt-inverse" />
                   </div>
@@ -398,14 +398,14 @@ function StatCard({ index, label, value, icon, href, alert }: {
 }) {
   const content = (
     <div className={`bg-surface-card border border-border-strong shadow-sharp p-5 relative ${href ? 'cursor-pointer hover:shadow-solid-sm hover:-translate-y-0.5 hover-spring group' : ''}`}>
-      <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-black/20" />
+      <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/20" />
       <div className="flex items-center justify-between mb-3">
         <span className="text-[0.625rem] font-mono text-txt-disabled">{String(index).padStart(2, '0')}</span>
         <div className={`w-6 h-6 flex items-center justify-center ${alert ? 'text-status-danger-text' : 'text-txt-tertiary'}`}>
           {icon}
         </div>
       </div>
-      <p className="text-[0.625rem] font-mono text-txt-tertiary uppercase tracking-wider mb-1">{label}</p>
+      <p className="text-[0.625rem] text-txt-tertiary mb-1">{label}</p>
       {value === null ? (
         <Skeleton className="h-7 w-12" />
       ) : (

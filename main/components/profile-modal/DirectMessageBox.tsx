@@ -33,7 +33,7 @@ export function DirectMessageBox({ receiverId }: { receiverId: string }) {
 
   return (
     <div className="border border-border-strong p-4 shadow-solid-sm">
-      <h4 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-2 flex items-center gap-1.5">
+      <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-2 flex items-center gap-1.5">
         <Send size={10} /> SEND MESSAGE
       </h4>
       {sent ? (
@@ -53,7 +53,7 @@ export function DirectMessageBox({ receiverId }: { receiverId: string }) {
             <button
               onClick={handleSend}
               disabled={!content.trim() || sending}
-              className="flex items-center gap-1.5 px-4 py-2 bg-surface-inverse text-txt-inverse text-xs font-bold border border-black hover:bg-black/80 disabled:opacity-40 transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]"
+              className="flex items-center gap-1.5 px-4 py-2 bg-surface-inverse text-txt-inverse text-xs font-bold border border-surface-inverse hover:bg-surface-inverse/90 disabled:opacity-40 transition-colors hover:opacity-90 active:scale-[0.97]"
             >
               {sending ? <Loader2 size={12} className="animate-spin" /> : <Send size={12} />}
               보내기

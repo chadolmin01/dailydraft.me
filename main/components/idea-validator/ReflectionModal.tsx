@@ -57,7 +57,7 @@ const ReflectionModal: React.FC<ReflectionModalProps> = ({
 
         <div className="p-5 overflow-y-auto">
            <div className="mb-5">
-              <label className="text-[0.5625rem] font-bold font-mono text-txt-tertiary uppercase mb-2 block tracking-widest">Original</label>
+              <label className="text-[0.5625rem] font-medium text-txt-tertiary mb-2 block">Original</label>
               <div className="p-4 bg-surface-sunken border border-border text-sm text-txt-secondary leading-relaxed break-keep">
                 {reflectionModal.originalContent}
               </div>
@@ -65,7 +65,7 @@ const ReflectionModal: React.FC<ReflectionModalProps> = ({
 
            {reflectionModal.suggestedActions && reflectionModal.suggestedActions.length > 0 && (
                <div className="mb-5">
-                   <label className="flex items-center gap-2 text-[0.5625rem] font-bold font-mono text-txt-tertiary uppercase mb-2 tracking-widest">
+                   <label className="flex items-center gap-2 text-[0.5625rem] font-medium text-txt-tertiary mb-2">
                        <Sparkles size={10} />
                        Quick Select
                    </label>
@@ -82,7 +82,7 @@ const ReflectionModal: React.FC<ReflectionModalProps> = ({
                            >
                                <div className="flex items-start gap-3">
                                    <div className={`mt-0.5 w-5 h-5 sm:w-4 sm:h-4 border flex items-center justify-center shrink-0 ${
-                                       reflectionText === action ? 'border-black bg-black' : 'border-border-strong'
+                                       reflectionText === action ? 'border-surface-inverse bg-black' : 'border-border-strong'
                                    }`}>
                                        {reflectionText === action && <Check size={10} className="text-white" />}
                                    </div>
@@ -95,7 +95,7 @@ const ReflectionModal: React.FC<ReflectionModalProps> = ({
            )}
 
           <div>
-            <label className="text-[0.5625rem] font-bold font-mono text-txt-tertiary uppercase mb-2 block tracking-widest">
+            <label className="text-[0.5625rem] font-medium text-txt-tertiary mb-2 block">
                My Decision
             </label>
             <textarea
@@ -111,7 +111,7 @@ const ReflectionModal: React.FC<ReflectionModalProps> = ({
           {isAlreadyReflected && (
             <button
               onClick={onRemove}
-              className="mr-auto text-status-danger-text text-[0.625rem] font-bold font-mono uppercase hover:underline"
+              className="mr-auto text-status-danger-text text-[0.625rem] font-medium hover:underline"
             >
               Cancel
             </button>
@@ -120,7 +120,7 @@ const ReflectionModal: React.FC<ReflectionModalProps> = ({
           <button
             onClick={onSave}
             disabled={!reflectionText.trim()}
-            className="px-5 py-2 bg-black text-white font-bold hover:bg-[#333] transition-colors text-xs disabled:opacity-50 disabled:cursor-not-allowed shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            className="px-5 py-2 bg-surface-inverse text-txt-inverse font-bold hover:bg-surface-inverse/90 transition-colors text-xs disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 active:scale-[0.97]"
           >
             {isAlreadyReflected ? 'Update' : 'Confirm'}
           </button>

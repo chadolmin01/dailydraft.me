@@ -352,7 +352,7 @@ function EditProjectContent() {
               <button
                 type="button"
                 onClick={() => setTab('info')}
-                className={`text-[0.625rem] font-mono font-bold px-3 py-1.5 uppercase tracking-wider transition-colors ${
+                className={`text-[0.625rem] font-medium px-3 py-1.5 transition-colors ${
                   tab === 'info'
                     ? 'bg-surface-inverse text-txt-inverse'
                     : 'bg-surface-sunken text-txt-tertiary hover:text-txt-secondary'
@@ -363,7 +363,7 @@ function EditProjectContent() {
               <button
                 type="button"
                 onClick={() => setTab('team')}
-                className={`text-[0.625rem] font-mono font-bold px-3 py-1.5 uppercase tracking-wider transition-colors ${
+                className={`text-[0.625rem] font-medium px-3 py-1.5 transition-colors ${
                   tab === 'team'
                     ? 'bg-surface-inverse text-txt-inverse'
                     : 'bg-surface-sunken text-txt-tertiary hover:text-txt-secondary'
@@ -400,7 +400,7 @@ function EditProjectContent() {
                     key={opt.value}
                     type="button"
                     onClick={() => setType(opt.value)}
-                    className={`text-[0.625rem] font-mono font-bold px-2.5 py-1 uppercase tracking-wider transition-colors ${
+                    className={`text-[0.625rem] font-medium px-2.5 py-1 transition-colors ${
                       type === opt.value
                         ? TYPE_THEMES[opt.value].badge
                         : 'bg-surface-sunken text-txt-tertiary hover:text-txt-secondary'
@@ -476,14 +476,14 @@ function EditProjectContent() {
                   {/* Description */}
                   <section>
                     <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-wider">
+                      <h3 className="text-[0.625rem] font-medium text-txt-tertiary">
                         프로젝트 소개
                       </h3>
                       <button
                         type="button"
                         onClick={generateDescription}
                         disabled={aiLoading || !title.trim()}
-                        className="flex items-center gap-1.5 px-2.5 py-1 text-[0.625rem] font-mono font-bold uppercase tracking-wider border border-border text-txt-secondary hover:border-border-strong hover:text-txt-primary transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="flex items-center gap-1.5 px-2.5 py-1 text-[0.625rem] font-medium border border-border text-txt-secondary hover:border-border-strong hover:text-txt-primary transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                       >
                         {aiLoading ? (
                           <><Loader2 size={10} className="animate-spin" /> 생성 중...</>
@@ -505,7 +505,7 @@ function EditProjectContent() {
 
                   {/* Pain Point */}
                   <section className={`p-4 border border-border-subtle transition-colors ${theme.painBg}`}>
-                    <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-wider mb-2">
+                    <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-2">
                       {theme.painLabel}
                     </h3>
                     <textarea
@@ -520,7 +520,7 @@ function EditProjectContent() {
 
                   {/* Links */}
                   <section>
-                    <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-wider mb-2">
+                    <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-2">
                       프로젝트 링크
                     </h3>
                     <div className="space-y-2">
@@ -581,7 +581,7 @@ function EditProjectContent() {
 
                   {/* Delete */}
                   <div className="border border-status-danger-text/20 p-4">
-                    <h3 className="text-[0.625rem] font-mono font-bold text-status-danger-text uppercase tracking-wider mb-2">
+                    <h3 className="text-[0.625rem] font-medium text-status-danger-text mb-2">
                       위험 영역
                     </h3>
                     {showDeleteConfirm ? (

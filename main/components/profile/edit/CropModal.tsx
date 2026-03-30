@@ -27,7 +27,7 @@ export const CropModal: React.FC<CropModalProps> = ({
       <div className="bg-surface-card border border-border-strong shadow-brutal-xl w-full max-w-lg mx-4 flex flex-col">
         {/* 헤더 */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-border-strong bg-surface-sunken">
-          <span className="text-xs font-mono font-bold uppercase tracking-widest text-txt-tertiary">
+          <span className="text-xs font-medium text-txt-tertiary">
             {cropType === 'avatar' ? 'CROP AVATAR' : 'CROP COVER'}
           </span>
           <button
@@ -77,7 +77,7 @@ export const CropModal: React.FC<CropModalProps> = ({
           </button>
           <button
             onClick={handleCropConfirm}
-            className="flex items-center gap-1.5 px-4 py-2 bg-brand text-white text-xs font-bold border border-brand hover:bg-brand-hover transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            className="flex items-center gap-1.5 px-4 py-2 bg-brand text-white text-xs font-bold border border-brand hover:bg-brand-hover transition-all hover:opacity-90 active:scale-[0.97]"
           >
             <Camera size={12} /> 적용
           </button>

@@ -116,7 +116,7 @@ export default function InstitutionReportsPage() {
         <div className="border-b border-border pb-6">
           <button
             onClick={() => router.push('/institution')}
-            className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-2 flex items-center gap-1 hover:text-txt-primary transition-colors"
+            className="text-[0.625rem] font-medium text-txt-tertiary mb-2 flex items-center gap-1 hover:text-txt-primary transition-colors"
           >
             <ChevronLeft size={12} />
             Institution Dashboard
@@ -140,7 +140,7 @@ export default function InstitutionReportsPage() {
           <>
             {/* Report Preview */}
             <Card padding="p-8">
-              <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-6">
+              <div className="text-[0.625rem] font-medium text-txt-tertiary mb-6">
                 {report.period} 활동 보고서
               </div>
 
@@ -171,17 +171,17 @@ export default function InstitutionReportsPage() {
               </div>
 
               {/* Members Summary Table */}
-              <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-3">
+              <div className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
                 학생별 활동 요약
               </div>
               <div className="overflow-x-auto border border-border">
                 <table className="w-full">
                   <thead>
                     <tr className="bg-surface-sunken border-b border-border">
-                      <th className="text-left text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary px-4 py-2">이름</th>
-                      <th className="text-left text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary px-4 py-2">학과</th>
-                      <th className="text-center text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary px-4 py-2">사업계획서</th>
-                      <th className="text-center text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary px-4 py-2">프로젝트</th>
+                      <th className="text-left text-[0.625rem] font-medium text-txt-tertiary px-4 py-2">이름</th>
+                      <th className="text-left text-[0.625rem] font-medium text-txt-tertiary px-4 py-2">학과</th>
+                      <th className="text-center text-[0.625rem] font-medium text-txt-tertiary px-4 py-2">사업계획서</th>
+                      <th className="text-center text-[0.625rem] font-medium text-txt-tertiary px-4 py-2">프로젝트</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -200,7 +200,7 @@ export default function InstitutionReportsPage() {
 
             {/* Download Options */}
             <div>
-              <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-4">
+              <div className="text-[0.625rem] font-medium text-txt-tertiary mb-4">
                 내보내기
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

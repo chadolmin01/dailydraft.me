@@ -144,7 +144,7 @@ export default function ErrorLogsPage() {
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-border-strong pb-6">
           <div>
-            <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-2 flex items-center gap-2">
+            <div className="text-[0.625rem] font-medium text-txt-tertiary mb-2 flex items-center gap-2">
               <span className="w-2 h-2 bg-indicator-alert"></span>
               ADMIN / MONITORING
             </div>
@@ -153,7 +153,7 @@ export default function ErrorLogsPage() {
 
           <button
             onClick={() => refetch()}
-            className="flex items-center gap-2 px-4 py-2 bg-black text-white text-sm font-medium border border-black hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            className="flex items-center gap-2 px-4 py-2 bg-surface-inverse text-txt-inverse text-sm font-medium border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97]"
           >
             <RefreshCw size={16} />
             새로고침
@@ -215,7 +215,7 @@ export default function ErrorLogsPage() {
                 </div>
                 <div>
                   <div className="text-2xl font-bold font-mono text-txt-primary">{count}</div>
-                  <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">{level}</div>
+                  <div className="text-[0.625rem] font-medium text-txt-tertiary">{level}</div>
                 </div>
               </Card>
             )
@@ -301,7 +301,7 @@ export default function ErrorLogsPage() {
                     <div className="border-t border-border p-4 bg-surface-sunken space-y-4">
                       {/* Full message */}
                       <div>
-                        <h4 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-1">MESSAGE</h4>
+                        <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-1">MESSAGE</h4>
                         <p className="text-sm text-txt-primary bg-surface-card p-3 border border-border-strong">
                           {log.message}
                         </p>
@@ -310,7 +310,7 @@ export default function ErrorLogsPage() {
                       {/* Stack trace */}
                       {log.stack_trace && (
                         <div>
-                          <h4 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-1">STACK TRACE</h4>
+                          <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-1">STACK TRACE</h4>
                           <pre className="text-xs text-txt-secondary bg-surface-card p-3 border border-border-strong overflow-x-auto">
                             {log.stack_trace}
                           </pre>
@@ -320,7 +320,7 @@ export default function ErrorLogsPage() {
                       {/* Request body */}
                       {log.request_body && (
                         <div>
-                          <h4 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-1">REQUEST BODY</h4>
+                          <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-1">REQUEST BODY</h4>
                           <pre className="text-xs text-txt-secondary bg-surface-card p-3 border border-border-strong overflow-x-auto">
                             {JSON.stringify(log.request_body, null, 2)}
                           </pre>
@@ -330,7 +330,7 @@ export default function ErrorLogsPage() {
                       {/* Metadata */}
                       {log.metadata && Object.keys(log.metadata).length > 0 && (
                         <div>
-                          <h4 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-1">METADATA</h4>
+                          <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-1">METADATA</h4>
                           <pre className="text-xs text-txt-secondary bg-surface-card p-3 border border-border-strong overflow-x-auto">
                             {JSON.stringify(log.metadata, null, 2)}
                           </pre>

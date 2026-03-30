@@ -93,7 +93,7 @@ export const AiGenerateButton: React.FC<AiGenerateButtonProps> = ({
               ? 'bg-surface-sunken text-txt-tertiary cursor-not-allowed'
               : isGenerating
                 ? 'bg-status-info-bg text-status-info-text cursor-wait'
-                : 'bg-black text-white hover:bg-[#333] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
+                : 'bg-surface-inverse text-txt-inverse hover:bg-surface-inverse/90 hover:opacity-90 active:scale-[0.97]'
             }
           `}
         >
@@ -252,7 +252,7 @@ export const AiAssistantFloating: React.FC<AiAssistantFloatingProps> = ({
           transition-all duration-200
           ${isExpanded
             ? 'bg-surface-inverse text-white'
-            : 'bg-black text-white hover:shadow-sharp hover:scale-105'
+            : 'bg-surface-inverse text-txt-inverse hover:shadow-sharp hover:scale-105'
           }
           ${isGenerating ? 'animate-pulse' : ''}
         `}

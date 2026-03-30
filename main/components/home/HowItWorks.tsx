@@ -26,7 +26,7 @@ export const HowItWorks: React.FC = () => {
     <section id="how-it-works" className="w-full py-20 px-6 md:px-10 bg-surface-card">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-12">
-          <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-3 block">
+          <span className="text-[0.625rem] font-medium text-txt-tertiary mb-3 block">
             HOW IT WORKS
           </span>
           <h2 className="text-2xl md:text-3xl font-bold text-txt-primary">
@@ -41,7 +41,7 @@ export const HowItWorks: React.FC = () => {
               className="relative flex flex-col items-center text-center p-6 bg-surface-card border border-border shadow-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-200"
             >
               {/* Step number */}
-              <div className="absolute -top-2.5 -left-2.5 w-6 h-6 bg-black text-white flex items-center justify-center text-xs font-bold">
+              <div className="absolute -top-2.5 -left-2.5 w-6 h-6 bg-surface-inverse text-txt-inverse flex items-center justify-center text-xs font-bold">
                 {index + 1}
               </div>
 
@@ -67,7 +67,7 @@ export const HowItWorks: React.FC = () => {
         <div className="hidden md:flex justify-center mt-8">
           <div className="flex items-center gap-4 text-txt-disabled">
             <div className="w-24 h-[1px] border-t border-dashed border-border"></div>
-            <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest">SIMPLE FLOW</span>
+            <span className="text-[0.625rem] font-medium">SIMPLE FLOW</span>
             <div className="w-24 h-[1px] border-t border-dashed border-border"></div>
           </div>
         </div>

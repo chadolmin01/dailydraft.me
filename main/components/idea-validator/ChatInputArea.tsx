@@ -38,7 +38,7 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = ({
              </div>
              <button
                 onClick={onConsumeToken}
-                className="bg-black text-white px-4 py-2 text-xs font-bold hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                className="bg-surface-inverse text-txt-inverse px-4 py-2 text-xs font-bold hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97]"
              >
                 토큰 1개 사용 (잔여: {tokens})
              </button>
@@ -70,7 +70,7 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = ({
               disabled={isTyping || !input.trim()}
               className={`absolute right-3 bottom-3 p-2 transition-colors
                 ${input.trim() && !isTyping
-                  ? 'bg-black text-white hover:bg-[#333]'
+                  ? 'bg-surface-inverse text-txt-inverse hover:bg-surface-inverse/90'
                   : 'bg-surface-sunken text-txt-tertiary cursor-not-allowed'}
               `}
             >

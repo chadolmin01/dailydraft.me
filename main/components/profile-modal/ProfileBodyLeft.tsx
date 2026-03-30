@@ -51,7 +51,7 @@ export function ProfileBodyLeft({
     <div className="md:col-span-3 space-y-6">
       {/* Bio / Vision */}
       <section>
-        <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-2">
+        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-2">
           소개
         </h3>
         {displayBio ? (
@@ -76,14 +76,14 @@ export function ProfileBodyLeft({
 
       {/* Portfolio */}
       <section>
-        <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-1">
+        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-1">
           <FileText size={11} /> 포트폴리오
         </h3>
 
         {/* Links */}
         {(profile.portfolio_url || profile.github_url || profile.linkedin_url) && (
           <div className="space-y-1.5 mb-4">
-            <p className="text-[0.5rem] font-mono font-bold text-txt-disabled uppercase tracking-widest mb-1.5">LINKS</p>
+            <p className="text-[0.5rem] font-medium text-txt-disabled mb-1.5">LINKS</p>
             <div className="flex flex-wrap gap-2">
               {profile.portfolio_url && (
                 <a href={profile.portfolio_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-surface-card border border-border-strong text-xs text-txt-secondary hover:border-brand hover:text-brand transition-colors">
@@ -110,7 +110,7 @@ export function ProfileBodyLeft({
         {/* Items -- show max 2, expand to side panel */}
         {portfolioItems.length > 0 ? (
           <>
-            <p className="text-[0.5rem] font-mono font-bold text-txt-disabled uppercase tracking-widest mb-2">WORKS</p>
+            <p className="text-[0.5rem] font-medium text-txt-disabled mb-2">WORKS</p>
             <div className="grid grid-cols-2 gap-3">
               {portfolioItems.slice(0, 2).map((item) => (
                 <a
@@ -150,7 +150,7 @@ export function ProfileBodyLeft({
 
       {/* User's Projects */}
       <section>
-        <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-1">
+        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-1">
           <Rocket size={11} /> 프로젝트
           <span className="text-[0.625rem] font-mono text-txt-tertiary">({userProjects.length})</span>
         </h3>
@@ -223,7 +223,7 @@ export function ProfileBodyLeft({
       {/* Contact */}
       {profile.contact_email && (
         <section>
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">
+          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
             연락처
           </h3>
           {isAuthenticated ? (
@@ -263,7 +263,7 @@ export function ProfileBodyLeft({
           )}
         </>
       ) : (
-        <div className="bg-surface-inverse p-5 text-center border border-black shadow-solid">
+        <div className="bg-surface-inverse p-5 text-center border border-surface-inverse shadow-solid">
           <Coffee size={20} className="text-txt-inverse/50 mx-auto mb-2" />
           <p className="text-sm font-medium text-txt-inverse mb-1">관심 있는 사람인가요?</p>
           <p className="text-xs text-txt-inverse/50 mb-3">로그인하면 쪽지와 커피챗이 가능해요</p>

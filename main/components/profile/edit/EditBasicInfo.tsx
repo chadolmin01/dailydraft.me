@@ -17,7 +17,7 @@ export const EditBasicInfo: React.FC<EditBasicInfoProps> = ({
     <>
       {/* 기본 정보 */}
       <section>
-        <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4 flex items-center gap-2">
+        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4 flex items-center gap-2">
           <User size={14} /> 기본 정보
         </h3>
         <div className="space-y-4">
@@ -49,7 +49,7 @@ export const EditBasicInfo: React.FC<EditBasicInfoProps> = ({
 
       {/* 현재 상황 */}
       <section>
-        <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4 flex items-center gap-2">
+        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4 flex items-center gap-2">
           <Target size={14} /> 현재 상황
         </h3>
         <div className="space-y-1.5">

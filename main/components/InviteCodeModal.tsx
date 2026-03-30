@@ -132,7 +132,7 @@ export const InviteCodeModal: React.FC<InviteCodeModalProps> = ({
               {/* Code Input */}
               <form onSubmit={handleSubmit}>
                 <div className="mb-4">
-                  <label className="block text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-2">
+                  <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-2">
                     초대 코드
                   </label>
                   <input
@@ -163,7 +163,7 @@ export const InviteCodeModal: React.FC<InviteCodeModalProps> = ({
                 <button
                   type="submit"
                   disabled={code.length !== 8 || isSubmitting}
-                  className="w-full py-3 bg-black text-white font-bold border border-black hover:bg-[#333] disabled:bg-surface-sunken disabled:text-txt-disabled disabled:border-border-strong disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                  className="w-full py-3 bg-surface-inverse text-txt-inverse font-bold border border-surface-inverse hover:bg-surface-inverse/90 disabled:bg-surface-sunken disabled:text-txt-disabled disabled:border-border-strong disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.97]"
                 >
                   {isSubmitting ? (
                     <>

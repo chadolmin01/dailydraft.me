@@ -33,7 +33,7 @@ export const FAQ: React.FC = () => {
     <section id="faq" className="w-full py-20 px-6 md:px-10">
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-10">
-          <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-3 block">
+          <span className="text-[0.625rem] font-medium text-txt-tertiary mb-3 block">
             FAQ
           </span>
           <h2 className="text-2xl md:text-3xl font-bold text-txt-primary">

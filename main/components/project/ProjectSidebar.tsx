@@ -21,12 +21,12 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
     <div className="md:col-span-2 space-y-7">
       {/* Team */}
       <div>
-        <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">
+        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
           팀 정보
         </h3>
         {creator ? (
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-black text-white flex items-center justify-center font-bold text-sm shrink-0">
+            <div className="w-10 h-10 bg-surface-inverse text-txt-inverse flex items-center justify-center font-bold text-sm shrink-0">
               {creator.nickname.charAt(0)}
             </div>
             <div className="min-w-0">
@@ -50,7 +50,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
         {/* Team Members */}
         {teamMembers.length > 0 && (
           <div className="mt-3 space-y-2">
-            <span className="text-[0.5rem] font-mono font-bold text-txt-disabled uppercase tracking-widest">
+            <span className="text-[0.5rem] font-medium text-txt-disabled">
               멤버 ({teamMembers.length})
             </span>
             {teamMembers.map(member => (
@@ -73,7 +73,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
       {/* Needed Roles */}
       {opportunity.needed_roles && opportunity.needed_roles.length > 0 && (
         <div>
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">
+          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
             모집 중인 포지션
           </h3>
           <div className="space-y-2">
@@ -108,7 +108,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
       {/* Needed Skills */}
       {Array.isArray(opportunity.needed_skills) && opportunity.needed_skills.length > 0 && (
         <div>
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">
+          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
             필요 스킬
           </h3>
           <div className="flex flex-wrap gap-1.5">
@@ -132,7 +132,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
 
       {/* Project Info */}
       <div>
-        <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">
+        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
           프로젝트 정보
         </h3>
         <div className="space-y-2.5 text-sm">
@@ -187,7 +187,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
       {/* Project Links */}
       {Array.isArray(opportunity.project_links) && opportunity.project_links.length > 0 && (
         <div>
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">
+          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
             프로젝트 링크
           </h3>
           <div className="space-y-2">
@@ -226,7 +226,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
 
       {/* CTA Card */}
       {!isOwner && (
-      <div className="bg-surface-inverse p-5 text-white border border-black shadow-solid">
+      <div className="bg-surface-inverse p-5 text-white border border-surface-inverse shadow-solid">
         {existingChat ? (
           <>
             <h3 className="font-bold text-sm mb-1">

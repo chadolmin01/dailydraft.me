@@ -169,7 +169,7 @@ export const ValidationFeedbackModal: React.FC<ValidationFeedbackModalProps> = (
 
         {/* Content */}
         <div className="p-4 max-h-[25rem] overflow-y-auto">
-          <h4 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">
+          <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
             주요 피드백
           </h4>
 
@@ -187,7 +187,7 @@ export const ValidationFeedbackModal: React.FC<ValidationFeedbackModalProps> = (
 
           {conversationSnippet && (
             <div className="mt-6">
-              <h4 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">
+              <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
                 대화 발췌
               </h4>
               <div className="p-3 bg-surface-sunken">
@@ -203,7 +203,7 @@ export const ValidationFeedbackModal: React.FC<ValidationFeedbackModalProps> = (
         <div className="p-4 border-t border-border-subtle bg-surface-sunken">
           <button
             onClick={onClose}
-            className="w-full py-2 bg-surface-inverse text-white text-sm font-medium hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            className="w-full py-2 bg-surface-inverse text-white text-sm font-medium hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97]"
           >
             확인
           </button>

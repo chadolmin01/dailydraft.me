@@ -184,7 +184,7 @@ export default function NotificationsPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-1 flex items-center gap-2">
+            <h1 className="text-[0.625rem] font-medium text-txt-tertiary mb-1 flex items-center gap-2">
               <Bell size={12} /> NOTIFICATIONS
             </h1>
             <p className="text-sm text-txt-tertiary">

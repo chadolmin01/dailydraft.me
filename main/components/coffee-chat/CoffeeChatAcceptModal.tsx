@@ -61,13 +61,13 @@ export function CoffeeChatAcceptModal({
 
         {/* Recipient */}
         <div className="flex items-center gap-2 px-3 py-2 bg-surface-sunken border border-border">
-          <span className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest">TO</span>
+          <span className="text-[0.625rem] font-medium text-txt-tertiary">TO</span>
           <span className="text-sm font-bold text-txt-primary">{requesterName}님에게</span>
         </div>
 
         {/* Welcome Message */}
         <div>
-          <label className="block text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-1.5">
+          <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-1.5">
             환영 메시지
           </label>
           <textarea
@@ -81,7 +81,7 @@ export function CoffeeChatAcceptModal({
 
         {/* Contact Info */}
         <div>
-          <label className="block text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-1.5">
+          <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-1.5">
             연락처 <span className="text-status-danger-text">*</span>
           </label>
           <div className="space-y-2">
@@ -131,7 +131,7 @@ export function CoffeeChatAcceptModal({
 
         {/* Requirements */}
         <div>
-          <label className="block text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-1.5">
+          <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-1.5">
             요청사항 <span className="text-txt-disabled font-normal">(선택)</span>
           </label>
           <textarea

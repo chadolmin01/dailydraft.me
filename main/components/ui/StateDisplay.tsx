@@ -44,7 +44,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
         {onRetry && (
           <button
             onClick={onRetry}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-txt-secondary border border-border-strong hover:bg-surface-sunken transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-txt-secondary border border-border-strong hover:bg-surface-sunken transition-all hover:opacity-90 active:scale-[0.97]"
           >
             <RefreshCw size={12} />
             다시 시도
@@ -64,7 +64,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
       {onRetry && (
         <button
           onClick={onRetry}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-black hover:bg-[#333] transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+          className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-black hover:bg-surface-inverse/90 transition-all hover:opacity-90 active:scale-[0.97]"
         >
           <RefreshCw size={16} />
           다시 시도
@@ -102,7 +102,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
       {action && (
         <button
           onClick={action.onClick}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-black hover:bg-[#333] transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+          className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-black hover:bg-surface-inverse/90 transition-all hover:opacity-90 active:scale-[0.97]"
         >
           {action.label}
         </button>
@@ -132,7 +132,7 @@ export const NetworkError: React.FC<NetworkErrorProps> = ({
       {onRetry && (
         <button
           onClick={onRetry}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-black hover:bg-[#333] transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+          className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-black hover:bg-surface-inverse/90 transition-all hover:opacity-90 active:scale-[0.97]"
         >
           <RefreshCw size={16} />
           다시 시도

@@ -44,7 +44,7 @@ export function PortfolioView({
         {/* Portfolio Site */}
         {hasPortfolio && (
           <section>
-            <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-1">
+            <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-1">
               <Globe size={11} /> PORTFOLIO SITE
             </h3>
             <div className="border border-border-strong overflow-hidden">
@@ -78,7 +78,7 @@ export function PortfolioView({
         {/* GitHub */}
         {hasGithub && (
           <section>
-            <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-1">
+            <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-1">
               <Github size={11} /> GITHUB
             </h3>
             <a
@@ -104,7 +104,7 @@ export function PortfolioView({
         {/* LinkedIn */}
         {hasLinkedin && (
           <section>
-            <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-1">
+            <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-1">
               <Linkedin size={11} /> LINKEDIN
             </h3>
             <a
@@ -130,7 +130,7 @@ export function PortfolioView({
         {/* Skills in portfolio context */}
         {skills && skills.length > 0 && (
           <section>
-            <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-1">
+            <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-1">
               <Code2 size={11} /> TECH STACK
             </h3>
             <div className="flex flex-wrap gap-2">

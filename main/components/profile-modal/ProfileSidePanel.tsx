@@ -20,7 +20,7 @@ export function ProfileSidePanel({
     <div className="hidden md:flex w-2/5 bg-surface-card border border-border-strong flex-col overflow-hidden shadow-brutal-xl">
       {/* Side panel header */}
       <div className="bg-surface-sunken border-b border-border-strong px-4 h-10 flex items-center justify-between shrink-0">
-        <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest">
+        <h3 className="text-[0.625rem] font-medium text-txt-tertiary">
           {sidePanel === 'projects' ? `프로젝트 (${userProjects.length})` : `포트폴리오 (${portfolioItems.length})`}
         </h3>
         <button

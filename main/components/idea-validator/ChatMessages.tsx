@@ -42,7 +42,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
                 </div>
                 <div className={`p-4 text-sm leading-relaxed shadow-sharp break-keep
                   ${msg.text?.startsWith('[종합 결정 사항]')
-                      ? 'bg-black text-white border border-black'
+                      ? 'bg-surface-inverse text-txt-inverse border border-surface-inverse'
                       : 'bg-surface-card border border-border text-txt-primary'
                   }`}>
                   {msg.text}
@@ -97,7 +97,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
                       >
                         <div className={`w-9 h-9 border flex items-center justify-center mb-4 transition-colors
                           ${resp.isReflected
-                            ? 'bg-black border-black text-white'
+                            ? 'bg-black border-surface-inverse text-white'
                             : `${getPersonaColor(resp.role)} group-hover:bg-black group-hover:border-border-strong group-hover:text-white`
                           }
                         `}>
@@ -122,14 +122,14 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
                   {msg.id === lastMsg?.id && msg.responses?.some(r => r.isReflected) && (
                     <div className="ml-10 mt-4 flex items-center justify-between p-3 bg-surface-sunken border border-border">
                       <div className="flex items-center gap-3">
-                        <div className="text-[0.625rem] font-bold font-mono text-txt-tertiary uppercase tracking-widest">
+                        <div className="text-[0.625rem] font-medium text-txt-tertiary">
                           {msg.responses.filter(r => r.isReflected).length}개 조언 선택됨
                         </div>
                       </div>
                       <button
                         onClick={onConsolidatedSend}
                         disabled={isTyping}
-                        className="bg-black hover:bg-[#333] text-white px-5 py-2 font-bold text-xs transition-all flex items-center gap-2 disabled:opacity-50 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                        className="bg-black hover:bg-surface-inverse/90 text-white px-5 py-2 font-bold text-xs transition-all flex items-center gap-2 disabled:opacity-50 hover:opacity-90 active:scale-[0.97]"
                       >
                         다음 단계
                         <ArrowRight size={14} />
@@ -168,7 +168,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
                 <button
                   type="button"
                   onClick={onRetry}
-                  className="px-3 py-1.5 bg-status-danger-text text-white text-xs font-medium hover:bg-status-danger-text/90 transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                  className="px-3 py-1.5 bg-status-danger-text text-white text-xs font-medium hover:bg-status-danger-text/90 transition-colors hover:opacity-90 active:scale-[0.97]"
                 >
                   다시 시도
                 </button>

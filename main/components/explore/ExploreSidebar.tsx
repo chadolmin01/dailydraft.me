@@ -29,10 +29,10 @@ export function ExploreSidebar({
     <div className="space-y-4">
       {/* 카테고리 */}
       <div className="relative bg-surface-card border border-border-strong p-4 shadow-sharp">
-        <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-black/20" />
-        <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-black/20" />
-        <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-2">
-          <span className="w-4 h-4 bg-black text-white flex items-center justify-center text-[0.5rem] font-bold">{activeTab === 'projects' ? 'C' : 'R'}</span>
+        <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/20" />
+        <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-surface-inverse/20" />
+        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
+          <span className="w-4 h-4 bg-surface-inverse text-txt-inverse flex items-center justify-center text-[0.5rem] font-bold">{activeTab === 'projects' ? 'C' : 'R'}</span>
           {activeTab === 'projects' ? 'CATEGORY' : 'ROLE'}
         </h3>
         <nav className="space-y-0.5">
@@ -65,7 +65,7 @@ export function ExploreSidebar({
 
       {/* 트렌딩 태그 */}
       <div className="relative bg-surface-card border border-border-strong p-4 shadow-sharp">
-        <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-2">
+        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
           <span className="w-4 h-4 bg-indicator-trending text-white flex items-center justify-center text-[0.5rem] font-bold">{activeTab === 'projects' ? 'T' : 'S'}</span>
           {activeTab === 'projects' ? 'TRENDING' : 'POPULAR SKILLS'}
         </h3>
@@ -97,7 +97,7 @@ export function ExploreSidebar({
       {/* 필터 */}
       {activeTab === 'projects' && (
         <div className="relative bg-surface-card border border-border-strong p-4 shadow-sharp">
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-2">
+          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
             <span className="w-4 h-4 bg-indicator-online text-white flex items-center justify-center text-[0.5rem] font-bold">F</span>
             FILTER
           </h3>
@@ -126,7 +126,7 @@ export function ExploreSidebar({
 
       {activeTab === 'people' && (
         <div className="relative bg-surface-card border border-border-strong p-4 shadow-sharp">
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-2">
+          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
             <span className="w-4 h-4 bg-brand text-white flex items-center justify-center text-[0.5rem] font-bold">i</span>
             INFO
           </h3>

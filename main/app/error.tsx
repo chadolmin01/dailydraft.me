@@ -30,7 +30,7 @@ export default function GlobalError({
             <span className="text-white font-black text-2xl font-mono">!</span>
           </div>
 
-          <p className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-2">
+          <p className="text-[0.625rem] font-medium text-txt-tertiary mb-2">
             SOMETHING WENT WRONG
           </p>
 
@@ -51,7 +51,7 @@ export default function GlobalError({
           <div className="flex gap-3 justify-center mt-6">
             <button
               onClick={reset}
-              className="px-6 py-2.5 bg-black text-white text-sm font-bold border border-black hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+              className="px-6 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-bold border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97]"
             >
               다시 시도
             </button>

@@ -34,7 +34,7 @@ export const EditAffiliation: React.FC<EditAffiliationProps> = ({
 }) => {
   return (
     <section>
-      <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4 flex items-center gap-2">
+      <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4 flex items-center gap-2">
         <Briefcase size={14} /> 소속 & 포지션
       </h3>
       <div className="space-y-4">
@@ -193,7 +193,7 @@ export const EditAffiliation: React.FC<EditAffiliationProps> = ({
                       } catch { setVerifyError('요청에 실패했습니다') }
                       finally { setVerifySending(false) }
                     }}
-                    className="px-3 py-2 text-xs font-bold border border-black bg-black text-white hover:bg-black/80 disabled:opacity-50 transition-colors"
+                    className="px-3 py-2 text-xs font-bold border border-surface-inverse bg-surface-inverse text-txt-inverse hover:bg-surface-inverse/90 disabled:opacity-50 transition-colors"
                   >
                     {verifySending ? '전송 중...' : '인증 코드 전송'}
                   </button>
@@ -233,7 +233,7 @@ export const EditAffiliation: React.FC<EditAffiliationProps> = ({
                       } catch { setVerifyError('요청에 실패했습니다') }
                       finally { setVerifySending(false) }
                     }}
-                    className="px-3 py-2 text-xs font-bold border border-black bg-black text-white hover:bg-black/80 disabled:opacity-50 transition-colors"
+                    className="px-3 py-2 text-xs font-bold border border-surface-inverse bg-surface-inverse text-txt-inverse hover:bg-surface-inverse/90 disabled:opacity-50 transition-colors"
                   >
                     {verifySending ? '확인 중...' : '인증 확인'}
                   </button>

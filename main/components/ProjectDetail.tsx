@@ -43,12 +43,12 @@ const SignupCTA: React.FC<{ onClose: () => void; onSignup: () => void }> = ({ on
       </p>
       <button
         onClick={onSignup}
-        className="w-full bg-black hover:bg-[#333] text-white px-8 py-4 font-bold text-sm flex items-center justify-center gap-2 transition-colors border border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] mb-3"
+        className="w-full bg-black hover:bg-surface-inverse/90 text-white px-8 py-4 font-bold text-sm flex items-center justify-center gap-2 transition-colors border border-surface-inverse hover:opacity-90 active:scale-[0.97] mb-3"
       >
         무료로 시작하기
         <ArrowRight size={16} />
       </button>
-      <p className="text-[0.625rem] font-mono text-txt-disabled uppercase tracking-wider mb-4">
+      <p className="text-[0.625rem] text-txt-disabled mb-4">
         가입 30초 · 무료 · 바로 사용 가능
       </p>
       <button
@@ -170,7 +170,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
           <p className="text-txt-tertiary mb-6">{error || '존재하지 않거나 삭제된 프로젝트입니다.'}</p>
           <Link
             href="/"
-            className="inline-flex items-center gap-2 bg-black text-white px-6 py-3 font-bold text-sm hover:bg-[#333] transition-colors border border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            className="inline-flex items-center gap-2 bg-surface-inverse text-txt-inverse px-6 py-3 font-bold text-sm hover:bg-surface-inverse/90 transition-colors border border-surface-inverse hover:opacity-90 active:scale-[0.97]"
           >
             <ArrowLeft size={16} />
             홈으로 돌아가기
@@ -217,7 +217,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
             <div className="flex-1">
               {/* Type Badge */}
               <div className="flex items-center gap-2 mb-4">
-                <span className="text-[0.625rem] font-mono font-bold px-2 py-1 border border-border-strong text-black uppercase tracking-wider">
+                <span className="text-[0.625rem] font-medium px-2 py-1 border border-border-strong text-black">
                   {opportunity.type === 'side_project' ? 'SIDE PROJECT' :
                    opportunity.type === 'startup' ? 'STARTUP' :
                    opportunity.type === 'study' ? 'STUDY' : opportunity.type?.toUpperCase() || 'PROJECT'}
@@ -270,7 +270,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
             <div className="hidden md:flex flex-col gap-3 shrink-0">
               <button
                 onClick={handleCoffeeChatAction}
-                className="bg-brand hover:bg-brand-hover text-white px-8 py-3.5 font-bold text-sm flex items-center justify-center gap-2 transition-colors border border-brand shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                className="bg-brand hover:bg-brand-hover text-white px-8 py-3.5 font-bold text-sm flex items-center justify-center gap-2 transition-colors border border-brand hover:opacity-90 active:scale-[0.97]"
               >
                 <Coffee size={16} />
                 커피챗 신청
@@ -317,7 +317,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
           <div className="lg:col-span-2 space-y-10">
             {/* Project Description */}
             <section>
-              <h2 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4">
+              <h2 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">
                 프로젝트 소개
               </h2>
               <div className="prose prose-gray max-w-none">
@@ -330,7 +330,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
             {/* Pain Point (if exists) */}
             {opportunity.pain_point && (
               <section className="bg-surface-sunken border border-border-strong p-6">
-                <h2 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">
+                <h2 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
                   해결하려는 문제
                 </h2>
                 <p className="text-txt-secondary leading-relaxed break-keep text-[0.9375rem]">
@@ -344,7 +344,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
             <section>
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
-                  <h2 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest">
+                  <h2 className="text-[0.625rem] font-medium text-txt-tertiary">
                     주간 업데이트
                   </h2>
                   {!opportunity.show_updates && isOwner && (
@@ -377,7 +377,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                   {isOwner && (
                     <button
                       onClick={() => setShowWriteUpdate(true)}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold bg-black text-white border border-black hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97]"
                     >
                       + 작성하기
                     </button>
@@ -446,7 +446,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
             {/* Feedback Section */}
             <section>
-              <h2 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4">
+              <h2 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">
                 커뮤니티 피드백
               </h2>
               <div className="bg-surface-sunken border border-border-strong p-8 text-center">
@@ -457,7 +457,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                 </p>
                 <button
                   onClick={handleCoffeeChatAction}
-                  className="inline-flex items-center gap-2 bg-black text-white px-5 py-2.5 font-bold text-sm hover:bg-[#333] transition-colors border border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                  className="inline-flex items-center gap-2 bg-surface-inverse text-txt-inverse px-5 py-2.5 font-bold text-sm hover:bg-surface-inverse/90 transition-colors border border-surface-inverse hover:opacity-90 active:scale-[0.97]"
                 >
                   피드백 작성하기
                   <ChevronRight size={14} />
@@ -470,13 +470,13 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
           <aside className="space-y-6">
             {/* Team Section */}
             <div className="border border-border-strong p-6">
-              <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4">
+              <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">
                 팀 정보
               </h3>
               {creator ? (
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-black text-white flex items-center justify-center font-bold text-sm">
+                    <div className="w-10 h-10 bg-surface-inverse text-txt-inverse flex items-center justify-center font-bold text-sm">
                       {creator.nickname.charAt(0)}
                     </div>
                     <div>
@@ -517,7 +517,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
             {/* Needed Roles */}
             {opportunity.needed_roles && opportunity.needed_roles.length > 0 && (
               <div className="border border-border-strong p-6">
-                <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4">
+                <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">
                   모집 중인 포지션
                 </h3>
                 <div className="space-y-3">
@@ -544,7 +544,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
             {/* Project Info */}
             <div className="border border-border-strong p-6">
-              <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4">
+              <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">
                 프로젝트 정보
               </h3>
               <div className="space-y-3 text-sm">
@@ -594,7 +594,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
             {/* Project Links */}
             {projectLinks && Object.keys(projectLinks).length > 0 && (
               <div className="border border-border-strong p-6">
-                <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4">
+                <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">
                   링크
                 </h3>
                 <div className="space-y-2">
@@ -615,7 +615,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
             )}
 
             {/* CTA Card */}
-            <div className="bg-black text-white p-6 border border-black shadow-solid">
+            <div className="bg-surface-inverse text-txt-inverse p-6 border border-surface-inverse shadow-solid">
               <h3 className="font-bold mb-2">프로젝트에 참여하고 싶나요?</h3>
               <p className="text-txt-inverse/50 text-sm mb-4 break-keep">
                 커피챗으로 메이커와 직접 이야기해보세요.
@@ -639,7 +639,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
       >
         <button
           onClick={handleCoffeeChatAction}
-          className="w-full bg-brand text-white py-3.5 font-bold text-sm flex items-center justify-center gap-2 border border-brand shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+          className="w-full bg-brand text-white py-3.5 font-bold text-sm flex items-center justify-center gap-2 border border-brand hover:opacity-90 active:scale-[0.97] transition-all"
         >
           <Coffee size={16} />
           커피챗 신청

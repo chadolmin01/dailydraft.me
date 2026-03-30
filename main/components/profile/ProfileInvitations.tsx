@@ -11,7 +11,7 @@ export function ProfileInvitations() {
   return (
     <section className="mb-6">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest flex items-center gap-2">
+        <h3 className="text-[0.625rem] font-medium text-txt-tertiary flex items-center gap-2">
           <span className="w-5 h-5 bg-brand text-white flex items-center justify-center text-[0.5rem] font-bold">I</span>
           RECEIVED INVITATIONS
           {receivedInvitations.filter(i => i.status === 'pending').length > 0 && (
@@ -30,7 +30,7 @@ export function ProfileInvitations() {
         <div className="space-y-3">
           {receivedInvitations.filter(i => i.status === 'pending').map((inv) => (
             <div key={inv.id} className="relative bg-surface-card border border-border-strong p-4 border-l-4 border-l-brand shadow-sharp">
-              <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-black/20" />
+              <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-surface-inverse/20" />
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
@@ -54,7 +54,7 @@ export function ProfileInvitations() {
                       } catch { /* handled by mutation */ }
                     }}
                     disabled={respondToInvitation.isPending}
-                    className="px-3 py-1.5 text-xs font-bold bg-indicator-online text-white border border-indicator-online hover:bg-indicator-online/90 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                    className="px-3 py-1.5 text-xs font-bold bg-indicator-online text-white border border-indicator-online hover:bg-indicator-online/90 hover:opacity-90 active:scale-[0.97] transition-all"
                   >
                     수락
                   </button>

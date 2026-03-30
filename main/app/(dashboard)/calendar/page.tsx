@@ -10,7 +10,7 @@ export default function CalendarPage() {
         <PageContainer size="wide">
           <div className="flex justify-between items-center border-b border-dashed border-border pb-6">
             <div>
-              <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-2 flex items-center gap-2">
+              <div className="text-[0.625rem] font-medium text-txt-tertiary mb-2 flex items-center gap-2">
                 <span className="w-2 h-2 bg-black"></span>
                 CALENDAR
               </div>
@@ -30,7 +30,7 @@ export default function CalendarPage() {
           <div className="bg-surface-card border border-border-strong shadow-sharp p-6">
             <div className="grid grid-cols-7 gap-px bg-border overflow-hidden">
               {['일', '월', '화', '수', '목', '금', '토'].map((day) => (
-                <div key={day} className="bg-surface-sunken p-3 text-center text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">
+                <div key={day} className="bg-surface-sunken p-3 text-center text-[0.625rem] font-medium text-txt-tertiary">
                   {day}
                 </div>
               ))}

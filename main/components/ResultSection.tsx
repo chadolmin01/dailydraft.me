@@ -29,7 +29,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
 
           {/* Header / Pitch */}
           <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-black text-white text-xs font-bold font-mono tracking-wide uppercase">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-surface-inverse text-txt-inverse text-xs font-medium">
               <Target className="w-3 h-3" /> 비전 (Vision)
             </div>
             <h2 className="text-3xl font-bold text-txt-primary tracking-tight leading-tight break-keep">
@@ -80,7 +80,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
 
                 <div className="space-y-6">
                     <div>
-                        <span className="text-xs font-bold text-indicator-online bg-status-success-bg px-2 py-1 font-mono uppercase tracking-wider border border-indicator-online/20">P0 - MVP 핵심</span>
+                        <span className="text-xs font-medium text-indicator-online bg-status-success-bg px-2 py-1 border border-indicator-online/20">P0 - MVP 핵심</span>
                         <ul className="mt-3 space-y-3">
                             {result.coreFeatures.p0.map((f, i) => (
                                 <li key={i} className="flex items-start gap-3 text-sm text-txt-primary break-keep group">
@@ -91,7 +91,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
                         </ul>
                     </div>
                     <div className="pt-4 border-t border-dashed border-border">
-                        <span className="text-xs font-bold text-status-info-text bg-status-info-bg px-2 py-1 font-mono uppercase tracking-wider border border-status-info-text/20">P1 - 고도화</span>
+                        <span className="text-xs font-medium text-status-info-text bg-status-info-bg px-2 py-1 border border-status-info-text/20">P1 - 고도화</span>
                         <ul className="mt-3 space-y-3">
                             {result.coreFeatures.p1.map((f, i) => (
                                 <li key={i} className="flex items-start gap-3 text-sm text-txt-tertiary break-keep">
@@ -105,7 +105,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
             </div>
 
             {/* Next Steps */}
-            <div className="bg-surface-inverse text-white p-6 shadow-brutal relative overflow-hidden group border border-black">
+            <div className="bg-surface-inverse text-white p-6 shadow-brutal relative overflow-hidden group border border-surface-inverse">
                 <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
                     <Lightbulb className="w-24 h-24" />
                 </div>
@@ -114,17 +114,17 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
                 </h3>
                 <div className="space-y-4 text-sm relative z-10">
                     <div>
-                        <span className="text-txt-inverse/50 text-xs font-mono uppercase tracking-wider block mb-1">즉시 실행 (Action Item)</span>
+                        <span className="text-txt-inverse/50 text-xs block mb-1">즉시 실행 (Action Item)</span>
                         <p className="font-medium break-keep text-base">{result.nextSteps.immediateAction}</p>
                     </div>
                     <div className="w-full h-px bg-white/20"></div>
                     <div className="grid grid-cols-2 gap-4">
                          <div>
-                            <span className="text-txt-inverse/50 text-xs font-mono uppercase tracking-wider block mb-1">MVP 범위</span>
+                            <span className="text-txt-inverse/50 text-xs block mb-1">MVP 범위</span>
                             <p className="text-white/70 break-keep leading-snug">{result.nextSteps.mvpScope}</p>
                         </div>
                         <div>
-                            <span className="text-txt-inverse/50 text-xs font-mono uppercase tracking-wider block mb-1">다음 회의</span>
+                            <span className="text-txt-inverse/50 text-xs block mb-1">다음 회의</span>
                             <p className="text-white/70 break-keep leading-snug">{result.nextSteps.nextMeetingTopic}</p>
                         </div>
                     </div>
@@ -154,7 +154,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
 
         {/* Header */}
         <div className="space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-violet-600 text-white text-xs font-bold font-mono tracking-wide uppercase">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-violet-600 text-white text-xs font-medium">
             <FileText className="w-3 h-3" /> PRD (Product Requirements)
           </div>
           <h2 className="text-3xl font-bold text-txt-primary tracking-tight leading-tight break-keep">
@@ -206,7 +206,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
           <div className="space-y-6">
             {/* P0 Features */}
             <div>
-              <span className="text-xs font-bold text-indicator-online bg-status-success-bg px-2 py-1 font-mono uppercase tracking-wider border border-indicator-online/20">P0 - MVP 핵심</span>
+              <span className="text-xs font-medium text-indicator-online bg-status-success-bg px-2 py-1 border border-indicator-online/20">P0 - MVP 핵심</span>
               <ul className="mt-3 space-y-3">
                 {prdResult.core_features.filter(f => f.priority === 'P0').map((f, i) => (
                   <li key={i} className="flex flex-col gap-1 text-sm text-txt-primary break-keep group bg-status-success-bg/30 p-3 border border-indicator-online/20">
@@ -222,7 +222,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
 
             {/* P1 Features */}
             <div className="pt-4 border-t border-dashed border-border">
-              <span className="text-xs font-bold text-status-info-text bg-status-info-bg px-2 py-1 font-mono uppercase tracking-wider border border-status-info-text/20">P1 - 고도화</span>
+              <span className="text-xs font-medium text-status-info-text bg-status-info-bg px-2 py-1 border border-status-info-text/20">P1 - 고도화</span>
               <ul className="mt-3 space-y-3">
                 {prdResult.core_features.filter(f => f.priority === 'P1').map((f, i) => (
                   <li key={i} className="flex flex-col gap-1 text-sm text-txt-tertiary break-keep">
@@ -239,7 +239,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
             {/* P2 Features */}
             {prdResult.core_features.filter(f => f.priority === 'P2').length > 0 && (
               <div className="pt-4 border-t border-dashed border-border">
-                <span className="text-xs font-bold text-txt-disabled bg-surface-sunken px-2 py-1 font-mono uppercase tracking-wider border border-border">P2 - 향후</span>
+                <span className="text-xs font-medium text-txt-disabled bg-surface-sunken px-2 py-1 border border-border">P2 - 향후</span>
                 <ul className="mt-3 space-y-2">
                   {prdResult.core_features.filter(f => f.priority === 'P2').map((f, i) => (
                     <li key={i} className="flex items-center gap-2 text-sm text-txt-disabled break-keep">
@@ -265,7 +265,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
           <div className="space-y-6 text-sm relative z-10">
             {/* Immediate Action */}
             <div className="bg-violet-800/50 p-4 border border-violet-700">
-              <span className="text-violet-300 text-xs font-mono uppercase tracking-wider block mb-2 flex items-center gap-1">
+              <span className="text-violet-300 text-xs block mb-2 flex items-center gap-1">
                 <Zap className="w-3 h-3" /> 즉시 실행 (Immediate Action)
               </span>
               <p className="font-medium break-keep text-base">{prdResult.next_steps.immediate_action}</p>
@@ -274,7 +274,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* MVP Scope */}
               <div className="bg-status-success-bg/30 p-4 border border-status-success-text/30">
-                <span className="text-status-success-text text-xs font-mono uppercase tracking-wider block mb-2 flex items-center gap-1">
+                <span className="text-status-success-text text-xs block mb-2 flex items-center gap-1">
                   <CheckCircle2 className="w-3 h-3" /> MVP 범위 (2-3개)
                 </span>
                 <ul className="space-y-2">
@@ -289,7 +289,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
 
               {/* Skip for Now */}
               <div className="bg-status-danger-bg/30 p-4 border border-status-danger-text/30">
-                <span className="text-status-danger-text text-xs font-mono uppercase tracking-wider block mb-2 flex items-center gap-1">
+                <span className="text-status-danger-text text-xs block mb-2 flex items-center gap-1">
                   <XCircle className="w-3 h-3" /> MVP 제외 (Skip for Now)
                 </span>
                 <ul className="space-y-2">
@@ -305,7 +305,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
 
             {/* Decision Needed */}
             <div className="bg-amber-900/30 p-4 border border-amber-700/30">
-              <span className="text-amber-300 text-xs font-mono uppercase tracking-wider block mb-2 flex items-center gap-1">
+              <span className="text-amber-300 text-xs block mb-2 flex items-center gap-1">
                 <HelpCircle className="w-3 h-3" /> 이번 주 결정 필요
               </span>
               <p className="text-amber-100 break-keep font-medium">{prdResult.next_steps.decision_needed}</p>
@@ -320,7 +320,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Business */}
             <div className="bg-status-info-bg p-4 border border-status-info-text/20">
-              <span className="text-xs font-bold text-status-info-text font-mono uppercase tracking-wider">Business</span>
+              <span className="text-xs font-medium text-status-info-text">Business</span>
               <div className="mt-2 space-y-2 text-sm">
                 <div>
                   <span className="text-txt-disabled text-xs font-mono">Monetization:</span>
@@ -335,7 +335,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
 
             {/* Design */}
             <div className="bg-pink-50 p-4 border border-pink-200">
-              <span className="text-xs font-bold text-pink-600 font-mono uppercase tracking-wider">Design</span>
+              <span className="text-xs font-medium text-pink-600">Design</span>
               <div className="mt-2 space-y-2 text-sm">
                 <div>
                   <span className="text-txt-disabled text-xs font-mono">Mood:</span>
@@ -354,7 +354,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
 
             {/* Tech */}
             <div className="bg-status-success-bg p-4 border border-indicator-online/20">
-              <span className="text-xs font-bold text-indicator-online font-mono uppercase tracking-wider">Tech</span>
+              <span className="text-xs font-medium text-indicator-online">Tech</span>
               <div className="mt-2 space-y-2 text-sm">
                 <div>
                   <span className="text-txt-disabled text-xs font-mono">Stack:</span>
@@ -451,7 +451,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
             <div className="bg-surface-sunken p-6 border border-border-strong">
                 <div className="flex items-center gap-2 mb-4 text-txt-disabled">
                     <History className="w-4 h-4" />
-                    <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest">Input History Timeline</span>
+                    <span className="text-[0.625rem] font-medium">Input History Timeline</span>
                 </div>
 
                 <div className="space-y-4">

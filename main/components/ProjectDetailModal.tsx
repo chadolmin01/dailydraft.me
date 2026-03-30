@@ -247,7 +247,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                       <div className="relative">
                         <button
                           onClick={() => setShowTypeSelector(!showTypeSelector)}
-                          className="text-[0.625rem] font-mono font-bold px-2 py-0.5 bg-surface-card text-txt-tertiary border border-border uppercase tracking-wider hover:border-border-strong hover:text-txt-secondary transition-colors flex items-center gap-1"
+                          className="text-[0.625rem] font-medium px-2 py-0.5 bg-surface-card text-txt-tertiary border border-border hover:border-border-strong hover:text-txt-secondary transition-colors flex items-center gap-1"
                         >
                           {opportunity.type === 'side_project' ? 'SIDE PROJECT' :
                            opportunity.type === 'startup' ? 'STARTUP' :
@@ -270,7 +270,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                                   )
                                   setShowTypeSelector(false)
                                 }}
-                                className={`w-full text-left px-3 py-1.5 text-[0.625rem] font-mono font-bold uppercase tracking-wider transition-colors ${
+                                className={`w-full text-left px-3 py-1.5 text-[0.625rem] font-medium transition-colors ${
                                   opportunity.type === opt.value
                                     ? 'bg-surface-inverse text-txt-inverse'
                                     : 'text-txt-secondary hover:bg-surface-sunken'
@@ -283,7 +283,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                         )}
                       </div>
                     ) : (
-                      <span className="text-[0.625rem] font-mono font-bold px-2 py-0.5 bg-surface-card text-txt-tertiary border border-border uppercase tracking-wider">
+                      <span className="text-[0.625rem] font-medium px-2 py-0.5 bg-surface-card text-txt-tertiary border border-border">
                         {opportunity.type === 'side_project' ? 'SIDE PROJECT' :
                          opportunity.type === 'startup' ? 'STARTUP' :
                          opportunity.type === 'study' ? 'STUDY' : opportunity.type?.toUpperCase() || 'PROJECT'}

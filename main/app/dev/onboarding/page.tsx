@@ -25,7 +25,7 @@ export default function DevOnboardingPage() {
         <p className="text-sm text-gray-500">로그인이 필요합니다</p>
         <button
           onClick={() => router.push('/login')}
-          className="px-4 py-2 bg-black text-white text-sm rounded-sm hover:bg-gray-800 transition"
+          className="px-4 py-2 bg-surface-inverse text-txt-inverse text-sm rounded-sm hover:bg-gray-800 transition"
         >
           로그인하기
         </button>
@@ -114,7 +114,7 @@ export default function DevOnboardingPage() {
 
           <button
             onClick={handleGoOnboarding}
-            className="w-full px-4 py-2.5 bg-black text-white text-sm font-bold rounded-sm hover:bg-gray-800 transition"
+            className="w-full px-4 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-bold rounded-sm hover:bg-gray-800 transition"
           >
             Reset & Go to Onboarding →
           </button>

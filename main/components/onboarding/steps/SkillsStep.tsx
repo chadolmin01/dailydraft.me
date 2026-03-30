@@ -30,7 +30,7 @@ export const SkillsInputStep: React.FC<SkillsInputStepProps> = ({
           value={skillInput}
           onChange={(e) => onSkillInputChange(e.target.value)}
           placeholder="예: 리액트, 파이썬, 피그마 등"
-          className="w-full pl-3.5 pr-10 py-2.5 bg-surface-card border border-border-strong text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-all placeholder:text-txt-tertiary"
+          className="w-full pl-3.5 pr-10 py-2.5 bg-surface-card border border-border-strong text-sm font-medium focus:outline-none focus:border-surface-inverse focus:bg-white transition-all placeholder:text-txt-tertiary"
           autoFocus
           onKeyDown={(e) => e.key === 'Enter' && onSubmit()}
         />
@@ -39,7 +39,7 @@ export const SkillsInputStep: React.FC<SkillsInputStepProps> = ({
         </button>
       </div>
       <div>
-        <p className="text-[10px] font-bold text-txt-tertiary uppercase tracking-wider mb-2 font-mono">빠른 선택</p>
+        <p className="text-[10px] font-medium text-txt-tertiary mb-2">빠른 선택</p>
         <div className="flex flex-wrap gap-1.5">
           {POPULAR_SKILLS.map((skill, idx) => (
             <button
@@ -47,7 +47,7 @@ export const SkillsInputStep: React.FC<SkillsInputStepProps> = ({
               onClick={() => onToggleSkill(skill)}
               className={`ob-chip ob-hover px-3 py-1.5 text-[12px] font-medium border transition-all ${
                 skills.includes(skill)
-                  ? 'bg-black text-white border-black'
+                  ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
                   : 'bg-surface-card text-txt-primary border-border-strong hover:bg-black hover:text-white'
               }`}
               style={{ animationDelay: `${idx * 30}ms` }}
@@ -67,7 +67,7 @@ export const SkillsInputStep: React.FC<SkillsInputStepProps> = ({
           ))}
         </div>
       )}
-      <button onClick={onSubmit} className="w-full py-2.5 bg-brand text-white text-[13px] font-bold hover:bg-brand-hover transition-all flex items-center justify-center gap-2 ob-hover shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] border border-brand">
+      <button onClick={onSubmit} className="w-full py-2.5 bg-brand text-white text-[13px] font-bold hover:bg-brand-hover transition-all flex items-center justify-center gap-2 ob-hover hover:opacity-90 active:scale-[0.97] border border-brand">
         {skillInput.trim() || skills.length > 0 ? '다음' : '건너뛰기'} <ArrowRight size={14} />
       </button>
     </div>
@@ -95,7 +95,7 @@ export const SkillsConfirmStep: React.FC<SkillsConfirmStepProps> = ({
           </span>
         ))}
       </div>
-      <button onClick={onConfirm} className="ob-hover px-5 py-2 bg-black text-white text-[13px] font-bold flex items-center gap-2 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">
+      <button onClick={onConfirm} className="ob-hover px-5 py-2 bg-surface-inverse text-txt-inverse text-[13px] font-bold flex items-center gap-2 hover:opacity-90 active:scale-[0.97]">
         {skills.length > 0 ? '확인' : '건너뛰기'} <ArrowRight size={14} />
       </button>
     </div>

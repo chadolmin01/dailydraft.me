@@ -251,7 +251,7 @@ export default function ProfileEditPage() {
             <button
               onClick={handleSave}
               disabled={updateProfile.isPending}
-              className="flex items-center gap-1.5 px-5 py-2 bg-surface-inverse text-txt-inverse text-[0.625rem] font-mono font-bold uppercase tracking-wider border border-surface-inverse hover:bg-surface-inverse/90 disabled:opacity-50 transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+              className="flex items-center gap-1.5 px-5 py-2 bg-surface-inverse text-txt-inverse text-[0.625rem] font-medium border border-surface-inverse hover:bg-surface-inverse/90 disabled:opacity-50 transition-all hover:opacity-90 active:scale-[0.97]"
             >
               {updateProfile.isPending ? <Loader2 size={12} className="animate-spin" /> : <Save size={12} />}
               {saved ? 'Saved' : 'Save'}
@@ -636,7 +636,7 @@ export default function ProfileEditPage() {
                     <button
                       type="button"
                       onClick={() => router.push('/onboarding')}
-                      className="flex items-center gap-1.5 px-3 py-1.5 text-[0.625rem] font-mono font-bold uppercase tracking-wider border border-border text-txt-secondary hover:bg-surface-sunken hover:border-border-strong transition-colors shrink-0"
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-[0.625rem] font-medium border border-border text-txt-secondary hover:bg-surface-sunken hover:border-border-strong transition-colors shrink-0"
                     >
                       <Sparkles size={12} />
                       AI 온보딩 다시하기
@@ -750,7 +750,7 @@ export default function ProfileEditPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
           <div className="bg-surface-card border border-border-strong shadow-brutal w-full max-w-lg mx-4 flex flex-col">
             <div className="flex items-center justify-between px-4 py-2.5 border-b-2 border-border-strong bg-surface-sunken">
-              <span className="text-xs font-mono font-bold uppercase tracking-wider text-txt-secondary">{cropType === 'avatar' ? 'CROP AVATAR' : 'CROP COVER'}</span>
+              <span className="text-xs font-medium text-txt-secondary">{cropType === 'avatar' ? 'CROP AVATAR' : 'CROP COVER'}</span>
               <button onClick={() => setCropImage(null)} className="p-1 hover:bg-surface-card transition-colors"><X size={16} className="text-txt-tertiary" /></button>
             </div>
             <div className="relative w-full" style={{ height: cropType === 'avatar' ? 320 : 240 }}>
@@ -762,8 +762,8 @@ export default function ProfileEditPage() {
               <span className="text-[0.625rem] font-mono text-txt-tertiary w-8 text-right">{zoom.toFixed(1)}x</span>
             </div>
             <div className="flex items-center justify-end gap-2 px-4 py-2.5 border-t-2 border-border-strong">
-              <button onClick={() => setCropImage(null)} className="py-2.5 px-4 text-xs font-bold font-mono uppercase tracking-wider border border-border text-txt-secondary hover:border-border-strong transition-colors">취소</button>
-              <button onClick={handleCropConfirm} className="flex items-center gap-1.5 px-4 py-2.5 bg-surface-inverse text-txt-inverse text-xs font-bold border border-surface-inverse hover:bg-surface-inverse/90 transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">
+              <button onClick={() => setCropImage(null)} className="py-2.5 px-4 text-xs font-medium border border-border text-txt-secondary hover:border-border-strong transition-colors">취소</button>
+              <button onClick={handleCropConfirm} className="flex items-center gap-1.5 px-4 py-2.5 bg-surface-inverse text-txt-inverse text-xs font-bold border border-surface-inverse hover:bg-surface-inverse/90 transition-all hover:opacity-90 active:scale-[0.97]">
                 <Camera size={12} /> 적용
               </button>
             </div>
@@ -780,7 +780,7 @@ function Card({ title, icon, children }: { title: string; icon?: React.ReactNode
     <div className="bg-surface-card border border-border-strong shadow-sharp">
       <div className="flex items-center gap-2 px-5 sm:px-6 py-3 border-b border-border bg-surface-sunken">
         {icon}
-        <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-wider">{title}</h3>
+        <h3 className="text-[0.625rem] font-medium text-txt-tertiary">{title}</h3>
       </div>
       <div className="p-5 sm:p-6">
         {children}

@@ -104,7 +104,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
     <div className="bg-surface-card border border-border-strong">
       {/* Header */}
       <div className="p-4 border-b border-border-strong">
-        <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest flex items-center gap-2">
+        <h3 className="text-[0.625rem] font-medium text-txt-tertiary flex items-center gap-2">
           <MessageCircle size={14} />
           {COMMENT_LABEL} ({comments.length})
         </h3>
@@ -137,7 +137,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
             <button
               type="submit"
               disabled={submitting || !content.trim()}
-              className="px-3 py-1.5 bg-black text-white border border-black hover:bg-[#333] transition-colors disabled:bg-surface-sunken disabled:text-txt-disabled disabled:border-border-strong disabled:cursor-not-allowed flex items-center justify-center"
+              className="px-3 py-1.5 bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 transition-colors disabled:bg-surface-sunken disabled:text-txt-disabled disabled:border-border-strong disabled:cursor-not-allowed flex items-center justify-center"
             >
               {submitting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
             </button>
@@ -148,7 +148,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
           <p className="text-sm text-txt-tertiary mb-3">로그인하고 {COMMENT_VERB}을 남겨보세요</p>
           <button
             onClick={onLoginClick}
-            className="inline-flex items-center gap-2 bg-black text-white px-5 py-2 text-xs font-bold border border-black hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            className="inline-flex items-center gap-2 bg-surface-inverse text-txt-inverse px-5 py-2 text-xs font-bold border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97]"
           >
             로그인하기 <ArrowRight size={12} />
           </button>

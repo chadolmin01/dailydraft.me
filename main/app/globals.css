@@ -471,6 +471,13 @@ a[class*="px-"]:active {
               box-shadow 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
               border-color 0.2s ease;
 }
+.hover-spring:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+.hover-spring:active {
+  transform: translateY(0) scale(0.985);
+}
 
 /* ── Heart Burst ── */
 @keyframes heartBurst {
@@ -522,31 +529,13 @@ a[class*="px-"]:active {
 
 /* ============================================================
    CLEAN MODERN OVERRIDES
-   Brutalism → Instagram/Meta style global transforms
    ============================================================ */
 
-/* border-dashed → subtle solid */
-.border-dashed {
-  border-style: solid !important;
-}
-
-/* ── Mono uppercase labels → clean sans-serif ── */
-.font-mono.uppercase {
-  font-family: var(--font-noto-sans-kr), 'Noto Sans KR', system-ui, sans-serif !important;
-  text-transform: none !important;
-  letter-spacing: 0 !important;
-  font-weight: 500 !important;
-}
-
-/* ── Tracking overrides for brutalist labels ── */
-.tracking-widest,
-.tracking-wider {
-  letter-spacing: 0.02em !important;
-}
-
 /* ── Square avatars → circle (global) ──
-   Targets initial-avatar pattern: fixed size + centered + bold text + shrink-0 */
-[class*="shrink-0"][class*="items-center"][class*="justify-center"][class*="font-bold"]:where(
+   Targets initial-avatar pattern: fixed size + centered + bold/medium text + shrink-0 */
+[class*="shrink-0"][class*="items-center"][class*="justify-center"]:where(
+  [class*="font-bold"], [class*="font-medium"]
+):where(
   [class*="w-5"][class*="h-5"],
   [class*="w-6"][class*="h-6"],
   [class*="w-7"][class*="h-7"],
@@ -560,15 +549,10 @@ a[class*="px-"]:active {
   border-radius: 9999px !important;
 }
 
-/* ── Softer borders globally ── */
-.border-border-strong {
-  border-color: var(--border-default) !important;
-}
-
-/* ── Cards: more padding, softer feel ── */
+/* ── Legacy shadow aliases (backward compat) ── */
 .shadow-sharp {
-  box-shadow: var(--shadow-md) !important;
+  box-shadow: var(--shadow-md);
 }
 .shadow-brutal {
-  box-shadow: var(--shadow-lg) !important;
+  box-shadow: var(--shadow-lg);
 }

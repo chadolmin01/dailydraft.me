@@ -210,7 +210,7 @@ const WarningItem: React.FC<WarningItemProps> = ({
           {/* Matched Text */}
           {match.matches.length > 0 && (
             <div className="mb-3">
-              <div className="text-[0.625rem] font-mono text-txt-tertiary uppercase mb-1">
+              <div className="text-[0.625rem] text-txt-tertiary mb-1">
                 감지된 표현
               </div>
               <div className="flex flex-wrap gap-1.5">
@@ -234,7 +234,7 @@ const WarningItem: React.FC<WarningItemProps> = ({
           {/* Auto Fix Suggestion */}
           {autoFixAvailable && suggestedFix && (
             <div className="mb-3 p-3 bg-status-info-bg border border-status-info-text/20">
-              <div className="text-[0.625rem] font-mono text-status-info-text uppercase mb-1.5">
+              <div className="text-[0.625rem] text-status-info-text mb-1.5">
                 수정 제안
               </div>
               <p className="text-xs text-brand">{suggestedFix}</p>
@@ -244,7 +244,7 @@ const WarningItem: React.FC<WarningItemProps> = ({
           {/* Source Suggestions for missing source pattern */}
           {pattern.id === 'MISSING_SOURCE' && (
             <div className="mb-3">
-              <div className="text-[0.625rem] font-mono text-txt-tertiary uppercase mb-1.5">
+              <div className="text-[0.625rem] text-txt-tertiary mb-1.5">
                 추천 출처
               </div>
               <div className="space-y-1">
@@ -269,7 +269,7 @@ const WarningItem: React.FC<WarningItemProps> = ({
                   e.stopPropagation()
                   onAutoFix()
                 }}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white text-xs font-medium hover:bg-blue-700 transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white text-xs font-medium hover:bg-blue-700 transition-colors hover:opacity-90 active:scale-[0.97]"
               >
                 <Wand2 size={12} />
                 자동 수정

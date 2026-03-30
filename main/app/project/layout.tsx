@@ -41,7 +41,7 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
                         w-10 h-10 flex items-center justify-center text-sm font-bold
                         transition-all duration-200 border
                         ${isActive
-                          ? 'bg-black text-white border-black'
+                          ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
                           : isPast
                             ? 'bg-emerald-500 text-white border-emerald-500'
                             : 'bg-surface-sunken text-txt-tertiary border-border-strong group-hover:bg-surface-card'

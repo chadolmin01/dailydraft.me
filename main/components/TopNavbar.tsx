@@ -36,7 +36,7 @@ const GnbIconBtn = ({ label, onClick, children, className }: {
     >
       {children}
     </button>
-    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2.5 py-1 bg-surface-inverse text-txt-inverse text-[0.625rem] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-tooltip hidden md:block shadow-solid-sm border border-black">
+    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2.5 py-1 bg-surface-inverse text-txt-inverse text-[0.625rem] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-tooltip hidden md:block shadow-solid-sm border border-surface-inverse">
       {label}
     </div>
   </div>
@@ -234,7 +234,7 @@ export const TopNavbar: React.FC = () => {
 
                   {/* 바로가기 */}
                   <div className="px-2 pt-2 pb-1">
-                    <p className="px-2.5 pt-1 pb-1.5 text-[10px] font-mono uppercase tracking-widest text-txt-disabled">
+                    <p className="px-2.5 pt-1 pb-1.5 text-[10px] text-txt-disabled">
                       {searchQuery.trim() ? '바로가기' : '빠른 이동'}
                     </p>
                     {filteredNav.length > 0 ? (
@@ -261,7 +261,7 @@ export const TopNavbar: React.FC = () => {
                     <>
                       <div className="mx-3 border-t border-border-subtle" />
                       <div className="px-2 pt-1 pb-2">
-                        <p className="px-2.5 pt-1 pb-1.5 text-[10px] font-mono uppercase tracking-widest text-txt-disabled">콘텐츠 검색</p>
+                        <p className="px-2.5 pt-1 pb-1.5 text-[10px] text-txt-disabled">콘텐츠 검색</p>
                         <button
                           onClick={handleSearch}
                           className="w-full flex items-center gap-3 px-2.5 py-2 rounded-sm text-sm text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary transition-colors text-left"
@@ -308,7 +308,7 @@ export const TopNavbar: React.FC = () => {
                 {/* 새 프로젝트 CTA */}
                 <button
                   onClick={() => router.push('/projects/new')}
-                  className="hidden md:flex items-center gap-1.5 px-3.5 py-1.5 bg-surface-inverse text-txt-inverse text-xs font-bold hover:bg-accent-hover transition-all border border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none active:scale-[0.97]"
+                  className="hidden md:flex items-center gap-1.5 px-3.5 py-1.5 bg-surface-inverse text-txt-inverse text-xs font-bold hover:bg-accent-hover transition-all border border-surface-inverse hover:opacity-90 active:scale-[0.97] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none active:scale-[0.97]"
                 >
                   <Plus size={14} strokeWidth={2.5} />
                   <span>새 프로젝트</span>
@@ -365,7 +365,7 @@ export const TopNavbar: React.FC = () => {
                         <>
                           <div className="mx-3 border-t border-border-subtle" />
                           <div className="py-1.5 px-1.5">
-                            <p className="px-2.5 py-1 text-[0.625rem] font-mono text-txt-disabled uppercase tracking-widest">Admin</p>
+                            <p className="px-2.5 py-1 text-[0.625rem] text-txt-disabled">Admin</p>
                             <DropdownItem icon={Shield} onClick={() => router.push('/admin')}>관리자 대시보드</DropdownItem>
                             <DropdownItem icon={User} onClick={() => router.push('/admin/users')}>사용자 관리</DropdownItem>
                             <DropdownItem icon={Briefcase} onClick={() => router.push('/admin/opportunities')}>기회 관리</DropdownItem>
@@ -387,7 +387,7 @@ export const TopNavbar: React.FC = () => {
                 {/* 비로그인: 로그인 버튼 */}
                 <Link
                   href="/login"
-                  className="hidden md:flex items-center gap-1.5 px-4 py-1.5 bg-surface-inverse text-txt-inverse text-xs font-bold hover:bg-accent-hover transition-all border border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                  className="hidden md:flex items-center gap-1.5 px-4 py-1.5 bg-surface-inverse text-txt-inverse text-xs font-bold hover:bg-accent-hover transition-all border border-surface-inverse hover:opacity-90 active:scale-[0.97]"
                 >
                   로그인
                 </Link>
@@ -443,7 +443,7 @@ export const TopNavbar: React.FC = () => {
                   <MobileNavItem href="/profile" active={pathname === '/profile'}>마이페이지</MobileNavItem>
                   <button
                     onClick={() => { router.push('/projects/new'); setIsMobileMenuOpen(false) }}
-                    className="w-full mt-2 flex items-center justify-center gap-1.5 px-4 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-semibold transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                    className="w-full mt-2 flex items-center justify-center gap-1.5 px-4 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-semibold transition-all hover:opacity-90 active:scale-[0.97]"
                   >
                     <Plus size={15} strokeWidth={2.5} /> 새 프로젝트
                   </button>
@@ -451,7 +451,7 @@ export const TopNavbar: React.FC = () => {
               ) : (
                 <Link
                   href="/login"
-                  className="w-full mt-2 flex items-center justify-center gap-1.5 px-4 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-semibold transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                  className="w-full mt-2 flex items-center justify-center gap-1.5 px-4 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-semibold transition-all hover:opacity-90 active:scale-[0.97]"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   로그인

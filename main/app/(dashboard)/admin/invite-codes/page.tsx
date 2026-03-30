@@ -149,7 +149,7 @@ export default function InviteCodesAdminPage() {
     <div className="p-6 max-w-6xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-2">
+        <div className="text-[0.625rem] font-medium text-txt-tertiary mb-2">
           ADMIN / INVITE CODES
         </div>
         <h1 className="text-2xl font-bold text-txt-primary flex items-center gap-2">
@@ -163,7 +163,7 @@ export default function InviteCodesAdminPage() {
 
       {/* Send New Code */}
       <div className="bg-surface-card border border-border-strong shadow-sharp p-6 mb-8">
-        <h2 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-4">새 초대 코드 발송</h2>
+        <h2 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">새 초대 코드 발송</h2>
 
         <div className="flex gap-4 items-end">
           <div className="flex-1">
@@ -218,7 +218,7 @@ export default function InviteCodesAdminPage() {
       {/* Codes List */}
       <div className="bg-surface-card border border-border-strong shadow-sharp">
         <div className="p-4 border-b border-border-strong flex items-center justify-between">
-          <h2 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">발송된 초대 코드</h2>
+          <h2 className="text-[0.625rem] font-medium text-txt-tertiary">발송된 초대 코드</h2>
           <button
             onClick={() => queryClient.invalidateQueries({ queryKey: ['admin-invite-codes'] })}
             className="p-2 hover:bg-surface-sunken border border-border-strong transition-colors"
@@ -240,12 +240,12 @@ export default function InviteCodesAdminPage() {
             <table className="w-full text-sm border border-border-strong">
               <thead className="bg-surface-sunken border-b border-border-strong">
                 <tr>
-                  <th className="text-left px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">코드</th>
-                  <th className="text-left px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">받는 사람</th>
-                  <th className="text-left px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">상태</th>
-                  <th className="text-left px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">만료일</th>
-                  <th className="text-left px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">생성일</th>
-                  <th className="text-left px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary"></th>
+                  <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">코드</th>
+                  <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">받는 사람</th>
+                  <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">상태</th>
+                  <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">만료일</th>
+                  <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">생성일</th>
+                  <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-dashed divide-border">
@@ -314,7 +314,7 @@ export default function InviteCodesAdminPage() {
       {/* Eligible Users List */}
       <div className="bg-surface-card border border-border-strong shadow-sharp mt-8">
         <div className="p-4 border-b border-border-strong">
-          <h2 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">온보딩 완료 유저 ({eligibleData?.total_count || 0}명)</h2>
+          <h2 className="text-[0.625rem] font-medium text-txt-tertiary">온보딩 완료 유저 ({eligibleData?.total_count || 0}명)</h2>
         </div>
 
         {eligibleLoading ? (
@@ -330,10 +330,10 @@ export default function InviteCodesAdminPage() {
             <table className="w-full text-sm border border-border-strong">
               <thead className="bg-surface-sunken border-b border-border-strong">
                 <tr>
-                  <th className="text-left px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">닉네임</th>
-                  <th className="text-left px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">이메일</th>
-                  <th className="text-left px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">초대 코드</th>
-                  <th className="text-left px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">가입일</th>
+                  <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">닉네임</th>
+                  <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">이메일</th>
+                  <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">초대 코드</th>
+                  <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">가입일</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-dashed divide-border">

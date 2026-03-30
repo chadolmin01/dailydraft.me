@@ -31,7 +31,7 @@ export function ProfileBodyRight({
       {/* Personality Traits */}
       {personality && Object.keys(personality).length > 0 && (
         <section>
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">
+          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
             성향 점수
           </h3>
           <div className="space-y-3">
@@ -47,7 +47,7 @@ export function ProfileBodyRight({
       {/* Work Style (vision_summary.work_style) */}
       {workStyle && Object.keys(workStyle).length > 0 && (
         <section>
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">
+          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
             작업 스타일
           </h3>
           <div className="space-y-3">
@@ -63,7 +63,7 @@ export function ProfileBodyRight({
       {/* Team Preference */}
       {teamPref && Object.keys(teamPref).length > 0 && (
         <section>
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-1">
+          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-1">
             <Users size={11} /> 팀 선호
           </h3>
           <div className="space-y-2">
@@ -92,7 +92,7 @@ export function ProfileBodyRight({
       {/* Availability */}
       {availability && (availability.hours_per_week != null || availability.prefer_online != null) && (
         <section>
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-1">
+          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-1">
             <Clock size={11} /> 가용 시간
           </h3>
           <div className="space-y-2">
@@ -115,7 +115,7 @@ export function ProfileBodyRight({
       {/* Skills */}
       {skills && skills.length > 0 && (
         <section>
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-1">
+          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-1">
             <Code2 size={11} /> 스킬
           </h3>
           <div className="flex flex-wrap gap-2">

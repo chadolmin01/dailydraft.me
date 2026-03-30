@@ -275,7 +275,7 @@ export const QuickFixButton: React.FC<QuickFixButtonProps> = ({
   size = 'sm',
 }) => {
   const variantClasses = {
-    primary: 'bg-brand text-white hover:bg-brand-hover shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]',
+    primary: 'bg-brand text-white hover:bg-brand-hover hover:opacity-90 active:scale-[0.97]',
     secondary: 'bg-surface-sunken text-txt-secondary hover:bg-black hover:text-white border border-border-strong',
   }
 

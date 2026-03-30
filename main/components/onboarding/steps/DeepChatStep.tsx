@@ -32,7 +32,7 @@ export const DeepChatFooter: React.FC<DeepChatFooterProps> = ({
           <div className="max-w-2xl mx-auto">
             <div className="flex items-center gap-1.5 mb-1.5">
               <Lightbulb size={10} className="text-txt-disabled" />
-              <span className="text-[10px] font-mono text-txt-disabled uppercase tracking-wider">Quick Reply</span>
+              <span className="text-[10px] text-txt-disabled">Quick Reply</span>
             </div>
             <div className="flex flex-wrap gap-1.5">
               {currentSuggestions.map((suggestion, i) => (
@@ -60,7 +60,7 @@ export const DeepChatFooter: React.FC<DeepChatFooterProps> = ({
                 value={deepChatInput}
                 onChange={(e) => onInputChange(e.target.value)}
                 placeholder={userMsgCount === 0 ? '첫 번째 질문에 답해보세요...' : '이어서 이야기해주세요...'}
-                className="w-full pl-4 pr-11 py-3 bg-surface-card border border-border-strong text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-all placeholder:text-txt-tertiary"
+                className="w-full pl-4 pr-11 py-3 bg-surface-card border border-border-strong text-sm font-medium focus:outline-none focus:border-surface-inverse focus:bg-white transition-all placeholder:text-txt-tertiary"
                 onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && onSend()}
                 disabled={isTyping}
               />
@@ -75,8 +75,8 @@ export const DeepChatFooter: React.FC<DeepChatFooterProps> = ({
             <button
               onClick={onFinish}
               disabled={isTyping}
-              className={`ob-hover px-4 py-3 text-[13px] font-bold flex items-center gap-1.5 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] disabled:opacity-50 shrink-0 transition-all ${
-                userMsgCount >= 3 ? 'bg-brand text-white border border-brand' : 'bg-black text-white'
+              className={`ob-hover px-4 py-3 text-[13px] font-bold flex items-center gap-1.5 hover:opacity-90 active:scale-[0.97] disabled:opacity-50 shrink-0 transition-all ${
+                userMsgCount >= 3 ? 'bg-brand text-white border border-brand' : 'bg-surface-inverse text-txt-inverse'
               }`}
             >
               <CheckCircle2 size={14} />완료
@@ -122,7 +122,7 @@ export const DefaultFooter: React.FC<DefaultFooterProps> = ({ canGoBack, onGoBac
             이전 단계
           </button>
         ) : (
-          <span className="text-[10px] font-mono text-txt-tertiary uppercase tracking-widest">Draft Onboarding</span>
+          <span className="text-[10px] text-txt-tertiary">Draft Onboarding</span>
         )}
         <span className="text-[10px] text-txt-tertiary font-mono">나중에 프로필에서 수정 가능</span>
       </div>

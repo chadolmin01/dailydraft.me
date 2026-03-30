@@ -58,7 +58,7 @@ const InputSection: React.FC<InputSectionProps> = ({ inputs, logs, onChange, onS
                 key={tab.role}
                 onClick={() => setActiveTab(tab.role)}
                 className={`
-                relative pb-3 pt-2 px-4 flex items-center gap-2 text-xs font-bold uppercase tracking-wide transition-all
+                relative pb-3 pt-2 px-4 flex items-center gap-2 text-xs font-medium transition-all
                 ${activeTab === tab.role ? 'text-txt-primary' : 'text-txt-disabled hover:text-txt-secondary'}
                 `}
             >
@@ -114,7 +114,7 @@ const InputSection: React.FC<InputSectionProps> = ({ inputs, logs, onChange, onS
                             ? 'bg-surface-sunken text-txt-secondary hover:bg-surface-card border border-border-strong'
                             : (isSubmitted
                                 ? 'bg-status-success-bg text-status-success-text border border-status-success-text/20'
-                                : 'bg-black text-white hover:bg-[#333] border border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]')
+                                : 'bg-surface-inverse text-txt-inverse hover:bg-surface-inverse/90 border border-surface-inverse hover:opacity-90 active:scale-[0.97]')
                         }
                         ${(isAnalyzing || !activeInput.trim()) && 'opacity-50 cursor-not-allowed shadow-none'}
                     `}
@@ -142,7 +142,7 @@ const InputSection: React.FC<InputSectionProps> = ({ inputs, logs, onChange, onS
         {roleLogs.length > 0 && (
             <div className="flex-1 flex flex-col min-h-0">
                 <div className="flex items-center gap-2 mb-2 px-1">
-                    <span className="text-[0.625rem] font-mono font-bold text-txt-disabled uppercase tracking-widest">History</span>
+                    <span className="text-[0.625rem] font-medium text-txt-disabled">History</span>
                     <div className="flex-1 h-px bg-border"></div>
                 </div>
 

@@ -234,7 +234,7 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
               <div className="flex flex-col items-center gap-4">
                 <div className={`
                   w-14 h-14 flex items-center justify-center transition-colors
-                  ${isDragging ? 'bg-black text-white' : 'bg-surface-sunken text-txt-tertiary'}
+                  ${isDragging ? 'bg-surface-inverse text-txt-inverse' : 'bg-surface-sunken text-txt-tertiary'}
                 `}>
                   <FileUp size={24} />
                 </div>
@@ -260,7 +260,7 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
 
               {/* Problem Field */}
               <div>
-                <label className="block text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-2">
+                <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-2">
                   Problem
                   <span className="text-txt-disabled font-normal ml-1 normal-case tracking-normal">해결하려는 문제</span>
                 </label>
@@ -274,7 +274,7 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
 
               {/* Solution Field */}
               <div>
-                <label className="block text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-2">
+                <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-2">
                   Solution
                   <span className="text-txt-disabled font-normal ml-1 normal-case tracking-normal">핵심 솔루션</span>
                 </label>
@@ -288,7 +288,7 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
 
               {/* Target Field */}
               <div>
-                <label className="block text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-2">
+                <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-2">
                   Target
                   <span className="text-txt-disabled font-normal ml-1 normal-case tracking-normal">타겟 고객</span>
                 </label>
@@ -335,7 +335,7 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
             <button
               onClick={handleSave}
               disabled={isLoading || (!structuredData.problem && !structuredData.solution && !structuredData.target)}
-              className="px-5 py-2.5 bg-black text-white text-sm font-bold hover:bg-surface-inverse transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+              className="px-5 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-bold hover:bg-surface-inverse transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 hover:opacity-90 active:scale-[0.97]"
             >
               {isLoading ? (
                 <>

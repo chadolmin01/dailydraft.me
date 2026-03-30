@@ -53,9 +53,9 @@ export function ExploreAsidePanel({
     <div className="space-y-4">
       {/* 추천 인재 */}
       <div className="relative bg-surface-card border border-border-strong p-4 shadow-sharp">
-        <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-black/20" />
-        <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-black/20" />
-        <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-2">
+        <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/20" />
+        <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-surface-inverse/20" />
+        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
           <span className="w-4 h-4 bg-brand text-white flex items-center justify-center text-[0.5rem] font-bold">P</span>
           {showLoading ? (
             <span className="flex items-center gap-1.5">
@@ -141,7 +141,7 @@ export function ExploreAsidePanel({
 
       {/* 스탯 카드 */}
       <div className="relative bg-surface-card border border-border-strong p-4 shadow-sharp">
-        <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-2">
+        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
           <span className="w-4 h-4 bg-indicator-premium text-white flex items-center justify-center text-[0.5rem] font-bold">S</span>
           STATS
         </h3>

@@ -187,7 +187,7 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2">
           <Users size={16} className="text-txt-tertiary" />
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest">
+          <h3 className="text-[0.625rem] font-medium text-txt-tertiary">
             팀원 관리
           </h3>
         </div>
@@ -200,7 +200,7 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
       {/* Accepted Coffee Chats — Add to Team */}
       {acceptedChats.length > 0 && (
         <div>
-          <h4 className="text-[0.625rem] font-mono font-bold text-status-success-text uppercase tracking-widest mb-2 flex items-center gap-1.5">
+          <h4 className="text-[0.625rem] font-medium text-status-success-text mb-2 flex items-center gap-1.5">
             <Coffee size={11} />
             수락된 커피챗 ({acceptedChats.length})
           </h4>
@@ -253,7 +253,7 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
       {/* Active Members */}
       {members.length > 0 && (
         <div>
-          <h4 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-2">
+          <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-2">
             현재 팀원 ({members.length})
           </h4>
           <div className="space-y-3">
@@ -278,7 +278,7 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
       {/* Left Members */}
       {leftMembers.length > 0 && (
         <div>
-          <h4 className="text-[0.625rem] font-mono font-bold text-txt-disabled uppercase tracking-widest mb-2">
+          <h4 className="text-[0.625rem] font-medium text-txt-disabled mb-2">
             이전 팀원 ({leftMembers.length})
           </h4>
           <div className="space-y-2 opacity-50">
@@ -325,7 +325,7 @@ function MemberCard({
     <div className="border border-border-strong bg-surface-card">
       <div className="flex items-start gap-3 px-4 py-3">
         {/* Avatar */}
-        <div className="w-10 h-10 bg-black text-white flex items-center justify-center font-bold text-sm shrink-0">
+        <div className="w-10 h-10 bg-surface-inverse text-txt-inverse flex items-center justify-center font-bold text-sm shrink-0">
           {member.profile?.nickname?.charAt(0) || '?'}
         </div>
 

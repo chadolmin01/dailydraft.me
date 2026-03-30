@@ -17,7 +17,7 @@ export const ProjectContent: React.FC<ProjectContentProps> = ({
     <div className="md:col-span-3 space-y-8">
       {/* Description */}
       <section>
-        <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">
+        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
           프로젝트 소개
         </h3>
         <p className="text-[0.9375rem] text-txt-secondary leading-[1.8] break-keep whitespace-pre-line">
@@ -28,7 +28,7 @@ export const ProjectContent: React.FC<ProjectContentProps> = ({
       {/* Pain Point */}
       {opportunity.pain_point && (
         <section className="bg-surface-card border border-border-strong p-5">
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-2">
+          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-2">
             해결하려는 문제
           </h3>
           <p className="text-sm text-txt-secondary leading-relaxed break-keep">
@@ -42,7 +42,7 @@ export const ProjectContent: React.FC<ProjectContentProps> = ({
       <section>
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
-            <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest">
+            <h3 className="text-[0.625rem] font-medium text-txt-tertiary">
               주간 업데이트
             </h3>
             {!opportunity.show_updates && isOwner && (
@@ -70,7 +70,7 @@ export const ProjectContent: React.FC<ProjectContentProps> = ({
               </button>
               <button
                 onClick={() => setShowWriteUpdate(true)}
-                className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold bg-black text-white border border-black hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]"
+                className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97]"
               >
                 + 작성하기
               </button>

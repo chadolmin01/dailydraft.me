@@ -31,7 +31,7 @@ export const OnboardingComboBox: React.FC<OnboardingComboBoxProps> = ({
 
   return (
     <div ref={containerRef} className="relative">
-      <div className="flex items-center bg-surface-card border border-border-strong focus-within:border-black focus-within:bg-white transition-all">
+      <div className="flex items-center bg-surface-card border border-border-strong focus-within:border-surface-inverse focus-within:bg-white transition-all">
         <input
           type="text"
           value={isOpen ? search || value : value}

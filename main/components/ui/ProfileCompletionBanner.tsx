@@ -29,7 +29,7 @@ export function ProfileCompletionBanner() {
   return (
     <div className="border border-border-strong bg-surface-card px-4 py-3 mb-4 flex items-center gap-4">
       <div className="flex items-center gap-3 shrink-0">
-        <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">
+        <span className="text-[0.625rem] font-medium text-txt-tertiary">
           PROFILE
         </span>
         <div className="w-16 h-1.5 bg-surface-sunken overflow-hidden">
@@ -47,7 +47,7 @@ export function ProfileCompletionBanner() {
 
       <Link
         href="/profile/edit"
-        className="shrink-0 px-3 py-1.5 bg-black text-white text-xs font-bold border border-black hover:bg-black/80 transition-colors flex items-center gap-1"
+        className="shrink-0 px-3 py-1.5 bg-surface-inverse text-txt-inverse text-xs font-bold border border-surface-inverse hover:bg-surface-inverse/90 transition-colors flex items-center gap-1"
       >
         완성하기 <ArrowRight size={12} />
       </Link>

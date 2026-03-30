@@ -133,7 +133,7 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
           <div className="bg-surface-card border border-border-strong shadow-brutal overflow-hidden animate-slide-up-fade">
             {/* Header */}
             <div className="p-8 pb-6">
-              <span className="text-[0.625rem] font-mono uppercase font-bold text-txt-tertiary tracking-wider">
+              <span className="text-[0.625rem] font-medium text-txt-tertiary">
                 NEXT STEP
               </span>
               <h2 className="text-lg font-bold text-txt-primary mt-1.5 break-keep">
@@ -146,7 +146,7 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
               {/* Primary */}
               <Link
                 href={cta.primary.href}
-                className="block border-2 border-black p-4 shadow-solid-sm transition-all hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-black hover:text-white group animate-fade-in"
+                className="block border-2 border-surface-inverse p-4 shadow-solid-sm transition-all hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-black hover:text-white group animate-fade-in"
                 style={{ animationDelay: '200ms', animationFillMode: 'both' }}
               >
                 <div className="flex items-center justify-between">
@@ -182,7 +182,7 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
                 style={{ animationDelay: '600ms', animationFillMode: 'both' }}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-[0.625rem] font-mono uppercase font-bold text-txt-tertiary tracking-wider">
+                  <span className="text-[0.625rem] font-medium text-txt-tertiary">
                     PROFILE
                   </span>
                   <span className="text-[0.625rem] font-mono font-bold text-txt-primary">

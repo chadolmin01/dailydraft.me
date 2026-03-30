@@ -128,7 +128,7 @@ export function ExploreTabBar({
               <tab.icon size={12} />
               {tab.label}
               {tab.beta && (
-                <span className="text-[0.5rem] font-mono font-bold bg-brand text-white px-1 py-px leading-none uppercase">beta</span>
+                <span className="text-[0.5rem] font-medium bg-brand text-white px-1 py-px leading-none">beta</span>
               )}
             </button>
           ))}
@@ -148,7 +148,7 @@ export function ExploreTabBar({
               <opt.icon size={12} />
               {opt.label}
               {opt.beta && (
-                <span className="text-[0.5rem] font-mono font-bold bg-brand text-white px-1 py-px leading-none uppercase">beta</span>
+                <span className="text-[0.5rem] font-medium bg-brand text-white px-1 py-px leading-none">beta</span>
               )}
             </button>
           ))}
@@ -164,7 +164,7 @@ export function ExploreTabBar({
               onClick={() => onTypeFilterChange(t.id as TypeFilter)}
               className={`shrink-0 px-3 py-1.5 text-xs font-bold border transition-all ${
                 typeFilter === t.id
-                  ? 'bg-black text-white border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]'
+                  ? 'bg-surface-inverse text-txt-inverse border-surface-inverse shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]'
                   : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]'
               }`}
             >
@@ -176,7 +176,7 @@ export function ExploreTabBar({
               onClick={onMobileFilterToggle}
               className={`lg:hidden shrink-0 ml-auto px-3 py-1.5 text-xs font-bold border transition-all flex items-center gap-1 ${
                 isMobileFilterOpen
-                  ? 'bg-black text-white border-black'
+                  ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
                   : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong'
               }`}
             >
@@ -196,7 +196,7 @@ export function ExploreTabBar({
               onClick={() => onPeopleRoleFilterChange(r.id as PeopleRoleFilter)}
               className={`shrink-0 px-3 py-1.5 text-xs font-bold border transition-all ${
                 peopleRoleFilter === r.id
-                  ? 'bg-black text-white border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]'
+                  ? 'bg-surface-inverse text-txt-inverse border-surface-inverse shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]'
                   : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]'
               }`}
             >
@@ -208,7 +208,7 @@ export function ExploreTabBar({
               onClick={onMobileFilterToggle}
               className={`lg:hidden shrink-0 ml-auto px-3 py-1.5 text-xs font-bold border transition-all flex items-center gap-1 ${
                 isMobileFilterOpen
-                  ? 'bg-black text-white border-black'
+                  ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
                   : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong'
               }`}
             >

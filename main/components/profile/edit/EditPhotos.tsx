@@ -15,7 +15,7 @@ export const EditPhotos: React.FC<EditPhotosProps> = ({
 }) => {
   return (
     <section>
-      <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4 flex items-center gap-2">
+      <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4 flex items-center gap-2">
         <Camera size={14} /> 사진
       </h3>
 

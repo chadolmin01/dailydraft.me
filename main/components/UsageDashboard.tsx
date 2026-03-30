@@ -159,7 +159,7 @@ function ApiUsageSection({ apiUsage }: { apiUsage: UsageData['apiUsage'] }) {
               onClick={() => setSelectedWindow(key)}
               className={`px-3 py-1 text-sm transition-colors ${
                 selectedWindow === key
-                  ? 'bg-black text-white'
+                  ? 'bg-surface-inverse text-txt-inverse'
                   : 'text-txt-tertiary hover:bg-surface-sunken'
               }`}
             >
@@ -191,7 +191,7 @@ function ApiUsageSection({ apiUsage }: { apiUsage: UsageData['apiUsage'] }) {
         <div className="grid grid-cols-3 gap-4 pt-4 border-t border-dashed border-border">
           {windows.map(({ key, label }) => (
             <div key={key} className="text-center">
-              <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-1">{label}</div>
+              <div className="text-[0.625rem] font-medium text-txt-tertiary mb-1">{label}</div>
               <div className="text-sm font-medium">
                 {apiUsage[key].remaining.toLocaleString()}
                 <span className="text-txt-disabled"> 남음</span>
@@ -318,7 +318,7 @@ export function UsageDashboard() {
           </div>
 
           {data.plan.type === 'free' && (
-            <button className="px-4 py-2 bg-brand text-white border border-brand font-medium hover:bg-brand-hover transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">
+            <button className="px-4 py-2 bg-brand text-white border border-brand font-medium hover:bg-brand-hover transition-colors hover:opacity-90 active:scale-[0.97]">
               Pro로 업그레이드
             </button>
           )}

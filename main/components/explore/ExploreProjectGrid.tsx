@@ -80,8 +80,8 @@ export function ExploreProjectGrid({
               className="stagger-item relative bg-surface-card border border-border-strong overflow-hidden group hover:shadow-solid-sm hover:border-brand/30 hover:-translate-y-0.5 hover-spring cursor-pointer h-[21.25rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985] active:shadow-none active:border-brand/50"
             >
               {/* 코너 마크 */}
-              <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-black/15 z-20" />
-              <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-black/15 z-20" />
+              <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/15 z-20" />
+              <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-surface-inverse/15 z-20" />
               {/* 헤더: 커버 */}
               <div className="relative h-36 shrink-0 bg-surface-inverse flex items-end p-4">
                 {p.coverImage && (
@@ -127,7 +127,7 @@ export function ExploreProjectGrid({
                   )}
                 </div>
                 <div className="flex items-center gap-1.5 mb-2 overflow-hidden">
-                  <span className="text-[0.625rem] font-mono font-bold text-brand uppercase tracking-wide shrink-0 bg-brand-bg px-1.5 py-0.5 border border-brand-border">NEED</span>
+                  <span className="text-[0.625rem] font-medium text-brand shrink-0 bg-brand-bg px-1.5 py-0.5 border border-brand-border">NEED</span>
                   {p.roles.slice(0, 2).map(role => (
                     <span key={role} className="text-xs bg-surface-card text-txt-secondary px-2 py-0.5 border border-border font-medium shrink-0">{role}</span>
                   ))}

@@ -143,7 +143,7 @@ export default function InstitutionMembersPage() {
         <div className="border-b border-border pb-6">
           <button
             onClick={() => router.push('/institution')}
-            className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-2 flex items-center gap-1 hover:text-txt-primary transition-colors"
+            className="text-[0.625rem] font-medium text-txt-tertiary mb-2 flex items-center gap-1 hover:text-txt-primary transition-colors"
           >
             <ChevronLeft size={12} />
             Institution Dashboard
@@ -164,7 +164,7 @@ export default function InstitutionMembersPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="이름으로 검색..."
-              className="w-full pl-10 pr-4 py-2.5 bg-surface-card border border-border-strong text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-black"
+              className="w-full pl-10 pr-4 py-2.5 bg-surface-card border border-border-strong text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-surface-inverse"
             />
           </div>
 
@@ -174,10 +174,10 @@ export default function InstitutionMembersPage() {
               <button
                 key={key}
                 onClick={() => { setRoleFilter(key); setPage(1) }}
-                className={`px-3 py-2 text-xs font-mono font-bold uppercase tracking-widest border transition-colors
+                className={`px-3 py-2 text-xs font-medium border transition-colors
                   ${roleFilter === key
-                    ? 'bg-black text-white border-black'
-                    : 'bg-surface-card text-txt-secondary border-border-strong hover:border-black'
+                    ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
+                    : 'bg-surface-card text-txt-secondary border-border-strong hover:border-surface-inverse'
                   }`}
               >
                 {label}
@@ -188,7 +188,7 @@ export default function InstitutionMembersPage() {
           {/* Add Member */}
           <button
             onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-black text-white text-xs font-mono font-bold uppercase tracking-widest hover:bg-surface-inverse transition-colors"
+            className="flex items-center gap-2 px-4 py-2.5 bg-surface-inverse text-txt-inverse text-xs font-medium hover:bg-surface-inverse transition-colors"
           >
             <Plus size={14} />
             멤버 추가
@@ -207,7 +207,7 @@ export default function InstitutionMembersPage() {
               <p className="text-txt-secondary text-sm">등록된 멤버가 없습니다</p>
               <button
                 onClick={() => setShowAddModal(true)}
-                className="mt-4 text-xs font-mono font-bold uppercase tracking-widest text-txt-primary underline underline-offset-4"
+                className="mt-4 text-xs font-medium text-txt-primary underline underline-offset-4"
               >
                 첫 멤버 추가하기
               </button>
@@ -217,12 +217,12 @@ export default function InstitutionMembersPage() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-dashed border-border">
-                    <th className="text-left text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary px-5 py-3">이름</th>
-                    <th className="text-left text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary px-5 py-3">학과</th>
-                    <th className="text-left text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary px-5 py-3">역할</th>
-                    <th className="text-left text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary px-5 py-3">스킬</th>
-                    <th className="text-left text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary px-5 py-3">상태</th>
-                    <th className="text-left text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary px-5 py-3">가입일</th>
+                    <th className="text-left text-[0.625rem] font-medium text-txt-tertiary px-5 py-3">이름</th>
+                    <th className="text-left text-[0.625rem] font-medium text-txt-tertiary px-5 py-3">학과</th>
+                    <th className="text-left text-[0.625rem] font-medium text-txt-tertiary px-5 py-3">역할</th>
+                    <th className="text-left text-[0.625rem] font-medium text-txt-tertiary px-5 py-3">스킬</th>
+                    <th className="text-left text-[0.625rem] font-medium text-txt-tertiary px-5 py-3">상태</th>
+                    <th className="text-left text-[0.625rem] font-medium text-txt-tertiary px-5 py-3">가입일</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -243,7 +243,7 @@ export default function InstitutionMembersPage() {
                           {profile?.major || '-'}
                         </td>
                         <td className="px-5 py-3.5">
-                          <span className="inline-flex items-center gap-1.5 px-2 py-1 text-[0.625rem] font-mono font-bold uppercase tracking-widest border border-border-strong">
+                          <span className="inline-flex items-center gap-1.5 px-2 py-1 text-[0.625rem] font-medium border border-border-strong">
                             <RoleIcon size={12} />
                             {ROLE_LABELS[member.role] || member.role}
                           </span>
@@ -311,14 +311,14 @@ export default function InstitutionMembersPage() {
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
           <Card padding="p-0" className="w-full max-w-md">
             <div className="flex items-center justify-between px-6 py-4 border-b border-dashed border-border">
-              <h3 className="font-mono font-bold text-sm uppercase tracking-tight text-txt-primary">멤버 추가</h3>
+              <h3 className="font-medium text-sm tracking-tight text-txt-primary">멤버 추가</h3>
               <button onClick={() => { setShowAddModal(false); setAddError('') }} className="text-txt-disabled hover:text-txt-primary">
                 <X size={18} />
               </button>
             </div>
             <form onSubmit={handleAddSubmit} className="p-6 space-y-4">
               <div>
-                <label className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary block mb-1.5">
+                <label className="text-[0.625rem] font-medium text-txt-tertiary block mb-1.5">
                   이메일
                 </label>
                 <input
@@ -327,11 +327,11 @@ export default function InstitutionMembersPage() {
                   onChange={(e) => setAddEmail(e.target.value)}
                   placeholder="학생의 Draft 가입 이메일"
                   required
-                  className="w-full px-3 py-2.5 bg-surface-sunken border border-border-strong text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-black"
+                  className="w-full px-3 py-2.5 bg-surface-sunken border border-border-strong text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-surface-inverse"
                 />
               </div>
               <div>
-                <label className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary block mb-1.5">
+                <label className="text-[0.625rem] font-medium text-txt-tertiary block mb-1.5">
                   역할
                 </label>
                 <div className="flex gap-2">
@@ -340,10 +340,10 @@ export default function InstitutionMembersPage() {
                       key={r}
                       type="button"
                       onClick={() => setAddRole(r)}
-                      className={`flex-1 py-2 text-xs font-mono font-bold uppercase tracking-widest border transition-colors
+                      className={`flex-1 py-2 text-xs font-medium border transition-colors
                         ${addRole === r
-                          ? 'bg-black text-white border-black'
-                          : 'bg-surface-card text-txt-secondary border-border-strong hover:border-black'
+                          ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
+                          : 'bg-surface-card text-txt-secondary border-border-strong hover:border-surface-inverse'
                         }`}
                     >
                       {ROLE_LABELS[r]}
@@ -352,7 +352,7 @@ export default function InstitutionMembersPage() {
                 </div>
               </div>
               <div>
-                <label className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary block mb-1.5">
+                <label className="text-[0.625rem] font-medium text-txt-tertiary block mb-1.5">
                   메모 (선택)
                 </label>
                 <input
@@ -360,7 +360,7 @@ export default function InstitutionMembersPage() {
                   value={addNotes}
                   onChange={(e) => setAddNotes(e.target.value)}
                   placeholder="참고사항"
-                  className="w-full px-3 py-2.5 bg-surface-sunken border border-border-strong text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-black"
+                  className="w-full px-3 py-2.5 bg-surface-sunken border border-border-strong text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-surface-inverse"
                 />
               </div>
               {addError && (
@@ -371,7 +371,7 @@ export default function InstitutionMembersPage() {
               <button
                 type="submit"
                 disabled={addMember.isPending}
-                className="w-full py-2.5 bg-black text-white text-xs font-mono font-bold uppercase tracking-widest hover:bg-surface-inverse disabled:opacity-50 transition-colors"
+                className="w-full py-2.5 bg-surface-inverse text-txt-inverse text-xs font-medium hover:bg-surface-inverse disabled:opacity-50 transition-colors"
               >
                 {addMember.isPending ? '추가 중...' : '멤버 추가'}
               </button>

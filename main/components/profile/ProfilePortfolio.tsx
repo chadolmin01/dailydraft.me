@@ -95,7 +95,7 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
   return (
     <section className="mb-6">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest flex items-center gap-2">
+        <h3 className="text-[0.625rem] font-medium text-txt-tertiary flex items-center gap-2">
           <span className="w-5 h-5 bg-surface-inverse text-txt-inverse flex items-center justify-center text-[0.5rem] font-bold">F</span>
           PORTFOLIO
           <span className="text-[0.625rem] font-mono text-txt-tertiary">({items.length})</span>
@@ -117,8 +117,8 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
             key={item.id}
             className="relative bg-surface-card border border-border-strong overflow-hidden group hover:shadow-brutal transition-all shadow-sharp"
           >
-            <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-black/20 z-10" />
-            <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-black/20 z-10" />
+            <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/20 z-10" />
+            <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-surface-inverse/20 z-10" />
 
             {/* Delete button */}
             {isEditable && (
@@ -227,7 +227,7 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
                 <button
                   onClick={handleCreate}
                   disabled={!title.trim() || createItem.isPending}
-                  className="flex items-center gap-1 px-3 py-1 text-[0.625rem] font-bold bg-surface-inverse text-txt-inverse border border-black hover:bg-black/80 transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] disabled:opacity-50"
+                  className="flex items-center gap-1 px-3 py-1 text-[0.625rem] font-bold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97] disabled:opacity-50"
                 >
                   {createItem.isPending ? <Loader2 size={10} className="animate-spin" /> : <Plus size={10} />}
                   저장

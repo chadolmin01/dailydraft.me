@@ -181,7 +181,7 @@ export default function PlanPage() {
             <button
               onClick={handleGeneratePRD}
               disabled={isGeneratingPRD}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-600 text-white text-sm border border-violet-600 hover:bg-violet-700 transition-colors disabled:opacity-50 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-600 text-white text-sm border border-violet-600 hover:bg-violet-700 transition-colors disabled:opacity-50 hover:opacity-90 active:scale-[0.97]"
             >
               <FileText className="w-3.5 h-3.5" />
               PRD 보기
@@ -201,7 +201,7 @@ export default function PlanPage() {
         <div className="lg:col-span-2 space-y-4">
           {/* Triangle Visual */}
           <div className="bg-surface-card border border-border-strong p-4">
-            <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-disabled mb-2">Alignment Map</div>
+            <div className="text-[0.625rem] font-medium text-txt-disabled mb-2">Alignment Map</div>
             <div className="h-[17.5rem]">
               <TriangleVisual
                 inputs={inputs}
@@ -249,7 +249,7 @@ export default function PlanPage() {
             {/* Activity Log */}
             {logs.length > 0 && (
               <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-4 border-b border-dashed border-border">
-                <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-disabled whitespace-nowrap">Updates</span>
+                <span className="text-[0.625rem] font-medium text-txt-disabled whitespace-nowrap">Updates</span>
                 {logs.slice(0, 3).map(log => (
                   <div key={log.id} className="flex items-center gap-1.5 px-2 py-1 bg-surface-sunken border border-border whitespace-nowrap">
                     <span className="text-[0.625rem] text-txt-disabled font-mono">
@@ -283,7 +283,7 @@ export default function PlanPage() {
           href="/project/build"
           className={`px-6 py-2.5 text-sm font-medium transition-colors ${
             hasInitialSynthesis
-              ? 'bg-black text-white border border-black hover:bg-[#333] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
+              ? 'bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 hover:opacity-90 active:scale-[0.97]'
               : 'bg-surface-sunken text-txt-disabled border border-border cursor-not-allowed pointer-events-none'
           }`}
         >

@@ -103,7 +103,7 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
       <div className="relative z-10 flex flex-col items-center text-center mt-10 sm:mt-16 md:mt-28 max-w-2xl mx-auto">
         <div className="inline-flex items-center gap-2 px-3 py-1 bg-surface-card border border-border-strong shadow-solid-sm mb-8">
             <Ruler size={14} className="text-black" />
-            <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-black">DRAFT COMMUNITY</span>
+            <span className="text-[0.625rem] font-medium text-black">DRAFT COMMUNITY</span>
         </div>
 
         <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-[1.2] mb-5 text-txt-primary">
@@ -124,7 +124,7 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
         <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
           <button
             onClick={onCtaClick}
-            className="group w-full sm:w-auto flex items-center justify-center gap-2 bg-black text-white px-6 py-3 font-bold text-xs hover:bg-[#333] transition-all duration-200 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] border border-black"
+            className="group w-full sm:w-auto flex items-center justify-center gap-2 bg-surface-inverse text-txt-inverse px-6 py-3 font-bold text-xs hover:bg-surface-inverse/90 transition-all duration-200 hover:opacity-90 active:scale-[0.97] border border-surface-inverse"
           >
             프로젝트 올리기
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />

@@ -152,7 +152,7 @@ function FaqTab() {
     <div className="p-3 space-y-3">
       {FAQ_ITEMS.map((cat) => (
         <div key={cat.category}>
-          <h4 className="text-[10px] font-mono font-bold text-txt-disabled uppercase tracking-widest mb-1.5 px-1">{cat.category}</h4>
+          <h4 className="text-[10px] font-medium text-txt-disabled mb-1.5 px-1">{cat.category}</h4>
           <div className="space-y-0.5">
             {cat.items.map((item, i) => {
               const key = `${cat.category}-${i}`
@@ -367,7 +367,7 @@ function ReportTab() {
     <div className="p-3 space-y-3">
       {/* Category */}
       <div>
-        <label className="text-[10px] font-mono font-bold text-txt-disabled uppercase tracking-widest mb-1.5 block">카테고리 *</label>
+        <label className="text-[10px] font-medium text-txt-disabled mb-1.5 block">카테고리 *</label>
         <div className="grid grid-cols-2 gap-1.5">
           {REPORT_CATEGORIES.map(cat => (
             <button
@@ -388,7 +388,7 @@ function ReportTab() {
 
       {/* Title */}
       <div>
-        <label className="text-[10px] font-mono font-bold text-txt-disabled uppercase tracking-widest mb-1.5 block">제목 *</label>
+        <label className="text-[10px] font-medium text-txt-disabled mb-1.5 block">제목 *</label>
         <input
           type="text"
           value={title}
@@ -401,7 +401,7 @@ function ReportTab() {
 
       {/* Description */}
       <div>
-        <label className="text-[10px] font-mono font-bold text-txt-disabled uppercase tracking-widest mb-1.5 block">상세 내용 *</label>
+        <label className="text-[10px] font-medium text-txt-disabled mb-1.5 block">상세 내용 *</label>
         <textarea
           value={description}
           onChange={e => setDescription(e.target.value)}
@@ -424,7 +424,7 @@ function ReportTab() {
       <button
         onClick={handleSubmit}
         disabled={!category || !title.trim() || !description.trim() || isSubmitting}
-        className="w-full py-2.5 text-[12px] font-bold bg-brand text-white border border-brand hover:bg-brand-hover disabled:opacity-30 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+        className="w-full py-2.5 text-[12px] font-bold bg-brand text-white border border-brand hover:bg-brand-hover disabled:opacity-30 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.97]"
       >
         {isSubmitting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
         리포트 제출

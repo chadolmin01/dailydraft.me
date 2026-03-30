@@ -67,7 +67,7 @@ export function ExploreSearchBar({
             {searchScope !== 'all' && (
               <button
                 onClick={() => onSearchScopeChange('all')}
-                className="flex items-center gap-1 text-[0.625rem] font-mono uppercase tracking-wide bg-surface-inverse text-txt-inverse pl-2 pr-1.5 py-0.5 hover:bg-accent-hover transition-colors"
+                className="flex items-center gap-1 text-[0.625rem] bg-surface-inverse text-txt-inverse pl-2 pr-1.5 py-0.5 hover:bg-accent-hover transition-colors"
               >
                 {searchScope === 'projects' ? '프로젝트' : searchScope === 'people' ? '사람' : '기술'}
                 <X size={10} />
@@ -90,7 +90,7 @@ export function ExploreSearchBar({
             <div className="mx-4 border-t border-border-subtle" />
             <div className="px-4 pt-3 pb-4 space-y-3">
               <div>
-                <p className="text-[0.625rem] font-mono uppercase tracking-widest text-txt-disabled mb-2.5">SCOPE</p>
+                <p className="text-[0.625rem] text-txt-disabled mb-2.5">SCOPE</p>
                 <div className="flex flex-wrap gap-1.5">
                   {SEARCH_SCOPES.map((scope) => {
                     const isActive = searchScope === scope.id

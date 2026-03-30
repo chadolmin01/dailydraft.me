@@ -78,7 +78,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onDragStart, onClick }
         <div className="flex items-center gap-2">
           <span className="text-[0.625rem] font-mono text-txt-tertiary">{task.id}</span>
           {task.synced && (
-            <div className="flex items-center gap-1 text-[0.625rem] text-txt-tertiary bg-white/50 px-1.5 py-0.5 border border-black/5" title={`${task.externalTicketId}에 동기화됨`}>
+            <div className="flex items-center gap-1 text-[0.625rem] text-txt-tertiary bg-white/50 px-1.5 py-0.5 border border-surface-inverse/5" title={`${task.externalTicketId}에 동기화됨`}>
               <LinkIcon size={8} />
               <span>{task.externalTicketId}</span>
             </div>

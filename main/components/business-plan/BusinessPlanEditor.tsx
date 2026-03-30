@@ -286,7 +286,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
 
         {/* Steps */}
         <div className="flex-1 p-4 overflow-y-auto">
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary mb-3 uppercase tracking-widest">
+          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
             Progress
           </h3>
           <StepWizardCompact
@@ -504,7 +504,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
           {currentStep < WIZARD_STEPS.length ? (
             <button
               onClick={handleNextStep}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-black text-white hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-surface-inverse text-txt-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97]"
             >
               다음
               <ArrowRight size={16} />
@@ -512,7 +512,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
           ) : (
             <button
               onClick={() => setShowPreview(true)}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-brand text-white hover:bg-brand-hover transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-brand text-white hover:bg-brand-hover transition-colors hover:opacity-90 active:scale-[0.97]"
             >
               <Eye size={16} />
               완료 및 미리보기
@@ -562,7 +562,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
               {/* Rejection Warnings Summary */}
               {totalWarningCounts.total > 0 && (
                 <div className="border-t border-border-subtle pt-4">
-                  <h4 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">
+                  <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
                     탈락 위험 요소
                   </h4>
                   {Object.entries(allWarnings).map(([section, warnings]) => {
@@ -585,7 +585,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
 
               {/* Legacy Validation Panel */}
               <div className="border-t border-border-subtle pt-4">
-                <h4 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">
+                <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
                   상세 체크리스트
                 </h4>
                 <ValidationPanel

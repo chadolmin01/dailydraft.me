@@ -40,8 +40,8 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
     )
 
     const buttonClass = isCompact
-      ? 'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-brand text-white border border-brand hover:bg-brand-hover transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
-      : 'inline-flex items-center gap-2 px-4 py-2.5 text-sm font-bold bg-brand text-white border border-brand hover:bg-brand-hover transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
+      ? 'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-brand text-white border border-brand hover:bg-brand-hover transition-colors hover:opacity-90 active:scale-[0.97]'
+      : 'inline-flex items-center gap-2 px-4 py-2.5 text-sm font-bold bg-brand text-white border border-brand hover:bg-brand-hover transition-colors hover:opacity-90 active:scale-[0.97]'
 
     if (actionHref) {
       return <Link href={actionHref} className={buttonClass}>{buttonContent}</Link>

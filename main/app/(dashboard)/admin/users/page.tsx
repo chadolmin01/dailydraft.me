@@ -127,7 +127,7 @@ export default function AdminUsersPage() {
           </Link>
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-2 flex items-center gap-2">
+              <div className="text-[0.625rem] font-medium text-txt-tertiary mb-2 flex items-center gap-2">
                 <span className="w-2 h-2 bg-black" />
                 Admin / Users
               </div>
@@ -135,7 +135,7 @@ export default function AdminUsersPage() {
             </div>
             <button
               onClick={() => refetch()}
-              className="flex items-center gap-2 px-4 py-2 bg-black text-white text-sm font-medium border border-black hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+              className="flex items-center gap-2 px-4 py-2 bg-surface-inverse text-txt-inverse text-sm font-medium border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97]"
             >
               <RefreshCw size={16} />
               새로고침
@@ -176,13 +176,13 @@ export default function AdminUsersPage() {
               <table className="w-full text-sm">
                 <thead className="bg-surface-sunken border-b border-border-strong">
                   <tr>
-                    <th className="text-left px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">닉네임</th>
-                    <th className="text-left px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary hidden md:table-cell">대학</th>
-                    <th className="text-left px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary hidden lg:table-cell">이메일</th>
-                    <th className="text-left px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary hidden lg:table-cell">포지션</th>
-                    <th className="text-left px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">상태</th>
-                    <th className="text-left px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary hidden md:table-cell">가입일</th>
-                    <th className="text-right px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">작업</th>
+                    <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">닉네임</th>
+                    <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary hidden md:table-cell">대학</th>
+                    <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary hidden lg:table-cell">이메일</th>
+                    <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary hidden lg:table-cell">포지션</th>
+                    <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">상태</th>
+                    <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary hidden md:table-cell">가입일</th>
+                    <th className="text-right px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">작업</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-dashed divide-border">

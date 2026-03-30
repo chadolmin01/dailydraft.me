@@ -131,7 +131,7 @@ function ProjectManageContent() {
               onClick={() => setTab(t.key)}
               className={`flex items-center gap-1.5 px-4 py-3 text-xs font-bold border-b-2 transition-colors -mb-px ${
                 tab === t.key
-                  ? 'border-black text-txt-primary'
+                  ? 'border-surface-inverse text-txt-primary'
                   : 'border-transparent text-txt-tertiary hover:text-txt-secondary'
               }`}
             >
@@ -153,7 +153,7 @@ function ProjectManageContent() {
             : 1
           return (
             <div>
-              <h2 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4">
+              <h2 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">
                 주간 업데이트
               </h2>
 

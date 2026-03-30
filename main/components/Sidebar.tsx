@@ -118,7 +118,7 @@ export const Sidebar: React.FC = () => {
         >
           <span className="font-black text-base leading-none">D</span>
         </div>
-        <div className="absolute left-14 top-1/2 -translate-y-1/2 bg-black text-white text-[0.625rem] font-mono font-bold uppercase tracking-widest px-2 py-1 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-solid-sm">
+        <div className="absolute left-14 top-1/2 -translate-y-1/2 bg-surface-inverse text-txt-inverse text-[0.625rem] font-medium px-2 py-1 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-solid-sm">
           MAIN
         </div>
       </div>
@@ -144,7 +144,7 @@ export const Sidebar: React.FC = () => {
             )}
 
             {/* Tooltip */}
-            <div className="absolute left-14 top-1/2 -translate-y-1/2 bg-black text-white text-[0.625rem] font-mono font-bold uppercase tracking-widest px-2 py-1 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-solid-sm">
+            <div className="absolute left-14 top-1/2 -translate-y-1/2 bg-surface-inverse text-txt-inverse text-[0.625rem] font-medium px-2 py-1 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-solid-sm">
               {item.label}
             </div>
           </button>
@@ -218,7 +218,7 @@ export const Sidebar: React.FC = () => {
               <>
                 <div className="h-px border-t border-dashed border-border my-1"></div>
                 <div className="px-3 py-1.5">
-                  <div className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest">Institution</div>
+                  <div className="text-[0.625rem] font-medium text-txt-tertiary">Institution</div>
                 </div>
                 <button
                   onClick={() => handleMenuAction('institution')}
@@ -235,7 +235,7 @@ export const Sidebar: React.FC = () => {
             {isAdmin && (
               <>
                 <div className="px-3 py-1.5">
-                  <div className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest">Admin</div>
+                  <div className="text-[0.625rem] font-medium text-txt-tertiary">Admin</div>
                 </div>
                 <button
                   onClick={() => handleMenuAction('invite-codes-admin')}
@@ -267,7 +267,7 @@ export const Sidebar: React.FC = () => {
           className={`w-10 h-10 mx-auto rounded-sm flex items-center justify-center text-[0.625rem] font-bold cursor-pointer transition-all border relative group
             ${
               isMenuOpen
-                ? 'bg-black text-white border-black shadow-solid-sm'
+                ? 'bg-surface-inverse text-txt-inverse border-surface-inverse shadow-solid-sm'
                 : isPremium
                   ? 'bg-indicator-premium text-white border-indicator-premium-border shadow-solid-sm'
                   : 'bg-surface-sunken text-txt-secondary border-border-strong hover:border-border-strong shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'

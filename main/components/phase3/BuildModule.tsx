@@ -211,13 +211,13 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
 
                   <div className="space-y-4">
                     <div>
-                      <h3 className="text-[0.625rem] font-mono font-bold text-txt-primary uppercase tracking-widest mb-1">요약</h3>
+                      <h3 className="text-[0.625rem] font-medium text-txt-primary mb-1">요약</h3>
                       <p className="text-txt-secondary leading-relaxed text-sm">{prd.summary}</p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-6">
                       <div>
-                        <h3 className="text-[0.625rem] font-mono font-bold text-txt-primary uppercase tracking-widest mb-1">핵심 기능</h3>
+                        <h3 className="text-[0.625rem] font-medium text-txt-primary mb-1">핵심 기능</h3>
                         <ul className="list-disc list-inside space-y-0.5">
                           {prd.features.map((f, i) => (
                             <li key={i} className="text-sm text-txt-secondary">{f}</li>
@@ -225,7 +225,7 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
                         </ul>
                       </div>
                       <div>
-                        <h3 className="text-[0.625rem] font-mono font-bold text-txt-primary uppercase tracking-widest mb-1">기술 스택</h3>
+                        <h3 className="text-[0.625rem] font-medium text-txt-primary mb-1">기술 스택</h3>
                         <div className="flex flex-wrap gap-1.5">
                           {prd.techStack.map((t, i) => (
                             <span key={i} className="px-2 py-0.5 bg-surface-sunken text-txt-secondary text-xs border border-border font-mono">
@@ -253,7 +253,7 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
                       disabled={isGenerating}
                       className={`
                         group relative px-4 py-2 font-medium text-sm text-white flex items-center gap-2 overflow-hidden transition-all
-                        ${isGenerating ? 'bg-txt-disabled cursor-not-allowed' : 'bg-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'}
+                        ${isGenerating ? 'bg-txt-disabled cursor-not-allowed' : 'bg-black hover:opacity-90 active:scale-[0.97]'}
                       `}
                     >
                       {isGenerating && (
@@ -293,7 +293,7 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
                     <button className="w-6 h-6 border border-dashed border-border-strong flex items-center justify-center text-txt-disabled hover:border-border-strong hover:text-txt-secondary transition-colors">
                       <Share2 size={12} />
                     </button>
-                    <button className="bg-black text-white px-2.5 py-1 text-xs font-medium flex items-center gap-1.5 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all ml-1">
+                    <button className="bg-surface-inverse text-txt-inverse px-2.5 py-1 text-xs font-medium flex items-center gap-1.5 hover:opacity-90 active:scale-[0.97] transition-all ml-1">
                       <Plus size={12} /> 추가
                     </button>
                   </div>
@@ -312,7 +312,7 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
                     >
                       <div className="p-2.5 flex items-center justify-between sticky top-0 bg-inherit z-10">
                         <div className="flex items-center gap-2">
-                          <h3 className="text-[0.625rem] font-mono font-bold text-txt-secondary uppercase tracking-widest">{column.label}</h3>
+                          <h3 className="text-[0.625rem] font-medium text-txt-secondary">{column.label}</h3>
                           <span className="bg-surface-sunken text-txt-secondary px-1.5 py-0.5 text-[0.625rem] font-mono border border-border">
                             {filteredTasks.filter(t => t.status === column.id).length}
                           </span>

@@ -82,7 +82,7 @@ export const FormTemplateSelector: React.FC<FormTemplateSelectorProps> = ({
 
           {/* Other templates */}
           <div>
-            <h3 className="text-[0.625rem] font-mono font-bold text-txt-secondary mb-3 uppercase tracking-widest">
+            <h3 className="text-[0.625rem] font-medium text-txt-secondary mb-3">
               Other Templates
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -99,7 +99,7 @@ export const FormTemplateSelector: React.FC<FormTemplateSelectorProps> = ({
           {/* Info */}
           <div className="mt-6 p-4 bg-surface-sunken border border-border">
             <div className="flex items-start gap-3">
-              <div className="w-8 h-8 bg-black text-white flex items-center justify-center shrink-0">
+              <div className="w-8 h-8 bg-surface-inverse text-txt-inverse flex items-center justify-center shrink-0">
                 <Sparkles size={16} />
               </div>
               <div>

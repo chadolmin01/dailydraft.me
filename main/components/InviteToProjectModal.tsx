@@ -100,7 +100,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
               <p className="text-xs text-txt-tertiary mb-4">프로젝트를 먼저 만들어주세요</p>
               <a
                 href="/projects/new"
-                className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand text-white text-xs font-bold border border-brand hover:bg-brand-hover shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand text-white text-xs font-bold border border-brand hover:bg-brand-hover hover:opacity-90 active:scale-[0.97] transition-all"
               >
                 프로젝트 만들기
               </a>
@@ -109,7 +109,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
             <>
               {/* 1. Project Selection */}
               <div>
-                <label className="block text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-2">
+                <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-2">
                   1. 프로젝트 선택
                 </label>
                 <div className="space-y-1.5">
@@ -135,7 +135,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
               {/* 2. Role Selection */}
               {selectedProject && (
                 <div>
-                  <label className="block text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-2">
+                  <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-2">
                     2. 역할 선택
                   </label>
                   {neededRoles.length > 0 ? (
@@ -169,7 +169,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
               {/* 3. Message */}
               {selectedProject && selectedRole && (
                 <div>
-                  <label className="block text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-2">
+                  <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-2">
                     3. 메시지 (선택)
                   </label>
                   <textarea
@@ -196,7 +196,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
             <button
               onClick={handleSubmit}
               disabled={!selectedProject || !selectedRole || createInvitation.isPending}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-brand text-white border border-brand text-sm font-bold hover:bg-brand-hover shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-brand text-white border border-brand text-sm font-bold hover:bg-brand-hover hover:opacity-90 active:scale-[0.97] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {createInvitation.isPending ? (
                 <><Loader2 size={14} className="animate-spin" /> 전송 중...</>

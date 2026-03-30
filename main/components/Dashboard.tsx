@@ -328,7 +328,7 @@ export const Dashboard: React.FC = () => {
                 padding="p-0"
                 onClick={() => router.push('/profile')}
               >
-                 <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-black/20 z-20" />
+                 <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/20 z-20" />
                  <div className="absolute top-0 right-0 w-24 h-24 bg-surface-sunken -mr-4 -mt-4 z-0 transition-colors group-hover:bg-surface-sunken/80"></div>
 
                 <div className="p-5 flex flex-col h-full relative z-10">
@@ -337,7 +337,7 @@ export const Dashboard: React.FC = () => {
                       {cleanNickname(profile?.nickname || '').slice(0, 2).toUpperCase() || user?.email?.slice(0, 2).toUpperCase() || 'U'}
                     </div>
                     <div className="flex flex-col items-end gap-1.5">
-                        <div className="px-2 py-0.5 bg-status-success-bg text-status-success-text text-[0.5625rem] font-bold border border-status-success-text/20 font-mono uppercase tracking-tight flex items-center gap-1.5">
+                        <div className="px-2 py-0.5 bg-status-success-bg text-status-success-text text-[0.5625rem] font-medium border border-status-success-text/20 tracking-tight flex items-center gap-1.5">
                             <div className="w-1.5 h-1.5 bg-status-success-text animate-pulse"></div>
                             {profile?.profile_visibility === 'private' ? 'Private' : 'Open to Work'}
                         </div>
@@ -355,17 +355,17 @@ export const Dashboard: React.FC = () => {
 
                   <div className="bg-surface-sunken border border-border p-3 space-y-2.5 mb-6 group-hover:bg-surface-card group-hover:border-border-strong transition-colors flex-1">
                       <div className="flex justify-between items-center text-[0.625rem]">
-                          <span className="text-txt-disabled font-mono uppercase font-medium">Affiliation</span>
+                          <span className="text-txt-disabled font-medium">Affiliation</span>
                           <span className="font-bold text-txt-secondary">{profile?.university || 'Not set'}</span>
                       </div>
                       <div className="w-full h-px bg-border"></div>
                       <div className="flex justify-between items-center text-[0.625rem]">
-                          <span className="text-txt-disabled font-mono uppercase font-medium">Location</span>
+                          <span className="text-txt-disabled font-medium">Location</span>
                           <span className="font-bold text-txt-secondary">{profile?.location || 'Not set'}</span>
                       </div>
                       <div className="w-full h-px bg-border"></div>
                       <div className="flex justify-between items-center text-[0.625rem]">
-                          <span className="text-txt-disabled font-mono uppercase font-medium">Expertise</span>
+                          <span className="text-txt-disabled font-medium">Expertise</span>
                           <span className="font-bold text-txt-secondary">
                             {profile?.interest_tags?.slice(0, 2).join(', ') || 'Not set'}
                           </span>
@@ -374,13 +374,13 @@ export const Dashboard: React.FC = () => {
 
                   <div className="grid grid-cols-2 gap-2 mt-auto">
                       <div className="p-2.5 border border-border-strong bg-surface-card group-hover:shadow-sharp transition-all">
-                        <div className="text-[0.5625rem] text-txt-disabled font-mono uppercase mb-0.5 flex items-center gap-1">
+                        <div className="text-[0.5625rem] text-txt-disabled mb-0.5 flex items-center gap-1">
                              <Eye size={10} /> Views
                         </div>
                         <div className="font-bold text-lg text-txt-primary leading-none">-</div>
                       </div>
                       <div className="p-2.5 border border-border-strong bg-surface-card group-hover:shadow-sharp transition-all">
-                        <div className="text-[0.5625rem] text-txt-disabled font-mono uppercase mb-0.5 flex items-center gap-1">
+                        <div className="text-[0.5625rem] text-txt-disabled mb-0.5 flex items-center gap-1">
                              <Users size={10} /> Network
                         </div>
                         <div className="font-bold text-lg text-brand leading-none">-</div>
@@ -393,12 +393,12 @@ export const Dashboard: React.FC = () => {
             {/* Project Status Card */}
             <div className="col-span-12 md:col-span-6">
               <Card className="relative overflow-hidden group cursor-pointer hover:border-border-strong transition-all h-full flex flex-col" padding="p-0">
-                <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-black/20 z-10" />
+                <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/20 z-10" />
                 <div className="p-5 border-b border-dashed border-border bg-surface-sunken/30">
                     <div className="flex justify-between items-start mb-3">
                       <div className="flex items-center gap-2">
                         <div className={`w-1.5 h-1.5 ${currentProject.statusColor} animate-pulse`}></div>
-                        <span className="text-[0.625rem] font-bold font-mono text-txt-tertiary uppercase">{currentProject.status}</span>
+                        <span className="text-[0.625rem] font-medium text-txt-tertiary">{currentProject.status}</span>
                       </div>
 
                       <div className="flex items-center gap-1">
@@ -425,7 +425,7 @@ export const Dashboard: React.FC = () => {
                     </h2>
 
                     <div className="flex items-center gap-3 text-[0.625rem] text-txt-tertiary font-mono">
-                      <span className="bg-surface-card border border-border-strong px-2 py-0.5 uppercase">{currentProject.stage}</span>
+                      <span className="bg-surface-card border border-border-strong px-2 py-0.5">{currentProject.stage}</span>
                       <span className="flex items-center gap-1"><Clock size={10}/> {currentProject.dDay}</span>
                     </div>
                 </div>
@@ -433,17 +433,17 @@ export const Dashboard: React.FC = () => {
                 <div className="p-5 flex-1 flex flex-col">
                     <div className="grid grid-cols-3 gap-3 mb-6">
                       <div className="text-center p-2 bg-surface-sunken border border-border">
-                          <div className="text-[0.5625rem] text-txt-disabled font-mono uppercase mb-1">Views</div>
+                          <div className="text-[0.5625rem] text-txt-disabled mb-1">Views</div>
                           <div className="text-lg font-bold text-txt-primary">{currentProject.stats.views}</div>
                           <div className="text-[0.5625rem] text-status-success-text font-bold">{currentProject.stats.viewsTrend}</div>
                       </div>
                       <div className="text-center p-2 bg-surface-sunken border border-border">
-                          <div className="text-[0.5625rem] text-txt-disabled font-mono uppercase mb-1">Apps</div>
+                          <div className="text-[0.5625rem] text-txt-disabled mb-1">Apps</div>
                           <div className="text-lg font-bold text-txt-primary">{currentProject.stats.applicants}</div>
                           <div className="text-[0.5625rem] text-status-success-text font-bold">{currentProject.stats.applicantsNew}</div>
                       </div>
                       <div className="text-center p-2 bg-status-info-bg border border-border text-brand">
-                          <div className="text-[0.5625rem] font-mono uppercase mb-1 opacity-70">Intv</div>
+                          <div className="text-[0.5625rem] mb-1 opacity-70">Intv</div>
                           <div className="text-lg font-bold">{currentProject.stats.interviews}</div>
                           <div className="text-[0.5625rem] font-bold">{currentProject.stats.interviewsMsg}</div>
                       </div>
@@ -508,7 +508,7 @@ export const Dashboard: React.FC = () => {
               </Card>
 
               <div className="flex-1 bg-surface-card border border-border-strong p-4 flex flex-col hover:shadow-sharp transition-all shadow-sm relative">
-                <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-black/20" />
+                <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/20" />
                 <div className="flex justify-between items-center mb-4 border-b border-dashed border-border pb-2">
                     <span className="text-[0.625rem] font-bold text-txt-primary font-mono flex items-center gap-1.5">
                       <CalendarDays size={12} /> UPCOMING TASKS
@@ -564,7 +564,7 @@ export const Dashboard: React.FC = () => {
              <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-2">
                   <span className="w-5 h-5 bg-brand text-white flex items-center justify-center text-[0.5rem] font-bold font-mono">R</span>
-                  <h3 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-primary">Recommended Opportunities</h3>
+                  <h3 className="text-[0.625rem] font-medium text-txt-primary">Recommended Opportunities</h3>
                 </div>
                 <button
                    onClick={() => router.push('/explore')}
@@ -608,7 +608,7 @@ export const Dashboard: React.FC = () => {
                             </div>
 
                             <div>
-                              <span className={`text-[0.5625rem] font-mono uppercase block mb-0.5 ${styles.subTextClass}`}>
+                              <span className={`text-[0.5625rem] block mb-0.5 ${styles.subTextClass}`}>
                                   {opp.category}
                               </span>
                               <h4 className={`font-bold text-sm leading-snug transition-colors break-keep line-clamp-2 group-hover:opacity-80 ${styles.textClass}`}>

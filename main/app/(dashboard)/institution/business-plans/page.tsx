@@ -82,7 +82,7 @@ export default function InstitutionBusinessPlansPage() {
         <div className="border-b border-border pb-6">
           <button
             onClick={() => router.push('/institution')}
-            className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-2 flex items-center gap-1 hover:text-txt-primary transition-colors"
+            className="text-[0.625rem] font-medium text-txt-tertiary mb-2 flex items-center gap-1 hover:text-txt-primary transition-colors"
           >
             <ChevronLeft size={12} />
             Institution Dashboard
@@ -97,19 +97,19 @@ export default function InstitutionBusinessPlansPage() {
         <div className="grid grid-cols-3 gap-4">
           <Card padding="p-5">
             <div className="text-3xl font-bold font-mono text-txt-primary">{totalPlans}</div>
-            <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mt-1">
+            <div className="text-[0.625rem] font-medium text-txt-tertiary mt-1">
               총 사업계획서
             </div>
           </Card>
           <Card padding="p-5">
             <div className="text-3xl font-bold font-mono text-txt-primary">{membersWithPlans.length}</div>
-            <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mt-1">
+            <div className="text-[0.625rem] font-medium text-txt-tertiary mt-1">
               작성 학생 수
             </div>
           </Card>
           <Card padding="p-5">
             <div className="text-3xl font-bold font-mono text-txt-primary">{completionRate}%</div>
-            <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mt-1">
+            <div className="text-[0.625rem] font-medium text-txt-tertiary mt-1">
               참여율
             </div>
           </Card>
@@ -117,7 +117,7 @@ export default function InstitutionBusinessPlansPage() {
 
         {/* Progress Bar */}
         <Card padding="p-6">
-          <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-3 flex items-center gap-2">
+          <div className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
             <BarChart3 size={14} />
             학생별 사업계획서 작성 현황
           </div>
@@ -136,7 +136,7 @@ export default function InstitutionBusinessPlansPage() {
         {/* Member Table */}
         <Card padding="p-0">
           <div className="px-5 py-3 border-b border-dashed border-border">
-            <h3 className="font-mono font-bold text-sm uppercase tracking-tight text-txt-primary">학생별 상세</h3>
+            <h3 className="font-medium text-sm tracking-tight text-txt-primary">학생별 상세</h3>
           </div>
           {isLoading ? (
             <div className="flex items-center justify-center py-16">
@@ -152,11 +152,11 @@ export default function InstitutionBusinessPlansPage() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-dashed border-border">
-                    <th className="text-left text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary px-5 py-3">이름</th>
-                    <th className="text-left text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary px-5 py-3">학과</th>
-                    <th className="text-center text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary px-5 py-3">사업계획서</th>
-                    <th className="text-center text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary px-5 py-3">프로젝트</th>
-                    <th className="text-left text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary px-5 py-3">주요 스킬</th>
+                    <th className="text-left text-[0.625rem] font-medium text-txt-tertiary px-5 py-3">이름</th>
+                    <th className="text-left text-[0.625rem] font-medium text-txt-tertiary px-5 py-3">학과</th>
+                    <th className="text-center text-[0.625rem] font-medium text-txt-tertiary px-5 py-3">사업계획서</th>
+                    <th className="text-center text-[0.625rem] font-medium text-txt-tertiary px-5 py-3">프로젝트</th>
+                    <th className="text-left text-[0.625rem] font-medium text-txt-tertiary px-5 py-3">주요 스킬</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -171,7 +171,7 @@ export default function InstitutionBusinessPlansPage() {
                         <td className="px-5 py-3.5 text-center">
                           <span className={`inline-flex items-center justify-center w-8 h-8 font-mono font-bold text-sm
                             ${member.businessPlanCount > 0
-                              ? 'bg-black text-white'
+                              ? 'bg-surface-inverse text-txt-inverse'
                               : 'bg-surface-sunken text-txt-disabled border border-border'
                             }`}
                           >
@@ -181,7 +181,7 @@ export default function InstitutionBusinessPlansPage() {
                         <td className="px-5 py-3.5 text-center">
                           <span className={`inline-flex items-center justify-center w-8 h-8 font-mono font-bold text-sm
                             ${member.teamCount > 0
-                              ? 'bg-black text-white'
+                              ? 'bg-surface-inverse text-txt-inverse'
                               : 'bg-surface-sunken text-txt-disabled border border-border'
                             }`}
                           >

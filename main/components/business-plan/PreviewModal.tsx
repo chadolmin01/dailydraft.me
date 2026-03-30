@@ -119,7 +119,7 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
               type="button"
               onClick={() => handleExport('pdf')}
               disabled={isExporting}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-draft-blue hover:opacity-90 transition-colors disabled:opacity-50 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-draft-blue hover:opacity-90 transition-colors disabled:opacity-50 hover:opacity-90 active:scale-[0.97]"
             >
               {isExporting && exportFormat === 'pdf' ? (
                 <Loader2 size={16} className="animate-spin" />
@@ -149,7 +149,7 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
                 <button
                   type="button"
                   onClick={onComplete}
-                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-status-success-text hover:bg-status-success-text/90 transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-status-success-text hover:bg-status-success-text/90 transition-colors hover:opacity-90 active:scale-[0.97]"
                 >
                   워크플로우 완료
                 </button>

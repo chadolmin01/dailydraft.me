@@ -259,7 +259,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
         <button
           onClick={handleSave}
           disabled={updateProfile.isPending}
-          className="flex items-center gap-1 px-4 py-1.5 text-xs font-bold bg-surface-inverse text-txt-inverse border border-black hover:bg-black/80 transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] disabled:opacity-50"
+          className="flex items-center gap-1 px-4 py-1.5 text-xs font-bold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97] disabled:opacity-50"
         >
           {updateProfile.isPending ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
           저장
@@ -397,7 +397,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
         <div key={item.label} className="flex items-start gap-2">
           <item.icon size={12} className="text-txt-disabled mt-0.5" />
           <div className="min-w-0 flex-1">
-            <p className="text-[0.5rem] font-mono text-txt-disabled uppercase tracking-widest">{item.label}</p>
+            <p className="text-[0.5rem] text-txt-disabled">{item.label}</p>
             {isEditable ? (
               <InlineField
                 value={item.value}
@@ -422,7 +422,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
       <div className="mt-4 pt-4 border-t border-border space-y-3">
         {profile?.interest_tags && profile.interest_tags.length > 0 && (
           <div className="flex gap-1.5 flex-wrap">
-            <span className="text-[0.5rem] font-mono text-txt-disabled uppercase tracking-widest self-center mr-1">TAGS</span>
+            <span className="text-[0.5rem] text-txt-disabled self-center mr-1">TAGS</span>
             {profile.interest_tags.map((tag, idx) => (
               <span key={idx} className="text-[0.625rem] font-mono bg-white text-tag-default-text border border-border px-2 py-0.5 font-medium">
                 {tag}
@@ -433,7 +433,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
 
         {strengths.length > 0 && (
           <div className="flex gap-1.5 flex-wrap">
-            <span className="text-[0.5rem] font-mono text-txt-disabled uppercase tracking-widest self-center mr-1 flex items-center gap-1"><Sparkles size={9} /> STRENGTHS</span>
+            <span className="text-[0.5rem] text-txt-disabled self-center mr-1 flex items-center gap-1"><Sparkles size={9} /> STRENGTHS</span>
             {strengths.map((s, idx) => (
               <span key={idx} className="text-[0.625rem] font-mono bg-indicator-online/20 text-indicator-online border border-indicator-online/30 px-2 py-0.5 font-medium">
                 {s}

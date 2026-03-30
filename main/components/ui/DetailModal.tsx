@@ -69,7 +69,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-[0.625rem] font-mono font-bold uppercase tracking-wider bg-surface-sunken border border-border px-2 py-0.5 text-txt-tertiary">
+                  <span className="text-[0.625rem] font-medium bg-surface-sunken border border-border px-2 py-0.5 text-txt-tertiary">
                     {data.type}
                   </span>
                 </div>
@@ -130,7 +130,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
               {activeTab === 'details' && (
                 <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
                   <div>
-                    <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary mb-3 uppercase tracking-widest border-b border-dashed border-border pb-2">
+                    <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 border-b border-dashed border-border pb-2">
                       Overview
                     </h3>
                     <div className="prose prose-sm max-w-none text-txt-secondary space-y-4 leading-relaxed">
@@ -143,7 +143,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
                   </div>
 
                   <div>
-                    <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary mb-3 uppercase tracking-widest border-b border-dashed border-border pb-2">
+                    <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 border-b border-dashed border-border pb-2">
                       Tech Stack & Keywords
                     </h3>
                     <div className="flex flex-wrap gap-2">
@@ -214,7 +214,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
             {/* Sidebar */}
             <div className="w-full md:w-80 bg-surface-sunken border-l border-border-strong p-6 md:p-8 space-y-6 flex flex-col h-full overflow-y-auto custom-scrollbar">
               <div className="space-y-3">
-                <button className="w-full bg-brand text-white py-3 text-sm font-bold hover:bg-brand-hover transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] flex items-center justify-center gap-2 border border-brand">
+                <button className="w-full bg-brand text-white py-3 text-sm font-bold hover:bg-brand-hover transition-all hover:opacity-90 active:scale-[0.97] flex items-center justify-center gap-2 border border-brand">
                   Apply Now <ArrowUpRight size={16} />
                 </button>
                 <div className="flex gap-2">
@@ -230,12 +230,12 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
               <div className="w-full h-px bg-border my-2"></div>
 
               <div>
-                <h4 className="text-[0.625rem] font-mono font-bold text-txt-disabled uppercase tracking-widest mb-3">
+                <h4 className="text-[0.625rem] font-medium text-txt-disabled mb-3">
                   Snapshot
                 </h4>
                 <div className="grid grid-cols-2 gap-2">
                   <div className="bg-surface-card p-2.5 border border-border-strong hover:shadow-sharp transition-all">
-                    <div className="text-[0.5rem] text-txt-disabled font-mono uppercase tracking-widest mb-1">
+                    <div className="text-[0.5rem] text-txt-disabled mb-1">
                       Deadline
                     </div>
                     <div className="font-bold text-sm text-status-danger-text flex items-center gap-1 font-mono">
@@ -243,14 +243,14 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
                     </div>
                   </div>
                   <div className="bg-surface-card p-2.5 border border-border-strong hover:shadow-sharp transition-all">
-                    <div className="text-[0.5rem] text-txt-disabled font-mono uppercase tracking-widest mb-1">Type</div>
+                    <div className="text-[0.5rem] text-txt-disabled mb-1">Type</div>
                     <div className="font-bold text-sm text-txt-primary truncate font-mono">{data.type}</div>
                   </div>
                 </div>
               </div>
 
               <div>
-                <h4 className="text-[0.625rem] font-mono font-bold text-txt-disabled uppercase tracking-widest mb-3">
+                <h4 className="text-[0.625rem] font-medium text-txt-disabled mb-3">
                   Resources
                 </h4>
                 <div className="space-y-2">
@@ -267,7 +267,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
               </div>
 
               <div className="mt-auto pt-4 border-t border-dashed border-border">
-                <div className="text-[0.625rem] text-txt-disabled font-mono mb-2 uppercase tracking-widest">Need Help?</div>
+                <div className="text-[0.625rem] text-txt-disabled mb-2">Need Help?</div>
                 <div className="text-xs text-txt-secondary font-mono font-medium">support@draft.io</div>
               </div>
             </div>
@@ -289,7 +289,7 @@ const MetricBar = ({
 }) => (
   <div>
     <div className="flex justify-between mb-1 text-xs">
-      <span className="text-txt-secondary font-mono text-[0.625rem] uppercase">{label}</span>
+      <span className="text-txt-secondary text-[0.625rem]">{label}</span>
       <span className="font-mono font-bold">{score}%</span>
     </div>
     <div className="w-full h-1.5 bg-surface-sunken border border-border overflow-hidden">

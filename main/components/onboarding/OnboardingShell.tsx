@@ -69,7 +69,7 @@ function DeepChatTransitionOverlay() {
             style={{ animation: 'dcto-step 0.5s cubic-bezier(0.16, 1, 0.3, 1) both', animationDelay: `${i * 150 + 200}ms` }}
           >
             <div className={`w-6 h-6 flex items-center justify-center shrink-0 border transition-all duration-500 ${
-              step.done ? 'bg-black border-black' : step.active ? 'bg-white border-black' : 'bg-surface-sunken border-border'
+              step.done ? 'bg-black border-surface-inverse' : step.active ? 'bg-white border-surface-inverse' : 'bg-surface-sunken border-border'
             }`}>
               {step.done ? (
                 <CheckCircle2 size={14} className="text-white" />

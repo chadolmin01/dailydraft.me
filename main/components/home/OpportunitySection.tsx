@@ -80,7 +80,7 @@ export const OpportunitySection: React.FC = () => {
       <div className="max-w-5xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-10">
           <div>
-            <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-1.5 block">
+            <span className="text-[0.625rem] font-medium text-txt-tertiary mb-1.5 block">
               LIVE PROJECTS
             </span>
             <h2 className="text-2xl md:text-3xl font-bold text-txt-primary">
@@ -146,7 +146,7 @@ export const OpportunitySection: React.FC = () => {
                 <div className="pt-4 border-t border-dashed border-border mt-auto">
                   {project.needed_roles && project.needed_roles.length > 0 && (
                     <div className="mb-3">
-                      <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-disabled block mb-1">
+                      <span className="text-[0.625rem] font-medium text-txt-disabled block mb-1">
                         NEED
                       </span>
                       <div className="flex flex-wrap gap-1">
@@ -199,7 +199,7 @@ export const OpportunitySection: React.FC = () => {
         )}
 
         {/* CTA Banner */}
-        <div className="mt-10 bg-black text-white p-6 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="mt-10 bg-surface-inverse text-txt-inverse p-6 flex flex-col md:flex-row items-center justify-between gap-6">
           <div>
             <h3 className="text-base font-bold mb-1.5">나도 프로젝트 올리기</h3>
             <p className="text-txt-disabled text-sm">
@@ -208,7 +208,7 @@ export const OpportunitySection: React.FC = () => {
           </div>
           <button
             onClick={() => router.push('/login')}
-            className="group flex items-center gap-2 bg-white text-black px-5 py-2.5 font-bold text-xs hover:bg-surface-sunken transition-colors shrink-0 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            className="group flex items-center gap-2 bg-white text-black px-5 py-2.5 font-bold text-xs hover:bg-surface-sunken transition-colors shrink-0 hover:opacity-90 active:scale-[0.97]"
           >
             시작하기
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />

@@ -106,7 +106,7 @@ export default function MessagesPage() {
           {/* 대화 목록 — 모바일에서는 스레드 열면 숨김 */}
           <div className={`w-full md:w-80 bg-surface-card border border-border-strong shadow-sharp shrink-0 flex flex-col ${mobileShowThread ? 'hidden md:flex' : 'flex'}`}>
             <div className="p-4 border-b border-dashed border-border">
-              <h2 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-2">
+              <h2 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
                 <Mail size={12} /> MESSAGES
               </h2>
               <div className="relative">
@@ -204,7 +204,7 @@ export default function MessagesPage() {
                       {cleanNickname(selectedProfile?.nickname || '') || 'Unknown'}
                     </p>
                     {selectedProfile?.desired_position && (
-                      <p className="text-[0.625rem] font-mono text-txt-disabled uppercase">
+                      <p className="text-[0.625rem] text-txt-disabled">
                         {selectedProfile.desired_position}
                       </p>
                     )}
@@ -225,7 +225,7 @@ export default function MessagesPage() {
                           <div className={`group relative max-w-[75%] ${isMine ? 'order-2' : ''}`}>
                             <div className={`px-3.5 py-2.5 text-sm leading-relaxed ${
                               isMine
-                                ? 'bg-surface-inverse text-txt-inverse border border-black shadow-solid-sm'
+                                ? 'bg-surface-inverse text-txt-inverse border border-surface-inverse shadow-solid-sm'
                                 : 'bg-surface-sunken text-txt-primary border border-border-strong'
                             }`}>
                               <p className="whitespace-pre-wrap break-words">{msg.content}</p>
@@ -268,7 +268,7 @@ export default function MessagesPage() {
                     <button
                       onClick={handleSend}
                       disabled={!messageInput.trim() || sendMessage.isPending}
-                      className="px-4 py-2.5 bg-surface-inverse text-txt-inverse border border-black hover:bg-black/80 disabled:opacity-40 transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]"
+                      className="px-4 py-2.5 bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 disabled:opacity-40 transition-colors hover:opacity-90 active:scale-[0.97]"
                     >
                       {sendMessage.isPending ? (
                         <Loader2 size={16} className="animate-spin" />

@@ -55,7 +55,7 @@ export const Card: React.FC<CardProps> = ({
       {(title || action) && (
         <div className={`px-6 py-4 border-b border-dashed border-border flex justify-between items-center`}>
           {title && (
-            <h3 className="font-mono font-bold text-txt-primary text-sm tracking-tight uppercase">{title}</h3>
+            <h3 className="font-medium text-txt-primary text-sm tracking-tight">{title}</h3>
           )}
           {action && <div>{action}</div>}
         </div>

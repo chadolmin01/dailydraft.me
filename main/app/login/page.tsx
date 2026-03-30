@@ -138,7 +138,7 @@ function LoginContent() {
           </svg>
           <div className="text-xl font-bold tracking-tighter text-txt-primary">{progress}%</div>
         </div>
-        <div className="text-[0.625rem] text-txt-tertiary font-bold tracking-widest animate-pulse uppercase">
+        <div className="text-[0.625rem] text-txt-tertiary font-medium animate-pulse">
            SYSTEM INIT...
         </div>
       </div>
@@ -160,7 +160,7 @@ function LoginContent() {
             </div>
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-surface-sunken border border-border-strong">
                <span className="w-2 h-2 bg-status-success-text animate-pulse"></span>
-               <span className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest">Open Beta</span>
+               <span className="text-[0.625rem] font-medium text-txt-tertiary">Open Beta</span>
             </div>
          </div>
 
@@ -185,7 +185,7 @@ function LoginContent() {
             <form onSubmit={handleLogin} className="space-y-5">
                {isSignUp && (
                   <div className="space-y-1.5">
-                     <label className="text-[0.625rem] font-bold font-mono text-txt-tertiary uppercase tracking-widest">닉네임</label>
+                     <label className="text-[0.625rem] font-medium text-txt-tertiary">닉네임</label>
                      <input
                         type="text"
                         value={nickname}
@@ -198,7 +198,7 @@ function LoginContent() {
                )}
 
                <div className="space-y-1.5">
-                  <label className="text-[0.625rem] font-bold font-mono text-txt-tertiary uppercase tracking-widest">이메일</label>
+                  <label className="text-[0.625rem] font-medium text-txt-tertiary">이메일</label>
                   <input
                      type="email"
                      value={email}
@@ -210,7 +210,7 @@ function LoginContent() {
                </div>
 
                <div className="space-y-1.5">
-                  <label className="text-[0.625rem] font-bold font-mono text-txt-tertiary uppercase tracking-widest">비밀번호</label>
+                  <label className="text-[0.625rem] font-medium text-txt-tertiary">비밀번호</label>
                   <input
                      type="password"
                      value={password}
@@ -225,13 +225,13 @@ function LoginContent() {
                <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-brand text-white py-3.5 text-sm font-bold border border-brand hover:bg-brand-hover transition-all flex items-center justify-center gap-2 group shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-solid-sm"
+                  className="w-full bg-brand text-white py-3.5 text-sm font-bold border border-brand hover:bg-brand-hover transition-all flex items-center justify-center gap-2 group hover:opacity-90 active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-solid-sm"
                >
                   {isSubmitting ? (
                      <Loader2 size={16} className="animate-spin" />
                   ) : (
                      <>
-                        <span className="font-mono uppercase tracking-wide">
+                        <span className="tracking-wide">
                            {isSignUp ? '가입하기' : '로그인'}
                         </span>
                         <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
@@ -255,7 +255,7 @@ function LoginContent() {
                   <div className="w-full border-t border-dashed border-border"></div>
                </div>
                <div className="relative flex justify-center text-xs">
-                  <span className="bg-surface-card px-2 text-txt-tertiary font-mono text-[0.625rem] font-bold uppercase tracking-widest">소셜 로그인</span>
+                  <span className="bg-surface-card px-2 text-txt-tertiary text-[0.625rem] font-medium">소셜 로그인</span>
                </div>
             </div>
 
@@ -280,7 +280,7 @@ function LoginContent() {
          </div>
 
          {/* Bottom Footer */}
-         <div className="p-5 sm:p-8 md:p-12 text-[0.625rem] text-txt-tertiary font-mono font-bold uppercase tracking-widest flex justify-between animate-slide-up-fade border-t border-dashed border-border" style={{ animationDelay: '0.2s' }}>
+         <div className="p-5 sm:p-8 md:p-12 text-[0.625rem] text-txt-tertiary font-medium flex justify-between animate-slide-up-fade border-t border-dashed border-border" style={{ animationDelay: '0.2s' }}>
             <span>© 2026 DRAFT INC.</span>
             <span className="flex items-center gap-1"><Shield size={10}/> SECURE CONNECTION</span>
          </div>
@@ -301,7 +301,7 @@ function LoginContent() {
 
          {/* Blueprint label */}
          <div className="absolute top-4 right-6 z-20 pointer-events-none">
-           <span className="text-[0.5rem] font-mono font-bold text-txt-disabled uppercase tracking-[0.2em]">DRAFT // BLUEPRINT v2.0</span>
+           <span className="text-[0.5rem] font-medium text-txt-disabled">DRAFT // BLUEPRINT v2.0</span>
          </div>
 
          {/* Fade Overlay (Top/Bottom) */}
@@ -358,7 +358,7 @@ const ShowcaseCard = ({ item }: { item: typeof showcaseItems[0] }) => (
        <div className={`w-8 h-8 flex items-center justify-center border ${item.color.includes('bg-surface-inverse') ? 'border-white/30 bg-white/10' : item.color.includes('bg-brand') ? 'border-white/30 bg-white/10' : 'border-border-strong bg-surface-sunken text-txt-primary'}`}>
           {item.type === 'startup' ? <Rocket size={14}/> : item.type === 'talent' ? <Users size={14}/> : <Zap size={14}/>}
        </div>
-       <span className={`text-[0.5625rem] font-mono font-bold uppercase border px-1.5 py-0.5 ${item.color.includes('bg-surface-inverse') ? 'border-white/30' : item.color.includes('bg-brand') ? 'border-white/30' : 'border-border-strong'}`}>
+       <span className={`text-[0.5625rem] font-medium border px-1.5 py-0.5 ${item.color.includes('bg-surface-inverse') ? 'border-white/30' : item.color.includes('bg-brand') ? 'border-white/30' : 'border-border-strong'}`}>
          {item.tag}
        </span>
     </div>

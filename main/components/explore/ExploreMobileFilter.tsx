@@ -38,7 +38,7 @@ export function ExploreMobileFilter({
     <div className="lg:hidden mb-4 animate-in slide-in-from-top-2 duration-200">
       <div className="bg-surface-card border border-border-strong p-4 space-y-4 shadow-sharp">
         <div>
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-2">{activeTab === 'projects' ? 'CATEGORY' : 'ROLE'}</h3>
+          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-2">{activeTab === 'projects' ? 'CATEGORY' : 'ROLE'}</h3>
           <div className="flex flex-wrap gap-1.5">
             {categories.map((cat) => (
               <button
@@ -57,7 +57,7 @@ export function ExploreMobileFilter({
           </div>
         </div>
         <div>
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-2">{activeTab === 'projects' ? 'TRENDING' : 'POPULAR SKILLS'}</h3>
+          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-2">{activeTab === 'projects' ? 'TRENDING' : 'POPULAR SKILLS'}</h3>
           <div className="flex flex-wrap gap-1.5">
             {trendingTags.map((item) => (
               <button

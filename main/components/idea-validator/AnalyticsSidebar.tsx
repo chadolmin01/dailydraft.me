@@ -11,7 +11,7 @@ interface AnalyticsSidebarProps {
 const ScoreBar = ({ label, score }: { label: string, score: number }) => (
     <div className="mb-4 last:mb-0">
       <div className="flex justify-between items-center mb-1.5 text-txt-tertiary">
-        <span className="text-xs font-medium font-mono uppercase tracking-wider">{label}</span>
+        <span className="text-xs font-medium">{label}</span>
         <span className="text-xs font-bold text-txt-primary">{score}%</span>
       </div>
       <div className="w-full bg-surface-sunken h-1.5 overflow-hidden">
@@ -26,7 +26,7 @@ const AnalyticsSidebar: React.FC<AnalyticsSidebarProps> = ({ level, metrics, onF
 
        {/* Mode Indicator */}
        <div className="mb-6 border border-border p-4 bg-surface-card">
-         <div className="text-[0.5625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">Current Session</div>
+         <div className="text-[0.5625rem] font-medium text-txt-tertiary mb-3">Current Session</div>
          <div className="flex items-center gap-3">
             <div className={`p-2 border ${
                 level === ValidationLevel.SKETCH ? 'bg-status-warning-bg border-status-warning-text/20 text-status-warning-text' :
@@ -35,7 +35,7 @@ const AnalyticsSidebar: React.FC<AnalyticsSidebarProps> = ({ level, metrics, onF
             }`}>
                 {level === ValidationLevel.SKETCH ? <Zap size={14}/> : level === ValidationLevel.DEFENSE ? <Sword size={14}/> : <Layers size={14}/>}
             </div>
-            <div className="font-bold text-txt-primary text-xs font-mono uppercase">
+            <div className="font-medium text-txt-primary text-xs">
               {level === ValidationLevel.SKETCH ? 'Lv.1 Sketch' : level === ValidationLevel.DEFENSE ? 'Lv.3 Defense' : 'Lv.2 MVP'}
             </div>
          </div>
@@ -45,7 +45,7 @@ const AnalyticsSidebar: React.FC<AnalyticsSidebarProps> = ({ level, metrics, onF
        <div className="flex items-center justify-between mb-5">
            <div className="flex items-center gap-2">
                <div className="w-1.5 h-1.5 bg-indicator-online animate-pulse"></div>
-               <span className="text-[0.5625rem] font-bold font-mono text-txt-tertiary uppercase tracking-widest">Live Analysis</span>
+               <span className="text-[0.5625rem] font-medium text-txt-tertiary">Live Analysis</span>
            </div>
        </div>
 
@@ -55,7 +55,7 @@ const AnalyticsSidebar: React.FC<AnalyticsSidebarProps> = ({ level, metrics, onF
               <div>
                   <div className="flex items-center gap-1.5 mb-1">
                     <Sparkles size={12} className="text-txt-primary" />
-                    <h3 className="text-[0.5625rem] font-bold font-mono uppercase tracking-widest text-txt-tertiary">AI Analysis</h3>
+                    <h3 className="text-[0.5625rem] font-medium text-txt-tertiary">AI Analysis</h3>
                   </div>
                   <h3 className="text-sm font-bold text-txt-primary">Startup Fit Report</h3>
               </div>
@@ -79,7 +79,7 @@ const AnalyticsSidebar: React.FC<AnalyticsSidebarProps> = ({ level, metrics, onF
 
           {metrics && (
              <div className="mt-5 pt-4 border-t border-dashed border-border">
-                 <button onClick={onFinish} className="w-full bg-black text-white py-2.5 text-xs font-bold hover:bg-[#333] transition-colors flex items-center justify-center gap-2 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">
+                 <button onClick={onFinish} className="w-full bg-surface-inverse text-txt-inverse py-2.5 text-xs font-bold hover:bg-surface-inverse/90 transition-colors flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.97]">
                      전체 리포트 보기
                      <ArrowRight size={14} />
                  </button>
@@ -91,7 +91,7 @@ const AnalyticsSidebar: React.FC<AnalyticsSidebarProps> = ({ level, metrics, onF
        {metrics && (
            <div className="space-y-5">
                <div>
-                   <h4 className="text-[0.5625rem] font-bold font-mono text-txt-tertiary uppercase tracking-widest mb-2">Strengths</h4>
+                   <h4 className="text-[0.5625rem] font-medium text-txt-tertiary mb-2">Strengths</h4>
                    <div className="space-y-1.5">
                       {metrics.keyStrengths.map((str, i) => (
                           <div key={i} className="flex gap-2 text-xs text-txt-secondary bg-surface-sunken p-2.5 border border-border-subtle">
@@ -103,7 +103,7 @@ const AnalyticsSidebar: React.FC<AnalyticsSidebarProps> = ({ level, metrics, onF
                </div>
 
                <div>
-                   <h4 className="text-[0.5625rem] font-bold font-mono text-txt-tertiary uppercase tracking-widest mb-2">Risks</h4>
+                   <h4 className="text-[0.5625rem] font-medium text-txt-tertiary mb-2">Risks</h4>
                    <div className="space-y-1.5">
                       {metrics.keyRisks.map((risk, i) => (
                           <div key={i} className="flex gap-2 text-xs text-txt-secondary bg-status-danger-bg p-2.5 border border-status-danger-text/20">

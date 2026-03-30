@@ -23,7 +23,7 @@ export function SplashScreen() {
 
   return (
     <div
-      className={`fixed inset-0 z-[9999] flex items-center justify-center bg-white transition-opacity duration-500 ${
+      className={`fixed inset-0 z-[9999] flex items-center justify-center bg-surface-bg transition-opacity duration-500 ${
         phase === 'out' ? 'opacity-0 pointer-events-none' : 'opacity-100'
       }`}
     >
@@ -38,7 +38,7 @@ export function SplashScreen() {
             <path
               d="M 60 0 L 0 0 0 60"
               fill="none"
-              stroke="#E4E4E7"
+              stroke="var(--border-default)"
               strokeWidth="0.5"
               className="splash-grid-line"
             />
@@ -50,9 +50,9 @@ export function SplashScreen() {
       {/* Center crosshair — blueprint reference point */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div className={`splash-crosshair ${phase === 'grid' ? '' : 'splash-crosshair-fade'}`}>
-          <div className="w-px h-16 bg-zinc-300" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-px bg-zinc-300" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 border border-zinc-400 rounded-full" />
+          <div className="w-px h-16 bg-border-strong" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-px bg-border-strong" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 border border-txt-tertiary rounded-full" />
         </div>
       </div>
 
@@ -65,14 +65,14 @@ export function SplashScreen() {
         }`}
       >
         {/* D mark */}
-        <div className="w-20 h-20 bg-[#262626] rounded-2xl flex items-center justify-center shadow-xl">
-          <span className="text-white font-black text-4xl leading-none">D</span>
+        <div className="w-20 h-20 bg-surface-inverse rounded-2xl flex items-center justify-center shadow-xl">
+          <span className="text-txt-inverse font-black text-4xl leading-none">D</span>
         </div>
 
         {/* Wordmark */}
         <div className="flex flex-col items-center gap-1.5">
-          <span className="text-zinc-900 font-bold text-2xl tracking-tight">Draft.</span>
-          <span className="text-zinc-400 text-[0.6875rem] font-mono tracking-[0.15em] uppercase">
+          <span className="text-txt-primary font-bold text-2xl tracking-tight">Draft.</span>
+          <span className="text-txt-tertiary text-[0.6875rem] tracking-wide">
             where projects begin
           </span>
         </div>
@@ -80,10 +80,10 @@ export function SplashScreen() {
 
       {/* Corner dots — minimal frame */}
       <div className={`splash-corners ${phase === 'grid' ? '' : 'splash-corners-visible'}`}>
-        <div className="absolute top-10 left-10 w-2 h-2 rounded-full bg-zinc-200" />
-        <div className="absolute top-10 right-10 w-2 h-2 rounded-full bg-zinc-200" />
-        <div className="absolute bottom-10 left-10 w-2 h-2 rounded-full bg-zinc-200" />
-        <div className="absolute bottom-10 right-10 w-2 h-2 rounded-full bg-zinc-200" />
+        <div className="absolute top-10 left-10 w-2 h-2 rounded-full bg-border-strong" />
+        <div className="absolute top-10 right-10 w-2 h-2 rounded-full bg-border-strong" />
+        <div className="absolute bottom-10 left-10 w-2 h-2 rounded-full bg-border-strong" />
+        <div className="absolute bottom-10 right-10 w-2 h-2 rounded-full bg-border-strong" />
       </div>
 
       <style jsx>{`

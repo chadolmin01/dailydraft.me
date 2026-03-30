@@ -187,7 +187,7 @@ const ResultView: React.FC<ResultViewProps> = ({
       <div className="bg-gradient-to-b from-surface-sunken to-surface-card border-b border-border px-8 py-8 md:px-12 md:py-10">
          <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
             <div>
-               <div className="flex items-center gap-2 mb-2 text-brand font-bold text-xs uppercase tracking-widest">
+               <div className="flex items-center gap-2 mb-2 text-brand font-medium text-xs">
                   <FileText size={14} /> Product Requirements Document
                </div>
                <h1 className="text-3xl md:text-4xl font-black text-txt-primary tracking-tight mb-2">{prd.projectName}</h1>
@@ -257,7 +257,7 @@ const ResultView: React.FC<ResultViewProps> = ({
                      <div className="flex items-start justify-between mb-2">
                         <h3 className="font-bold text-txt-primary">{feature.name}</h3>
                         <div className="flex gap-2">
-                           <span className={`px-2 py-0.5 text-[0.625rem] font-bold uppercase tracking-wider ${
+                           <span className={`px-2 py-0.5 text-[0.625rem] font-medium ${
                               feature.priority === 'High' ? 'bg-status-danger-bg text-status-danger-text' :
                               feature.priority === 'Medium' ? 'bg-status-warning-bg text-status-warning-text' :
                               'bg-status-success-bg text-status-success-text'
@@ -323,7 +323,7 @@ const ResultView: React.FC<ResultViewProps> = ({
            <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
               <div>
                  <div className="flex items-center gap-2 mb-2">
-                    <span className="px-2 py-0.5 bg-surface-sunken text-txt-secondary text-xs font-bold uppercase">{jd.department}</span>
+                    <span className="px-2 py-0.5 bg-surface-sunken text-txt-secondary text-xs font-medium">{jd.department}</span>
                     <span className="text-xs text-txt-tertiary">Full-time</span>
                  </div>
                  <h1 className="text-3xl font-bold text-txt-primary mb-4">{jd.roleTitle}</h1>
@@ -333,7 +333,7 @@ const ResultView: React.FC<ResultViewProps> = ({
                  </div>
               </div>
               <div className="flex gap-3 mt-4 md:mt-0">
-                 <button type="button" className="px-8 py-3 bg-black text-white font-bold hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">
+                 <button type="button" className="px-8 py-3 bg-surface-inverse text-txt-inverse font-bold hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97]">
                     Apply Now
                  </button>
                  <button
@@ -351,7 +351,7 @@ const ResultView: React.FC<ResultViewProps> = ({
            {/* Main Content */}
            <div className="md:col-span-2 space-y-10">
               <section>
-                 <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4">About the Team</h3>
+                 <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">About the Team</h3>
                  <p className="text-txt-secondary leading-relaxed text-lg">
                     {jd.companyIntro}
                  </p>
@@ -419,13 +419,13 @@ const ResultView: React.FC<ResultViewProps> = ({
       {/* Clean Success Banner */}
       <div className="mb-8 bg-surface-card border border-border p-6 md:p-8 flex flex-col md:flex-row items-center justify-between shadow-sharp">
           <div className="flex items-center gap-6">
-            <div className="bg-black text-white p-3 shrink-0">
+            <div className="bg-surface-inverse text-txt-inverse p-3 shrink-0">
               <Shield size={24} />
             </div>
             <div>
               <div className="flex items-center gap-3 mb-1">
                  <h2 className="text-xl md:text-2xl font-bold text-draft-black tracking-tight">프로젝트 검증 완료</h2>
-                 <span className="px-2 py-0.5 bg-black text-white text-[0.625rem] md:text-xs font-bold tracking-widest uppercase">
+                 <span className="px-2 py-0.5 bg-surface-inverse text-txt-inverse text-[0.625rem] md:text-xs font-medium">
                     AI Verified
                  </span>
               </div>
@@ -436,7 +436,7 @@ const ResultView: React.FC<ResultViewProps> = ({
           </div>
           <div className="mt-6 md:mt-0 flex items-center gap-6">
              <div className="text-right hidden md:block border-l border-border pl-8">
-               <div className="text-xs text-txt-tertiary uppercase tracking-widest font-mono mb-1">Total Score</div>
+               <div className="text-xs text-txt-tertiary mb-1">Total Score</div>
                <div className="flex items-baseline justify-end gap-1">
                    <span className="text-4xl font-black text-draft-black tracking-tighter">{artifacts?.score}</span>
                    <span className="text-lg text-txt-tertiary font-medium">/100</span>
@@ -455,7 +455,7 @@ const ResultView: React.FC<ResultViewProps> = ({
                <button
                  type="button"
                  onClick={handleGoToBusinessPlan}
-                 className="px-6 py-3 bg-blue-600 text-white font-bold hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                 className="px-6 py-3 bg-blue-600 text-white font-bold hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm hover:opacity-90 active:scale-[0.97]"
                >
                  <Briefcase size={16} />
                  사업계획서 작성하기
@@ -511,7 +511,7 @@ const ResultView: React.FC<ResultViewProps> = ({
                    <button type="button" className="w-full py-2 px-3 border border-border-strong bg-surface-card text-txt-secondary text-xs font-bold hover:bg-black hover:text-white flex items-center justify-center gap-2 transition-all">
                       <Download size={14} /> PDF
                    </button>
-                   <button type="button" className="w-full py-2 px-3 bg-black text-white text-xs font-bold hover:bg-[#333] flex items-center justify-center gap-2 transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">
+                   <button type="button" className="w-full py-2 px-3 bg-surface-inverse text-txt-inverse text-xs font-bold hover:bg-surface-inverse/90 flex items-center justify-center gap-2 transition-all hover:opacity-90 active:scale-[0.97]">
                       <Share2 size={14} /> Share
                    </button>
                 </div>
@@ -574,7 +574,7 @@ const ResultView: React.FC<ResultViewProps> = ({
 
            {/* Idea Summary Card */}
            <div className="bg-surface-card border border-border p-6 shadow-sharp">
-              <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4">Project Summary</h3>
+              <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">Project Summary</h3>
               <p className="text-txt-primary text-sm leading-relaxed font-medium">
                 {artifacts?.ideaSummary || "요약 정보를 불러오는 중입니다..."}
               </p>
@@ -582,7 +582,7 @@ const ResultView: React.FC<ResultViewProps> = ({
 
            {/* Persona Scores Card */}
            <div className="bg-surface-card border border-border p-6 shadow-sharp sticky top-6">
-              <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-6">Validation Scores</h3>
+              <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-6">Validation Scores</h3>
 
               <ScoreBar
                 label="Tech Feasibility"

@@ -103,7 +103,7 @@ export default function InstitutionDashboardPage() {
       <div className="max-w-[87.5rem] mx-auto p-8 lg:p-12 space-y-8">
         {/* Header */}
         <div className="border-b border-border pb-6">
-          <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-2 flex items-center gap-2">
+          <div className="text-[0.625rem] font-medium text-txt-tertiary mb-2 flex items-center gap-2">
             <span className="w-2 h-2 bg-black" />
             Institution Dashboard
           </div>
@@ -138,7 +138,7 @@ export default function InstitutionDashboardPage() {
                     </div>
                     <div className="min-w-0">
                       <div className="text-2xl font-bold font-mono text-txt-primary">{stat.value}</div>
-                      <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">{stat.label}</div>
+                      <div className="text-[0.625rem] font-medium text-txt-tertiary">{stat.label}</div>
                     </div>
                   </div>
                 </Card>
@@ -150,22 +150,22 @@ export default function InstitutionDashboardPage() {
         {/* KPI Highlights */}
         {stats && (
           <Card padding="p-6">
-            <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-4 flex items-center gap-2">
+            <div className="text-[0.625rem] font-medium text-txt-tertiary mb-4 flex items-center gap-2">
               <BarChart3 size={14} />
               KPI 요약
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="border-l-2 border-black pl-4">
+              <div className="border-l-2 border-surface-inverse pl-4">
                 <div className="text-3xl font-bold font-mono text-txt-primary">{stats.teamsFormed}</div>
                 <div className="text-sm text-txt-secondary mt-1">창업팀 구성 수</div>
                 <div className="text-[0.625rem] text-txt-tertiary mt-0.5">정부 평가 핵심 지표</div>
               </div>
-              <div className="border-l-2 border-black pl-4">
+              <div className="border-l-2 border-surface-inverse pl-4">
                 <div className="text-3xl font-bold font-mono text-txt-primary">{stats.businessPlans}</div>
                 <div className="text-sm text-txt-secondary mt-1">사업계획서 작성</div>
                 <div className="text-[0.625rem] text-txt-tertiary mt-0.5">예비창업패키지 신청 준비</div>
               </div>
-              <div className="border-l-2 border-black pl-4">
+              <div className="border-l-2 border-surface-inverse pl-4">
                 <div className="text-3xl font-bold font-mono text-txt-primary">{stats.applicationsCount}</div>
                 <div className="text-sm text-txt-secondary mt-1">팀원 지원 수</div>
                 <div className="text-[0.625rem] text-txt-tertiary mt-0.5">활발한 팀빌딩 활동</div>
@@ -176,7 +176,7 @@ export default function InstitutionDashboardPage() {
 
         {/* Quick Links */}
         <div>
-          <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-4 flex items-center gap-2">
+          <div className="text-[0.625rem] font-medium text-txt-tertiary mb-4 flex items-center gap-2">
             <BarChart3 size={14} />
             관리 도구
           </div>

@@ -25,7 +25,7 @@ export const AnalysisPanel: React.FC<AnalysisPanelProps> = ({ reasoning, isOpen 
 
       <div className="flex-1 overflow-y-auto p-4 space-y-5">
         <div>
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-disabled uppercase tracking-widest mb-2 flex items-center gap-2">
+          <h3 className="text-[0.625rem] font-medium text-txt-disabled mb-2 flex items-center gap-2">
             <Target size={12} />
             분해 전략
           </h3>
@@ -35,7 +35,7 @@ export const AnalysisPanel: React.FC<AnalysisPanelProps> = ({ reasoning, isOpen 
         </div>
 
         <div>
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-disabled uppercase tracking-widest mb-2 flex items-center gap-2">
+          <h3 className="text-[0.625rem] font-medium text-txt-disabled mb-2 flex items-center gap-2">
             <Layers size={12} />
             권장 실행 순서
           </h3>
@@ -59,7 +59,7 @@ export const AnalysisPanel: React.FC<AnalysisPanelProps> = ({ reasoning, isOpen 
         </div>
 
         <div>
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-disabled uppercase tracking-widest mb-2 flex items-center gap-2">
+          <h3 className="text-[0.625rem] font-medium text-txt-disabled mb-2 flex items-center gap-2">
             <GitMerge size={12} />
             주요 의존성
           </h3>

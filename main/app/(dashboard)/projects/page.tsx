@@ -51,13 +51,13 @@ export default function MyProjectsPage() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-lg font-bold text-txt-primary">내 프로젝트</h1>
-            <p className="text-[0.625rem] font-mono text-txt-tertiary uppercase tracking-widest mt-0.5">
+            <p className="text-[0.625rem] text-txt-tertiary mt-0.5">
               MY PROJECTS · {myProjects.length}개
             </p>
           </div>
           <Link
             href="/projects/new"
-            className="flex items-center gap-1.5 px-4 py-2 bg-surface-inverse text-txt-inverse text-sm font-bold border border-surface-inverse shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+            className="flex items-center gap-1.5 px-4 py-2 bg-surface-inverse text-txt-inverse text-sm font-bold border border-surface-inverse hover:opacity-90 active:scale-[0.97] transition-all"
           >
             <Plus size={16} />
             새 프로젝트
@@ -80,7 +80,7 @@ export default function MyProjectsPage() {
             </p>
             <Link
               href="/projects/new"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-surface-inverse text-txt-inverse text-sm font-bold border border-surface-inverse shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-surface-inverse text-txt-inverse text-sm font-bold border border-surface-inverse hover:opacity-90 active:scale-[0.97] transition-all"
             >
               <Rocket size={16} />
               첫 프로젝트 만들기
@@ -117,7 +117,7 @@ export default function MyProjectsPage() {
                       {/* Roles */}
                       {opp.needed_roles && opp.needed_roles.length > 0 && (
                         <div className="flex items-center gap-1.5 mb-3 flex-wrap">
-                          <span className="text-[0.625rem] font-mono font-bold text-brand uppercase tracking-wide bg-brand-bg px-1.5 py-0.5 border border-brand-border">NEED</span>
+                          <span className="text-[0.625rem] font-medium text-brand bg-brand-bg px-1.5 py-0.5 border border-brand-border">NEED</span>
                           {opp.needed_roles.slice(0, 3).map((role: string) => (
                             <span key={role} className="text-[0.625rem] bg-surface-sunken text-txt-secondary px-2 py-0.5 border border-border font-medium">{role}</span>
                           ))}

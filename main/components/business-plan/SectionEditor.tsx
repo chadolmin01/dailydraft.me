@@ -42,7 +42,7 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({
             배점: {section.weight}점
           </p>
         </div>
-        <div className="text-[0.625rem] font-mono font-bold text-txt-tertiary bg-surface-sunken px-2 py-1 border border-border-subtle uppercase tracking-widest">
+        <div className="text-[0.625rem] font-medium text-txt-tertiary bg-surface-sunken px-2 py-1 border border-border-subtle">
           {section.type.toUpperCase()}
         </div>
       </div>

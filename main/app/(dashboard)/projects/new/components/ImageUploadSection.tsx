@@ -22,7 +22,7 @@ export function ImageUploadSection({ imagePreviews, imageFilesLength, onImageSel
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
           {imagePreviews.length > 1 && (
-            <span className="absolute top-3 left-3 flex items-center gap-1 px-2 py-1 bg-black/80 text-white text-[0.625rem] font-mono font-bold uppercase tracking-wider">
+            <span className="absolute top-3 left-3 flex items-center gap-1 px-2 py-1 bg-black/80 text-white text-[0.625rem] font-medium">
               <Star size={9} className="fill-white" />
               메인
             </span>
@@ -72,7 +72,7 @@ export function ImageUploadSection({ imagePreviews, imageFilesLength, onImageSel
               <label className="flex-1 min-w-0 flex items-center justify-center border border-dashed border-border cursor-pointer hover:border-border-strong hover:bg-surface-sunken transition-colors h-[4.5rem]">
                 <div className="text-center">
                   <Plus size={14} className="text-txt-disabled mx-auto mb-0.5" />
-                  <span className="text-[0.5625rem] font-mono text-txt-disabled uppercase">추가</span>
+                  <span className="text-[0.5625rem] text-txt-disabled">추가</span>
                 </div>
                 <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple onChange={onImageSelect} className="hidden" />
               </label>
@@ -89,7 +89,7 @@ export function ImageUploadSection({ imagePreviews, imageFilesLength, onImageSel
         <ImagePlus size={18} className="text-txt-disabled group-hover:text-txt-tertiary transition-colors" />
       </div>
       <p className="text-sm text-txt-tertiary font-medium">프로젝트 이미지 추가</p>
-      <p className="text-[0.625rem] font-mono text-txt-disabled mt-1 uppercase tracking-wider">JPG, PNG, WebP, GIF / 최대 5장</p>
+      <p className="text-[0.625rem] text-txt-disabled mt-1">JPG, PNG, WebP, GIF / 최대 5장</p>
       <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple onChange={onImageSelect} className="hidden" />
     </label>
   )

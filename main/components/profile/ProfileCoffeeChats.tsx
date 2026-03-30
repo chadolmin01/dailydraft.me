@@ -97,7 +97,7 @@ export function ProfileCoffeeChats() {
       <div className="flex items-center gap-1 mb-4">
         <button
           onClick={() => setTab('received')}
-          className={`flex items-center gap-1.5 px-3 py-1.5 text-[0.625rem] font-mono font-bold uppercase tracking-widest border transition-colors ${
+          className={`flex items-center gap-1.5 px-3 py-1.5 text-[0.625rem] font-medium border transition-colors ${
             tab === 'received'
               ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
               : 'bg-surface-card text-txt-tertiary border-border hover:border-border-strong'
@@ -111,7 +111,7 @@ export function ProfileCoffeeChats() {
         </button>
         <button
           onClick={() => setTab('sent')}
-          className={`flex items-center gap-1.5 px-3 py-1.5 text-[0.625rem] font-mono font-bold uppercase tracking-widest border transition-colors ${
+          className={`flex items-center gap-1.5 px-3 py-1.5 text-[0.625rem] font-medium border transition-colors ${
             tab === 'sent'
               ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
               : 'bg-surface-card text-txt-tertiary border-border hover:border-border-strong'
@@ -143,7 +143,7 @@ export function ProfileCoffeeChats() {
             <div className="space-y-3">
               {pendingChats.map((chat, chatIdx) => (
                 <div key={chat.id} className="relative bg-surface-card border border-border-strong p-4 border-l-4 border-l-amber-500 shadow-sharp">
-                  <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-black/20" />
+                  <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-surface-inverse/20" />
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                     <div className="flex gap-3 flex-1 min-w-0">
                       <div className="relative">
@@ -191,7 +191,7 @@ export function ProfileCoffeeChats() {
                     <div className="flex items-center gap-2 flex-shrink-0">
                       <button
                         onClick={() => setAcceptModalChat(chat)}
-                        className="px-3 py-1.5 text-xs font-bold bg-indicator-online text-white border border-indicator-online hover:bg-indicator-online/90 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                        className="px-3 py-1.5 text-xs font-bold bg-indicator-online text-white border border-indicator-online hover:bg-indicator-online/90 hover:opacity-90 active:scale-[0.97] transition-all"
                       >
                         수락
                       </button>
@@ -249,7 +249,7 @@ export function ProfileCoffeeChats() {
                   {/* Outcome tracking + Next steps (accepted chats only) */}
                   {chat.status === 'accepted' && (
                     <div className="border-t border-border px-4 py-3 bg-surface-sunken/30">
-                      <p className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-2">결과 추적</p>
+                      <p className="text-[0.625rem] font-medium text-txt-tertiary mb-2">결과 추적</p>
                       <div className="flex flex-wrap gap-1.5">
                         {OUTCOME_OPTIONS.map((opt) => {
                           const Icon = opt.icon
@@ -391,7 +391,7 @@ function SentChatCard({ chat }: { chat: CoffeeChat }) {
           {/* Invitation message */}
           {invitation?.message && (
             <div className="px-4 py-3 bg-status-success-bg/30">
-              <p className="text-[0.625rem] font-mono font-bold text-indicator-online uppercase tracking-widest mb-1.5">
+              <p className="text-[0.625rem] font-medium text-indicator-online mb-1.5">
                 초대편지
               </p>
               <p className="text-sm text-txt-primary whitespace-pre-wrap leading-relaxed">
@@ -403,7 +403,7 @@ function SentChatCard({ chat }: { chat: CoffeeChat }) {
           {/* Contact info */}
           {contactParts.length > 0 && (
             <div className="px-4 py-3 border-t border-border/50">
-              <p className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-2">
+              <p className="text-[0.625rem] font-medium text-txt-tertiary mb-2">
                 연락처
               </p>
               <div className="space-y-1.5">
@@ -431,7 +431,7 @@ function SentChatCard({ chat }: { chat: CoffeeChat }) {
             <div className="px-4 py-3 border-t border-border/50 bg-surface-sunken/50">
               <div className="flex items-center gap-1.5 mb-1.5">
                 <FileText size={12} className="text-txt-tertiary" />
-                <p className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest">
+                <p className="text-[0.625rem] font-medium text-txt-tertiary">
                   요청사항
                 </p>
               </div>

@@ -160,7 +160,7 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
       {/* --- SOCIAL LINKS --- */}
       {showLinksSection && (
         <div className="relative bg-surface-card border border-border-strong p-4 shadow-sharp">
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-2">
+          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
             <span className="w-4 h-4 bg-brand text-white flex items-center justify-center text-[0.5rem] font-bold">L</span>
             LINKS
           </h3>
@@ -196,7 +196,7 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
               <button onClick={handleCancel} disabled={updateProfile.isPending} className="flex items-center gap-1 px-2.5 py-1 text-[0.625rem] font-bold text-txt-secondary border border-border-strong hover:bg-surface-sunken transition-colors">
                 <X size={10} /> 취소
               </button>
-              <button onClick={handleSave} disabled={updateProfile.isPending} className="flex items-center gap-1 px-3 py-1 text-[0.625rem] font-bold bg-surface-inverse text-txt-inverse border border-black hover:bg-black/80 transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] disabled:opacity-50">
+              <button onClick={handleSave} disabled={updateProfile.isPending} className="flex items-center gap-1 px-3 py-1 text-[0.625rem] font-bold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97] disabled:opacity-50">
                 {updateProfile.isPending ? <Loader2 size={10} className="animate-spin" /> : <Check size={10} />}
                 저장
               </button>
@@ -208,7 +208,7 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
       {/* --- TECH STACK --- */}
       {skills && skills.length > 0 && (
         <div className="relative bg-surface-card border border-border-strong p-4 shadow-sharp">
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-2">
+          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
             <span className="w-4 h-4 bg-indicator-online text-white flex items-center justify-center text-[0.5rem] font-bold">S</span>
             TECH STACK
           </h3>
@@ -229,14 +229,14 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
       {/* --- PERSONALITY --- */}
       {profile?.personality && (
         <div className="relative bg-surface-card border border-border-strong p-4 shadow-sharp">
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-2">
+          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
             <span className="w-4 h-4 bg-indicator-premium text-white flex items-center justify-center text-[0.5rem] font-bold">P</span>
             PERSONALITY
           </h3>
           <div className="space-y-2">
             {Object.entries(profile.personality as Record<string, number>).map(([key, value]) => (
               <div key={key} className="flex items-center justify-between">
-                <span className="text-[0.625rem] font-mono text-txt-secondary uppercase">{key.replace(/_/g, ' ')}</span>
+                <span className="text-[0.625rem] text-txt-secondary">{key.replace(/_/g, ' ')}</span>
                 <div className="flex items-center gap-2">
                   <div className="w-16 h-1.5 bg-surface-sunken border border-border overflow-hidden">
                     <div className="h-full bg-brand transition-all" style={{ width: `${(value / 10) * 100}%` }} />
@@ -251,9 +251,9 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
 
       {/* --- COMPLETION --- */}
       <div className="relative bg-surface-card border border-border-strong p-4 shadow-sharp">
-        <div className="absolute bottom-1 left-1 w-2 h-2 border-l border-b border-black/20" />
-        <div className="absolute bottom-1 right-1 w-2 h-2 border-r border-b border-black/20" />
-        <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-2">
+        <div className="absolute bottom-1 left-1 w-2 h-2 border-l border-b border-surface-inverse/20" />
+        <div className="absolute bottom-1 right-1 w-2 h-2 border-r border-b border-surface-inverse/20" />
+        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
           <span className="w-4 h-4 bg-indicator-online text-white flex items-center justify-center text-[0.5rem] font-bold">%</span>
           COMPLETION
         </h3>
@@ -280,7 +280,7 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
         {completion.pct < 100 && (
           <button
             onClick={() => router.push('/profile/edit')}
-            className="w-full mt-3 px-3 py-2 text-xs font-bold bg-brand text-white border border-brand hover:bg-brand-hover transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            className="w-full mt-3 px-3 py-2 text-xs font-bold bg-brand text-white border border-brand hover:bg-brand-hover transition-colors hover:opacity-90 active:scale-[0.97]"
           >
             프로필 완성하기
           </button>

@@ -117,8 +117,8 @@ export function ExplorePeopleGrid({
                 style={{ animationDelay: `${Math.min(index * 60, 600)}ms` }}
                 className="stagger-item relative bg-surface-card border border-border-strong overflow-hidden group hover:shadow-solid-sm hover:border-brand/30 hover:-translate-y-0.5 hover-spring cursor-pointer h-[13.75rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985] active:shadow-none active:border-brand/50"
               >
-                <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-black/15" />
-                <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-black/15" />
+                <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/15" />
+                <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-surface-inverse/15" />
                 <div className="px-4 pt-4 h-[4.75rem] shrink-0">
                   <div className="flex gap-3">
                     <div className="relative w-12 h-12 bg-brand-bg border border-brand-border rounded-full flex items-center justify-center text-base font-bold text-brand shrink-0 overflow-hidden">

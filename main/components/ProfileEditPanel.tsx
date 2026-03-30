@@ -286,7 +286,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
         <button
           onClick={handleSave}
           disabled={updateProfile.isPending}
-          className="flex items-center gap-1.5 px-4 py-2 bg-brand text-white text-xs font-bold border border-brand hover:bg-brand-hover disabled:opacity-50 transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+          className="flex items-center gap-1.5 px-4 py-2 bg-brand text-white text-xs font-bold border border-brand hover:bg-brand-hover disabled:opacity-50 transition-all hover:opacity-90 active:scale-[0.97]"
         >
           {updateProfile.isPending ? (
             <Loader2 size={14} className="animate-spin" />
@@ -412,7 +412,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
           <button
             onClick={handleSave}
             disabled={updateProfile.isPending}
-            className="flex items-center gap-1.5 px-5 py-2.5 bg-brand text-white text-sm font-bold border border-brand hover:bg-brand-hover disabled:opacity-50 transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            className="flex items-center gap-1.5 px-5 py-2.5 bg-brand text-white text-sm font-bold border border-brand hover:bg-brand-hover disabled:opacity-50 transition-all hover:opacity-90 active:scale-[0.97]"
           >
             {updateProfile.isPending ? (
               <Loader2 size={14} className="animate-spin" />
