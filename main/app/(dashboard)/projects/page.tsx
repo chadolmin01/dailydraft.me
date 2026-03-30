@@ -70,8 +70,8 @@ export default function MyProjectsPage() {
             <Loader2 className="h-6 w-6 animate-spin text-txt-tertiary" />
           </div>
         ) : myProjects.length === 0 ? (
-          <div className="border border-dashed border-border-strong bg-surface-card p-10 text-center">
-            <div className="w-14 h-14 bg-surface-sunken border border-border flex items-center justify-center mx-auto mb-4">
+          <div className="border border-border bg-surface-card rounded-xl p-10 text-center">
+            <div className="w-14 h-14 bg-surface-sunken rounded-xl border border-border flex items-center justify-center mx-auto mb-4">
               <FolderOpen size={24} className="text-txt-disabled" />
             </div>
             <h3 className="font-bold text-txt-primary mb-1">아직 프로젝트가 없습니다</h3>
@@ -101,7 +101,7 @@ export default function MyProjectsPage() {
                   onClick={() => setSelectedProjectId(opp.id)}
                   onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedProjectId(opp.id) } }}
                   style={{ animationDelay: `${Math.min(index * 60, 600)}ms` }}
-                  className="stagger-item bg-surface-card border border-border-strong p-4 cursor-pointer hover:shadow-solid-sm hover:border-brand/30 hover:-translate-y-0.5 hover-spring active:scale-[0.985] group"
+                  className="stagger-item bg-surface-card rounded-xl border border-border p-4 cursor-pointer hover:shadow-md hover:border-brand/30 hover:-translate-y-0.5 hover-spring active:scale-[0.985] group"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
@@ -168,7 +168,7 @@ export default function MyProjectsPage() {
 
         {/* Explore CTA */}
         {myProjects.length > 0 && (
-          <div className="mt-6 border border-dashed border-border p-4 text-center">
+          <div className="mt-6 border border-border p-4 text-center">
             <p className="text-sm text-txt-tertiary mb-2">다른 프로젝트도 둘러보세요</p>
             <Link
               href="/explore"

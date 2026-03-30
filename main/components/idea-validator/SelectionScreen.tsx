@@ -33,8 +33,8 @@ const SelectionScreen: React.FC<SelectionScreenProps> = ({ onSelect, skipToLevel
       onClick={onClick}
       className={`group relative flex flex-col items-start p-6 h-full w-full border transition-all duration-200 text-left
         ${variant === 'ai'
-          ? 'bg-surface-card border-border hover:border-border-strong hover:shadow-sharp'
-          : 'bg-surface-card border-border hover:border-border-strong hover:shadow-sharp'
+          ? 'bg-surface-card border-border hover:border-border hover:shadow-sharp'
+          : 'bg-surface-card border-border hover:border-border hover:shadow-sharp'
         }
       `}
     >
@@ -50,8 +50,8 @@ const SelectionScreen: React.FC<SelectionScreenProps> = ({ onSelect, skipToLevel
 
       <div className={`mb-5 p-2.5 border
         ${variant === 'ai'
-          ? 'bg-surface-sunken border-border-subtle text-txt-primary group-hover:bg-black group-hover:text-white group-hover:border-border-strong transition-colors'
-          : 'bg-surface-sunken border-border-subtle text-txt-primary group-hover:bg-black group-hover:text-white group-hover:border-border-strong transition-colors'
+          ? 'bg-surface-sunken border-border-subtle text-txt-primary group-hover:bg-black group-hover:text-white group-hover:border-border transition-colors'
+          : 'bg-surface-sunken border-border-subtle text-txt-primary group-hover:bg-black group-hover:text-white group-hover:border-border transition-colors'
         }`}>
         {icon}
       </div>
@@ -64,7 +64,7 @@ const SelectionScreen: React.FC<SelectionScreenProps> = ({ onSelect, skipToLevel
         {description}
       </p>
 
-      <div className="mt-auto w-full flex items-center justify-between border-t border-dashed border-border pt-4">
+      <div className="mt-auto w-full flex items-center justify-between border-t border-border pt-4">
         <span className="text-[0.625rem] font-medium text-txt-tertiary group-hover:text-black transition-colors">
           Select
         </span>
@@ -88,7 +88,7 @@ const SelectionScreen: React.FC<SelectionScreenProps> = ({ onSelect, skipToLevel
         iconBg: 'bg-status-warning-bg text-status-warning-text border-status-warning-text/20',
       },
       blue: {
-        border: 'hover:border-border-strong',
+        border: 'hover:border-border',
         iconBg: 'bg-surface-sunken text-txt-primary border-border',
       },
       red: {
@@ -102,7 +102,7 @@ const SelectionScreen: React.FC<SelectionScreenProps> = ({ onSelect, skipToLevel
     return (
       <button
         onClick={() => onSelect('ai', level)}
-        className={`group relative flex flex-col items-start p-5 w-full h-full bg-surface-card border transition-all duration-200 text-left hover:shadow-sharp ${currentTheme.border} ${recommended ? 'border-border-strong ring-1 ring-black' : 'border-border'}`}
+        className={`group relative flex flex-col items-start p-5 w-full h-full bg-surface-card border transition-all duration-200 text-left hover:shadow-sharp ${currentTheme.border} ${recommended ? 'border-border ring-1 ring-black' : 'border-border'}`}
       >
         {recommended && (
            <div className="absolute -top-2.5 left-5 bg-surface-inverse text-txt-inverse text-[0.5625rem] font-medium px-2 py-0.5">
@@ -133,7 +133,7 @@ const SelectionScreen: React.FC<SelectionScreenProps> = ({ onSelect, skipToLevel
           <div className="grid grid-cols-12 gap-6 lg:gap-10 items-center">
              {/* Left Text Area */}
              <div className="col-span-5 space-y-6 lg:space-y-8">
-                <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-surface-card border border-border">
+                <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-surface-card rounded-xl border border-border">
                   <span className="w-1.5 h-1.5 bg-indicator-online animate-pulse"></span>
                   <span className="text-[0.5625rem] font-medium text-txt-tertiary">System Operational</span>
                 </div>
@@ -148,7 +148,7 @@ const SelectionScreen: React.FC<SelectionScreenProps> = ({ onSelect, skipToLevel
                   </p>
                 </div>
 
-                <div className="flex items-center gap-6 pt-4 border-t border-dashed border-border">
+                <div className="flex items-center gap-6 pt-4 border-t border-border">
                    <div>
                       <div className="text-xl font-bold text-txt-primary font-mono">1.2k+</div>
                       <div className="text-[0.5625rem] text-txt-disabled font-medium mt-0.5">Projects</div>

@@ -24,9 +24,9 @@ export const CropModal: React.FC<CropModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-popover flex items-center justify-center bg-black/70 backdrop-blur-sm">
-      <div className="bg-surface-card border border-border-strong shadow-brutal-xl w-full max-w-lg mx-4 flex flex-col">
+      <div className="bg-surface-card rounded-xl border border-border shadow-brutal-xl w-full max-w-lg mx-4 flex flex-col">
         {/* 헤더 */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border-strong bg-surface-sunken">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-surface-sunken">
           <span className="text-xs font-medium text-txt-tertiary">
             {cropType === 'avatar' ? 'CROP AVATAR' : 'CROP COVER'}
           </span>
@@ -68,7 +68,7 @@ export const CropModal: React.FC<CropModalProps> = ({
         </div>
 
         {/* 버튼 */}
-        <div className="flex items-center justify-end gap-2 px-4 py-3 border-t border-border-strong">
+        <div className="flex items-center justify-end gap-2 px-4 py-3 border-t border-border">
           <button
             onClick={() => setCropImage(null)}
             className="px-4 py-2 text-xs text-txt-tertiary hover:text-txt-primary transition-colors"

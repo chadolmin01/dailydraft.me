@@ -102,7 +102,7 @@ export default function DesignPage() {
               ].map(c => (
                 <div key={c.name} className="group">
                   <div
-                    className={`h-16 border border-border mb-2 flex items-center justify-center ${c.needsDark ? 'bg-surface-inverse' : 'bg-surface-card'}`}
+                    className={`h-16 border border-border mb-2 flex items-center justify-center ${c.needsDark ? 'bg-surface-inverse' : 'bg-surface-card rounded-xl'}`}
                   >
                     <span className="text-sm font-bold" style={{ color: c.hex }}>Aa</span>
                   </div>
@@ -160,7 +160,7 @@ export default function DesignPage() {
           {/* ── Tags 비교 ── */}
           <div>
             <h3 className="text-xs font-medium text-txt-tertiary mb-3">Tags & Badges</h3>
-            <div className="bg-surface-card border border-border p-6">
+            <div className="bg-surface-card rounded-xl border border-border p-6">
               <div className="space-y-4">
                 <div>
                   <p className="text-xs text-txt-tertiary mb-2">모노크롬 (기본 — 이걸 쓰세요)</p>
@@ -201,7 +201,7 @@ export default function DesignPage() {
           {/* ── Accent / Interactive ── */}
           <div>
             <h3 className="text-xs font-medium text-txt-tertiary mb-3">Accent & Interactive</h3>
-            <div className="bg-surface-card border border-border p-6">
+            <div className="bg-surface-card rounded-xl border border-border p-6">
               <div className="flex flex-wrap gap-3">
                 <button className="px-4 py-2 bg-accent text-txt-inverse text-sm font-semibold hover:bg-accent-hover transition-colors">Primary</button>
                 <button className="px-4 py-2 bg-accent-secondary text-txt-primary text-sm font-semibold hover:bg-accent-secondary-hover transition-colors">Secondary</button>
@@ -227,7 +227,7 @@ export default function DesignPage() {
                 { name: 'lg', val: '12px' },
                 { name: 'xl', val: '16px' },
               ].map(r => (
-                <div key={r.name} className="bg-surface-card border border-border p-4 text-center" style={{ borderRadius: r.val }}>
+                <div key={r.name} className="bg-surface-card rounded-xl border border-border p-4 text-center" style={{ borderRadius: r.val }}>
                   <p className="text-xs font-semibold text-txt-primary">radius-{r.name}</p>
                   <p className="text-xs font-mono text-txt-tertiary">{r.val}</p>
                 </div>
@@ -271,9 +271,9 @@ export default function DesignPage() {
         </PageContainer>
 
         {/* Narrow */}
-        <div className="border-y border-dashed border-border bg-surface-sunken/50 mb-1">
+        <div className="border-y border-border bg-surface-sunken/50 mb-1">
           <PageContainer size="narrow" className="py-4">
-            <div className="bg-surface-card border border-border p-4 text-center">
+            <div className="bg-surface-card rounded-xl border border-border p-4 text-center">
               <p className="text-xs text-txt-tertiary mb-1">narrow — 768px</p>
               <p className="text-sm text-txt-secondary">로그인, 설정, 폼 등 좁은 콘텐츠</p>
             </div>
@@ -281,9 +281,9 @@ export default function DesignPage() {
         </div>
 
         {/* Standard */}
-        <div className="border-y border-dashed border-border bg-surface-sunken/50 mb-1">
+        <div className="border-y border-border bg-surface-sunken/50 mb-1">
           <PageContainer size="standard" className="py-4">
-            <div className="bg-surface-card border border-border p-4 text-center">
+            <div className="bg-surface-card rounded-xl border border-border p-4 text-center">
               <p className="text-xs text-txt-tertiary mb-1">standard — 1200px</p>
               <p className="text-sm text-txt-secondary">랜딩 페이지, 일반 콘텐츠</p>
             </div>
@@ -291,9 +291,9 @@ export default function DesignPage() {
         </div>
 
         {/* Wide */}
-        <div className="border-y border-dashed border-border bg-surface-sunken/50 mb-6">
+        <div className="border-y border-border bg-surface-sunken/50 mb-6">
           <PageContainer size="wide" className="py-4">
-            <div className="bg-surface-card border border-border p-4 text-center">
+            <div className="bg-surface-card rounded-xl border border-border p-4 text-center">
               <p className="text-xs text-txt-tertiary mb-1">wide — 1400px</p>
               <p className="text-sm text-txt-secondary">대시보드, 3컬럼 레이아웃</p>
             </div>
@@ -353,8 +353,8 @@ export default function DesignPage() {
         </PageContainer>
 
         {/* 1 Column */}
-        <div className="border border-dashed border-border mx-4 sm:mx-6 lg:mx-8 mb-4 overflow-hidden">
-          <div className="bg-surface-sunken px-4 py-2 border-b border-dashed border-border">
+        <div className="border border-border mx-4 sm:mx-6 lg:mx-8 mb-4 overflow-hidden">
+          <div className="bg-surface-sunken px-4 py-2 border-b border-border">
             <span className="text-xs text-txt-tertiary">1-column — main only</span>
           </div>
           <DashboardLayout size="wide">
@@ -366,19 +366,19 @@ export default function DesignPage() {
         </div>
 
         {/* 2 Column */}
-        <div className="border border-dashed border-border mx-4 sm:mx-6 lg:mx-8 mb-4 overflow-hidden">
-          <div className="bg-surface-sunken px-4 py-2 border-b border-dashed border-border">
+        <div className="border border-border mx-4 sm:mx-6 lg:mx-8 mb-4 overflow-hidden">
+          <div className="bg-surface-sunken px-4 py-2 border-b border-border">
             <span className="text-xs text-txt-tertiary">2-column — sidebar + main</span>
           </div>
           <DashboardLayout
             size="wide"
             sidebar={
-              <div className="bg-surface-sunken border border-border p-4 text-center">
+              <div className="bg-surface-sunken rounded-xl border border-border p-4 text-center">
                 <p className="text-sm font-medium text-txt-primary">Sidebar</p>
                 <p className="text-xs text-txt-tertiary mt-1">w-56, lg:block</p>
                 <div className="mt-3 space-y-2">
                   {['필터 1', '필터 2', '필터 3'].map(f => (
-                    <div key={f} className="h-7 bg-surface-card border border-border rounded-md flex items-center justify-center text-xs text-txt-secondary">{f}</div>
+                    <div key={f} className="h-7 bg-surface-card rounded-xl border border-border rounded-md flex items-center justify-center text-xs text-txt-secondary">{f}</div>
                   ))}
                 </div>
               </div>
@@ -392,30 +392,30 @@ export default function DesignPage() {
         </div>
 
         {/* 3 Column */}
-        <div className="border border-dashed border-border mx-4 sm:mx-6 lg:mx-8 mb-8 overflow-hidden">
-          <div className="bg-surface-sunken px-4 py-2 border-b border-dashed border-border">
+        <div className="border border-border mx-4 sm:mx-6 lg:mx-8 mb-8 overflow-hidden">
+          <div className="bg-surface-sunken px-4 py-2 border-b border-border">
             <span className="text-xs text-txt-tertiary">3-column — sidebar + main + aside</span>
           </div>
           <DashboardLayout
             size="wide"
             sidebar={
-              <div className="bg-surface-sunken border border-border p-4 text-center">
+              <div className="bg-surface-sunken rounded-xl border border-border p-4 text-center">
                 <p className="text-sm font-medium text-txt-primary">Sidebar</p>
                 <p className="text-xs text-txt-tertiary mt-1">w-56, lg:block</p>
                 <div className="mt-3 space-y-2">
                   {['카테고리', '필터', '태그'].map(f => (
-                    <div key={f} className="h-7 bg-surface-card border border-border rounded-md flex items-center justify-center text-xs text-txt-secondary">{f}</div>
+                    <div key={f} className="h-7 bg-surface-card rounded-xl border border-border rounded-md flex items-center justify-center text-xs text-txt-secondary">{f}</div>
                   ))}
                 </div>
               </div>
             }
             aside={
-              <div className="bg-surface-sunken border border-border p-4 text-center">
+              <div className="bg-surface-sunken rounded-xl border border-border p-4 text-center">
                 <p className="text-sm font-medium text-txt-primary">Aside</p>
                 <p className="text-xs text-txt-tertiary mt-1">w-64, xl:block</p>
                 <div className="mt-3 space-y-2">
                   {['추천', 'CTA', '정보'].map(f => (
-                    <div key={f} className="h-7 bg-surface-card border border-border rounded-md flex items-center justify-center text-xs text-txt-secondary">{f}</div>
+                    <div key={f} className="h-7 bg-surface-card rounded-xl border border-border rounded-md flex items-center justify-center text-xs text-txt-secondary">{f}</div>
                   ))}
                 </div>
               </div>
@@ -461,7 +461,7 @@ export default function DesignPage() {
               ].map((m) => (
                 <div key={m.size} className="flex items-center gap-3">
                   <span className="text-xs font-mono text-txt-secondary w-8">{m.size}</span>
-                  <div className="bg-surface-card border border-border h-8 flex items-center px-3" style={{ width: m.pct }}>
+                  <div className="bg-surface-card rounded-xl border border-border h-8 flex items-center px-3" style={{ width: m.pct }}>
                     <span className="text-xs text-txt-tertiary">{m.width}</span>
                   </div>
                 </div>
@@ -525,7 +525,7 @@ export default function DesignPage() {
         {/* ============================================================
            개별 카드 비교 (레퍼런스)
            ============================================================ */}
-        <div className="border-t border-dashed border-border pt-8 mb-4">
+        <div className="border-t border-border pt-8 mb-4">
           <p className="text-xs text-txt-tertiary mb-6">아래는 개별 카드 변형 레퍼런스</p>
         </div>
 
@@ -533,7 +533,7 @@ export default function DesignPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
 
           {/* 상태 1: 일반 모집중 (그라데이션 커버) */}
-          <div className="bg-surface-card border border-border overflow-hidden group hover:border-border-strong hover:shadow-sharp transition-all cursor-pointer h-[21.25rem] flex flex-col">
+          <div className="bg-surface-card rounded-xl border border-border overflow-hidden group hover:border-border hover:shadow-sharp transition-all cursor-pointer h-[21.25rem] flex flex-col">
             {/* 헤더: 커버 — 고정 144px */}
             <div className="relative h-36 shrink-0 bg-surface-inverse flex items-end p-4">
               <div className="absolute top-3 left-3">
@@ -573,7 +573,7 @@ export default function DesignPage() {
           </div>
 
           {/* 상태 2: 마감임박 D≤3 (이미지 커버 대응) */}
-          <div className="bg-surface-card border border-border overflow-hidden group hover:border-border-strong hover:shadow-sharp transition-all cursor-pointer h-[21.25rem] flex flex-col">
+          <div className="bg-surface-card rounded-xl border border-border overflow-hidden group hover:border-border hover:shadow-sharp transition-all cursor-pointer h-[21.25rem] flex flex-col">
             <div className="relative h-36 shrink-0 bg-surface-inverse/90 flex items-end p-4">
               <div className="absolute top-3 left-3">
                 <span className="text-xs bg-status-danger-accent/90 backdrop-blur-sm text-txt-inverse px-2 py-0.5 rounded font-semibold">D-2 마감임박</span>
@@ -609,7 +609,7 @@ export default function DesignPage() {
           </div>
 
           {/* 상태 3: 최근 업데이트 + 이미지 없음 fallback */}
-          <div className="bg-surface-card border border-border overflow-hidden group hover:border-border-strong hover:shadow-sharp transition-all cursor-pointer h-[21.25rem] flex flex-col">
+          <div className="bg-surface-card rounded-xl border border-border overflow-hidden group hover:border-border hover:shadow-sharp transition-all cursor-pointer h-[21.25rem] flex flex-col">
             <div className="relative h-36 shrink-0 bg-surface-sunken flex items-end p-4">
               <div className="absolute inset-0 flex items-center justify-center">
                 <FolderOpen size={32} className="text-border" />
@@ -655,7 +655,7 @@ export default function DesignPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
 
           {/* 상태 1: OPEN — 팀 합류 가능 */}
-          <div className="bg-surface-card border border-border overflow-hidden group hover:border-border-strong hover:shadow-sharp transition-all cursor-pointer h-[13.75rem] flex flex-col">
+          <div className="bg-surface-card rounded-xl border border-border overflow-hidden group hover:border-border hover:shadow-sharp transition-all cursor-pointer h-[13.75rem] flex flex-col">
             {/* 헤더: 아바타 + 이름/역할 — 고정 */}
             <div className="px-4 pt-4 h-[4.75rem] shrink-0">
               <div className="flex gap-3">
@@ -690,7 +690,7 @@ export default function DesignPage() {
           </div>
 
           {/* 상태 2: 커피챗 — 대화 가능 */}
-          <div className="bg-surface-card border border-border overflow-hidden group hover:border-border-strong hover:shadow-sharp transition-all cursor-pointer h-[13.75rem] flex flex-col">
+          <div className="bg-surface-card rounded-xl border border-border overflow-hidden group hover:border-border hover:shadow-sharp transition-all cursor-pointer h-[13.75rem] flex flex-col">
             <div className="px-4 pt-4 h-[4.75rem] shrink-0">
               <div className="flex gap-3">
                 <div className="w-12 h-12 bg-surface-sunken flex items-center justify-center text-base font-bold text-txt-secondary shrink-0">
@@ -722,7 +722,7 @@ export default function DesignPage() {
           </div>
 
           {/* 상태 3: BUSY — 현재 바쁨 */}
-          <div className="bg-surface-card border border-border overflow-hidden group hover:border-border-strong hover:shadow-sharp transition-all cursor-pointer h-[13.75rem] flex flex-col">
+          <div className="bg-surface-card rounded-xl border border-border overflow-hidden group hover:border-border hover:shadow-sharp transition-all cursor-pointer h-[13.75rem] flex flex-col">
             <div className="px-4 pt-4 h-[4.75rem] shrink-0">
               <div className="flex gap-3">
                 <div className="w-12 h-12 bg-surface-sunken flex items-center justify-center text-base font-bold text-txt-secondary shrink-0">
@@ -760,7 +760,7 @@ export default function DesignPage() {
         <SectionLabel label="3. SurfaceCard — 사이드바 / 컨테이너" description="사이드바, 필터, 정보 블록 등 범용 컨테이너." />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
 
-          <div className="bg-surface-card border border-border p-4">
+          <div className="bg-surface-card rounded-xl border border-border p-4">
             <h3 className="text-xs font-medium text-txt-tertiary mb-3">카테고리</h3>
             <nav className="space-y-1">
               {['전체', 'AI / ML', 'SaaS', '모바일', '웹'].map((cat, i) => (
@@ -771,7 +771,7 @@ export default function DesignPage() {
             </nav>
           </div>
 
-          <div className="bg-surface-card border border-border p-4">
+          <div className="bg-surface-card rounded-xl border border-border p-4">
             <h3 className="text-xs font-medium text-txt-tertiary mb-3">바로가기</h3>
             <nav className="space-y-1">
               {[
@@ -787,13 +787,13 @@ export default function DesignPage() {
             </nav>
           </div>
 
-          <div className="bg-surface-card border border-border p-4">
+          <div className="bg-surface-card rounded-xl border border-border p-4">
             <h3 className="text-xs font-medium text-txt-tertiary mb-3">프로필 완성도</h3>
             <div className="flex items-center justify-between mb-2">
               <span className="text-base font-semibold text-txt-primary">60%</span>
               <span className="text-xs text-txt-tertiary">3/5</span>
             </div>
-            <div className="w-full h-1.5 bg-surface-sunken border border-border overflow-hidden mb-3">
+            <div className="w-full h-1.5 bg-surface-sunken rounded-xl border border-border overflow-hidden mb-3">
               <div className="h-full bg-accent" style={{ width: '60%' }} />
             </div>
             <div className="space-y-1.5">
@@ -809,7 +809,7 @@ export default function DesignPage() {
             </div>
           </div>
 
-          <div className="bg-surface-card border border-border p-4">
+          <div className="bg-surface-card rounded-xl border border-border p-4">
             <h3 className="text-xs font-medium text-txt-tertiary mb-3 flex items-center gap-1"><Flame size={10} /> 트렌딩</h3>
             <div className="space-y-2">
               {['#AI에이전트', '#사이드프로젝트', '#React', '#커뮤니티', '#EdTech'].map((tag) => (
@@ -828,7 +828,7 @@ export default function DesignPage() {
         <SectionLabel label="4. StatusCard — 커피챗 / 알림" description="상태가 있는 인터랙티브 카드. 수락/거절 액션." />
         <div className="grid grid-cols-1 gap-3 mb-12 max-w-3xl">
 
-          <div className="bg-surface-card border border-border-strong p-4 bg-status-warning-bg/30">
+          <div className="bg-surface-card rounded-xl border border-border p-4 bg-status-warning-bg/30">
             <div className="flex items-start justify-between gap-3">
               <div className="flex gap-3 flex-1 min-w-0">
                 <div className="w-9 h-9 bg-surface-sunken flex items-center justify-center text-sm font-bold text-txt-secondary shrink-0">이서</div>
@@ -848,7 +848,7 @@ export default function DesignPage() {
             </div>
           </div>
 
-          <div className="bg-surface-card border border-border p-4">
+          <div className="bg-surface-card rounded-xl border border-border p-4">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 bg-surface-sunken flex items-center justify-center text-sm font-bold text-txt-secondary shrink-0">박지</div>
               <div className="flex-1 min-w-0">
@@ -862,7 +862,7 @@ export default function DesignPage() {
             </div>
           </div>
 
-          <div className="bg-surface-card border border-border p-4 opacity-60">
+          <div className="bg-surface-card rounded-xl border border-border p-4 opacity-60">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3 flex-1 min-w-0">
                 <div className="w-9 h-9 bg-surface-sunken flex items-center justify-center text-sm font-bold text-txt-tertiary shrink-0">최유</div>
@@ -878,7 +878,7 @@ export default function DesignPage() {
             </div>
           </div>
 
-          <div className="bg-surface-card border border-border-strong p-4 bg-status-warning-bg/30">
+          <div className="bg-surface-card rounded-xl border border-border p-4 bg-status-warning-bg/30">
             <div className="flex items-start justify-between gap-3">
               <div className="flex gap-3 flex-1 min-w-0">
                 <div className="w-9 h-9 bg-surface-sunken flex items-center justify-center text-sm font-bold text-txt-secondary shrink-0">정하</div>
@@ -912,14 +912,14 @@ export default function DesignPage() {
             <button className="w-full bg-surface-card text-txt-primary text-sm font-semibold py-2 hover:bg-surface-sunken transition-colors flex items-center justify-center gap-1.5"><Plus size={16} /> 프로젝트 등록하기</button>
           </div>
 
-          <div className="bg-surface-card border border-border p-5">
+          <div className="bg-surface-card rounded-xl border border-border p-5">
             <div className="w-10 h-10 bg-surface-sunken flex items-center justify-center mb-4"><Coffee size={20} className="text-txt-secondary" /></div>
             <h3 className="font-bold text-base text-txt-primary mb-1">커피챗 해보세요</h3>
             <p className="text-txt-secondary text-sm mb-4">관심 있는 프로젝트 리더와 부담 없이 대화해보세요</p>
             <button className="w-full bg-accent text-txt-inverse text-sm font-semibold py-2 hover:bg-accent-hover transition-colors">둘러보기</button>
           </div>
 
-          <div className="bg-surface-card border border-border p-5 text-center">
+          <div className="bg-surface-card rounded-xl border border-border p-5 text-center">
             <div className="w-10 h-10 bg-surface-sunken flex items-center justify-center mx-auto mb-3"><FolderOpen size={20} className="text-txt-disabled" /></div>
             <h3 className="font-semibold text-base text-txt-primary mb-1">아직 프로젝트가 없습니다</h3>
             <p className="text-sm text-txt-secondary mb-4">첫 프로젝트를 만들어 팀원을 모집해보세요</p>
@@ -933,7 +933,7 @@ export default function DesignPage() {
         <SectionLabel label="6. ProfileMiniCard — 사이드바 프로필" description="좌측 사이드바 상단, 네트워크 그리드에서 사용." />
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
 
-          <div className="bg-surface-card border border-border p-4">
+          <div className="bg-surface-card rounded-xl border border-border p-4">
             <div className="flex flex-col items-center text-center">
               <div className="w-16 h-16 bg-surface-sunken flex items-center justify-center text-xl font-bold text-txt-secondary mb-3">김민</div>
               <h3 className="font-bold text-base text-txt-primary">김민수</h3>
@@ -943,7 +943,7 @@ export default function DesignPage() {
             <button className="w-full mt-4 flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-semibold border border-border hover:bg-accent hover:text-txt-inverse hover:border-accent transition-colors">프로필 수정</button>
           </div>
 
-          <div className="bg-surface-card border border-border p-4 group hover:border-border-strong hover:shadow-sharp transition-all cursor-pointer">
+          <div className="bg-surface-card rounded-xl border border-border p-4 group hover:border-border hover:shadow-sharp transition-all cursor-pointer">
             <div className="flex flex-col items-center text-center">
               <div className="w-16 h-16 bg-surface-sunken flex items-center justify-center text-xl font-bold text-txt-secondary mb-3">이서</div>
               <h3 className="font-bold text-base text-txt-primary">이서연</h3>
@@ -955,7 +955,7 @@ export default function DesignPage() {
             </div>
           </div>
 
-          <div className="bg-surface-card border border-border p-4 group hover:border-border-strong hover:shadow-sharp transition-all cursor-pointer">
+          <div className="bg-surface-card rounded-xl border border-border p-4 group hover:border-border hover:shadow-sharp transition-all cursor-pointer">
             <div className="flex flex-col items-center text-center">
               <div className="w-16 h-16 bg-surface-sunken flex items-center justify-center text-xl font-bold text-txt-secondary mb-3">박지</div>
               <h3 className="font-bold text-base text-txt-primary">박지훈</h3>
@@ -964,7 +964,7 @@ export default function DesignPage() {
             </div>
           </div>
 
-          <div className="bg-surface-card border border-border p-4 group hover:border-border-strong hover:shadow-sharp transition-all cursor-pointer">
+          <div className="bg-surface-card rounded-xl border border-border p-4 group hover:border-border hover:shadow-sharp transition-all cursor-pointer">
             <div className="flex flex-col items-center text-center">
               <div className="w-16 h-16 bg-surface-sunken flex items-center justify-center text-xl font-bold text-txt-secondary mb-3">최유</div>
               <h3 className="font-bold text-base text-txt-primary">최유진</h3>
@@ -981,7 +981,7 @@ export default function DesignPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
 
           {/* 스텝 1: 템플릿 선택 (스태틱 프리뷰) */}
-          <div className="bg-surface-card border border-border overflow-hidden">
+          <div className="bg-surface-card rounded-xl border border-border overflow-hidden">
             <div className="px-5 py-4 border-b border-border flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 bg-surface-sunken flex items-center justify-center">
@@ -1010,7 +1010,7 @@ export default function DesignPage() {
                     className={`w-full flex items-center gap-3 px-4 py-3 border text-left transition-all focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-1 ${
                       i === 1
                         ? 'border-accent bg-surface-sunken'
-                        : 'border-border hover:border-border-strong hover:bg-surface-sunken'
+                        : 'border-border hover:border-border hover:bg-surface-sunken'
                     }`}
                   >
                     <span className="text-base">{t.icon}</span>
@@ -1031,7 +1031,7 @@ export default function DesignPage() {
           </div>
 
           {/* 스텝 2: 메시지 작성 (스태틱 프리뷰) */}
-          <div className="bg-surface-card border border-border overflow-hidden">
+          <div className="bg-surface-card rounded-xl border border-border overflow-hidden">
             <div className="px-5 py-4 border-b border-border flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <button className="w-8 h-8 flex items-center justify-center hover:bg-surface-sunken transition-colors">
@@ -1058,7 +1058,7 @@ export default function DesignPage() {
               {/* 편집 가능 텍스트 */}
               <div className="relative">
                 <textarea
-                  className="w-full h-28 px-4 py-3 text-sm text-txt-primary bg-surface-card border border-border resize-none focus:outline-none focus:border-accent focus:ring-2 focus:ring-[var(--focus-ring)] transition-colors placeholder:text-txt-disabled"
+                  className="w-full h-28 px-4 py-3 text-sm text-txt-primary bg-surface-card rounded-xl border border-border resize-none focus:outline-none focus:border-accent focus:ring-2 focus:ring-[var(--focus-ring)] transition-colors placeholder:text-txt-disabled"
                   placeholder="메시지를 수정하거나 추가로 작성하세요..."
                   defaultValue="안녕하세요! 프론트엔드 개발자 이서연입니다. AI 기반 이력서 분석 플랫폼 프로젝트에 팀원으로 합류하고 싶습니다. React와 TypeScript 경험이 있고, AI 서비스 UI에 관심이 많습니다."
                   readOnly
@@ -1139,7 +1139,7 @@ export default function DesignPage() {
                       className={`w-full flex items-center gap-3 px-4 py-3 border text-left transition-all focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-1 ${
                         coffeeChatTemplate === i
                           ? 'border-accent bg-surface-sunken'
-                          : 'border-border hover:border-border-strong hover:bg-surface-sunken'
+                          : 'border-border hover:border-border hover:bg-surface-sunken'
                       }`}
                     >
                       <span className="text-base">{t.icon}</span>
@@ -1182,7 +1182,7 @@ export default function DesignPage() {
                 )}
                 <div className="relative">
                   <textarea
-                    className="w-full h-28 px-4 py-3 text-sm text-txt-primary bg-surface-card border border-border resize-none focus:outline-none focus:border-accent focus:ring-2 focus:ring-[var(--focus-ring)] transition-colors placeholder:text-txt-disabled"
+                    className="w-full h-28 px-4 py-3 text-sm text-txt-primary bg-surface-card rounded-xl border border-border resize-none focus:outline-none focus:border-accent focus:ring-2 focus:ring-[var(--focus-ring)] transition-colors placeholder:text-txt-disabled"
                     placeholder="메시지를 수정하거나 추가로 작성하세요..."
                     value={coffeeChatMessage}
                     onChange={(e) => setCoffeeChatMessage(e.target.value.slice(0, 500))}
@@ -1304,7 +1304,7 @@ function ViewModeDemo() {
         <div className={viewMode === 'detail' ? 'grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'space-y-1'}>
           {projects.map((p) => viewMode === 'detail' ? (
             /* ── 자세히: 커버 이미지 카드 (REF-A 동일 구조) ── */
-            <div key={p.title} className="bg-surface-card border border-border overflow-hidden group hover:border-border-strong hover:shadow-sharp transition-all cursor-pointer h-[21.25rem] flex flex-col">
+            <div key={p.title} className="bg-surface-card rounded-xl border border-border overflow-hidden group hover:border-border hover:shadow-sharp transition-all cursor-pointer h-[21.25rem] flex flex-col">
               <div className={`relative h-36 shrink-0 ${p.color} flex items-end p-4`}>
                 <div className="absolute top-3 left-3">
                   {p.daysLeft <= 3 ? (
@@ -1426,7 +1426,7 @@ function ViewModeDemo() {
         <div className={viewMode === 'detail' ? 'grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'space-y-1'}>
           {people.map((p) => viewMode === 'detail' ? (
             /* ── 자세히: NEW-B 확정 디자인 (가로형 + 상태 푸터) ── */
-            <div key={p.name} className="bg-surface-card border border-border overflow-hidden group hover:border-border-strong hover:shadow-sharp transition-all cursor-pointer h-[13.75rem] flex flex-col">
+            <div key={p.name} className="bg-surface-card rounded-xl border border-border overflow-hidden group hover:border-border hover:shadow-sharp transition-all cursor-pointer h-[13.75rem] flex flex-col">
               {/* 헤더: 아바타 + 이름/역할 */}
               <div className="px-4 pt-4 h-[4.75rem] shrink-0">
                 <div className="flex gap-3">

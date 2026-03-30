@@ -199,8 +199,8 @@ export const TopNavbar: React.FC = () => {
               onClick={() => { if (!isSearchOpen) { setIsSearchOpen(true); setTimeout(() => searchInputRef.current?.focus(), 50) } }}
               className={`flex items-center transition-all duration-200 cursor-text ${
                 isSearchOpen
-                  ? 'bg-surface-card shadow-sharp border border-border-strong'
-                  : 'bg-surface-card border border-border hover:shadow-soft hover:border-border-strong'
+                  ? 'bg-surface-card shadow-sharp border border-border'
+                  : 'bg-surface-card rounded-xl border border-border hover:shadow-soft hover:border-border'
               }`}
             >
               <Search size={15} className={`ml-3.5 shrink-0 transition-colors ${isSearchOpen ? 'text-txt-secondary' : 'text-txt-disabled'}`} />
@@ -230,7 +230,7 @@ export const TopNavbar: React.FC = () => {
             {/* 드롭다운 — 검색바 아래로 자연스럽게 열림 */}
             {isSearchOpen && (
               <div className="absolute top-full left-0 right-0 mt-1.5 z-popover">
-                <div className="bg-surface-card shadow-brutal border border-border-strong overflow-hidden search-expand max-h-[60vh] overflow-y-auto">
+                <div className="bg-surface-card shadow-brutal border border-border overflow-hidden search-expand max-h-[60vh] overflow-y-auto">
 
                   {/* 바로가기 */}
                   <div className="px-2 pt-2 pb-1">
@@ -270,7 +270,7 @@ export const TopNavbar: React.FC = () => {
                             <Search size={14} />
                           </div>
                           <span>&ldquo;{searchQuery.trim()}&rdquo; 탐색에서 검색</span>
-                          <kbd className="ml-auto px-1.5 py-0.5 bg-surface-sunken border border-border rounded text-[10px] font-mono text-txt-disabled">Enter</kbd>
+                          <kbd className="ml-auto px-1.5 py-0.5 bg-surface-sunken rounded-xl border border-border rounded text-[10px] font-mono text-txt-disabled">Enter</kbd>
                         </button>
                       </div>
                     </>
@@ -280,13 +280,13 @@ export const TopNavbar: React.FC = () => {
                   <div className="mx-3 border-t border-border-subtle" />
                   <div className="px-4 py-2 flex items-center gap-3">
                     <span className="flex items-center gap-1.5 text-[10px] text-txt-disabled">
-                      <kbd className="px-1.5 py-0.5 bg-surface-sunken border border-border rounded font-mono">↑↓</kbd> 이동
+                      <kbd className="px-1.5 py-0.5 bg-surface-sunken rounded-xl border border-border rounded font-mono">↑↓</kbd> 이동
                     </span>
                     <span className="flex items-center gap-1.5 text-[10px] text-txt-disabled">
-                      <kbd className="px-1.5 py-0.5 bg-surface-sunken border border-border rounded font-mono">Enter</kbd> 열기
+                      <kbd className="px-1.5 py-0.5 bg-surface-sunken rounded-xl border border-border rounded font-mono">Enter</kbd> 열기
                     </span>
                     <span className="flex items-center gap-1.5 text-[10px] text-txt-disabled">
-                      <kbd className="px-1.5 py-0.5 bg-surface-sunken border border-border rounded font-mono">Esc</kbd> 닫기
+                      <kbd className="px-1.5 py-0.5 bg-surface-sunken rounded-xl border border-border rounded font-mono">Esc</kbd> 닫기
                     </span>
                   </div>
                 </div>
@@ -343,7 +343,7 @@ export const TopNavbar: React.FC = () => {
 
                   {/* 드롭다운 */}
                   {isMenuOpen && (
-                    <div className="absolute right-0 top-11 w-[calc(100vw-2rem)] sm:w-60 max-w-60 bg-surface-card shadow-brutal border border-border-strong py-1.5 animate-in fade-in zoom-in-95 duration-150 z-dropdown">
+                    <div className="absolute right-0 top-11 w-[calc(100vw-2rem)] sm:w-60 max-w-60 bg-surface-card shadow-brutal border border-border py-1.5 animate-in fade-in zoom-in-95 duration-150 z-dropdown">
                       {/* 유저 헤더 */}
                       <div className="px-4 pt-3 pb-3">
                         <div className="flex items-center gap-3">
@@ -414,7 +414,7 @@ export const TopNavbar: React.FC = () => {
             className="md:hidden fixed inset-0 bg-black/20 backdrop-blur-sm z-[299] animate-in fade-in duration-200"
             onClick={() => setIsMobileMenuOpen(false)}
           />
-          <div className="md:hidden fixed top-14 sm:top-20 left-0 right-0 bg-surface-card/95 backdrop-blur-xl border-b border-border-strong shadow-brutal z-fixed animate-in slide-in-from-bottom-2 duration-200">
+          <div className="md:hidden fixed top-14 sm:top-20 left-0 right-0 bg-surface-card/95 backdrop-blur-xl border-b border-border shadow-brutal z-fixed animate-in slide-in-from-bottom-2 duration-200">
             <div className="px-4 py-4 space-y-1.5">
               <form
                 className="relative mb-3"

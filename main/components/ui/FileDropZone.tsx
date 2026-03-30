@@ -166,7 +166,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
           relative border border-dashed p-8 text-center cursor-pointer transition-all
           ${isDragging
             ? 'border-brand bg-brand-bg'
-            : 'border-border hover:border-border-strong hover:bg-surface-sunken'
+            : 'border-border hover:border-border hover:bg-surface-sunken'
           }
         `}
       >
@@ -232,7 +232,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
             {files.map(({ file, id, preview }) => (
               <div
                 key={id}
-                className="flex items-center gap-3 p-3 bg-surface-sunken border border-border"
+                className="flex items-center gap-3 p-3 bg-surface-sunken rounded-xl border border-border"
               >
                 {preview ? (
                   <img

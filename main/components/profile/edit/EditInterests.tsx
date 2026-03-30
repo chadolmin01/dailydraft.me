@@ -27,7 +27,7 @@ export const EditInterests: React.FC<EditInterestsProps> = ({
             className={`px-2.5 py-1 text-xs font-medium border transition-colors ${
               interestTags.includes(tag)
                 ? 'bg-brand text-white border-brand'
-                : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong'
+                : 'bg-surface-card text-txt-secondary border-border hover:border-border'
             }`}
           >
             {tag}
@@ -60,7 +60,7 @@ export const EditInterests: React.FC<EditInterestsProps> = ({
           onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addCustomTag())}
           placeholder="직접 입력"
           maxLength={20}
-          className="flex-1 px-3 py-2 text-sm border border-border bg-surface-card focus:outline-none focus:border-accent transition-colors"
+          className="flex-1 px-3 py-2 text-sm border border-border bg-surface-card rounded-xl focus:outline-none focus:border-accent transition-colors"
         />
         <button
           type="button"

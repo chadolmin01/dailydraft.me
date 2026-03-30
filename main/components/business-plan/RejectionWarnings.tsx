@@ -69,7 +69,7 @@ export const RejectionWarnings: React.FC<RejectionWarningsProps> = ({
   }
 
   return (
-    <div className="bg-surface-card border border-border overflow-hidden">
+    <div className="bg-surface-card rounded-xl border border-border overflow-hidden">
       {/* Header */}
       <div className={`p-3 flex items-center justify-between ${
         severityCounts.high > 0 ? 'bg-status-danger-bg border-b border-status-danger-text/20' :
@@ -217,7 +217,7 @@ const WarningItem: React.FC<WarningItemProps> = ({
                 {match.matches.slice(0, 5).map((m, idx) => (
                   <span
                     key={idx}
-                    className="px-2 py-1 bg-surface-card border border-border text-xs text-txt-secondary font-mono"
+                    className="px-2 py-1 bg-surface-card rounded-xl border border-border text-xs text-txt-secondary font-mono"
                   >
                     "{m}"
                   </span>
@@ -280,7 +280,7 @@ const WarningItem: React.FC<WarningItemProps> = ({
                 e.stopPropagation()
                 onDismiss()
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-surface-card border border-border-strong text-txt-secondary text-xs font-medium hover:bg-black hover:text-white transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-surface-card rounded-xl border border-border text-txt-secondary text-xs font-medium hover:bg-black hover:text-white transition-colors"
             >
               <X size={12} />
               무시
@@ -339,7 +339,7 @@ export const InlineWarningHighlight: React.FC<InlineWarningHighlightProps> = ({
   const highlightClass = {
     high: 'bg-status-danger-bg border-b border-status-danger-text',
     medium: 'bg-status-warning-bg border-b border-status-warning-text',
-    low: 'bg-surface-sunken border-b border-border-strong',
+    low: 'bg-surface-sunken border-b border-border',
   }
 
   return (

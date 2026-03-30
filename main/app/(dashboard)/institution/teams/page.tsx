@@ -128,7 +128,7 @@ export default function InstitutionTeamsPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {teams.map((team) => (
-              <Card key={team.id} padding="p-5" className="group hover:border-border-strong">
+              <Card key={team.id} padding="p-5" className="group hover:border-border">
                 <div className="flex items-start justify-between mb-3">
                   <h3 className="font-semibold text-sm text-txt-primary leading-tight pr-4">
                     {team.title}

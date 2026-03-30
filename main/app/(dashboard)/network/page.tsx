@@ -16,7 +16,7 @@ export default function NetworkPage() {
               </div>
               <div className="h-8 w-40 bg-surface-sunken" />
             </div>
-            <div className="h-9 w-64 bg-surface-sunken border border-border" />
+            <div className="h-9 w-64 bg-surface-sunken rounded-xl border border-border" />
           </div>
         </PageContainer>
       </Section>
@@ -25,13 +25,13 @@ export default function NetworkPage() {
         <PageContainer size="wide">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-              <div key={i} className="bg-surface-card border border-border-strong shadow-sharp p-5 text-center">
-                <div className="w-16 h-16 bg-surface-sunken border border-border mx-auto mb-3" />
+              <div key={i} className="bg-surface-card rounded-xl border border-border shadow-sharp p-5 text-center">
+                <div className="w-16 h-16 bg-surface-sunken rounded-xl border border-border mx-auto mb-3" />
                 <div className="h-5 w-24 bg-surface-sunken mx-auto mb-1" />
                 <div className="h-4 w-20 bg-surface-sunken mx-auto mb-3" />
                 <div className="flex justify-center gap-1">
-                  <div className="h-5 w-14 bg-surface-sunken border border-border" />
-                  <div className="h-5 w-14 bg-surface-sunken border border-border" />
+                  <div className="h-5 w-14 bg-surface-sunken rounded-xl border border-border" />
+                  <div className="h-5 w-14 bg-surface-sunken rounded-xl border border-border" />
                 </div>
               </div>
             ))}

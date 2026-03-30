@@ -101,7 +101,7 @@ export const Sidebar: React.FC = () => {
   }
 
   return (
-    <div className="w-16 flex-shrink-0 bg-surface-card border-r border-border-strong flex flex-col items-center py-6 h-screen sticky top-0 z-50">
+    <div className="w-16 flex-shrink-0 bg-surface-card border-r border-border flex flex-col items-center py-6 h-screen sticky top-0 z-50">
       {/* Home / Logo Button - Now goes to Dashboard */}
       <div
         className="mb-8 cursor-pointer group relative"
@@ -112,7 +112,7 @@ export const Sidebar: React.FC = () => {
             ${
               getActiveTab() === 'dashboard'
                 ? 'bg-surface-inverse text-txt-inverse shadow-solid-sm'
-                : 'bg-surface-card text-txt-primary border border-border-strong hover:bg-surface-inverse hover:text-txt-inverse hover:border-border-strong shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
+                : 'bg-surface-card text-txt-primary border border-border hover:bg-surface-inverse hover:text-txt-inverse hover:border-border shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
             }
         `}
         >
@@ -155,9 +155,9 @@ export const Sidebar: React.FC = () => {
       <div className="mt-auto flex flex-col gap-4 w-full px-3 pb-4 relative" ref={menuRef}>
         {/* Popup Menu */}
         {isMenuOpen && (
-          <div className="absolute left-14 bottom-2 w-56 bg-surface-card border border-border-strong shadow-sharp rounded-sm p-1 flex flex-col gap-0.5 z-50 animate-in fade-in zoom-in-95 duration-100 origin-bottom-left">
+          <div className="absolute left-14 bottom-2 w-56 bg-surface-card rounded-xl border border-border shadow-sharp rounded-sm p-1 flex flex-col gap-0.5 z-50 animate-in fade-in zoom-in-95 duration-100 origin-bottom-left">
             {/* User Info */}
-            <div className="px-3 py-2.5 mb-1 border-b border-dashed border-border">
+            <div className="px-3 py-2.5 mb-1 border-b border-border">
               <div className="flex items-center gap-2">
                 <span className="font-bold text-sm text-txt-primary">{profile?.nickname || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}</span>
                 {isPremium && (
@@ -216,7 +216,7 @@ export const Sidebar: React.FC = () => {
             {/* Institution Admin Section */}
             {isInstitutionAdmin && (
               <>
-                <div className="h-px border-t border-dashed border-border my-1"></div>
+                <div className="h-px border-t border-border my-1"></div>
                 <div className="px-3 py-1.5">
                   <div className="text-[0.625rem] font-medium text-txt-tertiary">Institution</div>
                 </div>
@@ -229,7 +229,7 @@ export const Sidebar: React.FC = () => {
               </>
             )}
 
-            <div className="h-px border-t border-dashed border-border my-1"></div>
+            <div className="h-px border-t border-border my-1"></div>
 
             {/* Admin Section - Only show for admins */}
             {isAdmin && (
@@ -249,7 +249,7 @@ export const Sidebar: React.FC = () => {
                 >
                   <AlertCircle size={14} /> Error Logs
                 </button>
-                <div className="h-px border-t border-dashed border-border my-1"></div>
+                <div className="h-px border-t border-border my-1"></div>
               </>
             )}
 
@@ -270,7 +270,7 @@ export const Sidebar: React.FC = () => {
                 ? 'bg-surface-inverse text-txt-inverse border-surface-inverse shadow-solid-sm'
                 : isPremium
                   ? 'bg-indicator-premium text-white border-indicator-premium-border shadow-solid-sm'
-                  : 'bg-surface-sunken text-txt-secondary border-border-strong hover:border-border-strong shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
+                  : 'bg-surface-sunken text-txt-secondary border-border hover:border-border shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
             }`}
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >

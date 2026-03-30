@@ -68,7 +68,7 @@ export const RealtimeScorePanel: React.FC<RealtimeScorePanelProps> = ({
 
   if (!validationResult) {
     return (
-      <div className="bg-surface-card border border-border p-4 animate-pulse">
+      <div className="bg-surface-card rounded-xl border border-border p-4 animate-pulse">
         <div className="h-6 bg-surface-sunken w-1/2 mb-4"></div>
         <div className="h-4 bg-surface-sunken w-full mb-2"></div>
         <div className="h-4 bg-surface-sunken w-3/4"></div>
@@ -79,7 +79,7 @@ export const RealtimeScorePanel: React.FC<RealtimeScorePanelProps> = ({
   const { totalScore, maxScore, percentage, passingScore, sections, topImprovements } = validationResult
 
   return (
-    <div className="bg-surface-card border border-border overflow-hidden">
+    <div className="bg-surface-card rounded-xl border border-border overflow-hidden">
       {/* Header - Overall Score */}
       <div className={`p-4 ${
         percentage >= 90 ? 'bg-status-success-bg border-b border-status-success-text/20' :

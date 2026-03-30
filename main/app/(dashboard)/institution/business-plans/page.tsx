@@ -121,7 +121,7 @@ export default function InstitutionBusinessPlansPage() {
             <BarChart3 size={14} />
             학생별 사업계획서 작성 현황
           </div>
-          <div className="w-full bg-surface-sunken border border-border h-3 mb-2">
+          <div className="w-full bg-surface-sunken rounded-xl border border-border h-3 mb-2">
             <div
               className="bg-black h-full transition-all duration-500"
               style={{ width: `${completionRate}%` }}
@@ -135,7 +135,7 @@ export default function InstitutionBusinessPlansPage() {
 
         {/* Member Table */}
         <Card padding="p-0">
-          <div className="px-5 py-3 border-b border-dashed border-border">
+          <div className="px-5 py-3 border-b border-border">
             <h3 className="font-medium text-sm tracking-tight text-txt-primary">학생별 상세</h3>
           </div>
           {isLoading ? (
@@ -151,7 +151,7 @@ export default function InstitutionBusinessPlansPage() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-dashed border-border">
+                  <tr className="border-b border-border">
                     <th className="text-left text-[0.625rem] font-medium text-txt-tertiary px-5 py-3">이름</th>
                     <th className="text-left text-[0.625rem] font-medium text-txt-tertiary px-5 py-3">학과</th>
                     <th className="text-center text-[0.625rem] font-medium text-txt-tertiary px-5 py-3">사업계획서</th>

@@ -224,13 +224,13 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl max-h-[85vh] sm:max-h-[90vh] bg-surface-card shadow-brutal-xl border border-border-strong overflow-hidden flex flex-col relative"
+              className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl max-h-[85vh] sm:max-h-[90vh] bg-surface-card shadow-brutal-xl border border-border overflow-hidden flex flex-col relative"
               role="dialog"
               aria-modal="true"
               aria-label={opportunity?.title || '프로젝트 상세'}
             >
               {/* macOS-style Window Bar */}
-              <div className="bg-surface-sunken border-b border-border-strong px-3 sm:px-4 h-10 flex items-center justify-between shrink-0">
+              <div className="bg-surface-sunken border-b border-border px-3 sm:px-4 h-10 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-2">
                   <button onClick={onClose} className="sm:hidden p-1.5 -ml-1 hover:bg-surface-card transition-colors" aria-label="닫기">
                     <X size={18} className="text-txt-tertiary" />
@@ -247,7 +247,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                       <div className="relative">
                         <button
                           onClick={() => setShowTypeSelector(!showTypeSelector)}
-                          className="text-[0.625rem] font-medium px-2 py-0.5 bg-surface-card text-txt-tertiary border border-border hover:border-border-strong hover:text-txt-secondary transition-colors flex items-center gap-1"
+                          className="text-[0.625rem] font-medium px-2 py-0.5 bg-surface-card text-txt-tertiary border border-border hover:border-border hover:text-txt-secondary transition-colors flex items-center gap-1"
                         >
                           {opportunity.type === 'side_project' ? 'SIDE PROJECT' :
                            opportunity.type === 'startup' ? 'STARTUP' :
@@ -255,7 +255,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                           <Edit3 size={8} />
                         </button>
                         {showTypeSelector && (
-                          <div className="absolute top-full left-0 mt-1 bg-surface-card border border-border-strong shadow-sharp z-10 min-w-[8rem]">
+                          <div className="absolute top-full left-0 mt-1 bg-surface-card rounded-xl border border-border shadow-sharp z-10 min-w-[8rem]">
                             {[
                               { value: 'side_project', label: 'SIDE PROJECT' },
                               { value: 'startup', label: 'STARTUP' },
@@ -346,7 +346,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                     />
 
                     {/* Divider */}
-                    <div className="mx-4 sm:mx-8 border-t border-dashed border-border" />
+                    <div className="mx-4 sm:mx-8 border-t border-border" />
 
                     {/* Body: 2-Column Layout */}
                     <div className="px-4 sm:px-8 py-4 sm:py-6">

@@ -101,9 +101,9 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
   const hasMore = comments.length > INITIAL_VISIBLE
 
   return (
-    <div className="bg-surface-card border border-border-strong">
+    <div className="bg-surface-card rounded-xl border border-border">
       {/* Header */}
-      <div className="p-4 border-b border-border-strong">
+      <div className="p-4 border-b border-border">
         <h3 className="text-[0.625rem] font-medium text-txt-tertiary flex items-center gap-2">
           <MessageCircle size={14} />
           {COMMENT_LABEL} ({comments.length})
@@ -112,7 +112,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
 
       {/* Comment Form — login only */}
       {user && profile ? (
-        <form onSubmit={handleSubmit} className="p-4 bg-surface-sunken border-b border-dashed border-border">
+        <form onSubmit={handleSubmit} className="p-4 bg-surface-sunken border-b border-border">
           <div className="flex items-center gap-2 mb-3">
             <div className="w-7 h-7 bg-surface-inverse text-txt-inverse rounded-full flex items-center justify-center text-xs font-bold shrink-0">
               {cleanNickname(profile.nickname).charAt(0)}
@@ -131,20 +131,20 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
               placeholder={`${COMMENT_VERB}을 남겨주세요...`}
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="flex-1 px-3 py-1.5 text-sm border border-border-strong focus:outline-none focus:border-border-strong bg-surface-card text-txt-primary placeholder-txt-disabled"
+              className="flex-1 px-3 py-1.5 text-sm border border-border focus:outline-none focus:border-border bg-surface-card rounded-xl text-txt-primary placeholder-txt-disabled"
               maxLength={500}
             />
             <button
               type="submit"
               disabled={submitting || !content.trim()}
-              className="px-3 py-1.5 bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 transition-colors disabled:bg-surface-sunken disabled:text-txt-disabled disabled:border-border-strong disabled:cursor-not-allowed flex items-center justify-center"
+              className="px-3 py-1.5 bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 transition-colors disabled:bg-surface-sunken disabled:text-txt-disabled disabled:border-border disabled:cursor-not-allowed flex items-center justify-center"
             >
               {submitting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
             </button>
           </div>
         </form>
       ) : (
-        <div className="p-5 bg-surface-sunken border-b border-dashed border-border text-center">
+        <div className="p-5 bg-surface-sunken border-b border-border text-center">
           <p className="text-sm text-txt-tertiary mb-3">로그인하고 {COMMENT_VERB}을 남겨보세요</p>
           <button
             onClick={onLoginClick}

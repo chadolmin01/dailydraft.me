@@ -16,7 +16,7 @@ export const StepWizard: React.FC<StepWizardProps> = ({
   onStepClick,
 }) => {
   return (
-    <div className="bg-surface-card border border-border p-4">
+    <div className="bg-surface-card rounded-xl border border-border p-4">
       <div className="flex items-center justify-between">
         {WIZARD_STEPS.map((step, index) => (
           <React.Fragment key={step.id}>

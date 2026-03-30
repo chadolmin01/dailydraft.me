@@ -15,7 +15,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary: 'bg-surface-inverse text-txt-inverse hover:bg-surface-inverse/90 hover:opacity-90 active:scale-[0.97]',
-  secondary: 'bg-surface-card border border-border-strong text-black hover:bg-black hover:text-white',
+  secondary: 'bg-surface-card rounded-xl border border-border text-black hover:bg-black hover:text-white',
   ghost: 'text-black hover:bg-surface-sunken',
   blue: 'bg-brand text-white hover:bg-brand-hover hover:opacity-90 active:scale-[0.97]',
   danger: 'bg-status-danger-text text-white hover:bg-status-danger-text/90 hover:opacity-90 active:scale-[0.97]',
@@ -89,7 +89,7 @@ export const IconButton: React.FC<IconButtonProps> = ({
   const baseStyles = 'rounded-sm transition-colors flex items-center justify-center'
   const variantStyle = variant === 'ghost'
     ? 'text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken'
-    : 'bg-surface-card border border-border-strong text-txt-secondary hover:bg-black hover:text-white'
+    : 'bg-surface-card rounded-xl border border-border text-txt-secondary hover:bg-black hover:text-white'
 
   return (
     <button

@@ -353,7 +353,7 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
               <button
                 key={idx}
                 onClick={() => onShowSuggestion?.(imp.section, '')}
-                className="w-full text-left p-3 bg-surface-card border border-border hover:border-border-strong transition-colors group"
+                className="w-full text-left p-3 bg-surface-card rounded-xl border border-border hover:border-border transition-colors group"
               >
                 <div className="flex items-start gap-2">
                   <AlertTriangle

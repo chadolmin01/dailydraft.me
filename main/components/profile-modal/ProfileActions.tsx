@@ -27,7 +27,7 @@ export function ProfileActions({
 
   return (
     <>
-      <div className="border-t border-dashed border-border mt-4 pt-4">
+      <div className="border-t border-border mt-4 pt-4">
         <div className="flex gap-2">
           {/* Coffee Chat Button */}
           {pendingChat ? (
@@ -43,7 +43,7 @@ export function ProfileActions({
           ) : (
             <button
               onClick={() => setShowCoffeeChatForm(true)}
-              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-surface-card text-txt-secondary text-xs font-bold border border-border-strong hover:bg-black hover:text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-surface-card text-txt-secondary text-xs font-bold border border-border hover:bg-black hover:text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
             >
               <Coffee size={14} />
               커피챗 신청
@@ -53,7 +53,7 @@ export function ProfileActions({
           {/* Invite to Project Button */}
           <button
             onClick={() => setShowInviteModal(true)}
-            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-surface-card text-txt-secondary text-xs font-bold border border-border-strong hover:bg-black hover:text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-surface-card text-txt-secondary text-xs font-bold border border-border hover:bg-black hover:text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
           >
             <UserPlus size={14} />
             프로젝트에 초대
@@ -64,7 +64,7 @@ export function ProfileActions({
       {/* Coffee Chat Form Overlay */}
       {showCoffeeChatForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4" onClick={() => setShowCoffeeChatForm(false)}>
-          <div className="bg-surface-card border border-border-strong shadow-brutal w-full max-w-md p-6" onClick={e => e.stopPropagation()}>
+          <div className="bg-surface-card rounded-xl border border-border shadow-brutal w-full max-w-md p-6" onClick={e => e.stopPropagation()}>
             <CoffeeChatRequestForm
               targetUserId={targetUserId}
               onClose={() => setShowCoffeeChatForm(false)}

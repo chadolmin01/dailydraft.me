@@ -120,11 +120,11 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onDragStart, onClick }
           </div>
 
           {task.assignee ? (
-            <div className="w-6 h-6 bg-surface-card border border-border text-txt-secondary flex items-center justify-center text-[0.625rem] font-bold shadow-sharp">
+            <div className="w-6 h-6 bg-surface-card rounded-xl border border-border text-txt-secondary flex items-center justify-center text-[0.625rem] font-bold shadow-sharp">
               {task.assignee}
             </div>
           ) : (
-            <div className="w-6 h-6 border border-dashed border-border-strong flex items-center justify-center text-txt-disabled hover:border-border-strong hover:text-txt-secondary transition-colors bg-white/50">
+            <div className="w-6 h-6 border border-border flex items-center justify-center text-txt-disabled hover:border-border hover:text-txt-secondary transition-colors bg-white/50">
               <span className="text-[0.625rem]">+</span>
             </div>
           )}

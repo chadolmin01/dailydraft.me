@@ -179,19 +179,19 @@ export const ValidatedIdeasPage: React.FC = () => {
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-surface-card border border-border-strong shadow-sharp p-4">
+        <div className="bg-surface-card rounded-xl border border-border shadow-sharp p-4">
           <div className="text-2xl font-bold text-txt-primary">{ideas.length}</div>
           <div className="text-[0.625rem] font-medium text-txt-tertiary">전체 아이디어</div>
         </div>
-        <div className="bg-surface-card border border-border-strong shadow-sharp p-4">
+        <div className="bg-surface-card rounded-xl border border-border shadow-sharp p-4">
           <div className="text-2xl font-bold text-status-info-text">{ideas.filter(i => hasArtifacts(i)).length}</div>
           <div className="text-[0.625rem] font-medium text-txt-tertiary">문서 생성됨</div>
         </div>
-        <div className="bg-surface-card border border-border-strong shadow-sharp p-4">
+        <div className="bg-surface-card rounded-xl border border-border shadow-sharp p-4">
           <div className="text-2xl font-bold text-indicator-premium-border">{ideas.length > 0 ? Math.round(ideas.reduce((sum, i) => sum + (i.score ?? 0), 0) / ideas.length) : 0}</div>
           <div className="text-[0.625rem] font-medium text-txt-tertiary">평균 점수</div>
         </div>
-        <div className="bg-surface-card border border-border-strong shadow-sharp p-4">
+        <div className="bg-surface-card rounded-xl border border-border shadow-sharp p-4">
           <div className="text-2xl font-bold text-status-success-text">{ideas.reduce((sum, i) => sum + getAdviceCount(i), 0)}</div>
           <div className="text-[0.625rem] font-medium text-txt-tertiary">총 인사이트</div>
         </div>
@@ -201,20 +201,20 @@ export const ValidatedIdeasPage: React.FC = () => {
       <div className="flex flex-wrap items-center gap-3 mb-6">
         <div className="relative flex-1 min-w-[12.5rem]">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-txt-disabled" />
-          <input type="text" placeholder="아이디어 검색..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-full pl-10 pr-4 py-2 border border-border-strong text-sm focus:outline-none focus:border-brand transition-colors" />
+          <input type="text" placeholder="아이디어 검색..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-full pl-10 pr-4 py-2 border border-border text-sm focus:outline-none focus:border-brand transition-colors" />
           {searchQuery && (
             <button type="button" onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-txt-disabled hover:text-txt-secondary" aria-label="검색어 지우기"><X size={14} /></button>
           )}
         </div>
         <div className="flex items-center gap-2">
           <Filter size={14} className="text-txt-disabled" aria-hidden="true" />
-          <select aria-label="문서 필터" value={filterHasArtifacts === null ? 'all' : filterHasArtifacts ? 'with' : 'without'} onChange={e => { const val = e.target.value; setFilterHasArtifacts(val === 'all' ? null : val === 'with') }} className="px-3 py-2 border border-border-strong text-sm focus:outline-none focus:border-brand">
+          <select aria-label="문서 필터" value={filterHasArtifacts === null ? 'all' : filterHasArtifacts ? 'with' : 'without'} onChange={e => { const val = e.target.value; setFilterHasArtifacts(val === 'all' ? null : val === 'with') }} className="px-3 py-2 border border-border text-sm focus:outline-none focus:border-brand">
             <option value="all">전체</option>
             <option value="with">문서 있음</option>
             <option value="without">문서 없음</option>
           </select>
         </div>
-        <div className="flex items-center gap-0 border border-border-strong overflow-hidden">
+        <div className="flex items-center gap-0 border border-border overflow-hidden">
           {(['date', 'score', 'insights'] as const).map((field) => {
             const icons = { date: Calendar, score: Trophy, insights: MessageSquare }
             const labels = { date: '날짜', score: '점수', insights: '인사이트' }
@@ -233,7 +233,7 @@ export const ValidatedIdeasPage: React.FC = () => {
 
       {ideas.length === 0 && (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="w-16 h-16 bg-surface-sunken border border-border-strong flex items-center justify-center mb-4"><Lightbulb size={28} className="text-txt-disabled" /></div>
+          <div className="w-16 h-16 bg-surface-sunken rounded-xl border border-border flex items-center justify-center mb-4"><Lightbulb size={28} className="text-txt-disabled" /></div>
           <h3 className="text-lg font-bold text-txt-primary mb-2">아직 검증된 아이디어가 없습니다</h3>
           <p className="text-sm text-txt-tertiary mb-6 max-w-md">워크플로우를 시작하여 아이디어 검증 → PRD 생성 → 사업계획서 작성까지 한번에 진행하세요</p>
           <button type="button" onClick={handleStartNewWorkflow} className="px-6 py-3 bg-surface-inverse text-txt-inverse font-bold hover:bg-surface-inverse/90 transition-colors flex items-center gap-2 border border-surface-inverse hover:opacity-90 active:scale-[0.97]"><Play size={16} /> 워크플로우 시작하기</button>
@@ -244,7 +244,7 @@ export const ValidatedIdeasPage: React.FC = () => {
         {filteredAndSortedIdeas.map(idea => {
           const adviceList = getAdviceList(idea)
           return (
-            <div key={idea.id} role="listitem" tabIndex={0} onClick={() => setSelectedIdea(idea)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedIdea(idea) } }} className={`bg-surface-card border p-5 cursor-pointer transition-all hover:shadow-sharp focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 group ${selectedIdea?.id === idea.id ? 'border-border-strong ring-1 ring-black' : 'border-border-strong hover:border-border-strong'}`}>
+            <div key={idea.id} role="listitem" tabIndex={0} onClick={() => setSelectedIdea(idea)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedIdea(idea) } }} className={`bg-surface-card border p-5 cursor-pointer transition-all hover:shadow-sharp focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 group ${selectedIdea?.id === idea.id ? 'border-border ring-1 ring-black' : 'border-border hover:border-border'}`}>
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-2">
@@ -262,7 +262,7 @@ export const ValidatedIdeasPage: React.FC = () => {
                 </div>
                 <button type="button" onClick={e => { e.stopPropagation(); setDeleteTarget(idea.id) }} disabled={deleteIdea.isPending} className="p-2 sm:opacity-0 sm:group-hover:opacity-100 hover:bg-status-danger-bg transition-all disabled:opacity-50 border border-transparent hover:border-status-danger-text/20" title="삭제"><Trash2 size={16} className="text-status-danger-text/70 hover:text-status-danger-text" /></button>
               </div>
-              {adviceList.length > 0 && (<div className="mt-3 pt-3 border-t border-dashed border-border"><p className="text-xs text-txt-tertiary line-clamp-2">{adviceList[0]}</p></div>)}
+              {adviceList.length > 0 && (<div className="mt-3 pt-3 border-t border-border"><p className="text-xs text-txt-tertiary line-clamp-2">{adviceList[0]}</p></div>)}
             </div>
           )
         })}
@@ -277,8 +277,8 @@ export const ValidatedIdeasPage: React.FC = () => {
 
       {selectedIdea && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-labelledby="modal-title" onClick={(e) => { if (e.target === e.currentTarget) setSelectedIdea(null) }}>
-          <div className="bg-surface-card shadow-brutal max-w-2xl w-full max-h-[85vh] overflow-hidden flex flex-col border border-border-strong">
-            <div className="px-6 py-4 border-b border-border-strong flex items-center justify-between shrink-0">
+          <div className="bg-surface-card shadow-brutal max-w-2xl w-full max-h-[85vh] overflow-hidden flex flex-col border border-border">
+            <div className="px-6 py-4 border-b border-border flex items-center justify-between shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-status-success-bg border border-status-success-text/20 flex items-center justify-center"><Sparkles size={18} className="text-status-success-text" aria-hidden="true" /></div>
                 <div>
@@ -294,15 +294,15 @@ export const ValidatedIdeasPage: React.FC = () => {
             <div className="p-6 overflow-y-auto flex-1 space-y-6">
               <div>
                 <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-2">프로젝트 아이디어</h4>
-                <p className="text-txt-secondary leading-relaxed bg-surface-sunken p-4 border border-border-strong">{selectedIdea.project_idea}</p>
+                <p className="text-txt-secondary leading-relaxed bg-surface-sunken p-4 border border-border">{selectedIdea.project_idea}</p>
               </div>
               {(() => { const adviceList = getAdviceList(selectedIdea); if (adviceList.length === 0) return null; return (<div><h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">AI 인사이트 ({adviceList.length}개)</h4><ul className="space-y-2" role="list">{adviceList.map((advice, i) => (<li key={i} className="flex items-start gap-3 p-3 bg-status-info-bg border border-status-info-text/20"><span className="w-6 h-6 bg-status-info-bg text-status-info-text flex items-center justify-center text-xs font-medium shrink-0" aria-hidden="true">{i + 1}</span><p className="text-sm text-txt-secondary leading-relaxed">{advice}</p></li>))}</ul></div>) })()}
               {(() => { const artifacts = selectedIdea.artifacts as { prd?: string; jd?: string } | null; if (!artifacts || (!artifacts.prd && !artifacts.jd)) return null; return (<div><h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-2">생성된 문서</h4><div className="flex gap-2">{artifacts.prd && (<span className="px-4 py-2 bg-brand-bg text-brand text-sm font-medium flex items-center gap-2 border border-brand-border"><FileText size={14} />PRD 문서</span>)}{artifacts.jd && (<span className="px-4 py-2 bg-purple-100 text-purple-700 text-sm font-medium flex items-center gap-2 border border-purple-200"><FileText size={14} />채용 공고</span>)}</div></div>) })()}
             </div>
-            <div className="px-6 py-4 border-t border-border-strong flex items-center justify-between shrink-0">
+            <div className="px-6 py-4 border-t border-border flex items-center justify-between shrink-0">
               <button type="button" onClick={() => setDeleteTarget(selectedIdea.id)} disabled={deleteIdea.isPending} className="flex items-center gap-2 px-4 py-2 text-status-danger-text hover:bg-status-danger-bg transition-colors text-sm disabled:opacity-50 border border-transparent hover:border-status-danger-text/20"><Trash2 size={16} />삭제</button>
               <div className="flex gap-2">
-                <button type="button" onClick={() => setSelectedIdea(null)} className="px-4 py-2 text-txt-secondary hover:bg-surface-sunken transition-colors text-sm border border-border-strong font-bold">닫기</button>
+                <button type="button" onClick={() => setSelectedIdea(null)} className="px-4 py-2 text-txt-secondary hover:bg-surface-sunken transition-colors text-sm border border-border font-bold">닫기</button>
                 <button type="button" onClick={() => handleContinueWorkflow(selectedIdea)} className="px-5 py-2 bg-surface-inverse text-txt-inverse hover:bg-surface-inverse/90 transition-colors text-sm font-bold flex items-center gap-2 border border-surface-inverse hover:opacity-90 active:scale-[0.97]"><Play size={14} />워크플로우 이어하기<ChevronRight size={14} /></button>
               </div>
             </div>

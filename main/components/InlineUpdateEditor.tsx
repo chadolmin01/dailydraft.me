@@ -127,7 +127,7 @@ export const InlineUpdateEditor: React.FC<InlineUpdateEditorProps> = ({
           isDragging
             ? 'border-surface-inverse bg-surface-sunken'
             : isExpanded
-            ? 'border-border-strong shadow-solid-sm'
+            ? 'border-border shadow-solid-sm'
             : 'border-border'
         }`}
       >
@@ -182,7 +182,7 @@ export const InlineUpdateEditor: React.FC<InlineUpdateEditorProps> = ({
               <button
                 type="button"
                 onClick={handleCancel}
-                className="px-3 py-1.5 text-xs text-txt-secondary border border-border-strong hover:text-txt-primary transition-colors"
+                className="px-3 py-1.5 text-xs text-txt-secondary border border-border hover:text-txt-primary transition-colors"
               >
                 취소
               </button>

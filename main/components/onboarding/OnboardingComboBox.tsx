@@ -31,7 +31,7 @@ export const OnboardingComboBox: React.FC<OnboardingComboBoxProps> = ({
 
   return (
     <div ref={containerRef} className="relative">
-      <div className="flex items-center bg-surface-card border border-border-strong focus-within:border-surface-inverse focus-within:bg-white transition-all">
+      <div className="flex items-center bg-surface-card rounded-xl border border-border focus-within:border-surface-inverse focus-within:bg-white transition-all">
         <input
           type="text"
           value={isOpen ? search || value : value}
@@ -50,7 +50,7 @@ export const OnboardingComboBox: React.FC<OnboardingComboBoxProps> = ({
         </button>
       </div>
       {isOpen && filtered.length > 0 && (
-        <div className="absolute z-50 w-full mt-1 bg-surface-card border border-border-strong shadow-sharp max-h-36 overflow-y-auto">
+        <div className="absolute z-50 w-full mt-1 bg-surface-card rounded-xl border border-border shadow-sharp max-h-36 overflow-y-auto">
           {filtered.map((opt) => (
             <button
               key={opt}

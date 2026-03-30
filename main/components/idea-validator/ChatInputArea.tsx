@@ -26,7 +26,7 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = ({
     return (
       <div className="p-4 md:p-6 bg-surface-card border-t border-border shrink-0 z-10">
         <div className="max-w-4xl mx-auto relative">
-          <div className="w-full bg-surface-sunken border border-border p-4 flex items-center justify-between">
+          <div className="w-full bg-surface-sunken rounded-xl border border-border p-4 flex items-center justify-between">
              <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-surface-sunken flex items-center justify-center text-txt-tertiary">
                     <Lock size={14} />
@@ -57,7 +57,7 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = ({
       <div className="max-w-4xl mx-auto relative">
         <div className="relative">
             <textarea
-              className="w-full min-h-[3.5rem] pl-5 pr-14 py-4 bg-surface-sunken border border-border focus:outline-none focus:bg-surface-card focus:border-border-strong focus:ring-1 focus:ring-black/10 resize-none text-sm transition-all"
+              className="w-full min-h-[3.5rem] pl-5 pr-14 py-4 bg-surface-sunken rounded-xl border border-border focus:outline-none focus:bg-surface-card rounded-xl focus:border-border focus:ring-1 focus:ring-black/10 resize-none text-sm transition-all"
               placeholder="아이디어나 답변을 입력하세요..."
               value={input}
               onChange={(e) => onInputChange(e.target.value)}

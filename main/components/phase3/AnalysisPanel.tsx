@@ -71,7 +71,7 @@ export const AnalysisPanel: React.FC<AnalysisPanelProps> = ({ reasoning, isOpen 
         </div>
       </div>
 
-      <div className="p-3 border-t border-dashed border-border bg-surface-sunken text-[0.625rem] text-center text-txt-disabled">
+      <div className="p-3 border-t border-border bg-surface-sunken text-[0.625rem] text-center text-txt-disabled">
         Gemini 2.5 Flash Model
       </div>
     </div>

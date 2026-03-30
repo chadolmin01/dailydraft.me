@@ -29,7 +29,7 @@ export function ProfileInvitations() {
       ) : receivedInvitations.length > 0 ? (
         <div className="space-y-3">
           {receivedInvitations.filter(i => i.status === 'pending').map((inv) => (
-            <div key={inv.id} className="relative bg-surface-card border border-border-strong p-4 border-l-4 border-l-brand shadow-sharp">
+            <div key={inv.id} className="relative bg-surface-card rounded-xl border border-border p-4 border-l-4 border-l-brand shadow-sharp">
               <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-surface-inverse/20" />
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                 <div className="flex-1 min-w-0">
@@ -40,7 +40,7 @@ export function ProfileInvitations() {
                     <span className="text-[0.625rem] font-mono font-bold bg-indicator-premium/10 text-indicator-premium-border px-1.5 py-0.5 border border-indicator-premium-border/20">PENDING</span>
                   </div>
                   {inv.message && (
-                    <p className="text-xs text-txt-tertiary line-clamp-2 border-l border-dashed border-border pl-2 mt-1">{inv.message}</p>
+                    <p className="text-xs text-txt-tertiary line-clamp-2 border-l border-border pl-2 mt-1">{inv.message}</p>
                   )}
                   <p className="text-[0.625rem] font-mono text-txt-tertiary mt-1">
                     {new Date(inv.created_at).toLocaleDateString('ko-KR')}
@@ -65,7 +65,7 @@ export function ProfileInvitations() {
                       } catch { /* handled by mutation */ }
                     }}
                     disabled={respondToInvitation.isPending}
-                    className="px-3 py-1.5 text-xs font-bold border border-border-strong text-txt-secondary hover:bg-surface-sunken shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                    className="px-3 py-1.5 text-xs font-bold border border-border text-txt-secondary hover:bg-surface-sunken shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
                   >
                     거절
                   </button>
@@ -75,7 +75,7 @@ export function ProfileInvitations() {
           ))}
 
           {receivedInvitations.filter(i => i.status !== 'pending').map((inv) => (
-            <div key={inv.id} className="bg-surface-card border border-border-strong p-4 hover:shadow-sharp transition-all">
+            <div key={inv.id} className="bg-surface-card rounded-xl border border-border p-4 hover:shadow-sharp transition-all">
               <div className="flex items-center gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">

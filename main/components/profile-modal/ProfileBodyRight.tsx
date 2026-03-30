@@ -23,7 +23,7 @@ export function ProfileBodyRight({
        !(teamPref && Object.keys(teamPref).length > 0) &&
        !(availability && (availability.hours_per_week != null || availability.prefer_online != null)) &&
        !(skills && skills.length > 0) && (
-        <div className="px-4 py-8 border border-dashed border-border bg-surface-sunken/30 text-center">
+        <div className="px-4 py-8 border border-border bg-surface-sunken/30 text-center">
           <p className="text-xs text-txt-disabled font-mono">아직 등록된 성향·스킬 정보가 없습니다</p>
         </div>
       )}
@@ -68,19 +68,19 @@ export function ProfileBodyRight({
           </h3>
           <div className="space-y-2">
             {teamPref.role && (
-              <div className="flex items-center justify-between px-3 py-2 bg-surface-card border border-border">
+              <div className="flex items-center justify-between px-3 py-2 bg-surface-card rounded-xl border border-border">
                 <span className="text-[0.625rem] text-txt-tertiary font-mono">역할</span>
                 <span className="text-xs font-medium text-txt-secondary">{teamPref.role}</span>
               </div>
             )}
             {teamPref.preferred_size && (
-              <div className="flex items-center justify-between px-3 py-2 bg-surface-card border border-border">
+              <div className="flex items-center justify-between px-3 py-2 bg-surface-card rounded-xl border border-border">
                 <span className="text-[0.625rem] text-txt-tertiary font-mono">선호 규모</span>
                 <span className="text-xs font-medium text-txt-secondary">{teamPref.preferred_size}</span>
               </div>
             )}
             {teamPref.atmosphere && (
-              <div className="flex items-center justify-between px-3 py-2 bg-surface-card border border-border">
+              <div className="flex items-center justify-between px-3 py-2 bg-surface-card rounded-xl border border-border">
                 <span className="text-[0.625rem] text-txt-tertiary font-mono">분위기</span>
                 <span className="text-xs font-medium text-txt-secondary">{teamPref.atmosphere}</span>
               </div>
@@ -97,13 +97,13 @@ export function ProfileBodyRight({
           </h3>
           <div className="space-y-2">
             {availability.hours_per_week != null && (
-              <div className="flex items-center justify-between px-3 py-2 bg-surface-card border border-border">
+              <div className="flex items-center justify-between px-3 py-2 bg-surface-card rounded-xl border border-border">
                 <span className="text-[0.625rem] text-txt-tertiary font-mono">주당 시간</span>
                 <span className="text-xs font-medium text-txt-secondary">{availability.hours_per_week}시간</span>
               </div>
             )}
             {availability.prefer_online != null && (
-              <div className="flex items-center justify-between px-3 py-2 bg-surface-card border border-border">
+              <div className="flex items-center justify-between px-3 py-2 bg-surface-card rounded-xl border border-border">
                 <span className="text-[0.625rem] text-txt-tertiary font-mono">작업 방식</span>
                 <span className="text-xs font-medium text-txt-secondary">{availability.prefer_online ? '온라인 선호' : '오프라인 선호'}</span>
               </div>

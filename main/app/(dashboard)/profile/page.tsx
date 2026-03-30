@@ -58,7 +58,7 @@ export default function ProfilePage() {
           href="/onboarding"
           className="block mx-auto max-w-screen-xl px-4 sm:px-6 pt-4"
         >
-          <div className="flex items-center gap-3 px-4 py-3 bg-surface-card border border-border hover:border-txt-disabled transition-colors cursor-pointer">
+          <div className="flex items-center gap-3 px-4 py-3 bg-surface-card rounded-xl border border-border hover:border-txt-disabled transition-colors cursor-pointer">
             <div className="w-8 h-8 bg-black flex items-center justify-center shrink-0">
               <Sparkles size={14} className="text-white" />
             </div>

@@ -44,7 +44,7 @@ interface OpportunitiesResponse {
 
 const statusLabels: Record<string, { label: string; cls: string }> = {
   active: { label: '활성', cls: 'border border-status-success-text text-status-success-text' },
-  closed: { label: '마감', cls: 'border border-border-strong text-txt-tertiary' },
+  closed: { label: '마감', cls: 'border border-border text-txt-tertiary' },
   draft: { label: '임시', cls: 'border border-status-warning-text text-status-warning-text' },
 }
 
@@ -171,7 +171,7 @@ export default function AdminOpportunitiesPage() {
                 placeholder="제목, 설명 검색..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-surface-card border border-border-strong text-sm focus:outline-none focus:border-brand transition-colors"
+                className="w-full pl-10 pr-4 py-2.5 bg-surface-card rounded-xl border border-border text-sm focus:outline-none focus:border-brand transition-colors"
               />
             </div>
             <div className="flex items-center gap-2">
@@ -179,7 +179,7 @@ export default function AdminOpportunitiesPage() {
               <select
                 value={statusFilter}
                 onChange={(e) => { setStatusFilter(e.target.value); setPage(1) }}
-                className="px-3 py-2.5 bg-surface-card border border-border-strong text-sm focus:outline-none focus:border-brand"
+                className="px-3 py-2.5 bg-surface-card rounded-xl border border-border text-sm focus:outline-none focus:border-brand"
               >
                 <option value="">전체 상태</option>
                 <option value="active">활성</option>
@@ -189,7 +189,7 @@ export default function AdminOpportunitiesPage() {
               <select
                 value={sort}
                 onChange={(e) => { setSort(e.target.value); setPage(1) }}
-                className="px-3 py-2.5 bg-surface-card border border-border-strong text-sm focus:outline-none focus:border-brand"
+                className="px-3 py-2.5 bg-surface-card rounded-xl border border-border text-sm focus:outline-none focus:border-brand"
               >
                 <option value="recent">최신순</option>
                 <option value="views">조회순</option>
@@ -216,7 +216,7 @@ export default function AdminOpportunitiesPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-surface-sunken border-b border-border-strong">
+                <thead className="bg-surface-sunken border-b border-border">
                   <tr>
                     <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">제목</th>
                     <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary hidden md:table-cell">유형</th>
@@ -230,7 +230,7 @@ export default function AdminOpportunitiesPage() {
                 </thead>
                 <tbody className="divide-y divide-dashed divide-border">
                   {data.opportunities.map((opp) => {
-                    const statusInfo = statusLabels[opp.status] || { label: opp.status, cls: 'border border-border-strong text-txt-tertiary' }
+                    const statusInfo = statusLabels[opp.status] || { label: opp.status, cls: 'border border-border text-txt-tertiary' }
                     return (
                       <tr key={opp.id} className="hover:bg-surface-sunken transition-colors">
                         <td className="px-4 py-3">
@@ -279,7 +279,7 @@ export default function AdminOpportunitiesPage() {
 
           {/* Pagination */}
           {data && data.totalPages > 1 && (
-            <div className="flex items-center justify-between px-4 py-3 border-t border-border-strong">
+            <div className="flex items-center justify-between px-4 py-3 border-t border-border">
               <span className="text-xs text-txt-tertiary font-mono">
                 {data.page} / {data.totalPages} 페이지
               </span>
@@ -317,7 +317,7 @@ export default function AdminOpportunitiesPage() {
               <button
                 onClick={() => setDeleteTarget(null)}
                 disabled={deleteMutation.isPending}
-                className="px-4 py-2 text-sm text-txt-secondary border border-border-strong hover:bg-black hover:text-white transition-colors"
+                className="px-4 py-2 text-sm text-txt-secondary border border-border hover:bg-black hover:text-white transition-colors"
               >
                 취소
               </button>

@@ -15,7 +15,7 @@ interface ResultSectionProps {
 const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, logs, prdResult }) => {
   if (!result) {
     return (
-        <div className="h-full flex flex-col items-center justify-center text-txt-disabled p-12 border border-dashed border-border-strong bg-surface-sunken">
+        <div className="h-full flex flex-col items-center justify-center text-txt-disabled p-12 border border-border bg-surface-sunken">
             <Target className="w-12 h-12 mb-4 opacity-20" />
             <p className="text-center font-medium">왼쪽에서 의견을 입력하고<br/>통합 버튼을 눌러주세요.</p>
         </div>
@@ -38,7 +38,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
           </div>
 
           {/* Problem / Target / Alternatives Grid */}
-          <div className="bg-surface-card p-6 shadow-sharp border border-border-strong space-y-6">
+          <div className="bg-surface-card p-6 shadow-sharp border border-border space-y-6">
              <div className="grid grid-cols-1 gap-4">
                <div className="space-y-1">
                  <div className="flex items-center gap-2 text-rose-600 font-semibold text-sm">
@@ -70,7 +70,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
           </div>
 
           {/* Core Features */}
-          <div className="bg-surface-card p-6 shadow-sharp border border-border-strong">
+          <div className="bg-surface-card p-6 shadow-sharp border border-border">
                 <div className="flex items-center gap-2 mb-6">
                     <div className="p-2 bg-status-info-bg border border-status-info-text/20 text-status-info-text">
                         <Layers className="w-5 h-5" />
@@ -90,7 +90,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
                             ))}
                         </ul>
                     </div>
-                    <div className="pt-4 border-t border-dashed border-border">
+                    <div className="pt-4 border-t border-border">
                         <span className="text-xs font-medium text-status-info-text bg-status-info-bg px-2 py-1 border border-status-info-text/20">P1 - 고도화</span>
                         <ul className="mt-3 space-y-3">
                             {result.coreFeatures.p1.map((f, i) => (
@@ -163,7 +163,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
         </div>
 
         {/* Problem / Target / Alternatives */}
-        <div className="bg-surface-card p-6 shadow-sharp border border-border-strong space-y-6">
+        <div className="bg-surface-card p-6 shadow-sharp border border-border space-y-6">
           <div className="grid grid-cols-1 gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-2 text-rose-600 font-semibold text-sm">
@@ -195,7 +195,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
         </div>
 
         {/* Core Features with Priorities */}
-        <div className="bg-surface-card p-6 shadow-sharp border border-border-strong">
+        <div className="bg-surface-card p-6 shadow-sharp border border-border">
           <div className="flex items-center gap-2 mb-6">
             <div className="p-2 bg-violet-50 border border-violet-200 text-violet-600">
               <Layers className="w-5 h-5" />
@@ -221,7 +221,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
             </div>
 
             {/* P1 Features */}
-            <div className="pt-4 border-t border-dashed border-border">
+            <div className="pt-4 border-t border-border">
               <span className="text-xs font-medium text-status-info-text bg-status-info-bg px-2 py-1 border border-status-info-text/20">P1 - 고도화</span>
               <ul className="mt-3 space-y-3">
                 {prdResult.core_features.filter(f => f.priority === 'P1').map((f, i) => (
@@ -238,7 +238,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
 
             {/* P2 Features */}
             {prdResult.core_features.filter(f => f.priority === 'P2').length > 0 && (
-              <div className="pt-4 border-t border-dashed border-border">
+              <div className="pt-4 border-t border-border">
                 <span className="text-xs font-medium text-txt-disabled bg-surface-sunken px-2 py-1 border border-border">P2 - 향후</span>
                 <ul className="mt-3 space-y-2">
                   {prdResult.core_features.filter(f => f.priority === 'P2').map((f, i) => (
@@ -314,7 +314,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
         </div>
 
         {/* Role Perspectives */}
-        <div className="bg-surface-card p-6 shadow-sharp border border-border-strong">
+        <div className="bg-surface-card p-6 shadow-sharp border border-border">
           <h3 className="font-bold text-txt-primary mb-4">Role Perspectives</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -425,7 +425,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
   return (
     <div className="animate-fade-in space-y-6 h-full">
         {/* Main Analysis Card */}
-        <div className="bg-surface-card p-8 shadow-brutal border border-border-strong">
+        <div className="bg-surface-card p-8 shadow-brutal border border-border">
             <div className={`inline-flex items-center gap-2 px-3 py-1.5 mb-6 ${roleColor}`}>
                 {roleIcon}
                 <span className="font-bold text-sm">{roleTitle}</span>
@@ -440,7 +440,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
                 <p>{roleContent}</p>
             </div>
 
-            <div className="mt-12 pt-8 border-t border-dashed border-border text-sm text-txt-disabled flex items-center gap-2">
+            <div className="mt-12 pt-8 border-t border-border text-sm text-txt-disabled flex items-center gap-2">
                 <MessageSquare className="w-4 h-4" />
                 <span>AI가 분석한 핵심 요약입니다.</span>
             </div>
@@ -448,7 +448,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
 
         {/* Input History Section for this Role */}
         {roleLogs.length > 0 && (
-            <div className="bg-surface-sunken p-6 border border-border-strong">
+            <div className="bg-surface-sunken p-6 border border-border">
                 <div className="flex items-center gap-2 mb-4 text-txt-disabled">
                     <History className="w-4 h-4" />
                     <span className="text-[0.625rem] font-medium">Input History Timeline</span>
@@ -456,7 +456,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
 
                 <div className="space-y-4">
                     {roleLogs.map((log) => (
-                        <div key={log.id} className="relative pl-6 border-l border-border-strong last:border-0 pb-1">
+                        <div key={log.id} className="relative pl-6 border-l border-border last:border-0 pb-1">
                             {/* Dot */}
                             <div className="absolute top-1.5 left-[-5px] w-2 h-2 bg-txt-disabled border border-surface-card box-content"></div>
 

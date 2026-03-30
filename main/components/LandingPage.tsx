@@ -52,7 +52,7 @@ const FadeInView: React.FC<{ children: React.ReactNode; className?: string; dela
 // --- Mock UI Components ---
 
 const MockDashboardUI = () => (
-  <div className="w-full bg-surface-card border border-border-strong shadow-brutal overflow-hidden flex flex-col md:flex-row h-full min-h-[25rem]">
+  <div className="w-full bg-surface-card rounded-xl border border-border shadow-brutal overflow-hidden flex flex-col md:flex-row h-full min-h-[25rem]">
     {/* Sidebar */}
     <div className="w-16 border-r border-border flex flex-col items-center py-6 gap-6 bg-surface-card hidden md:flex shrink-0">
       <div className="w-8 h-8 bg-black flex items-center justify-center text-white font-bold font-mono">D.</div>
@@ -154,7 +154,7 @@ const MockDashboardUI = () => (
 )
 
 const MockAICard = () => (
-   <div className="bg-surface-card border border-border-strong shadow-brutal max-w-sm w-full relative overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
+   <div className="bg-surface-card rounded-xl border border-border shadow-brutal max-w-sm w-full relative overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
       <div className="bg-black p-4 text-white flex items-center justify-between">
          <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-status-warning-text" />
@@ -190,7 +190,7 @@ const MockAICard = () => (
             </div>
 
             {/* Match Item 2 */}
-            <div className="bg-surface-card border border-border p-2.5 relative opacity-70 hover:opacity-100 transition-opacity cursor-pointer">
+            <div className="bg-surface-card rounded-xl border border-border p-2.5 relative opacity-70 hover:opacity-100 transition-opacity cursor-pointer">
                <div className="flex justify-between items-start mb-2 pl-2">
                   <div className="flex items-center gap-3">
                      <div className="w-8 h-8 bg-surface-sunken flex items-center justify-center font-bold text-xs shrink-0">DC</div>
@@ -334,7 +334,7 @@ const Hero: React.FC = () => {
 
       {/* Left Column: Text Content */}
       <div className="w-full lg:w-1/2 text-center lg:text-left relative z-10 animate-fade-in-up">
-        <div className="inline-flex items-center px-3 py-1 bg-surface-card border border-border-strong mb-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] lg:mx-0 mx-auto">
+        <div className="inline-flex items-center px-3 py-1 bg-surface-card rounded-xl border border-border mb-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] lg:mx-0 mx-auto">
           <span className="w-2 h-2 bg-indicator-online mr-2 animate-pulse"></span>
           <span className="text-[0.625rem] font-medium">System Operational v2.0</span>
         </div>
@@ -357,7 +357,7 @@ const Hero: React.FC = () => {
               placeholder="이메일을 입력해주세요"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 bg-surface-card border border-border-strong focus:outline-none focus:border-border-strong focus:ring-1 focus:ring-black transition-all text-sm font-mono placeholder:font-sans"
+              className="w-full px-4 py-3 bg-surface-card rounded-xl border border-border focus:outline-none focus:border-border focus:ring-1 focus:ring-black transition-all text-sm font-mono placeholder:font-sans"
               required
             />
           </div>
@@ -510,14 +510,14 @@ const Features: React.FC = () => {
               </p>
 
               <div className="space-y-4">
-                 <div className="flex items-start gap-4 p-4 border border-border bg-surface-card hover:border-border-strong transition-colors group cursor-default">
+                 <div className="flex items-start gap-4 p-4 border border-border bg-surface-card rounded-xl hover:border-border transition-colors group cursor-default">
                     <div className="bg-surface-sunken p-2 border border-border group-hover:bg-black group-hover:text-white transition-colors"><BarChart3 className="w-5 h-5" /></div>
                     <div>
                        <h4 className="font-bold text-sm mb-1">매칭 적합도 분석 리포트</h4>
                        <p className="text-xs text-txt-tertiary break-keep">이 후보자가 왜 94% 적합한지, 30가지 지표로 분석해드립니다.</p>
                     </div>
                  </div>
-                 <div className="flex items-start gap-4 p-4 border border-border bg-surface-card hover:border-border-strong transition-colors group cursor-default">
+                 <div className="flex items-start gap-4 p-4 border border-border bg-surface-card rounded-xl hover:border-border transition-colors group cursor-default">
                     <div className="bg-surface-sunken p-2 border border-border group-hover:bg-black group-hover:text-white transition-colors"><MessageSquare className="w-5 h-5" /></div>
                     <div>
                        <h4 className="font-bold text-sm mb-1">AI 인터뷰 모드</h4>
@@ -566,10 +566,10 @@ const Features: React.FC = () => {
            </div>
 
            <div className="flex-1 w-full">
-              <div className="bg-surface-card border border-border-strong shadow-brutal overflow-hidden">
+              <div className="bg-surface-card rounded-xl border border-border shadow-brutal overflow-hidden">
                  <div className="bg-surface-sunken border-b border-border p-4 flex justify-between items-center">
                     <h4 className="font-bold text-sm flex items-center gap-2 font-mono"><FileText className="w-4 h-4" /> DOCUMENTS.DIR</h4>
-                    <button className="bg-surface-card border border-border-strong text-[0.625rem] px-2 py-1 flex items-center gap-1 font-mono hover:bg-surface-sunken"><Plus className="w-3 h-3"/> NEW</button>
+                    <button className="bg-surface-card rounded-xl border border-border text-[0.625rem] px-2 py-1 flex items-center gap-1 font-mono hover:bg-surface-sunken"><Plus className="w-3 h-3"/> NEW</button>
                  </div>
                  <div className="divide-y divide-border">
                     {[
@@ -580,7 +580,7 @@ const Features: React.FC = () => {
                     ].map((doc, i) => (
                        <div key={i} className="p-4 flex items-center justify-between hover:bg-brand-bg transition-colors group cursor-pointer">
                           <div className="flex items-center gap-3 overflow-hidden">
-                             <div className="w-8 h-8 bg-surface-sunken border border-border text-txt-tertiary flex items-center justify-center group-hover:bg-brand group-hover:text-white transition-colors shrink-0"><FileText className="w-4 h-4" /></div>
+                             <div className="w-8 h-8 bg-surface-sunken rounded-xl border border-border text-txt-tertiary flex items-center justify-center group-hover:bg-brand group-hover:text-white transition-colors shrink-0"><FileText className="w-4 h-4" /></div>
                              <div className="min-w-0">
                                 <div className="text-sm font-bold text-txt-primary mb-0.5 truncate">{doc.name}</div>
                                 <div className="text-[0.625rem] text-txt-disabled font-mono">{doc.tag}</div>
@@ -633,7 +633,7 @@ const LiveFeed: React.FC = () => {
             style={{ width: "max-content" }}
           >
             {[...activities, ...activities, ...activities, ...activities].map((activity, i) => (
-              <div key={i} className="flex-shrink-0 bg-surface-card border border-border p-4 w-72 shadow-sm hover:border-border-strong transition-colors group">
+              <div key={i} className="flex-shrink-0 bg-surface-card rounded-xl border border-border p-4 w-72 shadow-sm hover:border-border transition-colors group">
                  <div className="flex justify-between items-start mb-2">
                     <span className={`text-[0.625rem] font-mono px-1.5 py-0.5 border ${
                       activity.type === 'MATCH' ? 'bg-brand-bg border-brand-border text-brand' :
@@ -685,7 +685,7 @@ const FinalCTA: React.FC = () => {
                 </p>
 
                 {/* Instagram CTA */}
-                <div className="mt-12 pt-8 border-t border-dashed border-white/10">
+                <div className="mt-12 pt-8 border-t border-white/10">
                     <p className="text-txt-disabled mb-4 text-sm">최신 소식과 업데이트를 받아보세요</p>
                     <a
                       href="https://instagram.com/dailydraft_me"
@@ -717,7 +717,7 @@ const Footer: React.FC = () => {
                   팀 빌딩부터 투자 유치까지, Draft가 함께합니다.
                </p>
                <div className="flex gap-4">
-                  <a href="https://instagram.com/dailydraft_me" target="_blank" rel="noopener noreferrer" className="w-8 h-8 bg-surface-sunken flex items-center justify-center border border-border hover:border-border-strong hover:bg-surface-sunken transition-colors"><span className="font-bold text-xs">IG</span></a>
+                  <a href="https://instagram.com/dailydraft_me" target="_blank" rel="noopener noreferrer" className="w-8 h-8 bg-surface-sunken flex items-center justify-center border border-border hover:border-border hover:bg-surface-sunken transition-colors"><span className="font-bold text-xs">IG</span></a>
                </div>
             </div>
 
@@ -749,7 +749,7 @@ const Footer: React.FC = () => {
             </div>
         </div>
 
-        <div className="border-t border-dashed border-border pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-txt-disabled font-mono">
+        <div className="border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-txt-disabled font-mono">
             <p>2026 Draft Inc. All rights reserved.</p>
             <div className="flex gap-4 mt-4 md:mt-0">
                <span>Seoul, Korea</span>

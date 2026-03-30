@@ -36,7 +36,7 @@ export function ExploreMobileFilter({
 
   return (
     <div className="lg:hidden mb-4 animate-in slide-in-from-top-2 duration-200">
-      <div className="bg-surface-card border border-border-strong p-4 space-y-4 shadow-sharp">
+      <div className="bg-surface-card rounded-xl border border-border p-4 space-y-4 shadow-sharp">
         <div>
           <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-2">{activeTab === 'projects' ? 'CATEGORY' : 'ROLE'}</h3>
           <div className="flex flex-wrap gap-1.5">
@@ -47,7 +47,7 @@ export function ExploreMobileFilter({
                 className={`flex items-center gap-1.5 px-3 py-2 text-xs font-bold border transition-all ${
                   selectedCategory === cat.id
                     ? 'bg-brand text-white border-brand'
-                    : 'bg-surface-sunken text-txt-secondary border-border hover:border-border-strong'
+                    : 'bg-surface-sunken text-txt-secondary border-border hover:border-border'
                 }`}
               >
                 <cat.icon size={12} />
@@ -71,10 +71,10 @@ export function ExploreMobileFilter({
           </div>
         </div>
         {activeTab === 'projects' && (
-          <div className="pt-3 border-t border-dashed border-border">
+          <div className="pt-3 border-t border-border">
             <label className="flex items-center gap-2.5 text-sm text-txt-secondary cursor-pointer min-h-[44px]">
               <div className={`w-5 h-5 sm:w-4 sm:h-4 border flex items-center justify-center transition-all ${
-                recruitingOnly ? 'bg-indicator-online border-indicator-online' : 'border-border-strong'
+                recruitingOnly ? 'bg-indicator-online border-indicator-online' : 'border-border'
               }`}>
                 {recruitingOnly && <Check size={10} className="text-white" strokeWidth={3} />}
               </div>

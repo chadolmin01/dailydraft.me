@@ -107,7 +107,7 @@ export function InstallPrompt() {
         .animate-slideDown { animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
       `}} />
 
-      <div className="mx-3 mt-2 bg-surface-inverse text-txt-inverse border border-border-strong shadow-brutal">
+      <div className="mx-3 mt-2 bg-surface-inverse text-txt-inverse border border-border shadow-brutal">
         {/* 메인 배너 */}
         {!showIOSGuide ? (
           <div className="flex items-center gap-3 px-4 py-3">

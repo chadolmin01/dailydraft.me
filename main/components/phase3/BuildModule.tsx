@@ -135,7 +135,7 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
   };
 
   return (
-    <div className="flex h-full bg-surface-card border border-border overflow-hidden">
+    <div className="flex h-full bg-surface-card rounded-xl border border-border overflow-hidden">
       {/* Analysis Panel (Left) */}
       {viewState === 'KANBAN' && (
         <AnalysisPanel
@@ -173,7 +173,7 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
               <button
                 onClick={handleSync}
                 disabled={isSyncing}
-                className="px-2 py-1 bg-surface-card border border-border-strong text-xs font-medium text-txt-secondary hover:bg-black hover:text-white flex items-center gap-1.5 transition-all"
+                className="px-2 py-1 bg-surface-card rounded-xl border border-border text-xs font-medium text-txt-secondary hover:bg-black hover:text-white flex items-center gap-1.5 transition-all"
               >
                 <RefreshCw size={12} className={isSyncing ? 'animate-spin' : ''} />
                 {isSyncing ? 'Syncing...' : 'Sync'}
@@ -195,7 +195,7 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
             <div className="h-full overflow-y-auto p-6">
               <div className="max-w-3xl mx-auto">
                 {/* PRD Viewer */}
-                <div className="bg-surface-card border border-border p-6 shadow-sharp">
+                <div className="bg-surface-card rounded-xl border border-border p-6 shadow-sharp">
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <div className="flex items-center gap-2 mb-2">
@@ -204,7 +204,7 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
                       </div>
                       <h2 className="text-xl font-bold text-txt-primary">{prd.title}</h2>
                     </div>
-                    <div className="p-2 bg-surface-sunken border border-border-subtle">
+                    <div className="p-2 bg-surface-sunken rounded-xl border border-border-subtle">
                       <FileText className="text-txt-disabled" size={20} />
                     </div>
                   </div>
@@ -237,7 +237,7 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
                     </div>
                   </div>
 
-                  <div className="mt-8 pt-6 border-t border-dashed border-border flex items-center justify-between">
+                  <div className="mt-8 pt-6 border-t border-border flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 bg-indigo-50 flex items-center justify-center">
                         <Cpu size={16} className="text-indigo-600" />
@@ -290,7 +290,7 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
                       <div className="w-6 h-6 bg-surface-sunken border border-surface-card flex items-center justify-center text-[0.5625rem] font-bold text-txt-secondary z-20">DK</div>
                       <div className="w-6 h-6 bg-indigo-100 border border-surface-card flex items-center justify-center text-[0.5625rem] font-bold text-indigo-700 z-10">AI</div>
                     </div>
-                    <button className="w-6 h-6 border border-dashed border-border-strong flex items-center justify-center text-txt-disabled hover:border-border-strong hover:text-txt-secondary transition-colors">
+                    <button className="w-6 h-6 border border-border flex items-center justify-center text-txt-disabled hover:border-border hover:text-txt-secondary transition-colors">
                       <Share2 size={12} />
                     </button>
                     <button className="bg-surface-inverse text-txt-inverse px-2.5 py-1 text-xs font-medium flex items-center gap-1.5 hover:opacity-90 active:scale-[0.97] transition-all ml-1">
@@ -306,7 +306,7 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
                   {COLUMNS.map(column => (
                     <div
                       key={column.id}
-                      className="flex-1 min-w-[15rem] max-w-xs flex flex-col h-full bg-surface-sunken border border-dashed border-border hover:bg-surface-sunken/80 transition-colors"
+                      className="flex-1 min-w-[15rem] max-w-xs flex flex-col h-full bg-surface-sunken rounded-xl border border-border hover:bg-surface-sunken/80 transition-colors"
                       onDragOver={handleDragOver}
                       onDrop={(e) => handleDrop(e, column.id)}
                     >
@@ -329,7 +329,7 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
                           />
                         ))}
                         {filteredTasks.filter(t => t.status === column.id).length === 0 && (
-                          <div className="h-20 border border-dashed border-border flex flex-col items-center justify-center text-txt-disabled text-xs gap-1">
+                          <div className="h-20 border border-border flex flex-col items-center justify-center text-txt-disabled text-xs gap-1">
                             <span className="opacity-50">Empty</span>
                           </div>
                         )}

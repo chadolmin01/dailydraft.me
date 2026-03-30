@@ -241,7 +241,7 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
 
       {/* No accepted chats, no members */}
       {acceptedChats.length === 0 && members.length === 0 && !chatsLoading && (
-        <div className="border border-dashed border-border py-12 flex flex-col items-center justify-center">
+        <div className="border border-border py-12 flex flex-col items-center justify-center">
           <div className="w-12 h-12 bg-surface-sunken flex items-center justify-center mb-3">
             <Users size={20} className="text-txt-disabled" />
           </div>
@@ -283,8 +283,8 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
           </h4>
           <div className="space-y-2 opacity-50">
             {leftMembers.map(member => (
-              <div key={member.id} className="flex items-center gap-3 px-4 py-3 bg-surface-sunken border border-border">
-                <div className="w-8 h-8 bg-surface-card border border-border flex items-center justify-center text-xs font-bold text-txt-disabled">
+              <div key={member.id} className="flex items-center gap-3 px-4 py-3 bg-surface-sunken rounded-xl border border-border">
+                <div className="w-8 h-8 bg-surface-card rounded-xl border border-border flex items-center justify-center text-xs font-bold text-txt-disabled">
                   {member.profile?.nickname?.charAt(0) || '?'}
                 </div>
                 <div className="min-w-0 flex-1">
@@ -322,7 +322,7 @@ function MemberCard({
   const isRemoving = removingId === member.id
 
   return (
-    <div className="border border-border-strong bg-surface-card">
+    <div className="border border-border bg-surface-card rounded-xl">
       <div className="flex items-start gap-3 px-4 py-3">
         {/* Avatar */}
         <div className="w-10 h-10 bg-surface-inverse text-txt-inverse flex items-center justify-center font-bold text-sm shrink-0">
@@ -383,7 +383,7 @@ function MemberCard({
             <button
               type="button"
               onClick={() => setShowRoleSelect(!showRoleSelect)}
-              className="flex items-center gap-1 px-2.5 py-1.5 text-xs border border-border hover:border-border-strong transition-colors bg-surface-card"
+              className="flex items-center gap-1 px-2.5 py-1.5 text-xs border border-border hover:border-border transition-colors bg-surface-card rounded-xl"
             >
               <span className="text-txt-secondary">{member.assigned_role || '역할 선택'}</span>
               <ChevronDown size={12} className="text-txt-disabled" />
@@ -391,7 +391,7 @@ function MemberCard({
             {showRoleSelect && (
               <>
                 <div className="fixed inset-0 z-10" onClick={() => setShowRoleSelect(false)} />
-                <div className="absolute right-0 top-full mt-1 z-20 bg-surface-card border border-border-strong shadow-brutal min-w-[8rem]">
+                <div className="absolute right-0 top-full mt-1 z-20 bg-surface-card rounded-xl border border-border shadow-brutal min-w-[8rem]">
                   {ROLE_OPTIONS.map(({ value }) => (
                     <button
                       key={value}
@@ -440,7 +440,7 @@ function MemberCard({
             <button
               type="button"
               onClick={onRemoveCancel}
-              className="px-3 py-1 border border-border text-xs text-txt-secondary hover:bg-surface-card transition-colors"
+              className="px-3 py-1 border border-border text-xs text-txt-secondary hover:bg-surface-card rounded-xl transition-colors"
             >
               취소
             </button>

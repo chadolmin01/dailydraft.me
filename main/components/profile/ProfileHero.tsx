@@ -67,7 +67,7 @@ function InlineField({
           onKeyDown={(e) => { if (e.key === 'Escape') close() }}
           placeholder={placeholder}
           rows={3}
-          className={`bg-surface-bg border border-border-strong rounded-sm outline-none w-full px-2 py-1.5 resize-none focus:border-brand transition-colors ${className || ''}`}
+          className={`bg-surface-bg border border-border rounded-sm outline-none w-full px-2 py-1.5 resize-none focus:border-brand transition-colors ${className || ''}`}
         />
       )
     }
@@ -82,7 +82,7 @@ function InlineField({
         }}
         onBlur={close}
         placeholder={placeholder}
-        className={`bg-surface-bg border border-border-strong rounded-sm outline-none px-2 py-0.5 focus:border-brand transition-colors ${className || ''}`}
+        className={`bg-surface-bg border border-border rounded-sm outline-none px-2 py-0.5 focus:border-brand transition-colors ${className || ''}`}
       />
     )
   }
@@ -198,7 +198,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
   const renderAvatar = (size: 'hero' | 'hero-cover') => {
     const sizeClass = size === 'hero-cover'
       ? 'w-14 h-14 sm:w-[72px] sm:h-[72px] border-2 border-surface-card bg-surface-card'
-      : 'w-14 h-14 sm:w-[72px] sm:h-[72px] border border-border-strong bg-brand-bg'
+      : 'w-14 h-14 sm:w-[72px] sm:h-[72px] border border-border bg-brand-bg'
     const textClass = size === 'hero-cover' ? 'text-txt-primary' : 'text-brand'
 
     return (
@@ -251,7 +251,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
         <button
           onClick={handleCancel}
           disabled={updateProfile.isPending}
-          className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-txt-secondary border border-border-strong hover:bg-surface-sunken transition-colors"
+          className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-txt-secondary border border-border hover:bg-surface-sunken transition-colors"
         >
           <X size={12} />
           취소
@@ -328,7 +328,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
               onKeyDown={(e) => { if (e.key === 'Escape') setEditingBio(false) }}
               placeholder="자기소개를 입력하세요"
               rows={3}
-              className="bg-surface-bg border border-border-strong rounded-sm outline-none w-full px-3 py-2 resize-none focus:border-brand transition-colors text-sm text-txt-secondary leading-relaxed"
+              className="bg-surface-bg border border-border rounded-sm outline-none w-full px-3 py-2 resize-none focus:border-brand transition-colors text-sm text-txt-secondary leading-relaxed"
             />
           </div>
         )
@@ -355,7 +355,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
       // Empty — prominent empty state
       return (
         <div
-          className={`${marginClass} border border-dashed border-border p-5 cursor-pointer hover:border-brand/40 hover:bg-brand-bg/30 transition-colors group/bio`}
+          className={`${marginClass} border border-border p-5 cursor-pointer hover:border-brand/40 hover:bg-brand-bg/30 transition-colors group/bio`}
           onClick={() => setEditingBio(true)}
         >
           <div className="flex flex-col items-center gap-1.5 py-1">
@@ -450,7 +450,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
   /* ════════════════════════════════════════════════════════ */
   if (coverUrl) {
     return (
-      <div className="relative bg-surface-card text-txt-primary mb-6 border border-border-strong shadow-sharp overflow-hidden">
+      <div className="relative bg-surface-card text-txt-primary mb-6 border border-border shadow-sharp overflow-hidden">
         <div className="absolute top-1.5 left-1.5 w-2.5 h-2.5 border-l border-t border-border z-20" />
         <div className="absolute top-1.5 right-1.5 w-2.5 h-2.5 border-r border-t border-border z-20" />
         <div className="absolute bottom-1.5 left-1.5 w-2.5 h-2.5 border-l border-b border-border z-20" />
@@ -505,7 +505,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
   /* Variant B: no cover image                              */
   /* ════════════════════════════════════════════════════════ */
   return (
-    <div className="relative bg-surface-card text-txt-primary p-5 pb-6 mb-6 border border-border-strong shadow-sharp">
+    <div className="relative bg-surface-card text-txt-primary p-5 pb-6 mb-6 border border-border shadow-sharp">
       <div className="absolute top-1.5 left-1.5 w-2.5 h-2.5 border-l border-t border-border" />
       <div className="absolute top-1.5 right-1.5 w-2.5 h-2.5 border-r border-t border-border" />
       <div className="absolute bottom-1.5 left-1.5 w-2.5 h-2.5 border-l border-b border-border" />

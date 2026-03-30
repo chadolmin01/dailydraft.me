@@ -20,7 +20,7 @@ export const InfoFormStep: React.FC<InfoFormStepProps> = ({
   const showUnivCombo = profile.affiliationType === 'student' || profile.affiliationType === 'graduate'
 
   return (
-    <div className="mt-3 bg-surface-card border border-border-strong p-4 shadow-sharp space-y-3">
+    <div className="mt-3 bg-surface-card rounded-xl border border-border p-4 shadow-sharp space-y-3">
       <div>
         <label className="text-[10px] font-medium text-txt-tertiary mb-1.5 block">닉네임 *</label>
         <input
@@ -28,7 +28,7 @@ export const InfoFormStep: React.FC<InfoFormStepProps> = ({
           value={profile.name}
           onChange={(e) => onProfileChange({ name: e.target.value })}
           placeholder="어떻게 불러드릴까요?"
-          className="w-full px-3.5 py-2.5 bg-surface-card border border-border-strong text-sm font-medium focus:outline-none focus:border-surface-inverse focus:bg-white transition-all placeholder:text-txt-tertiary"
+          className="w-full px-3.5 py-2.5 bg-surface-card rounded-xl border border-border text-sm font-medium focus:outline-none focus:border-surface-inverse focus:bg-white transition-all placeholder:text-txt-tertiary"
           autoFocus
           onKeyDown={(e) => e.key === 'Enter' && profile.name.trim() && onSubmit()}
         />
@@ -45,7 +45,7 @@ export const InfoFormStep: React.FC<InfoFormStepProps> = ({
               className={`px-2.5 py-1.5 text-[11px] font-medium border transition-all ${
                 profile.affiliationType === a.value
                   ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
-                  : 'bg-surface-card text-txt-primary border-border-strong hover:bg-black hover:text-white'
+                  : 'bg-surface-card text-txt-primary border-border hover:bg-black hover:text-white'
               }`}
             >
               {a.label}
@@ -71,7 +71,7 @@ export const InfoFormStep: React.FC<InfoFormStepProps> = ({
               value={profile.university}
               onChange={(e) => onProfileChange({ university: e.target.value })}
               placeholder={aff.orgPlaceholder}
-              className="w-full px-3.5 py-2.5 bg-surface-card border border-border-strong text-sm font-medium focus:outline-none focus:border-surface-inverse focus:bg-white transition-all placeholder:text-txt-tertiary"
+              className="w-full px-3.5 py-2.5 bg-surface-card rounded-xl border border-border text-sm font-medium focus:outline-none focus:border-surface-inverse focus:bg-white transition-all placeholder:text-txt-tertiary"
             />
           )}
         </div>
@@ -84,7 +84,7 @@ export const InfoFormStep: React.FC<InfoFormStepProps> = ({
             value={profile.major}
             onChange={(e) => onProfileChange({ major: e.target.value })}
             placeholder={aff.rolePlaceholder}
-            className="w-full px-3.5 py-2.5 bg-surface-card border border-border-strong text-sm font-medium focus:outline-none focus:border-surface-inverse focus:bg-white transition-all placeholder:text-txt-tertiary"
+            className="w-full px-3.5 py-2.5 bg-surface-card rounded-xl border border-border text-sm font-medium focus:outline-none focus:border-surface-inverse focus:bg-white transition-all placeholder:text-txt-tertiary"
           />
         </div>
       </div>
@@ -103,7 +103,7 @@ export const InfoFormStep: React.FC<InfoFormStepProps> = ({
               className={`px-2 py-1 text-[11px] font-medium border transition-all ${
                 profile.locations.includes(loc)
                   ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
-                  : 'bg-surface-card text-txt-primary border-border-strong hover:bg-black hover:text-white'
+                  : 'bg-surface-card text-txt-primary border-border hover:bg-black hover:text-white'
               }`}
             >
               {loc}

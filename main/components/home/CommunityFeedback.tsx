@@ -51,7 +51,7 @@ export const CommunityFeedback: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           {/* Project Card */}
-          <div className="bg-surface-card border border-border-strong p-5 shadow-brutal">
+          <div className="bg-surface-card rounded-xl border border-border p-5 shadow-brutal">
             <div className="flex items-start justify-between mb-3">
               <div>
                 <h3 className="text-base font-bold text-txt-primary mb-1.5">
@@ -88,7 +88,7 @@ export const CommunityFeedback: React.FC = () => {
             </div>
 
             {/* Stats */}
-            <div className="flex items-center gap-4 pt-4 border-t border-dashed border-border">
+            <div className="flex items-center gap-4 pt-4 border-t border-border">
               <div className="flex items-center gap-1 text-txt-secondary text-sm">
                 <MessageCircle size={14} />
                 <span>피드백 {mockProject.commentCount}개</span>
@@ -105,7 +105,7 @@ export const CommunityFeedback: React.FC = () => {
             {mockComments.map((comment, index) => (
               <div
                 key={index}
-                className="bg-surface-card border border-border p-4 relative"
+                className="bg-surface-card rounded-xl border border-border p-4 relative"
               >
                 {/* Comment number */}
                 <div className="absolute -top-2 -left-2 w-6 h-6 bg-surface-inverse text-txt-inverse flex items-center justify-center text-xs font-bold">

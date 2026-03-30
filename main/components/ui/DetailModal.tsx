@@ -59,17 +59,17 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
       ></div>
 
       {/* Modal Content */}
-      <div className="relative bg-surface-card w-full max-w-4xl h-[85vh] border border-border-strong shadow-brutal flex flex-col overflow-hidden animate-[scale-in_0.2s_ease-out]">
+      <div className="relative bg-surface-card w-full max-w-4xl h-[85vh] border border-border shadow-brutal flex flex-col overflow-hidden animate-[scale-in_0.2s_ease-out]">
         {/* Header */}
-        <div className="bg-surface-card border-b border-dashed border-border sticky top-0 z-10 shrink-0">
+        <div className="bg-surface-card border-b border-border sticky top-0 z-10 shrink-0">
           <div className="flex justify-between items-start p-6 pb-4">
             <div className="flex gap-4">
-              <div className="w-12 h-12 bg-surface-sunken border border-border-strong flex items-center justify-center text-txt-tertiary shrink-0">
+              <div className="w-12 h-12 bg-surface-sunken rounded-xl border border-border flex items-center justify-center text-txt-tertiary shrink-0">
                 {data.category === '기술교육' ? <Cpu size={24} /> : <Briefcase size={24} />}
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-[0.625rem] font-medium bg-surface-sunken border border-border px-2 py-0.5 text-txt-tertiary">
+                  <span className="text-[0.625rem] font-medium bg-surface-sunken rounded-xl border border-border px-2 py-0.5 text-txt-tertiary">
                     {data.type}
                   </span>
                 </div>
@@ -97,7 +97,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
               onClick={() => setActiveTab('details')}
               className={`pb-3 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 ${
                 activeTab === 'details'
-                  ? 'text-txt-primary border-border-strong'
+                  ? 'text-txt-primary border-border'
                   : 'text-txt-disabled border-transparent hover:text-txt-secondary'
               }`}
             >
@@ -130,7 +130,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
               {activeTab === 'details' && (
                 <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
                   <div>
-                    <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 border-b border-dashed border-border pb-2">
+                    <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 border-b border-border pb-2">
                       Overview
                     </h3>
                     <div className="prose prose-sm max-w-none text-txt-secondary space-y-4 leading-relaxed">
@@ -143,7 +143,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
                   </div>
 
                   <div>
-                    <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 border-b border-dashed border-border pb-2">
+                    <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 border-b border-border pb-2">
                       Tech Stack & Keywords
                     </h3>
                     <div className="flex flex-wrap gap-2">
@@ -186,7 +186,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-surface-card p-5 border border-border-strong shadow-sharp">
+                    <div className="bg-surface-card p-5 border border-border shadow-sharp">
                       <h4 className="text-sm font-bold text-txt-primary mb-4 flex items-center gap-2">
                         <BarChart3 size={16} /> Skill Match
                       </h4>
@@ -196,7 +196,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
                         <MetricBar label="Industry Knowledge" score={92} />
                       </div>
                     </div>
-                    <div className="bg-surface-card p-5 border border-border-strong shadow-sharp">
+                    <div className="bg-surface-card p-5 border border-border shadow-sharp">
                       <h4 className="text-sm font-bold text-txt-primary mb-4 flex items-center gap-2">
                         <Users size={16} /> Culture Fit
                       </h4>
@@ -212,16 +212,16 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
             </div>
 
             {/* Sidebar */}
-            <div className="w-full md:w-80 bg-surface-sunken border-l border-border-strong p-6 md:p-8 space-y-6 flex flex-col h-full overflow-y-auto custom-scrollbar">
+            <div className="w-full md:w-80 bg-surface-sunken border-l border-border p-6 md:p-8 space-y-6 flex flex-col h-full overflow-y-auto custom-scrollbar">
               <div className="space-y-3">
                 <button className="w-full bg-brand text-white py-3 text-sm font-bold hover:bg-brand-hover transition-all hover:opacity-90 active:scale-[0.97] flex items-center justify-center gap-2 border border-brand">
                   Apply Now <ArrowUpRight size={16} />
                 </button>
                 <div className="flex gap-2">
-                  <button className="flex-1 bg-surface-card border border-border-strong py-2.5 text-xs font-bold hover:bg-black hover:text-white transition-all flex items-center justify-center gap-2">
+                  <button className="flex-1 bg-surface-card rounded-xl border border-border py-2.5 text-xs font-bold hover:bg-black hover:text-white transition-all flex items-center justify-center gap-2">
                     <Bookmark size={14} /> Save
                   </button>
-                  <button className="flex-1 bg-surface-card border border-border-strong py-2.5 text-xs font-bold hover:bg-black hover:text-white transition-all flex items-center justify-center gap-2">
+                  <button className="flex-1 bg-surface-card rounded-xl border border-border py-2.5 text-xs font-bold hover:bg-black hover:text-white transition-all flex items-center justify-center gap-2">
                     <Share2 size={14} /> Share
                   </button>
                 </div>
@@ -234,7 +234,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
                   Snapshot
                 </h4>
                 <div className="grid grid-cols-2 gap-2">
-                  <div className="bg-surface-card p-2.5 border border-border-strong hover:shadow-sharp transition-all">
+                  <div className="bg-surface-card p-2.5 border border-border hover:shadow-sharp transition-all">
                     <div className="text-[0.5rem] text-txt-disabled mb-1">
                       Deadline
                     </div>
@@ -242,7 +242,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
                       <Calendar size={12} /> D-{data.daysLeft}
                     </div>
                   </div>
-                  <div className="bg-surface-card p-2.5 border border-border-strong hover:shadow-sharp transition-all">
+                  <div className="bg-surface-card p-2.5 border border-border hover:shadow-sharp transition-all">
                     <div className="text-[0.5rem] text-txt-disabled mb-1">Type</div>
                     <div className="font-bold text-sm text-txt-primary truncate font-mono">{data.type}</div>
                   </div>
@@ -254,7 +254,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
                   Resources
                 </h4>
                 <div className="space-y-2">
-                  <button className="w-full flex items-center justify-between p-3 bg-surface-card border border-border-strong hover:shadow-sharp transition-all group">
+                  <button className="w-full flex items-center justify-between p-3 bg-surface-card rounded-xl border border-border hover:shadow-sharp transition-all group">
                     <div className="flex items-center gap-2 overflow-hidden">
                       <FileText size={14} className="text-txt-tertiary group-hover:text-txt-primary" />
                       <span className="text-xs font-bold text-txt-secondary truncate group-hover:text-txt-primary">
@@ -266,7 +266,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
                 </div>
               </div>
 
-              <div className="mt-auto pt-4 border-t border-dashed border-border">
+              <div className="mt-auto pt-4 border-t border-border">
                 <div className="text-[0.625rem] text-txt-disabled mb-2">Need Help?</div>
                 <div className="text-xs text-txt-secondary font-mono font-medium">support@draft.io</div>
               </div>
@@ -292,7 +292,7 @@ const MetricBar = ({
       <span className="text-txt-secondary text-[0.625rem]">{label}</span>
       <span className="font-mono font-bold">{score}%</span>
     </div>
-    <div className="w-full h-1.5 bg-surface-sunken border border-border overflow-hidden">
+    <div className="w-full h-1.5 bg-surface-sunken rounded-xl border border-border overflow-hidden">
       <div className={`h-full ${color}`} style={{ width: `${score}%` }}></div>
     </div>
   </div>

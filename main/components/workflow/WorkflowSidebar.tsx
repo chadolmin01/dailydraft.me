@@ -38,7 +38,7 @@ export const WorkflowSidebar: React.FC<WorkflowSidebarProps> = ({
 
   return (
     <nav
-      className="w-64 bg-surface-card border-r border-border-strong h-full flex flex-col"
+      className="w-64 bg-surface-card border-r border-border h-full flex flex-col"
       aria-label="워크플로우 진행 단계"
     >
       {/* 헤더 */}
@@ -89,7 +89,7 @@ export const WorkflowSidebar: React.FC<WorkflowSidebarProps> = ({
                   w-8 h-8 flex items-center justify-center shrink-0 border
                   ${completed ? 'border-status-success-text text-status-success-text bg-status-success-bg' : ''}
                   ${current && !completed ? 'border-brand text-brand bg-brand-bg' : ''}
-                  ${!current && !completed ? 'border-border-strong text-txt-disabled bg-surface-sunken' : ''}
+                  ${!current && !completed ? 'border-border text-txt-disabled bg-surface-sunken' : ''}
                 `}
               >
                 {completed ? <Check size={16} /> : stepIcons[step.id]}
@@ -139,7 +139,7 @@ export const WorkflowSidebar: React.FC<WorkflowSidebarProps> = ({
       {/* 점수 표시 (검증 완료 시) */}
       {validationScore !== undefined && (
         <div className="p-6 border-t border-border">
-          <div className="bg-surface-sunken border border-border-strong p-4">
+          <div className="bg-surface-sunken rounded-xl border border-border p-4">
             <div className="text-[0.625rem] font-medium text-txt-tertiary mb-1">검증 점수</div>
             <div className="flex items-baseline gap-1" aria-label={`검증 점수 ${validationScore}점`}>
               <span className="text-2xl font-black text-txt-primary">

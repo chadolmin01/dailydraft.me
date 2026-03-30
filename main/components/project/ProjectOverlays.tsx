@@ -21,7 +21,7 @@ export const ProjectOverlays: React.FC<ProjectOverlaysProps> = ({
       {/* Coffee Chat Form Overlay (Authenticated) */}
       {showCoffeeChatForm && opportunity && (
         <div className="absolute inset-0 bg-black/60 z-20 flex flex-col items-center justify-center p-4 sm:p-8 overflow-y-auto animate-backdrop-in">
-          <div className="w-full max-w-sm sm:max-w-md bg-surface-card border border-border-strong p-6 sm:p-8 shadow-brutal-xl animate-modal-in">
+          <div className="w-full max-w-sm sm:max-w-md bg-surface-card rounded-xl border border-border p-6 sm:p-8 shadow-brutal-xl animate-modal-in">
             <CoffeeChatRequestForm
               opportunityId={opportunity.id}
               onClose={() => { setShowCoffeeChatForm(false); setSelectedRole(undefined) }}
@@ -44,7 +44,7 @@ export const ProjectOverlays: React.FC<ProjectOverlaysProps> = ({
       {/* Signup CTA Overlay (Non-authenticated) */}
       {showCta && (
         <div className="absolute inset-0 bg-black/60 z-20 flex flex-col items-center justify-center p-4 sm:p-8 text-center overflow-y-auto animate-backdrop-in">
-          <div className="w-full max-w-sm sm:max-w-md bg-surface-card border border-border-strong p-6 sm:p-8 shadow-brutal-xl animate-modal-in">
+          <div className="w-full max-w-sm sm:max-w-md bg-surface-card rounded-xl border border-border p-6 sm:p-8 shadow-brutal-xl animate-modal-in">
             <div className="w-14 h-14 bg-black flex items-center justify-center mb-6 mx-auto">
               <span className="text-white font-black text-xl font-mono">D</span>
             </div>

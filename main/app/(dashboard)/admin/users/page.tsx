@@ -152,7 +152,7 @@ export default function AdminUsersPage() {
               placeholder="닉네임, 대학, 이메일 검색..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-surface-card border border-border-strong text-sm focus:outline-none focus:border-brand transition-colors"
+              className="w-full pl-10 pr-4 py-2.5 bg-surface-card rounded-xl border border-border text-sm focus:outline-none focus:border-brand transition-colors"
             />
           </div>
           <div className="text-sm text-txt-tertiary font-mono">
@@ -174,7 +174,7 @@ export default function AdminUsersPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-surface-sunken border-b border-border-strong">
+                <thead className="bg-surface-sunken border-b border-border">
                   <tr>
                     <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">닉네임</th>
                     <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary hidden md:table-cell">대학</th>
@@ -201,7 +201,7 @@ export default function AdminUsersPage() {
                           {u.onboarding_completed ? (
                             <span className="px-2 py-0.5 text-[0.625rem] font-mono font-bold border border-status-success-text text-status-success-text">완료</span>
                           ) : (
-                            <span className="px-2 py-0.5 text-[0.625rem] font-mono font-bold border border-border-strong text-txt-tertiary">미완</span>
+                            <span className="px-2 py-0.5 text-[0.625rem] font-mono font-bold border border-border text-txt-tertiary">미완</span>
                           )}
                           {u.is_premium && (
                             <span className="px-2 py-0.5 text-[0.625rem] font-mono font-bold border border-status-warning-text text-status-warning-text">PRO</span>
@@ -227,7 +227,7 @@ export default function AdminUsersPage() {
 
           {/* Pagination */}
           {data && data.totalPages > 1 && (
-            <div className="flex items-center justify-between px-4 py-3 border-t border-border-strong">
+            <div className="flex items-center justify-between px-4 py-3 border-t border-border">
               <span className="text-xs text-txt-tertiary font-mono">
                 {data.page} / {data.totalPages} 페이지
               </span>
@@ -265,7 +265,7 @@ export default function AdminUsersPage() {
               <button
                 onClick={() => setDeleteTarget(null)}
                 disabled={deleteMutation.isPending}
-                className="px-4 py-2 text-sm text-txt-secondary border border-border-strong hover:bg-black hover:text-white transition-colors"
+                className="px-4 py-2 text-sm text-txt-secondary border border-border hover:bg-black hover:text-white transition-colors"
               >
                 취소
               </button>

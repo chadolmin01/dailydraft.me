@@ -89,7 +89,7 @@ export const OpportunitySection: React.FC = () => {
           </div>
           <button
             onClick={() => router.push('/explore')}
-            className="text-sm font-bold text-txt-secondary hover:text-black transition-colors flex items-center gap-1 border-b border-border-strong pb-0.5 hover:border-border-strong"
+            className="text-sm font-bold text-txt-secondary hover:text-black transition-colors flex items-center gap-1 border-b border-border pb-0.5 hover:border-border"
           >
             전체 보기 <ArrowRight size={14} />
           </button>
@@ -104,13 +104,13 @@ export const OpportunitySection: React.FC = () => {
             {displayProjects.map((project) => (
               <div
                 key={project.id}
-                className="group bg-surface-card border border-border p-4 hover:border-border-strong hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col h-full"
+                className="group bg-surface-card rounded-xl border border-border p-4 hover:border-border hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col h-full"
                 onClick={() => project.isReal ? setSelectedProjectId(project.id) : router.push('/explore')}
               >
                 {/* Header */}
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 bg-surface-card border border-border-subtle flex items-center justify-center text-txt-primary group-hover:bg-black group-hover:text-white transition-colors">
+                    <div className="w-10 h-10 bg-surface-card rounded-xl border border-border-subtle flex items-center justify-center text-txt-primary group-hover:bg-black group-hover:text-white transition-colors">
                       <Zap size={20} />
                     </div>
                     {project.isReal && (
@@ -143,7 +143,7 @@ export const OpportunitySection: React.FC = () => {
                 </p>
 
                 {/* Footer */}
-                <div className="pt-4 border-t border-dashed border-border mt-auto">
+                <div className="pt-4 border-t border-border mt-auto">
                   {project.needed_roles && project.needed_roles.length > 0 && (
                     <div className="mb-3">
                       <span className="text-[0.625rem] font-medium text-txt-disabled block mb-1">
@@ -167,7 +167,7 @@ export const OpportunitySection: React.FC = () => {
                       {project.interest_tags.slice(0, 3).map((tag) => (
                         <span
                           key={tag}
-                          className="text-[0.625rem] bg-surface-card border border-border text-txt-secondary px-1.5 py-0.5"
+                          className="text-[0.625rem] bg-surface-card rounded-xl border border-border text-txt-secondary px-1.5 py-0.5"
                         >
                           {tag}
                         </span>
@@ -181,9 +181,9 @@ export const OpportunitySection: React.FC = () => {
             {/* + Add Project Card */}
             <div
               onClick={() => router.push('/login')}
-              className="group bg-surface-card border border-dashed border-border-strong p-6 hover:border-brand hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col items-center justify-center h-full min-h-[13.75rem] gap-4"
+              className="group bg-surface-card rounded-xl border border-border p-6 hover:border-brand hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col items-center justify-center h-full min-h-[13.75rem] gap-4"
             >
-              <div className="w-14 h-14 bg-surface-card border border-border flex items-center justify-center group-hover:bg-brand group-hover:border-brand transition-colors">
+              <div className="w-14 h-14 bg-surface-card rounded-xl border border-border flex items-center justify-center group-hover:bg-brand group-hover:border-brand transition-colors">
                 <Plus size={24} className="text-txt-disabled group-hover:text-white transition-colors" />
               </div>
               <div className="text-center">

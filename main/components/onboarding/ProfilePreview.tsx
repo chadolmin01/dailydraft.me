@@ -29,10 +29,10 @@ export const ProfilePreview: React.FC<ProfilePreviewProps> = ({
               </div>
             )}
           </div>
-          <div className={`bg-surface-card border border-border-strong shadow-sharp overflow-hidden transition-all duration-500 ${profile.name ? 'opacity-100 translate-y-0' : 'opacity-30 translate-y-2'}`}>
+          <div className={`bg-surface-card rounded-xl border border-border shadow-sharp overflow-hidden transition-all duration-500 ${profile.name ? 'opacity-100 translate-y-0' : 'opacity-30 translate-y-2'}`}>
             <div className="p-5 space-y-3.5">
               <div className="flex items-start gap-3">
-                <div className="w-12 h-12 bg-surface-sunken border border-border-strong flex items-center justify-center text-base font-bold text-txt-disabled shrink-0">
+                <div className="w-12 h-12 bg-surface-sunken rounded-xl border border-border flex items-center justify-center text-base font-bold text-txt-disabled shrink-0">
                   {profile.name ? <span className="text-txt-primary">{profile.name[0]}</span> : <User size={20} strokeWidth={1.5} />}
                 </div>
                 <div className="flex-1 min-w-0 pt-0.5">
@@ -55,7 +55,7 @@ export const ProfilePreview: React.FC<ProfilePreviewProps> = ({
                 </div>
               )}
               {profile.situation && (
-                <div className="px-3 py-2 bg-surface-sunken border border-border">
+                <div className="px-3 py-2 bg-surface-sunken rounded-xl border border-border">
                   <p className="text-[12px] text-txt-secondary font-medium">{SITUATION_OPTIONS.find(s => s.value === profile.situation)?.label}</p>
                 </div>
               )}

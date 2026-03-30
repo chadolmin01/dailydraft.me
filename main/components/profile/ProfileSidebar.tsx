@@ -46,7 +46,7 @@ function LinkField({
 
   if (editing) {
     return (
-      <div className="flex items-center gap-2 px-2 py-1.5 border border-border-strong">
+      <div className="flex items-center gap-2 px-2 py-1.5 border border-border">
         <Icon size={13} className="text-txt-tertiary shrink-0" />
         <input
           ref={ref}
@@ -77,7 +77,7 @@ function LinkField({
 
   return (
     <div
-      className="group/link flex items-center gap-2.5 px-2 py-1.5 text-xs text-txt-disabled hover:bg-surface-sunken hover:text-txt-tertiary transition-colors border border-dashed border-border cursor-pointer"
+      className="group/link flex items-center gap-2.5 px-2 py-1.5 text-xs text-txt-disabled hover:bg-surface-sunken hover:text-txt-tertiary transition-colors border border-border cursor-pointer"
       onClick={() => setEditing(true)}
       title="클릭하여 추가"
     >
@@ -152,14 +152,14 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
       {/* --- 프로필 설정 버튼 --- */}
       <button
         onClick={() => router.push('/profile/edit')}
-        className="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-bold border border-border-strong hover:bg-black hover:text-white transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] bg-surface-card"
+        className="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-bold border border-border hover:bg-black hover:text-white transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] bg-surface-card rounded-xl"
       >
         <Edit3 size={12} /> 프로필 설정
       </button>
 
       {/* --- SOCIAL LINKS --- */}
       {showLinksSection && (
-        <div className="relative bg-surface-card border border-border-strong p-4 shadow-sharp">
+        <div className="relative bg-surface-card rounded-xl border border-border p-4 shadow-sharp">
           <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
             <span className="w-4 h-4 bg-brand text-white flex items-center justify-center text-[0.5rem] font-bold">L</span>
             LINKS
@@ -193,7 +193,7 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
           </div>
           {isEditable && hasPendingChanges && (
             <div className="flex items-center justify-end gap-2 pt-3 mt-3 border-t border-border">
-              <button onClick={handleCancel} disabled={updateProfile.isPending} className="flex items-center gap-1 px-2.5 py-1 text-[0.625rem] font-bold text-txt-secondary border border-border-strong hover:bg-surface-sunken transition-colors">
+              <button onClick={handleCancel} disabled={updateProfile.isPending} className="flex items-center gap-1 px-2.5 py-1 text-[0.625rem] font-bold text-txt-secondary border border-border hover:bg-surface-sunken transition-colors">
                 <X size={10} /> 취소
               </button>
               <button onClick={handleSave} disabled={updateProfile.isPending} className="flex items-center gap-1 px-3 py-1 text-[0.625rem] font-bold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97] disabled:opacity-50">
@@ -207,14 +207,14 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
 
       {/* --- TECH STACK --- */}
       {skills && skills.length > 0 && (
-        <div className="relative bg-surface-card border border-border-strong p-4 shadow-sharp">
+        <div className="relative bg-surface-card rounded-xl border border-border p-4 shadow-sharp">
           <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
             <span className="w-4 h-4 bg-indicator-online text-white flex items-center justify-center text-[0.5rem] font-bold">S</span>
             TECH STACK
           </h3>
           <div className="space-y-1.5">
             {skills.map((skill, idx) => (
-              <div key={idx} className="flex items-center justify-between py-1 border-b border-dashed border-border last:border-0">
+              <div key={idx} className="flex items-center justify-between py-1 border-b border-border last:border-0">
                 <span className="flex items-center gap-2 text-xs text-txt-secondary">
                   <span className="text-[0.625rem] font-mono text-txt-tertiary">{String(idx + 1).padStart(2, '0')}</span>
                   {skill.name}
@@ -228,7 +228,7 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
 
       {/* --- PERSONALITY --- */}
       {profile?.personality && (
-        <div className="relative bg-surface-card border border-border-strong p-4 shadow-sharp">
+        <div className="relative bg-surface-card rounded-xl border border-border p-4 shadow-sharp">
           <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
             <span className="w-4 h-4 bg-indicator-premium text-white flex items-center justify-center text-[0.5rem] font-bold">P</span>
             PERSONALITY
@@ -238,7 +238,7 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
               <div key={key} className="flex items-center justify-between">
                 <span className="text-[0.625rem] text-txt-secondary">{key.replace(/_/g, ' ')}</span>
                 <div className="flex items-center gap-2">
-                  <div className="w-16 h-1.5 bg-surface-sunken border border-border overflow-hidden">
+                  <div className="w-16 h-1.5 bg-surface-sunken rounded-xl border border-border overflow-hidden">
                     <div className="h-full bg-brand transition-all" style={{ width: `${(value / 10) * 100}%` }} />
                   </div>
                   <span className="text-[0.625rem] font-mono text-txt-tertiary w-8 text-right">{value}/10</span>
@@ -250,7 +250,7 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
       )}
 
       {/* --- COMPLETION --- */}
-      <div className="relative bg-surface-card border border-border-strong p-4 shadow-sharp">
+      <div className="relative bg-surface-card rounded-xl border border-border p-4 shadow-sharp">
         <div className="absolute bottom-1 left-1 w-2 h-2 border-l border-b border-surface-inverse/20" />
         <div className="absolute bottom-1 right-1 w-2 h-2 border-r border-b border-surface-inverse/20" />
         <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
@@ -261,7 +261,7 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
           <span className="text-lg font-mono font-bold text-txt-primary">{completion.pct}%</span>
           <span className="text-[0.625rem] font-mono text-txt-tertiary">{completion.completedCount}/{completion.fields.length} FIELDS</span>
         </div>
-        <div className="w-full h-2 bg-surface-sunken border border-border overflow-hidden mb-3">
+        <div className="w-full h-2 bg-surface-sunken rounded-xl border border-border overflow-hidden mb-3">
           <div className="h-full bg-indicator-online transition-all" style={{ width: `${completion.pct}%` }} />
         </div>
         <div className="space-y-1">
@@ -271,7 +271,7 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
               {f.done ? (
                 <span className="w-3.5 h-3.5 bg-indicator-online text-white flex items-center justify-center"><Check size={10} /></span>
               ) : (
-                <span className="w-3.5 h-3.5 border border-border-strong" />
+                <span className="w-3.5 h-3.5 border border-border" />
               )}
               <span className={f.done ? 'text-txt-tertiary line-through font-mono text-[0.625rem]' : 'text-txt-secondary font-mono text-[0.625rem]'}>{f.label}</span>
             </div>

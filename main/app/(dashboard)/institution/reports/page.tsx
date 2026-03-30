@@ -145,7 +145,7 @@ export default function InstitutionReportsPage() {
               </div>
 
               {/* Institution Info */}
-              <div className="border-b border-dashed border-border pb-4 mb-6">
+              <div className="border-b border-border pb-4 mb-6">
                 <h2 className="text-xl font-bold text-txt-primary">{report.institution.name}</h2>
                 <p className="text-sm text-txt-secondary mt-1">{report.institution.university}</p>
               </div>
@@ -206,7 +206,7 @@ export default function InstitutionReportsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Card
                   padding="p-5"
-                  className="group cursor-pointer hover:border-border-strong"
+                  className="group cursor-pointer hover:border-border"
                   onClick={downloadCSV}
                 >
                   <div className="flex items-center justify-between">
@@ -229,7 +229,7 @@ export default function InstitutionReportsPage() {
 
                 <Card
                   padding="p-5"
-                  className="group cursor-pointer hover:border-border-strong"
+                  className="group cursor-pointer hover:border-border"
                   onClick={downloadJSON}
                 >
                   <div className="flex items-center justify-between">

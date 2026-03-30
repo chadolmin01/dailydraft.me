@@ -142,7 +142,7 @@ export default function ErrorLogsPage() {
     <div className="flex-1 overflow-y-auto h-screen bg-surface-sunken">
       <div className="max-w-[100rem] mx-auto p-8 lg:p-12 space-y-6">
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-border-strong pb-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-border pb-6">
           <div>
             <div className="text-[0.625rem] font-medium text-txt-tertiary mb-2 flex items-center gap-2">
               <span className="w-2 h-2 bg-indicator-alert"></span>
@@ -169,7 +169,7 @@ export default function ErrorLogsPage() {
               placeholder="메시지, 엔드포인트 검색..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-surface-card border border-border-strong text-sm focus:outline-none focus:border-brand"
+              className="w-full pl-10 pr-4 py-2 bg-surface-card rounded-xl border border-border text-sm focus:outline-none focus:border-brand"
             />
           </div>
 
@@ -178,7 +178,7 @@ export default function ErrorLogsPage() {
             <select
               value={levelFilter}
               onChange={(e) => setLevelFilter(e.target.value)}
-              className="px-3 py-2 bg-surface-card border border-border-strong text-sm focus:outline-none focus:border-brand"
+              className="px-3 py-2 bg-surface-card rounded-xl border border-border text-sm focus:outline-none focus:border-brand"
             >
               <option value="all">모든 레벨</option>
               <option value="debug">Debug</option>
@@ -191,7 +191,7 @@ export default function ErrorLogsPage() {
             <select
               value={sourceFilter}
               onChange={(e) => setSourceFilter(e.target.value)}
-              className="px-3 py-2 bg-surface-card border border-border-strong text-sm focus:outline-none focus:border-brand"
+              className="px-3 py-2 bg-surface-card rounded-xl border border-border text-sm focus:outline-none focus:border-brand"
             >
               <option value="all">모든 소스</option>
               <option value="api">API</option>
@@ -233,7 +233,7 @@ export default function ErrorLogsPage() {
             <p className="text-txt-secondary mb-4">에러 로그를 불러올 수 없습니다</p>
             <button
               onClick={() => refetch()}
-              className="px-4 py-2 border border-border-strong text-txt-secondary text-sm hover:bg-black hover:text-white transition-colors"
+              className="px-4 py-2 border border-border text-txt-secondary text-sm hover:bg-black hover:text-white transition-colors"
             >
               다시 시도
             </button>
@@ -272,7 +272,7 @@ export default function ErrorLogsPage() {
                           {log.source.toUpperCase()}
                         </span>
                         {log.error_code && (
-                          <span className="px-2 py-0.5 text-[0.625rem] font-mono font-bold bg-surface-sunken border border-border text-txt-secondary">
+                          <span className="px-2 py-0.5 text-[0.625rem] font-mono font-bold bg-surface-sunken rounded-xl border border-border text-txt-secondary">
                             {log.error_code}
                           </span>
                         )}
@@ -302,7 +302,7 @@ export default function ErrorLogsPage() {
                       {/* Full message */}
                       <div>
                         <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-1">MESSAGE</h4>
-                        <p className="text-sm text-txt-primary bg-surface-card p-3 border border-border-strong">
+                        <p className="text-sm text-txt-primary bg-surface-card p-3 border border-border">
                           {log.message}
                         </p>
                       </div>
@@ -311,7 +311,7 @@ export default function ErrorLogsPage() {
                       {log.stack_trace && (
                         <div>
                           <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-1">STACK TRACE</h4>
-                          <pre className="text-xs text-txt-secondary bg-surface-card p-3 border border-border-strong overflow-x-auto">
+                          <pre className="text-xs text-txt-secondary bg-surface-card p-3 border border-border overflow-x-auto">
                             {log.stack_trace}
                           </pre>
                         </div>
@@ -321,7 +321,7 @@ export default function ErrorLogsPage() {
                       {log.request_body && (
                         <div>
                           <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-1">REQUEST BODY</h4>
-                          <pre className="text-xs text-txt-secondary bg-surface-card p-3 border border-border-strong overflow-x-auto">
+                          <pre className="text-xs text-txt-secondary bg-surface-card p-3 border border-border overflow-x-auto">
                             {JSON.stringify(log.request_body, null, 2)}
                           </pre>
                         </div>
@@ -331,14 +331,14 @@ export default function ErrorLogsPage() {
                       {log.metadata && Object.keys(log.metadata).length > 0 && (
                         <div>
                           <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-1">METADATA</h4>
-                          <pre className="text-xs text-txt-secondary bg-surface-card p-3 border border-border-strong overflow-x-auto">
+                          <pre className="text-xs text-txt-secondary bg-surface-card p-3 border border-border overflow-x-auto">
                             {JSON.stringify(log.metadata, null, 2)}
                           </pre>
                         </div>
                       )}
 
                       {/* Additional info */}
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2 border-t border-dashed border-border">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2 border-t border-border">
                         {log.user_id && (
                           <div>
                             <span className="text-[0.625rem] font-mono text-txt-disabled">USER ID</span>

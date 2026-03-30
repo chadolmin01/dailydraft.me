@@ -8,12 +8,12 @@ import { useAuth } from '@/src/context/AuthContext'
 // Data for the Marquee
 const showcaseItems = [
   { type: 'project', title: '캠퍼스 중고거래', desc: 'React Native 앱 개발', tag: '모집 중', color: 'bg-surface-inverse text-white' },
-  { type: 'talent', title: '김민수', desc: '프론트엔드 개발자', tag: 'OPEN', color: 'bg-surface-card border-border-strong text-txt-primary' },
+  { type: 'talent', title: '김민수', desc: '프론트엔드 개발자', tag: 'OPEN', color: 'bg-surface-card border-border text-txt-primary' },
   { type: 'project', title: 'AI 스터디 플래너', desc: 'GPT 기반 학습 도우미', tag: '팀빌딩 중', color: 'bg-brand text-white' },
-  { type: 'talent', title: '박지영', desc: 'UI/UX 디자이너', tag: 'OPEN', color: 'bg-surface-card border-border-strong text-txt-primary' },
+  { type: 'talent', title: '박지영', desc: 'UI/UX 디자이너', tag: 'OPEN', color: 'bg-surface-card border-border text-txt-primary' },
   { type: 'project', title: '학식 알리미', desc: '대학 식당 메뉴 알림', tag: '런칭 완료', color: 'bg-surface-inverse text-white' },
-  { type: 'talent', title: '이준호', desc: '백엔드 개발자', tag: 'OPEN', color: 'bg-surface-card border-border-strong text-txt-primary' },
-  { type: 'project', title: '동아리 매칭', desc: '관심사 기반 동아리 추천', tag: '모집 중', color: 'bg-surface-card border-border-strong text-txt-primary' },
+  { type: 'talent', title: '이준호', desc: '백엔드 개발자', tag: 'OPEN', color: 'bg-surface-card border-border text-txt-primary' },
+  { type: 'project', title: '동아리 매칭', desc: '관심사 기반 동아리 추천', tag: '모집 중', color: 'bg-surface-card border-border text-txt-primary' },
 ]
 
 const showcaseColumn1 = [...showcaseItems, ...showcaseItems, ...showcaseItems]
@@ -150,7 +150,7 @@ function LoginContent() {
     <div className="fixed inset-0 z-[100] flex h-screen w-screen overflow-hidden bg-surface-card">
 
       {/* LEFT: Login Panel (Fixed Width) */}
-      <div className="w-full lg:w-[30rem] xl:w-[35rem] flex flex-col justify-between bg-surface-card z-20 shadow-brutal shrink-0 h-full relative border-r-2 border-border-strong">
+      <div className="w-full lg:w-[30rem] xl:w-[35rem] flex flex-col justify-between bg-surface-card z-20 shadow-brutal shrink-0 h-full relative border-r-2 border-border">
 
          {/* Top Branding */}
          <div className="p-5 sm:p-8 md:p-12 animate-slide-up-fade">
@@ -158,7 +158,7 @@ function LoginContent() {
                <div className="w-8 h-8 bg-surface-inverse text-txt-inverse flex items-center justify-center font-black text-lg shadow-solid-sm">D</div>
                <span className="font-bold text-xl tracking-tight text-txt-primary">Draft.</span>
             </div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-surface-sunken border border-border-strong">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-surface-sunken rounded-xl border border-border">
                <span className="w-2 h-2 bg-status-success-text animate-pulse"></span>
                <span className="text-[0.625rem] font-medium text-txt-tertiary">Open Beta</span>
             </div>
@@ -190,7 +190,7 @@ function LoginContent() {
                         type="text"
                         value={nickname}
                         onChange={(e) => setNickname(e.target.value)}
-                        className="w-full px-4 py-3 bg-surface-sunken border border-border-strong text-sm font-medium focus:outline-none focus:border-brand focus:bg-surface-card transition-all placeholder:text-txt-disabled"
+                        className="w-full px-4 py-3 bg-surface-sunken rounded-xl border border-border text-sm font-medium focus:outline-none focus:border-brand focus:bg-surface-card rounded-xl transition-all placeholder:text-txt-disabled"
                         placeholder="닉네임을 입력하세요"
                         required={isSignUp}
                      />
@@ -203,7 +203,7 @@ function LoginContent() {
                      type="email"
                      value={email}
                      onChange={(e) => setEmail(e.target.value)}
-                     className="w-full px-4 py-3 bg-surface-sunken border border-border-strong text-sm font-medium focus:outline-none focus:border-brand focus:bg-surface-card transition-all placeholder:text-txt-disabled font-mono"
+                     className="w-full px-4 py-3 bg-surface-sunken rounded-xl border border-border text-sm font-medium focus:outline-none focus:border-brand focus:bg-surface-card rounded-xl transition-all placeholder:text-txt-disabled font-mono"
                      placeholder="email@example.com"
                      required
                   />
@@ -215,7 +215,7 @@ function LoginContent() {
                      type="password"
                      value={password}
                      onChange={(e) => setPassword(e.target.value)}
-                     className="w-full px-4 py-3 bg-surface-sunken border border-border-strong text-sm font-medium focus:outline-none focus:border-brand focus:bg-surface-card transition-all placeholder:text-txt-disabled"
+                     className="w-full px-4 py-3 bg-surface-sunken rounded-xl border border-border text-sm font-medium focus:outline-none focus:border-brand focus:bg-surface-card rounded-xl transition-all placeholder:text-txt-disabled"
                      placeholder="비밀번호를 입력하세요"
                      required
                      minLength={6}
@@ -225,7 +225,7 @@ function LoginContent() {
                <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-brand text-white py-3.5 text-sm font-bold border border-brand hover:bg-brand-hover transition-all flex items-center justify-center gap-2 group hover:opacity-90 active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-solid-sm"
+                  className="w-full bg-brand text-white py-3.5 text-sm font-bold border border-brand hover:bg-brand-hover transition-all flex items-center justify-center gap-2 group hover:opacity-90 active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-md"
                >
                   {isSubmitting ? (
                      <Loader2 size={16} className="animate-spin" />
@@ -252,7 +252,7 @@ function LoginContent() {
 
             <div className="relative my-10">
                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-dashed border-border"></div>
+                  <div className="w-full border-t border-border"></div>
                </div>
                <div className="relative flex justify-center text-xs">
                   <span className="bg-surface-card px-2 text-txt-tertiary text-[0.625rem] font-medium">소셜 로그인</span>
@@ -263,7 +263,7 @@ function LoginContent() {
                <button
                   onClick={handleGoogleLogin}
                   type="button"
-                  className="flex items-center justify-center gap-2 px-4 py-3 border border-border-strong hover:bg-surface-inverse hover:text-txt-inverse transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                  className="flex items-center justify-center gap-2 px-4 py-3 border border-border hover:bg-surface-inverse hover:text-txt-inverse transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
                >
                   <Chrome size={16} />
                   <span className="text-xs font-bold font-mono">Google</span>
@@ -271,7 +271,7 @@ function LoginContent() {
                <button
                   onClick={handleGithubLogin}
                   type="button"
-                  className="flex items-center justify-center gap-2 px-4 py-3 border border-border-strong hover:bg-surface-inverse hover:text-txt-inverse transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                  className="flex items-center justify-center gap-2 px-4 py-3 border border-border hover:bg-surface-inverse hover:text-txt-inverse transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
                >
                   <Github size={16} />
                   <span className="text-xs font-bold font-mono">GitHub</span>
@@ -280,7 +280,7 @@ function LoginContent() {
          </div>
 
          {/* Bottom Footer */}
-         <div className="p-5 sm:p-8 md:p-12 text-[0.625rem] text-txt-tertiary font-medium flex justify-between animate-slide-up-fade border-t border-dashed border-border" style={{ animationDelay: '0.2s' }}>
+         <div className="p-5 sm:p-8 md:p-12 text-[0.625rem] text-txt-tertiary font-medium flex justify-between animate-slide-up-fade border-t border-border" style={{ animationDelay: '0.2s' }}>
             <span>© 2026 DRAFT INC.</span>
             <span className="flex items-center gap-1"><Shield size={10}/> SECURE CONNECTION</span>
          </div>
@@ -290,13 +290,13 @@ function LoginContent() {
       <div className="hidden lg:flex flex-1 bg-surface-sunken bg-grid-engineering relative overflow-hidden flex-col justify-center items-center">
 
          {/* Blueprint dimension lines (decorative) */}
-         <div className="absolute top-8 left-8 right-8 border-t border-dashed border-border-strong/20 z-10 pointer-events-none">
-           <span className="absolute -top-px left-0 w-2 h-2 border-l border-t border-border-strong/30" />
-           <span className="absolute -top-px right-0 w-2 h-2 border-r border-t border-border-strong/30" />
+         <div className="absolute top-8 left-8 right-8 border-t border-border/20 z-10 pointer-events-none">
+           <span className="absolute -top-px left-0 w-2 h-2 border-l border-t border-border/30" />
+           <span className="absolute -top-px right-0 w-2 h-2 border-r border-t border-border/30" />
          </div>
-         <div className="absolute bottom-8 left-8 right-8 border-b border-dashed border-border-strong/20 z-10 pointer-events-none">
-           <span className="absolute -bottom-px left-0 w-2 h-2 border-l border-b border-border-strong/30" />
-           <span className="absolute -bottom-px right-0 w-2 h-2 border-r border-b border-border-strong/30" />
+         <div className="absolute bottom-8 left-8 right-8 border-b border-border/20 z-10 pointer-events-none">
+           <span className="absolute -bottom-px left-0 w-2 h-2 border-l border-b border-border/30" />
+           <span className="absolute -bottom-px right-0 w-2 h-2 border-r border-b border-border/30" />
          </div>
 
          {/* Blueprint label */}
@@ -333,8 +333,8 @@ function LoginContent() {
                <span className="text-txt-tertiary">팀을 만들어보세요.</span>
             </h2>
             <div className="flex justify-end gap-2">
-               <div className="px-3 py-1 bg-surface-card border border-border-strong text-[0.625rem] font-bold font-mono shadow-solid-sm">커피챗</div>
-               <div className="px-3 py-1 bg-surface-card border border-border-strong text-[0.625rem] font-bold font-mono shadow-solid-sm">팀빌딩</div>
+               <div className="px-3 py-1 bg-surface-card rounded-xl border border-border text-[0.625rem] font-bold font-mono shadow-solid-sm">커피챗</div>
+               <div className="px-3 py-1 bg-surface-card rounded-xl border border-border text-[0.625rem] font-bold font-mono shadow-solid-sm">팀빌딩</div>
             </div>
          </div>
       </div>
@@ -346,7 +346,7 @@ function LoginContent() {
 // Helper Component for Marquee Cards
 const ShowcaseCard = ({ item }: { item: typeof showcaseItems[0] }) => (
   <div className={`
-    w-[17.5rem] p-6 border border-border-strong shadow-sharp flex flex-col justify-between transition-transform hover:scale-[1.02] relative
+    w-[17.5rem] p-6 border border-border shadow-sharp flex flex-col justify-between transition-transform hover:scale-[1.02] relative
     ${item.color}
   `}>
     {/* Corner marks */}
@@ -355,10 +355,10 @@ const ShowcaseCard = ({ item }: { item: typeof showcaseItems[0] }) => (
     <span className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-current opacity-30 pointer-events-none" />
     <span className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-current opacity-30 pointer-events-none" />
     <div className="flex justify-between items-start mb-4">
-       <div className={`w-8 h-8 flex items-center justify-center border ${item.color.includes('bg-surface-inverse') ? 'border-white/30 bg-white/10' : item.color.includes('bg-brand') ? 'border-white/30 bg-white/10' : 'border-border-strong bg-surface-sunken text-txt-primary'}`}>
+       <div className={`w-8 h-8 flex items-center justify-center border ${item.color.includes('bg-surface-inverse') ? 'border-white/30 bg-white/10' : item.color.includes('bg-brand') ? 'border-white/30 bg-white/10' : 'border-border bg-surface-sunken text-txt-primary'}`}>
           {item.type === 'startup' ? <Rocket size={14}/> : item.type === 'talent' ? <Users size={14}/> : <Zap size={14}/>}
        </div>
-       <span className={`text-[0.5625rem] font-medium border px-1.5 py-0.5 ${item.color.includes('bg-surface-inverse') ? 'border-white/30' : item.color.includes('bg-brand') ? 'border-white/30' : 'border-border-strong'}`}>
+       <span className={`text-[0.5625rem] font-medium border px-1.5 py-0.5 ${item.color.includes('bg-surface-inverse') ? 'border-white/30' : item.color.includes('bg-brand') ? 'border-white/30' : 'border-border'}`}>
          {item.tag}
        </span>
     </div>

@@ -57,7 +57,7 @@ export function ExplorePeopleGrid({
                 onClick={() => onSelectProfile(t.id, false)}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectProfile(t.id, false) } }}
                 style={{ animationDelay: `${Math.min(index * 40, 400)}ms` }}
-                className="stagger-item relative bg-surface-card border border-border-strong overflow-hidden flex items-center gap-3 px-3 py-3 cursor-pointer hover:border-brand/30 hover-spring focus-visible:ring-2 focus-visible:ring-accent outline-none active:scale-[0.985] active:border-brand/50"
+                className="stagger-item relative bg-surface-card rounded-xl border border-border overflow-hidden flex items-center gap-3 px-3 py-3 cursor-pointer hover:border-brand/30 hover-spring focus-visible:ring-2 focus-visible:ring-accent outline-none active:scale-[0.985] active:border-brand/50"
               >
                 <div className="relative w-10 h-10 bg-brand-bg border border-brand-border rounded-full flex items-center justify-center text-sm font-bold text-brand shrink-0 overflow-hidden">
                   {t.name.substring(0, 2)}
@@ -115,7 +115,7 @@ export function ExplorePeopleGrid({
                 onClick={() => onSelectProfile(t.id, false)}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectProfile(t.id, false) } }}
                 style={{ animationDelay: `${Math.min(index * 60, 600)}ms` }}
-                className="stagger-item relative bg-surface-card border border-border-strong overflow-hidden group hover:shadow-solid-sm hover:border-brand/30 hover:-translate-y-0.5 hover-spring cursor-pointer h-[13.75rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985] active:shadow-none active:border-brand/50"
+                className="stagger-item relative bg-surface-card rounded-xl border border-border overflow-hidden group hover:shadow-md hover:border-brand/30 hover:-translate-y-0.5 hover-spring cursor-pointer h-[13.75rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985] active:shadow-none active:border-brand/50"
               >
                 <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/15" />
                 <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-surface-inverse/15" />
@@ -167,7 +167,7 @@ export function ExplorePeopleGrid({
                   )}
                 </div>
                 <div className="px-4 pb-4 h-[3.25rem] shrink-0 flex items-end">
-                  <div className="flex items-center justify-between w-full pt-2 border-t border-dashed border-border">
+                  <div className="flex items-center justify-between w-full pt-2 border-t border-border">
                     <span className="text-[0.625rem] font-mono text-txt-tertiary">{t.role}</span>
                     {t.status === 'OPEN' ? (
                       <span className="text-[0.625rem] font-mono text-indicator-online flex items-center gap-1 bg-status-success-bg px-1.5 py-0.5 border border-indicator-online/20"><Coffee size={9} /> AVAILABLE</span>
@@ -186,7 +186,7 @@ export function ExplorePeopleGrid({
         <div className="text-center mt-6">
           <button
             onClick={onLoadMore}
-            className="px-6 py-2.5 text-sm font-bold text-txt-secondary border border-border-strong hover:bg-surface-sunken hover:shadow-sharp transition-all active:scale-[0.97] active:shadow-none"
+            className="px-6 py-2.5 text-sm font-bold text-txt-secondary border border-border hover:bg-surface-sunken hover:shadow-sharp transition-all active:scale-[0.97] active:shadow-none"
           >
             더 보기
           </button>

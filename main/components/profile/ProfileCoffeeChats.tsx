@@ -100,7 +100,7 @@ export function ProfileCoffeeChats() {
           className={`flex items-center gap-1.5 px-3 py-1.5 text-[0.625rem] font-medium border transition-colors ${
             tab === 'received'
               ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
-              : 'bg-surface-card text-txt-tertiary border-border hover:border-border-strong'
+              : 'bg-surface-card text-txt-tertiary border-border hover:border-border'
           }`}
         >
           <Coffee size={12} />
@@ -114,7 +114,7 @@ export function ProfileCoffeeChats() {
           className={`flex items-center gap-1.5 px-3 py-1.5 text-[0.625rem] font-medium border transition-colors ${
             tab === 'sent'
               ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
-              : 'bg-surface-card text-txt-tertiary border-border hover:border-border-strong'
+              : 'bg-surface-card text-txt-tertiary border-border hover:border-border'
           }`}
         >
           <Send size={12} />
@@ -142,7 +142,7 @@ export function ProfileCoffeeChats() {
           ) : chats.length > 0 ? (
             <div className="space-y-3">
               {pendingChats.map((chat, chatIdx) => (
-                <div key={chat.id} className="relative bg-surface-card border border-border-strong p-4 border-l-4 border-l-amber-500 shadow-sharp">
+                <div key={chat.id} className="relative bg-surface-card rounded-xl border border-border p-4 border-l-4 border-l-amber-500 shadow-sharp">
                   <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-surface-inverse/20" />
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                     <div className="flex gap-3 flex-1 min-w-0">
@@ -180,7 +180,7 @@ export function ProfileCoffeeChats() {
                           <span className="text-[0.625rem] font-mono font-bold bg-indicator-premium/10 text-indicator-premium-border px-1.5 py-0.5 border border-indicator-premium-border/20">PENDING</span>
                         </div>
                         {chat.message && (
-                          <p className="text-xs text-txt-tertiary line-clamp-2 border-l border-dashed border-border pl-2">{chat.message}</p>
+                          <p className="text-xs text-txt-tertiary line-clamp-2 border-l border-border pl-2">{chat.message}</p>
                         )}
                         <p className="text-[0.625rem] font-mono text-txt-tertiary mt-1">
                           {new Date(chat.created_at).toLocaleDateString('ko-KR')}
@@ -197,7 +197,7 @@ export function ProfileCoffeeChats() {
                       </button>
                       <button
                         onClick={() => handleDeclineChat(chat.id)}
-                        className="px-3 py-1.5 text-xs font-bold border border-border-strong text-txt-secondary hover:bg-surface-sunken shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                        className="px-3 py-1.5 text-xs font-bold border border-border text-txt-secondary hover:bg-surface-sunken shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
                       >
                         거절
                       </button>
@@ -207,13 +207,13 @@ export function ProfileCoffeeChats() {
               ))}
 
               {otherChats.map((chat) => (
-                <div key={chat.id} className="bg-surface-card border border-border-strong overflow-hidden hover:shadow-sharp transition-all">
+                <div key={chat.id} className="bg-surface-card rounded-xl border border-border overflow-hidden hover:shadow-sharp transition-all">
                   <div className="flex items-center gap-3 p-4">
                     <button
                       type="button"
                       onClick={() => chat.requester_user_id && setViewingProfileUserId(chat.requester_user_id)}
                       disabled={!chat.requester_user_id}
-                      className={`w-9 h-9 bg-surface-sunken border border-border flex items-center justify-center text-xs font-bold text-txt-tertiary flex-shrink-0 ${
+                      className={`w-9 h-9 bg-surface-sunken rounded-xl border border-border flex items-center justify-center text-xs font-bold text-txt-tertiary flex-shrink-0 ${
                         chat.requester_user_id ? 'cursor-pointer hover:ring-2 hover:ring-brand/40 transition-all' : ''
                       }`}
                       title={chat.requester_user_id ? '프로필 보기' : ''}
@@ -260,7 +260,7 @@ export function ProfileCoffeeChats() {
                               onClick={() => updateOutcomeMutation.mutate({ chatId: chat.id, outcome: opt.value })}
                               disabled={updateOutcomeMutation.isPending}
                               className={`flex items-center gap-1 px-2.5 py-1 text-[0.625rem] font-bold border transition-all ${
-                                isActive ? opt.color : 'bg-surface-card text-txt-disabled border-border hover:border-border-strong'
+                                isActive ? opt.color : 'bg-surface-card text-txt-disabled border-border hover:border-border'
                               }`}
                             >
                               <Icon size={10} />
@@ -348,7 +348,7 @@ function SentChatCard({ chat }: { chat: CoffeeChat }) {
   }) || []
 
   return (
-    <div className="bg-surface-card border border-border-strong overflow-hidden hover:shadow-sharp transition-all">
+    <div className="bg-surface-card rounded-xl border border-border overflow-hidden hover:shadow-sharp transition-all">
       {/* Header */}
       <div className="flex items-center gap-3 p-4">
         <div className={`w-9 h-9 border flex items-center justify-center text-xs font-bold flex-shrink-0 ${
@@ -377,7 +377,7 @@ function SentChatCard({ chat }: { chat: CoffeeChat }) {
             )}
           </div>
           {chat.message && (
-            <p className="text-xs text-txt-tertiary line-clamp-1 border-l border-dashed border-border pl-2 mb-0.5">{chat.message}</p>
+            <p className="text-xs text-txt-tertiary line-clamp-1 border-l border-border pl-2 mb-0.5">{chat.message}</p>
           )}
           <p className="text-[0.625rem] font-mono text-txt-tertiary mt-0.5">
             {new Date(chat.created_at).toLocaleDateString('ko-KR')}

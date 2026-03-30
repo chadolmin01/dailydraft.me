@@ -103,7 +103,7 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
         {isEditable && !showForm && (
           <button
             onClick={() => setShowForm(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold border border-border-strong hover:bg-black hover:text-white transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold border border-border hover:bg-black hover:text-white transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
           >
             <Plus size={14} /> 추가
           </button>
@@ -115,7 +115,7 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
         {items.map((item) => (
           <div
             key={item.id}
-            className="relative bg-surface-card border border-border-strong overflow-hidden group hover:shadow-brutal transition-all shadow-sharp"
+            className="relative bg-surface-card rounded-xl border border-border overflow-hidden group hover:shadow-brutal transition-all shadow-sharp"
           >
             <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/20 z-10" />
             <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-surface-inverse/20 z-10" />
@@ -125,7 +125,7 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
               <button
                 onClick={() => handleDelete(item.id)}
                 disabled={deletingId === item.id}
-                className="absolute top-2 right-2 z-20 w-6 h-6 bg-white/90 border border-border-strong flex items-center justify-center sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:bg-status-danger-bg hover:border-status-danger-text/30 hover:text-status-danger-text"
+                className="absolute top-2 right-2 z-20 w-6 h-6 bg-white/90 border border-border flex items-center justify-center sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:bg-status-danger-bg hover:border-status-danger-text/30 hover:text-status-danger-text"
               >
                 {deletingId === item.id ? <Loader2 size={10} className="animate-spin" /> : <Trash2 size={10} />}
               </button>
@@ -220,7 +220,7 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
               <div className="flex items-center justify-end gap-2 mt-auto pt-3">
                 <button
                   onClick={resetForm}
-                  className="flex items-center gap-1 px-2.5 py-1 text-[0.625rem] font-bold text-txt-secondary border border-border-strong hover:bg-surface-sunken transition-colors"
+                  className="flex items-center gap-1 px-2.5 py-1 text-[0.625rem] font-bold text-txt-secondary border border-border hover:bg-surface-sunken transition-colors"
                 >
                   <X size={10} /> 취소
                 </button>
@@ -240,7 +240,7 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
         {/* Empty state — add prompt */}
         {isEditable && items.length === 0 && !showForm && (
           <div
-            className="border border-dashed border-border p-6 cursor-pointer hover:border-brand/40 hover:bg-brand-bg/30 transition-colors group/add flex flex-col items-center justify-center gap-2 min-h-[13rem] col-span-full sm:col-span-1"
+            className="border border-border p-6 cursor-pointer hover:border-brand/40 hover:bg-brand-bg/30 transition-colors group/add flex flex-col items-center justify-center gap-2 min-h-[13rem] col-span-full sm:col-span-1"
             onClick={() => setShowForm(true)}
           >
             <ImageIcon size={20} className="text-txt-disabled group-hover/add:text-brand transition-colors" />

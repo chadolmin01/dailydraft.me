@@ -27,7 +27,7 @@ export const ProjectContent: React.FC<ProjectContentProps> = ({
 
       {/* Pain Point */}
       {opportunity.pain_point && (
-        <section className="bg-surface-card border border-border-strong p-5">
+        <section className="bg-surface-card rounded-xl border border-border p-5">
           <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-2">
             해결하려는 문제
           </h3>
@@ -46,7 +46,7 @@ export const ProjectContent: React.FC<ProjectContentProps> = ({
               주간 업데이트
             </h3>
             {!opportunity.show_updates && isOwner && (
-              <span className="text-[0.5rem] font-mono text-txt-disabled px-1.5 py-0.5 border border-dashed border-border">
+              <span className="text-[0.5rem] font-mono text-txt-disabled px-1.5 py-0.5 border border-border">
                 비공개
               </span>
             )}
@@ -63,7 +63,7 @@ export const ProjectContent: React.FC<ProjectContentProps> = ({
                 className={`text-[0.625rem] font-mono px-2 py-0.5 border transition-colors ${
                   opportunity.show_updates
                     ? 'bg-status-success-bg text-status-success-text border-status-success-text/30'
-                    : 'bg-surface-sunken text-txt-disabled border-border hover:border-border-strong'
+                    : 'bg-surface-sunken text-txt-disabled border-border hover:border-border'
                 }`}
               >
                 {opportunity.show_updates ? '공개 중' : '비공개'}

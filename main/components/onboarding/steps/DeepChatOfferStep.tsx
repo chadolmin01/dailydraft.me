@@ -25,7 +25,7 @@ export const DeepChatOfferStep: React.FC<DeepChatOfferStepProps> = ({ onAccept, 
           <ArrowRight size={14} className="text-white/50 shrink-0" />
         </div>
       </button>
-      <button onClick={onSkip} className="ob-chip ob-hover w-full text-left px-4 py-3 bg-surface-card border border-border-strong hover:border-border-strong transition-all" style={{ animationDelay: '80ms' }}>
+      <button onClick={onSkip} className="ob-chip ob-hover w-full text-left px-4 py-3 bg-surface-card rounded-xl border border-border hover:border-border transition-all" style={{ animationDelay: '80ms' }}>
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 bg-surface-sunken flex items-center justify-center shrink-0">
             <ArrowRight size={14} className="text-txt-disabled" />
@@ -53,7 +53,7 @@ export const DeepChatOfferFinishStep: React.FC<DeepChatOfferFinishStepProps> = (
       <button onClick={onContinue} className="ob-chip ob-hover w-full text-left px-4 py-2.5 bg-brand text-white border border-brand hover:opacity-90 active:scale-[0.97] transition-all text-[13px] font-bold" style={{ animationDelay: '0ms' }}>
         조금 더 대화하기
       </button>
-      <button onClick={onFinish} className="ob-chip ob-hover w-full text-left px-4 py-2.5 bg-surface-card border border-border-strong hover:border-border-strong transition-all text-[13px] font-bold text-txt-primary" style={{ animationDelay: '60ms' }}>
+      <button onClick={onFinish} className="ob-chip ob-hover w-full text-left px-4 py-2.5 bg-surface-card rounded-xl border border-border hover:border-border transition-all text-[13px] font-bold text-txt-primary" style={{ animationDelay: '60ms' }}>
         지금 마무리하기
       </button>
     </div>

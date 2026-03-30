@@ -97,7 +97,7 @@ export const FormTemplateSelector: React.FC<FormTemplateSelectorProps> = ({
           </div>
 
           {/* Info */}
-          <div className="mt-6 p-4 bg-surface-sunken border border-border">
+          <div className="mt-6 p-4 bg-surface-sunken rounded-xl border border-border">
             <div className="flex items-start gap-3">
               <div className="w-8 h-8 bg-surface-inverse text-txt-inverse flex items-center justify-center shrink-0">
                 <Sparkles size={16} />

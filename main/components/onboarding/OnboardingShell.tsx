@@ -12,7 +12,7 @@ function ProgressBar({ step }: { step: Step }) {
   const pct = Math.round((idx / (STEP_ORDER.length - 1)) * 100)
   return (
     <div className="flex items-center gap-2">
-      <div className="w-16 h-[5px] bg-surface-sunken border border-border overflow-hidden">
+      <div className="w-16 h-[5px] bg-surface-sunken rounded-xl border border-border overflow-hidden">
         <div className="h-full bg-brand transition-all duration-700 ease-out" style={{ width: `${pct}%` }} />
       </div>
       <span className="text-[10px] font-mono text-txt-disabled tabular-nums w-7 text-right">{pct}%</span>
@@ -93,7 +93,7 @@ function DeepChatTransitionOverlay() {
         className="w-full max-w-xs mb-8"
         style={{ animation: 'dcto-step 0.5s cubic-bezier(0.16, 1, 0.3, 1) both', animationDelay: '700ms' }}
       >
-        <div className="h-1 bg-surface-sunken border border-border overflow-hidden">
+        <div className="h-1 bg-surface-sunken rounded-xl border border-border overflow-hidden">
           <div
             className="h-full bg-black transition-all duration-[1.5s] ease-out"
             style={{ width: `${progressWidth}%` }}
@@ -108,7 +108,7 @@ function DeepChatTransitionOverlay() {
 
       {/* Rotating Tips */}
       <div
-        className="w-full max-w-xs bg-surface-card border border-border px-4 py-3 mb-6"
+        className="w-full max-w-xs bg-surface-card rounded-xl border border-border px-4 py-3 mb-6"
         style={{ animation: 'dcto-step 0.5s cubic-bezier(0.16, 1, 0.3, 1) both', animationDelay: '900ms' }}
       >
         {TRANSITION_TIPS.map((tip, i) => {
@@ -181,7 +181,7 @@ export const OnboardingShell: React.FC<OnboardingShellProps> = ({
       {/* Logout button */}
       <button
         onClick={onSignOut}
-        className="fixed top-4 right-4 z-[60] flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-mono text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken border border-border transition-colors"
+        className="fixed top-4 right-4 z-[60] flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-mono text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken rounded-xl border border-border transition-colors"
       >
         <LogOut size={12} />
         로그아웃

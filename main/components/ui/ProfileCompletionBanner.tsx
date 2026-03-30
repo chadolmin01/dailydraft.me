@@ -27,7 +27,7 @@ export function ProfileCompletionBanner() {
   const incomplete = fields.filter(f => !f.done).map(f => f.label)
 
   return (
-    <div className="border border-border-strong bg-surface-card px-4 py-3 mb-4 flex items-center gap-4">
+    <div className="border border-border bg-surface-card rounded-xl px-4 py-3 mb-4 flex items-center gap-4">
       <div className="flex items-center gap-3 shrink-0">
         <span className="text-[0.625rem] font-medium text-txt-tertiary">
           PROFILE

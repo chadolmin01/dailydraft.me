@@ -51,7 +51,7 @@ export function ExploreTabBar({
   return (
     <>
       {/* 탭 + 모바일 검색 아이콘 */}
-      <div className="border-b-2 border-border-strong mb-4">
+      <div className="border-b-2 border-border mb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center shrink-0">
             <button
@@ -92,7 +92,7 @@ export function ExploreTabBar({
       {/* 모바일 인라인 검색 */}
       {mobileSearchOpen && onSearchInputChange && (
         <div className="md:hidden mb-3 animate-in slide-in-from-top-2 duration-150">
-          <div className="relative flex items-center bg-surface-card border border-border-strong">
+          <div className="relative flex items-center bg-surface-card rounded-xl border border-border">
             <Search size={16} className="absolute left-3 text-txt-disabled" />
             <input
               type="text"
@@ -165,7 +165,7 @@ export function ExploreTabBar({
               className={`shrink-0 px-3 py-1.5 text-xs font-bold border transition-all ${
                 typeFilter === t.id
                   ? 'bg-surface-inverse text-txt-inverse border-surface-inverse shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]'
-                  : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]'
+                  : 'bg-surface-card text-txt-secondary border-border hover:border-border hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]'
               }`}
             >
               {t.label}
@@ -177,7 +177,7 @@ export function ExploreTabBar({
               className={`lg:hidden shrink-0 ml-auto px-3 py-1.5 text-xs font-bold border transition-all flex items-center gap-1 ${
                 isMobileFilterOpen
                   ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
-                  : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong'
+                  : 'bg-surface-card text-txt-secondary border-border hover:border-border'
               }`}
             >
               <Filter size={12} />
@@ -197,7 +197,7 @@ export function ExploreTabBar({
               className={`shrink-0 px-3 py-1.5 text-xs font-bold border transition-all ${
                 peopleRoleFilter === r.id
                   ? 'bg-surface-inverse text-txt-inverse border-surface-inverse shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]'
-                  : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]'
+                  : 'bg-surface-card text-txt-secondary border-border hover:border-border hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]'
               }`}
             >
               {r.label}
@@ -209,7 +209,7 @@ export function ExploreTabBar({
               className={`lg:hidden shrink-0 ml-auto px-3 py-1.5 text-xs font-bold border transition-all flex items-center gap-1 ${
                 isMobileFilterOpen
                   ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
-                  : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong'
+                  : 'bg-surface-card text-txt-secondary border-border hover:border-border'
               }`}
             >
               <Filter size={12} />

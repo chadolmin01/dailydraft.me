@@ -43,7 +43,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
                 <div className={`p-4 text-sm leading-relaxed shadow-sharp break-keep
                   ${msg.text?.startsWith('[종합 결정 사항]')
                       ? 'bg-surface-inverse text-txt-inverse border border-surface-inverse'
-                      : 'bg-surface-card border border-border text-txt-primary'
+                      : 'bg-surface-card rounded-xl border border-border text-txt-primary'
                   }`}>
                   {msg.text}
                 </div>
@@ -66,7 +66,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
                         {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
-                    <div className="p-4 bg-surface-card border border-border text-sm text-txt-secondary leading-relaxed break-keep shadow-sharp">
+                    <div className="p-4 bg-surface-card rounded-xl border border-border text-sm text-txt-secondary leading-relaxed break-keep shadow-sharp">
                       {msg.responses[0].content}
                     </div>
                   </div>
@@ -89,8 +89,8 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
                         onClick={() => resp.role !== 'System' && onOpenReflectionModal(msg.id, idx, resp.role, resp.content, resp.suggestedActions || [], resp.reflectedText)}
                         className={`relative flex flex-col items-start p-5 border transition-all duration-200 text-left group w-full h-full
                           ${resp.isReflected
-                            ? 'bg-surface-sunken border-border-strong ring-1 ring-black'
-                            : 'bg-surface-card border-border hover:border-border-strong hover:shadow-sharp'
+                            ? 'bg-surface-sunken border-border ring-1 ring-black'
+                            : 'bg-surface-card border-border hover:border-border hover:shadow-sharp'
                           }
                         `}
                         style={{ animationDelay: `${idx * 100}ms` }}
@@ -98,7 +98,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
                         <div className={`w-9 h-9 border flex items-center justify-center mb-4 transition-colors
                           ${resp.isReflected
                             ? 'bg-black border-surface-inverse text-white'
-                            : `${getPersonaColor(resp.role)} group-hover:bg-black group-hover:border-border-strong group-hover:text-white`
+                            : `${getPersonaColor(resp.role)} group-hover:bg-black group-hover:border-border group-hover:text-white`
                           }
                         `}>
                           {getPersonaIcon(resp.role)}
@@ -120,7 +120,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
                   </div>
 
                   {msg.id === lastMsg?.id && msg.responses?.some(r => r.isReflected) && (
-                    <div className="ml-10 mt-4 flex items-center justify-between p-3 bg-surface-sunken border border-border">
+                    <div className="ml-10 mt-4 flex items-center justify-between p-3 bg-surface-sunken rounded-xl border border-border">
                       <div className="flex items-center gap-3">
                         <div className="text-[0.625rem] font-medium text-txt-tertiary">
                           {msg.responses.filter(r => r.isReflected).length}개 조언 선택됨

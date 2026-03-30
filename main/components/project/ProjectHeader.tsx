@@ -102,7 +102,7 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
               className={`inline-flex items-center gap-1.5 px-3 py-1.5 border text-xs font-bold transition-all ${
                 hasInterested
                   ? 'border-status-danger-text/20 bg-status-danger-bg text-status-danger-text'
-                  : 'border-border-strong bg-surface-card text-txt-secondary hover:border-status-danger-text/20 hover:text-status-danger-text'
+                  : 'border-border bg-surface-card text-txt-secondary hover:border-status-danger-text/20 hover:text-status-danger-text'
               } disabled:opacity-40 disabled:cursor-default`}
             >
               <Heart size={12} className={`${hasInterested ? 'fill-current heart-burst' : ''} transition-transform`} />
@@ -121,7 +121,7 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
           <div className="px-4 sm:px-8 pb-3">
             <div className="flex gap-2 overflow-x-auto">
               {opportunity.demo_images!.slice(1).map((src, idx) => (
-                <div key={idx} className="relative h-24 w-32 shrink-0 border border-border-strong">
+                <div key={idx} className="relative h-24 w-32 shrink-0 border border-border">
                   <Image
                     src={src}
                     alt={`${opportunity.title} 이미지 ${idx + 2}`}
@@ -201,7 +201,7 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
           className={`inline-flex items-center gap-1.5 px-3 py-1.5 border text-xs font-bold transition-all ${
             hasInterested
               ? 'border-status-danger-text/20 bg-status-danger-bg text-status-danger-text'
-              : 'border-border-strong bg-surface-card text-txt-secondary hover:border-status-danger-text/20 hover:text-status-danger-text'
+              : 'border-border bg-surface-card text-txt-secondary hover:border-status-danger-text/20 hover:text-status-danger-text'
           } disabled:opacity-40 disabled:cursor-default`}
         >
           <Heart size={12} className={hasInterested ? 'fill-current' : ''} />

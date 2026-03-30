@@ -14,7 +14,7 @@ export function ImageUploadSection({ imagePreviews, imageFilesLength, onImageSel
     return (
       <div className="space-y-1.5">
         {/* Main image */}
-        <div className="relative group overflow-hidden border border-border-strong">
+        <div className="relative group overflow-hidden border border-border">
           <img
             src={imagePreviews[0]}
             alt="메인 이미지"
@@ -69,7 +69,7 @@ export function ImageUploadSection({ imagePreviews, imageFilesLength, onImageSel
               )
             })}
             {imageFilesLength < 5 && (
-              <label className="flex-1 min-w-0 flex items-center justify-center border border-dashed border-border cursor-pointer hover:border-border-strong hover:bg-surface-sunken transition-colors h-[4.5rem]">
+              <label className="flex-1 min-w-0 flex items-center justify-center border border-border cursor-pointer hover:border-border hover:bg-surface-sunken transition-colors h-[4.5rem]">
                 <div className="text-center">
                   <Plus size={14} className="text-txt-disabled mx-auto mb-0.5" />
                   <span className="text-[0.5625rem] text-txt-disabled">추가</span>
@@ -84,7 +84,7 @@ export function ImageUploadSection({ imagePreviews, imageFilesLength, onImageSel
   }
 
   return (
-    <label className="flex flex-col items-center justify-center border border-dashed border-border cursor-pointer hover:border-border-strong hover:bg-surface-sunken/50 transition-all h-40 group">
+    <label className="flex flex-col items-center justify-center border border-border cursor-pointer hover:border-border hover:bg-surface-sunken/50 transition-all h-40 group">
       <div className="w-10 h-10 bg-surface-sunken flex items-center justify-center mb-3 group-hover:bg-accent-secondary transition-colors">
         <ImagePlus size={18} className="text-txt-disabled group-hover:text-txt-tertiary transition-colors" />
       </div>

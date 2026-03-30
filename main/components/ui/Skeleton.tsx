@@ -14,7 +14,7 @@ function Skeleton({ className = '', ...props }: React.HTMLAttributes<HTMLDivElem
 /** Card-shaped skeleton with realistic layout */
 function SkeletonCard({ rows = 3 }: { rows?: number }) {
   return (
-    <div className="bg-surface-card border border-border rounded-xl p-4 space-y-3">
+    <div className="bg-surface-card rounded-xl border border-border p-4 space-y-3">
       {/* Header: avatar + title */}
       <div className="flex items-center gap-3">
         <Skeleton className="w-9 h-9 rounded-full shrink-0" />
@@ -50,7 +50,7 @@ function SkeletonGrid({ count = 4, cols = 2 }: { count?: number; cols?: number }
 /** Sidebar-shaped skeleton */
 function SkeletonSidebar() {
   return (
-    <div className="bg-surface-card border border-border rounded-xl p-4 space-y-4">
+    <div className="bg-surface-card rounded-xl border border-border p-4 space-y-4">
       <Skeleton className="h-3 w-20 rounded" />
       {Array.from({ length: 5 }).map((_, i) => (
         <div key={i} className="flex items-center gap-3">
@@ -65,7 +65,7 @@ function SkeletonSidebar() {
 /** Profile skeleton */
 function SkeletonProfile() {
   return (
-    <div className="bg-surface-card border border-border rounded-xl p-6 space-y-4">
+    <div className="bg-surface-card rounded-xl border border-border p-6 space-y-4">
       <div className="flex items-center gap-4">
         <Skeleton className="w-16 h-16 rounded-full shrink-0" />
         <div className="flex-1 space-y-2">
@@ -87,7 +87,7 @@ function SkeletonFeed({ count = 3 }: { count?: number }) {
   return (
     <div className="space-y-4">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="bg-surface-card border border-border rounded-xl p-4">
+        <div key={i} className="bg-surface-card rounded-xl border border-border p-4">
           <div className="flex items-center gap-3 mb-3">
             <Skeleton className="w-10 h-10 rounded-full shrink-0" />
             <div className="flex-1 space-y-1.5">

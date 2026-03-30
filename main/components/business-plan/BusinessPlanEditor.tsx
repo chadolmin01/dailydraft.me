@@ -398,14 +398,14 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
             <button
               onClick={handleSave}
               disabled={isSaving}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-txt-secondary bg-surface-card border border-border-strong hover:bg-black hover:text-white transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-txt-secondary bg-surface-card rounded-xl border border-border hover:bg-black hover:text-white transition-colors"
             >
               <Save size={16} />
               {isSaving ? '저장 중...' : '저장'}
             </button>
             <button
               onClick={() => setShowPreview(true)}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-txt-secondary bg-surface-card border border-border-strong hover:bg-black hover:text-white transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-txt-secondary bg-surface-card rounded-xl border border-border hover:bg-black hover:text-white transition-colors"
             >
               <Eye size={16} />
               미리보기

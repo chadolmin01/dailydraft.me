@@ -58,7 +58,7 @@ const ReflectionModal: React.FC<ReflectionModalProps> = ({
         <div className="p-5 overflow-y-auto">
            <div className="mb-5">
               <label className="text-[0.5625rem] font-medium text-txt-tertiary mb-2 block">Original</label>
-              <div className="p-4 bg-surface-sunken border border-border text-sm text-txt-secondary leading-relaxed break-keep">
+              <div className="p-4 bg-surface-sunken rounded-xl border border-border text-sm text-txt-secondary leading-relaxed break-keep">
                 {reflectionModal.originalContent}
               </div>
            </div>
@@ -76,13 +76,13 @@ const ReflectionModal: React.FC<ReflectionModalProps> = ({
                                onClick={() => onReflectionTextChange(action)}
                                className={`text-left p-3 border transition-all text-sm ${
                                    reflectionText === action
-                                   ? 'bg-surface-sunken border-border-strong ring-1 ring-black text-txt-primary'
-                                   : 'bg-surface-card border-border hover:border-border-strong text-txt-secondary'
+                                   ? 'bg-surface-sunken border-border ring-1 ring-black text-txt-primary'
+                                   : 'bg-surface-card border-border hover:border-border text-txt-secondary'
                                }`}
                            >
                                <div className="flex items-start gap-3">
                                    <div className={`mt-0.5 w-5 h-5 sm:w-4 sm:h-4 border flex items-center justify-center shrink-0 ${
-                                       reflectionText === action ? 'border-surface-inverse bg-black' : 'border-border-strong'
+                                       reflectionText === action ? 'border-surface-inverse bg-black' : 'border-border'
                                    }`}>
                                        {reflectionText === action && <Check size={10} className="text-white" />}
                                    </div>
@@ -101,7 +101,7 @@ const ReflectionModal: React.FC<ReflectionModalProps> = ({
             <textarea
               value={reflectionText}
               onChange={(e) => onReflectionTextChange(e.target.value)}
-              className="w-full h-28 p-4 bg-surface-card border border-border text-txt-primary text-sm leading-relaxed focus:outline-none focus:border-border-strong focus:ring-1 focus:ring-black/10 resize-none transition-all"
+              className="w-full h-28 p-4 bg-surface-card rounded-xl border border-border text-txt-primary text-sm leading-relaxed focus:outline-none focus:border-border focus:ring-1 focus:ring-black/10 resize-none transition-all"
               placeholder="이 피드백을 어떻게 해결할지 구체적으로 적어주세요..."
             />
           </div>

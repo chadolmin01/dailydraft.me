@@ -164,7 +164,7 @@ export default function InstitutionMembersPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="이름으로 검색..."
-              className="w-full pl-10 pr-4 py-2.5 bg-surface-card border border-border-strong text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-surface-inverse"
+              className="w-full pl-10 pr-4 py-2.5 bg-surface-card rounded-xl border border-border text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-surface-inverse"
             />
           </div>
 
@@ -177,7 +177,7 @@ export default function InstitutionMembersPage() {
                 className={`px-3 py-2 text-xs font-medium border transition-colors
                   ${roleFilter === key
                     ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
-                    : 'bg-surface-card text-txt-secondary border-border-strong hover:border-surface-inverse'
+                    : 'bg-surface-card text-txt-secondary border-border hover:border-surface-inverse'
                   }`}
               >
                 {label}
@@ -216,7 +216,7 @@ export default function InstitutionMembersPage() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-dashed border-border">
+                  <tr className="border-b border-border">
                     <th className="text-left text-[0.625rem] font-medium text-txt-tertiary px-5 py-3">이름</th>
                     <th className="text-left text-[0.625rem] font-medium text-txt-tertiary px-5 py-3">학과</th>
                     <th className="text-left text-[0.625rem] font-medium text-txt-tertiary px-5 py-3">역할</th>
@@ -243,7 +243,7 @@ export default function InstitutionMembersPage() {
                           {profile?.major || '-'}
                         </td>
                         <td className="px-5 py-3.5">
-                          <span className="inline-flex items-center gap-1.5 px-2 py-1 text-[0.625rem] font-medium border border-border-strong">
+                          <span className="inline-flex items-center gap-1.5 px-2 py-1 text-[0.625rem] font-medium border border-border">
                             <RoleIcon size={12} />
                             {ROLE_LABELS[member.role] || member.role}
                           </span>
@@ -289,14 +289,14 @@ export default function InstitutionMembersPage() {
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page <= 1}
-                  className="p-1.5 border border-border-strong hover:bg-surface-sunken disabled:opacity-30 disabled:cursor-not-allowed"
+                  className="p-1.5 border border-border hover:bg-surface-sunken disabled:opacity-30 disabled:cursor-not-allowed"
                 >
                   <ChevronLeft size={14} />
                 </button>
                 <button
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page >= totalPages}
-                  className="p-1.5 border border-border-strong hover:bg-surface-sunken disabled:opacity-30 disabled:cursor-not-allowed"
+                  className="p-1.5 border border-border hover:bg-surface-sunken disabled:opacity-30 disabled:cursor-not-allowed"
                 >
                   <ChevronRight size={14} />
                 </button>
@@ -310,7 +310,7 @@ export default function InstitutionMembersPage() {
       {showAddModal && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
           <Card padding="p-0" className="w-full max-w-md">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-dashed border-border">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border">
               <h3 className="font-medium text-sm tracking-tight text-txt-primary">멤버 추가</h3>
               <button onClick={() => { setShowAddModal(false); setAddError('') }} className="text-txt-disabled hover:text-txt-primary">
                 <X size={18} />
@@ -327,7 +327,7 @@ export default function InstitutionMembersPage() {
                   onChange={(e) => setAddEmail(e.target.value)}
                   placeholder="학생의 Draft 가입 이메일"
                   required
-                  className="w-full px-3 py-2.5 bg-surface-sunken border border-border-strong text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-surface-inverse"
+                  className="w-full px-3 py-2.5 bg-surface-sunken rounded-xl border border-border text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-surface-inverse"
                 />
               </div>
               <div>
@@ -343,7 +343,7 @@ export default function InstitutionMembersPage() {
                       className={`flex-1 py-2 text-xs font-medium border transition-colors
                         ${addRole === r
                           ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
-                          : 'bg-surface-card text-txt-secondary border-border-strong hover:border-surface-inverse'
+                          : 'bg-surface-card text-txt-secondary border-border hover:border-surface-inverse'
                         }`}
                     >
                       {ROLE_LABELS[r]}
@@ -360,7 +360,7 @@ export default function InstitutionMembersPage() {
                   value={addNotes}
                   onChange={(e) => setAddNotes(e.target.value)}
                   placeholder="참고사항"
-                  className="w-full px-3 py-2.5 bg-surface-sunken border border-border-strong text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-surface-inverse"
+                  className="w-full px-3 py-2.5 bg-surface-sunken rounded-xl border border-border text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-surface-inverse"
                 />
               </div>
               {addError && (

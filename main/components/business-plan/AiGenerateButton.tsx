@@ -117,7 +117,7 @@ export const AiGenerateButton: React.FC<AiGenerateButtonProps> = ({
             p-3 border transition-all
             ${disabled || isGenerating
               ? 'border-border text-txt-disabled cursor-not-allowed'
-              : 'border-border-strong text-txt-secondary hover:bg-black hover:text-white'
+              : 'border-border text-txt-secondary hover:bg-black hover:text-white'
             }
           `}
         >
@@ -127,7 +127,7 @@ export const AiGenerateButton: React.FC<AiGenerateButtonProps> = ({
 
       {/* Options dropdown */}
       {showOptions && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-surface-card border border-border shadow-sharp z-10">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-surface-card rounded-xl border border-border shadow-sharp z-10">
           {options.map((option) => (
             <button
               key={option.type}
@@ -219,7 +219,7 @@ export const AiAssistantFloating: React.FC<AiAssistantFloatingProps> = ({
   return (
     <div className="fixed bottom-6 right-6 z-40">
       {isExpanded && (
-        <div className="mb-3 bg-surface-card border border-border shadow-sharp overflow-hidden w-48">
+        <div className="mb-3 bg-surface-card rounded-xl border border-border shadow-sharp overflow-hidden w-48">
           <button
             onClick={() => { onGenerateSection(); setIsExpanded(false); }}
             disabled={isGenerating}

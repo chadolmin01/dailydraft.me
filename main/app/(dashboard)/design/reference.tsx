@@ -64,7 +64,7 @@ export default function DesignPage() {
         </PageContainer>
 
         {/* Narrow */}
-        <div className="border-y border-dashed border-blue-200 bg-blue-50/30 mb-1">
+        <div className="border-y border-blue-200 bg-blue-50/30 mb-1">
           <PageContainer size="narrow" className="py-4">
             <div className="bg-white border border-blue-200 rounded-xl p-4 text-center">
               <p className="text-[0.625rem] text-blue-500 mb-1">narrow — 768px</p>
@@ -74,7 +74,7 @@ export default function DesignPage() {
         </div>
 
         {/* Standard */}
-        <div className="border-y border-dashed border-green-200 bg-green-50/30 mb-1">
+        <div className="border-y border-green-200 bg-green-50/30 mb-1">
           <PageContainer size="standard" className="py-4">
             <div className="bg-white border border-green-200 rounded-xl p-4 text-center">
               <p className="text-[0.625rem] text-green-500 mb-1">standard — 1200px</p>
@@ -84,7 +84,7 @@ export default function DesignPage() {
         </div>
 
         {/* Wide */}
-        <div className="border-y border-dashed border-violet-200 bg-violet-50/30 mb-6">
+        <div className="border-y border-violet-200 bg-violet-50/30 mb-6">
           <PageContainer size="wide" className="py-4">
             <div className="bg-white border border-violet-200 rounded-xl p-4 text-center">
               <p className="text-[0.625rem] text-violet-500 mb-1">wide — 1400px</p>
@@ -146,8 +146,8 @@ export default function DesignPage() {
         </PageContainer>
 
         {/* 1 Column */}
-        <div className="border border-dashed border-gray-300 rounded-xl mx-4 sm:mx-6 lg:mx-8 mb-4 overflow-hidden">
-          <div className="bg-gray-100 px-4 py-2 border-b border-dashed border-gray-300">
+        <div className="border border-gray-300 rounded-xl mx-4 sm:mx-6 lg:mx-8 mb-4 overflow-hidden">
+          <div className="bg-gray-100 px-4 py-2 border-b border-gray-300">
             <span className="text-[0.625rem] text-gray-500">1-column — main only</span>
           </div>
           <DashboardLayout size="wide">
@@ -159,8 +159,8 @@ export default function DesignPage() {
         </div>
 
         {/* 2 Column */}
-        <div className="border border-dashed border-gray-300 rounded-xl mx-4 sm:mx-6 lg:mx-8 mb-4 overflow-hidden">
-          <div className="bg-gray-100 px-4 py-2 border-b border-dashed border-gray-300">
+        <div className="border border-gray-300 rounded-xl mx-4 sm:mx-6 lg:mx-8 mb-4 overflow-hidden">
+          <div className="bg-gray-100 px-4 py-2 border-b border-gray-300">
             <span className="text-[0.625rem] text-gray-500">2-column — sidebar + main</span>
           </div>
           <DashboardLayout
@@ -185,8 +185,8 @@ export default function DesignPage() {
         </div>
 
         {/* 3 Column */}
-        <div className="border border-dashed border-gray-300 rounded-xl mx-4 sm:mx-6 lg:mx-8 mb-8 overflow-hidden">
-          <div className="bg-gray-100 px-4 py-2 border-b border-dashed border-gray-300">
+        <div className="border border-gray-300 rounded-xl mx-4 sm:mx-6 lg:mx-8 mb-8 overflow-hidden">
+          <div className="bg-gray-100 px-4 py-2 border-b border-gray-300">
             <span className="text-[0.625rem] text-gray-500">3-column — sidebar + main + aside</span>
           </div>
           <DashboardLayout
@@ -232,7 +232,7 @@ export default function DesignPage() {
               <button
                 key={s}
                 onClick={() => { setModalSize(s); setModalOpen(true) }}
-                className="px-4 py-2 text-xs font-semibold border border-gray-200 rounded-lg hover:bg-black hover:text-white hover:border-border-strong transition-colors"
+                className="px-4 py-2 text-xs font-semibold border border-gray-200 rounded-lg hover:bg-black hover:text-white hover:border-border transition-colors"
               >
                 {s.toUpperCase()} 모달 열기
               </button>
@@ -587,7 +587,7 @@ export default function DesignPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2 shrink-0">
-                <input type="text" placeholder="연락처 입력" className="w-32 px-2 py-1 text-xs border border-gray-300 rounded-lg focus:outline-none focus:border-border-strong" />
+                <input type="text" placeholder="연락처 입력" className="w-32 px-2 py-1 text-xs border border-gray-300 rounded-lg focus:outline-none focus:border-border" />
                 <button className="p-1.5 bg-surface-inverse text-txt-inverse rounded-lg"><Check size={12} /></button>
                 <button className="p-1.5 bg-gray-200 text-gray-600 rounded-lg"><X size={12} /></button>
               </div>
@@ -636,7 +636,7 @@ export default function DesignPage() {
               <p className="text-xs text-gray-500 mt-0.5">프론트엔드 개발자</p>
               <p className="text-[0.625rem] text-gray-400 mt-1">서울대학교</p>
             </div>
-            <button className="w-full mt-4 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold border border-gray-200 rounded-lg hover:bg-black hover:text-white hover:border-border-strong transition-colors">프로필 수정</button>
+            <button className="w-full mt-4 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold border border-gray-200 rounded-lg hover:bg-black hover:text-white hover:border-border transition-colors">프로필 수정</button>
           </div>
 
           <div className="bg-white border border-gray-200 rounded-xl p-4 group hover:border-gray-400 hover:shadow-sm transition-all cursor-pointer">

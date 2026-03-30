@@ -175,7 +175,7 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
         onClick={handleClose}
       />
 
-      <div className="relative bg-surface-card w-full max-w-lg border border-border-strong shadow-brutal overflow-hidden max-h-[85vh] flex flex-col">
+      <div className="relative bg-surface-card w-full max-w-lg border border-border shadow-brutal overflow-hidden max-h-[85vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-6 pb-0 shrink-0">
           <div className="flex items-center gap-3">
@@ -202,7 +202,7 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
             <div className="flex flex-col items-center justify-center py-16">
               <div className="relative mb-6">
                 <div className="w-14 h-14 border-[3px] border-border-subtle" />
-                <div className="absolute inset-0 w-14 h-14 border-[3px] border-border-strong border-t-transparent animate-spin" />
+                <div className="absolute inset-0 w-14 h-14 border-[3px] border-border border-t-transparent animate-spin" />
               </div>
               <p className="text-sm font-medium text-txt-primary mb-1">{processingStatus}</p>
               <p className="text-xs text-txt-tertiary">잠시만 기다려주세요</p>
@@ -217,10 +217,10 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
               className={`
-                relative p-12 border border-dashed text-center cursor-pointer transition-all duration-200
+                relative p-12 border text-center cursor-pointer transition-all duration-200
                 ${isDragging
-                  ? 'border-border-strong bg-surface-sunken'
-                  : 'border-border hover:border-border-strong hover:bg-surface-sunken'
+                  ? 'border-border bg-surface-sunken'
+                  : 'border-border hover:border-border hover:bg-surface-sunken'
                 }
               `}
             >
@@ -267,7 +267,7 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
                 <textarea
                   value={structuredData.problem}
                   onChange={(e) => setStructuredData(prev => ({ ...prev, problem: e.target.value }))}
-                  className="w-full h-24 px-4 py-3 bg-surface-sunken border border-border focus:border-border-strong resize-none focus:outline-none focus:ring-2 focus:ring-brand text-sm placeholder:text-txt-disabled transition-shadow"
+                  className="w-full h-24 px-4 py-3 bg-surface-sunken rounded-xl border border-border focus:border-border resize-none focus:outline-none focus:ring-2 focus:ring-brand text-sm placeholder:text-txt-disabled transition-shadow"
                   placeholder="해결하려는 문제를 입력하세요..."
                 />
               </div>
@@ -281,7 +281,7 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
                 <textarea
                   value={structuredData.solution}
                   onChange={(e) => setStructuredData(prev => ({ ...prev, solution: e.target.value }))}
-                  className="w-full h-24 px-4 py-3 bg-surface-sunken border border-border focus:border-border-strong resize-none focus:outline-none focus:ring-2 focus:ring-brand text-sm placeholder:text-txt-disabled transition-shadow"
+                  className="w-full h-24 px-4 py-3 bg-surface-sunken rounded-xl border border-border focus:border-border resize-none focus:outline-none focus:ring-2 focus:ring-brand text-sm placeholder:text-txt-disabled transition-shadow"
                   placeholder="핵심 솔루션을 입력하세요..."
                 />
               </div>
@@ -295,7 +295,7 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
                 <textarea
                   value={structuredData.target}
                   onChange={(e) => setStructuredData(prev => ({ ...prev, target: e.target.value }))}
-                  className="w-full h-24 px-4 py-3 bg-surface-sunken border border-border focus:border-border-strong resize-none focus:outline-none focus:ring-2 focus:ring-brand text-sm placeholder:text-txt-disabled transition-shadow"
+                  className="w-full h-24 px-4 py-3 bg-surface-sunken rounded-xl border border-border focus:border-border resize-none focus:outline-none focus:ring-2 focus:ring-brand text-sm placeholder:text-txt-disabled transition-shadow"
                   placeholder="타겟 고객을 입력하세요..."
                 />
               </div>
@@ -328,7 +328,7 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
             <button
               onClick={handleClose}
               disabled={isLoading}
-              className="px-5 py-2.5 text-sm font-bold text-txt-secondary hover:bg-surface-sunken transition-colors border border-border-strong disabled:opacity-50"
+              className="px-5 py-2.5 text-sm font-bold text-txt-secondary hover:bg-surface-sunken transition-colors border border-border disabled:opacity-50"
             >
               취소
             </button>

@@ -38,7 +38,7 @@ export const HowItWorks: React.FC = () => {
           {steps.map((step, index) => (
             <div
               key={index}
-              className="relative flex flex-col items-center text-center p-6 bg-surface-card border border-border shadow-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-200"
+              className="relative flex flex-col items-center text-center p-6 bg-surface-card rounded-xl border border-border shadow-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-200"
             >
               {/* Step number */}
               <div className="absolute -top-2.5 -left-2.5 w-6 h-6 bg-surface-inverse text-txt-inverse flex items-center justify-center text-xs font-bold">
@@ -46,7 +46,7 @@ export const HowItWorks: React.FC = () => {
               </div>
 
               {/* Icon */}
-              <div className="w-12 h-12 bg-surface-card border border-border flex items-center justify-center mb-4">
+              <div className="w-12 h-12 bg-surface-card rounded-xl border border-border flex items-center justify-center mb-4">
                 <step.icon size={22} className="text-txt-secondary" />
               </div>
 
@@ -66,9 +66,9 @@ export const HowItWorks: React.FC = () => {
         {/* Connecting lines (desktop only) */}
         <div className="hidden md:flex justify-center mt-8">
           <div className="flex items-center gap-4 text-txt-disabled">
-            <div className="w-24 h-[1px] border-t border-dashed border-border"></div>
+            <div className="w-24 h-[1px] border-t border-border"></div>
             <span className="text-[0.625rem] font-medium">SIMPLE FLOW</span>
-            <div className="w-24 h-[1px] border-t border-dashed border-border"></div>
+            <div className="w-24 h-[1px] border-t border-border"></div>
           </div>
         </div>
       </div>

@@ -29,7 +29,7 @@ const SignupCTA: React.FC<{ onClose: () => void; onSignup: () => void }> = ({ on
   >
     <div
       onClick={(e) => e.stopPropagation()}
-      className="bg-surface-card w-full max-w-sm p-8 text-center shadow-brutal border border-border-strong animate-modal-in"
+      className="bg-surface-card w-full max-w-sm p-8 text-center shadow-brutal border border-border animate-modal-in"
     >
       <div className="w-16 h-16 bg-black flex items-center justify-center mx-auto mb-6">
         <span className="text-white font-black text-2xl font-mono">D</span>
@@ -133,27 +133,27 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
       <div className="min-h-screen bg-surface-bg">
         <div className="max-w-4xl mx-auto px-4 py-6 animate-pulse">
           {/* Hero skeleton */}
-          <div className="h-56 bg-surface-sunken border border-border-strong mb-6" />
+          <div className="h-56 bg-surface-sunken rounded-xl border border-border mb-6" />
           {/* Title */}
-          <div className="h-7 w-2/3 bg-surface-sunken border border-border mb-3" />
-          <div className="h-4 w-1/3 bg-surface-sunken border border-border mb-6" />
+          <div className="h-7 w-2/3 bg-surface-sunken rounded-xl border border-border mb-3" />
+          <div className="h-4 w-1/3 bg-surface-sunken rounded-xl border border-border mb-6" />
           {/* Tags */}
           <div className="flex gap-2 mb-6">
-            <div className="h-6 w-16 bg-surface-sunken border border-border" />
-            <div className="h-6 w-20 bg-surface-sunken border border-border" />
-            <div className="h-6 w-14 bg-surface-sunken border border-border" />
+            <div className="h-6 w-16 bg-surface-sunken rounded-xl border border-border" />
+            <div className="h-6 w-20 bg-surface-sunken rounded-xl border border-border" />
+            <div className="h-6 w-14 bg-surface-sunken rounded-xl border border-border" />
           </div>
           {/* Content */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-2 space-y-3">
-              <div className="h-4 bg-surface-sunken border border-border" />
-              <div className="h-4 bg-surface-sunken border border-border w-5/6" />
-              <div className="h-4 bg-surface-sunken border border-border w-4/6" />
-              <div className="h-4 bg-surface-sunken border border-border w-3/4" />
+              <div className="h-4 bg-surface-sunken rounded-xl border border-border" />
+              <div className="h-4 bg-surface-sunken rounded-xl border border-border w-5/6" />
+              <div className="h-4 bg-surface-sunken rounded-xl border border-border w-4/6" />
+              <div className="h-4 bg-surface-sunken rounded-xl border border-border w-3/4" />
             </div>
             <div className="space-y-3">
-              <div className="h-24 bg-surface-sunken border border-border-strong" />
-              <div className="h-20 bg-surface-sunken border border-border-strong" />
+              <div className="h-24 bg-surface-sunken rounded-xl border border-border" />
+              <div className="h-20 bg-surface-sunken rounded-xl border border-border" />
             </div>
           </div>
         </div>
@@ -188,7 +188,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
   return (
     <div className="min-h-screen bg-surface-bg">
       {/* Top Navigation Bar */}
-      <nav className="sticky top-0 z-40 bg-surface-card/95 backdrop-blur-sm border-b border-border-strong">
+      <nav className="sticky top-0 z-40 bg-surface-card/95 backdrop-blur-sm border-b border-border">
         <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
           <button
             onClick={() => router.back()}
@@ -211,13 +211,13 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
       </nav>
 
       {/* Hero Header */}
-      <header className="border-b border-border-strong">
+      <header className="border-b border-border">
         <div className="max-w-6xl mx-auto px-6 py-10">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
             <div className="flex-1">
               {/* Type Badge */}
               <div className="flex items-center gap-2 mb-4">
-                <span className="text-[0.625rem] font-medium px-2 py-1 border border-border-strong text-black">
+                <span className="text-[0.625rem] font-medium px-2 py-1 border border-border text-black">
                   {opportunity.type === 'side_project' ? 'SIDE PROJECT' :
                    opportunity.type === 'startup' ? 'STARTUP' :
                    opportunity.type === 'study' ? 'STUDY' : opportunity.type?.toUpperCase() || 'PROJECT'}
@@ -293,7 +293,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
           )}
 
           {/* Stats Bar */}
-          <div className="flex items-center gap-6 mt-6 pt-6 border-t border-dashed border-border text-sm text-txt-tertiary">
+          <div className="flex items-center gap-6 mt-6 pt-6 border-t border-border text-sm text-txt-tertiary">
             {interestCount > 0 && (
               <span className="flex items-center gap-1.5">
                 <Heart size={14} className="text-txt-disabled" />
@@ -329,7 +329,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
             {/* Pain Point (if exists) */}
             {opportunity.pain_point && (
-              <section className="bg-surface-sunken border border-border-strong p-6">
+              <section className="bg-surface-sunken rounded-xl border border-border p-6">
                 <h2 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
                   해결하려는 문제
                 </h2>
@@ -348,7 +348,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                     주간 업데이트
                   </h2>
                   {!opportunity.show_updates && isOwner && (
-                    <span className="text-[0.5rem] font-mono text-txt-disabled px-1.5 py-0.5 border border-dashed border-border">
+                    <span className="text-[0.5rem] font-mono text-txt-disabled px-1.5 py-0.5 border border-border">
                       비공개
                     </span>
                   )}
@@ -365,7 +365,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                       className={`text-[0.625rem] font-mono px-2 py-0.5 border transition-colors ${
                         opportunity.show_updates
                           ? 'bg-status-success-bg text-status-success-text border-status-success-text/30'
-                          : 'bg-surface-sunken text-txt-disabled border-border hover:border-border-strong'
+                          : 'bg-surface-sunken text-txt-disabled border-border hover:border-border'
                       }`}
                     >
                       {opportunity.show_updates ? '공개 중' : '비공개'}
@@ -397,10 +397,10 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                         <div key={update.id} className="relative pl-10">
                           {/* Timeline Dot */}
                           <div className={`absolute left-[0.6875rem] top-1.5 w-[0.5625rem] h-[0.5625rem] border bg-surface-card ${
-                            index === 0 ? 'border-border-strong' : 'border-border-strong'
+                            index === 0 ? 'border-border' : 'border-border'
                           }`} />
 
-                          <div className="bg-surface-card border border-border-strong p-5 hover:shadow-sharp transition-all">
+                          <div className="bg-surface-card rounded-xl border border-border p-5 hover:shadow-sharp transition-all">
                             <div className="flex items-center gap-2 mb-2">
                               <span className={`text-[0.625rem] font-bold px-2 py-0.5 border ${config.badgeColor}`}>
                                 {config.label}
@@ -449,7 +449,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
               <h2 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">
                 커뮤니티 피드백
               </h2>
-              <div className="bg-surface-sunken border border-border-strong p-8 text-center">
+              <div className="bg-surface-sunken rounded-xl border border-border p-8 text-center">
                 <MessageCircle size={32} className="text-txt-disabled mx-auto mb-3" />
                 <p className="font-bold text-txt-primary mb-1">피드백을 남겨보세요</p>
                 <p className="text-sm text-txt-tertiary mb-4 break-keep">
@@ -469,7 +469,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
           {/* Right: Sidebar (1/3) */}
           <aside className="space-y-6">
             {/* Team Section */}
-            <div className="border border-border-strong p-6">
+            <div className="border border-border p-6">
               <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">
                 팀 정보
               </h3>
@@ -516,7 +516,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
             {/* Needed Roles */}
             {opportunity.needed_roles && opportunity.needed_roles.length > 0 && (
-              <div className="border border-border-strong p-6">
+              <div className="border border-border p-6">
                 <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">
                   모집 중인 포지션
                 </h3>
@@ -543,7 +543,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
             )}
 
             {/* Project Info */}
-            <div className="border border-border-strong p-6">
+            <div className="border border-border p-6">
               <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">
                 프로젝트 정보
               </h3>
@@ -593,7 +593,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
             {/* Project Links */}
             {projectLinks && Object.keys(projectLinks).length > 0 && (
-              <div className="border border-border-strong p-6">
+              <div className="border border-border p-6">
                 <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">
                   링크
                 </h3>
@@ -634,7 +634,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
       {/* Mobile Fixed CTA */}
       <div
-        className="fixed left-0 right-0 bg-surface-card border-t border-border-strong p-4 md:hidden z-30"
+        className="fixed left-0 right-0 bg-surface-card border-t border-border p-4 md:hidden z-30"
         style={{ bottom: 'calc(var(--bottom-tab-height) + env(safe-area-inset-bottom, 0px))' }}
       >
         <button

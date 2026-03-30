@@ -71,7 +71,7 @@ export const Projects: React.FC = () => {
             <div className="sticky top-6 space-y-6">
 
               {/* 카테고리 */}
-              <div className="bg-surface-card border border-border-strong p-4">
+              <div className="bg-surface-card rounded-xl border border-border p-4">
                 <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
                   <span className="w-2 h-2 bg-surface-inverse" />
                   카테고리
@@ -94,22 +94,22 @@ export const Projects: React.FC = () => {
               </div>
 
               {/* 필터 */}
-              <div className="bg-surface-card border border-border-strong p-4">
+              <div className="bg-surface-card rounded-xl border border-border p-4">
                 <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
                   <span className="w-2 h-2 bg-brand" />
                   필터
                 </h3>
                 <div className="space-y-2">
                   <label className="flex items-center gap-2 text-sm text-txt-secondary cursor-pointer">
-                    <input type="checkbox" className="border border-border-strong" />
+                    <input type="checkbox" className="border border-border" />
                     팀원 모집 중
                   </label>
                   <label className="flex items-center gap-2 text-sm text-txt-secondary cursor-pointer">
-                    <input type="checkbox" className="border border-border-strong" />
+                    <input type="checkbox" className="border border-border" />
                     커피챗 가능
                   </label>
                   <label className="flex items-center gap-2 text-sm text-txt-secondary cursor-pointer">
-                    <input type="checkbox" className="border border-border-strong" />
+                    <input type="checkbox" className="border border-border" />
                     이번 주 신규
                   </label>
                 </div>
@@ -129,17 +129,17 @@ export const Projects: React.FC = () => {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 bg-surface-card border border-border-strong text-sm font-mono focus:outline-none focus:border-brand placeholder:text-txt-disabled"
+                  className="w-full pl-11 pr-4 py-3 bg-surface-card rounded-xl border border-border text-sm font-mono focus:outline-none focus:border-brand placeholder:text-txt-disabled"
                   placeholder="프로젝트, 역할, 기술 스택 검색..."
                 />
               </div>
-              <button className="lg:hidden p-3 bg-surface-card border border-border-strong hover:bg-surface-sunken transition-colors">
+              <button className="lg:hidden p-3 bg-surface-card rounded-xl border border-border hover:bg-surface-sunken transition-colors">
                 <Filter size={18} className="text-txt-secondary" />
               </button>
             </div>
 
             {/* 정렬 탭 */}
-            <div className="flex items-center gap-1 border-b border-border-strong">
+            <div className="flex items-center gap-1 border-b border-border">
               {[
                 { id: 'latest', label: '최신', icon: Clock },
                 { id: 'popular', label: '인기', icon: Star },
@@ -190,12 +190,12 @@ export const Projects: React.FC = () => {
                   return (
                     <Card key={opp.id} className="group hover:shadow-sharp relative" padding="p-4">
                       {/* Corner marks */}
-                      <span className="absolute top-0 left-0 w-2 h-2 border-t border-l border-border-strong pointer-events-none" />
-                      <span className="absolute top-0 right-0 w-2 h-2 border-t border-r border-border-strong pointer-events-none" />
-                      <span className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-border-strong pointer-events-none" />
-                      <span className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-border-strong pointer-events-none" />
+                      <span className="absolute top-0 left-0 w-2 h-2 border-t border-l border-border pointer-events-none" />
+                      <span className="absolute top-0 right-0 w-2 h-2 border-t border-r border-border pointer-events-none" />
+                      <span className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-border pointer-events-none" />
+                      <span className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-border pointer-events-none" />
                       <div className="flex gap-3">
-                        <div className="w-10 h-10 bg-surface-sunken border border-border-strong flex items-center justify-center text-txt-secondary group-hover:bg-surface-inverse group-hover:text-txt-inverse transition-colors flex-shrink-0">
+                        <div className="w-10 h-10 bg-surface-sunken rounded-xl border border-border flex items-center justify-center text-txt-secondary group-hover:bg-surface-inverse group-hover:text-txt-inverse transition-colors flex-shrink-0">
                           <Zap size={18} />
                         </div>
                         <div className="flex-1 min-w-0">
@@ -216,7 +216,7 @@ export const Projects: React.FC = () => {
                             ))}
                           </div>
 
-                          <div className="flex items-center justify-between mt-3 pt-2 border-t border-dashed border-border">
+                          <div className="flex items-center justify-between mt-3 pt-2 border-t border-border">
                             <div className="flex items-center gap-3 text-[0.625rem] font-mono text-txt-tertiary">
                               {opp.creator?.nickname && (
                                 <span className="flex items-center gap-1">
@@ -249,7 +249,7 @@ export const Projects: React.FC = () => {
             <div className="sticky top-6 space-y-6">
 
               {/* 인기 프로젝트 */}
-              <div className="bg-surface-card border border-border-strong p-4">
+              <div className="bg-surface-card rounded-xl border border-border p-4">
                 <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
                   <span className="w-2 h-2 bg-status-danger-text" />
                   <Flame size={10} /> 인기 프로젝트
@@ -258,7 +258,7 @@ export const Projects: React.FC = () => {
                   {opportunities.slice(0, 5).map((opp: OpportunityWithCreator, idx: number) => (
                     <div
                       key={opp.id}
-                      className="flex items-start gap-3 p-2 hover:bg-surface-sunken transition-colors cursor-pointer border-b border-dashed border-border last:border-b-0"
+                      className="flex items-start gap-3 p-2 hover:bg-surface-sunken transition-colors cursor-pointer border-b border-border last:border-b-0"
                     >
                       <span className="text-lg font-mono font-bold text-txt-disabled w-5">{idx + 1}</span>
                       <div className="flex-1 min-w-0">
@@ -292,7 +292,7 @@ export const Projects: React.FC = () => {
               </div>
 
               {/* 커피챗 안내 */}
-              <div className="bg-surface-card border border-dashed border-border p-4">
+              <div className="bg-surface-card rounded-xl border border-border p-4">
                 <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
                   <span className="w-2 h-2 bg-status-warning-text" />
                   <Coffee size={10} /> 커피챗

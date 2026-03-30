@@ -72,7 +72,7 @@ export default function DashboardPage() {
       {/* Welcome */}
       <Section spacing="sm" bg="transparent">
         <PageContainer size="wide">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-dashed border-border pb-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-border pb-6">
             <div>
               <p className="text-[0.625rem] text-txt-tertiary mb-1">{greeting}</p>
               <h1 className="text-xl font-bold text-txt-primary">
@@ -142,7 +142,7 @@ export default function DashboardPage() {
             </div>
             <div className="space-y-2">
               {pendingCount > 0 && (
-                <Link href="/projects" className="flex items-center justify-between bg-surface-card border border-border-strong p-4 hover:shadow-solid-sm hover-spring group">
+                <Link href="/projects" className="flex items-center justify-between bg-surface-card rounded-xl border border-border p-4 hover:shadow-md hover-spring group">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 bg-status-warning-bg border border-indicator-trending/20 flex items-center justify-center">
                       <Coffee size={14} className="text-indicator-trending" />
@@ -156,7 +156,7 @@ export default function DashboardPage() {
                 </Link>
               )}
               {pendingInvitations.map((inv) => (
-                <Link key={inv.id} href="/notifications" className="flex items-center justify-between bg-surface-card border border-border-strong p-4 hover:shadow-solid-sm hover-spring group">
+                <Link key={inv.id} href="/notifications" className="flex items-center justify-between bg-surface-card rounded-xl border border-border p-4 hover:shadow-md hover-spring group">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 bg-brand-bg border border-brand-border flex items-center justify-center">
                       <Users size={14} className="text-brand" />
@@ -192,7 +192,7 @@ export default function DashboardPage() {
               {recLoading ? (
                 <div className="space-y-3">
                   {[1, 2].map(i => (
-                    <div key={i} className="bg-surface-card border border-border-strong p-5">
+                    <div key={i} className="bg-surface-card rounded-xl border border-border p-5">
                       <Skeleton className="h-4 w-2/3 mb-3" />
                       <Skeleton className="h-3 w-full mb-2" />
                       <Skeleton className="h-3 w-1/2" />
@@ -200,7 +200,7 @@ export default function DashboardPage() {
                   ))}
                 </div>
               ) : recommended.length === 0 ? (
-                <div className="bg-surface-card border border-dashed border-border-strong p-8 text-center">
+                <div className="bg-surface-card rounded-xl border border-border p-8 text-center">
                   <Rocket size={24} className="text-txt-disabled mx-auto mb-2" />
                   <p className="text-sm text-txt-tertiary">프로필을 완성하면 맞춤 추천을 받을 수 있어요</p>
                   <Link href="/profile/edit" className="text-xs text-brand font-bold mt-2 inline-block hover:underline">프로필 완성하기</Link>
@@ -215,7 +215,7 @@ export default function DashboardPage() {
                       onClick={() => router.push(`/explore?project=${opp.id}`)}
                       onKeyDown={(e) => { if (e.key === 'Enter') router.push(`/explore?project=${opp.id}`) }}
                       style={{ animationDelay: `${index * 80}ms` }}
-                      className="stagger-item bg-surface-card border border-border-strong p-5 cursor-pointer hover:shadow-solid-sm hover:-translate-y-0.5 hover-spring group relative"
+                      className="stagger-item bg-surface-card rounded-xl border border-border p-5 cursor-pointer hover:shadow-md hover:-translate-y-0.5 hover-spring group relative"
                     >
                       <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/15" />
                       <div className="flex items-start justify-between gap-3">
@@ -253,7 +253,7 @@ export default function DashboardPage() {
                 <span className="w-5 h-5 bg-surface-inverse text-txt-inverse flex items-center justify-center text-[0.5rem] font-bold font-mono">A</span>
                 <span className="text-[0.625rem] font-medium text-txt-secondary">Activity</span>
               </div>
-              <div className="bg-surface-card border border-border-strong p-5 relative">
+              <div className="bg-surface-card rounded-xl border border-border p-5 relative">
                 <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/15" />
                 {statsLoading ? (
                   <div className="space-y-4">
@@ -319,7 +319,7 @@ export default function DashboardPage() {
           {projectsLoading ? (
             <div className="space-y-3">
               {[1, 2].map(i => (
-                <div key={i} className="bg-surface-card border border-border-strong p-5 flex items-center gap-4">
+                <div key={i} className="bg-surface-card rounded-xl border border-border p-5 flex items-center gap-4">
                   <Skeleton className="w-10 h-10 shrink-0" />
                   <div className="flex-1">
                     <Skeleton className="h-4 w-48 mb-2" />
@@ -329,8 +329,8 @@ export default function DashboardPage() {
               ))}
             </div>
           ) : myProjects.length === 0 ? (
-            <div className="border border-dashed border-border-strong bg-surface-card p-8 text-center">
-              <div className="w-12 h-12 bg-surface-sunken border border-border flex items-center justify-center mx-auto mb-3">
+            <div className="border border-border bg-surface-card rounded-xl p-8 text-center">
+              <div className="w-12 h-12 bg-surface-sunken rounded-xl border border-border flex items-center justify-center mx-auto mb-3">
                 <FolderOpen size={20} className="text-txt-disabled" />
               </div>
               <p className="text-sm font-bold text-txt-primary mb-1">아직 프로젝트가 없습니다</p>
@@ -350,7 +350,7 @@ export default function DashboardPage() {
                   key={opp.id}
                   href={`/projects`}
                   style={{ animationDelay: `${index * 60}ms` }}
-                  className="stagger-item bg-surface-card border border-border-strong p-4 flex items-center gap-4 hover:shadow-solid-sm hover:-translate-y-0.5 hover-spring group relative block"
+                  className="stagger-item bg-surface-card rounded-xl border border-border p-4 flex items-center gap-4 hover:shadow-md hover:-translate-y-0.5 hover-spring group relative block"
                 >
                   <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/15" />
                   <div className="w-10 h-10 bg-surface-inverse flex items-center justify-center shrink-0">
@@ -397,7 +397,7 @@ function StatCard({ index, label, value, icon, href, alert }: {
   alert?: boolean
 }) {
   const content = (
-    <div className={`bg-surface-card border border-border-strong shadow-sharp p-5 relative ${href ? 'cursor-pointer hover:shadow-solid-sm hover:-translate-y-0.5 hover-spring group' : ''}`}>
+    <div className={`bg-surface-card rounded-xl border border-border shadow-sharp p-5 relative ${href ? 'cursor-pointer hover:shadow-md hover:-translate-y-0.5 hover-spring group' : ''}`}>
       <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/20" />
       <div className="flex items-center justify-between mb-3">
         <span className="text-[0.625rem] font-mono text-txt-disabled">{String(index).padStart(2, '0')}</span>

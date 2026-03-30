@@ -226,7 +226,7 @@ function TemplateCard({ id, name, description, pages, features, recommended, onC
     <button
       onClick={onClick}
       className={`text-left p-5 bg-surface-card border hover:shadow-sharp transition-all group ${
-        recommended ? 'border-brand ring-2 ring-brand-border' : 'border-border-strong hover:border-border-strong'
+        recommended ? 'border-brand ring-2 ring-brand-border' : 'border-border hover:border-border'
       }`}
     >
       <div className="flex items-start justify-between mb-3">

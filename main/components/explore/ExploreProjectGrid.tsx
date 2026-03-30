@@ -77,7 +77,7 @@ export function ExploreProjectGrid({
               onClick={() => onSelectProject(p.id)}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectProject(p.id) } }}
               style={{ animationDelay: `${Math.min(index * 60, 600)}ms` }}
-              className="stagger-item relative bg-surface-card border border-border-strong overflow-hidden group hover:shadow-solid-sm hover:border-brand/30 hover:-translate-y-0.5 hover-spring cursor-pointer h-[21.25rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985] active:shadow-none active:border-brand/50"
+              className="stagger-item relative bg-surface-card rounded-xl border border-border overflow-hidden group hover:shadow-md hover:border-brand/30 hover:-translate-y-0.5 hover-spring cursor-pointer h-[21.25rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985] active:shadow-none active:border-brand/50"
             >
               {/* 코너 마크 */}
               <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/15 z-20" />
@@ -108,7 +108,7 @@ export function ExploreProjectGrid({
                     <span key={tag} className="text-[0.625rem] font-mono bg-black/60 backdrop-blur-sm text-white px-2 py-0.5 border border-white/10">{tag}</span>
                   ))}
                 </div>
-                <div className="relative z-[1] w-10 h-10 bg-surface-card flex items-center justify-center shadow-solid-sm border border-border-strong">
+                <div className="relative z-[1] w-10 h-10 bg-surface-card flex items-center justify-center shadow-solid-sm border border-border">
                   <Rocket size={18} className="text-black" />
                 </div>
               </div>
@@ -136,9 +136,9 @@ export function ExploreProjectGrid({
               </div>
               {/* 푸터 */}
               <div className="px-4 pb-4 h-[4.75rem] shrink-0 flex items-end">
-                <div className="flex items-center justify-between w-full pt-3 border-t border-dashed border-border">
+                <div className="flex items-center justify-between w-full pt-3 border-t border-border">
                   <div className="flex items-center gap-2">
-                    <div className="w-5 h-5 bg-surface-sunken border border-border flex items-center justify-center">
+                    <div className="w-5 h-5 bg-surface-sunken rounded-xl border border-border flex items-center justify-center">
                       <Users size={10} className="text-txt-disabled" />
                     </div>
                     <span className="text-[0.625rem] font-mono text-txt-tertiary">팀 모집중</span>
@@ -165,7 +165,7 @@ export function ExploreProjectGrid({
         <div className="text-center mt-6">
           <button
             onClick={onLoadMore}
-            className="px-6 py-2.5 text-sm font-bold text-txt-secondary border border-border-strong hover:bg-surface-sunken hover:shadow-sharp transition-all active:scale-[0.97] active:shadow-none"
+            className="px-6 py-2.5 text-sm font-bold text-txt-secondary border border-border hover:bg-surface-sunken hover:shadow-sharp transition-all active:scale-[0.97] active:shadow-none"
           >
             더 보기{!searchQuery && selectedCategory === 'all' && !recruitingOnly ? ` (${totalCount - projectCards.length}개 남음)` : ''}
           </button>

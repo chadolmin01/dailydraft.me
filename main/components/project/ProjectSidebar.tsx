@@ -78,7 +78,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
           </h3>
           <div className="space-y-2">
             {opportunity.needed_roles.map((role) => (
-              <div key={role} className="flex items-center justify-between py-2.5 px-3 bg-surface-card border border-border-strong">
+              <div key={role} className="flex items-center justify-between py-2.5 px-3 bg-surface-card rounded-xl border border-border">
                 <div className="flex items-center gap-2">
                   <Briefcase size={14} className="text-txt-disabled" />
                   <span className="text-sm text-txt-secondary">{role}</span>
@@ -115,7 +115,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
             {(opportunity.needed_skills as Array<{ name: string; level?: string }>).map((skill, i) => (
               <span
                 key={i}
-                className="inline-flex items-center gap-1 px-2 py-1 bg-surface-card border border-border text-xs text-txt-secondary"
+                className="inline-flex items-center gap-1 px-2 py-1 bg-surface-card rounded-xl border border-border text-xs text-txt-secondary"
               >
                 <Code size={10} className="text-txt-disabled" />
                 {skill.name}
@@ -199,7 +199,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2.5 py-2 px-3 bg-surface-card border border-border hover:border-border-strong transition-colors group"
+                  className="flex items-center gap-2.5 py-2 px-3 bg-surface-card rounded-xl border border-border hover:border-border transition-colors group"
                 >
                   <LinkIcon size={14} className="text-txt-disabled group-hover:text-txt-primary transition-colors shrink-0" />
                   <span className="text-sm text-txt-secondary group-hover:text-txt-primary transition-colors truncate">
@@ -217,7 +217,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
       {isOwner && (
         <button
           onClick={() => { onClose(); router.push(`/projects/${opportunity.id}/edit`) }}
-          className="w-full py-2.5 border border-border-strong text-txt-secondary font-medium text-sm hover:bg-black hover:text-white transition-colors flex items-center justify-center gap-2"
+          className="w-full py-2.5 border border-border text-txt-secondary font-medium text-sm hover:bg-black hover:text-white transition-colors flex items-center justify-center gap-2"
         >
           <Edit3 size={14} />
           프로젝트 수정하기

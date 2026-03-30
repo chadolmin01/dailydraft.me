@@ -329,7 +329,7 @@ function EditProjectContent() {
       <div className="max-w-4xl mx-auto px-4 py-2 md:py-4">
 
         {/* ─── Tab Bar ─── */}
-        <div className="bg-surface-card border border-border-strong border-b-0 shadow-sharp">
+        <div className="bg-surface-card rounded-xl border border-border border-b-0 shadow-sharp">
           <div className="px-3 sm:px-5 py-2.5 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <button
@@ -390,10 +390,10 @@ function EditProjectContent() {
 
         {/* ─── Tab: Info ─── */}
         {tab === 'info' && (
-          <form onSubmit={handleSubmit} className="bg-surface-card shadow-sharp overflow-hidden border border-border-strong border-t-0">
+          <form onSubmit={handleSubmit} className="bg-surface-card shadow-sharp overflow-hidden border border-border border-t-0">
 
             {/* Type selector */}
-            <div className="bg-surface-sunken border-b-2 border-border-strong px-3 sm:px-5 py-2.5 flex items-center justify-center">
+            <div className="bg-surface-sunken border-b-2 border-border px-3 sm:px-5 py-2.5 flex items-center justify-center">
               <div className="flex items-center gap-1">
                 {TYPE_OPTIONS.map(opt => (
                   <button
@@ -483,7 +483,7 @@ function EditProjectContent() {
                         type="button"
                         onClick={generateDescription}
                         disabled={aiLoading || !title.trim()}
-                        className="flex items-center gap-1.5 px-2.5 py-1 text-[0.625rem] font-medium border border-border text-txt-secondary hover:border-border-strong hover:text-txt-primary transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="flex items-center gap-1.5 px-2.5 py-1 text-[0.625rem] font-medium border border-border text-txt-secondary hover:border-border hover:text-txt-primary transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                       >
                         {aiLoading ? (
                           <><Loader2 size={10} className="animate-spin" /> 생성 중...</>
@@ -498,7 +498,7 @@ function EditProjectContent() {
                       placeholder={theme.descPlaceholder}
                       rows={7}
                       maxLength={2000}
-                      className="w-full text-sm text-txt-secondary leading-[1.8] placeholder:text-txt-disabled border border-border-strong p-3 focus:outline-none focus:border-surface-inverse resize-none bg-transparent"
+                      className="w-full text-sm text-txt-secondary leading-[1.8] placeholder:text-txt-disabled border border-border p-3 focus:outline-none focus:border-surface-inverse resize-none bg-transparent"
                     />
                     <p className="text-[0.625rem] text-txt-disabled mt-1 text-right font-mono">{description.length}/2000</p>
                   </section>
@@ -531,14 +531,14 @@ function EditProjectContent() {
                             value={link.label}
                             onChange={(e) => updateLink(idx, 'label', e.target.value)}
                             placeholder="이름"
-                            className="px-3 py-2 border border-border text-sm focus:outline-none focus:border-border-strong w-1/3 bg-transparent"
+                            className="px-3 py-2 border border-border text-sm focus:outline-none focus:border-border w-1/3 bg-transparent"
                           />
                           <input
                             type="url"
                             value={link.url}
                             onChange={(e) => updateLink(idx, 'url', e.target.value)}
                             placeholder="https://..."
-                            className="px-3 py-2 border border-border text-sm focus:outline-none focus:border-border-strong flex-1 bg-transparent"
+                            className="px-3 py-2 border border-border text-sm focus:outline-none focus:border-border flex-1 bg-transparent"
                           />
                           <button
                             type="button"
@@ -622,7 +622,7 @@ function EditProjectContent() {
             </div>
 
             {/* Mobile Footer */}
-            <div className="md:hidden px-4 py-4 bg-surface-card border-t-2 border-border-strong">
+            <div className="md:hidden px-4 py-4 bg-surface-card border-t-2 border-border">
               <button
                 type="submit"
                 disabled={updateOpportunity.isPending || imageUploading}
@@ -642,7 +642,7 @@ function EditProjectContent() {
 
         {/* ─── Tab: Team ─── */}
         {tab === 'team' && (
-          <div className="bg-surface-card shadow-sharp overflow-hidden border border-border-strong border-t-0">
+          <div className="bg-surface-card shadow-sharp overflow-hidden border border-border border-t-0">
             <TeamManageSection opportunityId={id} />
           </div>
         )}

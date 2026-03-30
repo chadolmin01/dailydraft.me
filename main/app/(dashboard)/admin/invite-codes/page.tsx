@@ -162,7 +162,7 @@ export default function InviteCodesAdminPage() {
       </div>
 
       {/* Send New Code */}
-      <div className="bg-surface-card border border-border-strong shadow-sharp p-6 mb-8">
+      <div className="bg-surface-card rounded-xl border border-border shadow-sharp p-6 mb-8">
         <h2 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">새 초대 코드 발송</h2>
 
         <div className="flex gap-4 items-end">
@@ -176,7 +176,7 @@ export default function InviteCodesAdminPage() {
                 setSelectedEmail(e.target.value)
                 setSendError(null)
               }}
-              className="w-full px-3 py-2 border border-border-strong focus:outline-none focus:border-brand"
+              className="w-full px-3 py-2 border border-border focus:outline-none focus:border-brand"
               disabled={eligibleLoading}
             >
               <option value="">이메일 선택...</option>
@@ -216,12 +216,12 @@ export default function InviteCodesAdminPage() {
       </div>
 
       {/* Codes List */}
-      <div className="bg-surface-card border border-border-strong shadow-sharp">
-        <div className="p-4 border-b border-border-strong flex items-center justify-between">
+      <div className="bg-surface-card rounded-xl border border-border shadow-sharp">
+        <div className="p-4 border-b border-border flex items-center justify-between">
           <h2 className="text-[0.625rem] font-medium text-txt-tertiary">발송된 초대 코드</h2>
           <button
             onClick={() => queryClient.invalidateQueries({ queryKey: ['admin-invite-codes'] })}
-            className="p-2 hover:bg-surface-sunken border border-border-strong transition-colors"
+            className="p-2 hover:bg-surface-sunken rounded-xl border border-border transition-colors"
           >
             <RefreshCw className="w-4 h-4 text-txt-tertiary" />
           </button>
@@ -237,8 +237,8 @@ export default function InviteCodesAdminPage() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm border border-border-strong">
-              <thead className="bg-surface-sunken border-b border-border-strong">
+            <table className="w-full text-sm border border-border">
+              <thead className="bg-surface-sunken border-b border-border">
                 <tr>
                   <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">코드</th>
                   <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">받는 사람</th>
@@ -252,7 +252,7 @@ export default function InviteCodesAdminPage() {
                 {codes.map((code) => (
                   <tr key={code.id} className="hover:bg-surface-sunken">
                     <td className="px-4 py-3">
-                      <code className="px-2 py-1 bg-surface-sunken border border-border font-mono text-sm">
+                      <code className="px-2 py-1 bg-surface-sunken rounded-xl border border-border font-mono text-sm">
                         {code.code}
                       </code>
                     </td>
@@ -269,7 +269,7 @@ export default function InviteCodesAdminPage() {
                           사용됨
                         </span>
                       ) : !code.is_active ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 border border-border-strong text-txt-tertiary text-[0.625rem] font-mono font-bold">
+                        <span className="inline-flex items-center gap-1 px-2 py-1 border border-border text-txt-tertiary text-[0.625rem] font-mono font-bold">
                           <X className="w-3 h-3" />
                           비활성
                         </span>
@@ -312,8 +312,8 @@ export default function InviteCodesAdminPage() {
       </div>
 
       {/* Eligible Users List */}
-      <div className="bg-surface-card border border-border-strong shadow-sharp mt-8">
-        <div className="p-4 border-b border-border-strong">
+      <div className="bg-surface-card rounded-xl border border-border shadow-sharp mt-8">
+        <div className="p-4 border-b border-border">
           <h2 className="text-[0.625rem] font-medium text-txt-tertiary">온보딩 완료 유저 ({eligibleData?.total_count || 0}명)</h2>
         </div>
 
@@ -327,8 +327,8 @@ export default function InviteCodesAdminPage() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm border border-border-strong">
-              <thead className="bg-surface-sunken border-b border-border-strong">
+            <table className="w-full text-sm border border-border">
+              <thead className="bg-surface-sunken border-b border-border">
                 <tr>
                   <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">닉네임</th>
                   <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">이메일</th>
@@ -349,7 +349,7 @@ export default function InviteCodesAdminPage() {
                     <td className="px-4 py-3">
                       {user.existing_invite_code ? (
                         <div className="flex items-center gap-2">
-                          <code className="px-2 py-1 bg-surface-sunken border border-border font-mono text-xs">
+                          <code className="px-2 py-1 bg-surface-sunken rounded-xl border border-border font-mono text-xs">
                             {user.existing_invite_code}
                           </code>
                           {user.invite_code_used ? (

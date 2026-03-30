@@ -151,7 +151,7 @@ export const FeedbackTooltip: React.FC<FeedbackTooltipProps> = ({
         <p className="mt-2 text-sm leading-relaxed opacity-90">{feedback}</p>
 
         {suggestion && (
-          <div className="mt-2 pt-2 border-t border-dashed border-white/20">
+          <div className="mt-2 pt-2 border-t border-white/20">
             <div className="text-[0.625rem] uppercase opacity-60 mb-1">수정 제안</div>
             <p className="text-sm opacity-90">{suggestion}</p>
           </div>
@@ -276,7 +276,7 @@ export const QuickFixButton: React.FC<QuickFixButtonProps> = ({
 }) => {
   const variantClasses = {
     primary: 'bg-brand text-white hover:bg-brand-hover hover:opacity-90 active:scale-[0.97]',
-    secondary: 'bg-surface-sunken text-txt-secondary hover:bg-black hover:text-white border border-border-strong',
+    secondary: 'bg-surface-sunken text-txt-secondary hover:bg-black hover:text-white border border-border',
   }
 
   const sizeClasses = {

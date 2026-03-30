@@ -14,7 +14,7 @@ export const SituationStep: React.FC<SituationStepProps> = ({ onSelect }) => {
         <button
           key={sit.value}
           onClick={() => onSelect(sit)}
-          className="ob-chip ob-hover w-full text-left px-4 py-3 bg-surface-card border border-border-strong hover:border-border-strong transition-all group"
+          className="ob-chip ob-hover w-full text-left px-4 py-3 bg-surface-card rounded-xl border border-border hover:border-border transition-all group"
           style={{ animationDelay: `${idx * 60}ms` }}
         >
           <div className="text-[13px] font-bold text-txt-primary group-hover:text-black">{sit.label}</div>

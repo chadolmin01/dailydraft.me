@@ -133,7 +133,7 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
               type="button"
               onClick={() => handleExport('docx')}
               disabled={isExporting}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-txt-secondary bg-surface-card border border-border-strong hover:bg-black hover:text-white transition-colors disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-txt-secondary bg-surface-card rounded-xl border border-border hover:bg-black hover:text-white transition-colors disabled:opacity-50"
             >
               {isExporting && exportFormat === 'docx' ? (
                 <Loader2 size={16} className="animate-spin" />
@@ -184,7 +184,7 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
                 <p className="text-xl text-txt-secondary mb-8">
                   {data.basicInfo.oneLiner}
                 </p>
-                <div className="px-6 py-3 border border-border-strong text-txt-tertiary">
+                <div className="px-6 py-3 border border-border text-txt-tertiary">
                   {template.name}
                 </div>
               </div>
@@ -222,7 +222,7 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
                   key={section.type}
                   className="mb-12 print:page-break-inside-avoid"
                 >
-                  <div className="border-b border-border-strong pb-2 mb-6">
+                  <div className="border-b border-border pb-2 mb-6">
                     <h2 className="text-xl font-bold text-txt-primary">
                       {section.title}
                     </h2>
@@ -261,7 +261,7 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
                   key={section.type}
                   className="mb-12 p-6 bg-surface-sunken print:page-break-inside-avoid"
                 >
-                  <div className="border-b border-border-strong pb-2 mb-6">
+                  <div className="border-b border-border pb-2 mb-6">
                     <h2 className="text-lg font-bold text-txt-primary">
                       {section.title}
                     </h2>

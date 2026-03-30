@@ -45,7 +45,7 @@ export const FAQ: React.FC = () => {
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className="border border-border bg-surface-card"
+              className="border border-border bg-surface-card rounded-xl"
             >
               <button
                 onClick={() => toggleFaq(index)}

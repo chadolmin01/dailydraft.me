@@ -18,7 +18,7 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
   return (
     <div className="min-h-screen bg-surface-sunken">
       {/* Header */}
-      <div className="bg-surface-card border-b border-border-strong">
+      <div className="bg-surface-card border-b border-border">
         <div className="max-w-5xl mx-auto px-6 py-6">
           <h1 className="text-2xl font-bold text-txt-primary mb-6">Project Studio</h1>
 
@@ -44,7 +44,7 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
                           ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
                           : isPast
                             ? 'bg-emerald-500 text-white border-emerald-500'
-                            : 'bg-surface-sunken text-txt-tertiary border-border-strong group-hover:bg-surface-card'
+                            : 'bg-surface-sunken text-txt-tertiary border-border group-hover:bg-surface-card'
                         }
                       `}>
                         {isPast ? '✓' : index + 1}

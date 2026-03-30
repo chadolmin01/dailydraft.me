@@ -28,7 +28,7 @@ export const EditSkills: React.FC<EditSkillsProps> = ({
             key={skill}
             type="button"
             onClick={() => addSkill(skill)}
-            className="px-2.5 py-1 text-xs font-medium border border-border bg-surface-card text-txt-secondary hover:border-border-strong transition-colors"
+            className="px-2.5 py-1 text-xs font-medium border border-border bg-surface-card rounded-xl text-txt-secondary hover:border-border transition-colors"
           >
             + {skill}
           </button>
@@ -39,7 +39,7 @@ export const EditSkills: React.FC<EditSkillsProps> = ({
       {skills.length > 0 && (
         <div className="space-y-1.5 mb-3">
           {skills.map((skill) => (
-            <div key={skill.name} className="flex items-center gap-2 px-3 py-2 bg-surface-card border border-border">
+            <div key={skill.name} className="flex items-center gap-2 px-3 py-2 bg-surface-card rounded-xl border border-border">
               <span className="flex-1 text-xs text-txt-primary font-medium">{skill.name}</span>
               <div className="flex items-center gap-0.5">
                 {SKILL_LEVELS.map((level) => (
@@ -77,12 +77,12 @@ export const EditSkills: React.FC<EditSkillsProps> = ({
           onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())}
           placeholder="스킬 직접 입력"
           maxLength={30}
-          className="flex-1 px-3 py-2 text-sm border border-border bg-surface-card focus:outline-none focus:border-accent transition-colors"
+          className="flex-1 px-3 py-2 text-sm border border-border bg-surface-card rounded-xl focus:outline-none focus:border-accent transition-colors"
         />
         <select
           value={newSkillLevel}
           onChange={(e) => setNewSkillLevel(e.target.value)}
-          className="px-2 py-2 text-xs border border-border bg-surface-card text-txt-secondary focus:outline-none focus:border-accent transition-colors"
+          className="px-2 py-2 text-xs border border-border bg-surface-card rounded-xl text-txt-secondary focus:outline-none focus:border-accent transition-colors"
         >
           {SKILL_LEVELS.map((level) => (
             <option key={level} value={level}>{level}</option>

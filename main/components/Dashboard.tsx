@@ -269,7 +269,7 @@ export const Dashboard: React.FC = () => {
       default:
         return {
           variant: 'default' as const,
-          cardClass: 'bg-surface-card hover:border-border-strong text-txt-primary',
+          cardClass: 'bg-surface-card hover:border-border text-txt-primary',
           badgeClass: 'bg-surface-sunken text-txt-secondary border-border',
           textClass: 'text-txt-primary',
           subTextClass: 'text-txt-disabled',
@@ -298,7 +298,7 @@ export const Dashboard: React.FC = () => {
       <div className="max-w-[100rem] mx-auto px-4 py-6 sm:p-8 lg:p-12 space-y-6 flex-1 flex flex-col w-full">
 
         {/* Header */}
-        <div className="flex justify-between items-end border-b border-dashed border-border pb-6 shrink-0">
+        <div className="flex justify-between items-end border-b border-border pb-6 shrink-0">
           <div>
             <div className="text-xs font-mono text-txt-tertiary mb-2 flex items-center gap-2">
               <span className="w-2 h-2 bg-surface-inverse"></span>
@@ -324,7 +324,7 @@ export const Dashboard: React.FC = () => {
             {/* Profile Card */}
             <div className="col-span-12 md:col-span-3 flex flex-col gap-3">
               <Card
-                className="flex-1 flex flex-col group cursor-pointer hover:border-border-strong transition-all relative overflow-hidden h-full"
+                className="flex-1 flex flex-col group cursor-pointer hover:border-border transition-all relative overflow-hidden h-full"
                 padding="p-0"
                 onClick={() => router.push('/profile')}
               >
@@ -353,7 +353,7 @@ export const Dashboard: React.FC = () => {
                       </p>
                   </div>
 
-                  <div className="bg-surface-sunken border border-border p-3 space-y-2.5 mb-6 group-hover:bg-surface-card group-hover:border-border-strong transition-colors flex-1">
+                  <div className="bg-surface-sunken rounded-xl border border-border p-3 space-y-2.5 mb-6 group-hover:bg-surface-card rounded-xl group-hover:border-border transition-colors flex-1">
                       <div className="flex justify-between items-center text-[0.625rem]">
                           <span className="text-txt-disabled font-medium">Affiliation</span>
                           <span className="font-bold text-txt-secondary">{profile?.university || 'Not set'}</span>
@@ -373,13 +373,13 @@ export const Dashboard: React.FC = () => {
                   </div>
 
                   <div className="grid grid-cols-2 gap-2 mt-auto">
-                      <div className="p-2.5 border border-border-strong bg-surface-card group-hover:shadow-sharp transition-all">
+                      <div className="p-2.5 border border-border bg-surface-card rounded-xl group-hover:shadow-sharp transition-all">
                         <div className="text-[0.5625rem] text-txt-disabled mb-0.5 flex items-center gap-1">
                              <Eye size={10} /> Views
                         </div>
                         <div className="font-bold text-lg text-txt-primary leading-none">-</div>
                       </div>
-                      <div className="p-2.5 border border-border-strong bg-surface-card group-hover:shadow-sharp transition-all">
+                      <div className="p-2.5 border border-border bg-surface-card rounded-xl group-hover:shadow-sharp transition-all">
                         <div className="text-[0.5625rem] text-txt-disabled mb-0.5 flex items-center gap-1">
                              <Users size={10} /> Network
                         </div>
@@ -392,9 +392,9 @@ export const Dashboard: React.FC = () => {
 
             {/* Project Status Card */}
             <div className="col-span-12 md:col-span-6">
-              <Card className="relative overflow-hidden group cursor-pointer hover:border-border-strong transition-all h-full flex flex-col" padding="p-0">
+              <Card className="relative overflow-hidden group cursor-pointer hover:border-border transition-all h-full flex flex-col" padding="p-0">
                 <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/20 z-10" />
-                <div className="p-5 border-b border-dashed border-border bg-surface-sunken/30">
+                <div className="p-5 border-b border-border bg-surface-sunken/30">
                     <div className="flex justify-between items-start mb-3">
                       <div className="flex items-center gap-2">
                         <div className={`w-1.5 h-1.5 ${currentProject.statusColor} animate-pulse`}></div>
@@ -425,19 +425,19 @@ export const Dashboard: React.FC = () => {
                     </h2>
 
                     <div className="flex items-center gap-3 text-[0.625rem] text-txt-tertiary font-mono">
-                      <span className="bg-surface-card border border-border-strong px-2 py-0.5">{currentProject.stage}</span>
+                      <span className="bg-surface-card rounded-xl border border-border px-2 py-0.5">{currentProject.stage}</span>
                       <span className="flex items-center gap-1"><Clock size={10}/> {currentProject.dDay}</span>
                     </div>
                 </div>
 
                 <div className="p-5 flex-1 flex flex-col">
                     <div className="grid grid-cols-3 gap-3 mb-6">
-                      <div className="text-center p-2 bg-surface-sunken border border-border">
+                      <div className="text-center p-2 bg-surface-sunken rounded-xl border border-border">
                           <div className="text-[0.5625rem] text-txt-disabled mb-1">Views</div>
                           <div className="text-lg font-bold text-txt-primary">{currentProject.stats.views}</div>
                           <div className="text-[0.5625rem] text-status-success-text font-bold">{currentProject.stats.viewsTrend}</div>
                       </div>
-                      <div className="text-center p-2 bg-surface-sunken border border-border">
+                      <div className="text-center p-2 bg-surface-sunken rounded-xl border border-border">
                           <div className="text-[0.5625rem] text-txt-disabled mb-1">Apps</div>
                           <div className="text-lg font-bold text-txt-primary">{currentProject.stats.applicants}</div>
                           <div className="text-[0.5625rem] text-status-success-text font-bold">{currentProject.stats.applicantsNew}</div>
@@ -461,7 +461,7 @@ export const Dashboard: React.FC = () => {
 
                         <div className="flex items-center gap-2">
                             {currentProject.team.map((member) => (
-                                <div key={member.id} className="flex items-center gap-2 pl-1 pr-3 py-1 bg-surface-card border border-border-strong hover:border-border-strong transition-colors cursor-pointer shadow-sm">
+                                <div key={member.id} className="flex items-center gap-2 pl-1 pr-3 py-1 bg-surface-card rounded-xl border border-border hover:border-border transition-colors cursor-pointer shadow-sm">
                                     <div className="w-6 h-6 bg-surface-inverse text-txt-inverse flex items-center justify-center text-[0.5625rem] font-bold">
                                         {member.initial}
                                     </div>
@@ -473,8 +473,8 @@ export const Dashboard: React.FC = () => {
                             ))}
 
                             {currentProject.hiring.isOpen && (
-                                <div className="ml-auto flex items-center gap-2 pl-1 pr-3 py-1 bg-surface-sunken border border-dashed border-border hover:bg-surface-card hover:border-border-strong transition-colors cursor-pointer group">
-                                    <div className="w-6 h-6 bg-surface-card border border-border text-txt-disabled flex items-center justify-center group-hover:text-txt-primary group-hover:border-border-strong">
+                                <div className="ml-auto flex items-center gap-2 pl-1 pr-3 py-1 bg-surface-sunken rounded-xl border border-border hover:bg-surface-card rounded-xl hover:border-border transition-colors cursor-pointer group">
+                                    <div className="w-6 h-6 bg-surface-card rounded-xl border border-border text-txt-disabled flex items-center justify-center group-hover:text-txt-primary group-hover:border-border">
                                         <Plus size={12} />
                                     </div>
                                     <div className="flex flex-col leading-none">
@@ -507,9 +507,9 @@ export const Dashboard: React.FC = () => {
                 </div>
               </Card>
 
-              <div className="flex-1 bg-surface-card border border-border-strong p-4 flex flex-col hover:shadow-sharp transition-all shadow-sm relative">
+              <div className="flex-1 bg-surface-card rounded-xl border border-border p-4 flex flex-col hover:shadow-sharp transition-all shadow-sm relative">
                 <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/20" />
-                <div className="flex justify-between items-center mb-4 border-b border-dashed border-border pb-2">
+                <div className="flex justify-between items-center mb-4 border-b border-border pb-2">
                     <span className="text-[0.625rem] font-bold text-txt-primary font-mono flex items-center gap-1.5">
                       <CalendarDays size={12} /> UPCOMING TASKS
                     </span>
@@ -549,7 +549,7 @@ export const Dashboard: React.FC = () => {
                 {upcomingTasks.length > 0 && (
                   <button
                     onClick={() => router.push('/calendar')}
-                    className="mt-4 text-[0.5625rem] text-txt-disabled hover:text-txt-primary text-center font-mono w-full pt-2 border-t border-dashed border-border"
+                    className="mt-4 text-[0.5625rem] text-txt-disabled hover:text-txt-primary text-center font-mono w-full pt-2 border-t border-border"
                   >
                     View All Schedule
                   </button>
@@ -568,7 +568,7 @@ export const Dashboard: React.FC = () => {
                 </div>
                 <button
                    onClick={() => router.push('/explore')}
-                   className="text-[0.625rem] text-txt-tertiary hover:text-txt-primary font-mono font-medium border border-border px-2 py-0.5 hover:border-border-strong transition-colors"
+                   className="text-[0.625rem] text-txt-tertiary hover:text-txt-primary font-mono font-medium border border-border px-2 py-0.5 hover:border-border transition-colors"
                 >
                    View All
                 </button>
@@ -636,7 +636,7 @@ export const Dashboard: React.FC = () => {
           </div>
 
           {/* Footer */}
-          <div className="mt-auto pt-8 border-t border-dashed border-border">
+          <div className="mt-auto pt-8 border-t border-border">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                   <div className="flex items-center gap-2">
                       <Command size={16} className="text-txt-disabled" />

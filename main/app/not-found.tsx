@@ -4,7 +4,7 @@ export default function NotFound() {
   return (
     <div className="min-h-screen bg-surface-bg flex items-center justify-center px-4">
       <div className="max-w-md w-full text-center">
-        <div className="border-2 border-border-strong bg-surface-card p-12 shadow-brutal">
+        <div className="border-2 border-border bg-surface-card p-12 shadow-brutal">
           <div className="text-[8rem] font-mono font-bold leading-none text-txt-primary tracking-tighter">
             404
           </div>
@@ -24,7 +24,7 @@ export default function NotFound() {
             </Link>
             <Link
               href="/"
-              className="px-6 py-2.5 bg-surface-card text-txt-secondary text-sm font-medium border border-border-strong hover:bg-surface-sunken transition-colors"
+              className="px-6 py-2.5 bg-surface-card text-txt-secondary text-sm font-medium border border-border hover:bg-surface-sunken transition-colors"
             >
               홈으로
             </Link>

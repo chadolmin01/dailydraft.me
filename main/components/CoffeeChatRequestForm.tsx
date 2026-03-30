@@ -94,7 +94,7 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
         {isPersonMode ? '커피챗 신청' : '커피챗 신청'}
       </h3>
       {selectedRole && (
-        <span className="inline-block px-2.5 py-1 bg-surface-sunken text-txt-secondary text-xs font-medium border border-border-strong mb-2">
+        <span className="inline-block px-2.5 py-1 bg-surface-sunken text-txt-secondary text-xs font-medium border border-border mb-2">
           {selectedRole} 포지션
         </span>
       )}
@@ -108,7 +108,7 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
           <button
             key={tpl.id}
             onClick={() => setMessage(tpl.message)}
-            className="text-[0.6875rem] px-3 py-1.5 bg-surface-sunken text-txt-secondary border border-border rounded-sm hover:bg-black hover:text-white hover:border-border-strong transition-colors"
+            className="text-[0.6875rem] px-3 py-1.5 bg-surface-sunken text-txt-secondary border border-border rounded-sm hover:bg-black hover:text-white hover:border-border transition-colors"
           >
             {tpl.label}
           </button>
@@ -123,7 +123,7 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
           : '안녕하세요! 프로젝트에 관심이 있어서 연락드립니다...'
         }
         rows={4}
-        className="w-full px-4 py-3 border border-border-strong rounded-sm text-sm text-left bg-surface-card focus:outline-none focus:border-brand resize-none mb-4"
+        className="w-full px-4 py-3 border border-border rounded-sm text-sm text-left bg-surface-card rounded-xl focus:outline-none focus:border-brand resize-none mb-4"
       />
 
       {error && (

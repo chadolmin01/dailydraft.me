@@ -72,7 +72,7 @@ function ProjectManageContent() {
   return (
     <div className="min-h-screen bg-surface-bg">
       {/* Header */}
-      <div className="bg-surface-card border-b border-border-strong sticky top-0 z-30">
+      <div className="bg-surface-card border-b border-border sticky top-0 z-30">
         <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
           <button
             onClick={() => router.push('/profile')}
@@ -92,7 +92,7 @@ function ProjectManageContent() {
             </Link>
             <Link
               href={`/projects/${id}/edit`}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold border border-border-strong text-txt-secondary hover:border-border-strong hover:text-txt-primary transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold border border-border text-txt-secondary hover:border-border hover:text-txt-primary transition-colors"
             >
               <Settings size={14} />
               수정
@@ -124,7 +124,7 @@ function ProjectManageContent() {
 
       {/* Tabs */}
       <div className="max-w-3xl mx-auto px-4">
-        <div className="flex border-b border-border-strong">
+        <div className="flex border-b border-border">
           {TABS.map((t) => (
             <button
               key={t.key}
@@ -170,7 +170,7 @@ function ProjectManageContent() {
                     const [firstLine, ...restLines] = update.content.split('\n')
                     const restContent = restLines.join('\n').trim()
                     return (
-                      <div key={update.id} className="bg-surface-card border border-border-strong p-4">
+                      <div key={update.id} className="bg-surface-card rounded-xl border border-border p-4">
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1.5">

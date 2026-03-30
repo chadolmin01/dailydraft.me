@@ -25,7 +25,7 @@ const AnalyticsSidebar: React.FC<AnalyticsSidebarProps> = ({ level, metrics, onF
     <div className="w-56 lg:w-64 bg-surface-card border-l border-border overflow-y-auto shrink-0 p-4 hidden md:block">
 
        {/* Mode Indicator */}
-       <div className="mb-6 border border-border p-4 bg-surface-card">
+       <div className="mb-6 border border-border p-4 bg-surface-card rounded-xl">
          <div className="text-[0.5625rem] font-medium text-txt-tertiary mb-3">Current Session</div>
          <div className="flex items-center gap-3">
             <div className={`p-2 border ${
@@ -78,7 +78,7 @@ const AnalyticsSidebar: React.FC<AnalyticsSidebarProps> = ({ level, metrics, onF
           )}
 
           {metrics && (
-             <div className="mt-5 pt-4 border-t border-dashed border-border">
+             <div className="mt-5 pt-4 border-t border-border">
                  <button onClick={onFinish} className="w-full bg-surface-inverse text-txt-inverse py-2.5 text-xs font-bold hover:bg-surface-inverse/90 transition-colors flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.97]">
                      전체 리포트 보기
                      <ArrowRight size={14} />

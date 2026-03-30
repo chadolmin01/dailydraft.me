@@ -227,9 +227,9 @@ export default function ProfileEditPage() {
     } catch { setSaveError('프로필 저장에 실패했습니다.'); toast.error('프로필 저장에 실패했습니다') }
   }
 
-  const inputClass = 'w-full px-4 py-3 text-sm border border-border bg-transparent focus:outline-none focus:border-border-strong transition-colors'
+  const inputClass = 'w-full px-4 py-3 text-sm border border-border bg-transparent focus:outline-none focus:border-border transition-colors'
   const chipActive = 'bg-surface-inverse text-txt-inverse border-surface-inverse'
-  const chipDefault = 'bg-surface-card text-txt-secondary border-border hover:border-border-strong'
+  const chipDefault = 'bg-surface-card text-txt-secondary border-border hover:border-border'
   const fieldLabel = 'block text-xs font-medium text-txt-secondary mb-1.5'
 
   const affConfig = AFFILIATION_OPTIONS.find(a => a.value === affiliationType) || AFFILIATION_OPTIONS[0]
@@ -243,7 +243,7 @@ export default function ProfileEditPage() {
         <div className="max-w-7xl mx-auto px-6 sm:px-10 pt-6">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <button onClick={() => router.push('/profile')} className="hidden sm:flex p-2 border border-border-strong text-txt-secondary hover:bg-surface-sunken transition-colors">
+              <button onClick={() => router.push('/profile')} className="hidden sm:flex p-2 border border-border text-txt-secondary hover:bg-surface-sunken transition-colors">
                 <ArrowLeft size={14} />
               </button>
               <h1 className="text-lg font-bold text-txt-primary">프로필 편집</h1>
@@ -274,7 +274,7 @@ export default function ProfileEditPage() {
 
         {/* ─── Tab bar ─── */}
         <div className="max-w-7xl mx-auto px-6 sm:px-10 pt-6">
-          <div className="flex gap-0 border-b-2 border-border-strong">
+          <div className="flex gap-0 border-b-2 border-border">
             {([
               { id: 'info' as TabId, label: '프로필 정보', icon: User },
               { id: 'ai' as TabId, label: 'AI 분석', icon: Sparkles },
@@ -320,7 +320,7 @@ export default function ProfileEditPage() {
               {/* 프로필 이미지 */}
               <Card title="프로필 이미지">
                 <div className="flex items-center gap-4">
-                  <button onClick={() => avatarInputRef.current?.click()} className="relative group w-16 h-16 bg-surface-sunken border border-border overflow-hidden shrink-0">
+                  <button onClick={() => avatarInputRef.current?.click()} className="relative group w-16 h-16 bg-surface-sunken rounded-xl border border-border overflow-hidden shrink-0">
                     {profile?.avatar_url ? (
                       <Image src={profile.avatar_url} alt="avatar" fill className="object-cover" />
                     ) : (
@@ -331,7 +331,7 @@ export default function ProfileEditPage() {
                     </div>
                     {uploadingAvatar && <div className="absolute inset-0 bg-black/50 flex items-center justify-center"><Loader2 size={14} className="animate-spin text-white" /></div>}
                   </button>
-                  <button onClick={() => coverInputRef.current?.click()} className="relative group flex-1 h-16 bg-surface-sunken border border-border overflow-hidden">
+                  <button onClick={() => coverInputRef.current?.click()} className="relative group flex-1 h-16 bg-surface-sunken rounded-xl border border-border overflow-hidden">
                     {profile?.cover_image_url ? (
                       <Image src={profile.cover_image_url} alt="cover" fill className="object-cover" />
                     ) : (
@@ -438,7 +438,7 @@ export default function ProfileEditPage() {
                 )}
                 <div className="flex gap-2">
                   <input type="text" value={newSkillName} onChange={(e) => setNewSkillName(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())} placeholder="스킬 직접 입력" maxLength={30} className={`flex-1 ${inputClass}`} />
-                  <select value={newSkillLevel} onChange={(e) => setNewSkillLevel(e.target.value)} className="px-3 py-3 text-xs border border-border bg-transparent text-txt-secondary focus:outline-none focus:border-border-strong transition-colors">
+                  <select value={newSkillLevel} onChange={(e) => setNewSkillLevel(e.target.value)} className="px-3 py-3 text-xs border border-border bg-transparent text-txt-secondary focus:outline-none focus:border-border transition-colors">
                     {SKILL_LEVELS.map((level) => <option key={level} value={level}>{level}</option>)}
                   </select>
                   <button type="button" onClick={() => addSkill()} className="px-4 py-3 border border-border text-txt-secondary hover:bg-surface-sunken transition-colors"><Plus size={16} /></button>
@@ -503,7 +503,7 @@ export default function ProfileEditPage() {
                     {portfolioItems.map((item) => (
                       <div key={item.id} className="flex items-center gap-3 px-3 py-2 border border-border">
                         {item.image_url && (
-                          <div className="w-10 h-10 bg-surface-sunken border border-border overflow-hidden shrink-0">
+                          <div className="w-10 h-10 bg-surface-sunken rounded-xl border border-border overflow-hidden shrink-0">
                             <Image src={item.image_url} alt="" width={40} height={40} className="object-cover w-full h-full" />
                           </div>
                         )}
@@ -574,7 +574,7 @@ export default function ProfileEditPage() {
                     </div>
                   </div>
                 ) : (
-                  <button type="button" onClick={() => setShowPortfolioForm(true)} className="w-full px-3 py-2.5 text-xs font-bold border border-dashed border-border text-txt-secondary hover:border-border-strong hover:bg-surface-sunken transition-colors flex items-center justify-center gap-1.5">
+                  <button type="button" onClick={() => setShowPortfolioForm(true)} className="w-full px-3 py-2.5 text-xs font-bold border border-border text-txt-secondary hover:border-border hover:bg-surface-sunken transition-colors flex items-center justify-center gap-1.5">
                     <Plus size={14} /> 항목 추가
                   </button>
                 )}
@@ -609,7 +609,7 @@ export default function ProfileEditPage() {
                     <div className="space-y-3">
                       <p className="text-xs text-txt-tertiary"><strong>{verifyEmail}</strong>로 발송된 6자리 코드를 입력하세요.</p>
                       <div className="flex gap-2">
-                        <input type="text" value={verifyCode} onChange={e => { setVerifyCode(e.target.value.replace(/\D/g, '').slice(0, 6)); setVerifyError('') }} placeholder="000000" maxLength={6} className="w-36 px-4 py-3 text-sm font-mono text-center tracking-widest border border-border bg-transparent focus:outline-none focus:border-border-strong transition-colors" />
+                        <input type="text" value={verifyCode} onChange={e => { setVerifyCode(e.target.value.replace(/\D/g, '').slice(0, 6)); setVerifyError('') }} placeholder="000000" maxLength={6} className="w-36 px-4 py-3 text-sm font-mono text-center tracking-widest border border-border bg-transparent focus:outline-none focus:border-border transition-colors" />
                         <button type="button" disabled={verifySending || verifyCode.length !== 6} onClick={async () => {
                           setVerifySending(true); setVerifyError('')
                           try {
@@ -636,7 +636,7 @@ export default function ProfileEditPage() {
                     <button
                       type="button"
                       onClick={() => router.push('/onboarding')}
-                      className="flex items-center gap-1.5 px-3 py-1.5 text-[0.625rem] font-medium border border-border text-txt-secondary hover:bg-surface-sunken hover:border-border-strong transition-colors shrink-0"
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-[0.625rem] font-medium border border-border text-txt-secondary hover:bg-surface-sunken hover:border-border transition-colors shrink-0"
                     >
                       <Sparkles size={12} />
                       AI 온보딩 다시하기
@@ -718,7 +718,7 @@ export default function ProfileEditPage() {
                       <div>
                         <label className={fieldLabel}>주당 투자 가능 시간</label>
                         <div className="flex items-center gap-2">
-                          <input type="number" min={0} max={80} value={hoursPerWeek} onChange={e => setHoursPerWeek(e.target.value)} placeholder="예: 15" className="w-28 px-4 py-3 text-sm border border-border bg-transparent focus:outline-none focus:border-border-strong transition-colors" />
+                          <input type="number" min={0} max={80} value={hoursPerWeek} onChange={e => setHoursPerWeek(e.target.value)} placeholder="예: 15" className="w-28 px-4 py-3 text-sm border border-border bg-transparent focus:outline-none focus:border-border transition-colors" />
                           <span className="text-xs text-txt-tertiary">시간</span>
                         </div>
                       </div>
@@ -748,8 +748,8 @@ export default function ProfileEditPage() {
       {/* Crop modal */}
       {cropImage && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
-          <div className="bg-surface-card border border-border-strong shadow-brutal w-full max-w-lg mx-4 flex flex-col">
-            <div className="flex items-center justify-between px-4 py-2.5 border-b-2 border-border-strong bg-surface-sunken">
+          <div className="bg-surface-card rounded-xl border border-border shadow-brutal w-full max-w-lg mx-4 flex flex-col">
+            <div className="flex items-center justify-between px-4 py-2.5 border-b-2 border-border bg-surface-sunken">
               <span className="text-xs font-medium text-txt-secondary">{cropType === 'avatar' ? 'CROP AVATAR' : 'CROP COVER'}</span>
               <button onClick={() => setCropImage(null)} className="p-1 hover:bg-surface-card transition-colors"><X size={16} className="text-txt-tertiary" /></button>
             </div>
@@ -761,8 +761,8 @@ export default function ProfileEditPage() {
               <input type="range" min={1} max={3} step={0.1} value={zoom} onChange={e => setZoom(Number(e.target.value))} className="flex-1 h-1.5 accent-brand cursor-pointer" />
               <span className="text-[0.625rem] font-mono text-txt-tertiary w-8 text-right">{zoom.toFixed(1)}x</span>
             </div>
-            <div className="flex items-center justify-end gap-2 px-4 py-2.5 border-t-2 border-border-strong">
-              <button onClick={() => setCropImage(null)} className="py-2.5 px-4 text-xs font-medium border border-border text-txt-secondary hover:border-border-strong transition-colors">취소</button>
+            <div className="flex items-center justify-end gap-2 px-4 py-2.5 border-t-2 border-border">
+              <button onClick={() => setCropImage(null)} className="py-2.5 px-4 text-xs font-medium border border-border text-txt-secondary hover:border-border transition-colors">취소</button>
               <button onClick={handleCropConfirm} className="flex items-center gap-1.5 px-4 py-2.5 bg-surface-inverse text-txt-inverse text-xs font-bold border border-surface-inverse hover:bg-surface-inverse/90 transition-all hover:opacity-90 active:scale-[0.97]">
                 <Camera size={12} /> 적용
               </button>
@@ -777,7 +777,7 @@ export default function ProfileEditPage() {
 /* ─── Card wrapper ─── */
 function Card({ title, icon, children }: { title: string; icon?: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div className="bg-surface-card border border-border-strong shadow-sharp">
+    <div className="bg-surface-card rounded-xl border border-border shadow-sharp">
       <div className="flex items-center gap-2 px-5 sm:px-6 py-3 border-b border-border bg-surface-sunken">
         {icon}
         <h3 className="text-[0.625rem] font-medium text-txt-tertiary">{title}</h3>
@@ -811,7 +811,7 @@ function TagEditor({ tags, onChange, suggestions, chipDefault }: { tags: string[
         ))}
       </div>
       <div className="flex gap-2">
-        <input type="text" value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); add(input.trim()); setInput('') } }} placeholder="직접 입력" maxLength={20} className="flex-1 px-4 py-2.5 text-sm border border-border bg-transparent focus:outline-none focus:border-border-strong transition-colors" />
+        <input type="text" value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); add(input.trim()); setInput('') } }} placeholder="직접 입력" maxLength={20} className="flex-1 px-4 py-2.5 text-sm border border-border bg-transparent focus:outline-none focus:border-border transition-colors" />
         <button type="button" onClick={() => { add(input.trim()); setInput('') }} className="px-3 py-2.5 border border-border text-txt-secondary hover:bg-surface-sunken transition-colors"><Plus size={14} /></button>
       </div>
     </div>

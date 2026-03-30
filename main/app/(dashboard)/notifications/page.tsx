@@ -195,7 +195,7 @@ export default function NotificationsPage() {
             <button
               onClick={() => markAllReadMutation.mutate()}
               disabled={markAllReadMutation.isPending}
-              className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-txt-secondary border border-border-strong hover:bg-surface-sunken transition-all"
+              className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-txt-secondary border border-border hover:bg-surface-sunken transition-all"
             >
               {markAllReadMutation.isPending ? (
                 <Loader2 size={14} className="animate-spin" />
@@ -232,7 +232,7 @@ export default function NotificationsPage() {
         </div>
 
         {/* Notification List */}
-        <div className="bg-surface-card border border-border-strong shadow-sharp">
+        <div className="bg-surface-card rounded-xl border border-border shadow-sharp">
           {isLoading ? (
             <div className="flex items-center justify-center py-16">
               <Loader2 size={24} className="animate-spin text-txt-disabled" />
