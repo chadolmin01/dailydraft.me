@@ -448,7 +448,16 @@ function ExplorePageContent() {
       <DashboardLayout
         size="wide"
         className="pt-1"
-        sidebar={<ExploreSidebar {...filterProps} />}
+        sidebar={
+          <ExploreSidebar
+            {...filterProps}
+            talentCards={talentCards}
+            sidebarRecs={sidebarRecs}
+            recsLoading={recsLoading}
+            onSelectPeople={() => setActiveTab('people')}
+            onSelectProfile={handleSelectProfile}
+          />
+        }
       >
         {/* 검색바: 모바일 숨김, 데스크톱만 */}
         <div className="hidden md:block">
