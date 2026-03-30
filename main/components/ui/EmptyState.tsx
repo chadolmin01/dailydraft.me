@@ -40,8 +40,8 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
     )
 
     const buttonClass = isCompact
-      ? 'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-brand text-white border border-brand hover:bg-brand-hover transition-colors hover:opacity-90 active:scale-[0.97]'
-      : 'inline-flex items-center gap-2 px-4 py-2.5 text-sm font-bold bg-brand text-white border border-brand hover:bg-brand-hover transition-colors hover:opacity-90 active:scale-[0.97]'
+      ? 'inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold bg-brand text-white rounded-full hover:bg-brand-hover active:scale-[0.97]'
+      : 'inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold bg-brand text-white rounded-full hover:bg-brand-hover active:scale-[0.97]'
 
     if (actionHref) {
       return <Link href={actionHref} className={buttonClass}>{buttonContent}</Link>
@@ -51,42 +51,29 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
 
   return (
     <div className={`
-      bg-surface-card border border-dashed border-border text-center
-      ${isCompact ? 'py-6 px-4' : 'py-12 px-6'}
+      rounded-xl text-center
+      ${isCompact ? 'py-8 px-4' : 'py-16 px-8'}
       ${className}
     `}>
-      {/* Icon with + badge */}
-      <div className={`relative inline-flex items-center justify-center ${isCompact ? 'mb-2' : 'mb-4'}`}>
-        <div className={`
-          bg-surface-sunken border border-dashed border-border flex items-center justify-center animate-pulse
-          ${isCompact ? 'w-10 h-10' : 'w-16 h-16'}
-        `}>
-          <Icon size={isCompact ? 20 : 28} className="text-txt-disabled" />
-        </div>
-        {hasAction && (
-          <div className={`
-            absolute -top-1 -right-1 bg-brand text-white flex items-center justify-center
-            ${isCompact ? 'w-4 h-4' : 'w-5 h-5'}
-          `}>
-            <Plus size={isCompact ? 10 : 12} strokeWidth={3} />
-          </div>
-        )}
+      {/* Icon — soft circle background */}
+      <div className={`inline-flex items-center justify-center rounded-full bg-surface-sunken ${isCompact ? 'w-12 h-12 mb-3' : 'w-16 h-16 mb-4'}`}>
+        <Icon size={isCompact ? 22 : 28} className="text-txt-tertiary" strokeWidth={1.5} />
       </div>
 
       {/* Title */}
-      <p className={`font-medium text-txt-secondary ${isCompact ? 'text-xs mb-1' : 'text-sm mb-1.5'}`}>
+      <p className={`font-semibold text-txt-primary ${isCompact ? 'text-sm mb-1' : 'text-base mb-1.5'}`}>
         {title}
       </p>
 
       {/* Description */}
       {description && (
-        <p className={`text-txt-disabled ${isCompact ? 'text-xs mb-3' : 'text-xs mb-4'}`}>
+        <p className={`text-txt-tertiary max-w-xs mx-auto ${isCompact ? 'text-xs mb-4' : 'text-sm mb-5'}`}>
           {description}
         </p>
       )}
 
       {/* CTA Button */}
-      {!description && hasAction && <div className={isCompact ? 'mt-3' : 'mt-4'} />}
+      {!description && hasAction && <div className={isCompact ? 'mt-4' : 'mt-5'} />}
       <ActionButton />
     </div>
   )
