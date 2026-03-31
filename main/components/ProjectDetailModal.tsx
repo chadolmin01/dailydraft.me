@@ -224,7 +224,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl max-h-[85vh] sm:max-h-[90vh] modal-glass rounded-t-2xl sm:rounded-2xl border border-border/60 ring-1 ring-black/[0.03] overflow-hidden flex flex-col relative"
+              className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl max-h-[85vh] sm:max-h-[90vh] modal-glass rounded-t-2xl sm:rounded-2xl overflow-hidden flex flex-col relative"
               role="dialog"
               aria-modal="true"
               aria-label={opportunity?.title || '프로젝트 상세'}
@@ -234,7 +234,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                 <div className="w-9 h-1 rounded-full bg-border/60" />
               </div>
               {/* Window Bar */}
-              <div className="modal-bar border-b border-border/60 px-3 sm:px-4 h-10 flex items-center justify-between shrink-0">
+              <div className="modal-bar border-b border-border/40 px-3 sm:px-4 h-10 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-2">
                   <button onClick={onClose} className="sm:hidden p-1.5 -ml-1 hover:bg-surface-card transition-colors" aria-label="닫기">
                     <X size={18} className="text-txt-tertiary" />
