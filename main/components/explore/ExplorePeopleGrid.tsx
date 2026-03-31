@@ -108,7 +108,7 @@ export function ExplorePeopleGrid({
           </div>
 
           {/* ── Desktop: full card grid ── */}
-          <div className="hidden md:grid md:grid-cols-2 gap-4">
+          <div className="hidden md:grid md:grid-cols-2 xl:grid-cols-3 gap-4">
             {talentCards.map((t, index) => (
               <div
                 key={t.id}
