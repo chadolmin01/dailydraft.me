@@ -382,9 +382,9 @@ function LoginContent() {
                <span className="text-txt-tertiary">팀을 만들어보세요.</span>
             </h2>
             <div className="flex justify-end gap-2">
-               <div className="px-3 py-1.5 bg-surface-card rounded-xl border border-border text-[0.6875rem] font-bold shadow-sm">커피챗</div>
-               <div className="px-3 py-1.5 bg-surface-card rounded-xl border border-border text-[0.6875rem] font-bold shadow-sm">팀빌딩</div>
-               <div className="px-3 py-1.5 bg-surface-card rounded-xl border border-border text-[0.6875rem] font-bold shadow-sm">사이드 프로젝트</div>
+               <div className="px-3 py-1.5 bg-surface-card rounded-full border border-border text-[0.6875rem] font-bold shadow-sm">커피챗</div>
+               <div className="px-3 py-1.5 bg-surface-card rounded-full border border-border text-[0.6875rem] font-bold shadow-sm">팀빌딩</div>
+               <div className="px-3 py-1.5 bg-surface-card rounded-full border border-border text-[0.6875rem] font-bold shadow-sm">사이드 프로젝트</div>
             </div>
          </div>
       </div>
@@ -413,21 +413,21 @@ const ShowcaseCard = ({ item }: { item: ShowcaseItem }) => {
         <div className={`h-2.5 bg-gradient-to-r ${PROJECT_ACCENTS[accentIdx]}`} />
         <div className="p-4 pt-3">
           <div className="flex items-center gap-2 mb-2.5">
-            <div className="w-7 h-7 bg-brand-bg border border-brand-border rounded-lg flex items-center justify-center shrink-0">
+            <div className="w-7 h-7 bg-brand-bg border border-brand-border rounded-xl flex items-center justify-center shrink-0">
               <Rocket size={13} className="text-brand" />
             </div>
-            <span className="text-[0.5625rem] font-mono font-bold text-status-success-text bg-status-success-bg px-1.5 py-0.5 rounded-md border border-indicator-online/20">모집중</span>
+            <span className="text-[0.5625rem] font-mono font-bold text-status-success-text bg-status-success-bg px-2 py-0.5 rounded-full border border-indicator-online/20">모집중</span>
           </div>
           <h4 className="font-bold text-[0.8125rem] text-txt-primary mb-1">{p.title}</h4>
           <p className="text-[0.6875rem] text-txt-tertiary line-clamp-2 mb-3">{p.desc}</p>
           <div className="flex items-center gap-1 flex-wrap mb-3">
             {p.roles.map(role => (
-              <span key={role} className="text-[0.625rem] font-medium text-brand bg-brand-bg px-1.5 py-0.5 rounded-md border border-brand-border">{role}</span>
+              <span key={role} className="text-[0.625rem] font-medium text-brand bg-brand-bg px-2 py-0.5 rounded-full border border-brand-border">{role}</span>
             ))}
           </div>
           <div className="flex items-center gap-1.5">
             {p.tags.map(tag => (
-              <span key={tag} className="text-[0.5625rem] text-txt-secondary px-1.5 py-0.5 rounded-md border border-border bg-surface-sunken">{tag}</span>
+              <span key={tag} className="text-[0.5625rem] text-txt-secondary px-2 py-0.5 rounded-full border border-border bg-surface-sunken">{tag}</span>
             ))}
           </div>
         </div>
@@ -456,7 +456,7 @@ const ShowcaseCard = ({ item }: { item: ShowcaseItem }) => {
       <p className="text-[0.6875rem] text-txt-tertiary mb-2.5">{t.role}</p>
       <div className="flex items-center gap-1 flex-wrap">
         {t.tags.map(tag => (
-          <span key={tag} className="text-[0.5625rem] text-txt-secondary px-1.5 py-0.5 rounded-md border border-border bg-surface-sunken">{tag}</span>
+          <span key={tag} className="text-[0.5625rem] text-txt-secondary px-2 py-0.5 rounded-full border border-border bg-surface-sunken">{tag}</span>
         ))}
       </div>
     </div>
