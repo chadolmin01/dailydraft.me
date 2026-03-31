@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useCallback } from 'react'
+import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MessageSquare, Users, Search, Coffee, Lightbulb, ArrowRight, Check, Lock } from 'lucide-react'
 import { SectionLabel, SectionTitle, TabPill } from './shared'
@@ -322,10 +323,10 @@ export const FeatureShowcase: React.FC = () => {
                   {tab.cta}
                 </span>
               ) : (
-                <button className="group flex items-center gap-2 text-sm font-bold text-brand hover:underline w-fit">
+                <Link href="/login" className="group flex items-center gap-2 text-sm font-bold text-brand hover:underline w-fit">
                   {tab.cta}
                   <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                </button>
+                </Link>
               )}
             </div>
 

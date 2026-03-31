@@ -1,13 +1,10 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { AnimatedCounter } from './shared'
-
-interface HeroProps {
-  onCtaClick: () => void
-}
 
 /* ── Floating UI Cards (lg only) ── */
 const FloatingCard: React.FC<{
@@ -30,7 +27,7 @@ interface PublicStats {
   coffeeChats: number
 }
 
-export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
+export const Hero: React.FC = () => {
   const [stats, setStats] = useState<PublicStats | null>(null)
 
   useEffect(() => {
@@ -109,13 +106,13 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
 
         {/* CTAs */}
         <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto mb-12">
-          <button
-            onClick={onCtaClick}
+          <Link
+            href="/login"
             className="group w-full sm:w-auto flex items-center justify-center gap-2 bg-brand text-white px-6 py-3 rounded-full font-bold text-sm hover:bg-brand-hover transition-all duration-200 active:scale-[0.97] shadow-sm"
           >
             시작하기 — 1분이면 끝
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-          </button>
+          </Link>
           <button
             onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
             className="group w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-full font-bold text-sm border border-border bg-surface-card text-txt-secondary hover:bg-surface-sunken transition-all duration-200"

@@ -3,11 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 
-interface NavbarProps {
-  onLoginClick: () => void
-}
-
-export const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
+export const Navbar: React.FC = () => {
   const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
@@ -36,18 +32,18 @@ export const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
           <Link href="#projects" className="hover:text-black transition-colors">프로젝트</Link>
           <Link href="#faq" className="hover:text-black transition-colors">FAQ</Link>
         </div>
-        <button
-          onClick={onLoginClick}
+        <Link
+          href="/login"
           className="text-xs font-medium border border-border bg-surface-card rounded-full hover:bg-surface-sunken px-3 py-1.5 transition-colors duration-200"
         >
           로그인
-        </button>
-        <button
-          onClick={onLoginClick}
+        </Link>
+        <Link
+          href="/login"
           className="hidden md:flex items-center gap-1.5 text-xs font-bold bg-brand text-white rounded-full px-4 py-2 hover:bg-brand-hover transition-colors duration-200"
         >
           시작하기
-        </button>
+        </Link>
       </div>
     </nav>
   )

@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import dynamic from 'next/dynamic'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Zap, ArrowRight, MessageCircle, Heart } from 'lucide-react'
 import { SkeletonGrid } from '@/components/ui/Skeleton'
@@ -174,13 +175,13 @@ export const OpportunitySection: React.FC = () => {
                 아이디어 단계부터 MVP까지, 어떤 단계든 공유하고 피드백 받으세요
               </p>
             </div>
-            <button
-              onClick={() => router.push('/login')}
+            <Link
+              href="/login"
               className="group flex items-center gap-2 bg-white text-black rounded-full px-5 py-2.5 font-bold text-xs hover:bg-surface-sunken transition-colors shrink-0 active:scale-[0.97]"
             >
               시작하기
               <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-            </button>
+            </Link>
           </div>
         </ScrollReveal>
       </div>
