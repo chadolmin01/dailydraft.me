@@ -296,34 +296,32 @@ export const TopNavbar: React.FC = () => {
 
           {/* ===== 우측 액션 ===== */}
           <div className="flex items-center gap-2 shrink-0 ml-auto">
+            {/* 새 프로젝트 CTA — auth 불필요, 즉시 렌더 (미인증 시 middleware가 /login 리다이렉트) */}
+            <Link
+              href="/projects/new"
+              className="hidden md:flex items-center gap-1.5 px-3.5 py-1.5 bg-surface-inverse text-txt-inverse text-xs font-bold hover:bg-accent-hover transition-all border border-surface-inverse hover:opacity-90 active:scale-[0.97]"
+            >
+              <Plus size={14} strokeWidth={2.5} />
+              <span>새 프로젝트</span>
+            </Link>
+
+            {/* 다크모드 토글 — auth 불필요, 즉시 렌더 */}
+            <button
+              onClick={() => { import('@/src/utils/haptic').then(h => h.hapticLight()); toggleTheme() }}
+              aria-label={theme === 'dark' ? '라이트 모드' : '다크 모드'}
+              className="w-9 h-9 flex items-center justify-center rounded-full text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken transition-colors"
+            >
+              {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+            </button>
+
+            {/* 알림 + 프로필: auth 로딩 중에는 플레이스홀더, 완료 후 실제 UI */}
             {authLoading ? (
               <>
-                {/* 스켈레톤: auth 로딩 중 레이아웃 점프 방지 */}
-                <div className="hidden md:block w-[100px] h-8 bg-surface-sunken skeleton-shimmer" />
-                <div className="w-8 h-8 bg-surface-sunken skeleton-shimmer" />
-                <div className="w-8 h-8 bg-surface-sunken skeleton-shimmer" />
+                <div className="w-8 h-8 bg-surface-sunken rounded-full" />
+                <div className="w-10 h-10 bg-surface-sunken rounded-full" />
               </>
             ) : isAuthenticated ? (
               <>
-                {/* 새 프로젝트 CTA */}
-                <button
-                  onClick={() => router.push('/projects/new')}
-                  className="hidden md:flex items-center gap-1.5 px-3.5 py-1.5 bg-surface-inverse text-txt-inverse text-xs font-bold hover:bg-accent-hover transition-all border border-surface-inverse hover:opacity-90 active:scale-[0.97] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none active:scale-[0.97]"
-                >
-                  <Plus size={14} strokeWidth={2.5} />
-                  <span>새 프로젝트</span>
-                </button>
-
-                {/* 다크모드 토글 */}
-                <button
-                  onClick={() => { import('@/src/utils/haptic').then(h => h.hapticLight()); toggleTheme() }}
-                  aria-label={theme === 'dark' ? '라이트 모드' : '다크 모드'}
-                  className="w-9 h-9 flex items-center justify-center rounded-full text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken transition-colors"
-                >
-                  {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
-                </button>
-
-                {/* 알림 */}
                 <NotificationDropdown />
 
                 {/* 프로필 */}
@@ -383,15 +381,12 @@ export const TopNavbar: React.FC = () => {
                 </div>
               </>
             ) : (
-              <>
-                {/* 비로그인: 로그인 버튼 */}
-                <Link
-                  href="/login"
-                  className="hidden md:flex items-center gap-1.5 px-4 py-1.5 bg-surface-inverse text-txt-inverse text-xs font-bold hover:bg-accent-hover transition-all border border-surface-inverse hover:opacity-90 active:scale-[0.97]"
-                >
-                  로그인
-                </Link>
-              </>
+              <Link
+                href="/login"
+                className="px-4 py-1.5 bg-surface-sunken text-txt-secondary text-xs font-bold border border-border hover:bg-surface-inverse hover:text-txt-inverse transition-all"
+              >
+                로그인
+              </Link>
             )}
 
             {/* 모바일 햄버거 */}
@@ -433,30 +428,16 @@ export const TopNavbar: React.FC = () => {
                 />
               </form>
               <MobileNavItem href="/explore" active={pathname === '/explore'}>탐색</MobileNavItem>
-              {authLoading ? (
-                <div className="space-y-2 mt-2">
-                  <div className="h-10 bg-surface-sunken skeleton-shimmer rounded-sm" />
-                  <div className="h-10 bg-surface-sunken skeleton-shimmer rounded-sm" />
-                </div>
-              ) : isAuthenticated ? (
-                <>
-                  <MobileNavItem href="/profile" active={pathname === '/profile'}>마이페이지</MobileNavItem>
-                  <button
-                    onClick={() => { router.push('/projects/new'); setIsMobileMenuOpen(false) }}
-                    className="w-full mt-2 flex items-center justify-center gap-1.5 px-4 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-semibold transition-all hover:opacity-90 active:scale-[0.97]"
-                  >
-                    <Plus size={15} strokeWidth={2.5} /> 새 프로젝트
-                  </button>
-                </>
-              ) : (
-                <Link
-                  href="/login"
-                  className="w-full mt-2 flex items-center justify-center gap-1.5 px-4 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-semibold transition-all hover:opacity-90 active:scale-[0.97]"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  로그인
-                </Link>
+              {isAuthenticated && (
+                <MobileNavItem href="/profile" active={pathname === '/profile'}>마이페이지</MobileNavItem>
               )}
+              <Link
+                href={isAuthenticated ? '/projects/new' : '/login'}
+                className="w-full mt-2 flex items-center justify-center gap-1.5 px-4 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-semibold transition-all hover:opacity-90 active:scale-[0.97]"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                {isAuthenticated ? <><Plus size={15} strokeWidth={2.5} /> 새 프로젝트</> : '로그인'}
+              </Link>
             </div>
           </div>
         </>
