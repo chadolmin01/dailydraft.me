@@ -139,9 +139,13 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
               type="submit"
               disabled={submitting || !content.trim()}
               className="px-3 py-1.5 bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 transition-colors disabled:bg-surface-sunken disabled:text-txt-disabled disabled:border-border disabled:cursor-not-allowed flex items-center justify-center"
+              aria-label="댓글 전송"
             >
               {submitting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
             </button>
+          </div>
+          <div className="text-[0.625rem] text-txt-tertiary font-mono text-right mt-1">
+            {content.length}/500
           </div>
         </form>
       ) : (

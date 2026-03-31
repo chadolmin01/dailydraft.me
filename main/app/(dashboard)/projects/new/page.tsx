@@ -144,7 +144,7 @@ function NewProjectContent() {
       const previewUrl = URL.createObjectURL(croppedFile)
       setImageFiles(prev => [...prev, croppedFile])
       setImagePreviews(prev => [...prev, previewUrl])
-    } catch { /* ignore crop errors */ }
+    } catch { toast.error('이미지 처리에 실패했습니다') }
 
     URL.revokeObjectURL(cropSrc)
 

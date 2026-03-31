@@ -404,18 +404,18 @@ export const Dashboard: React.FC = () => {
                       <div className="flex items-center gap-1">
                           <button
                             onClick={prevProject}
-                            className="p-2.5 sm:p-1 hover:bg-surface-sunken text-txt-disabled hover:text-txt-primary transition-colors"
+                            className="p-2.5 hover:bg-surface-sunken text-txt-disabled hover:text-txt-primary transition-colors"
                           >
-                            <ChevronLeft size={14} />
+                            <ChevronLeft size={16} />
                           </button>
                           <span className="text-[0.625rem] font-mono font-bold text-txt-disabled select-none min-w-[1.875rem] text-center">
                             {currentProjectIndex + 1} / {myProjects.length}
                           </span>
                           <button
                             onClick={nextProject}
-                            className="p-2.5 sm:p-1 hover:bg-surface-sunken text-txt-disabled hover:text-txt-primary transition-colors"
+                            className="p-2.5 hover:bg-surface-sunken text-txt-disabled hover:text-txt-primary transition-colors"
                           >
-                            <ChevronRight size={14} />
+                            <ChevronRight size={16} />
                           </button>
                       </div>
                     </div>
@@ -644,9 +644,9 @@ export const Dashboard: React.FC = () => {
                   </div>
 
                   <div className="flex gap-6 text-[0.625rem] text-txt-tertiary font-mono">
-                      <a href="#" className="hover:text-txt-primary transition-colors">Terms of Service</a>
-                      <a href="#" className="hover:text-txt-primary transition-colors">Privacy Policy</a>
-                      <a href="#" className="hover:text-txt-primary transition-colors">Business License: 820-81-00000</a>
+                      <span className="hover:text-txt-primary transition-colors cursor-default">Terms of Service</span>
+                      <span className="hover:text-txt-primary transition-colors cursor-default">Privacy Policy</span>
+                      <span className="hover:text-txt-primary transition-colors cursor-default">Business License: 820-81-00000</span>
                   </div>
 
                   <div className="text-[0.625rem] text-txt-disabled font-mono">

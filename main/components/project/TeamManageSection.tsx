@@ -226,6 +226,7 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
                   onClick={() => addToTeam.mutate(chat)}
                   disabled={addToTeam.isPending}
                   className="flex items-center gap-1.5 px-3 py-1.5 bg-surface-inverse text-white text-xs font-bold hover:opacity-90 transition-opacity disabled:opacity-50 shrink-0"
+                  aria-label="팀에 추가"
                 >
                   {addToTeam.isPending ? (
                     <Loader2 size={12} className="animate-spin" />
@@ -385,6 +386,8 @@ function MemberCard({
               type="button"
               onClick={() => setShowRoleSelect(!showRoleSelect)}
               className="flex items-center gap-1 px-2.5 py-1.5 text-xs border border-border hover:border-border transition-colors bg-surface-card rounded-xl"
+              aria-label="역할 선택"
+              aria-haspopup="listbox"
             >
               <span className="text-txt-secondary">{member.assigned_role || '역할 선택'}</span>
               <ChevronDown size={12} className="text-txt-disabled" />

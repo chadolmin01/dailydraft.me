@@ -16,6 +16,7 @@ import {
   ArrowRight,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { SkeletonFeed } from '@/components/ui/Skeleton'
 import { useCoffeeChats, useAcceptCoffeeChat, useDeclineCoffeeChat, useUpdateChatOutcome } from '@/src/hooks/useCoffeeChats'
@@ -53,6 +54,7 @@ export function ProfileCoffeeChats() {
   const [chatError, setChatError] = useState<string | null>(null)
   const [tab, setTab] = useState<Tab>('received')
   const [acceptModalChat, setAcceptModalChat] = useState<CoffeeChat | null>(null)
+  const [declineTarget, setDeclineTarget] = useState<string | null>(null)
   const [viewingProfileUserId, setViewingProfileUserId] = useState<string | null>(null)
 
   const { data: chats = [], isLoading: chatsLoading } = useCoffeeChats({ asOwner: true })
@@ -199,7 +201,7 @@ export function ProfileCoffeeChats() {
                         수락
                       </button>
                       <button
-                        onClick={() => handleDeclineChat(chat.id)}
+                        onClick={() => setDeclineTarget(chat.id)}
                         className="px-3 py-1.5 text-xs font-bold border border-border text-txt-secondary hover:bg-surface-sunken hover:shadow-md active:scale-[0.97] transition-all"
                       >
                         거절
@@ -325,6 +327,19 @@ export function ProfileCoffeeChats() {
           isPersonMode={!acceptModalChat.opportunity_id}
         />
       )}
+
+      {/* Decline Confirm Modal */}
+      <ConfirmModal
+        isOpen={!!declineTarget}
+        onClose={() => setDeclineTarget(null)}
+        onConfirm={async () => {
+          if (declineTarget) await handleDeclineChat(declineTarget)
+        }}
+        title="커피챗 거절"
+        message="이 커피챗 요청을 거절하시겠습니까? 거절 후에는 되돌릴 수 없습니다."
+        confirmText="거절하기"
+        variant="warning"
+      />
 
       {/* Profile Detail Modal */}
       <ProfileDetailModal

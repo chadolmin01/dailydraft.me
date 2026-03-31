@@ -123,8 +123,12 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
           : '안녕하세요! 프로젝트에 관심이 있어서 연락드립니다...'
         }
         rows={4}
-        className="w-full px-4 py-3 border border-border rounded-sm text-base sm:text-sm text-left bg-surface-card rounded-lg focus:outline-none focus:border-brand resize-none mb-4"
+        maxLength={500}
+        className="w-full px-4 py-3 border border-border rounded-sm text-base sm:text-sm text-left bg-surface-card rounded-lg focus:outline-none focus:border-brand resize-none"
       />
+      <div className="text-[0.625rem] text-txt-tertiary font-mono text-right mt-1 mb-4">
+        {message.length}/500
+      </div>
 
       {error && (
         <p className="text-xs text-status-danger-text mb-3">{error}</p>

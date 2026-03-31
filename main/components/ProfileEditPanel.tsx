@@ -123,7 +123,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
       fetch('/api/profile/verify-university')
         .then(r => r.json())
         .then(d => { if (d.is_verified) setUniVerified(true) })
-        .catch(() => {})
+        .catch(() => toast.error('대학 인증 확인에 실패했습니다'))
     }
   }, [profile, isOpen])
 

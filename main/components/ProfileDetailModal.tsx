@@ -86,7 +86,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
           setHasInterested(!!d.interested)
           setInterestCount(d.interest_count ?? 0)
         })
-        .catch(() => {})
+        .catch(() => toast.error('관심 정보를 불러오지 못했습니다'))
     } else {
       setHasInterested(false)
       setInterestCount(0)

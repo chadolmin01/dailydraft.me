@@ -1,7 +1,9 @@
 'use client'
 
+import { FileText } from 'lucide-react'
 import { PageContainer } from '@/components/ui/PageContainer'
 import { Section } from '@/components/ui/Section'
+import { EmptyState } from '@/components/ui/EmptyState'
 
 export default function DocumentsPage() {
   return (
@@ -14,27 +16,19 @@ export default function DocumentsPage() {
                 <span className="w-2 h-2 bg-black"></span>
                 DOCUMENTS
               </div>
-              <div className="h-8 w-36 bg-surface-sunken" />
+              <h1 className="text-2xl font-bold text-txt-primary">문서</h1>
             </div>
-            <div className="h-10 w-32 bg-surface-sunken rounded-xl border border-border" />
           </div>
         </PageContainer>
       </Section>
 
       <Section spacing="sm" bg="transparent">
         <PageContainer size="wide">
-          <div className="space-y-3">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="bg-surface-card rounded-xl border border-border shadow-md p-5 flex items-center gap-4">
-                <div className="w-10 h-10 bg-surface-sunken rounded-xl border border-border shrink-0" />
-                <div className="flex-1">
-                  <div className="h-5 w-48 bg-surface-sunken mb-1" />
-                  <div className="h-3 w-32 bg-surface-sunken" />
-                </div>
-                <div className="h-4 w-20 bg-surface-sunken rounded-xl border border-border" />
-              </div>
-            ))}
-          </div>
+          <EmptyState
+            icon={FileText}
+            title="문서 기능 준비 중"
+            description="곧 만나보실 수 있습니다"
+          />
         </PageContainer>
       </Section>
     </div>
