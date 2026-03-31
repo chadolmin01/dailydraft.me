@@ -10,10 +10,10 @@ import {
   Users,
   Eye,
   Heart,
-  Loader2,
   Rocket,
   Settings,
 } from 'lucide-react'
+import { SkeletonGrid } from '@/components/ui/Skeleton'
 import { useMyOpportunities } from '@/src/hooks/useOpportunities'
 import { useAuth } from '@/src/context/AuthContext'
 import type { Opportunity } from '@/src/types/opportunity'
@@ -66,9 +66,7 @@ export default function MyProjectsPage() {
 
         {/* Content */}
         {isLoading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="h-6 w-6 animate-spin text-txt-tertiary" />
-          </div>
+          <SkeletonGrid count={4} cols={2} />
         ) : myProjects.length === 0 ? (
           <div className="border border-border bg-surface-card rounded-xl p-10 text-center">
             <div className="w-14 h-14 bg-surface-sunken rounded-xl border border-border flex items-center justify-center mx-auto mb-4">

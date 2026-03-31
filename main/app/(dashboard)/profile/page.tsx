@@ -16,7 +16,8 @@ import {
   ProfileInvitations,
 } from '@/components/profile'
 import Link from 'next/link'
-import { Sparkles, Loader2 } from 'lucide-react'
+import { Sparkles } from 'lucide-react'
+import { SkeletonProfile, SkeletonGrid } from '@/components/ui/Skeleton'
 
 export default function ProfilePage() {
   const { user } = useAuth()
@@ -46,8 +47,9 @@ export default function ProfilePage() {
   }, [user])
 
   if (isLoading) return (
-    <div className="flex items-center justify-center min-h-[60vh]">
-      <Loader2 className="h-6 w-6 animate-spin text-txt-tertiary" />
+    <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
+      <SkeletonProfile />
+      <SkeletonGrid count={2} cols={2} />
     </div>
   )
 

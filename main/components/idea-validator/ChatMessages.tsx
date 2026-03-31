@@ -90,7 +90,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
                         className={`relative flex flex-col items-start p-5 border transition-all duration-200 text-left group w-full h-full
                           ${resp.isReflected
                             ? 'bg-surface-sunken border-border ring-1 ring-black'
-                            : 'bg-surface-card border-border hover:border-border hover:shadow-md'
+                            : 'bg-surface-card border-border hover:border-border hover:shadow-md hover-spring'
                           }
                         `}
                         style={{ animationDelay: `${idx * 100}ms` }}

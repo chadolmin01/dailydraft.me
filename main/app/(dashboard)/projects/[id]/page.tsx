@@ -2,7 +2,8 @@
 
 import React, { useState, Suspense } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { ArrowLeft, Settings, ExternalLink, Clock, Users, MessageCircle, Pencil, Trash2, Loader2 } from 'lucide-react'
+import { ArrowLeft, Settings, ExternalLink, Clock, Users, MessageCircle, Pencil, Trash2 } from 'lucide-react'
+import { SkeletonFeed } from '@/components/ui/Skeleton'
 import { toast } from 'sonner'
 import { useAuth } from '@/src/context/AuthContext'
 import { useOpportunity } from '@/src/hooks/useOpportunities'
@@ -52,8 +53,8 @@ function ProjectManageContent() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-surface-bg flex items-center justify-center">
-        <Loader2 size={24} className="animate-spin text-txt-disabled" />
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <SkeletonFeed count={3} />
       </div>
     )
   }

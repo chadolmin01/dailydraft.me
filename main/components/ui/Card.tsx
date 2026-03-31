@@ -23,7 +23,7 @@ export const Card: React.FC<CardProps> = ({
 }) => {
   const baseClasses = 'rounded-xl transition-all duration-200'
 
-  const defaultClasses = 'bg-surface-card border border-border hover:shadow-md'
+  const defaultClasses = 'bg-surface-card border border-border hover:shadow-md hover-spring'
   const technicalClasses = 'bg-surface-card border border-border'
   const flatClasses = 'bg-surface-sunken rounded-xl border border-border'
   const solidClasses = ''

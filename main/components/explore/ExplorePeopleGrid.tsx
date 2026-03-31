@@ -2,8 +2,9 @@
 
 import React from 'react'
 import Image from 'next/image'
-import { Users, Coffee, Loader2 } from 'lucide-react'
+import { Users, Coffee } from 'lucide-react'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { SkeletonGrid } from '@/components/ui/Skeleton'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { getMatchColorClass } from './constants'
 import { AFFILIATION_LABELS } from '@/components/profile-modal/types'
@@ -36,9 +37,7 @@ export function ExplorePeopleGrid({
       {isError ? (
         <ErrorState message="프로필을 불러오는 데 실패했습니다" onRetry={onRetry} />
       ) : isLoading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-6 w-6 animate-spin text-txt-tertiary" />
-        </div>
+        <SkeletonGrid count={6} cols={2} />
       ) : talentCards.length === 0 ? (
         <EmptyState
           icon={Users}

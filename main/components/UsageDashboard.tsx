@@ -104,7 +104,7 @@ function UsageCard({
   const isDanger = percentage >= 95
 
   return (
-    <div className="bg-surface-card p-4 border border-border shadow-md hover:shadow-lg transition-shadow">
+    <div className="bg-surface-card p-4 border border-border shadow-md hover:shadow-lg hover-spring">
       <div className="flex items-center gap-3 mb-3">
         <div className={`p-2 border ${isDanger ? 'border-status-danger-text bg-status-danger-bg' : isWarning ? 'border-status-warning-text bg-status-warning-bg' : 'border-brand bg-brand-bg'}`}>
           <Icon className={`w-5 h-5 ${isDanger ? 'text-status-danger-text' : isWarning ? 'text-status-warning-text' : 'text-brand'}`} />

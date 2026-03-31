@@ -242,7 +242,7 @@ export const ValidatedIdeasPage: React.FC = () => {
         {filteredAndSortedIdeas.map(idea => {
           const adviceList = getAdviceList(idea)
           return (
-            <div key={idea.id} role="listitem" tabIndex={0} onClick={() => setSelectedIdea(idea)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedIdea(idea) } }} className={`bg-surface-card border p-5 cursor-pointer transition-all hover:shadow-md focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 group ${selectedIdea?.id === idea.id ? 'border-border ring-1 ring-black' : 'border-border hover:border-border'}`}>
+            <div key={idea.id} role="listitem" tabIndex={0} onClick={() => setSelectedIdea(idea)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedIdea(idea) } }} className={`bg-surface-card border p-5 cursor-pointer hover:shadow-md hover-spring focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 group ${selectedIdea?.id === idea.id ? 'border-border ring-1 ring-black' : 'border-border hover:border-border'}`}>
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-2">

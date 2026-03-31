@@ -400,7 +400,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                             index === 0 ? 'border-border' : 'border-border'
                           }`} />
 
-                          <div className="bg-surface-card rounded-xl border border-border p-5 hover:shadow-md transition-all">
+                          <div className="bg-surface-card rounded-xl border border-border p-5 hover:shadow-md hover-spring">
                             <div className="flex items-center gap-2 mb-2">
                               <span className={`text-[0.625rem] font-bold px-2 py-0.5 border ${config.badgeColor}`}>
                                 {config.label}
