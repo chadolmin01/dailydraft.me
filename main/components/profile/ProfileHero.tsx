@@ -68,7 +68,7 @@ function InlineField({
           onKeyDown={(e) => { if (e.key === 'Escape') close() }}
           placeholder={placeholder}
           rows={3}
-          className={`bg-surface-bg border border-border rounded-sm outline-none w-full px-2 py-1.5 resize-none focus:border-brand transition-colors ${className || ''}`}
+          className={`bg-surface-bg border border-border rounded-lg outline-none w-full px-2 py-1.5 resize-none focus:border-brand transition-colors ${className || ''}`}
         />
       )
     }
@@ -83,7 +83,7 @@ function InlineField({
         }}
         onBlur={close}
         placeholder={placeholder}
-        className={`bg-surface-bg border border-border rounded-sm outline-none px-2 py-0.5 focus:border-brand transition-colors ${className || ''}`}
+        className={`bg-surface-bg border border-border rounded-lg outline-none px-2 py-0.5 focus:border-brand transition-colors ${className || ''}`}
       />
     )
   }
@@ -258,7 +258,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
         <button
           onClick={handleCancel}
           disabled={updateProfile.isPending}
-          className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-txt-secondary border border-border hover:bg-surface-sunken transition-colors"
+          className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-txt-secondary border border-border hover:bg-surface-sunken transition-colors rounded-xl"
         >
           <X size={12} />
           취소
@@ -266,7 +266,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
         <button
           onClick={handleSave}
           disabled={updateProfile.isPending}
-          className="flex items-center gap-1 px-4 py-1.5 text-xs font-bold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97] disabled:opacity-50"
+          className="flex items-center gap-1 px-4 py-1.5 text-xs font-bold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97] disabled:opacity-50 rounded-xl"
         >
           {updateProfile.isPending ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
           저장
@@ -292,7 +292,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
         <h2 className="text-lg sm:text-xl font-bold text-txt-primary truncate">{cleanNickname(profile?.nickname || '') || 'User'}</h2>
       )}
       {uniVerified && (
-        <span className="flex items-center gap-0.5 px-1 py-0.5 bg-indicator-online/20 border border-indicator-online/40 text-indicator-online text-[0.5rem] font-mono font-bold shrink-0">
+        <span className="flex items-center gap-0.5 px-1.5 py-0.5 bg-indicator-online/20 border border-indicator-online/40 text-indicator-online text-[0.5rem] font-mono font-bold shrink-0 rounded-full">
           <ShieldCheck size={8} /> V
         </span>
       )}
@@ -335,7 +335,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
               onKeyDown={(e) => { if (e.key === 'Escape') setEditingBio(false) }}
               placeholder="자기소개를 입력하세요"
               rows={3}
-              className="bg-surface-bg border border-border rounded-sm outline-none w-full px-3 py-2 resize-none focus:border-brand transition-colors text-sm text-txt-secondary leading-relaxed"
+              className="bg-surface-bg border border-border rounded-lg outline-none w-full px-3 py-2 resize-none focus:border-brand transition-colors text-sm text-txt-secondary leading-relaxed"
             />
           </div>
         )
@@ -362,7 +362,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
       // Empty — prominent empty state
       return (
         <div
-          className={`${marginClass} border border-border p-5 cursor-pointer hover:border-brand/40 hover:bg-brand-bg/30 transition-colors group/bio`}
+          className={`${marginClass} border border-border p-5 rounded-xl cursor-pointer hover:border-brand/40 hover:bg-brand-bg/30 transition-colors group/bio`}
           onClick={() => setEditingBio(true)}
         >
           <div className="flex flex-col items-center gap-1.5 py-1">
@@ -431,7 +431,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
           <div className="flex gap-1.5 flex-wrap">
             <span className="text-[0.5rem] text-txt-disabled self-center mr-1">TAGS</span>
             {profile.interest_tags.map((tag, idx) => (
-              <span key={idx} className="text-[0.625rem] font-mono bg-white text-tag-default-text border border-border px-2 py-0.5 font-medium">
+              <span key={idx} className="text-[0.625rem] font-mono bg-white text-tag-default-text border border-border px-2 py-0.5 font-medium rounded-full">
                 {tag}
               </span>
             ))}
@@ -442,7 +442,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
           <div className="flex gap-1.5 flex-wrap">
             <span className="text-[0.5rem] text-txt-disabled self-center mr-1 flex items-center gap-1"><Sparkles size={9} /> STRENGTHS</span>
             {strengths.map((s, idx) => (
-              <span key={idx} className="text-[0.625rem] font-mono bg-indicator-online/20 text-indicator-online border border-indicator-online/30 px-2 py-0.5 font-medium">
+              <span key={idx} className="text-[0.625rem] font-mono bg-indicator-online/20 text-indicator-online border border-indicator-online/30 px-2 py-0.5 font-medium rounded-full">
                 {s}
               </span>
             ))}
@@ -457,11 +457,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
   /* ════════════════════════════════════════════════════════ */
   if (coverUrl) {
     return (
-      <div className="relative bg-surface-card text-txt-primary mb-6 border border-border shadow-md overflow-hidden">
-        <div className="absolute top-1.5 left-1.5 w-2.5 h-2.5 border-l border-t border-border z-20" />
-        <div className="absolute top-1.5 right-1.5 w-2.5 h-2.5 border-r border-t border-border z-20" />
-        <div className="absolute bottom-1.5 left-1.5 w-2.5 h-2.5 border-l border-b border-border z-20" />
-        <div className="absolute bottom-1.5 right-1.5 w-2.5 h-2.5 border-r border-b border-border z-20" />
+      <div className="relative bg-surface-card text-txt-primary mb-6 border border-border shadow-md overflow-hidden rounded-2xl">
 
         {/* Cover image */}
         <div className="relative h-32 sm:h-40 lg:h-48">
@@ -485,7 +481,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
               {renderName()}
               {renderSubtitle()}
               {profile?.current_situation && (
-                <span className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 text-[0.5rem] font-mono font-bold bg-brand/20 text-brand-border border border-brand/30">
+                <span className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 text-[0.5rem] font-mono font-bold bg-brand/20 text-brand-border border border-brand/30 rounded-full">
                   <Target size={8} /> {SITUATION_LABELS[profile.current_situation] || profile.current_situation}
                 </span>
               )}
@@ -512,11 +508,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
   /* Variant B: no cover image                              */
   /* ════════════════════════════════════════════════════════ */
   return (
-    <div className="relative bg-surface-card text-txt-primary p-5 pb-6 mb-6 border border-border shadow-md">
-      <div className="absolute top-1.5 left-1.5 w-2.5 h-2.5 border-l border-t border-border" />
-      <div className="absolute top-1.5 right-1.5 w-2.5 h-2.5 border-r border-t border-border" />
-      <div className="absolute bottom-1.5 left-1.5 w-2.5 h-2.5 border-l border-b border-border" />
-      <div className="absolute bottom-1.5 right-1.5 w-2.5 h-2.5 border-r border-b border-border" />
+    <div className="relative bg-surface-card text-txt-primary p-5 pb-6 mb-6 border border-border shadow-md rounded-2xl">
 
       <div className="flex items-start gap-4 mb-4">
         {renderAvatar('hero')}
@@ -524,7 +516,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
           {renderName()}
           {renderSubtitle()}
           {profile?.current_situation && (
-            <span className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 text-[0.5rem] font-mono font-bold bg-brand/20 text-brand-border border border-brand/30">
+            <span className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 text-[0.5rem] font-mono font-bold bg-brand/20 text-brand-border border border-brand/30 rounded-full">
               <Target size={8} /> {SITUATION_LABELS[profile.current_situation] || profile.current_situation}
             </span>
           )}
