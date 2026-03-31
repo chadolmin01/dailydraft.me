@@ -90,7 +90,7 @@ function InlineField({
 
   return (
     <span
-      className="group/edit inline-flex items-center gap-1 cursor-pointer"
+      className="group/edit inline-flex items-center gap-1 cursor-pointer rounded-sm px-1 -mx-1 hover:bg-surface-sunken/60 transition-colors"
       onClick={() => setEditing(true)}
       title="클릭하여 수정"
     >

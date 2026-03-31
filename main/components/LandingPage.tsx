@@ -126,7 +126,7 @@ const MockDashboardUI = () => (
         <div className="border border-border p-1">
            <div className="flex justify-between items-center bg-surface-sunken px-3 py-2 border-b border-border mb-1">
               <h4 className="font-medium text-xs text-txt-primary">Opportunities</h4>
-              <span className="text-[0.625rem] text-txt-disabled font-mono cursor-pointer hover:text-black">ALL</span>
+              <span className="text-[0.625rem] text-txt-disabled font-mono cursor-pointer hover:text-black hover:bg-surface-sunken px-1.5 py-0.5 -mr-1.5 transition-colors">ALL</span>
            </div>
            <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
               {/* Dark Card */}
