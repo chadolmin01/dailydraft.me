@@ -641,7 +641,6 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
             </div>
             <div className="flex-1 p-4 overflow-y-auto">
               <StepWizardCompact
-                steps={WIZARD_STEPS}
                 currentStep={currentStep}
                 completedSteps={completedSteps}
                 onStepClick={(step) => { setCurrentStep(step); setShowMobileSidebar(false) }}
