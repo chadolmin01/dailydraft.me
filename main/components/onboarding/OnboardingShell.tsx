@@ -1,9 +1,9 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { LogOut, CheckCircle2, MessageSquare, Sparkles, ArrowRight } from 'lucide-react'
+import { LogOut, CheckCircle2, MessageSquare, Sparkles, ArrowRight, X } from 'lucide-react'
 import type { Step } from '@/src/lib/onboarding/types'
-import { ONBOARDING_TIPS, STEP_ORDER } from '@/src/lib/onboarding/constants'
+import { ONBOARDING_TIPS, STEP_ORDER, DEEP_CHAT_TOPICS } from '@/src/lib/onboarding/constants'
 
 // ── Progress Bar ──
 
@@ -37,9 +37,14 @@ const TRANSITION_TIPS = [
   { icon: CheckCircle2, text: '정답은 없어요. 편하게 답하면 돼요' },
 ]
 
-function DeepChatTransitionOverlay() {
+interface DeepChatTransitionOverlayProps {
+  onCancel?: () => void
+}
+
+function DeepChatTransitionOverlay({ onCancel }: DeepChatTransitionOverlayProps) {
   const [tipIdx, setTipIdx] = useState(0)
   const [progressWidth, setProgressWidth] = useState(0)
+  const [showCancel, setShowCancel] = useState(false)
 
   useEffect(() => {
     const timer = setTimeout(() => setProgressWidth(66), 300)
@@ -51,6 +56,12 @@ function DeepChatTransitionOverlay() {
       setTipIdx(prev => (prev + 1) % TRANSITION_TIPS.length)
     }, 2500)
     return () => clearInterval(interval)
+  }, [])
+
+  // Show cancel button after 5 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => setShowCancel(true), 5000)
+    return () => clearTimeout(timer)
   }, [])
 
   return (
@@ -134,29 +145,24 @@ function DeepChatTransitionOverlay() {
         </div>
       </div>
 
-      {/* CTA hint */}
-      <div
-        className="flex items-center gap-2 text-txt-tertiary"
-        style={{ animation: 'dcto-step 0.5s cubic-bezier(0.16, 1, 0.3, 1) both', animationDelay: '1100ms' }}
-      >
-        <span className="text-[11px] font-mono">잠시 후 대화가 시작돼요</span>
-        <ArrowRight size={12} className="animate-[dcto-arrow_1s_ease-in-out_infinite]" />
-      </div>
-
-      <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes dcto-logo {
-          0% { opacity:0; transform: scale(0.5) rotate(-8deg); }
-          100% { opacity:1; transform: scale(1) rotate(0deg); }
-        }
-        @keyframes dcto-step {
-          0% { opacity:0; transform: translateY(12px); }
-          100% { opacity:1; transform: translateY(0); }
-        }
-        @keyframes dcto-arrow {
-          0%, 100% { transform: translateX(0); }
-          50% { transform: translateX(4px); }
-        }
-      `}} />
+      {/* CTA hint or Cancel */}
+      {showCancel && onCancel ? (
+        <button
+          onClick={onCancel}
+          className="flex items-center gap-1.5 text-[12px] text-txt-tertiary hover:text-txt-primary font-medium transition-colors animate-in fade-in duration-300"
+        >
+          <X size={12} />
+          <span>취소하고 돌아가기</span>
+        </button>
+      ) : (
+        <div
+          className="flex items-center gap-2 text-txt-tertiary"
+          style={{ animation: 'dcto-step 0.5s cubic-bezier(0.16, 1, 0.3, 1) both', animationDelay: '1100ms' }}
+        >
+          <span className="text-[11px] font-mono">잠시 후 대화가 시작돼요</span>
+          <ArrowRight size={12} className="animate-[dcto-arrow_1s_ease-in-out_infinite]" />
+        </div>
+      )}
     </div>
   )
 }
@@ -169,20 +175,22 @@ interface OnboardingShellProps {
   tipIndex: number
   mounted: boolean
   deepChatTransition: boolean
+  coveredTopics?: string[]
   onSignOut: () => void
+  onCancelTransition?: () => void
   children: React.ReactNode
   footer: React.ReactNode
   sidebar: React.ReactNode
 }
 
 export const OnboardingShell: React.FC<OnboardingShellProps> = ({
-  step, userMsgCount, tipIndex, mounted, deepChatTransition,
-  onSignOut, children, footer, sidebar,
+  step, userMsgCount, tipIndex, mounted, deepChatTransition, coveredTopics,
+  onSignOut, onCancelTransition, children, footer, sidebar,
 }) => {
   return (
     <div className={`fixed inset-0 bg-surface-bg flex transition-opacity duration-700 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
       {/* Deep chat transition overlay */}
-      {deepChatTransition && <DeepChatTransitionOverlay />}
+      {deepChatTransition && <DeepChatTransitionOverlay onCancel={onCancelTransition} />}
 
       {/* Chat */}
       <div className={`flex-1 flex flex-col min-w-0 transition-opacity duration-500 ${deepChatTransition ? 'opacity-0' : 'opacity-100'}`}>
@@ -200,6 +208,20 @@ export const OnboardingShell: React.FC<OnboardingShellProps> = ({
               온라인
             </p>
           </div>
+          {/* U10: Mobile topic dot indicator */}
+          {step === 'deep-chat' && coveredTopics && (
+            <div className="flex items-center gap-1 xl:hidden">
+              {DEEP_CHAT_TOPICS.slice(0, 6).map(topic => (
+                <div
+                  key={topic.id}
+                  title={topic.label}
+                  className={`w-1.5 h-1.5 rounded-full transition-all duration-500 ${
+                    coveredTopics.includes(topic.id) ? 'bg-brand' : 'bg-border'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
           <ProgressBar step={step} />
         </div>
 

@@ -22,6 +22,7 @@ export interface Bubble {
   role: 'ai' | 'user'
   content: string
   attachment?: BubbleAttachment
+  offTopic?: boolean
 }
 
 // ── Deep Chat ──
@@ -29,6 +30,7 @@ export interface Bubble {
 export interface DeepChatMessage {
   role: 'user' | 'assistant'
   content: string
+  timestamp?: string
 }
 
 export interface DeepChatTopic {

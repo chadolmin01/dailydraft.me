@@ -61,8 +61,7 @@ export const DeepChatFooter: React.FC<DeepChatFooterProps> = ({
                 onChange={(e) => onInputChange(e.target.value)}
                 placeholder={userMsgCount === 0 ? '첫 번째 질문에 답해보세요...' : '이어서 이야기해주세요...'}
                 className="w-full pl-4 pr-11 py-3 bg-surface-card rounded-lg border border-border text-base sm:text-sm font-medium focus:outline-none focus:border-surface-inverse focus:bg-white transition-all placeholder:text-txt-tertiary"
-                onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && onSend()}
-                disabled={isTyping}
+                onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && !isTyping && onSend()}
               />
               <button
                 onClick={onSend}
@@ -75,7 +74,7 @@ export const DeepChatFooter: React.FC<DeepChatFooterProps> = ({
             <button
               onClick={onFinish}
               disabled={isTyping}
-              className={`ob-hover px-4 py-3 text-[13px] font-bold flex items-center gap-1.5 hover:opacity-90 active:scale-[0.97] disabled:opacity-50 shrink-0 transition-all ${
+              className={`ob-hover px-4 py-3 rounded-xl text-[13px] font-bold flex items-center gap-1.5 hover:opacity-90 active:scale-[0.97] disabled:opacity-50 shrink-0 transition-all ${
                 userMsgCount >= 3 ? 'bg-brand text-white border border-brand' : 'bg-surface-inverse text-txt-inverse'
               }`}
             >
@@ -96,7 +95,7 @@ export const DeepChatFooter: React.FC<DeepChatFooterProps> = ({
               </span>
             </div>
             <span className="text-[10px] text-txt-disabled font-mono">
-              {userMsgCount < 3 ? `${3 - userMsgCount}개 더 답하면 완료 가능` : '언제든 완료 가능'}
+              {userMsgCount < 3 ? `${3 - userMsgCount}개 더 답하면 완료 가능 · 더 많은 대화 = 더 정확한 매칭` : '언제든 완료 가능'}
             </span>
           </div>
         </div>

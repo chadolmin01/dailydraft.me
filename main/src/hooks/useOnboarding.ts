@@ -174,9 +174,7 @@ export function useDerivedState(state: OnboardingState) {
     [state.deepChatMessages],
   )
 
-  const currentSuggestions = useMemo(() => {
-    return state.dynamicSuggestions
-  }, [state.dynamicSuggestions])
+  const currentSuggestions = state.dynamicSuggestions
 
   const canGoBack = !['greeting', 'cta', 'info', 'deep-chat', 'done'].includes(state.step)
     && !state.isTyping && !state.isSaving && state.stepHistory.length > 0

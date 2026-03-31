@@ -1,12 +1,13 @@
 import type { DeepChatMessage, ProfileDraft } from './types'
 
 /** Parse free-text skills/interests via AI */
-export async function aiParse(text: string, type: 'skills' | 'interests'): Promise<string[] | null> {
+export async function aiParse(text: string, type: 'skills' | 'interests', signal?: AbortSignal): Promise<string[] | null> {
   try {
     const res = await fetch('/api/onboarding/parse', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text, type }),
+      signal,
     })
     if (!res.ok) return null
     const { items } = await res.json()
@@ -20,12 +21,14 @@ export async function aiParse(text: string, type: 'skills' | 'interests'): Promi
 export async function aiDeepChat(
   messages: DeepChatMessage[],
   profileCtx: Record<string, unknown>,
+  signal?: AbortSignal,
 ): Promise<{ reply: string; offTopic: boolean; suggestions: string[] }> {
   try {
     const res = await fetch('/api/onboarding/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ messages, profile: profileCtx }),
+      signal,
     })
     if (!res.ok) {
       return { reply: '죄송해요, 일시적인 오류가 발생했어요. 다시 말씀해주세요!', offTopic: false, suggestions: [] }
@@ -37,7 +40,9 @@ export async function aiDeepChat(
       offTopic: !!data?.offTopic,
       suggestions: Array.isArray(data?.suggestions) ? data.suggestions : [],
     }
-  } catch {
+  } catch (err) {
+    // Re-throw AbortError so callers can distinguish cancellation from real errors
+    if (err instanceof DOMException && err.name === 'AbortError') throw err
     return { reply: '죄송해요, 네트워크 오류가 발생했어요. 인터넷 연결을 확인하고 다시 시도해주세요.', offTopic: false, suggestions: [] }
   }
 }
@@ -85,7 +90,11 @@ export async function saveProfileFinal(
 ): Promise<void> {
   const hasDeepChat = deepChatMessages.length > 0
   const transcript = hasDeepChat
-    ? deepChatMessages.map(m => ({ role: m.role, content: m.content, timestamp: new Date().toISOString() }))
+    ? deepChatMessages.map(m => ({
+        role: m.role,
+        content: m.content,
+        timestamp: m.timestamp || new Date().toISOString(),
+      }))
     : undefined
 
   const res = await fetch('/api/onboarding/complete', {
@@ -119,6 +128,7 @@ export async function saveProfileFinal(
 /** Summarize deep chat transcript */
 export async function summarizeTranscript(
   messages: DeepChatMessage[],
+  signal?: AbortSignal,
 ): Promise<{ summary?: string } | null> {
   try {
     const res = await fetch('/api/onboarding/summarize', {
@@ -127,6 +137,7 @@ export async function summarizeTranscript(
       body: JSON.stringify({
         transcript: messages.map(m => ({ role: m.role, content: m.content })),
       }),
+      signal,
     })
     if (!res.ok) return null
     const json = await res.json()

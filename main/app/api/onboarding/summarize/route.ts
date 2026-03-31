@@ -66,8 +66,16 @@ export async function POST(request: Request) {
       return ApiResponse.badRequest('No transcript provided')
     }
 
+    // C9: Limit transcript size to prevent abuse
+    const MAX_TRANSCRIPT_MESSAGES = 40
+    const MAX_MSG_CONTENT_LENGTH = 3000
+    const trimmedTranscript = transcript.slice(0, MAX_TRANSCRIPT_MESSAGES).map(m => ({
+      ...m,
+      content: typeof m.content === 'string' ? m.content.slice(0, MAX_MSG_CONTENT_LENGTH) : '',
+    }))
+
     // Format conversation for analysis
-    const conversationText = transcript
+    const conversationText = trimmedTranscript
       .map(m => `${m.role === 'user' ? '사용자' : 'AI'}: ${m.content}`)
       .join('\n\n')
 
