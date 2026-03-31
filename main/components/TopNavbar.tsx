@@ -171,7 +171,7 @@ export const TopNavbar: React.FC = () => {
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 w-full h-14 sm:h-20 z-fixed transition-all duration-300 overflow-hidden ${
+      <nav className={`fixed top-0 left-0 w-full h-14 sm:h-20 z-fixed transition-all duration-300 ${
         isScrolled
           ? 'bg-surface-card/80 backdrop-blur-xl shadow-soft'
           : 'bg-surface-card/60 backdrop-blur-md'
