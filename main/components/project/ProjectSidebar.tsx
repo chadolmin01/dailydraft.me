@@ -3,8 +3,30 @@ import {
   Heart, Coffee, Clock,
   Briefcase, MapPin, Sparkles,
   Eye, ExternalLink, Edit3, Code,
+  Palette, Megaphone, PenTool, BarChart3,
+  Monitor, Camera, ArrowRight, Check, X as XIcon, Loader2,
 } from 'lucide-react'
 import { ProjectSidebarProps, linkIcons } from './types'
+
+const ROLE_ICON_MAP: Record<string, React.ElementType> = {
+  '개발자': Code,
+  '프론트엔드': Monitor,
+  '백엔드': Code,
+  '풀스택': Code,
+  '디자이너': Palette,
+  'UI/UX': PenTool,
+  '기획자': BarChart3,
+  '마케터': Megaphone,
+  'PM': Briefcase,
+  '영상': Camera,
+}
+
+function getRoleIcon(role: string) {
+  for (const [keyword, Icon] of Object.entries(ROLE_ICON_MAP)) {
+    if (role.includes(keyword)) return Icon
+  }
+  return Briefcase
+}
 
 export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
   opportunity,
@@ -77,30 +99,80 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
             모집 중인 포지션
           </h3>
           <div className="space-y-2">
-            {opportunity.needed_roles.map((role) => (
-              <div key={role} className="flex items-center justify-between py-2.5 px-3 bg-surface-card rounded-xl border border-border">
-                <div className="flex items-center gap-2">
-                  <Briefcase size={14} className="text-txt-disabled" />
-                  <span className="text-sm text-txt-secondary">{role}</span>
-                </div>
-                {existingChat ? (
-                  <span className={`text-xs ${
-                    existingChat.status === 'pending' ? 'text-indicator-premium' :
-                    existingChat.status === 'accepted' ? 'text-status-success-text' : 'text-txt-disabled'
-                  }`}>
-                    {existingChat.status === 'pending' ? '대기 중' :
-                     existingChat.status === 'accepted' ? '수락됨' : '거절됨'}
-                  </span>
-                ) : (
-                  <button
-                    onClick={() => handleAction(role)}
-                    className="text-xs text-txt-disabled hover:text-txt-secondary transition-colors"
+            {opportunity.needed_roles.map((role) => {
+              const RoleIcon = getRoleIcon(role)
+              const chatStatus = existingChat?.status
+
+              if (chatStatus === 'accepted') {
+                return (
+                  <div
+                    key={role}
+                    className="flex items-center gap-3 py-3 px-3.5 bg-status-success-bg rounded-xl border border-indicator-online/20"
                   >
-                    커피챗 신청 &rarr;
-                  </button>
-                )}
-              </div>
-            ))}
+                    <div className="w-8 h-8 bg-status-success-bg border border-indicator-online/30 rounded-lg flex items-center justify-center shrink-0">
+                      <Check size={14} className="text-status-success-text" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span className="text-sm font-medium text-status-success-text">{role}</span>
+                      <p className="text-[0.625rem] text-status-success-text/70">수락됨</p>
+                    </div>
+                  </div>
+                )
+              }
+
+              if (chatStatus === 'pending') {
+                return (
+                  <div
+                    key={role}
+                    className="flex items-center gap-3 py-3 px-3.5 bg-surface-card rounded-xl border border-indicator-premium/30"
+                  >
+                    <div className="w-8 h-8 bg-surface-sunken border border-border rounded-lg flex items-center justify-center shrink-0">
+                      <Loader2 size={14} className="text-indicator-premium animate-spin" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span className="text-sm font-medium text-txt-secondary">{role}</span>
+                      <p className="text-[0.625rem] text-indicator-premium">대기 중...</p>
+                    </div>
+                  </div>
+                )
+              }
+
+              if (chatStatus === 'declined') {
+                return (
+                  <div
+                    key={role}
+                    className="flex items-center gap-3 py-3 px-3.5 bg-surface-card rounded-xl border border-border opacity-60"
+                  >
+                    <div className="w-8 h-8 bg-surface-sunken border border-border rounded-lg flex items-center justify-center shrink-0">
+                      <XIcon size={14} className="text-txt-disabled" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span className="text-sm font-medium text-txt-tertiary">{role}</span>
+                      <p className="text-[0.625rem] text-txt-disabled">거절됨</p>
+                    </div>
+                  </div>
+                )
+              }
+
+              return (
+                <button
+                  key={role}
+                  onClick={() => handleAction(role)}
+                  className="group w-full flex items-center gap-3 py-3 px-3.5 bg-surface-card rounded-xl border border-border hover:border-brand/40 hover:bg-brand-bg hover:shadow-sm active:scale-[0.98] active:shadow-none transition-all cursor-pointer text-left"
+                >
+                  <div className="w-8 h-8 bg-surface-sunken border border-border rounded-lg flex items-center justify-center shrink-0 group-hover:bg-brand group-hover:border-brand group-hover:text-white transition-colors">
+                    <RoleIcon size={14} className="text-txt-disabled group-hover:text-white transition-colors" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <span className="text-sm font-medium text-txt-secondary group-hover:text-brand transition-colors">{role}</span>
+                    <p className="text-[0.625rem] text-txt-disabled group-hover:text-brand/60 transition-colors flex items-center gap-1">
+                      <Coffee size={9} /> 커피챗 신청하기
+                    </p>
+                  </div>
+                  <ArrowRight size={14} className="text-txt-disabled group-hover:text-brand group-hover:translate-x-0.5 transition-all shrink-0" />
+                </button>
+              )
+            })}
           </div>
         </div>
       )}
