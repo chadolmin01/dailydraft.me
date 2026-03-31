@@ -524,22 +524,26 @@ function ExplorePageContent() {
         )}
       </DashboardLayout>
 
-      <ProjectDetailModal
-        projectId={selectedProjectId}
-        onClose={() => setSelectedProjectId(null)}
-      />
+      {selectedProjectId && (
+        <ProjectDetailModal
+          projectId={selectedProjectId}
+          onClose={() => setSelectedProjectId(null)}
+        />
+      )}
 
-      <ProfileDetailModal
-        profileId={selectedProfileId}
-        byUserId={profileByUserId}
-        matchData={selectedMatchData}
-        onClose={() => { setSelectedProfileId(null); setProfileByUserId(false) }}
-        onSelectProject={(projectId) => {
-          setSelectedProfileId(null)
-          setProfileByUserId(false)
-          setSelectedProjectId(projectId)
-        }}
-      />
+      {selectedProfileId && (
+        <ProfileDetailModal
+          profileId={selectedProfileId}
+          byUserId={profileByUserId}
+          matchData={selectedMatchData}
+          onClose={() => { setSelectedProfileId(null); setProfileByUserId(false) }}
+          onSelectProject={(projectId) => {
+            setSelectedProfileId(null)
+            setProfileByUserId(false)
+            setSelectedProjectId(projectId)
+          }}
+        />
+      )}
     </div>
   )
 }

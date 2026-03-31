@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { hapticMedium } from '@/src/utils/haptic'
 import {
   X, Briefcase, Share2, Heart,
@@ -169,30 +169,24 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
   }
 
   return (
-    <AnimatePresence>
-      {profileId && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            key="profile-backdrop"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-md z-modal-backdrop"
-          />
+    <>
+      {/* Backdrop */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.2 }}
+        onClick={onClose}
+        className="fixed inset-0 bg-black/60 backdrop-blur-md z-modal-backdrop"
+      />
 
-          {/* Modal */}
-          <motion.div
-            key="profile-modal"
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.97, y: 10 }}
-            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-0 z-modal flex items-end sm:items-center justify-center pt-6 px-0 pb-[env(safe-area-inset-bottom)] sm:p-4 md:p-8"
-            onClick={onClose}
-          >
+      {/* Modal */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+        className="fixed inset-0 z-modal flex items-end sm:items-center justify-center pt-6 px-0 pb-[env(safe-area-inset-bottom)] sm:p-4 md:p-8"
+        onClick={onClose}
+      >
             <div
               onClick={(e) => e.stopPropagation()}
               className={`flex flex-col sm:flex-row gap-0 sm:gap-4 max-h-[85vh] sm:max-h-[90vh] transition-all duration-300 ${sidePanel ? 'w-full max-w-[90rem]' : 'w-full max-w-lg md:max-w-2xl lg:max-w-3xl'}`}
@@ -357,8 +351,6 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
             )}
             </div>
           </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+    </>
   )
 }
