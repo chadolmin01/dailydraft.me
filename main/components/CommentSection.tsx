@@ -163,8 +163,12 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
             <SkeletonFeed count={3} />
           </div>
         ) : comments.length === 0 ? (
-          <div className="p-8 text-center text-txt-disabled text-sm">
-            아직 {COMMENT_LABEL}이 없습니다. 첫 번째 {COMMENT_VERB}을 남겨보세요!
+          <div className="p-8 text-center">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-surface-sunken empty-float mb-3">
+              <MessageCircle size={20} className="text-txt-tertiary" strokeWidth={1.5} />
+            </div>
+            <p className="text-sm font-medium text-txt-secondary mb-1">아직 {COMMENT_LABEL}이 없습니다</p>
+            <p className="text-xs text-txt-disabled">첫 번째 {COMMENT_VERB}을 남겨보세요!</p>
           </div>
         ) : (
           <>
@@ -252,7 +256,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
               : 'text-txt-disabled hover:text-brand'
           }`}
         >
-          <ThumbsUp size={14} />
+          <ThumbsUp size={14} className={hasVoted ? 'icon-bounce' : ''} />
           <span>도움이 됐어요 {comment.helpful_count > 0 && `(${comment.helpful_count})`}</span>
         </button>
 

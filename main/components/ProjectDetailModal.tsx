@@ -304,7 +304,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                     aria-label="공유"
                   >
                     {shareCopied ? (
-                      <span className="text-[0.625rem] font-medium text-status-success-text px-1">복사됨!</span>
+                      <span className="text-[0.625rem] font-medium text-status-success-text px-1 icon-bounce">복사됨!</span>
                     ) : (
                       <Share2 size={14} className="text-txt-disabled" />
                     )}

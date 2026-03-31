@@ -135,12 +135,14 @@ export default function MessagesPage() {
                   ))}
                 </div>
               ) : filtered.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-                  <MailOpen size={24} className="text-txt-disabled mb-2" />
-                  <p className="text-sm text-txt-tertiary">
-                    {searchQuery ? '검색 결과가 없습니다' : '쪽지가 없습니다'}
+                <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+                  <div className="w-14 h-14 rounded-full bg-surface-sunken flex items-center justify-center empty-float mb-4">
+                    <MailOpen size={24} className="text-txt-tertiary" strokeWidth={1.5} />
+                  </div>
+                  <p className="text-sm font-medium text-txt-secondary mb-1">
+                    {searchQuery ? '검색 결과가 없습니다' : '아직 쪽지가 없어요'}
                   </p>
-                  <p className="text-xs text-txt-disabled mt-1">프로필에서 쪽지를 보내보세요</p>
+                  <p className="text-xs text-txt-disabled">Explore에서 마음에 드는 사람에게 쪽지를 보내보세요</p>
                 </div>
               ) : (
                 <div className="p-1.5 space-y-0.5">
@@ -190,9 +192,11 @@ export default function MessagesPage() {
           <div className={`flex-1 bg-surface-card rounded-xl border border-border shadow-md flex flex-col ${!mobileShowThread ? 'hidden md:flex' : 'flex'}`}>
             {!selectedPartner ? (
               <div className="flex-1 flex flex-col items-center justify-center text-center px-8">
-                <Mail size={32} className="text-txt-disabled mb-3" />
-                <p className="text-sm font-medium text-txt-tertiary">대화를 선택하세요</p>
-                <p className="text-xs text-txt-disabled mt-1">왼쪽 목록에서 대화 상대를 선택하거나, 프로필에서 쪽지를 보내보세요</p>
+                <div className="w-16 h-16 rounded-full bg-surface-sunken flex items-center justify-center empty-float mb-4">
+                  <Mail size={28} className="text-txt-tertiary" strokeWidth={1.5} />
+                </div>
+                <p className="text-sm font-medium text-txt-secondary mb-1">대화를 선택하세요</p>
+                <p className="text-xs text-txt-disabled">왼쪽 목록에서 대화 상대를 선택해보세요</p>
               </div>
             ) : (
               <>

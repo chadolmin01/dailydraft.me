@@ -245,7 +245,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                       }`}
                       aria-label="관심"
                     >
-                      <Heart size={12} className={hasInterested ? 'fill-current' : ''} />
+                      <Heart size={12} className={hasInterested ? 'fill-current heart-burst' : ''} />
                       {interestCount > 0 && <span>{interestCount}</span>}
                     </button>
                   )}
@@ -255,7 +255,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                     aria-label="공유"
                   >
                     {shareCopied ? (
-                      <span className="text-[0.625rem] font-medium text-status-success-text px-1">복사됨!</span>
+                      <span className="text-[0.625rem] font-medium text-status-success-text px-1 icon-bounce">복사됨!</span>
                     ) : (
                       <Share2 size={14} className="text-txt-disabled" />
                     )}

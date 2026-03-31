@@ -248,10 +248,13 @@ export default function NotificationsPage() {
             </div>
           ) : displayList.length === 0 ? (
             <div className="py-16 text-center">
-              <Bell size={32} className="mx-auto text-txt-disabled mb-3" />
-              <p className="text-sm text-txt-tertiary">
-                {showAll ? '알림 내역이 없습니다' : '새로운 알림이 없습니다'}
+              <div className="w-16 h-16 rounded-full bg-surface-sunken flex items-center justify-center mx-auto mb-4">
+                <Bell size={28} className="text-txt-tertiary bell-swing" strokeWidth={1.5} />
+              </div>
+              <p className="text-sm font-medium text-txt-secondary mb-1">
+                {showAll ? '알림 내역이 없습니다' : '새로운 알림이 없어요'}
               </p>
+              <p className="text-xs text-txt-disabled">프로젝트 활동이나 커피챗 요청이 오면 여기에 표시됩니다</p>
               {!showAll && allNotifications.length > 0 && (
                 <button
                   onClick={() => setShowAll(true)}

@@ -55,8 +55,8 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
       ${isCompact ? 'py-8 px-4' : 'py-16 px-8'}
       ${className}
     `}>
-      {/* Icon — soft circle background */}
-      <div className={`inline-flex items-center justify-center rounded-full bg-surface-sunken ${isCompact ? 'w-12 h-12 mb-3' : 'w-16 h-16 mb-4'}`}>
+      {/* Icon — soft circle background with float animation */}
+      <div className={`inline-flex items-center justify-center rounded-full bg-surface-sunken empty-float ${isCompact ? 'w-12 h-12 mb-3' : 'w-16 h-16 mb-4'}`}>
         <Icon size={isCompact ? 22 : 28} className="text-txt-tertiary" strokeWidth={1.5} />
       </div>
 

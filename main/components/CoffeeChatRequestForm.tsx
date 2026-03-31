@@ -68,10 +68,10 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
   if (sent) {
     return (
       <div className="text-center py-4">
-        <div className="w-14 h-14 bg-status-success-bg rounded-sm border border-status-success-text/20 flex items-center justify-center mb-4 mx-auto shadow-sm">
+        <div className="w-14 h-14 bg-status-success-bg rounded-sm border border-status-success-text/20 flex items-center justify-center mb-4 mx-auto shadow-sm success-pop">
           <Coffee size={24} className="text-status-success-text" />
         </div>
-        <h3 className="text-xl font-bold text-txt-primary mb-2">커피챗 신청 완료!</h3>
+        <h3 className="text-xl font-bold text-txt-primary mb-2 animate-in fade-in">커피챗 신청 완료!</h3>
         <p className="text-txt-tertiary text-sm mb-6">
           {isPersonMode
             ? '상대방에게 알림이 전송되었습니다. 수락되면 연락처를 받을 수 있어요.'

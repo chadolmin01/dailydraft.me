@@ -69,8 +69,8 @@ export default function MyProjectsPage() {
           <SkeletonGrid count={4} cols={2} />
         ) : myProjects.length === 0 ? (
           <div className="border border-border bg-surface-card rounded-xl p-10 text-center">
-            <div className="w-14 h-14 bg-surface-sunken rounded-xl border border-border flex items-center justify-center mx-auto mb-4">
-              <FolderOpen size={24} className="text-txt-disabled" />
+            <div className="w-14 h-14 bg-surface-sunken rounded-full flex items-center justify-center mx-auto mb-4 empty-float">
+              <FolderOpen size={24} className="text-txt-tertiary" strokeWidth={1.5} />
             </div>
             <h3 className="font-bold text-txt-primary mb-1">아직 프로젝트가 없습니다</h3>
             <p className="text-sm text-txt-tertiary mb-6">

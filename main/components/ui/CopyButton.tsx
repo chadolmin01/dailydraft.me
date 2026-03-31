@@ -47,7 +47,7 @@ export const CopyButton: React.FC<CopyButtonProps> = ({
       className={`inline-flex items-center gap-1 text-txt-tertiary hover:text-txt-secondary transition-colors ${className}`}
     >
       {copied ? (
-        <Check size={iconSize} className="text-status-success-text" />
+        <Check size={iconSize} className="text-status-success-text icon-bounce" />
       ) : (
         <Copy size={iconSize} />
       )}
