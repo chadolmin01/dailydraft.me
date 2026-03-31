@@ -75,11 +75,8 @@ export function ExploreProjectGrid({
               onClick={() => onSelectProject(p.id)}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectProject(p.id) } }}
               style={{ animationDelay: `${Math.min(index * 60, 600)}ms` }}
-              className="stagger-item relative bg-surface-card rounded-xl border border-border overflow-hidden group hover:shadow-md hover:border-brand/30 hover:-translate-y-0.5 hover-spring cursor-pointer h-[21.25rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985] active:shadow-none active:border-brand/50"
+              className="stagger-item relative bg-surface-card rounded-xl border border-border overflow-hidden group hover:shadow-md hover:border-brand/30 hover:-translate-y-0.5 hover-spring cursor-pointer min-h-[21.25rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985] active:shadow-none active:border-brand/50"
             >
-              {/* 코너 마크 */}
-              <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/15 z-20" />
-              <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-surface-inverse/15 z-20" />
               {/* 헤더: 커버 */}
               <div className="relative h-36 shrink-0 bg-surface-inverse flex items-end p-4">
                 {p.coverImage && (
