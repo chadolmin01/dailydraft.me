@@ -42,9 +42,19 @@ const column2Items: ShowcaseItem[] = [
   { type: 'project', data: projectCards[2] },
   { type: 'people', data: peopleCards[1] },
 ]
+const column3Items: ShowcaseItem[] = [
+  { type: 'project', data: projectCards[2] },
+  { type: 'people', data: peopleCards[1] },
+  { type: 'project', data: projectCards[4] },
+  { type: 'people', data: peopleCards[3] },
+  { type: 'project', data: projectCards[1] },
+  { type: 'people', data: peopleCards[4] },
+  { type: 'project', data: projectCards[3] },
+]
 
 const showcaseColumn1 = [...column1Items, ...column1Items, ...column1Items]
 const showcaseColumn2 = [...column2Items, ...column2Items, ...column2Items]
+const showcaseColumn3 = [...column3Items, ...column3Items, ...column3Items]
 
 export default function LoginPage() {
   return (
@@ -341,7 +351,7 @@ function LoginContent() {
          <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-surface-sunken to-transparent z-10 pointer-events-none" />
 
          {/* Marquee Columns Container */}
-         <div className="flex gap-4 h-[120vh] -rotate-3 scale-105 opacity-85 shrink-0">
+         <div className="flex gap-4 h-[120vh] -rotate-3 scale-105 opacity-80 shrink-0">
 
             {/* Column 1: Moving Up */}
             <div className="flex flex-col gap-4 animate-marquee-vertical-up shrink-0 w-[17rem]">
@@ -354,6 +364,13 @@ function LoginContent() {
             <div className="flex flex-col gap-4 animate-marquee-vertical-down mt-16 shrink-0 w-[17rem]">
                {showcaseColumn2.map((item, idx) => (
                   <ShowcaseCard key={`col2-${idx}`} item={item} />
+               ))}
+            </div>
+
+            {/* Column 3: Moving Up */}
+            <div className="flex flex-col gap-4 animate-marquee-vertical-up mt-8 shrink-0 w-[17rem]">
+               {showcaseColumn3.map((item, idx) => (
+                  <ShowcaseCard key={`col3-${idx}`} item={item} />
                ))}
             </div>
          </div>
@@ -376,29 +393,43 @@ function LoginContent() {
   )
 }
 
-// Showcase Cards — clean, minimal decorative cards
+// Accent colors for project cards
+const PROJECT_ACCENTS = [
+  'from-brand/10 to-brand/5',
+  'from-status-success-bg to-status-success-bg/50',
+  'from-violet-100 to-violet-50',
+  'from-amber-100 to-amber-50',
+  'from-sky-100 to-sky-50',
+]
+
+// Showcase Cards — clean decorative cards with subtle color accents
 const ShowcaseCard = ({ item }: { item: ShowcaseItem }) => {
   if (item.type === 'project') {
     const p = item.data
+    const accentIdx = p.title.length % PROJECT_ACCENTS.length
     return (
-      <div className="w-[17rem] shrink-0 bg-surface-card rounded-2xl border border-border p-4 shadow-sm">
-        <div className="flex items-center gap-2 mb-2.5">
-          <div className="w-7 h-7 bg-brand-bg border border-brand-border rounded-lg flex items-center justify-center shrink-0">
-            <Rocket size={13} className="text-brand" />
+      <div className="w-[17rem] shrink-0 bg-surface-card rounded-2xl border border-border overflow-hidden shadow-sm">
+        {/* Subtle gradient accent header */}
+        <div className={`h-2.5 bg-gradient-to-r ${PROJECT_ACCENTS[accentIdx]}`} />
+        <div className="p-4 pt-3">
+          <div className="flex items-center gap-2 mb-2.5">
+            <div className="w-7 h-7 bg-brand-bg border border-brand-border rounded-lg flex items-center justify-center shrink-0">
+              <Rocket size={13} className="text-brand" />
+            </div>
+            <span className="text-[0.5625rem] font-mono font-bold text-status-success-text bg-status-success-bg px-1.5 py-0.5 rounded-md border border-indicator-online/20">모집중</span>
           </div>
-          <span className="text-[0.5625rem] font-mono font-bold text-status-success-text bg-status-success-bg px-1.5 py-0.5 rounded-md border border-indicator-online/20">모집중</span>
-        </div>
-        <h4 className="font-bold text-[0.8125rem] text-txt-primary mb-1">{p.title}</h4>
-        <p className="text-[0.6875rem] text-txt-tertiary line-clamp-1 mb-3">{p.desc}</p>
-        <div className="flex items-center gap-1 flex-wrap mb-3">
-          {p.roles.map(role => (
-            <span key={role} className="text-[0.625rem] font-medium text-brand bg-brand-bg px-1.5 py-0.5 rounded-md border border-brand-border">{role}</span>
-          ))}
-        </div>
-        <div className="flex items-center gap-1.5">
-          {p.tags.map(tag => (
-            <span key={tag} className="text-[0.5625rem] text-txt-secondary px-1.5 py-0.5 rounded-md border border-border bg-surface-sunken">{tag}</span>
-          ))}
+          <h4 className="font-bold text-[0.8125rem] text-txt-primary mb-1">{p.title}</h4>
+          <p className="text-[0.6875rem] text-txt-tertiary line-clamp-2 mb-3">{p.desc}</p>
+          <div className="flex items-center gap-1 flex-wrap mb-3">
+            {p.roles.map(role => (
+              <span key={role} className="text-[0.625rem] font-medium text-brand bg-brand-bg px-1.5 py-0.5 rounded-md border border-brand-border">{role}</span>
+            ))}
+          </div>
+          <div className="flex items-center gap-1.5">
+            {p.tags.map(tag => (
+              <span key={tag} className="text-[0.5625rem] text-txt-secondary px-1.5 py-0.5 rounded-md border border-border bg-surface-sunken">{tag}</span>
+            ))}
+          </div>
         </div>
       </div>
     )
@@ -408,7 +439,7 @@ const ShowcaseCard = ({ item }: { item: ShowcaseItem }) => {
   const t = item.data
   return (
     <div className="w-[17rem] shrink-0 bg-surface-card rounded-2xl border border-border p-4 shadow-sm">
-      <div className="flex items-center gap-2.5 mb-3">
+      <div className="flex items-center gap-2.5 mb-2">
         <div className="w-9 h-9 bg-brand-bg border border-brand-border rounded-full flex items-center justify-center text-sm font-bold text-brand shrink-0">
           {t.initial}
         </div>
@@ -422,6 +453,7 @@ const ShowcaseCard = ({ item }: { item: ShowcaseItem }) => {
           <p className="text-[0.6875rem] text-txt-secondary truncate">{t.univ}</p>
         </div>
       </div>
+      <p className="text-[0.6875rem] text-txt-tertiary mb-2.5">{t.role}</p>
       <div className="flex items-center gap-1 flex-wrap">
         {t.tags.map(tag => (
           <span key={tag} className="text-[0.5625rem] text-txt-secondary px-1.5 py-0.5 rounded-md border border-border bg-surface-sunken">{tag}</span>
