@@ -30,12 +30,12 @@ export default function DesignPage() {
       <PageContainer size="wide" className="pt-8 pb-6">
         <div className="flex items-end justify-between border-b border-gray-200 pb-6">
           <div>
-            <p className="text-[0.625rem] font-mono text-gray-400 uppercase tracking-widest mb-2">DRAFT DESIGN SYSTEM</p>
+            <p className="text-[0.625rem] text-gray-400 mb-2">DRAFT DESIGN SYSTEM</p>
             <h1 className="text-2xl font-bold text-gray-900">Layout & Cards</h1>
             <p className="text-sm text-gray-500 mt-1">레이아웃 쉘 + 카드 컴포넌트 — 디자인 확정 후 실제 코드에 적용</p>
           </div>
           <div className="flex gap-2">
-            <a href="#layouts" className="px-3 py-1.5 text-xs font-semibold bg-black text-white rounded-lg">Layouts</a>
+            <a href="#layouts" className="px-3 py-1.5 text-xs font-semibold bg-surface-inverse text-txt-inverse rounded-lg">Layouts</a>
             <a href="#cards" className="px-3 py-1.5 text-xs font-semibold border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50">Cards</a>
           </div>
         </div>
@@ -64,30 +64,30 @@ export default function DesignPage() {
         </PageContainer>
 
         {/* Narrow */}
-        <div className="border-y border-dashed border-blue-200 bg-blue-50/30 mb-1">
+        <div className="border-y border-blue-200 bg-blue-50/30 mb-1">
           <PageContainer size="narrow" className="py-4">
             <div className="bg-white border border-blue-200 rounded-xl p-4 text-center">
-              <p className="text-[0.625rem] font-mono text-blue-500 uppercase tracking-widest mb-1">narrow — 768px</p>
+              <p className="text-[0.625rem] text-blue-500 mb-1">narrow — 768px</p>
               <p className="text-xs text-gray-500">로그인, 설정, 폼 등 좁은 콘텐츠</p>
             </div>
           </PageContainer>
         </div>
 
         {/* Standard */}
-        <div className="border-y border-dashed border-green-200 bg-green-50/30 mb-1">
+        <div className="border-y border-green-200 bg-green-50/30 mb-1">
           <PageContainer size="standard" className="py-4">
             <div className="bg-white border border-green-200 rounded-xl p-4 text-center">
-              <p className="text-[0.625rem] font-mono text-green-500 uppercase tracking-widest mb-1">standard — 1200px</p>
+              <p className="text-[0.625rem] text-green-500 mb-1">standard — 1200px</p>
               <p className="text-xs text-gray-500">랜딩 페이지, 일반 콘텐츠</p>
             </div>
           </PageContainer>
         </div>
 
         {/* Wide */}
-        <div className="border-y border-dashed border-violet-200 bg-violet-50/30 mb-6">
+        <div className="border-y border-violet-200 bg-violet-50/30 mb-6">
           <PageContainer size="wide" className="py-4">
             <div className="bg-white border border-violet-200 rounded-xl p-4 text-center">
-              <p className="text-[0.625rem] font-mono text-violet-500 uppercase tracking-widest mb-1">wide — 1400px</p>
+              <p className="text-[0.625rem] text-violet-500 mb-1">wide — 1400px</p>
               <p className="text-xs text-gray-500">대시보드, 3컬럼 레이아웃</p>
             </div>
           </PageContainer>
@@ -105,7 +105,7 @@ export default function DesignPage() {
             <PageContainer size="standard">
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-[0.625rem] font-mono text-gray-400 uppercase">spacing=sm · bg=white</span>
+                  <span className="text-[0.625rem] text-gray-400">spacing=sm · bg=white</span>
                   <p className="text-xs text-gray-500 mt-1">py-12 — 컴팩트한 간격</p>
                 </div>
                 <div className="text-[0.625rem] font-mono text-gray-300">py-12</div>
@@ -117,7 +117,7 @@ export default function DesignPage() {
             <PageContainer size="standard">
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-[0.625rem] font-mono text-gray-400 uppercase">spacing=md · bg=gray</span>
+                  <span className="text-[0.625rem] text-gray-400">spacing=md · bg=gray</span>
                   <p className="text-xs text-gray-500 mt-1">py-16 md:py-20 — 기본 간격</p>
                 </div>
                 <div className="text-[0.625rem] font-mono text-gray-300">py-16 ~ py-20</div>
@@ -129,7 +129,7 @@ export default function DesignPage() {
             <PageContainer size="standard">
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-[0.625rem] font-mono text-gray-400 uppercase">spacing=lg · bg=white</span>
+                  <span className="text-[0.625rem] text-gray-400">spacing=lg · bg=white</span>
                   <p className="text-xs text-gray-500 mt-1">py-20 md:py-28 — 히어로/CTA용</p>
                 </div>
                 <div className="text-[0.625rem] font-mono text-gray-300">py-20 ~ py-28</div>
@@ -146,9 +146,9 @@ export default function DesignPage() {
         </PageContainer>
 
         {/* 1 Column */}
-        <div className="border border-dashed border-gray-300 rounded-xl mx-4 sm:mx-6 lg:mx-8 mb-4 overflow-hidden">
-          <div className="bg-gray-100 px-4 py-2 border-b border-dashed border-gray-300">
-            <span className="text-[0.625rem] font-mono text-gray-500 uppercase">1-column — main only</span>
+        <div className="border border-gray-300 rounded-xl mx-4 sm:mx-6 lg:mx-8 mb-4 overflow-hidden">
+          <div className="bg-gray-100 px-4 py-2 border-b border-gray-300">
+            <span className="text-[0.625rem] text-gray-500">1-column — main only</span>
           </div>
           <DashboardLayout size="wide">
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
@@ -159,9 +159,9 @@ export default function DesignPage() {
         </div>
 
         {/* 2 Column */}
-        <div className="border border-dashed border-gray-300 rounded-xl mx-4 sm:mx-6 lg:mx-8 mb-4 overflow-hidden">
-          <div className="bg-gray-100 px-4 py-2 border-b border-dashed border-gray-300">
-            <span className="text-[0.625rem] font-mono text-gray-500 uppercase">2-column — sidebar + main</span>
+        <div className="border border-gray-300 rounded-xl mx-4 sm:mx-6 lg:mx-8 mb-4 overflow-hidden">
+          <div className="bg-gray-100 px-4 py-2 border-b border-gray-300">
+            <span className="text-[0.625rem] text-gray-500">2-column — sidebar + main</span>
           </div>
           <DashboardLayout
             size="wide"
@@ -185,9 +185,9 @@ export default function DesignPage() {
         </div>
 
         {/* 3 Column */}
-        <div className="border border-dashed border-gray-300 rounded-xl mx-4 sm:mx-6 lg:mx-8 mb-8 overflow-hidden">
-          <div className="bg-gray-100 px-4 py-2 border-b border-dashed border-gray-300">
-            <span className="text-[0.625rem] font-mono text-gray-500 uppercase">3-column — sidebar + main + aside</span>
+        <div className="border border-gray-300 rounded-xl mx-4 sm:mx-6 lg:mx-8 mb-8 overflow-hidden">
+          <div className="bg-gray-100 px-4 py-2 border-b border-gray-300">
+            <span className="text-[0.625rem] text-gray-500">3-column — sidebar + main + aside</span>
           </div>
           <DashboardLayout
             size="wide"
@@ -232,7 +232,7 @@ export default function DesignPage() {
               <button
                 key={s}
                 onClick={() => { setModalSize(s); setModalOpen(true) }}
-                className="px-4 py-2 text-xs font-semibold border border-gray-200 rounded-lg hover:bg-black hover:text-white hover:border-border-strong transition-colors"
+                className="px-4 py-2 text-xs font-semibold border border-gray-200 rounded-lg hover:bg-black hover:text-white hover:border-border transition-colors"
               >
                 {s.toUpperCase()} 모달 열기
               </button>
@@ -280,7 +280,7 @@ export default function DesignPage() {
           </div>
           <div className="px-6 py-4 border-t border-gray-100 flex justify-end gap-2">
             <button onClick={() => setModalOpen(false)} className="px-4 py-2 text-sm text-gray-600 hover:text-black">취소</button>
-            <button onClick={() => setModalOpen(false)} className="px-4 py-2 bg-black text-white text-sm font-semibold rounded-lg hover:bg-gray-800">확인</button>
+            <button onClick={() => setModalOpen(false)} className="px-4 py-2 bg-surface-inverse text-txt-inverse text-sm font-semibold rounded-lg hover:bg-gray-800">확인</button>
           </div>
         </Modal>
       </div>
@@ -460,10 +460,10 @@ export default function DesignPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
 
           <div className="bg-white border border-gray-200 rounded-xl p-4">
-            <h3 className="text-[0.625rem] font-bold text-gray-400 uppercase tracking-widest mb-3">카테고리</h3>
+            <h3 className="text-[0.625rem] font-medium text-gray-400 mb-3">카테고리</h3>
             <nav className="space-y-1">
               {['전체', 'AI / ML', 'SaaS', '모바일', '웹'].map((cat, i) => (
-                <button key={cat} className={`w-full flex items-center px-3 py-2 rounded-lg text-sm transition-all ${i === 0 ? 'bg-black text-white font-medium' : 'text-gray-600 hover:bg-gray-50'}`}>
+                <button key={cat} className={`w-full flex items-center px-3 py-2 rounded-lg text-sm transition-all ${i === 0 ? 'bg-surface-inverse text-txt-inverse font-medium' : 'text-gray-600 hover:bg-gray-50'}`}>
                   {cat}
                 </button>
               ))}
@@ -471,7 +471,7 @@ export default function DesignPage() {
           </div>
 
           <div className="bg-white border border-gray-200 rounded-xl p-4">
-            <h3 className="text-[0.625rem] font-bold text-gray-400 uppercase tracking-widest mb-3">바로가기</h3>
+            <h3 className="text-[0.625rem] font-medium text-gray-400 mb-3">바로가기</h3>
             <nav className="space-y-1">
               {[
                 { label: '내 프로젝트', icon: Zap, count: 2 },
@@ -487,7 +487,7 @@ export default function DesignPage() {
           </div>
 
           <div className="bg-white border border-gray-200 rounded-xl p-4">
-            <h3 className="text-[0.625rem] font-bold text-gray-400 uppercase tracking-widest mb-3">프로필 완성도</h3>
+            <h3 className="text-[0.625rem] font-medium text-gray-400 mb-3">프로필 완성도</h3>
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-semibold text-gray-900">60%</span>
               <span className="text-[0.625rem] text-gray-400">3/5</span>
@@ -509,7 +509,7 @@ export default function DesignPage() {
           </div>
 
           <div className="bg-white border border-gray-200 rounded-xl p-4">
-            <h3 className="text-[0.625rem] font-bold text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-1"><Flame size={10} /> 트렌딩</h3>
+            <h3 className="text-[0.625rem] font-medium text-gray-400 mb-3 flex items-center gap-1"><Flame size={10} /> 트렌딩</h3>
             <div className="space-y-2">
               {['#AI에이전트', '#사이드프로젝트', '#React', '#커뮤니티', '#EdTech'].map((tag) => (
                 <button key={tag} className="flex items-center justify-between w-full text-sm text-gray-600 hover:text-black transition-colors">
@@ -541,7 +541,7 @@ export default function DesignPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2 shrink-0">
-                <button className="px-3 py-1.5 text-xs font-semibold bg-black text-white rounded-lg hover:bg-gray-800">수락</button>
+                <button className="px-3 py-1.5 text-xs font-semibold bg-surface-inverse text-txt-inverse rounded-lg hover:bg-gray-800">수락</button>
                 <button className="px-3 py-1.5 text-xs font-semibold border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50">거절</button>
               </div>
             </div>
@@ -587,8 +587,8 @@ export default function DesignPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2 shrink-0">
-                <input type="text" placeholder="연락처 입력" className="w-32 px-2 py-1 text-xs border border-gray-300 rounded-lg focus:outline-none focus:border-border-strong" />
-                <button className="p-1.5 bg-black text-white rounded-lg"><Check size={12} /></button>
+                <input type="text" placeholder="연락처 입력" className="w-32 px-2 py-1 text-xs border border-gray-300 rounded-lg focus:outline-none focus:border-border" />
+                <button className="p-1.5 bg-surface-inverse text-txt-inverse rounded-lg"><Check size={12} /></button>
                 <button className="p-1.5 bg-gray-200 text-gray-600 rounded-lg"><X size={12} /></button>
               </div>
             </div>
@@ -612,14 +612,14 @@ export default function DesignPage() {
             <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center mb-4"><Coffee size={20} className="text-blue-600" /></div>
             <h3 className="font-bold text-base text-gray-900 mb-1">커피챗 해보세요</h3>
             <p className="text-gray-500 text-xs mb-4">관심 있는 프로젝트 리더와 부담 없이 대화해보세요</p>
-            <button className="w-full bg-black text-white text-sm font-semibold py-2 rounded-lg hover:bg-gray-800 transition-colors">둘러보기</button>
+            <button className="w-full bg-surface-inverse text-txt-inverse text-sm font-semibold py-2 rounded-lg hover:bg-gray-800 transition-colors">둘러보기</button>
           </div>
 
           <div className="bg-white border border-gray-200 rounded-xl p-6 text-center">
             <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-3"><Zap size={24} className="text-gray-300" /></div>
             <h3 className="font-semibold text-sm text-gray-900 mb-1">아직 프로젝트가 없습니다</h3>
             <p className="text-xs text-gray-500 mb-4">첫 프로젝트를 만들어 팀원을 모집해보세요</p>
-            <button className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"><Plus size={16} /> 프로젝트 만들기</button>
+            <button className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold bg-surface-inverse text-txt-inverse rounded-lg hover:bg-gray-800 transition-colors"><Plus size={16} /> 프로젝트 만들기</button>
           </div>
         </div>
 
@@ -636,7 +636,7 @@ export default function DesignPage() {
               <p className="text-xs text-gray-500 mt-0.5">프론트엔드 개발자</p>
               <p className="text-[0.625rem] text-gray-400 mt-1">서울대학교</p>
             </div>
-            <button className="w-full mt-4 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold border border-gray-200 rounded-lg hover:bg-black hover:text-white hover:border-border-strong transition-colors">프로필 수정</button>
+            <button className="w-full mt-4 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold border border-gray-200 rounded-lg hover:bg-black hover:text-white hover:border-border transition-colors">프로필 수정</button>
           </div>
 
           <div className="bg-white border border-gray-200 rounded-xl p-4 group hover:border-gray-400 hover:shadow-sm transition-all cursor-pointer">
@@ -686,7 +686,7 @@ export default function DesignPage() {
                 <div className={`w-8 h-8 ${stat.color} rounded-lg flex items-center justify-center`}><stat.icon size={16} /></div>
               </div>
               <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-              <p className="text-[0.625rem] text-gray-400 uppercase tracking-wider mt-1">{stat.label}</p>
+              <p className="text-[0.625rem] text-gray-400 mt-1">{stat.label}</p>
             </div>
           ))}
         </div>

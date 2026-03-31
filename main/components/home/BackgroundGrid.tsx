@@ -63,10 +63,10 @@ export const BackgroundGrid: React.FC = () => {
       </svg>
 
       {/* Corner Marks */}
-      <div className="absolute top-10 left-10 w-4 h-4 border-l border-t border-border-strong opacity-50" />
-      <div className="absolute top-10 right-10 w-4 h-4 border-r border-t border-border-strong opacity-50" />
-      <div className="absolute bottom-10 left-10 w-4 h-4 border-l border-b border-border-strong opacity-50" />
-      <div className="absolute bottom-10 right-10 w-4 h-4 border-r border-b border-border-strong opacity-50" />
+      <div className="absolute top-10 left-10 w-4 h-4 border-l border-t border-border opacity-50" />
+      <div className="absolute top-10 right-10 w-4 h-4 border-r border-t border-border opacity-50" />
+      <div className="absolute bottom-10 left-10 w-4 h-4 border-l border-b border-border opacity-50" />
+      <div className="absolute bottom-10 right-10 w-4 h-4 border-r border-b border-border opacity-50" />
     </div>
   )
 }

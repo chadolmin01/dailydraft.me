@@ -135,7 +135,7 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
   };
 
   return (
-    <div className="flex h-full bg-surface-card border border-border overflow-hidden">
+    <div className="flex h-full bg-surface-card rounded-xl border border-border overflow-hidden">
       {/* Analysis Panel (Left) */}
       {viewState === 'KANBAN' && (
         <AnalysisPanel
@@ -173,7 +173,7 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
               <button
                 onClick={handleSync}
                 disabled={isSyncing}
-                className="px-2 py-1 bg-surface-card border border-border-strong text-xs font-medium text-txt-secondary hover:bg-black hover:text-white flex items-center gap-1.5 transition-all"
+                className="px-2 py-1 bg-surface-card rounded-lg border border-border text-xs font-medium text-txt-secondary hover:bg-black hover:text-white flex items-center gap-1.5 transition-all"
               >
                 <RefreshCw size={12} className={isSyncing ? 'animate-spin' : ''} />
                 {isSyncing ? 'Syncing...' : 'Sync'}
@@ -185,7 +185,7 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
         {/* Content */}
         <div className="flex-1 overflow-hidden flex flex-col relative">
           {error && (
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-status-danger-bg text-status-danger-text px-3 py-1.5 shadow-sharp border border-status-danger-text/20 flex items-center gap-2 z-50 text-xs">
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-status-danger-bg text-status-danger-text px-3 py-1.5 shadow-md border border-status-danger-text/20 flex items-center gap-2 z-50 text-xs">
               <AlertCircle size={14} />
               {error}
             </div>
@@ -195,7 +195,7 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
             <div className="h-full overflow-y-auto p-6">
               <div className="max-w-3xl mx-auto">
                 {/* PRD Viewer */}
-                <div className="bg-surface-card border border-border p-6 shadow-sharp">
+                <div className="bg-surface-card rounded-xl border border-border p-6 shadow-md">
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <div className="flex items-center gap-2 mb-2">
@@ -204,20 +204,20 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
                       </div>
                       <h2 className="text-xl font-bold text-txt-primary">{prd.title}</h2>
                     </div>
-                    <div className="p-2 bg-surface-sunken border border-border-subtle">
+                    <div className="p-2 bg-surface-sunken rounded-xl border border-border-subtle">
                       <FileText className="text-txt-disabled" size={20} />
                     </div>
                   </div>
 
                   <div className="space-y-4">
                     <div>
-                      <h3 className="text-[0.625rem] font-mono font-bold text-txt-primary uppercase tracking-widest mb-1">요약</h3>
+                      <h3 className="text-[0.625rem] font-medium text-txt-primary mb-1">요약</h3>
                       <p className="text-txt-secondary leading-relaxed text-sm">{prd.summary}</p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-6">
                       <div>
-                        <h3 className="text-[0.625rem] font-mono font-bold text-txt-primary uppercase tracking-widest mb-1">핵심 기능</h3>
+                        <h3 className="text-[0.625rem] font-medium text-txt-primary mb-1">핵심 기능</h3>
                         <ul className="list-disc list-inside space-y-0.5">
                           {prd.features.map((f, i) => (
                             <li key={i} className="text-sm text-txt-secondary">{f}</li>
@@ -225,7 +225,7 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
                         </ul>
                       </div>
                       <div>
-                        <h3 className="text-[0.625rem] font-mono font-bold text-txt-primary uppercase tracking-widest mb-1">기술 스택</h3>
+                        <h3 className="text-[0.625rem] font-medium text-txt-primary mb-1">기술 스택</h3>
                         <div className="flex flex-wrap gap-1.5">
                           {prd.techStack.map((t, i) => (
                             <span key={i} className="px-2 py-0.5 bg-surface-sunken text-txt-secondary text-xs border border-border font-mono">
@@ -237,7 +237,7 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
                     </div>
                   </div>
 
-                  <div className="mt-8 pt-6 border-t border-dashed border-border flex items-center justify-between">
+                  <div className="mt-8 pt-6 border-t border-border flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 bg-indigo-50 flex items-center justify-center">
                         <Cpu size={16} className="text-indigo-600" />
@@ -253,7 +253,7 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
                       disabled={isGenerating}
                       className={`
                         group relative px-4 py-2 font-medium text-sm text-white flex items-center gap-2 overflow-hidden transition-all
-                        ${isGenerating ? 'bg-txt-disabled cursor-not-allowed' : 'bg-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'}
+                        ${isGenerating ? 'bg-txt-disabled cursor-not-allowed' : 'bg-black hover:opacity-90 active:scale-[0.97]'}
                       `}
                     >
                       {isGenerating && (
@@ -290,10 +290,10 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
                       <div className="w-6 h-6 bg-surface-sunken border border-surface-card flex items-center justify-center text-[0.5625rem] font-bold text-txt-secondary z-20">DK</div>
                       <div className="w-6 h-6 bg-indigo-100 border border-surface-card flex items-center justify-center text-[0.5625rem] font-bold text-indigo-700 z-10">AI</div>
                     </div>
-                    <button className="w-6 h-6 border border-dashed border-border-strong flex items-center justify-center text-txt-disabled hover:border-border-strong hover:text-txt-secondary transition-colors">
+                    <button className="w-6 h-6 border border-border flex items-center justify-center text-txt-disabled hover:border-border hover:text-txt-secondary transition-colors">
                       <Share2 size={12} />
                     </button>
-                    <button className="bg-black text-white px-2.5 py-1 text-xs font-medium flex items-center gap-1.5 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all ml-1">
+                    <button className="bg-surface-inverse text-txt-inverse px-2.5 py-1 text-xs font-medium flex items-center gap-1.5 hover:opacity-90 active:scale-[0.97] transition-all ml-1">
                       <Plus size={12} /> 추가
                     </button>
                   </div>
@@ -306,13 +306,13 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
                   {COLUMNS.map(column => (
                     <div
                       key={column.id}
-                      className="flex-1 min-w-[15rem] max-w-xs flex flex-col h-full bg-surface-sunken border border-dashed border-border hover:bg-surface-sunken/80 transition-colors"
+                      className="flex-1 min-w-[15rem] max-w-xs flex flex-col h-full bg-surface-sunken rounded-xl border border-border hover:bg-surface-sunken/80 transition-colors"
                       onDragOver={handleDragOver}
                       onDrop={(e) => handleDrop(e, column.id)}
                     >
                       <div className="p-2.5 flex items-center justify-between sticky top-0 bg-inherit z-10">
                         <div className="flex items-center gap-2">
-                          <h3 className="text-[0.625rem] font-mono font-bold text-txt-secondary uppercase tracking-widest">{column.label}</h3>
+                          <h3 className="text-[0.625rem] font-medium text-txt-secondary">{column.label}</h3>
                           <span className="bg-surface-sunken text-txt-secondary px-1.5 py-0.5 text-[0.625rem] font-mono border border-border">
                             {filteredTasks.filter(t => t.status === column.id).length}
                           </span>
@@ -329,7 +329,7 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
                           />
                         ))}
                         {filteredTasks.filter(t => t.status === column.id).length === 0 && (
-                          <div className="h-20 border border-dashed border-border flex flex-col items-center justify-center text-txt-disabled text-xs gap-1">
+                          <div className="h-20 border border-border flex flex-col items-center justify-center text-txt-disabled text-xs gap-1">
                             <span className="opacity-50">Empty</span>
                           </div>
                         )}

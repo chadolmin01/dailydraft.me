@@ -69,7 +69,7 @@ export const RejectionWarnings: React.FC<RejectionWarningsProps> = ({
   }
 
   return (
-    <div className="bg-surface-card border border-border overflow-hidden">
+    <div className="bg-surface-card rounded-xl border border-border overflow-hidden">
       {/* Header */}
       <div className={`p-3 flex items-center justify-between ${
         severityCounts.high > 0 ? 'bg-status-danger-bg border-b border-status-danger-text/20' :
@@ -210,14 +210,14 @@ const WarningItem: React.FC<WarningItemProps> = ({
           {/* Matched Text */}
           {match.matches.length > 0 && (
             <div className="mb-3">
-              <div className="text-[0.625rem] font-mono text-txt-tertiary uppercase mb-1">
+              <div className="text-[0.625rem] text-txt-tertiary mb-1">
                 감지된 표현
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {match.matches.slice(0, 5).map((m, idx) => (
                   <span
                     key={idx}
-                    className="px-2 py-1 bg-surface-card border border-border text-xs text-txt-secondary font-mono"
+                    className="px-2 py-1 bg-surface-card rounded-xl border border-border text-xs text-txt-secondary font-mono"
                   >
                     "{m}"
                   </span>
@@ -234,7 +234,7 @@ const WarningItem: React.FC<WarningItemProps> = ({
           {/* Auto Fix Suggestion */}
           {autoFixAvailable && suggestedFix && (
             <div className="mb-3 p-3 bg-status-info-bg border border-status-info-text/20">
-              <div className="text-[0.625rem] font-mono text-status-info-text uppercase mb-1.5">
+              <div className="text-[0.625rem] text-status-info-text mb-1.5">
                 수정 제안
               </div>
               <p className="text-xs text-brand">{suggestedFix}</p>
@@ -244,7 +244,7 @@ const WarningItem: React.FC<WarningItemProps> = ({
           {/* Source Suggestions for missing source pattern */}
           {pattern.id === 'MISSING_SOURCE' && (
             <div className="mb-3">
-              <div className="text-[0.625rem] font-mono text-txt-tertiary uppercase mb-1.5">
+              <div className="text-[0.625rem] text-txt-tertiary mb-1.5">
                 추천 출처
               </div>
               <div className="space-y-1">
@@ -269,7 +269,7 @@ const WarningItem: React.FC<WarningItemProps> = ({
                   e.stopPropagation()
                   onAutoFix()
                 }}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white text-xs font-medium hover:bg-blue-700 transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white text-xs font-medium hover:bg-blue-700 transition-colors hover:opacity-90 active:scale-[0.97]"
               >
                 <Wand2 size={12} />
                 자동 수정
@@ -280,7 +280,7 @@ const WarningItem: React.FC<WarningItemProps> = ({
                 e.stopPropagation()
                 onDismiss()
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-surface-card border border-border-strong text-txt-secondary text-xs font-medium hover:bg-black hover:text-white transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-surface-card rounded-lg border border-border text-txt-secondary text-xs font-medium hover:bg-black hover:text-white transition-colors"
             >
               <X size={12} />
               무시
@@ -339,7 +339,7 @@ export const InlineWarningHighlight: React.FC<InlineWarningHighlightProps> = ({
   const highlightClass = {
     high: 'bg-status-danger-bg border-b border-status-danger-text',
     medium: 'bg-status-warning-bg border-b border-status-warning-text',
-    low: 'bg-surface-sunken border-b border-border-strong',
+    low: 'bg-surface-sunken border-b border-border',
   }
 
   return (
@@ -350,7 +350,7 @@ export const InlineWarningHighlight: React.FC<InlineWarningHighlightProps> = ({
     >
       {text.substring(start, end)}
       {showTooltip && (
-        <div className="absolute left-0 bottom-full mb-2 w-64 p-2 bg-surface-inverse text-white text-xs shadow-brutal z-50">
+        <div className="absolute left-0 bottom-full mb-2 max-w-[calc(100vw-2rem)] sm:w-64 p-2 bg-surface-inverse text-white text-xs shadow-lg z-50">
           <div className="font-medium mb-1">
             {severity === 'high' ? '심각한 문제' : severity === 'medium' ? '개선 필요' : '참고 사항'}
           </div>

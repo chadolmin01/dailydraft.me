@@ -309,7 +309,12 @@ function EditProjectContent() {
   if (isLoading || !initialized) {
     return (
       <div className="flex-1 flex items-center justify-center min-h-[50vh]">
-        <Loader2 size={24} className="animate-spin text-txt-tertiary" />
+        <div className="space-y-4 w-full max-w-md px-8">
+          <div className="h-6 bg-surface-sunken rounded skeleton-shimmer w-1/2" />
+          <div className="h-10 bg-surface-sunken rounded skeleton-shimmer w-full" />
+          <div className="h-24 bg-surface-sunken rounded skeleton-shimmer w-full" />
+          <div className="h-10 bg-surface-sunken rounded skeleton-shimmer w-full" />
+        </div>
       </div>
     )
   }
@@ -329,7 +334,7 @@ function EditProjectContent() {
       <div className="max-w-4xl mx-auto px-4 py-2 md:py-4">
 
         {/* ─── Tab Bar ─── */}
-        <div className="bg-surface-card border border-border-strong border-b-0 shadow-sharp">
+        <div className="bg-surface-card rounded-xl border border-border border-b-0 shadow-md">
           <div className="px-3 sm:px-5 py-2.5 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <button
@@ -352,7 +357,7 @@ function EditProjectContent() {
               <button
                 type="button"
                 onClick={() => setTab('info')}
-                className={`text-[0.625rem] font-mono font-bold px-3 py-1.5 uppercase tracking-wider transition-colors ${
+                className={`text-[0.625rem] font-medium px-3 py-1.5 transition-colors ${
                   tab === 'info'
                     ? 'bg-surface-inverse text-txt-inverse'
                     : 'bg-surface-sunken text-txt-tertiary hover:text-txt-secondary'
@@ -363,7 +368,7 @@ function EditProjectContent() {
               <button
                 type="button"
                 onClick={() => setTab('team')}
-                className={`text-[0.625rem] font-mono font-bold px-3 py-1.5 uppercase tracking-wider transition-colors ${
+                className={`text-[0.625rem] font-medium px-3 py-1.5 transition-colors ${
                   tab === 'team'
                     ? 'bg-surface-inverse text-txt-inverse'
                     : 'bg-surface-sunken text-txt-tertiary hover:text-txt-secondary'
@@ -390,17 +395,17 @@ function EditProjectContent() {
 
         {/* ─── Tab: Info ─── */}
         {tab === 'info' && (
-          <form onSubmit={handleSubmit} className="bg-surface-card shadow-sharp overflow-hidden border border-border-strong border-t-0">
+          <form onSubmit={handleSubmit} className="bg-surface-card shadow-md overflow-hidden border border-border border-t-0">
 
             {/* Type selector */}
-            <div className="bg-surface-sunken border-b-2 border-border-strong px-3 sm:px-5 py-2.5 flex items-center justify-center">
+            <div className="bg-surface-sunken border-b-2 border-border px-3 sm:px-5 py-2.5 flex items-center justify-center">
               <div className="flex items-center gap-1">
                 {TYPE_OPTIONS.map(opt => (
                   <button
                     key={opt.value}
                     type="button"
                     onClick={() => setType(opt.value)}
-                    className={`text-[0.625rem] font-mono font-bold px-2.5 py-1 uppercase tracking-wider transition-colors ${
+                    className={`text-[0.625rem] font-medium px-2.5 py-1 transition-colors ${
                       type === opt.value
                         ? TYPE_THEMES[opt.value].badge
                         : 'bg-surface-sunken text-txt-tertiary hover:text-txt-secondary'
@@ -476,14 +481,14 @@ function EditProjectContent() {
                   {/* Description */}
                   <section>
                     <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-wider">
+                      <h3 className="text-[0.625rem] font-medium text-txt-tertiary">
                         프로젝트 소개
                       </h3>
                       <button
                         type="button"
                         onClick={generateDescription}
                         disabled={aiLoading || !title.trim()}
-                        className="flex items-center gap-1.5 px-2.5 py-1 text-[0.625rem] font-mono font-bold uppercase tracking-wider border border-border text-txt-secondary hover:border-border-strong hover:text-txt-primary transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="flex items-center gap-1.5 px-2.5 py-1 text-[0.625rem] font-medium border border-border text-txt-secondary hover:border-border hover:text-txt-primary transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                       >
                         {aiLoading ? (
                           <><Loader2 size={10} className="animate-spin" /> 생성 중...</>
@@ -498,14 +503,14 @@ function EditProjectContent() {
                       placeholder={theme.descPlaceholder}
                       rows={7}
                       maxLength={2000}
-                      className="w-full text-sm text-txt-secondary leading-[1.8] placeholder:text-txt-disabled border border-border-strong p-3 focus:outline-none focus:border-surface-inverse resize-none bg-transparent"
+                      className="w-full text-base sm:text-sm text-txt-secondary leading-[1.8] placeholder:text-txt-disabled border border-border p-3 focus:outline-none focus:border-surface-inverse resize-none bg-transparent"
                     />
                     <p className="text-[0.625rem] text-txt-disabled mt-1 text-right font-mono">{description.length}/2000</p>
                   </section>
 
                   {/* Pain Point */}
                   <section className={`p-4 border border-border-subtle transition-colors ${theme.painBg}`}>
-                    <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-wider mb-2">
+                    <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-2">
                       {theme.painLabel}
                     </h3>
                     <textarea
@@ -514,13 +519,13 @@ function EditProjectContent() {
                       placeholder={theme.painPlaceholder}
                       rows={3}
                       maxLength={1000}
-                      className="w-full text-sm text-txt-secondary leading-relaxed placeholder:text-txt-disabled border-none outline-none bg-transparent resize-none"
+                      className="w-full text-base sm:text-sm text-txt-secondary leading-relaxed placeholder:text-txt-disabled border-none outline-none bg-transparent resize-none"
                     />
                   </section>
 
                   {/* Links */}
                   <section>
-                    <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-wider mb-2">
+                    <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-2">
                       프로젝트 링크
                     </h3>
                     <div className="space-y-2">
@@ -531,14 +536,15 @@ function EditProjectContent() {
                             value={link.label}
                             onChange={(e) => updateLink(idx, 'label', e.target.value)}
                             placeholder="이름"
-                            className="px-3 py-2 border border-border text-sm focus:outline-none focus:border-border-strong w-1/3 bg-transparent"
+                            className="px-3 py-2 border border-border text-base sm:text-sm focus:outline-none focus:border-border w-1/3 bg-transparent"
                           />
                           <input
                             type="url"
                             value={link.url}
                             onChange={(e) => updateLink(idx, 'url', e.target.value)}
                             placeholder="https://..."
-                            className="px-3 py-2 border border-border text-sm focus:outline-none focus:border-border-strong flex-1 bg-transparent"
+                            inputMode="url"
+                            className="px-3 py-2 border border-border text-base sm:text-sm focus:outline-none focus:border-border flex-1 bg-transparent"
                           />
                           <button
                             type="button"
@@ -581,7 +587,7 @@ function EditProjectContent() {
 
                   {/* Delete */}
                   <div className="border border-status-danger-text/20 p-4">
-                    <h3 className="text-[0.625rem] font-mono font-bold text-status-danger-text uppercase tracking-wider mb-2">
+                    <h3 className="text-[0.625rem] font-medium text-status-danger-text mb-2">
                       위험 영역
                     </h3>
                     {showDeleteConfirm ? (
@@ -622,7 +628,7 @@ function EditProjectContent() {
             </div>
 
             {/* Mobile Footer */}
-            <div className="md:hidden px-4 py-4 bg-surface-card border-t-2 border-border-strong">
+            <div className="md:hidden px-4 py-4 bg-surface-card border-t-2 border-border">
               <button
                 type="submit"
                 disabled={updateOpportunity.isPending || imageUploading}
@@ -642,7 +648,7 @@ function EditProjectContent() {
 
         {/* ─── Tab: Team ─── */}
         {tab === 'team' && (
-          <div className="bg-surface-card shadow-sharp overflow-hidden border border-border-strong border-t-0">
+          <div className="bg-surface-card shadow-md overflow-hidden border border-border border-t-0">
             <TeamManageSection opportunityId={id} />
           </div>
         )}

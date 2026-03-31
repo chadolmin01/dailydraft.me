@@ -68,10 +68,10 @@ export const RealtimeScorePanel: React.FC<RealtimeScorePanelProps> = ({
 
   if (!validationResult) {
     return (
-      <div className="bg-surface-card border border-border p-4 animate-pulse">
-        <div className="h-6 bg-surface-sunken w-1/2 mb-4"></div>
-        <div className="h-4 bg-surface-sunken w-full mb-2"></div>
-        <div className="h-4 bg-surface-sunken w-3/4"></div>
+      <div className="bg-surface-card rounded-xl border border-border p-4">
+        <div className="h-6 bg-surface-sunken w-1/2 mb-4 skeleton-shimmer rounded"></div>
+        <div className="h-4 bg-surface-sunken w-full mb-2 skeleton-shimmer rounded"></div>
+        <div className="h-4 bg-surface-sunken w-3/4 skeleton-shimmer rounded"></div>
       </div>
     )
   }
@@ -79,7 +79,7 @@ export const RealtimeScorePanel: React.FC<RealtimeScorePanelProps> = ({
   const { totalScore, maxScore, percentage, passingScore, sections, topImprovements } = validationResult
 
   return (
-    <div className="bg-surface-card border border-border overflow-hidden">
+    <div className="bg-surface-card rounded-xl border border-border overflow-hidden">
       {/* Header - Overall Score */}
       <div className={`p-4 ${
         percentage >= 90 ? 'bg-status-success-bg border-b border-status-success-text/20' :
@@ -90,7 +90,7 @@ export const RealtimeScorePanel: React.FC<RealtimeScorePanelProps> = ({
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             {scoreStatus.icon}
-            <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-secondary">전체 점수</span>
+            <span className="text-[0.625rem] font-medium text-txt-secondary">전체 점수</span>
             {isValidating && (
               <span className="inline-flex items-center px-2 py-0.5 text-[0.625rem] font-medium bg-surface-sunken text-txt-secondary">
                 <span className="animate-pulse">분석 중...</span>
@@ -145,7 +145,7 @@ export const RealtimeScorePanel: React.FC<RealtimeScorePanelProps> = ({
 
       {/* Section Scores */}
       <div className="p-4 border-b border-border-subtle">
-        <h4 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">
+        <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
           섹션별 점수
         </h4>
 
@@ -165,7 +165,7 @@ export const RealtimeScorePanel: React.FC<RealtimeScorePanelProps> = ({
       {/* Top Improvements */}
       {topImprovements.length > 0 && (
         <div className="p-4">
-          <h4 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-1">
+          <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-1">
             <Zap size={12} className="text-status-warning-text" />
             점수 향상 팁
           </h4>
@@ -187,7 +187,7 @@ export const RealtimeScorePanel: React.FC<RealtimeScorePanelProps> = ({
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-[0.625rem] font-mono text-txt-tertiary uppercase">
+                      <span className="text-[0.625rem] text-txt-tertiary">
                         {SECTION_NAMES[improvement.section]}
                       </span>
                       <span className="text-[0.625rem] text-txt-tertiary">•</span>

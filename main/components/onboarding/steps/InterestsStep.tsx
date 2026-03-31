@@ -19,7 +19,7 @@ export const InterestsInputStep: React.FC<InterestsInputStepProps> = ({
   interestInput, interests, onInterestInputChange, onToggleInterest, onRemoveInterest, onSubmit,
 }) => {
   return (
-    <div className="mt-3 bg-surface-card border border-border-strong p-4 shadow-sharp space-y-3">
+    <div className="mt-3 bg-surface-card rounded-xl border border-border p-4 shadow-md space-y-3">
       <div className="flex items-center gap-1.5 mb-1">
         <Sparkles size={10} className="text-brand" />
         <span className="text-[10px] font-mono font-medium text-brand">AI가 자동으로 정리해드려요</span>
@@ -30,7 +30,7 @@ export const InterestsInputStep: React.FC<InterestsInputStepProps> = ({
           value={interestInput}
           onChange={(e) => onInterestInputChange(e.target.value)}
           placeholder="예: AI, 게임, 교육 등"
-          className="w-full pl-3.5 pr-10 py-2.5 bg-surface-card border border-border-strong text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-all placeholder:text-txt-tertiary"
+          className="w-full pl-3.5 pr-10 py-2.5 bg-surface-card rounded-lg border border-border text-base sm:text-sm font-medium focus:outline-none focus:border-surface-inverse focus:bg-white transition-all placeholder:text-txt-tertiary"
           autoFocus
           onKeyDown={(e) => e.key === 'Enter' && onSubmit()}
         />
@@ -39,16 +39,16 @@ export const InterestsInputStep: React.FC<InterestsInputStepProps> = ({
         </button>
       </div>
       <div>
-        <p className="text-[10px] font-bold text-txt-tertiary uppercase tracking-wider mb-2 font-mono">빠른 선택</p>
+        <p className="text-[10px] font-medium text-txt-tertiary mb-2">빠른 선택</p>
         <div className="flex flex-wrap gap-1.5">
           {INTEREST_OPTIONS.map((tag, idx) => (
             <button
               key={tag}
               onClick={() => onToggleInterest(tag)}
-              className={`ob-chip ob-hover px-3 py-1.5 text-[12px] font-medium border transition-all ${
+              className={`ob-chip ob-hover px-3 py-1.5 text-[12px] font-medium border rounded-full transition-all ${
                 interests.includes(tag)
-                  ? 'bg-black text-white border-black'
-                  : 'bg-surface-card text-txt-primary border-border-strong hover:bg-black hover:text-white'
+                  ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
+                  : 'bg-surface-card text-txt-primary border-border hover:bg-black hover:text-white'
               }`}
               style={{ animationDelay: `${idx * 25}ms` }}
             >
@@ -60,14 +60,14 @@ export const InterestsInputStep: React.FC<InterestsInputStepProps> = ({
       {interests.length > 0 && (
         <div className="flex flex-wrap gap-1 pt-1">
           {interests.map(t => (
-            <span key={t} className="ob-tag-pop inline-flex items-center gap-1 px-2.5 py-1 bg-brand text-white text-[11px] font-medium">
+            <span key={t} className="ob-tag-pop inline-flex items-center gap-1 px-2.5 py-1 bg-brand text-white text-[11px] font-medium rounded-full">
               {t}
               <button onClick={() => onRemoveInterest(t)} className="hover:text-white/60 transition-colors p-2 sm:p-0 -m-1 sm:m-0"><X size={11} /></button>
             </span>
           ))}
         </div>
       )}
-      <button onClick={onSubmit} className="w-full py-2.5 bg-brand text-white text-[13px] font-bold hover:bg-brand-hover transition-all flex items-center justify-center gap-2 ob-hover shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] border border-brand">
+      <button onClick={onSubmit} className="w-full py-2.5 bg-brand text-white text-[13px] font-bold rounded-xl hover:bg-brand-hover transition-all flex items-center justify-center gap-2 ob-hover hover:opacity-90 active:scale-[0.97] border border-brand">
         {interestInput.trim() || interests.length > 0 ? '다음' : '건너뛰기'} <ArrowRight size={14} />
       </button>
     </div>
@@ -89,13 +89,13 @@ export const InterestsConfirmStep: React.FC<InterestsConfirmStepProps> = ({
     <div className="mt-3 space-y-3">
       <div className="flex flex-wrap gap-1.5">
         {interests.map((tag, idx) => (
-          <span key={tag} className="ob-chip inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand text-white text-[13px] font-medium" style={{ animationDelay: `${idx * 40}ms` }}>
+          <span key={tag} className="ob-chip inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand text-white text-[13px] font-medium rounded-full" style={{ animationDelay: `${idx * 40}ms` }}>
             {tag}
             <button onClick={() => onRemoveInterest(tag)} className="hover:text-white/60 transition-colors"><X size={13} /></button>
           </span>
         ))}
       </div>
-      <button onClick={onConfirm} className="ob-hover px-5 py-2 bg-black text-white text-[13px] font-bold flex items-center gap-2 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">
+      <button onClick={onConfirm} className="ob-hover px-5 py-2 bg-surface-inverse text-txt-inverse text-[13px] font-bold rounded-xl flex items-center gap-2 hover:opacity-90 active:scale-[0.97]">
         확인 <ArrowRight size={14} />
       </button>
     </div>

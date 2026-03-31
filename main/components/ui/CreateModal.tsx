@@ -64,11 +64,11 @@ export const CreateModal: React.FC<CreateModalProps> = ({
         onClick={onClose}
       />
 
-      <div className="relative bg-surface-card w-full max-w-[25rem] border border-border-strong shadow-brutal overflow-hidden">
+      <div className="relative bg-surface-card w-full max-w-[25rem] border border-border shadow-lg overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 pb-2">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-black flex items-center justify-center text-white shadow-solid-sm">
+            <div className="w-10 h-10 bg-black flex items-center justify-center text-white shadow-sm">
               <Icon size={18} />
             </div>
             <div>
@@ -89,9 +89,9 @@ export const CreateModal: React.FC<CreateModalProps> = ({
           {/* AI 옵션 - 추천 */}
           <button
             onClick={handleAI}
-            className="w-full p-4 bg-brand text-left group hover:bg-brand-hover transition-colors relative overflow-hidden border border-brand shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            className="w-full p-4 bg-brand text-left group hover:bg-brand-hover transition-colors relative overflow-hidden border border-brand hover:opacity-90 active:scale-[0.97]"
           >
-            <div className="absolute top-3 right-3 px-2 py-0.5 bg-white/20 text-white text-[0.625rem] font-mono font-bold uppercase">
+            <div className="absolute top-3 right-3 px-2 py-0.5 bg-white/20 text-white text-[0.625rem] font-medium">
               추천
             </div>
             <div className="flex items-center gap-3">
@@ -108,10 +108,10 @@ export const CreateModal: React.FC<CreateModalProps> = ({
           {/* 문서 업로드 옵션 */}
           <button
             onClick={handleUpload}
-            className="w-full p-4 border border-border-strong text-left group hover:bg-surface-sunken transition-all shadow-sharp hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            className="w-full p-4 border border-border text-left group hover:bg-surface-sunken transition-all shadow-md hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
           >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-surface-sunken border border-border flex items-center justify-center text-txt-secondary group-hover:bg-border transition-colors">
+              <div className="w-10 h-10 bg-surface-sunken rounded-xl border border-border flex items-center justify-center text-txt-secondary group-hover:bg-border transition-colors">
                 <FileUp size={18} />
               </div>
               <div>

@@ -1,6 +1,7 @@
 import type { Config } from 'tailwindcss'
 
 const config: Config = {
+  darkMode: 'class',
   content: [
     './app/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -90,7 +91,7 @@ const config: Config = {
         none: '0px',
         xs: 'var(--radius-xs)',
         sm: 'var(--radius-sm)',
-        DEFAULT: 'var(--radius-sm)',
+        DEFAULT: 'var(--radius-md)',
         md: 'var(--radius-md)',
         lg: 'var(--radius-lg)',
         xl: 'var(--radius-xl)',
@@ -99,14 +100,14 @@ const config: Config = {
         full: '9999px',
       },
       boxShadow: {
-        // Override Tailwind defaults → hard shadows
+        // Override Tailwind defaults → soft diffused shadows
         sm: 'var(--shadow-sm)',
         DEFAULT: 'var(--shadow-sm)',
         md: 'var(--shadow-md)',
         lg: 'var(--shadow-lg)',
         xl: 'var(--shadow-xl)',
         '2xl': 'var(--shadow-xl)',
-        // Semantic brutal aliases
+        // Legacy aliases — now map to soft equivalents
         soft: 'var(--shadow-sm)',
         sharp: 'var(--shadow-md)',
         brutal: 'var(--shadow-lg)',
@@ -128,8 +129,10 @@ const config: Config = {
         'modal-in': 'modalIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'backdrop-in': 'backdropIn 0.2s ease-out forwards',
         'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
-        'page-enter': 'pageEnter 0.15s ease-out forwards',
+        'page-enter': 'pageEnter 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'fade-in': 'fadeIn 0.4s ease-out forwards',
+        shimmer: 'shimmer 1.5s ease-in-out infinite',
+        'stagger-in': 'staggerFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards',
       },
       keyframes: {
         marquee: {
@@ -175,12 +178,20 @@ const config: Config = {
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         pageEnter: {
-          '0%': { opacity: '0' },
-          '100%': { opacity: '1' },
+          '0%': { opacity: '0', transform: 'translateY(8px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         fadeIn: {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '-200% 0' },
+          '100%': { backgroundPosition: '200% 0' },
+        },
+        staggerFadeIn: {
+          '0%': { opacity: '0', transform: 'translateY(12px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
         },
       },
     },

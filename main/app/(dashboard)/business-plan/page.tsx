@@ -155,7 +155,7 @@ function BusinessPlanPageContent() {
 
         {/* Template Selection */}
         <div className="mb-6">
-          <h2 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-4">양식 선택</h2>
+          <h2 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">양식 선택</h2>
           <p className="text-sm text-txt-secondary mb-6">
             작성하려는 정부지원사업에 맞는 양식을 선택하세요.
           </p>
@@ -225,8 +225,8 @@ function TemplateCard({ id, name, description, pages, features, recommended, onC
   return (
     <button
       onClick={onClick}
-      className={`text-left p-5 bg-surface-card border hover:shadow-sharp transition-all group ${
-        recommended ? 'border-brand ring-2 ring-brand-border' : 'border-border-strong hover:border-border-strong'
+      className={`text-left p-5 bg-surface-card border hover:shadow-md hover-spring group ${
+        recommended ? 'border-brand ring-2 ring-brand-border' : 'border-border hover:border-border'
       }`}
     >
       <div className="flex items-start justify-between mb-3">

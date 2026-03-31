@@ -27,9 +27,9 @@ import {
   Square,
   CalendarDays,
   MoreHorizontal,
-  Loader2
 } from 'lucide-react'
 import { Opportunity, CalendarEvent } from '@/types'
+import { SkeletonGrid } from '@/components/ui/Skeleton'
 import { useAuth } from '@/src/context/AuthContext'
 import { useRecommendedOpportunities, useMyOpportunities, calculateDaysLeft, OpportunityWithCreator } from '@/src/hooks/useOpportunities'
 import { useProfile } from '@/src/hooks/useProfile'
@@ -269,7 +269,7 @@ export const Dashboard: React.FC = () => {
       default:
         return {
           variant: 'default' as const,
-          cardClass: 'bg-surface-card hover:border-border-strong text-txt-primary',
+          cardClass: 'bg-surface-card hover:border-border text-txt-primary',
           badgeClass: 'bg-surface-sunken text-txt-secondary border-border',
           textClass: 'text-txt-primary',
           subTextClass: 'text-txt-disabled',
@@ -298,7 +298,7 @@ export const Dashboard: React.FC = () => {
       <div className="max-w-[100rem] mx-auto px-4 py-6 sm:p-8 lg:p-12 space-y-6 flex-1 flex flex-col w-full">
 
         {/* Header */}
-        <div className="flex justify-between items-end border-b border-dashed border-border pb-6 shrink-0">
+        <div className="flex justify-between items-end border-b border-border pb-6 shrink-0">
           <div>
             <div className="text-xs font-mono text-txt-tertiary mb-2 flex items-center gap-2">
               <span className="w-2 h-2 bg-surface-inverse"></span>
@@ -308,7 +308,7 @@ export const Dashboard: React.FC = () => {
           </div>
           <button
             onClick={() => router.push('/projects')}
-            className="bg-brand text-white border border-brand px-4 py-2 text-sm font-medium hover:bg-brand-hover transition-colors flex items-center gap-2 shadow-solid-sm"
+            className="bg-brand text-white border border-brand px-4 py-2 text-sm font-medium hover:bg-brand-hover transition-colors flex items-center gap-2 shadow-sm"
           >
              <Plus size={16} /> New Draft
           </button>
@@ -324,20 +324,20 @@ export const Dashboard: React.FC = () => {
             {/* Profile Card */}
             <div className="col-span-12 md:col-span-3 flex flex-col gap-3">
               <Card
-                className="flex-1 flex flex-col group cursor-pointer hover:border-border-strong transition-all relative overflow-hidden h-full"
+                className="flex-1 flex flex-col group cursor-pointer hover:border-border transition-all relative overflow-hidden h-full"
                 padding="p-0"
                 onClick={() => router.push('/profile')}
               >
-                 <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-black/20 z-20" />
+                 <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/20 z-20" />
                  <div className="absolute top-0 right-0 w-24 h-24 bg-surface-sunken -mr-4 -mt-4 z-0 transition-colors group-hover:bg-surface-sunken/80"></div>
 
                 <div className="p-5 flex flex-col h-full relative z-10">
                   <div className="flex justify-between items-start mb-5">
-                    <div className="w-14 h-14 bg-surface-inverse text-txt-inverse flex items-center justify-center text-xl font-bold border border-surface-card shadow-sharp group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-14 h-14 bg-surface-inverse text-txt-inverse flex items-center justify-center text-xl font-bold border border-surface-card shadow-md group-hover:scale-110 transition-transform duration-300">
                       {cleanNickname(profile?.nickname || '').slice(0, 2).toUpperCase() || user?.email?.slice(0, 2).toUpperCase() || 'U'}
                     </div>
                     <div className="flex flex-col items-end gap-1.5">
-                        <div className="px-2 py-0.5 bg-status-success-bg text-status-success-text text-[0.5625rem] font-bold border border-status-success-text/20 font-mono uppercase tracking-tight flex items-center gap-1.5">
+                        <div className="px-2 py-0.5 bg-status-success-bg text-status-success-text text-[0.5625rem] font-medium border border-status-success-text/20 tracking-tight flex items-center gap-1.5">
                             <div className="w-1.5 h-1.5 bg-status-success-text animate-pulse"></div>
                             {profile?.profile_visibility === 'private' ? 'Private' : 'Open to Work'}
                         </div>
@@ -353,19 +353,19 @@ export const Dashboard: React.FC = () => {
                       </p>
                   </div>
 
-                  <div className="bg-surface-sunken border border-border p-3 space-y-2.5 mb-6 group-hover:bg-surface-card group-hover:border-border-strong transition-colors flex-1">
+                  <div className="bg-surface-sunken rounded-xl border border-border p-3 space-y-2.5 mb-6 group-hover:bg-surface-card rounded-xl group-hover:border-border transition-colors flex-1">
                       <div className="flex justify-between items-center text-[0.625rem]">
-                          <span className="text-txt-disabled font-mono uppercase font-medium">Affiliation</span>
+                          <span className="text-txt-disabled font-medium">Affiliation</span>
                           <span className="font-bold text-txt-secondary">{profile?.university || 'Not set'}</span>
                       </div>
                       <div className="w-full h-px bg-border"></div>
                       <div className="flex justify-between items-center text-[0.625rem]">
-                          <span className="text-txt-disabled font-mono uppercase font-medium">Location</span>
+                          <span className="text-txt-disabled font-medium">Location</span>
                           <span className="font-bold text-txt-secondary">{profile?.location || 'Not set'}</span>
                       </div>
                       <div className="w-full h-px bg-border"></div>
                       <div className="flex justify-between items-center text-[0.625rem]">
-                          <span className="text-txt-disabled font-mono uppercase font-medium">Expertise</span>
+                          <span className="text-txt-disabled font-medium">Expertise</span>
                           <span className="font-bold text-txt-secondary">
                             {profile?.interest_tags?.slice(0, 2).join(', ') || 'Not set'}
                           </span>
@@ -373,14 +373,14 @@ export const Dashboard: React.FC = () => {
                   </div>
 
                   <div className="grid grid-cols-2 gap-2 mt-auto">
-                      <div className="p-2.5 border border-border-strong bg-surface-card group-hover:shadow-sharp transition-all">
-                        <div className="text-[0.5625rem] text-txt-disabled font-mono uppercase mb-0.5 flex items-center gap-1">
+                      <div className="p-2.5 border border-border bg-surface-card rounded-xl group-hover:shadow-md hover-spring">
+                        <div className="text-[0.5625rem] text-txt-disabled mb-0.5 flex items-center gap-1">
                              <Eye size={10} /> Views
                         </div>
                         <div className="font-bold text-lg text-txt-primary leading-none">-</div>
                       </div>
-                      <div className="p-2.5 border border-border-strong bg-surface-card group-hover:shadow-sharp transition-all">
-                        <div className="text-[0.5625rem] text-txt-disabled font-mono uppercase mb-0.5 flex items-center gap-1">
+                      <div className="p-2.5 border border-border bg-surface-card rounded-xl group-hover:shadow-md hover-spring">
+                        <div className="text-[0.5625rem] text-txt-disabled mb-0.5 flex items-center gap-1">
                              <Users size={10} /> Network
                         </div>
                         <div className="font-bold text-lg text-brand leading-none">-</div>
@@ -392,13 +392,13 @@ export const Dashboard: React.FC = () => {
 
             {/* Project Status Card */}
             <div className="col-span-12 md:col-span-6">
-              <Card className="relative overflow-hidden group cursor-pointer hover:border-border-strong transition-all h-full flex flex-col" padding="p-0">
-                <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-black/20 z-10" />
-                <div className="p-5 border-b border-dashed border-border bg-surface-sunken/30">
+              <Card className="relative overflow-hidden group cursor-pointer hover:border-border transition-all h-full flex flex-col" padding="p-0">
+                <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/20 z-10" />
+                <div className="p-5 border-b border-border bg-surface-sunken/30">
                     <div className="flex justify-between items-start mb-3">
                       <div className="flex items-center gap-2">
                         <div className={`w-1.5 h-1.5 ${currentProject.statusColor} animate-pulse`}></div>
-                        <span className="text-[0.625rem] font-bold font-mono text-txt-tertiary uppercase">{currentProject.status}</span>
+                        <span className="text-[0.625rem] font-medium text-txt-tertiary">{currentProject.status}</span>
                       </div>
 
                       <div className="flex items-center gap-1">
@@ -425,25 +425,25 @@ export const Dashboard: React.FC = () => {
                     </h2>
 
                     <div className="flex items-center gap-3 text-[0.625rem] text-txt-tertiary font-mono">
-                      <span className="bg-surface-card border border-border-strong px-2 py-0.5 uppercase">{currentProject.stage}</span>
+                      <span className="bg-surface-card rounded-xl border border-border px-2 py-0.5">{currentProject.stage}</span>
                       <span className="flex items-center gap-1"><Clock size={10}/> {currentProject.dDay}</span>
                     </div>
                 </div>
 
                 <div className="p-5 flex-1 flex flex-col">
                     <div className="grid grid-cols-3 gap-3 mb-6">
-                      <div className="text-center p-2 bg-surface-sunken border border-border">
-                          <div className="text-[0.5625rem] text-txt-disabled font-mono uppercase mb-1">Views</div>
+                      <div className="text-center p-2 bg-surface-sunken rounded-xl border border-border">
+                          <div className="text-[0.5625rem] text-txt-disabled mb-1">Views</div>
                           <div className="text-lg font-bold text-txt-primary">{currentProject.stats.views}</div>
                           <div className="text-[0.5625rem] text-status-success-text font-bold">{currentProject.stats.viewsTrend}</div>
                       </div>
-                      <div className="text-center p-2 bg-surface-sunken border border-border">
-                          <div className="text-[0.5625rem] text-txt-disabled font-mono uppercase mb-1">Apps</div>
+                      <div className="text-center p-2 bg-surface-sunken rounded-xl border border-border">
+                          <div className="text-[0.5625rem] text-txt-disabled mb-1">Apps</div>
                           <div className="text-lg font-bold text-txt-primary">{currentProject.stats.applicants}</div>
                           <div className="text-[0.5625rem] text-status-success-text font-bold">{currentProject.stats.applicantsNew}</div>
                       </div>
                       <div className="text-center p-2 bg-status-info-bg border border-border text-brand">
-                          <div className="text-[0.5625rem] font-mono uppercase mb-1 opacity-70">Intv</div>
+                          <div className="text-[0.5625rem] mb-1 opacity-70">Intv</div>
                           <div className="text-lg font-bold">{currentProject.stats.interviews}</div>
                           <div className="text-[0.5625rem] font-bold">{currentProject.stats.interviewsMsg}</div>
                       </div>
@@ -461,7 +461,7 @@ export const Dashboard: React.FC = () => {
 
                         <div className="flex items-center gap-2">
                             {currentProject.team.map((member) => (
-                                <div key={member.id} className="flex items-center gap-2 pl-1 pr-3 py-1 bg-surface-card border border-border-strong hover:border-border-strong transition-colors cursor-pointer shadow-sm">
+                                <div key={member.id} className="flex items-center gap-2 pl-1 pr-3 py-1 bg-surface-card rounded-xl border border-border hover:border-border transition-colors cursor-pointer shadow-sm">
                                     <div className="w-6 h-6 bg-surface-inverse text-txt-inverse flex items-center justify-center text-[0.5625rem] font-bold">
                                         {member.initial}
                                     </div>
@@ -473,8 +473,8 @@ export const Dashboard: React.FC = () => {
                             ))}
 
                             {currentProject.hiring.isOpen && (
-                                <div className="ml-auto flex items-center gap-2 pl-1 pr-3 py-1 bg-surface-sunken border border-dashed border-border hover:bg-surface-card hover:border-border-strong transition-colors cursor-pointer group">
-                                    <div className="w-6 h-6 bg-surface-card border border-border text-txt-disabled flex items-center justify-center group-hover:text-txt-primary group-hover:border-border-strong">
+                                <div className="ml-auto flex items-center gap-2 pl-1 pr-3 py-1 bg-surface-sunken rounded-xl border border-border hover:bg-surface-card rounded-xl hover:border-border transition-colors cursor-pointer group">
+                                    <div className="w-6 h-6 bg-surface-card rounded-xl border border-border text-txt-disabled flex items-center justify-center group-hover:text-txt-primary group-hover:border-border">
                                         <Plus size={12} />
                                     </div>
                                     <div className="flex flex-col leading-none">
@@ -507,9 +507,9 @@ export const Dashboard: React.FC = () => {
                 </div>
               </Card>
 
-              <div className="flex-1 bg-surface-card border border-border-strong p-4 flex flex-col hover:shadow-sharp transition-all shadow-sm relative">
-                <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-black/20" />
-                <div className="flex justify-between items-center mb-4 border-b border-dashed border-border pb-2">
+              <div className="flex-1 bg-surface-card rounded-xl border border-border p-4 flex flex-col hover:shadow-md hover-spring shadow-sm relative">
+                <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/20" />
+                <div className="flex justify-between items-center mb-4 border-b border-border pb-2">
                     <span className="text-[0.625rem] font-bold text-txt-primary font-mono flex items-center gap-1.5">
                       <CalendarDays size={12} /> UPCOMING TASKS
                     </span>
@@ -521,7 +521,7 @@ export const Dashboard: React.FC = () => {
                       upcomingTasks.map(task => (
                         <div
                           key={task.id}
-                          className="flex items-start gap-2.5 group cursor-pointer"
+                          className="flex items-start gap-2.5 group cursor-pointer rounded-lg px-1 -mx-1 hover:bg-surface-sunken transition-colors"
                           onClick={() => onToggleEvent(task.id)}
                         >
                             <div className="mt-0.5 text-txt-disabled group-hover:text-txt-primary transition-colors">
@@ -549,7 +549,7 @@ export const Dashboard: React.FC = () => {
                 {upcomingTasks.length > 0 && (
                   <button
                     onClick={() => router.push('/calendar')}
-                    className="mt-4 text-[0.5625rem] text-txt-disabled hover:text-txt-primary text-center font-mono w-full pt-2 border-t border-dashed border-border"
+                    className="mt-4 text-[0.5625rem] text-txt-disabled hover:text-txt-primary text-center font-mono w-full pt-2 border-t border-border"
                   >
                     View All Schedule
                   </button>
@@ -564,11 +564,11 @@ export const Dashboard: React.FC = () => {
              <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-2">
                   <span className="w-5 h-5 bg-brand text-white flex items-center justify-center text-[0.5rem] font-bold font-mono">R</span>
-                  <h3 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-primary">Recommended Opportunities</h3>
+                  <h3 className="text-[0.625rem] font-medium text-txt-primary">Recommended Opportunities</h3>
                 </div>
                 <button
                    onClick={() => router.push('/explore')}
-                   className="text-[0.625rem] text-txt-tertiary hover:text-txt-primary font-mono font-medium border border-border px-2 py-0.5 hover:border-border-strong transition-colors"
+                   className="text-[0.625rem] text-txt-tertiary hover:text-txt-primary font-mono font-medium border border-border px-2 py-0.5 hover:border-border transition-colors"
                 >
                    View All
                 </button>
@@ -580,8 +580,8 @@ export const Dashboard: React.FC = () => {
                     <ErrorState message="추천 프로젝트를 불러오지 못했습니다" onRetry={() => refetchOpp()} />
                   </div>
                 ) : oppLoading ? (
-                  <div className="col-span-4 flex items-center justify-center py-8">
-                    <Loader2 className="animate-spin text-txt-disabled" size={24} />
+                  <div className="col-span-4">
+                    <SkeletonGrid count={4} cols={2} />
                   </div>
                 ) : displayOpportunities.map((opp) => {
                   const styles = getScopeStyles(opp.scope)
@@ -608,7 +608,7 @@ export const Dashboard: React.FC = () => {
                             </div>
 
                             <div>
-                              <span className={`text-[0.5625rem] font-mono uppercase block mb-0.5 ${styles.subTextClass}`}>
+                              <span className={`text-[0.5625rem] block mb-0.5 ${styles.subTextClass}`}>
                                   {opp.category}
                               </span>
                               <h4 className={`font-bold text-sm leading-snug transition-colors break-keep line-clamp-2 group-hover:opacity-80 ${styles.textClass}`}>
@@ -636,7 +636,7 @@ export const Dashboard: React.FC = () => {
           </div>
 
           {/* Footer */}
-          <div className="mt-auto pt-8 border-t border-dashed border-border">
+          <div className="mt-auto pt-8 border-t border-border">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                   <div className="flex items-center gap-2">
                       <Command size={16} className="text-txt-disabled" />

@@ -21,20 +21,11 @@ export const Card: React.FC<CardProps> = ({
   onClick,
   variant = 'default',
 }) => {
-  // Base classes — brutalist
-  const baseClasses = 'transition-all duration-200'
+  const baseClasses = 'rounded-xl transition-all duration-200'
 
-  // Default: Hard border, sharp shadow
-  const defaultClasses = 'bg-surface-card border border-border-strong hover:shadow-sharp'
-
-  // Technical: Dashed border, blueprint feel
-  const technicalClasses =
-    'bg-surface-card border border-dashed border-border hover:border-border-strong'
-
-  // Flat: Minimal but angular
-  const flatClasses = 'bg-surface-sunken border border-border'
-
-  // Solid: For vivid custom backgrounds (no default border/bg)
+  const defaultClasses = 'bg-surface-card border border-border hover:shadow-md hover-spring'
+  const technicalClasses = 'bg-surface-card border border-border'
+  const flatClasses = 'bg-surface-sunken rounded-xl border border-border'
   const solidClasses = ''
 
   let variantClasses = defaultClasses
@@ -48,14 +39,14 @@ export const Card: React.FC<CardProps> = ({
       className={`
         ${baseClasses}
         ${variantClasses}
-        ${onClick ? 'cursor-pointer active:scale-[0.985] active:shadow-none' : ''}
+        ${onClick ? 'cursor-pointer active:scale-[0.985]' : ''}
         ${className}
       `}
     >
       {(title || action) && (
-        <div className={`px-6 py-4 border-b border-dashed border-border flex justify-between items-center`}>
+        <div className="px-6 py-4 border-b border-border flex justify-between items-center">
           {title && (
-            <h3 className="font-mono font-bold text-txt-primary text-sm tracking-tight uppercase">{title}</h3>
+            <h3 className="font-medium text-txt-primary text-sm tracking-tight">{title}</h3>
           )}
           {action && <div>{action}</div>}
         </div>

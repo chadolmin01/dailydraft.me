@@ -23,15 +23,15 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
         </svg>
 
         {/* Card 1: Side Project */}
-        <div className="absolute top-20 -left-12 w-64 bg-surface-card/90 backdrop-blur-sm p-4 border border-border-strong shadow-soft animate-float rotate-[-2deg]">
+        <div className="absolute top-20 -left-12 w-64 bg-surface-card/90 backdrop-blur-sm p-4 border border-border shadow-soft animate-float rotate-[-2deg]">
             <div className="absolute -top-1 -left-1 w-2 h-2 bg-black"></div>
             <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-black"></div>
 
-            <div className="flex justify-between items-start mb-3 border-b border-dashed border-border pb-2">
-                <div className="w-8 h-8 border border-border-strong bg-surface-card flex items-center justify-center">
+            <div className="flex justify-between items-start mb-3 border-b border-border pb-2">
+                <div className="w-8 h-8 border border-border bg-surface-card rounded-xl flex items-center justify-center">
                     <Users size={16} className="text-black" />
                 </div>
-                <span className="text-[0.625rem] font-mono border border-border-strong px-1 text-black bg-surface-card">모집 중</span>
+                <span className="text-[0.625rem] font-mono border border-border px-1 text-black bg-surface-card rounded-xl">모집 중</span>
             </div>
             <h3 className="text-sm font-bold mb-1">캠퍼스 중고거래</h3>
             <p className="text-xs text-txt-tertiary">React Native / Node.js</p>
@@ -39,7 +39,7 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
         </div>
 
         {/* Card 2: Team Building */}
-        <div className="absolute top-32 -right-24 w-72 bg-brand p-5 shadow-brutal animate-float-delayed rotate-[1deg] ring-1 ring-offset-4 ring-brand-border">
+        <div className="absolute top-32 -right-24 w-72 bg-brand p-5 shadow-lg animate-float-delayed rotate-[1deg] ring-1 ring-offset-4 ring-brand-border">
             <div className="absolute top-0 right-0 p-1">
                 <div className="w-2 h-2 border border-white/50"></div>
             </div>
@@ -59,19 +59,19 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
         </div>
 
         {/* Card 3: Status Card */}
-        <div className="absolute bottom-20 left-10 w-56 bg-surface-card p-4 border border-border-strong shadow-none animate-float-slow rotate-[0deg] opacity-90">
+        <div className="absolute bottom-20 left-10 w-56 bg-surface-card p-4 border border-border shadow-none animate-float-slow rotate-[0deg] opacity-90">
              {/* Crosshairs corners */}
-            <div className="absolute top-0 left-0 w-2 h-2 border-l border-t border-border-strong"></div>
-            <div className="absolute top-0 right-0 w-2 h-2 border-r border-t border-border-strong"></div>
-            <div className="absolute bottom-0 left-0 w-2 h-2 border-l border-b border-border-strong"></div>
-            <div className="absolute bottom-0 right-0 w-2 h-2 border-r border-b border-border-strong"></div>
+            <div className="absolute top-0 left-0 w-2 h-2 border-l border-t border-border"></div>
+            <div className="absolute top-0 right-0 w-2 h-2 border-r border-t border-border"></div>
+            <div className="absolute bottom-0 left-0 w-2 h-2 border-l border-b border-border"></div>
+            <div className="absolute bottom-0 right-0 w-2 h-2 border-r border-b border-border"></div>
 
             <div className="flex items-center gap-2 mb-3">
                 <div className="w-2 h-2 bg-indicator-online animate-pulse"></div>
                 <span className="text-xs font-mono text-black font-bold">TEAM SYNERGY</span>
             </div>
             <div className="space-y-2">
-                <div className="w-full bg-surface-sunken h-2 border border-border-strong overflow-hidden relative">
+                <div className="w-full bg-surface-sunken h-2 border border-border overflow-hidden relative">
                     {/* Tick marks on progress bar */}
                     <div className="absolute top-0 left-[25%] h-full w-[1px] bg-white z-10"></div>
                     <div className="absolute top-0 left-[50%] h-full w-[1px] bg-white z-10"></div>
@@ -84,7 +84,7 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
             </div>
         </div>
          {/* Card 4: Launched Project */}
-        <div className="absolute bottom-10 -right-8 w-64 bg-[#111] p-5 shadow-brutal animate-float rotate-[-1deg] border border-white/15">
+        <div className="absolute bottom-10 -right-8 w-64 bg-[#111] p-5 shadow-lg animate-float rotate-[-1deg] border border-white/15">
              <div className="flex justify-between items-start mb-6">
                 <div className="w-8 h-8 bg-white/10 flex items-center justify-center border border-white/10">
                     <Sparkles size={14} className="text-txt-disabled" />
@@ -101,9 +101,9 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
       </div>
 
       <div className="relative z-10 flex flex-col items-center text-center mt-10 sm:mt-16 md:mt-28 max-w-2xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-3 py-1 bg-surface-card border border-border-strong shadow-solid-sm mb-8">
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-surface-card rounded-xl border border-border shadow-sm mb-8">
             <Ruler size={14} className="text-black" />
-            <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-black">DRAFT COMMUNITY</span>
+            <span className="text-[0.625rem] font-medium text-black">DRAFT COMMUNITY</span>
         </div>
 
         <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-[1.2] mb-5 text-txt-primary">
@@ -124,7 +124,7 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
         <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
           <button
             onClick={onCtaClick}
-            className="group w-full sm:w-auto flex items-center justify-center gap-2 bg-black text-white px-6 py-3 font-bold text-xs hover:bg-[#333] transition-all duration-200 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] border border-black"
+            className="group w-full sm:w-auto flex items-center justify-center gap-2 bg-surface-inverse text-txt-inverse px-6 py-3 font-bold text-xs hover:bg-surface-inverse/90 transition-all duration-200 hover:opacity-90 active:scale-[0.97] border border-surface-inverse"
           >
             프로젝트 올리기
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
@@ -132,7 +132,7 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
 
           <button
             onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
-            className="group w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 font-bold text-xs border border-border-strong bg-surface-card text-txt-secondary hover:bg-black hover:text-white transition-all duration-200"
+            className="group w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 font-bold text-xs border border-border bg-surface-card rounded-lg text-txt-secondary hover:bg-black hover:text-white transition-all duration-200"
           >
             프로젝트 둘러보기
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />

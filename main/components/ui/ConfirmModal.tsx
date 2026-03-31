@@ -82,7 +82,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
       />
 
       {/* Modal */}
-      <div className="relative bg-surface-card w-full max-w-md border border-border-strong shadow-brutal animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative bg-surface-card w-full max-w-md border border-border shadow-lg animate-in fade-in zoom-in-95 duration-200">
         {/* Close button */}
         <button
           onClick={onClose}
@@ -131,7 +131,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                 }
               }}
               disabled={isLoading}
-              className={`flex-1 px-4 py-2.5 text-sm font-bold transition-all disabled:opacity-50 flex items-center justify-center shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] ${styles.button}`}
+              className={`flex-1 px-4 py-2.5 text-sm font-bold transition-all disabled:opacity-50 flex items-center justify-center hover:opacity-90 active:scale-[0.97] ${styles.button}`}
             >
               {isLoading ? '처리 중...' : confirmText}
             </button>

@@ -24,7 +24,7 @@ function TagEditor({ label, tags, onChange, suggestions }: { label: string; tags
       <div className="flex flex-wrap gap-1 mb-2">
         {suggestions.filter(s => !tags.includes(s)).map(s => (
           <button key={s} type="button" onClick={() => add(s)}
-            className="px-2 py-0.5 text-xs font-medium border border-border bg-surface-card text-txt-secondary hover:border-border-strong transition-colors"
+            className="px-2 py-0.5 text-xs font-medium border border-border bg-surface-card rounded-xl text-txt-secondary hover:border-border transition-colors"
           >+ {s}</button>
         ))}
       </div>
@@ -33,7 +33,7 @@ function TagEditor({ label, tags, onChange, suggestions }: { label: string; tags
           type="text" value={input} onChange={e => setInput(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); add(input.trim()); setInput('') } }}
           placeholder="직접 입력" maxLength={20}
-          className="flex-1 px-3 py-1.5 text-sm border border-border bg-surface-card focus:outline-none focus:border-accent transition-colors"
+          className="flex-1 px-3 py-1.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:border-accent transition-colors"
         />
         <button type="button" onClick={() => { add(input.trim()); setInput('') }}
           className="px-2.5 py-1.5 text-sm border border-border text-txt-secondary hover:bg-surface-sunken transition-colors"
@@ -65,7 +65,7 @@ export const EditAIProfile: React.FC<EditAIProfileProps> = ({
 }) => {
   return (
     <section>
-      <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4 flex items-center gap-2">
+      <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4 flex items-center gap-2">
         <Sparkles size={14} /> AI 프로필 분석
       </h3>
       <p className="text-xs text-txt-tertiary mb-4">온보딩 AI 대화에서 분석된 데이터입니다. 직접 수정할 수 있어요.</p>
@@ -135,7 +135,7 @@ export const EditAIProfile: React.FC<EditAIProfileProps> = ({
           <div className="flex gap-1.5">
             {['리더', '팔로워', '유연'].map(r => (
               <button key={r} type="button" onClick={() => setTeamRole(r)}
-                className={`px-3 py-1.5 text-xs font-medium border transition-colors ${teamRole === r ? 'bg-brand text-white border-brand' : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong'}`}
+                className={`px-3 py-1.5 text-xs font-medium border transition-colors ${teamRole === r ? 'bg-brand text-white border-brand' : 'bg-surface-card text-txt-secondary border-border hover:border-border'}`}
               >{r}</button>
             ))}
           </div>
@@ -145,7 +145,7 @@ export const EditAIProfile: React.FC<EditAIProfileProps> = ({
           <div className="flex gap-1.5">
             {['2-3명', '4-5명', '6명+'].map(s => (
               <button key={s} type="button" onClick={() => setTeamSize(s)}
-                className={`px-3 py-1.5 text-xs font-medium border transition-colors ${teamSize === s ? 'bg-brand text-white border-brand' : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong'}`}
+                className={`px-3 py-1.5 text-xs font-medium border transition-colors ${teamSize === s ? 'bg-brand text-white border-brand' : 'bg-surface-card text-txt-secondary border-border hover:border-border'}`}
               >{s}</button>
             ))}
           </div>
@@ -155,7 +155,7 @@ export const EditAIProfile: React.FC<EditAIProfileProps> = ({
           <div className="flex gap-1.5">
             {['실무형', '캐주얼', '균형'].map(a => (
               <button key={a} type="button" onClick={() => setTeamAtmosphere(a)}
-                className={`px-3 py-1.5 text-xs font-medium border transition-colors ${teamAtmosphere === a ? 'bg-brand text-white border-brand' : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong'}`}
+                className={`px-3 py-1.5 text-xs font-medium border transition-colors ${teamAtmosphere === a ? 'bg-brand text-white border-brand' : 'bg-surface-card text-txt-secondary border-border hover:border-border'}`}
               >{a}</button>
             ))}
           </div>
@@ -173,7 +173,7 @@ export const EditAIProfile: React.FC<EditAIProfileProps> = ({
               value={hoursPerWeek}
               onChange={e => setHoursPerWeek(e.target.value)}
               placeholder="예: 15"
-              className="w-32 px-3 py-2 text-sm border border-border bg-surface-card focus:outline-none focus:border-accent transition-colors"
+              className="w-32 px-3 py-2 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:border-accent transition-colors"
             />
             <span className="text-xs text-txt-tertiary">시간</span>
           </div>

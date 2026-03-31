@@ -9,10 +9,13 @@ import { ONBOARDING_TIPS, STEP_ORDER } from '@/src/lib/onboarding/constants'
 
 function ProgressBar({ step }: { step: Step }) {
   const idx = STEP_ORDER.indexOf(step)
-  const pct = Math.round((idx / (STEP_ORDER.length - 1)) * 100)
+  const total = STEP_ORDER.length - 1
+  const pct = Math.round((idx / total) * 100)
+  const stepNum = Math.min(idx + 1, total)
   return (
     <div className="flex items-center gap-2">
-      <div className="w-16 h-[5px] bg-surface-sunken border border-border overflow-hidden">
+      <span className="text-[10px] font-mono text-txt-tertiary tabular-nums hidden sm:block">{stepNum}/{total}</span>
+      <div className="w-16 h-[5px] bg-surface-sunken rounded-xl border border-border overflow-hidden">
         <div className="h-full bg-brand transition-all duration-700 ease-out" style={{ width: `${pct}%` }} />
       </div>
       <span className="text-[10px] font-mono text-txt-disabled tabular-nums w-7 text-right">{pct}%</span>
@@ -54,7 +57,7 @@ function DeepChatTransitionOverlay() {
     <div className="fixed inset-0 z-50 bg-surface-bg flex flex-col items-center justify-center px-6">
       {/* Logo */}
       <div
-        className="w-16 h-16 bg-black flex items-center justify-center mb-8"
+        className="w-16 h-16 bg-black rounded-2xl flex items-center justify-center mb-8"
         style={{ animation: 'dcto-logo 0.6s cubic-bezier(0.16, 1, 0.3, 1) both' }}
       >
         <span className="text-white text-xl font-black">D</span>
@@ -68,15 +71,15 @@ function DeepChatTransitionOverlay() {
             className="flex items-center gap-3"
             style={{ animation: 'dcto-step 0.5s cubic-bezier(0.16, 1, 0.3, 1) both', animationDelay: `${i * 150 + 200}ms` }}
           >
-            <div className={`w-6 h-6 flex items-center justify-center shrink-0 border transition-all duration-500 ${
-              step.done ? 'bg-black border-black' : step.active ? 'bg-white border-black' : 'bg-surface-sunken border-border'
+            <div className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 border transition-all duration-500 ${
+              step.done ? 'bg-black border-surface-inverse' : step.active ? 'bg-white border-surface-inverse' : 'bg-surface-sunken border-border'
             }`}>
               {step.done ? (
                 <CheckCircle2 size={14} className="text-white" />
               ) : step.active ? (
-                <div className="w-2 h-2 bg-black animate-pulse" />
+                <div className="w-2 h-2 rounded-full bg-black animate-pulse" />
               ) : (
-                <div className="w-2 h-2 bg-border" />
+                <div className="w-2 h-2 rounded-full bg-border" />
               )}
             </div>
             <span className={`text-[13px] font-medium ${
@@ -93,7 +96,7 @@ function DeepChatTransitionOverlay() {
         className="w-full max-w-xs mb-8"
         style={{ animation: 'dcto-step 0.5s cubic-bezier(0.16, 1, 0.3, 1) both', animationDelay: '700ms' }}
       >
-        <div className="h-1 bg-surface-sunken border border-border overflow-hidden">
+        <div className="h-1 bg-surface-sunken rounded-xl border border-border overflow-hidden">
           <div
             className="h-full bg-black transition-all duration-[1.5s] ease-out"
             style={{ width: `${progressWidth}%` }}
@@ -108,7 +111,7 @@ function DeepChatTransitionOverlay() {
 
       {/* Rotating Tips */}
       <div
-        className="w-full max-w-xs bg-surface-card border border-border px-4 py-3 mb-6"
+        className="w-full max-w-xs bg-surface-card rounded-xl border border-border px-4 py-3 mb-6"
         style={{ animation: 'dcto-step 0.5s cubic-bezier(0.16, 1, 0.3, 1) both', animationDelay: '900ms' }}
       >
         {TRANSITION_TIPS.map((tip, i) => {
@@ -126,7 +129,7 @@ function DeepChatTransitionOverlay() {
         {/* Dot indicators */}
         <div className="flex justify-center gap-1.5 mt-2.5">
           {TRANSITION_TIPS.map((_, i) => (
-            <div key={i} className={`w-1 h-1 transition-all duration-300 ${i === tipIdx ? 'bg-black w-3' : 'bg-border'}`} />
+            <div key={i} className={`w-1 h-1 rounded-full transition-all duration-300 ${i === tipIdx ? 'bg-black w-3' : 'bg-border'}`} />
           ))}
         </div>
       </div>
@@ -181,7 +184,7 @@ export const OnboardingShell: React.FC<OnboardingShellProps> = ({
       {/* Logout button */}
       <button
         onClick={onSignOut}
-        className="fixed top-4 right-4 z-[60] flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-mono text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken border border-border transition-colors"
+        className="fixed top-4 right-4 z-[60] flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-mono text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken rounded-xl border border-border transition-colors"
       >
         <LogOut size={12} />
         로그아웃
@@ -194,7 +197,7 @@ export const OnboardingShell: React.FC<OnboardingShellProps> = ({
       <div className={`flex-1 flex flex-col min-w-0 transition-opacity duration-500 ${deepChatTransition ? 'opacity-0' : 'opacity-100'}`}>
         {/* Header */}
         <div className="px-4 sm:px-6 py-3.5 border-b border-border flex items-center gap-3 bg-surface-card/80 backdrop-blur-md shrink-0">
-          <div className="w-9 h-9 bg-black flex items-center justify-center ob-avatar shrink-0">
+          <div className="w-9 h-9 bg-black rounded-xl flex items-center justify-center ob-avatar shrink-0">
             <span className="text-white text-sm font-black">D</span>
           </div>
           <div className="flex-1 min-w-0">
@@ -202,7 +205,7 @@ export const OnboardingShell: React.FC<OnboardingShellProps> = ({
               {step === 'deep-chat' ? `Draft AI · 프로필 분석${userMsgCount > 0 ? ` (${userMsgCount}회)` : ''}` : 'Draft AI'}
             </h1>
             <p className="text-[11px] text-status-success-text font-medium mt-0.5 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 bg-status-success-text inline-block" />
+              <span className="w-1.5 h-1.5 bg-status-success-text rounded-full inline-block" />
               온라인
             </p>
           </div>

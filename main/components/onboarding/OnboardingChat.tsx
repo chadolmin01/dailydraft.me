@@ -54,7 +54,7 @@ export const OnboardingChat: React.FC<OnboardingChatProps> = ({
                   </div>
                 )}
                 <div className={`flex flex-col ${isAi ? 'items-start' : 'items-end'} max-w-[80%] sm:max-w-[72%]`}>
-                  <div className={`ob-bubble text-[14px] leading-[1.6] whitespace-pre-wrap px-4 py-2.5 ${isAi ? 'bg-surface-card text-txt-primary border border-border shadow-sharp' : 'bg-surface-inverse text-txt-inverse'}`}>
+                  <div className={`ob-bubble text-[14px] leading-[1.6] whitespace-pre-wrap px-4 py-2.5 ${isAi ? 'bg-surface-card text-txt-primary border border-border shadow-md' : 'bg-surface-inverse text-txt-inverse'}`}>
                     {bubble.content}
                   </div>
                   {active && (
@@ -71,7 +71,7 @@ export const OnboardingChat: React.FC<OnboardingChatProps> = ({
         {isTyping && (
           <div className="flex justify-start mt-1">
             <div className="w-8 mr-2 shrink-0" />
-            <div className="ob-bubble bg-surface-card border border-border px-4 py-3 shadow-sharp">
+            <div className="ob-bubble bg-surface-card rounded-xl border border-border px-4 py-3 shadow-md">
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-[5px]">
                   <div className="w-[7px] h-[7px] bg-txt-disabled ob-dot" style={{ animationDelay: '0ms' }} />
@@ -92,7 +92,7 @@ export const OnboardingChat: React.FC<OnboardingChatProps> = ({
         {isSaving && step === 'done' && (
           <div className="flex justify-start mt-2">
             <div className="w-8 mr-2 shrink-0" />
-            <div className="ob-bubble flex items-center gap-2 bg-surface-card border border-border px-4 py-2.5 shadow-sharp">
+            <div className="ob-bubble flex items-center gap-2 bg-surface-card rounded-xl border border-border px-4 py-2.5 shadow-md">
               <Loader2 size={14} className="animate-spin text-txt-disabled" />
               <span className="text-[13px] text-txt-tertiary font-mono">프로필 저장 중...</span>
             </div>

@@ -79,17 +79,17 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
         {/* Week + Type */}
         <div className="flex gap-3">
           <div className="w-24">
-            <label className="block text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-1">Week</label>
+            <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-1">Week</label>
             <input
               type="number"
               min={1}
               value={weekNumber}
               onChange={(e) => setWeekNumber(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-border-strong text-sm focus:outline-none focus:border-border-strong bg-surface-card text-txt-primary"
+              className="w-full px-3 py-2 border border-border text-base sm:text-sm focus:outline-none focus:border-border bg-surface-card rounded-lg text-txt-primary"
             />
           </div>
           <div className="flex-1">
-            <label className="block text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-1">유형</label>
+            <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-1">유형</label>
             <div className="flex flex-wrap gap-1.5">
               {UPDATE_TYPES.map((t) => (
                 <button
@@ -98,8 +98,8 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
                   onClick={() => setUpdateType(t.value)}
                   className={`px-3 py-1.5 text-xs border transition-colors ${
                     updateType === t.value
-                      ? 'bg-black text-white border-black'
-                      : 'bg-surface-card text-txt-secondary border-border-strong hover:border-border-strong'
+                      ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
+                      : 'bg-surface-card text-txt-secondary border-border hover:border-border'
                   }`}
                 >
                   {t.label}
@@ -111,20 +111,20 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
 
         {/* Title */}
         <div>
-          <label className="block text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-1">제목</label>
+          <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-1">제목</label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="이번 주의 가장 큰 진전은?"
             maxLength={100}
-            className="w-full px-3 py-2 border border-border-strong text-sm focus:outline-none focus:border-border-strong bg-surface-card text-txt-primary placeholder-txt-disabled"
+            className="w-full px-3 py-2 border border-border text-base sm:text-sm focus:outline-none focus:border-border bg-surface-card rounded-lg text-txt-primary placeholder-txt-disabled"
           />
         </div>
 
         {/* Content */}
         <div>
-          <label className="block text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-1">내용</label>
+          <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-1">내용</label>
           <p className="text-[0.625rem] text-txt-disabled mb-1.5">팁: 구체적인 숫자나 결과물이 있으면 더 좋아요</p>
           <textarea
             value={content}
@@ -132,7 +132,7 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
             placeholder={"이번 주 성과:\n\n다음 주 계획:\n\n배운 점 또는 고민 (선택):"}
             rows={6}
             maxLength={2000}
-            className="w-full px-3 py-2 border border-border-strong text-sm focus:outline-none focus:border-border-strong resize-none bg-surface-card text-txt-primary placeholder-txt-disabled"
+            className="w-full px-3 py-2 border border-border text-base sm:text-sm focus:outline-none focus:border-border resize-none bg-surface-card rounded-lg text-txt-primary placeholder-txt-disabled"
           />
         </div>
 
@@ -141,7 +141,7 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
         <button
           onClick={handleSubmit}
           disabled={createUpdate.isPending}
-          className="w-full py-2.5 bg-black text-white text-sm font-bold border border-black hover:bg-[#333] transition-colors disabled:opacity-50 flex items-center justify-center gap-2 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+          className="w-full py-2.5 bg-surface-inverse text-txt-inverse text-sm font-bold border border-surface-inverse hover:bg-surface-inverse/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.97]"
         >
           {createUpdate.isPending ? (
             <><Loader2 size={14} className="animate-spin" /> 저장 중...</>

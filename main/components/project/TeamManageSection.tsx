@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Users, Loader2, UserMinus, UserPlus, ChevronDown, Mail, MessageCircle, Coffee } from 'lucide-react'
 import { toast } from 'sonner'
+import { SkeletonFeed } from '@/components/ui/Skeleton'
 import { supabase } from '@/src/lib/supabase/client'
 import { useAuth } from '@/src/context/AuthContext'
 import { ROLE_OPTIONS } from '@/app/(dashboard)/projects/new/constants'
@@ -48,7 +49,7 @@ interface AcceptedChat {
 
 export function TeamManageSection({ opportunityId }: { opportunityId: string }) {
   const queryClient = useQueryClient()
-  const { user } = useAuth()
+  const { user, isLoading: isAuthLoading } = useAuth()
   const [removingId, setRemovingId] = useState<string | null>(null)
 
   // Fetch team members
@@ -102,7 +103,7 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
         profile: profileMap.get(c.requester_user_id) || null,
       }))
     },
-    enabled: !!user,
+    enabled: !isAuthLoading && !!user,
   })
 
   // Add to team mutation — uses API so notification is sent server-side
@@ -171,8 +172,8 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 size={20} className="animate-spin text-txt-tertiary" />
+      <div className="px-4 sm:px-8 py-6">
+        <SkeletonFeed count={3} />
       </div>
     )
   }
@@ -187,7 +188,7 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2">
           <Users size={16} className="text-txt-tertiary" />
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest">
+          <h3 className="text-[0.625rem] font-medium text-txt-tertiary">
             팀원 관리
           </h3>
         </div>
@@ -200,7 +201,7 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
       {/* Accepted Coffee Chats — Add to Team */}
       {acceptedChats.length > 0 && (
         <div>
-          <h4 className="text-[0.625rem] font-mono font-bold text-status-success-text uppercase tracking-widest mb-2 flex items-center gap-1.5">
+          <h4 className="text-[0.625rem] font-medium text-status-success-text mb-2 flex items-center gap-1.5">
             <Coffee size={11} />
             수락된 커피챗 ({acceptedChats.length})
           </h4>
@@ -241,7 +242,7 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
 
       {/* No accepted chats, no members */}
       {acceptedChats.length === 0 && members.length === 0 && !chatsLoading && (
-        <div className="border border-dashed border-border py-12 flex flex-col items-center justify-center">
+        <div className="border border-border py-12 flex flex-col items-center justify-center">
           <div className="w-12 h-12 bg-surface-sunken flex items-center justify-center mb-3">
             <Users size={20} className="text-txt-disabled" />
           </div>
@@ -253,7 +254,7 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
       {/* Active Members */}
       {members.length > 0 && (
         <div>
-          <h4 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-2">
+          <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-2">
             현재 팀원 ({members.length})
           </h4>
           <div className="space-y-3">
@@ -278,13 +279,13 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
       {/* Left Members */}
       {leftMembers.length > 0 && (
         <div>
-          <h4 className="text-[0.625rem] font-mono font-bold text-txt-disabled uppercase tracking-widest mb-2">
+          <h4 className="text-[0.625rem] font-medium text-txt-disabled mb-2">
             이전 팀원 ({leftMembers.length})
           </h4>
           <div className="space-y-2 opacity-50">
             {leftMembers.map(member => (
-              <div key={member.id} className="flex items-center gap-3 px-4 py-3 bg-surface-sunken border border-border">
-                <div className="w-8 h-8 bg-surface-card border border-border flex items-center justify-center text-xs font-bold text-txt-disabled">
+              <div key={member.id} className="flex items-center gap-3 px-4 py-3 bg-surface-sunken rounded-xl border border-border">
+                <div className="w-8 h-8 bg-surface-card rounded-xl border border-border flex items-center justify-center text-xs font-bold text-txt-disabled">
                   {member.profile?.nickname?.charAt(0) || '?'}
                 </div>
                 <div className="min-w-0 flex-1">
@@ -322,10 +323,10 @@ function MemberCard({
   const isRemoving = removingId === member.id
 
   return (
-    <div className="border border-border-strong bg-surface-card">
+    <div className="border border-border bg-surface-card rounded-xl">
       <div className="flex items-start gap-3 px-4 py-3">
         {/* Avatar */}
-        <div className="w-10 h-10 bg-black text-white flex items-center justify-center font-bold text-sm shrink-0">
+        <div className="w-10 h-10 bg-surface-inverse text-txt-inverse flex items-center justify-center font-bold text-sm shrink-0">
           {member.profile?.nickname?.charAt(0) || '?'}
         </div>
 
@@ -383,7 +384,7 @@ function MemberCard({
             <button
               type="button"
               onClick={() => setShowRoleSelect(!showRoleSelect)}
-              className="flex items-center gap-1 px-2.5 py-1.5 text-xs border border-border hover:border-border-strong transition-colors bg-surface-card"
+              className="flex items-center gap-1 px-2.5 py-1.5 text-xs border border-border hover:border-border transition-colors bg-surface-card rounded-xl"
             >
               <span className="text-txt-secondary">{member.assigned_role || '역할 선택'}</span>
               <ChevronDown size={12} className="text-txt-disabled" />
@@ -391,7 +392,7 @@ function MemberCard({
             {showRoleSelect && (
               <>
                 <div className="fixed inset-0 z-10" onClick={() => setShowRoleSelect(false)} />
-                <div className="absolute right-0 top-full mt-1 z-20 bg-surface-card border border-border-strong shadow-brutal min-w-[8rem]">
+                <div className="absolute right-0 top-full mt-1 z-20 bg-surface-card rounded-xl border border-border shadow-lg min-w-[8rem]">
                   {ROLE_OPTIONS.map(({ value }) => (
                     <button
                       key={value}
@@ -440,7 +441,7 @@ function MemberCard({
             <button
               type="button"
               onClick={onRemoveCancel}
-              className="px-3 py-1 border border-border text-xs text-txt-secondary hover:bg-surface-card transition-colors"
+              className="px-3 py-1 border border-border text-xs text-txt-secondary hover:bg-surface-card rounded-xl transition-colors"
             >
               취소
             </button>

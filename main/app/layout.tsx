@@ -27,6 +27,16 @@ export const metadata: Metadata = {
   title: 'Draft - 모든 프로젝트는 여기서 시작됩니다',
   description: '프로젝트를 공유하고, 피드백 받고, 함께할 사람을 만나세요.',
   keywords: ['스타트업', '프로젝트', '커뮤니티', '피드백', '사이드프로젝트', '팀빌딩'],
+  icons: {
+    icon: [
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
   openGraph: {
     title: 'Draft - 모든 프로젝트는 여기서 시작됩니다',
     description: '프로젝트를 공유하고, 피드백 받고, 함께할 사람을 만나세요.',

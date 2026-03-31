@@ -1,9 +1,9 @@
-import { Loader2 } from 'lucide-react'
+import { SkeletonGrid } from '@/components/ui/Skeleton'
 
 export default function DashboardLoading() {
   return (
-    <div className="flex items-center justify-center min-h-[60vh]">
-      <Loader2 className="h-6 w-6 animate-spin text-txt-tertiary" />
+    <div className="max-w-5xl mx-auto px-4 py-8">
+      <SkeletonGrid count={4} cols={2} />
     </div>
   )
 }

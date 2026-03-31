@@ -95,7 +95,10 @@ export default function InstitutionReportsPage() {
   if (isAdminLoading) {
     return (
       <div className="flex-1 flex items-center justify-center h-screen bg-surface-sunken">
-        <Loader2 className="animate-spin text-txt-disabled" size={32} />
+        <div className="space-y-4 w-full max-w-xs">
+          <div className="h-6 bg-surface-card rounded skeleton-shimmer w-40 mx-auto" />
+          <div className="h-4 bg-surface-card rounded skeleton-shimmer w-32 mx-auto" />
+        </div>
       </div>
     )
   }
@@ -116,7 +119,7 @@ export default function InstitutionReportsPage() {
         <div className="border-b border-border pb-6">
           <button
             onClick={() => router.push('/institution')}
-            className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-2 flex items-center gap-1 hover:text-txt-primary transition-colors"
+            className="text-[0.625rem] font-medium text-txt-tertiary mb-2 flex items-center gap-1 hover:text-txt-primary transition-colors"
           >
             <ChevronLeft size={12} />
             Institution Dashboard
@@ -128,8 +131,12 @@ export default function InstitutionReportsPage() {
         </div>
 
         {isLoading ? (
-          <div className="flex items-center justify-center py-16">
-            <Loader2 className="animate-spin text-txt-disabled" size={32} />
+          <div className="space-y-4">
+            <div className="h-48 bg-surface-card rounded-xl border border-border skeleton-shimmer" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="h-20 bg-surface-card rounded-xl border border-border skeleton-shimmer" />
+              <div className="h-20 bg-surface-card rounded-xl border border-border skeleton-shimmer" />
+            </div>
           </div>
         ) : !report ? (
           <Card padding="p-12" className="text-center">
@@ -140,12 +147,12 @@ export default function InstitutionReportsPage() {
           <>
             {/* Report Preview */}
             <Card padding="p-8">
-              <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-6">
+              <div className="text-[0.625rem] font-medium text-txt-tertiary mb-6">
                 {report.period} 활동 보고서
               </div>
 
               {/* Institution Info */}
-              <div className="border-b border-dashed border-border pb-4 mb-6">
+              <div className="border-b border-border pb-4 mb-6">
                 <h2 className="text-xl font-bold text-txt-primary">{report.institution.name}</h2>
                 <p className="text-sm text-txt-secondary mt-1">{report.institution.university}</p>
               </div>
@@ -171,17 +178,17 @@ export default function InstitutionReportsPage() {
               </div>
 
               {/* Members Summary Table */}
-              <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-3">
+              <div className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
                 학생별 활동 요약
               </div>
               <div className="overflow-x-auto border border-border">
                 <table className="w-full">
                   <thead>
                     <tr className="bg-surface-sunken border-b border-border">
-                      <th className="text-left text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary px-4 py-2">이름</th>
-                      <th className="text-left text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary px-4 py-2">학과</th>
-                      <th className="text-center text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary px-4 py-2">사업계획서</th>
-                      <th className="text-center text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary px-4 py-2">프로젝트</th>
+                      <th className="text-left text-[0.625rem] font-medium text-txt-tertiary px-4 py-2">이름</th>
+                      <th className="text-left text-[0.625rem] font-medium text-txt-tertiary px-4 py-2">학과</th>
+                      <th className="text-center text-[0.625rem] font-medium text-txt-tertiary px-4 py-2">사업계획서</th>
+                      <th className="text-center text-[0.625rem] font-medium text-txt-tertiary px-4 py-2">프로젝트</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -200,13 +207,13 @@ export default function InstitutionReportsPage() {
 
             {/* Download Options */}
             <div>
-              <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-4">
+              <div className="text-[0.625rem] font-medium text-txt-tertiary mb-4">
                 내보내기
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Card
                   padding="p-5"
-                  className="group cursor-pointer hover:border-border-strong"
+                  className="group cursor-pointer hover:border-border"
                   onClick={downloadCSV}
                 >
                   <div className="flex items-center justify-between">
@@ -229,7 +236,7 @@ export default function InstitutionReportsPage() {
 
                 <Card
                   padding="p-5"
-                  className="group cursor-pointer hover:border-border-strong"
+                  className="group cursor-pointer hover:border-border"
                   onClick={downloadJSON}
                 >
                   <div className="flex items-center justify-between">

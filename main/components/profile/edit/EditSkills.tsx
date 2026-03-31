@@ -17,7 +17,7 @@ export const EditSkills: React.FC<EditSkillsProps> = ({
 }) => {
   return (
     <section>
-      <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4 flex items-center gap-2">
+      <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4 flex items-center gap-2">
         <CheckSquare size={14} /> 기술 스택
       </h3>
 
@@ -28,7 +28,7 @@ export const EditSkills: React.FC<EditSkillsProps> = ({
             key={skill}
             type="button"
             onClick={() => addSkill(skill)}
-            className="px-2.5 py-1 text-xs font-medium border border-border bg-surface-card text-txt-secondary hover:border-border-strong transition-colors"
+            className="px-2.5 py-1 text-xs font-medium border border-border bg-surface-card rounded-xl text-txt-secondary hover:border-border transition-colors"
           >
             + {skill}
           </button>
@@ -39,7 +39,7 @@ export const EditSkills: React.FC<EditSkillsProps> = ({
       {skills.length > 0 && (
         <div className="space-y-1.5 mb-3">
           {skills.map((skill) => (
-            <div key={skill.name} className="flex items-center gap-2 px-3 py-2 bg-surface-card border border-border">
+            <div key={skill.name} className="flex items-center gap-2 px-3 py-2 bg-surface-card rounded-xl border border-border">
               <span className="flex-1 text-xs text-txt-primary font-medium">{skill.name}</span>
               <div className="flex items-center gap-0.5">
                 {SKILL_LEVELS.map((level) => (
@@ -59,9 +59,10 @@ export const EditSkills: React.FC<EditSkillsProps> = ({
               </div>
               <button
                 onClick={() => removeSkill(skill.name)}
-                className="p-2 sm:p-0.5 -m-1 sm:m-0 text-txt-tertiary hover:text-txt-secondary transition-colors"
+                className="p-2.5 sm:p-1 -m-1 sm:m-0 text-txt-tertiary hover:text-status-danger-text transition-colors"
+                aria-label={`${skill.name} 스킬 제거`}
               >
-                <X size={12} />
+                <X size={14} className="sm:w-3 sm:h-3" />
               </button>
             </div>
           ))}
@@ -75,14 +76,14 @@ export const EditSkills: React.FC<EditSkillsProps> = ({
           value={newSkillName}
           onChange={(e) => setNewSkillName(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())}
-          placeholder="스킬 직접 입력"
+          placeholder="예: React, Python, Figma"
           maxLength={30}
-          className="flex-1 px-3 py-2 text-sm border border-border bg-surface-card focus:outline-none focus:border-accent transition-colors"
+          className="flex-1 px-3 py-2 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all"
         />
         <select
           value={newSkillLevel}
           onChange={(e) => setNewSkillLevel(e.target.value)}
-          className="px-2 py-2 text-xs border border-border bg-surface-card text-txt-secondary focus:outline-none focus:border-accent transition-colors"
+          className="px-2 py-2 text-xs border border-border bg-surface-card rounded-lg text-txt-secondary focus:outline-none focus:border-accent transition-colors"
         >
           {SKILL_LEVELS.map((level) => (
             <option key={level} value={level}>{level}</option>

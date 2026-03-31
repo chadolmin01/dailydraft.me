@@ -31,15 +31,15 @@ const SelectionScreen: React.FC<SelectionScreenProps> = ({ onSelect, skipToLevel
   }) => (
     <button
       onClick={onClick}
-      className={`group relative flex flex-col items-start p-6 h-full w-full border transition-all duration-200 text-left
+      className={`group relative flex flex-col items-start p-6 h-full w-full border text-left hover-spring
         ${variant === 'ai'
-          ? 'bg-surface-card border-border hover:border-border-strong hover:shadow-sharp'
-          : 'bg-surface-card border-border hover:border-border-strong hover:shadow-sharp'
+          ? 'bg-surface-card border-border hover:border-border hover:shadow-md'
+          : 'bg-surface-card border-border hover:border-border hover:shadow-md'
         }
       `}
     >
       {tag && (
-        <div className={`absolute top-5 right-5 text-[0.5625rem] font-mono font-bold px-2 py-0.5 uppercase tracking-wider border
+        <div className={`absolute top-5 right-5 text-[0.5625rem] font-medium px-2 py-0.5 border
           ${variant === 'ai'
             ? 'bg-draft-blue/10 text-draft-blue border-draft-blue/20'
             : 'bg-surface-sunken text-txt-tertiary border-border'
@@ -50,8 +50,8 @@ const SelectionScreen: React.FC<SelectionScreenProps> = ({ onSelect, skipToLevel
 
       <div className={`mb-5 p-2.5 border
         ${variant === 'ai'
-          ? 'bg-surface-sunken border-border-subtle text-txt-primary group-hover:bg-black group-hover:text-white group-hover:border-border-strong transition-colors'
-          : 'bg-surface-sunken border-border-subtle text-txt-primary group-hover:bg-black group-hover:text-white group-hover:border-border-strong transition-colors'
+          ? 'bg-surface-sunken border-border-subtle text-txt-primary group-hover:bg-black group-hover:text-white group-hover:border-border transition-colors'
+          : 'bg-surface-sunken border-border-subtle text-txt-primary group-hover:bg-black group-hover:text-white group-hover:border-border transition-colors'
         }`}>
         {icon}
       </div>
@@ -64,8 +64,8 @@ const SelectionScreen: React.FC<SelectionScreenProps> = ({ onSelect, skipToLevel
         {description}
       </p>
 
-      <div className="mt-auto w-full flex items-center justify-between border-t border-dashed border-border pt-4">
-        <span className="text-[0.625rem] font-bold font-mono uppercase tracking-widest text-txt-tertiary group-hover:text-black transition-colors">
+      <div className="mt-auto w-full flex items-center justify-between border-t border-border pt-4">
+        <span className="text-[0.625rem] font-medium text-txt-tertiary group-hover:text-black transition-colors">
           Select
         </span>
         <ArrowRight size={14} className="text-txt-disabled group-hover:text-black group-hover:translate-x-1 transition-all" />
@@ -88,7 +88,7 @@ const SelectionScreen: React.FC<SelectionScreenProps> = ({ onSelect, skipToLevel
         iconBg: 'bg-status-warning-bg text-status-warning-text border-status-warning-text/20',
       },
       blue: {
-        border: 'hover:border-border-strong',
+        border: 'hover:border-border',
         iconBg: 'bg-surface-sunken text-txt-primary border-border',
       },
       red: {
@@ -102,10 +102,10 @@ const SelectionScreen: React.FC<SelectionScreenProps> = ({ onSelect, skipToLevel
     return (
       <button
         onClick={() => onSelect('ai', level)}
-        className={`group relative flex flex-col items-start p-5 w-full h-full bg-surface-card border transition-all duration-200 text-left hover:shadow-sharp ${currentTheme.border} ${recommended ? 'border-border-strong ring-1 ring-black' : 'border-border'}`}
+        className={`group relative flex flex-col items-start p-5 w-full h-full bg-surface-card border text-left hover:shadow-md hover-spring ${currentTheme.border} ${recommended ? 'border-border ring-1 ring-black' : 'border-border'}`}
       >
         {recommended && (
-           <div className="absolute -top-2.5 left-5 bg-black text-white text-[0.5625rem] font-bold px-2 py-0.5 uppercase tracking-wider font-mono">
+           <div className="absolute -top-2.5 left-5 bg-surface-inverse text-txt-inverse text-[0.5625rem] font-medium px-2 py-0.5">
               Recommended
            </div>
         )}
@@ -117,7 +117,7 @@ const SelectionScreen: React.FC<SelectionScreenProps> = ({ onSelect, skipToLevel
           <ArrowRight size={14} className="text-txt-disabled group-hover:text-black group-hover:translate-x-1 transition-all" />
         </div>
 
-        <h4 className="text-xs font-bold text-txt-primary mb-2 font-mono uppercase tracking-wide">{title}</h4>
+        <h4 className="text-xs font-medium text-txt-primary mb-2">{title}</h4>
         <p className="text-xs text-txt-tertiary leading-relaxed break-keep">
           {desc}
         </p>
@@ -133,9 +133,9 @@ const SelectionScreen: React.FC<SelectionScreenProps> = ({ onSelect, skipToLevel
           <div className="grid grid-cols-12 gap-6 lg:gap-10 items-center">
              {/* Left Text Area */}
              <div className="col-span-5 space-y-6 lg:space-y-8">
-                <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-surface-card border border-border">
+                <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-surface-card rounded-xl border border-border">
                   <span className="w-1.5 h-1.5 bg-indicator-online animate-pulse"></span>
-                  <span className="text-[0.5625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest">System Operational</span>
+                  <span className="text-[0.5625rem] font-medium text-txt-tertiary">System Operational</span>
                 </div>
 
                 <div>
@@ -148,14 +148,14 @@ const SelectionScreen: React.FC<SelectionScreenProps> = ({ onSelect, skipToLevel
                   </p>
                 </div>
 
-                <div className="flex items-center gap-6 pt-4 border-t border-dashed border-border">
+                <div className="flex items-center gap-6 pt-4 border-t border-border">
                    <div>
                       <div className="text-xl font-bold text-txt-primary font-mono">1.2k+</div>
-                      <div className="text-[0.5625rem] text-txt-disabled uppercase font-bold tracking-wider mt-0.5">Projects</div>
+                      <div className="text-[0.5625rem] text-txt-disabled font-medium mt-0.5">Projects</div>
                    </div>
                    <div>
                       <div className="text-xl font-bold text-txt-primary font-mono">89%</div>
-                      <div className="text-[0.5625rem] text-txt-disabled uppercase font-bold tracking-wider mt-0.5">Success Rate</div>
+                      <div className="text-[0.5625rem] text-txt-disabled font-medium mt-0.5">Success Rate</div>
                    </div>
                 </div>
              </div>
@@ -187,7 +187,7 @@ const SelectionScreen: React.FC<SelectionScreenProps> = ({ onSelect, skipToLevel
                 {(onBack || !skipToLevelSelect) && (
                   <button
                     onClick={() => onBack ? onBack() : setShowLevelSelect(false)}
-                    className="text-[0.625rem] font-bold text-txt-disabled hover:text-txt-primary mb-4 flex items-center gap-1 uppercase tracking-widest font-mono transition-colors mx-auto"
+                    className="text-[0.625rem] font-medium text-txt-disabled hover:text-txt-primary mb-4 flex items-center gap-1 transition-colors mx-auto"
                   >
                      ← Back
                   </button>

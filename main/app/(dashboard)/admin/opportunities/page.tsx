@@ -44,7 +44,7 @@ interface OpportunitiesResponse {
 
 const statusLabels: Record<string, { label: string; cls: string }> = {
   active: { label: '활성', cls: 'border border-status-success-text text-status-success-text' },
-  closed: { label: '마감', cls: 'border border-border-strong text-txt-tertiary' },
+  closed: { label: '마감', cls: 'border border-border text-txt-tertiary' },
   draft: { label: '임시', cls: 'border border-status-warning-text text-status-warning-text' },
 }
 
@@ -112,7 +112,10 @@ export default function AdminOpportunitiesPage() {
   if (isAdminLoading) {
     return (
       <div className="flex-1 flex items-center justify-center h-screen bg-surface-sunken">
-        <Loader2 className="animate-spin text-txt-disabled" size={32} />
+        <div className="space-y-4 w-full max-w-xs">
+          <div className="h-6 bg-surface-card rounded skeleton-shimmer w-40 mx-auto" />
+          <div className="h-4 bg-surface-card rounded skeleton-shimmer w-32 mx-auto" />
+        </div>
       </div>
     )
   }
@@ -145,7 +148,7 @@ export default function AdminOpportunitiesPage() {
           </Link>
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-2 flex items-center gap-2">
+              <div className="text-[0.625rem] font-medium text-txt-tertiary mb-2 flex items-center gap-2">
                 <span className="w-2 h-2 bg-black" />
                 Admin / Opportunities
               </div>
@@ -153,7 +156,7 @@ export default function AdminOpportunitiesPage() {
             </div>
             <button
               onClick={() => refetch()}
-              className="flex items-center gap-2 px-4 py-2 bg-black text-white text-sm font-medium border border-black hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+              className="flex items-center gap-2 px-4 py-2 bg-surface-inverse text-txt-inverse text-sm font-medium border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97]"
             >
               <RefreshCw size={16} />
               새로고침
@@ -171,7 +174,7 @@ export default function AdminOpportunitiesPage() {
                 placeholder="제목, 설명 검색..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-surface-card border border-border-strong text-sm focus:outline-none focus:border-brand transition-colors"
+                className="w-full pl-10 pr-4 py-2.5 bg-surface-card rounded-lg border border-border text-base sm:text-sm focus:outline-none focus:border-brand transition-colors"
               />
             </div>
             <div className="flex items-center gap-2">
@@ -179,7 +182,7 @@ export default function AdminOpportunitiesPage() {
               <select
                 value={statusFilter}
                 onChange={(e) => { setStatusFilter(e.target.value); setPage(1) }}
-                className="px-3 py-2.5 bg-surface-card border border-border-strong text-sm focus:outline-none focus:border-brand"
+                className="px-3 py-2.5 bg-surface-card rounded-lg border border-border text-sm focus:outline-none focus:border-brand"
               >
                 <option value="">전체 상태</option>
                 <option value="active">활성</option>
@@ -189,7 +192,7 @@ export default function AdminOpportunitiesPage() {
               <select
                 value={sort}
                 onChange={(e) => { setSort(e.target.value); setPage(1) }}
-                className="px-3 py-2.5 bg-surface-card border border-border-strong text-sm focus:outline-none focus:border-brand"
+                className="px-3 py-2.5 bg-surface-card rounded-lg border border-border text-sm focus:outline-none focus:border-brand"
               >
                 <option value="recent">최신순</option>
                 <option value="views">조회순</option>
@@ -205,8 +208,10 @@ export default function AdminOpportunitiesPage() {
         {/* Table */}
         <Card padding="p-0">
           {isLoading ? (
-            <div className="flex items-center justify-center py-16">
-              <Loader2 className="animate-spin text-txt-disabled" size={24} />
+            <div className="p-4 space-y-3">
+              {[0,1,2,3,4].map(i => (
+                <div key={i} className="h-12 bg-surface-sunken rounded skeleton-shimmer" />
+              ))}
             </div>
           ) : !data?.opportunities.length ? (
             <div className="flex flex-col items-center justify-center py-16">
@@ -216,21 +221,21 @@ export default function AdminOpportunitiesPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-surface-sunken border-b border-border-strong">
+                <thead className="bg-surface-sunken border-b border-border">
                   <tr>
-                    <th className="text-left px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">제목</th>
-                    <th className="text-left px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary hidden md:table-cell">유형</th>
-                    <th className="text-left px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">상태</th>
-                    <th className="text-left px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary hidden lg:table-cell">작성자</th>
-                    <th className="text-right px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary hidden md:table-cell">조회</th>
-                    <th className="text-right px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary hidden md:table-cell">지원</th>
-                    <th className="text-left px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary hidden lg:table-cell">작성일</th>
-                    <th className="text-right px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">작업</th>
+                    <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">제목</th>
+                    <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary hidden md:table-cell">유형</th>
+                    <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">상태</th>
+                    <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary hidden lg:table-cell">작성자</th>
+                    <th className="text-right px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary hidden md:table-cell">조회</th>
+                    <th className="text-right px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary hidden md:table-cell">지원</th>
+                    <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary hidden lg:table-cell">작성일</th>
+                    <th className="text-right px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">작업</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-dashed divide-border">
                   {data.opportunities.map((opp) => {
-                    const statusInfo = statusLabels[opp.status] || { label: opp.status, cls: 'border border-border-strong text-txt-tertiary' }
+                    const statusInfo = statusLabels[opp.status] || { label: opp.status, cls: 'border border-border text-txt-tertiary' }
                     return (
                       <tr key={opp.id} className="hover:bg-surface-sunken transition-colors">
                         <td className="px-4 py-3">
@@ -279,7 +284,7 @@ export default function AdminOpportunitiesPage() {
 
           {/* Pagination */}
           {data && data.totalPages > 1 && (
-            <div className="flex items-center justify-between px-4 py-3 border-t border-border-strong">
+            <div className="flex items-center justify-between px-4 py-3 border-t border-border">
               <span className="text-xs text-txt-tertiary font-mono">
                 {data.page} / {data.totalPages} 페이지
               </span>
@@ -317,7 +322,7 @@ export default function AdminOpportunitiesPage() {
               <button
                 onClick={() => setDeleteTarget(null)}
                 disabled={deleteMutation.isPending}
-                className="px-4 py-2 text-sm text-txt-secondary border border-border-strong hover:bg-black hover:text-white transition-colors"
+                className="px-4 py-2 text-sm text-txt-secondary border border-border hover:bg-black hover:text-white transition-colors"
               >
                 취소
               </button>

@@ -35,14 +35,14 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({
   return (
     <div className="space-y-6">
       {/* Section Header */}
-      <div className="flex items-center justify-between pb-4 border-b border-dashed border-border">
+      <div className="flex items-center justify-between pb-4 border-b border-border">
         <div>
           <h2 className="text-xl font-bold text-txt-primary">{section.title}</h2>
           <p className="text-sm text-txt-tertiary mt-1">
             배점: {section.weight}점
           </p>
         </div>
-        <div className="text-[0.625rem] font-mono font-bold text-txt-tertiary bg-surface-sunken px-2 py-1 border border-border-subtle uppercase tracking-widest">
+        <div className="text-[0.625rem] font-medium text-txt-tertiary bg-surface-sunken px-2 py-1 border border-border-subtle">
           {section.type.toUpperCase()}
         </div>
       </div>
@@ -149,7 +149,7 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
 
       {/* Help text */}
       {showHelp && field.helpText && (
-        <div className="p-3 bg-surface-sunken border border-border text-xs text-txt-secondary">
+        <div className="p-3 bg-surface-sunken rounded-xl border border-border text-xs text-txt-secondary">
           {field.helpText}
         </div>
       )}
@@ -164,12 +164,12 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
             maxLength={maxLength}
             rows={6}
             className={`
-              w-full px-4 py-3 border text-sm resize-none
-              focus:outline-none focus:border-border-strong
+              w-full px-4 py-3 border text-base sm:text-sm resize-none
+              focus:outline-none focus:border-border
               transition-all
               ${error
                 ? 'border-status-danger-text/20 bg-status-danger-bg/50'
-                : 'border-border bg-surface-card hover:border-border-strong'
+                : 'border-border bg-surface-card hover:border-border'
               }
               ${isGenerating ? 'opacity-50' : ''}
             `}
@@ -187,12 +187,12 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
           placeholder={field.placeholder}
           maxLength={field.maxLength}
           className={`
-            w-full px-4 py-2.5 border text-sm
-            focus:outline-none focus:border-border-strong
+            w-full px-4 py-2.5 border text-base sm:text-sm
+            focus:outline-none focus:border-border
             transition-all
             ${error
               ? 'border-status-danger-text/20 bg-status-danger-bg/50'
-              : 'border-border bg-surface-card hover:border-border-strong'
+              : 'border-border bg-surface-card hover:border-border'
             }
           `}
         />
@@ -243,7 +243,7 @@ export const BasicInfoEditor: React.FC<BasicInfoEditorProps> = ({
   return (
     <div className="space-y-6">
       {/* Section Header */}
-      <div className="pb-4 border-b border-dashed border-border">
+      <div className="pb-4 border-b border-border">
         <h2 className="text-xl font-bold text-txt-primary">기본 정보</h2>
         <p className="text-sm text-txt-tertiary mt-1">
           사업 아이템의 기본 정보를 입력하세요. AI 자동완성에 활용됩니다.
@@ -261,8 +261,8 @@ export const BasicInfoEditor: React.FC<BasicInfoEditorProps> = ({
           onChange={(e) => onChange({ ...data, itemName: e.target.value })}
           placeholder="예: 헬스체커"
           className={`
-            w-full px-4 py-2.5 border text-sm
-            focus:outline-none focus:border-border-strong
+            w-full px-4 py-2.5 border text-base sm:text-sm
+            focus:outline-none focus:border-border
             ${errors.itemName ? 'border-status-danger-text/20 bg-status-danger-bg/50' : 'border-border'}
           `}
         />
@@ -286,8 +286,8 @@ export const BasicInfoEditor: React.FC<BasicInfoEditorProps> = ({
           placeholder="예: AI 기반 건강검진 결과 분석 서비스"
           maxLength={50}
           className={`
-            w-full px-4 py-2.5 border text-sm
-            focus:outline-none focus:border-border-strong
+            w-full px-4 py-2.5 border text-base sm:text-sm
+            focus:outline-none focus:border-border
             ${errors.oneLiner ? 'border-status-danger-text/20 bg-status-danger-bg/50' : 'border-border'}
           `}
         />
@@ -308,8 +308,8 @@ export const BasicInfoEditor: React.FC<BasicInfoEditorProps> = ({
           onChange={(e) => onChange({ ...data, targetCustomer: e.target.value })}
           placeholder="예: 30-50대 직장인, 건강 관리에 관심 있는 소비자"
           className={`
-            w-full px-4 py-2.5 border text-sm
-            focus:outline-none focus:border-border-strong
+            w-full px-4 py-2.5 border text-base sm:text-sm
+            focus:outline-none focus:border-border
             ${errors.targetCustomer ? 'border-status-danger-text/20 bg-status-danger-bg/50' : 'border-border'}
           `}
         />
@@ -326,7 +326,7 @@ export const BasicInfoEditor: React.FC<BasicInfoEditorProps> = ({
         <select
           value={data.industry}
           onChange={(e) => onChange({ ...data, industry: e.target.value as IndustryType })}
-          className="w-full px-4 py-2.5 border border-border text-sm focus:outline-none focus:border-border-strong bg-surface-card"
+          className="w-full px-4 py-2.5 border border-border text-sm focus:outline-none focus:border-border bg-surface-card rounded-lg"
         >
           {industries.map((ind) => (
             <option key={ind.value} value={ind.value}>
@@ -347,7 +347,7 @@ export const BasicInfoEditor: React.FC<BasicInfoEditorProps> = ({
             value={data.fundingAmount || ''}
             onChange={(e) => onChange({ ...data, fundingAmount: e.target.value ? Number(e.target.value) : undefined })}
             placeholder="5000"
-            className="w-full px-4 py-2.5 pr-12 border border-border text-sm focus:outline-none focus:border-border-strong"
+            className="w-full px-4 py-2.5 pr-12 border border-border text-base sm:text-sm focus:outline-none focus:border-border"
           />
           <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-txt-tertiary">
             만원

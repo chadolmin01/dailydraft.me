@@ -82,9 +82,9 @@ export const InviteCodeModal: React.FC<InviteCodeModalProps> = ({
       className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       onClick={handleBackdropClick}
     >
-      <div className="bg-surface-card shadow-brutal border border-border-strong max-w-md w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="bg-surface-card shadow-lg border border-border max-w-md w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-border-strong">
+        <div className="flex items-center justify-between p-4 border-b border-border">
           <div className="flex items-center gap-2">
             <Gift size={20} className="text-brand" />
             <h2 className="text-lg font-bold text-txt-primary">초대 코드 입력</h2>
@@ -132,7 +132,7 @@ export const InviteCodeModal: React.FC<InviteCodeModalProps> = ({
               {/* Code Input */}
               <form onSubmit={handleSubmit}>
                 <div className="mb-4">
-                  <label className="block text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-2">
+                  <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-2">
                     초대 코드
                   </label>
                   <input
@@ -140,8 +140,8 @@ export const InviteCodeModal: React.FC<InviteCodeModalProps> = ({
                     value={code}
                     onChange={handleCodeChange}
                     placeholder="예: ABC12DEF"
-                    className={`w-full px-4 py-3 text-center text-xl font-mono tracking-wider border focus:outline-none focus:border-border-strong bg-surface-card text-txt-primary ${
-                      error ? 'border-status-danger-text' : 'border-border-strong'
+                    className={`w-full px-4 py-3 text-center text-xl font-mono tracking-wider border focus:outline-none focus:border-border bg-surface-card text-txt-primary ${
+                      error ? 'border-status-danger-text' : 'border-border'
                     }`}
                     disabled={isSubmitting}
                     autoFocus
@@ -163,7 +163,7 @@ export const InviteCodeModal: React.FC<InviteCodeModalProps> = ({
                 <button
                   type="submit"
                   disabled={code.length !== 8 || isSubmitting}
-                  className="w-full py-3 bg-black text-white font-bold border border-black hover:bg-[#333] disabled:bg-surface-sunken disabled:text-txt-disabled disabled:border-border-strong disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                  className="w-full py-3 bg-surface-inverse text-txt-inverse font-bold border border-surface-inverse hover:bg-surface-inverse/90 disabled:bg-surface-sunken disabled:text-txt-disabled disabled:border-border disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.97]"
                 >
                   {isSubmitting ? (
                     <>

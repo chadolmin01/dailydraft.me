@@ -14,7 +14,7 @@ export const EditInterests: React.FC<EditInterestsProps> = ({
 }) => {
   return (
     <section>
-      <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4 flex items-center gap-2">
+      <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4 flex items-center gap-2">
         <Hash size={14} /> 관심 분야
       </h3>
 
@@ -27,7 +27,7 @@ export const EditInterests: React.FC<EditInterestsProps> = ({
             className={`px-2.5 py-1 text-xs font-medium border transition-colors ${
               interestTags.includes(tag)
                 ? 'bg-brand text-white border-brand'
-                : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong'
+                : 'bg-surface-card text-txt-secondary border-border hover:border-border'
             }`}
           >
             {tag}
@@ -44,8 +44,8 @@ export const EditInterests: React.FC<EditInterestsProps> = ({
               className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium bg-brand text-white"
             >
               {tag}
-              <button onClick={() => toggleTag(tag)} className="hover:opacity-70 p-2 sm:p-0 -m-1 sm:m-0">
-                <X size={10} />
+              <button onClick={() => toggleTag(tag)} className="hover:opacity-70 p-2.5 sm:p-1 -m-1 sm:m-0" aria-label={`${tag} 태그 제거`}>
+                <X size={12} />
               </button>
             </span>
           ))}
@@ -58,9 +58,9 @@ export const EditInterests: React.FC<EditInterestsProps> = ({
           value={customTag}
           onChange={(e) => setCustomTag(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addCustomTag())}
-          placeholder="직접 입력"
+          placeholder="관심 키워드를 입력해보세요"
           maxLength={20}
-          className="flex-1 px-3 py-2 text-sm border border-border bg-surface-card focus:outline-none focus:border-accent transition-colors"
+          className="flex-1 px-3 py-2 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all"
         />
         <button
           type="button"

@@ -51,7 +51,7 @@ interface UsageData {
 }
 
 const planColors: Record<string, { bg: string; text: string; border: string }> = {
-  free: { bg: 'bg-surface-sunken', text: 'text-txt-secondary', border: 'border-border-strong' },
+  free: { bg: 'bg-surface-sunken', text: 'text-txt-secondary', border: 'border-border' },
   pro: { bg: 'bg-brand-bg', text: 'text-brand', border: 'border-brand' },
   team: { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-600' },
 }
@@ -104,7 +104,7 @@ function UsageCard({
   const isDanger = percentage >= 95
 
   return (
-    <div className="bg-surface-card p-4 border border-border-strong shadow-sharp hover:shadow-brutal transition-shadow">
+    <div className="bg-surface-card p-4 border border-border shadow-md hover:shadow-lg hover-spring">
       <div className="flex items-center gap-3 mb-3">
         <div className={`p-2 border ${isDanger ? 'border-status-danger-text bg-status-danger-bg' : isWarning ? 'border-status-warning-text bg-status-warning-bg' : 'border-brand bg-brand-bg'}`}>
           <Icon className={`w-5 h-5 ${isDanger ? 'text-status-danger-text' : isWarning ? 'text-status-warning-text' : 'text-brand'}`} />
@@ -143,7 +143,7 @@ function ApiUsageSection({ apiUsage }: { apiUsage: UsageData['apiUsage'] }) {
   const percentage = (current.used / current.limit) * 100
 
   return (
-    <div className="bg-surface-card p-6 border border-border-strong shadow-sharp">
+    <div className="bg-surface-card p-6 border border-border shadow-md">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="p-2 border border-violet-600 bg-violet-50">
@@ -152,14 +152,14 @@ function ApiUsageSection({ apiUsage }: { apiUsage: UsageData['apiUsage'] }) {
           <h3 className="font-semibold text-txt-primary">API 사용량</h3>
         </div>
 
-        <div className="flex gap-0 border border-border-strong p-0">
+        <div className="flex gap-0 border border-border p-0">
           {windows.map(({ key, label }) => (
             <button
               key={key}
               onClick={() => setSelectedWindow(key)}
               className={`px-3 py-1 text-sm transition-colors ${
                 selectedWindow === key
-                  ? 'bg-black text-white'
+                  ? 'bg-surface-inverse text-txt-inverse'
                   : 'text-txt-tertiary hover:bg-surface-sunken'
               }`}
             >
@@ -188,10 +188,10 @@ function ApiUsageSection({ apiUsage }: { apiUsage: UsageData['apiUsage'] }) {
           <ProgressBar used={current.used} limit={current.limit} />
         </div>
 
-        <div className="grid grid-cols-3 gap-4 pt-4 border-t border-dashed border-border">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-border">
           {windows.map(({ key, label }) => (
             <div key={key} className="text-center">
-              <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-1">{label}</div>
+              <div className="text-[0.625rem] font-medium text-txt-tertiary mb-1">{label}</div>
               <div className="text-sm font-medium">
                 {apiUsage[key].remaining.toLocaleString()}
                 <span className="text-txt-disabled"> 남음</span>
@@ -242,8 +242,19 @@ export function UsageDashboard() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[25rem]">
-        <Loader2 className="w-8 h-8 text-txt-disabled animate-spin" />
+      <div className="space-y-6 p-6">
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <div className="h-6 w-40 bg-surface-sunken rounded skeleton-shimmer" />
+            <div className="h-4 w-56 bg-surface-sunken rounded skeleton-shimmer" />
+          </div>
+        </div>
+        <div className="h-24 bg-surface-sunken rounded skeleton-shimmer" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[0,1,2,3].map(i => (
+            <div key={i} className="h-28 bg-surface-sunken rounded skeleton-shimmer" />
+          ))}
+        </div>
       </div>
     )
   }
@@ -280,7 +291,7 @@ export function UsageDashboard() {
         <button
           onClick={handleRefresh}
           disabled={refreshing}
-          className="flex items-center gap-2 px-4 py-2 text-txt-secondary border border-border-strong hover:bg-black hover:text-white transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 text-txt-secondary border border-border hover:bg-black hover:text-white transition-colors disabled:opacity-50"
         >
           <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
           새로고침
@@ -288,10 +299,10 @@ export function UsageDashboard() {
       </div>
 
       {/* 플랜 정보 */}
-      <div className={`p-6 ${colors.bg} border ${colors.border} shadow-sharp`}>
+      <div className={`p-6 ${colors.bg} border ${colors.border} shadow-md`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-surface-card border border-border-strong">
+            <div className="p-3 bg-surface-card rounded-xl border border-border">
               <Crown className={`w-6 h-6 ${colors.text}`} />
             </div>
             <div>
@@ -318,7 +329,7 @@ export function UsageDashboard() {
           </div>
 
           {data.plan.type === 'free' && (
-            <button className="px-4 py-2 bg-brand text-white border border-brand font-medium hover:bg-brand-hover transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">
+            <button className="px-4 py-2 bg-brand text-white border border-brand font-medium hover:bg-brand-hover transition-colors hover:opacity-90 active:scale-[0.97]">
               Pro로 업그레이드
             </button>
           )}
@@ -362,7 +373,7 @@ export function UsageDashboard() {
       <ApiUsageSection apiUsage={data.apiUsage} />
 
       {/* 기간 정보 */}
-      <div className="bg-surface-sunken border border-border-strong p-4 flex items-center justify-between">
+      <div className="bg-surface-sunken rounded-xl border border-border p-4 flex items-center justify-between">
         <div className="flex items-center gap-2 text-txt-secondary">
           <Clock className="w-4 h-4" />
           <span>사용량 측정 기간</span>

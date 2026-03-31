@@ -60,7 +60,7 @@ export const validatedIdeaKeys = {
 
 // Fetch current user's validated ideas
 export function useValidatedIdeas(limit = 10) {
-  const { user } = useAuth()
+  const { user, isLoading: isAuthLoading } = useAuth()
 
   return useQuery({
     queryKey: validatedIdeaKeys.list(user?.id ?? ''),
@@ -77,7 +77,7 @@ export function useValidatedIdeas(limit = 10) {
       if (error) throw error
       return data as ValidatedIdea[]
     },
-    enabled: !!user?.id,
+    enabled: !isAuthLoading && !!user?.id,
   })
 }
 

@@ -125,9 +125,9 @@ export const InlineUpdateEditor: React.FC<InlineUpdateEditorProps> = ({
         onDrop={handleDrop}
         className={`border bg-surface-card transition-all duration-200 relative ${
           isDragging
-            ? 'border-black bg-surface-sunken'
+            ? 'border-surface-inverse bg-surface-sunken'
             : isExpanded
-            ? 'border-border-strong shadow-solid-sm'
+            ? 'border-border shadow-sm'
             : 'border-border'
         }`}
       >
@@ -153,7 +153,7 @@ export const InlineUpdateEditor: React.FC<InlineUpdateEditorProps> = ({
             placeholder={placeholder}
             rows={isExpanded ? 4 : 2}
             maxLength={2000}
-            className={`w-full px-4 py-3 text-sm resize-none bg-transparent focus:outline-none text-txt-primary placeholder-txt-disabled transition-opacity ${isDragging ? 'opacity-0' : 'opacity-100'}`}
+            className={`w-full px-4 py-3 text-base sm:text-sm resize-none bg-transparent focus:outline-none text-txt-primary placeholder-txt-disabled transition-opacity ${isDragging ? 'opacity-0' : 'opacity-100'}`}
           />
         )}
 
@@ -182,14 +182,14 @@ export const InlineUpdateEditor: React.FC<InlineUpdateEditorProps> = ({
               <button
                 type="button"
                 onClick={handleCancel}
-                className="px-3 py-1.5 text-xs text-txt-secondary border border-border-strong hover:text-txt-primary transition-colors"
+                className="px-3 py-1.5 text-xs text-txt-secondary border border-border hover:text-txt-primary transition-colors"
               >
                 취소
               </button>
               <button
                 onClick={handleSubmit}
                 disabled={createUpdate.isPending || !content.trim()}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-black text-white border border-black hover:bg-[#333] transition-colors disabled:opacity-40 shadow-solid-sm hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 transition-colors disabled:opacity-40 hover:opacity-90 active:scale-[0.97]"
               >
                 {createUpdate.isPending
                   ? <><Loader2 size={12} className="animate-spin" /> 저장 중</>

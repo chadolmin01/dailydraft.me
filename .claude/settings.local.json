@@ -213,7 +213,16 @@
       "Bash(du:*)",
       "Bash(npm run:*)",
       "Bash(diff:*)",
-      "Bash(do cp:*)"
+      "Bash(do cp:*)",
+      "Bash(lsof main:*)",
+      "Bash(source:*)",
+      "Bash(set:*)",
+      "Bash(PYTHONIOENCODING=utf-8 browser-use state:*)",
+      "Bash(PYTHONIOENCODING=utf-8 browser-use screenshot:*)",
+      "Bash(gh:*)",
+      "Bash(do if:*)",
+      "Bash(xargs grep:*)",
+      "Bash(read f:*)"
     ]
   }
 }

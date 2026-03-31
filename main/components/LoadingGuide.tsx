@@ -101,7 +101,7 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
       <div className="w-full max-w-md relative">
         {/* ── Welcome Phase ── */}
         {phase === 'welcome' && (
-          <div className="bg-surface-card border border-border-strong shadow-brutal overflow-hidden animate-slide-up-fade">
+          <div className="bg-surface-card rounded-xl border border-border shadow-lg overflow-hidden animate-slide-up-fade">
             <div className="h-28 bg-surface-inverse relative overflow-hidden flex items-center justify-center">
               <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent" />
               <div className="relative z-10 w-14 h-14 bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20">
@@ -118,7 +118,7 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
               </p>
             </div>
 
-            <div className="bg-surface-sunken px-4 py-2 border-t border-border-strong flex justify-between items-center text-[0.5625rem] font-mono text-txt-disabled">
+            <div className="bg-surface-sunken px-4 py-2 border-t border-border flex justify-between items-center text-[0.5625rem] font-mono text-txt-disabled">
               <span>DRAFT OS v2.4.0</span>
               <span className="flex items-center gap-1.5">
                 READY
@@ -130,10 +130,10 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
 
         {/* ── CTA Phase ── */}
         {phase === 'cta' && (
-          <div className="bg-surface-card border border-border-strong shadow-brutal overflow-hidden animate-slide-up-fade">
+          <div className="bg-surface-card rounded-xl border border-border shadow-lg overflow-hidden animate-slide-up-fade">
             {/* Header */}
             <div className="p-8 pb-6">
-              <span className="text-[0.625rem] font-mono uppercase font-bold text-txt-tertiary tracking-wider">
+              <span className="text-[0.625rem] font-medium text-txt-tertiary">
                 NEXT STEP
               </span>
               <h2 className="text-lg font-bold text-txt-primary mt-1.5 break-keep">
@@ -146,7 +146,7 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
               {/* Primary */}
               <Link
                 href={cta.primary.href}
-                className="block border-2 border-black p-4 shadow-solid-sm transition-all hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-black hover:text-white group animate-fade-in"
+                className="block border-2 border-surface-inverse p-4 shadow-sm transition-all hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-black hover:text-white group animate-fade-in"
                 style={{ animationDelay: '200ms', animationFillMode: 'both' }}
               >
                 <div className="flex items-center justify-between">
@@ -164,7 +164,7 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
               {/* Secondary */}
               <Link
                 href={cta.secondary.href}
-                className="flex items-center justify-between border border-border-strong p-4 transition-colors hover:bg-surface-sunken group animate-fade-in"
+                className="flex items-center justify-between border border-border p-4 transition-colors hover:bg-surface-sunken group animate-fade-in"
                 style={{ animationDelay: '400ms', animationFillMode: 'both' }}
               >
                 <div className="flex items-center gap-3">
@@ -178,11 +178,11 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
             {/* Profile Nudge */}
             {showNudge && (
               <div
-                className="mx-8 mb-6 pt-6 border-t border-dashed border-border animate-fade-in"
+                className="mx-8 mb-6 pt-6 border-t border-border animate-fade-in"
                 style={{ animationDelay: '600ms', animationFillMode: 'both' }}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-[0.625rem] font-mono uppercase font-bold text-txt-tertiary tracking-wider">
+                  <span className="text-[0.625rem] font-medium text-txt-tertiary">
                     PROFILE
                   </span>
                   <span className="text-[0.625rem] font-mono font-bold text-txt-primary">
@@ -234,7 +234,7 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
             )}
 
             {/* Footer */}
-            <div className="bg-surface-sunken px-4 py-2 border-t border-border-strong flex justify-between items-center text-[0.5625rem] font-mono text-txt-disabled">
+            <div className="bg-surface-sunken px-4 py-2 border-t border-border flex justify-between items-center text-[0.5625rem] font-mono text-txt-disabled">
               <span>DRAFT OS v2.4.0</span>
               <span className="flex items-center gap-1.5">
                 ONBOARDING

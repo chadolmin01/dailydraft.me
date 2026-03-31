@@ -45,7 +45,7 @@ export function ProfileHeader({
       <div className={`px-4 sm:px-8 ${coverUrl ? 'pt-0 -mt-10 relative z-10' : 'pt-4 sm:pt-6'} pb-3`}>
         <div className="flex items-start gap-4">
           {/* Avatar */}
-          <div className={`relative w-20 h-20 bg-surface-inverse flex items-center justify-center text-2xl font-bold text-txt-inverse shrink-0 shadow-solid-sm border-2 ${coverUrl ? 'border-surface-card' : 'border-border-strong'}`}>
+          <div className={`relative w-20 h-20 bg-surface-inverse rounded-full flex items-center justify-center text-2xl font-bold text-txt-inverse shrink-0 shadow-md border-2 ${coverUrl ? 'border-surface-card' : 'border-default'}`}>
             {cleanNickname(profile.nickname).substring(0, 2)}
             {profile.avatar_url && (
               <Image
@@ -108,7 +108,7 @@ export function ProfileHeader({
         {profile.interest_tags && profile.interest_tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mt-3">
             {profile.interest_tags.map((tag) => (
-              <span key={tag} className="px-2.5 py-1 bg-white text-tag-default-text text-xs font-medium border border-border-strong">
+              <span key={tag} className="px-2.5 py-1 bg-white text-tag-default-text text-xs font-medium border border-border">
                 {tag}
               </span>
             ))}
@@ -116,7 +116,7 @@ export function ProfileHeader({
         )}
       </div>
 
-      <div className="mx-4 sm:mx-8 border-t border-dashed border-border" />
+      <div className="mx-4 sm:mx-8 border-t border-border" />
     </>
   )
 }

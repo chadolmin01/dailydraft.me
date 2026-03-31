@@ -16,7 +16,7 @@ export const StepWizard: React.FC<StepWizardProps> = ({
   onStepClick,
 }) => {
   return (
-    <div className="bg-surface-card border border-border p-4">
+    <div className="bg-surface-card rounded-xl border border-border p-4">
       <div className="flex items-center justify-between">
         {WIZARD_STEPS.map((step, index) => (
           <React.Fragment key={step.id}>
@@ -69,7 +69,7 @@ const StepItem: React.FC<StepItemProps> = ({
           w-10 h-10 flex items-center justify-center font-bold text-sm
           transition-all duration-200
           ${isCompleted
-            ? 'bg-black text-white'
+            ? 'bg-surface-inverse text-txt-inverse'
             : isActive
               ? 'bg-brand text-txt-inverse ring-4 ring-brand-border'
               : 'bg-surface-sunken text-txt-tertiary border border-border'
@@ -151,7 +151,7 @@ export const StepWizardCompact: React.FC<StepWizardProps> = ({
               className={`
                 w-8 h-8 flex items-center justify-center font-bold text-xs shrink-0
                 ${isCompleted
-                  ? 'bg-black text-white'
+                  ? 'bg-surface-inverse text-txt-inverse'
                   : isActive
                     ? 'bg-brand text-txt-inverse'
                     : 'bg-surface-sunken text-txt-tertiary border border-border'

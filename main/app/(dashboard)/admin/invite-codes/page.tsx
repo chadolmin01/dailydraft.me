@@ -122,7 +122,10 @@ export default function InviteCodesAdminPage() {
   if (isAdminLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="w-8 h-8 animate-spin text-txt-disabled" />
+        <div className="space-y-4 w-full max-w-xs">
+          <div className="h-6 bg-surface-sunken rounded skeleton-shimmer w-40 mx-auto" />
+          <div className="h-4 bg-surface-sunken rounded skeleton-shimmer w-32 mx-auto" />
+        </div>
       </div>
     )
   }
@@ -149,7 +152,7 @@ export default function InviteCodesAdminPage() {
     <div className="p-6 max-w-6xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-2">
+        <div className="text-[0.625rem] font-medium text-txt-tertiary mb-2">
           ADMIN / INVITE CODES
         </div>
         <h1 className="text-2xl font-bold text-txt-primary flex items-center gap-2">
@@ -162,8 +165,8 @@ export default function InviteCodesAdminPage() {
       </div>
 
       {/* Send New Code */}
-      <div className="bg-surface-card border border-border-strong shadow-sharp p-6 mb-8">
-        <h2 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-4">새 초대 코드 발송</h2>
+      <div className="bg-surface-card rounded-xl border border-border shadow-md p-6 mb-8">
+        <h2 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">새 초대 코드 발송</h2>
 
         <div className="flex gap-4 items-end">
           <div className="flex-1">
@@ -176,7 +179,7 @@ export default function InviteCodesAdminPage() {
                 setSelectedEmail(e.target.value)
                 setSendError(null)
               }}
-              className="w-full px-3 py-2 border border-border-strong focus:outline-none focus:border-brand"
+              className="w-full px-3 py-2 border border-border focus:outline-none focus:border-brand"
               disabled={eligibleLoading}
             >
               <option value="">이메일 선택...</option>
@@ -216,20 +219,22 @@ export default function InviteCodesAdminPage() {
       </div>
 
       {/* Codes List */}
-      <div className="bg-surface-card border border-border-strong shadow-sharp">
-        <div className="p-4 border-b border-border-strong flex items-center justify-between">
-          <h2 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">발송된 초대 코드</h2>
+      <div className="bg-surface-card rounded-xl border border-border shadow-md">
+        <div className="p-4 border-b border-border flex items-center justify-between">
+          <h2 className="text-[0.625rem] font-medium text-txt-tertiary">발송된 초대 코드</h2>
           <button
             onClick={() => queryClient.invalidateQueries({ queryKey: ['admin-invite-codes'] })}
-            className="p-2 hover:bg-surface-sunken border border-border-strong transition-colors"
+            className="p-2 hover:bg-surface-sunken rounded-xl border border-border transition-colors"
           >
             <RefreshCw className="w-4 h-4 text-txt-tertiary" />
           </button>
         </div>
 
         {codesLoading ? (
-          <div className="p-8 text-center">
-            <Loader2 className="w-6 h-6 animate-spin mx-auto text-txt-disabled" />
+          <div className="p-4 space-y-3">
+            {[0,1,2].map(i => (
+              <div key={i} className="h-12 bg-surface-sunken rounded skeleton-shimmer" />
+            ))}
           </div>
         ) : !codes?.length ? (
           <div className="p-8 text-center text-txt-tertiary">
@@ -237,22 +242,22 @@ export default function InviteCodesAdminPage() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm border border-border-strong">
-              <thead className="bg-surface-sunken border-b border-border-strong">
+            <table className="w-full text-sm border border-border">
+              <thead className="bg-surface-sunken border-b border-border">
                 <tr>
-                  <th className="text-left px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">코드</th>
-                  <th className="text-left px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">받는 사람</th>
-                  <th className="text-left px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">상태</th>
-                  <th className="text-left px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">만료일</th>
-                  <th className="text-left px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">생성일</th>
-                  <th className="text-left px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary"></th>
+                  <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">코드</th>
+                  <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">받는 사람</th>
+                  <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">상태</th>
+                  <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">만료일</th>
+                  <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">생성일</th>
+                  <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-dashed divide-border">
                 {codes.map((code) => (
                   <tr key={code.id} className="hover:bg-surface-sunken">
                     <td className="px-4 py-3">
-                      <code className="px-2 py-1 bg-surface-sunken border border-border font-mono text-sm">
+                      <code className="px-2 py-1 bg-surface-sunken rounded-xl border border-border font-mono text-sm">
                         {code.code}
                       </code>
                     </td>
@@ -269,7 +274,7 @@ export default function InviteCodesAdminPage() {
                           사용됨
                         </span>
                       ) : !code.is_active ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 border border-border-strong text-txt-tertiary text-[0.625rem] font-mono font-bold">
+                        <span className="inline-flex items-center gap-1 px-2 py-1 border border-border text-txt-tertiary text-[0.625rem] font-mono font-bold">
                           <X className="w-3 h-3" />
                           비활성
                         </span>
@@ -312,14 +317,16 @@ export default function InviteCodesAdminPage() {
       </div>
 
       {/* Eligible Users List */}
-      <div className="bg-surface-card border border-border-strong shadow-sharp mt-8">
-        <div className="p-4 border-b border-border-strong">
-          <h2 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">온보딩 완료 유저 ({eligibleData?.total_count || 0}명)</h2>
+      <div className="bg-surface-card rounded-xl border border-border shadow-md mt-8">
+        <div className="p-4 border-b border-border">
+          <h2 className="text-[0.625rem] font-medium text-txt-tertiary">온보딩 완료 유저 ({eligibleData?.total_count || 0}명)</h2>
         </div>
 
         {eligibleLoading ? (
-          <div className="p-8 text-center">
-            <Loader2 className="w-6 h-6 animate-spin mx-auto text-txt-disabled" />
+          <div className="p-4 space-y-3">
+            {[0,1,2].map(i => (
+              <div key={i} className="h-12 bg-surface-sunken rounded skeleton-shimmer" />
+            ))}
           </div>
         ) : !eligibleData?.all.length ? (
           <div className="p-8 text-center text-txt-tertiary">
@@ -327,13 +334,13 @@ export default function InviteCodesAdminPage() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm border border-border-strong">
-              <thead className="bg-surface-sunken border-b border-border-strong">
+            <table className="w-full text-sm border border-border">
+              <thead className="bg-surface-sunken border-b border-border">
                 <tr>
-                  <th className="text-left px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">닉네임</th>
-                  <th className="text-left px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">이메일</th>
-                  <th className="text-left px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">초대 코드</th>
-                  <th className="text-left px-4 py-3 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">가입일</th>
+                  <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">닉네임</th>
+                  <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">이메일</th>
+                  <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">초대 코드</th>
+                  <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">가입일</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-dashed divide-border">
@@ -349,7 +356,7 @@ export default function InviteCodesAdminPage() {
                     <td className="px-4 py-3">
                       {user.existing_invite_code ? (
                         <div className="flex items-center gap-2">
-                          <code className="px-2 py-1 bg-surface-sunken border border-border font-mono text-xs">
+                          <code className="px-2 py-1 bg-surface-sunken rounded-xl border border-border font-mono text-xs">
                             {user.existing_invite_code}
                           </code>
                           {user.invite_code_used ? (

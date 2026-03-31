@@ -25,7 +25,7 @@ const TechnicalDivider = () => (
   <div className="w-full h-px bg-border relative my-12">
     <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-3 bg-black"></div>
     <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-3 bg-black"></div>
-    <div className="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 bg-white px-2 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-disabled">
+    <div className="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 bg-white px-2 text-[0.625rem] font-medium text-txt-disabled">
       SECTION BREAK
     </div>
   </div>
@@ -52,7 +52,7 @@ const FadeInView: React.FC<{ children: React.ReactNode; className?: string; dela
 // --- Mock UI Components ---
 
 const MockDashboardUI = () => (
-  <div className="w-full bg-surface-card border border-border-strong shadow-brutal overflow-hidden flex flex-col md:flex-row h-full min-h-[25rem]">
+  <div className="w-full bg-surface-card rounded-xl border border-border shadow-lg overflow-hidden flex flex-col md:flex-row h-full min-h-[25rem]">
     {/* Sidebar */}
     <div className="w-16 border-r border-border flex flex-col items-center py-6 gap-6 bg-surface-card hidden md:flex shrink-0">
       <div className="w-8 h-8 bg-black flex items-center justify-center text-white font-bold font-mono">D.</div>
@@ -78,7 +78,7 @@ const MockDashboardUI = () => (
              </div>
              <h3 className="text-lg sm:text-xl font-bold text-txt-primary tracking-tight">Dashboard</h3>
           </div>
-          <button className="bg-black hover:bg-[#333] text-white text-xs px-3 py-1.5 flex items-center gap-2 font-mono transition-colors whitespace-nowrap shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">
+          <button className="bg-black hover:bg-surface-inverse/90 text-white text-xs px-3 py-1.5 flex items-center gap-2 font-mono transition-colors whitespace-nowrap hover:opacity-90 active:scale-[0.97]">
              <Plus className="w-3 h-3" /> NEW
           </button>
         </div>
@@ -88,7 +88,7 @@ const MockDashboardUI = () => (
            {/* Card 1 */}
            <div className="bg-surface-card p-3 sm:p-4 border-b sm:border-b-0 sm:border-r border-border relative group">
               <div className="flex items-center gap-3 mb-4">
-                 <div className="w-8 h-8 bg-black text-white flex items-center justify-center font-bold text-xs font-mono shrink-0">P1</div>
+                 <div className="w-8 h-8 bg-surface-inverse text-txt-inverse flex items-center justify-center font-bold text-xs font-mono shrink-0">P1</div>
                  <div className="min-w-0">
                     <div className="font-bold text-sm truncate">Project Alpha</div>
                     <div className="text-[0.625rem] text-txt-disabled font-mono truncate">STRATEGY</div>
@@ -101,7 +101,7 @@ const MockDashboardUI = () => (
 
            {/* Card 2 */}
            <div className="bg-surface-card p-3 sm:p-4 border-b sm:border-b-0 lg:border-r border-border flex flex-col justify-between">
-              <div className="text-[0.625rem] text-txt-disabled font-mono uppercase tracking-wider">Total Views</div>
+              <div className="text-[0.625rem] text-txt-disabled">Total Views</div>
               <div>
                 <div className="text-2xl font-bold text-txt-primary font-mono tracking-tighter">1,240</div>
                 <div className="text-[0.625rem] text-status-success-text mt-1 font-mono">+12%</div>
@@ -112,7 +112,7 @@ const MockDashboardUI = () => (
            <div className="bg-brand-bg p-3 sm:p-4 flex flex-col justify-between relative overflow-hidden sm:col-span-2 lg:col-span-1">
                <div className="absolute top-0 right-0 w-8 h-8 border-l border-b border-brand-border"></div>
                <div className="flex justify-between items-start">
-                  <div className="text-[0.625rem] text-brand font-mono uppercase tracking-wider">Req</div>
+                  <div className="text-[0.625rem] text-brand">Req</div>
                   <span className="w-2 h-2 bg-brand"></span>
                </div>
                <div>
@@ -125,8 +125,8 @@ const MockDashboardUI = () => (
         {/* Recommended Section */}
         <div className="border border-border p-1">
            <div className="flex justify-between items-center bg-surface-sunken px-3 py-2 border-b border-border mb-1">
-              <h4 className="font-bold text-xs text-txt-primary font-mono uppercase">Opportunities</h4>
-              <span className="text-[0.625rem] text-txt-disabled font-mono cursor-pointer hover:text-black">ALL</span>
+              <h4 className="font-medium text-xs text-txt-primary">Opportunities</h4>
+              <span className="text-[0.625rem] text-txt-disabled font-mono cursor-pointer hover:text-black hover:bg-surface-sunken px-1.5 py-0.5 -mr-1.5 transition-colors">ALL</span>
            </div>
            <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
               {/* Dark Card */}
@@ -154,11 +154,11 @@ const MockDashboardUI = () => (
 )
 
 const MockAICard = () => (
-   <div className="bg-surface-card border border-border-strong shadow-brutal max-w-sm w-full relative overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
+   <div className="bg-surface-card rounded-xl border border-border shadow-lg max-w-sm w-full relative overflow-hidden hover-spring">
       <div className="bg-black p-4 text-white flex items-center justify-between">
          <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-status-warning-text" />
-            <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest">AI ANALYSIS</span>
+            <span className="text-[0.625rem] font-medium">AI ANALYSIS</span>
          </div>
          <span className="text-[0.625rem] font-mono text-txt-disabled">v2.4</span>
       </div>
@@ -190,7 +190,7 @@ const MockAICard = () => (
             </div>
 
             {/* Match Item 2 */}
-            <div className="bg-surface-card border border-border p-2.5 relative opacity-70 hover:opacity-100 transition-opacity cursor-pointer">
+            <div className="bg-surface-card rounded-xl border border-border p-2.5 relative opacity-70 hover:opacity-100 transition-opacity cursor-pointer">
                <div className="flex justify-between items-start mb-2 pl-2">
                   <div className="flex items-center gap-3">
                      <div className="w-8 h-8 bg-surface-sunken flex items-center justify-center font-bold text-xs shrink-0">DC</div>
@@ -226,7 +226,7 @@ const Header: React.FC = () => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-surface-card/90 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <div className="flex items-center space-x-2 cursor-pointer group" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+        <div className="flex items-center space-x-2 cursor-pointer group hover:opacity-70 transition-opacity" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
           <div className="w-6 h-6 bg-black flex items-center justify-center text-white font-bold text-xs font-mono group-hover:rotate-12 transition-transform">
             D
           </div>
@@ -242,7 +242,7 @@ const Header: React.FC = () => {
            </Link>
            <Link
              href="/login"
-             className="bg-black text-white text-xs px-5 py-2.5 hover:bg-[#333] transition-colors font-mono font-medium flex items-center gap-2 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+             className="bg-surface-inverse text-txt-inverse text-xs px-5 py-2.5 hover:bg-surface-inverse/90 transition-colors font-mono font-medium flex items-center gap-2 hover:opacity-90 active:scale-[0.97]"
            >
              GET STARTED <ArrowRight className="w-3 h-3" />
            </Link>
@@ -334,12 +334,12 @@ const Hero: React.FC = () => {
 
       {/* Left Column: Text Content */}
       <div className="w-full lg:w-1/2 text-center lg:text-left relative z-10 animate-fade-in-up">
-        <div className="inline-flex items-center px-3 py-1 bg-surface-card border border-border-strong mb-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] lg:mx-0 mx-auto">
+        <div className="inline-flex items-center px-3 py-1 bg-surface-card rounded-xl border border-border mb-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] lg:mx-0 mx-auto">
           <span className="w-2 h-2 bg-indicator-online mr-2 animate-pulse"></span>
-          <span className="text-[0.625rem] font-mono font-bold tracking-widest uppercase">System Operational v2.0</span>
+          <span className="text-[0.625rem] font-medium">System Operational v2.0</span>
         </div>
 
-        <h1 className="text-5xl sm:text-6xl xl:text-7xl font-bold tracking-tighter text-txt-primary mb-8 leading-[1.1] break-keep">
+        <h1 className="text-3xl sm:text-5xl md:text-6xl xl:text-7xl font-bold tracking-tighter text-txt-primary mb-8 leading-[1.1] break-keep">
           완벽한 팀은<br />
           첫 번째 <span className="relative inline-block text-brand mx-2">Draft<svg className="absolute w-full h-3 bottom-1 left-0 text-brand/30 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" opacity="0.5" /></svg></span>에서 시작됩니다
         </h1>
@@ -357,14 +357,16 @@ const Hero: React.FC = () => {
               placeholder="이메일을 입력해주세요"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 bg-surface-card border border-border-strong focus:outline-none focus:border-border-strong focus:ring-1 focus:ring-black transition-all text-sm font-mono placeholder:font-sans"
+              className="w-full px-4 py-3 bg-surface-card rounded-lg border border-border focus:outline-none focus:border-border focus:ring-1 focus:ring-black transition-all text-base sm:text-sm font-mono placeholder:font-sans"
+              inputMode="email"
+              autoComplete="email"
               required
             />
           </div>
           <button
             type="submit"
             disabled={status === 'loading'}
-            className={`w-full sm:w-auto px-8 py-3 text-white font-medium transition-all flex items-center justify-center whitespace-nowrap shadow-sharp shrink-0 disabled:opacity-70 ${getButtonStyle()}`}
+            className={`w-full sm:w-auto px-8 py-3 text-white font-medium transition-all flex items-center justify-center whitespace-nowrap shadow-md shrink-0 disabled:opacity-70 ${getButtonStyle()}`}
           >
             {getButtonContent()}
           </button>
@@ -376,7 +378,7 @@ const Hero: React.FC = () => {
           </div>
         )}
 
-        <div className="flex flex-wrap items-center lg:justify-start justify-center gap-4 sm:gap-6 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-disabled">
+        <div className="flex flex-wrap items-center lg:justify-start justify-center gap-4 sm:gap-6 text-[0.625rem] font-medium text-txt-disabled">
            <span>Free Beta Access</span>
            <span className="hidden sm:inline">.</span>
            <span>No Credit Card</span>
@@ -436,7 +438,7 @@ const PainPoints: React.FC = () => {
             <FadeInView className="mb-20 text-center">
                 <div className="inline-flex items-center gap-2 px-3 py-1 border border-indicator-alert/30 bg-indicator-alert/10 text-indicator-alert mb-6 backdrop-blur-sm">
                     <div className="w-1.5 h-1.5 bg-indicator-alert animate-pulse"></div>
-                    <span className="text-[0.625rem] font-mono font-bold tracking-widest uppercase">SYSTEM CRITICAL WARNING</span>
+                    <span className="text-[0.625rem] font-medium">SYSTEM CRITICAL WARNING</span>
                 </div>
 
                 <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 leading-tight break-keep">
@@ -499,7 +501,7 @@ const Features: React.FC = () => {
            <div className="flex-1">
               <div className="flex items-center gap-2 mb-4">
                  <Target className="w-4 h-4 text-brand" />
-                 <span className="text-brand font-mono text-[0.625rem] font-bold tracking-widest uppercase">AI MATCHING ENGINE</span>
+                 <span className="text-brand text-[0.625rem] font-medium">AI MATCHING ENGINE</span>
               </div>
               <h2 className="text-3xl sm:text-4xl font-bold text-txt-primary mb-6 leading-tight break-keep">
                  단순 연결이 아닌,<br/>
@@ -510,14 +512,14 @@ const Features: React.FC = () => {
               </p>
 
               <div className="space-y-4">
-                 <div className="flex items-start gap-4 p-4 border border-border bg-surface-card hover:border-border-strong transition-colors group cursor-default">
+                 <div className="flex items-start gap-4 p-4 border border-border bg-surface-card rounded-xl hover:border-border transition-colors group cursor-default">
                     <div className="bg-surface-sunken p-2 border border-border group-hover:bg-black group-hover:text-white transition-colors"><BarChart3 className="w-5 h-5" /></div>
                     <div>
                        <h4 className="font-bold text-sm mb-1">매칭 적합도 분석 리포트</h4>
                        <p className="text-xs text-txt-tertiary break-keep">이 후보자가 왜 94% 적합한지, 30가지 지표로 분석해드립니다.</p>
                     </div>
                  </div>
-                 <div className="flex items-start gap-4 p-4 border border-border bg-surface-card hover:border-border-strong transition-colors group cursor-default">
+                 <div className="flex items-start gap-4 p-4 border border-border bg-surface-card rounded-xl hover:border-border transition-colors group cursor-default">
                     <div className="bg-surface-sunken p-2 border border-border group-hover:bg-black group-hover:text-white transition-colors"><MessageSquare className="w-5 h-5" /></div>
                     <div>
                        <h4 className="font-bold text-sm mb-1">AI 인터뷰 모드</h4>
@@ -539,7 +541,7 @@ const Features: React.FC = () => {
            <div className="flex-1">
               <div className="flex items-center gap-2 mb-4">
                  <LayoutGrid className="w-4 h-4 text-status-success-text" />
-                 <span className="text-status-success-text font-mono text-[0.625rem] font-bold tracking-widest uppercase">STARTUP OS</span>
+                 <span className="text-status-success-text text-[0.625rem] font-medium">STARTUP OS</span>
               </div>
               <h2 className="text-3xl sm:text-4xl font-bold text-txt-primary mb-6 leading-tight break-keep">
                  아이디어 구상부터 IR까지,<br/>
@@ -566,10 +568,10 @@ const Features: React.FC = () => {
            </div>
 
            <div className="flex-1 w-full">
-              <div className="bg-surface-card border border-border-strong shadow-brutal overflow-hidden">
+              <div className="bg-surface-card rounded-xl border border-border shadow-lg overflow-hidden">
                  <div className="bg-surface-sunken border-b border-border p-4 flex justify-between items-center">
                     <h4 className="font-bold text-sm flex items-center gap-2 font-mono"><FileText className="w-4 h-4" /> DOCUMENTS.DIR</h4>
-                    <button className="bg-surface-card border border-border-strong text-[0.625rem] px-2 py-1 flex items-center gap-1 font-mono hover:bg-surface-sunken"><Plus className="w-3 h-3"/> NEW</button>
+                    <button className="bg-surface-card rounded-xl border border-border text-[0.625rem] px-2 py-1 flex items-center gap-1 font-mono hover:bg-surface-sunken"><Plus className="w-3 h-3"/> NEW</button>
                  </div>
                  <div className="divide-y divide-border">
                     {[
@@ -580,7 +582,7 @@ const Features: React.FC = () => {
                     ].map((doc, i) => (
                        <div key={i} className="p-4 flex items-center justify-between hover:bg-brand-bg transition-colors group cursor-pointer">
                           <div className="flex items-center gap-3 overflow-hidden">
-                             <div className="w-8 h-8 bg-surface-sunken border border-border text-txt-tertiary flex items-center justify-center group-hover:bg-brand group-hover:text-white transition-colors shrink-0"><FileText className="w-4 h-4" /></div>
+                             <div className="w-8 h-8 bg-surface-sunken rounded-xl border border-border text-txt-tertiary flex items-center justify-center group-hover:bg-brand group-hover:text-white transition-colors shrink-0"><FileText className="w-4 h-4" /></div>
                              <div className="min-w-0">
                                 <div className="text-sm font-bold text-txt-primary mb-0.5 truncate">{doc.name}</div>
                                 <div className="text-[0.625rem] text-txt-disabled font-mono">{doc.tag}</div>
@@ -619,7 +621,7 @@ const LiveFeed: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
         <div className="flex items-center gap-2 justify-center">
             <span className="w-2 h-2 bg-indicator-alert animate-pulse"></span>
-            <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">LIVE SYSTEM ACTIVITY</span>
+            <span className="text-[0.625rem] font-medium text-txt-tertiary">LIVE SYSTEM ACTIVITY</span>
         </div>
       </div>
 
@@ -633,7 +635,7 @@ const LiveFeed: React.FC = () => {
             style={{ width: "max-content" }}
           >
             {[...activities, ...activities, ...activities, ...activities].map((activity, i) => (
-              <div key={i} className="flex-shrink-0 bg-surface-card border border-border p-4 w-72 shadow-sm hover:border-border-strong transition-colors group">
+              <div key={i} className="flex-shrink-0 bg-surface-card rounded-xl border border-border p-4 w-72 shadow-sm hover:border-border transition-colors group">
                  <div className="flex justify-between items-start mb-2">
                     <span className={`text-[0.625rem] font-mono px-1.5 py-0.5 border ${
                       activity.type === 'MATCH' ? 'bg-brand-bg border-brand-border text-brand' :
@@ -659,7 +661,7 @@ const FinalCTA: React.FC = () => {
     }
 
     return (
-        <section className="py-24 bg-black text-white relative overflow-hidden">
+        <section className="py-24 bg-surface-inverse text-txt-inverse relative overflow-hidden">
             <div className="grid-bg-dark absolute inset-0 opacity-20 pointer-events-none"></div>
 
             <div className="max-w-4xl mx-auto px-4 relative z-10 text-center">
@@ -674,18 +676,18 @@ const FinalCTA: React.FC = () => {
                 <div className="flex flex-col sm:flex-row justify-center gap-4 max-w-md mx-auto">
                   <Link
                     href="/login"
-                    className="bg-brand text-white px-8 py-4 font-bold text-lg hover:bg-brand-hover transition-colors flex items-center justify-center gap-2 group w-full sm:w-auto shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                    className="bg-brand text-white px-8 py-4 font-bold text-lg hover:bg-brand-hover transition-colors flex items-center justify-center gap-2 group w-full sm:w-auto hover:opacity-90 active:scale-[0.97]"
                   >
                     GET STARTED <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </div>
 
-                <p className="mt-8 text-[0.625rem] font-mono font-bold uppercase tracking-widest text-white/40">
+                <p className="mt-8 text-[0.625rem] font-medium text-white/40">
                     Join 2,000+ Founders Waiting
                 </p>
 
                 {/* Instagram CTA */}
-                <div className="mt-12 pt-8 border-t border-dashed border-white/10">
+                <div className="mt-12 pt-8 border-t border-white/10">
                     <p className="text-txt-disabled mb-4 text-sm">최신 소식과 업데이트를 받아보세요</p>
                     <a
                       href="https://instagram.com/dailydraft_me"
@@ -717,12 +719,12 @@ const Footer: React.FC = () => {
                   팀 빌딩부터 투자 유치까지, Draft가 함께합니다.
                </p>
                <div className="flex gap-4">
-                  <a href="https://instagram.com/dailydraft_me" target="_blank" rel="noopener noreferrer" className="w-8 h-8 bg-surface-sunken flex items-center justify-center border border-border hover:border-border-strong hover:bg-surface-sunken transition-colors"><span className="font-bold text-xs">IG</span></a>
+                  <a href="https://instagram.com/dailydraft_me" target="_blank" rel="noopener noreferrer" className="w-8 h-8 bg-surface-sunken flex items-center justify-center border border-border hover:border-border hover:bg-surface-sunken transition-colors"><span className="font-bold text-xs">IG</span></a>
                </div>
             </div>
 
             <div>
-               <h4 className="font-bold text-sm mb-4 font-mono uppercase tracking-wider">Product</h4>
+               <h4 className="font-medium text-sm mb-4">Product</h4>
                <ul className="space-y-3 text-sm text-txt-tertiary">
                   <li><a href="#" className="hover:text-black transition-colors">AI 매칭</a></li>
                   <li><a href="#" className="hover:text-black transition-colors">문서 자동화</a></li>
@@ -731,7 +733,7 @@ const Footer: React.FC = () => {
             </div>
 
             <div>
-               <h4 className="font-bold text-sm mb-4 font-mono uppercase tracking-wider">Company</h4>
+               <h4 className="font-medium text-sm mb-4">Company</h4>
                <ul className="space-y-3 text-sm text-txt-tertiary">
                   <li><a href="#" className="hover:text-black transition-colors">팀 소개</a></li>
                   <li><a href="#" className="hover:text-black transition-colors">채용</a></li>
@@ -740,7 +742,7 @@ const Footer: React.FC = () => {
             </div>
 
              <div>
-               <h4 className="font-bold text-sm mb-4 font-mono uppercase tracking-wider">Contact</h4>
+               <h4 className="font-medium text-sm mb-4">Contact</h4>
                <ul className="space-y-3 text-sm text-txt-tertiary">
                   <li><a href="https://instagram.com/dailydraft_me" target="_blank" rel="noopener noreferrer" className="hover:text-black transition-colors">Instagram</a></li>
                   <li><a href="mailto:team@dailydraft.me" className="hover:text-black transition-colors">team@dailydraft.me</a></li>
@@ -749,7 +751,7 @@ const Footer: React.FC = () => {
             </div>
         </div>
 
-        <div className="border-t border-dashed border-border pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-txt-disabled font-mono">
+        <div className="border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-txt-disabled font-mono">
             <p>2026 Draft Inc. All rights reserved.</p>
             <div className="flex gap-4 mt-4 md:mt-0">
                <span>Seoul, Korea</span>

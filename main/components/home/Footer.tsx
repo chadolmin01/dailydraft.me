@@ -14,20 +14,20 @@ export const Footer: React.FC = () => {
              </div>
              <span className="font-bold text-sm tracking-tight">Draft.</span>
           </div>
-          <p className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-disabled">
+          <p className="text-[0.625rem] font-medium text-txt-disabled">
             &copy; 2026 Draft. All rights reserved.
           </p>
         </div>
 
         <div className="flex gap-8">
             <div className="flex flex-col gap-2">
-                <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-disabled">서비스</span>
+                <span className="text-[0.625rem] font-medium text-txt-disabled">서비스</span>
                 <Link href="#how-it-works" className="text-sm text-txt-secondary hover:text-black">이용 방법</Link>
                 <Link href="#projects" className="text-sm text-txt-secondary hover:text-black">프로젝트</Link>
                 <Link href="#faq" className="text-sm text-txt-secondary hover:text-black">FAQ</Link>
             </div>
             <div className="flex flex-col gap-2">
-                <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-disabled">안내</span>
+                <span className="text-[0.625rem] font-medium text-txt-disabled">안내</span>
                 <Link href="mailto:contact@dailydraft.me" className="text-sm text-txt-secondary hover:text-black">문의하기</Link>
                 <Link href="/login" className="text-sm text-txt-secondary hover:text-black">로그인</Link>
             </div>
@@ -35,7 +35,7 @@ export const Footer: React.FC = () => {
 
         <div className="flex items-center gap-2 border border-border px-3 py-1.5 bg-surface-sunken">
              <div className="w-1.5 h-1.5 bg-indicator-online"></div>
-             <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">OPEN BETA</span>
+             <span className="text-[0.625rem] font-medium text-txt-tertiary">OPEN BETA</span>
         </div>
       </div>
     </footer>

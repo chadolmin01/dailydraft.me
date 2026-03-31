@@ -60,14 +60,14 @@ export function CoffeeChatAcceptModal({
       <div className="px-6 py-5 space-y-5 max-h-[70vh] overflow-y-auto">
 
         {/* Recipient */}
-        <div className="flex items-center gap-2 px-3 py-2 bg-surface-sunken border border-border">
-          <span className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest">TO</span>
+        <div className="flex items-center gap-2 px-3 py-2 bg-surface-sunken rounded-xl border border-border">
+          <span className="text-[0.625rem] font-medium text-txt-tertiary">TO</span>
           <span className="text-sm font-bold text-txt-primary">{requesterName}님에게</span>
         </div>
 
         {/* Welcome Message */}
         <div>
-          <label className="block text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-1.5">
+          <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-1.5">
             환영 메시지
           </label>
           <textarea
@@ -75,18 +75,18 @@ export function CoffeeChatAcceptModal({
             onChange={e => setMessage(e.target.value)}
             rows={3}
             placeholder="상대방에게 전할 메시지를 작성하세요..."
-            className="w-full px-3 py-2.5 text-sm border border-border-strong bg-surface-card text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-brand resize-none"
+            className="w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-brand resize-none"
           />
         </div>
 
         {/* Contact Info */}
         <div>
-          <label className="block text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-1.5">
+          <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-1.5">
             연락처 <span className="text-status-danger-text">*</span>
           </label>
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-surface-sunken border border-border flex items-center justify-center shrink-0">
+              <div className="w-8 h-8 bg-surface-sunken rounded-xl border border-border flex items-center justify-center shrink-0">
                 <Mail size={14} className="text-txt-tertiary" />
               </div>
               <input
@@ -94,11 +94,13 @@ export function CoffeeChatAcceptModal({
                 value={contactEmail}
                 onChange={e => setContactEmail(e.target.value)}
                 placeholder="이메일"
-                className="flex-1 px-3 py-2 text-sm border border-border-strong bg-surface-card text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-brand"
+                inputMode="email"
+                autoComplete="email"
+                className="flex-1 px-3 py-2 text-base sm:text-sm border border-border bg-surface-card rounded-lg text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-brand"
               />
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-surface-sunken border border-border flex items-center justify-center shrink-0">
+              <div className="w-8 h-8 bg-surface-sunken rounded-xl border border-border flex items-center justify-center shrink-0">
                 <Phone size={14} className="text-txt-tertiary" />
               </div>
               <input
@@ -106,11 +108,11 @@ export function CoffeeChatAcceptModal({
                 value={contactPhone}
                 onChange={e => setContactPhone(e.target.value)}
                 placeholder="전화번호"
-                className="flex-1 px-3 py-2 text-sm border border-border-strong bg-surface-card text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-brand"
+                className="flex-1 px-3 py-2 text-base sm:text-sm border border-border bg-surface-card rounded-lg text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-brand"
               />
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-surface-sunken border border-border flex items-center justify-center shrink-0">
+              <div className="w-8 h-8 bg-surface-sunken rounded-xl border border-border flex items-center justify-center shrink-0">
                 <MessageCircle size={14} className="text-txt-tertiary" />
               </div>
               <input
@@ -118,7 +120,7 @@ export function CoffeeChatAcceptModal({
                 value={contactKakao}
                 onChange={e => setContactKakao(e.target.value)}
                 placeholder="카카오톡 ID"
-                className="flex-1 px-3 py-2 text-sm border border-border-strong bg-surface-card text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-brand"
+                className="flex-1 px-3 py-2 text-base sm:text-sm border border-border bg-surface-card rounded-lg text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-brand"
               />
             </div>
           </div>
@@ -131,7 +133,7 @@ export function CoffeeChatAcceptModal({
 
         {/* Requirements */}
         <div>
-          <label className="block text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-1.5">
+          <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-1.5">
             요청사항 <span className="text-txt-disabled font-normal">(선택)</span>
           </label>
           <textarea
@@ -139,7 +141,7 @@ export function CoffeeChatAcceptModal({
             onChange={e => setRequirements(e.target.value)}
             rows={2}
             placeholder="포트폴리오, 이력서 등 요청할 내용이 있다면 작성하세요..."
-            className="w-full px-3 py-2.5 text-sm border border-border-strong bg-surface-card text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-brand resize-none"
+            className="w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-brand resize-none"
           />
         </div>
       </div>
@@ -150,7 +152,7 @@ export function CoffeeChatAcceptModal({
           type="button"
           onClick={onClose}
           disabled={isLoading}
-          className="px-4 py-2 text-xs font-bold border border-border-strong text-txt-secondary hover:bg-surface-sunken transition-colors"
+          className="px-4 py-2 text-xs font-bold border border-border text-txt-secondary hover:bg-surface-sunken transition-colors"
         >
           취소
         </button>

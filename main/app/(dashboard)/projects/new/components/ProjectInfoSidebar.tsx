@@ -41,7 +41,7 @@ export function ProjectInfoSidebar({
 
       {/* Roles */}
       <div>
-        <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-wider mb-2">
+        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-2">
           {theme.rolesLabel}
         </h3>
         <div className="grid grid-cols-3 gap-1.5">
@@ -65,7 +65,7 @@ export function ProjectInfoSidebar({
 
       {/* Project Info */}
       <div>
-        <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-wider mb-3">
+        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
           프로젝트 정보
         </h3>
         <div className="space-y-4">
@@ -84,7 +84,7 @@ export function ProjectInfoSidebar({
                   className={`px-3 py-1.5 text-xs border transition-colors ${
                     locationType === opt.value
                       ? theme.chipOn
-                      : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong'
+                      : 'bg-surface-card text-txt-secondary border-border hover:border-border'
                   }`}
                 >
                   {opt.label}
@@ -108,7 +108,7 @@ export function ProjectInfoSidebar({
                   className={`px-3 py-1.5 text-xs border transition-colors ${
                     timeCommitment === opt.value
                       ? theme.chipOn
-                      : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong'
+                      : 'bg-surface-card text-txt-secondary border-border hover:border-border'
                   }`}
                 >
                   {opt.label}
@@ -132,7 +132,7 @@ export function ProjectInfoSidebar({
                   className={`px-3 py-1.5 text-xs border transition-colors ${
                     compensationType === opt.value
                       ? theme.chipOn
-                      : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong'
+                      : 'bg-surface-card text-txt-secondary border-border hover:border-border'
                   }`}
                 >
                   {opt.label}
@@ -145,7 +145,7 @@ export function ProjectInfoSidebar({
                 value={compensationDetails}
                 onChange={(e) => onSetCompensationDetails(e.target.value)}
                 placeholder="상세 (예: 지분 5%, 월 50만원)"
-                className="px-3 py-2 border border-border text-sm mt-2 ml-5 w-[calc(100%-1.25rem)] focus:outline-none focus:border-border-strong bg-transparent"
+                className="px-3 py-2 border border-border text-base sm:text-sm mt-2 ml-5 w-[calc(100%-1.25rem)] focus:outline-none focus:border-border bg-transparent"
               />
             )}
           </div>

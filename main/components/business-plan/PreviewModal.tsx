@@ -92,7 +92,7 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-surface-card w-full max-w-5xl h-[95vh] shadow-brutal flex flex-col">
+      <div className="bg-surface-card w-full max-w-5xl h-[95vh] shadow-lg flex flex-col">
         {/* Header */}
         <div className="px-6 py-4 border-b border-border flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
@@ -119,7 +119,7 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
               type="button"
               onClick={() => handleExport('pdf')}
               disabled={isExporting}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-draft-blue hover:opacity-90 transition-colors disabled:opacity-50 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-draft-blue hover:opacity-90 transition-colors disabled:opacity-50 hover:opacity-90 active:scale-[0.97]"
             >
               {isExporting && exportFormat === 'pdf' ? (
                 <Loader2 size={16} className="animate-spin" />
@@ -133,7 +133,7 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
               type="button"
               onClick={() => handleExport('docx')}
               disabled={isExporting}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-txt-secondary bg-surface-card border border-border-strong hover:bg-black hover:text-white transition-colors disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-txt-secondary bg-surface-card rounded-lg border border-border hover:bg-black hover:text-white transition-colors disabled:opacity-50"
             >
               {isExporting && exportFormat === 'docx' ? (
                 <Loader2 size={16} className="animate-spin" />
@@ -149,7 +149,7 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
                 <button
                   type="button"
                   onClick={onComplete}
-                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-status-success-text hover:bg-status-success-text/90 transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-status-success-text hover:bg-status-success-text/90 transition-colors hover:opacity-90 active:scale-[0.97]"
                 >
                   워크플로우 완료
                 </button>
@@ -173,7 +173,7 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
         <div className="flex-1 overflow-y-auto p-8 bg-surface-sunken print:p-0 print:bg-white">
           <div
             ref={previewRef}
-            className="max-w-[210mm] mx-auto bg-surface-card shadow-sharp print:shadow-none"
+            className="max-w-[210mm] mx-auto bg-surface-card shadow-md print:shadow-none"
           >
             {/* Cover Page */}
             <div className="p-12 min-h-[297mm] flex flex-col print:page-break-after-always">
@@ -184,7 +184,7 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
                 <p className="text-xl text-txt-secondary mb-8">
                   {data.basicInfo.oneLiner}
                 </p>
-                <div className="px-6 py-3 border border-border-strong text-txt-tertiary">
+                <div className="px-6 py-3 border border-border text-txt-tertiary">
                   {template.name}
                 </div>
               </div>
@@ -222,7 +222,7 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
                   key={section.type}
                   className="mb-12 print:page-break-inside-avoid"
                 >
-                  <div className="border-b border-border-strong pb-2 mb-6">
+                  <div className="border-b border-border pb-2 mb-6">
                     <h2 className="text-xl font-bold text-txt-primary">
                       {section.title}
                     </h2>
@@ -261,7 +261,7 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
                   key={section.type}
                   className="mb-12 p-6 bg-surface-sunken print:page-break-inside-avoid"
                 >
-                  <div className="border-b border-border-strong pb-2 mb-6">
+                  <div className="border-b border-border pb-2 mb-6">
                     <h2 className="text-lg font-bold text-txt-primary">
                       {section.title}
                     </h2>

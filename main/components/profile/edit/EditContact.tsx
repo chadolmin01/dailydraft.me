@@ -19,7 +19,7 @@ export const EditContact: React.FC<EditContactProps & EditSocialLinksProps> = ({
     <>
       {/* 연락처 */}
       <section>
-        <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4 flex items-center gap-2">
+        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4 flex items-center gap-2">
           <Mail size={14} /> 연락처
         </h3>
         <div>
@@ -29,7 +29,9 @@ export const EditContact: React.FC<EditContactProps & EditSocialLinksProps> = ({
             value={contactEmail}
             onChange={(e) => setContactEmail(e.target.value)}
             placeholder={userEmail || 'email@example.com'}
-            className="w-full px-3 py-2.5 text-sm border border-border bg-surface-card focus:outline-none focus:border-accent transition-colors"
+            inputMode="email"
+            autoComplete="email"
+            className="w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:border-accent transition-colors"
           />
           <p className="text-xs text-txt-tertiary mt-1">커피챗 수락 시 상대방에게 공개됩니다</p>
         </div>
@@ -37,7 +39,7 @@ export const EditContact: React.FC<EditContactProps & EditSocialLinksProps> = ({
 
       {/* 소셜 링크 */}
       <section>
-        <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4 flex items-center gap-2">
+        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4 flex items-center gap-2">
           <Link size={14} /> 소셜 링크
         </h3>
         <div className="space-y-3">
@@ -50,7 +52,8 @@ export const EditContact: React.FC<EditContactProps & EditSocialLinksProps> = ({
               value={portfolioUrl}
               onChange={(e) => setPortfolioUrl(e.target.value)}
               placeholder="https://myportfolio.com"
-              className="w-full px-3 py-2.5 text-sm border border-border bg-surface-card focus:outline-none focus:border-accent transition-colors"
+              inputMode="url"
+              className="w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:border-accent transition-colors"
             />
           </div>
           <div>
@@ -62,7 +65,8 @@ export const EditContact: React.FC<EditContactProps & EditSocialLinksProps> = ({
               value={githubUrl}
               onChange={(e) => setGithubUrl(e.target.value)}
               placeholder="https://github.com/username"
-              className="w-full px-3 py-2.5 text-sm border border-border bg-surface-card focus:outline-none focus:border-accent transition-colors"
+              inputMode="url"
+              className="w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:border-accent transition-colors"
             />
           </div>
           <div>
@@ -74,7 +78,8 @@ export const EditContact: React.FC<EditContactProps & EditSocialLinksProps> = ({
               value={linkedinUrl}
               onChange={(e) => setLinkedinUrl(e.target.value)}
               placeholder="https://linkedin.com/in/username"
-              className="w-full px-3 py-2.5 text-sm border border-border bg-surface-card focus:outline-none focus:border-accent transition-colors"
+              inputMode="url"
+              className="w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:border-accent transition-colors"
             />
           </div>
         </div>

@@ -1,8 +1,11 @@
 'use client'
 
 import React from 'react'
-import { Check } from 'lucide-react'
-import type { CategoryItem, TrendingTag, ActiveTab } from './types'
+import { Check, ChevronRight, Rocket, Sparkles } from 'lucide-react'
+import Link from 'next/link'
+import { useAuth } from '@/src/context/AuthContext'
+import { cleanNickname } from '@/src/lib/clean-nickname'
+import type { CategoryItem, TrendingTag, ActiveTab, TalentCard, UserRecommendation } from './types'
 
 interface ExploreSidebarProps {
   activeTab: ActiveTab
@@ -13,6 +16,11 @@ interface ExploreSidebarProps {
   onTagClick: (tag: string) => void
   recruitingOnly: boolean
   onRecruitingOnlyChange: (value: boolean) => void
+  talentCards?: TalentCard[]
+  sidebarRecs?: UserRecommendation[]
+  recsLoading?: boolean
+  onSelectPeople?: () => void
+  onSelectProfile?: (id: string, byUserId: boolean) => void
 }
 
 export function ExploreSidebar({
@@ -24,50 +32,21 @@ export function ExploreSidebar({
   onTagClick,
   recruitingOnly,
   onRecruitingOnlyChange,
+  talentCards = [],
+  sidebarRecs = [],
+  recsLoading,
+  onSelectPeople,
+  onSelectProfile,
 }: ExploreSidebarProps) {
+  const { isAuthenticated } = useAuth()
+  const showAiRecs = isAuthenticated && sidebarRecs.length > 0
+  const showLoading = isAuthenticated && recsLoading && sidebarRecs.length === 0
   return (
     <div className="space-y-4">
-      {/* 카테고리 */}
-      <div className="relative bg-surface-card border border-border-strong p-4 shadow-sharp">
-        <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-black/20" />
-        <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-black/20" />
-        <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-2">
-          <span className="w-4 h-4 bg-black text-white flex items-center justify-center text-[0.5rem] font-bold">{activeTab === 'projects' ? 'C' : 'R'}</span>
-          {activeTab === 'projects' ? 'CATEGORY' : 'ROLE'}
-        </h3>
-        <nav className="space-y-0.5">
-          {categories.map((cat, idx) => (
-            <button
-              key={cat.id}
-              onClick={() => onCategoryChange(cat.id)}
-              className={`w-full flex items-center justify-between px-2.5 py-2 text-sm transition-all border ${
-                selectedCategory === cat.id
-                  ? 'bg-brand text-white border-brand shadow-solid-sm'
-                  : 'text-txt-secondary border-transparent hover:bg-surface-sunken hover:border-border'
-              }`}
-            >
-              <span className="flex items-center gap-2">
-                <span className={`text-[0.625rem] font-mono ${selectedCategory === cat.id ? 'text-white/60' : 'text-txt-disabled'}`}>{String(idx).padStart(2, '0')}</span>
-                <cat.icon size={13} />
-                {cat.label}
-              </span>
-              {cat.count > 0 && (
-                <span className={`text-[0.625rem] font-mono px-1.5 py-0.5 ${
-                  selectedCategory === cat.id ? 'bg-white/20 text-white' : 'bg-surface-sunken text-txt-tertiary'
-                }`}>
-                  {cat.count}
-                </span>
-              )}
-            </button>
-          ))}
-        </nav>
-      </div>
-
       {/* 트렌딩 태그 */}
-      <div className="relative bg-surface-card border border-border-strong p-4 shadow-sharp">
-        <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-2">
-          <span className="w-4 h-4 bg-indicator-trending text-white flex items-center justify-center text-[0.5rem] font-bold">{activeTab === 'projects' ? 'T' : 'S'}</span>
-          {activeTab === 'projects' ? 'TRENDING' : 'POPULAR SKILLS'}
+      <div className="bg-surface-card rounded-xl border border-border p-4">
+        <h3 className="text-[0.6875rem] font-medium text-txt-tertiary mb-3">
+          {activeTab === 'projects' ? '트렌딩' : '인기 스킬'}
         </h3>
         <div className="space-y-1.5">
           {trendingTags.map((item, idx) => {
@@ -80,12 +59,12 @@ export function ExploreSidebar({
               >
                 <div className="flex items-center justify-between mb-0.5">
                   <span className="flex items-center gap-1.5 text-sm text-txt-secondary group-hover:text-txt-primary transition-colors">
-                    <span className="w-4 h-4 bg-surface-sunken border border-border flex items-center justify-center text-[0.5rem] font-mono text-txt-disabled">{idx + 1}</span>
+                    <span className="w-4 h-4 bg-surface-sunken rounded-xl border border-border flex items-center justify-center text-[0.5rem] font-mono text-txt-disabled">{idx + 1}</span>
                     {item.tag}
                   </span>
                   <span className="text-[0.625rem] font-mono text-txt-disabled">{item.count}</span>
                 </div>
-                <div className="w-full h-1 bg-surface-sunken border border-border overflow-hidden">
+                <div className="w-full h-1 bg-surface-sunken rounded-xl border border-border overflow-hidden">
                   <div className="h-full bg-indicator-trending/60 transition-all group-hover:bg-indicator-trending" style={{ width: `${barWidth}%` }} />
                 </div>
               </button>
@@ -96,14 +75,11 @@ export function ExploreSidebar({
 
       {/* 필터 */}
       {activeTab === 'projects' && (
-        <div className="relative bg-surface-card border border-border-strong p-4 shadow-sharp">
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-2">
-            <span className="w-4 h-4 bg-indicator-online text-white flex items-center justify-center text-[0.5rem] font-bold">F</span>
-            FILTER
-          </h3>
+        <div className="bg-surface-card rounded-xl border border-border p-4">
+          <h3 className="text-[0.6875rem] font-medium text-txt-tertiary mb-3">필터</h3>
           <label className="flex items-center gap-2.5 text-sm text-txt-secondary cursor-pointer group">
             <div className={`w-4 h-4 border flex items-center justify-center transition-all ${
-              recruitingOnly ? 'bg-indicator-online border-indicator-online' : 'border-border-strong group-hover:border-txt-secondary'
+              recruitingOnly ? 'bg-indicator-online border-indicator-online' : 'border-border group-hover:border-txt-secondary'
             }`}>
               {recruitingOnly && <Check size={10} className="text-white" strokeWidth={3} />}
             </div>
@@ -115,7 +91,7 @@ export function ExploreSidebar({
             />
             모집 중만 보기
           </label>
-          <div className="mt-3 pt-3 border-t border-dashed border-border">
+          <div className="mt-3 pt-3 border-t border-border">
             <p className="text-[0.625rem] font-mono text-txt-disabled flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 bg-indicator-online animate-pulse" />
               {recruitingOnly ? 'ACTIVE FILTER ON' : 'NO FILTER APPLIED'}
@@ -125,11 +101,8 @@ export function ExploreSidebar({
       )}
 
       {activeTab === 'people' && (
-        <div className="relative bg-surface-card border border-border-strong p-4 shadow-sharp">
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-2">
-            <span className="w-4 h-4 bg-brand text-white flex items-center justify-center text-[0.5rem] font-bold">i</span>
-            INFO
-          </h3>
+        <div className="bg-surface-card rounded-xl border border-border p-4">
+          <h3 className="text-[0.6875rem] font-medium text-txt-tertiary mb-3">정보</h3>
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
               <span className="text-txt-tertiary">공개 프로필</span>
@@ -146,7 +119,7 @@ export function ExploreSidebar({
               </div>
             )}
           </div>
-          <div className="mt-3 pt-3 border-t border-dashed border-border">
+          <div className="mt-3 pt-3 border-t border-border">
             <p className="text-[0.625rem] font-mono text-txt-disabled flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 bg-brand animate-pulse" />
               {selectedCategory !== 'all' ? 'ROLE FILTER ON' : 'ALL ROLES'}
@@ -154,6 +127,83 @@ export function ExploreSidebar({
           </div>
         </div>
       )}
+      {/* 추천 인재 */}
+      {onSelectProfile && (
+        <div className="bg-surface-card rounded-xl border border-border p-4">
+          <h3 className="text-[0.6875rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
+            {showLoading ? (
+              <span className="flex items-center gap-1.5">
+                <Sparkles size={10} className="animate-pulse text-brand" />
+                AI 매칭 중...
+              </span>
+            ) : showAiRecs ? 'AI 추천' : 'PEOPLE'}
+          </h3>
+          <div className="space-y-1">
+            {showLoading ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="flex items-center gap-3 p-2">
+                  <div className="w-8 h-8 bg-surface-sunken rounded-full skeleton-shimmer" />
+                  <div className="flex-1 space-y-1.5">
+                    <div className="h-3 bg-surface-sunken rounded w-16 skeleton-shimmer" />
+                    <div className="h-2.5 bg-surface-sunken rounded w-24 skeleton-shimmer" />
+                  </div>
+                </div>
+              ))
+            ) : showAiRecs ? (
+              sidebarRecs.slice(0, 4).map((rec) => (
+                <button key={rec.user_id} onClick={() => onSelectProfile(rec.user_id, true)} className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-surface-sunken transition-colors text-left">
+                  <div className="w-8 h-8 bg-brand-bg rounded-full flex items-center justify-center text-xs font-bold text-brand shrink-0">
+                    {cleanNickname(rec.nickname || '??').substring(0, 2)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-txt-primary truncate">{cleanNickname(rec.nickname || '')}</p>
+                    <p className="text-[0.6875rem] text-txt-tertiary truncate">{rec.match_reason}</p>
+                  </div>
+                  <span className="text-[0.625rem] font-bold text-brand shrink-0">{rec.match_score}%</span>
+                </button>
+              ))
+            ) : (
+              talentCards.slice(0, 4).map((t) => (
+                <button key={t.id} onClick={() => onSelectProfile(t.id, false)} className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-surface-sunken transition-colors text-left">
+                  <div className="w-8 h-8 bg-surface-sunken rounded-full flex items-center justify-center text-xs font-bold text-txt-secondary shrink-0">
+                    {t.name.substring(0, 2)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-txt-primary truncate">{t.name}</p>
+                    <p className="text-[0.6875rem] text-txt-tertiary truncate">{t.university || t.role}</p>
+                  </div>
+                  <span className={`text-[0.625rem] font-bold shrink-0 ${t.status === 'OPEN' ? 'text-indicator-online' : 'text-txt-tertiary'}`}>
+                    {t.status}
+                  </span>
+                </button>
+              ))
+            )}
+          </div>
+          {onSelectPeople && (
+            <button
+              onClick={onSelectPeople}
+              className="w-full mt-2 pt-2 border-t border-border text-xs text-txt-tertiary hover:text-brand flex items-center justify-center gap-1 py-1.5 transition-colors"
+            >
+              전체 보기 <ChevronRight size={12} />
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* 새 프로젝트 CTA */}
+      <div className="bg-brand rounded-xl p-4 text-white">
+        <div className="flex items-center gap-2 mb-2">
+          <Rocket size={16} />
+          <span className="text-xs font-bold">새 프로젝트</span>
+        </div>
+        <p className="text-white/70 text-xs mb-3">팀을 구성하고 프로젝트를 시작하세요</p>
+        <Link
+          href={isAuthenticated ? '/projects/new' : '/login'}
+          className="block w-full text-center py-2 bg-white text-brand text-sm font-bold rounded-lg hover:bg-white/90 transition-colors"
+        >
+          {isAuthenticated ? '시작하기' : '로그인'}
+        </Link>
+      </div>
     </div>
   )
 }

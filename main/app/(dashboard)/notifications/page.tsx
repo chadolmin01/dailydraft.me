@@ -41,12 +41,12 @@ const typeConfig: Record<string, { icon: React.ElementType; color: string; readC
   application_received: { icon: FileText, color: 'text-status-info-text bg-status-info-bg', readColor: 'text-txt-disabled bg-surface-sunken' },
   application_accepted: { icon: UserCheck, color: 'text-status-success-text bg-status-success-bg', readColor: 'text-txt-disabled bg-surface-sunken' },
   application_rejected: { icon: UserX, color: 'text-status-danger-text bg-status-danger-bg', readColor: 'text-txt-disabled bg-surface-sunken' },
-  connection: { icon: Link2, color: 'text-purple-600 bg-purple-100', readColor: 'text-txt-disabled bg-surface-sunken' },
+  connection: { icon: Link2, color: 'text-brand bg-brand-bg', readColor: 'text-txt-disabled bg-surface-sunken' },
   deadline: { icon: Clock, color: 'text-indicator-trending bg-status-warning-bg', readColor: 'text-txt-disabled bg-surface-sunken' },
   coffee_chat: { icon: Coffee, color: 'text-indicator-premium-border bg-status-warning-bg', readColor: 'text-txt-disabled bg-surface-sunken' },
   project_invitation: { icon: UserPlus, color: 'text-brand bg-brand-bg', readColor: 'text-txt-disabled bg-surface-sunken' },
   comment: { icon: MessageSquare, color: 'text-txt-secondary bg-surface-sunken', readColor: 'text-txt-disabled bg-surface-sunken' },
-  recommendation: { icon: Check, color: 'text-cyan-600 bg-cyan-100', readColor: 'text-txt-disabled bg-surface-sunken' },
+  recommendation: { icon: Check, color: 'text-status-info-text bg-status-info-bg', readColor: 'text-txt-disabled bg-surface-sunken' },
   new_match: { icon: Check, color: 'text-indicator-online bg-status-success-bg', readColor: 'text-txt-disabled bg-surface-sunken' },
 }
 
@@ -66,7 +66,7 @@ function timeAgo(dateStr: string): string {
 
 export default function NotificationsPage() {
   const router = useRouter()
-  const { user } = useAuth()
+  const { user, isLoading: isAuthLoading } = useAuth()
   const queryClient = useQueryClient()
   const [showAll, setShowAll] = useState(false)
 
@@ -77,7 +77,7 @@ export default function NotificationsPage() {
       if (!res.ok) throw new Error('Failed to fetch')
       return res.json()
     },
-    enabled: !!user,
+    enabled: !isAuthLoading && !!user,
     refetchOnWindowFocus: true,
     staleTime: 10_000,
   })
@@ -184,7 +184,7 @@ export default function NotificationsPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-1 flex items-center gap-2">
+            <h1 className="text-[0.625rem] font-medium text-txt-tertiary mb-1 flex items-center gap-2">
               <Bell size={12} /> NOTIFICATIONS
             </h1>
             <p className="text-sm text-txt-tertiary">
@@ -195,7 +195,7 @@ export default function NotificationsPage() {
             <button
               onClick={() => markAllReadMutation.mutate()}
               disabled={markAllReadMutation.isPending}
-              className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-txt-secondary border border-border-strong hover:bg-surface-sunken transition-all"
+              className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-txt-secondary border border-border hover:bg-surface-sunken transition-all"
             >
               {markAllReadMutation.isPending ? (
                 <Loader2 size={14} className="animate-spin" />
@@ -213,7 +213,7 @@ export default function NotificationsPage() {
             onClick={() => setShowAll(false)}
             className={`px-4 py-1.5 text-xs font-bold transition-all ${
               !showAll
-                ? 'bg-black text-white'
+                ? 'bg-surface-inverse text-txt-inverse'
                 : 'text-txt-tertiary hover:text-txt-primary border border-transparent hover:border-border'
             }`}
           >
@@ -223,7 +223,7 @@ export default function NotificationsPage() {
             onClick={() => setShowAll(true)}
             className={`px-4 py-1.5 text-xs font-bold transition-all ${
               showAll
-                ? 'bg-black text-white'
+                ? 'bg-surface-inverse text-txt-inverse'
                 : 'text-txt-tertiary hover:text-txt-primary border border-transparent hover:border-border'
             }`}
           >
@@ -232,17 +232,29 @@ export default function NotificationsPage() {
         </div>
 
         {/* Notification List */}
-        <div className="bg-surface-card border border-border-strong shadow-sharp">
+        <div className="bg-surface-card rounded-xl border border-border shadow-md">
           {isLoading ? (
-            <div className="flex items-center justify-center py-16">
-              <Loader2 size={24} className="animate-spin text-txt-disabled" />
+            <div className="p-4 space-y-3">
+              {[0,1,2,3].map(i => (
+                <div key={i} className="flex items-start gap-4 px-5 py-4">
+                  <div className="w-10 h-10 bg-surface-sunken rounded skeleton-shimmer shrink-0" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 bg-surface-sunken rounded skeleton-shimmer w-48" />
+                    <div className="h-3 bg-surface-sunken rounded skeleton-shimmer w-full" />
+                    <div className="h-2.5 bg-surface-sunken rounded skeleton-shimmer w-16" />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : displayList.length === 0 ? (
             <div className="py-16 text-center">
-              <Bell size={32} className="mx-auto text-txt-disabled mb-3" />
-              <p className="text-sm text-txt-tertiary">
-                {showAll ? '알림 내역이 없습니다' : '새로운 알림이 없습니다'}
+              <div className="w-16 h-16 rounded-full bg-surface-sunken flex items-center justify-center mx-auto mb-4">
+                <Bell size={28} className="text-txt-tertiary bell-swing" strokeWidth={1.5} />
+              </div>
+              <p className="text-sm font-medium text-txt-secondary mb-1">
+                {showAll ? '알림 내역이 없습니다' : '새로운 알림이 없어요'}
               </p>
+              <p className="text-xs text-txt-disabled">프로젝트 활동이나 커피챗 요청이 오면 여기에 표시됩니다</p>
               {!showAll && allNotifications.length > 0 && (
                 <button
                   onClick={() => setShowAll(true)}

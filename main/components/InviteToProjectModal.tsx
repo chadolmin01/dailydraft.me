@@ -55,9 +55,9 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
   if (sent) {
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-        <div className="bg-surface-card border border-border-strong shadow-brutal w-full max-w-md" onClick={e => e.stopPropagation()}>
+        <div className="bg-surface-card rounded-xl border border-border shadow-lg w-full max-w-md" onClick={e => e.stopPropagation()}>
           <div className="p-6 text-center">
-            <div className="w-14 h-14 bg-status-success-bg border border-status-success-text/20 flex items-center justify-center mb-4 mx-auto shadow-solid-sm">
+            <div className="w-14 h-14 bg-status-success-bg border border-status-success-text/20 flex items-center justify-center mb-4 mx-auto shadow-sm">
               <Check size={24} className="text-status-success-text" />
             </div>
             <h3 className="text-xl font-bold text-txt-primary mb-2">초대 완료!</h3>
@@ -78,9 +78,9 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-surface-card border border-border-strong shadow-brutal w-full max-w-md max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
+      <div className="bg-surface-card rounded-xl border border-border shadow-lg w-full max-w-md max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border-strong bg-surface-sunken shrink-0">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-surface-sunken shrink-0">
           <h3 className="text-sm font-bold text-txt-primary">프로젝트에 초대</h3>
           <button onClick={onClose} className="p-2.5 sm:p-1 hover:bg-surface-card transition-colors">
             <X size={16} className="text-txt-disabled" />
@@ -90,8 +90,10 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
         {/* Body */}
         <div className="p-4 space-y-5 overflow-y-auto flex-1">
           {loadingProjects ? (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="animate-spin text-txt-disabled" size={20} />
+            <div className="space-y-2 py-2">
+              {[0,1,2].map(i => (
+                <div key={i} className="h-12 bg-surface-sunken rounded skeleton-shimmer" />
+              ))}
             </div>
           ) : activeProjects.length === 0 ? (
             <div className="text-center py-8">
@@ -100,7 +102,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
               <p className="text-xs text-txt-tertiary mb-4">프로젝트를 먼저 만들어주세요</p>
               <a
                 href="/projects/new"
-                className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand text-white text-xs font-bold border border-brand hover:bg-brand-hover shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand text-white text-xs font-bold border border-brand hover:bg-brand-hover hover:opacity-90 active:scale-[0.97] transition-all"
               >
                 프로젝트 만들기
               </a>
@@ -109,7 +111,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
             <>
               {/* 1. Project Selection */}
               <div>
-                <label className="block text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-2">
+                <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-2">
                   1. 프로젝트 선택
                 </label>
                 <div className="space-y-1.5">
@@ -120,7 +122,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
                       className={`w-full flex items-center justify-between px-3 py-2.5 text-left text-sm border transition-all ${
                         selectedProject === opp.id
                           ? 'bg-brand-bg text-brand border-brand-border font-bold'
-                          : 'bg-surface-card text-txt-secondary border-border-strong hover:bg-surface-sunken'
+                          : 'bg-surface-card text-txt-secondary border-border hover:bg-surface-sunken'
                       }`}
                     >
                       <span className="truncate">{opp.title}</span>
@@ -135,7 +137,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
               {/* 2. Role Selection */}
               {selectedProject && (
                 <div>
-                  <label className="block text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-2">
+                  <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-2">
                     2. 역할 선택
                   </label>
                   {neededRoles.length > 0 ? (
@@ -146,8 +148,8 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
                           onClick={() => setSelectedRole(role)}
                           className={`px-3 py-1.5 text-xs font-bold border transition-all ${
                             selectedRole === role
-                              ? 'bg-brand text-white border-brand shadow-solid-sm'
-                              : 'bg-surface-card text-txt-secondary border-border-strong hover:bg-black hover:text-white'
+                              ? 'bg-brand text-white border-brand shadow-sm'
+                              : 'bg-surface-card text-txt-secondary border-border hover:bg-black hover:text-white'
                           }`}
                         >
                           {role}
@@ -160,7 +162,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
                       placeholder="역할을 입력하세요 (예: Frontend Developer)"
                       value={selectedRole || ''}
                       onChange={e => setSelectedRole(e.target.value || null)}
-                      className="w-full px-3 py-2 text-sm border border-border-strong bg-surface-card focus:outline-none focus:border-brand"
+                      className="w-full px-3 py-2 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:border-brand"
                     />
                   )}
                 </div>
@@ -169,7 +171,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
               {/* 3. Message */}
               {selectedProject && selectedRole && (
                 <div>
-                  <label className="block text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-2">
+                  <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-2">
                     3. 메시지 (선택)
                   </label>
                   <textarea
@@ -178,7 +180,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
                     placeholder="함께 하고 싶어서 연락드립니다..."
                     rows={3}
                     maxLength={500}
-                    className="w-full px-3 py-2 text-sm border border-border-strong bg-surface-card focus:outline-none focus:border-brand resize-none"
+                    className="w-full px-3 py-2 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:border-brand resize-none"
                   />
                 </div>
               )}
@@ -192,11 +194,11 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
 
         {/* Footer */}
         {activeProjects.length > 0 && (
-          <div className="px-4 py-3 border-t border-border-strong shrink-0">
+          <div className="px-4 py-3 border-t border-border shrink-0">
             <button
               onClick={handleSubmit}
               disabled={!selectedProject || !selectedRole || createInvitation.isPending}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-brand text-white border border-brand text-sm font-bold hover:bg-brand-hover shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-brand text-white border border-brand text-sm font-bold hover:bg-brand-hover hover:opacity-90 active:scale-[0.97] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {createInvitation.isPending ? (
                 <><Loader2 size={14} className="animate-spin" /> 전송 중...</>

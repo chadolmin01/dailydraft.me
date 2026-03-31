@@ -51,7 +51,7 @@ export function ExploreTabBar({
   return (
     <>
       {/* 탭 + 모바일 검색 아이콘 */}
-      <div className="border-b-2 border-border-strong mb-4">
+      <div className="border-b-2 border-border mb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center shrink-0">
             <button
@@ -92,14 +92,14 @@ export function ExploreTabBar({
       {/* 모바일 인라인 검색 */}
       {mobileSearchOpen && onSearchInputChange && (
         <div className="md:hidden mb-3 animate-in slide-in-from-top-2 duration-150">
-          <div className="relative flex items-center bg-surface-card border border-border-strong">
+          <div className="relative flex items-center bg-surface-card rounded-xl border border-border">
             <Search size={16} className="absolute left-3 text-txt-disabled" />
             <input
               type="text"
               value={searchInput ?? ''}
               onChange={(e) => onSearchInputChange(e.target.value)}
               autoFocus
-              className="w-full pl-10 pr-10 py-2.5 text-sm bg-transparent focus:outline-none"
+              className="w-full pl-10 pr-10 py-2.5 text-base sm:text-sm bg-transparent focus:outline-none"
               placeholder="프로젝트, 사람, 기술 검색..."
             />
             {searchInput && (
@@ -128,7 +128,7 @@ export function ExploreTabBar({
               <tab.icon size={12} />
               {tab.label}
               {tab.beta && (
-                <span className="text-[0.5rem] font-mono font-bold bg-brand text-white px-1 py-px leading-none uppercase">beta</span>
+                <span className="text-[0.5rem] font-medium bg-brand text-white px-1 py-px leading-none">beta</span>
               )}
             </button>
           ))}
@@ -148,7 +148,7 @@ export function ExploreTabBar({
               <opt.icon size={12} />
               {opt.label}
               {opt.beta && (
-                <span className="text-[0.5rem] font-mono font-bold bg-brand text-white px-1 py-px leading-none uppercase">beta</span>
+                <span className="text-[0.5rem] font-medium bg-brand text-white px-1 py-px leading-none">beta</span>
               )}
             </button>
           ))}
@@ -164,8 +164,8 @@ export function ExploreTabBar({
               onClick={() => onTypeFilterChange(t.id as TypeFilter)}
               className={`shrink-0 px-3 py-1.5 text-xs font-bold border transition-all ${
                 typeFilter === t.id
-                  ? 'bg-black text-white border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]'
-                  : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]'
+                  ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
+                  : 'bg-surface-card text-txt-secondary border-border hover:border-border hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]'
               }`}
             >
               {t.label}
@@ -176,8 +176,8 @@ export function ExploreTabBar({
               onClick={onMobileFilterToggle}
               className={`lg:hidden shrink-0 ml-auto px-3 py-1.5 text-xs font-bold border transition-all flex items-center gap-1 ${
                 isMobileFilterOpen
-                  ? 'bg-black text-white border-black'
-                  : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong'
+                  ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
+                  : 'bg-surface-card text-txt-secondary border-border hover:border-border'
               }`}
             >
               <Filter size={12} />
@@ -196,8 +196,8 @@ export function ExploreTabBar({
               onClick={() => onPeopleRoleFilterChange(r.id as PeopleRoleFilter)}
               className={`shrink-0 px-3 py-1.5 text-xs font-bold border transition-all ${
                 peopleRoleFilter === r.id
-                  ? 'bg-black text-white border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]'
-                  : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]'
+                  ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
+                  : 'bg-surface-card text-txt-secondary border-border hover:border-border hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]'
               }`}
             >
               {r.label}
@@ -208,8 +208,8 @@ export function ExploreTabBar({
               onClick={onMobileFilterToggle}
               className={`lg:hidden shrink-0 ml-auto px-3 py-1.5 text-xs font-bold border transition-all flex items-center gap-1 ${
                 isMobileFilterOpen
-                  ? 'bg-black text-white border-black'
-                  : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong'
+                  ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
+                  : 'bg-surface-card text-txt-secondary border-border hover:border-border'
               }`}
             >
               <Filter size={12} />

@@ -51,7 +51,7 @@ export function ProfileBodyLeft({
     <div className="md:col-span-3 space-y-6">
       {/* Bio / Vision */}
       <section>
-        <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-2">
+        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-2">
           소개
         </h3>
         {displayBio ? (
@@ -68,7 +68,7 @@ export function ProfileBodyLeft({
             )}
           </>
         ) : (
-          <div className="px-4 py-5 border border-dashed border-border bg-surface-sunken/30 text-center">
+          <div className="px-4 py-5 border border-border bg-surface-sunken/30 text-center">
             <p className="text-xs text-txt-disabled font-mono">아직 자기소개가 없습니다</p>
           </div>
         )}
@@ -76,29 +76,29 @@ export function ProfileBodyLeft({
 
       {/* Portfolio */}
       <section>
-        <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-1">
+        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-1">
           <FileText size={11} /> 포트폴리오
         </h3>
 
         {/* Links */}
         {(profile.portfolio_url || profile.github_url || profile.linkedin_url) && (
           <div className="space-y-1.5 mb-4">
-            <p className="text-[0.5rem] font-mono font-bold text-txt-disabled uppercase tracking-widest mb-1.5">LINKS</p>
+            <p className="text-[0.5rem] font-medium text-txt-disabled mb-1.5">LINKS</p>
             <div className="flex flex-wrap gap-2">
               {profile.portfolio_url && (
-                <a href={profile.portfolio_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-surface-card border border-border-strong text-xs text-txt-secondary hover:border-brand hover:text-brand transition-colors">
+                <a href={profile.portfolio_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-surface-card rounded-xl border border-border text-xs text-txt-secondary hover:border-brand hover:text-brand transition-colors">
                   <Globe size={12} className="shrink-0" />
                   {profile.portfolio_url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}
                 </a>
               )}
               {profile.github_url && (
-                <a href={profile.github_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-surface-card border border-border-strong text-xs text-txt-secondary hover:border-brand hover:text-brand transition-colors">
+                <a href={profile.github_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-surface-card rounded-xl border border-border text-xs text-txt-secondary hover:border-brand hover:text-brand transition-colors">
                   <Github size={12} className="shrink-0" />
                   {profile.github_url.replace(/^https?:\/\/(www\.)?github\.com\/?/, '')}
                 </a>
               )}
               {profile.linkedin_url && (
-                <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-surface-card border border-border-strong text-xs text-txt-secondary hover:border-brand hover:text-brand transition-colors">
+                <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-surface-card rounded-xl border border-border text-xs text-txt-secondary hover:border-brand hover:text-brand transition-colors">
                   <Linkedin size={12} className="shrink-0" />
                   {profile.linkedin_url.replace(/^https?:\/\/(www\.)?linkedin\.com\/in\/?/, '')}
                 </a>
@@ -110,7 +110,7 @@ export function ProfileBodyLeft({
         {/* Items -- show max 2, expand to side panel */}
         {portfolioItems.length > 0 ? (
           <>
-            <p className="text-[0.5rem] font-mono font-bold text-txt-disabled uppercase tracking-widest mb-2">WORKS</p>
+            <p className="text-[0.5rem] font-medium text-txt-disabled mb-2">WORKS</p>
             <div className="grid grid-cols-2 gap-3">
               {portfolioItems.slice(0, 2).map((item) => (
                 <a
@@ -118,7 +118,7 @@ export function ProfileBodyLeft({
                   href={item.link_url || '#'}
                   target={item.link_url ? '_blank' : undefined}
                   rel={item.link_url ? 'noopener noreferrer' : undefined}
-                  className="bg-surface-card border border-border-strong overflow-hidden hover:shadow-sharp transition-all"
+                  className="bg-surface-card rounded-xl border border-border overflow-hidden hover:shadow-md hover-spring"
                 >
                   {item.image_url && (
                     <div className="relative h-20 bg-surface-card">
@@ -142,7 +142,7 @@ export function ProfileBodyLeft({
             )}
           </>
         ) : !profile.portfolio_url && !profile.github_url && !profile.linkedin_url ? (
-          <div className="px-4 py-5 border border-dashed border-border bg-surface-sunken/30 text-center">
+          <div className="px-4 py-5 border border-border bg-surface-sunken/30 text-center">
             <p className="text-xs text-txt-disabled font-mono">아직 등록된 포트폴리오가 없습니다</p>
           </div>
         ) : null}
@@ -150,7 +150,7 @@ export function ProfileBodyLeft({
 
       {/* User's Projects */}
       <section>
-        <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-1">
+        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-1">
           <Rocket size={11} /> 프로젝트
           <span className="text-[0.625rem] font-mono text-txt-tertiary">({userProjects.length})</span>
         </h3>
@@ -168,7 +168,7 @@ export function ProfileBodyLeft({
                         onSelectProject(project.id)
                       }
                     }}
-                    className="w-full text-left px-3 py-3 bg-surface-card border border-border-strong hover:shadow-sharp hover:border-brand/40 transition-all group/proj"
+                    className="w-full text-left px-3 py-3 bg-surface-card rounded-xl border border-border hover:shadow-md hover:border-brand/40 hover-spring group/proj"
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
@@ -193,7 +193,7 @@ export function ProfileBodyLeft({
                     {(project.interest_tags || []).length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-2">
                         {(project.interest_tags as string[]).slice(0, 3).map((tag: string) => (
-                          <span key={tag} className="text-[0.625rem] font-mono bg-white text-txt-tertiary px-1.5 py-0.5 border border-border">{tag}</span>
+                          <span key={tag} className="text-[0.625rem] font-mono bg-white text-txt-tertiary px-1.5 py-0.5 border border-border hover:bg-surface-sunken hover:text-txt-secondary transition-colors">{tag}</span>
                         ))}
                       </div>
                     )}
@@ -214,7 +214,7 @@ export function ProfileBodyLeft({
             )}
           </>
         ) : (
-          <div className="px-4 py-5 border border-dashed border-border bg-surface-sunken/30 text-center">
+          <div className="px-4 py-5 border border-border bg-surface-sunken/30 text-center">
             <p className="text-xs text-txt-disabled font-mono">아직 등록된 프로젝트가 없습니다</p>
           </div>
         )}
@@ -223,13 +223,13 @@ export function ProfileBodyLeft({
       {/* Contact */}
       {profile.contact_email && (
         <section>
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">
+          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
             연락처
           </h3>
           {isAuthenticated ? (
             <a
               href={`mailto:${profile.contact_email}`}
-              className="flex items-center gap-2 px-3 py-2 bg-surface-card hover:bg-surface-sunken text-sm text-txt-secondary transition-colors border border-border-strong hover:border-border-strong"
+              className="flex items-center gap-2 px-3 py-2 bg-surface-card hover:bg-surface-sunken text-sm text-txt-secondary transition-colors border border-border hover:border-border"
             >
               <Mail size={14} />
               {profile.contact_email}
@@ -237,7 +237,7 @@ export function ProfileBodyLeft({
           ) : (
             <a
               href="/login"
-              className="flex items-center gap-2 px-3 py-2 bg-surface-card hover:bg-surface-sunken text-sm text-txt-tertiary transition-colors border border-border-strong hover:border-border-strong"
+              className="flex items-center gap-2 px-3 py-2 bg-surface-card hover:bg-surface-sunken text-sm text-txt-tertiary transition-colors border border-border hover:border-border"
             >
               <Mail size={14} />
               로그인하면 연락처를 볼 수 있어요
@@ -263,7 +263,7 @@ export function ProfileBodyLeft({
           )}
         </>
       ) : (
-        <div className="bg-surface-inverse p-5 text-center border border-black shadow-solid">
+        <div className="bg-surface-inverse p-5 text-center border border-surface-inverse shadow-md">
           <Coffee size={20} className="text-txt-inverse/50 mx-auto mb-2" />
           <p className="text-sm font-medium text-txt-inverse mb-1">관심 있는 사람인가요?</p>
           <p className="text-xs text-txt-inverse/50 mb-3">로그인하면 쪽지와 커피챗이 가능해요</p>

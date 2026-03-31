@@ -89,7 +89,7 @@ export function useOpportunity(id: string | undefined) {
 
 // Fetch current user's opportunities
 export function useMyOpportunities() {
-  const { user } = useAuth()
+  const { user, isLoading: isAuthLoading } = useAuth()
 
   return useQuery({
     queryKey: opportunityKeys.my(user?.id ?? ''),
@@ -105,7 +105,7 @@ export function useMyOpportunities() {
       if (error) throw error
       return data as Opportunity[]
     }),
-    enabled: !!user?.id,
+    enabled: !isAuthLoading && !!user?.id,
     staleTime: 1000 * 60 * 2,
     retry: (failureCount) => failureCount < 3,
     retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
@@ -114,7 +114,7 @@ export function useMyOpportunities() {
 
 // Fetch recommended opportunities for user
 export function useRecommendedOpportunities(limit = 4) {
-  const { user } = useAuth()
+  const { user, isLoading: isAuthLoading } = useAuth()
 
   return useQuery({
     queryKey: opportunityKeys.recommended(user?.id ?? ''),
@@ -132,7 +132,7 @@ export function useRecommendedOpportunities(limit = 4) {
       if (error) throw error
       return data as OpportunityWithCreator[]
     }),
-    enabled: !!user?.id,
+    enabled: !isAuthLoading && !!user?.id,
     retry: (failureCount) => failureCount < 3,
     retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
   })

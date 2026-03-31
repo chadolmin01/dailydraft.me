@@ -34,7 +34,7 @@ export const EditAffiliation: React.FC<EditAffiliationProps> = ({
 }) => {
   return (
     <section>
-      <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4 flex items-center gap-2">
+      <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4 flex items-center gap-2">
         <Briefcase size={14} /> 소속 & 포지션
       </h3>
       <div className="space-y-4">
@@ -50,7 +50,7 @@ export const EditAffiliation: React.FC<EditAffiliationProps> = ({
                 className={`px-3 py-1.5 text-xs font-medium border transition-colors ${
                   affiliationType === opt.value
                     ? 'bg-brand text-white border-brand'
-                    : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong'
+                    : 'bg-surface-card text-txt-secondary border-border hover:border-border'
                 }`}
               >
                 {opt.label}
@@ -71,7 +71,7 @@ export const EditAffiliation: React.FC<EditAffiliationProps> = ({
                 className={`px-2.5 py-1 text-xs font-medium border transition-colors ${
                   position === opt
                     ? 'bg-brand text-white border-brand'
-                    : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong'
+                    : 'bg-surface-card text-txt-secondary border-border hover:border-border'
                 }`}
               >
                 {opt}
@@ -84,7 +84,7 @@ export const EditAffiliation: React.FC<EditAffiliationProps> = ({
             onChange={(e) => setPosition(e.target.value)}
             placeholder="또는 직접 입력"
             maxLength={50}
-            className="w-full px-3 py-2.5 text-sm border border-border bg-surface-card focus:outline-none focus:border-accent transition-colors"
+            className="w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:border-accent transition-colors"
           />
         </div>
 
@@ -110,7 +110,7 @@ export const EditAffiliation: React.FC<EditAffiliationProps> = ({
                     onChange={(e) => setUniversity(e.target.value)}
                     placeholder={affConfig.orgPlaceholder}
                     maxLength={50}
-                    className="w-full px-3 py-2.5 text-sm border border-border bg-surface-card focus:outline-none focus:border-accent transition-colors"
+                    className="w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:border-accent transition-colors"
                   />
                 )}
               </div>
@@ -122,7 +122,7 @@ export const EditAffiliation: React.FC<EditAffiliationProps> = ({
                   onChange={(e) => setMajor(e.target.value)}
                   placeholder={affConfig.rolePlaceholder}
                   maxLength={50}
-                  className="w-full px-3 py-2.5 text-sm border border-border bg-surface-card focus:outline-none focus:border-accent transition-colors"
+                  className="w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:border-accent transition-colors"
                 />
               </div>
             </div>
@@ -140,7 +140,7 @@ export const EditAffiliation: React.FC<EditAffiliationProps> = ({
                 className={`px-2.5 py-1 text-xs font-medium border transition-colors ${
                   location === loc
                     ? 'bg-brand text-white border-brand'
-                    : 'bg-surface-card text-txt-secondary border-border hover:border-border-strong'
+                    : 'bg-surface-card text-txt-secondary border-border hover:border-border'
                 }`}
               >
                 {loc}
@@ -173,7 +173,9 @@ export const EditAffiliation: React.FC<EditAffiliationProps> = ({
                     value={verifyEmail}
                     onChange={e => { setVerifyEmail(e.target.value); setVerifyError('') }}
                     placeholder="university@snu.ac.kr"
-                    className="flex-1 px-3 py-2 text-sm border border-border bg-surface-card focus:outline-none focus:border-accent transition-colors"
+                    inputMode="email"
+                    autoComplete="email"
+                    className="flex-1 px-3 py-2 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:border-accent transition-colors"
                   />
                   <button
                     type="button"
@@ -193,7 +195,7 @@ export const EditAffiliation: React.FC<EditAffiliationProps> = ({
                       } catch { setVerifyError('요청에 실패했습니다') }
                       finally { setVerifySending(false) }
                     }}
-                    className="px-3 py-2 text-xs font-bold border border-black bg-black text-white hover:bg-black/80 disabled:opacity-50 transition-colors"
+                    className="px-3 py-2 text-xs font-bold border border-surface-inverse bg-surface-inverse text-txt-inverse hover:bg-surface-inverse/90 disabled:opacity-50 transition-colors"
                   >
                     {verifySending ? '전송 중...' : '인증 코드 전송'}
                   </button>
@@ -212,7 +214,7 @@ export const EditAffiliation: React.FC<EditAffiliationProps> = ({
                     onChange={e => { setVerifyCode(e.target.value.replace(/\D/g, '').slice(0, 6)); setVerifyError('') }}
                     placeholder="000000"
                     maxLength={6}
-                    className="w-32 px-3 py-2 text-sm font-mono text-center tracking-widest border border-border bg-surface-card focus:outline-none focus:border-accent transition-colors"
+                    className="w-32 px-3 py-2 text-base sm:text-sm font-mono text-center tracking-widest border border-border bg-surface-card rounded-lg focus:outline-none focus:border-accent transition-colors"
                   />
                   <button
                     type="button"
@@ -233,7 +235,7 @@ export const EditAffiliation: React.FC<EditAffiliationProps> = ({
                       } catch { setVerifyError('요청에 실패했습니다') }
                       finally { setVerifySending(false) }
                     }}
-                    className="px-3 py-2 text-xs font-bold border border-black bg-black text-white hover:bg-black/80 disabled:opacity-50 transition-colors"
+                    className="px-3 py-2 text-xs font-bold border border-surface-inverse bg-surface-inverse text-txt-inverse hover:bg-surface-inverse/90 disabled:opacity-50 transition-colors"
                   >
                     {verifySending ? '확인 중...' : '인증 확인'}
                   </button>

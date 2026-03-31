@@ -68,10 +68,10 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
   if (sent) {
     return (
       <div className="text-center py-4">
-        <div className="w-14 h-14 bg-status-success-bg rounded-sm border border-status-success-text/20 flex items-center justify-center mb-4 mx-auto shadow-solid-sm">
+        <div className="w-14 h-14 bg-status-success-bg rounded-sm border border-status-success-text/20 flex items-center justify-center mb-4 mx-auto shadow-sm success-pop">
           <Coffee size={24} className="text-status-success-text" />
         </div>
-        <h3 className="text-xl font-bold text-txt-primary mb-2">커피챗 신청 완료!</h3>
+        <h3 className="text-xl font-bold text-txt-primary mb-2 animate-in fade-in">커피챗 신청 완료!</h3>
         <p className="text-txt-tertiary text-sm mb-6">
           {isPersonMode
             ? '상대방에게 알림이 전송되었습니다. 수락되면 연락처를 받을 수 있어요.'
@@ -94,7 +94,7 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
         {isPersonMode ? '커피챗 신청' : '커피챗 신청'}
       </h3>
       {selectedRole && (
-        <span className="inline-block px-2.5 py-1 bg-surface-sunken text-txt-secondary text-xs font-medium border border-border-strong mb-2">
+        <span className="inline-block px-2.5 py-1 bg-surface-sunken text-txt-secondary text-xs font-medium border border-border mb-2">
           {selectedRole} 포지션
         </span>
       )}
@@ -108,7 +108,7 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
           <button
             key={tpl.id}
             onClick={() => setMessage(tpl.message)}
-            className="text-[0.6875rem] px-3 py-1.5 bg-surface-sunken text-txt-secondary border border-border rounded-sm hover:bg-black hover:text-white hover:border-border-strong transition-colors"
+            className="text-[0.6875rem] px-3 py-1.5 bg-surface-sunken text-txt-secondary border border-border rounded-sm hover:bg-black hover:text-white hover:border-border transition-colors"
           >
             {tpl.label}
           </button>
@@ -123,7 +123,7 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
           : '안녕하세요! 프로젝트에 관심이 있어서 연락드립니다...'
         }
         rows={4}
-        className="w-full px-4 py-3 border border-border-strong rounded-sm text-sm text-left bg-surface-card focus:outline-none focus:border-brand resize-none mb-4"
+        className="w-full px-4 py-3 border border-border rounded-sm text-base sm:text-sm text-left bg-surface-card rounded-lg focus:outline-none focus:border-brand resize-none mb-4"
       />
 
       {error && (
@@ -133,7 +133,7 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
       <button
         onClick={handleSubmit}
         disabled={!message.trim() || isPending}
-        className="w-full bg-brand text-white border border-brand py-3 rounded-sm font-bold text-sm flex items-center justify-center gap-2 hover:bg-brand-hover shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-40 disabled:cursor-not-allowed mb-3"
+        className="w-full bg-brand text-white border border-brand py-3 rounded-sm font-bold text-sm flex items-center justify-center gap-2 hover:bg-brand-hover hover:opacity-90 active:scale-[0.97] transition-all disabled:opacity-40 disabled:cursor-not-allowed mb-3"
       >
         {isPending ? (
           <><Loader2 size={14} className="animate-spin" /> 전송 중...</>

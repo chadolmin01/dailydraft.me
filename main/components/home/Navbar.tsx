@@ -16,9 +16,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
           <span className="text-white font-bold text-sm font-mono">D</span>
         </div>
         <span className="font-bold text-base tracking-tight">Draft.</span>
-        <div className="hidden md:flex items-center gap-2 ml-4 px-2 py-1 bg-surface-card border border-border-strong">
+        <div className="hidden md:flex items-center gap-2 ml-4 px-2 py-1 bg-surface-card rounded-xl border border-border">
           <div className="w-1.5 h-1.5 bg-indicator-online"></div>
-          <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-secondary">OPEN BETA</span>
+          <span className="text-[0.625rem] font-medium text-txt-secondary">OPEN BETA</span>
         </div>
       </div>
 
@@ -30,13 +30,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onLoginClick }) => {
         </div>
         <button
           onClick={onLoginClick}
-          className="text-xs font-medium border border-border-strong bg-surface-card hover:bg-black hover:text-white px-3 py-1.5 transition-all duration-200 font-mono"
+          className="text-xs font-medium border border-border bg-surface-card rounded-lg hover:bg-black hover:text-white px-3 py-1.5 transition-all duration-200 font-mono"
         >
           로그인
         </button>
         <button
           onClick={onLoginClick}
-          className="hidden md:flex items-center gap-1.5 text-xs font-bold bg-black text-white px-3 py-1.5 hover:bg-[#333] transition-all duration-200 shadow-solid-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+          className="hidden md:flex items-center gap-1.5 text-xs font-bold bg-surface-inverse text-txt-inverse px-3 py-1.5 hover:bg-surface-inverse/90 transition-all duration-200 shadow-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
         >
           <span>시작하기</span>
           <Command size={14} />

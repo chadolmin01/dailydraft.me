@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { motion, AnimatePresence } from 'framer-motion'
+import { hapticMedium, hapticSuccess } from '@/src/utils/haptic'
 import {
   Loader2, AlertCircle, X, Share2, Edit3,
 } from 'lucide-react'
@@ -128,6 +130,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
     }
   }
   const handleInterest = async () => {
+    hapticMedium()
     if (!user) {
       setShowCta(true)
       return
@@ -195,29 +198,43 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
     : 0
 
   return (
-    <>
+    <AnimatePresence>
       {projectId && (
         <>
           {/* Backdrop */}
-          <div
+          <motion.div
+            key="project-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-modal-backdrop animate-backdrop-in"
+            className="fixed inset-0 bg-black/60 backdrop-blur-md z-modal-backdrop"
           />
 
           {/* Modal */}
-          <div
-            className="fixed inset-0 z-modal flex items-end sm:items-center justify-center pt-6 px-0 pb-[env(safe-area-inset-bottom)] sm:p-4 md:p-8 animate-modal-in"
+          <motion.div
+            key="project-modal"
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.97, y: 10 }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed inset-0 z-modal flex items-end sm:items-center justify-center pt-6 px-0 pb-[env(safe-area-inset-bottom)] sm:p-4 md:p-8"
             onClick={onClose}
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl max-h-[85vh] sm:max-h-[90vh] bg-surface-card shadow-brutal-xl border border-border-strong overflow-hidden flex flex-col relative"
+              className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl max-h-[85vh] sm:max-h-[90vh] modal-glass rounded-t-2xl sm:rounded-2xl overflow-hidden flex flex-col relative"
               role="dialog"
               aria-modal="true"
               aria-label={opportunity?.title || '프로젝트 상세'}
             >
-              {/* macOS-style Window Bar */}
-              <div className="bg-surface-sunken border-b border-border-strong px-3 sm:px-4 h-10 flex items-center justify-between shrink-0">
+              {/* Mobile drag handle */}
+              <div className="sm:hidden flex justify-center pt-2 pb-0.5">
+                <div className="w-9 h-1 rounded-full bg-border/60" />
+              </div>
+              {/* Window Bar */}
+              <div className="modal-bar border-b border-border/40 px-3 sm:px-4 h-10 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-2">
                   <button onClick={onClose} className="sm:hidden p-1.5 -ml-1 hover:bg-surface-card transition-colors" aria-label="닫기">
                     <X size={18} className="text-txt-tertiary" />
@@ -234,7 +251,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                       <div className="relative">
                         <button
                           onClick={() => setShowTypeSelector(!showTypeSelector)}
-                          className="text-[0.625rem] font-mono font-bold px-2 py-0.5 bg-surface-card text-txt-tertiary border border-border uppercase tracking-wider hover:border-border-strong hover:text-txt-secondary transition-colors flex items-center gap-1"
+                          className="text-[0.625rem] font-medium px-2 py-0.5 bg-surface-card text-txt-tertiary border border-border hover:border-border hover:text-txt-secondary transition-colors flex items-center gap-1"
                         >
                           {opportunity.type === 'side_project' ? 'SIDE PROJECT' :
                            opportunity.type === 'startup' ? 'STARTUP' :
@@ -242,7 +259,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                           <Edit3 size={8} />
                         </button>
                         {showTypeSelector && (
-                          <div className="absolute top-full left-0 mt-1 bg-surface-card border border-border-strong shadow-sharp z-10 min-w-[8rem]">
+                          <div className="absolute top-full left-0 mt-1 bg-surface-card rounded-xl border border-border shadow-md z-10 min-w-[8rem]">
                             {[
                               { value: 'side_project', label: 'SIDE PROJECT' },
                               { value: 'startup', label: 'STARTUP' },
@@ -257,7 +274,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                                   )
                                   setShowTypeSelector(false)
                                 }}
-                                className={`w-full text-left px-3 py-1.5 text-[0.625rem] font-mono font-bold uppercase tracking-wider transition-colors ${
+                                className={`w-full text-left px-3 py-1.5 text-[0.625rem] font-medium transition-colors ${
                                   opportunity.type === opt.value
                                     ? 'bg-surface-inverse text-txt-inverse'
                                     : 'text-txt-secondary hover:bg-surface-sunken'
@@ -270,7 +287,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                         )}
                       </div>
                     ) : (
-                      <span className="text-[0.625rem] font-mono font-bold px-2 py-0.5 bg-surface-card text-txt-tertiary border border-border uppercase tracking-wider">
+                      <span className="text-[0.625rem] font-medium px-2 py-0.5 bg-surface-card text-txt-tertiary border border-border">
                         {opportunity.type === 'side_project' ? 'SIDE PROJECT' :
                          opportunity.type === 'startup' ? 'STARTUP' :
                          opportunity.type === 'study' ? 'STUDY' : opportunity.type?.toUpperCase() || 'PROJECT'}
@@ -291,7 +308,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                     aria-label="공유"
                   >
                     {shareCopied ? (
-                      <span className="text-[0.625rem] font-medium text-status-success-text px-1">복사됨!</span>
+                      <span className="text-[0.625rem] font-medium text-status-success-text px-1 icon-bounce">복사됨!</span>
                     ) : (
                       <Share2 size={14} className="text-txt-disabled" />
                     )}
@@ -308,7 +325,16 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
 
               {loading ? (
                 <div className="flex items-center justify-center h-[60vh]">
-                  <Loader2 className="animate-spin text-txt-disabled" size={28} />
+                  <div className="space-y-4 w-full max-w-md px-8">
+                    <div className="h-5 bg-surface-sunken rounded skeleton-shimmer w-3/4" />
+                    <div className="h-3 bg-surface-sunken rounded skeleton-shimmer w-full" />
+                    <div className="h-3 bg-surface-sunken rounded skeleton-shimmer w-2/3" />
+                    <div className="flex gap-2 mt-4">
+                      <div className="h-6 w-16 bg-surface-sunken rounded skeleton-shimmer" />
+                      <div className="h-6 w-16 bg-surface-sunken rounded skeleton-shimmer" />
+                    </div>
+                    <div className="h-20 bg-surface-sunken rounded skeleton-shimmer w-full mt-2" />
+                  </div>
                 </div>
               ) : !opportunity ? (
                 <div className="flex flex-col items-center justify-center h-[60vh] text-center px-8">
@@ -333,7 +359,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                     />
 
                     {/* Divider */}
-                    <div className="mx-4 sm:mx-8 border-t border-dashed border-border" />
+                    <div className="mx-4 sm:mx-8 border-t border-border" />
 
                     {/* Body: 2-Column Layout */}
                     <div className="px-4 sm:px-8 py-4 sm:py-6">
@@ -378,9 +404,9 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                 </>
               )}
             </div>
-          </div>
+          </motion.div>
         </>
       )}
-    </>
+    </AnimatePresence>
   )
 }

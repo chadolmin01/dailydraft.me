@@ -309,7 +309,7 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
       {/* Overall Score */}
       <div className={`p-4 border ${getScoreBg(validationResult.totalScore, validationResult.maxScore)}`}>
         <div className="flex items-center justify-between mb-2">
-          <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-secondary">총점</span>
+          <span className="text-[0.625rem] font-medium text-txt-secondary">총점</span>
           <span className={`text-2xl font-bold ${getScoreColor(validationResult.totalScore, validationResult.maxScore)}`}>
             {validationResult.totalScore}/{validationResult.maxScore}
           </span>
@@ -331,7 +331,7 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
 
       {/* Section Scores */}
       <div>
-        <h4 className="text-[0.625rem] font-mono font-bold text-txt-tertiary mb-3 uppercase tracking-widest">
+        <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
           섹션별 점수
         </h4>
         <div className="space-y-3">
@@ -344,7 +344,7 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
       {/* Improvement Suggestions */}
       {validationResult.improvements.length > 0 && (
         <div>
-          <h4 className="text-[0.625rem] font-mono font-bold text-txt-tertiary mb-3 uppercase tracking-widest flex items-center gap-2">
+          <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
             <Lightbulb size={12} />
             개선 제안
           </h4>
@@ -353,7 +353,7 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
               <button
                 key={idx}
                 onClick={() => onShowSuggestion?.(imp.section, '')}
-                className="w-full text-left p-3 bg-surface-card border border-border hover:border-border-strong transition-colors group"
+                className="w-full text-left p-3 bg-surface-card rounded-xl border border-border hover:border-border transition-colors group"
               >
                 <div className="flex items-start gap-2">
                   <AlertTriangle

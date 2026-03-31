@@ -2,8 +2,10 @@
 
 import React from 'react'
 import Image from 'next/image'
-import { Rocket, Users, FolderOpen, Eye, Heart, Loader2 } from 'lucide-react'
+import { Rocket, Users, FolderOpen, Eye, Heart } from 'lucide-react'
+import { Tooltip } from '@/components/ui/Tooltip'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { SkeletonGrid } from '@/components/ui/Skeleton'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { useAuth } from '@/src/context/AuthContext'
 import { getUpdateBadge } from './constants'
@@ -44,11 +46,7 @@ export function ExploreProjectGrid({
   }
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-txt-tertiary" />
-      </div>
-    )
+    return <SkeletonGrid count={6} cols={3} />
   }
 
   if (projectCards.length === 0) {
@@ -65,8 +63,8 @@ export function ExploreProjectGrid({
 
   return (
     <section>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {projectCards.map((p) => {
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        {projectCards.map((p, index) => {
           const updateBadge = getUpdateBadge(p.updatedAt)
           const isUrgent = p.daysLeft > 0 && p.daysLeft <= 3
           return (
@@ -76,11 +74,12 @@ export function ExploreProjectGrid({
               tabIndex={0}
               onClick={() => onSelectProject(p.id)}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectProject(p.id) } }}
-              className="relative bg-surface-card border border-border-strong overflow-hidden group hover:shadow-solid-sm hover:border-brand/30 transition-all cursor-pointer h-[21.25rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985] active:shadow-none active:border-brand/50"
+              style={{ animationDelay: `${Math.min(index * 60, 600)}ms` }}
+              className="stagger-item relative bg-surface-card rounded-xl border border-border overflow-hidden group hover:shadow-md hover:border-brand/30 hover:-translate-y-0.5 hover-spring cursor-pointer h-[21.25rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985] active:shadow-none active:border-brand/50"
             >
               {/* 코너 마크 */}
-              <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-black/15 z-20" />
-              <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-black/15 z-20" />
+              <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/15 z-20" />
+              <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-surface-inverse/15 z-20" />
               {/* 헤더: 커버 */}
               <div className="relative h-36 shrink-0 bg-surface-inverse flex items-end p-4">
                 {p.coverImage && (
@@ -91,7 +90,9 @@ export function ExploreProjectGrid({
                 )}
                 <div className="absolute top-3 left-3 z-[1]">
                   {isUrgent ? (
-                    <span className="text-[0.625rem] font-mono font-bold bg-status-danger-text text-white px-2 py-0.5 border border-status-danger-text">D-{p.daysLeft} URGENT</span>
+                    <Tooltip text={`마감 ${p.daysLeft}일 전`} position="bottom">
+                      <span className="text-[0.625rem] font-mono font-bold bg-status-danger-text text-white px-2 py-0.5 border border-status-danger-text">D-{p.daysLeft} URGENT</span>
+                    </Tooltip>
                   ) : (
                     <span className="text-[0.625rem] font-mono font-bold bg-indicator-online text-white px-2 py-0.5 border border-indicator-online flex items-center gap-1">
                       <span className="w-1 h-1 bg-white animate-pulse" />
@@ -107,7 +108,7 @@ export function ExploreProjectGrid({
                     <span key={tag} className="text-[0.625rem] font-mono bg-black/60 backdrop-blur-sm text-white px-2 py-0.5 border border-white/10">{tag}</span>
                   ))}
                 </div>
-                <div className="relative z-[1] w-10 h-10 bg-surface-card flex items-center justify-center shadow-solid-sm border border-border-strong">
+                <div className="relative z-[1] w-10 h-10 bg-surface-card flex items-center justify-center shadow-sm border border-border">
                   <Rocket size={18} className="text-black" />
                 </div>
               </div>
@@ -117,27 +118,29 @@ export function ExploreProjectGrid({
                   <h3 className="font-bold text-base text-txt-primary truncate">{p.title}</h3>
                   <Badges badges={p.badges} />
                   {p.matchLabel && (
-                    <span className={`text-[0.625rem] font-mono font-bold px-1.5 py-0.5 border shrink-0 ${
-                      p.matchLabel === '잘 맞는 프로젝트' ? 'bg-status-success-bg text-status-success-text border-indicator-online/20'
-                      : 'bg-brand-bg text-brand border-brand-border'
-                    }`}>
-                      {p.matchLabel}
-                    </span>
+                    <Tooltip text="AI가 프로필 기반으로 추천했어요">
+                      <span className={`text-[0.625rem] font-mono font-bold px-1.5 py-0.5 border shrink-0 ${
+                        p.matchLabel === '잘 맞는 프로젝트' ? 'bg-status-success-bg text-status-success-text border-indicator-online/20'
+                        : 'bg-brand-bg text-brand border-brand-border'
+                      }`}>
+                        {p.matchLabel}
+                      </span>
+                    </Tooltip>
                   )}
                 </div>
                 <div className="flex items-center gap-1.5 mb-2 overflow-hidden">
-                  <span className="text-[0.625rem] font-mono font-bold text-brand uppercase tracking-wide shrink-0 bg-brand-bg px-1.5 py-0.5 border border-brand-border">NEED</span>
+                  <span className="text-[0.625rem] font-medium text-brand shrink-0 bg-brand-bg px-1.5 py-0.5 border border-brand-border">NEED</span>
                   {p.roles.slice(0, 2).map(role => (
-                    <span key={role} className="text-xs bg-white text-txt-secondary px-2 py-0.5 border border-border font-medium shrink-0">{role}</span>
+                    <span key={role} className="text-xs bg-surface-card text-txt-secondary px-2 py-0.5 border border-border font-medium shrink-0">{role}</span>
                   ))}
                 </div>
                 <p className="text-sm text-txt-secondary line-clamp-2">{p.desc}</p>
               </div>
               {/* 푸터 */}
               <div className="px-4 pb-4 h-[4.75rem] shrink-0 flex items-end">
-                <div className="flex items-center justify-between w-full pt-3 border-t border-dashed border-border">
+                <div className="flex items-center justify-between w-full pt-3 border-t border-border">
                   <div className="flex items-center gap-2">
-                    <div className="w-5 h-5 bg-surface-sunken border border-border flex items-center justify-center">
+                    <div className="w-5 h-5 bg-surface-sunken rounded-xl border border-border flex items-center justify-center">
                       <Users size={10} className="text-txt-disabled" />
                     </div>
                     <span className="text-[0.625rem] font-mono text-txt-tertiary">팀 모집중</span>
@@ -164,7 +167,7 @@ export function ExploreProjectGrid({
         <div className="text-center mt-6">
           <button
             onClick={onLoadMore}
-            className="px-6 py-2.5 text-sm font-bold text-txt-secondary border border-border-strong hover:bg-surface-sunken hover:shadow-sharp transition-all active:scale-[0.97] active:shadow-none"
+            className="px-6 py-2.5 text-sm font-bold text-txt-secondary border border-border hover:bg-surface-sunken hover:shadow-md transition-all active:scale-[0.97] active:shadow-none"
           >
             더 보기{!searchQuery && selectedCategory === 'all' && !recruitingOnly ? ` (${totalCount - projectCards.length}개 남음)` : ''}
           </button>

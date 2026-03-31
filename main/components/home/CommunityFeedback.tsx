@@ -38,7 +38,7 @@ export const CommunityFeedback: React.FC = () => {
     <section className="w-full py-20 px-6 md:px-10">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-12">
-          <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-3 block">
+          <span className="text-[0.625rem] font-medium text-txt-tertiary mb-3 block">
             COMMUNITY FEEDBACK
           </span>
           <h2 className="text-2xl md:text-3xl font-bold text-txt-primary mb-3">
@@ -51,7 +51,7 @@ export const CommunityFeedback: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           {/* Project Card */}
-          <div className="bg-surface-card border border-border-strong p-5 shadow-brutal">
+          <div className="bg-surface-card rounded-xl border border-border p-5 shadow-lg">
             <div className="flex items-start justify-between mb-3">
               <div>
                 <h3 className="text-base font-bold text-txt-primary mb-1.5">
@@ -88,7 +88,7 @@ export const CommunityFeedback: React.FC = () => {
             </div>
 
             {/* Stats */}
-            <div className="flex items-center gap-4 pt-4 border-t border-dashed border-border">
+            <div className="flex items-center gap-4 pt-4 border-t border-border">
               <div className="flex items-center gap-1 text-txt-secondary text-sm">
                 <MessageCircle size={14} />
                 <span>피드백 {mockProject.commentCount}개</span>
@@ -105,10 +105,10 @@ export const CommunityFeedback: React.FC = () => {
             {mockComments.map((comment, index) => (
               <div
                 key={index}
-                className="bg-surface-card border border-border p-4 relative"
+                className="bg-surface-card rounded-xl border border-border p-4 relative"
               >
                 {/* Comment number */}
-                <div className="absolute -top-2 -left-2 w-6 h-6 bg-black text-white flex items-center justify-center text-xs font-bold">
+                <div className="absolute -top-2 -left-2 w-6 h-6 bg-surface-inverse text-txt-inverse flex items-center justify-center text-xs font-bold">
                   {index + 1}
                 </div>
 
@@ -133,7 +133,7 @@ export const CommunityFeedback: React.FC = () => {
         <div className="text-center mt-10">
           <button
             onClick={() => router.push('/login')}
-            className="group inline-flex items-center gap-2 bg-black text-white px-6 py-3 font-bold text-xs hover:bg-[#333] transition-all duration-200 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] border border-black"
+            className="group inline-flex items-center gap-2 bg-surface-inverse text-txt-inverse px-6 py-3 font-bold text-xs hover:bg-surface-inverse/90 transition-all duration-200 hover:opacity-90 active:scale-[0.97] border border-surface-inverse"
           >
             나도 프로젝트 올리기
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />

@@ -1,6 +1,8 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { hapticMedium } from '@/src/utils/haptic'
 import {
   X, Briefcase, Share2, Heart,
   Loader2, AlertCircle, ShieldCheck,
@@ -92,6 +94,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
   }, [profile?.id, user])
 
   const handleInterest = async () => {
+    hapticMedium()
     if (!user) return
     if (user.id === profile?.user_id) { toast.error('내 프로필에는 관심 표시를 할 수 없어요'); return }
     if (!profile?.id || interestLoading) return
@@ -166,18 +169,28 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
   }
 
   return (
-    <>
+    <AnimatePresence>
       {profileId && (
         <>
           {/* Backdrop */}
-          <div
+          <motion.div
+            key="profile-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-modal-backdrop animate-backdrop-in"
+            className="fixed inset-0 bg-black/60 backdrop-blur-md z-modal-backdrop"
           />
 
           {/* Modal */}
-          <div
-            className="fixed inset-0 z-modal flex items-end sm:items-center justify-center pt-6 px-0 pb-[env(safe-area-inset-bottom)] sm:p-4 md:p-8 animate-modal-in"
+          <motion.div
+            key="profile-modal"
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.97, y: 10 }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed inset-0 z-modal flex items-end sm:items-center justify-center pt-6 px-0 pb-[env(safe-area-inset-bottom)] sm:p-4 md:p-8"
             onClick={onClose}
           >
             <div
@@ -188,9 +201,13 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
               aria-label={profile?.nickname || '프로필'}
             >
             {/* Main modal */}
-            <div className={`bg-surface-card shadow-brutal-xl border border-border-strong overflow-hidden flex flex-col relative transition-all duration-300 ${sidePanel ? 'w-full sm:w-3/5' : 'w-full'}`}>
-              {/* macOS-style Window Bar */}
-              <div className="bg-surface-sunken border-b border-border-strong px-3 sm:px-4 h-10 flex items-center justify-between shrink-0">
+            <div className={`modal-glass rounded-t-2xl sm:rounded-2xl overflow-hidden flex flex-col relative transition-all duration-300 ${sidePanel ? 'w-full sm:w-3/5' : 'w-full'}`}>
+              {/* Mobile drag handle */}
+              <div className="sm:hidden flex justify-center pt-2 pb-0.5">
+                <div className="w-9 h-1 rounded-full bg-border/60" />
+              </div>
+              {/* Window Bar */}
+              <div className="modal-bar border-b border-border/40 px-3 sm:px-4 h-10 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-2">
                   <button onClick={onClose} className="sm:hidden p-1.5 -ml-1 hover:bg-surface-card transition-colors" aria-label="닫기">
                     <X size={18} className="text-txt-tertiary" />
@@ -227,12 +244,12 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                       disabled={interestLoading}
                       className={`flex items-center gap-1 px-2 py-1 text-[0.625rem] font-mono font-bold transition-colors border ${
                         hasInterested
-                          ? 'bg-rose-50 text-rose-500 border-rose-200 hover:bg-rose-100'
-                          : 'text-txt-disabled border-transparent hover:bg-surface-sunken hover:border-border hover:text-rose-400'
+                          ? 'bg-status-danger-bg text-status-danger-text border-status-danger-text/20'
+                          : 'text-txt-disabled border-transparent hover:bg-surface-sunken hover:border-border hover:text-status-danger-text'
                       }`}
                       aria-label="관심"
                     >
-                      <Heart size={12} className={hasInterested ? 'fill-current' : ''} />
+                      <Heart size={12} className={hasInterested ? 'fill-current heart-burst' : ''} />
                       {interestCount > 0 && <span>{interestCount}</span>}
                     </button>
                   )}
@@ -242,7 +259,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                     aria-label="공유"
                   >
                     {shareCopied ? (
-                      <span className="text-[0.625rem] font-medium text-status-success-text px-1">복사됨!</span>
+                      <span className="text-[0.625rem] font-medium text-status-success-text px-1 icon-bounce">복사됨!</span>
                     ) : (
                       <Share2 size={14} className="text-txt-disabled" />
                     )}
@@ -259,7 +276,18 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
 
               {loading ? (
                 <div className="flex items-center justify-center h-[60vh]">
-                  <Loader2 className="animate-spin text-txt-disabled" size={28} />
+                  <div className="space-y-4 w-full max-w-sm px-8">
+                    <div className="flex items-center gap-3">
+                      <div className="w-14 h-14 bg-surface-sunken rounded-full skeleton-shimmer" />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-4 bg-surface-sunken rounded skeleton-shimmer w-24" />
+                        <div className="h-3 bg-surface-sunken rounded skeleton-shimmer w-32" />
+                      </div>
+                    </div>
+                    <div className="h-3 bg-surface-sunken rounded skeleton-shimmer w-full" />
+                    <div className="h-3 bg-surface-sunken rounded skeleton-shimmer w-3/4" />
+                    <div className="h-3 bg-surface-sunken rounded skeleton-shimmer w-1/2" />
+                  </div>
                 </div>
               ) : !profile ? (
                 <div className="flex flex-col items-center justify-center h-[60vh] text-center px-8">
@@ -328,9 +356,9 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
               />
             )}
             </div>
-          </div>
+          </motion.div>
         </>
       )}
-    </>
+    </AnimatePresence>
   )
 }

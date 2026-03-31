@@ -20,32 +20,32 @@ export const InfoFormStep: React.FC<InfoFormStepProps> = ({
   const showUnivCombo = profile.affiliationType === 'student' || profile.affiliationType === 'graduate'
 
   return (
-    <div className="mt-3 bg-surface-card border border-border-strong p-4 shadow-sharp space-y-3">
+    <div className="mt-3 bg-surface-card rounded-xl border border-border p-4 shadow-md space-y-3">
       <div>
-        <label className="text-[10px] font-bold text-txt-tertiary uppercase tracking-wider mb-1.5 block font-mono">닉네임 *</label>
+        <label className="text-[10px] font-medium text-txt-tertiary mb-1.5 block">닉네임 *</label>
         <input
           type="text"
           value={profile.name}
           onChange={(e) => onProfileChange({ name: e.target.value })}
           placeholder="어떻게 불러드릴까요?"
-          className="w-full px-3.5 py-2.5 bg-surface-card border border-border-strong text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-all placeholder:text-txt-tertiary"
+          className="w-full px-3.5 py-2.5 bg-surface-card rounded-lg border border-border text-base sm:text-sm font-medium focus:outline-none focus:border-surface-inverse focus:bg-white transition-all placeholder:text-txt-tertiary"
           autoFocus
           onKeyDown={(e) => e.key === 'Enter' && profile.name.trim() && onSubmit()}
         />
       </div>
       {/* 소속 유형 */}
       <div>
-        <label className="text-[10px] font-bold text-txt-tertiary uppercase tracking-wider mb-1.5 block font-mono">소속 유형</label>
+        <label className="text-[10px] font-medium text-txt-tertiary mb-1.5 block">소속 유형</label>
         <div className="flex flex-wrap gap-1.5">
           {AFFILIATION_OPTIONS.map((a) => (
             <button
               key={a.value}
               type="button"
               onClick={() => onProfileChange({ affiliationType: a.value })}
-              className={`px-2.5 py-1.5 text-[11px] font-medium border transition-all ${
+              className={`px-2.5 py-1.5 text-[11px] font-medium border rounded-full transition-all ${
                 profile.affiliationType === a.value
-                  ? 'bg-black text-white border-black'
-                  : 'bg-surface-card text-txt-primary border-border-strong hover:bg-black hover:text-white'
+                  ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
+                  : 'bg-surface-card text-txt-primary border-border hover:bg-black hover:text-white'
               }`}
             >
               {a.label}
@@ -55,7 +55,7 @@ export const InfoFormStep: React.FC<InfoFormStepProps> = ({
       </div>
       <div className="grid grid-cols-2 gap-2">
         <div>
-          <label className="text-[10px] font-bold text-txt-tertiary uppercase tracking-wider mb-1.5 block font-mono">
+          <label className="text-[10px] font-medium text-txt-tertiary mb-1.5 block">
             {aff.orgPlaceholder === '대학교' ? '소속' : aff.orgPlaceholder.replace(' (선택)', '')}
           </label>
           {showUnivCombo ? (
@@ -71,12 +71,12 @@ export const InfoFormStep: React.FC<InfoFormStepProps> = ({
               value={profile.university}
               onChange={(e) => onProfileChange({ university: e.target.value })}
               placeholder={aff.orgPlaceholder}
-              className="w-full px-3.5 py-2.5 bg-surface-card border border-border-strong text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-all placeholder:text-txt-tertiary"
+              className="w-full px-3.5 py-2.5 bg-surface-card rounded-lg border border-border text-base sm:text-sm font-medium focus:outline-none focus:border-surface-inverse focus:bg-white transition-all placeholder:text-txt-tertiary"
             />
           )}
         </div>
         <div>
-          <label className="text-[10px] font-bold text-txt-tertiary uppercase tracking-wider mb-1.5 block font-mono">
+          <label className="text-[10px] font-medium text-txt-tertiary mb-1.5 block">
             {aff.rolePlaceholder.replace(' (선택)', '')}
           </label>
           <input
@@ -84,12 +84,12 @@ export const InfoFormStep: React.FC<InfoFormStepProps> = ({
             value={profile.major}
             onChange={(e) => onProfileChange({ major: e.target.value })}
             placeholder={aff.rolePlaceholder}
-            className="w-full px-3.5 py-2.5 bg-surface-card border border-border-strong text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-all placeholder:text-txt-tertiary"
+            className="w-full px-3.5 py-2.5 bg-surface-card rounded-lg border border-border text-base sm:text-sm font-medium focus:outline-none focus:border-surface-inverse focus:bg-white transition-all placeholder:text-txt-tertiary"
           />
         </div>
       </div>
       <div>
-        <label className="text-[10px] font-bold text-txt-tertiary uppercase tracking-wider mb-1.5 block font-mono">활동 지역</label>
+        <label className="text-[10px] font-medium text-txt-tertiary mb-1.5 block">활동 지역</label>
         <div className="flex flex-wrap gap-1.5">
           {LOCATION_OPTIONS.map((loc) => (
             <button
@@ -100,10 +100,10 @@ export const InfoFormStep: React.FC<InfoFormStepProps> = ({
                   ? profile.locations.filter(l => l !== loc)
                   : [...profile.locations, loc],
               })}
-              className={`px-2 py-1 text-[11px] font-medium border transition-all ${
+              className={`px-2 py-1 text-[11px] font-medium border rounded-full transition-all ${
                 profile.locations.includes(loc)
-                  ? 'bg-black text-white border-black'
-                  : 'bg-surface-card text-txt-primary border-border-strong hover:bg-black hover:text-white'
+                  ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
+                  : 'bg-surface-card text-txt-primary border-border hover:bg-black hover:text-white'
               }`}
             >
               {loc}
@@ -117,7 +117,7 @@ export const InfoFormStep: React.FC<InfoFormStepProps> = ({
       <button
         onClick={onSubmit}
         disabled={!profile.name.trim()}
-        className="w-full py-2.5 bg-brand text-white text-[13px] font-bold hover:bg-brand-hover transition-all flex items-center justify-center gap-2 disabled:opacity-20 disabled:cursor-not-allowed ob-hover shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] border border-brand"
+        className="w-full py-2.5 bg-brand text-white text-[13px] font-bold rounded-xl hover:bg-brand-hover transition-all flex items-center justify-center gap-2 disabled:opacity-20 disabled:cursor-not-allowed ob-hover hover:opacity-90 active:scale-[0.97] border border-brand"
       >
         입력 완료 <ArrowRight size={14} />
       </button>

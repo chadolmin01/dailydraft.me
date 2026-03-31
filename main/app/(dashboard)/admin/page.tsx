@@ -56,7 +56,10 @@ export default function AdminDashboardPage() {
   if (isAdminLoading) {
     return (
       <div className="flex-1 flex items-center justify-center h-screen bg-surface-sunken">
-        <Loader2 className="animate-spin text-txt-disabled" size={32} />
+        <div className="space-y-4 w-full max-w-xs">
+          <div className="h-6 bg-surface-card rounded skeleton-shimmer w-40 mx-auto" />
+          <div className="h-4 bg-surface-card rounded skeleton-shimmer w-32 mx-auto" />
+        </div>
       </div>
     )
   }
@@ -92,7 +95,7 @@ export default function AdminDashboardPage() {
       <div className="max-w-[87.5rem] mx-auto p-8 lg:p-12 space-y-8">
         {/* Header */}
         <div className="border-b border-border pb-6">
-          <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-2 flex items-center gap-2">
+          <div className="text-[0.625rem] font-medium text-txt-tertiary mb-2 flex items-center gap-2">
             <span className="w-2 h-2 bg-black" />
             Admin Dashboard
           </div>
@@ -102,8 +105,10 @@ export default function AdminDashboardPage() {
 
         {/* Stats Grid */}
         {isLoading ? (
-          <div className="flex items-center justify-center py-16">
-            <Loader2 className="animate-spin text-txt-disabled" size={32} />
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+            {[0,1,2,3,4,5,6].map(i => (
+              <div key={i} className="h-20 bg-surface-card rounded-xl border border-border skeleton-shimmer" />
+            ))}
           </div>
         ) : isError ? (
           <Card padding="p-8" className="text-center">
@@ -122,7 +127,7 @@ export default function AdminDashboardPage() {
                     </div>
                     <div className="min-w-0">
                       <div className="text-2xl font-bold font-mono text-txt-primary">{stat.value}</div>
-                      <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">{stat.label}</div>
+                      <div className="text-[0.625rem] font-medium text-txt-tertiary">{stat.label}</div>
                     </div>
                   </div>
                 </Card>
@@ -133,7 +138,7 @@ export default function AdminDashboardPage() {
 
         {/* Quick Links */}
         <div>
-          <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-4 flex items-center gap-2">
+          <div className="text-[0.625rem] font-medium text-txt-tertiary mb-4 flex items-center gap-2">
             <BarChart3 size={14} />
             관리 도구
           </div>
@@ -142,7 +147,7 @@ export default function AdminDashboardPage() {
               const Icon = link.icon
               return (
                 <Link key={link.href} href={link.href}>
-                  <Card padding="p-5" className="group cursor-pointer hover:border-border-strong">
+                  <Card padding="p-5" className="group cursor-pointer hover-spring hover:border-border">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div className="w-10 h-10 bg-surface-sunken flex items-center justify-center group-hover:bg-black transition-colors">

@@ -21,10 +21,10 @@ export function PortfolioView({
   return (
     <div className="flex-1 overflow-y-auto">
       {/* Header */}
-      <div className="px-4 sm:px-8 py-4 border-b border-dashed border-border flex items-center gap-3">
+      <div className="px-4 sm:px-8 py-4 border-b border-border flex items-center gap-3">
         <button
           onClick={onBack}
-          className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold border border-border-strong hover:bg-black hover:text-white transition-all"
+          className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold border border-border hover:bg-black hover:text-white transition-all"
         >
           <ArrowLeft size={12} />
           프로필로 돌아가기
@@ -44,10 +44,10 @@ export function PortfolioView({
         {/* Portfolio Site */}
         {hasPortfolio && (
           <section>
-            <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-1">
+            <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-1">
               <Globe size={11} /> PORTFOLIO SITE
             </h3>
-            <div className="border border-border-strong overflow-hidden">
+            <div className="border border-border overflow-hidden">
               <div className="bg-surface-card px-3 py-2 border-b border-border flex items-center justify-between">
                 <span className="text-xs text-txt-secondary font-mono truncate flex-1 mr-2">
                   {profile.portfolio_url!.replace(/^https?:\/\//, '')}
@@ -78,14 +78,14 @@ export function PortfolioView({
         {/* GitHub */}
         {hasGithub && (
           <section>
-            <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-1">
+            <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-1">
               <Github size={11} /> GITHUB
             </h3>
             <a
               href={profile.github_url!}
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-4 p-4 bg-surface-card border border-border-strong hover:border-brand/30 hover:shadow-solid-sm transition-all"
+              className="group flex items-center gap-4 p-4 bg-surface-card rounded-xl border border-border hover:border-brand/30 hover:shadow-md hover-spring"
             >
               <div className="w-12 h-12 bg-surface-inverse flex items-center justify-center shrink-0">
                 <Github size={24} className="text-txt-inverse" />
@@ -104,14 +104,14 @@ export function PortfolioView({
         {/* LinkedIn */}
         {hasLinkedin && (
           <section>
-            <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-1">
+            <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-1">
               <Linkedin size={11} /> LINKEDIN
             </h3>
             <a
               href={profile.linkedin_url!}
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-4 p-4 bg-surface-card border border-border-strong hover:border-brand/30 hover:shadow-solid-sm transition-all"
+              className="group flex items-center gap-4 p-4 bg-surface-card rounded-xl border border-border hover:border-brand/30 hover:shadow-md hover-spring"
             >
               <div className="w-12 h-12 bg-[#0A66C2] flex items-center justify-center shrink-0">
                 <Linkedin size={24} className="text-white" />
@@ -130,7 +130,7 @@ export function PortfolioView({
         {/* Skills in portfolio context */}
         {skills && skills.length > 0 && (
           <section>
-            <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3 flex items-center gap-1">
+            <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-1">
               <Code2 size={11} /> TECH STACK
             </h3>
             <div className="flex flex-wrap gap-2">

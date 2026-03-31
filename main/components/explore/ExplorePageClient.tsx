@@ -2,15 +2,16 @@
 
 import React, { useState, useEffect, useMemo, useCallback, Suspense } from 'react'
 import dynamic from 'next/dynamic'
-import { LayoutGrid, Users, Sparkles, Loader2 } from 'lucide-react'
+import { LayoutGrid, Users, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 import { useSearchParams as useNextSearchParams, useRouter, usePathname } from 'next/navigation'
 import { DashboardLayout } from '@/components/ui/DashboardLayout'
+import { SkeletonGrid, SkeletonSidebar } from '@/components/ui/Skeleton'
 import { ProfileCompletionBanner } from '@/components/ui/ProfileCompletionBanner'
 
 const ModalLoadingFallback = () => (
   <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-modal-backdrop">
-    <div className="bg-surface-card border border-border-strong px-6 py-4 shadow-brutal">
+    <div className="bg-surface-card rounded-xl border border-border px-6 py-4 shadow-lg">
       <span className="text-sm text-txt-secondary font-mono">로딩 중...</span>
     </div>
   </div>
@@ -37,7 +38,6 @@ import {
   ExploreHeroCarousel,
   ExploreSearchBar,
   ExploreSidebar,
-  ExploreAsidePanel,
   ExploreTabBar,
   ExploreMobileFilter,
   ExploreProjectGrid,
@@ -57,8 +57,11 @@ function useDebouncedValue<T>(value: T, delay: number): T {
 export default function ExplorePageClient() {
   return (
     <Suspense fallback={
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="h-6 w-6 animate-spin text-txt-tertiary" />
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="flex gap-6">
+          <div className="hidden lg:block w-56 shrink-0"><SkeletonSidebar /></div>
+          <div className="flex-1"><SkeletonGrid count={6} cols={3} /></div>
+        </div>
       </div>
     }>
       <ExplorePageContent />
@@ -137,7 +140,7 @@ function ExplorePageContent() {
   const [peopleDisplayLimit, setPeopleDisplayLimit] = useState(PEOPLE_PAGE_SIZE)
 
   const searchQuery = useDebouncedValue(searchInput, 300)
-  const { isAuthenticated, user } = useAuth()
+  const { isAuthenticated, user, isLoading: isAuthLoading } = useAuth()
 
   // Sync search to URL (preserves modal params)
   useEffect(() => {
@@ -173,7 +176,7 @@ function ExplorePageContent() {
       return res.json() as Promise<Array<OpportunityWithCreator & { match_score: number; match_reason: string }>>
     },
     staleTime: 1000 * 60 * 5,
-    enabled: !!user,
+    enabled: !isAuthLoading && !!user,
   })
   const aiScoreMap = useMemo(() => {
     const map = new Map<string, number>()
@@ -449,15 +452,12 @@ function ExplorePageContent() {
       <DashboardLayout
         size="wide"
         className="pt-1"
-        sidebar={<ExploreSidebar {...filterProps} />}
-        aside={
-          <ExploreAsidePanel
+        sidebar={
+          <ExploreSidebar
+            {...filterProps}
             talentCards={talentCards}
             sidebarRecs={sidebarRecs}
             recsLoading={recsLoading}
-            totalProjectCount={totalCount}
-            projectCardCount={projectCards.length}
-            categoriesCount={filterProps.categories.length}
             onSelectPeople={() => setActiveTab('people')}
             onSelectProfile={handleSelectProfile}
           />
@@ -488,7 +488,7 @@ function ExplorePageContent() {
           <div className="flex items-center gap-3 px-4 py-3 mb-4 border border-brand-border bg-brand-bg">
             <Sparkles size={16} className="text-brand shrink-0" />
             <p className="text-xs text-txt-secondary flex-1">로그인하면 내 관심사에 맞는 AI 추천을 받을 수 있어요</p>
-            <Link href="/login" className="shrink-0 px-3 py-1.5 bg-black text-white text-xs font-bold border border-black hover:bg-surface-inverse transition-colors">
+            <Link href="/login" className="shrink-0 px-3 py-1.5 bg-surface-inverse text-txt-inverse text-xs font-bold border border-surface-inverse hover:bg-surface-inverse transition-colors">
               로그인
             </Link>
           </div>

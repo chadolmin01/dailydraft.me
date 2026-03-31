@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef, useCallback } from 'react'
 import Image from 'next/image'
 import {
   Heart, Calendar, MapPin, Eye,
@@ -6,6 +6,7 @@ import {
 import { toast } from 'sonner'
 import { Badges } from '@/components/ui/Badge'
 import { ProjectHeaderProps } from './types'
+import { hapticMedium } from '@/src/utils/haptic'
 
 export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
   opportunity,
@@ -55,14 +56,14 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
             <div className="flex flex-wrap items-center gap-3 text-sm text-white/70">
               {creator ? (
                 <span className="flex items-center gap-2">
-                  <div className="w-5 h-5 bg-white/20 backdrop-blur flex items-center justify-center text-[0.5625rem] font-bold text-white">
+                  <div className="w-5 h-5 bg-white/20 backdrop-blur rounded-full flex items-center justify-center text-[0.5625rem] font-bold text-white">
                     {creator.nickname.charAt(0)}
                   </div>
                   <span className="font-medium text-white/90">{creator.nickname}</span>
                 </span>
               ) : (
                 <span className="flex items-center gap-2">
-                  <div className="w-5 h-5 bg-white/20 backdrop-blur flex items-center justify-center text-[0.5625rem] font-bold text-white/70">?</div>
+                  <div className="w-5 h-5 bg-white/20 backdrop-blur rounded-full flex items-center justify-center text-[0.5625rem] font-bold text-white/70">?</div>
                   <span className="font-medium text-white/90">익명</span>
                 </span>
               )}
@@ -96,15 +97,15 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
           )}
           <div className="flex items-center gap-3 mt-3">
             <button
-              onClick={() => { if (isOwner) { toast('내 프로젝트에는 관심 표시를 할 수 없어요'); return } handleInterest() }}
+              onClick={() => { hapticMedium(); if (isOwner) { toast('내 프로젝트에는 관심 표시를 할 수 없어요'); return } handleInterest() }}
               disabled={interestLoading}
               className={`inline-flex items-center gap-1.5 px-3 py-1.5 border text-xs font-bold transition-all ${
                 hasInterested
                   ? 'border-status-danger-text/20 bg-status-danger-bg text-status-danger-text'
-                  : 'border-border-strong bg-surface-card text-txt-secondary hover:border-status-danger-text/20 hover:text-status-danger-text'
+                  : 'border-border bg-surface-card text-txt-secondary hover:border-status-danger-text/20 hover:text-status-danger-text'
               } disabled:opacity-40 disabled:cursor-default`}
             >
-              <Heart size={12} className={hasInterested ? 'fill-current' : ''} />
+              <Heart size={12} className={`${hasInterested ? 'fill-current heart-burst' : ''} transition-transform`} />
               {hasInterested ? '관심 표현됨' : '관심 있어요'}
               <span className="text-txt-disabled font-mono">{(opportunity.interest_count ?? 0) + (hasInterested ? 1 : 0)}</span>
             </button>
@@ -120,7 +121,7 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
           <div className="px-4 sm:px-8 pb-3">
             <div className="flex gap-2 overflow-x-auto">
               {opportunity.demo_images!.slice(1).map((src, idx) => (
-                <div key={idx} className="relative h-24 w-32 shrink-0 border border-border-strong">
+                <div key={idx} className="relative h-24 w-32 shrink-0 border border-border">
                   <Image
                     src={src}
                     alt={`${opportunity.title} 이미지 ${idx + 2}`}
@@ -159,7 +160,7 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
       <div className="flex flex-wrap items-center gap-4 text-sm text-txt-tertiary">
         {creator ? (
           <span className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-black flex items-center justify-center text-[0.625rem] font-bold text-white">
+            <div className="w-6 h-6 bg-surface-inverse rounded-full flex items-center justify-center text-[0.625rem] font-bold text-txt-inverse">
               {creator.nickname.charAt(0)}
             </div>
             <span className="font-medium text-txt-secondary">{creator.nickname}</span>
@@ -195,12 +196,12 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
       )}
       <div className="flex items-center gap-3 mt-3">
         <button
-          onClick={handleInterest}
+          onClick={() => { hapticMedium(); handleInterest() }}
           disabled={isOwner || interestLoading}
           className={`inline-flex items-center gap-1.5 px-3 py-1.5 border text-xs font-bold transition-all ${
             hasInterested
               ? 'border-status-danger-text/20 bg-status-danger-bg text-status-danger-text'
-              : 'border-border-strong bg-surface-card text-txt-secondary hover:border-status-danger-text/20 hover:text-status-danger-text'
+              : 'border-border bg-surface-card text-txt-secondary hover:border-status-danger-text/20 hover:text-status-danger-text'
           } disabled:opacity-40 disabled:cursor-default`}
         >
           <Heart size={12} className={hasInterested ? 'fill-current' : ''} />

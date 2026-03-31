@@ -4,66 +4,66 @@
 
 /* ============================================================
    DRAFT DESIGN SYSTEM — CSS Custom Properties
-   브루탈리즘 · 각진 모서리 · 강한 그림자 · 모노크롬
+   Clean Modern · Instagram/Meta inspired · Content-first
    ============================================================ */
 
 :root {
   /* ── Surface ── */
-  --surface-bg: #FAFAFA;
+  --surface-bg: #FFFFFF;
   --surface-card: #FFFFFF;
   --surface-elevated: #FFFFFF;
-  --surface-sunken: #F0F0F1;
-  --surface-inverse: #18181B;
-  --surface-overlay: rgba(0, 0, 0, 0.5);
+  --surface-sunken: #F5F5F5;
+  --surface-inverse: #262626;
+  --surface-overlay: rgba(0, 0, 0, 0.4);
 
   /* ── Text ── */
-  --text-primary: #18181B;
-  --text-secondary: #52525B;
-  --text-tertiary: #71717A;
-  --text-disabled: #A1A1AA;
+  --text-primary: #262626;
+  --text-secondary: #555555;
+  --text-tertiary: #8E8E8E;
+  --text-disabled: #C7C7C7;
   --text-inverse: #FFFFFF;
-  --text-link: #18181B;
+  --text-link: #00376B;
 
-  /* ── Border ── */
-  --border-default: #A1A1AA;
-  --border-strong: #3F3F46;
-  --border-subtle: #EDEEF0;
+  /* ── Border (ultra-light, Instagram-like) ── */
+  --border-default: #EFEFEF;
+  --border-strong: #DBDBDB;
+  --border-subtle: #F5F5F5;
 
-  /* ── Accent (최소 사용) ── */
-  --accent-primary: #18181B;
-  --accent-primary-hover: #27272A;
-  --accent-secondary: #F4F4F5;
-  --accent-secondary-hover: #E4E4E7;
+  /* ── Accent ── */
+  --accent-primary: #0095F6;
+  --accent-primary-hover: #1877F2;
+  --accent-secondary: #F5F5F5;
+  --accent-secondary-hover: #EFEFEF;
 
-  /* ── Status (뮤트된 시맨틱 컬러) ── */
+  /* ── Status ── */
   --status-success-bg: #F0FDF4;
-  --status-success-text: #15803D;
+  --status-success-text: #16A34A;
   --status-warning-bg: #FFFBEB;
-  --status-warning-text: #92400E;
+  --status-warning-text: #D97706;
   --status-danger-bg: #FEF2F2;
-  --status-danger-text: #991B1B;
-  --status-info-bg: #F4F4F5;
-  --status-info-text: #3F3F46;
-  --status-neutral-bg: #F4F4F5;
-  --status-neutral-text: #71717A;
-  --status-danger-accent: #991B1B;
+  --status-danger-text: #DC2626;
+  --status-info-bg: #EFF6FF;
+  --status-info-text: #2563EB;
+  --status-neutral-bg: #F5F5F5;
+  --status-neutral-text: #737373;
+  --status-danger-accent: #EF4444;
 
-  /* ── Tag (모노크롬 기본, 시맨틱은 예외만) ── */
-  --tag-default-bg: #F4F4F5;
-  --tag-default-text: #3F3F46;
-  --tag-strong-bg: #18181B;
+  /* ── Tag ── */
+  --tag-default-bg: #F5F5F5;
+  --tag-default-text: #555555;
+  --tag-strong-bg: #262626;
   --tag-strong-text: #FFFFFF;
-  --tag-outline-border: #D4D4D8;
-  --tag-outline-text: #52525B;
+  --tag-outline-border: #DBDBDB;
+  --tag-outline-text: #555555;
 
-  /* ── Brand (인디고 — CTA, 활성 상태, 강조) ── */
-  --brand: #4F46E5;
-  --brand-hover: #4338CA;
-  --brand-bg: rgba(79, 70, 229, 0.05);
-  --brand-border: rgba(79, 70, 229, 0.2);
-  --brand-shadow: rgba(79, 70, 229, 0.3);
+  /* ── Brand (Meta Blue) ── */
+  --brand: #0095F6;
+  --brand-hover: #1877F2;
+  --brand-bg: rgba(0, 149, 246, 0.06);
+  --brand-border: rgba(0, 149, 246, 0.2);
+  --brand-shadow: rgba(0, 149, 246, 0.2);
 
-  /* ── Indicator (상태 표시등) ── */
+  /* ── Indicator ── */
   --indicator-online: #22C55E;
   --indicator-premium: #F59E0B;
   --indicator-premium-border: #D97706;
@@ -71,27 +71,27 @@
   --indicator-trending: #F97316;
 
   /* ── Bottom Tab Bar ── */
-  --bottom-tab-height: 3.5rem;  /* 56px */
+  --bottom-tab-height: 3.5rem;
 
   /* ── Misc ── */
-  --grid-color: rgba(0, 0, 0, 0.04);
-  --focus-ring: rgba(24, 24, 27, 0.5);
+  --grid-color: rgba(0, 0, 0, 0.03);
+  --focus-ring: rgba(0, 149, 246, 0.4);
 
-  /* ── Radius (브루탈리즘: 최소 라운딩) ── */
-  --radius-xs: 0px;
-  --radius-sm: 2px;
-  --radius-md: 2px;
-  --radius-lg: 4px;
-  --radius-xl: 4px;
+  /* ── Radius (Soft & Rounded) ── */
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
   --radius-full: 9999px;
 
-  /* ── Shadow (브루탈리즘: 하드 오프셋) ── */
-  --shadow-sm: 2px 2px 0px 0px rgba(0, 0, 0, 0.1);
-  --shadow-md: 3px 3px 0px 0px rgba(0, 0, 0, 0.12);
-  --shadow-lg: 4px 4px 0px 0px rgba(0, 0, 0, 0.15);
-  --shadow-xl: 6px 6px 0px 0px rgba(0, 0, 0, 0.15);
-  --shadow-solid: 4px 4px 0px 0px #3F3F46;
-  --shadow-solid-sm: 2px 2px 0px 0px #3F3F46;
+  /* ── Shadow (Minimal, barely-there) ── */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 1px 4px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 2px 12px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0 4px 24px rgba(0, 0, 0, 0.1);
+  --shadow-solid: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-solid-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 /* ── Desktop: collapse bottom tab height ── */
@@ -101,8 +101,74 @@
   }
 }
 
-/* ── Dark mode (future) ── */
-/* .dark { ... } */
+/* ── Dark mode ── */
+.dark {
+  --surface-bg: #000000;
+  --surface-card: #121212;
+  --surface-elevated: #1A1A1A;
+  --surface-sunken: #0A0A0A;
+  --surface-inverse: #FAFAFA;
+  --surface-overlay: rgba(0, 0, 0, 0.7);
+
+  --text-primary: #F5F5F5;
+  --text-secondary: #A8A8A8;
+  --text-tertiary: #737373;
+  --text-disabled: #525252;
+  --text-inverse: #262626;
+  --text-link: #E0F1FF;
+
+  --border-default: #363636;
+  --border-strong: #525252;
+  --border-subtle: #262626;
+
+  --accent-primary: #0095F6;
+  --accent-primary-hover: #1877F2;
+  --accent-secondary: #262626;
+  --accent-secondary-hover: #363636;
+
+  --status-success-bg: rgba(34, 197, 94, 0.12);
+  --status-success-text: #4ADE80;
+  --status-warning-bg: rgba(245, 158, 11, 0.12);
+  --status-warning-text: #FBBF24;
+  --status-danger-bg: rgba(239, 68, 68, 0.12);
+  --status-danger-text: #F87171;
+  --status-info-bg: rgba(37, 99, 235, 0.12);
+  --status-info-text: #60A5FA;
+  --status-neutral-bg: #262626;
+  --status-neutral-text: #737373;
+  --status-danger-accent: #F87171;
+
+  --tag-default-bg: #262626;
+  --tag-default-text: #A8A8A8;
+  --tag-strong-bg: #FAFAFA;
+  --tag-strong-text: #262626;
+  --tag-outline-border: #363636;
+  --tag-outline-text: #A8A8A8;
+
+  --brand: #0095F6;
+  --brand-hover: #4CB5F9;
+  --brand-bg: rgba(0, 149, 246, 0.12);
+  --brand-border: rgba(0, 149, 246, 0.25);
+  --brand-shadow: rgba(0, 149, 246, 0.2);
+
+  --indicator-online: #4ADE80;
+  --indicator-premium: #FBBF24;
+  --indicator-premium-border: #F59E0B;
+  --indicator-alert: #F87171;
+  --indicator-trending: #FB923C;
+
+  --grid-color: rgba(255, 255, 255, 0.03);
+  --focus-ring: rgba(0, 149, 246, 0.5);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-solid: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-solid-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+
+  color-scheme: dark;
+}
 
 /* ============================================================
    BASE STYLES
@@ -164,6 +230,77 @@ body {
 }
 
 /* ============================================================
+   TYPOGRAPHY SYSTEM — Semantic type scale
+   ============================================================ */
+
+.type-page-title {
+  font-size: 1.375rem;    /* 22px */
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+.type-section-title {
+  font-size: 0.9375rem;   /* 15px */
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.005em;
+  color: var(--text-primary);
+}
+.type-body {
+  font-size: 0.875rem;    /* 14px */
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+.type-body-secondary {
+  font-size: 0.8125rem;   /* 13px */
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+.type-caption {
+  font-size: 0.75rem;     /* 12px */
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--text-tertiary);
+}
+.type-label {
+  font-size: 0.6875rem;   /* 11px */
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  color: var(--text-tertiary);
+}
+.type-overline {
+  font-size: 0.625rem;    /* 10px */
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  color: var(--text-disabled);
+}
+
+/* ============================================================
+   GLOBAL TRANSITIONS — Consistent motion
+   ============================================================ */
+
+/* All interactive elements get uniform transition */
+a, button, input, select, textarea,
+[role="button"], [tabindex] {
+  transition-property: color, background-color, border-color, opacity, box-shadow, transform;
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Cards and containers — slightly slower, elegant */
+[class*="bg-surface-card"],
+[class*="border-border"] {
+  transition-property: box-shadow, border-color, transform;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ============================================================
    BACKGROUND PATTERNS
    ============================================================ */
 
@@ -218,7 +355,7 @@ body {
 *:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
-  border-radius: 2px;
+  border-radius: 8px;
 }
 
 button:focus-visible,
@@ -244,17 +381,10 @@ a[class*="px-"]:active {
   transition: transform 80ms ease-out;
 }
 
-/* shadow-solid 버튼 전용 — 눌림 시 그림자 제거 + 이동 */
-button[class*="shadow-solid"]:not(:disabled):active {
-  transform: translate(2px, 2px) scale(0.98) !important;
-  box-shadow: none !important;
-}
-
 /* 카드 클릭 눌림 */
-[role="button"][class*="border-border-strong"]:active {
+[role="button"][class*="border"]:active {
   transform: scale(0.985);
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: transform 80ms ease-out, box-shadow 80ms ease-out;
+  transition: transform 80ms ease-out;
 }
 
 /* ============================================================
@@ -380,3 +510,200 @@ button[class*="shadow-solid"]:not(:disabled):active {
 .ob-hover { transition:all 0.2s cubic-bezier(0.34,1.4,0.64,1) }
 .ob-hover:hover { transform:scale(1.06) translateY(-1px) }
 .ob-hover:active { transform:scale(0.96) }
+
+/* ============================================================
+   MLP MICRO-INTERACTIONS
+   ============================================================ */
+
+/* ── Skeleton Shimmer ── */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton-shimmer {
+  background: linear-gradient(90deg, var(--surface-sunken) 25%, var(--border-subtle) 50%, var(--surface-sunken) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* ── Grid Stagger Entrance ── */
+@keyframes staggerFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.stagger-item {
+  opacity: 0;
+  animation: staggerFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ── Spring Hover for Cards ── */
+.hover-spring {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+              border-color 0.2s ease;
+}
+.hover-spring:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+.hover-spring:active {
+  transform: translateY(0) scale(0.985);
+}
+
+/* ── Heart Burst ── */
+@keyframes heartBurst {
+  0% { transform: scale(1); }
+  15% { transform: scale(1.3); }
+  30% { transform: scale(0.9); }
+  45% { transform: scale(1.15); }
+  60% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+@keyframes heartParticle {
+  0% { opacity: 1; transform: translate(0, 0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0); }
+}
+.heart-burst {
+  animation: heartBurst 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.heart-particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--status-danger-accent);
+  pointer-events: none;
+  animation: heartParticle 0.6s ease-out forwards;
+}
+
+/* ── Empty State Float ── */
+@keyframes emptyFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.empty-float {
+  animation: emptyFloat 3s ease-in-out infinite;
+}
+
+/* ── Success Pop ── */
+@keyframes successPop {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.success-pop {
+  animation: successPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ── Icon Bounce (for copy, like, etc.) ── */
+@keyframes iconBounce {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.25); }
+  60% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+.icon-bounce {
+  animation: iconBounce 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ── Bell Swing (empty notifications) ── */
+@keyframes bellSwing {
+  0%, 100% { transform: rotate(0deg); }
+  15% { transform: rotate(12deg); }
+  30% { transform: rotate(-10deg); }
+  45% { transform: rotate(6deg); }
+  60% { transform: rotate(-4deg); }
+  75% { transform: rotate(2deg); }
+}
+.bell-swing {
+  animation: bellSwing 2s ease-in-out infinite;
+  transform-origin: top center;
+}
+
+/* ── Tooltip ── */
+.tooltip-container {
+  position: relative;
+}
+.tooltip-content {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s, transform 0.15s;
+  white-space: nowrap;
+  z-index: 50;
+}
+.tooltip-container:hover .tooltip-content {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── Modal Glass ── */
+.modal-glass {
+  background: color-mix(in srgb, var(--surface-card) 92%, transparent);
+  backdrop-filter: blur(24px) saturate(1.3);
+  -webkit-backdrop-filter: blur(24px) saturate(1.3);
+  box-shadow:
+    0 32px 64px -16px rgba(0, 0, 0, 0.16),
+    0 16px 32px -8px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(0, 0, 0, 0.04);
+}
+.modal-glass .modal-bar {
+  background: color-mix(in srgb, var(--surface-sunken) 80%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* ── Scroll Reveal ── */
+.reveal-hidden {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Toast Enhancements ── */
+.toast-success {
+  border-left: 4px solid var(--indicator-online) !important;
+  background-color: var(--status-success-bg) !important;
+}
+.toast-error {
+  border-left: 4px solid var(--status-danger-accent) !important;
+  background-color: var(--status-danger-bg) !important;
+}
+
+/* ============================================================
+   CLEAN MODERN OVERRIDES
+   ============================================================ */
+
+/* ── Square avatars → circle (global) ──
+   Targets initial-avatar pattern: fixed size + centered + bold/medium text + shrink-0 */
+[class*="shrink-0"][class*="items-center"][class*="justify-center"]:where(
+  [class*="font-bold"], [class*="font-medium"]
+):where(
+  [class*="w-5"][class*="h-5"],
+  [class*="w-6"][class*="h-6"],
+  [class*="w-7"][class*="h-7"],
+  [class*="w-8"][class*="h-8"],
+  [class*="w-9"][class*="h-9"],
+  [class*="w-10"][class*="h-10"],
+  [class*="w-12"][class*="h-12"],
+  [class*="w-14"][class*="h-14"],
+  [class*="w-20"][class*="h-20"]
+):not(button):not(a) {
+  border-radius: 9999px !important;
+}
+
+/* ── Legacy shadow aliases (backward compat) ── */
+.shadow-sharp {
+  box-shadow: var(--shadow-md);
+}
+.shadow-brutal {
+  box-shadow: var(--shadow-lg);
+}

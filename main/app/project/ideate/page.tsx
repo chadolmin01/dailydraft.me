@@ -11,7 +11,7 @@ export default function IdeatePage() {
         <p className="text-txt-secondary mt-1">팀 빌딩 전 아이디어를 구체화하는 단계입니다.</p>
       </div>
 
-      <Card className="border-dashed border border-border-strong bg-surface-sunken">
+      <Card className="border border-border bg-surface-sunken">
         <div className="py-12 text-center">
           <div className="text-4xl mb-4 opacity-30">!</div>
           <h3 className="text-lg font-semibold text-txt-tertiary mb-2">Coming Soon</h3>
@@ -24,7 +24,7 @@ export default function IdeatePage() {
       <div className="flex justify-end">
         <a
           href="/project/plan"
-          className="px-6 py-2.5 bg-black text-white text-sm font-medium border border-black hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+          className="px-6 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-medium border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97]"
         >
           다음: Plan &rarr;
         </a>

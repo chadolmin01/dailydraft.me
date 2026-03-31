@@ -8,7 +8,6 @@ import {
   Calendar,
   FileText,
   Users,
-  PenTool,
   User,
   LayoutDashboard,
   Briefcase,
@@ -102,7 +101,7 @@ export const Sidebar: React.FC = () => {
   }
 
   return (
-    <div className="w-16 flex-shrink-0 bg-surface-card border-r border-border-strong flex flex-col items-center py-6 h-screen sticky top-0 z-50">
+    <div className="w-16 flex-shrink-0 bg-surface-card border-r border-border flex flex-col items-center py-6 h-screen sticky top-0 z-50">
       {/* Home / Logo Button - Now goes to Dashboard */}
       <div
         className="mb-8 cursor-pointer group relative"
@@ -112,14 +111,14 @@ export const Sidebar: React.FC = () => {
           className={`w-10 h-10 flex items-center justify-center rounded-sm transition-colors
             ${
               getActiveTab() === 'dashboard'
-                ? 'bg-black text-white shadow-solid-sm'
-                : 'bg-surface-card text-txt-primary border border-border-strong hover:bg-black hover:text-white hover:border-border-strong shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
+                ? 'bg-surface-inverse text-txt-inverse shadow-sm'
+                : 'bg-surface-card text-txt-primary border border-border hover:bg-surface-inverse hover:text-txt-inverse hover:border-border hover:shadow-md active:scale-[0.97]'
             }
         `}
         >
-          <PenTool size={20} />
+          <span className="font-black text-base leading-none">D</span>
         </div>
-        <div className="absolute left-14 top-1/2 -translate-y-1/2 bg-black text-white text-[0.625rem] font-mono font-bold uppercase tracking-widest px-2 py-1 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-solid-sm">
+        <div className="absolute left-14 top-1/2 -translate-y-1/2 bg-surface-inverse text-txt-inverse text-[0.625rem] font-medium px-2 py-1 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-sm">
           MAIN
         </div>
       </div>
@@ -133,7 +132,7 @@ export const Sidebar: React.FC = () => {
             className={`w-10 h-10 flex items-center justify-center transition-all duration-200 mx-auto rounded-sm relative group
               ${
                 getActiveTab() === item.id
-                  ? 'bg-brand-bg text-brand border border-brand shadow-solid-sm'
+                  ? 'bg-brand-bg text-brand border border-brand shadow-sm'
                   : 'text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken border border-transparent'
               }`}
           >
@@ -145,7 +144,7 @@ export const Sidebar: React.FC = () => {
             )}
 
             {/* Tooltip */}
-            <div className="absolute left-14 top-1/2 -translate-y-1/2 bg-black text-white text-[0.625rem] font-mono font-bold uppercase tracking-widest px-2 py-1 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-solid-sm">
+            <div className="absolute left-14 top-1/2 -translate-y-1/2 bg-surface-inverse text-txt-inverse text-[0.625rem] font-medium px-2 py-1 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-sm">
               {item.label}
             </div>
           </button>
@@ -156,9 +155,9 @@ export const Sidebar: React.FC = () => {
       <div className="mt-auto flex flex-col gap-4 w-full px-3 pb-4 relative" ref={menuRef}>
         {/* Popup Menu */}
         {isMenuOpen && (
-          <div className="absolute left-14 bottom-2 w-56 bg-surface-card border border-border-strong shadow-sharp rounded-sm p-1 flex flex-col gap-0.5 z-50 animate-in fade-in zoom-in-95 duration-100 origin-bottom-left">
+          <div className="absolute left-14 bottom-2 w-56 bg-surface-card rounded-xl border border-border shadow-md rounded-sm p-1 flex flex-col gap-0.5 z-50 animate-in fade-in zoom-in-95 duration-100 origin-bottom-left">
             {/* User Info */}
-            <div className="px-3 py-2.5 mb-1 border-b border-dashed border-border">
+            <div className="px-3 py-2.5 mb-1 border-b border-border">
               <div className="flex items-center gap-2">
                 <span className="font-bold text-sm text-txt-primary">{profile?.nickname || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}</span>
                 {isPremium && (
@@ -217,9 +216,9 @@ export const Sidebar: React.FC = () => {
             {/* Institution Admin Section */}
             {isInstitutionAdmin && (
               <>
-                <div className="h-px border-t border-dashed border-border my-1"></div>
+                <div className="h-px border-t border-border my-1"></div>
                 <div className="px-3 py-1.5">
-                  <div className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest">Institution</div>
+                  <div className="text-[0.625rem] font-medium text-txt-tertiary">Institution</div>
                 </div>
                 <button
                   onClick={() => handleMenuAction('institution')}
@@ -230,13 +229,13 @@ export const Sidebar: React.FC = () => {
               </>
             )}
 
-            <div className="h-px border-t border-dashed border-border my-1"></div>
+            <div className="h-px border-t border-border my-1"></div>
 
             {/* Admin Section - Only show for admins */}
             {isAdmin && (
               <>
                 <div className="px-3 py-1.5">
-                  <div className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest">Admin</div>
+                  <div className="text-[0.625rem] font-medium text-txt-tertiary">Admin</div>
                 </div>
                 <button
                   onClick={() => handleMenuAction('invite-codes-admin')}
@@ -250,7 +249,7 @@ export const Sidebar: React.FC = () => {
                 >
                   <AlertCircle size={14} /> Error Logs
                 </button>
-                <div className="h-px border-t border-dashed border-border my-1"></div>
+                <div className="h-px border-t border-border my-1"></div>
               </>
             )}
 
@@ -268,10 +267,10 @@ export const Sidebar: React.FC = () => {
           className={`w-10 h-10 mx-auto rounded-sm flex items-center justify-center text-[0.625rem] font-bold cursor-pointer transition-all border relative group
             ${
               isMenuOpen
-                ? 'bg-black text-white border-black shadow-solid-sm'
+                ? 'bg-surface-inverse text-txt-inverse border-surface-inverse shadow-sm'
                 : isPremium
-                  ? 'bg-indicator-premium text-white border-indicator-premium-border shadow-solid-sm'
-                  : 'bg-surface-sunken text-txt-secondary border-border-strong hover:border-border-strong shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
+                  ? 'bg-indicator-premium text-white border-indicator-premium-border shadow-sm'
+                  : 'bg-surface-sunken text-txt-secondary border-border hover:border-border hover:shadow-md active:scale-[0.97]'
             }`}
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >

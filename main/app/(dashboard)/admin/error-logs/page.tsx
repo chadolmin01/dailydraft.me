@@ -98,7 +98,10 @@ export default function ErrorLogsPage() {
   if (isAdminLoading) {
     return (
       <div className="flex-1 flex items-center justify-center h-screen bg-surface-sunken">
-        <Loader2 className="animate-spin text-txt-disabled" size={32} />
+        <div className="space-y-4 w-full max-w-xs">
+          <div className="h-6 bg-surface-card rounded skeleton-shimmer w-40 mx-auto" />
+          <div className="h-4 bg-surface-card rounded skeleton-shimmer w-32 mx-auto" />
+        </div>
       </div>
     )
   }
@@ -142,9 +145,9 @@ export default function ErrorLogsPage() {
     <div className="flex-1 overflow-y-auto h-screen bg-surface-sunken">
       <div className="max-w-[100rem] mx-auto p-8 lg:p-12 space-y-6">
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-border-strong pb-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-border pb-6">
           <div>
-            <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-2 flex items-center gap-2">
+            <div className="text-[0.625rem] font-medium text-txt-tertiary mb-2 flex items-center gap-2">
               <span className="w-2 h-2 bg-indicator-alert"></span>
               ADMIN / MONITORING
             </div>
@@ -153,7 +156,7 @@ export default function ErrorLogsPage() {
 
           <button
             onClick={() => refetch()}
-            className="flex items-center gap-2 px-4 py-2 bg-black text-white text-sm font-medium border border-black hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            className="flex items-center gap-2 px-4 py-2 bg-surface-inverse text-txt-inverse text-sm font-medium border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97]"
           >
             <RefreshCw size={16} />
             새로고침
@@ -169,7 +172,7 @@ export default function ErrorLogsPage() {
               placeholder="메시지, 엔드포인트 검색..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-surface-card border border-border-strong text-sm focus:outline-none focus:border-brand"
+              className="w-full pl-10 pr-4 py-2 bg-surface-card rounded-lg border border-border text-base sm:text-sm focus:outline-none focus:border-brand"
             />
           </div>
 
@@ -178,7 +181,7 @@ export default function ErrorLogsPage() {
             <select
               value={levelFilter}
               onChange={(e) => setLevelFilter(e.target.value)}
-              className="px-3 py-2 bg-surface-card border border-border-strong text-sm focus:outline-none focus:border-brand"
+              className="px-3 py-2 bg-surface-card rounded-lg border border-border text-sm focus:outline-none focus:border-brand"
             >
               <option value="all">모든 레벨</option>
               <option value="debug">Debug</option>
@@ -191,7 +194,7 @@ export default function ErrorLogsPage() {
             <select
               value={sourceFilter}
               onChange={(e) => setSourceFilter(e.target.value)}
-              className="px-3 py-2 bg-surface-card border border-border-strong text-sm focus:outline-none focus:border-brand"
+              className="px-3 py-2 bg-surface-card rounded-lg border border-border text-sm focus:outline-none focus:border-brand"
             >
               <option value="all">모든 소스</option>
               <option value="api">API</option>
@@ -215,7 +218,7 @@ export default function ErrorLogsPage() {
                 </div>
                 <div>
                   <div className="text-2xl font-bold font-mono text-txt-primary">{count}</div>
-                  <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">{level}</div>
+                  <div className="text-[0.625rem] font-medium text-txt-tertiary">{level}</div>
                 </div>
               </Card>
             )
@@ -224,8 +227,10 @@ export default function ErrorLogsPage() {
 
         {/* Logs List */}
         {isLoading ? (
-          <div className="flex items-center justify-center py-16">
-            <Loader2 className="animate-spin text-txt-disabled" size={32} />
+          <div className="space-y-2">
+            {[0,1,2,3,4].map(i => (
+              <div key={i} className="h-16 bg-surface-card rounded-xl border border-border skeleton-shimmer" />
+            ))}
           </div>
         ) : isError ? (
           <Card padding="p-8" className="text-center">
@@ -233,7 +238,7 @@ export default function ErrorLogsPage() {
             <p className="text-txt-secondary mb-4">에러 로그를 불러올 수 없습니다</p>
             <button
               onClick={() => refetch()}
-              className="px-4 py-2 border border-border-strong text-txt-secondary text-sm hover:bg-black hover:text-white transition-colors"
+              className="px-4 py-2 border border-border text-txt-secondary text-sm hover:bg-black hover:text-white transition-colors"
             >
               다시 시도
             </button>
@@ -272,7 +277,7 @@ export default function ErrorLogsPage() {
                           {log.source.toUpperCase()}
                         </span>
                         {log.error_code && (
-                          <span className="px-2 py-0.5 text-[0.625rem] font-mono font-bold bg-surface-sunken border border-border text-txt-secondary">
+                          <span className="px-2 py-0.5 text-[0.625rem] font-mono font-bold bg-surface-sunken rounded-xl border border-border text-txt-secondary">
                             {log.error_code}
                           </span>
                         )}
@@ -301,8 +306,8 @@ export default function ErrorLogsPage() {
                     <div className="border-t border-border p-4 bg-surface-sunken space-y-4">
                       {/* Full message */}
                       <div>
-                        <h4 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-1">MESSAGE</h4>
-                        <p className="text-sm text-txt-primary bg-surface-card p-3 border border-border-strong">
+                        <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-1">MESSAGE</h4>
+                        <p className="text-sm text-txt-primary bg-surface-card p-3 border border-border">
                           {log.message}
                         </p>
                       </div>
@@ -310,8 +315,8 @@ export default function ErrorLogsPage() {
                       {/* Stack trace */}
                       {log.stack_trace && (
                         <div>
-                          <h4 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-1">STACK TRACE</h4>
-                          <pre className="text-xs text-txt-secondary bg-surface-card p-3 border border-border-strong overflow-x-auto">
+                          <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-1">STACK TRACE</h4>
+                          <pre className="text-xs text-txt-secondary bg-surface-card p-3 border border-border overflow-x-auto">
                             {log.stack_trace}
                           </pre>
                         </div>
@@ -320,8 +325,8 @@ export default function ErrorLogsPage() {
                       {/* Request body */}
                       {log.request_body && (
                         <div>
-                          <h4 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-1">REQUEST BODY</h4>
-                          <pre className="text-xs text-txt-secondary bg-surface-card p-3 border border-border-strong overflow-x-auto">
+                          <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-1">REQUEST BODY</h4>
+                          <pre className="text-xs text-txt-secondary bg-surface-card p-3 border border-border overflow-x-auto">
                             {JSON.stringify(log.request_body, null, 2)}
                           </pre>
                         </div>
@@ -330,15 +335,15 @@ export default function ErrorLogsPage() {
                       {/* Metadata */}
                       {log.metadata && Object.keys(log.metadata).length > 0 && (
                         <div>
-                          <h4 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-1">METADATA</h4>
-                          <pre className="text-xs text-txt-secondary bg-surface-card p-3 border border-border-strong overflow-x-auto">
+                          <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-1">METADATA</h4>
+                          <pre className="text-xs text-txt-secondary bg-surface-card p-3 border border-border overflow-x-auto">
                             {JSON.stringify(log.metadata, null, 2)}
                           </pre>
                         </div>
                       )}
 
                       {/* Additional info */}
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2 border-t border-dashed border-border">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2 border-t border-border">
                         {log.user_id && (
                           <div>
                             <span className="text-[0.625rem] font-mono text-txt-disabled">USER ID</span>

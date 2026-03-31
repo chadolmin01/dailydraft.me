@@ -37,8 +37,8 @@ export function ExploreSearchBar({
     <div ref={searchRef} className="relative mb-6">
       <div className={`relative transition-all duration-200 ${
         isSearchExpanded
-          ? 'bg-surface-card shadow-solid-sm border border-brand/40'
-          : 'bg-surface-card border border-border hover:shadow-sharp hover:border-border-strong'
+          ? 'bg-surface-card shadow-sm border border-brand/40'
+          : 'bg-surface-card rounded-xl border border-border hover:shadow-md hover:border-border'
       }`}>
         <div className="relative flex items-center">
           <div className={`absolute left-4 transition-colors ${isSearchExpanded ? 'text-txt-secondary' : 'text-txt-disabled'}`}>
@@ -53,7 +53,7 @@ export function ExploreSearchBar({
               if (e.key === 'Escape') { setIsSearchExpanded(false); (e.target as HTMLInputElement).blur() }
               if (e.key === 'Enter') setIsSearchExpanded(false)
             }}
-            className={`w-full bg-transparent text-sm focus:outline-none transition-all ${
+            className={`w-full bg-transparent text-base sm:text-sm focus:outline-none transition-all ${
               isSearchExpanded ? 'pl-11 pr-24 py-3.5' : 'pl-11 pr-24 py-3'
             }`}
             placeholder={
@@ -67,7 +67,7 @@ export function ExploreSearchBar({
             {searchScope !== 'all' && (
               <button
                 onClick={() => onSearchScopeChange('all')}
-                className="flex items-center gap-1 text-[0.625rem] font-mono uppercase tracking-wide bg-surface-inverse text-txt-inverse pl-2 pr-1.5 py-0.5 hover:bg-accent-hover transition-colors"
+                className="flex items-center gap-1 text-[0.625rem] bg-surface-inverse text-txt-inverse pl-2 pr-1.5 py-0.5 hover:bg-accent-hover transition-colors"
               >
                 {searchScope === 'projects' ? '프로젝트' : searchScope === 'people' ? '사람' : '기술'}
                 <X size={10} />
@@ -90,7 +90,7 @@ export function ExploreSearchBar({
             <div className="mx-4 border-t border-border-subtle" />
             <div className="px-4 pt-3 pb-4 space-y-3">
               <div>
-                <p className="text-[0.625rem] font-mono uppercase tracking-widest text-txt-disabled mb-2.5">SCOPE</p>
+                <p className="text-[0.625rem] text-txt-disabled mb-2.5">SCOPE</p>
                 <div className="flex flex-wrap gap-1.5">
                   {SEARCH_SCOPES.map((scope) => {
                     const isActive = searchScope === scope.id
@@ -104,8 +104,8 @@ export function ExploreSearchBar({
                         }}
                         className={`group/chip flex items-center gap-2 pl-2.5 pr-3.5 py-2 text-xs font-medium transition-all border ${
                           isActive
-                            ? 'bg-brand text-white border-brand shadow-solid-sm'
-                            : 'bg-surface-sunken text-txt-secondary border-border hover:bg-surface-card hover:border-border-strong hover:shadow-sharp'
+                            ? 'bg-brand text-white border-brand shadow-sm'
+                            : 'bg-surface-sunken text-txt-secondary border-border hover:bg-surface-card hover:border-border hover:shadow-md'
                         }`}
                       >
                         <div className={`w-6 h-6 flex items-center justify-center transition-colors border ${
@@ -124,11 +124,11 @@ export function ExploreSearchBar({
               </div>
               <div className="flex items-center gap-3 pt-1">
                 <span className="flex items-center gap-1.5 text-[0.625rem] text-txt-disabled">
-                  <kbd className="px-1.5 py-0.5 bg-surface-sunken border border-border rounded text-[0.625rem] font-mono">Enter</kbd>
+                  <kbd className="px-1.5 py-0.5 bg-surface-sunken rounded-xl border border-border rounded text-[0.625rem] font-mono">Enter</kbd>
                   검색
                 </span>
                 <span className="flex items-center gap-1.5 text-[0.625rem] text-txt-disabled">
-                  <kbd className="px-1.5 py-0.5 bg-surface-sunken border border-border rounded text-[0.625rem] font-mono">Esc</kbd>
+                  <kbd className="px-1.5 py-0.5 bg-surface-sunken rounded-xl border border-border rounded text-[0.625rem] font-mono">Esc</kbd>
                   닫기
                 </span>
               </div>

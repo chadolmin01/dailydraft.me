@@ -181,7 +181,7 @@ export default function PlanPage() {
             <button
               onClick={handleGeneratePRD}
               disabled={isGeneratingPRD}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-600 text-white text-sm border border-violet-600 hover:bg-violet-700 transition-colors disabled:opacity-50 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-600 text-white text-sm border border-violet-600 hover:bg-violet-700 transition-colors disabled:opacity-50 hover:opacity-90 active:scale-[0.97]"
             >
               <FileText className="w-3.5 h-3.5" />
               PRD 보기
@@ -200,8 +200,8 @@ export default function PlanPage() {
         {/* LEFT: Triangle + Input (2/5) */}
         <div className="lg:col-span-2 space-y-4">
           {/* Triangle Visual */}
-          <div className="bg-surface-card border border-border-strong p-4">
-            <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-disabled mb-2">Alignment Map</div>
+          <div className="bg-surface-card rounded-xl border border-border p-4">
+            <div className="text-[0.625rem] font-medium text-txt-disabled mb-2">Alignment Map</div>
             <div className="h-[17.5rem]">
               <TriangleVisual
                 inputs={inputs}
@@ -214,7 +214,7 @@ export default function PlanPage() {
           </div>
 
           {/* Input Section */}
-          <div className="bg-surface-card border border-border-strong overflow-hidden">
+          <div className="bg-surface-card rounded-xl border border-border overflow-hidden">
             <div className="h-[20rem]">
               <InputSection
                 inputs={inputs}
@@ -231,9 +231,9 @@ export default function PlanPage() {
 
         {/* RIGHT: Result Dashboard (3/5) */}
         <div className="lg:col-span-3">
-          <div className="bg-surface-card border border-border-strong p-6">
+          <div className="bg-surface-card rounded-xl border border-border p-6">
             {/* Dashboard Header */}
-            <div className="flex justify-between items-center mb-6 pb-4 border-b border-dashed border-border">
+            <div className="flex justify-between items-center mb-6 pb-4 border-b border-border">
               <h3 className="text-lg font-bold flex items-center gap-2">
                 <div className="w-1.5 h-4 bg-black"></div>
                 Project Dashboard
@@ -248,10 +248,10 @@ export default function PlanPage() {
 
             {/* Activity Log */}
             {logs.length > 0 && (
-              <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-4 border-b border-dashed border-border">
-                <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-disabled whitespace-nowrap">Updates</span>
+              <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-4 border-b border-border">
+                <span className="text-[0.625rem] font-medium text-txt-disabled whitespace-nowrap">Updates</span>
                 {logs.slice(0, 3).map(log => (
-                  <div key={log.id} className="flex items-center gap-1.5 px-2 py-1 bg-surface-sunken border border-border whitespace-nowrap">
+                  <div key={log.id} className="flex items-center gap-1.5 px-2 py-1 bg-surface-sunken rounded-xl border border-border whitespace-nowrap">
                     <span className="text-[0.625rem] text-txt-disabled font-mono">
                       {log.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
@@ -272,10 +272,10 @@ export default function PlanPage() {
       </div>
 
       {/* Navigation */}
-      <div className="flex justify-between pt-4 border-t border-border-strong">
+      <div className="flex justify-between pt-4 border-t border-border">
         <a
           href="/project/ideate"
-          className="px-6 py-2.5 border border-border-strong text-txt-secondary text-sm font-medium hover:bg-black hover:text-white transition-colors"
+          className="px-6 py-2.5 border border-border text-txt-secondary text-sm font-medium hover:bg-black hover:text-white transition-colors"
         >
           &larr; 이전: Ideate
         </a>
@@ -283,7 +283,7 @@ export default function PlanPage() {
           href="/project/build"
           className={`px-6 py-2.5 text-sm font-medium transition-colors ${
             hasInitialSynthesis
-              ? 'bg-black text-white border border-black hover:bg-[#333] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
+              ? 'bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 hover:opacity-90 active:scale-[0.97]'
               : 'bg-surface-sunken text-txt-disabled border border-border cursor-not-allowed pointer-events-none'
           }`}
         >

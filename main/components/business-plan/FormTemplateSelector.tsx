@@ -47,7 +47,7 @@ export const FormTemplateSelector: React.FC<FormTemplateSelectorProps> = ({
       />
 
       {/* Modal */}
-      <div className="relative bg-surface-card shadow-brutal w-full max-w-4xl max-h-[90vh] overflow-hidden mx-4">
+      <div className="relative bg-surface-card shadow-lg w-full max-w-4xl max-h-[90vh] overflow-hidden mx-4">
         {/* Header */}
         <div className="px-6 py-4 border-b border-border flex items-center justify-between">
           <div>
@@ -82,7 +82,7 @@ export const FormTemplateSelector: React.FC<FormTemplateSelectorProps> = ({
 
           {/* Other templates */}
           <div>
-            <h3 className="text-[0.625rem] font-mono font-bold text-txt-secondary mb-3 uppercase tracking-widest">
+            <h3 className="text-[0.625rem] font-medium text-txt-secondary mb-3">
               Other Templates
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -97,9 +97,9 @@ export const FormTemplateSelector: React.FC<FormTemplateSelectorProps> = ({
           </div>
 
           {/* Info */}
-          <div className="mt-6 p-4 bg-surface-sunken border border-border">
+          <div className="mt-6 p-4 bg-surface-sunken rounded-xl border border-border">
             <div className="flex items-start gap-3">
-              <div className="w-8 h-8 bg-black text-white flex items-center justify-center shrink-0">
+              <div className="w-8 h-8 bg-surface-inverse text-txt-inverse flex items-center justify-center shrink-0">
                 <Sparkles size={16} />
               </div>
               <div>
@@ -132,7 +132,7 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onSelect, feature
       onClick={() => onSelect(template)}
       className={`
         w-full text-left p-4 border transition-all group
-        ${featured ? 'border-status-info-text/30 hover:border-status-info-text bg-status-info-bg/30' : `${colors.border} bg-surface-card hover:shadow-sharp`}
+        ${featured ? 'border-status-info-text/30 hover:border-status-info-text bg-status-info-bg/30' : `${colors.border} bg-surface-card hover:shadow-md hover-spring`}
       `}
     >
       <div className="flex items-start gap-4">

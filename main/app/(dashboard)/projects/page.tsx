@@ -10,10 +10,10 @@ import {
   Users,
   Eye,
   Heart,
-  Loader2,
   Rocket,
   Settings,
 } from 'lucide-react'
+import { SkeletonGrid } from '@/components/ui/Skeleton'
 import { useMyOpportunities } from '@/src/hooks/useOpportunities'
 import { useAuth } from '@/src/context/AuthContext'
 import type { Opportunity } from '@/src/types/opportunity'
@@ -51,13 +51,13 @@ export default function MyProjectsPage() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-lg font-bold text-txt-primary">내 프로젝트</h1>
-            <p className="text-[0.625rem] font-mono text-txt-tertiary uppercase tracking-widest mt-0.5">
+            <p className="text-[0.625rem] text-txt-tertiary mt-0.5">
               MY PROJECTS · {myProjects.length}개
             </p>
           </div>
           <Link
             href="/projects/new"
-            className="flex items-center gap-1.5 px-4 py-2 bg-surface-inverse text-txt-inverse text-sm font-bold border border-surface-inverse shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+            className="flex items-center gap-1.5 px-4 py-2 bg-surface-inverse text-txt-inverse text-sm font-bold border border-surface-inverse hover:opacity-90 active:scale-[0.97] transition-all"
           >
             <Plus size={16} />
             새 프로젝트
@@ -66,13 +66,11 @@ export default function MyProjectsPage() {
 
         {/* Content */}
         {isLoading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="h-6 w-6 animate-spin text-txt-tertiary" />
-          </div>
+          <SkeletonGrid count={4} cols={2} />
         ) : myProjects.length === 0 ? (
-          <div className="border border-dashed border-border-strong bg-surface-card p-10 text-center">
-            <div className="w-14 h-14 bg-surface-sunken border border-border flex items-center justify-center mx-auto mb-4">
-              <FolderOpen size={24} className="text-txt-disabled" />
+          <div className="border border-border bg-surface-card rounded-xl p-10 text-center">
+            <div className="w-14 h-14 bg-surface-sunken rounded-full flex items-center justify-center mx-auto mb-4 empty-float">
+              <FolderOpen size={24} className="text-txt-tertiary" strokeWidth={1.5} />
             </div>
             <h3 className="font-bold text-txt-primary mb-1">아직 프로젝트가 없습니다</h3>
             <p className="text-sm text-txt-tertiary mb-6">
@@ -80,7 +78,7 @@ export default function MyProjectsPage() {
             </p>
             <Link
               href="/projects/new"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-surface-inverse text-txt-inverse text-sm font-bold border border-surface-inverse shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-surface-inverse text-txt-inverse text-sm font-bold border border-surface-inverse hover:opacity-90 active:scale-[0.97] transition-all"
             >
               <Rocket size={16} />
               첫 프로젝트 만들기
@@ -88,7 +86,7 @@ export default function MyProjectsPage() {
           </div>
         ) : (
           <div className="space-y-3">
-            {myProjects.map((opp: Opportunity) => {
+            {myProjects.map((opp: Opportunity, index: number) => {
               const daysAgo = opp.created_at
                 ? Math.floor((Date.now() - new Date(opp.created_at).getTime()) / (1000 * 60 * 60 * 24))
                 : 0
@@ -100,7 +98,8 @@ export default function MyProjectsPage() {
                   tabIndex={0}
                   onClick={() => setSelectedProjectId(opp.id)}
                   onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedProjectId(opp.id) } }}
-                  className="bg-surface-card border border-border-strong p-4 cursor-pointer hover:shadow-solid-sm hover:border-brand/30 transition-all active:scale-[0.985] group"
+                  style={{ animationDelay: `${Math.min(index * 60, 600)}ms` }}
+                  className="stagger-item bg-surface-card rounded-xl border border-border p-4 cursor-pointer hover:shadow-md hover:border-brand/30 hover:-translate-y-0.5 hover-spring active:scale-[0.985] group"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
@@ -116,7 +115,7 @@ export default function MyProjectsPage() {
                       {/* Roles */}
                       {opp.needed_roles && opp.needed_roles.length > 0 && (
                         <div className="flex items-center gap-1.5 mb-3 flex-wrap">
-                          <span className="text-[0.625rem] font-mono font-bold text-brand uppercase tracking-wide bg-brand-bg px-1.5 py-0.5 border border-brand-border">NEED</span>
+                          <span className="text-[0.625rem] font-medium text-brand bg-brand-bg px-1.5 py-0.5 border border-brand-border">NEED</span>
                           {opp.needed_roles.slice(0, 3).map((role: string) => (
                             <span key={role} className="text-[0.625rem] bg-surface-sunken text-txt-secondary px-2 py-0.5 border border-border font-medium">{role}</span>
                           ))}
@@ -167,7 +166,7 @@ export default function MyProjectsPage() {
 
         {/* Explore CTA */}
         {myProjects.length > 0 && (
-          <div className="mt-6 border border-dashed border-border p-4 text-center">
+          <div className="mt-6 border border-border p-4 text-center">
             <p className="text-sm text-txt-tertiary mb-2">다른 프로젝트도 둘러보세요</p>
             <Link
               href="/explore"

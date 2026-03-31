@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { MessageCircle, ThumbsUp, Flag, Send, Loader2, ArrowRight } from 'lucide-react'
 import { toast } from 'sonner'
+import { SkeletonFeed } from '@/components/ui/Skeleton'
 import { useComments, Comment } from '@/src/hooks/useComments'
 import { useAuth } from '@/src/context/AuthContext'
 import { COMMENT_LABEL, COMMENT_VERB } from '@/src/constants/labels'
@@ -101,10 +102,10 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
   const hasMore = comments.length > INITIAL_VISIBLE
 
   return (
-    <div className="bg-surface-card border border-border-strong">
+    <div className="bg-surface-card rounded-xl border border-border">
       {/* Header */}
-      <div className="p-4 border-b border-border-strong">
-        <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest flex items-center gap-2">
+      <div className="p-4 border-b border-border">
+        <h3 className="text-[0.625rem] font-medium text-txt-tertiary flex items-center gap-2">
           <MessageCircle size={14} />
           {COMMENT_LABEL} ({comments.length})
         </h3>
@@ -112,9 +113,9 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
 
       {/* Comment Form — login only */}
       {user && profile ? (
-        <form onSubmit={handleSubmit} className="p-4 bg-surface-sunken border-b border-dashed border-border">
+        <form onSubmit={handleSubmit} className="p-4 bg-surface-sunken border-b border-border">
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-7 h-7 bg-black text-white flex items-center justify-center text-xs font-bold shrink-0">
+            <div className="w-7 h-7 bg-surface-inverse text-txt-inverse rounded-full flex items-center justify-center text-xs font-bold shrink-0">
               {cleanNickname(profile.nickname).charAt(0)}
             </div>
             <span className="text-sm font-medium text-txt-primary">{cleanNickname(profile.nickname)}</span>
@@ -131,24 +132,24 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
               placeholder={`${COMMENT_VERB}을 남겨주세요...`}
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="flex-1 px-3 py-1.5 text-sm border border-border-strong focus:outline-none focus:border-border-strong bg-surface-card text-txt-primary placeholder-txt-disabled"
+              className="flex-1 px-3 py-1.5 text-base sm:text-sm border border-border focus:outline-none focus:border-border bg-surface-card rounded-lg text-txt-primary placeholder-txt-disabled"
               maxLength={500}
             />
             <button
               type="submit"
               disabled={submitting || !content.trim()}
-              className="px-3 py-1.5 bg-black text-white border border-black hover:bg-[#333] transition-colors disabled:bg-surface-sunken disabled:text-txt-disabled disabled:border-border-strong disabled:cursor-not-allowed flex items-center justify-center"
+              className="px-3 py-1.5 bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 transition-colors disabled:bg-surface-sunken disabled:text-txt-disabled disabled:border-border disabled:cursor-not-allowed flex items-center justify-center"
             >
               {submitting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
             </button>
           </div>
         </form>
       ) : (
-        <div className="p-5 bg-surface-sunken border-b border-dashed border-border text-center">
+        <div className="p-5 bg-surface-sunken border-b border-border text-center">
           <p className="text-sm text-txt-tertiary mb-3">로그인하고 {COMMENT_VERB}을 남겨보세요</p>
           <button
             onClick={onLoginClick}
-            className="inline-flex items-center gap-2 bg-black text-white px-5 py-2 text-xs font-bold border border-black hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            className="inline-flex items-center gap-2 bg-surface-inverse text-txt-inverse px-5 py-2 text-xs font-bold border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97]"
           >
             로그인하기 <ArrowRight size={12} />
           </button>
@@ -158,12 +159,16 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
       {/* Comments List */}
       <div className="divide-y divide-border">
         {loading ? (
-          <div className="p-8 flex items-center justify-center">
-            <Loader2 className="animate-spin text-txt-disabled" size={24} />
+          <div className="p-4">
+            <SkeletonFeed count={3} />
           </div>
         ) : comments.length === 0 ? (
-          <div className="p-8 text-center text-txt-disabled text-sm">
-            아직 {COMMENT_LABEL}이 없습니다. 첫 번째 {COMMENT_VERB}을 남겨보세요!
+          <div className="p-8 text-center">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-surface-sunken empty-float mb-3">
+              <MessageCircle size={20} className="text-txt-tertiary" strokeWidth={1.5} />
+            </div>
+            <p className="text-sm font-medium text-txt-secondary mb-1">아직 {COMMENT_LABEL}이 없습니다</p>
+            <p className="text-xs text-txt-disabled">첫 번째 {COMMENT_VERB}을 남겨보세요!</p>
           </div>
         ) : (
           <>
@@ -224,7 +229,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
     <div className="p-4">
       {/* Author info */}
       <div className="flex items-center gap-2 mb-2">
-        <div className="w-6 h-6 bg-black text-white flex items-center justify-center text-[0.625rem] font-bold shrink-0">
+        <div className="w-6 h-6 bg-surface-inverse text-txt-inverse rounded-full flex items-center justify-center text-[0.625rem] font-bold shrink-0">
           {cleanNickname(comment.nickname).charAt(0)}
         </div>
         <span className="font-bold text-sm text-txt-primary">{cleanNickname(comment.nickname)}</span>
@@ -251,7 +256,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
               : 'text-txt-disabled hover:text-brand'
           }`}
         >
-          <ThumbsUp size={14} />
+          <ThumbsUp size={14} className={hasVoted ? 'icon-bounce' : ''} />
           <span>도움이 됐어요 {comment.helpful_count > 0 && `(${comment.helpful_count})`}</span>
         </button>
 

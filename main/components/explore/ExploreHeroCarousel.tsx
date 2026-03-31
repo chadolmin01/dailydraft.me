@@ -47,7 +47,7 @@ export function ExploreHeroCarousel() {
 
         {/* ===== 왼쪽: 메인 강조 슬라이드 ===== */}
         <div
-          className="relative flex-[2] min-w-0 bg-surface-card border border-border-strong overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,0.08)] cursor-pointer transition-all duration-300"
+          className="relative flex-[2] min-w-0 bg-surface-card rounded-xl border border-border overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,0.08)] cursor-pointer transition-all duration-300 hover:shadow-lg hover:border-border/80 active:scale-[0.995]"
           onClick={goNext}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
@@ -57,10 +57,10 @@ export function ExploreHeroCarousel() {
           <div className="absolute inset-0 bg-gradient-to-r from-surface-card via-surface-card/80 to-transparent" />
 
           {/* 코너 마크 */}
-          <div className="absolute top-2 left-2 w-3 h-3 border-l border-t border-black/30 z-10" />
-          <div className="absolute top-2 right-2 w-3 h-3 border-r border-t border-black/30 z-10" />
-          <div className="absolute bottom-2 left-2 w-3 h-3 border-l border-b border-black/30 z-10" />
-          <div className="absolute bottom-2 right-2 w-3 h-3 border-r border-b border-black/30 z-10" />
+          <div className="absolute top-2 left-2 w-3 h-3 border-l border-t border-surface-inverse/30 z-10" />
+          <div className="absolute top-2 right-2 w-3 h-3 border-r border-t border-surface-inverse/30 z-10" />
+          <div className="absolute bottom-2 left-2 w-3 h-3 border-l border-b border-surface-inverse/30 z-10" />
+          <div className="absolute bottom-2 right-2 w-3 h-3 border-r border-b border-surface-inverse/30 z-10" />
 
           {/* 인디케이터 */}
           <div className="absolute bottom-3 left-4 sm:left-6 z-20 flex items-center gap-2">
@@ -68,11 +68,13 @@ export function ExploreHeroCarousel() {
               <button
                 key={i}
                 onClick={(e) => { e.stopPropagation(); setActive(i) }}
-                className={`transition-all duration-200 ${
-                  active === i ? 'w-5 h-1.5 bg-black' : 'w-1.5 h-1.5 bg-border-strong/50 hover:bg-border-strong'
-                }`}
+                className="p-2 -m-1.5"
                 aria-label={`슬라이드 ${i + 1}`}
-              />
+              >
+                <span className={`block rounded-full transition-all duration-200 ${
+                  active === i ? 'w-5 h-1.5 bg-black' : 'w-1.5 h-1.5 bg-border-strong/50'
+                }`} />
+              </button>
             ))}
             <span className="text-[0.625rem] font-mono text-txt-disabled ml-1">{active + 1}/{SLIDE_COUNT}</span>
           </div>
@@ -82,7 +84,7 @@ export function ExploreHeroCarousel() {
             {/* Slide 0: CTA */}
             <div className={`absolute inset-0 px-4 sm:px-6 flex items-start pt-6 sm:pt-10 transition-all duration-300 ${order[0] === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
               <div className="w-full">
-                <div className="inline-flex items-center gap-2 px-2 h-6 bg-surface-card border border-border-strong mb-3">
+                <div className="inline-flex items-center gap-2 px-2 h-6 bg-surface-card rounded-xl border border-border mb-3">
                   <div className="w-1.5 h-1.5 bg-indicator-online animate-pulse" />
                   <span className="text-[0.625rem] font-mono font-bold text-black tracking-wider">OPEN BETA</span>
                 </div>
@@ -94,7 +96,7 @@ export function ExploreHeroCarousel() {
                 </p>
                 <Link
                   href={isAuthenticated ? '/projects/new' : '/login'}
-                  className="group inline-flex items-center gap-2 px-5 py-2.5 bg-black text-white text-sm font-bold hover:bg-surface-inverse transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] border border-black"
+                  className="group inline-flex items-center gap-2 px-5 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-bold hover:bg-surface-inverse transition-all hover:opacity-90 active:scale-[0.97] border border-surface-inverse"
                 >
                   {isAuthenticated ? '프로젝트 올리기' : '시작하기'}
                   <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
@@ -105,7 +107,7 @@ export function ExploreHeroCarousel() {
             {/* Slide 1: How it works */}
             <div className={`absolute inset-0 px-4 sm:px-6 flex items-start pt-6 sm:pt-10 transition-all duration-300 ${order[0] === 1 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
               <div className="w-full">
-                <div className="inline-flex items-center gap-2 px-2 h-6 bg-surface-card border border-border-strong mb-3">
+                <div className="inline-flex items-center gap-2 px-2 h-6 bg-surface-card rounded-xl border border-border mb-3">
                   <span className="text-[0.625rem] font-mono font-bold text-black tracking-wider">HOW IT WORKS</span>
                 </div>
                 <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-txt-primary mb-1.5 break-keep leading-tight tracking-tight">
@@ -120,7 +122,7 @@ export function ExploreHeroCarousel() {
             {/* Slide 2: Feedback */}
             <div className={`absolute inset-0 px-4 sm:px-6 flex items-start pt-6 sm:pt-10 transition-all duration-300 ${order[0] === 2 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
               <div className="w-full">
-                <div className="inline-flex items-center gap-2 px-2 h-6 bg-surface-card border border-border-strong mb-3">
+                <div className="inline-flex items-center gap-2 px-2 h-6 bg-surface-card rounded-xl border border-border mb-3">
                   <span className="text-[0.625rem] font-mono font-bold text-black tracking-wider">FEEDBACK</span>
                 </div>
                 <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-txt-primary mb-1.5 break-keep leading-tight tracking-tight">
@@ -140,7 +142,7 @@ export function ExploreHeroCarousel() {
           {/* 오른쪽 상단 */}
           <button
             onClick={() => setActive(order[1])}
-            className="relative flex-1 bg-surface-card border border-border overflow-hidden text-left hover:border-border-strong hover:shadow-solid-sm transition-all duration-200 group"
+            className="relative flex-1 bg-surface-card rounded-xl border border-border overflow-hidden text-left hover:border-border hover:shadow-md hover-spring group"
           >
             <div className="absolute inset-0 bg-grid-engineering opacity-20" />
             <div className="relative z-10 h-full px-4 flex items-center">
@@ -152,7 +154,7 @@ export function ExploreHeroCarousel() {
           {/* 오른쪽 하단 */}
           <button
             onClick={() => setActive(order[2])}
-            className="relative flex-1 bg-surface-card border border-border overflow-hidden text-left hover:border-border-strong hover:shadow-solid-sm transition-all duration-200 group"
+            className="relative flex-1 bg-surface-card rounded-xl border border-border overflow-hidden text-left hover:border-border hover:shadow-md hover-spring group"
           >
             <div className="absolute inset-0 bg-grid-engineering opacity-20" />
             <div className="relative z-10 h-full px-4 flex items-center">
@@ -169,7 +171,7 @@ export function ExploreHeroCarousel() {
 /* ── 오른쪽 미리보기 카드 콘텐츠 ── */
 function SlidePreview({ index, isAuthenticated, tone = 'white' }: { index: number; isAuthenticated: boolean; tone?: 'white' | 'gray' | 'black' }) {
   const colors = {
-    white: { title: 'text-txt-primary', sub: 'text-txt-tertiary', tag: 'bg-surface-card border-border text-txt-secondary', badge: 'bg-surface-card border-border-strong', label: 'text-black' },
+    white: { title: 'text-txt-primary', sub: 'text-txt-tertiary', tag: 'bg-surface-card border-border text-txt-secondary', badge: 'bg-surface-card border-border', label: 'text-black' },
     gray:  { title: 'text-white', sub: 'text-white/70', tag: 'bg-white/15 border-white/25 text-white/80', badge: 'bg-white/15 border-white/25', label: 'text-white' },
     black: { title: 'text-white', sub: 'text-white/50', tag: 'bg-white/10 border-white/15 text-white/60', badge: 'bg-white/10 border-white/15', label: 'text-white' },
   }

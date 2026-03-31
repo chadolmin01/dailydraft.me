@@ -222,7 +222,7 @@ function WorkflowContent() {
   return (
     <div className="flex flex-col md:flex-row h-screen bg-surface-sunken">
       {/* 모바일 상단 진행 표시 */}
-      <div className="md:hidden bg-surface-card border-b border-border-strong px-4 py-3">
+      <div className="md:hidden bg-surface-card border-b border-border px-4 py-3">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-medium text-txt-primary">
             Step {currentStep === 'validation' ? 1 : currentStep === 'prd' ? 2 : 3} / 3

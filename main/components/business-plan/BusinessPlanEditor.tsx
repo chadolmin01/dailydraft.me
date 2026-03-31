@@ -14,6 +14,7 @@ import {
   X,
   TrendingUp,
   Target,
+  Menu,
 } from 'lucide-react'
 import { Card } from '../ui/Card'
 import { StepWizard, StepWizardCompact } from './StepWizard'
@@ -76,6 +77,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
   const [isSaving, setIsSaving] = useState(false)
   const [showValidation, setShowValidation] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false)
   const [showRealtimeScore, setShowRealtimeScore] = useState(true)
 
   // Real-time validation hook
@@ -263,7 +265,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
   return (
     <div className="flex h-screen bg-surface-bg">
       {/* Sidebar */}
-      <div className="w-72 bg-surface-card border-r border-border flex flex-col">
+      <div className="hidden md:flex w-64 lg:w-72 bg-surface-card border-r border-border flex-col">
         {/* Header */}
         <div className="p-4 border-b border-border">
           <button
@@ -286,7 +288,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
 
         {/* Steps */}
         <div className="flex-1 p-4 overflow-y-auto">
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary mb-3 uppercase tracking-widest">
+          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
             Progress
           </h3>
           <StepWizardCompact
@@ -384,28 +386,36 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top Bar */}
-        <div className="bg-surface-card border-b border-border px-6 py-4 flex items-center justify-between">
-          <div>
-            <h2 className="font-bold text-txt-primary">
-              {WIZARD_STEPS[currentStep - 1].title}
-            </h2>
-            <p className="text-sm text-txt-tertiary">
-              {WIZARD_STEPS[currentStep - 1].description}
-            </p>
+        <div className="bg-surface-card border-b border-border px-4 md:px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowMobileSidebar(true)}
+              className="md:hidden p-1.5 text-txt-secondary hover:text-txt-primary hover:bg-surface-sunken transition-colors"
+            >
+              <Menu size={18} />
+            </button>
+            <div>
+              <h2 className="font-bold text-txt-primary text-sm md:text-base">
+                {WIZARD_STEPS[currentStep - 1].title}
+              </h2>
+              <p className="text-xs md:text-sm text-txt-tertiary">
+                {WIZARD_STEPS[currentStep - 1].description}
+              </p>
+            </div>
           </div>
 
           <div className="flex items-center gap-2">
             <button
               onClick={handleSave}
               disabled={isSaving}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-txt-secondary bg-surface-card border border-border-strong hover:bg-black hover:text-white transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-txt-secondary bg-surface-card rounded-lg border border-border hover:bg-black hover:text-white transition-colors"
             >
               <Save size={16} />
               {isSaving ? '저장 중...' : '저장'}
             </button>
             <button
               onClick={() => setShowPreview(true)}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-txt-secondary bg-surface-card border border-border-strong hover:bg-black hover:text-white transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-txt-secondary bg-surface-card rounded-lg border border-border hover:bg-black hover:text-white transition-colors"
             >
               <Eye size={16} />
               미리보기
@@ -504,7 +514,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
           {currentStep < WIZARD_STEPS.length ? (
             <button
               onClick={handleNextStep}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-black text-white hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-surface-inverse text-txt-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97]"
             >
               다음
               <ArrowRight size={16} />
@@ -512,7 +522,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
           ) : (
             <button
               onClick={() => setShowPreview(true)}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-brand text-white hover:bg-brand-hover transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-brand text-white hover:bg-brand-hover transition-colors hover:opacity-90 active:scale-[0.97]"
             >
               <Eye size={16} />
               완료 및 미리보기
@@ -528,7 +538,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
             className="absolute inset-0 bg-black/30"
             onClick={() => setShowValidation(false)}
           />
-          <div className="relative bg-surface-card w-[26.25rem] h-full shadow-brutal overflow-y-auto">
+          <div className="relative bg-surface-card w-[26.25rem] h-full shadow-lg overflow-y-auto">
             <div className="sticky top-0 bg-surface-card border-b border-border px-4 py-3 flex items-center justify-between z-10">
               <h3 className="font-bold text-txt-primary">실시간 점수 분석</h3>
               <button
@@ -562,7 +572,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
               {/* Rejection Warnings Summary */}
               {totalWarningCounts.total > 0 && (
                 <div className="border-t border-border-subtle pt-4">
-                  <h4 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">
+                  <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
                     탈락 위험 요소
                   </h4>
                   {Object.entries(allWarnings).map(([section, warnings]) => {
@@ -585,7 +595,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
 
               {/* Legacy Validation Panel */}
               <div className="border-t border-border-subtle pt-4">
-                <h4 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">
+                <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
                   상세 체크리스트
                 </h4>
                 <ValidationPanel
@@ -608,6 +618,36 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
           onClose={() => setShowPreview(false)}
           onComplete={onComplete}
         />
+      )}
+
+      {/* Mobile Sidebar Overlay */}
+      {showMobileSidebar && (
+        <div className="fixed inset-0 z-50 md:hidden">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setShowMobileSidebar(false)} />
+          <div className="absolute left-0 top-0 bottom-0 w-72 bg-surface-card border-r border-border flex flex-col animate-fade-in-up">
+            <div className="p-4 border-b border-border flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-status-info-bg flex items-center justify-center">
+                  <FileText size={20} className="text-status-info-text" />
+                </div>
+                <div>
+                  <h1 className="font-bold text-txt-primary text-sm">{template.shortName}</h1>
+                  <p className="text-[0.625rem] text-txt-tertiary font-mono">{template.pages}p</p>
+                </div>
+              </div>
+              <button onClick={() => setShowMobileSidebar(false)} className="p-1.5 text-txt-disabled hover:text-txt-primary">
+                <X size={18} />
+              </button>
+            </div>
+            <div className="flex-1 p-4 overflow-y-auto">
+              <StepWizardCompact
+                currentStep={currentStep}
+                completedSteps={completedSteps}
+                onStepClick={(step) => { setCurrentStep(step); setShowMobileSidebar(false) }}
+              />
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

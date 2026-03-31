@@ -166,7 +166,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
           relative border border-dashed p-8 text-center cursor-pointer transition-all
           ${isDragging
             ? 'border-brand bg-brand-bg'
-            : 'border-border hover:border-border-strong hover:bg-surface-sunken'
+            : 'border-border hover:border-border hover:bg-surface-sunken'
           }
         `}
       >
@@ -214,7 +214,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
       {files.length > 0 && (
         <div className="mt-4 space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest">
+            <span className="text-[0.625rem] font-medium text-txt-tertiary">
               {files.length}개 파일 선택됨
             </span>
             <button
@@ -232,7 +232,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
             {files.map(({ file, id, preview }) => (
               <div
                 key={id}
-                className="flex items-center gap-3 p-3 bg-surface-sunken border border-border"
+                className="flex items-center gap-3 p-3 bg-surface-sunken rounded-xl border border-border"
               >
                 {preview ? (
                   <img

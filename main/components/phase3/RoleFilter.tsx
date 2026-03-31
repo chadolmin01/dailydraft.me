@@ -36,9 +36,9 @@ export const RoleFilter: React.FC<RoleFilterProps> = ({ currentFilter, onFilterC
 
         if (isActive) {
           if (role.id === 'ALL') {
-            buttonClass += ` ${role.color} ring-2 ring-border shadow-sharp`;
+            buttonClass += ` ${role.color} ring-2 ring-border shadow-md`;
           } else {
-            buttonClass += ` ${role.color} ring-2 ring-offset-1 ring-border-strong shadow-sharp saturate-150 border-transparent`;
+            buttonClass += ` ${role.color} ring-2 ring-offset-1 ring-border-strong shadow-md saturate-150 border-transparent`;
           }
         } else {
           buttonClass += " bg-surface-card text-txt-tertiary border-border hover:bg-surface-sunken hover:text-txt-primary";

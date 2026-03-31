@@ -29,7 +29,7 @@ const SignupCTA: React.FC<{ onClose: () => void; onSignup: () => void }> = ({ on
   >
     <div
       onClick={(e) => e.stopPropagation()}
-      className="bg-surface-card w-full max-w-sm p-8 text-center shadow-brutal border border-border-strong animate-modal-in"
+      className="bg-surface-card w-full max-w-sm p-8 text-center shadow-lg border border-border animate-modal-in"
     >
       <div className="w-16 h-16 bg-black flex items-center justify-center mx-auto mb-6">
         <span className="text-white font-black text-2xl font-mono">D</span>
@@ -43,12 +43,12 @@ const SignupCTA: React.FC<{ onClose: () => void; onSignup: () => void }> = ({ on
       </p>
       <button
         onClick={onSignup}
-        className="w-full bg-black hover:bg-[#333] text-white px-8 py-4 font-bold text-sm flex items-center justify-center gap-2 transition-colors border border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] mb-3"
+        className="w-full bg-black hover:bg-surface-inverse/90 text-white px-8 py-4 font-bold text-sm flex items-center justify-center gap-2 transition-colors border border-surface-inverse hover:opacity-90 active:scale-[0.97] mb-3"
       >
         무료로 시작하기
         <ArrowRight size={16} />
       </button>
-      <p className="text-[0.625rem] font-mono text-txt-disabled uppercase tracking-wider mb-4">
+      <p className="text-[0.625rem] text-txt-disabled mb-4">
         가입 30초 · 무료 · 바로 사용 가능
       </p>
       <button
@@ -131,29 +131,29 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
   if (loading) {
     return (
       <div className="min-h-screen bg-surface-bg">
-        <div className="max-w-4xl mx-auto px-4 py-6 animate-pulse">
+        <div className="max-w-4xl mx-auto px-4 py-6">
           {/* Hero skeleton */}
-          <div className="h-56 bg-surface-sunken border border-border-strong mb-6" />
+          <div className="h-56 bg-surface-sunken rounded-xl border border-border skeleton-shimmer mb-6" />
           {/* Title */}
-          <div className="h-7 w-2/3 bg-surface-sunken border border-border mb-3" />
-          <div className="h-4 w-1/3 bg-surface-sunken border border-border mb-6" />
+          <div className="h-7 w-2/3 bg-surface-sunken rounded-xl border border-border skeleton-shimmer mb-3" />
+          <div className="h-4 w-1/3 bg-surface-sunken rounded-xl border border-border skeleton-shimmer mb-6" />
           {/* Tags */}
           <div className="flex gap-2 mb-6">
-            <div className="h-6 w-16 bg-surface-sunken border border-border" />
-            <div className="h-6 w-20 bg-surface-sunken border border-border" />
-            <div className="h-6 w-14 bg-surface-sunken border border-border" />
+            <div className="h-6 w-16 bg-surface-sunken rounded-xl border border-border skeleton-shimmer" />
+            <div className="h-6 w-20 bg-surface-sunken rounded-xl border border-border skeleton-shimmer" />
+            <div className="h-6 w-14 bg-surface-sunken rounded-xl border border-border skeleton-shimmer" />
           </div>
           {/* Content */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-2 space-y-3">
-              <div className="h-4 bg-surface-sunken border border-border" />
-              <div className="h-4 bg-surface-sunken border border-border w-5/6" />
-              <div className="h-4 bg-surface-sunken border border-border w-4/6" />
-              <div className="h-4 bg-surface-sunken border border-border w-3/4" />
+              <div className="h-4 bg-surface-sunken rounded-xl border border-border skeleton-shimmer" />
+              <div className="h-4 bg-surface-sunken rounded-xl border border-border skeleton-shimmer w-5/6" />
+              <div className="h-4 bg-surface-sunken rounded-xl border border-border skeleton-shimmer w-4/6" />
+              <div className="h-4 bg-surface-sunken rounded-xl border border-border skeleton-shimmer w-3/4" />
             </div>
             <div className="space-y-3">
-              <div className="h-24 bg-surface-sunken border border-border-strong" />
-              <div className="h-20 bg-surface-sunken border border-border-strong" />
+              <div className="h-24 bg-surface-sunken rounded-xl border border-border skeleton-shimmer" />
+              <div className="h-20 bg-surface-sunken rounded-xl border border-border skeleton-shimmer" />
             </div>
           </div>
         </div>
@@ -170,7 +170,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
           <p className="text-txt-tertiary mb-6">{error || '존재하지 않거나 삭제된 프로젝트입니다.'}</p>
           <Link
             href="/"
-            className="inline-flex items-center gap-2 bg-black text-white px-6 py-3 font-bold text-sm hover:bg-[#333] transition-colors border border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            className="inline-flex items-center gap-2 bg-surface-inverse text-txt-inverse px-6 py-3 font-bold text-sm hover:bg-surface-inverse/90 transition-colors border border-surface-inverse hover:opacity-90 active:scale-[0.97]"
           >
             <ArrowLeft size={16} />
             홈으로 돌아가기
@@ -188,7 +188,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
   return (
     <div className="min-h-screen bg-surface-bg">
       {/* Top Navigation Bar */}
-      <nav className="sticky top-0 z-40 bg-surface-card/95 backdrop-blur-sm border-b border-border-strong">
+      <nav className="sticky top-0 z-40 bg-surface-card/95 backdrop-blur-sm border-b border-border">
         <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
           <button
             onClick={() => router.back()}
@@ -211,13 +211,13 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
       </nav>
 
       {/* Hero Header */}
-      <header className="border-b border-border-strong">
+      <header className="border-b border-border">
         <div className="max-w-6xl mx-auto px-6 py-10">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
             <div className="flex-1">
               {/* Type Badge */}
               <div className="flex items-center gap-2 mb-4">
-                <span className="text-[0.625rem] font-mono font-bold px-2 py-1 border border-border-strong text-black uppercase tracking-wider">
+                <span className="text-[0.625rem] font-medium px-2 py-1 border border-border text-black">
                   {opportunity.type === 'side_project' ? 'SIDE PROJECT' :
                    opportunity.type === 'startup' ? 'STARTUP' :
                    opportunity.type === 'study' ? 'STUDY' : opportunity.type?.toUpperCase() || 'PROJECT'}
@@ -270,7 +270,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
             <div className="hidden md:flex flex-col gap-3 shrink-0">
               <button
                 onClick={handleCoffeeChatAction}
-                className="bg-brand hover:bg-brand-hover text-white px-8 py-3.5 font-bold text-sm flex items-center justify-center gap-2 transition-colors border border-brand shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                className="bg-brand hover:bg-brand-hover text-white px-8 py-3.5 font-bold text-sm flex items-center justify-center gap-2 transition-colors border border-brand hover:opacity-90 active:scale-[0.97]"
               >
                 <Coffee size={16} />
                 커피챗 신청
@@ -293,7 +293,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
           )}
 
           {/* Stats Bar */}
-          <div className="flex items-center gap-6 mt-6 pt-6 border-t border-dashed border-border text-sm text-txt-tertiary">
+          <div className="flex items-center gap-6 mt-6 pt-6 border-t border-border text-sm text-txt-tertiary">
             {interestCount > 0 && (
               <span className="flex items-center gap-1.5">
                 <Heart size={14} className="text-txt-disabled" />
@@ -317,7 +317,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
           <div className="lg:col-span-2 space-y-10">
             {/* Project Description */}
             <section>
-              <h2 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4">
+              <h2 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">
                 프로젝트 소개
               </h2>
               <div className="prose prose-gray max-w-none">
@@ -329,8 +329,8 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
             {/* Pain Point (if exists) */}
             {opportunity.pain_point && (
-              <section className="bg-surface-sunken border border-border-strong p-6">
-                <h2 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">
+              <section className="bg-surface-sunken rounded-xl border border-border p-6">
+                <h2 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
                   해결하려는 문제
                 </h2>
                 <p className="text-txt-secondary leading-relaxed break-keep text-[0.9375rem]">
@@ -344,11 +344,11 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
             <section>
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
-                  <h2 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest">
+                  <h2 className="text-[0.625rem] font-medium text-txt-tertiary">
                     주간 업데이트
                   </h2>
                   {!opportunity.show_updates && isOwner && (
-                    <span className="text-[0.5rem] font-mono text-txt-disabled px-1.5 py-0.5 border border-dashed border-border">
+                    <span className="text-[0.5rem] font-mono text-txt-disabled px-1.5 py-0.5 border border-border">
                       비공개
                     </span>
                   )}
@@ -365,7 +365,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                       className={`text-[0.625rem] font-mono px-2 py-0.5 border transition-colors ${
                         opportunity.show_updates
                           ? 'bg-status-success-bg text-status-success-text border-status-success-text/30'
-                          : 'bg-surface-sunken text-txt-disabled border-border hover:border-border-strong'
+                          : 'bg-surface-sunken text-txt-disabled border-border hover:border-border'
                       }`}
                     >
                       {opportunity.show_updates ? '공개 중' : '비공개'}
@@ -377,7 +377,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                   {isOwner && (
                     <button
                       onClick={() => setShowWriteUpdate(true)}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold bg-black text-white border border-black hover:bg-[#333] transition-colors shadow-solid-sm hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97]"
                     >
                       + 작성하기
                     </button>
@@ -397,10 +397,10 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                         <div key={update.id} className="relative pl-10">
                           {/* Timeline Dot */}
                           <div className={`absolute left-[0.6875rem] top-1.5 w-[0.5625rem] h-[0.5625rem] border bg-surface-card ${
-                            index === 0 ? 'border-border-strong' : 'border-border-strong'
+                            index === 0 ? 'border-border' : 'border-border'
                           }`} />
 
-                          <div className="bg-surface-card border border-border-strong p-5 hover:shadow-sharp transition-all">
+                          <div className="bg-surface-card rounded-xl border border-border p-5 hover:shadow-md hover-spring">
                             <div className="flex items-center gap-2 mb-2">
                               <span className={`text-[0.625rem] font-bold px-2 py-0.5 border ${config.badgeColor}`}>
                                 {config.label}
@@ -446,10 +446,10 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
             {/* Feedback Section */}
             <section>
-              <h2 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4">
+              <h2 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">
                 커뮤니티 피드백
               </h2>
-              <div className="bg-surface-sunken border border-border-strong p-8 text-center">
+              <div className="bg-surface-sunken rounded-xl border border-border p-8 text-center">
                 <MessageCircle size={32} className="text-txt-disabled mx-auto mb-3" />
                 <p className="font-bold text-txt-primary mb-1">피드백을 남겨보세요</p>
                 <p className="text-sm text-txt-tertiary mb-4 break-keep">
@@ -457,7 +457,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                 </p>
                 <button
                   onClick={handleCoffeeChatAction}
-                  className="inline-flex items-center gap-2 bg-black text-white px-5 py-2.5 font-bold text-sm hover:bg-[#333] transition-colors border border-black shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                  className="inline-flex items-center gap-2 bg-surface-inverse text-txt-inverse px-5 py-2.5 font-bold text-sm hover:bg-surface-inverse/90 transition-colors border border-surface-inverse hover:opacity-90 active:scale-[0.97]"
                 >
                   피드백 작성하기
                   <ChevronRight size={14} />
@@ -469,14 +469,14 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
           {/* Right: Sidebar (1/3) */}
           <aside className="space-y-6">
             {/* Team Section */}
-            <div className="border border-border-strong p-6">
-              <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4">
+            <div className="border border-border p-6">
+              <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">
                 팀 정보
               </h3>
               {creator ? (
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-black text-white flex items-center justify-center font-bold text-sm">
+                    <div className="w-10 h-10 bg-surface-inverse text-txt-inverse flex items-center justify-center font-bold text-sm">
                       {creator.nickname.charAt(0)}
                     </div>
                     <div>
@@ -516,8 +516,8 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
             {/* Needed Roles */}
             {opportunity.needed_roles && opportunity.needed_roles.length > 0 && (
-              <div className="border border-border-strong p-6">
-                <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4">
+              <div className="border border-border p-6">
+                <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">
                   모집 중인 포지션
                 </h3>
                 <div className="space-y-3">
@@ -543,8 +543,8 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
             )}
 
             {/* Project Info */}
-            <div className="border border-border-strong p-6">
-              <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4">
+            <div className="border border-border p-6">
+              <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">
                 프로젝트 정보
               </h3>
               <div className="space-y-3 text-sm">
@@ -593,8 +593,8 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
             {/* Project Links */}
             {projectLinks && Object.keys(projectLinks).length > 0 && (
-              <div className="border border-border-strong p-6">
-                <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-4">
+              <div className="border border-border p-6">
+                <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">
                   링크
                 </h3>
                 <div className="space-y-2">
@@ -615,7 +615,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
             )}
 
             {/* CTA Card */}
-            <div className="bg-black text-white p-6 border border-black shadow-solid">
+            <div className="bg-surface-inverse text-txt-inverse p-6 border border-surface-inverse shadow-md">
               <h3 className="font-bold mb-2">프로젝트에 참여하고 싶나요?</h3>
               <p className="text-txt-inverse/50 text-sm mb-4 break-keep">
                 커피챗으로 메이커와 직접 이야기해보세요.
@@ -634,12 +634,12 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
       {/* Mobile Fixed CTA */}
       <div
-        className="fixed left-0 right-0 bg-surface-card border-t border-border-strong p-4 md:hidden z-30"
+        className="fixed left-0 right-0 bg-surface-card border-t border-border p-4 md:hidden z-30"
         style={{ bottom: 'calc(var(--bottom-tab-height) + env(safe-area-inset-bottom, 0px))' }}
       >
         <button
           onClick={handleCoffeeChatAction}
-          className="w-full bg-brand text-white py-3.5 font-bold text-sm flex items-center justify-center gap-2 border border-brand shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+          className="w-full bg-brand text-white py-3.5 font-bold text-sm flex items-center justify-center gap-2 border border-brand hover:opacity-90 active:scale-[0.97] transition-all"
         >
           <Coffee size={16} />
           커피챗 신청

@@ -17,10 +17,10 @@ export function ProfileSidePanel({
   onSelectProject?: (projectId: string) => void
 }) {
   return (
-    <div className="hidden md:flex w-2/5 bg-surface-card border border-border-strong flex-col overflow-hidden shadow-brutal-xl">
+    <div className="hidden md:flex w-2/5 modal-glass rounded-2xl flex-col overflow-hidden">
       {/* Side panel header */}
-      <div className="bg-surface-sunken border-b border-border-strong px-4 h-10 flex items-center justify-between shrink-0">
-        <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest">
+      <div className="modal-bar border-b border-border/40 px-4 h-10 flex items-center justify-between shrink-0">
+        <h3 className="text-[0.625rem] font-medium text-txt-tertiary">
           {sidePanel === 'projects' ? `프로젝트 (${userProjects.length})` : `포트폴리오 (${portfolioItems.length})`}
         </h3>
         <button
@@ -44,7 +44,7 @@ export function ProfileSidePanel({
                   onSelectProject(project.id)
                 }
               }}
-              className="w-full text-left px-3 py-3 bg-surface-card border border-border-strong hover:shadow-sharp hover:border-brand/40 transition-all group/proj"
+              className="w-full text-left px-3 py-3 bg-surface-card rounded-xl border border-border hover:shadow-md hover:border-brand/40 hover-spring group/proj"
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
@@ -78,7 +78,7 @@ export function ProfileSidePanel({
             href={item.link_url || '#'}
             target={item.link_url ? '_blank' : undefined}
             rel={item.link_url ? 'noopener noreferrer' : undefined}
-            className="block bg-surface-card border border-border-strong overflow-hidden hover:shadow-sharp transition-all"
+            className="block bg-surface-card rounded-xl border border-border overflow-hidden hover:shadow-md hover-spring"
           >
             {item.image_url && (
               <div className="relative h-32 bg-surface-sunken">

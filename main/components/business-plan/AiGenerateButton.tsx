@@ -93,7 +93,7 @@ export const AiGenerateButton: React.FC<AiGenerateButtonProps> = ({
               ? 'bg-surface-sunken text-txt-tertiary cursor-not-allowed'
               : isGenerating
                 ? 'bg-status-info-bg text-status-info-text cursor-wait'
-                : 'bg-black text-white hover:bg-[#333] shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
+                : 'bg-surface-inverse text-txt-inverse hover:bg-surface-inverse/90 hover:opacity-90 active:scale-[0.97]'
             }
           `}
         >
@@ -117,7 +117,7 @@ export const AiGenerateButton: React.FC<AiGenerateButtonProps> = ({
             p-3 border transition-all
             ${disabled || isGenerating
               ? 'border-border text-txt-disabled cursor-not-allowed'
-              : 'border-border-strong text-txt-secondary hover:bg-black hover:text-white'
+              : 'border-border text-txt-secondary hover:bg-black hover:text-white'
             }
           `}
         >
@@ -127,7 +127,7 @@ export const AiGenerateButton: React.FC<AiGenerateButtonProps> = ({
 
       {/* Options dropdown */}
       {showOptions && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-surface-card border border-border shadow-sharp z-10">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-surface-card rounded-xl border border-border shadow-md z-10">
           {options.map((option) => (
             <button
               key={option.type}
@@ -219,7 +219,7 @@ export const AiAssistantFloating: React.FC<AiAssistantFloatingProps> = ({
   return (
     <div className="fixed bottom-6 right-6 z-40">
       {isExpanded && (
-        <div className="mb-3 bg-surface-card border border-border shadow-sharp overflow-hidden w-48">
+        <div className="mb-3 bg-surface-card rounded-xl border border-border shadow-md overflow-hidden w-48">
           <button
             onClick={() => { onGenerateSection(); setIsExpanded(false); }}
             disabled={isGenerating}
@@ -248,11 +248,11 @@ export const AiAssistantFloating: React.FC<AiAssistantFloatingProps> = ({
       <button
         onClick={() => setIsExpanded(!isExpanded)}
         className={`
-          w-14 h-14 shadow-brutal flex items-center justify-center
+          w-14 h-14 shadow-lg flex items-center justify-center
           transition-all duration-200
           ${isExpanded
             ? 'bg-surface-inverse text-white'
-            : 'bg-black text-white hover:shadow-sharp hover:scale-105'
+            : 'bg-surface-inverse text-txt-inverse hover:shadow-md hover:scale-105'
           }
           ${isGenerating ? 'animate-pulse' : ''}
         `}

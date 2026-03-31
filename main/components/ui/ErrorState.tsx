@@ -36,8 +36,8 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
         <button
           onClick={onRetry}
           className={`
-            inline-flex items-center gap-1.5 font-bold text-txt-secondary border border-border-strong
-            hover:bg-surface-sunken transition-all shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]
+            inline-flex items-center gap-1.5 font-bold text-txt-secondary border border-border
+            hover:bg-surface-sunken transition-all hover:opacity-90 active:scale-[0.97]
             ${isCompact ? 'px-3 py-1.5 text-xs mt-3' : 'px-4 py-2 text-sm mt-4'}
           `}
         >

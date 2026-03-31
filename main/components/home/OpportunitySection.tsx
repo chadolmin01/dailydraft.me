@@ -4,8 +4,9 @@ import React, { useState } from 'react'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
 import {
-  Zap, ArrowRight, MessageCircle, Heart, Loader2, Plus,
+  Zap, ArrowRight, MessageCircle, Heart, Plus,
 } from 'lucide-react'
+import { SkeletonGrid } from '@/components/ui/Skeleton'
 import { useOpportunities } from '@/src/hooks/useOpportunities'
 
 const ProjectDetailModal = dynamic(
@@ -80,7 +81,7 @@ export const OpportunitySection: React.FC = () => {
       <div className="max-w-5xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-10">
           <div>
-            <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-1.5 block">
+            <span className="text-[0.625rem] font-medium text-txt-tertiary mb-1.5 block">
               LIVE PROJECTS
             </span>
             <h2 className="text-2xl md:text-3xl font-bold text-txt-primary">
@@ -89,28 +90,26 @@ export const OpportunitySection: React.FC = () => {
           </div>
           <button
             onClick={() => router.push('/explore')}
-            className="text-sm font-bold text-txt-secondary hover:text-black transition-colors flex items-center gap-1 border-b border-border-strong pb-0.5 hover:border-border-strong"
+            className="text-sm font-bold text-txt-secondary hover:text-black transition-colors flex items-center gap-1 border-b border-border pb-0.5 hover:border-border"
           >
             전체 보기 <ArrowRight size={14} />
           </button>
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="animate-spin text-txt-disabled" size={32} />
-          </div>
+          <SkeletonGrid count={4} cols={2} />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {displayProjects.map((project) => (
               <div
                 key={project.id}
-                className="group bg-surface-card border border-border p-4 hover:border-border-strong hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col h-full"
+                className="group bg-surface-card rounded-xl border border-border p-4 hover:border-border hover-spring cursor-pointer flex flex-col h-full"
                 onClick={() => project.isReal ? setSelectedProjectId(project.id) : router.push('/explore')}
               >
                 {/* Header */}
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 bg-surface-card border border-border-subtle flex items-center justify-center text-txt-primary group-hover:bg-black group-hover:text-white transition-colors">
+                    <div className="w-10 h-10 bg-surface-card rounded-lg border border-border-subtle flex items-center justify-center text-txt-primary group-hover:bg-black group-hover:text-white transition-colors">
                       <Zap size={20} />
                     </div>
                     {project.isReal && (
@@ -143,10 +142,10 @@ export const OpportunitySection: React.FC = () => {
                 </p>
 
                 {/* Footer */}
-                <div className="pt-4 border-t border-dashed border-border mt-auto">
+                <div className="pt-4 border-t border-border mt-auto">
                   {project.needed_roles && project.needed_roles.length > 0 && (
                     <div className="mb-3">
-                      <span className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-disabled block mb-1">
+                      <span className="text-[0.625rem] font-medium text-txt-disabled block mb-1">
                         NEED
                       </span>
                       <div className="flex flex-wrap gap-1">
@@ -167,7 +166,7 @@ export const OpportunitySection: React.FC = () => {
                       {project.interest_tags.slice(0, 3).map((tag) => (
                         <span
                           key={tag}
-                          className="text-[0.625rem] bg-surface-card border border-border text-txt-secondary px-1.5 py-0.5"
+                          className="text-[0.625rem] bg-surface-card rounded-xl border border-border text-txt-secondary px-1.5 py-0.5"
                         >
                           {tag}
                         </span>
@@ -181,9 +180,9 @@ export const OpportunitySection: React.FC = () => {
             {/* + Add Project Card */}
             <div
               onClick={() => router.push('/login')}
-              className="group bg-surface-card border border-dashed border-border-strong p-6 hover:border-brand hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col items-center justify-center h-full min-h-[13.75rem] gap-4"
+              className="group bg-surface-card rounded-xl border border-border p-6 hover:border-brand hover-spring cursor-pointer flex flex-col items-center justify-center h-full min-h-[13.75rem] gap-4"
             >
-              <div className="w-14 h-14 bg-surface-card border border-border flex items-center justify-center group-hover:bg-brand group-hover:border-brand transition-colors">
+              <div className="w-14 h-14 bg-surface-card rounded-xl border border-border flex items-center justify-center group-hover:bg-brand group-hover:border-brand transition-colors">
                 <Plus size={24} className="text-txt-disabled group-hover:text-white transition-colors" />
               </div>
               <div className="text-center">
@@ -199,7 +198,7 @@ export const OpportunitySection: React.FC = () => {
         )}
 
         {/* CTA Banner */}
-        <div className="mt-10 bg-black text-white p-6 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="mt-10 bg-surface-inverse text-txt-inverse p-6 flex flex-col md:flex-row items-center justify-between gap-6">
           <div>
             <h3 className="text-base font-bold mb-1.5">나도 프로젝트 올리기</h3>
             <p className="text-txt-disabled text-sm">
@@ -208,7 +207,7 @@ export const OpportunitySection: React.FC = () => {
           </div>
           <button
             onClick={() => router.push('/login')}
-            className="group flex items-center gap-2 bg-white text-black px-5 py-2.5 font-bold text-xs hover:bg-surface-sunken transition-colors shrink-0 shadow-solid-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            className="group flex items-center gap-2 bg-white text-black px-5 py-2.5 font-bold text-xs hover:bg-surface-sunken transition-colors shrink-0 hover:opacity-90 active:scale-[0.97]"
           >
             시작하기
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />

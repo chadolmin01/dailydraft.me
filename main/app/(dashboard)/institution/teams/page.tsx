@@ -60,7 +60,10 @@ export default function InstitutionTeamsPage() {
   if (isAdminLoading) {
     return (
       <div className="flex-1 flex items-center justify-center h-screen bg-surface-sunken">
-        <Loader2 className="animate-spin text-txt-disabled" size={32} />
+        <div className="space-y-4 w-full max-w-xs">
+          <div className="h-6 bg-surface-card rounded skeleton-shimmer w-40 mx-auto" />
+          <div className="h-4 bg-surface-card rounded skeleton-shimmer w-32 mx-auto" />
+        </div>
       </div>
     )
   }
@@ -83,7 +86,7 @@ export default function InstitutionTeamsPage() {
         <div className="border-b border-border pb-6">
           <button
             onClick={() => router.push('/institution')}
-            className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-2 flex items-center gap-1 hover:text-txt-primary transition-colors"
+            className="text-[0.625rem] font-medium text-txt-tertiary mb-2 flex items-center gap-1 hover:text-txt-primary transition-colors"
           >
             <ChevronLeft size={12} />
             Institution Dashboard
@@ -98,26 +101,28 @@ export default function InstitutionTeamsPage() {
         <div className="grid grid-cols-3 gap-4">
           <Card padding="p-4">
             <div className="text-2xl font-bold font-mono text-txt-primary">{teams.length}</div>
-            <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">총 프로젝트</div>
+            <div className="text-[0.625rem] font-medium text-txt-tertiary">총 프로젝트</div>
           </Card>
           <Card padding="p-4">
             <div className="text-2xl font-bold font-mono text-txt-primary">
               {teams.filter((t) => t.status === 'active').length}
             </div>
-            <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">모집 중</div>
+            <div className="text-[0.625rem] font-medium text-txt-tertiary">모집 중</div>
           </Card>
           <Card padding="p-4">
             <div className="text-2xl font-bold font-mono text-txt-primary">
               {teams.filter((t) => t.status === 'filled').length}
             </div>
-            <div className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary">팀 완성</div>
+            <div className="text-[0.625rem] font-medium text-txt-tertiary">팀 완성</div>
           </Card>
         </div>
 
         {/* Teams List */}
         {isLoading ? (
-          <div className="flex items-center justify-center py-16">
-            <Loader2 className="animate-spin text-txt-disabled" size={24} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[0,1,2,3].map(i => (
+              <div key={i} className="h-24 bg-surface-card rounded-xl border border-border skeleton-shimmer" />
+            ))}
           </div>
         ) : teams.length === 0 ? (
           <Card padding="p-12" className="text-center">
@@ -128,12 +133,12 @@ export default function InstitutionTeamsPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {teams.map((team) => (
-              <Card key={team.id} padding="p-5" className="group hover:border-border-strong">
+              <Card key={team.id} padding="p-5" className="group hover:border-border">
                 <div className="flex items-start justify-between mb-3">
                   <h3 className="font-semibold text-sm text-txt-primary leading-tight pr-4">
                     {team.title}
                   </h3>
-                  <span className={`shrink-0 px-2 py-0.5 text-[0.5625rem] font-mono font-bold uppercase border ${STATUS_STYLES[team.status] || 'border-border text-txt-tertiary'}`}>
+                  <span className={`shrink-0 px-2 py-0.5 text-[0.5625rem] font-medium border ${STATUS_STYLES[team.status] || 'border-border text-txt-tertiary'}`}>
                     {STATUS_LABELS[team.status] || team.status}
                   </span>
                 </div>

@@ -3,8 +3,30 @@ import {
   Heart, Coffee, Clock,
   Briefcase, MapPin, Sparkles,
   Eye, ExternalLink, Edit3, Code,
+  Palette, Megaphone, PenTool, BarChart3,
+  Monitor, Camera, ArrowRight, Check, X as XIcon, Loader2,
 } from 'lucide-react'
 import { ProjectSidebarProps, linkIcons } from './types'
+
+const ROLE_ICON_MAP: Record<string, React.ElementType> = {
+  '개발자': Code,
+  '프론트엔드': Monitor,
+  '백엔드': Code,
+  '풀스택': Code,
+  '디자이너': Palette,
+  'UI/UX': PenTool,
+  '기획자': BarChart3,
+  '마케터': Megaphone,
+  'PM': Briefcase,
+  '영상': Camera,
+}
+
+function getRoleIcon(role: string) {
+  for (const [keyword, Icon] of Object.entries(ROLE_ICON_MAP)) {
+    if (role.includes(keyword)) return Icon
+  }
+  return Briefcase
+}
 
 export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
   opportunity,
@@ -21,12 +43,12 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
     <div className="md:col-span-2 space-y-7">
       {/* Team */}
       <div>
-        <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">
+        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
           팀 정보
         </h3>
         {creator ? (
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-black text-white flex items-center justify-center font-bold text-sm shrink-0">
+            <div className="w-10 h-10 bg-surface-inverse text-txt-inverse flex items-center justify-center font-bold text-sm shrink-0">
               {creator.nickname.charAt(0)}
             </div>
             <div className="min-w-0">
@@ -50,7 +72,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
         {/* Team Members */}
         {teamMembers.length > 0 && (
           <div className="mt-3 space-y-2">
-            <span className="text-[0.5rem] font-mono font-bold text-txt-disabled uppercase tracking-widest">
+            <span className="text-[0.5rem] font-medium text-txt-disabled">
               멤버 ({teamMembers.length})
             </span>
             {teamMembers.map(member => (
@@ -73,34 +95,84 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
       {/* Needed Roles */}
       {opportunity.needed_roles && opportunity.needed_roles.length > 0 && (
         <div>
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">
+          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
             모집 중인 포지션
           </h3>
           <div className="space-y-2">
-            {opportunity.needed_roles.map((role) => (
-              <div key={role} className="flex items-center justify-between py-2.5 px-3 bg-surface-card border border-border-strong">
-                <div className="flex items-center gap-2">
-                  <Briefcase size={14} className="text-txt-disabled" />
-                  <span className="text-sm text-txt-secondary">{role}</span>
-                </div>
-                {existingChat ? (
-                  <span className={`text-xs ${
-                    existingChat.status === 'pending' ? 'text-indicator-premium' :
-                    existingChat.status === 'accepted' ? 'text-status-success-text' : 'text-txt-disabled'
-                  }`}>
-                    {existingChat.status === 'pending' ? '대기 중' :
-                     existingChat.status === 'accepted' ? '수락됨' : '거절됨'}
-                  </span>
-                ) : (
-                  <button
-                    onClick={() => handleAction(role)}
-                    className="text-xs text-txt-disabled hover:text-txt-secondary transition-colors"
+            {opportunity.needed_roles.map((role) => {
+              const RoleIcon = getRoleIcon(role)
+              const chatStatus = existingChat?.status
+
+              if (chatStatus === 'accepted') {
+                return (
+                  <div
+                    key={role}
+                    className="flex items-center gap-3 py-3 px-3.5 bg-status-success-bg rounded-xl border border-indicator-online/20"
                   >
-                    커피챗 신청 &rarr;
-                  </button>
-                )}
-              </div>
-            ))}
+                    <div className="w-8 h-8 bg-status-success-bg border border-indicator-online/30 rounded-lg flex items-center justify-center shrink-0">
+                      <Check size={14} className="text-status-success-text" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span className="text-sm font-medium text-status-success-text">{role}</span>
+                      <p className="text-[0.625rem] text-status-success-text/70">수락됨</p>
+                    </div>
+                  </div>
+                )
+              }
+
+              if (chatStatus === 'pending') {
+                return (
+                  <div
+                    key={role}
+                    className="flex items-center gap-3 py-3 px-3.5 bg-surface-card rounded-xl border border-indicator-premium/30"
+                  >
+                    <div className="w-8 h-8 bg-surface-sunken border border-border rounded-lg flex items-center justify-center shrink-0">
+                      <Loader2 size={14} className="text-indicator-premium animate-spin" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span className="text-sm font-medium text-txt-secondary">{role}</span>
+                      <p className="text-[0.625rem] text-indicator-premium">대기 중...</p>
+                    </div>
+                  </div>
+                )
+              }
+
+              if (chatStatus === 'declined') {
+                return (
+                  <div
+                    key={role}
+                    className="flex items-center gap-3 py-3 px-3.5 bg-surface-card rounded-xl border border-border opacity-60"
+                  >
+                    <div className="w-8 h-8 bg-surface-sunken border border-border rounded-lg flex items-center justify-center shrink-0">
+                      <XIcon size={14} className="text-txt-disabled" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span className="text-sm font-medium text-txt-tertiary">{role}</span>
+                      <p className="text-[0.625rem] text-txt-disabled">거절됨</p>
+                    </div>
+                  </div>
+                )
+              }
+
+              return (
+                <button
+                  key={role}
+                  onClick={() => handleAction(role)}
+                  className="group w-full flex items-center gap-3 py-3 px-3.5 bg-surface-card rounded-xl border border-border hover:border-brand/40 hover:bg-brand-bg hover:shadow-sm active:scale-[0.98] active:shadow-none transition-all cursor-pointer text-left"
+                >
+                  <div className="w-8 h-8 bg-surface-sunken border border-border rounded-lg flex items-center justify-center shrink-0 group-hover:bg-brand group-hover:border-brand group-hover:text-white transition-colors">
+                    <RoleIcon size={14} className="text-txt-disabled group-hover:text-white transition-colors" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <span className="text-sm font-medium text-txt-secondary group-hover:text-brand transition-colors">{role}</span>
+                    <p className="text-[0.625rem] text-txt-disabled group-hover:text-brand/60 transition-colors flex items-center gap-1">
+                      <Coffee size={9} /> 커피챗 신청하기
+                    </p>
+                  </div>
+                  <ArrowRight size={14} className="text-txt-disabled group-hover:text-brand group-hover:translate-x-0.5 transition-all shrink-0" />
+                </button>
+              )
+            })}
           </div>
         </div>
       )}
@@ -108,14 +180,14 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
       {/* Needed Skills */}
       {Array.isArray(opportunity.needed_skills) && opportunity.needed_skills.length > 0 && (
         <div>
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">
+          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
             필요 스킬
           </h3>
           <div className="flex flex-wrap gap-1.5">
             {(opportunity.needed_skills as Array<{ name: string; level?: string }>).map((skill, i) => (
               <span
                 key={i}
-                className="inline-flex items-center gap-1 px-2 py-1 bg-surface-card border border-border text-xs text-txt-secondary"
+                className="inline-flex items-center gap-1 px-2 py-1 bg-surface-card rounded-xl border border-border text-xs text-txt-secondary"
               >
                 <Code size={10} className="text-txt-disabled" />
                 {skill.name}
@@ -132,7 +204,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
 
       {/* Project Info */}
       <div>
-        <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">
+        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
           프로젝트 정보
         </h3>
         <div className="space-y-2.5 text-sm">
@@ -187,7 +259,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
       {/* Project Links */}
       {Array.isArray(opportunity.project_links) && opportunity.project_links.length > 0 && (
         <div>
-          <h3 className="text-[0.625rem] font-mono font-bold text-txt-tertiary uppercase tracking-widest mb-3">
+          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
             프로젝트 링크
           </h3>
           <div className="space-y-2">
@@ -199,7 +271,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2.5 py-2 px-3 bg-surface-card border border-border hover:border-border-strong transition-colors group"
+                  className="flex items-center gap-2.5 py-2 px-3 bg-surface-card rounded-xl border border-border hover:border-border transition-colors group"
                 >
                   <LinkIcon size={14} className="text-txt-disabled group-hover:text-txt-primary transition-colors shrink-0" />
                   <span className="text-sm text-txt-secondary group-hover:text-txt-primary transition-colors truncate">
@@ -217,7 +289,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
       {isOwner && (
         <button
           onClick={() => { onClose(); router.push(`/projects/${opportunity.id}/edit`) }}
-          className="w-full py-2.5 border border-border-strong text-txt-secondary font-medium text-sm hover:bg-black hover:text-white transition-colors flex items-center justify-center gap-2"
+          className="w-full py-2.5 border border-border text-txt-secondary font-medium text-sm hover:bg-black hover:text-white transition-colors flex items-center justify-center gap-2"
         >
           <Edit3 size={14} />
           프로젝트 수정하기
@@ -226,7 +298,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
 
       {/* CTA Card */}
       {!isOwner && (
-      <div className="bg-surface-inverse p-5 text-white border border-black shadow-solid">
+      <div className="bg-surface-inverse p-5 text-white border border-surface-inverse shadow-md">
         {existingChat ? (
           <>
             <h3 className="font-bold text-sm mb-1">

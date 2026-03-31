@@ -8,7 +8,6 @@ import {
   Filter,
   Zap,
   LayoutGrid,
-  Loader2,
   Clock,
   Star,
   Flame,
@@ -21,6 +20,7 @@ import {
   FolderOpen,
 } from 'lucide-react'
 import { EmptyState } from './ui/EmptyState'
+import { SkeletonGrid } from './ui/Skeleton'
 import { ErrorState } from './ui/ErrorState'
 import { useOpportunities, calculateDaysLeft, type OpportunityWithCreator } from '@/src/hooks/useOpportunities'
 
@@ -71,8 +71,8 @@ export const Projects: React.FC = () => {
             <div className="sticky top-6 space-y-6">
 
               {/* 카테고리 */}
-              <div className="bg-surface-card border border-border-strong p-4">
-                <h3 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-3 flex items-center gap-2">
+              <div className="bg-surface-card rounded-xl border border-border p-4">
+                <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
                   <span className="w-2 h-2 bg-surface-inverse" />
                   카테고리
                 </h3>
@@ -83,7 +83,7 @@ export const Projects: React.FC = () => {
                       onClick={() => setSelectedCategory(cat.id)}
                       className={`w-full flex items-center px-3 py-2 text-sm font-medium transition-all ${
                         selectedCategory === cat.id
-                          ? 'bg-surface-inverse text-txt-inverse shadow-solid-sm'
+                          ? 'bg-surface-inverse text-txt-inverse shadow-sm'
                           : 'text-txt-secondary hover:bg-surface-sunken'
                       }`}
                     >
@@ -94,22 +94,22 @@ export const Projects: React.FC = () => {
               </div>
 
               {/* 필터 */}
-              <div className="bg-surface-card border border-border-strong p-4">
-                <h3 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-3 flex items-center gap-2">
+              <div className="bg-surface-card rounded-xl border border-border p-4">
+                <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
                   <span className="w-2 h-2 bg-brand" />
                   필터
                 </h3>
                 <div className="space-y-2">
                   <label className="flex items-center gap-2 text-sm text-txt-secondary cursor-pointer">
-                    <input type="checkbox" className="border border-border-strong" />
+                    <input type="checkbox" className="border border-border" />
                     팀원 모집 중
                   </label>
                   <label className="flex items-center gap-2 text-sm text-txt-secondary cursor-pointer">
-                    <input type="checkbox" className="border border-border-strong" />
+                    <input type="checkbox" className="border border-border" />
                     커피챗 가능
                   </label>
                   <label className="flex items-center gap-2 text-sm text-txt-secondary cursor-pointer">
-                    <input type="checkbox" className="border border-border-strong" />
+                    <input type="checkbox" className="border border-border" />
                     이번 주 신규
                   </label>
                 </div>
@@ -129,17 +129,17 @@ export const Projects: React.FC = () => {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 bg-surface-card border border-border-strong text-sm font-mono focus:outline-none focus:border-brand placeholder:text-txt-disabled"
+                  className="w-full pl-11 pr-4 py-3 bg-surface-card rounded-lg border border-border text-base sm:text-sm font-mono focus:outline-none focus:border-brand placeholder:text-txt-disabled"
                   placeholder="프로젝트, 역할, 기술 스택 검색..."
                 />
               </div>
-              <button className="lg:hidden p-3 bg-surface-card border border-border-strong hover:bg-surface-sunken transition-colors">
+              <button className="lg:hidden p-3 bg-surface-card rounded-xl border border-border hover:bg-surface-sunken transition-colors">
                 <Filter size={18} className="text-txt-secondary" />
               </button>
             </div>
 
             {/* 정렬 탭 */}
-            <div className="flex items-center gap-1 border-b border-border-strong">
+            <div className="flex items-center gap-1 border-b border-border">
               {[
                 { id: 'latest', label: '최신', icon: Clock },
                 { id: 'popular', label: '인기', icon: Star },
@@ -148,7 +148,7 @@ export const Projects: React.FC = () => {
                 <button
                   key={tab.id}
                   onClick={() => setSortBy(tab.id as typeof sortBy)}
-                  className={`flex items-center gap-1.5 px-4 py-2.5 text-[0.625rem] font-mono font-bold uppercase tracking-wider border-b -mb-px transition-colors ${
+                  className={`flex items-center gap-1.5 px-4 py-2.5 text-[0.625rem] font-medium border-b -mb-px transition-colors ${
                     sortBy === tab.id
                       ? 'border-surface-inverse text-txt-primary'
                       : 'border-transparent text-txt-tertiary hover:text-txt-secondary'
@@ -164,9 +164,7 @@ export const Projects: React.FC = () => {
             {isError ? (
               <ErrorState message="프로젝트를 불러오는 데 실패했습니다" onRetry={() => refetch()} />
             ) : isLoading ? (
-              <div className="flex items-center justify-center py-16">
-                <Loader2 className="animate-spin text-txt-tertiary" size={24} />
-              </div>
+              <SkeletonGrid count={4} cols={2} />
             ) : sorted.length === 0 ? (
               searchQuery ? (
                 <EmptyState
@@ -188,14 +186,14 @@ export const Projects: React.FC = () => {
                 {sorted.map((opp: OpportunityWithCreator) => {
                   const daysLeft = calculateDaysLeft(opp.created_at)
                   return (
-                    <Card key={opp.id} className="group hover:shadow-sharp relative" padding="p-4">
+                    <Card key={opp.id} className="group hover:shadow-md hover-spring relative" padding="p-4">
                       {/* Corner marks */}
-                      <span className="absolute top-0 left-0 w-2 h-2 border-t border-l border-border-strong pointer-events-none" />
-                      <span className="absolute top-0 right-0 w-2 h-2 border-t border-r border-border-strong pointer-events-none" />
-                      <span className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-border-strong pointer-events-none" />
-                      <span className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-border-strong pointer-events-none" />
+                      <span className="absolute top-0 left-0 w-2 h-2 border-t border-l border-border pointer-events-none" />
+                      <span className="absolute top-0 right-0 w-2 h-2 border-t border-r border-border pointer-events-none" />
+                      <span className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-border pointer-events-none" />
+                      <span className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-border pointer-events-none" />
                       <div className="flex gap-3">
-                        <div className="w-10 h-10 bg-surface-sunken border border-border-strong flex items-center justify-center text-txt-secondary group-hover:bg-surface-inverse group-hover:text-txt-inverse transition-colors flex-shrink-0">
+                        <div className="w-10 h-10 bg-surface-sunken rounded-xl border border-border flex items-center justify-center text-txt-secondary group-hover:bg-surface-inverse group-hover:text-txt-inverse transition-colors flex-shrink-0">
                           <Zap size={18} />
                         </div>
                         <div className="flex-1 min-w-0">
@@ -216,7 +214,7 @@ export const Projects: React.FC = () => {
                             ))}
                           </div>
 
-                          <div className="flex items-center justify-between mt-3 pt-2 border-t border-dashed border-border">
+                          <div className="flex items-center justify-between mt-3 pt-2 border-t border-border">
                             <div className="flex items-center gap-3 text-[0.625rem] font-mono text-txt-tertiary">
                               {opp.creator?.nickname && (
                                 <span className="flex items-center gap-1">
@@ -249,8 +247,8 @@ export const Projects: React.FC = () => {
             <div className="sticky top-6 space-y-6">
 
               {/* 인기 프로젝트 */}
-              <div className="bg-surface-card border border-border-strong p-4">
-                <h3 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-3 flex items-center gap-2">
+              <div className="bg-surface-card rounded-xl border border-border p-4">
+                <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
                   <span className="w-2 h-2 bg-status-danger-text" />
                   <Flame size={10} /> 인기 프로젝트
                 </h3>
@@ -258,7 +256,7 @@ export const Projects: React.FC = () => {
                   {opportunities.slice(0, 5).map((opp: OpportunityWithCreator, idx: number) => (
                     <div
                       key={opp.id}
-                      className="flex items-start gap-3 p-2 hover:bg-surface-sunken transition-colors cursor-pointer border-b border-dashed border-border last:border-b-0"
+                      className="flex items-start gap-3 p-2 hover:bg-surface-sunken transition-colors cursor-pointer border-b border-border last:border-b-0"
                     >
                       <span className="text-lg font-mono font-bold text-txt-disabled w-5">{idx + 1}</span>
                       <div className="flex-1 min-w-0">
@@ -276,7 +274,7 @@ export const Projects: React.FC = () => {
               </div>
 
               {/* CTA 배너 */}
-              <div className="bg-surface-inverse border border-surface-inverse p-5 text-txt-inverse shadow-brutal">
+              <div className="bg-surface-inverse border border-surface-inverse p-5 text-txt-inverse shadow-lg">
                 <div className="w-10 h-10 border border-white/20 flex items-center justify-center mb-4">
                   <Rocket size={20} />
                 </div>
@@ -284,7 +282,7 @@ export const Projects: React.FC = () => {
                 <p className="text-txt-disabled text-xs mb-4 font-mono">프로젝트를 등록하고 함께할 팀원을 모집하세요</p>
                 <Link
                   href="/projects/new"
-                  className="w-full bg-white text-surface-inverse text-sm font-bold py-2 border border-white hover:bg-surface-sunken transition-all flex items-center justify-center gap-1.5 shadow-[2px_2px_0px_0px_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                  className="w-full bg-white text-surface-inverse text-sm font-bold py-2 border border-white hover:bg-surface-sunken transition-all flex items-center justify-center gap-1.5 hover:opacity-90 active:scale-[0.97]"
                 >
                   <Plus size={16} />
                   프로젝트 등록하기
@@ -292,8 +290,8 @@ export const Projects: React.FC = () => {
               </div>
 
               {/* 커피챗 안내 */}
-              <div className="bg-surface-card border border-dashed border-border p-4">
-                <h3 className="text-[0.625rem] font-mono font-bold uppercase tracking-widest text-txt-tertiary mb-3 flex items-center gap-2">
+              <div className="bg-surface-card rounded-xl border border-border p-4">
+                <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
                   <span className="w-2 h-2 bg-status-warning-text" />
                   <Coffee size={10} /> 커피챗
                 </h3>
