@@ -341,17 +341,17 @@ function LoginContent() {
          <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-surface-sunken to-transparent z-10 pointer-events-none" />
 
          {/* Marquee Columns Container */}
-         <div className="flex gap-4 h-[120vh] -rotate-3 scale-105 opacity-85">
+         <div className="flex gap-4 h-[120vh] -rotate-3 scale-105 opacity-85 shrink-0">
 
             {/* Column 1: Moving Up */}
-            <div className="flex flex-col gap-4 animate-marquee-vertical-up">
+            <div className="flex flex-col gap-4 animate-marquee-vertical-up shrink-0 w-[17rem]">
                {showcaseColumn1.map((item, idx) => (
                   <ShowcaseCard key={`col1-${idx}`} item={item} />
                ))}
             </div>
 
             {/* Column 2: Moving Down */}
-            <div className="flex flex-col gap-4 animate-marquee-vertical-down mt-16">
+            <div className="flex flex-col gap-4 animate-marquee-vertical-down mt-16 shrink-0 w-[17rem]">
                {showcaseColumn2.map((item, idx) => (
                   <ShowcaseCard key={`col2-${idx}`} item={item} />
                ))}
@@ -387,7 +387,7 @@ const ShowcaseCard = ({ item }: { item: ShowcaseItem }) => {
   if (item.type === 'project') {
     const p = item.data
     return (
-      <div className="w-[17rem] bg-surface-card rounded-xl border border-border overflow-hidden shadow-sm flex flex-col">
+      <div className="w-[17rem] shrink-0 bg-surface-card rounded-xl border border-border overflow-hidden shadow-sm flex flex-col">
         {/* Cover */}
         <div className="h-20 bg-surface-inverse relative flex items-end p-3">
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/20" />
