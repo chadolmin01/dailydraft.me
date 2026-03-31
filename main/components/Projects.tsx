@@ -129,7 +129,7 @@ export const Projects: React.FC = () => {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 bg-surface-card rounded-lg border border-border text-sm font-mono focus:outline-none focus:border-brand placeholder:text-txt-disabled"
+                  className="w-full pl-11 pr-4 py-3 bg-surface-card rounded-lg border border-border text-base sm:text-sm font-mono focus:outline-none focus:border-brand placeholder:text-txt-disabled"
                   placeholder="프로젝트, 역할, 기술 스택 검색..."
                 />
               </div>

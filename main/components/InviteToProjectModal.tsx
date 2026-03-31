@@ -162,7 +162,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
                       placeholder="역할을 입력하세요 (예: Frontend Developer)"
                       value={selectedRole || ''}
                       onChange={e => setSelectedRole(e.target.value || null)}
-                      className="w-full px-3 py-2 text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:border-brand"
+                      className="w-full px-3 py-2 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:border-brand"
                     />
                   )}
                 </div>
@@ -180,7 +180,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
                     placeholder="함께 하고 싶어서 연락드립니다..."
                     rows={3}
                     maxLength={500}
-                    className="w-full px-3 py-2 text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:border-brand resize-none"
+                    className="w-full px-3 py-2 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:border-brand resize-none"
                   />
                 </div>
               )}

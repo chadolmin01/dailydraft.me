@@ -60,7 +60,7 @@ export const DeepChatFooter: React.FC<DeepChatFooterProps> = ({
                 value={deepChatInput}
                 onChange={(e) => onInputChange(e.target.value)}
                 placeholder={userMsgCount === 0 ? '첫 번째 질문에 답해보세요...' : '이어서 이야기해주세요...'}
-                className="w-full pl-4 pr-11 py-3 bg-surface-card rounded-lg border border-border text-sm font-medium focus:outline-none focus:border-surface-inverse focus:bg-white transition-all placeholder:text-txt-tertiary"
+                className="w-full pl-4 pr-11 py-3 bg-surface-card rounded-lg border border-border text-base sm:text-sm font-medium focus:outline-none focus:border-surface-inverse focus:bg-white transition-all placeholder:text-txt-tertiary"
                 onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && onSend()}
                 disabled={isTyping}
               />

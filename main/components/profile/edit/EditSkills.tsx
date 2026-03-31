@@ -78,7 +78,7 @@ export const EditSkills: React.FC<EditSkillsProps> = ({
           onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())}
           placeholder="예: React, Python, Figma"
           maxLength={30}
-          className="flex-1 px-3 py-2 text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all"
+          className="flex-1 px-3 py-2 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all"
         />
         <select
           value={newSkillLevel}

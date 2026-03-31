@@ -1058,7 +1058,7 @@ export default function DesignPage() {
               {/* 편집 가능 텍스트 */}
               <div className="relative">
                 <textarea
-                  className="w-full h-28 px-4 py-3 text-sm text-txt-primary bg-surface-card rounded-lg border border-border resize-none focus:outline-none focus:border-accent focus:ring-2 focus:ring-[var(--focus-ring)] transition-colors placeholder:text-txt-disabled"
+                  className="w-full h-28 px-4 py-3 text-base sm:text-sm text-txt-primary bg-surface-card rounded-lg border border-border resize-none focus:outline-none focus:border-accent focus:ring-2 focus:ring-[var(--focus-ring)] transition-colors placeholder:text-txt-disabled"
                   placeholder="메시지를 수정하거나 추가로 작성하세요..."
                   defaultValue="안녕하세요! 프론트엔드 개발자 이서연입니다. AI 기반 이력서 분석 플랫폼 프로젝트에 팀원으로 합류하고 싶습니다. React와 TypeScript 경험이 있고, AI 서비스 UI에 관심이 많습니다."
                   readOnly
@@ -1182,7 +1182,7 @@ export default function DesignPage() {
                 )}
                 <div className="relative">
                   <textarea
-                    className="w-full h-28 px-4 py-3 text-sm text-txt-primary bg-surface-card rounded-lg border border-border resize-none focus:outline-none focus:border-accent focus:ring-2 focus:ring-[var(--focus-ring)] transition-colors placeholder:text-txt-disabled"
+                    className="w-full h-28 px-4 py-3 text-base sm:text-sm text-txt-primary bg-surface-card rounded-lg border border-border resize-none focus:outline-none focus:border-accent focus:ring-2 focus:ring-[var(--focus-ring)] transition-colors placeholder:text-txt-disabled"
                     placeholder="메시지를 수정하거나 추가로 작성하세요..."
                     value={coffeeChatMessage}
                     onChange={(e) => setCoffeeChatMessage(e.target.value.slice(0, 500))}

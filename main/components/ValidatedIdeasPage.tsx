@@ -199,7 +199,7 @@ export const ValidatedIdeasPage: React.FC = () => {
       <div className="flex flex-wrap items-center gap-3 mb-6">
         <div className="relative flex-1 min-w-[12.5rem]">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-txt-disabled" />
-          <input type="text" placeholder="아이디어 검색..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-full pl-10 pr-4 py-2 border border-border text-sm focus:outline-none focus:border-brand transition-colors" />
+          <input type="text" placeholder="아이디어 검색..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-full pl-10 pr-4 py-2 border border-border text-base sm:text-sm focus:outline-none focus:border-brand transition-colors" />
           {searchQuery && (
             <button type="button" onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-txt-disabled hover:text-txt-secondary" aria-label="검색어 지우기"><X size={14} /></button>
           )}

@@ -85,7 +85,7 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
               min={1}
               value={weekNumber}
               onChange={(e) => setWeekNumber(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-border text-sm focus:outline-none focus:border-border bg-surface-card rounded-lg text-txt-primary"
+              className="w-full px-3 py-2 border border-border text-base sm:text-sm focus:outline-none focus:border-border bg-surface-card rounded-lg text-txt-primary"
             />
           </div>
           <div className="flex-1">
@@ -118,7 +118,7 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
             onChange={(e) => setTitle(e.target.value)}
             placeholder="이번 주의 가장 큰 진전은?"
             maxLength={100}
-            className="w-full px-3 py-2 border border-border text-sm focus:outline-none focus:border-border bg-surface-card rounded-lg text-txt-primary placeholder-txt-disabled"
+            className="w-full px-3 py-2 border border-border text-base sm:text-sm focus:outline-none focus:border-border bg-surface-card rounded-lg text-txt-primary placeholder-txt-disabled"
           />
         </div>
 
@@ -132,7 +132,7 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
             placeholder={"이번 주 성과:\n\n다음 주 계획:\n\n배운 점 또는 고민 (선택):"}
             rows={6}
             maxLength={2000}
-            className="w-full px-3 py-2 border border-border text-sm focus:outline-none focus:border-border resize-none bg-surface-card rounded-lg text-txt-primary placeholder-txt-disabled"
+            className="w-full px-3 py-2 border border-border text-base sm:text-sm focus:outline-none focus:border-border resize-none bg-surface-card rounded-lg text-txt-primary placeholder-txt-disabled"
           />
         </div>
 

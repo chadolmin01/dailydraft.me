@@ -46,7 +46,7 @@ export function DirectMessageBox({ receiverId }: { receiverId: string }) {
             placeholder="간단한 쪽지를 보내보세요..."
             rows={2}
             maxLength={2000}
-            className="w-full px-3 py-2 text-sm border border-border bg-surface-bg focus:outline-none focus:border-accent resize-none transition-colors mb-2"
+            className="w-full px-3 py-2 text-base sm:text-sm border border-border bg-surface-bg focus:outline-none focus:border-accent resize-none transition-colors mb-2"
           />
           <div className="flex items-center justify-between">
             <span className="text-[0.625rem] font-mono text-txt-tertiary">{content.length}/2000</span>

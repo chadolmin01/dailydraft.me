@@ -335,7 +335,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
               onKeyDown={(e) => { if (e.key === 'Escape') setEditingBio(false) }}
               placeholder="자기소개를 입력하세요"
               rows={3}
-              className="bg-surface-bg border border-border rounded-lg outline-none w-full px-3 py-2 resize-none focus:border-brand transition-colors text-sm text-txt-secondary leading-relaxed"
+              className="bg-surface-bg border border-border rounded-lg outline-none w-full px-3 py-2 resize-none focus:border-brand transition-colors text-base sm:text-sm text-txt-secondary leading-relaxed"
             />
           </div>
         )

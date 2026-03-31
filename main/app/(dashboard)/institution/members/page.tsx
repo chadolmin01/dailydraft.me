@@ -167,7 +167,7 @@ export default function InstitutionMembersPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="이름으로 검색..."
-              className="w-full pl-10 pr-4 py-2.5 bg-surface-card rounded-lg border border-border text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-surface-inverse"
+              className="w-full pl-10 pr-4 py-2.5 bg-surface-card rounded-lg border border-border text-base sm:text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-surface-inverse"
             />
           </div>
 
@@ -331,8 +331,10 @@ export default function InstitutionMembersPage() {
                   value={addEmail}
                   onChange={(e) => setAddEmail(e.target.value)}
                   placeholder="학생의 Draft 가입 이메일"
+                  inputMode="email"
+                  autoComplete="email"
                   required
-                  className="w-full px-3 py-2.5 bg-surface-sunken rounded-lg border border-border text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-surface-inverse"
+                  className="w-full px-3 py-2.5 bg-surface-sunken rounded-lg border border-border text-base sm:text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-surface-inverse"
                 />
               </div>
               <div>
@@ -365,7 +367,7 @@ export default function InstitutionMembersPage() {
                   value={addNotes}
                   onChange={(e) => setAddNotes(e.target.value)}
                   placeholder="참고사항"
-                  className="w-full px-3 py-2.5 bg-surface-sunken rounded-lg border border-border text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-surface-inverse"
+                  className="w-full px-3 py-2.5 bg-surface-sunken rounded-lg border border-border text-base sm:text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-surface-inverse"
                 />
               </div>
               {addError && (

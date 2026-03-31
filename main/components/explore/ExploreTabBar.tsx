@@ -99,7 +99,7 @@ export function ExploreTabBar({
               value={searchInput ?? ''}
               onChange={(e) => onSearchInputChange(e.target.value)}
               autoFocus
-              className="w-full pl-10 pr-10 py-2.5 text-sm bg-transparent focus:outline-none"
+              className="w-full pl-10 pr-10 py-2.5 text-base sm:text-sm bg-transparent focus:outline-none"
               placeholder="프로젝트, 사람, 기술 검색..."
             />
             {searchInput && (

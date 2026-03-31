@@ -145,7 +145,7 @@ export function ProjectInfoSidebar({
                 value={compensationDetails}
                 onChange={(e) => onSetCompensationDetails(e.target.value)}
                 placeholder="상세 (예: 지분 5%, 월 50만원)"
-                className="px-3 py-2 border border-border text-sm mt-2 ml-5 w-[calc(100%-1.25rem)] focus:outline-none focus:border-border bg-transparent"
+                className="px-3 py-2 border border-border text-base sm:text-sm mt-2 ml-5 w-[calc(100%-1.25rem)] focus:outline-none focus:border-border bg-transparent"
               />
             )}
           </div>

@@ -68,11 +68,13 @@ export function ExploreHeroCarousel() {
               <button
                 key={i}
                 onClick={(e) => { e.stopPropagation(); setActive(i) }}
-                className={`transition-all duration-200 ${
-                  active === i ? 'w-5 h-1.5 bg-black' : 'w-1.5 h-1.5 bg-border-strong/50 hover:bg-border-strong'
-                }`}
+                className="p-2 -m-1.5"
                 aria-label={`슬라이드 ${i + 1}`}
-              />
+              >
+                <span className={`block rounded-full transition-all duration-200 ${
+                  active === i ? 'w-5 h-1.5 bg-black' : 'w-1.5 h-1.5 bg-border-strong/50'
+                }`} />
+              </button>
             ))}
             <span className="text-[0.625rem] font-mono text-txt-disabled ml-1">{active + 1}/{SLIDE_COUNT}</span>
           </div>

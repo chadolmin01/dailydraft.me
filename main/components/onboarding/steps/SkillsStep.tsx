@@ -30,7 +30,7 @@ export const SkillsInputStep: React.FC<SkillsInputStepProps> = ({
           value={skillInput}
           onChange={(e) => onSkillInputChange(e.target.value)}
           placeholder="예: 리액트, 파이썬, 피그마 등"
-          className="w-full pl-3.5 pr-10 py-2.5 bg-surface-card rounded-lg border border-border text-sm font-medium focus:outline-none focus:border-surface-inverse focus:bg-white transition-all placeholder:text-txt-tertiary"
+          className="w-full pl-3.5 pr-10 py-2.5 bg-surface-card rounded-lg border border-border text-base sm:text-sm font-medium focus:outline-none focus:border-surface-inverse focus:bg-white transition-all placeholder:text-txt-tertiary"
           autoFocus
           onKeyDown={(e) => e.key === 'Enter' && onSubmit()}
         />

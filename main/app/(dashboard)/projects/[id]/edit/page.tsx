@@ -503,7 +503,7 @@ function EditProjectContent() {
                       placeholder={theme.descPlaceholder}
                       rows={7}
                       maxLength={2000}
-                      className="w-full text-sm text-txt-secondary leading-[1.8] placeholder:text-txt-disabled border border-border p-3 focus:outline-none focus:border-surface-inverse resize-none bg-transparent"
+                      className="w-full text-base sm:text-sm text-txt-secondary leading-[1.8] placeholder:text-txt-disabled border border-border p-3 focus:outline-none focus:border-surface-inverse resize-none bg-transparent"
                     />
                     <p className="text-[0.625rem] text-txt-disabled mt-1 text-right font-mono">{description.length}/2000</p>
                   </section>
@@ -519,7 +519,7 @@ function EditProjectContent() {
                       placeholder={theme.painPlaceholder}
                       rows={3}
                       maxLength={1000}
-                      className="w-full text-sm text-txt-secondary leading-relaxed placeholder:text-txt-disabled border-none outline-none bg-transparent resize-none"
+                      className="w-full text-base sm:text-sm text-txt-secondary leading-relaxed placeholder:text-txt-disabled border-none outline-none bg-transparent resize-none"
                     />
                   </section>
 
@@ -536,14 +536,15 @@ function EditProjectContent() {
                             value={link.label}
                             onChange={(e) => updateLink(idx, 'label', e.target.value)}
                             placeholder="이름"
-                            className="px-3 py-2 border border-border text-sm focus:outline-none focus:border-border w-1/3 bg-transparent"
+                            className="px-3 py-2 border border-border text-base sm:text-sm focus:outline-none focus:border-border w-1/3 bg-transparent"
                           />
                           <input
                             type="url"
                             value={link.url}
                             onChange={(e) => updateLink(idx, 'url', e.target.value)}
                             placeholder="https://..."
-                            className="px-3 py-2 border border-border text-sm focus:outline-none focus:border-border flex-1 bg-transparent"
+                            inputMode="url"
+                            className="px-3 py-2 border border-border text-base sm:text-sm focus:outline-none focus:border-border flex-1 bg-transparent"
                           />
                           <button
                             type="button"

@@ -116,7 +116,7 @@ export default function MessagesPage() {
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   placeholder="이름으로 검색..."
-                  className="w-full pl-9 pr-3 py-2 text-sm border border-border bg-surface-bg focus:outline-none focus:border-accent transition-colors"
+                  className="w-full pl-9 pr-3 py-2 text-base sm:text-sm border border-border bg-surface-bg focus:outline-none focus:border-accent transition-colors"
                 />
               </div>
             </div>
@@ -275,7 +275,7 @@ export default function MessagesPage() {
                       onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend() } }}
                       placeholder="쪽지를 입력하세요..."
                       maxLength={2000}
-                      className="flex-1 px-3 py-2.5 text-sm border border-border bg-surface-bg focus:outline-none focus:border-accent transition-colors"
+                      className="flex-1 px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-bg focus:outline-none focus:border-accent transition-colors"
                     />
                     <button
                       onClick={handleSend}

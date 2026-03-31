@@ -164,7 +164,7 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
             maxLength={maxLength}
             rows={6}
             className={`
-              w-full px-4 py-3 border text-sm resize-none
+              w-full px-4 py-3 border text-base sm:text-sm resize-none
               focus:outline-none focus:border-border
               transition-all
               ${error
@@ -187,7 +187,7 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
           placeholder={field.placeholder}
           maxLength={field.maxLength}
           className={`
-            w-full px-4 py-2.5 border text-sm
+            w-full px-4 py-2.5 border text-base sm:text-sm
             focus:outline-none focus:border-border
             transition-all
             ${error
@@ -261,7 +261,7 @@ export const BasicInfoEditor: React.FC<BasicInfoEditorProps> = ({
           onChange={(e) => onChange({ ...data, itemName: e.target.value })}
           placeholder="예: 헬스체커"
           className={`
-            w-full px-4 py-2.5 border text-sm
+            w-full px-4 py-2.5 border text-base sm:text-sm
             focus:outline-none focus:border-border
             ${errors.itemName ? 'border-status-danger-text/20 bg-status-danger-bg/50' : 'border-border'}
           `}
@@ -286,7 +286,7 @@ export const BasicInfoEditor: React.FC<BasicInfoEditorProps> = ({
           placeholder="예: AI 기반 건강검진 결과 분석 서비스"
           maxLength={50}
           className={`
-            w-full px-4 py-2.5 border text-sm
+            w-full px-4 py-2.5 border text-base sm:text-sm
             focus:outline-none focus:border-border
             ${errors.oneLiner ? 'border-status-danger-text/20 bg-status-danger-bg/50' : 'border-border'}
           `}
@@ -308,7 +308,7 @@ export const BasicInfoEditor: React.FC<BasicInfoEditorProps> = ({
           onChange={(e) => onChange({ ...data, targetCustomer: e.target.value })}
           placeholder="예: 30-50대 직장인, 건강 관리에 관심 있는 소비자"
           className={`
-            w-full px-4 py-2.5 border text-sm
+            w-full px-4 py-2.5 border text-base sm:text-sm
             focus:outline-none focus:border-border
             ${errors.targetCustomer ? 'border-status-danger-text/20 bg-status-danger-bg/50' : 'border-border'}
           `}
@@ -347,7 +347,7 @@ export const BasicInfoEditor: React.FC<BasicInfoEditorProps> = ({
             value={data.fundingAmount || ''}
             onChange={(e) => onChange({ ...data, fundingAmount: e.target.value ? Number(e.target.value) : undefined })}
             placeholder="5000"
-            className="w-full px-4 py-2.5 pr-12 border border-border text-sm focus:outline-none focus:border-border"
+            className="w-full px-4 py-2.5 pr-12 border border-border text-base sm:text-sm focus:outline-none focus:border-border"
           />
           <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-txt-tertiary">
             만원

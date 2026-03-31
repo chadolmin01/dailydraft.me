@@ -227,7 +227,7 @@ export default function ProfileEditPage() {
     } catch { setSaveError('프로필 저장에 실패했습니다.'); toast.error('프로필 저장에 실패했습니다') }
   }
 
-  const inputClass = 'w-full px-4 py-3 text-sm border border-border bg-transparent focus:outline-none focus:border-border transition-colors'
+  const inputClass = 'w-full px-4 py-3 text-base sm:text-sm border border-border bg-transparent focus:outline-none focus:border-border transition-colors'
   const chipActive = 'bg-surface-inverse text-txt-inverse border-surface-inverse'
   const chipDefault = 'bg-surface-card text-txt-secondary border-border hover:border-border'
   const fieldLabel = 'block text-xs font-medium text-txt-secondary mb-1.5'
@@ -473,7 +473,7 @@ export default function ProfileEditPage() {
               <Card title="연락처">
                 <div>
                   <label className={fieldLabel}>이메일</label>
-                  <input type="email" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} placeholder={user?.email || 'email@example.com'} className={inputClass} />
+                  <input type="email" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} placeholder={user?.email || 'email@example.com'} inputMode="email" autoComplete="email" className={inputClass} />
                   <p className="text-xs text-txt-tertiary mt-2">커피챗 수락 시 상대방에게 공개됩니다</p>
                 </div>
               </Card>
@@ -483,15 +483,15 @@ export default function ProfileEditPage() {
                 <div className="space-y-4">
                   <div>
                     <label className={`${fieldLabel} flex items-center gap-2`}><Globe size={14} /> 포트폴리오</label>
-                    <input type="url" value={portfolioUrl} onChange={(e) => setPortfolioUrl(e.target.value)} placeholder="https://myportfolio.com" className={inputClass} />
+                    <input type="url" value={portfolioUrl} onChange={(e) => setPortfolioUrl(e.target.value)} placeholder="https://myportfolio.com" inputMode="url" className={inputClass} />
                   </div>
                   <div>
                     <label className={`${fieldLabel} flex items-center gap-2`}><Github size={14} /> GitHub</label>
-                    <input type="url" value={githubUrl} onChange={(e) => setGithubUrl(e.target.value)} placeholder="https://github.com/username" className={inputClass} />
+                    <input type="url" value={githubUrl} onChange={(e) => setGithubUrl(e.target.value)} placeholder="https://github.com/username" inputMode="url" className={inputClass} />
                   </div>
                   <div>
                     <label className={`${fieldLabel} flex items-center gap-2`}><Linkedin size={14} /> LinkedIn</label>
-                    <input type="url" value={linkedinUrl} onChange={(e) => setLinkedinUrl(e.target.value)} placeholder="https://linkedin.com/in/username" className={inputClass} />
+                    <input type="url" value={linkedinUrl} onChange={(e) => setLinkedinUrl(e.target.value)} placeholder="https://linkedin.com/in/username" inputMode="url" className={inputClass} />
                   </div>
                 </div>
               </Card>
@@ -531,7 +531,7 @@ export default function ProfileEditPage() {
                     </div>
                     <div>
                       <label className={fieldLabel}>링크</label>
-                      <input type="url" value={newPortfolioLink} onChange={(e) => setNewPortfolioLink(e.target.value)} placeholder="https://..." className={inputClass} />
+                      <input type="url" value={newPortfolioLink} onChange={(e) => setNewPortfolioLink(e.target.value)} placeholder="https://..." inputMode="url" className={inputClass} />
                     </div>
                     <div>
                       <label className={fieldLabel}>이미지</label>
@@ -592,7 +592,7 @@ export default function ProfileEditPage() {
                     <div className="space-y-3">
                       <p className="text-xs text-txt-tertiary">대학 이메일(.ac.kr)로 인증하면 프로필에 인증 배지가 표시됩니다.</p>
                       <div className="flex gap-2">
-                        <input type="email" value={verifyEmail} onChange={e => { setVerifyEmail(e.target.value); setVerifyError('') }} placeholder="university@snu.ac.kr" className={`flex-1 ${inputClass}`} />
+                        <input type="email" value={verifyEmail} onChange={e => { setVerifyEmail(e.target.value); setVerifyError('') }} placeholder="university@snu.ac.kr" inputMode="email" autoComplete="email" className={`flex-1 ${inputClass}`} />
                         <button type="button" disabled={verifySending || !verifyEmail.trim()} onClick={async () => {
                           setVerifySending(true); setVerifyError('')
                           try {
@@ -609,7 +609,7 @@ export default function ProfileEditPage() {
                     <div className="space-y-3">
                       <p className="text-xs text-txt-tertiary"><strong>{verifyEmail}</strong>로 발송된 6자리 코드를 입력하세요.</p>
                       <div className="flex gap-2">
-                        <input type="text" value={verifyCode} onChange={e => { setVerifyCode(e.target.value.replace(/\D/g, '').slice(0, 6)); setVerifyError('') }} placeholder="000000" maxLength={6} className="w-36 px-4 py-3 text-sm font-mono text-center tracking-widest border border-border bg-transparent focus:outline-none focus:border-border transition-colors" />
+                        <input type="text" value={verifyCode} onChange={e => { setVerifyCode(e.target.value.replace(/\D/g, '').slice(0, 6)); setVerifyError('') }} placeholder="000000" maxLength={6} className="w-36 px-4 py-3 text-base sm:text-sm font-mono text-center tracking-widest border border-border bg-transparent focus:outline-none focus:border-border transition-colors" />
                         <button type="button" disabled={verifySending || verifyCode.length !== 6} onClick={async () => {
                           setVerifySending(true); setVerifyError('')
                           try {
@@ -718,7 +718,7 @@ export default function ProfileEditPage() {
                       <div>
                         <label className={fieldLabel}>주당 투자 가능 시간</label>
                         <div className="flex items-center gap-2">
-                          <input type="number" min={0} max={80} value={hoursPerWeek} onChange={e => setHoursPerWeek(e.target.value)} placeholder="예: 15" className="w-28 px-4 py-3 text-sm border border-border bg-transparent focus:outline-none focus:border-border transition-colors" />
+                          <input type="number" min={0} max={80} value={hoursPerWeek} onChange={e => setHoursPerWeek(e.target.value)} placeholder="예: 15" className="w-28 px-4 py-3 text-base sm:text-sm border border-border bg-transparent focus:outline-none focus:border-border transition-colors" />
                           <span className="text-xs text-txt-tertiary">시간</span>
                         </div>
                       </div>
@@ -811,7 +811,7 @@ function TagEditor({ tags, onChange, suggestions, chipDefault }: { tags: string[
         ))}
       </div>
       <div className="flex gap-2">
-        <input type="text" value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); add(input.trim()); setInput('') } }} placeholder="직접 입력" maxLength={20} className="flex-1 px-4 py-2.5 text-sm border border-border bg-transparent focus:outline-none focus:border-border transition-colors" />
+        <input type="text" value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); add(input.trim()); setInput('') } }} placeholder="직접 입력" maxLength={20} className="flex-1 px-4 py-2.5 text-base sm:text-sm border border-border bg-transparent focus:outline-none focus:border-border transition-colors" />
         <button type="button" onClick={() => { add(input.trim()); setInput('') }} className="px-3 py-2.5 border border-border text-txt-secondary hover:bg-surface-sunken transition-colors"><Plus size={14} /></button>
       </div>
     </div>

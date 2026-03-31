@@ -210,7 +210,7 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="제목 *"
-                className="text-sm font-bold bg-transparent border-b border-border outline-none px-0 py-1 focus:border-brand transition-colors placeholder:text-txt-disabled"
+                className="text-base sm:text-sm font-bold bg-transparent border-b border-border outline-none px-0 py-1 focus:border-brand transition-colors placeholder:text-txt-disabled"
                 autoFocus
               />
               <input

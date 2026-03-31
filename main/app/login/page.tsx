@@ -263,7 +263,7 @@ function LoginContent() {
                            type="text"
                            value={nickname}
                            onChange={(e) => setNickname(e.target.value)}
-                           className="w-full px-4 py-3 bg-surface-sunken rounded-xl border border-border text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand focus:bg-surface-card transition-all placeholder:text-txt-disabled"
+                           className="w-full px-4 py-3 bg-surface-sunken rounded-xl border border-border text-base sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand focus:bg-surface-card transition-all placeholder:text-txt-disabled"
                            placeholder="닉네임을 입력하세요"
                            required={isSignUp}
                         />
@@ -276,8 +276,10 @@ function LoginContent() {
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full px-4 py-3 bg-surface-sunken rounded-xl border border-border text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand focus:bg-surface-card transition-all placeholder:text-txt-disabled font-mono"
+                        className="w-full px-4 py-3 bg-surface-sunken rounded-xl border border-border text-base sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand focus:bg-surface-card transition-all placeholder:text-txt-disabled font-mono"
                         placeholder="email@example.com"
+                        inputMode="email"
+                        autoComplete="email"
                         required
                      />
                   </div>
@@ -288,7 +290,7 @@ function LoginContent() {
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="w-full px-4 py-3 bg-surface-sunken rounded-xl border border-border text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand focus:bg-surface-card transition-all placeholder:text-txt-disabled"
+                        className="w-full px-4 py-3 bg-surface-sunken rounded-xl border border-border text-base sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand focus:bg-surface-card transition-all placeholder:text-txt-disabled"
                         placeholder="비밀번호를 입력하세요"
                         required
                         minLength={6}
@@ -324,7 +326,7 @@ function LoginContent() {
             )}
 
             {/* Trust Signals */}
-            <div className="mt-8 flex items-center gap-4 text-[0.6875rem] text-txt-disabled">
+            <div className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-1 sm:gap-4 text-[0.6875rem] text-txt-disabled">
                <span className="flex items-center gap-1"><Users size={12} /> 대학생 커뮤니티</span>
                <span className="w-px h-3 bg-border" />
                <span className="flex items-center gap-1"><Rocket size={12} /> 프로젝트 매칭</span>

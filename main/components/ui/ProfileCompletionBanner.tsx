@@ -57,7 +57,7 @@ export function ProfileCompletionBanner() {
           localStorage.setItem(getDismissKey(), '1')
           setDismissed(true)
         }}
-        className="shrink-0 text-txt-disabled hover:text-txt-primary transition-colors"
+        className="shrink-0 p-2 -m-1 text-txt-disabled hover:text-txt-primary transition-colors"
       >
         <X size={14} />
       </button>

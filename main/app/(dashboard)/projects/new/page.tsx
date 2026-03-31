@@ -383,7 +383,7 @@ function NewProjectContent() {
                     placeholder={theme.descPlaceholder}
                     rows={7}
                     maxLength={2000}
-                    className="w-full text-sm text-txt-secondary leading-[1.8] placeholder:text-txt-disabled border border-border p-3 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand resize-none bg-transparent transition-all"
+                    className="w-full text-base sm:text-sm text-txt-secondary leading-[1.8] placeholder:text-txt-disabled border border-border p-3 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand resize-none bg-transparent transition-all"
                   />
                   <p className={`text-[0.625rem] mt-1 text-right font-mono ${description.length >= 1800 ? 'text-status-danger-text font-bold' : description.length >= 1500 ? 'text-status-warning-text' : 'text-txt-disabled'}`}>{description.length}/2000</p>
                 </section>
@@ -399,7 +399,7 @@ function NewProjectContent() {
                     placeholder={theme.painPlaceholder}
                     rows={3}
                     maxLength={1000}
-                    className="w-full text-sm text-txt-secondary leading-relaxed placeholder:text-txt-disabled border-none outline-none bg-transparent resize-none"
+                    className="w-full text-base sm:text-sm text-txt-secondary leading-relaxed placeholder:text-txt-disabled border-none outline-none bg-transparent resize-none"
                   />
                 </section>
 
@@ -416,14 +416,15 @@ function NewProjectContent() {
                           value={link.label}
                           onChange={(e) => updateLink(idx, 'label', e.target.value)}
                           placeholder="예: GitHub, 노션"
-                          className="px-3 py-2 border border-border text-sm focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand w-1/3 bg-transparent transition-all"
+                          className="px-3 py-2 border border-border text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand w-1/3 bg-transparent transition-all"
                         />
                         <input
                           type="url"
                           value={link.url}
                           onChange={(e) => updateLink(idx, 'url', e.target.value)}
                           placeholder="https://github.com/..."
-                          className="px-3 py-2 border border-border text-sm focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand flex-1 bg-transparent transition-all"
+                          inputMode="url"
+                          className="px-3 py-2 border border-border text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand flex-1 bg-transparent transition-all"
                         />
                         <button
                           type="button"

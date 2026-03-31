@@ -95,7 +95,7 @@ const InputSection: React.FC<InputSectionProps> = ({ inputs, logs, onChange, onS
                 onKeyDown={handleKeyDown}
                 placeholder={getPlaceholder(activeTab)}
                 rows={3}
-                className="w-full p-4 resize-none outline-none text-sm text-txt-primary leading-relaxed font-sans placeholder-txt-disabled bg-transparent"
+                className="w-full p-4 resize-none outline-none text-base sm:text-sm text-txt-primary leading-relaxed font-sans placeholder-txt-disabled bg-transparent"
                 disabled={isAnalyzing}
             />
 

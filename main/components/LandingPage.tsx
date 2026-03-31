@@ -357,7 +357,9 @@ const Hero: React.FC = () => {
               placeholder="이메일을 입력해주세요"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 bg-surface-card rounded-lg border border-border focus:outline-none focus:border-border focus:ring-1 focus:ring-black transition-all text-sm font-mono placeholder:font-sans"
+              className="w-full px-4 py-3 bg-surface-card rounded-lg border border-border focus:outline-none focus:border-border focus:ring-1 focus:ring-black transition-all text-base sm:text-sm font-mono placeholder:font-sans"
+              inputMode="email"
+              autoComplete="email"
               required
             />
           </div>

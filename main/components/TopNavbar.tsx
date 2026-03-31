@@ -216,7 +216,7 @@ export const TopNavbar: React.FC = () => {
                     if (e.key === 'Escape') { setIsSearchOpen(false) }
                     if (e.key === 'Enter') handleSearch()
                   }}
-                  className="flex-1 pl-2 pr-3 py-2 bg-transparent text-sm focus:outline-none"
+                  className="flex-1 pl-2 pr-3 py-2 bg-transparent text-base sm:text-sm focus:outline-none"
                   placeholder="페이지, 프로젝트, 사람 검색..."
                 />
               )}
@@ -429,7 +429,7 @@ export const TopNavbar: React.FC = () => {
                   name="mq"
                   type="text"
                   placeholder="검색..."
-                  className="w-full pl-10 pr-4 py-2.5 bg-surface-sunken rounded-sm text-sm placeholder:text-txt-disabled focus:outline-none focus:bg-surface-card focus:ring-1 focus:ring-border transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 bg-surface-sunken rounded-sm text-base sm:text-sm placeholder:text-txt-disabled focus:outline-none focus:bg-surface-card focus:ring-1 focus:ring-border transition-all"
                 />
               </form>
               <MobileNavItem href="/explore" active={pathname === '/explore'}>탐색</MobileNavItem>
