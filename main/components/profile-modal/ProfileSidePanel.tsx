@@ -17,9 +17,9 @@ export function ProfileSidePanel({
   onSelectProject?: (projectId: string) => void
 }) {
   return (
-    <div className="hidden md:flex w-2/5 bg-surface-card rounded-xl border border-border flex-col overflow-hidden shadow-lg-xl">
+    <div className="hidden md:flex w-2/5 modal-glass rounded-2xl border border-border/60 ring-1 ring-black/[0.03] flex-col overflow-hidden">
       {/* Side panel header */}
-      <div className="bg-surface-sunken border-b border-border px-4 h-10 flex items-center justify-between shrink-0">
+      <div className="modal-bar border-b border-border/60 px-4 h-10 flex items-center justify-between shrink-0">
         <h3 className="text-[0.625rem] font-medium text-txt-tertiary">
           {sidePanel === 'projects' ? `프로젝트 (${userProjects.length})` : `포트폴리오 (${portfolioItems.length})`}
         </h3>
