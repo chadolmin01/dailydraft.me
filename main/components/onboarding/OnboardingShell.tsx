@@ -9,9 +9,12 @@ import { ONBOARDING_TIPS, STEP_ORDER } from '@/src/lib/onboarding/constants'
 
 function ProgressBar({ step }: { step: Step }) {
   const idx = STEP_ORDER.indexOf(step)
-  const pct = Math.round((idx / (STEP_ORDER.length - 1)) * 100)
+  const total = STEP_ORDER.length - 1
+  const pct = Math.round((idx / total) * 100)
+  const stepNum = Math.min(idx + 1, total)
   return (
     <div className="flex items-center gap-2">
+      <span className="text-[10px] font-mono text-txt-tertiary tabular-nums hidden sm:block">{stepNum}/{total}</span>
       <div className="w-16 h-[5px] bg-surface-sunken rounded-xl border border-border overflow-hidden">
         <div className="h-full bg-brand transition-all duration-700 ease-out" style={{ width: `${pct}%` }} />
       </div>

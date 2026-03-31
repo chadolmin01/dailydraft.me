@@ -207,8 +207,10 @@ function NewProjectContent() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    if (!title.trim()) { setError('프로젝트 이름을 입력해주세요'); return }
-    if (!description.trim()) { setError('프로젝트 설명을 입력해주세요'); return }
+    if (!title.trim()) { setError('프로젝트 이름을 입력해주세요 (필수)'); return }
+    if (title.trim().length < 2) { setError('프로젝트 이름은 2자 이상이어야 해요'); return }
+    if (!description.trim()) { setError('프로젝트 소개를 입력해주세요 (필수)'); return }
+    if (description.trim().length < 20) { setError('프로젝트 소개는 20자 이상 작성해주세요'); return }
     if (selectedRoles.length === 0) { setError('필요한 역할을 최소 1개 선택해주세요'); return }
 
     const projectLinks = links
@@ -234,11 +236,11 @@ function NewProjectContent() {
         demo_images: demoImages.length > 0 ? demoImages : null,
         status: 'active',
       })
-      toast.success('프로젝트가 등록되었습니다')
+      toast.success('프로젝트가 등록되었습니다! 프로젝트 페이지로 이동합니다')
       router.push(returnTo || `/p/${result.id}`)
     } catch {
-      setError('프로젝트 생성에 실패했습니다. 다시 시도해주세요.')
-      toast.error('프로젝트 생성에 실패했습니다')
+      setError('프로젝트 생성에 실패했습니다. 네트워크를 확인하고 다시 시도해주세요.')
+      toast.error('프로젝트 생성에 실패했습니다. 잠시 후 다시 시도해주세요.')
     }
   }
 
@@ -360,7 +362,7 @@ function NewProjectContent() {
                 <section>
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="text-[0.625rem] font-medium text-txt-tertiary">
-                      프로젝트 소개
+                      프로젝트 소개 <span className="text-status-danger-text">*</span>
                     </h3>
                     <button
                       type="button"
@@ -381,9 +383,9 @@ function NewProjectContent() {
                     placeholder={theme.descPlaceholder}
                     rows={7}
                     maxLength={2000}
-                    className="w-full text-sm text-txt-secondary leading-[1.8] placeholder:text-txt-disabled border border-border p-3 focus:outline-none focus:border-surface-inverse resize-none bg-transparent"
+                    className="w-full text-sm text-txt-secondary leading-[1.8] placeholder:text-txt-disabled border border-border p-3 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand resize-none bg-transparent transition-all"
                   />
-                  <p className="text-[0.625rem] text-txt-disabled mt-1 text-right font-mono">{description.length}/2000</p>
+                  <p className={`text-[0.625rem] mt-1 text-right font-mono ${description.length >= 1800 ? 'text-status-danger-text font-bold' : description.length >= 1500 ? 'text-status-warning-text' : 'text-txt-disabled'}`}>{description.length}/2000</p>
                 </section>
 
                 {/* Pain Point */}
@@ -413,20 +415,21 @@ function NewProjectContent() {
                           type="text"
                           value={link.label}
                           onChange={(e) => updateLink(idx, 'label', e.target.value)}
-                          placeholder="이름"
-                          className="px-3 py-2 border border-border text-sm focus:outline-none focus:border-border w-1/3 bg-transparent"
+                          placeholder="예: GitHub, 노션"
+                          className="px-3 py-2 border border-border text-sm focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand w-1/3 bg-transparent transition-all"
                         />
                         <input
                           type="url"
                           value={link.url}
                           onChange={(e) => updateLink(idx, 'url', e.target.value)}
-                          placeholder="https://..."
-                          className="px-3 py-2 border border-border text-sm focus:outline-none focus:border-border flex-1 bg-transparent"
+                          placeholder="https://github.com/..."
+                          className="px-3 py-2 border border-border text-sm focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand flex-1 bg-transparent transition-all"
                         />
                         <button
                           type="button"
                           onClick={() => removeLink(idx)}
-                          className="p-2 text-txt-disabled hover:text-status-danger-text transition-colors shrink-0"
+                          className="p-2.5 text-txt-disabled hover:text-status-danger-text transition-colors shrink-0"
+                          aria-label="링크 삭제"
                         >
                           <X size={14} />
                         </button>

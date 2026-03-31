@@ -268,10 +268,10 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
       })
       setSaved(true)
       setTimeout(() => setSaved(false), 2000)
-      toast.success('프로필이 저장되었습니다')
+      toast.success('프로필이 저장되었습니다! 프로필에서 확인해보세요.')
     } catch {
-      setSaveError('프로필 저장에 실패했습니다. 다시 시도해주세요.')
-      toast.error('프로필 저장에 실패했습니다')
+      setSaveError('프로필 저장에 실패했습니다. 네트워크를 확인하고 다시 시도해주세요.')
+      toast.error('프로필 저장에 실패했습니다. 잠시 후 다시 시도해주세요.')
     }
   }
 
@@ -298,8 +298,19 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
       }
     >
       <div className="px-6 py-6 space-y-8">
+        {/* Section Progress */}
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {['사진', '기본', '소속', '스킬', '연락처', '관심사', 'AI'].map((label, i) => (
+            <span key={label} className="text-[0.5625rem] font-medium text-txt-disabled">
+              {i > 0 && <span className="mr-1.5">›</span>}
+              {label}
+            </span>
+          ))}
+        </div>
+
         {saveError && (
-          <div className="p-3 bg-status-danger-text/5 border border-status-danger-text/20 text-sm text-status-danger-text">
+          <div className="p-3 bg-status-danger-bg rounded-xl border border-status-danger-text/20 text-sm text-status-danger-text flex items-center gap-2">
+            <span className="shrink-0">⚠</span>
             {saveError}
           </div>
         )}

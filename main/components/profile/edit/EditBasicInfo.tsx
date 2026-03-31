@@ -22,25 +22,28 @@ export const EditBasicInfo: React.FC<EditBasicInfoProps> = ({
         </h3>
         <div className="space-y-4">
           <div>
-            <label className="block text-xs font-medium text-txt-secondary mb-1.5">닉네임</label>
+            <label className="block text-xs font-medium text-txt-secondary mb-1.5">닉네임 <span className="text-status-danger-text">*</span></label>
             <input
               type="text"
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
               maxLength={30}
-              placeholder="닉네임을 입력하세요"
-              className="w-full px-3 py-2.5 text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:border-accent transition-colors"
+              placeholder="어떻게 불러드릴까요?"
+              className={`w-full px-3 py-2.5 text-sm border bg-surface-card rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all ${!nickname.trim() ? 'border-status-danger-text/30' : 'border-border'}`}
             />
+            {!nickname.trim() && (
+              <p className="text-[0.6875rem] text-status-danger-text mt-1">닉네임은 필수예요</p>
+            )}
           </div>
           <div>
             <label className="block text-xs font-medium text-txt-secondary mb-1.5">한 줄 소개</label>
             <textarea
               value={vision}
               onChange={(e) => setVision(e.target.value)}
-              placeholder="자신을 한 줄로 소개해주세요"
+              placeholder="한 줄로 나를 표현해볼까요? 예: 사이드 프로젝트를 좋아하는 프론트엔드 개발자"
               rows={2}
               maxLength={200}
-              className="w-full px-3 py-2.5 text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:border-accent resize-none transition-colors"
+              className="w-full px-3 py-2.5 text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand resize-none transition-all"
             />
             <p className={`text-xs mt-1 text-right font-mono ${vision.length >= 180 ? 'text-status-danger-text font-bold' : vision.length >= 150 ? 'text-status-warning-text' : 'text-txt-tertiary'}`}>{vision.length}/200</p>
           </div>
@@ -58,10 +61,10 @@ export const EditBasicInfo: React.FC<EditBasicInfoProps> = ({
               key={opt.value}
               type="button"
               onClick={() => setCurrentSituation(currentSituation === opt.value ? '' : opt.value)}
-              className={`w-full text-left px-3 py-2.5 text-xs border transition-colors ${
+              className={`w-full text-left px-3 py-2.5 text-xs border rounded-lg transition-all ${
                 currentSituation === opt.value
                   ? 'bg-brand text-white border-brand'
-                  : 'bg-surface-card text-txt-secondary border-border hover:border-border'
+                  : 'bg-surface-card text-txt-secondary border-border hover:bg-surface-sunken hover:border-border'
               }`}
             >
               {opt.label}

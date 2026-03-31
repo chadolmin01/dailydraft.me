@@ -4,6 +4,7 @@ import React, { useState, Suspense } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { ArrowLeft, Settings, ExternalLink, Clock, Users, MessageCircle, Pencil, Trash2 } from 'lucide-react'
 import { SkeletonFeed } from '@/components/ui/Skeleton'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { toast } from 'sonner'
 import { useAuth } from '@/src/context/AuthContext'
 import { useOpportunity } from '@/src/hooks/useOpportunities'
@@ -33,6 +34,7 @@ function ProjectManageContent() {
   const [tab, setTab] = useState<Tab>('updates')
   const [showWriteUpdate, setShowWriteUpdate] = useState(false)
   const [editingUpdate, setEditingUpdate] = useState<ProjectUpdate | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<ProjectUpdate | null>(null)
 
   const { data: oppData, isLoading } = useOpportunity(id)
   const { data: updates = [] } = useProjectUpdates(id)
@@ -42,13 +44,18 @@ function ProjectManageContent() {
   const isOwner = !!(user && opportunity && user.id === opportunity.creator_id)
 
   const handleDelete = async (update: ProjectUpdate) => {
-    if (!confirm('이 업데이트를 삭제할까요?')) return
+    setDeleteTarget(update)
+  }
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return
     try {
-      await deleteUpdate.mutateAsync({ id: update.id, opportunity_id: id })
-      toast.success('업데이트가 삭제됐습니다')
+      await deleteUpdate.mutateAsync({ id: deleteTarget.id, opportunity_id: id })
+      toast.success('업데이트가 삭제되었습니다')
     } catch {
-      toast.error('삭제에 실패했습니다')
+      toast.error('삭제에 실패했습니다. 다시 시도해주세요.')
     }
+    setDeleteTarget(null)
   }
 
   if (isLoading) {
@@ -249,6 +256,18 @@ function ProjectManageContent() {
           onClose={() => setEditingUpdate(null)}
         />
       )}
+
+      {/* Delete Confirm Modal */}
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={confirmDelete}
+        title="업데이트를 삭제할까요?"
+        message="삭제된 업데이트는 복구할 수 없습니다."
+        confirmText="삭제하기"
+        cancelText="취소"
+        variant="danger"
+      />
     </div>
   )
 }

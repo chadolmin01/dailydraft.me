@@ -59,9 +59,10 @@ export const EditSkills: React.FC<EditSkillsProps> = ({
               </div>
               <button
                 onClick={() => removeSkill(skill.name)}
-                className="p-2 sm:p-0.5 -m-1 sm:m-0 text-txt-tertiary hover:text-txt-secondary transition-colors"
+                className="p-2.5 sm:p-1 -m-1 sm:m-0 text-txt-tertiary hover:text-status-danger-text transition-colors"
+                aria-label={`${skill.name} 스킬 제거`}
               >
-                <X size={12} />
+                <X size={14} className="sm:w-3 sm:h-3" />
               </button>
             </div>
           ))}
@@ -75,9 +76,9 @@ export const EditSkills: React.FC<EditSkillsProps> = ({
           value={newSkillName}
           onChange={(e) => setNewSkillName(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())}
-          placeholder="스킬 직접 입력"
+          placeholder="예: React, Python, Figma"
           maxLength={30}
-          className="flex-1 px-3 py-2 text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:border-accent transition-colors"
+          className="flex-1 px-3 py-2 text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all"
         />
         <select
           value={newSkillLevel}
