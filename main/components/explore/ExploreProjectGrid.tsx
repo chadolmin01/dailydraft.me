@@ -2,8 +2,9 @@
 
 import React from 'react'
 import Image from 'next/image'
-import { Rocket, Users, FolderOpen, Eye, Heart, Loader2 } from 'lucide-react'
+import { Rocket, Users, FolderOpen, Eye, Heart } from 'lucide-react'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { SkeletonGrid } from '@/components/ui/Skeleton'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { useAuth } from '@/src/context/AuthContext'
 import { getUpdateBadge } from './constants'
@@ -44,11 +45,7 @@ export function ExploreProjectGrid({
   }
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-txt-tertiary" />
-      </div>
-    )
+    return <SkeletonGrid count={6} cols={3} />
   }
 
   if (projectCards.length === 0) {

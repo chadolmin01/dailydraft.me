@@ -2,10 +2,11 @@
 
 import React, { useState, useEffect, useMemo, useCallback, Suspense } from 'react'
 import dynamic from 'next/dynamic'
-import { LayoutGrid, Users, Sparkles, Loader2 } from 'lucide-react'
+import { LayoutGrid, Users, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 import { useSearchParams as useNextSearchParams, useRouter, usePathname } from 'next/navigation'
 import { DashboardLayout } from '@/components/ui/DashboardLayout'
+import { SkeletonGrid, SkeletonSidebar } from '@/components/ui/Skeleton'
 import { ProfileCompletionBanner } from '@/components/ui/ProfileCompletionBanner'
 
 const ModalLoadingFallback = () => (
@@ -56,8 +57,11 @@ function useDebouncedValue<T>(value: T, delay: number): T {
 export default function ExplorePageClient() {
   return (
     <Suspense fallback={
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="h-6 w-6 animate-spin text-txt-tertiary" />
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="flex gap-6">
+          <div className="hidden lg:block w-56 shrink-0"><SkeletonSidebar /></div>
+          <div className="flex-1"><SkeletonGrid count={6} cols={3} /></div>
+        </div>
       </div>
     }>
       <ExplorePageContent />

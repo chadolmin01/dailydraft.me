@@ -27,9 +27,9 @@ import {
   Square,
   CalendarDays,
   MoreHorizontal,
-  Loader2
 } from 'lucide-react'
 import { Opportunity, CalendarEvent } from '@/types'
+import { SkeletonGrid } from '@/components/ui/Skeleton'
 import { useAuth } from '@/src/context/AuthContext'
 import { useRecommendedOpportunities, useMyOpportunities, calculateDaysLeft, OpportunityWithCreator } from '@/src/hooks/useOpportunities'
 import { useProfile } from '@/src/hooks/useProfile'
@@ -580,8 +580,8 @@ export const Dashboard: React.FC = () => {
                     <ErrorState message="추천 프로젝트를 불러오지 못했습니다" onRetry={() => refetchOpp()} />
                   </div>
                 ) : oppLoading ? (
-                  <div className="col-span-4 flex items-center justify-center py-8">
-                    <Loader2 className="animate-spin text-txt-disabled" size={24} />
+                  <div className="col-span-4">
+                    <SkeletonGrid count={4} cols={2} />
                   </div>
                 ) : displayOpportunities.map((opp) => {
                   const styles = getScopeStyles(opp.scope)

@@ -154,7 +154,7 @@ const MockDashboardUI = () => (
 )
 
 const MockAICard = () => (
-   <div className="bg-surface-card rounded-xl border border-border shadow-lg max-w-sm w-full relative overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
+   <div className="bg-surface-card rounded-xl border border-border shadow-lg max-w-sm w-full relative overflow-hidden hover-spring">
       <div className="bg-black p-4 text-white flex items-center justify-between">
          <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-status-warning-text" />

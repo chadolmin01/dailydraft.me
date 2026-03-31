@@ -140,7 +140,7 @@ export function ExploreHeroCarousel() {
           {/* 오른쪽 상단 */}
           <button
             onClick={() => setActive(order[1])}
-            className="relative flex-1 bg-surface-card rounded-xl border border-border overflow-hidden text-left hover:border-border hover:shadow-md transition-all duration-200 group"
+            className="relative flex-1 bg-surface-card rounded-xl border border-border overflow-hidden text-left hover:border-border hover:shadow-md hover-spring group"
           >
             <div className="absolute inset-0 bg-grid-engineering opacity-20" />
             <div className="relative z-10 h-full px-4 flex items-center">
@@ -152,7 +152,7 @@ export function ExploreHeroCarousel() {
           {/* 오른쪽 하단 */}
           <button
             onClick={() => setActive(order[2])}
-            className="relative flex-1 bg-surface-card rounded-xl border border-border overflow-hidden text-left hover:border-border hover:shadow-md transition-all duration-200 group"
+            className="relative flex-1 bg-surface-card rounded-xl border border-border overflow-hidden text-left hover:border-border hover:shadow-md hover-spring group"
           >
             <div className="absolute inset-0 bg-grid-engineering opacity-20" />
             <div className="relative z-10 h-full px-4 flex items-center">

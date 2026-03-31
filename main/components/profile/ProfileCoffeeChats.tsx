@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import {
-  Loader2,
   Coffee,
   Send,
   AlertTriangle,
@@ -16,7 +15,9 @@ import {
   XCircle,
   ArrowRight,
 } from 'lucide-react'
+import { toast } from 'sonner'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { SkeletonFeed } from '@/components/ui/Skeleton'
 import { useCoffeeChats, useAcceptCoffeeChat, useDeclineCoffeeChat, useUpdateChatOutcome } from '@/src/hooks/useCoffeeChats'
 import type { CoffeeChat, ParsedInvitation, CoffeeChatOutcome } from '@/src/hooks/useCoffeeChats'
 import { CoffeeChatAcceptModal } from '@/components/coffee-chat/CoffeeChatAcceptModal'
@@ -78,8 +79,10 @@ export function ProfileCoffeeChats() {
         invitationMessage,
       })
       setAcceptModalChat(null)
+      toast.success('커피챗을 수락했습니다')
     } catch {
       setChatError('커피챗 수락에 실패했습니다. 다시 시도해주세요.')
+      toast.error('커피챗 수락에 실패했습니다')
     }
   }
 
@@ -87,8 +90,10 @@ export function ProfileCoffeeChats() {
     setChatError(null)
     try {
       await declineChatMutation.mutateAsync(chatId)
+      toast.success('커피챗을 거절했습니다')
     } catch {
       setChatError('커피챗 거절에 실패했습니다. 다시 시도해주세요.')
+      toast.error('커피챗 거절에 실패했습니다')
     }
   }
 
@@ -136,9 +141,7 @@ export function ProfileCoffeeChats() {
       {tab === 'received' && (
         <>
           {chatsLoading ? (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="animate-spin text-txt-tertiary" size={20} />
-            </div>
+            <SkeletonFeed count={2} />
           ) : chats.length > 0 ? (
             <div className="space-y-3">
               {pendingChats.map((chat, chatIdx) => (
@@ -207,7 +210,7 @@ export function ProfileCoffeeChats() {
               ))}
 
               {otherChats.map((chat) => (
-                <div key={chat.id} className="bg-surface-card rounded-xl border border-border overflow-hidden hover:shadow-md transition-all">
+                <div key={chat.id} className="bg-surface-card rounded-xl border border-border overflow-hidden hover:shadow-md hover-spring">
                   <div className="flex items-center gap-3 p-4">
                     <button
                       type="button"
@@ -294,9 +297,7 @@ export function ProfileCoffeeChats() {
       {tab === 'sent' && (
         <>
           {sentLoading ? (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="animate-spin text-txt-tertiary" size={20} />
-            </div>
+            <SkeletonFeed count={2} />
           ) : sentChats.length > 0 ? (
             <div className="space-y-3">
               {sentChats.map((chat) => (

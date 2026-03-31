@@ -38,7 +38,7 @@ export const HowItWorks: React.FC = () => {
           {steps.map((step, index) => (
             <div
               key={index}
-              className="relative flex flex-col items-center text-center p-6 bg-surface-card rounded-xl border border-border shadow-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-200"
+              className="relative flex flex-col items-center text-center p-6 bg-surface-card rounded-xl border border-border shadow-sm hover-spring"
             >
               {/* Step number */}
               <div className="absolute -top-2.5 -left-2.5 w-6 h-6 bg-surface-inverse text-txt-inverse flex items-center justify-center text-xs font-bold">

@@ -11,6 +11,7 @@ import {
   Upload,
   Trash2,
 } from 'lucide-react'
+import { toast } from 'sonner'
 import { useAuth } from '@/src/context/AuthContext'
 import { supabase } from '@/src/lib/supabase/client'
 import {
@@ -63,7 +64,7 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
         .getPublicUrl(path)
       setImageUrl(publicUrl)
     } catch {
-      // silent
+      toast.error('이미지 업로드에 실패했습니다')
     } finally {
       setUploading(false)
       if (fileRef.current) fileRef.current.value = ''
@@ -80,13 +81,20 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
         link_url: linkUrl.trim() || undefined,
         display_order: items.length,
       },
-      { onSuccess: resetForm },
+      {
+        onSuccess: () => { resetForm(); toast.success('포트폴리오가 추가되었습니다') },
+        onError: () => toast.error('포트폴리오 추가에 실패했습니다'),
+      },
     )
   }
 
   const handleDelete = (id: string) => {
     setDeletingId(id)
-    deleteItem.mutate(id, { onSettled: () => setDeletingId(null) })
+    deleteItem.mutate(id, {
+      onSuccess: () => toast.success('포트폴리오가 삭제되었습니다'),
+      onError: () => toast.error('삭제에 실패했습니다'),
+      onSettled: () => setDeletingId(null),
+    })
   }
 
   // Hide entirely if not editable and no items
@@ -115,7 +123,7 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
         {items.map((item) => (
           <div
             key={item.id}
-            className="relative bg-surface-card rounded-xl border border-border overflow-hidden group hover:shadow-lg transition-all shadow-md"
+            className="relative bg-surface-card rounded-xl border border-border overflow-hidden group hover:shadow-lg hover-spring shadow-md"
           >
             <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/20 z-10" />
             <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-surface-inverse/20 z-10" />

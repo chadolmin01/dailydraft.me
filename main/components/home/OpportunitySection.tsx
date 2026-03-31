@@ -4,8 +4,9 @@ import React, { useState } from 'react'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
 import {
-  Zap, ArrowRight, MessageCircle, Heart, Loader2, Plus,
+  Zap, ArrowRight, MessageCircle, Heart, Plus,
 } from 'lucide-react'
+import { SkeletonGrid } from '@/components/ui/Skeleton'
 import { useOpportunities } from '@/src/hooks/useOpportunities'
 
 const ProjectDetailModal = dynamic(
@@ -96,15 +97,13 @@ export const OpportunitySection: React.FC = () => {
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="animate-spin text-txt-disabled" size={32} />
-          </div>
+          <SkeletonGrid count={4} cols={2} />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {displayProjects.map((project) => (
               <div
                 key={project.id}
-                className="group bg-surface-card rounded-xl border border-border p-4 hover:border-border hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col h-full"
+                className="group bg-surface-card rounded-xl border border-border p-4 hover:border-border hover-spring cursor-pointer flex flex-col h-full"
                 onClick={() => project.isReal ? setSelectedProjectId(project.id) : router.push('/explore')}
               >
                 {/* Header */}
@@ -181,7 +180,7 @@ export const OpportunitySection: React.FC = () => {
             {/* + Add Project Card */}
             <div
               onClick={() => router.push('/login')}
-              className="group bg-surface-card rounded-xl border border-border p-6 hover:border-brand hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col items-center justify-center h-full min-h-[13.75rem] gap-4"
+              className="group bg-surface-card rounded-xl border border-border p-6 hover:border-brand hover-spring cursor-pointer flex flex-col items-center justify-center h-full min-h-[13.75rem] gap-4"
             >
               <div className="w-14 h-14 bg-surface-card rounded-xl border border-border flex items-center justify-center group-hover:bg-brand group-hover:border-brand transition-colors">
                 <Plus size={24} className="text-txt-disabled group-hover:text-white transition-colors" />

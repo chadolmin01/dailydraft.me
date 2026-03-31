@@ -33,7 +33,7 @@ export function ProfileProjects({ opportunities }: ProfileProjectsProps) {
             const daysLeft = calculateDaysLeft(opp.created_at)
             const isUrgent = daysLeft > 0 && daysLeft <= 3
             return (
-              <Link href={`/projects/${opp.id}`} key={opp.id} className="relative bg-surface-card rounded-xl border border-border overflow-hidden group hover:shadow-lg transition-all cursor-pointer h-[21.25rem] flex flex-col shadow-md">
+              <Link href={`/projects/${opp.id}`} key={opp.id} className="relative bg-surface-card rounded-xl border border-border overflow-hidden group hover:shadow-lg hover-spring cursor-pointer h-[21.25rem] flex flex-col shadow-md">
                 <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/20 z-20" />
                 <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-surface-inverse/20 z-20" />
                 <div className="relative h-36 shrink-0 bg-surface-inverse flex items-end p-4">

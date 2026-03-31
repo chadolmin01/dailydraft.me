@@ -1,7 +1,9 @@
 'use client'
 
-import { Loader2, Mail } from 'lucide-react'
+import { Mail } from 'lucide-react'
+import { toast } from 'sonner'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { SkeletonFeed } from '@/components/ui/Skeleton'
 import { useProjectInvitations, useRespondToInvitation } from '@/src/hooks/useProjectInvitations'
 
 export function ProfileInvitations() {
@@ -23,9 +25,7 @@ export function ProfileInvitations() {
       </div>
 
       {invitationsLoading ? (
-        <div className="flex items-center justify-center py-8">
-          <Loader2 className="animate-spin text-txt-tertiary" size={20} />
-        </div>
+        <SkeletonFeed count={2} />
       ) : receivedInvitations.length > 0 ? (
         <div className="space-y-3">
           {receivedInvitations.filter(i => i.status === 'pending').map((inv) => (
@@ -51,7 +51,8 @@ export function ProfileInvitations() {
                     onClick={async () => {
                       try {
                         await respondToInvitation.mutateAsync({ id: inv.id, status: 'accepted' })
-                      } catch { /* handled by mutation */ }
+                        toast.success('초대를 수락했습니다')
+                      } catch { toast.error('초대 수락에 실패했습니다') }
                     }}
                     disabled={respondToInvitation.isPending}
                     className="px-3 py-1.5 text-xs font-bold bg-indicator-online text-white border border-indicator-online hover:bg-indicator-online/90 hover:opacity-90 active:scale-[0.97] transition-all"
@@ -62,7 +63,8 @@ export function ProfileInvitations() {
                     onClick={async () => {
                       try {
                         await respondToInvitation.mutateAsync({ id: inv.id, status: 'declined' })
-                      } catch { /* handled by mutation */ }
+                        toast.success('초대를 거절했습니다')
+                      } catch { toast.error('초대 거절에 실패했습니다') }
                     }}
                     disabled={respondToInvitation.isPending}
                     className="px-3 py-1.5 text-xs font-bold border border-border text-txt-secondary hover:bg-surface-sunken hover:shadow-md active:scale-[0.97] transition-all"
@@ -75,7 +77,7 @@ export function ProfileInvitations() {
           ))}
 
           {receivedInvitations.filter(i => i.status !== 'pending').map((inv) => (
-            <div key={inv.id} className="bg-surface-card rounded-xl border border-border p-4 hover:shadow-md transition-all">
+            <div key={inv.id} className="bg-surface-card rounded-xl border border-border p-4 hover:shadow-md hover-spring">
               <div className="flex items-center gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
