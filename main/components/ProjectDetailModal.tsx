@@ -28,6 +28,7 @@ interface ProjectDetailModalProps {
 }
 
 export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, onClose }) => {
+  if (!projectId) return null
   const router = useRouter()
   const [showCta, setShowCta] = useState(false)
   const [showCoffeeChatForm, setShowCoffeeChatForm] = useState(false)
@@ -212,11 +213,10 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.97, y: 10 }}
-            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-0 z-modal flex items-end sm:items-center justify-center pt-6 px-0 pb-[env(safe-area-inset-bottom)] sm:p-4 md:p-8"
-            onClick={onClose}
-          >
+        transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+        className="fixed inset-0 z-modal flex items-end sm:items-center justify-center pt-6 px-0 pb-[env(safe-area-inset-bottom)] sm:p-4 md:p-8"
+        onClick={onClose}
+      >
             <div
               onClick={(e) => e.stopPropagation()}
               className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl max-h-[85vh] sm:max-h-[90vh] modal-glass rounded-t-2xl sm:rounded-2xl overflow-hidden flex flex-col relative"
