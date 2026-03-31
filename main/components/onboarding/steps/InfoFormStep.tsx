@@ -42,7 +42,7 @@ export const InfoFormStep: React.FC<InfoFormStepProps> = ({
               key={a.value}
               type="button"
               onClick={() => onProfileChange({ affiliationType: a.value })}
-              className={`px-2.5 py-1.5 text-[11px] font-medium border transition-all ${
+              className={`px-2.5 py-1.5 text-[11px] font-medium border rounded-full transition-all ${
                 profile.affiliationType === a.value
                   ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
                   : 'bg-surface-card text-txt-primary border-border hover:bg-black hover:text-white'
@@ -100,7 +100,7 @@ export const InfoFormStep: React.FC<InfoFormStepProps> = ({
                   ? profile.locations.filter(l => l !== loc)
                   : [...profile.locations, loc],
               })}
-              className={`px-2 py-1 text-[11px] font-medium border transition-all ${
+              className={`px-2 py-1 text-[11px] font-medium border rounded-full transition-all ${
                 profile.locations.includes(loc)
                   ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
                   : 'bg-surface-card text-txt-primary border-border hover:bg-black hover:text-white'
@@ -117,7 +117,7 @@ export const InfoFormStep: React.FC<InfoFormStepProps> = ({
       <button
         onClick={onSubmit}
         disabled={!profile.name.trim()}
-        className="w-full py-2.5 bg-brand text-white text-[13px] font-bold hover:bg-brand-hover transition-all flex items-center justify-center gap-2 disabled:opacity-20 disabled:cursor-not-allowed ob-hover hover:opacity-90 active:scale-[0.97] border border-brand"
+        className="w-full py-2.5 bg-brand text-white text-[13px] font-bold rounded-xl hover:bg-brand-hover transition-all flex items-center justify-center gap-2 disabled:opacity-20 disabled:cursor-not-allowed ob-hover hover:opacity-90 active:scale-[0.97] border border-brand"
       >
         입력 완료 <ArrowRight size={14} />
       </button>

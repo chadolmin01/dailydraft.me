@@ -24,7 +24,7 @@ export const ProfilePreview: React.FC<ProfilePreviewProps> = ({
             <span className="text-[10px] font-medium text-txt-disabled">Preview</span>
             {(profile.name || profile.position) && (
               <div className="flex items-center gap-1.5">
-                <div className="w-1.5 h-1.5 bg-status-success-text animate-pulse" />
+                <div className="w-1.5 h-1.5 bg-status-success-text rounded-full animate-pulse" />
                 <span className="text-[10px] font-mono text-txt-disabled">LIVE</span>
               </div>
             )}
@@ -62,13 +62,13 @@ export const ProfilePreview: React.FC<ProfilePreviewProps> = ({
               {profile.skills.length > 0 && (
                 <div className="pt-2 border-t border-border-subtle">
                   <label className="text-[10px] font-medium text-txt-disabled mb-1.5 flex items-center gap-1"><Code2 size={9} /> Skills</label>
-                  <div className="flex flex-wrap gap-1">{profile.skills.map((s, i) => { const label = typeof s === 'string' ? s : (s as any)?.name || ''; return <span key={label || i} className="px-2 py-0.5 bg-brand text-white text-[10px] font-medium">{label}</span> })}</div>
+                  <div className="flex flex-wrap gap-1">{profile.skills.map((s, i) => { const label = typeof s === 'string' ? s : (s as any)?.name || ''; return <span key={label || i} className="px-2 py-0.5 bg-brand text-white text-[10px] font-medium rounded-full">{label}</span> })}</div>
                 </div>
               )}
               {profile.interests.length > 0 && (
                 <div className="pt-2 border-t border-border-subtle">
                   <label className="text-[10px] font-medium text-txt-disabled mb-1.5 flex items-center gap-1"><Target size={9} /> Interests</label>
-                  <div className="flex flex-wrap gap-1">{profile.interests.map(t => <span key={t} className="px-2 py-0.5 bg-brand-bg border border-brand-border text-brand text-[10px] font-medium">{t}</span>)}</div>
+                  <div className="flex flex-wrap gap-1">{profile.interests.map(t => <span key={t} className="px-2 py-0.5 bg-brand-bg border border-brand-border text-brand text-[10px] font-medium rounded-full">{t}</span>)}</div>
                 </div>
               )}
               {step === 'deep-chat' && hasDeepChatMessages && (
@@ -82,13 +82,13 @@ export const ProfilePreview: React.FC<ProfilePreviewProps> = ({
                         <div key={topic.id} className="flex items-center gap-2">
                           <Icon size={10} className={covered ? 'text-brand' : 'text-txt-disabled'} />
                           <span className={`text-[10px] font-mono ${covered ? 'text-txt-primary' : 'text-txt-disabled'}`}>{topic.label}</span>
-                          {covered && <div className="w-1 h-1 bg-brand ml-auto" />}
+                          {covered && <div className="w-1 h-1 bg-brand rounded-full ml-auto" />}
                         </div>
                       )
                     })}
                   </div>
                   <div className="flex items-center gap-1.5 mt-2 pt-1.5 border-t border-border-subtle">
-                    <div className="w-1.5 h-1.5 bg-brand animate-pulse" />
+                    <div className="w-1.5 h-1.5 bg-brand rounded-full animate-pulse" />
                     <span className="text-[10px] text-txt-tertiary font-mono">{userMsgCount}회 대화 · {coveredTopics.length}개 분석</span>
                   </div>
                 </div>
