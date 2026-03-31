@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { MessageCircle, ThumbsUp, Flag, Send, Loader2, ArrowRight } from 'lucide-react'
 import { toast } from 'sonner'
+import { SkeletonFeed } from '@/components/ui/Skeleton'
 import { useComments, Comment } from '@/src/hooks/useComments'
 import { useAuth } from '@/src/context/AuthContext'
 import { COMMENT_LABEL, COMMENT_VERB } from '@/src/constants/labels'
@@ -158,8 +159,8 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
       {/* Comments List */}
       <div className="divide-y divide-border">
         {loading ? (
-          <div className="p-8 flex items-center justify-center">
-            <Loader2 className="animate-spin text-txt-disabled" size={24} />
+          <div className="p-4">
+            <SkeletonFeed count={3} />
           </div>
         ) : comments.length === 0 ? (
           <div className="p-8 text-center text-txt-disabled text-sm">

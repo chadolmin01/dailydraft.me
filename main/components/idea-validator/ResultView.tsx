@@ -160,7 +160,7 @@ const ResultView: React.FC<ResultViewProps> = ({
   );
 
   const ActionCard = ({ title, items, color, icon }: { title: string, items: string[], color: string, icon: React.ReactNode }) => (
-    <div className="bg-surface-card rounded-xl border border-border p-6 shadow-md hover:shadow-lg transition-shadow">
+    <div className="bg-surface-card rounded-xl border border-border p-6 shadow-md hover:shadow-lg hover-spring">
         <div className="flex items-center gap-3 mb-4">
             <div className={`p-2 ${color}`}>
                 {icon}
@@ -253,7 +253,7 @@ const ResultView: React.FC<ResultViewProps> = ({
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                {prd.coreFeatures.map((feature, i) => (
-                  <div key={i} className="bg-surface-card rounded-xl border border-border p-5 hover:shadow-md transition-shadow">
+                  <div key={i} className="bg-surface-card rounded-xl border border-border p-5 hover:shadow-md hover-spring">
                      <div className="flex items-start justify-between mb-2">
                         <h3 className="font-bold text-txt-primary">{feature.name}</h3>
                         <div className="flex gap-2">

@@ -507,7 +507,7 @@ export const Dashboard: React.FC = () => {
                 </div>
               </Card>
 
-              <div className="flex-1 bg-surface-card rounded-xl border border-border p-4 flex flex-col hover:shadow-md transition-all shadow-sm relative">
+              <div className="flex-1 bg-surface-card rounded-xl border border-border p-4 flex flex-col hover:shadow-md hover-spring shadow-sm relative">
                 <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/20" />
                 <div className="flex justify-between items-center mb-4 border-b border-border pb-2">
                     <span className="text-[0.625rem] font-bold text-txt-primary font-mono flex items-center gap-1.5">

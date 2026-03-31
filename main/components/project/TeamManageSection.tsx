@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Users, Loader2, UserMinus, UserPlus, ChevronDown, Mail, MessageCircle, Coffee } from 'lucide-react'
 import { toast } from 'sonner'
+import { SkeletonFeed } from '@/components/ui/Skeleton'
 import { supabase } from '@/src/lib/supabase/client'
 import { useAuth } from '@/src/context/AuthContext'
 import { ROLE_OPTIONS } from '@/app/(dashboard)/projects/new/constants'
@@ -171,8 +172,8 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 size={20} className="animate-spin text-txt-tertiary" />
+      <div className="px-4 sm:px-8 py-6">
+        <SkeletonFeed count={3} />
       </div>
     )
   }

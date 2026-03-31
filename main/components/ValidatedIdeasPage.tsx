@@ -21,6 +21,7 @@ import {
   Trophy,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { SkeletonGrid } from '@/components/ui/Skeleton'
 import { useValidatedIdeas, useDeleteValidatedIdea } from '@/src/hooks/useValidatedIdeas'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import type { Tables } from '@/src/types/database'
@@ -145,11 +146,8 @@ export const ValidatedIdeasPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-[60vh]">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 size={32} className="animate-spin text-txt-disabled" />
-          <p className="text-sm text-txt-tertiary">아이디어 불러오는 중...</p>
-        </div>
+      <div className="py-8">
+        <SkeletonGrid count={4} cols={2} />
       </div>
     )
   }

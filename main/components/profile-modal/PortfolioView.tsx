@@ -85,7 +85,7 @@ export function PortfolioView({
               href={profile.github_url!}
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-4 p-4 bg-surface-card rounded-xl border border-border hover:border-brand/30 hover:shadow-md transition-all"
+              className="group flex items-center gap-4 p-4 bg-surface-card rounded-xl border border-border hover:border-brand/30 hover:shadow-md hover-spring"
             >
               <div className="w-12 h-12 bg-surface-inverse flex items-center justify-center shrink-0">
                 <Github size={24} className="text-txt-inverse" />
@@ -111,7 +111,7 @@ export function PortfolioView({
               href={profile.linkedin_url!}
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-4 p-4 bg-surface-card rounded-xl border border-border hover:border-brand/30 hover:shadow-md transition-all"
+              className="group flex items-center gap-4 p-4 bg-surface-card rounded-xl border border-border hover:border-brand/30 hover:shadow-md hover-spring"
             >
               <div className="w-12 h-12 bg-[#0A66C2] flex items-center justify-center shrink-0">
                 <Linkedin size={24} className="text-white" />

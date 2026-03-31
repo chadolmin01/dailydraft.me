@@ -118,7 +118,7 @@ export function ProfileBodyLeft({
                   href={item.link_url || '#'}
                   target={item.link_url ? '_blank' : undefined}
                   rel={item.link_url ? 'noopener noreferrer' : undefined}
-                  className="bg-surface-card rounded-xl border border-border overflow-hidden hover:shadow-md transition-all"
+                  className="bg-surface-card rounded-xl border border-border overflow-hidden hover:shadow-md hover-spring"
                 >
                   {item.image_url && (
                     <div className="relative h-20 bg-surface-card">
@@ -168,7 +168,7 @@ export function ProfileBodyLeft({
                         onSelectProject(project.id)
                       }
                     }}
-                    className="w-full text-left px-3 py-3 bg-surface-card rounded-xl border border-border hover:shadow-md hover:border-brand/40 transition-all group/proj"
+                    className="w-full text-left px-3 py-3 bg-surface-card rounded-xl border border-border hover:shadow-md hover:border-brand/40 hover-spring group/proj"
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">

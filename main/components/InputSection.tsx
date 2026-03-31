@@ -148,7 +148,7 @@ const InputSection: React.FC<InputSectionProps> = ({ inputs, logs, onChange, onS
 
                 <div ref={logContainerRef} className="overflow-y-auto flex-1 space-y-2 pr-1 custom-scrollbar">
                     {roleLogs.map((log) => (
-                        <div key={log.id} className="group flex items-start gap-3 p-3 bg-surface-sunken rounded-xl border border-border hover:bg-surface-card rounded-xl hover:border-border hover:shadow-md transition-all">
+                        <div key={log.id} className="group flex items-start gap-3 p-3 bg-surface-sunken rounded-xl border border-border hover:bg-surface-card rounded-xl hover:border-border hover:shadow-md hover-spring">
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-1">
                                     <span className="text-[0.625rem] font-mono text-txt-disabled">

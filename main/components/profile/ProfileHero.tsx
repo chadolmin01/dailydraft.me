@@ -18,6 +18,7 @@ import {
   Heart,
   Eye,
 } from 'lucide-react'
+import { toast } from 'sonner'
 import { useUpdateProfile } from '@/src/hooks/useProfile'
 import { useAuth } from '@/src/context/AuthContext'
 import { supabase } from '@/src/lib/supabase/client'
@@ -164,7 +165,10 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
       }
     }
     if (Object.keys(updates).length > 0) {
-      updateProfile.mutate(updates)
+      updateProfile.mutate(updates, {
+        onSuccess: () => toast.success('프로필이 저장되었습니다'),
+        onError: () => toast.error('프로필 저장에 실패했습니다'),
+      })
     }
   }
 
@@ -185,9 +189,12 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
       const { data: { publicUrl } } = supabase.storage
         .from('profile-images')
         .getPublicUrl(path)
-      updateProfile.mutate({ avatar_url: publicUrl })
+      updateProfile.mutate({ avatar_url: publicUrl }, {
+        onSuccess: () => toast.success('프로필 사진이 변경되었습니다'),
+        onError: () => toast.error('프로필 사진 변경에 실패했습니다'),
+      })
     } catch {
-      // silent fail
+      toast.error('이미지 업로드에 실패했습니다')
     } finally {
       setAvatarUploading(false)
       if (avatarInputRef.current) avatarInputRef.current.value = ''

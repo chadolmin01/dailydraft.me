@@ -234,7 +234,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
                   Snapshot
                 </h4>
                 <div className="grid grid-cols-2 gap-2">
-                  <div className="bg-surface-card p-2.5 border border-border hover:shadow-md transition-all">
+                  <div className="bg-surface-card p-2.5 border border-border hover:shadow-md hover-spring">
                     <div className="text-[0.5rem] text-txt-disabled mb-1">
                       Deadline
                     </div>
@@ -242,7 +242,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
                       <Calendar size={12} /> D-{data.daysLeft}
                     </div>
                   </div>
-                  <div className="bg-surface-card p-2.5 border border-border hover:shadow-md transition-all">
+                  <div className="bg-surface-card p-2.5 border border-border hover:shadow-md hover-spring">
                     <div className="text-[0.5rem] text-txt-disabled mb-1">Type</div>
                     <div className="font-bold text-sm text-txt-primary truncate font-mono">{data.type}</div>
                   </div>
@@ -254,7 +254,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
                   Resources
                 </h4>
                 <div className="space-y-2">
-                  <button className="w-full flex items-center justify-between p-3 bg-surface-card rounded-xl border border-border hover:shadow-md transition-all group">
+                  <button className="w-full flex items-center justify-between p-3 bg-surface-card rounded-xl border border-border hover:shadow-md hover-spring group">
                     <div className="flex items-center gap-2 overflow-hidden">
                       <FileText size={14} className="text-txt-tertiary group-hover:text-txt-primary" />
                       <span className="text-xs font-bold text-txt-secondary truncate group-hover:text-txt-primary">
