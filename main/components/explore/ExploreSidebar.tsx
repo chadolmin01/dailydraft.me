@@ -43,6 +43,69 @@ export function ExploreSidebar({
   const showLoading = isAuthenticated && recsLoading && sidebarRecs.length === 0
   return (
     <div className="space-y-4">
+      {/* AI 추천 인재 — 최상단 배치 */}
+      {onSelectProfile && (
+        <div className="bg-surface-card rounded-xl border border-border p-4">
+          <h3 className="text-[0.6875rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
+            {showLoading ? (
+              <span className="flex items-center gap-1.5">
+                <Sparkles size={10} className="animate-pulse text-brand" />
+                AI 매칭 중...
+              </span>
+            ) : showAiRecs ? 'AI 추천' : 'PEOPLE'}
+          </h3>
+          <div className="space-y-1">
+            {showLoading ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="flex items-center gap-3 p-2">
+                  <div className="w-8 h-8 bg-surface-sunken rounded-full skeleton-shimmer" />
+                  <div className="flex-1 space-y-1.5">
+                    <div className="h-3 bg-surface-sunken rounded w-16 skeleton-shimmer" />
+                    <div className="h-2.5 bg-surface-sunken rounded w-24 skeleton-shimmer" />
+                  </div>
+                </div>
+              ))
+            ) : showAiRecs ? (
+              sidebarRecs.slice(0, 4).map((rec) => (
+                <button key={rec.user_id} onClick={() => onSelectProfile(rec.user_id, true)} className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-surface-sunken transition-colors text-left">
+                  <div className="w-8 h-8 bg-brand-bg rounded-full flex items-center justify-center text-xs font-bold text-brand shrink-0">
+                    {cleanNickname(rec.nickname || '??').substring(0, 2)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-txt-primary truncate">{cleanNickname(rec.nickname || '')}</p>
+                    <p className="text-[0.6875rem] text-txt-tertiary truncate">{rec.match_reason}</p>
+                  </div>
+                  <span className="text-[0.625rem] font-bold text-brand shrink-0">{rec.match_score}%</span>
+                </button>
+              ))
+            ) : (
+              talentCards.slice(0, 4).map((t) => (
+                <button key={t.id} onClick={() => onSelectProfile(t.id, false)} className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-surface-sunken transition-colors text-left">
+                  <div className="w-8 h-8 bg-surface-sunken rounded-full flex items-center justify-center text-xs font-bold text-txt-secondary shrink-0">
+                    {t.name.substring(0, 2)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-txt-primary truncate">{t.name}</p>
+                    <p className="text-[0.6875rem] text-txt-tertiary truncate">{t.university || t.role}</p>
+                  </div>
+                  <span className={`text-[0.625rem] font-bold shrink-0 ${t.status === 'OPEN' ? 'text-indicator-online' : 'text-txt-tertiary'}`}>
+                    {t.status}
+                  </span>
+                </button>
+              ))
+            )}
+          </div>
+          {onSelectPeople && (
+            <button
+              onClick={onSelectPeople}
+              className="w-full mt-2 pt-2 border-t border-border text-xs text-txt-tertiary hover:text-brand flex items-center justify-center gap-1 py-1.5 transition-colors"
+            >
+              전체 보기 <ChevronRight size={12} />
+            </button>
+          )}
+        </div>
+      )}
+
       {/* 트렌딩 태그 */}
       <div className="bg-surface-card rounded-xl border border-border p-4">
         <h3 className="text-[0.6875rem] font-medium text-txt-tertiary mb-3">
@@ -125,68 +188,6 @@ export function ExploreSidebar({
               {selectedCategory !== 'all' ? 'ROLE FILTER ON' : 'ALL ROLES'}
             </p>
           </div>
-        </div>
-      )}
-      {/* 추천 인재 */}
-      {onSelectProfile && (
-        <div className="bg-surface-card rounded-xl border border-border p-4">
-          <h3 className="text-[0.6875rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
-            {showLoading ? (
-              <span className="flex items-center gap-1.5">
-                <Sparkles size={10} className="animate-pulse text-brand" />
-                AI 매칭 중...
-              </span>
-            ) : showAiRecs ? 'AI 추천' : 'PEOPLE'}
-          </h3>
-          <div className="space-y-1">
-            {showLoading ? (
-              Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="flex items-center gap-3 p-2">
-                  <div className="w-8 h-8 bg-surface-sunken rounded-full skeleton-shimmer" />
-                  <div className="flex-1 space-y-1.5">
-                    <div className="h-3 bg-surface-sunken rounded w-16 skeleton-shimmer" />
-                    <div className="h-2.5 bg-surface-sunken rounded w-24 skeleton-shimmer" />
-                  </div>
-                </div>
-              ))
-            ) : showAiRecs ? (
-              sidebarRecs.slice(0, 4).map((rec) => (
-                <button key={rec.user_id} onClick={() => onSelectProfile(rec.user_id, true)} className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-surface-sunken transition-colors text-left">
-                  <div className="w-8 h-8 bg-brand-bg rounded-full flex items-center justify-center text-xs font-bold text-brand shrink-0">
-                    {cleanNickname(rec.nickname || '??').substring(0, 2)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-txt-primary truncate">{cleanNickname(rec.nickname || '')}</p>
-                    <p className="text-[0.6875rem] text-txt-tertiary truncate">{rec.match_reason}</p>
-                  </div>
-                  <span className="text-[0.625rem] font-bold text-brand shrink-0">{rec.match_score}%</span>
-                </button>
-              ))
-            ) : (
-              talentCards.slice(0, 4).map((t) => (
-                <button key={t.id} onClick={() => onSelectProfile(t.id, false)} className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-surface-sunken transition-colors text-left">
-                  <div className="w-8 h-8 bg-surface-sunken rounded-full flex items-center justify-center text-xs font-bold text-txt-secondary shrink-0">
-                    {t.name.substring(0, 2)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-txt-primary truncate">{t.name}</p>
-                    <p className="text-[0.6875rem] text-txt-tertiary truncate">{t.university || t.role}</p>
-                  </div>
-                  <span className={`text-[0.625rem] font-bold shrink-0 ${t.status === 'OPEN' ? 'text-indicator-online' : 'text-txt-tertiary'}`}>
-                    {t.status}
-                  </span>
-                </button>
-              ))
-            )}
-          </div>
-          {onSelectPeople && (
-            <button
-              onClick={onSelectPeople}
-              className="w-full mt-2 pt-2 border-t border-border text-xs text-txt-tertiary hover:text-brand flex items-center justify-center gap-1 py-1.5 transition-colors"
-            >
-              전체 보기 <ChevronRight size={12} />
-            </button>
-          )}
         </div>
       )}
 
