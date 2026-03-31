@@ -700,6 +700,19 @@ a[class*="px-"]:active {
   border-radius: 9999px !important;
 }
 
+/* ── Scrollbar hide + scroll fade mask ── */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.mask-fade-r {
+  -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+  mask-image: linear-gradient(to right, black 85%, transparent 100%);
+}
+
 /* ── Legacy shadow aliases (backward compat) ── */
 .shadow-sharp {
   box-shadow: var(--shadow-md);

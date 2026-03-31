@@ -116,12 +116,12 @@ export function ExploreTabBar({
 
       {/* 정렬 옵션 */}
       {activeTab === 'projects' && (
-        <div className="flex items-center gap-1 mb-3 overflow-x-auto">
+        <div className="flex items-center gap-1 mb-3 overflow-x-auto scrollbar-hide mask-fade-r">
           {SORT_OPTIONS.map((tab) => (
             <button
               key={tab.id}
               onClick={() => onSortChange(tab.id as SortBy)}
-              className={`shrink-0 flex items-center gap-1 px-3 py-1.5 text-xs font-medium transition-colors ${
+              className={`shrink-0 flex items-center gap-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
                 sortBy === tab.id ? 'bg-surface-sunken text-txt-primary' : 'text-txt-tertiary hover:text-txt-secondary'
               }`}
             >
@@ -136,12 +136,12 @@ export function ExploreTabBar({
       )}
 
       {activeTab === 'people' && (
-        <div className="flex items-center gap-1 mb-3 overflow-x-auto">
+        <div className="flex items-center gap-1 mb-3 overflow-x-auto scrollbar-hide mask-fade-r">
           {PEOPLE_SORT_OPTIONS.map((opt) => (
             <button
               key={opt.id}
               onClick={() => onPeopleSortChange(opt.id as PeopleSortBy)}
-              className={`shrink-0 flex items-center gap-1 px-3 py-1.5 text-xs font-medium transition-colors ${
+              className={`shrink-0 flex items-center gap-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
                 peopleSortBy === opt.id ? 'bg-surface-sunken text-txt-primary' : 'text-txt-tertiary hover:text-txt-secondary'
               }`}
             >
@@ -157,12 +157,12 @@ export function ExploreTabBar({
 
       {/* Type filter chips + 모바일 필터 */}
       {activeTab === 'projects' && (
-        <div className="flex items-center gap-1.5 mb-4 overflow-x-auto">
+        <div className="flex items-center gap-1.5 mb-4 overflow-x-auto scrollbar-hide mask-fade-r">
           {TYPE_FILTERS.map((t) => (
             <button
               key={t.id}
               onClick={() => onTypeFilterChange(t.id as TypeFilter)}
-              className={`shrink-0 px-3 py-1.5 text-xs font-bold border transition-all ${
+              className={`shrink-0 px-3 py-2 text-xs font-bold border rounded-lg transition-all ${
                 typeFilter === t.id
                   ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
                   : 'bg-surface-card text-txt-secondary border-border hover:border-border hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]'
@@ -174,7 +174,7 @@ export function ExploreTabBar({
           {onMobileFilterToggle && (
             <button
               onClick={onMobileFilterToggle}
-              className={`lg:hidden shrink-0 ml-auto px-3 py-1.5 text-xs font-bold border transition-all flex items-center gap-1 ${
+              className={`lg:hidden shrink-0 ml-auto px-3 py-2 text-xs font-bold border rounded-lg transition-all flex items-center gap-1 ${
                 isMobileFilterOpen
                   ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
                   : 'bg-surface-card text-txt-secondary border-border hover:border-border'
@@ -189,12 +189,12 @@ export function ExploreTabBar({
 
       {/* People role filter chips + 모바일 필터 */}
       {activeTab === 'people' && (
-        <div className="flex items-center gap-1.5 mb-4 overflow-x-auto">
+        <div className="flex items-center gap-1.5 mb-4 overflow-x-auto scrollbar-hide mask-fade-r">
           {PEOPLE_ROLE_FILTERS.map((r) => (
             <button
               key={r.id}
               onClick={() => onPeopleRoleFilterChange(r.id as PeopleRoleFilter)}
-              className={`shrink-0 px-3 py-1.5 text-xs font-bold border transition-all ${
+              className={`shrink-0 px-3 py-2 text-xs font-bold border rounded-lg transition-all ${
                 peopleRoleFilter === r.id
                   ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
                   : 'bg-surface-card text-txt-secondary border-border hover:border-border hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]'
@@ -206,7 +206,7 @@ export function ExploreTabBar({
           {onMobileFilterToggle && (
             <button
               onClick={onMobileFilterToggle}
-              className={`lg:hidden shrink-0 ml-auto px-3 py-1.5 text-xs font-bold border transition-all flex items-center gap-1 ${
+              className={`lg:hidden shrink-0 ml-auto px-3 py-2 text-xs font-bold border rounded-lg transition-all flex items-center gap-1 ${
                 isMobileFilterOpen
                   ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
                   : 'bg-surface-card text-txt-secondary border-border hover:border-border'

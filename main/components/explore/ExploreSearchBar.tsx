@@ -67,7 +67,7 @@ export function ExploreSearchBar({
             {searchScope !== 'all' && (
               <button
                 onClick={() => onSearchScopeChange('all')}
-                className="flex items-center gap-1 text-[0.625rem] bg-surface-inverse text-txt-inverse pl-2 pr-1.5 py-0.5 hover:bg-accent-hover transition-colors"
+                className="flex items-center gap-1 text-[0.625rem] bg-surface-inverse text-txt-inverse pl-2 pr-1.5 py-1 rounded-full hover:bg-accent-hover transition-colors"
               >
                 {searchScope === 'projects' ? '프로젝트' : searchScope === 'people' ? '사람' : '기술'}
                 <X size={10} />
