@@ -116,7 +116,7 @@ export function ProfileHeader({
         )}
       </div>
 
-      <div className="mx-4 sm:mx-8 border-t border-border" />
+      <div className="mx-4 sm:mx-8 border-t border-border-strong/40" />
     </>
   )
 }
