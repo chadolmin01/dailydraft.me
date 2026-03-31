@@ -5,9 +5,12 @@ import { useRouter } from 'next/navigation'
 import { BackgroundGrid } from '@/components/home/BackgroundGrid'
 import { Navbar } from '@/components/home/Navbar'
 import { Hero } from '@/components/home/Hero'
+import { TrustBar } from '@/components/home/TrustBar'
+import { FeatureShowcase } from '@/components/home/FeatureShowcase'
 import { HowItWorks } from '@/components/home/HowItWorks'
-import { CommunityFeedback } from '@/components/home/CommunityFeedback'
 import { OpportunitySection } from '@/components/home/OpportunitySection'
+import { CommunityFeedback } from '@/components/home/CommunityFeedback'
+import { FinalCTA } from '@/components/home/FinalCTA'
 import { FAQ } from '@/components/home/FAQ'
 import { Footer } from '@/components/home/Footer'
 
@@ -26,9 +29,12 @@ export default function HomePageClient() {
 
       <main className="relative pt-14">
         <Hero onCtaClick={handleLoginClick} />
+        <TrustBar />
+        <FeatureShowcase />
         <HowItWorks />
-        <CommunityFeedback />
         <OpportunitySection />
+        <CommunityFeedback />
+        <FinalCTA />
         <FAQ />
       </main>
 

@@ -3,11 +3,11 @@
 import React, { useState } from 'react'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
-import {
-  Zap, ArrowRight, MessageCircle, Heart, Plus,
-} from 'lucide-react'
+import { Zap, ArrowRight, MessageCircle, Heart } from 'lucide-react'
 import { SkeletonGrid } from '@/components/ui/Skeleton'
 import { useOpportunities } from '@/src/hooks/useOpportunities'
+import { ScrollReveal } from '@/components/ui/ScrollReveal'
+import { SectionLabel, SectionTitle } from './shared'
 
 const ProjectDetailModal = dynamic(
   () => import('@/components/ProjectDetailModal').then(m => ({ default: m.ProjectDetailModal })),
@@ -23,7 +23,6 @@ interface DisplayProject {
   isReal?: boolean
 }
 
-// Seed 기반 고정 mock 숫자 (id로부터 결정적 해시)
 function seededNumber(id: string, min: number, max: number): number {
   let hash = 0
   for (let i = 0; i < id.length; i++) {
@@ -33,7 +32,6 @@ function seededNumber(id: string, min: number, max: number): number {
   return min + (Math.abs(hash) % (max - min + 1))
 }
 
-// --- Main Component ---
 export const OpportunitySection: React.FC = () => {
   const router = useRouter()
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
@@ -81,141 +79,112 @@ export const OpportunitySection: React.FC = () => {
       <div className="max-w-5xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-10">
           <div>
-            <span className="text-[0.625rem] font-medium text-txt-tertiary mb-1.5 block">
-              LIVE PROJECTS
-            </span>
-            <h2 className="text-2xl md:text-3xl font-bold text-txt-primary">
-              지금 올라온 프로젝트
-            </h2>
+            <SectionLabel>LIVE PROJECTS</SectionLabel>
+            <SectionTitle>지금 올라온 프로젝트</SectionTitle>
           </div>
           <button
             onClick={() => router.push('/explore')}
-            className="text-sm font-bold text-txt-secondary hover:text-black transition-colors flex items-center gap-1 border-b border-border pb-0.5 hover:border-border"
+            className="text-sm font-bold text-txt-secondary hover:text-brand transition-colors flex items-center gap-1"
           >
             전체 보기 <ArrowRight size={14} />
           </button>
         </div>
 
         {loading ? (
-          <SkeletonGrid count={4} cols={2} />
+          <SkeletonGrid count={3} cols={3} />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {displayProjects.map((project) => (
-              <div
-                key={project.id}
-                className="group bg-surface-card rounded-xl border border-border p-4 hover:border-border hover-spring cursor-pointer flex flex-col h-full"
-                onClick={() => project.isReal ? setSelectedProjectId(project.id) : router.push('/explore')}
-              >
-                {/* Header */}
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 bg-surface-card rounded-lg border border-border-subtle flex items-center justify-center text-txt-primary group-hover:bg-black group-hover:text-white transition-colors">
-                      <Zap size={20} />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {displayProjects.map((project, i) => (
+              <ScrollReveal key={project.id} delay={i * 0.1}>
+                <div
+                  className="group bg-surface-card rounded-xl border border-border p-5 hover:shadow-md hover-spring cursor-pointer flex flex-col h-full transition-shadow"
+                  onClick={() => project.isReal ? setSelectedProjectId(project.id) : router.push('/explore')}
+                >
+                  {/* Header */}
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex items-center gap-2">
+                      <div className="w-10 h-10 bg-surface-sunken rounded-xl flex items-center justify-center text-txt-primary group-hover:bg-brand group-hover:text-white transition-colors">
+                        <Zap size={20} />
+                      </div>
+                      {project.isReal && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-status-success-bg border border-status-success-text/20 text-status-success-text text-[10px] font-bold rounded-full">
+                          <span className="w-1.5 h-1.5 bg-indicator-online rounded-full animate-pulse" />
+                          NEW
+                        </span>
+                      )}
                     </div>
-                    {project.isReal && (
-                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-status-success-bg border border-status-success-text/20 text-status-success-text text-[0.625rem] font-bold">
-                        <span className="w-1.5 h-1.5 bg-indicator-online animate-pulse" />
-                        NEW
+                    <div className="flex items-center gap-2">
+                      <span className="flex items-center gap-1 text-[10px] font-mono text-txt-disabled">
+                        <MessageCircle size={10} />
+                        {seededNumber(project.id + 'msg', 2, 15)}
                       </span>
+                      <span className="flex items-center gap-1 text-[10px] font-mono text-txt-disabled">
+                        <Heart size={10} />
+                        {seededNumber(project.id + 'heart', 1, 10)}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="font-bold text-txt-primary mb-2 group-hover:text-brand transition-colors truncate">
+                    {project.title}
+                  </h3>
+
+                  {/* Description */}
+                  <p className="text-xs text-txt-tertiary leading-relaxed mb-6 flex-1 line-clamp-2 break-keep">
+                    {project.description}
+                  </p>
+
+                  {/* Footer */}
+                  <div className="pt-4 border-t border-border mt-auto">
+                    {project.needed_roles && project.needed_roles.length > 0 && (
+                      <div className="mb-3">
+                        <span className="text-[10px] font-medium text-txt-disabled block mb-1">NEED</span>
+                        <div className="flex flex-wrap gap-1">
+                          {project.needed_roles.slice(0, 2).map((role) => (
+                            <span key={role} className="text-[10px] bg-brand-bg border border-brand-border text-brand px-2 py-0.5 font-bold rounded-full">
+                              {role}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
                     )}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="flex items-center gap-1 text-[0.625rem] font-mono text-txt-disabled">
-                      <MessageCircle size={10} />
-                      {seededNumber(project.id + 'msg', 2, 15)}
-                    </span>
-                    <span className="flex items-center gap-1 text-[0.625rem] font-mono text-txt-disabled">
-                      <Heart size={10} />
-                      {seededNumber(project.id + 'heart', 1, 10)}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Title */}
-                <h3 className="font-bold text-txt-primary mb-2 group-hover:text-brand transition-colors truncate">
-                  {project.title}
-                </h3>
-
-                {/* Description */}
-                <p className="text-xs text-txt-tertiary leading-relaxed mb-6 flex-1 line-clamp-2 break-keep">
-                  {project.description}
-                </p>
-
-                {/* Footer */}
-                <div className="pt-4 border-t border-border mt-auto">
-                  {project.needed_roles && project.needed_roles.length > 0 && (
-                    <div className="mb-3">
-                      <span className="text-[0.625rem] font-medium text-txt-disabled block mb-1">
-                        NEED
-                      </span>
+                    {project.interest_tags && project.interest_tags.length > 0 && (
                       <div className="flex flex-wrap gap-1">
-                        {project.needed_roles.slice(0, 2).map((role) => (
-                          <span
-                            key={role}
-                            className="text-[0.625rem] bg-brand-bg border border-brand-border text-brand px-1.5 py-0.5 font-bold"
-                          >
-                            {role}
+                        {project.interest_tags.slice(0, 3).map((tag) => (
+                          <span key={tag} className="text-[10px] bg-surface-sunken rounded-full border border-border text-txt-secondary px-2 py-0.5">
+                            {tag}
                           </span>
                         ))}
                       </div>
-                    </div>
-                  )}
-
-                  {project.interest_tags && project.interest_tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1">
-                      {project.interest_tags.slice(0, 3).map((tag) => (
-                        <span
-                          key={tag}
-                          className="text-[0.625rem] bg-surface-card rounded-xl border border-border text-txt-secondary px-1.5 py-0.5"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
-              </div>
+              </ScrollReveal>
             ))}
-
-            {/* + Add Project Card */}
-            <div
-              onClick={() => router.push('/login')}
-              className="group bg-surface-card rounded-xl border border-border p-6 hover:border-brand hover-spring cursor-pointer flex flex-col items-center justify-center h-full min-h-[13.75rem] gap-4"
-            >
-              <div className="w-14 h-14 bg-surface-card rounded-xl border border-border flex items-center justify-center group-hover:bg-brand group-hover:border-brand transition-colors">
-                <Plus size={24} className="text-txt-disabled group-hover:text-white transition-colors" />
-              </div>
-              <div className="text-center">
-                <p className="font-bold text-txt-secondary group-hover:text-brand transition-colors mb-1">
-                  내 아이디어 등록하기
-                </p>
-                <p className="text-xs text-txt-disabled">
-                  팀원을 모집해보세요
-                </p>
-              </div>
-            </div>
           </div>
         )}
 
         {/* CTA Banner */}
-        <div className="mt-10 bg-surface-inverse text-txt-inverse p-6 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div>
-            <h3 className="text-base font-bold mb-1.5">나도 프로젝트 올리기</h3>
-            <p className="text-txt-disabled text-sm">
-              아이디어 단계부터 MVP까지, 어떤 단계든 공유하고 피드백 받으세요
-            </p>
+        <ScrollReveal delay={0.3}>
+          <div className="mt-10 bg-surface-inverse text-txt-inverse rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div>
+              <h3 className="text-base font-bold mb-1.5">나도 프로젝트 올리기</h3>
+              <p className="text-txt-disabled text-sm">
+                아이디어 단계부터 MVP까지, 어떤 단계든 공유하고 피드백 받으세요
+              </p>
+            </div>
+            <button
+              onClick={() => router.push('/login')}
+              className="group flex items-center gap-2 bg-white text-black rounded-full px-5 py-2.5 font-bold text-xs hover:bg-surface-sunken transition-colors shrink-0 active:scale-[0.97]"
+            >
+              시작하기
+              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+            </button>
           </div>
-          <button
-            onClick={() => router.push('/login')}
-            className="group flex items-center gap-2 bg-white text-black px-5 py-2.5 font-bold text-xs hover:bg-surface-sunken transition-colors shrink-0 hover:opacity-90 active:scale-[0.97]"
-          >
-            시작하기
-            <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-          </button>
-        </div>
+        </ScrollReveal>
       </div>
 
-      {/* Project Detail Modal */}
       <ProjectDetailModal
         projectId={selectedProjectId}
         onClose={() => setSelectedProjectId(null)}
