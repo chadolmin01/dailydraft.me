@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { AnimatedCounter } from './shared'
@@ -24,7 +24,25 @@ const FloatingCard: React.FC<{
   </motion.div>
 )
 
+interface PublicStats {
+  users: number
+  projects: number
+  coffeeChats: number
+}
+
 export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
+  const [stats, setStats] = useState<PublicStats | null>(null)
+
+  useEffect(() => {
+    fetch('/api/stats/public')
+      .then(r => r.json())
+      .then(d => setStats(d))
+      .catch(() => {})
+  }, [])
+
+  // 최소 표시 기준: 사용자 50명 이상이어야 stats bar 노출 (초기엔 낮은 숫자가 역효과)
+  const showStats = stats && stats.users >= 50
+
   return (
     <section className="relative w-full pt-16 sm:pt-24 pb-16 sm:pb-24 px-4 sm:px-6 md:px-10 max-w-6xl mx-auto">
 
@@ -46,7 +64,7 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
           </div>
         </FloatingCard>
 
-        {/* Card 2: AI Match Score */}
+        {/* Card 2: AI Match preview */}
         <FloatingCard className="top-32 -right-8 w-52" delay={1.5}>
           <div className="text-[10px] font-mono text-txt-tertiary mb-2">AI 매칭</div>
           <div className="flex items-center gap-3 mb-2">
@@ -57,10 +75,7 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <div className="flex-1 h-1.5 bg-surface-sunken rounded-full overflow-hidden">
-              <div className="h-full w-[87%] bg-brand rounded-full" />
-            </div>
-            <span className="text-xs font-bold text-brand">87%</span>
+            <span className="text-[10px] text-txt-tertiary">스킬 · 비전 기반 분석</span>
           </div>
         </FloatingCard>
 
@@ -110,29 +125,31 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
           </button>
         </div>
 
-        {/* Social proof counters */}
-        <div className="flex items-center gap-6 sm:gap-10 text-center">
-          <div>
-            <div className="text-xl sm:text-2xl font-bold text-txt-primary">
-              <AnimatedCounter target={3200} suffix="+" />
+        {/* Real stats from DB — only show when data loaded and non-zero */}
+        {showStats && (
+          <div className="flex items-center gap-6 sm:gap-10 text-center">
+            <div>
+              <div className="text-xl sm:text-2xl font-bold text-txt-primary">
+                <AnimatedCounter target={stats.users} suffix="명" />
+              </div>
+              <div className="text-[10px] font-mono text-txt-tertiary mt-1">가입한 사용자</div>
             </div>
-            <div className="text-[10px] font-mono text-txt-tertiary mt-1">사용자</div>
-          </div>
-          <div className="w-px h-8 bg-border" />
-          <div>
-            <div className="text-xl sm:text-2xl font-bold text-txt-primary">
-              <AnimatedCounter target={850} suffix="+" />
+            <div className="w-px h-8 bg-border" />
+            <div>
+              <div className="text-xl sm:text-2xl font-bold text-txt-primary">
+                <AnimatedCounter target={stats.projects} suffix="개" />
+              </div>
+              <div className="text-[10px] font-mono text-txt-tertiary mt-1">등록된 프로젝트</div>
             </div>
-            <div className="text-[10px] font-mono text-txt-tertiary mt-1">프로젝트</div>
-          </div>
-          <div className="w-px h-8 bg-border" />
-          <div>
-            <div className="text-xl sm:text-2xl font-bold text-txt-primary">
-              <AnimatedCounter target={1400} suffix="+" />
+            <div className="w-px h-8 bg-border" />
+            <div>
+              <div className="text-xl sm:text-2xl font-bold text-txt-primary">
+                <AnimatedCounter target={stats.coffeeChats} suffix="회" />
+              </div>
+              <div className="text-[10px] font-mono text-txt-tertiary mt-1">커피챗</div>
             </div>
-            <div className="text-[10px] font-mono text-txt-tertiary mt-1">커피챗</div>
           </div>
-        </div>
+        )}
       </div>
     </section>
   )

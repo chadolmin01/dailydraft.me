@@ -9,7 +9,6 @@ import { TrustBar } from '@/components/home/TrustBar'
 import { FeatureShowcase } from '@/components/home/FeatureShowcase'
 import { HowItWorks } from '@/components/home/HowItWorks'
 import { OpportunitySection } from '@/components/home/OpportunitySection'
-import { CommunityFeedback } from '@/components/home/CommunityFeedback'
 import { FinalCTA } from '@/components/home/FinalCTA'
 import { FAQ } from '@/components/home/FAQ'
 import { Footer } from '@/components/home/Footer'
@@ -33,7 +32,6 @@ export default function HomePageClient() {
         <FeatureShowcase />
         <HowItWorks />
         <OpportunitySection />
-        <CommunityFeedback />
         <FinalCTA />
         <FAQ />
       </main>

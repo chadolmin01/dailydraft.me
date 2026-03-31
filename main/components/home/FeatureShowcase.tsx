@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { MessageSquare, Users, Search, Coffee, ArrowRight, Check } from 'lucide-react'
+import { MessageSquare, Users, Search, Coffee, Lightbulb, ArrowRight, Check, Lock } from 'lucide-react'
 import { SectionLabel, SectionTitle, TabPill } from './shared'
 
 const tabs = [
@@ -57,6 +57,20 @@ const tabs = [
       '커피챗 히스토리 관리',
     ],
     cta: '커피챗 시작하기',
+  },
+  {
+    id: 'ideation',
+    label: '아이디어 검증',
+    icon: Lightbulb,
+    title: 'AI가 아이디어를 검증해줘요',
+    description: '아이디어를 입력하면 개발자·디자이너·투자자 3가지 관점에서 AI가 분석합니다. PRD 생성과 사업계획서 작성까지 한 곳에서.',
+    bullets: [
+      '3가지 페르소나 기반 AI 검증',
+      '검증 결과 → PRD 자동 생성',
+      '사업계획서 템플릿 + PDF 내보내기',
+    ],
+    cta: '곧 공개',
+    comingSoon: true,
   },
 ]
 
@@ -149,6 +163,39 @@ const ExploreMockup = () => (
   </div>
 )
 
+const IdeationMockup = () => (
+  <div className="space-y-3">
+    <div className="bg-surface-card border border-border rounded-xl p-4">
+      <div className="text-[10px] font-mono text-txt-tertiary mb-2">아이디어 입력</div>
+      <div className="text-sm text-txt-secondary mb-3">&quot;대학생 맞춤 AI 스터디 플래너&quot;</div>
+      <div className="h-px bg-border mb-3" />
+      <div className="text-[10px] font-mono text-txt-tertiary mb-2">AI 검증 결과</div>
+      <div className="space-y-2">
+        {[
+          { persona: 'Developer', score: 'A', color: 'bg-brand/10 text-brand' },
+          { persona: 'Designer', score: 'B+', color: 'bg-status-success-bg text-indicator-online' },
+          { persona: 'Investor', score: 'A-', color: 'bg-indicator-premium/10 text-indicator-premium-border' },
+        ].map((p) => (
+          <div key={p.persona} className="flex items-center justify-between">
+            <span className="text-xs text-txt-secondary">{p.persona}</span>
+            <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${p.color}`}>{p.score}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+    <div className="flex gap-2">
+      <div className="flex-1 bg-surface-card border border-border rounded-xl p-3 text-center">
+        <div className="text-[10px] text-txt-tertiary mb-1">PRD 생성</div>
+        <div className="text-xs font-bold text-txt-primary">자동 생성</div>
+      </div>
+      <div className="flex-1 bg-surface-card border border-border rounded-xl p-3 text-center">
+        <div className="text-[10px] text-txt-tertiary mb-1">사업계획서</div>
+        <div className="text-xs font-bold text-txt-primary">PDF 내보내기</div>
+      </div>
+    </div>
+  </div>
+)
+
 const CoffeeChatMockup = () => (
   <div className="space-y-3">
     <div className="bg-surface-card border border-border rounded-xl p-4">
@@ -188,15 +235,18 @@ const mockups: Record<string, React.FC> = {
   matching: MatchingMockup,
   explore: ExploreMockup,
   coffeechat: CoffeeChatMockup,
+  ideation: IdeationMockup,
 }
 
 export const FeatureShowcase: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0)
   const [paused, setPaused] = useState(false)
 
+  // Auto-cycle only through the first 4 tabs (skip comingSoon)
+  const autoTabCount = tabs.filter(t => !('comingSoon' in t && t.comingSoon)).length
   const next = useCallback(() => {
-    setActiveTab((prev) => (prev + 1) % tabs.length)
-  }, [])
+    setActiveTab((prev) => (prev + 1) % autoTabCount)
+  }, [autoTabCount])
 
   // Auto-cycle every 5s
   useEffect(() => {
@@ -216,7 +266,7 @@ export const FeatureShowcase: React.FC = () => {
   const Mockup = mockups[tab.id]
 
   return (
-    <section id="features" className="w-full py-20 px-6 md:px-10">
+    <section id="features" className="w-full py-14 px-6 md:px-10">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-10">
           <SectionLabel>FEATURES</SectionLabel>
@@ -230,6 +280,9 @@ export const FeatureShowcase: React.FC = () => {
               <span className="flex items-center gap-1.5">
                 <t.icon size={14} />
                 {t.label}
+                {'comingSoon' in t && t.comingSoon && (
+                  <span className="text-[9px] font-mono bg-surface-sunken text-txt-disabled px-1.5 py-0.5 rounded-full border border-border">SOON</span>
+                )}
               </span>
             </TabPill>
           ))}
@@ -263,10 +316,17 @@ export const FeatureShowcase: React.FC = () => {
                   </li>
                 ))}
               </ul>
-              <button className="group flex items-center gap-2 text-sm font-bold text-brand hover:underline w-fit">
-                {tab.cta}
-                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-              </button>
+              {'comingSoon' in tab && tab.comingSoon ? (
+                <span className="flex items-center gap-2 text-sm font-bold text-txt-disabled w-fit">
+                  <Lock size={14} />
+                  {tab.cta}
+                </span>
+              ) : (
+                <button className="group flex items-center gap-2 text-sm font-bold text-brand hover:underline w-fit">
+                  {tab.cta}
+                  <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                </button>
+              )}
             </div>
 
             {/* Right: Mockup UI */}

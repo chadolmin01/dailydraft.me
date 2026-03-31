@@ -1,8 +1,8 @@
 'use client'
 
-import React, { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { UserPlus, Brain, Compass, Coffee, Rocket, Check } from 'lucide-react'
+import React from 'react'
+import { UserPlus, Brain, Compass, Coffee, Rocket } from 'lucide-react'
+import { ScrollReveal } from '@/components/ui/ScrollReveal'
 import { SectionLabel, SectionTitle } from './shared'
 
 const steps = [
@@ -34,117 +34,75 @@ const steps = [
 ]
 
 export const HowItWorks: React.FC = () => {
-  const [activeStep, setActiveStep] = useState(0)
-
   return (
-    <section id="how-it-works" className="w-full py-20 px-6 md:px-10 bg-surface-card">
+    <section id="how-it-works" className="w-full py-14 px-6 md:px-10 bg-surface-card">
       <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-12">
+        <div className="text-center mb-10">
           <SectionLabel>HOW IT WORKS</SectionLabel>
           <SectionTitle>5단계로 시작하는 팀빌딩</SectionTitle>
         </div>
 
-        {/* ── Desktop: Horizontal stepper ── */}
-        <div className="hidden md:block">
-          {/* Step indicators + connecting line */}
-          <div className="relative flex items-center justify-between mb-10 px-4">
-            {/* Background line */}
-            <div className="absolute top-5 left-[10%] right-[10%] h-0.5 bg-border" />
-            {/* Progress line */}
-            <div
-              className="absolute top-5 left-[10%] h-0.5 bg-brand transition-all duration-500"
-              style={{ width: `${(activeStep / (steps.length - 1)) * 80}%` }}
-            />
-
-            {steps.map((step, i) => (
-              <button
-                key={i}
-                onClick={() => setActiveStep(i)}
-                className="relative z-10 flex flex-col items-center gap-2 group"
-              >
-                <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${
-                    i < activeStep
-                      ? 'bg-surface-inverse text-txt-inverse'
-                      : i === activeStep
-                        ? 'bg-brand text-white ring-4 ring-brand/20'
-                        : 'bg-surface-sunken text-txt-disabled border border-border'
-                  }`}
-                >
-                  {i < activeStep ? <Check size={16} /> : i + 1}
+        {/* Desktop: 5-column grid — all steps visible */}
+        <div className="hidden md:grid grid-cols-5 gap-4">
+          {steps.map((step, i) => {
+            const Icon = step.icon
+            return (
+              <ScrollReveal key={i} delay={i * 0.08}>
+                <div className="relative flex flex-col items-center text-center">
+                  {/* Connector line */}
+                  {i < steps.length - 1 && (
+                    <div className="absolute top-5 left-[55%] w-full h-0.5 bg-border" />
+                  )}
+                  {/* Step number circle */}
+                  <div className="relative z-10 w-10 h-10 rounded-full bg-brand text-white flex items-center justify-center text-sm font-bold mb-3">
+                    {i + 1}
+                  </div>
+                  {/* Icon */}
+                  <div className="w-11 h-11 bg-brand/10 rounded-xl flex items-center justify-center mb-3">
+                    <Icon size={20} className="text-brand" />
+                  </div>
+                  {/* Title */}
+                  <h3 className="text-sm font-bold text-txt-primary mb-1.5">
+                    {step.title}
+                  </h3>
+                  {/* Description */}
+                  <p className="text-xs text-txt-secondary leading-relaxed break-keep">
+                    {step.description}
+                  </p>
                 </div>
-                <span className={`text-[10px] font-medium transition-colors ${
-                  i === activeStep ? 'text-brand' : 'text-txt-tertiary'
-                }`}>
-                  {step.title}
-                </span>
-              </button>
-            ))}
-          </div>
-
-          {/* Step content */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeStep}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.25 }}
-              className="bg-surface-card rounded-xl border border-border p-8 text-center max-w-lg mx-auto"
-            >
-              <div className="w-14 h-14 bg-brand/10 rounded-xl flex items-center justify-center mx-auto mb-4">
-                {React.createElement(steps[activeStep].icon, { size: 24, className: 'text-brand' })}
-              </div>
-              <h3 className="text-lg font-bold text-txt-primary mb-2">
-                {steps[activeStep].title}
-              </h3>
-              <p className="text-sm text-txt-secondary leading-relaxed break-keep">
-                {steps[activeStep].description}
-              </p>
-            </motion.div>
-          </AnimatePresence>
+              </ScrollReveal>
+            )
+          })}
         </div>
 
-        {/* ── Mobile: Vertical accordion ── */}
-        <div className="md:hidden space-y-3">
-          {steps.map((step, i) => (
-            <button
-              key={i}
-              onClick={() => setActiveStep(i)}
-              className={`w-full text-left rounded-xl border p-4 transition-all duration-200 ${
-                i === activeStep
-                  ? 'border-brand bg-brand/5'
-                  : 'border-border bg-surface-card'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
-                  i < activeStep
-                    ? 'bg-surface-inverse text-txt-inverse'
-                    : i === activeStep
-                      ? 'bg-brand text-white'
-                      : 'bg-surface-sunken text-txt-disabled'
-                }`}>
-                  {i < activeStep ? <Check size={12} /> : i + 1}
+        {/* Mobile: Vertical timeline — all steps visible */}
+        <div className="md:hidden space-y-0">
+          {steps.map((step, i) => {
+            const Icon = step.icon
+            return (
+              <div key={i} className="flex gap-4">
+                {/* Timeline line + circle */}
+                <div className="flex flex-col items-center">
+                  <div className="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center text-xs font-bold shrink-0">
+                    {i + 1}
+                  </div>
+                  {i < steps.length - 1 && (
+                    <div className="w-0.5 flex-1 bg-border my-1" />
+                  )}
                 </div>
-                <span className={`text-sm font-bold ${i === activeStep ? 'text-brand' : 'text-txt-primary'}`}>
-                  {step.title}
-                </span>
-              </div>
-              <AnimatePresence>
-                {i === activeStep && (
-                  <motion.p
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="text-xs text-txt-secondary leading-relaxed mt-3 pl-11 break-keep"
-                  >
+                {/* Content */}
+                <div className="pb-6">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Icon size={16} className="text-brand shrink-0" />
+                    <h3 className="text-sm font-bold text-txt-primary">{step.title}</h3>
+                  </div>
+                  <p className="text-xs text-txt-secondary leading-relaxed break-keep">
                     {step.description}
-                  </motion.p>
-                )}
-              </AnimatePresence>
-            </button>
-          ))}
+                  </p>
+                </div>
+              </div>
+            )
+          })}
         </div>
       </div>
     </section>

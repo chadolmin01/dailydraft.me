@@ -1,37 +1,32 @@
 'use client'
 
 import React from 'react'
+import { MessageSquare, Users, Rocket } from 'lucide-react'
 import { ScrollReveal } from '@/components/ui/ScrollReveal'
-import { SectionLabel, SectionTitle, AnimatedCounter } from './shared'
+import { SectionLabel, SectionTitle } from './shared'
 
-const testimonials = [
+const scenarios = [
   {
-    name: '김도연',
-    school: '연세대 경영학과',
-    role: 'PM',
-    avatar: 'D',
-    quote: '프로젝트 올린 지 이틀 만에 개발자 두 분에게 커피챗이 왔어요. AI 매칭 점수가 높은 분들이라 실제로 만나보니 정말 잘 맞았습니다.',
+    icon: MessageSquare,
+    label: 'AI 온보딩',
+    title: '1분 대화로 프로필 완성',
+    description: 'AI와 짧은 대화를 나누면 기술 스택, 관심 분야, 파운더 유형까지 자동으로 분석해 프로필이 만들어집니다.',
+    color: 'bg-brand/10 text-brand border-brand/20',
   },
   {
-    name: '이서준',
-    school: 'KAIST 전산학부',
-    role: '풀스택 개발자',
-    avatar: 'S',
-    quote: 'AI 온보딩이 제 기술 스택을 잘 파악해줬어요. 추천받은 프로젝트 중 하나에 합류해서 지금 MVP 개발 중입니다.',
+    icon: Users,
+    label: '팀 매칭',
+    title: '비전이 맞는 팀원 발견',
+    description: '스킬뿐 아니라 방향성과 비전을 분석해서, 정말 잘 맞을 사람과 프로젝트를 연결합니다.',
+    color: 'bg-status-success-bg text-indicator-online border-indicator-online/20',
   },
   {
-    name: '박하은',
-    school: '고려대 디자인학과',
-    role: 'UX 디자이너',
-    avatar: 'H',
-    quote: '디자이너가 필요한 프로젝트를 쉽게 찾을 수 있어서 좋았어요. 커피챗으로 가볍게 만나본 후 팀에 합류했습니다.',
+    icon: Rocket,
+    label: '팀빌딩',
+    title: '커피챗으로 가볍게 시작',
+    description: '관심 있는 프로젝트에 커피챗을 보내고, 수락되면 연락처가 공개됩니다. 부담 없이 만나보세요.',
+    color: 'bg-indicator-premium/10 text-indicator-premium-border border-indicator-premium-border/20',
   },
-]
-
-const stats = [
-  { label: '평균 매칭 정확도', value: 87, suffix: '%' },
-  { label: '첫 커피챗까지 평균', value: 3, suffix: '일' },
-  { label: '팀빌딩 성공률', value: 72, suffix: '%' },
 ]
 
 export const CommunityFeedback: React.FC = () => {
@@ -39,45 +34,30 @@ export const CommunityFeedback: React.FC = () => {
     <section className="w-full py-20 px-6 md:px-10">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-12">
-          <SectionLabel>COMMUNITY</SectionLabel>
-          <SectionTitle>실제 사용자들의 이야기</SectionTitle>
+          <SectionLabel>HOW DRAFT WORKS</SectionLabel>
+          <SectionTitle>이런 경험을 할 수 있어요</SectionTitle>
         </div>
 
-        {/* Testimonials */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          {testimonials.map((t, i) => (
-            <ScrollReveal key={t.name} delay={i * 0.1}>
-              <div className="bg-surface-card rounded-xl border border-border p-5 h-full flex flex-col">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-brand/10 rounded-full flex items-center justify-center text-brand text-sm font-bold">
-                    {t.avatar}
+        {/* Scenario Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {scenarios.map((s, i) => {
+            const Icon = s.icon
+            return (
+              <ScrollReveal key={s.label} delay={i * 0.1}>
+                <div className="bg-surface-card rounded-xl border border-border p-6 h-full flex flex-col">
+                  <div className={`w-10 h-10 rounded-xl ${s.color} border flex items-center justify-center mb-4`}>
+                    <Icon size={20} />
                   </div>
-                  <div>
-                    <div className="text-sm font-bold text-txt-primary">{t.name}</div>
-                    <div className="text-[10px] text-txt-tertiary">{t.school} · {t.role}</div>
-                  </div>
+                  <div className="text-[10px] font-mono text-txt-tertiary mb-1.5">{s.label}</div>
+                  <h3 className="text-base font-bold text-txt-primary mb-2">{s.title}</h3>
+                  <p className="text-sm text-txt-secondary leading-relaxed break-keep flex-1">
+                    {s.description}
+                  </p>
                 </div>
-                <p className="text-sm text-txt-secondary leading-relaxed break-keep flex-1">
-                  &ldquo;{t.quote}&rdquo;
-                </p>
-              </div>
-            </ScrollReveal>
-          ))}
+              </ScrollReveal>
+            )
+          })}
         </div>
-
-        {/* Stats */}
-        <ScrollReveal delay={0.3}>
-          <div className="grid grid-cols-3 gap-4">
-            {stats.map((s) => (
-              <div key={s.label} className="bg-surface-sunken rounded-xl p-6 text-center">
-                <div className="text-2xl md:text-3xl font-bold text-txt-primary mb-1">
-                  <AnimatedCounter target={s.value} suffix={s.suffix} />
-                </div>
-                <div className="text-xs text-txt-tertiary">{s.label}</div>
-              </div>
-            ))}
-          </div>
-        </ScrollReveal>
       </div>
     </section>
   )
