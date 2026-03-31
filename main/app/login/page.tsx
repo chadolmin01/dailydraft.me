@@ -2,22 +2,49 @@
 
 import React, { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Mail, Github, Chrome, ArrowRight, Shield, Zap, Users, Rocket, AlertCircle, Loader2 } from 'lucide-react'
+import { Mail, Github, Chrome, ArrowRight, Shield, Users, Rocket, AlertCircle, Loader2, Coffee, Eye, Heart, Code, Palette, Megaphone, BarChart3 } from 'lucide-react'
 import { useAuth } from '@/src/context/AuthContext'
 
-// Data for the Marquee
-const showcaseItems = [
-  { type: 'project', title: '캠퍼스 중고거래', desc: 'React Native 앱 개발', tag: '모집 중', color: 'bg-surface-inverse text-white' },
-  { type: 'talent', title: '김민수', desc: '프론트엔드 개발자', tag: 'OPEN', color: 'bg-surface-card text-txt-primary' },
-  { type: 'project', title: 'AI 스터디 플래너', desc: 'GPT 기반 학습 도우미', tag: '팀빌딩 중', color: 'bg-brand text-white' },
-  { type: 'talent', title: '박지영', desc: 'UI/UX 디자이너', tag: 'OPEN', color: 'bg-surface-card text-txt-primary' },
-  { type: 'project', title: '학식 알리미', desc: '대학 식당 메뉴 알림', tag: '런칭 완료', color: 'bg-surface-inverse text-white' },
-  { type: 'talent', title: '이준호', desc: '백엔드 개발자', tag: 'OPEN', color: 'bg-surface-card text-txt-primary' },
-  { type: 'project', title: '동아리 매칭', desc: '관심사 기반 동아리 추천', tag: '모집 중', color: 'bg-surface-card text-txt-primary' },
+// Showcase data — mimics real Explore cards
+const projectCards = [
+  { title: '캠퍼스 중고거래 앱', desc: '대학생 전용 중고 플랫폼을 함께 만들어요', roles: ['프론트엔드', '디자이너'], tags: ['React Native', 'Firebase'], views: 142, hearts: 23 },
+  { title: 'AI 스터디 플래너', desc: 'GPT 기반 학습 도우미로 시험 준비를 효율적으로', roles: ['백엔드', 'AI/ML'], tags: ['Python', 'GPT API'], views: 89, hearts: 15 },
+  { title: '학식 알리미', desc: '오늘 뭐 먹지? 대학 식당 메뉴를 한눈에', roles: ['풀스택'], tags: ['Next.js', 'Supabase'], views: 210, hearts: 41 },
+  { title: '동아리 매칭 서비스', desc: '관심사 기반으로 딱 맞는 동아리를 추천해드려요', roles: ['기획자', '프론트엔드'], tags: ['SaaS', '에듀테크'], views: 67, hearts: 12 },
+  { title: '대학생 포트폴리오', desc: '프로젝트 경험을 정리하고 공유하는 플랫폼', roles: ['디자이너', '백엔드'], tags: ['Figma', 'Node.js'], views: 178, hearts: 35 },
 ]
 
-const showcaseColumn1 = [...showcaseItems, ...showcaseItems, ...showcaseItems]
-const showcaseColumn2 = [...showcaseItems.reverse(), ...showcaseItems, ...showcaseItems]
+const peopleCards = [
+  { name: '김민수', initial: '김', role: '프론트엔드 개발자', univ: '서울대 · 컴퓨터공학', tags: ['React', 'TypeScript', 'Next.js'], status: 'OPEN' as const },
+  { name: '박지영', initial: '박', role: 'UI/UX 디자이너', univ: '홍익대 · 시각디자인', tags: ['Figma', 'Framer'], status: 'OPEN' as const },
+  { name: '이준호', initial: '이', role: '백엔드 개발자', univ: 'KAIST · 전산학', tags: ['Node.js', 'Python', 'AWS'], status: 'OPEN' as const },
+  { name: '최서연', initial: '최', role: '마케터 / 기획', univ: '연세대 · 경영학', tags: ['콘텐츠', 'Growth'], status: 'BUSY' as const },
+  { name: '정하윤', initial: '정', role: '풀스택 개발자', univ: '고려대 · 소프트웨어', tags: ['Flutter', 'Firebase'], status: 'OPEN' as const },
+]
+
+type ShowcaseItem = { type: 'project'; data: typeof projectCards[0] } | { type: 'people'; data: typeof peopleCards[0] }
+
+const column1Items: ShowcaseItem[] = [
+  { type: 'project', data: projectCards[0] },
+  { type: 'people', data: peopleCards[0] },
+  { type: 'project', data: projectCards[1] },
+  { type: 'people', data: peopleCards[1] },
+  { type: 'project', data: projectCards[2] },
+  { type: 'people', data: peopleCards[2] },
+  { type: 'project', data: projectCards[3] },
+]
+const column2Items: ShowcaseItem[] = [
+  { type: 'people', data: peopleCards[3] },
+  { type: 'project', data: projectCards[4] },
+  { type: 'people', data: peopleCards[4] },
+  { type: 'project', data: projectCards[0] },
+  { type: 'people', data: peopleCards[0] },
+  { type: 'project', data: projectCards[2] },
+  { type: 'people', data: peopleCards[1] },
+]
+
+const showcaseColumn1 = [...column1Items, ...column1Items, ...column1Items]
+const showcaseColumn2 = [...column2Items, ...column2Items, ...column2Items]
 
 export default function LoginPage() {
   return (
@@ -314,17 +341,17 @@ function LoginContent() {
          <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-surface-sunken to-transparent z-10 pointer-events-none" />
 
          {/* Marquee Columns Container */}
-         <div className="flex gap-5 h-[120vh] -rotate-6 scale-110 opacity-80">
+         <div className="flex gap-4 h-[120vh] -rotate-3 scale-105 opacity-85">
 
             {/* Column 1: Moving Up */}
-            <div className="flex flex-col gap-5 animate-marquee-vertical-up">
+            <div className="flex flex-col gap-4 animate-marquee-vertical-up">
                {showcaseColumn1.map((item, idx) => (
                   <ShowcaseCard key={`col1-${idx}`} item={item} />
                ))}
             </div>
 
             {/* Column 2: Moving Down */}
-            <div className="flex flex-col gap-5 animate-marquee-vertical-down mt-20">
+            <div className="flex flex-col gap-4 animate-marquee-vertical-down mt-16">
                {showcaseColumn2.map((item, idx) => (
                   <ShowcaseCard key={`col2-${idx}`} item={item} />
                ))}
@@ -349,35 +376,98 @@ function LoginContent() {
   )
 }
 
-// Helper Component for Marquee Cards
-const ShowcaseCard = ({ item }: { item: typeof showcaseItems[0] }) => (
-  <div className={`
-    w-[16rem] p-5 rounded-2xl border border-border/50 shadow-sm flex flex-col justify-between relative
-    ${item.color}
-  `}>
-    <div className="flex justify-between items-start mb-4">
-       <div className={`w-8 h-8 flex items-center justify-center rounded-lg ${
-         item.color.includes('bg-surface-inverse') ? 'bg-white/10 border border-white/20' :
-         item.color.includes('bg-brand') ? 'bg-white/10 border border-white/20' :
-         'bg-surface-sunken border border-border'
-       }`}>
-          {item.type === 'startup' ? <Rocket size={14}/> : item.type === 'talent' ? <Users size={14}/> : <Zap size={14}/>}
-       </div>
-       <span className={`text-[0.5625rem] font-semibold px-2 py-0.5 rounded-full ${
-         item.color.includes('bg-surface-inverse') ? 'bg-white/15 border border-white/20' :
-         item.color.includes('bg-brand') ? 'bg-white/15 border border-white/20' :
-         'bg-surface-sunken border border-border'
-       }`}>
-         {item.tag}
-       </span>
+// Role icon map
+const ROLE_ICONS: Record<string, React.ElementType> = {
+  '프론트엔드': Code, '백엔드': Code, '풀스택': Code, 'AI/ML': BarChart3,
+  '디자이너': Palette, '기획자': BarChart3, '마케터': Megaphone,
+}
+
+// Showcase Cards — mimics real Explore UI
+const ShowcaseCard = ({ item }: { item: ShowcaseItem }) => {
+  if (item.type === 'project') {
+    const p = item.data
+    return (
+      <div className="w-[17rem] bg-surface-card rounded-xl border border-border overflow-hidden shadow-sm flex flex-col">
+        {/* Cover */}
+        <div className="h-20 bg-surface-inverse relative flex items-end p-3">
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/20" />
+          <div className="absolute top-2 left-2 z-[1]">
+            <span className="text-[0.5625rem] font-mono font-bold bg-indicator-online text-white px-1.5 py-0.5 flex items-center gap-1">
+              <span className="w-1 h-1 bg-white animate-pulse" /> 모집중
+            </span>
+          </div>
+          <div className="absolute top-2 right-2 flex gap-1 z-[1]">
+            {p.tags.slice(0, 2).map(tag => (
+              <span key={tag} className="text-[0.5rem] font-mono bg-black/50 text-white px-1.5 py-0.5">{tag}</span>
+            ))}
+          </div>
+          <div className="relative z-[1] w-7 h-7 bg-surface-card flex items-center justify-center border border-border">
+            <Rocket size={12} className="text-txt-primary" />
+          </div>
+        </div>
+        {/* Body */}
+        <div className="px-3 pt-2.5 pb-2">
+          <h4 className="font-bold text-sm text-txt-primary truncate">{p.title}</h4>
+          <div className="flex items-center gap-1 mt-1">
+            <span className="text-[0.5rem] font-medium text-brand bg-brand-bg px-1 py-px border border-brand-border">NEED</span>
+            {p.roles.map(role => (
+              <span key={role} className="text-[0.625rem] text-txt-secondary px-1 py-px border border-border">{role}</span>
+            ))}
+          </div>
+          <p className="text-[0.6875rem] text-txt-tertiary mt-1.5 line-clamp-1">{p.desc}</p>
+        </div>
+        {/* Footer */}
+        <div className="px-3 pb-2.5 mt-auto">
+          <div className="flex items-center justify-between pt-2 border-t border-border">
+            <span className="text-[0.5625rem] font-mono text-txt-disabled">팀 모집중</span>
+            <div className="flex items-center gap-2 text-[0.625rem] font-mono">
+              <span className="flex items-center gap-0.5 text-txt-secondary"><Eye size={9} />{p.views}</span>
+              <span className="flex items-center gap-0.5 text-status-danger-text/70"><Heart size={9} fill="currentColor" />{p.hearts}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // People card
+  const t = item.data
+  return (
+    <div className="w-[17rem] bg-surface-card rounded-xl border border-border overflow-hidden shadow-sm flex flex-col">
+      <div className="px-3 pt-3 pb-2">
+        <div className="flex gap-2.5">
+          <div className="w-9 h-9 bg-brand-bg border border-brand-border rounded-full flex items-center justify-center text-sm font-bold text-brand shrink-0">
+            {t.initial}
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-1.5">
+              <h4 className="font-semibold text-sm text-txt-primary truncate">{t.name}</h4>
+              <span className={`text-[0.5rem] font-mono font-bold px-1 py-px border ${
+                t.status === 'OPEN' ? 'bg-status-success-bg text-status-success-text border-indicator-online/20'
+                : 'bg-status-neutral-bg text-status-neutral-text border-border'
+              }`}>{t.status}</span>
+            </div>
+            <p className="text-[0.6875rem] text-txt-secondary truncate">{t.univ}</p>
+          </div>
+        </div>
+      </div>
+      <div className="px-3 pb-1">
+        <div className="flex items-center gap-1 overflow-hidden">
+          {t.tags.map(tag => (
+            <span key={tag} className="text-[0.5625rem] text-txt-secondary px-1.5 py-px border border-border shrink-0">{tag}</span>
+          ))}
+        </div>
+      </div>
+      <div className="px-3 pb-2.5 mt-1">
+        <div className="flex items-center justify-between pt-2 border-t border-border">
+          <span className="text-[0.5625rem] font-mono text-txt-disabled">{t.role}</span>
+          {t.status === 'OPEN' ? (
+            <span className="text-[0.5625rem] font-mono text-indicator-online flex items-center gap-0.5 bg-status-success-bg px-1 py-px border border-indicator-online/20"><Coffee size={8} /> AVAILABLE</span>
+          ) : (
+            <span className="text-[0.5625rem] font-mono text-txt-tertiary bg-surface-sunken px-1 py-px border border-border">BUSY</span>
+          )}
+        </div>
+      </div>
     </div>
-    <div>
-       <h4 className="font-bold text-base mb-0.5">{item.title}</h4>
-       <p className={`text-xs ${
-         item.color.includes('bg-surface-inverse') ? 'text-white/60' :
-         item.color.includes('bg-brand') ? 'text-white/60' :
-         'text-txt-tertiary'
-       }`}>{item.desc}</p>
-    </div>
-  </div>
-)
+  )
+}
