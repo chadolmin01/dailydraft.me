@@ -181,15 +181,6 @@ export const OnboardingShell: React.FC<OnboardingShellProps> = ({
 }) => {
   return (
     <div className={`fixed inset-0 bg-surface-bg flex transition-opacity duration-700 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
-      {/* Logout button */}
-      <button
-        onClick={onSignOut}
-        className="fixed top-4 right-4 z-[60] flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-mono text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken rounded-xl border border-border transition-colors"
-      >
-        <LogOut size={12} />
-        로그아웃
-      </button>
-
       {/* Deep chat transition overlay */}
       {deepChatTransition && <DeepChatTransitionOverlay />}
 
