@@ -90,8 +90,10 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
         {/* Body */}
         <div className="p-4 space-y-5 overflow-y-auto flex-1">
           {loadingProjects ? (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="animate-spin text-txt-disabled" size={20} />
+            <div className="space-y-2 py-2">
+              {[0,1,2].map(i => (
+                <div key={i} className="h-12 bg-surface-sunken rounded skeleton-shimmer" />
+              ))}
             </div>
           ) : activeProjects.length === 0 ? (
             <div className="text-center py-8">

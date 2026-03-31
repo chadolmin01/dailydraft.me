@@ -60,7 +60,10 @@ export default function InstitutionTeamsPage() {
   if (isAdminLoading) {
     return (
       <div className="flex-1 flex items-center justify-center h-screen bg-surface-sunken">
-        <Loader2 className="animate-spin text-txt-disabled" size={32} />
+        <div className="space-y-4 w-full max-w-xs">
+          <div className="h-6 bg-surface-card rounded skeleton-shimmer w-40 mx-auto" />
+          <div className="h-4 bg-surface-card rounded skeleton-shimmer w-32 mx-auto" />
+        </div>
       </div>
     )
   }
@@ -116,8 +119,10 @@ export default function InstitutionTeamsPage() {
 
         {/* Teams List */}
         {isLoading ? (
-          <div className="flex items-center justify-center py-16">
-            <Loader2 className="animate-spin text-txt-disabled" size={24} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[0,1,2,3].map(i => (
+              <div key={i} className="h-24 bg-surface-card rounded-xl border border-border skeleton-shimmer" />
+            ))}
           </div>
         ) : teams.length === 0 ? (
           <Card padding="p-12" className="text-center">

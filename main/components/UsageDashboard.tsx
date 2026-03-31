@@ -242,8 +242,19 @@ export function UsageDashboard() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[25rem]">
-        <Loader2 className="w-8 h-8 text-txt-disabled animate-spin" />
+      <div className="space-y-6 p-6">
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <div className="h-6 w-40 bg-surface-sunken rounded skeleton-shimmer" />
+            <div className="h-4 w-56 bg-surface-sunken rounded skeleton-shimmer" />
+          </div>
+        </div>
+        <div className="h-24 bg-surface-sunken rounded skeleton-shimmer" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[0,1,2,3].map(i => (
+            <div key={i} className="h-28 bg-surface-sunken rounded skeleton-shimmer" />
+          ))}
+        </div>
       </div>
     )
   }

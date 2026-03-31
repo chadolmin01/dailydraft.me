@@ -54,7 +54,10 @@ export default function InstitutionBusinessPlansPage() {
   if (isAdminLoading) {
     return (
       <div className="flex-1 flex items-center justify-center h-screen bg-surface-sunken">
-        <Loader2 className="animate-spin text-txt-disabled" size={32} />
+        <div className="space-y-4 w-full max-w-xs">
+          <div className="h-6 bg-surface-card rounded skeleton-shimmer w-40 mx-auto" />
+          <div className="h-4 bg-surface-card rounded skeleton-shimmer w-32 mx-auto" />
+        </div>
       </div>
     )
   }
@@ -139,8 +142,10 @@ export default function InstitutionBusinessPlansPage() {
             <h3 className="font-medium text-sm tracking-tight text-txt-primary">학생별 상세</h3>
           </div>
           {isLoading ? (
-            <div className="flex items-center justify-center py-16">
-              <Loader2 className="animate-spin text-txt-disabled" size={24} />
+            <div className="p-4 space-y-3">
+              {[0,1,2,3].map(i => (
+                <div key={i} className="h-14 bg-surface-sunken rounded skeleton-shimmer" />
+              ))}
             </div>
           ) : members.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16">

@@ -68,10 +68,10 @@ export const RealtimeScorePanel: React.FC<RealtimeScorePanelProps> = ({
 
   if (!validationResult) {
     return (
-      <div className="bg-surface-card rounded-xl border border-border p-4 animate-pulse">
-        <div className="h-6 bg-surface-sunken w-1/2 mb-4"></div>
-        <div className="h-4 bg-surface-sunken w-full mb-2"></div>
-        <div className="h-4 bg-surface-sunken w-3/4"></div>
+      <div className="bg-surface-card rounded-xl border border-border p-4">
+        <div className="h-6 bg-surface-sunken w-1/2 mb-4 skeleton-shimmer rounded"></div>
+        <div className="h-4 bg-surface-sunken w-full mb-2 skeleton-shimmer rounded"></div>
+        <div className="h-4 bg-surface-sunken w-3/4 skeleton-shimmer rounded"></div>
       </div>
     )
   }

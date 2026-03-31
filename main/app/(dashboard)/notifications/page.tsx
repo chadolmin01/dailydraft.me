@@ -234,8 +234,17 @@ export default function NotificationsPage() {
         {/* Notification List */}
         <div className="bg-surface-card rounded-xl border border-border shadow-md">
           {isLoading ? (
-            <div className="flex items-center justify-center py-16">
-              <Loader2 size={24} className="animate-spin text-txt-disabled" />
+            <div className="p-4 space-y-3">
+              {[0,1,2,3].map(i => (
+                <div key={i} className="flex items-start gap-4 px-5 py-4">
+                  <div className="w-10 h-10 bg-surface-sunken rounded skeleton-shimmer shrink-0" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 bg-surface-sunken rounded skeleton-shimmer w-48" />
+                    <div className="h-3 bg-surface-sunken rounded skeleton-shimmer w-full" />
+                    <div className="h-2.5 bg-surface-sunken rounded skeleton-shimmer w-16" />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : displayList.length === 0 ? (
             <div className="py-16 text-center">

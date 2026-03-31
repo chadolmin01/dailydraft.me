@@ -72,7 +72,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onDragStart, onClick }
       draggable
       onDragStart={(e) => onDragStart(e, task.id)}
       onClick={() => onClick(task)}
-      className={`group p-4 border shadow-md hover:shadow-lg transition-all cursor-grab active:cursor-grabbing mb-3 relative ${styles.card}`}
+      className={`group p-4 border shadow-md hover:shadow-lg hover-spring cursor-grab active:cursor-grabbing mb-3 relative ${styles.card}`}
     >
       <div className="flex justify-between items-start mb-2">
         <div className="flex items-center gap-2">

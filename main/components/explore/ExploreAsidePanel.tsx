@@ -22,13 +22,13 @@ function PeopleSkeletonRows() {
   return (
     <>
       {[0, 1, 2, 3].map((i) => (
-        <div key={i} className="flex items-center gap-3 p-2 animate-pulse">
-          <div className="w-9 h-9 bg-surface-sunken rounded-xl border border-border" />
+        <div key={i} className="flex items-center gap-3 p-2">
+          <div className="w-9 h-9 bg-surface-sunken rounded-xl border border-border skeleton-shimmer" />
           <div className="flex-1 min-w-0 space-y-1.5">
-            <div className="h-3.5 bg-surface-sunken rounded-sm w-20" />
-            <div className="h-2.5 bg-surface-sunken rounded-sm w-28" />
+            <div className="h-3.5 bg-surface-sunken rounded-sm w-20 skeleton-shimmer" />
+            <div className="h-2.5 bg-surface-sunken rounded-sm w-28 skeleton-shimmer" />
           </div>
-          <div className="h-4 w-8 bg-surface-sunken rounded-sm" />
+          <div className="h-4 w-8 bg-surface-sunken rounded-sm skeleton-shimmer" />
         </div>
       ))}
     </>

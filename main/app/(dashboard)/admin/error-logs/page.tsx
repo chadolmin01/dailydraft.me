@@ -98,7 +98,10 @@ export default function ErrorLogsPage() {
   if (isAdminLoading) {
     return (
       <div className="flex-1 flex items-center justify-center h-screen bg-surface-sunken">
-        <Loader2 className="animate-spin text-txt-disabled" size={32} />
+        <div className="space-y-4 w-full max-w-xs">
+          <div className="h-6 bg-surface-card rounded skeleton-shimmer w-40 mx-auto" />
+          <div className="h-4 bg-surface-card rounded skeleton-shimmer w-32 mx-auto" />
+        </div>
       </div>
     )
   }
@@ -224,8 +227,10 @@ export default function ErrorLogsPage() {
 
         {/* Logs List */}
         {isLoading ? (
-          <div className="flex items-center justify-center py-16">
-            <Loader2 className="animate-spin text-txt-disabled" size={32} />
+          <div className="space-y-2">
+            {[0,1,2,3,4].map(i => (
+              <div key={i} className="h-16 bg-surface-card rounded-xl border border-border skeleton-shimmer" />
+            ))}
           </div>
         ) : isError ? (
           <Card padding="p-8" className="text-center">

@@ -272,7 +272,18 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
 
               {loading ? (
                 <div className="flex items-center justify-center h-[60vh]">
-                  <Loader2 className="animate-spin text-txt-disabled" size={28} />
+                  <div className="space-y-4 w-full max-w-sm px-8">
+                    <div className="flex items-center gap-3">
+                      <div className="w-14 h-14 bg-surface-sunken rounded-full skeleton-shimmer" />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-4 bg-surface-sunken rounded skeleton-shimmer w-24" />
+                        <div className="h-3 bg-surface-sunken rounded skeleton-shimmer w-32" />
+                      </div>
+                    </div>
+                    <div className="h-3 bg-surface-sunken rounded skeleton-shimmer w-full" />
+                    <div className="h-3 bg-surface-sunken rounded skeleton-shimmer w-3/4" />
+                    <div className="h-3 bg-surface-sunken rounded skeleton-shimmer w-1/2" />
+                  </div>
                 </div>
               ) : !profile ? (
                 <div className="flex flex-col items-center justify-center h-[60vh] text-center px-8">

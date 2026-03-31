@@ -141,11 +141,11 @@ export function ExploreSidebar({
           <div className="space-y-1">
             {showLoading ? (
               Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="flex items-center gap-3 p-2 animate-pulse">
-                  <div className="w-8 h-8 bg-surface-sunken rounded-full" />
+                <div key={i} className="flex items-center gap-3 p-2">
+                  <div className="w-8 h-8 bg-surface-sunken rounded-full skeleton-shimmer" />
                   <div className="flex-1 space-y-1.5">
-                    <div className="h-3 bg-surface-sunken rounded w-16" />
-                    <div className="h-2.5 bg-surface-sunken rounded w-24" />
+                    <div className="h-3 bg-surface-sunken rounded w-16 skeleton-shimmer" />
+                    <div className="h-2.5 bg-surface-sunken rounded w-24 skeleton-shimmer" />
                   </div>
                 </div>
               ))

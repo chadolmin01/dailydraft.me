@@ -8,7 +8,6 @@ import {
   Filter,
   Zap,
   LayoutGrid,
-  Loader2,
   Clock,
   Star,
   Flame,
@@ -21,6 +20,7 @@ import {
   FolderOpen,
 } from 'lucide-react'
 import { EmptyState } from './ui/EmptyState'
+import { SkeletonGrid } from './ui/Skeleton'
 import { ErrorState } from './ui/ErrorState'
 import { useOpportunities, calculateDaysLeft, type OpportunityWithCreator } from '@/src/hooks/useOpportunities'
 
@@ -164,9 +164,7 @@ export const Projects: React.FC = () => {
             {isError ? (
               <ErrorState message="프로젝트를 불러오는 데 실패했습니다" onRetry={() => refetch()} />
             ) : isLoading ? (
-              <div className="flex items-center justify-center py-16">
-                <Loader2 className="animate-spin text-txt-tertiary" size={24} />
-              </div>
+              <SkeletonGrid count={4} cols={2} />
             ) : sorted.length === 0 ? (
               searchQuery ? (
                 <EmptyState
@@ -188,7 +186,7 @@ export const Projects: React.FC = () => {
                 {sorted.map((opp: OpportunityWithCreator) => {
                   const daysLeft = calculateDaysLeft(opp.created_at)
                   return (
-                    <Card key={opp.id} className="group hover:shadow-md relative" padding="p-4">
+                    <Card key={opp.id} className="group hover:shadow-md hover-spring relative" padding="p-4">
                       {/* Corner marks */}
                       <span className="absolute top-0 left-0 w-2 h-2 border-t border-l border-border pointer-events-none" />
                       <span className="absolute top-0 right-0 w-2 h-2 border-t border-r border-border pointer-events-none" />

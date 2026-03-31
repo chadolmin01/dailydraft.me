@@ -373,13 +373,13 @@ export const Dashboard: React.FC = () => {
                   </div>
 
                   <div className="grid grid-cols-2 gap-2 mt-auto">
-                      <div className="p-2.5 border border-border bg-surface-card rounded-xl group-hover:shadow-md transition-all">
+                      <div className="p-2.5 border border-border bg-surface-card rounded-xl group-hover:shadow-md hover-spring">
                         <div className="text-[0.5625rem] text-txt-disabled mb-0.5 flex items-center gap-1">
                              <Eye size={10} /> Views
                         </div>
                         <div className="font-bold text-lg text-txt-primary leading-none">-</div>
                       </div>
-                      <div className="p-2.5 border border-border bg-surface-card rounded-xl group-hover:shadow-md transition-all">
+                      <div className="p-2.5 border border-border bg-surface-card rounded-xl group-hover:shadow-md hover-spring">
                         <div className="text-[0.5625rem] text-txt-disabled mb-0.5 flex items-center gap-1">
                              <Users size={10} /> Network
                         </div>

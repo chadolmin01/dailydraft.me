@@ -299,9 +299,9 @@ export const TopNavbar: React.FC = () => {
             {authLoading ? (
               <>
                 {/* 스켈레톤: auth 로딩 중 레이아웃 점프 방지 */}
-                <div className="hidden md:block w-[100px] h-8 bg-surface-sunken animate-pulse" />
-                <div className="w-8 h-8 bg-surface-sunken animate-pulse" />
-                <div className="w-8 h-8 bg-surface-sunken animate-pulse" />
+                <div className="hidden md:block w-[100px] h-8 bg-surface-sunken skeleton-shimmer" />
+                <div className="w-8 h-8 bg-surface-sunken skeleton-shimmer" />
+                <div className="w-8 h-8 bg-surface-sunken skeleton-shimmer" />
               </>
             ) : isAuthenticated ? (
               <>
@@ -435,8 +435,8 @@ export const TopNavbar: React.FC = () => {
               <MobileNavItem href="/explore" active={pathname === '/explore'}>탐색</MobileNavItem>
               {authLoading ? (
                 <div className="space-y-2 mt-2">
-                  <div className="h-10 bg-surface-sunken animate-pulse rounded-sm" />
-                  <div className="h-10 bg-surface-sunken animate-pulse rounded-sm" />
+                  <div className="h-10 bg-surface-sunken skeleton-shimmer rounded-sm" />
+                  <div className="h-10 bg-surface-sunken skeleton-shimmer rounded-sm" />
                 </div>
               ) : isAuthenticated ? (
                 <>

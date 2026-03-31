@@ -321,7 +321,16 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
 
               {loading ? (
                 <div className="flex items-center justify-center h-[60vh]">
-                  <Loader2 className="animate-spin text-txt-disabled" size={28} />
+                  <div className="space-y-4 w-full max-w-md px-8">
+                    <div className="h-5 bg-surface-sunken rounded skeleton-shimmer w-3/4" />
+                    <div className="h-3 bg-surface-sunken rounded skeleton-shimmer w-full" />
+                    <div className="h-3 bg-surface-sunken rounded skeleton-shimmer w-2/3" />
+                    <div className="flex gap-2 mt-4">
+                      <div className="h-6 w-16 bg-surface-sunken rounded skeleton-shimmer" />
+                      <div className="h-6 w-16 bg-surface-sunken rounded skeleton-shimmer" />
+                    </div>
+                    <div className="h-20 bg-surface-sunken rounded skeleton-shimmer w-full mt-2" />
+                  </div>
                 </div>
               ) : !opportunity ? (
                 <div className="flex flex-col items-center justify-center h-[60vh] text-center px-8">

@@ -122,7 +122,10 @@ export default function InviteCodesAdminPage() {
   if (isAdminLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="w-8 h-8 animate-spin text-txt-disabled" />
+        <div className="space-y-4 w-full max-w-xs">
+          <div className="h-6 bg-surface-sunken rounded skeleton-shimmer w-40 mx-auto" />
+          <div className="h-4 bg-surface-sunken rounded skeleton-shimmer w-32 mx-auto" />
+        </div>
       </div>
     )
   }
@@ -228,8 +231,10 @@ export default function InviteCodesAdminPage() {
         </div>
 
         {codesLoading ? (
-          <div className="p-8 text-center">
-            <Loader2 className="w-6 h-6 animate-spin mx-auto text-txt-disabled" />
+          <div className="p-4 space-y-3">
+            {[0,1,2].map(i => (
+              <div key={i} className="h-12 bg-surface-sunken rounded skeleton-shimmer" />
+            ))}
           </div>
         ) : !codes?.length ? (
           <div className="p-8 text-center text-txt-tertiary">
@@ -318,8 +323,10 @@ export default function InviteCodesAdminPage() {
         </div>
 
         {eligibleLoading ? (
-          <div className="p-8 text-center">
-            <Loader2 className="w-6 h-6 animate-spin mx-auto text-txt-disabled" />
+          <div className="p-4 space-y-3">
+            {[0,1,2].map(i => (
+              <div key={i} className="h-12 bg-surface-sunken rounded skeleton-shimmer" />
+            ))}
           </div>
         ) : !eligibleData?.all.length ? (
           <div className="p-8 text-center text-txt-tertiary">

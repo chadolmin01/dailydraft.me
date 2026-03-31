@@ -309,7 +309,12 @@ function EditProjectContent() {
   if (isLoading || !initialized) {
     return (
       <div className="flex-1 flex items-center justify-center min-h-[50vh]">
-        <Loader2 size={24} className="animate-spin text-txt-tertiary" />
+        <div className="space-y-4 w-full max-w-md px-8">
+          <div className="h-6 bg-surface-sunken rounded skeleton-shimmer w-1/2" />
+          <div className="h-10 bg-surface-sunken rounded skeleton-shimmer w-full" />
+          <div className="h-24 bg-surface-sunken rounded skeleton-shimmer w-full" />
+          <div className="h-10 bg-surface-sunken rounded skeleton-shimmer w-full" />
+        </div>
       </div>
     )
   }
