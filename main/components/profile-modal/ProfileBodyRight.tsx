@@ -16,14 +16,14 @@ export function ProfileBodyRight({
   skills: Array<{ name: string; level: string }> | null
 }) {
   return (
-    <div className="md:col-span-2 space-y-5 md:bg-surface-sunken/60 md:border md:border-border md:rounded-xl md:p-5">
+    <div className="md:col-span-2 space-y-5 md:bg-white/60 md:border md:border-border md:rounded-xl md:p-5">
       {/* Empty state when right column has no data */}
       {!(personality && Object.keys(personality).length > 0) &&
        !(workStyle && Object.keys(workStyle).length > 0) &&
        !(teamPref && Object.keys(teamPref).length > 0) &&
        !(availability && (availability.hours_per_week != null || availability.prefer_online != null)) &&
        !(skills && skills.length > 0) && (
-        <div className="px-4 py-8 border border-border-strong bg-surface-sunken text-center rounded-lg">
+        <div className="px-4 py-8 border border-border bg-white text-center rounded-lg">
           <p className="text-xs text-txt-disabled font-mono">아직 등록된 성향·스킬 정보가 없습니다</p>
         </div>
       )}
