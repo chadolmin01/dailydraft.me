@@ -150,7 +150,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
                       {data.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="px-3 py-1.5 bg-brand-bg border border-brand-border text-xs font-medium text-brand font-mono"
+                          className="px-3 py-1.5 bg-brand-bg border border-brand-border text-xs font-medium text-brand font-mono hover:bg-brand hover:text-white hover:border-brand transition-colors cursor-default"
                         >
                           #{tag}
                         </span>

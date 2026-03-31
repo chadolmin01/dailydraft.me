@@ -77,7 +77,7 @@ const ReflectionModal: React.FC<ReflectionModalProps> = ({
                                className={`text-left p-3 border transition-all text-sm ${
                                    reflectionText === action
                                    ? 'bg-surface-sunken border-border ring-1 ring-black text-txt-primary'
-                                   : 'bg-surface-card border-border hover:border-border text-txt-secondary'
+                                   : 'bg-surface-card border-border hover:bg-surface-sunken hover:border-surface-inverse/30 text-txt-secondary'
                                }`}
                            >
                                <div className="flex items-start gap-3">
