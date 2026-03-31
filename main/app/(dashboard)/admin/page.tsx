@@ -147,7 +147,7 @@ export default function AdminDashboardPage() {
               const Icon = link.icon
               return (
                 <Link key={link.href} href={link.href}>
-                  <Card padding="p-5" className="group cursor-pointer hover:border-border">
+                  <Card padding="p-5" className="group cursor-pointer hover-spring hover:border-border">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div className="w-10 h-10 bg-surface-sunken flex items-center justify-center group-hover:bg-black transition-colors">

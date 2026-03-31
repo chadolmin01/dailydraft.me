@@ -188,7 +188,7 @@ function ApiUsageSection({ apiUsage }: { apiUsage: UsageData['apiUsage'] }) {
           <ProgressBar used={current.used} limit={current.limit} />
         </div>
 
-        <div className="grid grid-cols-3 gap-4 pt-4 border-t border-border">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-border">
           {windows.map(({ key, label }) => (
             <div key={key} className="text-center">
               <div className="text-[0.625rem] font-medium text-txt-tertiary mb-1">{label}</div>

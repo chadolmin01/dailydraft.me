@@ -350,7 +350,7 @@ export const InlineWarningHighlight: React.FC<InlineWarningHighlightProps> = ({
     >
       {text.substring(start, end)}
       {showTooltip && (
-        <div className="absolute left-0 bottom-full mb-2 w-64 p-2 bg-surface-inverse text-white text-xs shadow-lg z-50">
+        <div className="absolute left-0 bottom-full mb-2 max-w-[calc(100vw-2rem)] sm:w-64 p-2 bg-surface-inverse text-white text-xs shadow-lg z-50">
           <div className="font-medium mb-1">
             {severity === 'high' ? '심각한 문제' : severity === 'medium' ? '개선 필요' : '참고 사항'}
           </div>

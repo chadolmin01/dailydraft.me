@@ -32,7 +32,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-surface-inverse text-txt-inverse text-xs font-medium">
               <Target className="w-3 h-3" /> 비전 (Vision)
             </div>
-            <h2 className="text-3xl font-bold text-txt-primary tracking-tight leading-tight break-keep">
+            <h2 className="text-xl sm:text-3xl font-bold text-txt-primary tracking-tight leading-tight break-keep">
               &quot;{result.elevatorPitch}&quot;
             </h2>
           </div>
@@ -118,7 +118,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
                         <p className="font-medium break-keep text-base">{result.nextSteps.immediateAction}</p>
                     </div>
                     <div className="w-full h-px bg-white/20"></div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                          <div>
                             <span className="text-txt-inverse/50 text-xs block mb-1">MVP 범위</span>
                             <p className="text-white/70 break-keep leading-snug">{result.nextSteps.mvpScope}</p>
@@ -157,7 +157,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-violet-600 text-white text-xs font-medium">
             <FileText className="w-3 h-3" /> PRD (Product Requirements)
           </div>
-          <h2 className="text-3xl font-bold text-txt-primary tracking-tight leading-tight break-keep">
+          <h2 className="text-xl sm:text-3xl font-bold text-txt-primary tracking-tight leading-tight break-keep">
             &quot;{prdResult.elevator_pitch}&quot;
           </h2>
         </div>

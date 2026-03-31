@@ -226,7 +226,7 @@ const Header: React.FC = () => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-surface-card/90 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <div className="flex items-center space-x-2 cursor-pointer group" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+        <div className="flex items-center space-x-2 cursor-pointer group hover:opacity-70 transition-opacity" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
           <div className="w-6 h-6 bg-black flex items-center justify-center text-white font-bold text-xs font-mono group-hover:rotate-12 transition-transform">
             D
           </div>
@@ -339,7 +339,7 @@ const Hero: React.FC = () => {
           <span className="text-[0.625rem] font-medium">System Operational v2.0</span>
         </div>
 
-        <h1 className="text-5xl sm:text-6xl xl:text-7xl font-bold tracking-tighter text-txt-primary mb-8 leading-[1.1] break-keep">
+        <h1 className="text-3xl sm:text-5xl md:text-6xl xl:text-7xl font-bold tracking-tighter text-txt-primary mb-8 leading-[1.1] break-keep">
           완벽한 팀은<br />
           첫 번째 <span className="relative inline-block text-brand mx-2">Draft<svg className="absolute w-full h-3 bottom-1 left-0 text-brand/30 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" opacity="0.5" /></svg></span>에서 시작됩니다
         </h1>

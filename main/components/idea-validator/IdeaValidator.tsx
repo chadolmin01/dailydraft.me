@@ -151,7 +151,7 @@ const IdeaValidator: React.FC<IdeaValidatorProps> = ({ onClose, onComplete, embe
       {/* Top Navigation Bar - Hidden when embedded */}
       {!embedded && (
         <nav className="w-full h-12 border-b border-border bg-surface-card flex shrink-0 items-center justify-between px-4 z-50">
-          <div className="flex items-center cursor-pointer gap-2" onClick={() => setView(AppState.SELECTION)}>
+          <div className="flex items-center cursor-pointer gap-2 hover:opacity-70 transition-opacity" onClick={() => setView(AppState.SELECTION)}>
             <div className="bg-draft-black text-white px-1.5 py-0.5 font-mono font-bold text-sm">D</div>
             <span className="text-base font-bold tracking-tight">Draft.</span>
           </div>

@@ -521,7 +521,7 @@ export const Dashboard: React.FC = () => {
                       upcomingTasks.map(task => (
                         <div
                           key={task.id}
-                          className="flex items-start gap-2.5 group cursor-pointer"
+                          className="flex items-start gap-2.5 group cursor-pointer rounded-lg px-1 -mx-1 hover:bg-surface-sunken transition-colors"
                           onClick={() => onToggleEvent(task.id)}
                         >
                             <div className="mt-0.5 text-txt-disabled group-hover:text-txt-primary transition-colors">

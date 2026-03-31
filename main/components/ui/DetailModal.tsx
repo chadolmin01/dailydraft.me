@@ -233,7 +233,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
                 <h4 className="text-[0.625rem] font-medium text-txt-disabled mb-3">
                   Snapshot
                 </h4>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <div className="bg-surface-card p-2.5 border border-border hover:shadow-md hover-spring">
                     <div className="text-[0.5rem] text-txt-disabled mb-1">
                       Deadline

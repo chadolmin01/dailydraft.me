@@ -47,7 +47,7 @@ export function ExploreHeroCarousel() {
 
         {/* ===== 왼쪽: 메인 강조 슬라이드 ===== */}
         <div
-          className="relative flex-[2] min-w-0 bg-surface-card rounded-xl border border-border overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,0.08)] cursor-pointer transition-all duration-300"
+          className="relative flex-[2] min-w-0 bg-surface-card rounded-xl border border-border overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,0.08)] cursor-pointer transition-all duration-300 hover:shadow-lg hover:border-border/80 active:scale-[0.995]"
           onClick={goNext}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
