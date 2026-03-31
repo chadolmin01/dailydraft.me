@@ -197,7 +197,7 @@ export function NotificationDropdown() {
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute right-0 top-11 w-[calc(100vw-2rem)] sm:w-96 max-w-[24rem] bg-surface-elevated border border-border shadow-lg z-dropdown animate-in fade-in zoom-in-95 duration-150">
+        <div className="absolute right-0 top-11 w-[calc(100vw-2rem)] sm:w-96 max-w-[24rem] bg-surface-elevated border border-border shadow-lg z-popover animate-in fade-in zoom-in-95 duration-150">
           {/* Header */}
           <div className="px-4 pt-3 pb-2 border-b border-border">
             <div className="flex items-center justify-between mb-2">
