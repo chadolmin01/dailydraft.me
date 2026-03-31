@@ -2,7 +2,7 @@
 
 import React, { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Mail, Github, Chrome, ArrowRight, Shield, Users, Rocket, AlertCircle, Loader2, Coffee, Eye, Heart, Code, Palette, Megaphone, BarChart3 } from 'lucide-react'
+import { Mail, Github, Chrome, ArrowRight, Shield, Users, Rocket, AlertCircle, Loader2 } from 'lucide-react'
 import { useAuth } from '@/src/context/AuthContext'
 
 // Showcase data — mimics real Explore cards
@@ -376,55 +376,29 @@ function LoginContent() {
   )
 }
 
-// Role icon map
-const ROLE_ICONS: Record<string, React.ElementType> = {
-  '프론트엔드': Code, '백엔드': Code, '풀스택': Code, 'AI/ML': BarChart3,
-  '디자이너': Palette, '기획자': BarChart3, '마케터': Megaphone,
-}
-
-// Showcase Cards — mimics real Explore UI
+// Showcase Cards — clean, minimal decorative cards
 const ShowcaseCard = ({ item }: { item: ShowcaseItem }) => {
   if (item.type === 'project') {
     const p = item.data
     return (
-      <div className="w-[17rem] shrink-0 bg-surface-card rounded-xl border border-border overflow-hidden shadow-sm flex flex-col">
-        {/* Cover */}
-        <div className="h-20 bg-surface-inverse relative flex items-end p-3">
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/20" />
-          <div className="absolute top-2 left-2 z-[1]">
-            <span className="text-[0.5625rem] font-mono font-bold bg-indicator-online text-white px-1.5 py-0.5 flex items-center gap-1">
-              <span className="w-1 h-1 bg-white animate-pulse" /> 모집중
-            </span>
+      <div className="w-[17rem] shrink-0 bg-surface-card rounded-2xl border border-border p-4 shadow-sm">
+        <div className="flex items-center gap-2 mb-2.5">
+          <div className="w-7 h-7 bg-brand-bg border border-brand-border rounded-lg flex items-center justify-center shrink-0">
+            <Rocket size={13} className="text-brand" />
           </div>
-          <div className="absolute top-2 right-2 flex gap-1 z-[1]">
-            {p.tags.slice(0, 2).map(tag => (
-              <span key={tag} className="text-[0.5rem] font-mono bg-black/50 text-white px-1.5 py-0.5">{tag}</span>
-            ))}
-          </div>
-          <div className="relative z-[1] w-7 h-7 bg-surface-card flex items-center justify-center border border-border">
-            <Rocket size={12} className="text-txt-primary" />
-          </div>
+          <span className="text-[0.5625rem] font-mono font-bold text-status-success-text bg-status-success-bg px-1.5 py-0.5 rounded-md border border-indicator-online/20">모집중</span>
         </div>
-        {/* Body */}
-        <div className="px-3 pt-2.5 pb-2">
-          <h4 className="font-bold text-sm text-txt-primary truncate">{p.title}</h4>
-          <div className="flex items-center gap-1 mt-1">
-            <span className="text-[0.5rem] font-medium text-brand bg-brand-bg px-1 py-px border border-brand-border">NEED</span>
-            {p.roles.map(role => (
-              <span key={role} className="text-[0.625rem] text-txt-secondary px-1 py-px border border-border">{role}</span>
-            ))}
-          </div>
-          <p className="text-[0.6875rem] text-txt-tertiary mt-1.5 line-clamp-1">{p.desc}</p>
+        <h4 className="font-bold text-[0.8125rem] text-txt-primary mb-1">{p.title}</h4>
+        <p className="text-[0.6875rem] text-txt-tertiary line-clamp-1 mb-3">{p.desc}</p>
+        <div className="flex items-center gap-1 flex-wrap mb-3">
+          {p.roles.map(role => (
+            <span key={role} className="text-[0.625rem] font-medium text-brand bg-brand-bg px-1.5 py-0.5 rounded-md border border-brand-border">{role}</span>
+          ))}
         </div>
-        {/* Footer */}
-        <div className="px-3 pb-2.5 mt-auto">
-          <div className="flex items-center justify-between pt-2 border-t border-border">
-            <span className="text-[0.5625rem] font-mono text-txt-disabled">팀 모집중</span>
-            <div className="flex items-center gap-2 text-[0.625rem] font-mono">
-              <span className="flex items-center gap-0.5 text-txt-secondary"><Eye size={9} />{p.views}</span>
-              <span className="flex items-center gap-0.5 text-status-danger-text/70"><Heart size={9} fill="currentColor" />{p.hearts}</span>
-            </div>
-          </div>
+        <div className="flex items-center gap-1.5">
+          {p.tags.map(tag => (
+            <span key={tag} className="text-[0.5625rem] text-txt-secondary px-1.5 py-0.5 rounded-md border border-border bg-surface-sunken">{tag}</span>
+          ))}
         </div>
       </div>
     )
@@ -433,40 +407,25 @@ const ShowcaseCard = ({ item }: { item: ShowcaseItem }) => {
   // People card
   const t = item.data
   return (
-    <div className="w-[17rem] bg-surface-card rounded-xl border border-border overflow-hidden shadow-sm flex flex-col">
-      <div className="px-3 pt-3 pb-2">
-        <div className="flex gap-2.5">
-          <div className="w-9 h-9 bg-brand-bg border border-brand-border rounded-full flex items-center justify-center text-sm font-bold text-brand shrink-0">
-            {t.initial}
+    <div className="w-[17rem] shrink-0 bg-surface-card rounded-2xl border border-border p-4 shadow-sm">
+      <div className="flex items-center gap-2.5 mb-3">
+        <div className="w-9 h-9 bg-brand-bg border border-brand-border rounded-full flex items-center justify-center text-sm font-bold text-brand shrink-0">
+          {t.initial}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5">
+            <h4 className="font-semibold text-[0.8125rem] text-txt-primary">{t.name}</h4>
+            {t.status === 'OPEN' && (
+              <span className="w-1.5 h-1.5 rounded-full bg-indicator-online shrink-0" />
+            )}
           </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-1.5">
-              <h4 className="font-semibold text-sm text-txt-primary truncate">{t.name}</h4>
-              <span className={`text-[0.5rem] font-mono font-bold px-1 py-px border ${
-                t.status === 'OPEN' ? 'bg-status-success-bg text-status-success-text border-indicator-online/20'
-                : 'bg-status-neutral-bg text-status-neutral-text border-border'
-              }`}>{t.status}</span>
-            </div>
-            <p className="text-[0.6875rem] text-txt-secondary truncate">{t.univ}</p>
-          </div>
+          <p className="text-[0.6875rem] text-txt-secondary truncate">{t.univ}</p>
         </div>
       </div>
-      <div className="px-3 pb-1">
-        <div className="flex items-center gap-1 overflow-hidden">
-          {t.tags.map(tag => (
-            <span key={tag} className="text-[0.5625rem] text-txt-secondary px-1.5 py-px border border-border shrink-0">{tag}</span>
-          ))}
-        </div>
-      </div>
-      <div className="px-3 pb-2.5 mt-1">
-        <div className="flex items-center justify-between pt-2 border-t border-border">
-          <span className="text-[0.5625rem] font-mono text-txt-disabled">{t.role}</span>
-          {t.status === 'OPEN' ? (
-            <span className="text-[0.5625rem] font-mono text-indicator-online flex items-center gap-0.5 bg-status-success-bg px-1 py-px border border-indicator-online/20"><Coffee size={8} /> AVAILABLE</span>
-          ) : (
-            <span className="text-[0.5625rem] font-mono text-txt-tertiary bg-surface-sunken px-1 py-px border border-border">BUSY</span>
-          )}
-        </div>
+      <div className="flex items-center gap-1 flex-wrap">
+        {t.tags.map(tag => (
+          <span key={tag} className="text-[0.5625rem] text-txt-secondary px-1.5 py-0.5 rounded-md border border-border bg-surface-sunken">{tag}</span>
+        ))}
       </div>
     </div>
   )
