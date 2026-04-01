@@ -97,6 +97,7 @@ export function ExploreHeroCarousel() {
                 <Link
                   href="/projects/b0de922b-c9ed-4f21-9a48-5454e6af5501"
                   className="group inline-flex items-center gap-2 px-5 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-bold hover:bg-surface-inverse transition-all hover:opacity-90 active:scale-[0.97] border border-surface-inverse"
+                  onClick={(e) => e.stopPropagation()}
                 >
                   팀원 공고 보기
                   <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
@@ -119,6 +120,7 @@ export function ExploreHeroCarousel() {
                 <Link
                   href="/explore?coffeeChat=38c7770c-f545-4f84-a8af-7e6b34c86285&msg=인터뷰+신청드립니다"
                   className="group inline-flex items-center gap-2 px-5 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-bold hover:bg-surface-inverse transition-all hover:opacity-90 active:scale-[0.97] border border-surface-inverse"
+                  onClick={(e) => e.stopPropagation()}
                 >
                   커피챗 신청하기
                   <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
@@ -141,6 +143,7 @@ export function ExploreHeroCarousel() {
                 <Link
                   href="/explore?coffeeChat=38c7770c-f545-4f84-a8af-7e6b34c86285&msg=프로젝트+홍보+문의드립니다"
                   className="group inline-flex items-center gap-2 px-5 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-bold hover:bg-surface-inverse transition-all hover:opacity-90 active:scale-[0.97] border border-surface-inverse"
+                  onClick={(e) => e.stopPropagation()}
                 >
                   홍보 문의하기
                   <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
