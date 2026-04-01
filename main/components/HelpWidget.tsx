@@ -293,7 +293,7 @@ function ChatTab() {
             onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send()}
             placeholder="질문을 입력하세요..."
             disabled={isLoading}
-            className="flex-1 px-3 py-2 text-[12px] bg-surface-card rounded-lg border border-border focus:outline-none focus:border-brand transition-colors placeholder:text-txt-disabled disabled:opacity-50"
+            className="flex-1 px-3 py-2 text-[12px] bg-surface-card rounded-xl border border-border focus:outline-none focus:border-brand transition-colors placeholder:text-txt-disabled disabled:opacity-50"
           />
           <button
             onClick={() => send()}
@@ -355,7 +355,7 @@ function ReportTab() {
         <p className="text-[12px] text-txt-tertiary text-center">빠르게 확인하고 처리하겠습니다.<br />감사합니다!</p>
         <button
           onClick={() => setSubmitted(false)}
-          className="mt-2 px-4 py-2 text-[12px] font-bold bg-surface-card rounded-lg border border-border text-txt-secondary hover:bg-black hover:text-white hover:border-border transition-colors"
+          className="mt-2 px-4 py-2 text-[12px] font-bold bg-surface-card rounded-xl border border-border text-txt-secondary hover:bg-black hover:text-white hover:border-border transition-colors"
         >
           새 리포트 작성
         </button>
@@ -395,7 +395,7 @@ function ReportTab() {
           onChange={e => setTitle(e.target.value)}
           placeholder="간단히 요약해주세요"
           maxLength={200}
-          className="w-full px-3 py-2 text-[12px] bg-surface-card rounded-lg border border-border focus:outline-none focus:border-brand transition-colors placeholder:text-txt-disabled"
+          className="w-full px-3 py-2 text-[12px] bg-surface-card rounded-xl border border-border focus:outline-none focus:border-brand transition-colors placeholder:text-txt-disabled"
         />
       </div>
 
@@ -408,7 +408,7 @@ function ReportTab() {
           placeholder="어떤 상황에서 발생했는지, 기대했던 동작은 무엇인지 알려주세요"
           rows={4}
           maxLength={5000}
-          className="w-full px-3 py-2 text-[12px] bg-surface-sunken rounded-lg border border-border focus:outline-none focus:border-brand transition-colors resize-none placeholder:text-txt-disabled"
+          className="w-full px-3 py-2 text-[12px] bg-surface-sunken rounded-xl border border-border focus:outline-none focus:border-brand transition-colors resize-none placeholder:text-txt-disabled"
         />
         <p className="text-[9px] text-txt-disabled text-right mt-0.5 font-mono">{description.length}/5000</p>
       </div>

@@ -15,7 +15,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary: 'bg-surface-inverse text-txt-inverse hover:bg-surface-inverse/90 hover:opacity-90 active:scale-[0.97]',
-  secondary: 'bg-surface-card rounded-lg border border-border text-black hover:bg-black hover:text-white',
+  secondary: 'bg-surface-card border border-border text-black hover:bg-black hover:text-white',
   ghost: 'text-black hover:bg-surface-sunken',
   blue: 'bg-brand text-white hover:bg-brand-hover hover:opacity-90 active:scale-[0.97]',
   danger: 'bg-status-danger-text text-white hover:bg-status-danger-text/90 hover:opacity-90 active:scale-[0.97]',
@@ -44,7 +44,7 @@ export const Button: React.FC<ButtonProps> = ({
   disabled,
   ...props
 }) => {
-  const baseStyles = 'font-bold rounded-lg transition-all flex items-center justify-center gap-2'
+  const baseStyles = 'font-bold rounded-xl transition-all flex items-center justify-center gap-2'
   const isDisabled = disabled || loading
 
   return (
@@ -86,10 +86,10 @@ export const IconButton: React.FC<IconButtonProps> = ({
   className = '',
   ...props
 }) => {
-  const baseStyles = 'rounded-lg transition-colors flex items-center justify-center'
+  const baseStyles = 'rounded-xl transition-colors flex items-center justify-center'
   const variantStyle = variant === 'ghost'
     ? 'text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken'
-    : 'bg-surface-card rounded-lg border border-border text-txt-secondary hover:bg-black hover:text-white'
+    : 'bg-surface-card border border-border text-txt-secondary hover:bg-black hover:text-white'
 
   return (
     <button

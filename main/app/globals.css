@@ -12,7 +12,7 @@
   --surface-bg: #FFFFFF;
   --surface-card: #FFFFFF;
   --surface-elevated: #FFFFFF;
-  --surface-sunken: #F5F5F5;
+  --surface-sunken: #EEEEEE;
   --surface-inverse: #262626;
   --surface-overlay: rgba(0, 0, 0, 0.4);
 
@@ -24,10 +24,10 @@
   --text-inverse: #FFFFFF;
   --text-link: #00376B;
 
-  /* ── Border (ultra-light, Instagram-like) ── */
-  --border-default: #EFEFEF;
-  --border-strong: #DBDBDB;
-  --border-subtle: #F5F5F5;
+  /* ── Border ── */
+  --border-default: #E0E0E0;
+  --border-strong: #D0D0D0;
+  --border-subtle: #EEEEEE;
 
   /* ── Accent ── */
   --accent-primary: #0095F6;
@@ -85,13 +85,13 @@
   --radius-xl: 20px;
   --radius-full: 9999px;
 
-  /* ── Shadow (Minimal, barely-there) ── */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 1px 4px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 2px 12px rgba(0, 0, 0, 0.08);
-  --shadow-xl: 0 4px 24px rgba(0, 0, 0, 0.1);
-  --shadow-solid: 0 2px 8px rgba(0, 0, 0, 0.06);
-  --shadow-solid-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  /* ── Shadow (Uniform 4-sided · clean panel feel) ── */
+  --shadow-sm: 0 0 2px rgba(0, 0, 0, 0.08), 0 0 1px rgba(0, 0, 0, 0.12);
+  --shadow-md: 0 0 6px rgba(0, 0, 0, 0.08), 0 0 1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 0 12px rgba(0, 0, 0, 0.08), 0 0 2px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 0 20px rgba(0, 0, 0, 0.1), 0 0 2px rgba(0, 0, 0, 0.1);
+  --shadow-solid: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 0 6px rgba(0, 0, 0, 0.06);
+  --shadow-solid-sm: 0 0 0 1px rgba(0, 0, 0, 0.06);
 }
 
 /* ── Desktop: collapse bottom tab height ── */
@@ -117,9 +117,9 @@
   --text-inverse: #262626;
   --text-link: #E0F1FF;
 
-  --border-default: #363636;
-  --border-strong: #525252;
-  --border-subtle: #262626;
+  --border-default: #3A3A3A;
+  --border-strong: #555555;
+  --border-subtle: #2A2A2A;
 
   --accent-primary: #0095F6;
   --accent-primary-hover: #1877F2;
@@ -160,12 +160,12 @@
   --grid-color: rgba(255, 255, 255, 0.03);
   --focus-ring: rgba(0, 149, 246, 0.5);
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.5);
-  --shadow-xl: 0 8px 32px rgba(0, 0, 0, 0.6);
-  --shadow-solid: 0 4px 12px rgba(0, 0, 0, 0.5);
-  --shadow-solid-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 0 2px rgba(0, 0, 0, 0.4), 0 0 1px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 0 6px rgba(0, 0, 0, 0.35), 0 0 1px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 0 12px rgba(0, 0, 0, 0.35), 0 0 2px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 0 20px rgba(0, 0, 0, 0.4), 0 0 2px rgba(0, 0, 0, 0.5);
+  --shadow-solid: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 0 6px rgba(0, 0, 0, 0.4);
+  --shadow-solid-sm: 0 0 0 1px rgba(255, 255, 255, 0.06);
 
   color-scheme: dark;
 }
@@ -557,7 +557,6 @@ a[class*="px-"]:active {
               border-color 0.2s ease;
 }
 .hover-spring:hover {
-  transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
 }
 .hover-spring:active {

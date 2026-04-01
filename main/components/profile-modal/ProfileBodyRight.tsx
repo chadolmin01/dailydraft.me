@@ -23,7 +23,7 @@ export function ProfileBodyRight({
        !(teamPref && Object.keys(teamPref).length > 0) &&
        !(availability && (availability.hours_per_week != null || availability.prefer_online != null)) &&
        !(skills && skills.length > 0) && (
-        <div className="px-4 py-8 border border-border bg-white text-center rounded-lg">
+        <div className="px-4 py-8 border border-border bg-white text-center rounded-xl">
           <p className="text-xs text-txt-disabled font-mono">아직 등록된 성향·스킬 정보가 없습니다</p>
         </div>
       )}
@@ -71,19 +71,19 @@ export function ProfileBodyRight({
           </h3>
           <div className="space-y-1.5">
             {teamPref.role && (
-              <div className="flex items-center justify-between px-3 py-2.5 bg-white rounded-lg border border-border-strong/60 hover:border-brand/30 transition-colors">
+              <div className="flex items-center justify-between px-3 py-2.5 bg-white rounded-xl border border-border-strong/60 hover:border-brand/30 transition-colors">
                 <span className="text-[0.625rem] text-txt-tertiary font-mono uppercase">역할</span>
                 <span className="text-xs font-semibold text-txt-primary">{teamPref.role}</span>
               </div>
             )}
             {teamPref.preferred_size && (
-              <div className="flex items-center justify-between px-3 py-2.5 bg-white rounded-lg border border-border-strong/60 hover:border-brand/30 transition-colors">
+              <div className="flex items-center justify-between px-3 py-2.5 bg-white rounded-xl border border-border-strong/60 hover:border-brand/30 transition-colors">
                 <span className="text-[0.625rem] text-txt-tertiary font-mono uppercase">선호 규모</span>
                 <span className="text-xs font-semibold text-txt-primary">{teamPref.preferred_size}</span>
               </div>
             )}
             {teamPref.atmosphere && (
-              <div className="flex items-center justify-between px-3 py-2.5 bg-white rounded-lg border border-border-strong/60 hover:border-brand/30 transition-colors">
+              <div className="flex items-center justify-between px-3 py-2.5 bg-white rounded-xl border border-border-strong/60 hover:border-brand/30 transition-colors">
                 <span className="text-[0.625rem] text-txt-tertiary font-mono uppercase">분위기</span>
                 <span className="text-xs font-semibold text-txt-primary">{teamPref.atmosphere}</span>
               </div>
@@ -101,13 +101,13 @@ export function ProfileBodyRight({
           </h3>
           <div className="space-y-1.5">
             {availability.hours_per_week != null && (
-              <div className="flex items-center justify-between px-3 py-2.5 bg-white rounded-lg border border-border-strong/60 hover:border-brand/30 transition-colors">
+              <div className="flex items-center justify-between px-3 py-2.5 bg-white rounded-xl border border-border-strong/60 hover:border-brand/30 transition-colors">
                 <span className="text-[0.625rem] text-txt-tertiary font-mono uppercase">주당 시간</span>
                 <span className="text-xs font-semibold text-txt-primary">{availability.hours_per_week}시간</span>
               </div>
             )}
             {availability.prefer_online != null && (
-              <div className="flex items-center justify-between px-3 py-2.5 bg-white rounded-lg border border-border-strong/60 hover:border-brand/30 transition-colors">
+              <div className="flex items-center justify-between px-3 py-2.5 bg-white rounded-xl border border-border-strong/60 hover:border-brand/30 transition-colors">
                 <span className="text-[0.625rem] text-txt-tertiary font-mono uppercase">작업 방식</span>
                 <span className="text-xs font-semibold text-txt-primary">{availability.prefer_online ? '온라인 선호' : '오프라인 선호'}</span>
               </div>
@@ -127,7 +127,7 @@ export function ProfileBodyRight({
             {skills.map((skill) => (
               <span
                 key={skill.name}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white text-txt-primary text-xs font-medium border border-border-strong/60 rounded-lg hover:border-brand/40 hover:text-brand transition-colors"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white text-txt-primary text-xs font-medium border border-border-strong/60 rounded-xl hover:border-brand/40 hover:text-brand transition-colors"
               >
                 {skill.name}
                 <span className="text-txt-disabled">·</span>

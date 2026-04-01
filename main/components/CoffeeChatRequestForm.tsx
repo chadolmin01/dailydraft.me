@@ -68,7 +68,7 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
   if (sent) {
     return (
       <div className="text-center py-4">
-        <div className="w-14 h-14 bg-status-success-bg rounded-sm border border-status-success-text/20 flex items-center justify-center mb-4 mx-auto shadow-sm success-pop">
+        <div className="w-14 h-14 bg-status-success-bg rounded-lg border border-status-success-text/20 flex items-center justify-center mb-4 mx-auto shadow-sm success-pop">
           <Coffee size={24} className="text-status-success-text" />
         </div>
         <h3 className="text-xl font-bold text-txt-primary mb-2 animate-in fade-in">커피챗 신청 완료!</h3>
@@ -108,7 +108,7 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
           <button
             key={tpl.id}
             onClick={() => setMessage(tpl.message)}
-            className="text-[0.6875rem] px-3 py-1.5 bg-surface-sunken text-txt-secondary border border-border rounded-sm hover:bg-black hover:text-white hover:border-border transition-colors"
+            className="text-[0.6875rem] px-3 py-1.5 bg-surface-sunken text-txt-secondary border border-border rounded-lg hover:bg-black hover:text-white hover:border-border transition-colors"
           >
             {tpl.label}
           </button>
@@ -124,7 +124,7 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
         }
         rows={4}
         maxLength={500}
-        className="w-full px-4 py-3 border border-border rounded-sm text-base sm:text-sm text-left bg-surface-card rounded-lg focus:outline-none focus:border-brand resize-none"
+        className="w-full px-4 py-3 border border-border text-base sm:text-sm text-left bg-surface-card rounded-xl focus:outline-none focus:border-brand resize-none"
       />
       <div className="text-[0.625rem] text-txt-tertiary font-mono text-right mt-1 mb-4">
         {message.length}/500
@@ -137,7 +137,7 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
       <button
         onClick={handleSubmit}
         disabled={!message.trim() || isPending}
-        className="w-full bg-brand text-white border border-brand py-3 rounded-sm font-bold text-sm flex items-center justify-center gap-2 hover:bg-brand-hover hover:opacity-90 active:scale-[0.97] transition-all disabled:opacity-40 disabled:cursor-not-allowed mb-3"
+        className="w-full bg-brand text-white border border-brand py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-brand-hover hover:opacity-90 active:scale-[0.97] transition-all disabled:opacity-40 disabled:cursor-not-allowed mb-3"
       >
         {isPending ? (
           <><Loader2 size={14} className="animate-spin" /> 전송 중...</>

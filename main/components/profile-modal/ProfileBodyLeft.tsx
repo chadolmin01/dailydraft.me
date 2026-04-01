@@ -70,7 +70,7 @@ export function ProfileBodyLeft({
             )}
           </>
         ) : (
-          <div className="px-4 py-5 border border-border bg-white rounded-lg text-center">
+          <div className="px-4 py-5 border border-border bg-white rounded-xl text-center">
             <p className="text-xs text-txt-disabled font-mono">아직 자기소개가 없습니다</p>
           </div>
         )}
@@ -89,19 +89,19 @@ export function ProfileBodyLeft({
             <p className="text-[0.5rem] font-medium text-txt-disabled mb-1.5">LINKS</p>
             <div className="flex flex-wrap gap-2">
               {profile.portfolio_url && (
-                <a href={profile.portfolio_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white rounded-lg border border-border text-xs text-txt-secondary hover:border-brand hover:text-brand transition-colors">
+                <a href={profile.portfolio_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white rounded-xl border border-border text-xs text-txt-secondary hover:border-brand hover:text-brand transition-colors">
                   <Globe size={12} className="shrink-0" />
                   {profile.portfolio_url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}
                 </a>
               )}
               {profile.github_url && (
-                <a href={profile.github_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white rounded-lg border border-border text-xs text-txt-secondary hover:border-brand hover:text-brand transition-colors">
+                <a href={profile.github_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white rounded-xl border border-border text-xs text-txt-secondary hover:border-brand hover:text-brand transition-colors">
                   <Github size={12} className="shrink-0" />
                   {profile.github_url.replace(/^https?:\/\/(www\.)?github\.com\/?/, '')}
                 </a>
               )}
               {profile.linkedin_url && (
-                <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white rounded-lg border border-border text-xs text-txt-secondary hover:border-brand hover:text-brand transition-colors">
+                <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white rounded-xl border border-border text-xs text-txt-secondary hover:border-brand hover:text-brand transition-colors">
                   <Linkedin size={12} className="shrink-0" />
                   {profile.linkedin_url.replace(/^https?:\/\/(www\.)?linkedin\.com\/in\/?/, '')}
                 </a>
@@ -145,7 +145,7 @@ export function ProfileBodyLeft({
             )}
           </>
         ) : !profile.portfolio_url && !profile.github_url && !profile.linkedin_url ? (
-          <div className="px-4 py-5 border border-border bg-white rounded-lg text-center">
+          <div className="px-4 py-5 border border-border bg-white rounded-xl text-center">
             <p className="text-xs text-txt-disabled font-mono">아직 등록된 포트폴리오가 없습니다</p>
           </div>
         ) : null}
@@ -218,7 +218,7 @@ export function ProfileBodyLeft({
             )}
           </>
         ) : (
-          <div className="px-4 py-5 border border-border bg-white rounded-lg text-center">
+          <div className="px-4 py-5 border border-border bg-white rounded-xl text-center">
             <p className="text-xs text-txt-disabled font-mono">아직 등록된 프로젝트가 없습니다</p>
           </div>
         )}
@@ -291,7 +291,7 @@ function ContactSection({ email, isAuthenticated }: { email: string; isAuthentic
       {isAuthenticated ? (
         <button
           onClick={handleCopy}
-          className="w-full flex items-center justify-between px-3 py-2.5 bg-white hover:bg-surface-sunken text-sm text-txt-secondary transition-colors border border-border rounded-lg group"
+          className="w-full flex items-center justify-between px-3 py-2.5 bg-white hover:bg-surface-sunken text-sm text-txt-secondary transition-colors border border-border rounded-xl group"
         >
           <span className="flex items-center gap-2">
             <Mail size={14} />
@@ -304,7 +304,7 @@ function ContactSection({ email, isAuthenticated }: { email: string; isAuthentic
       ) : (
         <a
           href="/login"
-          className="flex items-center gap-2 px-3 py-2.5 bg-white hover:bg-surface-sunken text-sm text-txt-tertiary transition-colors border border-border rounded-lg"
+          className="flex items-center gap-2 px-3 py-2.5 bg-white hover:bg-surface-sunken text-sm text-txt-tertiary transition-colors border border-border rounded-xl"
         >
           <Mail size={14} />
           로그인하면 연락처를 볼 수 있어요

@@ -12,7 +12,7 @@ export const FinalCTA: React.FC = () => {
           혼자 시작하지 마세요
         </h2>
         <p className="text-sm md:text-base text-gray-400 mb-8 max-w-lg mx-auto leading-relaxed break-keep">
-          AI가 분석하고, 비전 맞는 팀원을 찾아드려요.
+          프로젝트를 올리고, 함께할 팀원을 찾아보세요.
           <br className="hidden sm:inline" />
           1분이면 시작할 수 있어요.
         </p>

@@ -108,7 +108,7 @@ export const Sidebar: React.FC = () => {
         onClick={() => router.push('/explore')}
       >
         <div
-          className={`w-10 h-10 flex items-center justify-center rounded-sm transition-colors
+          className={`w-10 h-10 flex items-center justify-center rounded-lg transition-colors
             ${
               getActiveTab() === 'dashboard'
                 ? 'bg-surface-inverse text-txt-inverse shadow-sm'
@@ -118,7 +118,7 @@ export const Sidebar: React.FC = () => {
         >
           <span className="font-black text-base leading-none">D</span>
         </div>
-        <div className="absolute left-14 top-1/2 -translate-y-1/2 bg-surface-inverse text-txt-inverse text-[0.625rem] font-medium px-2 py-1 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-sm">
+        <div className="absolute left-14 top-1/2 -translate-y-1/2 bg-surface-inverse text-txt-inverse text-[0.625rem] font-medium px-2 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-sm">
           MAIN
         </div>
       </div>
@@ -129,7 +129,7 @@ export const Sidebar: React.FC = () => {
           <button
             key={item.id}
             onClick={() => router.push(item.path)}
-            className={`w-10 h-10 flex items-center justify-center transition-all duration-200 mx-auto rounded-sm relative group
+            className={`w-10 h-10 flex items-center justify-center transition-all duration-200 mx-auto rounded-lg relative group
               ${
                 getActiveTab() === item.id
                   ? 'bg-brand-bg text-brand border border-brand shadow-sm'
@@ -144,7 +144,7 @@ export const Sidebar: React.FC = () => {
             )}
 
             {/* Tooltip */}
-            <div className="absolute left-14 top-1/2 -translate-y-1/2 bg-surface-inverse text-txt-inverse text-[0.625rem] font-medium px-2 py-1 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-sm">
+            <div className="absolute left-14 top-1/2 -translate-y-1/2 bg-surface-inverse text-txt-inverse text-[0.625rem] font-medium px-2 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-sm">
               {item.label}
             </div>
           </button>
@@ -155,13 +155,13 @@ export const Sidebar: React.FC = () => {
       <div className="mt-auto flex flex-col gap-4 w-full px-3 pb-4 relative" ref={menuRef}>
         {/* Popup Menu */}
         {isMenuOpen && (
-          <div className="absolute left-14 bottom-2 w-56 bg-surface-card rounded-xl border border-border shadow-md rounded-sm p-1 flex flex-col gap-0.5 z-50 animate-in fade-in zoom-in-95 duration-100 origin-bottom-left">
+          <div className="absolute left-14 bottom-2 w-56 bg-surface-card rounded-xl border border-border shadow-md p-1 flex flex-col gap-0.5 z-50 animate-in fade-in zoom-in-95 duration-100 origin-bottom-left">
             {/* User Info */}
             <div className="px-3 py-2.5 mb-1 border-b border-border">
               <div className="flex items-center gap-2">
                 <span className="font-bold text-sm text-txt-primary">{profile?.nickname || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}</span>
                 {isPremium && (
-                  <span className="flex items-center gap-0.5 px-1.5 py-0.5 bg-indicator-premium text-white text-[0.5625rem] font-mono font-bold rounded-sm border border-indicator-premium-border">
+                  <span className="flex items-center gap-0.5 px-1.5 py-0.5 bg-indicator-premium text-white text-[0.5625rem] font-mono font-bold rounded-lg border border-indicator-premium-border">
                     <Crown size={10} />
                     PRO
                   </span>
@@ -173,31 +173,31 @@ export const Sidebar: React.FC = () => {
             {/* Menu Items */}
             <button
               onClick={() => handleMenuAction('profile')}
-              className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary rounded-sm transition-colors text-left w-full"
+              className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary rounded-lg transition-colors text-left w-full"
             >
               <User size={14} /> My Profile
             </button>
             {/* Community Mode: Usage hidden
             <button
               onClick={() => handleMenuAction('usage')}
-              className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary rounded-sm transition-colors text-left w-full"
+              className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary rounded-lg transition-colors text-left w-full"
             >
               <BarChart3 size={14} /> Usage & Billing
             </button>
             */}
             <button
               onClick={() => handleMenuAction('settings')}
-              className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary rounded-sm transition-colors text-left w-full"
+              className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary rounded-lg transition-colors text-left w-full"
             >
               <Settings size={14} /> Settings
             </button>
             <button
               onClick={() => handleMenuAction('notifications')}
-              className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary rounded-sm transition-colors text-left w-full"
+              className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary rounded-lg transition-colors text-left w-full"
             >
               <Bell size={14} /> Notifications{' '}
               {unreadMessages > 0 && (
-                <span className="ml-auto bg-status-danger-bg text-status-danger-text px-1.5 py-0.5 rounded-sm text-[0.5625rem] font-mono font-bold border border-status-danger-accent">
+                <span className="ml-auto bg-status-danger-bg text-status-danger-text px-1.5 py-0.5 rounded-lg text-[0.5625rem] font-mono font-bold border border-status-danger-accent">
                   {unreadMessages > 9 ? '9+' : unreadMessages}
                 </span>
               )}
@@ -207,7 +207,7 @@ export const Sidebar: React.FC = () => {
             {!isPremium && (
               <button
                 onClick={() => handleMenuAction('invite-code')}
-                className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-brand hover:bg-brand-bg rounded-sm transition-colors text-left w-full"
+                className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-brand hover:bg-brand-bg rounded-lg transition-colors text-left w-full"
               >
                 <Gift size={14} /> 초대 코드 입력
               </button>
@@ -222,7 +222,7 @@ export const Sidebar: React.FC = () => {
                 </div>
                 <button
                   onClick={() => handleMenuAction('institution')}
-                  className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary rounded-sm transition-colors text-left w-full"
+                  className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary rounded-lg transition-colors text-left w-full"
                 >
                   <Building2 size={14} /> 기관 대시보드
                 </button>
@@ -239,13 +239,13 @@ export const Sidebar: React.FC = () => {
                 </div>
                 <button
                   onClick={() => handleMenuAction('invite-codes-admin')}
-                  className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary rounded-sm transition-colors text-left w-full"
+                  className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary rounded-lg transition-colors text-left w-full"
                 >
                   <Gift size={14} /> 초대 코드 관리
                 </button>
                 <button
                   onClick={() => handleMenuAction('error-logs')}
-                  className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary rounded-sm transition-colors text-left w-full"
+                  className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary rounded-lg transition-colors text-left w-full"
                 >
                   <AlertCircle size={14} /> Error Logs
                 </button>
@@ -255,7 +255,7 @@ export const Sidebar: React.FC = () => {
 
             <button
               onClick={() => handleMenuAction('signout')}
-              className="flex items-center gap-3 px-3 py-2 text-xs font-bold text-status-danger-text hover:bg-status-danger-bg rounded-sm transition-colors text-left w-full"
+              className="flex items-center gap-3 px-3 py-2 text-xs font-bold text-status-danger-text hover:bg-status-danger-bg rounded-lg transition-colors text-left w-full"
             >
               <LogOut size={14} /> Sign Out
             </button>
@@ -264,7 +264,7 @@ export const Sidebar: React.FC = () => {
 
         {/* Profile Avatar Trigger */}
         <button
-          className={`w-10 h-10 mx-auto rounded-sm flex items-center justify-center text-[0.625rem] font-bold cursor-pointer transition-all border relative group
+          className={`w-10 h-10 mx-auto rounded-lg flex items-center justify-center text-[0.625rem] font-bold cursor-pointer transition-all border relative group
             ${
               isMenuOpen
                 ? 'bg-surface-inverse text-txt-inverse border-surface-inverse shadow-sm'
@@ -277,7 +277,7 @@ export const Sidebar: React.FC = () => {
           {isPremium ? <Crown size={16} /> : (profile?.nickname?.[0] || user?.email?.[0] || 'U').toUpperCase()}
           {/* Notification Dot — only show when there are unread messages */}
           {unreadMessages > 0 && (
-            <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-indicator-alert rounded-sm border border-surface-card"></div>
+            <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-indicator-alert rounded-full border border-surface-card"></div>
           )}
         </button>
       </div>

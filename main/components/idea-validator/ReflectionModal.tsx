@@ -101,7 +101,7 @@ const ReflectionModal: React.FC<ReflectionModalProps> = ({
             <textarea
               value={reflectionText}
               onChange={(e) => onReflectionTextChange(e.target.value)}
-              className="w-full h-28 p-4 bg-surface-card rounded-lg border border-border text-txt-primary text-base sm:text-sm leading-relaxed focus:outline-none focus:border-border focus:ring-1 focus:ring-black/10 resize-none transition-all"
+              className="w-full h-28 p-4 bg-surface-card rounded-xl border border-border text-txt-primary text-base sm:text-sm leading-relaxed focus:outline-none focus:border-border focus:ring-1 focus:ring-black/10 resize-none transition-all"
               placeholder="이 피드백을 어떻게 해결할지 구체적으로 적어주세요..."
             />
           </div>

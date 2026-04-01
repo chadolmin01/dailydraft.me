@@ -49,7 +49,7 @@ const DropdownItem = ({ icon: Icon, children, onClick, disabled, danger }: {
   <button
     onClick={onClick}
     disabled={disabled}
-    className={`w-full flex items-center gap-2.5 px-2.5 py-2 text-xs rounded-sm transition-colors text-left ${
+    className={`w-full flex items-center gap-2.5 px-2.5 py-2 text-xs rounded-lg transition-colors text-left ${
       disabled ? 'text-txt-disabled cursor-not-allowed'
         : danger ? 'text-status-danger-text hover:bg-status-danger-bg'
         : 'text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary'
@@ -64,7 +64,7 @@ const DropdownItem = ({ icon: Icon, children, onClick, disabled, danger }: {
 const MobileNavItem = ({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) => (
   <Link
     href={href}
-    className={`block px-4 py-2.5 rounded-sm text-sm font-medium transition-colors ${
+    className={`block px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
       active ? 'bg-surface-sunken text-txt-primary' : 'text-txt-secondary hover:bg-surface-sunken'
     }`}
   >
@@ -201,7 +201,7 @@ export const TopNavbar: React.FC = () => {
               onClick={() => { if (!isSearchOpen) { setIsSearchOpen(true); setTimeout(() => searchInputRef.current?.focus(), 50) } }}
               className={`flex items-center transition-all duration-200 cursor-text ${
                 isSearchOpen
-                  ? 'bg-surface-card shadow-md border border-border'
+                  ? 'bg-surface-card shadow-md border border-border rounded-xl'
                   : 'bg-surface-card rounded-xl border border-border hover:shadow-soft hover:border-border'
               }`}
             >
@@ -232,7 +232,7 @@ export const TopNavbar: React.FC = () => {
             {/* 드롭다운 — 검색바 아래로 자연스럽게 열림 */}
             {isSearchOpen && (
               <div className="absolute top-full left-0 right-0 mt-1.5 z-popover">
-                <div className="bg-surface-card shadow-lg border border-border overflow-hidden search-expand max-h-[60vh] overflow-y-auto">
+                <div className="bg-surface-card shadow-lg border border-border rounded-xl overflow-hidden search-expand max-h-[60vh] overflow-y-auto">
 
                   {/* 바로가기 */}
                   <div className="px-2 pt-2 pb-1">
@@ -244,9 +244,9 @@ export const TopNavbar: React.FC = () => {
                         <button
                           key={item.href || item.label}
                           onClick={() => handleNavClick(item.href)}
-                          className="w-full flex items-center gap-3 px-2.5 py-2 rounded-sm text-sm transition-colors text-left text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary"
+                          className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm transition-colors text-left text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary"
                         >
-                          <div className="w-7 h-7 rounded-sm bg-surface-sunken flex items-center justify-center shrink-0">
+                          <div className="w-7 h-7 rounded-lg bg-surface-sunken flex items-center justify-center shrink-0">
                             <item.icon size={14} />
                           </div>
                           <span>{item.label}</span>
@@ -266,9 +266,9 @@ export const TopNavbar: React.FC = () => {
                         <p className="px-2.5 pt-1 pb-1.5 text-[10px] text-txt-disabled">콘텐츠 검색</p>
                         <button
                           onClick={handleSearch}
-                          className="w-full flex items-center gap-3 px-2.5 py-2 rounded-sm text-sm text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary transition-colors text-left"
+                          className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary transition-colors text-left"
                         >
-                          <div className="w-7 h-7 rounded-sm bg-surface-inverse text-txt-inverse flex items-center justify-center shrink-0">
+                          <div className="w-7 h-7 rounded-lg bg-surface-inverse text-txt-inverse flex items-center justify-center shrink-0">
                             <Search size={14} />
                           </div>
                           <span>&ldquo;{searchQuery.trim()}&rdquo; 탐색에서 검색</span>
@@ -282,13 +282,13 @@ export const TopNavbar: React.FC = () => {
                   <div className="mx-3 border-t border-border-subtle" />
                   <div className="px-4 py-2 flex items-center gap-3">
                     <span className="flex items-center gap-1.5 text-[10px] text-txt-disabled">
-                      <kbd className="px-1.5 py-0.5 bg-surface-sunken rounded-xl border border-border rounded font-mono">↑↓</kbd> 이동
+                      <kbd className="px-1.5 py-0.5 bg-surface-sunken rounded-lg border border-border font-mono">↑↓</kbd> 이동
                     </span>
                     <span className="flex items-center gap-1.5 text-[10px] text-txt-disabled">
-                      <kbd className="px-1.5 py-0.5 bg-surface-sunken rounded-xl border border-border rounded font-mono">Enter</kbd> 열기
+                      <kbd className="px-1.5 py-0.5 bg-surface-sunken rounded-lg border border-border font-mono">Enter</kbd> 열기
                     </span>
                     <span className="flex items-center gap-1.5 text-[10px] text-txt-disabled">
-                      <kbd className="px-1.5 py-0.5 bg-surface-sunken rounded-xl border border-border rounded font-mono">Esc</kbd> 닫기
+                      <kbd className="px-1.5 py-0.5 bg-surface-sunken rounded-lg border border-border font-mono">Esc</kbd> 닫기
                     </span>
                   </div>
                 </div>
@@ -338,7 +338,7 @@ export const TopNavbar: React.FC = () => {
 
                   {/* 드롭다운 */}
                   {isMenuOpen && (
-                    <div className="absolute right-0 top-11 w-[calc(100vw-2rem)] sm:w-60 max-w-60 bg-surface-card shadow-lg border border-border py-1.5 animate-in fade-in zoom-in-95 duration-150 z-popover">
+                    <div className="absolute right-0 top-11 w-[calc(100vw-2rem)] sm:w-60 max-w-60 bg-surface-card shadow-lg border border-border rounded-xl py-1.5 animate-in fade-in zoom-in-95 duration-150 z-popover">
                       {/* 유저 헤더 */}
                       <div className="px-4 pt-3 pb-3">
                         <div className="flex items-center gap-3">
@@ -426,7 +426,7 @@ export const TopNavbar: React.FC = () => {
                   name="mq"
                   type="text"
                   placeholder="검색..."
-                  className="w-full pl-10 pr-4 py-2.5 bg-surface-sunken rounded-sm text-base sm:text-sm placeholder:text-txt-disabled focus:outline-none focus:bg-surface-card focus:ring-1 focus:ring-border transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 bg-surface-sunken rounded-lg text-base sm:text-sm placeholder:text-txt-disabled focus:outline-none focus:bg-surface-card focus:ring-1 focus:ring-border transition-all"
                 />
               </form>
               <MobileNavItem href="/explore" active={pathname === '/explore'}>탐색</MobileNavItem>

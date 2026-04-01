@@ -68,7 +68,7 @@ function InlineField({
           onKeyDown={(e) => { if (e.key === 'Escape') close() }}
           placeholder={placeholder}
           rows={3}
-          className={`bg-surface-bg border border-border rounded-lg outline-none w-full px-2 py-1.5 resize-none focus:border-brand transition-colors ${className || ''}`}
+          className={`bg-surface-bg border border-border rounded-xl outline-none w-full px-2 py-1.5 resize-none focus:border-brand transition-colors ${className || ''}`}
         />
       )
     }
@@ -83,14 +83,14 @@ function InlineField({
         }}
         onBlur={close}
         placeholder={placeholder}
-        className={`bg-surface-bg border border-border rounded-lg outline-none px-2 py-0.5 focus:border-brand transition-colors ${className || ''}`}
+        className={`bg-surface-bg border border-border rounded-xl outline-none px-2 py-0.5 focus:border-brand transition-colors ${className || ''}`}
       />
     )
   }
 
   return (
     <span
-      className="group/edit inline-flex items-center gap-1 cursor-pointer rounded-sm px-1 -mx-1 hover:bg-surface-sunken/60 transition-colors"
+      className="group/edit inline-flex items-center gap-1 cursor-pointer rounded-lg px-1 -mx-1 hover:bg-surface-sunken/60 transition-colors"
       onClick={() => setEditing(true)}
       title="클릭하여 수정"
     >
@@ -335,7 +335,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
               onKeyDown={(e) => { if (e.key === 'Escape') setEditingBio(false) }}
               placeholder="자기소개를 입력하세요"
               rows={3}
-              className="bg-surface-bg border border-border rounded-lg outline-none w-full px-3 py-2 resize-none focus:border-brand transition-colors text-base sm:text-sm text-txt-secondary leading-relaxed"
+              className="bg-surface-bg border border-border rounded-xl outline-none w-full px-3 py-2 resize-none focus:border-brand transition-colors text-base sm:text-sm text-txt-secondary leading-relaxed"
             />
           </div>
         )

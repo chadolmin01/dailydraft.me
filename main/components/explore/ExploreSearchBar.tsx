@@ -37,7 +37,7 @@ export function ExploreSearchBar({
     <div ref={searchRef} className="relative mb-6">
       <div className={`relative transition-all duration-200 ${
         isSearchExpanded
-          ? 'bg-surface-card shadow-sm border border-brand/40'
+          ? 'bg-surface-card shadow-sm border border-brand/40 rounded-xl'
           : 'bg-surface-card rounded-xl border border-border hover:shadow-md hover:border-border'
       }`}>
         <div className="relative flex items-center">
@@ -124,11 +124,11 @@ export function ExploreSearchBar({
               </div>
               <div className="flex items-center gap-3 pt-1">
                 <span className="flex items-center gap-1.5 text-[0.625rem] text-txt-disabled">
-                  <kbd className="px-1.5 py-0.5 bg-surface-sunken rounded-xl border border-border rounded text-[0.625rem] font-mono">Enter</kbd>
+                  <kbd className="px-1.5 py-0.5 bg-surface-sunken rounded-lg border border-border text-[0.625rem] font-mono">Enter</kbd>
                   검색
                 </span>
                 <span className="flex items-center gap-1.5 text-[0.625rem] text-txt-disabled">
-                  <kbd className="px-1.5 py-0.5 bg-surface-sunken rounded-xl border border-border rounded text-[0.625rem] font-mono">Esc</kbd>
+                  <kbd className="px-1.5 py-0.5 bg-surface-sunken rounded-lg border border-border text-[0.625rem] font-mono">Esc</kbd>
                   닫기
                 </span>
               </div>

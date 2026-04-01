@@ -193,10 +193,10 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
           </div>
           {isEditable && hasPendingChanges && (
             <div className="flex items-center justify-end gap-2 pt-3 mt-3 border-t border-border">
-              <button onClick={handleCancel} disabled={updateProfile.isPending} className="flex items-center gap-1 px-2.5 py-1 text-[0.625rem] font-bold text-txt-secondary border border-border hover:bg-surface-sunken transition-colors rounded-lg">
+              <button onClick={handleCancel} disabled={updateProfile.isPending} className="flex items-center gap-1 px-2.5 py-1 text-[0.625rem] font-bold text-txt-secondary border border-border hover:bg-surface-sunken transition-colors rounded-xl">
                 <X size={10} /> 취소
               </button>
-              <button onClick={handleSave} disabled={updateProfile.isPending} className="flex items-center gap-1 px-3 py-1 text-[0.625rem] font-bold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97] disabled:opacity-50 rounded-lg">
+              <button onClick={handleSave} disabled={updateProfile.isPending} className="flex items-center gap-1 px-3 py-1 text-[0.625rem] font-bold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97] disabled:opacity-50 rounded-xl">
                 {updateProfile.isPending ? <Loader2 size={10} className="animate-spin" /> : <Check size={10} />}
                 저장
               </button>
