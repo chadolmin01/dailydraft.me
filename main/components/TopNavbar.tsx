@@ -171,12 +171,14 @@ export const TopNavbar: React.FC = () => {
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 w-full h-14 sm:h-20 z-fixed transition-all duration-300 ${
-        isScrolled
-          ? 'bg-surface-card/80 backdrop-blur-xl shadow-soft'
-          : 'bg-surface-card/60 backdrop-blur-md'
-      }`}>
-        <div className="w-full px-2.5 sm:px-10 lg:px-16 xl:px-24 h-full flex items-center gap-2 sm:gap-3">
+      <nav className="fixed top-0 left-0 w-full h-14 sm:h-20 z-fixed">
+        {/* 배경 레이어 — backdrop-filter를 nav가 아닌 별도 div에 적용하여 드롭다운 overflow 가림 방지 */}
+        <div className={`absolute inset-0 transition-all duration-300 ${
+          isScrolled
+            ? 'bg-surface-card/80 backdrop-blur-xl shadow-soft'
+            : 'bg-surface-card/60 backdrop-blur-md'
+        }`} />
+        <div className="relative w-full px-2.5 sm:px-10 lg:px-16 xl:px-24 h-full flex items-center gap-2 sm:gap-3">
 
           {/* ===== 좌측: 로고 ===== */}
           <Link href="/explore" className="flex items-center gap-2.5 shrink-0 group mr-1">
@@ -314,13 +316,8 @@ export const TopNavbar: React.FC = () => {
               {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
             </button>
 
-            {/* 알림 + 프로필: auth 로딩 중에는 플레이스홀더, 완료 후 실제 UI */}
-            {authLoading ? (
-              <>
-                <div className="w-8 h-8 bg-surface-sunken rounded-full" />
-                <div className="w-10 h-10 bg-surface-sunken rounded-full" />
-              </>
-            ) : isAuthenticated ? (
+            {/* 알림 + 프로필: 인증 확인되면 즉시 실제 UI / 미확인 중이면 플레이스홀더 / 비인증이면 로그인 */}
+            {isAuthenticated ? (
               <>
                 <NotificationDropdown />
 
@@ -379,6 +376,11 @@ export const TopNavbar: React.FC = () => {
                     </div>
                   )}
                 </div>
+              </>
+            ) : authLoading ? (
+              <>
+                <div className="w-8 h-8 bg-surface-sunken rounded-full animate-pulse" />
+                <div className="w-10 h-10 bg-surface-sunken rounded-full animate-pulse" />
               </>
             ) : (
               <Link
