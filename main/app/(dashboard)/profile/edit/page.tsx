@@ -19,6 +19,7 @@ import { useProfile, useUpdateProfile } from '@/src/hooks/useProfile'
 import { usePortfolioItems, useCreatePortfolioItem, useDeletePortfolioItem } from '@/src/hooks/usePortfolioItems'
 import { UNIVERSITY_LIST, LOCATION_OPTIONS } from '@/src/lib/constants/profile-options'
 import { supabase } from '@/src/lib/supabase/client'
+import { CATEGORICAL_TO_SCORE, SCORE_TO_CATEGORICAL, CATEGORICAL_LABELS } from '@/src/lib/onboarding/constants'
 
 /* ─── Constants ─── */
 const POSITION_OPTIONS = [
@@ -84,6 +85,7 @@ export default function ProfileEditPage() {
   const [newSkillLevel, setNewSkillLevel] = useState('중급')
   const [personality, setPersonality] = useState<Record<string, number>>({ risk: 5, time: 5, communication: 5, decision: 5 })
   const [workStyle, setWorkStyle] = useState<Record<string, number>>({ collaboration: 5, planning: 5, perfectionism: 5 })
+  const [workStyleTraits, setWorkStyleTraits] = useState<Record<string, string>>({})
   const [teamRole, setTeamRole] = useState('')
   const [teamSize, setTeamSize] = useState('')
   const [teamAtmosphere, setTeamAtmosphere] = useState('')
@@ -139,11 +141,23 @@ export default function ProfileEditPage() {
     if (profile.vision_summary) {
       try {
         const v = JSON.parse(profile.vision_summary)
-        if (v.work_style) setWorkStyle({ collaboration: v.work_style.collaboration || 5, planning: v.work_style.planning || 5, perfectionism: v.work_style.perfectionism || 5 })
+        const ws = v.work_style
+        if (ws) setWorkStyle({ collaboration: ws.collaboration || 5, planning: ws.planning || 5, perfectionism: ws.perfectionism || 5 })
         if (v.team_preference) { setTeamRole(v.team_preference.role || ''); setTeamSize(v.team_preference.preferred_size || ''); setTeamAtmosphere(v.team_preference.atmosphere || '') }
         if (v.availability) { setHoursPerWeek(v.availability.hours_per_week?.toString() || ''); setPreferOnline(v.availability.prefer_online || false) }
         setGoals(v.goals || [])
         setStrengths(v.strengths || [])
+        // Read categorical traits
+        const traits: Record<string, string> = {}
+        if (v.traits?.collaboration_style) traits.collaboration_style = v.traits.collaboration_style
+        else if (ws?.collaboration) traits.collaboration_style = SCORE_TO_CATEGORICAL.collaboration_style(ws.collaboration)
+        if (v.traits?.decision_style) traits.decision_style = v.traits.decision_style
+        else if (p?.decision) traits.decision_style = SCORE_TO_CATEGORICAL.decision_style(p.decision)
+        if (v.traits?.planning_style) traits.planning_style = v.traits.planning_style
+        else if (ws?.planning) traits.planning_style = SCORE_TO_CATEGORICAL.planning_style(ws.planning)
+        if (v.traits?.quality_style) traits.quality_style = v.traits.quality_style
+        else if (ws?.perfectionism) traits.quality_style = SCORE_TO_CATEGORICAL.quality_style(ws.perfectionism)
+        setWorkStyleTraits(traits)
       } catch { /* not JSON */ }
     }
     fetch('/api/profile/verify-university').then(r => r.json()).then(d => { if (d.is_verified) setUniVerified(true) }).catch(() => {})
@@ -203,13 +217,22 @@ export default function ProfileEditPage() {
   const handleSave = async () => {
     setSaveError(null); setSaved(false)
     try {
+      // Convert categorical → numeric scores
+      const finalWorkStyle = { ...workStyle }
+      const finalPersonality = { ...personality }
+      if (workStyleTraits.collaboration_style) { const s = CATEGORICAL_TO_SCORE.collaboration_style[workStyleTraits.collaboration_style]; if (s != null) finalWorkStyle.collaboration = s }
+      if (workStyleTraits.planning_style) { const s = CATEGORICAL_TO_SCORE.planning_style[workStyleTraits.planning_style]; if (s != null) finalWorkStyle.planning = s }
+      if (workStyleTraits.quality_style) { const s = CATEGORICAL_TO_SCORE.quality_style[workStyleTraits.quality_style]; if (s != null) finalWorkStyle.perfectionism = s }
+      if (workStyleTraits.decision_style) { const s = CATEGORICAL_TO_SCORE.decision_style[workStyleTraits.decision_style]; if (s != null) finalPersonality.decision = s }
+
       let existingVision: Record<string, unknown> = {}
       if (profile?.vision_summary) { try { existingVision = JSON.parse(profile.vision_summary) } catch { /* */ } }
       const visionJson = JSON.stringify({
-        ...existingVision, work_style: workStyle,
+        ...existingVision, work_style: finalWorkStyle,
         team_preference: { role: teamRole || undefined, preferred_size: teamSize || undefined, atmosphere: teamAtmosphere || undefined },
         availability: { hours_per_week: hoursPerWeek ? parseInt(hoursPerWeek) : null, prefer_online: preferOnline },
         goals, strengths,
+        traits: { ...((existingVision as Record<string, unknown>).traits || {}), ...workStyleTraits },
       })
       await updateProfile.mutateAsync({
         nickname: nickname.trim() || undefined, desired_position: position.trim() || undefined,
@@ -220,7 +243,7 @@ export default function ProfileEditPage() {
         linkedin_url: linkedinUrl.trim() || undefined, github_url: githubUrl.trim() || undefined,
         location: location.trim() || undefined, current_situation: currentSituation || undefined,
         interest_tags: interestTags.length > 0 ? interestTags : undefined,
-        skills: skills.length > 0 ? skills : undefined, personality,
+        skills: skills.length > 0 ? skills : undefined, personality: finalPersonality,
       })
       setSaved(true); setTimeout(() => setSaved(false), 2000)
       toast.success('프로필이 저장되었습니다')
@@ -646,11 +669,29 @@ export default function ProfileEditPage() {
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <Card title="성향 점수">
                       <div className="space-y-5">
+                        {/* decision — categorical */}
+                        <div>
+                          <span className="text-xs font-medium text-txt-secondary block mb-2">의사결정 스타일</span>
+                          <div className="flex flex-wrap gap-2">
+                            {Object.entries(CATEGORICAL_LABELS.decision_style).map(([id, lbl]) => (
+                              <button key={id} type="button" onClick={() => setWorkStyleTraits(prev => ({ ...prev, decision_style: id }))}
+                                className={`px-3 py-2 text-xs font-medium border transition-colors ${workStyleTraits.decision_style === id ? chipActive : chipDefault}`}>{lbl}</button>
+                            ))}
+                          </div>
+                        </div>
+                        {/* communication — 1-5 spectrum */}
+                        <div>
+                          <div className="flex items-center justify-between mb-1.5">
+                            <span className="text-xs font-medium text-txt-secondary">소통 선호</span>
+                            <span className="text-xs font-mono text-txt-tertiary">{Math.round(personality.communication / 2)}/5</span>
+                          </div>
+                          <input type="range" min={1} max={5} step={1} value={Math.round(personality.communication / 2)} onChange={e => setPersonality(p => ({ ...p, communication: parseInt(e.target.value) * 2 }))} className="w-full h-1.5 accent-brand cursor-pointer" />
+                          <div className="flex justify-between mt-1"><span className="text-[9px] text-txt-tertiary font-mono">혼자 집중</span><span className="text-[9px] text-txt-tertiary font-mono">수시 소통</span></div>
+                        </div>
+                        {/* risk, time — 1-10 sliders */}
                         {[
                           { key: 'risk', label: '도전 성향', low: '안정 추구', high: '도전적' },
                           { key: 'time', label: '시간 투자', low: '여유 없음', high: '풀타임' },
-                          { key: 'communication', label: '소통 선호', low: '혼자 집중', high: '수시 소통' },
-                          { key: 'decision', label: '실행 속도', low: '신중한 계획', high: '빠른 실행' },
                         ].map(item => (
                           <div key={item.key}>
                             <div className="flex items-center justify-between mb-1.5">
@@ -667,17 +708,18 @@ export default function ProfileEditPage() {
                     <Card title="작업 스타일">
                       <div className="space-y-5">
                         {[
-                          { key: 'collaboration', label: '협업 스타일', low: '독립형', high: '팀 소통형' },
-                          { key: 'planning', label: '작업 방식', low: '바로 실행', high: '기획 우선' },
-                          { key: 'perfectionism', label: '품질 기준', low: '속도 우선', high: '완벽주의' },
+                          { traitKey: 'collaboration_style', label: '협업 스타일' },
+                          { traitKey: 'planning_style', label: '작업 방식' },
+                          { traitKey: 'quality_style', label: '품질 기준' },
                         ].map(item => (
-                          <div key={item.key}>
-                            <div className="flex items-center justify-between mb-1.5">
-                              <span className="text-xs font-medium text-txt-secondary">{item.label}</span>
-                              <span className="text-xs font-mono text-txt-tertiary">{workStyle[item.key]}/10</span>
+                          <div key={item.traitKey}>
+                            <span className="text-xs font-medium text-txt-secondary block mb-2">{item.label}</span>
+                            <div className="flex flex-wrap gap-2">
+                              {Object.entries(CATEGORICAL_LABELS[item.traitKey]).map(([id, lbl]) => (
+                                <button key={id} type="button" onClick={() => setWorkStyleTraits(prev => ({ ...prev, [item.traitKey]: id }))}
+                                  className={`px-3 py-2 text-xs font-medium border transition-colors ${workStyleTraits[item.traitKey] === id ? chipActive : chipDefault}`}>{lbl}</button>
+                              ))}
                             </div>
-                            <input type="range" min={1} max={10} step={1} value={workStyle[item.key]} onChange={e => setWorkStyle(p => ({ ...p, [item.key]: parseInt(e.target.value) }))} className="w-full h-1.5 accent-brand cursor-pointer" />
-                            <div className="flex justify-between mt-1"><span className="text-[9px] text-txt-tertiary font-mono">{item.low}</span><span className="text-[9px] text-txt-tertiary font-mono">{item.high}</span></div>
                           </div>
                         ))}
                       </div>
