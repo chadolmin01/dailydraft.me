@@ -533,6 +533,7 @@ function ExplorePageContent() {
 
       {selectedProfileId && (
         <ProfileDetailModal
+          key={selectedProfileId}
           profileId={selectedProfileId}
           byUserId={profileByUserId}
           matchData={selectedMatchData}

@@ -22,7 +22,6 @@ import { PortfolioView } from './profile-modal/PortfolioView'
 import { useBackHandler } from '@/src/hooks/useBackHandler'
 
 export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileId, byUserId, matchData, onClose, onSelectProject }) => {
-  if (!profileId) return null
   const { isAuthenticated, user } = useAuth()
   const [shareCopied, setShareCopied] = useState(false)
   const [showCoffeeChatForm, setShowCoffeeChatForm] = useState(false)

@@ -342,11 +342,14 @@ export function ProfileCoffeeChats() {
       />
 
       {/* Profile Detail Modal */}
-      <ProfileDetailModal
-        profileId={viewingProfileUserId}
-        byUserId
-        onClose={() => setViewingProfileUserId(null)}
-      />
+      {viewingProfileUserId && (
+        <ProfileDetailModal
+          key={viewingProfileUserId}
+          profileId={viewingProfileUserId}
+          byUserId
+          onClose={() => setViewingProfileUserId(null)}
+        />
+      )}
     </section>
   )
 }
