@@ -68,11 +68,11 @@ export function BottomTabBar() {
                 <div className={`w-12 h-10 rounded-xl flex items-center justify-center transition-all duration-200 ${
                   isActive
                     ? 'bg-surface-inverse shadow-lg scale-105'
-                    : 'bg-surface-inverse/85 shadow-md hover:scale-105'
+                    : 'bg-surface-card border border-border shadow-sm'
                 }`}>
                   <Icon
                     size={20}
-                    className="text-txt-inverse"
+                    className={isActive ? 'text-txt-inverse' : 'text-txt-primary'}
                     strokeWidth={isActive ? 2.4 : 1.8}
                   />
                 </div>
