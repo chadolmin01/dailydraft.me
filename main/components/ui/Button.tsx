@@ -44,7 +44,7 @@ export const Button: React.FC<ButtonProps> = ({
   disabled,
   ...props
 }) => {
-  const baseStyles = 'font-bold rounded-xl transition-all duration-150 active:duration-75 cursor-pointer flex items-center justify-center gap-2'
+  const baseStyles = 'font-bold rounded-xl overflow-hidden transition-all duration-150 active:duration-75 cursor-pointer flex items-center justify-center gap-2'
   const isDisabled = disabled || loading
 
   return (
@@ -86,7 +86,7 @@ export const IconButton: React.FC<IconButtonProps> = ({
   className = '',
   ...props
 }) => {
-  const baseStyles = 'rounded-xl transition-all duration-150 active:duration-75 cursor-pointer flex items-center justify-center'
+  const baseStyles = 'rounded-xl overflow-hidden transition-all duration-150 active:duration-75 cursor-pointer flex items-center justify-center'
   const variantStyle = variant === 'ghost'
     ? 'text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken hover:scale-[1.05] active:scale-[0.93]'
     : 'bg-surface-card border border-border text-txt-secondary hover:bg-black hover:text-white hover:scale-[1.05] hover:shadow-sm active:scale-[0.93] active:shadow-none'
