@@ -319,7 +319,10 @@ export const TopNavbar: React.FC = () => {
             {/* 알림 + 프로필: 인증 확인되면 즉시 실제 UI / 미확인 중이면 플레이스홀더 / 비인증이면 로그인 */}
             {isAuthenticated ? (
               <>
-                <NotificationDropdown />
+                {/* 알림 드롭다운 — 데스크탑 전용 (모바일은 하단 탭바에서 처리) */}
+                <div className="hidden md:block">
+                  <NotificationDropdown />
+                </div>
 
                 {/* 프로필 */}
                 <div className="relative ml-1" ref={menuRef}>
