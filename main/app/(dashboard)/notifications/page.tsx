@@ -19,6 +19,7 @@ import {
   Loader2,
   UserPlus,
 } from 'lucide-react'
+import { PushNotificationBanner } from '@/components/ui/PushNotificationBanner'
 
 interface Notification {
   id: string
@@ -181,10 +182,11 @@ export default function NotificationsPage() {
   return (
     <div className="bg-surface-bg min-h-full">
       <PageContainer size="standard" className="py-6">
+        <PushNotificationBanner />
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-[0.625rem] font-medium text-txt-tertiary mb-1 flex items-center gap-2">
+            <h1 className="text-[10px] font-medium text-txt-tertiary mb-1 flex items-center gap-2">
               <Bell size={12} /> NOTIFICATIONS
             </h1>
             <p className="text-sm text-txt-tertiary">

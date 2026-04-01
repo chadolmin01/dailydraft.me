@@ -9,6 +9,7 @@ import { notifyCoffeeChatRequest, notifyCoffeeChatResponse, notifyPersonCoffeeCh
 import { createClient } from '@supabase/supabase-js'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { sendPushToUser } from '@/app/api/push/send/route'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -134,6 +135,13 @@ export async function POST(req: NextRequest) {
       } else {
         await notifyCoffeeChatRequest(chat.owner_user_id, requesterName, projectTitle)
       }
+
+      // Web Push
+      await sendPushToUser(chat.owner_user_id, {
+        title: '☕ 커피챗 신청이 왔어요',
+        body: `${requesterName}님이 커피챗을 신청했습니다.`,
+        url: '/notifications',
+      })
     } else if (type === 'accepted' || type === 'declined') {
       if (!requesterEmail) {
         return ApiResponse.validationError('Requester email not found')
@@ -171,6 +179,15 @@ export async function POST(req: NextRequest) {
           type === 'accepted'
         )
       }
+
+      // Web Push
+      await sendPushToUser(chat.requester_user_id, {
+        title: type === 'accepted' ? '☕ 커피챗이 수락됐어요!' : '커피챗 결과 알림',
+        body: type === 'accepted'
+          ? `${ownerName}님이 커피챗을 수락했습니다. 연락처를 확인해보세요.`
+          : `${ownerName}님이 커피챗 신청을 거절했습니다.`,
+        url: '/notifications',
+      })
 
       // Store invitation message if provided
       if (type === 'accepted' && body.invitationMessage) {

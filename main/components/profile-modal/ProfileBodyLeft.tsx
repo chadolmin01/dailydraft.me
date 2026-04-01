@@ -23,6 +23,7 @@ export function ProfileBodyLeft({
   setSidePanel,
   onClose,
   onSelectProject,
+  initialCoffeeChatMessage,
 }: {
   profile: {
     id: string
@@ -47,12 +48,13 @@ export function ProfileBodyLeft({
   setSidePanel: (v: null | 'projects' | 'portfolio') => void
   onClose: () => void
   onSelectProject?: (projectId: string) => void
+  initialCoffeeChatMessage?: string
 }) {
   return (
     <div className="md:col-span-3 space-y-6">
       {/* Bio / Vision */}
       <section>
-        <h3 className="text-[0.625rem] font-bold text-txt-secondary uppercase tracking-wider mb-2 flex items-center gap-2">
+        <h3 className="text-[10px] font-bold text-txt-secondary uppercase tracking-wider mb-2 flex items-center gap-2">
           <span className="w-0.5 h-3 bg-brand rounded-full" />
           소개
         </h3>
@@ -78,7 +80,7 @@ export function ProfileBodyLeft({
 
       {/* Portfolio */}
       <section>
-        <h3 className="text-[0.625rem] font-bold text-txt-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
+        <h3 className="text-[10px] font-bold text-txt-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
           <span className="w-0.5 h-3 bg-violet-500 rounded-full" />
           <FileText size={11} /> 포트폴리오
         </h3>
@@ -130,7 +132,7 @@ export function ProfileBodyLeft({
                   )}
                   <div className="p-2">
                     <p className="text-xs font-bold text-txt-primary truncate">{item.title}</p>
-                    {item.description && <p className="text-[0.625rem] text-txt-tertiary truncate mt-0.5">{item.description}</p>}
+                    {item.description && <p className="text-[10px] text-txt-tertiary truncate mt-0.5">{item.description}</p>}
                   </div>
                 </a>
               ))}
@@ -138,7 +140,7 @@ export function ProfileBodyLeft({
             {portfolioItems.length > 2 && (
               <button
                 onClick={() => setSidePanel('portfolio')}
-                className="w-full mt-2 flex items-center justify-center gap-1 px-3 py-2 text-[0.625rem] font-mono font-bold text-txt-tertiary border border-border hover:bg-surface-sunken hover:text-txt-primary transition-colors"
+                className="w-full mt-2 flex items-center justify-center gap-1 px-3 py-2 text-[10px] font-mono font-bold text-txt-tertiary border border-border hover:bg-surface-sunken hover:text-txt-primary transition-colors"
               >
                 +{portfolioItems.length - 2}개 더보기 <ChevronRight size={12} />
               </button>
@@ -153,10 +155,10 @@ export function ProfileBodyLeft({
 
       {/* User's Projects */}
       <section>
-        <h3 className="text-[0.625rem] font-bold text-txt-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
+        <h3 className="text-[10px] font-bold text-txt-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
           <span className="w-0.5 h-3 bg-emerald-500 rounded-full" />
           <Rocket size={11} /> 프로젝트
-          <span className="text-[0.625rem] font-mono text-txt-tertiary font-normal">({userProjects.length})</span>
+          <span className="text-[10px] font-mono text-txt-tertiary font-normal">({userProjects.length})</span>
         </h3>
         {userProjects.length > 0 ? (
           <>
@@ -178,16 +180,16 @@ export function ProfileBodyLeft({
                       <div className="min-w-0">
                         <p className="text-sm font-bold text-txt-primary truncate group-hover/proj:text-brand transition-colors">{project.title}</p>
                         <div className="flex items-center gap-2 mt-1.5">
-                          <span className="text-[0.625rem] font-mono text-brand bg-brand-bg px-1.5 py-0.5 border border-brand-border">
+                          <span className="text-[10px] font-mono text-brand bg-brand-bg px-1.5 py-0.5 border border-brand-border">
                             {typeLabel}
                           </span>
                           {(project.needed_roles || []).slice(0, 2).map((role: string) => (
-                            <span key={role} className="text-[0.625rem] font-mono text-txt-tertiary">{role}</span>
+                            <span key={role} className="text-[10px] font-mono text-txt-tertiary">{role}</span>
                           ))}
                         </div>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
-                        <span className="text-[0.625rem] font-mono text-indicator-online flex items-center gap-1">
+                        <span className="text-[10px] font-mono text-indicator-online flex items-center gap-1">
                           <span className="w-1.5 h-1.5 bg-indicator-online rounded-full" />
                           모집중
                         </span>
@@ -197,12 +199,12 @@ export function ProfileBodyLeft({
                     {(project.interest_tags || []).length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-2">
                         {(project.interest_tags as string[]).slice(0, 3).map((tag: string) => (
-                          <span key={tag} className="text-[0.625rem] font-mono bg-white text-txt-tertiary px-1.5 py-0.5 border border-border hover:bg-surface-sunken hover:text-txt-secondary transition-colors">{tag}</span>
+                          <span key={tag} className="text-[10px] font-mono bg-white text-txt-tertiary px-1.5 py-0.5 border border-border hover:bg-surface-sunken hover:text-txt-secondary transition-colors">{tag}</span>
                         ))}
                       </div>
                     )}
                     {(project.applications_count ?? 0) > 0 && (
-                      <p className="text-[0.625rem] font-mono text-txt-tertiary mt-2">{project.applications_count}명 지원</p>
+                      <p className="text-[10px] font-mono text-txt-tertiary mt-2">{project.applications_count}명 지원</p>
                     )}
                   </button>
                 )
@@ -211,7 +213,7 @@ export function ProfileBodyLeft({
             {userProjects.length > 2 && (
               <button
                 onClick={() => setSidePanel('projects')}
-                className="w-full mt-2 flex items-center justify-center gap-1 px-3 py-2 text-[0.625rem] font-mono font-bold text-txt-tertiary border border-border hover:bg-surface-sunken hover:text-txt-primary transition-colors"
+                className="w-full mt-2 flex items-center justify-center gap-1 px-3 py-2 text-[10px] font-mono font-bold text-txt-tertiary border border-border hover:bg-surface-sunken hover:text-txt-primary transition-colors"
               >
                 +{userProjects.length - 2}개 더보기 <ChevronRight size={12} />
               </button>
@@ -242,6 +244,7 @@ export function ProfileBodyLeft({
               setShowCoffeeChatForm={setShowCoffeeChatForm}
               showInviteModal={showInviteModal}
               setShowInviteModal={setShowInviteModal}
+              initialMessage={initialCoffeeChatMessage}
             />
           )}
         </>
@@ -284,7 +287,7 @@ function ContactSection({ email, isAuthenticated }: { email: string; isAuthentic
 
   return (
     <section>
-      <h3 className="text-[0.625rem] font-bold text-txt-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
+      <h3 className="text-[10px] font-bold text-txt-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
         <span className="w-0.5 h-3 bg-sky-500 rounded-full" />
         연락처
       </h3>
@@ -297,7 +300,7 @@ function ContactSection({ email, isAuthenticated }: { email: string; isAuthentic
             <Mail size={14} />
             {email}
           </span>
-          <span className="flex items-center gap-1 text-[0.625rem] font-mono text-txt-disabled group-hover:text-txt-secondary transition-colors">
+          <span className="flex items-center gap-1 text-[10px] font-mono text-txt-disabled group-hover:text-txt-secondary transition-colors">
             {copied ? <><Check size={12} className="text-indicator-online" /> 복사됨</> : <><Copy size={12} /> 복사</>}
           </span>
         </button>

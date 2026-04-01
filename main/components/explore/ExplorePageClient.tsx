@@ -81,6 +81,8 @@ function ExplorePageContent() {
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null)
   const [profileByUserId, setProfileByUserId] = useState(false)
+  const [initialCoffeeChatOpen, setInitialCoffeeChatOpen] = useState(false)
+  const [initialCoffeeChatMessage, setInitialCoffeeChatMessage] = useState<string | undefined>(undefined)
   const hydratedRef = React.useRef(false)
 
   // Hydrate modal state from URL on mount
@@ -89,9 +91,22 @@ function ExplorePageContent() {
     const project = params.get('project')
     const profile = params.get('profile')
     const byUserId = params.get('profileBy') === 'userId'
+    const coffeeChat = params.get('coffeeChat')
+    const msg = params.get('msg')
     if (project) setSelectedProjectId(project)
     if (profile) setSelectedProfileId(profile)
     if (byUserId) setProfileByUserId(byUserId)
+    if (coffeeChat) {
+      setSelectedProfileId(coffeeChat)
+      setProfileByUserId(true)
+      setInitialCoffeeChatOpen(true)
+      if (msg) setInitialCoffeeChatMessage(decodeURIComponent(msg))
+      // URL에서 coffeeChat/msg 파라미터 제거
+      params.delete('coffeeChat')
+      params.delete('msg')
+      const qs = params.toString()
+      window.history.replaceState(null, '', `${window.location.pathname}${qs ? `?${qs}` : ''}`)
+    }
     hydratedRef.current = true
   }, [])
 
@@ -537,12 +552,14 @@ function ExplorePageContent() {
           profileId={selectedProfileId}
           byUserId={profileByUserId}
           matchData={selectedMatchData}
-          onClose={() => { setSelectedProfileId(null); setProfileByUserId(false) }}
+          onClose={() => { setSelectedProfileId(null); setProfileByUserId(false); setInitialCoffeeChatOpen(false); setInitialCoffeeChatMessage(undefined) }}
           onSelectProject={(projectId) => {
             setSelectedProfileId(null)
             setProfileByUserId(false)
             setSelectedProjectId(projectId)
           }}
+          initialCoffeeChatOpen={initialCoffeeChatOpen}
+          initialCoffeeChatMessage={initialCoffeeChatMessage}
         />
       )}
     </div>
