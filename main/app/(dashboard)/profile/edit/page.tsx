@@ -330,7 +330,10 @@ export default function ProfileEditPage() {
                 <div className="space-y-4">
                   <div>
                     <label className={fieldLabel}>닉네임</label>
-                    <input type="text" value={nickname} onChange={(e) => setNickname(e.target.value)} maxLength={30} placeholder="닉네임" className={inputClass} />
+                    <div className="relative">
+                      <input type="text" value={nickname} onChange={(e) => setNickname(e.target.value.slice(0, 7))} maxLength={7} placeholder="닉네임" className={inputClass} />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono text-txt-disabled">{nickname.length}/7</span>
+                    </div>
                   </div>
                   <div>
                     <label className={fieldLabel}>자기소개</label>

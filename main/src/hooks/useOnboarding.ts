@@ -171,6 +171,48 @@ function onboardingReducer(state: OnboardingState, action: OnboardingAction): On
     case 'INCREMENT_INTERACTIVE_COUNT':
       return { ...state, interactiveElementCount: state.interactiveElementCount + 1 }
 
+    case 'UNDO_LAST_EXCHANGE': {
+      // Need at least 1 user + 1 assistant message to undo
+      const msgs = state.deepChatMessages
+      if (msgs.length < 2) return state
+
+      // Remove last 2 messages (user + assistant)
+      const newMessages = msgs.slice(0, -2)
+
+      // Remove last user bubble + last AI bubble from the end
+      const newBubbles = [...state.bubbles]
+      let removedUser = false, removedAi = false
+      for (let i = newBubbles.length - 1; i >= 0 && (!removedUser || !removedAi); i--) {
+        if (newBubbles[i].role === 'ai' && !removedAi) {
+          newBubbles.splice(i, 1); removedAi = true
+        } else if (newBubbles[i].role === 'user' && !removedUser) {
+          newBubbles.splice(i, 1); removedUser = true
+        }
+      }
+
+      // If the now-last bubble is an answered interactive → un-answer + remove structured response
+      let newStructured = state.structuredResponses
+      const last = newBubbles[newBubbles.length - 1]
+      if (last?.answered && last.interactiveConfig) {
+        newBubbles[newBubbles.length - 1] = { ...last, answered: false }
+        const qId = last.interactiveConfig.questionId
+        // Remove the last matching structured response
+        const idx = newStructured.map(r => r.questionId).lastIndexOf(qId)
+        if (idx >= 0) {
+          newStructured = [...newStructured]
+          newStructured.splice(idx, 1)
+        }
+      }
+
+      return {
+        ...state,
+        bubbles: newBubbles,
+        deepChatMessages: newMessages,
+        structuredResponses: newStructured,
+        dynamicSuggestions: [],
+      }
+    }
+
     default:
       return state
   }
@@ -195,7 +237,11 @@ export function useDerivedState(state: OnboardingState) {
   const canGoBack = !['greeting', 'cta', 'info', 'deep-chat', 'done'].includes(state.step)
     && !state.isTyping && !state.isSaving && state.stepHistory.length > 0
 
-  return { coveredTopics, userMsgCount, currentSuggestions, canGoBack }
+  const canUndo = state.step === 'deep-chat'
+    && !state.isTyping && !state.isSaving
+    && state.deepChatMessages.filter(m => m.role === 'user').length > 0
+
+  return { coveredTopics, userMsgCount, currentSuggestions, canGoBack, canUndo }
 }
 
 export function useOnboarding() {

@@ -231,3 +231,4 @@ export type OnboardingAction =
   | { type: 'ADD_STRUCTURED_RESPONSE'; response: StructuredResponse }
   | { type: 'SET_BUBBLE_ANSWERED'; bubbleId: string }
   | { type: 'INCREMENT_INTERACTIVE_COUNT' }
+  | { type: 'UNDO_LAST_EXCHANGE' }

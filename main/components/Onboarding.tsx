@@ -34,9 +34,9 @@ interface OnboardingProps {
 
 export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   const searchParams = useSearchParams()
-  const { signOut, profile: authProfile, isLoading: authLoading } = useAuth()
+  const { signOut, profile: authProfile, isLoading: authLoading, isAuthenticated } = useAuth()
   const [state, dispatch] = useOnboarding()
-  const { coveredTopics, userMsgCount, currentSuggestions, canGoBack } = useDerivedState(state)
+  const { coveredTopics, userMsgCount, currentSuggestions, canGoBack, canUndo } = useDerivedState(state)
 
   const chatEndRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -142,6 +142,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   // ── Init: wait for auth, then resume or start fresh ──
   useEffect(() => {
     if (queueRef.current || authLoading) return
+    // Race condition fix: if authenticated, wait for profile to load from DB
+    // (isLoading becomes false before fetchProfile completes)
+    if (isAuthenticated && authProfile === null) return
     queueRef.current = true
 
     const redoChat = searchParams.get('mode') === 'redo-chat'
@@ -206,7 +209,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       dispatch({ type: 'SET_STEP', step: 'cta' })
     }
     run().catch(console.error)
-  }, [authLoading, authProfile, searchParams, pushAi, pushUser, dispatch, safeTimeout, loadProgress])
+  }, [authLoading, authProfile, isAuthenticated, searchParams, pushAi, pushUser, dispatch, safeTimeout, loadProgress])
 
   // ── Step handlers ──
 
@@ -832,11 +835,13 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       currentSuggestions={currentSuggestions}
       coveredTopics={coveredTopics}
       hasMessages={state.deepChatMessages.length > 0}
+      canUndo={canUndo}
       inputRef={deepChatInputRef}
       onInputChange={(v: string) => dispatch({ type: 'SET_DEEP_CHAT_INPUT', value: v })}
       onSend={() => sendDeepChatMessage(stateRef.current.deepChatInput)}
       onSuggestionClick={(text: string) => sendDeepChatMessage(text)}
       onFinish={handleDeepChatFinish}
+      onUndo={() => dispatch({ type: 'UNDO_LAST_EXCHANGE' })}
     />
   ) : (
     <DefaultFooter canGoBack={canGoBack} onGoBack={() => dispatch({ type: 'GO_BACK' })} />

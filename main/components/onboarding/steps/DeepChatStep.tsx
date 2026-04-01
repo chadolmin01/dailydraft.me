@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { Send, CheckCircle2, Lightbulb, ArrowLeft } from 'lucide-react'
+import { Send, CheckCircle2, Lightbulb, ArrowLeft, Undo2 } from 'lucide-react'
 import { DEEP_CHAT_TOPICS } from '@/src/lib/onboarding/constants'
 
 interface DeepChatFooterProps {
@@ -12,17 +12,19 @@ interface DeepChatFooterProps {
   currentSuggestions: string[]
   coveredTopics: string[]
   hasMessages: boolean
+  canUndo: boolean
   inputRef: React.RefObject<HTMLInputElement | null>
   onInputChange: (v: string) => void
   onSend: () => void
   onSuggestionClick: (text: string) => void
   onFinish: () => void
+  onUndo: () => void
 }
 
 export const DeepChatFooter: React.FC<DeepChatFooterProps> = ({
   deepChatInput, isTyping, userMsgCount,
   showSuggestions, currentSuggestions, coveredTopics, hasMessages,
-  inputRef, onInputChange, onSend, onSuggestionClick, onFinish,
+  canUndo, inputRef, onInputChange, onSend, onSuggestionClick, onFinish, onUndo,
 }) => {
   return (
     <div className="border-t border-border bg-surface-card/80 backdrop-blur-md">
@@ -53,6 +55,15 @@ export const DeepChatFooter: React.FC<DeepChatFooterProps> = ({
       <div className="px-4 py-3">
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center gap-2">
+            {canUndo && (
+              <button
+                onClick={onUndo}
+                className="w-10 h-10 flex items-center justify-center text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken rounded-lg transition-colors shrink-0"
+                title="이전 답변 되돌리기"
+              >
+                <Undo2 size={16} />
+              </button>
+            )}
             <div className="flex-1 relative">
               <input
                 ref={inputRef}

@@ -30,15 +30,19 @@ export const InfoFormStep: React.FC<InfoFormStepProps> = ({
     <div className="mt-3 bg-surface-card rounded-xl border border-border p-4 shadow-md space-y-3">
       <div>
         <label className="text-[10px] font-medium text-txt-tertiary mb-1.5 block">닉네임 *</label>
-        <input
-          type="text"
-          value={profile.name}
-          onChange={(e) => onProfileChange({ name: e.target.value })}
-          placeholder="어떻게 불러드릴까요?"
-          className={`w-full px-3.5 py-2.5 bg-surface-card rounded-lg border text-base sm:text-sm font-medium focus:outline-none focus:border-surface-inverse focus:bg-white transition-all placeholder:text-txt-tertiary ${nameEmpty ? 'border-status-danger-text' : 'border-border'}`}
-          autoFocus
-          onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-        />
+        <div className="relative">
+          <input
+            type="text"
+            value={profile.name}
+            onChange={(e) => onProfileChange({ name: e.target.value.slice(0, 7) })}
+            maxLength={7}
+            placeholder="어떻게 불러드릴까요?"
+            className={`w-full px-3.5 py-2.5 bg-surface-card rounded-lg border text-base sm:text-sm font-medium focus:outline-none focus:border-surface-inverse focus:bg-white transition-all placeholder:text-txt-tertiary ${nameEmpty ? 'border-status-danger-text' : 'border-border'}`}
+            autoFocus
+            onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+          />
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono text-txt-disabled">{profile.name.length}/7</span>
+        </div>
         {nameEmpty && (
           <p className="text-[11px] text-status-danger-text mt-1 font-medium">닉네임을 입력해주세요</p>
         )}
