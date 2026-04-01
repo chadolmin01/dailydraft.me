@@ -12,6 +12,31 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.1"
   }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       accepted_connections: {
@@ -239,6 +264,7 @@ export type Database = {
           contact_info: string | null
           created_at: string | null
           id: string
+          invitation_message: string | null
           message: string | null
           opportunity_id: string | null
           owner_user_id: string
@@ -253,6 +279,7 @@ export type Database = {
           contact_info?: string | null
           created_at?: string | null
           id?: string
+          invitation_message?: string | null
           message?: string | null
           opportunity_id?: string | null
           owner_user_id: string
@@ -267,6 +294,7 @@ export type Database = {
           contact_info?: string | null
           created_at?: string | null
           id?: string
+          invitation_message?: string | null
           message?: string | null
           opportunity_id?: string | null
           owner_user_id?: string
@@ -2365,6 +2393,22 @@ export type Database = {
           title: string
         }[]
       }
+      find_similar_opportunities: {
+        Args: {
+          p_match_count?: number
+          p_match_threshold?: number
+          p_opportunity_id: string
+        }
+        Returns: {
+          description: string
+          id: string
+          interest_tags: string[]
+          needed_roles: string[]
+          similarity: number
+          title: string
+          type: string
+        }[]
+      }
       generate_deadline_notifications: { Args: never; Returns: number }
       get_boosted_opportunities: {
         Args: never
@@ -2434,6 +2478,11 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: number
       }
+      get_user_admin_institution_ids: {
+        Args: { uid: string }
+        Returns: string[]
+      }
+      get_user_institution_ids: { Args: { uid: string }; Returns: string[] }
       get_user_subscription: {
         Args: { p_user_id: string }
         Returns: {
@@ -2838,6 +2887,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {},
   },

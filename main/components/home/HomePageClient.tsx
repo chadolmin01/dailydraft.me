@@ -20,9 +20,9 @@ export default function HomePageClient() {
       <main className="relative pt-14">
         <Hero />
         <TrustBar />
-        <FeatureShowcase />
         <HowItWorks />
         <OpportunitySection />
+        <FeatureShowcase />
         <FinalCTA />
         <FAQ />
       </main>

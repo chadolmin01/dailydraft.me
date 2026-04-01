@@ -9,7 +9,7 @@ import {
   MessageCircle, ExternalLink, Sparkles
 } from 'lucide-react'
 import { useAuth } from '@/src/context/AuthContext'
-import { useOpportunity, useUpdateOpportunity } from '@/src/hooks/useOpportunities'
+import { useOpportunity, useUpdateOpportunity, useSimilarOpportunities, type SimilarOpportunity } from '@/src/hooks/useOpportunities'
 import { useProfileByUserId, type CreatorProfile } from '@/src/hooks/usePublicProfiles'
 import { useCoffeeChats } from '@/src/hooks/useCoffeeChats'
 import { useProjectUpdates } from '@/src/hooks/useProjectUpdates'
@@ -20,6 +20,64 @@ import type { Opportunity } from '@/src/types/opportunity'
 import { UPDATE_TYPE_CONFIG } from '@/components/project/types'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { timeAgo } from '@/src/lib/utils'
+
+const TYPE_LABEL: Record<string, string> = {
+  side_project: 'SIDE PROJECT',
+  startup: 'STARTUP',
+  study: 'STUDY',
+}
+
+function SimilarProjectsSection({ opportunityId }: { opportunityId: string | undefined }) {
+  const { data: similar, isLoading } = useSimilarOpportunities(opportunityId)
+
+  if (isLoading || !similar || similar.length === 0) return null
+
+  return (
+    <div className="border-t border-border bg-surface-bg">
+      <div className="max-w-6xl mx-auto px-6 py-10">
+        <div className="flex items-center gap-2 mb-6">
+          <Sparkles size={14} className="text-brand" />
+          <span className="text-[10px] font-mono font-bold text-txt-tertiary uppercase tracking-widest">
+            비슷한 프로젝트
+          </span>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {similar.map((proj: SimilarOpportunity) => (
+            <Link
+              key={proj.id}
+              href={`/p/${proj.id}`}
+              className="group block bg-surface-card border border-border p-5 hover:border-brand/40 transition-colors"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[9px] font-mono font-bold text-txt-tertiary tracking-widest">
+                  {TYPE_LABEL[proj.type] || proj.type.toUpperCase()}
+                </span>
+                <span className="text-[9px] font-mono text-brand bg-brand/8 px-1.5 py-0.5 rounded-full">
+                  {Math.round(proj.similarity * 100)}% 유사
+                </span>
+              </div>
+              <h3 className="text-sm font-bold text-txt-primary leading-snug mb-2 group-hover:text-brand transition-colors line-clamp-2">
+                {proj.title}
+              </h3>
+              <p className="text-xs text-txt-tertiary leading-relaxed line-clamp-2 mb-3">
+                {proj.description}
+              </p>
+              {proj.interest_tags.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {proj.interest_tags.slice(0, 3).map((tag) => (
+                    <span key={tag} className="text-[9px] font-mono bg-surface-sunken text-txt-secondary px-1.5 py-0.5 rounded-full">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </Link>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
 
 // CTA Overlay Component
 const SignupCTA: React.FC<{ onClose: () => void; onSignup: () => void }> = ({ onClose, onSignup }) => (
@@ -631,6 +689,9 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
           </aside>
         </div>
       </div>
+
+      {/* Similar Projects Section */}
+      <SimilarProjectsSection opportunityId={opportunity?.id} />
 
       {/* Mobile Fixed CTA */}
       <div

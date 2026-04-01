@@ -5,12 +5,12 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { hapticMedium, hapticSuccess } from '@/src/utils/haptic'
 import {
-  Loader2, AlertCircle, X, Share2, Edit3,
+  Loader2, AlertCircle, X, Share2, Edit3, ChevronLeft, ChevronRight,
 } from 'lucide-react'
 import { toast } from 'sonner'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/src/lib/supabase/client'
-import { useOpportunity, useUpdateOpportunity } from '@/src/hooks/useOpportunities'
+import { useOpportunity, useUpdateOpportunity, useSimilarOpportunities, opportunityKeys } from '@/src/hooks/useOpportunities'
 import { useProfileByUserId } from '@/src/hooks/usePublicProfiles'
 import { useProjectUpdates } from '@/src/hooks/useProjectUpdates'
 import { useAuth } from '@/src/context/AuthContext'
@@ -30,6 +30,19 @@ interface ProjectDetailModalProps {
 export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, onClose }) => {
   if (!projectId) return null
   const router = useRouter()
+  const queryClient = useQueryClient()
+
+  // Navigation history — enables ← → between similar projects
+  const [navHistory, setNavHistory] = useState<string[]>([projectId])
+  const [navIndex, setNavIndex] = useState(0)
+  const currentId = navHistory[navIndex]
+
+  // Reset navigation when modal opens with a new projectId
+  useEffect(() => {
+    setNavHistory([projectId])
+    setNavIndex(0)
+  }, [projectId])
+
   const [showCta, setShowCta] = useState(false)
   const [showCoffeeChatForm, setShowCoffeeChatForm] = useState(false)
   const [selectedRole, setSelectedRole] = useState<string | undefined>(undefined)
@@ -39,29 +52,63 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
   const [showTypeSelector, setShowTypeSelector] = useState(false)
   const { user } = useAuth()
   const updateOpportunity = useUpdateOpportunity()
-  const { expressInterest, loading: interestLoading } = useInterests({ opportunityId: projectId ?? '' })
+  const { expressInterest, loading: interestLoading } = useInterests({ opportunityId: currentId ?? '' })
   const { data: myChatsForProject = [] } = useCoffeeChats({
-    opportunityId: projectId ?? undefined,
-    enabled: !!projectId,
+    opportunityId: currentId ?? undefined,
+    enabled: !!currentId,
   })
 
   useBackHandler(showCoffeeChatForm, () => setShowCoffeeChatForm(false), 'coffee-chat')
   useBackHandler(showWriteUpdate, () => setShowWriteUpdate(false), 'write-update')
   useBackHandler(showCta, () => setShowCta(false), 'project-cta')
 
-  const { data: opportunity, isLoading: loading } = useOpportunity(projectId ?? undefined)
+  const { data: opportunity, isLoading: loading } = useOpportunity(currentId ?? undefined)
   const { data: creator } = useProfileByUserId(opportunity?.creator_id ?? undefined)
   const { data: updates = [] } = useProjectUpdates(opportunity?.id)
 
+  // Prefetch similar projects — starts immediately when modal opens
+  const { data: similar = [], isLoading: similarLoading } = useSimilarOpportunities(currentId)
+
+  useEffect(() => {
+    similar.forEach(proj => {
+      queryClient.prefetchQuery({
+        queryKey: opportunityKeys.detail(proj.id),
+        queryFn: async () => {
+          const { data, error } = await supabase.from('opportunities').select('*').eq('id', proj.id).single()
+          if (error) throw error
+          return data
+        },
+        staleTime: 1000 * 60 * 2,
+      })
+    })
+  }, [similar, queryClient])
+
+  const canGoBack = navIndex > 0
+  const nextSimilar = similar[0]
+  const canGoForward = !similarLoading && !!nextSimilar
+
+  const goNext = () => {
+    if (!nextSimilar) return
+    hapticMedium()
+    setNavHistory(prev => [...prev.slice(0, navIndex + 1), nextSimilar.id])
+    setNavIndex(prev => prev + 1)
+  }
+
+  const goBack = () => {
+    if (navIndex === 0) return
+    hapticMedium()
+    setNavIndex(prev => prev - 1)
+  }
+
   // Fetch team members (accepted connections)
   const { data: teamMembers = [] } = useQuery({
-    queryKey: ['team-public', projectId],
+    queryKey: ['team-public', currentId],
     queryFn: async () => {
-      if (!projectId) return []
+      if (!currentId) return []
       const { data: connections } = await supabase
         .from('accepted_connections')
         .select('id, applicant_id, assigned_role, status')
-        .eq('opportunity_id', projectId)
+        .eq('opportunity_id', currentId)
         .eq('status', 'active')
       if (!connections || connections.length === 0) return []
       const userIds = connections.map(c => c.applicant_id)
@@ -76,7 +123,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
         role: c.assigned_role || profileMap.get(c.applicant_id)?.desired_position || null,
       }))
     },
-    enabled: !!projectId,
+    enabled: !!currentId,
     staleTime: 1000 * 60 * 2,
   })
 
@@ -91,14 +138,14 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
     setShowCoffeeChatForm(false)
     setHasInterested(false)
     setShowTypeSelector(false)
-  }, [projectId])
+  }, [currentId])
 
   // 조회수 트래킹
   useEffect(() => {
-    if (projectId) {
-      fetch(`/api/opportunities/${projectId}/view`, { method: 'POST' }).catch(() => {})
+    if (currentId) {
+      fetch(`/api/opportunities/${currentId}/view`, { method: 'POST' }).catch(() => {})
     }
-  }, [projectId])
+  }, [currentId])
 
   useEffect(() => {
     if (projectId) {
@@ -156,7 +203,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
 
   const handleShare = async () => {
     const appUrl = window.location.origin
-    const url = `${appUrl}/p/${projectId}`
+    const url = `${appUrl}/p/${currentId}`
     const shareData = {
       title: opportunity?.title || 'Draft 프로젝트',
       text: opportunity?.needed_roles?.length
@@ -297,6 +344,29 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                   </div>
                 )}
                 <div className="flex items-center gap-1">
+                  {/* Similar project navigation */}
+                  <button
+                    onClick={goBack}
+                    disabled={!canGoBack}
+                    className="p-2 hover:bg-surface-sunken transition-colors border border-transparent hover:border-border disabled:opacity-30 disabled:cursor-not-allowed"
+                    aria-label="이전 프로젝트"
+                  >
+                    <ChevronLeft size={16} className="text-txt-disabled" />
+                  </button>
+                  <button
+                    onClick={goNext}
+                    disabled={!canGoForward}
+                    className="p-2 hover:bg-surface-sunken transition-colors border border-transparent hover:border-border disabled:opacity-30 disabled:cursor-not-allowed"
+                    aria-label="다음 유사 프로젝트"
+                    title={nextSimilar ? `다음: ${nextSimilar.title}` : undefined}
+                  >
+                    {similarLoading ? (
+                      <Loader2 size={14} className="text-txt-disabled animate-spin" />
+                    ) : (
+                      <ChevronRight size={16} className={canGoForward ? 'text-txt-secondary' : 'text-txt-disabled'} />
+                    )}
+                  </button>
+                  <div className="w-px h-4 bg-border mx-1" />
                   <button
                     onClick={handleShare}
                     className="p-2 hover:bg-surface-sunken transition-colors border border-transparent hover:border-border"
@@ -339,8 +409,23 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                 </div>
               ) : (
                 <>
-                  {/* Scrollable Content */}
-                  <div className="flex-1 overflow-y-auto">
+                  {/* Scrollable Content — swipe left/right to navigate similar projects */}
+                  <div
+                    className="flex-1 overflow-y-auto"
+                    onTouchStart={(e) => {
+                      const touch = e.touches[0]
+                      ;(e.currentTarget as HTMLElement).dataset.touchStartX = String(touch.clientX)
+                    }}
+                    onTouchEnd={(e) => {
+                      const startX = Number((e.currentTarget as HTMLElement).dataset.touchStartX)
+                      const endX = e.changedTouches[0].clientX
+                      const diff = startX - endX
+                      if (Math.abs(diff) > 60) {
+                        if (diff > 0 && canGoForward) goNext()
+                        else if (diff < 0 && canGoBack) goBack()
+                      }
+                    }}
+                  >
 
                     <ProjectHeader
                       opportunity={opportunity}

@@ -210,6 +210,30 @@ export function useDeleteOpportunity() {
   })
 }
 
+export type SimilarOpportunity = {
+  id: string
+  title: string
+  description: string
+  type: string
+  interest_tags: string[]
+  needed_roles: string[]
+  similarity: number
+}
+
+export function useSimilarOpportunities(id: string | undefined) {
+  return useQuery({
+    queryKey: [...opportunityKeys.detail(id ?? ''), 'similar'],
+    queryFn: async (): Promise<SimilarOpportunity[]> => {
+      const res = await fetch(`/api/opportunities/${id}/similar`)
+      if (!res.ok) return []
+      const json = await res.json()
+      return json.data || []
+    },
+    enabled: !!id,
+    staleTime: 1000 * 60 * 5,
+  })
+}
+
 // Helper to calculate days left until deadline (based on created_at + 30 days default)
 export function calculateDaysLeft(createdAt: string | null, durationDays = 30): number {
   if (!createdAt) return 0

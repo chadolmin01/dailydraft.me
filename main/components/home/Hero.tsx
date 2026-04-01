@@ -45,47 +45,73 @@ export const Hero: React.FC = () => {
 
       {/* Floating UI Cards — desktop only */}
       <div className="absolute inset-0 pointer-events-none z-0">
-        {/* Card 1: Mini onboarding chat preview */}
-        <FloatingCard className="top-24 -left-4 w-56" delay={0}>
-          <div className="text-[10px] font-mono text-txt-tertiary mb-2">AI 온보딩</div>
-          <div className="space-y-2">
-            <div className="bg-surface-sunken rounded-lg px-3 py-1.5 text-xs text-txt-secondary w-fit">
-              어떤 프로젝트에 관심 있어요?
+        {/* Card 1: AI 온보딩 채팅 미리보기 */}
+        <FloatingCard className="top-20 -left-6 w-56" delay={0}>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-[0.625rem] font-mono font-bold text-txt-primary tracking-tight">AI 온보딩</span>
+              <span className="text-[0.625rem] font-mono font-medium bg-brand/10 text-brand px-2 py-0.5 rounded-full">진행 중</span>
             </div>
-            <div className="bg-brand/10 rounded-lg px-3 py-1.5 text-xs text-brand w-fit ml-auto">
-              AI 기반 서비스요!
+            <div className="space-y-1.5">
+              <div className="bg-surface-sunken rounded-lg px-3 py-2 text-xs text-txt-secondary w-fit leading-relaxed">
+                어떤 프로젝트에 관심 있어요?
+              </div>
+              <div className="bg-brand/10 rounded-lg px-3 py-2 text-xs text-brand w-fit ml-auto leading-relaxed">
+                AI 기반 서비스요!
+              </div>
+              <div className="bg-surface-sunken rounded-lg px-3 py-2 text-xs text-txt-secondary w-fit leading-relaxed">
+                프로필 생성 중...
+              </div>
             </div>
-            <div className="bg-surface-sunken rounded-lg px-3 py-1.5 text-xs text-txt-secondary w-fit">
-              프로필 생성 중...
+            <div className="flex items-center justify-between pt-2 border-t border-border">
+              <span className="text-[0.625rem] font-mono text-txt-tertiary">STEP 2 / 4</span>
+              <span className="text-[0.625rem] font-mono text-txt-tertiary">50%</span>
             </div>
           </div>
         </FloatingCard>
 
-        {/* Card 2: AI Match preview */}
-        <FloatingCard className="top-32 -right-8 w-52" delay={1.5}>
-          <div className="text-[10px] font-mono text-txt-tertiary mb-2">AI 매칭</div>
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-8 h-8 bg-brand/10 rounded-full flex items-center justify-center text-brand text-xs font-bold">JK</div>
-            <div>
-              <div className="text-xs font-bold">김지현</div>
-              <div className="text-[10px] text-txt-tertiary">프론트엔드 · React</div>
+        {/* Card 2: AI 매칭 결과 미리보기 */}
+        <FloatingCard className="top-28 -right-10 w-56" delay={1.5}>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-[0.625rem] font-mono font-bold text-txt-primary tracking-tight">AI 매칭</span>
+              <span className="text-[0.625rem] font-mono font-medium bg-status-success-bg text-status-success-text px-2 py-0.5 rounded-full">매칭 완료</span>
             </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] text-txt-tertiary">스킬 · 비전 기반 분석</span>
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 bg-brand/10 rounded-full flex items-center justify-center text-brand text-xs font-bold shrink-0">JK</div>
+              <div className="min-w-0">
+                <div className="text-sm font-bold text-txt-primary leading-snug">김지현</div>
+                <div className="text-xs text-txt-tertiary mt-0.5">프론트엔드 · React</div>
+              </div>
+            </div>
+            <div className="flex items-center justify-between pt-2 border-t border-border">
+              <span className="text-[0.625rem] font-mono text-txt-tertiary">SKILL MATCH</span>
+              <span className="text-[0.625rem] font-mono text-status-success-text">92%</span>
+            </div>
           </div>
         </FloatingCard>
 
-        {/* Card 3: Coffee chat request */}
-        <FloatingCard className="bottom-16 left-8 w-48" delay={3}>
-          <div className="text-[10px] font-mono text-txt-tertiary mb-2">커피챗</div>
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-6 h-6 bg-surface-sunken rounded-full flex items-center justify-center text-[10px] font-bold">P</div>
-            <span className="text-xs font-medium">박수진</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-1.5 h-1.5 bg-indicator-online rounded-full"></div>
-            <span className="text-[10px] text-status-success-text font-medium">수락됨</span>
+        {/* Card 3: 커피챗 요청 미리보기 */}
+        <FloatingCard className="bottom-12 left-6 w-56" delay={3}>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-[0.625rem] font-mono font-bold text-txt-primary tracking-tight">커피챗</span>
+              <div className="flex items-center gap-1.5">
+                <div className="w-1.5 h-1.5 bg-indicator-online rounded-full"></div>
+                <span className="text-[0.625rem] font-mono font-medium text-status-success-text">수락됨</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 bg-surface-sunken rounded-full flex items-center justify-center text-xs font-bold text-txt-secondary shrink-0">SJ</div>
+              <div className="min-w-0">
+                <div className="text-sm font-bold text-txt-primary leading-snug">박수진</div>
+                <div className="text-xs text-txt-tertiary mt-0.5">백엔드 · Node.js</div>
+              </div>
+            </div>
+            <div className="flex items-center justify-between pt-2 border-t border-border">
+              <span className="text-[0.625rem] font-mono text-txt-tertiary">COFFEE CHAT</span>
+              <span className="text-[0.625rem] font-mono text-txt-tertiary">오늘 14:00</span>
+            </div>
           </div>
         </FloatingCard>
       </div>
@@ -93,15 +119,13 @@ export const Hero: React.FC = () => {
       {/* Main content */}
       <div className="relative z-10 flex flex-col items-center text-center mt-10 sm:mt-16 md:mt-24 max-w-2xl mx-auto">
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.15] mb-5 text-txt-primary">
-          사이드 프로젝트 팀빌딩,
+          프로젝트를 공유하고,
           <br />
-          <span className="text-brand">AI가 대신 해줄게.</span>
+          <span className="text-brand">함께할 사람을 만나세요.</span>
         </h1>
 
         <p className="text-sm md:text-base text-txt-secondary mb-8 max-w-xl leading-relaxed break-keep">
-          프로필만 입력하면 AI가 분석하고,
-          <br className="hidden md:inline" />
-          비전이 맞는 팀원을 찾아줍니다.
+          모든 프로젝트는 Draft에서 시작됩니다.
         </p>
 
         {/* CTAs */}
