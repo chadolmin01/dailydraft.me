@@ -111,6 +111,44 @@ export const INTERACTIVE_QUESTIONS: Record<string, InteractiveQuestion> = {
     },
   },
 
+  // ── This or That → risk tolerance ──
+
+  this_or_that_risk: {
+    type: 'this-or-that',
+    measuredFields: ['risk_style'],
+    optionA: {
+      id: 'stable',
+      emoji: '🛡️',
+      label: '안정적 도전',
+      description: '검증된 아이디어로\n확실하게 진행해요',
+      scores: {},
+    },
+    optionB: {
+      id: 'adventurous',
+      emoji: '🔥',
+      label: '과감한 도전',
+      description: '새로운 걸 시도해보고\n실패해도 배워요',
+      scores: {},
+    },
+  },
+
+  // ── Emoji Grid → strengths ──
+
+  emoji_grid_strengths: {
+    type: 'emoji-grid',
+    measuredFields: ['strengths'],
+    minSelect: 1,
+    maxSelect: 3,
+    options: [
+      { id: 'planning', emoji: '📋', label: '기획력' },
+      { id: 'implementation', emoji: '⚡', label: '빠른 구현' },
+      { id: 'design', emoji: '🎨', label: '디자인 감각' },
+      { id: 'communication', emoji: '💬', label: '소통·조율' },
+      { id: 'problem_solving', emoji: '🧩', label: '문제 해결' },
+      { id: 'leadership', emoji: '🚀', label: '리더십·추진력' },
+    ],
+  },
+
   // ── Drag Rank → ordered label arrays ──
 
   drag_rank_goals: {

@@ -101,8 +101,14 @@ export async function POST(request: Request) {
         const field = sr.measuredFields[0] // primary field
 
         // Categorical: store selected option ID directly
-        if (['collaboration_style', 'decision_style', 'planning_style', 'quality_style'].includes(field)) {
-          behavioralTraits[field] = sr.value // e.g. "solo", "fast", "plan_first", "quality"
+        if (['collaboration_style', 'decision_style', 'planning_style', 'quality_style', 'risk_style'].includes(field)) {
+          behavioralTraits[field] = sr.value // e.g. "solo", "fast", "plan_first", "quality", "adventurous"
+        }
+
+        // Strengths from emoji grid
+        if (sr.measuredFields.includes('strengths') && Array.isArray(sr.value)) {
+          const strengthMap: Record<string, string> = { planning: '기획력', implementation: '빠른 구현', design: '디자인 감각', communication: '소통', problem_solving: '문제 해결', leadership: '리더십' }
+          parsed.strengths = (sr.value as string[]).map(id => strengthMap[id] || id)
         }
 
         // Spectrum 1-5: store as number (actual resolution exists)
@@ -185,6 +191,11 @@ export async function POST(request: Request) {
         if (!parsed.work_style) parsed.work_style = { collaboration: 5, planning: 5, perfectionism: 5 }
         ;(parsed.work_style as Record<string, number>).perfectionism = score
       }
+    }
+    if (behavioralTraits.risk_style) {
+      if (!parsed.personality) parsed.personality = { risk: 5, time: 5, communication: 5, decision: 5 }
+      ;(parsed.personality as Record<string, number>).risk = behavioralTraits.risk_style === 'adventurous' ? 8 : 3
+      behavioralTraits.risk_style = behavioralTraits.risk_style // keep in traits
     }
 
     // Save to DB: personality + vision_summary (스키마가 클램핑 완료)
