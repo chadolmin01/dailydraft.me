@@ -72,7 +72,7 @@ export default function ProfilePage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">
-                    <span className="text-[0.5625rem] font-mono font-bold text-brand uppercase tracking-wider">AI MATCHING</span>
+                    <span className="text-[10px] font-mono font-bold text-brand uppercase tracking-wider">AI MATCHING</span>
                   </div>
                   <p className="text-[13px] font-bold text-txt-primary">2분 대화로 매칭 정확도를 높여보세요</p>
                   <p className="text-[11px] text-txt-tertiary mt-0.5">작업 스타일, 성향을 분석해 딱 맞는 팀원을 추천해드려요</p>
