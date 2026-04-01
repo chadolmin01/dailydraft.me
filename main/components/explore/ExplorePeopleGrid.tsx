@@ -70,11 +70,11 @@ export function ExplorePeopleGrid({
                     <h3 className="font-semibold text-sm text-txt-primary truncate">{t.name}</h3>
                     <Badges badges={t.badges} />
                     {peopleSortBy === 'ai' && t.matchScore != null && t.matchScore > 0 ? (
-                      <span className={`text-[0.5625rem] font-mono font-bold px-1 py-px shrink-0 border ${getMatchColorClass(t.matchScore)}`}>
+                      <span className={`text-[10px] font-mono font-bold px-1 py-px shrink-0 border ${getMatchColorClass(t.matchScore)}`}>
                         {t.matchScore}%
                       </span>
                     ) : (
-                      <span className={`text-[0.5625rem] font-mono font-bold px-1 py-px shrink-0 border ${
+                      <span className={`text-[10px] font-mono font-bold px-1 py-px shrink-0 border ${
                         t.status === 'OPEN' ? 'bg-status-success-bg text-status-success-text border-indicator-online/20'
                         : t.status === 'BUSY' ? 'bg-status-neutral-bg text-status-neutral-text border-border'
                         : 'bg-surface-sunken text-txt-tertiary border-border'
@@ -90,10 +90,10 @@ export function ExplorePeopleGrid({
                   {t.tags.length > 0 && (
                     <div className="flex items-center gap-1 mt-1 overflow-hidden">
                       {t.tags.slice(0, 3).map(tag => (
-                        <span key={tag} className="text-[0.625rem] bg-surface-card text-tag-default-text px-1.5 py-px border border-border font-medium shrink-0">{tag}</span>
+                        <span key={tag} className="text-[10px] bg-surface-card text-tag-default-text px-1.5 py-px border border-border font-medium shrink-0">{tag}</span>
                       ))}
                       {t.tags.length > 3 && (
-                        <span className="text-[0.625rem] text-txt-disabled font-mono">+{t.tags.length - 3}</span>
+                        <span className="text-[10px] text-txt-disabled font-mono">+{t.tags.length - 3}</span>
                       )}
                     </div>
                   )}
@@ -135,13 +135,13 @@ export function ExplorePeopleGrid({
                         <Badges badges={t.badges} />
                         {peopleSortBy === 'ai' && t.matchScore != null && t.matchScore > 0 ? (
                           <Tooltip text="AI 프로필 유사도">
-                            <span className={`text-[0.625rem] font-mono font-bold px-1.5 py-0.5 shrink-0 border ${getMatchColorClass(t.matchScore)}`}>
+                            <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 shrink-0 border ${getMatchColorClass(t.matchScore)}`}>
                               {t.matchScore}%
                             </span>
                           </Tooltip>
                         ) : (
                           <Tooltip text={t.status === 'OPEN' ? '커피챗/협업 가능' : t.status === 'BUSY' ? '바쁨 · 메시지 가능' : '현재 불가'}>
-                            <span className={`text-[0.625rem] font-mono font-bold px-1.5 py-0.5 shrink-0 border ${
+                            <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 shrink-0 border ${
                               t.status === 'OPEN' ? 'bg-status-success-bg text-status-success-text border-indicator-online/20'
                               : t.status === 'BUSY' ? 'bg-status-neutral-bg text-status-neutral-text border-border'
                               : 'bg-surface-sunken text-txt-tertiary border-border'
@@ -174,11 +174,11 @@ export function ExplorePeopleGrid({
                 </div>
                 <div className="px-4 pb-4 h-[3.25rem] shrink-0 flex items-end">
                   <div className="flex items-center justify-between w-full pt-2 border-t border-border">
-                    <span className="text-[0.625rem] font-mono text-txt-tertiary">{t.role}</span>
+                    <span className="text-[10px] font-mono text-txt-tertiary">{t.role}</span>
                     {t.status === 'OPEN' ? (
-                      <span className="text-[0.625rem] font-mono text-indicator-online flex items-center gap-1 bg-status-success-bg px-1.5 py-0.5 border border-indicator-online/20"><Coffee size={9} /> AVAILABLE</span>
+                      <span className="text-[10px] font-mono text-indicator-online flex items-center gap-1 bg-status-success-bg px-1.5 py-0.5 border border-indicator-online/20"><Coffee size={9} /> AVAILABLE</span>
                     ) : (
-                      <span className="text-[0.625rem] font-mono text-txt-tertiary flex items-center gap-1 bg-surface-sunken px-1.5 py-0.5 border border-border">{t.status}</span>
+                      <span className="text-[10px] font-mono text-txt-tertiary flex items-center gap-1 bg-surface-sunken px-1.5 py-0.5 border border-border">{t.status}</span>
                     )}
                   </div>
                 </div>
@@ -192,7 +192,7 @@ export function ExplorePeopleGrid({
         <div className="text-center mt-6">
           <button
             onClick={onLoadMore}
-            className="px-6 py-2.5 text-sm font-bold text-txt-secondary border border-border hover:bg-surface-sunken hover:shadow-md transition-all active:scale-[0.97] active:shadow-none"
+            className="px-6 py-2.5 text-sm font-bold text-black bg-surface-card border border-border rounded-xl hover:bg-black hover:text-white hover:scale-[1.015] hover:shadow-sm transition-all duration-150 active:scale-[0.97] active:shadow-none"
           >
             더 보기
           </button>

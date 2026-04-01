@@ -340,7 +340,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
         {/* Section Progress */}
         <div className="flex items-center gap-1.5 flex-wrap">
           {['사진', '기본', '소속', '스킬', '연락처', '관심사', 'AI'].map((label, i) => (
-            <span key={label} className="text-[0.5625rem] font-medium text-txt-disabled">
+            <span key={label} className="text-[10px] font-medium text-txt-disabled">
               {i > 0 && <span className="mr-1.5">›</span>}
               {label}
             </span>

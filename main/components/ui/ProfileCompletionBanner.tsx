@@ -49,7 +49,7 @@ export function ProfileCompletionBanner() {
         {/* Content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-[0.5625rem] font-mono font-medium text-txt-tertiary uppercase tracking-wider">PROFILE COMPLETION</span>
+            <span className="text-[10px] font-mono font-medium text-txt-tertiary uppercase tracking-wider">PROFILE COMPLETION</span>
           </div>
           <p className="text-xs text-txt-secondary truncate">
             <span className="font-semibold text-txt-primary">{displayFields.join(', ')}</span>

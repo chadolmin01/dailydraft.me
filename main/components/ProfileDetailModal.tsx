@@ -21,7 +21,7 @@ import { ProfileSidePanel } from './profile-modal/ProfileSidePanel'
 import { PortfolioView } from './profile-modal/PortfolioView'
 import { useBackHandler } from '@/src/hooks/useBackHandler'
 
-export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileId, byUserId, matchData, onClose, onSelectProject }) => {
+export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileId, byUserId, matchData, onClose, onSelectProject, initialCoffeeChatOpen, initialCoffeeChatMessage }) => {
   const { isAuthenticated, user } = useAuth()
   const [shareCopied, setShareCopied] = useState(false)
   const [showCoffeeChatForm, setShowCoffeeChatForm] = useState(false)
@@ -77,6 +77,12 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
       fetch(`/api/profile/${profile.id}/view`, { method: 'POST' }).catch(() => {})
     }
   }, [profile?.id])
+
+  useEffect(() => {
+    if (initialCoffeeChatOpen && profile && user && user.id !== profile.user_id) {
+      setShowCoffeeChatForm(true)
+    }
+  }, [initialCoffeeChatOpen, profile, user])
 
   useEffect(() => {
     if (profile?.id && user) {
@@ -218,7 +224,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                 {!loading && profile && (
                   <div className="flex items-center gap-2">
                     {profile.current_situation && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-status-success-bg text-status-success-text text-[0.625rem] font-bold border border-status-success-text/30">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-status-success-bg text-status-success-text text-[10px] font-bold border border-status-success-text/30">
                         <Briefcase size={10} />
                         {SITUATION_LABELS[profile.current_situation] || profile.current_situation}
                       </span>
@@ -237,7 +243,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                     <button
                       onClick={handleInterest}
                       disabled={interestLoading}
-                      className={`flex items-center gap-1 px-2 py-1 text-[0.625rem] font-mono font-bold transition-colors border ${
+                      className={`flex items-center gap-1 px-2 py-1 text-[10px] font-mono font-bold transition-colors border ${
                         hasInterested
                           ? 'bg-status-danger-bg text-status-danger-text border-status-danger-text/20'
                           : 'text-txt-disabled border-transparent hover:bg-surface-sunken hover:border-border hover:text-status-danger-text'
@@ -254,7 +260,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                     aria-label="공유"
                   >
                     {shareCopied ? (
-                      <span className="text-[0.625rem] font-medium text-status-success-text px-1 icon-bounce">복사됨!</span>
+                      <span className="text-[10px] font-medium text-status-success-text px-1 icon-bounce">복사됨!</span>
                     ) : (
                       <Share2 size={14} className="text-txt-disabled" />
                     )}
@@ -324,6 +330,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                         setSidePanel={setSidePanel}
                         onClose={onClose}
                         onSelectProject={onSelectProject}
+                        initialCoffeeChatMessage={initialCoffeeChatMessage}
                       />
 
                       <ProfileBodyRight

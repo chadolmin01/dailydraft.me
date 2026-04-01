@@ -6,7 +6,7 @@ import { CATEGORICAL_LABELS, SCORE_TO_CATEGORICAL } from '@/src/lib/onboarding/c
 function TraitBadge({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between px-3 py-2.5 bg-white rounded-xl border border-border-strong/60 hover:border-brand/30 transition-colors">
-      <span className="text-[0.625rem] text-txt-tertiary font-mono uppercase">{label}</span>
+      <span className="text-[10px] text-txt-tertiary font-mono uppercase">{label}</span>
       <span className="text-xs font-semibold text-txt-primary">{value}</span>
     </div>
   )
@@ -57,7 +57,7 @@ export function ProfileBodyRight({
       {/* Personality Traits */}
       {personality && Object.keys(personality).length > 0 && (
         <section>
-          <h3 className="text-[0.625rem] font-bold text-txt-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
+          <h3 className="text-[10px] font-bold text-txt-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
             <span className="w-0.5 h-3 bg-brand rounded-full" />
             성향 점수
           </h3>
@@ -85,7 +85,7 @@ export function ProfileBodyRight({
       {/* Work Style — categorical badges */}
       {hasWorkStyleBadges && (
         <section>
-          <h3 className="text-[0.625rem] font-bold text-txt-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
+          <h3 className="text-[10px] font-bold text-txt-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
             <span className="w-0.5 h-3 bg-violet-500 rounded-full" />
             작업 스타일
           </h3>
@@ -100,26 +100,26 @@ export function ProfileBodyRight({
       {/* Team Preference */}
       {teamPref && Object.keys(teamPref).length > 0 && (
         <section>
-          <h3 className="text-[0.625rem] font-bold text-txt-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
+          <h3 className="text-[10px] font-bold text-txt-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
             <span className="w-0.5 h-3 bg-emerald-500 rounded-full" />
             <Users size={11} /> 팀 선호
           </h3>
           <div className="space-y-1.5">
             {teamPref.role && (
               <div className="flex items-center justify-between px-3 py-2.5 bg-white rounded-xl border border-border-strong/60 hover:border-brand/30 transition-colors">
-                <span className="text-[0.625rem] text-txt-tertiary font-mono uppercase">역할</span>
+                <span className="text-[10px] text-txt-tertiary font-mono uppercase">역할</span>
                 <span className="text-xs font-semibold text-txt-primary">{teamPref.role}</span>
               </div>
             )}
             {teamPref.preferred_size && (
               <div className="flex items-center justify-between px-3 py-2.5 bg-white rounded-xl border border-border-strong/60 hover:border-brand/30 transition-colors">
-                <span className="text-[0.625rem] text-txt-tertiary font-mono uppercase">선호 규모</span>
+                <span className="text-[10px] text-txt-tertiary font-mono uppercase">선호 규모</span>
                 <span className="text-xs font-semibold text-txt-primary">{teamPref.preferred_size}</span>
               </div>
             )}
             {teamPref.atmosphere && (
               <div className="flex items-center justify-between px-3 py-2.5 bg-white rounded-xl border border-border-strong/60 hover:border-brand/30 transition-colors">
-                <span className="text-[0.625rem] text-txt-tertiary font-mono uppercase">분위기</span>
+                <span className="text-[10px] text-txt-tertiary font-mono uppercase">분위기</span>
                 <span className="text-xs font-semibold text-txt-primary">{teamPref.atmosphere}</span>
               </div>
             )}
@@ -130,20 +130,20 @@ export function ProfileBodyRight({
       {/* Availability */}
       {availability && (availability.hours_per_week != null || availability.prefer_online != null) && (
         <section>
-          <h3 className="text-[0.625rem] font-bold text-txt-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
+          <h3 className="text-[10px] font-bold text-txt-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
             <span className="w-0.5 h-3 bg-amber-500 rounded-full" />
             <Clock size={11} /> 가용 시간
           </h3>
           <div className="space-y-1.5">
             {availability.hours_per_week != null && (
               <div className="flex items-center justify-between px-3 py-2.5 bg-white rounded-xl border border-border-strong/60 hover:border-brand/30 transition-colors">
-                <span className="text-[0.625rem] text-txt-tertiary font-mono uppercase">주당 시간</span>
+                <span className="text-[10px] text-txt-tertiary font-mono uppercase">주당 시간</span>
                 <span className="text-xs font-semibold text-txt-primary">{availability.hours_per_week}시간</span>
               </div>
             )}
             {availability.prefer_online != null && (
               <div className="flex items-center justify-between px-3 py-2.5 bg-white rounded-xl border border-border-strong/60 hover:border-brand/30 transition-colors">
-                <span className="text-[0.625rem] text-txt-tertiary font-mono uppercase">작업 방식</span>
+                <span className="text-[10px] text-txt-tertiary font-mono uppercase">작업 방식</span>
                 <span className="text-xs font-semibold text-txt-primary">{availability.prefer_online ? '온라인 선호' : '오프라인 선호'}</span>
               </div>
             )}
@@ -154,7 +154,7 @@ export function ProfileBodyRight({
       {/* Skills */}
       {skills && skills.length > 0 && (
         <section>
-          <h3 className="text-[0.625rem] font-bold text-txt-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
+          <h3 className="text-[10px] font-bold text-txt-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
             <span className="w-0.5 h-3 bg-sky-500 rounded-full" />
             <Code2 size={11} /> 스킬
           </h3>
@@ -166,7 +166,7 @@ export function ProfileBodyRight({
               >
                 {skill.name}
                 <span className="text-txt-disabled">·</span>
-                <span className="text-brand text-[0.625rem] font-bold">{skill.level}</span>
+                <span className="text-brand text-[10px] font-bold">{skill.level}</span>
               </span>
             ))}
           </div>

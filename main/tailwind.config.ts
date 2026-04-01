@@ -133,6 +133,7 @@ const config: Config = {
         'fade-in': 'fadeIn 0.4s ease-out forwards',
         shimmer: 'shimmer 1.5s ease-in-out infinite',
         'stagger-in': 'staggerFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'badge-pop': 'badgePop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
       },
       keyframes: {
         marquee: {
@@ -192,6 +193,12 @@ const config: Config = {
         staggerFadeIn: {
           '0%': { opacity: '0', transform: 'translateY(12px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        badgePop: {
+          '0%': { opacity: '0', transform: 'scale(0.4) translateY(-6px)' },
+          '60%': { opacity: '1', transform: 'scale(1.18) translateY(0)' },
+          '80%': { transform: 'scale(0.94)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
         },
       },
     },

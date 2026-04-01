@@ -16,6 +16,8 @@ export interface ProfileDetailModalProps {
   matchData?: MatchData | null
   onClose: () => void
   onSelectProject?: (projectId: string) => void
+  initialCoffeeChatOpen?: boolean
+  initialCoffeeChatMessage?: string
 }
 
 export const SITUATION_LABELS: Record<string, string> = {
