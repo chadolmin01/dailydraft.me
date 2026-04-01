@@ -76,6 +76,34 @@ const SYSTEM_PROMPT = (profile: ProfileContext) => `당신은 Draft 플랫폼의
 - 첫 메시지 예시: [SUGGESTIONS: "아직 해본 적 없어요", "학교 팀프로젝트 해봤어요", "개인 프로젝트 진행 중이에요"]
 - 대화 맥락에 맞는 다양한 선택지를 제공하세요 (긍정/부정/중간 등)
 
+## 인터랙티브 요소 (반드시 지킬 것)
+
+대화 중 적절한 시점에 인터랙티브 UI 요소를 삽입할 수 있습니다.
+텍스트 질문 대신 UI 요소를 사용하면 사용자가 더 쉽고 정확하게 답할 수 있습니다.
+
+사용 가능한 요소 ID:
+- scenario_collaboration: 팀 협업 상황 시나리오 (협업 스타일)
+- scenario_decision: 의사결정 상황 시나리오 (결정 스타일)
+- this_or_that_planning: 기획형 vs 실행형
+- this_or_that_perfectionism: 완성도 vs 속도
+- drag_rank_goals: 프로젝트 목표 우선순위
+- drag_rank_wants: 팀원에게 기대하는 것
+- emoji_grid_atmosphere: 선호하는 팀 분위기
+- emoji_grid_team_size: 선호하는 팀 규모
+- quick_number_hours: 주당 투자 가능 시간
+- spectrum_communication: 소통 스타일
+- spectrum_teamrole: 리더/팔로워 성향
+
+사용법: 응답 끝에 [INTERACTIVE: 요소ID] 태그를 추가하세요.
+예시: "팀에서 의견이 다를 때 어떻게 하시는지 궁금해요! [INTERACTIVE: scenario_collaboration]"
+
+규칙:
+- 대화당 최대 5개까지 사용
+- 연속 2개 사용 금지 (사이에 일반 대화 1회 이상 넣기)
+- 첫 메시지에는 사용하지 않기 (먼저 자유 대화로 라포 형성)
+- [INTERACTIVE] 사용 시 [SUGGESTIONS]는 생략하기
+- 사용자가 자유 텍스트로 답한 내용을 잘 반영한 뒤 인터랙티브 요소를 제시
+
 ## 가드레일 (반드시 지킬 것)
 - 사용자가 팀 매칭/프로젝트/프로필과 **전혀 관련 없는 질문**을 하면 (예: 코딩 과제 풀어줘, 날씨 알려줘, 숙제 도와줘, 번역해줘, 일반 상식 질문 등), 반드시 응답 맨 앞에 **[OFF_TOPIC]** 태그를 붙이고 정중히 거절한 뒤 본 대화로 유도하세요.
 - 예시: "[OFF_TOPIC] 저는 팀 매칭을 위한 프로필 분석 전문이에요! 그 질문은 제가 도와드리기 어렵지만, 이어서 프로젝트 경험에 대해 얘기해볼까요?"
@@ -149,6 +177,14 @@ export async function POST(request: Request) {
       reply = reply.replace('[OFF_TOPIC]', '').trim()
     }
 
+    // Extract [INTERACTIVE: ...] from the reply
+    let interactiveElement: string | null = null
+    const interactiveMatch = reply.match(/\[INTERACTIVE:\s*([a-z_]+)\]\s*/i)
+    if (interactiveMatch) {
+      reply = reply.replace(interactiveMatch[0], '').trim()
+      interactiveElement = interactiveMatch[1]
+    }
+
     // Extract [SUGGESTIONS: ...] from the reply
     let suggestions: string[] = []
     const sugMatch = reply.match(/\[SUGGESTIONS:\s*(.+?)\]\s*$/)
@@ -161,7 +197,7 @@ export async function POST(request: Request) {
       }
     }
 
-    return ApiResponse.ok({ reply, offTopic, suggestions })
+    return ApiResponse.ok({ reply, offTopic, suggestions, interactiveElement })
   } catch (error) {
     console.error('Onboarding chat error:', error)
     return ApiResponse.internalError('채팅 처리 중 오류가 발생했습니다')

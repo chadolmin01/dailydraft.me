@@ -66,6 +66,7 @@ export const ATTACHMENT_TO_STEP: Record<string, Step> = {
   'interests-confirm': 'interests-confirm',
   'deep-chat-offer': 'deep-chat-offer',
   'deep-chat-offer-finish': 'deep-chat',
+  'interactive-element': 'deep-chat',
 }
 
 /** All steps in order, for progress calculation */

@@ -19,8 +19,12 @@ interface OnboardingChatProps {
   renderAttachment: (bubble: Bubble) => React.ReactNode
 }
 
-function isActiveBubble(bubbles: Bubble[], id: string, attachment: BubbleAttachment | undefined, step: Step): boolean {
+function isActiveBubble(bubbles: Bubble[], id: string, attachment: BubbleAttachment | undefined, step: Step, bubble?: Bubble): boolean {
   if (!attachment) return false
+  // Interactive elements: active if not yet answered (multiple can exist)
+  if (attachment === 'interactive-element') {
+    return ATTACHMENT_TO_STEP[attachment] === step && !bubble?.answered
+  }
   const last = [...bubbles].reverse().find(b => b.attachment === attachment)
   if (last?.id !== id) return false
   return ATTACHMENT_TO_STEP[attachment] === step
@@ -38,7 +42,7 @@ export const OnboardingChat: React.FC<OnboardingChatProps> = ({
           const prev = bubbles[i - 1]
           const showAvatar = isAi && (!prev || prev.role !== 'ai')
           const isGrouped = isAi && prev?.role === 'ai'
-          const active = isActiveBubble(bubbles, bubble.id, bubble.attachment, step)
+          const active = isActiveBubble(bubbles, bubble.id, bubble.attachment, step, bubble)
 
           return (
             <div key={bubble.id}>

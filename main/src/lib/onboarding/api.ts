@@ -1,4 +1,4 @@
-import type { DeepChatMessage, ProfileDraft } from './types'
+import type { DeepChatMessage, ProfileDraft, StructuredResponse } from './types'
 
 /** Parse free-text skills/interests via AI */
 export async function aiParse(text: string, type: 'skills' | 'interests', signal?: AbortSignal): Promise<string[] | null> {
@@ -22,7 +22,7 @@ export async function aiDeepChat(
   messages: DeepChatMessage[],
   profileCtx: Record<string, unknown>,
   signal?: AbortSignal,
-): Promise<{ reply: string; offTopic: boolean; suggestions: string[] }> {
+): Promise<{ reply: string; offTopic: boolean; suggestions: string[]; interactiveElement: string | null }> {
   try {
     const res = await fetch('/api/onboarding/chat', {
       method: 'POST',
@@ -31,7 +31,7 @@ export async function aiDeepChat(
       signal,
     })
     if (!res.ok) {
-      return { reply: '죄송해요, 일시적인 오류가 발생했어요. 다시 말씀해주세요!', offTopic: false, suggestions: [] }
+      return { reply: '죄송해요, 일시적인 오류가 발생했어요. 다시 말씀해주세요!', offTopic: false, suggestions: [], interactiveElement: null }
     }
     const json = await res.json()
     const data = json?.data || json
@@ -39,11 +39,12 @@ export async function aiDeepChat(
       reply: data?.reply || '어떤 프로젝트 경험이 있으신지 알려주세요!',
       offTopic: !!data?.offTopic,
       suggestions: Array.isArray(data?.suggestions) ? data.suggestions : [],
+      interactiveElement: data?.interactiveElement || null,
     }
   } catch (err) {
     // Re-throw AbortError so callers can distinguish cancellation from real errors
     if (err instanceof DOMException && err.name === 'AbortError') throw err
-    return { reply: '죄송해요, 네트워크 오류가 발생했어요. 인터넷 연결을 확인하고 다시 시도해주세요.', offTopic: false, suggestions: [] }
+    return { reply: '죄송해요, 네트워크 오류가 발생했어요. 인터넷 연결을 확인하고 다시 시도해주세요.', offTopic: false, suggestions: [], interactiveElement: null }
   }
 }
 
@@ -129,6 +130,7 @@ export async function saveProfileFinal(
 export async function summarizeTranscript(
   messages: DeepChatMessage[],
   signal?: AbortSignal,
+  structuredResponses?: StructuredResponse[],
 ): Promise<{ summary?: string } | null> {
   try {
     const res = await fetch('/api/onboarding/summarize', {
@@ -136,6 +138,7 @@ export async function summarizeTranscript(
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         transcript: messages.map(m => ({ role: m.role, content: m.content })),
+        structuredData: structuredResponses?.length ? structuredResponses : undefined,
       }),
       signal,
     })

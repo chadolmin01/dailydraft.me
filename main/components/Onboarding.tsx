@@ -20,6 +20,9 @@ import { SkillsInputStep, SkillsConfirmStep } from './onboarding/steps/SkillsSte
 import { InterestsInputStep, InterestsConfirmStep } from './onboarding/steps/InterestsStep'
 import { DeepChatOfferStep, DeepChatOfferFinishStep } from './onboarding/steps/DeepChatOfferStep'
 import { DeepChatFooter, DefaultFooter } from './onboarding/steps/DeepChatStep'
+import { ScenarioCard, ThisOrThat, DragRank, EmojiGrid, QuickNumber, SpectrumPick } from './onboarding/interactive'
+import { INTERACTIVE_QUESTIONS } from '@/src/lib/onboarding/interactive-questions'
+import type { StructuredResponse, InteractiveElementConfig, ScenarioCardQuestion, ThisOrThatQuestion, DragRankQuestion, EmojiGridQuestion, QuickNumberQuestion, SpectrumPickQuestion } from '@/src/lib/onboarding/types'
 
 // ── localStorage key for progress persistence ──
 const STORAGE_KEY = 'draft-onboarding-progress'
@@ -369,7 +372,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     }, 10000)
 
     try {
-      const { reply: firstQ, suggestions: firstSuggestions } = await aiDeepChat([], profileCtx, abortRef.current.signal)
+      const { reply: firstQ, suggestions: firstSuggestions, interactiveElement: _firstInteractive } = await aiDeepChat([], profileCtx, abortRef.current.signal)
 
       clearTimeout(timeoutId)
       timerRefs.current.delete(timeoutId)
@@ -407,6 +410,78 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     await finishOnboarding()
   }
 
+  // ── Interactive element response handler ──
+  const handleInteractiveResponse = async (bubbleId: string, response: StructuredResponse) => {
+    dispatch({ type: 'SET_BUBBLE_ANSWERED', bubbleId })
+    dispatch({ type: 'ADD_STRUCTURED_RESPONSE', response })
+
+    // Add user message with natural language summary
+    pushUser(response.naturalLanguage)
+    const userMsg: DeepChatMessage = {
+      role: 'user',
+      content: response.naturalLanguage,
+      timestamp: new Date().toISOString(),
+    }
+    const updatedMessages = [...stateRef.current.deepChatMessages, userMsg]
+    dispatch({ type: 'SET_DEEP_CHAT_MESSAGES', messages: updatedMessages })
+
+    // Send to AI for follow-up
+    const profileCtx = buildProfileCtx(stateRef.current.profile)
+    const activityLabel = AI_ACTIVITY_LABELS[Math.min(updatedMessages.filter(m => m.role === 'user').length - 1, AI_ACTIVITY_LABELS.length - 1)]
+    dispatch({ type: 'SET_AI_ACTIVITY', label: activityLabel })
+    dispatch({ type: 'SET_TYPING', isTyping: true })
+    dispatch({ type: 'SET_SHOW_SUGGESTIONS', value: false })
+
+    abortRef.current?.abort()
+    abortRef.current = new AbortController()
+
+    try {
+      const { reply, offTopic, suggestions, interactiveElement } = await aiDeepChat(updatedMessages, profileCtx, abortRef.current.signal)
+
+      if (offTopic) {
+        dispatch({ type: 'SET_DEEP_CHAT_MESSAGES', messages: stateRef.current.deepChatMessages })
+        dispatch({ type: 'SET_TYPING', isTyping: false })
+        dispatch({ type: 'ADD_BUBBLE', bubble: { id: `ai-${Date.now()}-${Math.random()}`, role: 'ai', content: reply, offTopic: true } })
+      } else {
+        const aiMsg: DeepChatMessage = { role: 'assistant', content: reply, timestamp: new Date().toISOString() }
+        const finalMessages = [...updatedMessages, aiMsg]
+        dispatch({ type: 'SET_DEEP_CHAT_MESSAGES', messages: finalMessages })
+
+        // Check if AI wants to show an interactive element
+        const questionDef = interactiveElement ? INTERACTIVE_QUESTIONS[interactiveElement] : null
+        if (questionDef && stateRef.current.interactiveElementCount < 5) {
+          const config: InteractiveElementConfig = {
+            type: questionDef.type,
+            questionId: interactiveElement!,
+            measuredFields: questionDef.measuredFields,
+          }
+          dispatch({ type: 'SET_TYPING', isTyping: false })
+          dispatch({ type: 'ADD_BUBBLE', bubble: {
+            id: `ai-${Date.now()}-${Math.random()}`,
+            role: 'ai',
+            content: reply,
+            attachment: 'interactive-element',
+            interactiveConfig: config,
+          } })
+          dispatch({ type: 'INCREMENT_INTERACTIVE_COUNT' })
+        } else {
+          await pushAi(reply, undefined, 300)
+        }
+      }
+      dispatch({ type: 'SET_DYNAMIC_SUGGESTIONS', suggestions: interactiveElement ? [] : suggestions })
+    } catch (err) {
+      const isAbort = err instanceof DOMException && err.name === 'AbortError'
+      if (!isAbort) {
+        await pushAi('일시적인 오류가 발생했어요. 다시 말씀해주세요!', undefined, 300)
+      }
+    } finally {
+      dispatch({ type: 'SET_TYPING', isTyping: false })
+      dispatch({ type: 'SET_AI_ACTIVITY', label: null })
+      dispatch({ type: 'SET_SHOW_SUGGESTIONS', value: true })
+      safeTimeout(() => deepChatInputRef.current?.focus(), 200)
+    }
+  }
+
   const sendDeepChatMessage = async (text: string) => {
     const s = stateRef.current
     if (s.isTyping || !text.trim() || s.step !== 'deep-chat') return
@@ -428,7 +503,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     abortRef.current = new AbortController()
 
     try {
-      const { reply, offTopic, suggestions } = await aiDeepChat(updatedMessages, profileCtx, abortRef.current.signal)
+      const { reply, offTopic, suggestions, interactiveElement } = await aiDeepChat(updatedMessages, profileCtx, abortRef.current.signal)
 
       if (offTopic) {
         // Don't add off-topic exchange to history — rollback to previous state
@@ -440,9 +515,29 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
         const aiMsg: DeepChatMessage = { role: 'assistant', content: reply, timestamp: new Date().toISOString() }
         const finalMessages = [...updatedMessages, aiMsg]
         dispatch({ type: 'SET_DEEP_CHAT_MESSAGES', messages: finalMessages })
-        await pushAi(reply, undefined, 300)
+
+        // Check if AI wants to show an interactive element
+        const questionDef = interactiveElement ? INTERACTIVE_QUESTIONS[interactiveElement] : null
+        if (questionDef && stateRef.current.interactiveElementCount < 5) {
+          const config: InteractiveElementConfig = {
+            type: questionDef.type,
+            questionId: interactiveElement!,
+            measuredFields: questionDef.measuredFields,
+          }
+          dispatch({ type: 'SET_TYPING', isTyping: false })
+          dispatch({ type: 'ADD_BUBBLE', bubble: {
+            id: `ai-${Date.now()}-${Math.random()}`,
+            role: 'ai',
+            content: reply,
+            attachment: 'interactive-element',
+            interactiveConfig: config,
+          } })
+          dispatch({ type: 'INCREMENT_INTERACTIVE_COUNT' })
+        } else {
+          await pushAi(reply, undefined, 300)
+        }
       }
-      dispatch({ type: 'SET_DYNAMIC_SUGGESTIONS', suggestions })
+      dispatch({ type: 'SET_DYNAMIC_SUGGESTIONS', suggestions: interactiveElement ? [] : suggestions })
     } catch (err) {
       const isAbort = err instanceof DOMException && err.name === 'AbortError'
       if (!isAbort) {
@@ -483,9 +578,10 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       // Use ref for coveredTopics to avoid stale count (#10)
       await pushAi(`${coveredTopicsRef.current.length}개 영역을 분석해서 프로필에 반영하고 있어요...`, undefined, 400)
 
-      // Read latest messages from ref (#2)
+      // Read latest messages + structured responses from ref (#2)
       const currentMessages = stateRef.current.deepChatMessages
-      const summaryResult = await summarizeTranscript(currentMessages, abortRef.current?.signal)
+      const currentStructured = stateRef.current.structuredResponses
+      const summaryResult = await summarizeTranscript(currentMessages, abortRef.current?.signal, currentStructured)
       dispatch({ type: 'SET_TYPING', isTyping: false })
       dispatch({ type: 'SET_AI_ACTIVITY', label: null })
 
@@ -592,6 +688,135 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
             onFinish={forceFinishDeepChat}
           />
         )
+      case 'interactive-element': {
+        if (bubble.answered || !bubble.interactiveConfig) return null
+        const question = INTERACTIVE_QUESTIONS[bubble.interactiveConfig.questionId]
+        if (!question) return null
+        const bId = bubble.id
+        const mFields = bubble.interactiveConfig.measuredFields
+
+        switch (question.type) {
+          case 'scenario-card': {
+            const q = question as ScenarioCardQuestion
+            return (
+              <ScenarioCard
+                options={q.options}
+                onSelect={(opt) => handleInteractiveResponse(bId, {
+                  questionId: bubble.interactiveConfig!.questionId,
+                  type: 'scenario-card',
+                  value: opt.id,
+                  naturalLanguage: opt.label + ': ' + opt.description.replace(/\n/g, ' '),
+                  measuredFields: mFields,
+                  scoreMappings: opt.scores,
+                })}
+              />
+            )
+          }
+          case 'this-or-that': {
+            const q = question as ThisOrThatQuestion
+            return (
+              <ThisOrThat
+                optionA={q.optionA}
+                optionB={q.optionB}
+                onSelect={(opt) => handleInteractiveResponse(bId, {
+                  questionId: bubble.interactiveConfig!.questionId,
+                  type: 'this-or-that',
+                  value: opt.id,
+                  naturalLanguage: `${opt.label} 스타일이에요: ${opt.description.replace(/\n/g, ' ')}`,
+                  measuredFields: mFields,
+                  scoreMappings: opt.scores,
+                })}
+              />
+            )
+          }
+          case 'drag-rank': {
+            const q = question as DragRankQuestion
+            return (
+              <DragRank
+                items={q.items}
+                onConfirm={(ordered) => handleInteractiveResponse(bId, {
+                  questionId: bubble.interactiveConfig!.questionId,
+                  type: 'drag-rank',
+                  value: ordered.map(item => item.label),
+                  naturalLanguage: `우선순위: ${ordered.map((item, i) => `${i + 1}. ${item.label}`).join(', ')}`,
+                  measuredFields: mFields,
+                })}
+              />
+            )
+          }
+          case 'emoji-grid': {
+            const q = question as EmojiGridQuestion
+            return (
+              <EmojiGrid
+                options={q.options}
+                minSelect={q.minSelect}
+                maxSelect={q.maxSelect}
+                onConfirm={(selected) => handleInteractiveResponse(bId, {
+                  questionId: bubble.interactiveConfig!.questionId,
+                  type: 'emoji-grid',
+                  value: selected.map(s => s.id),
+                  naturalLanguage: selected.map(s => `${s.emoji} ${s.label}`).join(', '),
+                  measuredFields: mFields,
+                })}
+              />
+            )
+          }
+          case 'quick-number': {
+            const q = question as QuickNumberQuestion
+            return (
+              <QuickNumber
+                presets={q.presets}
+                unit={q.unit}
+                subQuestion={q.subQuestion}
+                onConfirm={(value, subAnswer) => {
+                  let nl = `주 ${value}시간`
+                  if (q.subQuestion && subAnswer !== undefined) {
+                    nl += subAnswer ? `, ${q.subQuestion.yesLabel}` : `, ${q.subQuestion.noLabel}`
+                  }
+                  const scoreMappings: Record<string, number> = {}
+                  if (mFields.includes('hours_per_week')) scoreMappings.time = Math.min(10, Math.round(value / 3))
+                  handleInteractiveResponse(bId, {
+                    questionId: bubble.interactiveConfig!.questionId,
+                    type: 'quick-number',
+                    value: { hours: value, semesterAvailable: subAnswer ?? null },
+                    naturalLanguage: nl,
+                    measuredFields: mFields,
+                    scoreMappings,
+                  })
+                }}
+              />
+            )
+          }
+          case 'spectrum-pick': {
+            const q = question as SpectrumPickQuestion
+            return (
+              <SpectrumPick
+                leftLabel={q.leftLabel}
+                leftDescription={q.leftDescription}
+                rightLabel={q.rightLabel}
+                rightDescription={q.rightDescription}
+                points={q.points}
+                onSelect={(value) => {
+                  const score = Math.round((value / q.points) * 10)
+                  const label = value <= 2 ? q.leftLabel : value >= 4 ? q.rightLabel : '중간'
+                  const scoreMappings: Record<string, number> = {}
+                  mFields.forEach(f => { scoreMappings[f] = score })
+                  handleInteractiveResponse(bId, {
+                    questionId: bubble.interactiveConfig!.questionId,
+                    type: 'spectrum-pick',
+                    value,
+                    naturalLanguage: `${label} (${value}/${q.points})`,
+                    measuredFields: mFields,
+                    scoreMappings,
+                  })
+                }}
+              />
+            )
+          }
+          default:
+            return null
+        }
+      }
       default:
         return null
     }

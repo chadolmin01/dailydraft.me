@@ -16,6 +16,7 @@ export type BubbleAttachment =
   | 'skills-input' | 'skills-confirm'
   | 'interests-input' | 'interests-confirm'
   | 'deep-chat-offer' | 'deep-chat-offer-finish'
+  | 'interactive-element'
 
 export interface Bubble {
   id: string
@@ -23,7 +24,119 @@ export interface Bubble {
   content: string
   attachment?: BubbleAttachment
   offTopic?: boolean
+  interactiveConfig?: InteractiveElementConfig
+  answered?: boolean
 }
+
+// ── Interactive Elements ──
+
+export type InteractiveElementType =
+  | 'scenario-card'
+  | 'this-or-that'
+  | 'drag-rank'
+  | 'emoji-grid'
+  | 'quick-number'
+  | 'spectrum-pick'
+
+export interface InteractiveElementConfig {
+  type: InteractiveElementType
+  questionId: string
+  measuredFields: string[]
+}
+
+export interface StructuredResponse {
+  questionId: string
+  type: InteractiveElementType
+  value: unknown
+  naturalLanguage: string
+  measuredFields: string[]
+  scoreMappings?: Record<string, number>
+}
+
+export interface ScenarioOption {
+  id: string
+  icon: string
+  label: string
+  description: string
+  scores: Record<string, number>
+}
+
+export interface ThisOrThatOption {
+  id: string
+  emoji: string
+  label: string
+  description: string
+  scores: Record<string, number>
+}
+
+export interface DragRankItem {
+  id: string
+  label: string
+  emoji: string
+}
+
+export interface EmojiGridOption {
+  id: string
+  emoji: string
+  label: string
+}
+
+export interface QuickNumberPreset {
+  label: string
+  value: number
+}
+
+export interface InteractiveQuestionBase {
+  type: InteractiveElementType
+  measuredFields: string[]
+}
+
+export interface ScenarioCardQuestion extends InteractiveQuestionBase {
+  type: 'scenario-card'
+  options: ScenarioOption[]
+}
+
+export interface ThisOrThatQuestion extends InteractiveQuestionBase {
+  type: 'this-or-that'
+  optionA: ThisOrThatOption
+  optionB: ThisOrThatOption
+}
+
+export interface DragRankQuestion extends InteractiveQuestionBase {
+  type: 'drag-rank'
+  items: DragRankItem[]
+}
+
+export interface EmojiGridQuestion extends InteractiveQuestionBase {
+  type: 'emoji-grid'
+  options: EmojiGridOption[]
+  minSelect: number
+  maxSelect: number
+}
+
+export interface QuickNumberQuestion extends InteractiveQuestionBase {
+  type: 'quick-number'
+  presets: QuickNumberPreset[]
+  unit: string
+  subQuestion?: { question: string; yesLabel: string; noLabel: string }
+}
+
+export interface SpectrumPickQuestion extends InteractiveQuestionBase {
+  type: 'spectrum-pick'
+  leftLabel: string
+  leftDescription: string
+  rightLabel: string
+  rightDescription: string
+  points: number
+}
+
+export type InteractiveQuestion =
+  | ScenarioCardQuestion
+  | ThisOrThatQuestion
+  | DragRankQuestion
+  | EmojiGridQuestion
+  | QuickNumberQuestion
+  | SpectrumPickQuestion
 
 // ── Deep Chat ──
 
@@ -79,6 +192,9 @@ export interface OnboardingState {
   tipIndex: number
   // Dynamic suggestions from AI
   dynamicSuggestions: string[]
+  // Interactive elements
+  structuredResponses: StructuredResponse[]
+  interactiveElementCount: number
 }
 
 // ── Reducer Actions ──
@@ -112,3 +228,6 @@ export type OnboardingAction =
   | { type: 'SET_AI_ACTIVITY'; label: string | null }
   | { type: 'SET_TIP_INDEX'; index: number }
   | { type: 'SET_DYNAMIC_SUGGESTIONS'; suggestions: string[] }
+  | { type: 'ADD_STRUCTURED_RESPONSE'; response: StructuredResponse }
+  | { type: 'SET_BUBBLE_ANSWERED'; bubbleId: string }
+  | { type: 'INCREMENT_INTERACTIVE_COUNT' }

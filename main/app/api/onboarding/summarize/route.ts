@@ -60,7 +60,10 @@ export async function POST(request: Request) {
     if (rateLimitResponse) return rateLimitResponse
 
     const body = await request.json()
-    const { transcript } = body as { transcript: TranscriptMessage[] }
+    const { transcript, structuredData } = body as {
+      transcript: TranscriptMessage[]
+      structuredData?: Array<{ questionId: string; scoreMappings?: Record<string, number>; value: unknown; measuredFields: string[] }>
+    }
 
     if (!Array.isArray(transcript) || transcript.length === 0) {
       return ApiResponse.badRequest('No transcript provided')
@@ -87,6 +90,68 @@ export async function POST(request: Request) {
       schema: OnboardingSummarySchema,
       extractJson: 'object',
     })
+
+    // Merge structured data directly into parsed results (higher priority than AI inference)
+    if (structuredData?.length) {
+      for (const sr of structuredData) {
+        if (!sr.scoreMappings) continue
+        for (const [field, score] of Object.entries(sr.scoreMappings)) {
+          // Map to personality fields
+          if (['risk', 'time', 'communication', 'decision'].includes(field)) {
+            if (!parsed.personality) parsed.personality = { risk: 5, time: 5, communication: 5, decision: 5 }
+            ;(parsed.personality as Record<string, number>)[field] = score
+          }
+          // Map to work_style fields
+          if (['collaboration', 'planning', 'perfectionism'].includes(field)) {
+            if (!parsed.work_style) parsed.work_style = { collaboration: 5, planning: 5, perfectionism: 5 }
+            ;(parsed.work_style as Record<string, number>)[field] = score
+          }
+          // Map to team_preference.role
+          if (field === 'role') {
+            if (!parsed.team_preference) parsed.team_preference = { role: '유연', preferred_size: null, atmosphere: '균형' }
+            parsed.team_preference.role = score >= 7 ? '리더' : score <= 3 ? '팔로워' : '유연'
+          }
+        }
+        // Direct value mappings
+        if (sr.measuredFields.includes('hours_per_week') && typeof sr.value === 'number') {
+          if (!parsed.availability) parsed.availability = { hours_per_week: null, prefer_online: false, semester_available: true }
+          parsed.availability.hours_per_week = sr.value as number
+        }
+        // hours_per_week from quick-number with object value { hours, semesterAvailable }
+        if (sr.measuredFields.includes('hours_per_week') && typeof sr.value === 'object' && sr.value !== null && 'hours' in (sr.value as Record<string, unknown>)) {
+          if (!parsed.availability) parsed.availability = { hours_per_week: null, prefer_online: false, semester_available: true }
+          parsed.availability.hours_per_week = (sr.value as { hours: number }).hours
+        }
+        if (sr.measuredFields.includes('goals') && Array.isArray(sr.value)) {
+          parsed.goals = sr.value as string[]
+        }
+        if (sr.measuredFields.includes('wants_from_team') && Array.isArray(sr.value)) {
+          parsed.wants_from_team = sr.value as string[]
+        }
+        if (sr.measuredFields.includes('atmosphere') && Array.isArray(sr.value)) {
+          if (!parsed.team_preference) parsed.team_preference = { role: '유연', preferred_size: null, atmosphere: '균형' }
+          const atm = sr.value as string[]
+          parsed.team_preference.atmosphere = atm.includes('serious') ? '실무형' : atm.includes('side') || atm.includes('cafe') ? '캐주얼' : '균형'
+          // Map 'remote' selection to prefer_online
+          if (!parsed.availability) parsed.availability = { hours_per_week: null, prefer_online: false, semester_available: true }
+          parsed.availability.prefer_online = atm.includes('remote')
+        }
+        // preferred_size from emoji_grid_team_size
+        if (sr.measuredFields.includes('preferred_size') && Array.isArray(sr.value)) {
+          if (!parsed.team_preference) parsed.team_preference = { role: '유연', preferred_size: null, atmosphere: '균형' }
+          const sizeMap: Record<string, string> = { duo: '2-3명', small: '2-3명', medium: '4-5명', large: '6명+' }
+          const picked = (sr.value as string[])[0]
+          parsed.team_preference.preferred_size = sizeMap[picked] || null
+        }
+        // semester_available from quick_number subAnswer
+        if (sr.measuredFields.includes('semester_available') && typeof sr.value === 'object' && sr.value !== null) {
+          const qv = sr.value as { hours?: number; semesterAvailable?: boolean | null }
+          if (!parsed.availability) parsed.availability = { hours_per_week: null, prefer_online: false, semester_available: true }
+          if (typeof qv.hours === 'number') parsed.availability.hours_per_week = qv.hours
+          if (typeof qv.semesterAvailable === 'boolean') parsed.availability.semester_available = qv.semesterAvailable
+        }
+      }
+    }
 
     // Save to DB: personality + vision_summary (스키마가 클램핑 완료)
     const updateData: Record<string, unknown> = {

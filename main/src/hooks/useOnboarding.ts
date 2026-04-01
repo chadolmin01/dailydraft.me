@@ -26,6 +26,8 @@ const INITIAL_STATE: OnboardingState = {
   aiActivity: null,
   tipIndex: 0,
   dynamicSuggestions: [],
+  structuredResponses: [],
+  interactiveElementCount: 0,
 }
 
 function onboardingReducer(state: OnboardingState, action: OnboardingAction): OnboardingState {
@@ -154,6 +156,20 @@ function onboardingReducer(state: OnboardingState, action: OnboardingAction): On
 
     case 'SET_DYNAMIC_SUGGESTIONS':
       return { ...state, dynamicSuggestions: action.suggestions }
+
+    case 'ADD_STRUCTURED_RESPONSE':
+      return { ...state, structuredResponses: [...state.structuredResponses, action.response] }
+
+    case 'SET_BUBBLE_ANSWERED':
+      return {
+        ...state,
+        bubbles: state.bubbles.map(b =>
+          b.id === action.bubbleId ? { ...b, answered: true } : b,
+        ),
+      }
+
+    case 'INCREMENT_INTERACTIVE_COUNT':
+      return { ...state, interactiveElementCount: state.interactiveElementCount + 1 }
 
     default:
       return state
