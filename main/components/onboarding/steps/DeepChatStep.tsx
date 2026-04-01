@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { Send, CheckCircle2, Lightbulb, ArrowLeft, Undo2 } from 'lucide-react'
+import { Send, CheckCircle2, Lightbulb, Undo2 } from 'lucide-react'
 import { DEEP_CHAT_TOPICS } from '@/src/lib/onboarding/constants'
 
 interface DeepChatFooterProps {
@@ -127,9 +127,12 @@ export const DefaultFooter: React.FC<DefaultFooterProps> = ({ canGoBack, onGoBac
     <div className="px-4 py-3 border-t border-border bg-surface-card/60 backdrop-blur-sm">
       <div className="max-w-2xl mx-auto flex items-center justify-between">
         {canGoBack ? (
-          <button onClick={onGoBack} className="flex items-center gap-1.5 text-[12px] text-txt-tertiary hover:text-txt-primary font-medium transition-colors ob-hover">
-            <ArrowLeft size={14} />
-            이전 단계
+          <button
+            onClick={onGoBack}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium text-txt-secondary border border-border rounded-lg hover:bg-surface-sunken hover:text-txt-primary transition-all active:scale-[0.97]"
+          >
+            <Undo2 size={13} />
+            이전으로
           </button>
         ) : (
           <span className="text-[10px] text-txt-tertiary">Draft Onboarding</span>
