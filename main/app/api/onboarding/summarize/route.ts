@@ -91,63 +91,66 @@ export async function POST(request: Request) {
       extractJson: 'object',
     })
 
-    // Merge structured data directly into parsed results (higher priority than AI inference)
+    // Merge structured data from interactive elements (higher priority than AI inference)
+    // Strategy: categorical values stored as-is, numeric values stored as numbers
+    const behavioralTraits: Record<string, unknown> = {}
+
     if (structuredData?.length) {
       for (const sr of structuredData) {
-        if (!sr.scoreMappings) continue
-        for (const [field, score] of Object.entries(sr.scoreMappings)) {
-          // Map to personality fields
-          if (['risk', 'time', 'communication', 'decision'].includes(field)) {
-            if (!parsed.personality) parsed.personality = { risk: 5, time: 5, communication: 5, decision: 5 }
-            ;(parsed.personality as Record<string, number>)[field] = score
-          }
-          // Map to work_style fields
-          if (['collaboration', 'planning', 'perfectionism'].includes(field)) {
-            if (!parsed.work_style) parsed.work_style = { collaboration: 5, planning: 5, perfectionism: 5 }
-            ;(parsed.work_style as Record<string, number>)[field] = score
-          }
-          // Map to team_preference.role
-          if (field === 'role') {
-            if (!parsed.team_preference) parsed.team_preference = { role: '유연', preferred_size: null, atmosphere: '균형' }
-            parsed.team_preference.role = score >= 7 ? '리더' : score <= 3 ? '팔로워' : '유연'
-          }
+        const field = sr.measuredFields[0] // primary field
+
+        // Categorical: store selected option ID directly
+        if (['collaboration_style', 'decision_style', 'planning_style', 'quality_style'].includes(field)) {
+          behavioralTraits[field] = sr.value // e.g. "solo", "fast", "plan_first", "quality"
         }
-        // Direct value mappings
-        if (sr.measuredFields.includes('hours_per_week') && typeof sr.value === 'number') {
-          if (!parsed.availability) parsed.availability = { hours_per_week: null, prefer_online: false, semester_available: true }
-          parsed.availability.hours_per_week = sr.value as number
+
+        // Spectrum 1-5: store as number (actual resolution exists)
+        if (field === 'communication' && typeof sr.value === 'number') {
+          if (!parsed.personality) parsed.personality = { risk: 5, time: 5, communication: 5, decision: 5 }
+          // Scale 1-5 → 1-10 for DB compatibility
+          ;(parsed.personality as Record<string, number>).communication = sr.value * 2
         }
-        // hours_per_week from quick-number with object value { hours, semesterAvailable }
-        if (sr.measuredFields.includes('hours_per_week') && typeof sr.value === 'object' && sr.value !== null && 'hours' in (sr.value as Record<string, unknown>)) {
-          if (!parsed.availability) parsed.availability = { hours_per_week: null, prefer_online: false, semester_available: true }
-          parsed.availability.hours_per_week = (sr.value as { hours: number }).hours
+        if (field === 'team_role' && typeof sr.value === 'number') {
+          if (!parsed.team_preference) parsed.team_preference = { role: '유연', preferred_size: null, atmosphere: '균형' }
+          parsed.team_preference.role = sr.value >= 4 ? '리더' : sr.value <= 2 ? '팔로워' : '유연'
+          behavioralTraits.team_role = sr.value // also store raw 1-5
         }
+
+        // Lists: store ordered arrays directly
         if (sr.measuredFields.includes('goals') && Array.isArray(sr.value)) {
           parsed.goals = sr.value as string[]
         }
         if (sr.measuredFields.includes('wants_from_team') && Array.isArray(sr.value)) {
           parsed.wants_from_team = sr.value as string[]
         }
+
+        // Multi-select: store selected IDs
         if (sr.measuredFields.includes('atmosphere') && Array.isArray(sr.value)) {
-          if (!parsed.team_preference) parsed.team_preference = { role: '유연', preferred_size: null, atmosphere: '균형' }
           const atm = sr.value as string[]
+          behavioralTraits.atmosphere = atm // e.g. ["serious", "remote"]
+          if (!parsed.team_preference) parsed.team_preference = { role: '유연', preferred_size: null, atmosphere: '균형' }
           parsed.team_preference.atmosphere = atm.includes('serious') ? '실무형' : atm.includes('side') || atm.includes('cafe') ? '캐주얼' : '균형'
-          // Map 'remote' selection to prefer_online
           if (!parsed.availability) parsed.availability = { hours_per_week: null, prefer_online: false, semester_available: true }
           parsed.availability.prefer_online = atm.includes('remote')
         }
-        // preferred_size from emoji_grid_team_size
         if (sr.measuredFields.includes('preferred_size') && Array.isArray(sr.value)) {
+          const picked = (sr.value as string[])[0]
+          behavioralTraits.preferred_size = picked // e.g. "small"
           if (!parsed.team_preference) parsed.team_preference = { role: '유연', preferred_size: null, atmosphere: '균형' }
           const sizeMap: Record<string, string> = { duo: '2-3명', small: '2-3명', medium: '4-5명', large: '6명+' }
-          const picked = (sr.value as string[])[0]
           parsed.team_preference.preferred_size = sizeMap[picked] || null
         }
-        // semester_available from quick_number subAnswer
-        if (sr.measuredFields.includes('semester_available') && typeof sr.value === 'object' && sr.value !== null) {
+
+        // Numbers + booleans
+        if (sr.measuredFields.includes('hours_per_week') && typeof sr.value === 'object' && sr.value !== null) {
           const qv = sr.value as { hours?: number; semesterAvailable?: boolean | null }
           if (!parsed.availability) parsed.availability = { hours_per_week: null, prefer_online: false, semester_available: true }
-          if (typeof qv.hours === 'number') parsed.availability.hours_per_week = qv.hours
+          if (typeof qv.hours === 'number') {
+            parsed.availability.hours_per_week = qv.hours
+            // Also set personality.time from actual hours
+            if (!parsed.personality) parsed.personality = { risk: 5, time: 5, communication: 5, decision: 5 }
+            ;(parsed.personality as Record<string, number>).time = Math.min(10, Math.round(qv.hours / 3))
+          }
           if (typeof qv.semesterAvailable === 'boolean') parsed.availability.semester_available = qv.semesterAvailable
         }
       }
@@ -162,7 +165,7 @@ export async function POST(request: Request) {
       updateData.personality = parsed.personality
     }
 
-    if (parsed.summary || parsed.work_style) {
+    if (parsed.summary || parsed.work_style || Object.keys(behavioralTraits).length > 0) {
       updateData.vision_summary = JSON.stringify({
         work_style: parsed.work_style || null,
         availability: parsed.availability || null,
@@ -172,6 +175,8 @@ export async function POST(request: Request) {
         wants_from_team: parsed.wants_from_team || [],
         project_interests: parsed.project_interests || [],
         summary: parsed.summary || '',
+        // Behavioral traits from interactive elements (categorical, not numeric)
+        ...(Object.keys(behavioralTraits).length > 0 && { traits: behavioralTraits }),
       })
     }
 

@@ -3,109 +3,115 @@ import type { InteractiveQuestion } from './types'
 /**
  * Predefined interactive question bank.
  * AI references these by key via [INTERACTIVE: key] tag.
- * All content and score mappings are client-defined — AI only picks timing.
+ *
+ * Storage strategy:
+ * - Binary/ternary choices → store the chosen option ID as-is (categorical)
+ * - Spectrum (5-point) → store 1-5 (actual resolution exists)
+ * - Numbers → store actual number
+ * - Lists → store ordered array
+ * - Booleans → store true/false
  */
 export const INTERACTIVE_QUESTIONS: Record<string, InteractiveQuestion> = {
 
-  // ── Scenario Cards (SJT) ──
+  // ── Scenario Cards (SJT) → categorical values ──
 
   scenario_collaboration: {
     type: 'scenario-card',
-    measuredFields: ['collaboration', 'communication'],
+    measuredFields: ['collaboration_style'],
     options: [
       {
         id: 'solo',
         icon: 'Search',
         label: '혼자 파고든다',
         description: '조용히 집중해서 원인을 찾아보고\n해결되면 팀에 공유해요',
-        scores: { collaboration: 3, communication: 3 },
+        scores: {},
       },
       {
         id: 'share',
         icon: 'MessageCircle',
         label: '바로 팀에 공유',
         description: '상황을 바로 알리고\n같이 해결 방법을 찾아요',
-        scores: { collaboration: 9, communication: 9 },
+        scores: {},
       },
       {
         id: 'organize',
         icon: 'ClipboardList',
         label: '정리 후 분배',
         description: '이슈를 정리하고\n누가 뭘 할지 나눠서 진행해요',
-        scores: { collaboration: 7, communication: 6 },
+        scores: {},
       },
     ],
   },
 
   scenario_decision: {
     type: 'scenario-card',
-    measuredFields: ['decision', 'risk'],
+    measuredFields: ['decision_style'],
     options: [
       {
         id: 'fast',
         icon: 'Zap',
         label: '빠르게 결정',
         description: '일단 시도해보고\n문제 생기면 그때 수정해요',
-        scores: { decision: 9, risk: 8 },
+        scores: {},
       },
       {
         id: 'careful',
         icon: 'Shield',
         label: '충분히 검토',
         description: '장단점을 비교해보고\n확신이 들면 진행해요',
-        scores: { decision: 3, risk: 3 },
+        scores: {},
       },
       {
         id: 'consult',
         icon: 'Users',
         label: '의견 모아서',
         description: '팀원들 의견을 들어보고\n합의점을 찾아서 결정해요',
-        scores: { decision: 5, risk: 5 },
+        scores: {},
       },
     ],
   },
 
-  // ── This or That ──
+  // ── This or That → categorical values ──
 
   this_or_that_planning: {
     type: 'this-or-that',
-    measuredFields: ['planning'],
+    measuredFields: ['planning_style'],
     optionA: {
       id: 'plan_first',
       emoji: '📝',
       label: '기획형',
       description: '문서 정리부터.\n계획 세우고 시작해요',
-      scores: { planning: 9 },
+      scores: {},
     },
     optionB: {
       id: 'build_first',
       emoji: '⚡',
       label: '실행형',
       description: '일단 만들어보면서\n방향을 잡아가요',
-      scores: { planning: 2 },
+      scores: {},
     },
   },
 
   this_or_that_perfectionism: {
     type: 'this-or-that',
-    measuredFields: ['perfectionism'],
+    measuredFields: ['quality_style'],
     optionA: {
       id: 'quality',
       emoji: '💎',
       label: '완성도',
       description: '시간 더 걸려도\n제대로 만들어요',
-      scores: { perfectionism: 9 },
+      scores: {},
     },
     optionB: {
       id: 'speed',
       emoji: '🚀',
       label: '속도',
       description: '빠르게 완성하고\n반복 개선해요',
-      scores: { perfectionism: 2 },
+      scores: {},
     },
   },
 
-  // ── Drag Rank ──
+  // ── Drag Rank → ordered label arrays ──
 
   drag_rank_goals: {
     type: 'drag-rank',
@@ -131,7 +137,7 @@ export const INTERACTIVE_QUESTIONS: Record<string, InteractiveQuestion> = {
     ],
   },
 
-  // ── Emoji Grid ──
+  // ── Emoji Grid → selected ID arrays ──
 
   emoji_grid_atmosphere: {
     type: 'emoji-grid',
@@ -161,7 +167,7 @@ export const INTERACTIVE_QUESTIONS: Record<string, InteractiveQuestion> = {
     ],
   },
 
-  // ── Quick Number ──
+  // ── Quick Number → actual numbers + boolean ──
 
   quick_number_hours: {
     type: 'quick-number',
@@ -181,7 +187,7 @@ export const INTERACTIVE_QUESTIONS: Record<string, InteractiveQuestion> = {
     },
   },
 
-  // ── Spectrum Pick ──
+  // ── Spectrum Pick → 1-5 numeric (actual resolution) ──
 
   spectrum_communication: {
     type: 'spectrum-pick',
@@ -195,7 +201,7 @@ export const INTERACTIVE_QUESTIONS: Record<string, InteractiveQuestion> = {
 
   spectrum_teamrole: {
     type: 'spectrum-pick',
-    measuredFields: ['role'],
+    measuredFields: ['team_role'],
     leftLabel: '팔로워',
     leftDescription: '방향이 정해지면\n맡은 걸 확실히',
     rightLabel: '리더',

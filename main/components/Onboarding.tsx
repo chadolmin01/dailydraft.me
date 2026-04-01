@@ -707,7 +707,6 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                   value: opt.id,
                   naturalLanguage: opt.label + ': ' + opt.description.replace(/\n/g, ' '),
                   measuredFields: mFields,
-                  scoreMappings: opt.scores,
                 })}
               />
             )
@@ -724,7 +723,6 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                   value: opt.id,
                   naturalLanguage: `${opt.label} 스타일이에요: ${opt.description.replace(/\n/g, ' ')}`,
                   measuredFields: mFields,
-                  scoreMappings: opt.scores,
                 })}
               />
             )
@@ -773,15 +771,12 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                   if (q.subQuestion && subAnswer !== undefined) {
                     nl += subAnswer ? `, ${q.subQuestion.yesLabel}` : `, ${q.subQuestion.noLabel}`
                   }
-                  const scoreMappings: Record<string, number> = {}
-                  if (mFields.includes('hours_per_week')) scoreMappings.time = Math.min(10, Math.round(value / 3))
                   handleInteractiveResponse(bId, {
                     questionId: bubble.interactiveConfig!.questionId,
                     type: 'quick-number',
                     value: { hours: value, semesterAvailable: subAnswer ?? null },
                     naturalLanguage: nl,
                     measuredFields: mFields,
-                    scoreMappings,
                   })
                 }}
               />
@@ -797,17 +792,13 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                 rightDescription={q.rightDescription}
                 points={q.points}
                 onSelect={(value) => {
-                  const score = Math.round((value / q.points) * 10)
                   const label = value <= 2 ? q.leftLabel : value >= 4 ? q.rightLabel : '중간'
-                  const scoreMappings: Record<string, number> = {}
-                  mFields.forEach(f => { scoreMappings[f] = score })
                   handleInteractiveResponse(bId, {
                     questionId: bubble.interactiveConfig!.questionId,
                     type: 'spectrum-pick',
                     value,
                     naturalLanguage: `${label} (${value}/${q.points})`,
                     measuredFields: mFields,
-                    scoreMappings,
                   })
                 }}
               />
