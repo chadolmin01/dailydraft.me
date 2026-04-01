@@ -40,6 +40,7 @@ function isDismissed() {
 export function InstallPrompt() {
   const { isAuthenticated } = useAuth()
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
+  const deferredPromptRef = useRef<BeforeInstallPromptEvent | null>(null)
   const [showIOSGuide, setShowIOSGuide] = useState(false)
   const [visible, setVisible] = useState(false)
   const [closing, setClosing] = useState(false)
@@ -58,7 +59,9 @@ export function InstallPrompt() {
     // Android: beforeinstallprompt — 즉시 표시 안 하고 저장만
     const installHandler = (e: Event) => {
       e.preventDefault()
-      setDeferredPrompt(e as BeforeInstallPromptEvent)
+      const prompt = e as BeforeInstallPromptEvent
+      deferredPromptRef.current = prompt
+      setDeferredPrompt(prompt)
     }
     window.addEventListener('beforeinstallprompt', installHandler)
 
@@ -92,16 +95,18 @@ export function InstallPrompt() {
   }, [])
 
   const handleInstall = useCallback(async () => {
-    if (deferredPrompt) {
+    const prompt = deferredPromptRef.current ?? deferredPrompt
+    if (prompt) {
       // Android: 네이티브 설치 프롬프트 트리거
-      await deferredPrompt.prompt()
-      const { outcome } = await deferredPrompt.userChoice
+      await prompt.prompt()
+      const { outcome } = await prompt.userChoice
       if (outcome === 'accepted') {
         dismiss()
       }
+      deferredPromptRef.current = null
       setDeferredPrompt(null)
-    } else if (isIOS()) {
-      // iOS: 수동 안내 표시
+    } else {
+      // iOS 또는 prompt 미지원 — 수동 안내 표시
       setShowIOSGuide(true)
     }
   }, [deferredPrompt, dismiss])
@@ -110,17 +115,16 @@ export function InstallPrompt() {
 
   return (
     <div
-      className={`fixed left-0 right-0 z-[400] md:hidden transition-transform duration-300 ease-out ${
+      className={`fixed top-0 left-0 right-0 z-[400] md:hidden transition-transform duration-300 ease-out ${
         closing ? '-translate-y-full' : 'translate-y-0 animate-slideDown'
       }`}
-      style={{ top: '3.5rem' }}
     >
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes slideDown { from { transform: translateY(-100%); } to { transform: translateY(0); } }
         .animate-slideDown { animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
       `}} />
 
-      <div className="mx-3 mt-2 bg-surface-inverse text-txt-inverse border border-border shadow-lg">
+      <div className="bg-surface-inverse text-txt-inverse border-b border-border shadow-lg">
         {/* 메인 배너 */}
         {!showIOSGuide ? (
           <div className="flex items-center gap-3 px-4 py-3">

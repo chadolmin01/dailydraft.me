@@ -1,4 +1,16 @@
 import type { NextConfig } from 'next'
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const withPWAInit = require('next-pwa')
+
+const withPWA = withPWAInit({
+  dest: 'public',
+  disable: process.env.NODE_ENV === 'development',
+  register: true,
+  skipWaiting: true,
+  fallbacks: {
+    document: '/offline',
+  },
+})
 
 const nextConfig: NextConfig = {
   // Enable React strict mode
@@ -85,4 +97,4 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ['puppeteer'],
 }
 
-export default nextConfig
+export default withPWA(nextConfig)
