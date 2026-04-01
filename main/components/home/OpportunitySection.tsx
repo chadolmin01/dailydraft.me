@@ -10,9 +10,17 @@ import { useOpportunities } from '@/src/hooks/useOpportunities'
 import { ScrollReveal } from '@/components/ui/ScrollReveal'
 import { SectionLabel, SectionTitle } from './shared'
 
+const ModalLoadingFallback = () => (
+  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-modal-backdrop">
+    <div className="bg-surface-card rounded-xl border border-border px-6 py-4 shadow-lg">
+      <span className="text-sm text-txt-secondary font-mono">로딩 중...</span>
+    </div>
+  </div>
+)
+
 const ProjectDetailModal = dynamic(
   () => import('@/components/ProjectDetailModal').then(m => ({ default: m.ProjectDetailModal })),
-  { ssr: false }
+  { ssr: false, loading: ModalLoadingFallback }
 )
 
 interface DisplayProject {
@@ -186,10 +194,12 @@ export const OpportunitySection: React.FC = () => {
         </ScrollReveal>
       </div>
 
-      <ProjectDetailModal
-        projectId={selectedProjectId}
-        onClose={() => setSelectedProjectId(null)}
-      />
+      {selectedProjectId && (
+        <ProjectDetailModal
+          projectId={selectedProjectId}
+          onClose={() => setSelectedProjectId(null)}
+        />
+      )}
     </section>
   )
 }
