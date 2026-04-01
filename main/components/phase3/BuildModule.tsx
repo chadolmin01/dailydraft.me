@@ -290,10 +290,10 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
                       <div className="w-6 h-6 bg-surface-sunken border border-surface-card flex items-center justify-center text-[10px] font-bold text-txt-secondary z-20">DK</div>
                       <div className="w-6 h-6 bg-indigo-100 border border-surface-card flex items-center justify-center text-[10px] font-bold text-indigo-700 z-10">AI</div>
                     </div>
-                    <button className="w-6 h-6 border border-border flex items-center justify-center text-txt-disabled hover:border-border hover:text-txt-secondary transition-colors">
+                    <button className="w-6 h-6 border border-border flex items-center justify-center text-txt-disabled hover:border-border hover:text-txt-secondary transition-colors rounded-lg">
                       <Share2 size={12} />
                     </button>
-                    <button className="bg-surface-inverse text-txt-inverse px-2.5 py-1 text-xs font-medium flex items-center gap-1.5 hover:opacity-90 active:scale-[0.97] transition-all ml-1">
+                    <button className="bg-surface-inverse text-txt-inverse px-2.5 py-1 text-xs font-medium flex items-center gap-1.5 hover:opacity-90 active:scale-[0.97] transition-all ml-1 rounded-lg">
                       <Plus size={12} /> 추가
                     </button>
                   </div>

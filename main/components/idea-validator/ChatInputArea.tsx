@@ -38,7 +38,7 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = ({
              </div>
              <button
                 onClick={onConsumeToken}
-                className="bg-surface-inverse text-txt-inverse px-4 py-2 text-xs font-bold hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97]"
+                className="bg-surface-inverse text-txt-inverse px-4 py-2 rounded-xl text-xs font-bold hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97]"
              >
                 토큰 1개 사용 (잔여: {tokens})
              </button>

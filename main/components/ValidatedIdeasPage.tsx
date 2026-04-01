@@ -169,7 +169,7 @@ export const ValidatedIdeasPage: React.FC = () => {
               <p className="text-sm text-txt-tertiary">AI로 검증한 모든 아이디어를 확인하고 관리하세요</p>
             </div>
           </div>
-          <button type="button" onClick={handleStartNewWorkflow} className="px-4 py-2 bg-surface-inverse text-txt-inverse border border-surface-inverse text-sm font-bold hover:bg-surface-inverse/90 transition-colors flex items-center gap-2 hover:opacity-90 active:scale-[0.97]">
+          <button type="button" onClick={handleStartNewWorkflow} className="px-4 py-2 bg-surface-inverse text-txt-inverse border border-surface-inverse text-sm font-bold hover:bg-surface-inverse/90 transition-colors flex items-center gap-2 hover:opacity-90 active:scale-[0.97] rounded-xl">
             <Play size={16} /> 새 워크플로우
           </button>
         </div>
@@ -234,7 +234,7 @@ export const ValidatedIdeasPage: React.FC = () => {
           <div className="w-16 h-16 bg-surface-sunken rounded-xl border border-border flex items-center justify-center mb-4"><Lightbulb size={28} className="text-txt-disabled" /></div>
           <h3 className="text-lg font-bold text-txt-primary mb-2">아직 검증된 아이디어가 없습니다</h3>
           <p className="text-sm text-txt-tertiary mb-6 max-w-md">워크플로우를 시작하여 아이디어 검증 → PRD 생성 → 사업계획서 작성까지 한번에 진행하세요</p>
-          <button type="button" onClick={handleStartNewWorkflow} className="px-6 py-3 bg-surface-inverse text-txt-inverse font-bold hover:bg-surface-inverse/90 transition-colors flex items-center gap-2 border border-surface-inverse hover:opacity-90 active:scale-[0.97]"><Play size={16} /> 워크플로우 시작하기</button>
+          <button type="button" onClick={handleStartNewWorkflow} className="px-6 py-3 bg-surface-inverse text-txt-inverse font-bold hover:bg-surface-inverse/90 transition-colors flex items-center gap-2 border border-surface-inverse hover:opacity-90 active:scale-[0.97] rounded-xl"><Play size={16} /> 워크플로우 시작하기</button>
         </div>
       )}
 
@@ -258,7 +258,7 @@ export const ValidatedIdeasPage: React.FC = () => {
                     {hasArtifacts(idea) && (<span className="flex items-center gap-1 text-status-info-text"><FileText size={12} />문서</span>)}
                   </div>
                 </div>
-                <button type="button" onClick={e => { e.stopPropagation(); setDeleteTarget(idea.id) }} disabled={deleteIdea.isPending} className="p-2 sm:opacity-0 sm:group-hover:opacity-100 hover:bg-status-danger-bg transition-all disabled:opacity-50 border border-transparent hover:border-status-danger-text/20" title="삭제"><Trash2 size={16} className="text-status-danger-text/70 hover:text-status-danger-text" /></button>
+                <button type="button" onClick={e => { e.stopPropagation(); setDeleteTarget(idea.id) }} disabled={deleteIdea.isPending} className="p-2 sm:opacity-0 sm:group-hover:opacity-100 hover:bg-status-danger-bg transition-all disabled:opacity-50 border border-transparent hover:border-status-danger-text/20 rounded-lg" title="삭제"><Trash2 size={16} className="text-status-danger-text/70 hover:text-status-danger-text" /></button>
               </div>
               {adviceList.length > 0 && (<div className="mt-3 pt-3 border-t border-border"><p className="text-xs text-txt-tertiary line-clamp-2">{adviceList[0]}</p></div>)}
             </div>
@@ -287,7 +287,7 @@ export const ValidatedIdeasPage: React.FC = () => {
                   <p className="text-xs text-txt-tertiary">{selectedIdea.created_at ? new Date(selectedIdea.created_at).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }) : '날짜 없음'}{selectedIdea.validation_level && ` · ${selectedIdea.validation_level} 레벨`}</p>
                 </div>
               </div>
-              <button type="button" onClick={() => setSelectedIdea(null)} className="p-2 hover:bg-surface-sunken transition-colors border border-transparent hover:border-border" aria-label="모달 닫기"><X size={20} className="text-txt-tertiary" aria-hidden="true" /></button>
+              <button type="button" onClick={() => setSelectedIdea(null)} className="p-2 hover:bg-surface-sunken transition-colors border border-transparent hover:border-border rounded-lg" aria-label="모달 닫기"><X size={20} className="text-txt-tertiary" aria-hidden="true" /></button>
             </div>
             <div className="p-6 overflow-y-auto flex-1 space-y-6">
               <div>
@@ -298,10 +298,10 @@ export const ValidatedIdeasPage: React.FC = () => {
               {(() => { const artifacts = selectedIdea.artifacts as { prd?: string; jd?: string } | null; if (!artifacts || (!artifacts.prd && !artifacts.jd)) return null; return (<div><h4 className="text-[10px] font-medium text-txt-tertiary mb-2">생성된 문서</h4><div className="flex gap-2">{artifacts.prd && (<span className="px-4 py-2 bg-brand-bg text-brand text-sm font-medium flex items-center gap-2 border border-brand-border"><FileText size={14} />PRD 문서</span>)}{artifacts.jd && (<span className="px-4 py-2 bg-purple-100 text-purple-700 text-sm font-medium flex items-center gap-2 border border-purple-200"><FileText size={14} />채용 공고</span>)}</div></div>) })()}
             </div>
             <div className="px-6 py-4 border-t border-border flex items-center justify-between shrink-0">
-              <button type="button" onClick={() => setDeleteTarget(selectedIdea.id)} disabled={deleteIdea.isPending} className="flex items-center gap-2 px-4 py-2 text-status-danger-text hover:bg-status-danger-bg transition-colors text-sm disabled:opacity-50 border border-transparent hover:border-status-danger-text/20"><Trash2 size={16} />삭제</button>
+              <button type="button" onClick={() => setDeleteTarget(selectedIdea.id)} disabled={deleteIdea.isPending} className="flex items-center gap-2 px-4 py-2 text-status-danger-text hover:bg-status-danger-bg transition-colors text-sm disabled:opacity-50 border border-transparent hover:border-status-danger-text/20 rounded-lg"><Trash2 size={16} />삭제</button>
               <div className="flex gap-2">
-                <button type="button" onClick={() => setSelectedIdea(null)} className="px-4 py-2 text-txt-secondary hover:bg-surface-sunken transition-colors text-sm border border-border font-bold">닫기</button>
-                <button type="button" onClick={() => handleContinueWorkflow(selectedIdea)} className="px-5 py-2 bg-surface-inverse text-txt-inverse hover:bg-surface-inverse/90 transition-colors text-sm font-bold flex items-center gap-2 border border-surface-inverse hover:opacity-90 active:scale-[0.97]"><Play size={14} />워크플로우 이어하기<ChevronRight size={14} /></button>
+                <button type="button" onClick={() => setSelectedIdea(null)} className="px-4 py-2 text-txt-secondary hover:bg-surface-sunken transition-colors text-sm border border-border font-bold rounded-xl">닫기</button>
+                <button type="button" onClick={() => handleContinueWorkflow(selectedIdea)} className="px-5 py-2 bg-surface-inverse text-txt-inverse hover:bg-surface-inverse/90 transition-colors text-sm font-bold flex items-center gap-2 border border-surface-inverse hover:opacity-90 active:scale-[0.97] rounded-xl"><Play size={14} />워크플로우 이어하기<ChevronRight size={14} /></button>
               </div>
             </div>
           </div>

@@ -129,7 +129,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
                       <button
                         onClick={onConsolidatedSend}
                         disabled={isTyping}
-                        className="bg-black hover:bg-surface-inverse/90 text-white px-5 py-2 font-bold text-xs transition-all flex items-center gap-2 disabled:opacity-50 hover:opacity-90 active:scale-[0.97]"
+                        className="bg-black hover:bg-surface-inverse/90 text-white px-5 py-2 rounded-xl font-bold text-xs transition-all flex items-center gap-2 disabled:opacity-50 hover:opacity-90 active:scale-[0.97]"
                       >
                         다음 단계
                         <ArrowRight size={14} />

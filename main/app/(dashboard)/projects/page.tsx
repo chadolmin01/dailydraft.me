@@ -57,7 +57,7 @@ export default function MyProjectsPage() {
           </div>
           <Link
             href="/projects/new"
-            className="flex items-center gap-1.5 px-4 py-2 bg-surface-inverse text-txt-inverse text-sm font-bold border border-surface-inverse hover:opacity-90 active:scale-[0.97] transition-all"
+            className="flex items-center gap-1.5 px-4 py-2 bg-surface-inverse text-txt-inverse text-sm font-bold border border-surface-inverse hover:opacity-90 active:scale-[0.97] transition-all rounded-xl"
           >
             <Plus size={16} />
             새 프로젝트
@@ -78,7 +78,7 @@ export default function MyProjectsPage() {
             </p>
             <Link
               href="/projects/new"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-surface-inverse text-txt-inverse text-sm font-bold border border-surface-inverse hover:opacity-90 active:scale-[0.97] transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-surface-inverse text-txt-inverse text-sm font-bold border border-surface-inverse hover:opacity-90 active:scale-[0.97] transition-all rounded-xl"
             >
               <Rocket size={16} />
               첫 프로젝트 만들기
