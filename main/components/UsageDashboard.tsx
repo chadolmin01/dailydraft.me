@@ -329,7 +329,7 @@ export function UsageDashboard() {
           </div>
 
           {data.plan.type === 'free' && (
-            <button className="px-4 py-2 bg-brand text-white border border-brand font-medium hover:bg-brand-hover transition-colors hover:opacity-90 active:scale-[0.97]">
+            <button className="px-4 py-2 bg-brand text-white border border-brand rounded-xl font-medium hover:bg-brand-hover transition-colors hover:opacity-90 active:scale-[0.97]">
               Pro로 업그레이드
             </button>
           )}

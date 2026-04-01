@@ -266,7 +266,7 @@ export default function ProfileEditPage() {
         <div className="max-w-7xl mx-auto px-6 sm:px-10 pt-6">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <button onClick={() => router.push('/profile')} className="hidden sm:flex p-2 border border-border text-txt-secondary hover:bg-surface-sunken transition-colors">
+              <button onClick={() => router.push('/profile')} className="hidden sm:flex p-2 border border-border text-txt-secondary hover:bg-surface-sunken transition-colors rounded-lg">
                 <ArrowLeft size={14} />
               </button>
               <h1 className="text-lg font-bold text-txt-primary">프로필 편집</h1>
@@ -274,7 +274,7 @@ export default function ProfileEditPage() {
             <button
               onClick={handleSave}
               disabled={updateProfile.isPending}
-              className="flex items-center gap-1.5 px-5 py-2 bg-surface-inverse text-txt-inverse text-[10px] font-medium border border-surface-inverse hover:bg-surface-inverse/90 disabled:opacity-50 transition-all hover:opacity-90 active:scale-[0.97]"
+              className="flex items-center gap-1.5 px-5 py-2 bg-surface-inverse text-txt-inverse text-[10px] font-medium border border-surface-inverse hover:bg-surface-inverse/90 disabled:opacity-50 transition-all hover:opacity-90 active:scale-[0.97] rounded-xl"
             >
               {updateProfile.isPending ? <Loader2 size={12} className="animate-spin" /> : <Save size={12} />}
               {saved ? 'Saved' : 'Save'}
@@ -467,7 +467,7 @@ export default function ProfileEditPage() {
                   <select value={newSkillLevel} onChange={(e) => setNewSkillLevel(e.target.value)} className="px-3 py-3 text-xs border border-border bg-transparent text-txt-secondary focus:outline-none focus:border-border transition-colors">
                     {SKILL_LEVELS.map((level) => <option key={level} value={level}>{level}</option>)}
                   </select>
-                  <button type="button" onClick={() => addSkill()} className="px-4 py-3 border border-border text-txt-secondary hover:bg-surface-sunken transition-colors"><Plus size={16} /></button>
+                  <button type="button" onClick={() => addSkill()} className="px-4 py-3 border border-border text-txt-secondary hover:bg-surface-sunken transition-colors rounded-xl"><Plus size={16} /></button>
                 </div>
               </Card>
 
@@ -491,7 +491,7 @@ export default function ProfileEditPage() {
                 )}
                 <div className="flex gap-2">
                   <input type="text" value={customTag} onChange={(e) => setCustomTag(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addCustomTag())} placeholder="직접 입력" maxLength={20} className={`flex-1 ${inputClass}`} />
-                  <button type="button" onClick={addCustomTag} className="px-4 py-3 border border-border text-txt-secondary hover:bg-surface-sunken transition-colors"><Plus size={16} /></button>
+                  <button type="button" onClick={addCustomTag} className="px-4 py-3 border border-border text-txt-secondary hover:bg-surface-sunken transition-colors rounded-xl"><Plus size={16} /></button>
                 </div>
               </Card>
 
@@ -574,7 +574,7 @@ export default function ProfileEditPage() {
                         e.target.value = ''
                       }} />
                       <div className="flex items-center gap-2">
-                        <button type="button" onClick={() => portfolioImageInputRef.current?.click()} className="px-3 py-2 text-xs border border-border text-txt-secondary hover:bg-surface-sunken transition-colors flex items-center gap-1.5"><Camera size={12} /> 이미지 선택</button>
+                        <button type="button" onClick={() => portfolioImageInputRef.current?.click()} className="px-3 py-2 text-xs border border-border text-txt-secondary hover:bg-surface-sunken transition-colors flex items-center gap-1.5 rounded-xl"><Camera size={12} /> 이미지 선택</button>
                         {newPortfolioImage && <span className="text-[10px] font-mono text-indicator-online">업로드 완료</span>}
                       </div>
                     </div>
@@ -593,14 +593,14 @@ export default function ProfileEditPage() {
                           setShowPortfolioForm(false)
                           toast.success('포트폴리오 항목이 추가되었습니다')
                         } catch { toast.error('추가에 실패했습니다') }
-                      }} disabled={createPortfolio.isPending} className="px-4 py-2 text-xs font-bold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 disabled:opacity-50 transition-colors">
+                      }} disabled={createPortfolio.isPending} className="px-4 py-2 text-xs font-bold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 disabled:opacity-50 transition-colors rounded-xl">
                         {createPortfolio.isPending ? '추가 중...' : '추가'}
                       </button>
-                      <button type="button" onClick={() => { setShowPortfolioForm(false); setNewPortfolioTitle(''); setNewPortfolioDesc(''); setNewPortfolioLink(''); setNewPortfolioImage('') }} className="px-4 py-2 text-xs border border-border text-txt-secondary hover:bg-surface-sunken transition-colors">취소</button>
+                      <button type="button" onClick={() => { setShowPortfolioForm(false); setNewPortfolioTitle(''); setNewPortfolioDesc(''); setNewPortfolioLink(''); setNewPortfolioImage('') }} className="px-4 py-2 text-xs border border-border text-txt-secondary hover:bg-surface-sunken transition-colors rounded-xl">취소</button>
                     </div>
                   </div>
                 ) : (
-                  <button type="button" onClick={() => setShowPortfolioForm(true)} className="w-full px-3 py-2.5 text-xs font-bold border border-border text-txt-secondary hover:border-border hover:bg-surface-sunken transition-colors flex items-center justify-center gap-1.5">
+                  <button type="button" onClick={() => setShowPortfolioForm(true)} className="w-full px-3 py-2.5 text-xs font-bold border border-border text-txt-secondary hover:border-border hover:bg-surface-sunken transition-colors flex items-center justify-center gap-1.5 rounded-xl">
                     <Plus size={14} /> 항목 추가
                   </button>
                 )}
@@ -627,7 +627,7 @@ export default function ProfileEditPage() {
                             setVerifyStep('sent')
                             toast.success('인증 코드가 발송되었습니다')
                           } catch { setVerifyError('요청에 실패했습니다') } finally { setVerifySending(false) }
-                        }} className="px-4 py-3 text-xs font-bold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 disabled:opacity-50 transition-colors">{verifySending ? '전송 중...' : '인증 코드 전송'}</button>
+                        }} className="px-4 py-3 text-xs font-bold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 disabled:opacity-50 transition-colors rounded-xl">{verifySending ? '전송 중...' : '인증 코드 전송'}</button>
                       </div>
                       {verifyError && <p className="text-xs text-status-danger-text">{verifyError}</p>}
                     </div>
@@ -643,8 +643,8 @@ export default function ProfileEditPage() {
                             const data = await res.json(); if (!res.ok) { setVerifyError(data.error); return }
                             setUniVerified(true); toast.success('대학 인증이 완료되었습니다!')
                           } catch { setVerifyError('요청에 실패했습니다') } finally { setVerifySending(false) }
-                        }} className="px-4 py-3 text-xs font-bold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 disabled:opacity-50 transition-colors">{verifySending ? '확인 중...' : '인증 확인'}</button>
-                        <button type="button" onClick={() => { setVerifyStep('idle'); setVerifyCode(''); setVerifyError('') }} className="px-3 py-3 text-xs text-txt-tertiary hover:text-txt-primary transition-colors">재전송</button>
+                        }} className="px-4 py-3 text-xs font-bold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 disabled:opacity-50 transition-colors rounded-xl">{verifySending ? '확인 중...' : '인증 확인'}</button>
+                        <button type="button" onClick={() => { setVerifyStep('idle'); setVerifyCode(''); setVerifyError('') }} className="px-3 py-3 text-xs text-txt-tertiary hover:text-txt-primary transition-colors rounded-xl">재전송</button>
                       </div>
                       {verifyError && <p className="text-xs text-status-danger-text">{verifyError}</p>}
                     </div>
@@ -662,7 +662,7 @@ export default function ProfileEditPage() {
                     <button
                       type="button"
                       onClick={() => router.push('/onboarding?mode=redo-chat')}
-                      className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-medium border border-border text-txt-secondary hover:bg-surface-sunken hover:border-border transition-colors shrink-0"
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-medium border border-border text-txt-secondary hover:bg-surface-sunken hover:border-border transition-colors shrink-0 rounded-xl"
                     >
                       <Sparkles size={12} />
                       AI 온보딩 다시하기
@@ -796,7 +796,7 @@ export default function ProfileEditPage() {
           <div className="bg-surface-card rounded-xl border border-border shadow-lg w-full max-w-lg mx-4 flex flex-col">
             <div className="flex items-center justify-between px-4 py-2.5 border-b-2 border-border bg-surface-sunken">
               <span className="text-xs font-medium text-txt-secondary">{cropType === 'avatar' ? 'CROP AVATAR' : 'CROP COVER'}</span>
-              <button onClick={() => setCropImage(null)} className="p-1 hover:bg-surface-card transition-colors"><X size={16} className="text-txt-tertiary" /></button>
+              <button onClick={() => setCropImage(null)} className="p-1 hover:bg-surface-card transition-colors rounded-lg"><X size={16} className="text-txt-tertiary" /></button>
             </div>
             <div className="relative w-full" style={{ height: cropType === 'avatar' ? 320 : 240 }}>
               <Cropper image={cropImage} crop={crop} zoom={zoom} aspect={cropType === 'avatar' ? 1 : 3} cropShape={cropType === 'avatar' ? 'round' : 'rect'} onCropChange={setCrop} onZoomChange={setZoom} onCropComplete={onCropComplete} />
@@ -807,8 +807,8 @@ export default function ProfileEditPage() {
               <span className="text-[10px] font-mono text-txt-tertiary w-8 text-right">{zoom.toFixed(1)}x</span>
             </div>
             <div className="flex items-center justify-end gap-2 px-4 py-2.5 border-t-2 border-border">
-              <button onClick={() => setCropImage(null)} className="py-2.5 px-4 text-xs font-medium border border-border text-txt-secondary hover:border-border transition-colors">취소</button>
-              <button onClick={handleCropConfirm} className="flex items-center gap-1.5 px-4 py-2.5 bg-surface-inverse text-txt-inverse text-xs font-bold border border-surface-inverse hover:bg-surface-inverse/90 transition-all hover:opacity-90 active:scale-[0.97]">
+              <button onClick={() => setCropImage(null)} className="py-2.5 px-4 text-xs font-medium border border-border text-txt-secondary hover:border-border transition-colors rounded-xl">취소</button>
+              <button onClick={handleCropConfirm} className="flex items-center gap-1.5 px-4 py-2.5 bg-surface-inverse text-txt-inverse text-xs font-bold border border-surface-inverse hover:bg-surface-inverse/90 transition-all hover:opacity-90 active:scale-[0.97] rounded-xl">
                 <Camera size={12} /> 적용
               </button>
             </div>
@@ -857,7 +857,7 @@ function TagEditor({ tags, onChange, suggestions, chipDefault }: { tags: string[
       </div>
       <div className="flex gap-2">
         <input type="text" value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); add(input.trim()); setInput('') } }} placeholder="직접 입력" maxLength={20} className="flex-1 px-4 py-2.5 text-base sm:text-sm border border-border bg-transparent focus:outline-none focus:border-border transition-colors" />
-        <button type="button" onClick={() => { add(input.trim()); setInput('') }} className="px-3 py-2.5 border border-border text-txt-secondary hover:bg-surface-sunken transition-colors"><Plus size={14} /></button>
+        <button type="button" onClick={() => { add(input.trim()); setInput('') }} className="px-3 py-2.5 border border-border text-txt-secondary hover:bg-surface-sunken transition-colors rounded-xl"><Plus size={14} /></button>
       </div>
     </div>
   )

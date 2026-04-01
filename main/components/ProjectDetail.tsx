@@ -101,7 +101,7 @@ const SignupCTA: React.FC<{ onClose: () => void; onSignup: () => void }> = ({ on
       </p>
       <button
         onClick={onSignup}
-        className="w-full bg-black hover:bg-surface-inverse/90 text-white px-8 py-4 font-bold text-sm flex items-center justify-center gap-2 transition-colors border border-surface-inverse hover:opacity-90 active:scale-[0.97] mb-3"
+        className="w-full bg-black hover:bg-surface-inverse/90 text-white px-8 py-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-colors border border-surface-inverse hover:opacity-90 active:scale-[0.97] mb-3"
       >
         무료로 시작하기
         <ArrowRight size={16} />
@@ -228,7 +228,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
           <p className="text-txt-tertiary mb-6">{error || '존재하지 않거나 삭제된 프로젝트입니다.'}</p>
           <Link
             href="/"
-            className="inline-flex items-center gap-2 bg-surface-inverse text-txt-inverse px-6 py-3 font-bold text-sm hover:bg-surface-inverse/90 transition-colors border border-surface-inverse hover:opacity-90 active:scale-[0.97]"
+            className="inline-flex items-center gap-2 bg-surface-inverse text-txt-inverse px-6 py-3 rounded-xl font-bold text-sm hover:bg-surface-inverse/90 transition-colors border border-surface-inverse hover:opacity-90 active:scale-[0.97]"
           >
             <ArrowLeft size={16} />
             홈으로 돌아가기
@@ -328,7 +328,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
             <div className="hidden md:flex flex-col gap-3 shrink-0">
               <button
                 onClick={handleCoffeeChatAction}
-                className="bg-brand hover:bg-brand-hover text-white px-8 py-3.5 font-bold text-sm flex items-center justify-center gap-2 transition-colors border border-brand hover:opacity-90 active:scale-[0.97]"
+                className="bg-brand hover:bg-brand-hover text-white px-8 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-colors border border-brand hover:opacity-90 active:scale-[0.97]"
               >
                 <Coffee size={16} />
                 커피챗 신청
@@ -515,7 +515,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                 </p>
                 <button
                   onClick={handleCoffeeChatAction}
-                  className="inline-flex items-center gap-2 bg-surface-inverse text-txt-inverse px-5 py-2.5 font-bold text-sm hover:bg-surface-inverse/90 transition-colors border border-surface-inverse hover:opacity-90 active:scale-[0.97]"
+                  className="inline-flex items-center gap-2 bg-surface-inverse text-txt-inverse px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-surface-inverse/90 transition-colors border border-surface-inverse hover:opacity-90 active:scale-[0.97]"
                 >
                   피드백 작성하기
                   <ChevronRight size={14} />
@@ -700,7 +700,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
       >
         <button
           onClick={handleCoffeeChatAction}
-          className="w-full bg-brand text-white py-3.5 font-bold text-sm flex items-center justify-center gap-2 border border-brand hover:opacity-90 active:scale-[0.97] transition-all"
+          className="w-full bg-brand text-white py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 border border-brand hover:opacity-90 active:scale-[0.97] transition-all"
         >
           <Coffee size={16} />
           커피챗 신청

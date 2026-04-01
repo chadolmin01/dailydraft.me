@@ -39,9 +39,9 @@ export default function DesignPage() {
             <p className="text-sm text-txt-secondary mt-1">브루탈리즘 · 각진 모서리 · 하드 셰도우 · 모노크롬</p>
           </div>
           <div className="flex gap-2">
-            <a href="#palette" className="px-3 py-1.5 text-sm font-semibold bg-accent text-txt-inverse ">Palette</a>
-            <a href="#layouts" className="px-3 py-1.5 text-sm font-semibold border border-border text-txt-secondary hover:bg-surface-sunken">Layouts</a>
-            <a href="#cards" className="px-3 py-1.5 text-sm font-semibold border border-border text-txt-secondary hover:bg-surface-sunken">Cards</a>
+            <a href="#palette" className="px-3 py-1.5 text-sm font-semibold bg-accent text-txt-inverse rounded-xl">Palette</a>
+            <a href="#layouts" className="px-3 py-1.5 text-sm font-semibold border border-border text-txt-secondary hover:bg-surface-sunken rounded-xl">Layouts</a>
+            <a href="#cards" className="px-3 py-1.5 text-sm font-semibold border border-border text-txt-secondary hover:bg-surface-sunken rounded-xl">Cards</a>
           </div>
         </div>
       </PageContainer>
@@ -203,11 +203,11 @@ export default function DesignPage() {
             <h3 className="text-xs font-medium text-txt-tertiary mb-3">Accent & Interactive</h3>
             <div className="bg-surface-card rounded-xl border border-border p-6">
               <div className="flex flex-wrap gap-3">
-                <button className="px-4 py-2 bg-accent text-txt-inverse text-sm font-semibold hover:bg-accent-hover transition-colors">Primary</button>
-                <button className="px-4 py-2 bg-accent-secondary text-txt-primary text-sm font-semibold hover:bg-accent-secondary-hover transition-colors">Secondary</button>
-                <button className="px-4 py-2 border border-border text-txt-secondary text-sm font-semibold hover:bg-surface-sunken transition-colors">Outline</button>
-                <button className="px-4 py-2 text-txt-secondary text-sm font-semibold hover:bg-surface-sunken transition-colors">Ghost</button>
-                <button className="px-4 py-2 bg-status-danger-bg text-status-danger-text text-sm font-semibold hover:bg-status-danger-text hover:text-txt-inverse transition-colors">Danger</button>
+                <button className="px-4 py-2 bg-accent text-txt-inverse text-sm font-semibold hover:bg-accent-hover transition-colors rounded-xl">Primary</button>
+                <button className="px-4 py-2 bg-accent-secondary text-txt-primary text-sm font-semibold hover:bg-accent-secondary-hover transition-colors rounded-xl">Secondary</button>
+                <button className="px-4 py-2 border border-border text-txt-secondary text-sm font-semibold hover:bg-surface-sunken transition-colors rounded-xl">Outline</button>
+                <button className="px-4 py-2 text-txt-secondary text-sm font-semibold hover:bg-surface-sunken transition-colors rounded-xl">Ghost</button>
+                <button className="px-4 py-2 bg-status-danger-bg text-status-danger-text text-sm font-semibold hover:bg-status-danger-text hover:text-txt-inverse transition-colors rounded-xl">Danger</button>
               </div>
               <div className="mt-4 flex items-center gap-4 text-sm">
                 <span className="text-txt-primary font-semibold underline underline-offset-2 cursor-pointer">링크 텍스트</span>
@@ -439,7 +439,7 @@ export default function DesignPage() {
               <button
                 key={s}
                 onClick={() => { setModalSize(s); setModalOpen(true) }}
-                className="px-4 py-2 text-sm font-semibold border border-border hover:bg-accent hover:text-txt-inverse hover:border-accent transition-colors"
+                className="px-4 py-2 text-sm font-semibold border border-border hover:bg-accent hover:text-txt-inverse hover:border-accent transition-colors rounded-xl"
               >
                 {s.toUpperCase()} 모달 열기
               </button>
@@ -486,8 +486,8 @@ export default function DesignPage() {
             </div>
           </div>
           <div className="px-6 py-4 border-t border-border-subtle flex justify-end gap-2">
-            <button onClick={() => setModalOpen(false)} className="px-4 py-2 text-sm text-txt-secondary hover:text-txt-primary">취소</button>
-            <button onClick={() => setModalOpen(false)} className="px-4 py-2 bg-accent text-txt-inverse text-sm font-semibold hover:bg-accent-hover">확인</button>
+            <button onClick={() => setModalOpen(false)} className="px-4 py-2 text-sm text-txt-secondary hover:text-txt-primary rounded-xl">취소</button>
+            <button onClick={() => setModalOpen(false)} className="px-4 py-2 bg-accent text-txt-inverse text-sm font-semibold hover:bg-accent-hover rounded-xl">확인</button>
           </div>
         </Modal>
       </div>
@@ -842,8 +842,8 @@ export default function DesignPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2 shrink-0">
-                <button className="px-3 py-1.5 text-sm font-semibold bg-accent text-txt-inverse hover:bg-accent-hover">수락</button>
-                <button className="px-3 py-1.5 text-sm font-semibold border border-border text-txt-secondary hover:bg-surface-sunken">거절</button>
+                <button className="px-3 py-1.5 text-sm font-semibold bg-accent text-txt-inverse hover:bg-accent-hover rounded-xl">수락</button>
+                <button className="px-3 py-1.5 text-sm font-semibold border border-border text-txt-secondary hover:bg-surface-sunken rounded-xl">거절</button>
               </div>
             </div>
           </div>
@@ -892,8 +892,8 @@ export default function DesignPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2 shrink-0">
-                <button className="px-3 py-1.5 text-sm font-semibold bg-accent text-txt-inverse hover:bg-accent-hover">수락</button>
-                <button className="px-3 py-1.5 text-sm font-semibold border border-border text-txt-secondary hover:bg-surface-sunken">거절</button>
+                <button className="px-3 py-1.5 text-sm font-semibold bg-accent text-txt-inverse hover:bg-accent-hover rounded-xl">수락</button>
+                <button className="px-3 py-1.5 text-sm font-semibold border border-border text-txt-secondary hover:bg-surface-sunken rounded-xl">거절</button>
               </div>
             </div>
           </div>
@@ -909,21 +909,21 @@ export default function DesignPage() {
             <div className="w-10 h-10 bg-surface-card/10 flex items-center justify-center mb-4"><Rocket size={20} /></div>
             <h3 className="font-bold text-base mb-1">팀원을 찾고 계신가요?</h3>
             <p className="text-txt-inverse/70 text-sm mb-4">프로젝트를 등록하고 함께할 팀원을 모집하세요</p>
-            <button className="w-full bg-surface-card text-txt-primary text-sm font-semibold py-2 hover:bg-surface-sunken transition-colors flex items-center justify-center gap-1.5"><Plus size={16} /> 프로젝트 등록하기</button>
+            <button className="w-full bg-surface-card text-txt-primary text-sm font-semibold py-2 hover:bg-surface-sunken transition-colors flex items-center justify-center gap-1.5 rounded-xl"><Plus size={16} /> 프로젝트 등록하기</button>
           </div>
 
           <div className="bg-surface-card rounded-xl border border-border p-5">
             <div className="w-10 h-10 bg-surface-sunken flex items-center justify-center mb-4"><Coffee size={20} className="text-txt-secondary" /></div>
             <h3 className="font-bold text-base text-txt-primary mb-1">커피챗 해보세요</h3>
             <p className="text-txt-secondary text-sm mb-4">관심 있는 프로젝트 리더와 부담 없이 대화해보세요</p>
-            <button className="w-full bg-accent text-txt-inverse text-sm font-semibold py-2 hover:bg-accent-hover transition-colors">둘러보기</button>
+            <button className="w-full bg-accent text-txt-inverse text-sm font-semibold py-2 hover:bg-accent-hover transition-colors rounded-xl">둘러보기</button>
           </div>
 
           <div className="bg-surface-card rounded-xl border border-border p-5 text-center">
             <div className="w-10 h-10 bg-surface-sunken flex items-center justify-center mx-auto mb-3"><FolderOpen size={20} className="text-txt-disabled" /></div>
             <h3 className="font-semibold text-base text-txt-primary mb-1">아직 프로젝트가 없습니다</h3>
             <p className="text-sm text-txt-secondary mb-4">첫 프로젝트를 만들어 팀원을 모집해보세요</p>
-            <button className="w-full flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-semibold bg-accent text-txt-inverse hover:bg-accent-hover transition-colors"><Plus size={16} /> 프로젝트 만들기</button>
+            <button className="w-full flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-semibold bg-accent text-txt-inverse hover:bg-accent-hover transition-colors rounded-xl"><Plus size={16} /> 프로젝트 만들기</button>
           </div>
         </div>
 
@@ -940,7 +940,7 @@ export default function DesignPage() {
               <p className="text-sm text-txt-secondary mt-0.5">프론트엔드 개발자</p>
               <p className="text-xs text-txt-tertiary mt-1">서울대학교</p>
             </div>
-            <button className="w-full mt-4 flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-semibold border border-border hover:bg-accent hover:text-txt-inverse hover:border-accent transition-colors">프로필 수정</button>
+            <button className="w-full mt-4 flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-semibold border border-border hover:bg-accent hover:text-txt-inverse hover:border-accent transition-colors rounded-xl">프로필 수정</button>
           </div>
 
           <div className="bg-surface-card rounded-xl border border-border p-4 group hover:border-border hover:shadow-sharp transition-all cursor-pointer">
@@ -1024,7 +1024,7 @@ export default function DesignPage() {
               </div>
             </div>
             <div className="px-5 py-4 border-t border-border-subtle flex justify-end">
-              <button className="px-4 py-2 bg-accent text-txt-inverse text-sm font-semibold hover:bg-accent-hover transition-colors flex items-center gap-1.5">
+              <button className="px-4 py-2 bg-accent text-txt-inverse text-sm font-semibold hover:bg-accent-hover transition-colors flex items-center gap-1.5 rounded-xl">
                 다음 <ChevronRight size={14} />
               </button>
             </div>
@@ -1068,7 +1068,7 @@ export default function DesignPage() {
             </div>
             <div className="px-5 py-4 border-t border-border-subtle flex items-center justify-between">
               <p className="text-xs text-txt-tertiary">상대방 이메일로 알림이 전송됩니다</p>
-              <button className="px-5 py-2 bg-accent text-txt-inverse text-sm font-semibold hover:bg-accent-hover transition-colors flex items-center gap-1.5">
+              <button className="px-5 py-2 bg-accent text-txt-inverse text-sm font-semibold hover:bg-accent-hover transition-colors flex items-center gap-1.5 rounded-xl">
                 <Send size={14} /> 커피챗 신청
               </button>
             </div>
@@ -1079,7 +1079,7 @@ export default function DesignPage() {
         <div className="mb-12">
           <button
             onClick={() => { setCoffeeChatOpen(true); setCoffeeChatStep('template'); setCoffeeChatTemplate(null); setCoffeeChatMessage('') }}
-            className="px-4 py-2 text-sm font-semibold border border-border hover:bg-accent hover:text-txt-inverse hover:border-accent transition-colors flex items-center gap-1.5"
+            className="px-4 py-2 text-sm font-semibold border border-border hover:bg-accent hover:text-txt-inverse hover:border-accent transition-colors flex items-center gap-1.5 rounded-xl"
           >
             <Coffee size={14} /> 인터랙티브 커피챗 모달 열기
           </button>

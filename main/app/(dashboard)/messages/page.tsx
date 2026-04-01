@@ -116,7 +116,7 @@ export default function MessagesPage() {
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   placeholder="이름으로 검색..."
-                  className="w-full pl-9 pr-3 py-2 text-base sm:text-sm border border-border bg-surface-bg focus:outline-none focus:border-accent transition-colors"
+                  className="w-full pl-9 pr-3 py-2 text-base sm:text-sm border border-border bg-surface-bg focus:outline-none focus:border-accent transition-colors rounded-xl"
                 />
               </div>
             </div>
@@ -235,7 +235,7 @@ export default function MessagesPage() {
                       return (
                         <div key={msg.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
                           <div className={`group relative max-w-[75%] ${isMine ? 'order-2' : ''}`}>
-                            <div className={`px-3.5 py-2.5 text-sm leading-relaxed ${
+                            <div className={`px-3.5 py-2.5 text-sm leading-relaxed rounded-xl ${
                               isMine
                                 ? 'bg-surface-inverse text-txt-inverse border border-surface-inverse shadow-sm'
                                 : 'bg-surface-sunken text-txt-primary border border-border'
@@ -275,12 +275,12 @@ export default function MessagesPage() {
                       onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend() } }}
                       placeholder="쪽지를 입력하세요..."
                       maxLength={2000}
-                      className="flex-1 px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-bg focus:outline-none focus:border-accent transition-colors"
+                      className="flex-1 px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-bg focus:outline-none focus:border-accent transition-colors rounded-xl"
                     />
                     <button
                       onClick={handleSend}
                       disabled={!messageInput.trim() || sendMessage.isPending}
-                      className="px-4 py-2.5 bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 disabled:opacity-40 transition-colors hover:opacity-90 active:scale-[0.97]"
+                      className="px-4 py-2.5 bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 disabled:opacity-40 transition-colors hover:opacity-90 active:scale-[0.97] rounded-xl"
                     >
                       {sendMessage.isPending ? (
                         <Loader2 size={16} className="animate-spin" />

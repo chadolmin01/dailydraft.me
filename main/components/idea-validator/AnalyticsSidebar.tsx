@@ -79,7 +79,7 @@ const AnalyticsSidebar: React.FC<AnalyticsSidebarProps> = ({ level, metrics, onF
 
           {metrics && (
              <div className="mt-5 pt-4 border-t border-border">
-                 <button onClick={onFinish} className="w-full bg-surface-inverse text-txt-inverse py-2.5 text-xs font-bold hover:bg-surface-inverse/90 transition-colors flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.97]">
+                 <button onClick={onFinish} className="w-full bg-surface-inverse text-txt-inverse py-2.5 rounded-xl text-xs font-bold hover:bg-surface-inverse/90 transition-colors flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.97]">
                      전체 리포트 보기
                      <ArrowRight size={14} />
                  </button>

@@ -153,7 +153,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
           <p className="text-sm text-txt-tertiary mb-3">로그인하고 {COMMENT_VERB}을 남겨보세요</p>
           <button
             onClick={onLoginClick}
-            className="inline-flex items-center gap-2 bg-surface-inverse text-txt-inverse px-5 py-2 text-xs font-bold border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97]"
+            className="inline-flex items-center gap-2 bg-surface-inverse text-txt-inverse px-5 py-2 rounded-xl text-xs font-bold border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97]"
           >
             로그인하기 <ArrowRight size={12} />
           </button>

@@ -308,7 +308,7 @@ export const Dashboard: React.FC = () => {
           </div>
           <button
             onClick={() => router.push('/projects')}
-            className="bg-brand text-white border border-brand px-4 py-2 text-sm font-medium hover:bg-brand-hover transition-colors flex items-center gap-2 shadow-sm"
+            className="bg-brand text-white border border-brand px-4 py-2 text-sm font-medium hover:bg-brand-hover transition-colors flex items-center gap-2 shadow-sm rounded-xl"
           >
              <Plus size={16} /> New Draft
           </button>

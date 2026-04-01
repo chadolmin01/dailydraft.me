@@ -301,7 +301,7 @@ export const TopNavbar: React.FC = () => {
             {/* 새 프로젝트 CTA — auth 불필요, 즉시 렌더 (미인증 시 middleware가 /login 리다이렉트) */}
             <Link
               href="/projects/new"
-              className="hidden md:flex items-center gap-1.5 px-3.5 py-1.5 bg-surface-inverse text-txt-inverse text-xs font-bold hover:bg-accent-hover transition-all border border-surface-inverse hover:opacity-90 active:scale-[0.97]"
+              className="hidden md:flex items-center gap-1.5 px-3.5 py-1.5 bg-surface-inverse text-txt-inverse text-xs font-bold hover:bg-accent-hover transition-all border border-surface-inverse hover:opacity-90 active:scale-[0.97] rounded-xl"
             >
               <Plus size={14} strokeWidth={2.5} />
               <span>새 프로젝트</span>
@@ -388,7 +388,7 @@ export const TopNavbar: React.FC = () => {
             ) : (
               <Link
                 href="/login"
-                className="px-4 py-1.5 bg-surface-sunken text-txt-secondary text-xs font-bold border border-border hover:bg-surface-inverse hover:text-txt-inverse transition-all"
+                className="px-4 py-1.5 bg-surface-sunken text-txt-secondary text-xs font-bold border border-border hover:bg-surface-inverse hover:text-txt-inverse transition-all rounded-xl"
               >
                 로그인
               </Link>
@@ -399,7 +399,7 @@ export const TopNavbar: React.FC = () => {
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label={isMobileMenuOpen ? '메뉴 닫기' : '메뉴 열기'}
               aria-expanded={isMobileMenuOpen}
-              className="md:hidden w-11 h-11 flex items-center justify-center text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken transition-colors border border-border"
+              className="md:hidden w-11 h-11 flex items-center justify-center text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken transition-colors border border-border rounded-lg"
             >
               {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
@@ -438,7 +438,7 @@ export const TopNavbar: React.FC = () => {
               )}
               <Link
                 href={isAuthenticated ? '/projects/new' : '/login'}
-                className="w-full mt-2 flex items-center justify-center gap-1.5 px-4 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-semibold transition-all hover:opacity-90 active:scale-[0.97]"
+                className="w-full mt-2 flex items-center justify-center gap-1.5 px-4 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-semibold transition-all hover:opacity-90 active:scale-[0.97] rounded-xl"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 {isAuthenticated ? <><Plus size={15} strokeWidth={2.5} /> 새 프로젝트</> : '로그인'}
