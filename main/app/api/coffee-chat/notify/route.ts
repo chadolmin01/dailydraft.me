@@ -9,7 +9,7 @@ import { notifyCoffeeChatRequest, notifyCoffeeChatResponse, notifyPersonCoffeeCh
 import { createClient } from '@supabase/supabase-js'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
-import { sendPushToUser } from '@/app/api/push/send/route'
+import { sendPushToUser } from '@/src/lib/push-notification'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
