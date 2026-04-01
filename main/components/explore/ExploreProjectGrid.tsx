@@ -9,6 +9,7 @@ import { SkeletonGrid } from '@/components/ui/Skeleton'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { useAuth } from '@/src/context/AuthContext'
 import { getUpdateBadge } from './constants'
+import { trackProjectView } from '@/src/lib/pwa/engagement-tracker'
 import { Badges } from '@/components/ui/Badge'
 import type { ProjectCard } from './types'
 
@@ -86,7 +87,7 @@ export function ExploreProjectGrid({
               key={p.id}
               role="button"
               tabIndex={0}
-              onClick={() => onSelectProject(p.id)}
+              onClick={() => { onSelectProject(p.id); trackProjectView() }}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectProject(p.id) } }}
               style={{ animationDelay: `${Math.min(index * 60, 600)}ms` }}
               className="stagger-item relative bg-surface-card rounded-xl border border-border overflow-hidden group hover:shadow-md hover:border-brand/30 hover:-translate-y-0.5 hover-spring cursor-pointer min-h-[21.25rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985] active:shadow-none active:border-brand/50"

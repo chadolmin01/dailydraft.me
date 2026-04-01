@@ -1,11 +1,12 @@
 'use client'
 
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { X, Download, Share, Plus, ChevronDown } from 'lucide-react'
+import { useAuth } from '@/src/context/AuthContext'
 
-// localStorage key — 닫으면 7일간 미노출
+// localStorage key — 닫으면 3일간 미노출
 const DISMISS_KEY = 'draft_install_dismissed'
-const DISMISS_DAYS = 7
+const DISMISS_DAYS = 3
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>
@@ -37,36 +38,48 @@ function isDismissed() {
 }
 
 export function InstallPrompt() {
+  const { isAuthenticated } = useAuth()
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
   const [showIOSGuide, setShowIOSGuide] = useState(false)
   const [visible, setVisible] = useState(false)
   const [closing, setClosing] = useState(false)
+  const prevAuthRef = useRef<boolean | null>(null)
+
+  const tryShow = useCallback(() => {
+    if (isStandalone() || isDismissed()) return
+    if (typeof window !== 'undefined' && window.innerWidth >= 768) return
+    setVisible(true)
+  }, [])
 
   useEffect(() => {
-    // 이미 standalone이거나, 데스크톱이거나, 닫은 적 있으면 미노출
     if (isStandalone() || isDismissed()) return
     if (window.innerWidth >= 768) return
 
-    // Android: beforeinstallprompt 이벤트 감지
-    const handler = (e: Event) => {
+    // Android: beforeinstallprompt — 즉시 표시 안 하고 저장만
+    const installHandler = (e: Event) => {
       e.preventDefault()
       setDeferredPrompt(e as BeforeInstallPromptEvent)
-      setVisible(true)
     }
-    window.addEventListener('beforeinstallprompt', handler)
+    window.addEventListener('beforeinstallprompt', installHandler)
 
-    // iOS: 이벤트 없으므로 직접 감지
-    if (isIOS()) {
-      // 3초 후 표시 (페이지 로드 직후는 UX 나쁨)
-      const timer = setTimeout(() => setVisible(true), 3000)
-      return () => {
-        clearTimeout(timer)
-        window.removeEventListener('beforeinstallprompt', handler)
-      }
+    // 행동 기반 트리거 이벤트 수신
+    const promptHandler = () => tryShow()
+    window.addEventListener('draft:pwa-prompt', promptHandler)
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', installHandler)
+      window.removeEventListener('draft:pwa-prompt', promptHandler)
     }
+  }, [tryShow])
 
-    return () => window.removeEventListener('beforeinstallprompt', handler)
-  }, [])
+  // 로그인 직후 감지 — false → true 전환 시 1.5초 후 표시
+  useEffect(() => {
+    if (prevAuthRef.current === false && isAuthenticated) {
+      const timer = setTimeout(() => tryShow(), 1500)
+      return () => clearTimeout(timer)
+    }
+    prevAuthRef.current = isAuthenticated
+  }, [isAuthenticated, tryShow])
 
   const dismiss = useCallback(() => {
     setClosing(true)
