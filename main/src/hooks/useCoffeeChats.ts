@@ -132,7 +132,7 @@ export function useRequestCoffeeChat() {
           body: JSON.stringify({ type: 'request', chatId }),
         }).catch((err) => console.warn('[CoffeeChat] 알림 이메일 전송 실패 (커피챗은 정상 처리됨):', err))
       }
-      queryClient.invalidateQueries({ queryKey: coffeeChatKeys.all })
+      queryClient.invalidateQueries({ queryKey: coffeeChatKeys.all, refetchType: 'active' })
     },
   })
 }
@@ -168,7 +168,7 @@ export function useAcceptCoffeeChat() {
           invitationMessage: variables.invitationMessage,
         }),
       }).catch((err) => console.warn('[CoffeeChat] 알림 이메일 전송 실패 (커피챗은 정상 처리됨):', err))
-      queryClient.invalidateQueries({ queryKey: coffeeChatKeys.all })
+      queryClient.invalidateQueries({ queryKey: coffeeChatKeys.all, refetchType: 'active' })
     },
   })
 }
@@ -187,7 +187,7 @@ export function useUpdateChatOutcome() {
       if (error) throw error
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: coffeeChatKeys.all })
+      queryClient.invalidateQueries({ queryKey: coffeeChatKeys.all, refetchType: 'active' })
     },
   })
 }
@@ -212,7 +212,7 @@ export function useDeclineCoffeeChat() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type: 'declined', chatId }),
       }).catch((err) => console.warn('[CoffeeChat] 알림 이메일 전송 실패 (커피챗은 정상 처리됨):', err))
-      queryClient.invalidateQueries({ queryKey: coffeeChatKeys.all })
+      queryClient.invalidateQueries({ queryKey: coffeeChatKeys.all, refetchType: 'active' })
     },
   })
 }
@@ -264,7 +264,7 @@ export function useRequestPersonCoffeeChat() {
           body: JSON.stringify({ type: 'request', chatId }),
         }).catch((err) => console.warn('[CoffeeChat] 알림 이메일 전송 실패 (커피챗은 정상 처리됨):', err))
       }
-      queryClient.invalidateQueries({ queryKey: coffeeChatKeys.all })
+      queryClient.invalidateQueries({ queryKey: coffeeChatKeys.all, refetchType: 'active' })
     },
   })
 }
