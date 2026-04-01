@@ -43,7 +43,7 @@ export function ExploreHeroCarousel() {
 
   return (
     <PageContainer size="wide" className="pt-3 pb-1">
-      <div className="flex gap-3 h-[12rem] sm:h-[18rem]">
+      <div className="flex gap-3 h-[16rem] sm:h-[18rem]">
 
         {/* ===== 왼쪽: 메인 강조 슬라이드 ===== */}
         <div
@@ -82,7 +82,7 @@ export function ExploreHeroCarousel() {
           {/* 메인 슬라이드 콘텐츠 */}
           <div className="relative z-10 h-full">
             {/* Slide 0: 팀원 모집 */}
-            <div className={`absolute inset-0 px-4 sm:px-6 flex items-start pt-6 sm:pt-10 transition-all duration-300 ${order[0] === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+            <div className={`absolute inset-0 px-4 sm:px-6 flex items-start pt-4 sm:pt-10 transition-all duration-300 ${order[0] === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
               <div className="w-full">
                 <div className="inline-flex items-center gap-2 px-2 h-6 bg-surface-card rounded-xl border border-border mb-3">
                   <div className="w-1.5 h-1.5 bg-indicator-online animate-pulse" />
@@ -91,7 +91,7 @@ export function ExploreHeroCarousel() {
                 <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-txt-primary mb-1.5 break-keep leading-tight tracking-tight">
                   Draft 팀에 <span className="text-txt-tertiary">합류하고 싶다면?</span>
                 </h2>
-                <p className="text-sm text-txt-tertiary break-keep mb-4 sm:mb-6">
+                <p className="text-sm text-txt-tertiary break-keep mb-3 sm:mb-6">
                   같이 만들어갈 팀원을 찾고 있어요. 프로젝트 페이지에서 지원해보세요.
                 </p>
                 <Link
@@ -105,7 +105,7 @@ export function ExploreHeroCarousel() {
             </div>
 
             {/* Slide 1: 사용자 인터뷰 */}
-            <div className={`absolute inset-0 px-4 sm:px-6 flex items-start pt-6 sm:pt-10 transition-all duration-300 ${order[0] === 1 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+            <div className={`absolute inset-0 px-4 sm:px-6 flex items-start pt-4 sm:pt-10 transition-all duration-300 ${order[0] === 1 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
               <div className="w-full">
                 <div className="inline-flex items-center gap-2 px-2 h-6 bg-surface-card rounded-xl border border-border mb-3">
                   <span className="text-[10px] font-mono font-bold text-black tracking-wider">RESEARCH</span>
@@ -113,7 +113,7 @@ export function ExploreHeroCarousel() {
                 <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-txt-primary mb-1.5 break-keep leading-tight tracking-tight">
                   서비스 인터뷰에 <span className="text-txt-tertiary">참여해주세요.</span>
                 </h2>
-                <p className="text-sm text-txt-tertiary break-keep mb-4 sm:mb-6">
+                <p className="text-sm text-txt-tertiary break-keep mb-3 sm:mb-6">
                   Draft 팀이 솔직한 의견을 듣고 싶어요. 커피챗으로 편하게 연락주세요.
                 </p>
                 <Link
@@ -127,7 +127,7 @@ export function ExploreHeroCarousel() {
             </div>
 
             {/* Slide 2: 프로젝트 홍보 */}
-            <div className={`absolute inset-0 px-4 sm:px-6 flex items-start pt-6 sm:pt-10 transition-all duration-300 ${order[0] === 2 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+            <div className={`absolute inset-0 px-4 sm:px-6 flex items-start pt-4 sm:pt-10 transition-all duration-300 ${order[0] === 2 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
               <div className="w-full">
                 <div className="inline-flex items-center gap-2 px-2 h-6 bg-surface-card rounded-xl border border-border mb-3">
                   <span className="text-[10px] font-mono font-bold text-black tracking-wider">PROMO</span>
@@ -135,7 +135,7 @@ export function ExploreHeroCarousel() {
                 <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-txt-primary mb-1.5 break-keep leading-tight tracking-tight">
                   내 프로젝트를 <span className="text-txt-tertiary">알리고 싶다면?</span>
                 </h2>
-                <p className="text-sm text-txt-tertiary break-keep mb-4 sm:mb-6">
+                <p className="text-sm text-txt-tertiary break-keep mb-3 sm:mb-6">
                   Draft를 통해 더 많은 사람에게 닿아보세요. 커피챗으로 문의해주세요.
                 </p>
                 <Link
