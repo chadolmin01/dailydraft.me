@@ -264,6 +264,34 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
         className="fixed inset-0 z-modal flex items-end sm:items-center justify-center pt-6 px-0 pb-[env(safe-area-inset-bottom)] sm:p-4 md:p-8"
         onClick={onClose}
       >
+            {/* Left nav button */}
+            {canGoBack && (
+              <button
+                onClick={(e) => { e.stopPropagation(); goBack() }}
+                className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-surface-card/90 backdrop-blur-sm border border-border shadow-lg flex items-center justify-center hover:bg-surface-card active:scale-95 transition-all"
+                aria-label="이전 프로젝트"
+              >
+                <ChevronLeft size={20} className="text-txt-primary" />
+              </button>
+            )}
+
+            {/* Right nav button */}
+            {(canGoForward || similarLoading) && (
+              <button
+                onClick={(e) => { e.stopPropagation(); goNext() }}
+                disabled={!canGoForward}
+                className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-surface-card/90 backdrop-blur-sm border border-border shadow-lg flex items-center justify-center hover:bg-surface-card active:scale-95 transition-all disabled:opacity-40"
+                aria-label="다음 유사 프로젝트"
+                title={nextSimilar ? nextSimilar.title : undefined}
+              >
+                {similarLoading ? (
+                  <Loader2 size={16} className="text-txt-disabled animate-spin" />
+                ) : (
+                  <ChevronRight size={20} className="text-txt-primary" />
+                )}
+              </button>
+            )}
+
             <div
               onClick={(e) => e.stopPropagation()}
               className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl max-h-[85vh] sm:max-h-[90vh] modal-glass rounded-t-2xl sm:rounded-2xl overflow-hidden flex flex-col relative"
@@ -344,29 +372,6 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                   </div>
                 )}
                 <div className="flex items-center gap-1">
-                  {/* Similar project navigation — desktop only (mobile uses swipe) */}
-                  <button
-                    onClick={goBack}
-                    disabled={!canGoBack}
-                    className="hidden sm:block p-2 hover:bg-surface-sunken transition-colors border border-transparent hover:border-border disabled:opacity-30 disabled:cursor-not-allowed"
-                    aria-label="이전 프로젝트"
-                  >
-                    <ChevronLeft size={16} className="text-txt-disabled" />
-                  </button>
-                  <button
-                    onClick={goNext}
-                    disabled={!canGoForward}
-                    className="hidden sm:block p-2 hover:bg-surface-sunken transition-colors border border-transparent hover:border-border disabled:opacity-30 disabled:cursor-not-allowed"
-                    aria-label="다음 유사 프로젝트"
-                    title={nextSimilar ? `다음: ${nextSimilar.title}` : undefined}
-                  >
-                    {similarLoading ? (
-                      <Loader2 size={14} className="text-txt-disabled animate-spin" />
-                    ) : (
-                      <ChevronRight size={16} className={canGoForward ? 'text-txt-secondary' : 'text-txt-disabled'} />
-                    )}
-                  </button>
-                  <div className="hidden sm:block w-px h-4 bg-border mx-1" />
                   <button
                     onClick={handleShare}
                     className="p-2 hover:bg-surface-sunken transition-colors border border-transparent hover:border-border"
