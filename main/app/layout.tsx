@@ -24,9 +24,9 @@ const jetBrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://dailydraft.me'),
-  title: 'Draft - 모든 프로젝트는 여기서 시작됩니다',
-  description: '프로젝트를 공유하고, 피드백 받고, 함께할 사람을 만나세요.',
-  keywords: ['스타트업', '프로젝트', '커뮤니티', '피드백', '사이드프로젝트', '팀빌딩'],
+  title: 'Draft — AI로 찾는 내 프로젝트 팀',
+  description: '스킬과 작업 스타일 기반 AI 매칭으로 사이드프로젝트 팀원을 찾아보세요. 개발자, 디자이너, 기획자들의 팀빌딩 플랫폼.',
+  keywords: ['팀빌딩', 'AI매칭', '사이드프로젝트', '팀원모집', '개발자', '디자이너', '기획자', '스타트업'],
   icons: {
     icon: [
       { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
@@ -38,8 +38,8 @@ export const metadata: Metadata = {
     ],
   },
   openGraph: {
-    title: 'Draft - 모든 프로젝트는 여기서 시작됩니다',
-    description: '프로젝트를 공유하고, 피드백 받고, 함께할 사람을 만나세요.',
+    title: 'Draft — AI로 찾는 내 프로젝트 팀',
+    description: '스킬과 작업 스타일 기반 AI 매칭으로 사이드프로젝트 팀원을 찾아보세요. 개발자, 디자이너, 기획자들의 팀빌딩 플랫폼.',
     url: process.env.NEXT_PUBLIC_APP_URL || 'https://dailydraft.me',
     siteName: 'Draft',
     type: 'website',
@@ -47,8 +47,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Draft - 모든 프로젝트는 여기서 시작됩니다',
-    description: '프로젝트를 공유하고, 피드백 받고, 함께할 사람을 만나세요.',
+    title: 'Draft — AI로 찾는 내 프로젝트 팀',
+    description: '스킬과 작업 스타일 기반 AI 매칭으로 사이드프로젝트 팀원을 찾아보세요. 개발자, 디자이너, 기획자들의 팀빌딩 플랫폼.',
   },
   robots: {
     index: true,
