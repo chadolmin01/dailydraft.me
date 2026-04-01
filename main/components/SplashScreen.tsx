@@ -65,7 +65,7 @@ export function SplashScreen() {
         }`}
       >
         {/* D mark */}
-        <div className="w-20 h-20 bg-surface-inverse rounded-2xl flex items-center justify-center shadow-xl">
+        <div className="w-20 h-20 bg-surface-inverse flex items-center justify-center">
           <span className="text-txt-inverse font-black text-4xl leading-none">D</span>
         </div>
 
@@ -80,10 +80,10 @@ export function SplashScreen() {
 
       {/* Corner dots — minimal frame */}
       <div className={`splash-corners ${phase === 'grid' ? '' : 'splash-corners-visible'}`}>
-        <div className="absolute top-10 left-10 w-2 h-2 rounded-full bg-border-strong" />
-        <div className="absolute top-10 right-10 w-2 h-2 rounded-full bg-border-strong" />
-        <div className="absolute bottom-10 left-10 w-2 h-2 rounded-full bg-border-strong" />
-        <div className="absolute bottom-10 right-10 w-2 h-2 rounded-full bg-border-strong" />
+        <div className="absolute top-10 left-10 w-2 h-2 bg-border-strong" />
+        <div className="absolute top-10 right-10 w-2 h-2 bg-border-strong" />
+        <div className="absolute bottom-10 left-10 w-2 h-2 bg-border-strong" />
+        <div className="absolute bottom-10 right-10 w-2 h-2 bg-border-strong" />
       </div>
 
       <style jsx>{`
