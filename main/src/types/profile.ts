@@ -1,4 +1,4 @@
-export type CurrentSituation = 'solo' | 'has_project' | 'want_to_join'
+export type CurrentSituation = 'solo' | 'has_project' | 'want_to_join' | 'exploring'
 
 export interface Skill {
   name: string

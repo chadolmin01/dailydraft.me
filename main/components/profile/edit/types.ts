@@ -84,6 +84,8 @@ export interface EditAIProfileProps {
   setPersonality: React.Dispatch<React.SetStateAction<Record<string, number>>>
   workStyle: Record<string, number>
   setWorkStyle: React.Dispatch<React.SetStateAction<Record<string, number>>>
+  workStyleTraits: Record<string, string>
+  setWorkStyleTraits: React.Dispatch<React.SetStateAction<Record<string, string>>>
   teamRole: string
   setTeamRole: (v: string) => void
   teamSize: string

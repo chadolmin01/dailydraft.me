@@ -47,11 +47,4 @@ export const traitLabels = [
   { key: 'risk', label: '도전 성향', low: '안정', high: '도전' },
   { key: 'time', label: '시간 투자', low: '여유 없음', high: '풀타임' },
   { key: 'communication', label: '소통 선호', low: '혼자 집중', high: '수시 소통' },
-  { key: 'decision', label: '실행 속도', low: '신중한 계획', high: '빠른 실행' },
-]
-
-export const workStyleLabels = [
-  { key: 'collaboration', label: '협업 스타일', low: '독립형', high: '팀 소통형' },
-  { key: 'planning', label: '작업 방식', low: '바로 실행', high: '기획 우선' },
-  { key: 'perfectionism', label: '품질 기준', low: '속도 우선', high: '완벽주의' },
 ]

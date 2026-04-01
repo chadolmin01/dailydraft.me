@@ -58,17 +58,28 @@ export default function ProfilePage() {
       {profile && !profile.ai_chat_completed && (
         <Link
           href="/onboarding"
-          className="block mx-auto max-w-screen-xl px-4 sm:px-6 pt-4"
+          className="group block mx-auto max-w-screen-xl px-4 sm:px-6 pt-4"
         >
-          <div className="flex items-center gap-3 px-4 py-3 bg-surface-card rounded-xl border border-border hover:border-txt-disabled transition-colors cursor-pointer">
-            <div className="w-8 h-8 bg-black flex items-center justify-center shrink-0">
-              <Sparkles size={14} className="text-white" />
+          <div className="relative overflow-hidden bg-surface-card rounded-xl border border-border shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer">
+            {/* Subtle gradient accent line */}
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-brand via-brand/60 to-transparent" />
+            <div className="flex items-center gap-4 px-5 py-4">
+              <div className="relative w-10 h-10 bg-surface-inverse rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-300">
+                <Sparkles size={16} className="text-white" />
+                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-brand rounded-full border-2 border-surface-card animate-pulse" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-0.5">
+                  <span className="text-[0.5625rem] font-mono font-bold text-brand uppercase tracking-wider">AI MATCHING</span>
+                </div>
+                <p className="text-[13px] font-bold text-txt-primary">2분 대화로 매칭 정확도를 높여보세요</p>
+                <p className="text-[11px] text-txt-tertiary mt-0.5">작업 스타일, 성향을 분석해 딱 맞는 팀원을 추천해드려요</p>
+              </div>
+              <div className="shrink-0 px-3.5 py-2 bg-surface-inverse text-txt-inverse text-xs font-bold rounded-xl group-hover:bg-brand transition-colors duration-300 flex items-center gap-1.5">
+                시작하기
+                <span className="group-hover:translate-x-0.5 transition-transform duration-300">→</span>
+              </div>
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[13px] font-bold text-txt-primary">AI 매칭 분석 미완료</p>
-              <p className="text-[11px] text-txt-tertiary font-mono">짧은 대화로 팀 매칭 정확도를 높여보세요</p>
-            </div>
-            <span className="text-[11px] font-mono text-txt-disabled shrink-0">진행하기 →</span>
           </div>
         </Link>
       )}

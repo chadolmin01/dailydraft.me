@@ -13,6 +13,7 @@ import {
   Loader2,
 } from 'lucide-react'
 import { useUpdateProfile } from '@/src/hooks/useProfile'
+import { CATEGORICAL_LABELS, SCORE_TO_CATEGORICAL } from '@/src/lib/onboarding/constants'
 import type { Profile } from './types'
 
 /* ── Link inline field ──────────────────────────────────── */
@@ -227,27 +228,52 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
       )}
 
       {/* --- PERSONALITY --- */}
-      {profile?.personality && (
-        <div className="relative bg-surface-card rounded-xl border border-border p-4 shadow-md">
-          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
-            <span className="w-4 h-4 bg-indicator-premium text-white flex items-center justify-center text-[0.5rem] font-bold rounded">P</span>
-            PERSONALITY
-          </h3>
-          <div className="space-y-2">
-            {Object.entries(profile.personality as Record<string, number>).map(([key, value]) => (
-              <div key={key} className="flex items-center justify-between">
-                <span className="text-[0.625rem] text-txt-secondary">{key.replace(/_/g, ' ')}</span>
-                <div className="flex items-center gap-2">
-                  <div className="w-16 h-1.5 bg-surface-sunken rounded-xl border border-border overflow-hidden">
-                    <div className="h-full bg-brand transition-all" style={{ width: `${(value / 10) * 100}%` }} />
-                  </div>
-                  <span className="text-[0.625rem] font-mono text-txt-tertiary w-8 text-right">{value}/10</span>
+      {profile?.personality && (() => {
+        const p = profile.personality as Record<string, number>
+        // Resolve decision categorical label
+        let visionTraits: Record<string, unknown> | undefined
+        try {
+          const vs = profile.vision_summary ? JSON.parse(profile.vision_summary as string) : null
+          visionTraits = vs?.traits as Record<string, unknown> | undefined
+        } catch { /* skip */ }
+        const decisionCatId = (visionTraits?.decision_style as string) || (p.decision != null ? SCORE_TO_CATEGORICAL.decision_style(p.decision) : undefined)
+        const decisionLabel = decisionCatId ? CATEGORICAL_LABELS.decision_style?.[decisionCatId] : undefined
+
+        return (
+          <div className="relative bg-surface-card rounded-xl border border-border p-4 shadow-md">
+            <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
+              <span className="w-4 h-4 bg-indicator-premium text-white flex items-center justify-center text-[0.5rem] font-bold rounded">P</span>
+              PERSONALITY
+            </h3>
+            <div className="space-y-2">
+              {/* decision — categorical label */}
+              {decisionLabel && (
+                <div className="flex items-center justify-between">
+                  <span className="text-[0.625rem] text-txt-secondary">의사결정</span>
+                  <span className="text-xs font-semibold text-txt-primary">{decisionLabel}</span>
                 </div>
-              </div>
-            ))}
+              )}
+              {/* communication, risk, time — slider bars */}
+              {(['communication', 'risk', 'time'] as const).map(key => {
+                const value = p[key]
+                if (value == null) return null
+                const labels: Record<string, string> = { risk: '도전 성향', time: '시간 투자', communication: '소통 선호' }
+                return (
+                  <div key={key} className="flex items-center justify-between">
+                    <span className="text-[0.625rem] text-txt-secondary">{labels[key]}</span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-16 h-1.5 bg-surface-sunken rounded-xl border border-border overflow-hidden">
+                        <div className="h-full bg-brand transition-all" style={{ width: `${(value / 10) * 100}%` }} />
+                      </div>
+                      <span className="text-[0.625rem] font-mono text-txt-tertiary w-8 text-right">{value}/10</span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
           </div>
-        </div>
-      )}
+        )
+      })()}
 
       {/* --- COMPLETION --- */}
       <div className="relative bg-surface-card rounded-xl border border-border p-4 shadow-md">

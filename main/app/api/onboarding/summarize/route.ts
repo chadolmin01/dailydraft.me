@@ -4,6 +4,7 @@ import { ApiResponse } from '@/src/lib/api-utils'
 import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
 import { safeGenerate } from '@/src/lib/ai/safe-generate'
 import { OnboardingSummarySchema } from '@/src/lib/ai/schemas'
+import { CATEGORICAL_TO_SCORE } from '@/src/lib/onboarding/constants'
 
 interface TranscriptMessage {
   role: 'user' | 'assistant'
@@ -153,6 +154,36 @@ export async function POST(request: Request) {
           }
           if (typeof qv.semesterAvailable === 'boolean') parsed.availability.semester_available = qv.semesterAvailable
         }
+      }
+    }
+
+    // Overwrite numeric fields from categorical interactive answers
+    if (behavioralTraits.collaboration_style) {
+      const score = CATEGORICAL_TO_SCORE.collaboration_style[behavioralTraits.collaboration_style as string]
+      if (score != null) {
+        if (!parsed.work_style) parsed.work_style = { collaboration: 5, planning: 5, perfectionism: 5 }
+        ;(parsed.work_style as Record<string, number>).collaboration = score
+      }
+    }
+    if (behavioralTraits.decision_style) {
+      const score = CATEGORICAL_TO_SCORE.decision_style[behavioralTraits.decision_style as string]
+      if (score != null) {
+        if (!parsed.personality) parsed.personality = { risk: 5, time: 5, communication: 5, decision: 5 }
+        ;(parsed.personality as Record<string, number>).decision = score
+      }
+    }
+    if (behavioralTraits.planning_style) {
+      const score = CATEGORICAL_TO_SCORE.planning_style[behavioralTraits.planning_style as string]
+      if (score != null) {
+        if (!parsed.work_style) parsed.work_style = { collaboration: 5, planning: 5, perfectionism: 5 }
+        ;(parsed.work_style as Record<string, number>).planning = score
+      }
+    }
+    if (behavioralTraits.quality_style) {
+      const score = CATEGORICAL_TO_SCORE.quality_style[behavioralTraits.quality_style as string]
+      if (score != null) {
+        if (!parsed.work_style) parsed.work_style = { collaboration: 5, planning: 5, perfectionism: 5 }
+        ;(parsed.work_style as Record<string, number>).perfectionism = score
       }
     }
 

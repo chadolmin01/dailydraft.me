@@ -14,11 +14,11 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantStyles: Record<ButtonVariant, string> = {
-  primary: 'bg-surface-inverse text-txt-inverse hover:bg-surface-inverse/90 hover:opacity-90 active:scale-[0.97]',
-  secondary: 'bg-surface-card border border-border text-black hover:bg-black hover:text-white',
-  ghost: 'text-black hover:bg-surface-sunken',
-  blue: 'bg-brand text-white hover:bg-brand-hover hover:opacity-90 active:scale-[0.97]',
-  danger: 'bg-status-danger-text text-white hover:bg-status-danger-text/90 hover:opacity-90 active:scale-[0.97]',
+  primary: 'bg-surface-inverse text-txt-inverse hover:bg-surface-inverse/90 hover:opacity-90 hover:scale-[1.015] hover:shadow-sm active:scale-[0.97] active:shadow-none',
+  secondary: 'bg-surface-card border border-border text-black hover:bg-black hover:text-white hover:scale-[1.015] hover:shadow-sm active:scale-[0.97] active:shadow-none',
+  ghost: 'text-black hover:bg-surface-sunken hover:scale-[1.015] active:scale-[0.97]',
+  blue: 'bg-brand text-white hover:bg-brand-hover hover:opacity-90 hover:scale-[1.015] hover:shadow-sm active:scale-[0.97] active:shadow-none',
+  danger: 'bg-status-danger-text text-white hover:bg-status-danger-text/90 hover:opacity-90 hover:scale-[1.015] hover:shadow-sm active:scale-[0.97] active:shadow-none',
 }
 
 const sizeStyles: Record<ButtonSize, string> = {
@@ -44,7 +44,7 @@ export const Button: React.FC<ButtonProps> = ({
   disabled,
   ...props
 }) => {
-  const baseStyles = 'font-bold rounded-xl transition-all flex items-center justify-center gap-2'
+  const baseStyles = 'font-bold rounded-xl transition-all duration-150 active:duration-75 cursor-pointer flex items-center justify-center gap-2'
   const isDisabled = disabled || loading
 
   return (
@@ -86,10 +86,10 @@ export const IconButton: React.FC<IconButtonProps> = ({
   className = '',
   ...props
 }) => {
-  const baseStyles = 'rounded-xl transition-colors flex items-center justify-center'
+  const baseStyles = 'rounded-xl transition-all duration-150 active:duration-75 cursor-pointer flex items-center justify-center'
   const variantStyle = variant === 'ghost'
-    ? 'text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken'
-    : 'bg-surface-card border border-border text-txt-secondary hover:bg-black hover:text-white'
+    ? 'text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken hover:scale-[1.05] active:scale-[0.93]'
+    : 'bg-surface-card border border-border text-txt-secondary hover:bg-black hover:text-white hover:scale-[1.05] hover:shadow-sm active:scale-[0.93] active:shadow-none'
 
   return (
     <button

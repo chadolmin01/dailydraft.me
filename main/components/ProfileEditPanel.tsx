@@ -8,6 +8,7 @@ import { SlidePanel } from './ui/SlidePanel'
 import { useAuth } from '@/src/context/AuthContext'
 import { useProfile, useUpdateProfile } from '@/src/hooks/useProfile'
 import { supabase } from '@/src/lib/supabase/client'
+import { CATEGORICAL_TO_SCORE, SCORE_TO_CATEGORICAL } from '@/src/lib/onboarding/constants'
 import {
   EditPhotos,
   EditBasicInfo,
@@ -57,6 +58,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
   const [newSkillLevel, setNewSkillLevel] = useState('중급')
   const [personality, setPersonality] = useState<Record<string, number>>({ risk: 5, time: 5, communication: 5, decision: 5 })
   const [workStyle, setWorkStyle] = useState<Record<string, number>>({ collaboration: 5, planning: 5, perfectionism: 5 })
+  const [workStyleTraits, setWorkStyleTraits] = useState<Record<string, string>>({})
   const [teamRole, setTeamRole] = useState('')
   const [teamSize, setTeamSize] = useState('')
   const [teamAtmosphere, setTeamAtmosphere] = useState('')
@@ -101,7 +103,8 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
       if (profile.vision_summary) {
         try {
           const v = JSON.parse(profile.vision_summary)
-          if (v.work_style) setWorkStyle({ collaboration: v.work_style.collaboration || 5, planning: v.work_style.planning || 5, perfectionism: v.work_style.perfectionism || 5 })
+          const ws = v.work_style
+          if (ws) setWorkStyle({ collaboration: ws.collaboration || 5, planning: ws.planning || 5, perfectionism: ws.perfectionism || 5 })
           if (v.team_preference) {
             setTeamRole(v.team_preference.role || '')
             setTeamSize(v.team_preference.preferred_size || '')
@@ -113,6 +116,18 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
           }
           setGoals(v.goals || [])
           setStrengths(v.strengths || [])
+
+          // Read categorical traits — from traits or reverse-convert from numbers
+          const traits: Record<string, string> = {}
+          if (v.traits?.collaboration_style) traits.collaboration_style = v.traits.collaboration_style
+          else if (ws?.collaboration) traits.collaboration_style = SCORE_TO_CATEGORICAL.collaboration_style(ws.collaboration)
+          if (v.traits?.decision_style) traits.decision_style = v.traits.decision_style
+          else if (p?.decision) traits.decision_style = SCORE_TO_CATEGORICAL.decision_style(p.decision)
+          if (v.traits?.planning_style) traits.planning_style = v.traits.planning_style
+          else if (ws?.planning) traits.planning_style = SCORE_TO_CATEGORICAL.planning_style(ws.planning)
+          if (v.traits?.quality_style) traits.quality_style = v.traits.quality_style
+          else if (ws?.perfectionism) traits.quality_style = SCORE_TO_CATEGORICAL.quality_style(ws.perfectionism)
+          setWorkStyleTraits(traits)
         } catch { /* not JSON, skip */ }
       }
 
@@ -239,14 +254,38 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
       if (profile?.vision_summary) {
         try { existingVision = JSON.parse(profile.vision_summary) } catch { /* not JSON */ }
       }
+      // Convert categorical selections → numeric scores for DB
+      const finalWorkStyle = { ...workStyle }
+      const finalPersonality = { ...personality }
+      if (workStyleTraits.collaboration_style) {
+        const s = CATEGORICAL_TO_SCORE.collaboration_style[workStyleTraits.collaboration_style]
+        if (s != null) finalWorkStyle.collaboration = s
+      }
+      if (workStyleTraits.planning_style) {
+        const s = CATEGORICAL_TO_SCORE.planning_style[workStyleTraits.planning_style]
+        if (s != null) finalWorkStyle.planning = s
+      }
+      if (workStyleTraits.quality_style) {
+        const s = CATEGORICAL_TO_SCORE.quality_style[workStyleTraits.quality_style]
+        if (s != null) finalWorkStyle.perfectionism = s
+      }
+      if (workStyleTraits.decision_style) {
+        const s = CATEGORICAL_TO_SCORE.decision_style[workStyleTraits.decision_style]
+        if (s != null) finalPersonality.decision = s
+      }
+
       const visionJson = JSON.stringify({
         ...existingVision,
-        work_style: workStyle,
+        work_style: finalWorkStyle,
         team_preference: { role: teamRole || undefined, preferred_size: teamSize || undefined, atmosphere: teamAtmosphere || undefined },
         availability: { hours_per_week: hoursPerWeek ? parseInt(hoursPerWeek) : null, prefer_online: preferOnline },
         goals,
         strengths,
         summary: existingVision.summary || vision.trim() || undefined,
+        traits: {
+          ...((existingVision as Record<string, unknown>).traits || {}),
+          ...workStyleTraits,
+        },
       })
 
       await updateProfile.mutateAsync({
@@ -264,7 +303,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
         current_situation: currentSituation || undefined,
         interest_tags: interestTags.length > 0 ? interestTags : undefined,
         skills: skills.length > 0 ? skills : undefined,
-        personality,
+        personality: finalPersonality,
       })
       setSaved(true)
       setTimeout(() => setSaved(false), 2000)
@@ -396,6 +435,8 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
           setPersonality={setPersonality}
           workStyle={workStyle}
           setWorkStyle={setWorkStyle}
+          workStyleTraits={workStyleTraits}
+          setWorkStyleTraits={setWorkStyleTraits}
           teamRole={teamRole}
           setTeamRole={setTeamRole}
           teamSize={teamSize}

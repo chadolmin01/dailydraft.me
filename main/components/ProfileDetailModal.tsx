@@ -142,6 +142,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
   const displayBio = bio || visionSummary
   const visionGoals = Array.isArray(visionParsed?.goals) ? (visionParsed.goals as string[]) : []
   const workStyle = visionParsed?.work_style as Record<string, number> | undefined
+  const visionTraits = visionParsed?.traits as Record<string, unknown> | undefined
   const teamPref = visionParsed?.team_preference as Record<string, string> | undefined
   const availability = visionParsed?.availability as { hours_per_week?: number; prefer_online?: boolean } | undefined
 
@@ -328,6 +329,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                       <ProfileBodyRight
                         personality={personality}
                         workStyle={workStyle}
+                        traits={visionTraits}
                         teamPref={teamPref}
                         availability={availability}
                         skills={skills}
