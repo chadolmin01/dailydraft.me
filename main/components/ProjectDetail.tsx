@@ -52,7 +52,7 @@ function SimilarProjectsSection({ opportunityId }: { opportunityId: string | und
                 <span className="text-[9px] font-mono font-bold text-txt-tertiary tracking-widest">
                   {TYPE_LABEL[proj.type] || proj.type.toUpperCase()}
                 </span>
-                <span className="text-[9px] font-mono text-brand bg-brand/8 px-1.5 py-0.5 rounded-full">
+                <span className="text-[9px] font-mono text-brand bg-brand/10 px-1.5 py-0.5 rounded-full">
                   {Math.round(proj.similarity * 100)}% 유사
                 </span>
               </div>

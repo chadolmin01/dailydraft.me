@@ -344,11 +344,11 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                   </div>
                 )}
                 <div className="flex items-center gap-1">
-                  {/* Similar project navigation */}
+                  {/* Similar project navigation — desktop only (mobile uses swipe) */}
                   <button
                     onClick={goBack}
                     disabled={!canGoBack}
-                    className="p-2 hover:bg-surface-sunken transition-colors border border-transparent hover:border-border disabled:opacity-30 disabled:cursor-not-allowed"
+                    className="hidden sm:block p-2 hover:bg-surface-sunken transition-colors border border-transparent hover:border-border disabled:opacity-30 disabled:cursor-not-allowed"
                     aria-label="이전 프로젝트"
                   >
                     <ChevronLeft size={16} className="text-txt-disabled" />
@@ -356,7 +356,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                   <button
                     onClick={goNext}
                     disabled={!canGoForward}
-                    className="p-2 hover:bg-surface-sunken transition-colors border border-transparent hover:border-border disabled:opacity-30 disabled:cursor-not-allowed"
+                    className="hidden sm:block p-2 hover:bg-surface-sunken transition-colors border border-transparent hover:border-border disabled:opacity-30 disabled:cursor-not-allowed"
                     aria-label="다음 유사 프로젝트"
                     title={nextSimilar ? `다음: ${nextSimilar.title}` : undefined}
                   >
@@ -366,7 +366,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                       <ChevronRight size={16} className={canGoForward ? 'text-txt-secondary' : 'text-txt-disabled'} />
                     )}
                   </button>
-                  <div className="w-px h-4 bg-border mx-1" />
+                  <div className="hidden sm:block w-px h-4 bg-border mx-1" />
                   <button
                     onClick={handleShare}
                     className="p-2 hover:bg-surface-sunken transition-colors border border-transparent hover:border-border"
