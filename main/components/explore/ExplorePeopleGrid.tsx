@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useRef, useEffect } from 'react'
 import Image from 'next/image'
 import { Users, Coffee } from 'lucide-react'
 import { Tooltip } from '@/components/ui/Tooltip'
@@ -18,6 +18,7 @@ interface ExplorePeopleGridProps {
   isError: boolean
   onRetry: () => void
   hasMore: boolean
+  isFetchingMore: boolean
   onLoadMore: () => void
   onSelectProfile: (id: string, byUserId: boolean) => void
   peopleSortBy: PeopleSortBy
@@ -29,10 +30,24 @@ export function ExplorePeopleGrid({
   isError,
   onRetry,
   hasMore,
+  isFetchingMore,
   onLoadMore,
   onSelectProfile,
   peopleSortBy,
 }: ExplorePeopleGridProps) {
+  const sentinelRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = sentinelRef.current
+    if (!el || !hasMore) return
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) onLoadMore() },
+      { rootMargin: '200px' },
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [hasMore, onLoadMore])
+
   return (
     <section>
       {isError ? (
@@ -188,14 +203,11 @@ export function ExplorePeopleGrid({
         </>
       )}
 
-      {talentCards.length > 0 && hasMore && !isLoading && (
-        <div className="text-center mt-6">
-          <button
-            onClick={onLoadMore}
-            className="px-6 py-2.5 text-sm font-bold text-black bg-surface-card border border-border rounded-xl hover:bg-black hover:text-white hover:scale-[1.015] hover:shadow-sm transition-all duration-150 active:scale-[0.97] active:shadow-none"
-          >
-            더 보기
-          </button>
+      {talentCards.length > 0 && hasMore && (
+        <div ref={sentinelRef} className="flex justify-center py-8">
+          {isFetchingMore && (
+            <span className="text-xs font-mono text-txt-tertiary animate-pulse">로딩 중...</span>
+          )}
         </div>
       )}
     </section>

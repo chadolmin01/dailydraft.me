@@ -25,15 +25,15 @@ const ProfileDetailModal = dynamic(
   () => import('@/components/ProfileDetailModal').then(m => ({ default: m.ProfileDetailModal })),
   { ssr: false, loading: ModalLoadingFallback }
 )
-import { useOpportunities, type OpportunityWithCreator, calculateDaysLeft } from '@/src/hooks/useOpportunities'
+import { useInfiniteOpportunities, type OpportunityWithCreator, calculateDaysLeft } from '@/src/hooks/useOpportunities'
 import { cleanNickname } from '@/src/lib/clean-nickname'
-import { usePublicProfiles, type PublicProfile } from '@/src/hooks/usePublicProfiles'
+import { useInfinitePublicProfiles, type PublicProfile } from '@/src/hooks/usePublicProfiles'
 import { useUserRecommendations, type UserRecommendation } from '@/src/hooks/useUserRecommendations'
 import { FALLBACK_CATEGORIES, FALLBACK_TRENDING_TAGS } from '@/src/lib/fallbacks/explore'
 import { PEOPLE_ROLE_FILTERS, PEOPLE_CATEGORY_ICONS } from '@/components/explore/constants'
 import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/src/context/AuthContext'
-import { CATEGORY_ICONS, PAGE_SIZE, PEOPLE_PAGE_SIZE } from '@/components/explore/constants'
+import { CATEGORY_ICONS, PAGE_SIZE, PEOPLE_PAGE_SIZE } from './constants'
 import {
   ExploreHeroCarousel,
   ExploreSearchBar,
@@ -151,8 +151,6 @@ function ExplorePageContent() {
   const [searchScope, setSearchScope] = useState<SearchScope>(initialScope)
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
-  const [displayLimit, setDisplayLimit] = useState(PAGE_SIZE)
-  const [peopleDisplayLimit, setPeopleDisplayLimit] = useState(PEOPLE_PAGE_SIZE)
 
   const searchQuery = useDebouncedValue(searchInput, 300)
   const { isAuthenticated, user, isLoading: isAuthLoading } = useAuth()
@@ -173,12 +171,28 @@ function ExplorePageContent() {
   }, [searchQuery, searchScope, pathname, router])
 
   // ── Data ──
-  const { data: oppData, isLoading: opportunitiesLoading, isError: oppError, refetch: refetchOpp } = useOpportunities({ limit: displayLimit })
-  const opportunities = oppData?.items ?? []
-  const totalCount = oppData?.totalCount ?? 0
-  const hasMore = displayLimit < totalCount
+  const {
+    data: oppPages,
+    isLoading: opportunitiesLoading,
+    isError: oppError,
+    refetch: refetchOpp,
+    fetchNextPage: fetchNextOpp,
+    hasNextPage: hasMoreOpp,
+    isFetchingNextPage: isFetchingMoreOpp,
+  } = useInfiniteOpportunities(PAGE_SIZE)
+  const opportunities = useMemo(() => oppPages?.pages.flatMap(p => p.items) ?? [], [oppPages])
+  const totalCount = oppPages?.pages[0]?.totalCount ?? 0
 
-  const { data: publicProfiles = [], isLoading: profilesLoading, isError: profilesError, refetch: refetchProfiles } = usePublicProfiles({ limit: peopleDisplayLimit })
+  const {
+    data: profilePages,
+    isLoading: profilesLoading,
+    isError: profilesError,
+    refetch: refetchProfiles,
+    fetchNextPage: fetchNextProfiles,
+    hasNextPage: hasMoreProfiles,
+    isFetchingNextPage: isFetchingMoreProfiles,
+  } = useInfinitePublicProfiles(PEOPLE_PAGE_SIZE)
+  const publicProfiles = useMemo(() => profilePages?.pages.flatMap(p => p.items) ?? [], [profilePages])
   const { data: allRecs = [], isLoading: recsLoading } = useUserRecommendations({ limit: 15 })
   const sidebarRecs = allRecs.slice(0, 4)
 
@@ -515,12 +529,13 @@ function ExplorePageContent() {
             isLoading={opportunitiesLoading}
             isError={oppError}
             onRetry={() => refetchOpp()}
-            hasMore={hasMore}
+            hasMore={hasMoreOpp ?? false}
+            isFetchingMore={isFetchingMoreOpp}
             totalCount={totalCount}
             searchQuery={searchQuery}
             selectedCategory={selectedCategory}
             recruitingOnly={recruitingOnly}
-            onLoadMore={() => setDisplayLimit(prev => prev + PAGE_SIZE)}
+            onLoadMore={() => fetchNextOpp()}
             onSelectProject={handleSelectProject}
           />
         )}
@@ -531,8 +546,9 @@ function ExplorePageContent() {
             isLoading={profilesLoading}
             isError={profilesError}
             onRetry={() => refetchProfiles()}
-            hasMore={publicProfiles.length >= peopleDisplayLimit}
-            onLoadMore={() => setPeopleDisplayLimit(prev => prev + PEOPLE_PAGE_SIZE)}
+            hasMore={hasMoreProfiles ?? false}
+            isFetchingMore={isFetchingMoreProfiles}
+            onLoadMore={() => fetchNextProfiles()}
             onSelectProfile={handleSelectProfile}
             peopleSortBy={peopleSortBy}
           />

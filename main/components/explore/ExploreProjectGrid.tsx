@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useRef, useEffect } from 'react'
 import Image from 'next/image'
 import { Rocket, Users, FolderOpen, Eye, Heart } from 'lucide-react'
 import { Tooltip } from '@/components/ui/Tooltip'
@@ -18,6 +18,7 @@ interface ExploreProjectGridProps {
   isError: boolean
   onRetry: () => void
   hasMore: boolean
+  isFetchingMore: boolean
   totalCount: number
   searchQuery: string
   selectedCategory: string
@@ -32,6 +33,7 @@ export function ExploreProjectGrid({
   isError,
   onRetry,
   hasMore,
+  isFetchingMore,
   totalCount,
   searchQuery,
   selectedCategory,
@@ -40,6 +42,18 @@ export function ExploreProjectGrid({
   onSelectProject,
 }: ExploreProjectGridProps) {
   const { isAuthenticated } = useAuth()
+  const sentinelRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = sentinelRef.current
+    if (!el || !hasMore) return
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) onLoadMore() },
+      { rootMargin: '200px' },
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [hasMore, onLoadMore])
 
   if (isError) {
     return <ErrorState message="프로젝트를 불러오는 데 실패했습니다" onRetry={onRetry} />
@@ -161,14 +175,11 @@ export function ExploreProjectGrid({
         })}
       </div>
 
-      {hasMore && !isLoading && (
-        <div className="text-center mt-6">
-          <button
-            onClick={onLoadMore}
-            className="px-6 py-2.5 text-sm font-bold text-black bg-surface-card border border-border rounded-xl hover:bg-black hover:text-white hover:scale-[1.015] hover:shadow-sm transition-all duration-150 active:scale-[0.97] active:shadow-none"
-          >
-            더 보기{!searchQuery && selectedCategory === 'all' && !recruitingOnly ? ` (${totalCount - projectCards.length}개 남음)` : ''}
-          </button>
+      {hasMore && (
+        <div ref={sentinelRef} className="flex justify-center py-8">
+          {isFetchingMore && (
+            <span className="text-xs font-mono text-txt-tertiary animate-pulse">로딩 중...</span>
+          )}
         </div>
       )}
     </section>

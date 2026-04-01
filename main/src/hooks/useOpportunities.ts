@@ -1,6 +1,6 @@
 'use client'
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase/client'
 import { useAuth } from '../context/AuthContext'
 import type { TablesInsert, TablesUpdate } from '../types/database'
@@ -58,6 +58,30 @@ export function useOpportunities(filters?: {
       if (error) throw error
       return { items: data as OpportunityWithCreator[], totalCount: count ?? 0 }
     }),
+    staleTime: 1000 * 60 * 2,
+    retry: (failureCount) => failureCount < 3,
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
+  })
+}
+
+// Infinite scroll: fetch opportunities page by page
+export function useInfiniteOpportunities(pageSize = 12) {
+  return useInfiniteQuery({
+    queryKey: [...opportunityKeys.lists(), 'infinite', pageSize],
+    queryFn: ({ pageParam = 0 }) => withRetry(async () => {
+      const { data, error, count } = await supabase
+        .from('opportunities')
+        .select('*', { count: 'exact' })
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+        .range(pageParam, pageParam + pageSize - 1)
+
+      if (error) throw error
+      return { items: data as OpportunityWithCreator[], totalCount: count ?? 0, nextOffset: pageParam + pageSize }
+    }),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) =>
+      lastPage.items.length < pageSize ? undefined : lastPage.nextOffset,
     staleTime: 1000 * 60 * 2,
     retry: (failureCount) => failureCount < 3,
     retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
