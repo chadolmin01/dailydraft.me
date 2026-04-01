@@ -5,6 +5,7 @@ import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-l
 import { safeGenerate } from '@/src/lib/ai/safe-generate'
 import { OnboardingSummarySchema } from '@/src/lib/ai/schemas'
 import { CATEGORICAL_TO_SCORE } from '@/src/lib/onboarding/constants'
+import { generateProfileEmbedding } from '@/src/lib/ai/embeddings'
 
 interface TranscriptMessage {
   role: 'user' | 'assistant'
@@ -207,19 +208,45 @@ export async function POST(request: Request) {
       updateData.personality = parsed.personality
     }
 
-    if (parsed.summary || parsed.work_style || Object.keys(behavioralTraits).length > 0) {
-      updateData.vision_summary = JSON.stringify({
-        work_style: parsed.work_style || null,
-        availability: parsed.availability || null,
-        team_preference: parsed.team_preference || null,
-        goals: parsed.goals || [],
-        strengths: parsed.strengths || [],
-        wants_from_team: parsed.wants_from_team || [],
-        project_interests: parsed.project_interests || [],
-        summary: parsed.summary || '',
-        // Behavioral traits from interactive elements (categorical, not numeric)
-        ...(Object.keys(behavioralTraits).length > 0 && { traits: behavioralTraits }),
-      })
+    const visionSummaryJson = (parsed.summary || parsed.work_style || Object.keys(behavioralTraits).length > 0)
+      ? {
+          work_style: parsed.work_style || null,
+          availability: parsed.availability || null,
+          team_preference: parsed.team_preference || null,
+          goals: parsed.goals || [],
+          strengths: parsed.strengths || [],
+          wants_from_team: parsed.wants_from_team || [],
+          project_interests: parsed.project_interests || [],
+          summary: parsed.summary || '',
+          ...(Object.keys(behavioralTraits).length > 0 && { traits: behavioralTraits }),
+        }
+      : null
+
+    if (visionSummaryJson) {
+      updateData.vision_summary = JSON.stringify(visionSummaryJson)
+    }
+
+    // Generate vision_embedding for vector similarity matching
+    // Fetch current profile to get skills/interests/position (saved by checkpoint earlier)
+    if (parsed.summary) {
+      try {
+        const { data: currentProfile } = await supabase.from('profiles')
+          .select('skills, interest_tags, desired_position')
+          .eq('user_id', user.id)
+          .single()
+
+        const embedding = await generateProfileEmbedding({
+          visionSummary: parsed.summary,
+          skills: (currentProfile?.skills as Array<{ name: string; level: string }>) ?? undefined,
+          interestTags: currentProfile?.interest_tags as string[] ?? undefined,
+          desiredPosition: (currentProfile?.desired_position as string) ?? undefined,
+        })
+
+        updateData.vision_embedding = embedding
+      } catch (embeddingError) {
+        // Non-fatal: profile still saves, embedding can be backfilled later
+        console.error('Embedding generation failed:', embeddingError)
+      }
     }
 
     await supabase.from('profiles')

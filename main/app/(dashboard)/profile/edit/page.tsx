@@ -658,7 +658,7 @@ export default function ProfileEditPage() {
                     <p className="text-xs text-txt-tertiary">온보딩 AI 대화에서 분석된 데이터입니다. 직접 수정할 수 있어요.</p>
                     <button
                       type="button"
-                      onClick={() => router.push('/onboarding')}
+                      onClick={() => router.push('/onboarding?mode=redo-chat')}
                       className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-medium border border-border text-txt-secondary hover:bg-surface-sunken hover:border-border transition-colors shrink-0"
                     >
                       <Sparkles size={12} />

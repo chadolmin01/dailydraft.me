@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useRef, useCallback } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
 import { useAuth } from '@/src/context/AuthContext'
 import { useOnboarding, useDerivedState } from '@/src/hooks/useOnboarding'
@@ -32,6 +33,7 @@ interface OnboardingProps {
 }
 
 export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
+  const searchParams = useSearchParams()
   const { signOut, profile: authProfile, isLoading: authLoading } = useAuth()
   const [state, dispatch] = useOnboarding()
   const { coveredTopics, userMsgCount, currentSuggestions, canGoBack } = useDerivedState(state)
@@ -142,7 +144,11 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     if (queueRef.current || authLoading) return
     queueRef.current = true
 
-    const resumeResult = determineResumeStep(authProfile as Record<string, unknown> | null)
+    const redoChat = searchParams.get('mode') === 'redo-chat'
+    const resumeResult = determineResumeStep(
+      authProfile as Record<string, unknown> | null,
+      { redoChat },
+    )
 
     if (resumeResult) {
       dispatch({ type: 'SET_PROFILE', profile: resumeResult.draft })
@@ -165,10 +171,13 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
         }
         run().catch(console.error)
       } else {
-        // Resume to deep-chat-offer
+        // Resume to deep-chat-offer (or redo)
         const run = async () => {
           await new Promise(r => safeTimeout(r as () => void, 400))
-          await pushAi(`${resumeResult.draft.name}님, 돌아오셨군요!\n이어서 AI 대화를 진행할까요?`, 'deep-chat-offer', 600)
+          const msg = redoChat
+            ? `${resumeResult.draft.name}님, AI 매칭 분석을 다시 진행할게요!\n새로운 대화로 프로필을 업데이트합니다.`
+            : `${resumeResult.draft.name}님, 돌아오셨군요!\n이어서 AI 대화를 진행할까요?`
+          await pushAi(msg, 'deep-chat-offer', 600)
           dispatch({ type: 'SET_STEP', step: 'deep-chat-offer' })
         }
         run().catch(console.error)
@@ -197,7 +206,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       dispatch({ type: 'SET_STEP', step: 'cta' })
     }
     run().catch(console.error)
-  }, [authLoading, authProfile, pushAi, pushUser, dispatch, safeTimeout, loadProgress])
+  }, [authLoading, authProfile, searchParams, pushAi, pushUser, dispatch, safeTimeout, loadProgress])
 
   // ── Step handlers ──
 
