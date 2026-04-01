@@ -6,8 +6,12 @@ export function SplashScreen() {
   const [phase, setPhase] = useState<'grid' | 'logo' | 'out' | 'done'>('grid')
 
   useEffect(() => {
-    // Check if already shown this session
-    if (sessionStorage.getItem('draft-splash-shown')) {
+    // Skip if already shown this session, or if a modal is about to open via URL params
+    const hasDeepLink = typeof window !== 'undefined' && (
+      new URLSearchParams(window.location.search).has('project') ||
+      new URLSearchParams(window.location.search).has('profile')
+    )
+    if (sessionStorage.getItem('draft-splash-shown') || hasDeepLink) {
       setPhase('done')
       return
     }

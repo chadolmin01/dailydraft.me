@@ -17,37 +17,41 @@ const supabase = createClient(
 export default async function ExplorePage() {
   const queryClient = new QueryClient()
 
-  // Prefetch opportunities (initial page)
+  // Prefetch opportunities — key must match useInfiniteOpportunities(12)
+  // queryKey: ['opportunities', 'list', 'infinite', 12]
   await Promise.all([
-    queryClient.prefetchQuery({
-      queryKey: ['opportunities', 'list', { limit: PAGE_SIZE }],
-      queryFn: async () => {
+    queryClient.prefetchInfiniteQuery({
+      queryKey: ['opportunities', 'list', 'infinite', PAGE_SIZE],
+      queryFn: async ({ pageParam = 0 }: { pageParam: number }) => {
         const { data, error, count } = await supabase
           .from('opportunities')
           .select('*', { count: 'exact' })
           .eq('status', 'active')
           .order('created_at', { ascending: false })
-          .range(0, PAGE_SIZE - 1)
+          .range(pageParam, pageParam + PAGE_SIZE - 1)
 
         if (error) throw error
-        return { items: data ?? [], totalCount: count ?? 0 }
+        return { items: data ?? [], totalCount: count ?? 0, nextOffset: pageParam + PAGE_SIZE }
       },
+      initialPageParam: 0,
     }),
 
-    // Prefetch public profiles (initial page)
-    queryClient.prefetchQuery({
-      queryKey: ['public_profiles', 'list', { limit: PEOPLE_PAGE_SIZE }],
-      queryFn: async () => {
-        const { data, error } = await supabase
+    // Prefetch public profiles — key must match useInfinitePublicProfiles(12)
+    // queryKey: ['public_profiles', 'infinite', 12]
+    queryClient.prefetchInfiniteQuery({
+      queryKey: ['public_profiles', 'infinite', PEOPLE_PAGE_SIZE],
+      queryFn: async ({ pageParam = 0 }: { pageParam: number }) => {
+        const { data, error, count } = await supabase
           .from('profiles')
-          .select('id, user_id, nickname, desired_position, interest_tags, location, profile_visibility, vision_summary, avatar_url, interest_count, created_at')
+          .select('id, user_id, nickname, desired_position, interest_tags, location, profile_visibility, vision_summary, avatar_url, interest_count, created_at, badges, university, affiliation_type', { count: 'exact' })
           .eq('profile_visibility', 'public')
           .order('updated_at', { ascending: false })
-          .limit(PEOPLE_PAGE_SIZE)
+          .range(pageParam, pageParam + PEOPLE_PAGE_SIZE - 1)
 
         if (error) throw error
-        return data ?? []
+        return { items: data ?? [], totalCount: count ?? 0, nextOffset: pageParam + PEOPLE_PAGE_SIZE }
       },
+      initialPageParam: 0,
     }),
   ])
 
