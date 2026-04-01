@@ -130,7 +130,7 @@ export default function AdminUsersPage() {
           </Link>
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-[0.625rem] font-medium text-txt-tertiary mb-2 flex items-center gap-2">
+              <div className="text-[10px] font-medium text-txt-tertiary mb-2 flex items-center gap-2">
                 <span className="w-2 h-2 bg-black" />
                 Admin / Users
               </div>
@@ -181,13 +181,13 @@ export default function AdminUsersPage() {
               <table className="w-full text-sm">
                 <thead className="bg-surface-sunken border-b border-border">
                   <tr>
-                    <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">닉네임</th>
-                    <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary hidden md:table-cell">대학</th>
-                    <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary hidden lg:table-cell">이메일</th>
-                    <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary hidden lg:table-cell">포지션</th>
-                    <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">상태</th>
-                    <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary hidden md:table-cell">가입일</th>
-                    <th className="text-right px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">작업</th>
+                    <th className="text-left px-4 py-3 text-[10px] font-medium text-txt-tertiary">닉네임</th>
+                    <th className="text-left px-4 py-3 text-[10px] font-medium text-txt-tertiary hidden md:table-cell">대학</th>
+                    <th className="text-left px-4 py-3 text-[10px] font-medium text-txt-tertiary hidden lg:table-cell">이메일</th>
+                    <th className="text-left px-4 py-3 text-[10px] font-medium text-txt-tertiary hidden lg:table-cell">포지션</th>
+                    <th className="text-left px-4 py-3 text-[10px] font-medium text-txt-tertiary">상태</th>
+                    <th className="text-left px-4 py-3 text-[10px] font-medium text-txt-tertiary hidden md:table-cell">가입일</th>
+                    <th className="text-right px-4 py-3 text-[10px] font-medium text-txt-tertiary">작업</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-dashed divide-border">
@@ -204,12 +204,12 @@ export default function AdminUsersPage() {
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-1.5">
                           {u.onboarding_completed ? (
-                            <span className="px-2 py-0.5 text-[0.625rem] font-mono font-bold border border-status-success-text text-status-success-text">완료</span>
+                            <span className="px-2 py-0.5 text-[10px] font-mono font-bold border border-status-success-text text-status-success-text">완료</span>
                           ) : (
-                            <span className="px-2 py-0.5 text-[0.625rem] font-mono font-bold border border-border text-txt-tertiary">미완</span>
+                            <span className="px-2 py-0.5 text-[10px] font-mono font-bold border border-border text-txt-tertiary">미완</span>
                           )}
                           {u.is_premium && (
-                            <span className="px-2 py-0.5 text-[0.625rem] font-mono font-bold border border-status-warning-text text-status-warning-text">PRO</span>
+                            <span className="px-2 py-0.5 text-[10px] font-mono font-bold border border-status-warning-text text-status-warning-text">PRO</span>
                           )}
                         </div>
                       </td>

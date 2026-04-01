@@ -67,7 +67,7 @@ export function ExploreSearchBar({
             {searchScope !== 'all' && (
               <button
                 onClick={() => onSearchScopeChange('all')}
-                className="flex items-center gap-1 text-[0.625rem] bg-surface-inverse text-txt-inverse pl-2 pr-1.5 py-1 rounded-full hover:bg-accent-hover transition-colors"
+                className="flex items-center gap-1 text-[10px] bg-surface-inverse text-txt-inverse pl-2 pr-1.5 py-1 rounded-full hover:bg-accent-hover transition-colors"
               >
                 {searchScope === 'projects' ? '프로젝트' : searchScope === 'people' ? '사람' : '기술'}
                 <X size={10} />
@@ -90,7 +90,7 @@ export function ExploreSearchBar({
             <div className="mx-4 border-t border-border-subtle" />
             <div className="px-4 pt-3 pb-4 space-y-3">
               <div>
-                <p className="text-[0.625rem] text-txt-disabled mb-2.5">SCOPE</p>
+                <p className="text-[10px] text-txt-disabled mb-2.5">SCOPE</p>
                 <div className="flex flex-wrap gap-1.5">
                   {SEARCH_SCOPES.map((scope) => {
                     const isActive = searchScope === scope.id
@@ -115,7 +115,7 @@ export function ExploreSearchBar({
                         </div>
                         <div className="text-left">
                           <span className="block leading-tight">{scope.label}</span>
-                          <span className={`block text-[0.625rem] leading-tight ${isActive ? 'text-txt-inverse/50' : 'text-txt-disabled'}`}>{scope.desc}</span>
+                          <span className={`block text-[10px] leading-tight ${isActive ? 'text-txt-inverse/50' : 'text-txt-disabled'}`}>{scope.desc}</span>
                         </div>
                       </button>
                     )
@@ -123,12 +123,12 @@ export function ExploreSearchBar({
                 </div>
               </div>
               <div className="flex items-center gap-3 pt-1">
-                <span className="flex items-center gap-1.5 text-[0.625rem] text-txt-disabled">
-                  <kbd className="px-1.5 py-0.5 bg-surface-sunken rounded-lg border border-border text-[0.625rem] font-mono">Enter</kbd>
+                <span className="flex items-center gap-1.5 text-[10px] text-txt-disabled">
+                  <kbd className="px-1.5 py-0.5 bg-surface-sunken rounded-lg border border-border text-[10px] font-mono">Enter</kbd>
                   검색
                 </span>
-                <span className="flex items-center gap-1.5 text-[0.625rem] text-txt-disabled">
-                  <kbd className="px-1.5 py-0.5 bg-surface-sunken rounded-lg border border-border text-[0.625rem] font-mono">Esc</kbd>
+                <span className="flex items-center gap-1.5 text-[10px] text-txt-disabled">
+                  <kbd className="px-1.5 py-0.5 bg-surface-sunken rounded-lg border border-border text-[10px] font-mono">Esc</kbd>
                   닫기
                 </span>
               </div>

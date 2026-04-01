@@ -368,7 +368,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
           <div className="flex flex-col items-center gap-1.5 py-1">
             <Pencil size={16} className="text-txt-disabled group-hover/bio:text-brand transition-colors" />
             <p className="text-sm font-medium text-txt-tertiary group-hover/bio:text-txt-primary transition-colors">자기소개를 작성해보세요</p>
-            <p className="text-[0.625rem] text-txt-disabled">나를 소개하는 한 줄을 남겨보세요</p>
+            <p className="text-[10px] text-txt-disabled">나를 소개하는 한 줄을 남겨보세요</p>
           </div>
         </div>
       )
@@ -431,7 +431,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
           <div className="flex gap-1.5 flex-wrap">
             <span className="text-[0.5rem] text-txt-disabled self-center mr-1">TAGS</span>
             {profile.interest_tags.map((tag, idx) => (
-              <span key={idx} className="text-[0.625rem] font-mono bg-white text-tag-default-text border border-border px-2 py-0.5 font-medium rounded-full">
+              <span key={idx} className="text-[10px] font-mono bg-white text-tag-default-text border border-border px-2 py-0.5 font-medium rounded-full">
                 {tag}
               </span>
             ))}
@@ -442,7 +442,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
           <div className="flex gap-1.5 flex-wrap">
             <span className="text-[0.5rem] text-txt-disabled self-center mr-1 flex items-center gap-1"><Sparkles size={9} /> STRENGTHS</span>
             {strengths.map((s, idx) => (
-              <span key={idx} className="text-[0.625rem] font-mono bg-indicator-online/20 text-indicator-online border border-indicator-online/30 px-2 py-0.5 font-medium rounded-full">
+              <span key={idx} className="text-[10px] font-mono bg-indicator-online/20 text-indicator-online border border-indicator-online/30 px-2 py-0.5 font-medium rounded-full">
                 {s}
               </span>
             ))}

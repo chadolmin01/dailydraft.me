@@ -14,7 +14,7 @@ export const EditInterests: React.FC<EditInterestsProps> = ({
 }) => {
   return (
     <section>
-      <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4 flex items-center gap-2">
+      <h3 className="text-[10px] font-medium text-txt-tertiary mb-4 flex items-center gap-2">
         <Hash size={14} /> 관심 분야
       </h3>
 

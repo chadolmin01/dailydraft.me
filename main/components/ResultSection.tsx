@@ -451,7 +451,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
             <div className="bg-surface-sunken p-6 border border-border">
                 <div className="flex items-center gap-2 mb-4 text-txt-disabled">
                     <History className="w-4 h-4" />
-                    <span className="text-[0.625rem] font-medium">Input History Timeline</span>
+                    <span className="text-[10px] font-medium">Input History Timeline</span>
                 </div>
 
                 <div className="space-y-4">

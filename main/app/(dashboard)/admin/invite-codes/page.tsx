@@ -152,7 +152,7 @@ export default function InviteCodesAdminPage() {
     <div className="p-6 max-w-6xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <div className="text-[0.625rem] font-medium text-txt-tertiary mb-2">
+        <div className="text-[10px] font-medium text-txt-tertiary mb-2">
           ADMIN / INVITE CODES
         </div>
         <h1 className="text-2xl font-bold text-txt-primary flex items-center gap-2">
@@ -166,7 +166,7 @@ export default function InviteCodesAdminPage() {
 
       {/* Send New Code */}
       <div className="bg-surface-card rounded-xl border border-border shadow-md p-6 mb-8">
-        <h2 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">새 초대 코드 발송</h2>
+        <h2 className="text-[10px] font-medium text-txt-tertiary mb-4">새 초대 코드 발송</h2>
 
         <div className="flex gap-4 items-end">
           <div className="flex-1">
@@ -221,7 +221,7 @@ export default function InviteCodesAdminPage() {
       {/* Codes List */}
       <div className="bg-surface-card rounded-xl border border-border shadow-md">
         <div className="p-4 border-b border-border flex items-center justify-between">
-          <h2 className="text-[0.625rem] font-medium text-txt-tertiary">발송된 초대 코드</h2>
+          <h2 className="text-[10px] font-medium text-txt-tertiary">발송된 초대 코드</h2>
           <button
             onClick={() => queryClient.invalidateQueries({ queryKey: ['admin-invite-codes'] })}
             className="p-2 hover:bg-surface-sunken rounded-xl border border-border transition-colors"
@@ -245,12 +245,12 @@ export default function InviteCodesAdminPage() {
             <table className="w-full text-sm border border-border">
               <thead className="bg-surface-sunken border-b border-border">
                 <tr>
-                  <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">코드</th>
-                  <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">받는 사람</th>
-                  <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">상태</th>
-                  <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">만료일</th>
-                  <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">생성일</th>
-                  <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary"></th>
+                  <th className="text-left px-4 py-3 text-[10px] font-medium text-txt-tertiary">코드</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-medium text-txt-tertiary">받는 사람</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-medium text-txt-tertiary">상태</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-medium text-txt-tertiary">만료일</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-medium text-txt-tertiary">생성일</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-medium text-txt-tertiary"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-dashed divide-border">
@@ -269,22 +269,22 @@ export default function InviteCodesAdminPage() {
                     </td>
                     <td className="px-4 py-3">
                       {code.used_by ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 border border-status-success-text text-status-success-text text-[0.625rem] font-mono font-bold">
+                        <span className="inline-flex items-center gap-1 px-2 py-1 border border-status-success-text text-status-success-text text-[10px] font-mono font-bold">
                           <Check className="w-3 h-3" />
                           사용됨
                         </span>
                       ) : !code.is_active ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 border border-border text-txt-tertiary text-[0.625rem] font-mono font-bold">
+                        <span className="inline-flex items-center gap-1 px-2 py-1 border border-border text-txt-tertiary text-[10px] font-mono font-bold">
                           <X className="w-3 h-3" />
                           비활성
                         </span>
                       ) : isExpired(code.expires_at) ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 border border-status-danger-text/20 text-status-danger-text text-[0.625rem] font-mono font-bold">
+                        <span className="inline-flex items-center gap-1 px-2 py-1 border border-status-danger-text/20 text-status-danger-text text-[10px] font-mono font-bold">
                           <Clock className="w-3 h-3" />
                           만료됨
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 border border-brand-border text-brand text-[0.625rem] font-mono font-bold">
+                        <span className="inline-flex items-center gap-1 px-2 py-1 border border-brand-border text-brand text-[10px] font-mono font-bold">
                           <Clock className="w-3 h-3" />
                           대기 중
                         </span>
@@ -319,7 +319,7 @@ export default function InviteCodesAdminPage() {
       {/* Eligible Users List */}
       <div className="bg-surface-card rounded-xl border border-border shadow-md mt-8">
         <div className="p-4 border-b border-border">
-          <h2 className="text-[0.625rem] font-medium text-txt-tertiary">온보딩 완료 유저 ({eligibleData?.total_count || 0}명)</h2>
+          <h2 className="text-[10px] font-medium text-txt-tertiary">온보딩 완료 유저 ({eligibleData?.total_count || 0}명)</h2>
         </div>
 
         {eligibleLoading ? (
@@ -337,10 +337,10 @@ export default function InviteCodesAdminPage() {
             <table className="w-full text-sm border border-border">
               <thead className="bg-surface-sunken border-b border-border">
                 <tr>
-                  <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">닉네임</th>
-                  <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">이메일</th>
-                  <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">초대 코드</th>
-                  <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">가입일</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-medium text-txt-tertiary">닉네임</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-medium text-txt-tertiary">이메일</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-medium text-txt-tertiary">초대 코드</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-medium text-txt-tertiary">가입일</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-dashed divide-border">

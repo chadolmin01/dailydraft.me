@@ -17,7 +17,7 @@ export const EditSkills: React.FC<EditSkillsProps> = ({
 }) => {
   return (
     <section>
-      <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4 flex items-center gap-2">
+      <h3 className="text-[10px] font-medium text-txt-tertiary mb-4 flex items-center gap-2">
         <CheckSquare size={14} /> 기술 스택
       </h3>
 
@@ -47,7 +47,7 @@ export const EditSkills: React.FC<EditSkillsProps> = ({
                     key={level}
                     type="button"
                     onClick={() => updateSkillLevel(skill.name, level)}
-                    className={`px-1.5 py-0.5 text-[0.625rem] transition-colors ${
+                    className={`px-1.5 py-0.5 text-[10px] transition-colors ${
                       skill.level === level
                         ? 'bg-brand text-white'
                         : 'text-txt-tertiary hover:text-txt-secondary'

@@ -77,7 +77,7 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = ({
               <Send size={16} />
             </button>
         </div>
-        <p className="text-center text-[0.625rem] text-txt-tertiary mt-3 font-mono">
+        <p className="text-center text-[10px] text-txt-tertiary mt-3 font-mono">
           Draft AI can make mistakes. Consider checking important information.
         </p>
       </div>

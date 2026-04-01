@@ -54,7 +54,7 @@ export const RoleFilter: React.FC<RoleFilterProps> = ({ currentFilter, onFilterC
               <span className={`w-2 h-2 ${role.color.split(' ')[0].replace('100', '400')}`}></span>
             )}
             {role.label}
-            <span className={`px-1.5 py-0.5 text-[0.625rem] ${isActive ? 'bg-white/40 text-current' : 'bg-surface-sunken text-txt-tertiary'}`}>
+            <span className={`px-1.5 py-0.5 text-[10px] ${isActive ? 'bg-white/40 text-current' : 'bg-surface-sunken text-txt-tertiary'}`}>
               {count}
             </span>
           </button>

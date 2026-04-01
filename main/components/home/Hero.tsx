@@ -49,8 +49,8 @@ export const Hero: React.FC = () => {
         <FloatingCard className="top-20 -left-6 w-56" delay={0}>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-[0.625rem] font-mono font-bold text-txt-primary tracking-tight">AI 온보딩</span>
-              <span className="text-[0.625rem] font-mono font-medium bg-brand/10 text-brand px-2 py-0.5 rounded-full">진행 중</span>
+              <span className="text-[10px] font-mono font-bold text-txt-primary tracking-tight">AI 온보딩</span>
+              <span className="text-[10px] font-mono font-medium bg-brand/10 text-brand px-2 py-0.5 rounded-full">진행 중</span>
             </div>
             <div className="space-y-1.5">
               <div className="bg-surface-sunken rounded-lg px-3 py-2 text-xs text-txt-secondary w-fit leading-relaxed">
@@ -64,8 +64,8 @@ export const Hero: React.FC = () => {
               </div>
             </div>
             <div className="flex items-center justify-between pt-2 border-t border-border">
-              <span className="text-[0.625rem] font-mono text-txt-tertiary">STEP 2 / 4</span>
-              <span className="text-[0.625rem] font-mono text-txt-tertiary">50%</span>
+              <span className="text-[10px] font-mono text-txt-tertiary">STEP 2 / 4</span>
+              <span className="text-[10px] font-mono text-txt-tertiary">50%</span>
             </div>
           </div>
         </FloatingCard>
@@ -74,8 +74,8 @@ export const Hero: React.FC = () => {
         <FloatingCard className="top-28 -right-10 w-56" delay={1.5}>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-[0.625rem] font-mono font-bold text-txt-primary tracking-tight">AI 매칭</span>
-              <span className="text-[0.625rem] font-mono font-medium bg-status-success-bg text-status-success-text px-2 py-0.5 rounded-full">매칭 완료</span>
+              <span className="text-[10px] font-mono font-bold text-txt-primary tracking-tight">AI 매칭</span>
+              <span className="text-[10px] font-mono font-medium bg-status-success-bg text-status-success-text px-2 py-0.5 rounded-full">매칭 완료</span>
             </div>
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 bg-brand/10 rounded-full flex items-center justify-center text-brand text-xs font-bold shrink-0">JK</div>
@@ -85,8 +85,8 @@ export const Hero: React.FC = () => {
               </div>
             </div>
             <div className="flex items-center justify-between pt-2 border-t border-border">
-              <span className="text-[0.625rem] font-mono text-txt-tertiary">SKILL MATCH</span>
-              <span className="text-[0.625rem] font-mono text-status-success-text">92%</span>
+              <span className="text-[10px] font-mono text-txt-tertiary">SKILL MATCH</span>
+              <span className="text-[10px] font-mono text-status-success-text">92%</span>
             </div>
           </div>
         </FloatingCard>
@@ -95,10 +95,10 @@ export const Hero: React.FC = () => {
         <FloatingCard className="bottom-12 left-6 w-56" delay={3}>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-[0.625rem] font-mono font-bold text-txt-primary tracking-tight">커피챗</span>
+              <span className="text-[10px] font-mono font-bold text-txt-primary tracking-tight">커피챗</span>
               <div className="flex items-center gap-1.5">
                 <div className="w-1.5 h-1.5 bg-indicator-online rounded-full"></div>
-                <span className="text-[0.625rem] font-mono font-medium text-status-success-text">수락됨</span>
+                <span className="text-[10px] font-mono font-medium text-status-success-text">수락됨</span>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -109,8 +109,8 @@ export const Hero: React.FC = () => {
               </div>
             </div>
             <div className="flex items-center justify-between pt-2 border-t border-border">
-              <span className="text-[0.625rem] font-mono text-txt-tertiary">COFFEE CHAT</span>
-              <span className="text-[0.625rem] font-mono text-txt-tertiary">오늘 14:00</span>
+              <span className="text-[10px] font-mono text-txt-tertiary">COFFEE CHAT</span>
+              <span className="text-[10px] font-mono text-txt-tertiary">오늘 14:00</span>
             </div>
           </div>
         </FloatingCard>

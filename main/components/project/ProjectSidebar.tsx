@@ -43,7 +43,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
     <div className="md:col-span-2 space-y-7">
       {/* Team */}
       <div>
-        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
+        <h3 className="text-[10px] font-medium text-txt-tertiary mb-3">
           팀 정보
         </h3>
         {creator ? (
@@ -95,7 +95,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
       {/* Needed Roles */}
       {opportunity.needed_roles && opportunity.needed_roles.length > 0 && (
         <div>
-          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
+          <h3 className="text-[10px] font-medium text-txt-tertiary mb-3">
             모집 중인 포지션
           </h3>
           <div className="space-y-2">
@@ -114,7 +114,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
                     </div>
                     <div className="flex-1 min-w-0">
                       <span className="text-sm font-medium text-status-success-text">{role}</span>
-                      <p className="text-[0.625rem] text-status-success-text/70">수락됨</p>
+                      <p className="text-[10px] text-status-success-text/70">수락됨</p>
                     </div>
                   </div>
                 )
@@ -131,7 +131,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
                     </div>
                     <div className="flex-1 min-w-0">
                       <span className="text-sm font-medium text-txt-secondary">{role}</span>
-                      <p className="text-[0.625rem] text-indicator-premium">대기 중...</p>
+                      <p className="text-[10px] text-indicator-premium">대기 중...</p>
                     </div>
                   </div>
                 )
@@ -148,7 +148,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
                     </div>
                     <div className="flex-1 min-w-0">
                       <span className="text-sm font-medium text-txt-tertiary">{role}</span>
-                      <p className="text-[0.625rem] text-txt-disabled">거절됨</p>
+                      <p className="text-[10px] text-txt-disabled">거절됨</p>
                     </div>
                   </div>
                 )
@@ -165,7 +165,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
                   </div>
                   <div className="flex-1 min-w-0">
                     <span className="text-sm font-medium text-txt-secondary group-hover:text-brand transition-colors">{role}</span>
-                    <p className="text-[0.625rem] text-txt-disabled group-hover:text-brand/60 transition-colors flex items-center gap-1">
+                    <p className="text-[10px] text-txt-disabled group-hover:text-brand/60 transition-colors flex items-center gap-1">
                       <Coffee size={9} /> 커피챗 신청하기
                     </p>
                   </div>
@@ -180,7 +180,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
       {/* Needed Skills */}
       {Array.isArray(opportunity.needed_skills) && opportunity.needed_skills.length > 0 && (
         <div>
-          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
+          <h3 className="text-[10px] font-medium text-txt-tertiary mb-3">
             필요 스킬
           </h3>
           <div className="flex flex-wrap gap-1.5">
@@ -204,7 +204,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
 
       {/* Project Info */}
       <div>
-        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
+        <h3 className="text-[10px] font-medium text-txt-tertiary mb-3">
           프로젝트 정보
         </h3>
         <div className="space-y-2.5 text-sm">
@@ -259,7 +259,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
       {/* Project Links */}
       {Array.isArray(opportunity.project_links) && opportunity.project_links.length > 0 && (
         <div>
-          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
+          <h3 className="text-[10px] font-medium text-txt-tertiary mb-3">
             프로젝트 링크
           </h3>
           <div className="space-y-2">

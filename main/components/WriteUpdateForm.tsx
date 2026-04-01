@@ -79,7 +79,7 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
         {/* Week + Type */}
         <div className="flex gap-3">
           <div className="w-24">
-            <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-1">Week</label>
+            <label className="block text-[10px] font-medium text-txt-tertiary mb-1">Week</label>
             <input
               type="number"
               min={1}
@@ -89,7 +89,7 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
             />
           </div>
           <div className="flex-1">
-            <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-1">유형</label>
+            <label className="block text-[10px] font-medium text-txt-tertiary mb-1">유형</label>
             <div className="flex flex-wrap gap-1.5">
               {UPDATE_TYPES.map((t) => (
                 <button
@@ -111,7 +111,7 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
 
         {/* Title */}
         <div>
-          <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-1">제목</label>
+          <label className="block text-[10px] font-medium text-txt-tertiary mb-1">제목</label>
           <input
             type="text"
             value={title}
@@ -120,15 +120,15 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
             maxLength={100}
             className="w-full px-3 py-2 border border-border text-base sm:text-sm focus:outline-none focus:border-border bg-surface-card rounded-lg text-txt-primary placeholder-txt-disabled"
           />
-          <div className="text-[0.625rem] text-txt-tertiary font-mono text-right mt-1">
+          <div className="text-[10px] text-txt-tertiary font-mono text-right mt-1">
             {title.length}/100
           </div>
         </div>
 
         {/* Content */}
         <div>
-          <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-1">내용</label>
-          <p className="text-[0.625rem] text-txt-disabled mb-1.5">팁: 구체적인 숫자나 결과물이 있으면 더 좋아요</p>
+          <label className="block text-[10px] font-medium text-txt-tertiary mb-1">내용</label>
+          <p className="text-[10px] text-txt-disabled mb-1.5">팁: 구체적인 숫자나 결과물이 있으면 더 좋아요</p>
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
@@ -137,7 +137,7 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
             maxLength={2000}
             className="w-full px-3 py-2 border border-border text-base sm:text-sm focus:outline-none focus:border-border resize-none bg-surface-card rounded-lg text-txt-primary placeholder-txt-disabled"
           />
-          <div className="text-[0.625rem] text-txt-tertiary font-mono text-right mt-1">
+          <div className="text-[10px] text-txt-tertiary font-mono text-right mt-1">
             {content.length}/2000
           </div>
         </div>

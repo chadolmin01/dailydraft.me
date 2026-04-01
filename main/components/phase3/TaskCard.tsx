@@ -76,9 +76,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onDragStart, onClick }
     >
       <div className="flex justify-between items-start mb-2">
         <div className="flex items-center gap-2">
-          <span className="text-[0.625rem] font-mono text-txt-tertiary">{task.id}</span>
+          <span className="text-[10px] font-mono text-txt-tertiary">{task.id}</span>
           {task.synced && (
-            <div className="flex items-center gap-1 text-[0.625rem] text-txt-tertiary bg-white/50 px-1.5 py-0.5 border border-surface-inverse/5" title={`${task.externalTicketId}에 동기화됨`}>
+            <div className="flex items-center gap-1 text-[10px] text-txt-tertiary bg-white/50 px-1.5 py-0.5 border border-surface-inverse/5" title={`${task.externalTicketId}에 동기화됨`}>
               <LinkIcon size={8} />
               <span>{task.externalTicketId}</span>
             </div>
@@ -98,7 +98,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onDragStart, onClick }
       </p>
 
       <div className="flex items-center justify-between mt-auto">
-        <span className={`text-[0.625rem] px-2 py-1 font-bold shadow-md ${styles.badge}`}>
+        <span className={`text-[10px] px-2 py-1 font-bold shadow-md ${styles.badge}`}>
           {task.type}
         </span>
 
@@ -120,12 +120,12 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onDragStart, onClick }
           </div>
 
           {task.assignee ? (
-            <div className="w-6 h-6 bg-surface-card rounded-xl border border-border text-txt-secondary flex items-center justify-center text-[0.625rem] font-bold shadow-md">
+            <div className="w-6 h-6 bg-surface-card rounded-xl border border-border text-txt-secondary flex items-center justify-center text-[10px] font-bold shadow-md">
               {task.assignee}
             </div>
           ) : (
             <div className="w-6 h-6 border border-border flex items-center justify-center text-txt-disabled hover:border-border hover:text-txt-secondary transition-colors bg-white/50">
-              <span className="text-[0.625rem]">+</span>
+              <span className="text-[10px]">+</span>
             </div>
           )}
         </div>

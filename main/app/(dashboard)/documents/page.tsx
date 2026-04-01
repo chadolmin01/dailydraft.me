@@ -12,7 +12,7 @@ export default function DocumentsPage() {
         <PageContainer size="wide">
           <div className="flex justify-between items-center border-b border-border pb-6">
             <div>
-              <div className="text-[0.625rem] font-medium text-txt-tertiary mb-2 flex items-center gap-2">
+              <div className="text-[10px] font-medium text-txt-tertiary mb-2 flex items-center gap-2">
                 <span className="w-2 h-2 bg-black"></span>
                 DOCUMENTS
               </div>

@@ -118,14 +118,14 @@ export function InstallPrompt() {
 
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold leading-tight">Draft 앱으로 열기</p>
-              <p className="text-[0.625rem] font-mono text-txt-inverse/60 mt-0.5">
+              <p className="text-[10px] font-mono text-txt-inverse/60 mt-0.5">
                 홈 화면에 추가하면 앱처럼 사용할 수 있어요
               </p>
             </div>
 
             <button
               onClick={handleInstall}
-              className="flex items-center gap-1.5 px-3 py-2 bg-white text-black text-[0.6875rem] font-bold border border-white shrink-0 active:scale-95 transition-transform"
+              className="flex items-center gap-1.5 px-3 py-2 bg-white text-black text-xs font-bold border border-white shrink-0 active:scale-95 transition-transform"
             >
               <Download size={14} />
               설치
@@ -155,7 +155,7 @@ export function InstallPrompt() {
 
             <div className="space-y-3">
               <div className="flex items-start gap-3">
-                <div className="w-6 h-6 bg-white/10 flex items-center justify-center shrink-0 text-[0.625rem] font-bold">1</div>
+                <div className="w-6 h-6 bg-white/10 flex items-center justify-center shrink-0 text-[10px] font-bold">1</div>
                 <div className="flex-1">
                   <p className="text-[0.8125rem] font-medium flex items-center gap-1.5">
                     하단의 <Share size={14} className="text-brand" /> 공유 버튼을 탭하세요
@@ -164,7 +164,7 @@ export function InstallPrompt() {
               </div>
 
               <div className="flex items-start gap-3">
-                <div className="w-6 h-6 bg-white/10 flex items-center justify-center shrink-0 text-[0.625rem] font-bold">2</div>
+                <div className="w-6 h-6 bg-white/10 flex items-center justify-center shrink-0 text-[10px] font-bold">2</div>
                 <div className="flex-1">
                   <p className="text-[0.8125rem] font-medium flex items-center gap-1.5">
                     <Plus size={14} className="text-brand" /> &quot;홈 화면에 추가&quot;를 탭하세요
@@ -173,7 +173,7 @@ export function InstallPrompt() {
               </div>
 
               <div className="flex items-start gap-3">
-                <div className="w-6 h-6 bg-white/10 flex items-center justify-center shrink-0 text-[0.625rem] font-bold">3</div>
+                <div className="w-6 h-6 bg-white/10 flex items-center justify-center shrink-0 text-[10px] font-bold">3</div>
                 <div className="flex-1">
                   <p className="text-[0.8125rem] font-medium">우측 상단 &quot;추가&quot;를 탭하면 완료!</p>
                 </div>

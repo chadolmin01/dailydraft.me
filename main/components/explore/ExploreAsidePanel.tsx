@@ -55,7 +55,7 @@ export function ExploreAsidePanel({
       <div className="relative bg-surface-card rounded-xl border border-border p-4 shadow-md">
         <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/20" />
         <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-surface-inverse/20" />
-        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
+        <h3 className="text-[10px] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
           <span className="w-4 h-4 bg-brand text-white flex items-center justify-center text-[0.5rem] font-bold">P</span>
           {showLoading ? (
             <span className="flex items-center gap-1.5">
@@ -75,9 +75,9 @@ export function ExploreAsidePanel({
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-txt-primary truncate">{cleanNickname(rec.nickname || '')}</p>
-                  <p className="text-[0.625rem] font-mono text-txt-disabled truncate">{rec.match_reason}</p>
+                  <p className="text-[10px] font-mono text-txt-disabled truncate">{rec.match_reason}</p>
                 </div>
-                <span className="text-[0.625rem] font-mono font-bold px-1.5 py-0.5 bg-brand-bg text-brand border border-brand-border">
+                <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 bg-brand-bg text-brand border border-brand-border">
                   {rec.match_score}%
                 </span>
               </div>
@@ -90,9 +90,9 @@ export function ExploreAsidePanel({
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-txt-primary truncate">{t.name}</p>
-                  <p className="text-[0.625rem] font-mono text-txt-disabled truncate">{t.university || t.role}</p>
+                  <p className="text-[10px] font-mono text-txt-disabled truncate">{t.university || t.role}</p>
                 </div>
-                <span className={`text-[0.625rem] font-mono font-bold px-1.5 py-0.5 border ${
+                <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 border ${
                   t.status === 'OPEN' ? 'bg-status-success-bg text-indicator-online border-indicator-online/20' : 'bg-surface-sunken text-txt-tertiary border-border'
                 }`}>
                   {t.status}
@@ -104,7 +104,7 @@ export function ExploreAsidePanel({
         <div className="mt-3 pt-2 border-t border-border">
           <button
             onClick={onSelectPeople}
-            className="w-full text-[0.625rem] font-mono text-txt-tertiary hover:text-brand flex items-center justify-center gap-1 py-1 transition-colors"
+            className="w-full text-[10px] font-mono text-txt-tertiary hover:text-brand flex items-center justify-center gap-1 py-1 transition-colors"
           >
             VIEW ALL PEOPLE <ChevronRight size={10} />
           </button>
@@ -126,7 +126,7 @@ export function ExploreAsidePanel({
             <div className="w-8 h-8 bg-white/15 border border-white/20 flex items-center justify-center">
               <Rocket size={16} />
             </div>
-            <span className="text-[0.625rem] font-mono font-bold text-white/60 tracking-wider">NEW PROJECT</span>
+            <span className="text-[10px] font-mono font-bold text-white/60 tracking-wider">NEW PROJECT</span>
           </div>
           <h3 className="font-bold text-base mb-1">아이디어가 있나요?</h3>
           <p className="text-white/60 text-xs mb-4 font-mono">팀을 구성하고 프로젝트를 시작하세요</p>
@@ -141,7 +141,7 @@ export function ExploreAsidePanel({
 
       {/* 스탯 카드 */}
       <div className="relative bg-surface-card rounded-xl border border-border p-4 shadow-md">
-        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
+        <h3 className="text-[10px] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
           <span className="w-4 h-4 bg-indicator-premium text-white flex items-center justify-center text-[0.5rem] font-bold">S</span>
           STATS
         </h3>
@@ -152,7 +152,7 @@ export function ExploreAsidePanel({
             { label: 'CATEGORIES', value: categoriesCount, color: 'bg-indicator-premium' },
           ].map((stat) => (
             <div key={stat.label} className="flex items-center justify-between">
-              <span className="text-[0.625rem] font-mono text-txt-disabled">{stat.label}</span>
+              <span className="text-[10px] font-mono text-txt-disabled">{stat.label}</span>
               <div className="flex items-center gap-2">
                 <div className="w-16 h-1.5 bg-surface-sunken rounded-xl border border-border overflow-hidden">
                   <div className={`h-full ${stat.color}`} style={{ width: `${Math.min(100, stat.value * 3)}%` }} />
@@ -163,7 +163,7 @@ export function ExploreAsidePanel({
           ))}
         </div>
         <div className="mt-3 pt-2 border-t border-border">
-          <p className="text-[0.625rem] font-mono text-txt-disabled flex items-center gap-1.5">
+          <p className="text-[10px] font-mono text-txt-disabled flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 bg-indicator-online animate-pulse" />
             LIVE DATA
           </p>

@@ -55,7 +55,7 @@ export const CropModal: React.FC<CropModalProps> = ({
         {/* 줌 슬라이더 */}
         <div className="px-4 py-3 border-t border-border">
           <div className="flex items-center gap-3">
-            <span className="text-[0.625rem] font-mono text-txt-tertiary">ZOOM</span>
+            <span className="text-[10px] font-mono text-txt-tertiary">ZOOM</span>
             <input
               type="range"
               min={1} max={3} step={0.1}
@@ -63,7 +63,7 @@ export const CropModal: React.FC<CropModalProps> = ({
               onChange={e => setZoom(Number(e.target.value))}
               className="flex-1 h-1.5 accent-brand cursor-pointer"
             />
-            <span className="text-[0.625rem] font-mono text-txt-tertiary w-8 text-right">{zoom.toFixed(1)}x</span>
+            <span className="text-[10px] font-mono text-txt-tertiary w-8 text-right">{zoom.toFixed(1)}x</span>
           </div>
         </div>
 

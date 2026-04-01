@@ -147,7 +147,7 @@ export default function ErrorLogsPage() {
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-border pb-6">
           <div>
-            <div className="text-[0.625rem] font-medium text-txt-tertiary mb-2 flex items-center gap-2">
+            <div className="text-[10px] font-medium text-txt-tertiary mb-2 flex items-center gap-2">
               <span className="w-2 h-2 bg-indicator-alert"></span>
               ADMIN / MONITORING
             </div>
@@ -218,7 +218,7 @@ export default function ErrorLogsPage() {
                 </div>
                 <div>
                   <div className="text-2xl font-bold font-mono text-txt-primary">{count}</div>
-                  <div className="text-[0.625rem] font-medium text-txt-tertiary">{level}</div>
+                  <div className="text-[10px] font-medium text-txt-tertiary">{level}</div>
                 </div>
               </Card>
             )
@@ -273,11 +273,11 @@ export default function ErrorLogsPage() {
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <span className={`px-2 py-0.5 text-[0.625rem] font-mono font-bold ${sourceColors[log.source]}`}>
+                        <span className={`px-2 py-0.5 text-[10px] font-mono font-bold ${sourceColors[log.source]}`}>
                           {log.source.toUpperCase()}
                         </span>
                         {log.error_code && (
-                          <span className="px-2 py-0.5 text-[0.625rem] font-mono font-bold bg-surface-sunken rounded-xl border border-border text-txt-secondary">
+                          <span className="px-2 py-0.5 text-[10px] font-mono font-bold bg-surface-sunken rounded-xl border border-border text-txt-secondary">
                             {log.error_code}
                           </span>
                         )}
@@ -306,7 +306,7 @@ export default function ErrorLogsPage() {
                     <div className="border-t border-border p-4 bg-surface-sunken space-y-4">
                       {/* Full message */}
                       <div>
-                        <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-1">MESSAGE</h4>
+                        <h4 className="text-[10px] font-medium text-txt-tertiary mb-1">MESSAGE</h4>
                         <p className="text-sm text-txt-primary bg-surface-card p-3 border border-border">
                           {log.message}
                         </p>
@@ -315,7 +315,7 @@ export default function ErrorLogsPage() {
                       {/* Stack trace */}
                       {log.stack_trace && (
                         <div>
-                          <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-1">STACK TRACE</h4>
+                          <h4 className="text-[10px] font-medium text-txt-tertiary mb-1">STACK TRACE</h4>
                           <pre className="text-xs text-txt-secondary bg-surface-card p-3 border border-border overflow-x-auto">
                             {log.stack_trace}
                           </pre>
@@ -325,7 +325,7 @@ export default function ErrorLogsPage() {
                       {/* Request body */}
                       {log.request_body && (
                         <div>
-                          <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-1">REQUEST BODY</h4>
+                          <h4 className="text-[10px] font-medium text-txt-tertiary mb-1">REQUEST BODY</h4>
                           <pre className="text-xs text-txt-secondary bg-surface-card p-3 border border-border overflow-x-auto">
                             {JSON.stringify(log.request_body, null, 2)}
                           </pre>
@@ -335,7 +335,7 @@ export default function ErrorLogsPage() {
                       {/* Metadata */}
                       {log.metadata && Object.keys(log.metadata).length > 0 && (
                         <div>
-                          <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-1">METADATA</h4>
+                          <h4 className="text-[10px] font-medium text-txt-tertiary mb-1">METADATA</h4>
                           <pre className="text-xs text-txt-secondary bg-surface-card p-3 border border-border overflow-x-auto">
                             {JSON.stringify(log.metadata, null, 2)}
                           </pre>
@@ -346,19 +346,19 @@ export default function ErrorLogsPage() {
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2 border-t border-border">
                         {log.user_id && (
                           <div>
-                            <span className="text-[0.625rem] font-mono text-txt-disabled">USER ID</span>
+                            <span className="text-[10px] font-mono text-txt-disabled">USER ID</span>
                             <p className="text-xs font-mono text-txt-secondary truncate">{log.user_id}</p>
                           </div>
                         )}
                         {log.ip_address && (
                           <div>
-                            <span className="text-[0.625rem] font-mono text-txt-disabled">IP ADDRESS</span>
+                            <span className="text-[10px] font-mono text-txt-disabled">IP ADDRESS</span>
                             <p className="text-xs font-mono text-txt-secondary">{log.ip_address}</p>
                           </div>
                         )}
                         {log.user_agent && (
                           <div className="col-span-2">
-                            <span className="text-[0.625rem] font-mono text-txt-disabled">USER AGENT</span>
+                            <span className="text-[10px] font-mono text-txt-disabled">USER AGENT</span>
                             <p className="text-xs font-mono text-txt-secondary truncate">{log.user_agent}</p>
                           </div>
                         )}

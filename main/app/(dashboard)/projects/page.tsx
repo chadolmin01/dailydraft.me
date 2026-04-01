@@ -26,14 +26,14 @@ const ProjectDetailModal = dynamic(
 function StatusBadge({ status }: { status: string }) {
   if (status === 'active') {
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-status-success-bg border border-status-success-text/30 text-status-success-text text-[0.625rem] font-bold">
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-status-success-bg border border-status-success-text/30 text-status-success-text text-[10px] font-bold">
         <span className="w-1.5 h-1.5 bg-indicator-online animate-pulse" />
         모집중
       </span>
     )
   }
   return (
-    <span className="px-2 py-0.5 bg-surface-sunken text-txt-tertiary text-[0.625rem] font-bold border border-border">
+    <span className="px-2 py-0.5 bg-surface-sunken text-txt-tertiary text-[10px] font-bold border border-border">
       마감
     </span>
   )
@@ -51,7 +51,7 @@ export default function MyProjectsPage() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-lg font-bold text-txt-primary">내 프로젝트</h1>
-            <p className="text-[0.625rem] text-txt-tertiary mt-0.5">
+            <p className="text-[10px] text-txt-tertiary mt-0.5">
               MY PROJECTS · {myProjects.length}개
             </p>
           </div>
@@ -115,15 +115,15 @@ export default function MyProjectsPage() {
                       {/* Roles */}
                       {opp.needed_roles && opp.needed_roles.length > 0 && (
                         <div className="flex items-center gap-1.5 mb-3 flex-wrap">
-                          <span className="text-[0.625rem] font-medium text-brand bg-brand-bg px-1.5 py-0.5 border border-brand-border">NEED</span>
+                          <span className="text-[10px] font-medium text-brand bg-brand-bg px-1.5 py-0.5 border border-brand-border">NEED</span>
                           {opp.needed_roles.slice(0, 3).map((role: string) => (
-                            <span key={role} className="text-[0.625rem] bg-surface-sunken text-txt-secondary px-2 py-0.5 border border-border font-medium">{role}</span>
+                            <span key={role} className="text-[10px] bg-surface-sunken text-txt-secondary px-2 py-0.5 border border-border font-medium">{role}</span>
                           ))}
                         </div>
                       )}
 
                       {/* Stats footer */}
-                      <div className="flex items-center gap-4 text-[0.625rem] font-mono text-txt-tertiary">
+                      <div className="flex items-center gap-4 text-[10px] font-mono text-txt-tertiary">
                         <span className="flex items-center gap-1">
                           <Clock size={10} />
                           {daysAgo === 0 ? '오늘' : `${daysAgo}일 전`}

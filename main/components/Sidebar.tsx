@@ -118,7 +118,7 @@ export const Sidebar: React.FC = () => {
         >
           <span className="font-black text-base leading-none">D</span>
         </div>
-        <div className="absolute left-14 top-1/2 -translate-y-1/2 bg-surface-inverse text-txt-inverse text-[0.625rem] font-medium px-2 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-sm">
+        <div className="absolute left-14 top-1/2 -translate-y-1/2 bg-surface-inverse text-txt-inverse text-[10px] font-medium px-2 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-sm">
           MAIN
         </div>
       </div>
@@ -144,7 +144,7 @@ export const Sidebar: React.FC = () => {
             )}
 
             {/* Tooltip */}
-            <div className="absolute left-14 top-1/2 -translate-y-1/2 bg-surface-inverse text-txt-inverse text-[0.625rem] font-medium px-2 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-sm">
+            <div className="absolute left-14 top-1/2 -translate-y-1/2 bg-surface-inverse text-txt-inverse text-[10px] font-medium px-2 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-sm">
               {item.label}
             </div>
           </button>
@@ -161,13 +161,13 @@ export const Sidebar: React.FC = () => {
               <div className="flex items-center gap-2">
                 <span className="font-bold text-sm text-txt-primary">{profile?.nickname || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}</span>
                 {isPremium && (
-                  <span className="flex items-center gap-0.5 px-1.5 py-0.5 bg-indicator-premium text-white text-[0.5625rem] font-mono font-bold rounded-lg border border-indicator-premium-border">
+                  <span className="flex items-center gap-0.5 px-1.5 py-0.5 bg-indicator-premium text-white text-[10px] font-mono font-bold rounded-lg border border-indicator-premium-border">
                     <Crown size={10} />
                     PRO
                   </span>
                 )}
               </div>
-              <div className="text-[0.625rem] text-txt-tertiary font-mono mt-0.5">{user?.email || ''}</div>
+              <div className="text-[10px] text-txt-tertiary font-mono mt-0.5">{user?.email || ''}</div>
             </div>
 
             {/* Menu Items */}
@@ -197,7 +197,7 @@ export const Sidebar: React.FC = () => {
             >
               <Bell size={14} /> Notifications{' '}
               {unreadMessages > 0 && (
-                <span className="ml-auto bg-status-danger-bg text-status-danger-text px-1.5 py-0.5 rounded-lg text-[0.5625rem] font-mono font-bold border border-status-danger-accent">
+                <span className="ml-auto bg-status-danger-bg text-status-danger-text px-1.5 py-0.5 rounded-lg text-[10px] font-mono font-bold border border-status-danger-accent">
                   {unreadMessages > 9 ? '9+' : unreadMessages}
                 </span>
               )}
@@ -218,7 +218,7 @@ export const Sidebar: React.FC = () => {
               <>
                 <div className="h-px border-t border-border my-1"></div>
                 <div className="px-3 py-1.5">
-                  <div className="text-[0.625rem] font-medium text-txt-tertiary">Institution</div>
+                  <div className="text-[10px] font-medium text-txt-tertiary">Institution</div>
                 </div>
                 <button
                   onClick={() => handleMenuAction('institution')}
@@ -235,7 +235,7 @@ export const Sidebar: React.FC = () => {
             {isAdmin && (
               <>
                 <div className="px-3 py-1.5">
-                  <div className="text-[0.625rem] font-medium text-txt-tertiary">Admin</div>
+                  <div className="text-[10px] font-medium text-txt-tertiary">Admin</div>
                 </div>
                 <button
                   onClick={() => handleMenuAction('invite-codes-admin')}
@@ -264,7 +264,7 @@ export const Sidebar: React.FC = () => {
 
         {/* Profile Avatar Trigger */}
         <button
-          className={`w-10 h-10 mx-auto rounded-lg flex items-center justify-center text-[0.625rem] font-bold cursor-pointer transition-all border relative group
+          className={`w-10 h-10 mx-auto rounded-lg flex items-center justify-center text-[10px] font-bold cursor-pointer transition-all border relative group
             ${
               isMenuOpen
                 ? 'bg-surface-inverse text-txt-inverse border-surface-inverse shadow-sm'

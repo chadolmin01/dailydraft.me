@@ -114,14 +114,14 @@ function ProjectManageContent() {
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className={`text-[0.625rem] font-mono font-bold px-2 py-0.5 border ${
+              <span className={`text-[10px] font-mono font-bold px-2 py-0.5 border ${
                 opportunity.status === 'active'
                   ? 'bg-status-success-bg text-status-success-text border-status-success-text/30'
                   : 'bg-surface-sunken text-txt-tertiary border-border'
               }`}>
                 {opportunity.status === 'active' ? '모집중' : '마감'}
               </span>
-              <span className="text-[0.625rem] font-mono text-txt-disabled">
+              <span className="text-[10px] font-mono text-txt-disabled">
                 Week {Math.max(1, Math.ceil((Date.now() - new Date(opportunity.created_at ?? '').getTime()) / (7 * 24 * 60 * 60 * 1000)))} 진행중
               </span>
             </div>
@@ -161,7 +161,7 @@ function ProjectManageContent() {
             : 1
           return (
             <div>
-              <h2 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">
+              <h2 className="text-[10px] font-medium text-txt-tertiary mb-4">
                 주간 업데이트
               </h2>
 
@@ -182,12 +182,12 @@ function ProjectManageContent() {
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1.5">
-                              <span className={`text-[0.625rem] font-bold px-2 py-0.5 border ${config.badgeColor}`}>
+                              <span className={`text-[10px] font-bold px-2 py-0.5 border ${config.badgeColor}`}>
                                 {config.label}
                               </span>
-                              <span className="text-[0.625rem] font-mono text-txt-disabled">Week {update.week_number}</span>
+                              <span className="text-[10px] font-mono text-txt-disabled">Week {update.week_number}</span>
                               {update.created_at && (
-                                <span className="text-[0.625rem] font-mono text-txt-disabled">· {timeAgo(update.created_at)}</span>
+                                <span className="text-[10px] font-mono text-txt-disabled">· {timeAgo(update.created_at)}</span>
                               )}
                             </div>
                             <p className="font-semibold text-sm text-txt-primary mb-1">{firstLine}</p>

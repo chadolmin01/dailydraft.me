@@ -67,7 +67,7 @@ export const FormTemplateSelector: React.FC<FormTemplateSelectorProps> = ({
           {/* Recommended */}
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-3">
-              <span className="text-[0.625rem] font-bold font-mono text-status-info-text bg-status-info-bg px-2 py-0.5 border border-status-info-text/20">
+              <span className="text-[10px] font-bold font-mono text-status-info-text bg-status-info-bg px-2 py-0.5 border border-status-info-text/20">
                 RECOMMENDED
               </span>
               <span className="text-xs text-txt-tertiary">가장 범용적인 PSST 표준 양식</span>
@@ -82,7 +82,7 @@ export const FormTemplateSelector: React.FC<FormTemplateSelectorProps> = ({
 
           {/* Other templates */}
           <div>
-            <h3 className="text-[0.625rem] font-medium text-txt-secondary mb-3">
+            <h3 className="text-[10px] font-medium text-txt-secondary mb-3">
               Other Templates
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -155,14 +155,14 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onSelect, feature
           <p className="text-sm text-txt-secondary mb-2">{template.description}</p>
 
           <div className="flex items-center gap-3">
-            <span className="text-[0.625rem] font-mono text-txt-tertiary">
+            <span className="text-[10px] font-mono text-txt-tertiary">
               {template.pages}p
             </span>
             <div className="flex flex-wrap gap-1">
               {template.features.slice(0, 3).map((feature, idx) => (
                 <span
                   key={idx}
-                  className="text-[0.625rem] px-1.5 py-0.5 bg-surface-sunken text-txt-secondary"
+                  className="text-[10px] px-1.5 py-0.5 bg-surface-sunken text-txt-secondary"
                 >
                   {feature}
                 </span>

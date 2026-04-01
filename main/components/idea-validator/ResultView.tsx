@@ -257,7 +257,7 @@ const ResultView: React.FC<ResultViewProps> = ({
                      <div className="flex items-start justify-between mb-2">
                         <h3 className="font-bold text-txt-primary">{feature.name}</h3>
                         <div className="flex gap-2">
-                           <span className={`px-2 py-0.5 text-[0.625rem] font-medium ${
+                           <span className={`px-2 py-0.5 text-[10px] font-medium ${
                               feature.priority === 'High' ? 'bg-status-danger-bg text-status-danger-text' :
                               feature.priority === 'Medium' ? 'bg-status-warning-bg text-status-warning-text' :
                               'bg-status-success-bg text-status-success-text'
@@ -351,7 +351,7 @@ const ResultView: React.FC<ResultViewProps> = ({
            {/* Main Content */}
            <div className="md:col-span-2 space-y-10">
               <section>
-                 <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">About the Team</h3>
+                 <h3 className="text-[10px] font-medium text-txt-tertiary mb-4">About the Team</h3>
                  <p className="text-txt-secondary leading-relaxed text-lg">
                     {jd.companyIntro}
                  </p>
@@ -425,7 +425,7 @@ const ResultView: React.FC<ResultViewProps> = ({
             <div>
               <div className="flex items-center gap-3 mb-1">
                  <h2 className="text-xl md:text-2xl font-bold text-draft-black tracking-tight">프로젝트 검증 완료</h2>
-                 <span className="px-2 py-0.5 bg-surface-inverse text-txt-inverse text-[0.625rem] md:text-xs font-medium">
+                 <span className="px-2 py-0.5 bg-surface-inverse text-txt-inverse text-[10px] md:text-xs font-medium">
                     AI Verified
                  </span>
               </div>
@@ -574,7 +574,7 @@ const ResultView: React.FC<ResultViewProps> = ({
 
            {/* Idea Summary Card */}
            <div className="bg-surface-card rounded-xl border border-border p-6 shadow-md">
-              <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">Project Summary</h3>
+              <h3 className="text-[10px] font-medium text-txt-tertiary mb-4">Project Summary</h3>
               <p className="text-txt-primary text-sm leading-relaxed font-medium">
                 {artifacts?.ideaSummary || "요약 정보를 불러오는 중입니다..."}
               </p>
@@ -582,7 +582,7 @@ const ResultView: React.FC<ResultViewProps> = ({
 
            {/* Persona Scores Card */}
            <div className="bg-surface-card rounded-xl border border-border p-6 shadow-md sticky top-6">
-              <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-6">Validation Scores</h3>
+              <h3 className="text-[10px] font-medium text-txt-tertiary mb-6">Validation Scores</h3>
 
               <ScoreBar
                 label="Tech Feasibility"

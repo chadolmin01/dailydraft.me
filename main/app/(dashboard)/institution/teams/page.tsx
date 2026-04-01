@@ -86,7 +86,7 @@ export default function InstitutionTeamsPage() {
         <div className="border-b border-border pb-6">
           <button
             onClick={() => router.push('/institution')}
-            className="text-[0.625rem] font-medium text-txt-tertiary mb-2 flex items-center gap-1 hover:text-txt-primary transition-colors"
+            className="text-[10px] font-medium text-txt-tertiary mb-2 flex items-center gap-1 hover:text-txt-primary transition-colors"
           >
             <ChevronLeft size={12} />
             Institution Dashboard
@@ -101,19 +101,19 @@ export default function InstitutionTeamsPage() {
         <div className="grid grid-cols-3 gap-4">
           <Card padding="p-4">
             <div className="text-2xl font-bold font-mono text-txt-primary">{teams.length}</div>
-            <div className="text-[0.625rem] font-medium text-txt-tertiary">총 프로젝트</div>
+            <div className="text-[10px] font-medium text-txt-tertiary">총 프로젝트</div>
           </Card>
           <Card padding="p-4">
             <div className="text-2xl font-bold font-mono text-txt-primary">
               {teams.filter((t) => t.status === 'active').length}
             </div>
-            <div className="text-[0.625rem] font-medium text-txt-tertiary">모집 중</div>
+            <div className="text-[10px] font-medium text-txt-tertiary">모집 중</div>
           </Card>
           <Card padding="p-4">
             <div className="text-2xl font-bold font-mono text-txt-primary">
               {teams.filter((t) => t.status === 'filled').length}
             </div>
-            <div className="text-[0.625rem] font-medium text-txt-tertiary">팀 완성</div>
+            <div className="text-[10px] font-medium text-txt-tertiary">팀 완성</div>
           </Card>
         </div>
 
@@ -138,7 +138,7 @@ export default function InstitutionTeamsPage() {
                   <h3 className="font-semibold text-sm text-txt-primary leading-tight pr-4">
                     {team.title}
                   </h3>
-                  <span className={`shrink-0 px-2 py-0.5 text-[0.5625rem] font-medium border ${STATUS_STYLES[team.status] || 'border-border text-txt-tertiary'}`}>
+                  <span className={`shrink-0 px-2 py-0.5 text-[10px] font-medium border ${STATUS_STYLES[team.status] || 'border-border text-txt-tertiary'}`}>
                     {STATUS_LABELS[team.status] || team.status}
                   </span>
                 </div>

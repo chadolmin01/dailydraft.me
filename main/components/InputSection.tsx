@@ -101,7 +101,7 @@ const InputSection: React.FC<InputSectionProps> = ({ inputs, logs, onChange, onS
 
             {/* Toolbar / Send Button Area */}
             <div className="px-3 pb-3 pt-1 flex justify-between items-center">
-                <span className="text-[0.625rem] text-txt-disabled font-mono">
+                <span className="text-[10px] text-txt-disabled font-mono">
                      {activeInput.length} chars
                 </span>
 
@@ -142,7 +142,7 @@ const InputSection: React.FC<InputSectionProps> = ({ inputs, logs, onChange, onS
         {roleLogs.length > 0 && (
             <div className="flex-1 flex flex-col min-h-0">
                 <div className="flex items-center gap-2 mb-2 px-1">
-                    <span className="text-[0.625rem] font-medium text-txt-disabled">History</span>
+                    <span className="text-[10px] font-medium text-txt-disabled">History</span>
                     <div className="flex-1 h-px bg-border"></div>
                 </div>
 
@@ -151,10 +151,10 @@ const InputSection: React.FC<InputSectionProps> = ({ inputs, logs, onChange, onS
                         <div key={log.id} className="group flex items-start gap-3 p-3 bg-surface-sunken rounded-xl border border-border hover:bg-surface-card rounded-xl hover:border-border hover:shadow-md hover-spring">
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-1">
-                                    <span className="text-[0.625rem] font-mono text-txt-disabled">
+                                    <span className="text-[10px] font-mono text-txt-disabled">
                                         {log.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                     </span>
-                                    <span className="text-[0.625rem] font-bold text-txt-secondary">{log.action}</span>
+                                    <span className="text-[10px] font-bold text-txt-secondary">{log.action}</span>
                                 </div>
                                 <p className="text-xs text-txt-secondary line-clamp-2 break-all">
                                     &quot;{log.content}&quot;

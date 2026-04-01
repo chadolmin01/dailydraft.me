@@ -278,7 +278,7 @@ function NewProjectContent() {
                   key={opt.value}
                   type="button"
                   onClick={() => setType(opt.value)}
-                  className={`text-[0.625rem] font-medium px-2.5 py-1 transition-colors ${
+                  className={`text-[10px] font-medium px-2.5 py-1 transition-colors ${
                     type === opt.value
                       ? TYPE_THEMES[opt.value].badge
                       : 'bg-surface-sunken text-txt-tertiary hover:text-txt-secondary'
@@ -289,7 +289,7 @@ function NewProjectContent() {
               ))}
             </div>
 
-            <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[0.625rem] font-bold transition-colors ${theme.status}`}>
+            <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold transition-colors ${theme.status}`}>
               <span className={`w-1.5 h-1.5 animate-pulse ${theme.statusDot}`} />
               작성 중
             </span>
@@ -361,14 +361,14 @@ function NewProjectContent() {
                 {/* Description */}
                 <section>
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-[0.625rem] font-medium text-txt-tertiary">
+                    <h3 className="text-[10px] font-medium text-txt-tertiary">
                       프로젝트 소개 <span className="text-status-danger-text">*</span>
                     </h3>
                     <button
                       type="button"
                       onClick={generateDescription}
                       disabled={aiLoading || !title.trim()}
-                      className="flex items-center gap-1.5 px-2.5 py-1 text-[0.625rem] font-medium border border-border text-txt-secondary hover:border-border hover:text-txt-primary transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-medium border border-border text-txt-secondary hover:border-border hover:text-txt-primary transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                       {aiLoading ? (
                         <><Loader2 size={10} className="animate-spin" /> 생성 중...</>
@@ -385,12 +385,12 @@ function NewProjectContent() {
                     maxLength={2000}
                     className="w-full text-base sm:text-sm text-txt-secondary leading-[1.8] placeholder:text-txt-disabled border border-border p-3 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand resize-none bg-transparent transition-all"
                   />
-                  <p className={`text-[0.625rem] mt-1 text-right font-mono ${description.length >= 1800 ? 'text-status-danger-text font-bold' : description.length >= 1500 ? 'text-status-warning-text' : 'text-txt-disabled'}`}>{description.length}/2000</p>
+                  <p className={`text-[10px] mt-1 text-right font-mono ${description.length >= 1800 ? 'text-status-danger-text font-bold' : description.length >= 1500 ? 'text-status-warning-text' : 'text-txt-disabled'}`}>{description.length}/2000</p>
                 </section>
 
                 {/* Pain Point */}
                 <section className={`p-4 border border-border-subtle transition-colors ${theme.painBg}`}>
-                  <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-2">
+                  <h3 className="text-[10px] font-medium text-txt-tertiary mb-2">
                     {theme.painLabel}
                   </h3>
                   <textarea
@@ -405,7 +405,7 @@ function NewProjectContent() {
 
                 {/* Links */}
                 <section>
-                  <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-2">
+                  <h3 className="text-[10px] font-medium text-txt-tertiary mb-2">
                     프로젝트 링크
                   </h3>
                   <div className="space-y-2">

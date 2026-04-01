@@ -148,7 +148,7 @@ export default function AdminOpportunitiesPage() {
           </Link>
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-[0.625rem] font-medium text-txt-tertiary mb-2 flex items-center gap-2">
+              <div className="text-[10px] font-medium text-txt-tertiary mb-2 flex items-center gap-2">
                 <span className="w-2 h-2 bg-black" />
                 Admin / Opportunities
               </div>
@@ -223,14 +223,14 @@ export default function AdminOpportunitiesPage() {
               <table className="w-full text-sm">
                 <thead className="bg-surface-sunken border-b border-border">
                   <tr>
-                    <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">제목</th>
-                    <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary hidden md:table-cell">유형</th>
-                    <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">상태</th>
-                    <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary hidden lg:table-cell">작성자</th>
-                    <th className="text-right px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary hidden md:table-cell">조회</th>
-                    <th className="text-right px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary hidden md:table-cell">지원</th>
-                    <th className="text-left px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary hidden lg:table-cell">작성일</th>
-                    <th className="text-right px-4 py-3 text-[0.625rem] font-medium text-txt-tertiary">작업</th>
+                    <th className="text-left px-4 py-3 text-[10px] font-medium text-txt-tertiary">제목</th>
+                    <th className="text-left px-4 py-3 text-[10px] font-medium text-txt-tertiary hidden md:table-cell">유형</th>
+                    <th className="text-left px-4 py-3 text-[10px] font-medium text-txt-tertiary">상태</th>
+                    <th className="text-left px-4 py-3 text-[10px] font-medium text-txt-tertiary hidden lg:table-cell">작성자</th>
+                    <th className="text-right px-4 py-3 text-[10px] font-medium text-txt-tertiary hidden md:table-cell">조회</th>
+                    <th className="text-right px-4 py-3 text-[10px] font-medium text-txt-tertiary hidden md:table-cell">지원</th>
+                    <th className="text-left px-4 py-3 text-[10px] font-medium text-txt-tertiary hidden lg:table-cell">작성일</th>
+                    <th className="text-right px-4 py-3 text-[10px] font-medium text-txt-tertiary">작업</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-dashed divide-border">
@@ -245,7 +245,7 @@ export default function AdminOpportunitiesPage() {
                           {typeLabels[opp.type] || opp.type}
                         </td>
                         <td className="px-4 py-3">
-                          <span className={`px-2 py-0.5 text-[0.625rem] font-mono font-bold ${statusInfo.cls}`}>
+                          <span className={`px-2 py-0.5 text-[10px] font-mono font-bold ${statusInfo.cls}`}>
                             {statusInfo.label}
                           </span>
                         </td>

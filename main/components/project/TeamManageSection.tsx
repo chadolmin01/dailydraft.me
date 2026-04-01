@@ -188,11 +188,11 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2">
           <Users size={16} className="text-txt-tertiary" />
-          <h3 className="text-[0.625rem] font-medium text-txt-tertiary">
+          <h3 className="text-[10px] font-medium text-txt-tertiary">
             팀원 관리
           </h3>
         </div>
-        <div className="flex items-center gap-3 text-[0.625rem] font-mono text-txt-disabled">
+        <div className="flex items-center gap-3 text-[10px] font-mono text-txt-disabled">
           <span>전체 {data?.stats?.total || 0}명</span>
           <span>활동 {data?.stats?.active || 0}명</span>
         </div>
@@ -201,7 +201,7 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
       {/* Accepted Coffee Chats — Add to Team */}
       {acceptedChats.length > 0 && (
         <div>
-          <h4 className="text-[0.625rem] font-medium text-status-success-text mb-2 flex items-center gap-1.5">
+          <h4 className="text-[10px] font-medium text-status-success-text mb-2 flex items-center gap-1.5">
             <Coffee size={11} />
             수락된 커피챗 ({acceptedChats.length})
           </h4>
@@ -255,7 +255,7 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
       {/* Active Members */}
       {members.length > 0 && (
         <div>
-          <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-2">
+          <h4 className="text-[10px] font-medium text-txt-tertiary mb-2">
             현재 팀원 ({members.length})
           </h4>
           <div className="space-y-3">
@@ -280,7 +280,7 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
       {/* Left Members */}
       {leftMembers.length > 0 && (
         <div>
-          <h4 className="text-[0.625rem] font-medium text-txt-disabled mb-2">
+          <h4 className="text-[10px] font-medium text-txt-disabled mb-2">
             이전 팀원 ({leftMembers.length})
           </h4>
           <div className="space-y-2 opacity-50">
@@ -293,7 +293,7 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
                   <p className="text-sm text-txt-disabled font-medium">{member.profile?.nickname || '알 수 없음'}</p>
                   <p className="text-xs text-txt-disabled">{member.assigned_role || '역할 미지정'}</p>
                 </div>
-                <span className="text-[0.625rem] font-mono text-txt-disabled">탈퇴</span>
+                <span className="text-[10px] font-mono text-txt-disabled">탈퇴</span>
               </div>
             ))}
           </div>
@@ -336,7 +336,7 @@ function MemberCard({
           <div className="flex items-center gap-2 mb-0.5">
             <p className="font-semibold text-sm text-txt-primary">{member.profile?.nickname || '알 수 없음'}</p>
             {member.application?.match_score != null && (
-              <span className="text-[0.625rem] font-mono font-bold text-brand bg-brand-bg px-1.5 py-0.5 border border-brand-border">
+              <span className="text-[10px] font-mono font-bold text-brand bg-brand-bg px-1.5 py-0.5 border border-brand-border">
                 {member.application.match_score}% 매치
               </span>
             )}
@@ -351,7 +351,7 @@ function MemberCard({
           {member.profile?.skills && member.profile.skills.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-2">
               {member.profile.skills.slice(0, 5).map((skill, i) => (
-                <span key={i} className="text-[0.625rem] font-mono bg-surface-sunken text-txt-secondary px-1.5 py-0.5 border border-border">
+                <span key={i} className="text-[10px] font-mono bg-surface-sunken text-txt-secondary px-1.5 py-0.5 border border-border">
                   {skill.name}
                 </span>
               ))}
@@ -363,14 +363,14 @@ function MemberCard({
             {member.profile?.contact_email && (
               <a
                 href={`mailto:${member.profile.contact_email}`}
-                className="flex items-center gap-1 text-[0.625rem] text-txt-tertiary hover:text-txt-primary transition-colors"
+                className="flex items-center gap-1 text-[10px] text-txt-tertiary hover:text-txt-primary transition-colors"
               >
                 <Mail size={10} />
                 {member.profile.contact_email}
               </a>
             )}
             {member.profile?.contact_kakao && (
-              <span className="flex items-center gap-1 text-[0.625rem] text-txt-tertiary">
+              <span className="flex items-center gap-1 text-[10px] text-txt-tertiary">
                 <MessageCircle size={10} />
                 {member.profile.contact_kakao}
               </span>

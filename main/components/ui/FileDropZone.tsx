@@ -214,7 +214,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
       {files.length > 0 && (
         <div className="mt-4 space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-[0.625rem] font-medium text-txt-tertiary">
+            <span className="text-[10px] font-medium text-txt-tertiary">
               {files.length}개 파일 선택됨
             </span>
             <button

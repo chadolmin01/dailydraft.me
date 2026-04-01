@@ -321,7 +321,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                       <div className="relative">
                         <button
                           onClick={() => setShowTypeSelector(!showTypeSelector)}
-                          className="text-[0.625rem] font-medium px-2 py-0.5 bg-surface-card text-txt-tertiary border border-border hover:border-border hover:text-txt-secondary transition-colors flex items-center gap-1"
+                          className="text-[10px] font-medium px-2 py-0.5 bg-surface-card text-txt-tertiary border border-border hover:border-border hover:text-txt-secondary transition-colors flex items-center gap-1"
                         >
                           {opportunity.type === 'side_project' ? 'SIDE PROJECT' :
                            opportunity.type === 'startup' ? 'STARTUP' :
@@ -344,7 +344,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                                   )
                                   setShowTypeSelector(false)
                                 }}
-                                className={`w-full text-left px-3 py-1.5 text-[0.625rem] font-medium transition-colors ${
+                                className={`w-full text-left px-3 py-1.5 text-[10px] font-medium transition-colors ${
                                   opportunity.type === opt.value
                                     ? 'bg-surface-inverse text-txt-inverse'
                                     : 'text-txt-secondary hover:bg-surface-sunken'
@@ -357,14 +357,14 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                         )}
                       </div>
                     ) : (
-                      <span className="text-[0.625rem] font-medium px-2 py-0.5 bg-surface-card text-txt-tertiary border border-border">
+                      <span className="text-[10px] font-medium px-2 py-0.5 bg-surface-card text-txt-tertiary border border-border">
                         {opportunity.type === 'side_project' ? 'SIDE PROJECT' :
                          opportunity.type === 'startup' ? 'STARTUP' :
                          opportunity.type === 'study' ? 'STUDY' : opportunity.type?.toUpperCase() || 'PROJECT'}
                       </span>
                     )}
                     {opportunity.status === 'active' && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-status-success-bg text-status-success-text text-[0.625rem] font-bold border border-status-success-text/30">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-status-success-bg text-status-success-text text-[10px] font-bold border border-status-success-text/30">
                         <span className="w-1.5 h-1.5 bg-indicator-online animate-pulse" />
                         모집 중
                       </span>
@@ -378,7 +378,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                     aria-label="공유"
                   >
                     {shareCopied ? (
-                      <span className="text-[0.625rem] font-medium text-status-success-text px-1 icon-bounce">복사됨!</span>
+                      <span className="text-[10px] font-medium text-status-success-text px-1 icon-bounce">복사됨!</span>
                     ) : (
                       <Share2 size={14} className="text-txt-disabled" />
                     )}

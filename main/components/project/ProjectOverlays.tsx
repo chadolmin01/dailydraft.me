@@ -62,7 +62,7 @@ export const ProjectOverlays: React.FC<ProjectOverlaysProps> = ({
               무료로 시작하기
               <ArrowRight size={16} />
             </button>
-            <p className="text-[0.625rem] text-txt-disabled mb-6">
+            <p className="text-[10px] text-txt-disabled mb-6">
               가입 30초 · 무료 · 바로 사용 가능
             </p>
             <button

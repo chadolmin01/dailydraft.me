@@ -74,7 +74,7 @@ export default function DashboardPage() {
         <PageContainer size="wide">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-border pb-6">
             <div>
-              <p className="text-[0.625rem] text-txt-tertiary mb-1">{greeting}</p>
+              <p className="text-[10px] text-txt-tertiary mb-1">{greeting}</p>
               <h1 className="text-xl font-bold text-txt-primary">
                 {profile?.nickname ?? user?.email?.split('@')[0] ?? '...'}
               </h1>
@@ -96,7 +96,7 @@ export default function DashboardPage() {
           <ScrollReveal>
           <div className="flex items-center gap-2 mb-4">
             <span className="w-5 h-5 bg-surface-inverse text-txt-inverse flex items-center justify-center text-[0.5rem] font-bold font-mono">S</span>
-            <span className="text-[0.625rem] font-medium text-txt-secondary">Stats Overview</span>
+            <span className="text-[10px] font-medium text-txt-secondary">Stats Overview</span>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <StatCard
@@ -138,7 +138,7 @@ export default function DashboardPage() {
           <PageContainer size="wide">
             <div className="flex items-center gap-2 mb-4">
               <span className="w-5 h-5 bg-status-danger-text text-white flex items-center justify-center text-[0.5rem] font-bold font-mono">!</span>
-              <span className="text-[0.625rem] font-medium text-txt-secondary">Action Required</span>
+              <span className="text-[10px] font-medium text-txt-secondary">Action Required</span>
             </div>
             <div className="space-y-2">
               {pendingCount > 0 && (
@@ -149,7 +149,7 @@ export default function DashboardPage() {
                     </div>
                     <div>
                       <p className="text-sm font-bold text-txt-primary">대기 중인 지원서 {pendingCount}건</p>
-                      <p className="text-[0.625rem] font-mono text-txt-tertiary">응답을 기다리고 있어요</p>
+                      <p className="text-[10px] font-mono text-txt-tertiary">응답을 기다리고 있어요</p>
                     </div>
                   </div>
                   <ArrowRight size={16} className="text-txt-disabled group-hover:text-txt-primary transition-colors" />
@@ -163,7 +163,7 @@ export default function DashboardPage() {
                     </div>
                     <div>
                       <p className="text-sm font-bold text-txt-primary">팀 초대가 도착했어요</p>
-                      <p className="text-[0.625rem] font-mono text-txt-tertiary">{inv.role} 역할 · {timeAgo(inv.created_at)}</p>
+                      <p className="text-[10px] font-mono text-txt-tertiary">{inv.role} 역할 · {timeAgo(inv.created_at)}</p>
                     </div>
                   </div>
                   <ArrowRight size={16} className="text-txt-disabled group-hover:text-txt-primary transition-colors" />
@@ -183,9 +183,9 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <span className="w-5 h-5 bg-brand text-white flex items-center justify-center text-[0.5rem] font-bold font-mono">R</span>
-                  <span className="text-[0.625rem] font-medium text-txt-secondary">Recommended</span>
+                  <span className="text-[10px] font-medium text-txt-secondary">Recommended</span>
                 </div>
-                <Link href="/explore" className="text-[0.625rem] font-mono text-txt-tertiary hover:text-txt-primary transition-colors flex items-center gap-1">
+                <Link href="/explore" className="text-[10px] font-mono text-txt-tertiary hover:text-txt-primary transition-colors flex items-center gap-1">
                   전체보기 <ArrowRight size={10} />
                 </Link>
               </div>
@@ -232,9 +232,9 @@ export default function DashboardPage() {
                           <p className="text-sm text-txt-secondary line-clamp-1 mb-2">{opp.description}</p>
                           {opp.needed_roles && opp.needed_roles.length > 0 && (
                             <div className="flex items-center gap-1.5">
-                              <span className="text-[0.625rem] font-mono font-bold text-brand bg-brand-bg px-1.5 py-0.5 border border-brand-border">NEED</span>
+                              <span className="text-[10px] font-mono font-bold text-brand bg-brand-bg px-1.5 py-0.5 border border-brand-border">NEED</span>
                               {opp.needed_roles.slice(0, 3).map((role: string) => (
-                                <span key={role} className="text-[0.625rem] bg-surface-sunken text-txt-secondary px-1.5 py-0.5 border border-border">{role}</span>
+                                <span key={role} className="text-[10px] bg-surface-sunken text-txt-secondary px-1.5 py-0.5 border border-border">{role}</span>
                               ))}
                             </div>
                           )}
@@ -251,7 +251,7 @@ export default function DashboardPage() {
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <span className="w-5 h-5 bg-surface-inverse text-txt-inverse flex items-center justify-center text-[0.5rem] font-bold font-mono">A</span>
-                <span className="text-[0.625rem] font-medium text-txt-secondary">Activity</span>
+                <span className="text-[10px] font-medium text-txt-secondary">Activity</span>
               </div>
               <div className="bg-surface-card rounded-xl border border-border p-5 relative">
                 <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/15" />
@@ -289,8 +289,8 @@ export default function DashboardPage() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-xs font-bold text-txt-primary">{activity.title}</p>
-                          <p className="text-[0.625rem] text-txt-tertiary truncate">{activity.description}</p>
-                          <p className="text-[0.625rem] font-mono text-txt-disabled mt-0.5">{timeAgo(activity.created_at)}</p>
+                          <p className="text-[10px] text-txt-tertiary truncate">{activity.description}</p>
+                          <p className="text-[10px] font-mono text-txt-disabled mt-0.5">{timeAgo(activity.created_at)}</p>
                         </div>
                       </div>
                     ))}
@@ -308,10 +308,10 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <span className="w-5 h-5 bg-[#059669] text-white flex items-center justify-center text-[0.5rem] font-bold font-mono">P</span>
-              <span className="text-[0.625rem] font-medium text-txt-secondary">My Projects</span>
+              <span className="text-[10px] font-medium text-txt-secondary">My Projects</span>
             </div>
             {myProjects.length > 0 && (
-              <Link href="/projects" className="text-[0.625rem] font-mono text-txt-tertiary hover:text-txt-primary transition-colors flex items-center gap-1">
+              <Link href="/projects" className="text-[10px] font-mono text-txt-tertiary hover:text-txt-primary transition-colors flex items-center gap-1">
                 전체보기 <ArrowRight size={10} />
               </Link>
             )}
@@ -365,7 +365,7 @@ export default function DashboardPage() {
                         <span className="px-1.5 py-0.5 bg-surface-sunken text-txt-tertiary text-[0.5rem] font-bold border border-border shrink-0">마감</span>
                       )}
                     </div>
-                    <div className="flex items-center gap-3 text-[0.625rem] font-mono text-txt-tertiary">
+                    <div className="flex items-center gap-3 text-[10px] font-mono text-txt-tertiary">
                       {opp.views_count != null && opp.views_count > 0 && (
                         <span className="flex items-center gap-1"><Eye size={10} />{opp.views_count}</span>
                       )}
@@ -400,12 +400,12 @@ function StatCard({ index, label, value, icon, href, alert }: {
     <div className={`bg-surface-card rounded-xl border border-border shadow-md p-5 relative ${href ? 'cursor-pointer hover:shadow-md hover:-translate-y-0.5 hover-spring group' : ''}`}>
       <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/20" />
       <div className="flex items-center justify-between mb-3">
-        <span className="text-[0.625rem] font-mono text-txt-disabled">{String(index).padStart(2, '0')}</span>
+        <span className="text-[10px] font-mono text-txt-disabled">{String(index).padStart(2, '0')}</span>
         <div className={`w-6 h-6 flex items-center justify-center ${alert ? 'text-status-danger-text' : 'text-txt-tertiary'}`}>
           {icon}
         </div>
       </div>
-      <p className="text-[0.625rem] text-txt-tertiary mb-1">{label}</p>
+      <p className="text-[10px] text-txt-tertiary mb-1">{label}</p>
       {value === null ? (
         <Skeleton className="h-7 w-12" />
       ) : (

@@ -146,7 +146,7 @@ export default function InstitutionMembersPage() {
         <div className="border-b border-border pb-6">
           <button
             onClick={() => router.push('/institution')}
-            className="text-[0.625rem] font-medium text-txt-tertiary mb-2 flex items-center gap-1 hover:text-txt-primary transition-colors"
+            className="text-[10px] font-medium text-txt-tertiary mb-2 flex items-center gap-1 hover:text-txt-primary transition-colors"
           >
             <ChevronLeft size={12} />
             Institution Dashboard
@@ -222,12 +222,12 @@ export default function InstitutionMembersPage() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-border">
-                    <th className="text-left text-[0.625rem] font-medium text-txt-tertiary px-5 py-3">이름</th>
-                    <th className="text-left text-[0.625rem] font-medium text-txt-tertiary px-5 py-3">학과</th>
-                    <th className="text-left text-[0.625rem] font-medium text-txt-tertiary px-5 py-3">역할</th>
-                    <th className="text-left text-[0.625rem] font-medium text-txt-tertiary px-5 py-3">스킬</th>
-                    <th className="text-left text-[0.625rem] font-medium text-txt-tertiary px-5 py-3">상태</th>
-                    <th className="text-left text-[0.625rem] font-medium text-txt-tertiary px-5 py-3">가입일</th>
+                    <th className="text-left text-[10px] font-medium text-txt-tertiary px-5 py-3">이름</th>
+                    <th className="text-left text-[10px] font-medium text-txt-tertiary px-5 py-3">학과</th>
+                    <th className="text-left text-[10px] font-medium text-txt-tertiary px-5 py-3">역할</th>
+                    <th className="text-left text-[10px] font-medium text-txt-tertiary px-5 py-3">스킬</th>
+                    <th className="text-left text-[10px] font-medium text-txt-tertiary px-5 py-3">상태</th>
+                    <th className="text-left text-[10px] font-medium text-txt-tertiary px-5 py-3">가입일</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -241,14 +241,14 @@ export default function InstitutionMembersPage() {
                             {profile?.nickname || '이름 없음'}
                           </div>
                           {profile?.university && (
-                            <div className="text-[0.625rem] text-txt-tertiary">{profile.university}</div>
+                            <div className="text-[10px] text-txt-tertiary">{profile.university}</div>
                           )}
                         </td>
                         <td className="px-5 py-3.5 text-sm text-txt-secondary">
                           {profile?.major || '-'}
                         </td>
                         <td className="px-5 py-3.5">
-                          <span className="inline-flex items-center gap-1.5 px-2 py-1 text-[0.625rem] font-medium border border-border">
+                          <span className="inline-flex items-center gap-1.5 px-2 py-1 text-[10px] font-medium border border-border">
                             <RoleIcon size={12} />
                             {ROLE_LABELS[member.role] || member.role}
                           </span>
@@ -256,12 +256,12 @@ export default function InstitutionMembersPage() {
                         <td className="px-5 py-3.5">
                           <div className="flex flex-wrap gap-1 max-w-[200px]">
                             {(profile?.skills || []).slice(0, 3).map((skill: any, i: number) => (
-                              <span key={i} className="px-1.5 py-0.5 text-[0.5625rem] font-mono bg-surface-sunken text-txt-secondary border border-border">
+                              <span key={i} className="px-1.5 py-0.5 text-[10px] font-mono bg-surface-sunken text-txt-secondary border border-border">
                                 {skill.name}
                               </span>
                             ))}
                             {(profile?.skills?.length || 0) > 3 && (
-                              <span className="text-[0.5625rem] text-txt-disabled">
+                              <span className="text-[10px] text-txt-disabled">
                                 +{profile.skills.length - 3}
                               </span>
                             )}
@@ -287,7 +287,7 @@ export default function InstitutionMembersPage() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between px-5 py-3 border-t border-border">
-              <span className="text-[0.625rem] font-mono text-txt-tertiary">
+              <span className="text-[10px] font-mono text-txt-tertiary">
                 {data?.total ?? 0}명 중 {((page - 1) * 20) + 1}-{Math.min(page * 20, data?.total ?? 0)}
               </span>
               <div className="flex gap-1">
@@ -323,7 +323,7 @@ export default function InstitutionMembersPage() {
             </div>
             <form onSubmit={handleAddSubmit} className="p-6 space-y-4">
               <div>
-                <label className="text-[0.625rem] font-medium text-txt-tertiary block mb-1.5">
+                <label className="text-[10px] font-medium text-txt-tertiary block mb-1.5">
                   이메일
                 </label>
                 <input
@@ -338,7 +338,7 @@ export default function InstitutionMembersPage() {
                 />
               </div>
               <div>
-                <label className="text-[0.625rem] font-medium text-txt-tertiary block mb-1.5">
+                <label className="text-[10px] font-medium text-txt-tertiary block mb-1.5">
                   역할
                 </label>
                 <div className="flex gap-2">
@@ -359,7 +359,7 @@ export default function InstitutionMembersPage() {
                 </div>
               </div>
               <div>
-                <label className="text-[0.625rem] font-medium text-txt-tertiary block mb-1.5">
+                <label className="text-[10px] font-medium text-txt-tertiary block mb-1.5">
                   메모 (선택)
                 </label>
                 <input

@@ -357,7 +357,7 @@ function EditProjectContent() {
               <button
                 type="button"
                 onClick={() => setTab('info')}
-                className={`text-[0.625rem] font-medium px-3 py-1.5 transition-colors ${
+                className={`text-[10px] font-medium px-3 py-1.5 transition-colors ${
                   tab === 'info'
                     ? 'bg-surface-inverse text-txt-inverse'
                     : 'bg-surface-sunken text-txt-tertiary hover:text-txt-secondary'
@@ -368,7 +368,7 @@ function EditProjectContent() {
               <button
                 type="button"
                 onClick={() => setTab('team')}
-                className={`text-[0.625rem] font-medium px-3 py-1.5 transition-colors ${
+                className={`text-[10px] font-medium px-3 py-1.5 transition-colors ${
                   tab === 'team'
                     ? 'bg-surface-inverse text-txt-inverse'
                     : 'bg-surface-sunken text-txt-tertiary hover:text-txt-secondary'
@@ -380,12 +380,12 @@ function EditProjectContent() {
 
             <div className="flex items-center gap-2">
               {lastSavedAt && (
-                <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 text-[0.625rem] font-mono text-status-success-text bg-status-success-bg border border-status-success-text/20">
+                <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-mono text-status-success-text bg-status-success-bg border border-status-success-text/20">
                   <Check size={9} />
                   {lastSavedAt.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })} 저장됨
                 </span>
               )}
-              <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[0.625rem] font-bold transition-colors ${theme.status}`}>
+              <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold transition-colors ${theme.status}`}>
                 <span className={`w-1.5 h-1.5 animate-pulse ${theme.statusDot}`} />
                 수정 중
               </span>
@@ -405,7 +405,7 @@ function EditProjectContent() {
                     key={opt.value}
                     type="button"
                     onClick={() => setType(opt.value)}
-                    className={`text-[0.625rem] font-medium px-2.5 py-1 transition-colors ${
+                    className={`text-[10px] font-medium px-2.5 py-1 transition-colors ${
                       type === opt.value
                         ? TYPE_THEMES[opt.value].badge
                         : 'bg-surface-sunken text-txt-tertiary hover:text-txt-secondary'
@@ -481,14 +481,14 @@ function EditProjectContent() {
                   {/* Description */}
                   <section>
                     <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-[0.625rem] font-medium text-txt-tertiary">
+                      <h3 className="text-[10px] font-medium text-txt-tertiary">
                         프로젝트 소개
                       </h3>
                       <button
                         type="button"
                         onClick={generateDescription}
                         disabled={aiLoading || !title.trim()}
-                        className="flex items-center gap-1.5 px-2.5 py-1 text-[0.625rem] font-medium border border-border text-txt-secondary hover:border-border hover:text-txt-primary transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-medium border border-border text-txt-secondary hover:border-border hover:text-txt-primary transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                       >
                         {aiLoading ? (
                           <><Loader2 size={10} className="animate-spin" /> 생성 중...</>
@@ -505,12 +505,12 @@ function EditProjectContent() {
                       maxLength={2000}
                       className="w-full text-base sm:text-sm text-txt-secondary leading-[1.8] placeholder:text-txt-disabled border border-border p-3 focus:outline-none focus:border-surface-inverse resize-none bg-transparent"
                     />
-                    <p className="text-[0.625rem] text-txt-disabled mt-1 text-right font-mono">{description.length}/2000</p>
+                    <p className="text-[10px] text-txt-disabled mt-1 text-right font-mono">{description.length}/2000</p>
                   </section>
 
                   {/* Pain Point */}
                   <section className={`p-4 border border-border-subtle transition-colors ${theme.painBg}`}>
-                    <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-2">
+                    <h3 className="text-[10px] font-medium text-txt-tertiary mb-2">
                       {theme.painLabel}
                     </h3>
                     <textarea
@@ -525,7 +525,7 @@ function EditProjectContent() {
 
                   {/* Links */}
                   <section>
-                    <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-2">
+                    <h3 className="text-[10px] font-medium text-txt-tertiary mb-2">
                       프로젝트 링크
                     </h3>
                     <div className="space-y-2">
@@ -587,7 +587,7 @@ function EditProjectContent() {
 
                   {/* Delete */}
                   <div className="border border-status-danger-text/20 p-4">
-                    <h3 className="text-[0.625rem] font-medium text-status-danger-text mb-2">
+                    <h3 className="text-[10px] font-medium text-status-danger-text mb-2">
                       위험 영역
                     </h3>
                     {showDeleteConfirm ? (

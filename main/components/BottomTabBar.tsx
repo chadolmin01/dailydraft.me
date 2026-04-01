@@ -60,7 +60,7 @@ export function BottomTabBar() {
                 )}
               </span>
 
-              <span className={`text-[0.625rem] ${isActive ? 'font-semibold' : 'font-normal'}`}>
+              <span className={`text-[10px] ${isActive ? 'font-semibold' : 'font-normal'}`}>
                 {tab.label}
               </span>
             </Link>

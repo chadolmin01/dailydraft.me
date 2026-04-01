@@ -30,7 +30,7 @@ export default function GlobalError({
             <span className="text-white font-black text-2xl font-mono">!</span>
           </div>
 
-          <p className="text-[0.625rem] font-medium text-txt-tertiary mb-2">
+          <p className="text-[10px] font-medium text-txt-tertiary mb-2">
             SOMETHING WENT WRONG
           </p>
 
@@ -43,7 +43,7 @@ export default function GlobalError({
           </p>
 
           {error.digest && (
-            <p className="text-[0.625rem] font-mono text-txt-disabled mb-6">
+            <p className="text-[10px] font-mono text-txt-disabled mb-6">
               Error ID: {error.digest}
             </p>
           )}

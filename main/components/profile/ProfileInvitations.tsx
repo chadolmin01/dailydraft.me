@@ -13,11 +13,11 @@ export function ProfileInvitations() {
   return (
     <section className="mb-6">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-[0.625rem] font-medium text-txt-tertiary flex items-center gap-2">
+        <h3 className="text-[10px] font-medium text-txt-tertiary flex items-center gap-2">
           <span className="w-5 h-5 bg-brand text-white flex items-center justify-center text-[0.5rem] font-bold">I</span>
           RECEIVED INVITATIONS
           {receivedInvitations.filter(i => i.status === 'pending').length > 0 && (
-            <span className="text-[0.625rem] font-mono font-bold bg-indicator-alert text-white px-1.5 py-0.5">
+            <span className="text-[10px] font-mono font-bold bg-indicator-alert text-white px-1.5 py-0.5">
               {receivedInvitations.filter(i => i.status === 'pending').length} PENDING
             </span>
           )}
@@ -34,15 +34,15 @@ export function ProfileInvitations() {
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[0.625rem] font-mono font-bold bg-brand-bg text-brand px-1.5 py-0.5 border border-brand-border">
+                    <span className="text-[10px] font-mono font-bold bg-brand-bg text-brand px-1.5 py-0.5 border border-brand-border">
                       {inv.role}
                     </span>
-                    <span className="text-[0.625rem] font-mono font-bold bg-indicator-premium/10 text-indicator-premium-border px-1.5 py-0.5 border border-indicator-premium-border/20">PENDING</span>
+                    <span className="text-[10px] font-mono font-bold bg-indicator-premium/10 text-indicator-premium-border px-1.5 py-0.5 border border-indicator-premium-border/20">PENDING</span>
                   </div>
                   {inv.message && (
                     <p className="text-xs text-txt-tertiary line-clamp-2 border-l border-border pl-2 mt-1">{inv.message}</p>
                   )}
-                  <p className="text-[0.625rem] font-mono text-txt-tertiary mt-1">
+                  <p className="text-[10px] font-mono text-txt-tertiary mt-1">
                     {new Date(inv.created_at).toLocaleDateString('ko-KR')}
                   </p>
                 </div>
@@ -81,16 +81,16 @@ export function ProfileInvitations() {
               <div className="flex items-center gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-[0.625rem] font-mono font-bold bg-brand-bg text-brand px-1.5 py-0.5 border border-brand-border">
+                    <span className="text-[10px] font-mono font-bold bg-brand-bg text-brand px-1.5 py-0.5 border border-brand-border">
                       {inv.role}
                     </span>
-                    <span className={`text-[0.625rem] font-mono font-bold px-1.5 py-0.5 border ${
+                    <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 border ${
                       inv.status === 'accepted' ? 'bg-status-success-bg text-indicator-online border-indicator-online/20' : 'bg-surface-sunken text-txt-tertiary border-border'
                     }`}>
                       {inv.status === 'accepted' ? 'ACCEPTED' : 'DECLINED'}
                     </span>
                   </div>
-                  <p className="text-[0.625rem] font-mono text-txt-tertiary mt-0.5">
+                  <p className="text-[10px] font-mono text-txt-tertiary mt-0.5">
                     {new Date(inv.created_at).toLocaleDateString('ko-KR')}
                   </p>
                 </div>

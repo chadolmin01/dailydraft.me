@@ -260,7 +260,7 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
 
               {/* Problem Field */}
               <div>
-                <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-2">
+                <label className="block text-[10px] font-medium text-txt-tertiary mb-2">
                   Problem
                   <span className="text-txt-disabled font-normal ml-1 normal-case tracking-normal">해결하려는 문제</span>
                 </label>
@@ -274,7 +274,7 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
 
               {/* Solution Field */}
               <div>
-                <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-2">
+                <label className="block text-[10px] font-medium text-txt-tertiary mb-2">
                   Solution
                   <span className="text-txt-disabled font-normal ml-1 normal-case tracking-normal">핵심 솔루션</span>
                 </label>
@@ -288,7 +288,7 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
 
               {/* Target Field */}
               <div>
-                <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-2">
+                <label className="block text-[10px] font-medium text-txt-tertiary mb-2">
                   Target
                   <span className="text-txt-disabled font-normal ml-1 normal-case tracking-normal">타겟 고객</span>
                 </label>

@@ -17,7 +17,7 @@ export const ProjectContent: React.FC<ProjectContentProps> = ({
     <div className="md:col-span-3 space-y-8">
       {/* Description */}
       <section>
-        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
+        <h3 className="text-[10px] font-medium text-txt-tertiary mb-3">
           프로젝트 소개
         </h3>
         <p className="text-[0.9375rem] text-txt-secondary leading-[1.8] break-keep whitespace-pre-line">
@@ -28,7 +28,7 @@ export const ProjectContent: React.FC<ProjectContentProps> = ({
       {/* Pain Point */}
       {opportunity.pain_point && (
         <section className="bg-surface-card rounded-xl border border-border p-5">
-          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-2">
+          <h3 className="text-[10px] font-medium text-txt-tertiary mb-2">
             해결하려는 문제
           </h3>
           <p className="text-sm text-txt-secondary leading-relaxed break-keep">
@@ -42,7 +42,7 @@ export const ProjectContent: React.FC<ProjectContentProps> = ({
       <section>
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
-            <h3 className="text-[0.625rem] font-medium text-txt-tertiary">
+            <h3 className="text-[10px] font-medium text-txt-tertiary">
               주간 업데이트
             </h3>
             {!opportunity.show_updates && isOwner && (
@@ -60,7 +60,7 @@ export const ProjectContent: React.FC<ProjectContentProps> = ({
                     updates: { show_updates: !opportunity.show_updates },
                   })
                 }}
-                className={`text-[0.625rem] font-mono px-2 py-0.5 border transition-colors ${
+                className={`text-[10px] font-mono px-2 py-0.5 border transition-colors ${
                   opportunity.show_updates
                     ? 'bg-status-success-bg text-status-success-text border-status-success-text/30'
                     : 'bg-surface-sunken text-txt-disabled border-border hover:border-border'
@@ -90,9 +90,9 @@ export const ProjectContent: React.FC<ProjectContentProps> = ({
                       <span className="text-xs font-medium text-txt-tertiary">
                         {UPDATE_TYPE_CONFIG[update.update_type]?.label || update.update_type}
                       </span>
-                      <span className="text-[0.625rem] font-mono text-txt-disabled">Week {update.week_number}</span>
+                      <span className="text-[10px] font-mono text-txt-disabled">Week {update.week_number}</span>
                       {update.created_at && (
-                        <span className="text-[0.625rem] font-mono text-txt-disabled">· {timeAgo(update.created_at)}</span>
+                        <span className="text-[10px] font-mono text-txt-disabled">· {timeAgo(update.created_at)}</span>
                       )}
                     </div>
                     <h4 className="font-semibold text-txt-primary text-sm mb-0.5">{update.title}</h4>

@@ -39,7 +39,7 @@ export function Badge({ variant, className = '' }: BadgeProps) {
 
   return (
     <span
-      className={`text-[0.5625rem] font-medium px-2 py-0.5 rounded-full border shrink-0 ${config.className} ${className}`}
+      className={`text-[10px] font-medium px-2 py-0.5 rounded-full border shrink-0 ${config.className} ${className}`}
     >
       {config.label}
     </span>

@@ -18,7 +18,7 @@ export function Tooltip({ text, children, position = 'top', className = '' }: To
     <span className={`tooltip-container inline-flex ${className}`}>
       {children}
       <span
-        className={`tooltip-content ${positionClasses} px-2 py-1 text-[0.625rem] font-medium bg-surface-inverse text-txt-inverse rounded-lg shadow-lg`}
+        className={`tooltip-content ${positionClasses} px-2 py-1 text-[10px] font-medium bg-surface-inverse text-txt-inverse rounded-lg shadow-lg`}
       >
         {text}
         <span

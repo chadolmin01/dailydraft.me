@@ -132,7 +132,7 @@ export const InviteCodeModal: React.FC<InviteCodeModalProps> = ({
               {/* Code Input */}
               <form onSubmit={handleSubmit}>
                 <div className="mb-4">
-                  <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-2">
+                  <label className="block text-[10px] font-medium text-txt-tertiary mb-2">
                     초대 코드
                   </label>
                   <input

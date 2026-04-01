@@ -43,14 +43,14 @@ export const WorkflowSidebar: React.FC<WorkflowSidebarProps> = ({
     >
       {/* 헤더 */}
       <div className="p-6 border-b border-border">
-        <h2 className="text-[0.625rem] font-medium text-txt-primary mb-1">지원사업 준비</h2>
+        <h2 className="text-[10px] font-medium text-txt-primary mb-1">지원사업 준비</h2>
         <p className="text-xs text-txt-tertiary">3단계 워크플로우</p>
       </div>
 
       {/* 진행률 */}
       <div className="px-6 py-4 border-b border-border">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-[0.625rem] font-medium text-txt-tertiary">진행률</span>
+          <span className="text-[10px] font-medium text-txt-tertiary">진행률</span>
           <span className="text-xs font-bold text-txt-primary">{progress}%</span>
         </div>
         <div className="h-2 bg-surface-sunken overflow-hidden">
@@ -100,7 +100,7 @@ export const WorkflowSidebar: React.FC<WorkflowSidebarProps> = ({
                 <div className="flex items-center gap-2">
                   <span
                     className={`
-                      text-[0.625rem] font-medium
+                      text-[10px] font-medium
                       ${completed ? 'text-status-success-text' : ''}
                       ${current && !completed ? 'text-brand' : ''}
                       ${!current && !completed ? 'text-txt-disabled' : ''}
@@ -109,7 +109,7 @@ export const WorkflowSidebar: React.FC<WorkflowSidebarProps> = ({
                     Step {index + 1}
                   </span>
                   {current && !completed && (
-                    <span className="px-1.5 py-0.5 border border-brand text-brand text-[0.625rem] font-mono font-bold">
+                    <span className="px-1.5 py-0.5 border border-brand text-brand text-[10px] font-mono font-bold">
                       진행 중
                     </span>
                   )}
@@ -140,7 +140,7 @@ export const WorkflowSidebar: React.FC<WorkflowSidebarProps> = ({
       {validationScore !== undefined && (
         <div className="p-6 border-t border-border">
           <div className="bg-surface-sunken rounded-xl border border-border p-4">
-            <div className="text-[0.625rem] font-medium text-txt-tertiary mb-1">검증 점수</div>
+            <div className="text-[10px] font-medium text-txt-tertiary mb-1">검증 점수</div>
             <div className="flex items-baseline gap-1" aria-label={`검증 점수 ${validationScore}점`}>
               <span className="text-2xl font-black text-txt-primary">
                 {validationScore}

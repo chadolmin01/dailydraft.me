@@ -105,7 +105,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
     <div className="bg-surface-card rounded-xl border border-border">
       {/* Header */}
       <div className="p-4 border-b border-border">
-        <h3 className="text-[0.625rem] font-medium text-txt-tertiary flex items-center gap-2">
+        <h3 className="text-[10px] font-medium text-txt-tertiary flex items-center gap-2">
           <MessageCircle size={14} />
           {COMMENT_LABEL} ({comments.length})
         </h3>
@@ -144,7 +144,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
               {submitting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
             </button>
           </div>
-          <div className="text-[0.625rem] text-txt-tertiary font-mono text-right mt-1">
+          <div className="text-[10px] text-txt-tertiary font-mono text-right mt-1">
             {content.length}/500
           </div>
         </form>
@@ -233,7 +233,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
     <div className="p-4">
       {/* Author info */}
       <div className="flex items-center gap-2 mb-2">
-        <div className="w-6 h-6 bg-surface-inverse text-txt-inverse rounded-full flex items-center justify-center text-[0.625rem] font-bold shrink-0">
+        <div className="w-6 h-6 bg-surface-inverse text-txt-inverse rounded-full flex items-center justify-center text-[10px] font-bold shrink-0">
           {cleanNickname(comment.nickname).charAt(0)}
         </div>
         <span className="font-bold text-sm text-txt-primary">{cleanNickname(comment.nickname)}</span>

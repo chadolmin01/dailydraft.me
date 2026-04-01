@@ -44,7 +44,7 @@ const ReflectionModal: React.FC<ReflectionModalProps> = ({
              </div>
              <div>
                 <h3 className="font-bold text-txt-primary text-sm">조언 반영하기</h3>
-                <p className="text-[0.625rem] text-txt-tertiary font-mono">피드백을 실행 계획으로 전환</p>
+                <p className="text-[10px] text-txt-tertiary font-mono">피드백을 실행 계획으로 전환</p>
              </div>
           </div>
           <button
@@ -57,7 +57,7 @@ const ReflectionModal: React.FC<ReflectionModalProps> = ({
 
         <div className="p-5 overflow-y-auto">
            <div className="mb-5">
-              <label className="text-[0.5625rem] font-medium text-txt-tertiary mb-2 block">Original</label>
+              <label className="text-[10px] font-medium text-txt-tertiary mb-2 block">Original</label>
               <div className="p-4 bg-surface-sunken rounded-xl border border-border text-sm text-txt-secondary leading-relaxed break-keep">
                 {reflectionModal.originalContent}
               </div>
@@ -65,7 +65,7 @@ const ReflectionModal: React.FC<ReflectionModalProps> = ({
 
            {reflectionModal.suggestedActions && reflectionModal.suggestedActions.length > 0 && (
                <div className="mb-5">
-                   <label className="flex items-center gap-2 text-[0.5625rem] font-medium text-txt-tertiary mb-2">
+                   <label className="flex items-center gap-2 text-[10px] font-medium text-txt-tertiary mb-2">
                        <Sparkles size={10} />
                        Quick Select
                    </label>
@@ -95,7 +95,7 @@ const ReflectionModal: React.FC<ReflectionModalProps> = ({
            )}
 
           <div>
-            <label className="text-[0.5625rem] font-medium text-txt-tertiary mb-2 block">
+            <label className="text-[10px] font-medium text-txt-tertiary mb-2 block">
                My Decision
             </label>
             <textarea
@@ -111,7 +111,7 @@ const ReflectionModal: React.FC<ReflectionModalProps> = ({
           {isAlreadyReflected && (
             <button
               onClick={onRemove}
-              className="mr-auto text-status-danger-text text-[0.625rem] font-medium hover:underline"
+              className="mr-auto text-status-danger-text text-[10px] font-medium hover:underline"
             >
               Cancel
             </button>

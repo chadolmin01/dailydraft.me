@@ -62,7 +62,7 @@ export function ExploreTabBar({
             >
               <LayoutGrid size={14} />
               프로젝트
-              {query && <span className="ml-1 text-[0.625rem] font-mono bg-brand-bg text-brand px-1.5 py-0.5">{projectCount}</span>}
+              {query && <span className="ml-1 text-[10px] font-mono bg-brand-bg text-brand px-1.5 py-0.5">{projectCount}</span>}
             </button>
             <button
               onClick={() => onTabChange('people')}
@@ -72,7 +72,7 @@ export function ExploreTabBar({
             >
               <Users size={14} />
               사람
-              {query && <span className="ml-1 text-[0.625rem] font-mono bg-brand-bg text-brand px-1.5 py-0.5">{peopleCount}</span>}
+              {query && <span className="ml-1 text-[10px] font-mono bg-brand-bg text-brand px-1.5 py-0.5">{peopleCount}</span>}
             </button>
           </div>
           {onMobileSearchToggle && (

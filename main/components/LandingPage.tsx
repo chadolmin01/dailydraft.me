@@ -25,7 +25,7 @@ const TechnicalDivider = () => (
   <div className="w-full h-px bg-border relative my-12">
     <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-3 bg-black"></div>
     <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-3 bg-black"></div>
-    <div className="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 bg-white px-2 text-[0.625rem] font-medium text-txt-disabled">
+    <div className="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 bg-white px-2 text-[10px] font-medium text-txt-disabled">
       SECTION BREAK
     </div>
   </div>
@@ -74,7 +74,7 @@ const MockDashboardUI = () => (
           <div>
              <div className="flex items-center gap-2 mb-1">
                 <span className="w-2 h-2 bg-indicator-online animate-pulse"></span>
-                <span className="text-[0.625rem] text-txt-disabled font-mono tracking-widest whitespace-nowrap">WORKSPACE / MAIN</span>
+                <span className="text-[10px] text-txt-disabled font-mono tracking-widest whitespace-nowrap">WORKSPACE / MAIN</span>
              </div>
              <h3 className="text-lg sm:text-xl font-bold text-txt-primary tracking-tight">Dashboard</h3>
           </div>
@@ -91,20 +91,20 @@ const MockDashboardUI = () => (
                  <div className="w-8 h-8 bg-surface-inverse text-txt-inverse flex items-center justify-center font-bold text-xs font-mono shrink-0">P1</div>
                  <div className="min-w-0">
                     <div className="font-bold text-sm truncate">Project Alpha</div>
-                    <div className="text-[0.625rem] text-txt-disabled font-mono truncate">STRATEGY</div>
+                    <div className="text-[10px] text-txt-disabled font-mono truncate">STRATEGY</div>
                  </div>
               </div>
-              <div className="flex flex-wrap gap-2 text-[0.625rem] font-mono">
+              <div className="flex flex-wrap gap-2 text-[10px] font-mono">
                  <span className="bg-surface-sunken px-1.5 py-0.5 border border-border">SEOUL</span>
               </div>
            </div>
 
            {/* Card 2 */}
            <div className="bg-surface-card p-3 sm:p-4 border-b sm:border-b-0 lg:border-r border-border flex flex-col justify-between">
-              <div className="text-[0.625rem] text-txt-disabled">Total Views</div>
+              <div className="text-[10px] text-txt-disabled">Total Views</div>
               <div>
                 <div className="text-2xl font-bold text-txt-primary font-mono tracking-tighter">1,240</div>
-                <div className="text-[0.625rem] text-status-success-text mt-1 font-mono">+12%</div>
+                <div className="text-[10px] text-status-success-text mt-1 font-mono">+12%</div>
               </div>
            </div>
 
@@ -112,12 +112,12 @@ const MockDashboardUI = () => (
            <div className="bg-brand-bg p-3 sm:p-4 flex flex-col justify-between relative overflow-hidden sm:col-span-2 lg:col-span-1">
                <div className="absolute top-0 right-0 w-8 h-8 border-l border-b border-brand-border"></div>
                <div className="flex justify-between items-start">
-                  <div className="text-[0.625rem] text-brand">Req</div>
+                  <div className="text-[10px] text-brand">Req</div>
                   <span className="w-2 h-2 bg-brand"></span>
                </div>
                <div>
                   <div className="text-2xl font-bold text-brand font-mono tracking-tighter">04</div>
-                  <div className="text-[0.625rem] text-brand mt-1 font-mono">WAITING</div>
+                  <div className="text-[10px] text-brand mt-1 font-mono">WAITING</div>
                </div>
            </div>
         </div>
@@ -126,23 +126,23 @@ const MockDashboardUI = () => (
         <div className="border border-border p-1">
            <div className="flex justify-between items-center bg-surface-sunken px-3 py-2 border-b border-border mb-1">
               <h4 className="font-medium text-xs text-txt-primary">Opportunities</h4>
-              <span className="text-[0.625rem] text-txt-disabled font-mono cursor-pointer hover:text-black hover:bg-surface-sunken px-1.5 py-0.5 -mr-1.5 transition-colors">ALL</span>
+              <span className="text-[10px] text-txt-disabled font-mono cursor-pointer hover:text-black hover:bg-surface-sunken px-1.5 py-0.5 -mr-1.5 transition-colors">ALL</span>
            </div>
            <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
               {/* Dark Card */}
               <div className="bg-[#111] p-4 text-white relative group">
-                 <div className="absolute top-3 right-3 border border-white/15 px-1.5 py-0.5 text-[0.625rem] font-mono text-status-success-text/70">98%</div>
+                 <div className="absolute top-3 right-3 border border-white/15 px-1.5 py-0.5 text-[10px] font-mono text-status-success-text/70">98%</div>
                  <div className="mb-3">
-                    <span className="text-[0.625rem] font-mono text-txt-tertiary block mb-1">SEED STAGE</span>
+                    <span className="text-[10px] font-mono text-txt-tertiary block mb-1">SEED STAGE</span>
                     <h5 className="font-bold text-sm leading-tight break-keep">AI Pet Health<br/>Platform</h5>
                  </div>
               </div>
 
                {/* Indigo Card */}
                <div className="bg-brand p-4 text-white relative">
-                 <div className="absolute top-3 right-3 bg-brand-hover px-1.5 py-0.5 text-[0.625rem] font-mono border border-brand">85%</div>
+                 <div className="absolute top-3 right-3 bg-brand-hover px-1.5 py-0.5 text-[10px] font-mono border border-brand">85%</div>
                  <div className="mb-3">
-                    <span className="text-[0.625rem] font-mono text-indigo-200 block mb-1">GOV SUPPORT</span>
+                    <span className="text-[10px] font-mono text-indigo-200 block mb-1">GOV SUPPORT</span>
                     <h5 className="font-bold text-sm leading-tight break-keep">2026 예비창업<br/>패키지 모집</h5>
                  </div>
               </div>
@@ -158,9 +158,9 @@ const MockAICard = () => (
       <div className="bg-black p-4 text-white flex items-center justify-between">
          <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-status-warning-text" />
-            <span className="text-[0.625rem] font-medium">AI ANALYSIS</span>
+            <span className="text-[10px] font-medium">AI ANALYSIS</span>
          </div>
-         <span className="text-[0.625rem] font-mono text-txt-disabled">v2.4</span>
+         <span className="text-[10px] font-mono text-txt-disabled">v2.4</span>
       </div>
 
       <div className="p-5 relative">
@@ -168,7 +168,7 @@ const MockAICard = () => (
          <div className="relative z-10">
             <div className="mb-4">
                <h4 className="text-lg font-bold mb-1 tracking-tight">Matches Found</h4>
-               <p className="text-[0.625rem] text-txt-tertiary font-mono">BASED ON VISION</p>
+               <p className="text-[10px] text-txt-tertiary font-mono">BASED ON VISION</p>
             </div>
 
             {/* Match Item 1 */}
@@ -179,7 +179,7 @@ const MockAICard = () => (
                      <div className="w-8 h-8 bg-surface-sunken flex items-center justify-center font-bold text-xs shrink-0">SJ</div>
                      <div>
                         <div className="font-bold text-sm text-txt-primary group-hover:text-brand">Sarah Jin</div>
-                        <div className="text-[0.625rem] text-txt-tertiary font-mono">ANGEL INVESTOR</div>
+                        <div className="text-[10px] text-txt-tertiary font-mono">ANGEL INVESTOR</div>
                      </div>
                   </div>
                   <div className="text-brand text-sm font-mono font-bold">94%</div>
@@ -196,7 +196,7 @@ const MockAICard = () => (
                      <div className="w-8 h-8 bg-surface-sunken flex items-center justify-center font-bold text-xs shrink-0">DC</div>
                      <div>
                         <div className="font-bold text-sm text-txt-primary">David Choi</div>
-                        <div className="text-[0.625rem] text-txt-tertiary font-mono">SENIOR BACKEND</div>
+                        <div className="text-[10px] text-txt-tertiary font-mono">SENIOR BACKEND</div>
                      </div>
                   </div>
                   <div className="text-txt-secondary text-sm font-mono font-bold">88%</div>
@@ -209,7 +209,7 @@ const MockAICard = () => (
       </div>
 
       <div className="bg-surface-sunken p-3 text-center border-t border-border">
-         <button className="text-[0.625rem] font-mono font-bold text-txt-secondary hover:text-black flex items-center justify-center gap-2 w-full transition-colors">
+         <button className="text-[10px] font-mono font-bold text-txt-secondary hover:text-black flex items-center justify-center gap-2 w-full transition-colors">
             VIEW REPORT <ArrowRight className="w-3 h-3" />
          </button>
       </div>
@@ -236,7 +236,7 @@ const Header: React.FC = () => {
         <div className="flex items-center space-x-6">
            <Link
              href="/login"
-             className="text-sm font-medium text-txt-tertiary hover:text-black hidden sm:block font-mono"
+             className="text-sm font-medium text-txt-tertiary hover:text-black transition-colors hidden sm:block font-mono"
            >
              Log in
            </Link>
@@ -336,7 +336,7 @@ const Hero: React.FC = () => {
       <div className="w-full lg:w-1/2 text-center lg:text-left relative z-10 animate-fade-in-up">
         <div className="inline-flex items-center px-3 py-1 bg-surface-card rounded-xl border border-border mb-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] lg:mx-0 mx-auto">
           <span className="w-2 h-2 bg-indicator-online mr-2 animate-pulse"></span>
-          <span className="text-[0.625rem] font-medium">System Operational v2.0</span>
+          <span className="text-[10px] font-medium">System Operational v2.0</span>
         </div>
 
         <h1 className="text-3xl sm:text-5xl md:text-6xl xl:text-7xl font-bold tracking-tighter text-txt-primary mb-8 leading-[1.1] break-keep">
@@ -378,7 +378,7 @@ const Hero: React.FC = () => {
           </div>
         )}
 
-        <div className="flex flex-wrap items-center lg:justify-start justify-center gap-4 sm:gap-6 text-[0.625rem] font-medium text-txt-disabled">
+        <div className="flex flex-wrap items-center lg:justify-start justify-center gap-4 sm:gap-6 text-[10px] font-medium text-txt-disabled">
            <span>Free Beta Access</span>
            <span className="hidden sm:inline">.</span>
            <span>No Credit Card</span>
@@ -438,7 +438,7 @@ const PainPoints: React.FC = () => {
             <FadeInView className="mb-20 text-center">
                 <div className="inline-flex items-center gap-2 px-3 py-1 border border-indicator-alert/30 bg-indicator-alert/10 text-indicator-alert mb-6 backdrop-blur-sm">
                     <div className="w-1.5 h-1.5 bg-indicator-alert animate-pulse"></div>
-                    <span className="text-[0.625rem] font-medium">SYSTEM CRITICAL WARNING</span>
+                    <span className="text-[10px] font-medium">SYSTEM CRITICAL WARNING</span>
                 </div>
 
                 <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 leading-tight break-keep">
@@ -460,7 +460,7 @@ const PainPoints: React.FC = () => {
                      className="bg-black border border-white/10 hover:border-white/30 transition-colors group relative flex flex-col"
                    >
                        <div className="border-b border-white/10 p-3 flex justify-between items-center bg-[#0a0a0a] group-hover:bg-[#151515] transition-colors">
-                          <span className="text-[0.625rem] font-mono text-white/40 group-hover:text-txt-disabled transition-colors truncate max-w-[9.375rem]">{item.path}</span>
+                          <span className="text-[10px] font-mono text-white/40 group-hover:text-txt-disabled transition-colors truncate max-w-[9.375rem]">{item.path}</span>
                           <div className="flex gap-1.5 opacity-50 group-hover:opacity-100 transition-opacity">
                              <div className="w-2.5 h-2.5 bg-indicator-alert/80"></div>
                              <div className="w-2.5 h-2.5 bg-status-warning-text/80"></div>
@@ -469,7 +469,7 @@ const PainPoints: React.FC = () => {
                        </div>
 
                        <div className="p-6 flex-1 flex flex-col">
-                           <div className="mb-4 font-mono text-[0.625rem] text-status-danger-text/70 bg-red-950/20 border border-red-900/30 px-2 py-1 self-start inline-block">
+                           <div className="mb-4 font-mono text-[10px] text-status-danger-text/70 bg-red-950/20 border border-red-900/30 px-2 py-1 self-start inline-block">
                              &gt; ERROR_CODE: {item.code}
                            </div>
                            <h3 className="text-xl font-bold mb-3 text-white">{item.title}</h3>
@@ -501,7 +501,7 @@ const Features: React.FC = () => {
            <div className="flex-1">
               <div className="flex items-center gap-2 mb-4">
                  <Target className="w-4 h-4 text-brand" />
-                 <span className="text-brand text-[0.625rem] font-medium">AI MATCHING ENGINE</span>
+                 <span className="text-brand text-[10px] font-medium">AI MATCHING ENGINE</span>
               </div>
               <h2 className="text-3xl sm:text-4xl font-bold text-txt-primary mb-6 leading-tight break-keep">
                  단순 연결이 아닌,<br/>
@@ -541,7 +541,7 @@ const Features: React.FC = () => {
            <div className="flex-1">
               <div className="flex items-center gap-2 mb-4">
                  <LayoutGrid className="w-4 h-4 text-status-success-text" />
-                 <span className="text-status-success-text text-[0.625rem] font-medium">STARTUP OS</span>
+                 <span className="text-status-success-text text-[10px] font-medium">STARTUP OS</span>
               </div>
               <h2 className="text-3xl sm:text-4xl font-bold text-txt-primary mb-6 leading-tight break-keep">
                  아이디어 구상부터 IR까지,<br/>
@@ -571,7 +571,7 @@ const Features: React.FC = () => {
               <div className="bg-surface-card rounded-xl border border-border shadow-lg overflow-hidden">
                  <div className="bg-surface-sunken border-b border-border p-4 flex justify-between items-center">
                     <h4 className="font-bold text-sm flex items-center gap-2 font-mono"><FileText className="w-4 h-4" /> DOCUMENTS.DIR</h4>
-                    <button className="bg-surface-card rounded-xl border border-border text-[0.625rem] px-2 py-1 flex items-center gap-1 font-mono hover:bg-surface-sunken"><Plus className="w-3 h-3"/> NEW</button>
+                    <button className="bg-surface-card rounded-xl border border-border text-[10px] px-2 py-1 flex items-center gap-1 font-mono hover:bg-surface-sunken transition-colors"><Plus className="w-3 h-3"/> NEW</button>
                  </div>
                  <div className="divide-y divide-border">
                     {[
@@ -585,11 +585,11 @@ const Features: React.FC = () => {
                              <div className="w-8 h-8 bg-surface-sunken rounded-xl border border-border text-txt-tertiary flex items-center justify-center group-hover:bg-brand group-hover:text-white transition-colors shrink-0"><FileText className="w-4 h-4" /></div>
                              <div className="min-w-0">
                                 <div className="text-sm font-bold text-txt-primary mb-0.5 truncate">{doc.name}</div>
-                                <div className="text-[0.625rem] text-txt-disabled font-mono">{doc.tag}</div>
+                                <div className="text-[10px] text-txt-disabled font-mono">{doc.tag}</div>
                              </div>
                           </div>
                           <div className="flex items-center gap-3 shrink-0">
-                             <span className={`text-[0.625rem] px-2 py-0.5 border font-mono ${
+                             <span className={`text-[10px] px-2 py-0.5 border font-mono ${
                                 doc.status === 'Final' ? 'bg-status-success-bg border-status-success-text/20 text-status-success-text' :
                                 doc.status === 'Review' ? 'bg-status-warning-bg border-status-warning-text/20 text-status-warning-text' :
                                 'bg-surface-sunken border-border text-txt-tertiary'
@@ -621,7 +621,7 @@ const LiveFeed: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
         <div className="flex items-center gap-2 justify-center">
             <span className="w-2 h-2 bg-indicator-alert animate-pulse"></span>
-            <span className="text-[0.625rem] font-medium text-txt-tertiary">LIVE SYSTEM ACTIVITY</span>
+            <span className="text-[10px] font-medium text-txt-tertiary">LIVE SYSTEM ACTIVITY</span>
         </div>
       </div>
 
@@ -637,13 +637,13 @@ const LiveFeed: React.FC = () => {
             {[...activities, ...activities, ...activities, ...activities].map((activity, i) => (
               <div key={i} className="flex-shrink-0 bg-surface-card rounded-xl border border-border p-4 w-72 shadow-sm hover:border-border transition-colors group">
                  <div className="flex justify-between items-start mb-2">
-                    <span className={`text-[0.625rem] font-mono px-1.5 py-0.5 border ${
+                    <span className={`text-[10px] font-mono px-1.5 py-0.5 border ${
                       activity.type === 'MATCH' ? 'bg-brand-bg border-brand-border text-brand' :
                       activity.type === 'CREATE' ? 'bg-status-success-bg border-status-success-text/20 text-status-success-text' :
                       activity.type === 'FUNDING' ? 'bg-status-warning-bg border-status-warning-text/20 text-status-warning-text' :
                       'bg-surface-sunken border-border text-txt-tertiary'
                     }`}>{activity.type}</span>
-                    <span className="text-[0.625rem] font-mono text-txt-disabled">{activity.time}</span>
+                    <span className="text-[10px] font-mono text-txt-disabled">{activity.time}</span>
                  </div>
                  <p className="text-xs font-medium text-txt-primary line-clamp-2">{activity.text}</p>
               </div>
@@ -682,7 +682,7 @@ const FinalCTA: React.FC = () => {
                   </Link>
                 </div>
 
-                <p className="mt-8 text-[0.625rem] font-medium text-white/40">
+                <p className="mt-8 text-[10px] font-medium text-white/40">
                     Join 2,000+ Founders Waiting
                 </p>
 

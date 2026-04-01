@@ -36,7 +36,7 @@ const GnbIconBtn = ({ label, onClick, children, className }: {
     >
       {children}
     </button>
-    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2.5 py-1 bg-surface-inverse text-txt-inverse text-[0.625rem] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-tooltip hidden md:block shadow-sm border border-surface-inverse">
+    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2.5 py-1 bg-surface-inverse text-txt-inverse text-[10px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-tooltip hidden md:block shadow-sm border border-surface-inverse">
       {label}
     </div>
   </div>
@@ -327,7 +327,7 @@ export const TopNavbar: React.FC = () => {
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
                     aria-label="프로필 메뉴"
                     aria-expanded={isMenuOpen}
-                    className={`w-10 h-10 rounded-full flex items-center justify-center text-[0.6875rem] font-bold transition-all border ${
+                    className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold transition-all border ${
                       isMenuOpen
                         ? 'bg-surface-inverse text-txt-inverse border-surface-inverse scale-95'
                         : 'bg-surface-sunken text-txt-secondary border-border-subtle hover:border-border'
@@ -347,7 +347,7 @@ export const TopNavbar: React.FC = () => {
                           </div>
                           <div className="min-w-0">
                             <p className="text-sm font-semibold text-txt-primary truncate">{displayName}</p>
-                            <p className="text-[0.6875rem] text-txt-tertiary truncate">{user?.email || ''}</p>
+                            <p className="text-xs text-txt-tertiary truncate">{user?.email || ''}</p>
                           </div>
                         </div>
                       </div>
@@ -360,7 +360,7 @@ export const TopNavbar: React.FC = () => {
                         <>
                           <div className="mx-3 border-t border-border-subtle" />
                           <div className="py-1.5 px-1.5">
-                            <p className="px-2.5 py-1 text-[0.625rem] text-txt-disabled">Admin</p>
+                            <p className="px-2.5 py-1 text-[10px] text-txt-disabled">Admin</p>
                             <DropdownItem icon={Shield} onClick={() => router.push('/admin')}>관리자 대시보드</DropdownItem>
                             <DropdownItem icon={User} onClick={() => router.push('/admin/users')}>사용자 관리</DropdownItem>
                             <DropdownItem icon={Briefcase} onClick={() => router.push('/admin/opportunities')}>기회 관리</DropdownItem>

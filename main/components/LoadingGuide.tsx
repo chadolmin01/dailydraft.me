@@ -118,7 +118,7 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
               </p>
             </div>
 
-            <div className="bg-surface-sunken px-4 py-2 border-t border-border flex justify-between items-center text-[0.5625rem] font-mono text-txt-disabled">
+            <div className="bg-surface-sunken px-4 py-2 border-t border-border flex justify-between items-center text-[10px] font-mono text-txt-disabled">
               <span>DRAFT OS v2.4.0</span>
               <span className="flex items-center gap-1.5">
                 READY
@@ -133,7 +133,7 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
           <div className="bg-surface-card rounded-xl border border-border shadow-lg overflow-hidden animate-slide-up-fade">
             {/* Header */}
             <div className="p-8 pb-6">
-              <span className="text-[0.625rem] font-medium text-txt-tertiary">
+              <span className="text-[10px] font-medium text-txt-tertiary">
                 NEXT STEP
               </span>
               <h2 className="text-lg font-bold text-txt-primary mt-1.5 break-keep">
@@ -182,10 +182,10 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
                 style={{ animationDelay: '600ms', animationFillMode: 'both' }}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-[0.625rem] font-medium text-txt-tertiary">
+                  <span className="text-[10px] font-medium text-txt-tertiary">
                     PROFILE
                   </span>
-                  <span className="text-[0.625rem] font-mono font-bold text-txt-primary">
+                  <span className="text-[10px] font-mono font-bold text-txt-primary">
                     {completion.pct}%
                   </span>
                 </div>
@@ -234,7 +234,7 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
             )}
 
             {/* Footer */}
-            <div className="bg-surface-sunken px-4 py-2 border-t border-border flex justify-between items-center text-[0.5625rem] font-mono text-txt-disabled">
+            <div className="bg-surface-sunken px-4 py-2 border-t border-border flex justify-between items-center text-[10px] font-mono text-txt-disabled">
               <span>DRAFT OS v2.4.0</span>
               <span className="flex items-center gap-1.5">
                 ONBOARDING

@@ -191,7 +191,7 @@ function ApiUsageSection({ apiUsage }: { apiUsage: UsageData['apiUsage'] }) {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-border">
           {windows.map(({ key, label }) => (
             <div key={key} className="text-center">
-              <div className="text-[0.625rem] font-medium text-txt-tertiary mb-1">{label}</div>
+              <div className="text-[10px] font-medium text-txt-tertiary mb-1">{label}</div>
               <div className="text-sm font-medium">
                 {apiUsage[key].remaining.toLocaleString()}
                 <span className="text-txt-disabled"> 남음</span>
@@ -308,7 +308,7 @@ export function UsageDashboard() {
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-xl font-bold text-txt-primary">{data.plan.nameKo} 플랜</h2>
-                <span className={`px-2 py-0.5 text-[0.625rem] font-mono font-bold ${colors.text} border ${colors.border}`}>
+                <span className={`px-2 py-0.5 text-[10px] font-mono font-bold ${colors.text} border ${colors.border}`}>
                   {data.plan.name.toUpperCase()}
                 </span>
               </div>

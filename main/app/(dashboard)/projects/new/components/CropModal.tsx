@@ -27,11 +27,11 @@ export function CropModal({ cropSrc, crop, zoom, cropQueueLength, onCropChange, 
         <div className="flex items-center justify-between px-4 py-2.5 border-b-2 border-border bg-surface-sunken">
           <div className="flex items-center gap-2">
             <Crop size={13} className="text-txt-tertiary" />
-            <span className="text-[0.625rem] font-medium text-txt-secondary">이미지 크롭</span>
-            <span className="text-[0.625rem] font-mono text-txt-disabled">16:9</span>
+            <span className="text-[10px] font-medium text-txt-secondary">이미지 크롭</span>
+            <span className="text-[10px] font-mono text-txt-disabled">16:9</span>
           </div>
           {cropQueueLength > 0 && (
-            <span className="text-[0.625rem] font-mono text-txt-disabled">
+            <span className="text-[10px] font-mono text-txt-disabled">
               +{cropQueueLength}장 대기
             </span>
           )}
@@ -54,7 +54,7 @@ export function CropModal({ cropSrc, crop, zoom, cropQueueLength, onCropChange, 
         {/* Controls */}
         <div className="px-4 py-3 space-y-3 bg-surface-card">
           <div className="flex items-center gap-3">
-            <span className="text-[0.625rem] text-txt-disabled w-6">줌</span>
+            <span className="text-[10px] text-txt-disabled w-6">줌</span>
             <input
               type="range"
               min={1}
@@ -64,7 +64,7 @@ export function CropModal({ cropSrc, crop, zoom, cropQueueLength, onCropChange, 
               onChange={e => onZoomChange(Number(e.target.value))}
               className="flex-1 h-1 accent-black"
             />
-            <span className="text-[0.625rem] font-mono text-txt-tertiary w-8 text-right">{zoom.toFixed(1)}x</span>
+            <span className="text-[10px] font-mono text-txt-tertiary w-8 text-right">{zoom.toFixed(1)}x</span>
           </div>
 
           <div className="flex gap-2">

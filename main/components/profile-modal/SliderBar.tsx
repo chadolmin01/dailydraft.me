@@ -10,12 +10,12 @@ export function SliderBar({ value, low, high, label, colorKey }: { value: number
           <span className={`w-1.5 h-1.5 rounded-full ${colors.dot}`} />
           {label}
         </span>
-        <span className={`text-[0.625rem] font-mono font-bold ${colors.text}`}>{value}/10</span>
+        <span className={`text-[10px] font-mono font-bold ${colors.text}`}>{value}/10</span>
       </div>
       <div className="h-2 bg-white rounded-xl border border-border-strong/50 overflow-hidden">
         <div className={`h-full ${colors.bar} rounded-xl transition-all`} style={{ width: `${pct}%`, opacity: 0.6 + (value / 10) * 0.4 }} />
       </div>
-      <div className="flex justify-between text-[0.5625rem] text-txt-tertiary">
+      <div className="flex justify-between text-[10px] text-txt-tertiary">
         <span>{low}</span>
         <span>{high}</span>
       </div>

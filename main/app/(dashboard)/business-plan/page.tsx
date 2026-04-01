@@ -155,7 +155,7 @@ function BusinessPlanPageContent() {
 
         {/* Template Selection */}
         <div className="mb-6">
-          <h2 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">양식 선택</h2>
+          <h2 className="text-[10px] font-medium text-txt-tertiary mb-4">양식 선택</h2>
           <p className="text-sm text-txt-secondary mb-6">
             작성하려는 정부지원사업에 맞는 양식을 선택하세요.
           </p>
@@ -235,7 +235,7 @@ function TemplateCard({ id, name, description, pages, features, recommended, onC
           <h3 className="font-semibold text-txt-primary">{name}</h3>
         </div>
         {recommended && (
-          <span className="px-2 py-0.5 border border-brand text-brand text-[0.625rem] font-mono font-bold">
+          <span className="px-2 py-0.5 border border-brand text-brand text-[10px] font-mono font-bold">
             추천
           </span>
         )}
@@ -246,7 +246,7 @@ function TemplateCard({ id, name, description, pages, features, recommended, onC
       <div className="flex items-center justify-between">
         <div className="flex flex-wrap gap-1">
           {features.slice(0, 2).map((feature, idx) => (
-            <span key={idx} className="px-2 py-0.5 bg-surface-sunken text-txt-secondary text-[0.625rem] font-mono border border-border">
+            <span key={idx} className="px-2 py-0.5 bg-surface-sunken text-txt-secondary text-[10px] font-mono border border-border">
               {feature}
             </span>
           ))}

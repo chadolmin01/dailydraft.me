@@ -46,7 +46,7 @@ export function ExploreSidebar({
       {/* AI 추천 인재 — 최상단 배치 */}
       {onSelectProfile && (
         <div className="bg-surface-card rounded-xl border border-border p-4">
-          <h3 className="text-[0.6875rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
+          <h3 className="text-xs font-medium text-txt-tertiary mb-3 flex items-center gap-2">
             {showLoading ? (
               <span className="flex items-center gap-1.5">
                 <Sparkles size={10} className="animate-pulse text-brand" />
@@ -73,9 +73,9 @@ export function ExploreSidebar({
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-txt-primary truncate">{cleanNickname(rec.nickname || '')}</p>
-                    <p className="text-[0.6875rem] text-txt-tertiary truncate">{rec.match_reason}</p>
+                    <p className="text-xs text-txt-tertiary truncate">{rec.match_reason}</p>
                   </div>
-                  <span className="text-[0.625rem] font-bold text-brand shrink-0">{rec.match_score}%</span>
+                  <span className="text-[10px] font-bold text-brand shrink-0">{rec.match_score}%</span>
                 </button>
               ))
             ) : (
@@ -86,9 +86,9 @@ export function ExploreSidebar({
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-txt-primary truncate">{t.name}</p>
-                    <p className="text-[0.6875rem] text-txt-tertiary truncate">{t.university || t.role}</p>
+                    <p className="text-xs text-txt-tertiary truncate">{t.university || t.role}</p>
                   </div>
-                  <span className={`text-[0.625rem] font-bold shrink-0 ${t.status === 'OPEN' ? 'text-indicator-online' : 'text-txt-tertiary'}`}>
+                  <span className={`text-[10px] font-bold shrink-0 ${t.status === 'OPEN' ? 'text-indicator-online' : 'text-txt-tertiary'}`}>
                     {t.status}
                   </span>
                 </button>
@@ -108,7 +108,7 @@ export function ExploreSidebar({
 
       {/* 트렌딩 태그 */}
       <div className="bg-surface-card rounded-xl border border-border p-4">
-        <h3 className="text-[0.6875rem] font-medium text-txt-tertiary mb-3">
+        <h3 className="text-xs font-medium text-txt-tertiary mb-3">
           {activeTab === 'projects' ? '트렌딩' : '인기 스킬'}
         </h3>
         <div className="space-y-1.5">
@@ -125,7 +125,7 @@ export function ExploreSidebar({
                     <span className="w-4 h-4 bg-surface-sunken rounded-xl border border-border flex items-center justify-center text-[0.5rem] font-mono text-txt-disabled">{idx + 1}</span>
                     {item.tag}
                   </span>
-                  <span className="text-[0.625rem] font-mono text-txt-disabled">{item.count}</span>
+                  <span className="text-[10px] font-mono text-txt-disabled">{item.count}</span>
                 </div>
                 <div className="w-full h-1 bg-surface-sunken rounded-xl border border-border overflow-hidden">
                   <div className="h-full bg-indicator-trending/60 transition-all group-hover:bg-indicator-trending" style={{ width: `${barWidth}%` }} />
@@ -139,7 +139,7 @@ export function ExploreSidebar({
       {/* 필터 */}
       {activeTab === 'projects' && (
         <div className="bg-surface-card rounded-xl border border-border p-4">
-          <h3 className="text-[0.6875rem] font-medium text-txt-tertiary mb-3">필터</h3>
+          <h3 className="text-xs font-medium text-txt-tertiary mb-3">필터</h3>
           <label className="flex items-center gap-2.5 text-sm text-txt-secondary cursor-pointer group">
             <div className={`w-4 h-4 border flex items-center justify-center transition-all ${
               recruitingOnly ? 'bg-indicator-online border-indicator-online' : 'border-border group-hover:border-txt-secondary'
@@ -155,7 +155,7 @@ export function ExploreSidebar({
             모집 중만 보기
           </label>
           <div className="mt-3 pt-3 border-t border-border">
-            <p className="text-[0.625rem] font-mono text-txt-disabled flex items-center gap-1.5">
+            <p className="text-[10px] font-mono text-txt-disabled flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 bg-indicator-online animate-pulse" />
               {recruitingOnly ? 'ACTIVE FILTER ON' : 'NO FILTER APPLIED'}
             </p>
@@ -165,25 +165,25 @@ export function ExploreSidebar({
 
       {activeTab === 'people' && (
         <div className="bg-surface-card rounded-xl border border-border p-4">
-          <h3 className="text-[0.6875rem] font-medium text-txt-tertiary mb-3">정보</h3>
+          <h3 className="text-xs font-medium text-txt-tertiary mb-3">정보</h3>
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
               <span className="text-txt-tertiary">공개 프로필</span>
-              <span className="text-[0.625rem] font-mono font-bold bg-surface-sunken px-1.5 py-0.5 text-txt-primary">
+              <span className="text-[10px] font-mono font-bold bg-surface-sunken px-1.5 py-0.5 text-txt-primary">
                 {categories.find(c => c.id === 'all')?.count ?? 0}
               </span>
             </div>
             {selectedCategory !== 'all' && (
               <div className="flex items-center justify-between text-sm">
                 <span className="text-txt-tertiary">필터 결과</span>
-                <span className="text-[0.625rem] font-mono font-bold bg-brand-bg px-1.5 py-0.5 text-brand">
+                <span className="text-[10px] font-mono font-bold bg-brand-bg px-1.5 py-0.5 text-brand">
                   {categories.find(c => c.id === selectedCategory)?.count ?? 0}
                 </span>
               </div>
             )}
           </div>
           <div className="mt-3 pt-3 border-t border-border">
-            <p className="text-[0.625rem] font-mono text-txt-disabled flex items-center gap-1.5">
+            <p className="text-[10px] font-mono text-txt-disabled flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 bg-brand animate-pulse" />
               {selectedCategory !== 'all' ? 'ROLE FILTER ON' : 'ALL ROLES'}
             </p>

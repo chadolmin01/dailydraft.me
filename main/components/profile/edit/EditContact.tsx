@@ -19,7 +19,7 @@ export const EditContact: React.FC<EditContactProps & EditSocialLinksProps> = ({
     <>
       {/* 연락처 */}
       <section>
-        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4 flex items-center gap-2">
+        <h3 className="text-[10px] font-medium text-txt-tertiary mb-4 flex items-center gap-2">
           <Mail size={14} /> 연락처
         </h3>
         <div>
@@ -39,7 +39,7 @@ export const EditContact: React.FC<EditContactProps & EditSocialLinksProps> = ({
 
       {/* 소셜 링크 */}
       <section>
-        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4 flex items-center gap-2">
+        <h3 className="text-[10px] font-medium text-txt-tertiary mb-4 flex items-center gap-2">
           <Link size={14} /> 소셜 링크
         </h3>
         <div className="space-y-3">

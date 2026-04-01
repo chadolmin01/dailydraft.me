@@ -74,7 +74,7 @@ export const EditUpdateForm: React.FC<EditUpdateFormProps> = ({
         {/* Week + Type */}
         <div className="flex gap-3">
           <div className="w-24">
-            <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-1">Week</label>
+            <label className="block text-[10px] font-medium text-txt-tertiary mb-1">Week</label>
             <input
               type="number"
               min={1}
@@ -84,7 +84,7 @@ export const EditUpdateForm: React.FC<EditUpdateFormProps> = ({
             />
           </div>
           <div className="flex-1">
-            <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-1">유형</label>
+            <label className="block text-[10px] font-medium text-txt-tertiary mb-1">유형</label>
             <div className="flex flex-wrap gap-1.5">
               {UPDATE_TYPES.map((t) => (
                 <button
@@ -106,7 +106,7 @@ export const EditUpdateForm: React.FC<EditUpdateFormProps> = ({
 
         {/* Title */}
         <div>
-          <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-1">제목</label>
+          <label className="block text-[10px] font-medium text-txt-tertiary mb-1">제목</label>
           <input
             type="text"
             value={title}
@@ -114,14 +114,14 @@ export const EditUpdateForm: React.FC<EditUpdateFormProps> = ({
             maxLength={100}
             className="w-full px-3 py-2 border border-border text-base sm:text-sm focus:outline-none focus:border-border bg-surface-card rounded-xl text-txt-primary"
           />
-          <div className="text-[0.625rem] text-txt-tertiary font-mono text-right mt-1">
+          <div className="text-[10px] text-txt-tertiary font-mono text-right mt-1">
             {title.length}/100
           </div>
         </div>
 
         {/* Content */}
         <div>
-          <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-1">내용</label>
+          <label className="block text-[10px] font-medium text-txt-tertiary mb-1">내용</label>
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
@@ -129,7 +129,7 @@ export const EditUpdateForm: React.FC<EditUpdateFormProps> = ({
             maxLength={2000}
             className="w-full px-3 py-2 border border-border text-base sm:text-sm focus:outline-none focus:border-border resize-none bg-surface-card rounded-xl text-txt-primary"
           />
-          <div className="text-[0.625rem] text-txt-tertiary font-mono text-right mt-1">
+          <div className="text-[10px] text-txt-tertiary font-mono text-right mt-1">
             {content.length}/2000
           </div>
         </div>

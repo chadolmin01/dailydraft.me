@@ -179,19 +179,19 @@ export const ValidatedIdeasPage: React.FC = () => {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div className="bg-surface-card rounded-xl border border-border shadow-md p-4">
           <div className="text-2xl font-bold text-txt-primary">{ideas.length}</div>
-          <div className="text-[0.625rem] font-medium text-txt-tertiary">전체 아이디어</div>
+          <div className="text-[10px] font-medium text-txt-tertiary">전체 아이디어</div>
         </div>
         <div className="bg-surface-card rounded-xl border border-border shadow-md p-4">
           <div className="text-2xl font-bold text-status-info-text">{ideas.filter(i => hasArtifacts(i)).length}</div>
-          <div className="text-[0.625rem] font-medium text-txt-tertiary">문서 생성됨</div>
+          <div className="text-[10px] font-medium text-txt-tertiary">문서 생성됨</div>
         </div>
         <div className="bg-surface-card rounded-xl border border-border shadow-md p-4">
           <div className="text-2xl font-bold text-indicator-premium-border">{ideas.length > 0 ? Math.round(ideas.reduce((sum, i) => sum + (i.score ?? 0), 0) / ideas.length) : 0}</div>
-          <div className="text-[0.625rem] font-medium text-txt-tertiary">평균 점수</div>
+          <div className="text-[10px] font-medium text-txt-tertiary">평균 점수</div>
         </div>
         <div className="bg-surface-card rounded-xl border border-border shadow-md p-4">
           <div className="text-2xl font-bold text-status-success-text">{ideas.reduce((sum, i) => sum + getAdviceCount(i), 0)}</div>
-          <div className="text-[0.625rem] font-medium text-txt-tertiary">총 인사이트</div>
+          <div className="text-[10px] font-medium text-txt-tertiary">총 인사이트</div>
         </div>
       </div>
 
@@ -254,7 +254,7 @@ export const ValidatedIdeasPage: React.FC = () => {
                   <div className="flex items-center gap-3 text-xs text-txt-tertiary">
                     <span className="flex items-center gap-1"><Calendar size={12} aria-hidden="true" />{idea.created_at ? new Date(idea.created_at).toLocaleDateString('ko-KR') : '-'}</span>
                     <span className="flex items-center gap-1"><MessageSquare size={12} />{adviceList.length}개 인사이트</span>
-                    {idea.validation_level && (<span className={`px-1.5 py-0.5 text-[0.625rem] font-bold border ${idea.validation_level === 'DEFENSE' ? 'bg-status-danger-bg text-status-danger-text border-status-danger-text/20' : idea.validation_level === 'MVP' ? 'bg-status-info-bg text-status-info-text border-status-info-text/20' : 'bg-status-warning-bg text-status-warning-text border-status-warning-text/20'}`}>{idea.validation_level}</span>)}
+                    {idea.validation_level && (<span className={`px-1.5 py-0.5 text-[10px] font-bold border ${idea.validation_level === 'DEFENSE' ? 'bg-status-danger-bg text-status-danger-text border-status-danger-text/20' : idea.validation_level === 'MVP' ? 'bg-status-info-bg text-status-info-text border-status-info-text/20' : 'bg-status-warning-bg text-status-warning-text border-status-warning-text/20'}`}>{idea.validation_level}</span>)}
                     {hasArtifacts(idea) && (<span className="flex items-center gap-1 text-status-info-text"><FileText size={12} />문서</span>)}
                   </div>
                 </div>
@@ -291,11 +291,11 @@ export const ValidatedIdeasPage: React.FC = () => {
             </div>
             <div className="p-6 overflow-y-auto flex-1 space-y-6">
               <div>
-                <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-2">프로젝트 아이디어</h4>
+                <h4 className="text-[10px] font-medium text-txt-tertiary mb-2">프로젝트 아이디어</h4>
                 <p className="text-txt-secondary leading-relaxed bg-surface-sunken p-4 border border-border">{selectedIdea.project_idea}</p>
               </div>
-              {(() => { const adviceList = getAdviceList(selectedIdea); if (adviceList.length === 0) return null; return (<div><h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">AI 인사이트 ({adviceList.length}개)</h4><ul className="space-y-2" role="list">{adviceList.map((advice, i) => (<li key={i} className="flex items-start gap-3 p-3 bg-status-info-bg border border-status-info-text/20"><span className="w-6 h-6 bg-status-info-bg text-status-info-text flex items-center justify-center text-xs font-medium shrink-0" aria-hidden="true">{i + 1}</span><p className="text-sm text-txt-secondary leading-relaxed">{advice}</p></li>))}</ul></div>) })()}
-              {(() => { const artifacts = selectedIdea.artifacts as { prd?: string; jd?: string } | null; if (!artifacts || (!artifacts.prd && !artifacts.jd)) return null; return (<div><h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-2">생성된 문서</h4><div className="flex gap-2">{artifacts.prd && (<span className="px-4 py-2 bg-brand-bg text-brand text-sm font-medium flex items-center gap-2 border border-brand-border"><FileText size={14} />PRD 문서</span>)}{artifacts.jd && (<span className="px-4 py-2 bg-purple-100 text-purple-700 text-sm font-medium flex items-center gap-2 border border-purple-200"><FileText size={14} />채용 공고</span>)}</div></div>) })()}
+              {(() => { const adviceList = getAdviceList(selectedIdea); if (adviceList.length === 0) return null; return (<div><h4 className="text-[10px] font-medium text-txt-tertiary mb-3">AI 인사이트 ({adviceList.length}개)</h4><ul className="space-y-2" role="list">{adviceList.map((advice, i) => (<li key={i} className="flex items-start gap-3 p-3 bg-status-info-bg border border-status-info-text/20"><span className="w-6 h-6 bg-status-info-bg text-status-info-text flex items-center justify-center text-xs font-medium shrink-0" aria-hidden="true">{i + 1}</span><p className="text-sm text-txt-secondary leading-relaxed">{advice}</p></li>))}</ul></div>) })()}
+              {(() => { const artifacts = selectedIdea.artifacts as { prd?: string; jd?: string } | null; if (!artifacts || (!artifacts.prd && !artifacts.jd)) return null; return (<div><h4 className="text-[10px] font-medium text-txt-tertiary mb-2">생성된 문서</h4><div className="flex gap-2">{artifacts.prd && (<span className="px-4 py-2 bg-brand-bg text-brand text-sm font-medium flex items-center gap-2 border border-brand-border"><FileText size={14} />PRD 문서</span>)}{artifacts.jd && (<span className="px-4 py-2 bg-purple-100 text-purple-700 text-sm font-medium flex items-center gap-2 border border-purple-200"><FileText size={14} />채용 공고</span>)}</div></div>) })()}
             </div>
             <div className="px-6 py-4 border-t border-border flex items-center justify-between shrink-0">
               <button type="button" onClick={() => setDeleteTarget(selectedIdea.id)} disabled={deleteIdea.isPending} className="flex items-center gap-2 px-4 py-2 text-status-danger-text hover:bg-status-danger-bg transition-colors text-sm disabled:opacity-50 border border-transparent hover:border-status-danger-text/20"><Trash2 size={16} />삭제</button>

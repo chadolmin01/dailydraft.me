@@ -251,7 +251,7 @@ export default function ProfileEditPage() {
             <button
               onClick={handleSave}
               disabled={updateProfile.isPending}
-              className="flex items-center gap-1.5 px-5 py-2 bg-surface-inverse text-txt-inverse text-[0.625rem] font-medium border border-surface-inverse hover:bg-surface-inverse/90 disabled:opacity-50 transition-all hover:opacity-90 active:scale-[0.97]"
+              className="flex items-center gap-1.5 px-5 py-2 bg-surface-inverse text-txt-inverse text-[10px] font-medium border border-surface-inverse hover:bg-surface-inverse/90 disabled:opacity-50 transition-all hover:opacity-90 active:scale-[0.97]"
             >
               {updateProfile.isPending ? <Loader2 size={12} className="animate-spin" /> : <Save size={12} />}
               {saved ? 'Saved' : 'Save'}
@@ -312,7 +312,7 @@ export default function ProfileEditPage() {
                   <div>
                     <label className={fieldLabel}>자기소개</label>
                     <textarea value={bio} onChange={(e) => setBio(e.target.value)} maxLength={500} placeholder="자신을 소개해주세요. 어떤 일을 하고, 어떤 프로젝트에 관심이 있는지 자유롭게 작성하세요." rows={4} className={`${inputClass} resize-none`} />
-                    <p className="text-[0.625rem] font-mono text-txt-tertiary mt-1 text-right">{bio.length}/500</p>
+                    <p className="text-[10px] font-mono text-txt-tertiary mt-1 text-right">{bio.length}/500</p>
                   </div>
                 </div>
               </Card>
@@ -336,11 +336,11 @@ export default function ProfileEditPage() {
                       <Image src={profile.cover_image_url} alt="cover" fill className="object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <span className="text-[0.625rem] font-mono text-txt-tertiary flex items-center gap-1.5"><ImageIcon size={12} /> 커버 이미지</span>
+                        <span className="text-[10px] font-mono text-txt-tertiary flex items-center gap-1.5"><ImageIcon size={12} /> 커버 이미지</span>
                       </div>
                     )}
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 flex items-center justify-center transition-colors">
-                      <span className="text-[0.625rem] font-mono text-white opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1"><Camera size={11} /> 변경</span>
+                      <span className="text-[10px] font-mono text-white opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1"><Camera size={11} /> 변경</span>
                     </div>
                     {uploadingCover && <div className="absolute inset-0 bg-black/50 flex items-center justify-center"><Loader2 size={14} className="animate-spin text-white" /></div>}
                   </button>
@@ -427,7 +427,7 @@ export default function ProfileEditPage() {
                         <div className="flex items-center gap-1">
                           {SKILL_LEVELS.map((level) => (
                             <button key={level} type="button" onClick={() => updateSkillLevel(skill.name, level)}
-                              className={`px-2 py-1 text-[0.625rem] font-medium transition-colors ${skill.level === level ? 'bg-surface-inverse text-txt-inverse' : 'text-txt-tertiary hover:text-txt-secondary'}`}
+                              className={`px-2 py-1 text-[10px] font-medium transition-colors ${skill.level === level ? 'bg-surface-inverse text-txt-inverse' : 'text-txt-tertiary hover:text-txt-secondary'}`}
                             >{level}</button>
                           ))}
                         </div>
@@ -509,7 +509,7 @@ export default function ProfileEditPage() {
                         )}
                         <div className="flex-1 min-w-0">
                           <p className="text-sm text-txt-primary font-medium truncate">{item.title}</p>
-                          {item.description && <p className="text-[0.625rem] text-txt-tertiary truncate">{item.description}</p>}
+                          {item.description && <p className="text-[10px] text-txt-tertiary truncate">{item.description}</p>}
                         </div>
                         {item.link_url && (
                           <a href={item.link_url} target="_blank" rel="noopener noreferrer" className="p-1 text-txt-tertiary hover:text-txt-secondary"><ExternalLink size={14} /></a>
@@ -549,7 +549,7 @@ export default function ProfileEditPage() {
                       }} />
                       <div className="flex items-center gap-2">
                         <button type="button" onClick={() => portfolioImageInputRef.current?.click()} className="px-3 py-2 text-xs border border-border text-txt-secondary hover:bg-surface-sunken transition-colors flex items-center gap-1.5"><Camera size={12} /> 이미지 선택</button>
-                        {newPortfolioImage && <span className="text-[0.625rem] font-mono text-indicator-online">업로드 완료</span>}
+                        {newPortfolioImage && <span className="text-[10px] font-mono text-indicator-online">업로드 완료</span>}
                       </div>
                     </div>
                     <div className="flex items-center gap-2 pt-1">
@@ -585,7 +585,7 @@ export default function ProfileEditPage() {
                 <Card title="대학 인증" icon={<ShieldCheck size={16} className={uniVerified ? 'text-indicator-online' : 'text-txt-tertiary'} />}>
                   {uniVerified ? (
                     <div className="flex items-center gap-2">
-                      <span className="px-2 py-1 text-[0.625rem] font-bold bg-indicator-online text-white">VERIFIED</span>
+                      <span className="px-2 py-1 text-[10px] font-bold bg-indicator-online text-white">VERIFIED</span>
                       <span className="text-xs text-indicator-online">대학 인증이 완료되었습니다.</span>
                     </div>
                   ) : verifyStep === 'idle' ? (
@@ -636,7 +636,7 @@ export default function ProfileEditPage() {
                     <button
                       type="button"
                       onClick={() => router.push('/onboarding')}
-                      className="flex items-center gap-1.5 px-3 py-1.5 text-[0.625rem] font-medium border border-border text-txt-secondary hover:bg-surface-sunken hover:border-border transition-colors shrink-0"
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-medium border border-border text-txt-secondary hover:bg-surface-sunken hover:border-border transition-colors shrink-0"
                     >
                       <Sparkles size={12} />
                       AI 온보딩 다시하기
@@ -757,9 +757,9 @@ export default function ProfileEditPage() {
               <Cropper image={cropImage} crop={crop} zoom={zoom} aspect={cropType === 'avatar' ? 1 : 3} cropShape={cropType === 'avatar' ? 'round' : 'rect'} onCropChange={setCrop} onZoomChange={setZoom} onCropComplete={onCropComplete} />
             </div>
             <div className="flex items-center gap-3 px-4 py-3">
-              <span className="text-[0.625rem] font-mono text-txt-tertiary">ZOOM</span>
+              <span className="text-[10px] font-mono text-txt-tertiary">ZOOM</span>
               <input type="range" min={1} max={3} step={0.1} value={zoom} onChange={e => setZoom(Number(e.target.value))} className="flex-1 h-1.5 accent-brand cursor-pointer" />
-              <span className="text-[0.625rem] font-mono text-txt-tertiary w-8 text-right">{zoom.toFixed(1)}x</span>
+              <span className="text-[10px] font-mono text-txt-tertiary w-8 text-right">{zoom.toFixed(1)}x</span>
             </div>
             <div className="flex items-center justify-end gap-2 px-4 py-2.5 border-t-2 border-border">
               <button onClick={() => setCropImage(null)} className="py-2.5 px-4 text-xs font-medium border border-border text-txt-secondary hover:border-border transition-colors">취소</button>
@@ -780,7 +780,7 @@ function Card({ title, icon, children }: { title: string; icon?: React.ReactNode
     <div className="bg-surface-card rounded-xl border border-border shadow-md">
       <div className="flex items-center gap-2 px-5 sm:px-6 py-3 border-b border-border bg-surface-sunken">
         {icon}
-        <h3 className="text-[0.625rem] font-medium text-txt-tertiary">{title}</h3>
+        <h3 className="text-[10px] font-medium text-txt-tertiary">{title}</h3>
       </div>
       <div className="p-5 sm:p-6">
         {children}

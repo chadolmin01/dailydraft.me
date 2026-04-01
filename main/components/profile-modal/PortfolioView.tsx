@@ -35,7 +35,7 @@ export function PortfolioView({
           </div>
           <div>
             <p className="text-sm font-bold text-txt-primary">{cleanNickname(profile.nickname)}</p>
-            <p className="text-[0.625rem] font-mono text-txt-tertiary">{profile.desired_position || 'Explorer'}</p>
+            <p className="text-[10px] font-mono text-txt-tertiary">{profile.desired_position || 'Explorer'}</p>
           </div>
         </div>
       </div>
@@ -44,7 +44,7 @@ export function PortfolioView({
         {/* Portfolio Site */}
         {hasPortfolio && (
           <section>
-            <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-1">
+            <h3 className="text-[10px] font-medium text-txt-tertiary mb-3 flex items-center gap-1">
               <Globe size={11} /> PORTFOLIO SITE
             </h3>
             <div className="border border-border overflow-hidden">
@@ -56,7 +56,7 @@ export function PortfolioView({
                   href={profile.portfolio_url!}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1 px-2 py-1 text-[0.625rem] font-bold border border-border hover:bg-black hover:text-white transition-all shrink-0"
+                  className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold border border-border hover:bg-black hover:text-white transition-all shrink-0"
                 >
                   <ExternalLink size={10} />
                   새 탭에서 열기
@@ -78,7 +78,7 @@ export function PortfolioView({
         {/* GitHub */}
         {hasGithub && (
           <section>
-            <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-1">
+            <h3 className="text-[10px] font-medium text-txt-tertiary mb-3 flex items-center gap-1">
               <Github size={11} /> GITHUB
             </h3>
             <a
@@ -104,7 +104,7 @@ export function PortfolioView({
         {/* LinkedIn */}
         {hasLinkedin && (
           <section>
-            <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-1">
+            <h3 className="text-[10px] font-medium text-txt-tertiary mb-3 flex items-center gap-1">
               <Linkedin size={11} /> LINKEDIN
             </h3>
             <a
@@ -130,7 +130,7 @@ export function PortfolioView({
         {/* Skills in portfolio context */}
         {skills && skills.length > 0 && (
           <section>
-            <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-1">
+            <h3 className="text-[10px] font-medium text-txt-tertiary mb-3 flex items-center gap-1">
               <Code2 size={11} /> TECH STACK
             </h3>
             <div className="flex flex-wrap gap-2">
@@ -141,7 +141,7 @@ export function PortfolioView({
                 >
                   {skill.name}
                   <span className="text-txt-tertiary">·</span>
-                  <span className="text-txt-tertiary text-[0.625rem]">{skill.level}</span>
+                  <span className="text-txt-tertiary text-[10px]">{skill.level}</span>
                 </span>
               ))}
             </div>

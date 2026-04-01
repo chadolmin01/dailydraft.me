@@ -115,8 +115,8 @@ const TriangleVisual: React.FC<TriangleVisualProps> = ({ inputs, analyzing, comp
             strokeWidth={selectedView === Role.PM ? "3" : "2"}
             className="transition-colors duration-300"
             />
-            <text x={top.x} y={top.y - 26} textAnchor="middle" className={`text-[0.5625rem] font-bold uppercase tracking-wider ${selectedView === Role.PM ? 'fill-blue-600' : (pmSubmitted ? 'fill-blue-600' : 'fill-gray-400')}`}>기획</text>
-            <text x={top.x} y={top.y} dy=".3em" textAnchor="middle" className="text-[0.5625rem] font-mono fill-gray-500 pointer-events-none">PM</text>
+            <text x={top.x} y={top.y - 26} textAnchor="middle" className={`text-[10px] font-bold uppercase tracking-wider ${selectedView === Role.PM ? 'fill-blue-600' : (pmSubmitted ? 'fill-blue-600' : 'fill-gray-400')}`}>기획</text>
+            <text x={top.x} y={top.y} dy=".3em" textAnchor="middle" className="text-[10px] font-mono fill-gray-500 pointer-events-none">PM</text>
 
             {pmSubmitted && !completed && (
                  <circle cx={top.x + 14} cy={top.y - 14} r={6} fill="#22c55e" stroke="white" strokeWidth="2" />
@@ -137,8 +137,8 @@ const TriangleVisual: React.FC<TriangleVisualProps> = ({ inputs, analyzing, comp
             strokeWidth={selectedView === Role.DESIGNER ? "3" : "2"}
             className="transition-colors duration-300"
             />
-            <text x={left.x} y={left.y + 32} textAnchor="middle" className={`text-[0.5625rem] font-bold uppercase tracking-wider ${selectedView === Role.DESIGNER ? 'fill-pink-600' : (designSubmitted ? 'fill-pink-600' : 'fill-gray-400')}`}>디자인</text>
-            <text x={left.x} y={left.y} dy=".3em" textAnchor="middle" className="text-[0.5625rem] font-mono fill-gray-500 pointer-events-none">DS</text>
+            <text x={left.x} y={left.y + 32} textAnchor="middle" className={`text-[10px] font-bold uppercase tracking-wider ${selectedView === Role.DESIGNER ? 'fill-pink-600' : (designSubmitted ? 'fill-pink-600' : 'fill-gray-400')}`}>디자인</text>
+            <text x={left.x} y={left.y} dy=".3em" textAnchor="middle" className="text-[10px] font-mono fill-gray-500 pointer-events-none">DS</text>
 
             {designSubmitted && !completed && (
                  <circle cx={left.x + 14} cy={left.y - 14} r={6} fill="#22c55e" stroke="white" strokeWidth="2" />
@@ -159,8 +159,8 @@ const TriangleVisual: React.FC<TriangleVisualProps> = ({ inputs, analyzing, comp
             strokeWidth={selectedView === Role.DEV ? "3" : "2"}
             className="transition-colors duration-300"
             />
-            <text x={right.x} y={right.y + 32} textAnchor="middle" className={`text-[0.5625rem] font-bold uppercase tracking-wider ${selectedView === Role.DEV ? 'fill-emerald-600' : (devSubmitted ? 'fill-emerald-600' : 'fill-gray-400')}`}>개발</text>
-            <text x={right.x} y={right.y} dy=".3em" textAnchor="middle" className="text-[0.5625rem] font-mono fill-gray-500 pointer-events-none">DV</text>
+            <text x={right.x} y={right.y + 32} textAnchor="middle" className={`text-[10px] font-bold uppercase tracking-wider ${selectedView === Role.DEV ? 'fill-emerald-600' : (devSubmitted ? 'fill-emerald-600' : 'fill-gray-400')}`}>개발</text>
+            <text x={right.x} y={right.y} dy=".3em" textAnchor="middle" className="text-[10px] font-mono fill-gray-500 pointer-events-none">DV</text>
 
             {devSubmitted && !completed && (
                  <circle cx={right.x + 14} cy={right.y - 14} r={6} fill="#22c55e" stroke="white" strokeWidth="2" />
@@ -188,7 +188,7 @@ const TriangleVisual: React.FC<TriangleVisualProps> = ({ inputs, analyzing, comp
                     비전
                 </text>
             ) : (
-                <text x={center.x} y={center.y} dy=".3em" textAnchor="middle" fill="#cbd5e1" className="text-[0.5625rem] font-bold">
+                <text x={center.x} y={center.y} dy=".3em" textAnchor="middle" fill="#cbd5e1" className="text-[10px] font-bold">
                     {analyzing ? '...' : '?'}
                 </text>
             )}

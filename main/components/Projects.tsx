@@ -72,7 +72,7 @@ export const Projects: React.FC = () => {
 
               {/* 카테고리 */}
               <div className="bg-surface-card rounded-xl border border-border p-4">
-                <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
+                <h3 className="text-[10px] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
                   <span className="w-2 h-2 bg-surface-inverse" />
                   카테고리
                 </h3>
@@ -95,7 +95,7 @@ export const Projects: React.FC = () => {
 
               {/* 필터 */}
               <div className="bg-surface-card rounded-xl border border-border p-4">
-                <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
+                <h3 className="text-[10px] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
                   <span className="w-2 h-2 bg-brand" />
                   필터
                 </h3>
@@ -148,7 +148,7 @@ export const Projects: React.FC = () => {
                 <button
                   key={tab.id}
                   onClick={() => setSortBy(tab.id as typeof sortBy)}
-                  className={`flex items-center gap-1.5 px-4 py-2.5 text-[0.625rem] font-medium border-b -mb-px transition-colors ${
+                  className={`flex items-center gap-1.5 px-4 py-2.5 text-[10px] font-medium border-b -mb-px transition-colors ${
                     sortBy === tab.id
                       ? 'border-surface-inverse text-txt-primary'
                       : 'border-transparent text-txt-tertiary hover:text-txt-secondary'
@@ -200,22 +200,22 @@ export const Projects: React.FC = () => {
                           <div className="flex items-start justify-between gap-2">
                             <h3 className="font-semibold text-txt-primary text-sm truncate">{opp.title}</h3>
                             {daysLeft > 0 && (
-                              <span className="text-[0.625rem] font-mono font-bold text-status-danger-text bg-status-danger-bg px-1.5 py-0.5 border border-status-danger-text/20 flex-shrink-0">D-{daysLeft}</span>
+                              <span className="text-[10px] font-mono font-bold text-status-danger-text bg-status-danger-bg px-1.5 py-0.5 border border-status-danger-text/20 flex-shrink-0">D-{daysLeft}</span>
                             )}
                           </div>
                           <p className="text-xs text-txt-secondary mt-1 line-clamp-2">{opp.description}</p>
 
                           <div className="flex items-center gap-2 mt-2 flex-wrap">
                             {opp.needed_roles?.slice(0, 2).map((role: string) => (
-                              <span key={role} className="text-[0.625rem] font-mono font-bold bg-status-info-bg text-status-info-text px-2 py-0.5 border border-border">{role}</span>
+                              <span key={role} className="text-[10px] font-mono font-bold bg-status-info-bg text-status-info-text px-2 py-0.5 border border-border">{role}</span>
                             ))}
                             {opp.interest_tags?.slice(0, 2).map((tag: string) => (
-                              <span key={tag} className="text-[0.625rem] font-mono text-txt-tertiary">{tag}</span>
+                              <span key={tag} className="text-[10px] font-mono text-txt-tertiary">{tag}</span>
                             ))}
                           </div>
 
                           <div className="flex items-center justify-between mt-3 pt-2 border-t border-border">
-                            <div className="flex items-center gap-3 text-[0.625rem] font-mono text-txt-tertiary">
+                            <div className="flex items-center gap-3 text-[10px] font-mono text-txt-tertiary">
                               {opp.creator?.nickname && (
                                 <span className="flex items-center gap-1">
                                   <Users size={10} />
@@ -229,7 +229,7 @@ export const Projects: React.FC = () => {
                                 </span>
                               )}
                             </div>
-                            <div className="flex items-center gap-2 text-[0.625rem] font-mono text-txt-tertiary">
+                            <div className="flex items-center gap-2 text-[10px] font-mono text-txt-tertiary">
                               <span>{opp.applications_count || 0}명 지원</span>
                             </div>
                           </div>
@@ -248,7 +248,7 @@ export const Projects: React.FC = () => {
 
               {/* 인기 프로젝트 */}
               <div className="bg-surface-card rounded-xl border border-border p-4">
-                <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
+                <h3 className="text-[10px] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
                   <span className="w-2 h-2 bg-status-danger-text" />
                   <Flame size={10} /> 인기 프로젝트
                 </h3>
@@ -262,9 +262,9 @@ export const Projects: React.FC = () => {
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-txt-primary truncate">{opp.title}</p>
                         <div className="flex items-center gap-2 mt-1">
-                          <span className="text-[0.625rem] font-mono text-txt-tertiary">{opp.applications_count || 0}명 지원</span>
+                          <span className="text-[10px] font-mono text-txt-tertiary">{opp.applications_count || 0}명 지원</span>
                           {opp.creator?.nickname && (
-                            <span className="text-[0.625rem] font-mono text-txt-tertiary">by {opp.creator.nickname}</span>
+                            <span className="text-[10px] font-mono text-txt-tertiary">by {opp.creator.nickname}</span>
                           )}
                         </div>
                       </div>
@@ -291,7 +291,7 @@ export const Projects: React.FC = () => {
 
               {/* 커피챗 안내 */}
               <div className="bg-surface-card rounded-xl border border-border p-4">
-                <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
+                <h3 className="text-[10px] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
                   <span className="w-2 h-2 bg-status-warning-text" />
                   <Coffee size={10} /> 커피챗
                 </h3>

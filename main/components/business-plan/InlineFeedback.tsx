@@ -138,11 +138,11 @@ export const FeedbackTooltip: React.FC<FeedbackTooltipProps> = ({
     <div className={`absolute ${positionClasses[position]} z-50 w-72 animate-in fade-in duration-150`}>
       <div className={`${config.bg} shadow-lg p-3 text-white`}>
         <div className="flex items-start gap-2">
-          <span className={`px-1.5 py-0.5 ${config.badge} text-[0.625rem] font-bold`}>
+          <span className={`px-1.5 py-0.5 ${config.badge} text-[10px] font-bold`}>
             {config.text}
           </span>
           {potentialGain && (
-            <span className="px-1.5 py-0.5 bg-status-success-text text-[0.625rem] font-bold">
+            <span className="px-1.5 py-0.5 bg-status-success-text text-[10px] font-bold">
               +{potentialGain}점
             </span>
           )}
@@ -152,7 +152,7 @@ export const FeedbackTooltip: React.FC<FeedbackTooltipProps> = ({
 
         {suggestion && (
           <div className="mt-2 pt-2 border-t border-white/20">
-            <div className="text-[0.625rem] uppercase opacity-60 mb-1">수정 제안</div>
+            <div className="text-[10px] uppercase opacity-60 mb-1">수정 제안</div>
             <p className="text-sm opacity-90">{suggestion}</p>
           </div>
         )}
@@ -281,7 +281,7 @@ export const QuickFixButton: React.FC<QuickFixButtonProps> = ({
 
   const sizeClasses = {
     sm: 'px-2.5 py-1 text-xs',
-    xs: 'px-2 py-0.5 text-[0.625rem]',
+    xs: 'px-2 py-0.5 text-[10px]',
   }
 
   return (

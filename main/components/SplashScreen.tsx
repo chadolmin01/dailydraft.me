@@ -72,7 +72,7 @@ export function SplashScreen() {
         {/* Wordmark */}
         <div className="flex flex-col items-center gap-1.5">
           <span className="text-txt-primary font-bold text-2xl tracking-tight">Draft.</span>
-          <span className="text-txt-tertiary text-[0.6875rem] tracking-wide">
+          <span className="text-txt-tertiary text-xs tracking-wide">
             where projects begin
           </span>
         </div>
