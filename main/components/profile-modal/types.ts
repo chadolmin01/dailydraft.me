@@ -35,14 +35,14 @@ export const AFFILIATION_LABELS: Record<string, string> = {
   other: '기타',
 }
 
-export const TRAIT_COLORS: Record<string, { bar: string; dot: string; text: string }> = {
-  risk:          { bar: 'bg-neutral-800', dot: 'bg-neutral-600', text: 'text-txt-primary' },
-  time:          { bar: 'bg-neutral-700', dot: 'bg-neutral-500', text: 'text-txt-primary' },
-  communication: { bar: 'bg-neutral-600', dot: 'bg-neutral-400', text: 'text-txt-primary' },
-  decision:      { bar: 'bg-neutral-800', dot: 'bg-neutral-600', text: 'text-txt-primary' },
-  collaboration: { bar: 'bg-neutral-700', dot: 'bg-neutral-500', text: 'text-txt-primary' },
-  planning:      { bar: 'bg-neutral-600', dot: 'bg-neutral-400', text: 'text-txt-primary' },
-  perfectionism: { bar: 'bg-neutral-700', dot: 'bg-neutral-500', text: 'text-txt-primary' },
+export const TRAIT_COLORS: Record<string, { bar: string; barBg: string; dot: string; text: string; accent: string }> = {
+  risk:          { bar: 'bg-amber-500',  barBg: 'bg-amber-100',  dot: 'bg-amber-500',  text: 'text-amber-600',  accent: 'amber' },
+  time:          { bar: 'bg-emerald-500', barBg: 'bg-emerald-100', dot: 'bg-emerald-500', text: 'text-emerald-600', accent: 'emerald' },
+  communication: { bar: 'bg-blue-500',   barBg: 'bg-blue-100',   dot: 'bg-blue-500',   text: 'text-blue-600',   accent: 'blue' },
+  decision:      { bar: 'bg-violet-500', barBg: 'bg-violet-100', dot: 'bg-violet-500', text: 'text-violet-600', accent: 'violet' },
+  collaboration: { bar: 'bg-sky-500',    barBg: 'bg-sky-100',    dot: 'bg-sky-500',    text: 'text-sky-600',    accent: 'sky' },
+  planning:      { bar: 'bg-indigo-500', barBg: 'bg-indigo-100', dot: 'bg-indigo-500', text: 'text-indigo-600', accent: 'indigo' },
+  perfectionism: { bar: 'bg-rose-500',   barBg: 'bg-rose-100',   dot: 'bg-rose-500',   text: 'text-rose-600',   accent: 'rose' },
 }
 
 export const traitLabels = [

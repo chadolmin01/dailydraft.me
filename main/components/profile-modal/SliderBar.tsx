@@ -1,24 +1,67 @@
+'use client'
+
+import { useState, useEffect, useRef } from 'react'
 import { TRAIT_COLORS } from './types'
 
 export function SliderBar({ value, low, high, label, colorKey }: { value: number; low: string; high: string; label: string; colorKey?: string }) {
   const pct = Math.min(Math.max((value / 10) * 100, 5), 100)
-  const colors = (colorKey && TRAIT_COLORS[colorKey]) || { bar: 'bg-surface-inverse', dot: 'bg-surface-inverse', text: 'text-txt-disabled' }
+  const colors = (colorKey && TRAIT_COLORS[colorKey]) || { bar: 'bg-neutral-500', barBg: 'bg-neutral-100', dot: 'bg-neutral-500', text: 'text-neutral-600', accent: 'neutral' }
+  const [animated, setAnimated] = useState(false)
+  const [hovering, setHovering] = useState(false)
+  const barRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setAnimated(true), 100)
+    return () => clearTimeout(timer)
+  }, [])
+
+  // Interpret value
+  const getInterpretation = () => {
+    if (value <= 3) return low
+    if (value >= 8) return high
+    return '보통'
+  }
+
   return (
-    <div className="space-y-1">
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-txt-secondary flex items-center gap-1.5">
-          <span className={`w-1.5 h-1.5 rounded-full ${colors.dot}`} />
+    <div
+      className="group relative rounded-xl px-3 py-2.5 hover:bg-surface-sunken/50 transition-all cursor-default"
+      onMouseEnter={() => setHovering(true)}
+      onMouseLeave={() => setHovering(false)}
+    >
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-xs font-semibold text-txt-primary flex items-center gap-2">
+          <span className={`w-2 h-2 rounded-full ${colors.dot} ring-2 ring-offset-1 ${hovering ? 'ring-current scale-125' : 'ring-transparent'} transition-all`} style={{ color: `var(--tw-${colors.accent}-200, transparent)` }} />
           {label}
         </span>
-        <span className={`text-[10px] font-mono font-bold ${colors.text}`}>{value}/10</span>
+        <span className={`text-xs font-bold tabular-nums ${colors.text} transition-colors`}>
+          {value}<span className="text-txt-tertiary font-normal">/10</span>
+        </span>
       </div>
-      <div className="h-2 bg-white rounded-xl border border-border-strong/50 overflow-hidden">
-        <div className={`h-full ${colors.bar} rounded-xl transition-all`} style={{ width: `${pct}%`, opacity: 0.6 + (value / 10) * 0.4 }} />
+
+      <div ref={barRef} className={`relative h-2.5 ${colors.barBg} rounded-full overflow-hidden`}>
+        <div
+          className={`h-full ${colors.bar} rounded-full transition-all duration-700 ease-out`}
+          style={{ width: animated ? `${pct}%` : '0%' }}
+        />
+        {/* Thumb indicator */}
+        <div
+          className={`absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 ${colors.bar} rounded-full border-2 border-white shadow-md transition-all duration-700 ease-out ${hovering ? 'scale-125 shadow-lg' : ''}`}
+          style={{ left: animated ? `calc(${pct}% - 7px)` : '-7px' }}
+        />
       </div>
-      <div className="flex justify-between text-[10px] text-txt-tertiary">
-        <span>{low}</span>
-        <span>{high}</span>
+
+      <div className="flex justify-between mt-1.5">
+        <span className={`text-[10px] font-medium ${value <= 3 ? colors.text + ' font-bold' : 'text-txt-tertiary'} transition-colors`}>{low}</span>
+        <span className={`text-[10px] font-medium ${value >= 8 ? colors.text + ' font-bold' : 'text-txt-tertiary'} transition-colors`}>{high}</span>
       </div>
+
+      {/* Hover tooltip */}
+      {hovering && (
+        <div className="absolute -top-8 left-1/2 -translate-x-1/2 px-2.5 py-1 bg-surface-inverse text-txt-inverse text-[10px] font-medium rounded-lg shadow-lg whitespace-nowrap z-10 animate-[fadeIn_0.15s_ease-out]">
+          {getInterpretation()} ({value}점)
+          <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[var(--surface-inverse)]" />
+        </div>
+      )}
     </div>
   )
 }
