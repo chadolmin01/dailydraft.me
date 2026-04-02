@@ -5,7 +5,7 @@ import { Task, TaskStatus, TaskType, IntegrationState, PRDData } from '@/types';
 import { TaskCard } from './TaskCard';
 import { RoleFilter } from './RoleFilter';
 import { AnalysisPanel } from './AnalysisPanel';
-import { INITIAL_TASKS, MOCK_PRD, CURRENT_USER } from './constants';
+import { INITIAL_TASKS, EMPTY_PRD } from './constants';
 import { Plus, Layout, AlertCircle, RefreshCw, Share2, PanelLeft, FileText, Cpu, ArrowRight, FlaskConical } from 'lucide-react';
 import type { PRDResult } from '@/src/lib/api/prd';
 
@@ -21,13 +21,12 @@ interface BuildModuleProps {
 }
 
 export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
-  // Convert PRDResult to PRDData format or use mock
   const prd: PRDData = prdData ? {
     title: prdData.elevator_pitch.slice(0, 50) + '...',
     summary: prdData.elevator_pitch,
     features: prdData.core_features.map(f => f.feature_name),
     techStack: prdData.role_perspectives.tech.expected_stack
-  } : MOCK_PRD;
+  } : EMPTY_PRD;
   const [tasks, setTasks] = useState<Task[]>(INITIAL_TASKS);
   const [viewState, setViewState] = useState<'PRD' | 'KANBAN'>('PRD');
   const [activeRoleFilter, setActiveRoleFilter] = useState<TaskType | 'ALL'>('ALL');

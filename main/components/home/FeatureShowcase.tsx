@@ -108,17 +108,17 @@ const OnboardingMockup = () => (
 const MatchingMockup = () => (
   <div className="space-y-3">
     {[
-      { name: '이서준', role: '백엔드 · Python', score: 92, tags: ['AI', 'LLM'] },
-      { name: '김하늘', role: 'PM · 비즈니스', score: 85, tags: ['에듀테크', '소셜'] },
-    ].map((match) => (
-      <div key={match.name} className="bg-surface-card border border-border rounded-xl p-4">
+      { label: 'A', role: '백엔드 · Python', score: 92, tags: ['AI', 'LLM'] },
+      { label: 'B', role: 'PM · 비즈니스', score: 85, tags: ['에듀테크', '소셜'] },
+    ].map((match, i) => (
+      <div key={i} className="bg-surface-card border border-border rounded-xl p-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 bg-brand/10 rounded-full flex items-center justify-center text-brand text-xs font-bold">
-              {match.name[0]}
+              {match.label}
             </div>
             <div>
-              <div className="text-sm font-bold">{match.name}</div>
+              <div className="text-sm font-bold">멤버 {match.label}</div>
               <div className="text-[10px] text-txt-tertiary">{match.role}</div>
             </div>
           </div>
@@ -201,13 +201,13 @@ const CoffeeChatMockup = () => (
   <div className="space-y-3">
     <div className="bg-surface-card border border-border rounded-xl p-4">
       <div className="flex items-center gap-3 mb-3">
-        <div className="w-9 h-9 bg-surface-sunken rounded-full flex items-center justify-center text-xs font-bold">P</div>
+        <div className="w-9 h-9 bg-surface-sunken rounded-full flex items-center justify-center text-xs font-bold">D</div>
         <div>
-          <div className="text-sm font-bold">박수진</div>
+          <div className="text-sm font-bold">디자이너</div>
           <div className="text-[10px] text-txt-tertiary">디자이너 · Figma</div>
         </div>
       </div>
-      <div className="text-xs text-txt-secondary mb-3">&quot;AI 스터디 플래너 프로젝트 관심 있어서 연락드려요!&quot;</div>
+      <div className="text-xs text-txt-secondary mb-3">&quot;프로젝트 관심 있어서 연락드려요!&quot;</div>
       <div className="flex gap-2">
         <div className="px-3 py-1 bg-brand text-white rounded-full text-[10px] font-medium">수락</div>
         <div className="px-3 py-1 border border-border rounded-full text-[10px] text-txt-tertiary">거절</div>
