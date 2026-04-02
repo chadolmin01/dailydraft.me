@@ -96,7 +96,7 @@ export function StarterGuideCard({
               {/* Bonus hint: link nudge after profile step (desktop only) */}
               {step.id === 'profile' && step.done && showLinkHint && (
                 <Link
-                  href="/profile/edit"
+                  href="/profile"
                   className="hidden sm:flex items-center gap-1.5 ml-8 py-1 group/hint"
                 >
                   <span className="text-[11px] text-txt-tertiary group-hover/hint:text-txt-secondary transition-colors">
