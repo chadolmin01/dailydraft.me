@@ -91,17 +91,8 @@ function CollapsibleSection({ children, title, icon: Icon, color, defaultOpen = 
 /* ── Skill Tag ──────────────────────────────────── */
 
 function SkillTag({ name }: { name: string }) {
-  const [clicked, setClicked] = useState(false)
-
   return (
-    <span
-      className={`inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-lg border transition-all cursor-default select-none ${
-        clicked
-          ? 'bg-surface-inverse text-txt-inverse border-surface-inverse scale-95'
-          : 'bg-white text-txt-primary border-border hover:border-border-strong hover:shadow-sm hover:-translate-y-0.5 active:scale-95'
-      }`}
-      onClick={() => { setClicked(true); setTimeout(() => setClicked(false), 300) }}
-    >
+    <span className="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-lg border border-border bg-white text-txt-primary hover:border-border-strong hover:shadow-sm hover:-translate-y-0.5 transition-all select-none">
       {name}
     </span>
   )
