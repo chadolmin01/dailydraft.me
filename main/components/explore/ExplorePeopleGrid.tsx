@@ -3,7 +3,6 @@
 import React, { useRef, useEffect } from 'react'
 import Image from 'next/image'
 import { Users, Coffee } from 'lucide-react'
-import { Tooltip } from '@/components/ui/Tooltip'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { SkeletonGrid } from '@/components/ui/Skeleton'
 import { ErrorState } from '@/components/ui/ErrorState'
@@ -114,9 +113,9 @@ export function ExplorePeopleGrid({
                   )}
                 </div>
                 {t.status === 'OPEN' && (
-                  <Tooltip text="커피챗 가능">
+                  <span title="커피챗 가능">
                     <Coffee size={14} className="text-indicator-online shrink-0" />
-                  </Tooltip>
+                  </span>
                 )}
               </div>
             ))}
@@ -149,21 +148,17 @@ export function ExplorePeopleGrid({
                         <h3 className="font-semibold text-base text-txt-primary truncate">{t.name}</h3>
                         <Badges badges={t.badges} />
                         {peopleSortBy === 'ai' && t.matchScore != null && t.matchScore > 0 ? (
-                          <Tooltip text="AI 프로필 유사도">
-                            <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 shrink-0 border ${getMatchColorClass(t.matchScore)}`}>
-                              {t.matchScore}%
-                            </span>
-                          </Tooltip>
+                          <span title="AI 프로필 유사도" className={`text-[10px] font-mono font-bold px-1.5 py-0.5 shrink-0 border ${getMatchColorClass(t.matchScore)}`}>
+                            {t.matchScore}%
+                          </span>
                         ) : (
-                          <Tooltip text={t.status === 'OPEN' ? '커피챗/협업 가능' : t.status === 'BUSY' ? '바쁨 · 메시지 가능' : '현재 불가'}>
-                            <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 shrink-0 border ${
-                              t.status === 'OPEN' ? 'bg-status-success-bg text-status-success-text border-indicator-online/20'
-                              : t.status === 'BUSY' ? 'bg-status-neutral-bg text-status-neutral-text border-border'
-                              : 'bg-surface-sunken text-txt-tertiary border-border'
-                            }`}>
-                              {t.status}
-                            </span>
-                          </Tooltip>
+                          <span title={t.status === 'OPEN' ? '커피챗/협업 가능' : t.status === 'BUSY' ? '바쁨 · 메시지 가능' : '현재 불가'} className={`text-[10px] font-mono font-bold px-1.5 py-0.5 shrink-0 border ${
+                            t.status === 'OPEN' ? 'bg-status-success-bg text-status-success-text border-indicator-online/20'
+                            : t.status === 'BUSY' ? 'bg-status-neutral-bg text-status-neutral-text border-border'
+                            : 'bg-surface-sunken text-txt-tertiary border-border'
+                          }`}>
+                            {t.status}
+                          </span>
                         )}
                       </div>
                       <p className="text-sm text-txt-secondary truncate">

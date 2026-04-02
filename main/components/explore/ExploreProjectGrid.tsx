@@ -3,7 +3,6 @@
 import React, { useRef, useEffect } from 'react'
 import Image from 'next/image'
 import { Rocket, Users, FolderOpen, Eye, Heart } from 'lucide-react'
-import { Tooltip } from '@/components/ui/Tooltip'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { SkeletonGrid } from '@/components/ui/Skeleton'
 import { ErrorState } from '@/components/ui/ErrorState'
@@ -102,9 +101,7 @@ export function ExploreProjectGrid({
                 )}
                 <div className="absolute top-3 left-3 z-[1]">
                   {isUrgent ? (
-                    <Tooltip text={`마감 ${p.daysLeft}일 전`} position="bottom">
-                      <span className="text-[10px] font-mono font-bold bg-status-danger-text text-white px-2 py-0.5 border border-status-danger-text">D-{p.daysLeft} URGENT</span>
-                    </Tooltip>
+                    <span title={`마감 ${p.daysLeft}일 전`} className="text-[10px] font-mono font-bold bg-status-danger-text text-white px-2 py-0.5 border border-status-danger-text">D-{p.daysLeft} URGENT</span>
                   ) : (
                     <span className="text-[10px] font-mono font-bold bg-white/90 backdrop-blur-sm text-black px-2 py-0.5 border border-white/60 flex items-center gap-1">
                       <span className="w-1 h-1 bg-black rounded-full" />
@@ -114,15 +111,13 @@ export function ExploreProjectGrid({
                 </div>
                 <div className="absolute top-3 right-3 flex flex-col items-end gap-1 z-[1]">
                   {p.matchLabel && (
-                    <Tooltip text="AI가 프로필 기반으로 추천했어요">
-                      <span className={`animate-badge-pop text-[10px] font-mono font-bold px-2 py-0.5 border flex items-center gap-1 ${
-                        p.matchLabel === '잘 맞는 프로젝트'
-                          ? 'bg-indicator-online text-white border-indicator-online'
-                          : 'bg-black/80 backdrop-blur-sm text-white border-white/20'
-                      }`}>
-                        ✦ {p.matchLabel}
-                      </span>
-                    </Tooltip>
+                    <span title="AI가 프로필 기반으로 추천했어요" className={`animate-badge-pop text-[10px] font-mono font-bold px-2 py-0.5 border flex items-center gap-1 ${
+                      p.matchLabel === '잘 맞는 프로젝트'
+                        ? 'bg-indicator-online text-white border-indicator-online'
+                        : 'bg-black/80 backdrop-blur-sm text-white border-white/20'
+                    }`}>
+                      ✦ {p.matchLabel}
+                    </span>
                   )}
                   {updateBadge && (
                     <span className="text-[10px] font-mono bg-white/90 backdrop-blur-sm text-txt-secondary px-2 py-0.5 font-medium border border-white/60">{updateBadge}</span>
