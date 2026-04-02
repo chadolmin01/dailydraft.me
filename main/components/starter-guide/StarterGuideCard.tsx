@@ -161,12 +161,16 @@ function StepRow({ step, index, isNext }: { step: StarterStep; index: number; is
       {step.done ? (
         <span className="text-[10px] sm:text-[11px] font-medium text-brand shrink-0">완료</span>
       ) : isNext ? (
-        <Link
-          href={step.href}
-          className="shrink-0 flex items-center gap-1 text-[10px] sm:text-[11px] font-bold text-txt-secondary hover:text-txt-primary transition-colors"
-        >
-          시작하기 <ArrowRight size={12} />
-        </Link>
+        step.href ? (
+          <Link
+            href={step.href}
+            className="shrink-0 flex items-center gap-1 text-[10px] sm:text-[11px] font-bold text-txt-secondary hover:text-txt-primary transition-colors"
+          >
+            시작하기 <ArrowRight size={12} />
+          </Link>
+        ) : (
+          <span className="text-[10px] sm:text-[11px] text-txt-tertiary shrink-0">아래에서 클릭 ↓</span>
+        )
       ) : null}
     </div>
   )

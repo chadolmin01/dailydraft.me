@@ -468,14 +468,6 @@ function ExplorePageContent() {
     peopleCount: talentCards.length,
   } as const
 
-  // Starter guide: 10s dwell → mark explore visited
-  useEffect(() => {
-    if (!guide.visible) return
-    const timer = setTimeout(() => guide.markExploreVisited(), 10_000)
-    return () => clearTimeout(timer)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [guide.visible])
-
   const handleSelectProject = useCallback((id: string) => {
     guide.markExploreVisited()
     setSelectedProfileId(null)

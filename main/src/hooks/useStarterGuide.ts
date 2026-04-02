@@ -139,7 +139,7 @@ export function useStarterGuide() {
   // Build steps
   const steps: StarterStep[] = useMemo(() => [
     { id: 'profile', label: '프로필 완성하기', desc: '매칭 정확도를 높이는 첫 걸음', href: '/profile/edit', done: state.steps.profile },
-    { id: 'explore', label: '프로젝트 둘러보기', desc: '지금 모집 중인 프로젝트 구경', href: '/explore', done: state.steps.explore },
+    { id: 'explore', label: '프로젝트 눌러보기', desc: '관심 가는 프로젝트를 클릭해보세요', href: '', done: state.steps.explore },
     { id: 'project', label: '프로젝트 등록 또는 지원', desc: '팀에 합류하거나 직접 시작하기', href: '/projects/new', done: state.steps.project },
   ], [state.steps])
 
