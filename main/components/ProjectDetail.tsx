@@ -6,7 +6,7 @@ import Link from 'next/link'
 import {
   ArrowLeft, ArrowRight, Share2, Heart, Coffee, Users, Eye, Clock,
   Briefcase, MapPin, Calendar, ChevronRight, Loader2, AlertCircle,
-  MessageCircle, ExternalLink, Sparkles
+  MessageCircle, ExternalLink, Sparkles, Check
 } from 'lucide-react'
 import { useAuth } from '@/src/context/AuthContext'
 import { useOpportunity, useUpdateOpportunity, useSimilarOpportunities, type SimilarOpportunity } from '@/src/hooks/useOpportunities'
@@ -579,23 +579,84 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                   모집 중인 포지션
                 </h3>
                 <div className="space-y-3">
-                  {opportunity.needed_roles.map((role) => (
-                    <div
-                      key={role}
-                      className="flex items-center justify-between p-3 bg-brand-bg border border-brand-border"
-                    >
-                      <div className="flex items-center gap-2">
-                        <Briefcase size={14} className="text-brand" />
-                        <span className="font-medium text-sm text-txt-primary">{role}</span>
-                      </div>
-                      <button
-                        onClick={handleCoffeeChatAction}
-                        className="text-[10px] font-bold text-brand hover:text-brand-hover transition-colors"
+                  {opportunity.needed_roles.map((role) => {
+                    const filledRoles = (opportunity as any).filled_roles as string[] | null
+                    const isFilled = filledRoles?.includes(role) ?? false
+
+                    if (isOwner) {
+                      return (
+                        <button
+                          key={role}
+                          onClick={() => {
+                            const current = (filledRoles || []) as string[]
+                            const next = isFilled
+                              ? current.filter(r => r !== role)
+                              : [...current, role]
+                            updateOpportunity.mutate({
+                              id: opportunity.id,
+                              updates: { filled_roles: next } as any,
+                            })
+                          }}
+                          className={`w-full flex items-center justify-between p-3 border transition-colors ${
+                            isFilled
+                              ? 'bg-surface-sunken border-border'
+                              : 'bg-brand-bg border-brand-border hover:bg-brand/10'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            {isFilled ? (
+                              <Check size={14} className="text-status-success-text" />
+                            ) : (
+                              <Briefcase size={14} className="text-brand" />
+                            )}
+                            <span className={`font-medium text-sm ${isFilled ? 'text-txt-tertiary' : 'text-txt-primary'}`}>
+                              {role}
+                            </span>
+                          </div>
+                          <span className={`text-[10px] font-bold ${
+                            isFilled ? 'text-status-success-text' : 'text-brand'
+                          }`}>
+                            {isFilled ? '모집완료' : '모집중'}
+                          </span>
+                        </button>
+                      )
+                    }
+
+                    if (isFilled) {
+                      return (
+                        <div
+                          key={role}
+                          className="flex items-center justify-between p-3 bg-surface-sunken border border-border opacity-60"
+                        >
+                          <div className="flex items-center gap-2">
+                            <Check size={14} className="text-status-success-text" />
+                            <span className="font-medium text-sm text-txt-tertiary">{role}</span>
+                          </div>
+                          <span className="text-[10px] font-bold text-txt-disabled">
+                            모집완료
+                          </span>
+                        </div>
+                      )
+                    }
+
+                    return (
+                      <div
+                        key={role}
+                        className="flex items-center justify-between p-3 bg-brand-bg border border-brand-border"
                       >
-                        커피챗 신청 &rarr;
-                      </button>
-                    </div>
-                  ))}
+                        <div className="flex items-center gap-2">
+                          <Briefcase size={14} className="text-brand" />
+                          <span className="font-medium text-sm text-txt-primary">{role}</span>
+                        </div>
+                        <button
+                          onClick={handleCoffeeChatAction}
+                          className="text-[10px] font-bold text-brand hover:text-brand-hover transition-colors"
+                        >
+                          커피챗 신청 &rarr;
+                        </button>
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
             )}
