@@ -131,7 +131,7 @@ export async function summarizeTranscript(
   messages: DeepChatMessage[],
   signal?: AbortSignal,
   structuredResponses?: StructuredResponse[],
-): Promise<{ summary?: string } | null> {
+): Promise<{ summary?: string; bio?: string } | null> {
   try {
     const res = await fetch('/api/onboarding/summarize', {
       method: 'POST',
@@ -144,7 +144,7 @@ export async function summarizeTranscript(
     })
     if (!res.ok) return null
     const json = await res.json()
-    return { summary: json?.profile?.summary }
+    return { summary: json?.profile?.summary, bio: json?.profile?.bio }
   } catch {
     return null
   }

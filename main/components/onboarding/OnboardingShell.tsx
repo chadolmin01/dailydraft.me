@@ -68,10 +68,10 @@ function DeepChatTransitionOverlay({ onCancel }: DeepChatTransitionOverlayProps)
     <div className="fixed inset-0 z-50 bg-surface-bg flex flex-col items-center justify-center px-6">
       {/* Logo */}
       <div
-        className="w-16 h-16 bg-black rounded-2xl flex items-center justify-center mb-8"
+        className="w-12 h-12 bg-surface-inverse rounded-2xl flex items-center justify-center mb-8"
         style={{ animation: 'dcto-logo 0.6s cubic-bezier(0.16, 1, 0.3, 1) both' }}
       >
-        <span className="text-white text-xl font-black">D</span>
+        <span className="text-white text-lg font-black">D</span>
       </div>
 
       {/* Progress Steps */}
@@ -83,12 +83,12 @@ function DeepChatTransitionOverlay({ onCancel }: DeepChatTransitionOverlayProps)
             style={{ animation: 'dcto-step 0.5s cubic-bezier(0.16, 1, 0.3, 1) both', animationDelay: `${i * 150 + 200}ms` }}
           >
             <div className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 border transition-all duration-500 ${
-              step.done ? 'bg-black border-surface-inverse' : step.active ? 'bg-white border-surface-inverse' : 'bg-surface-sunken border-border'
+              step.done ? 'bg-surface-inverse border-surface-inverse' : step.active ? 'bg-surface-card border-surface-inverse' : 'bg-surface-sunken border-border'
             }`}>
               {step.done ? (
                 <CheckCircle2 size={14} className="text-white" />
               ) : step.active ? (
-                <div className="w-2 h-2 rounded-full bg-black animate-pulse" />
+                <div className="w-2 h-2 rounded-full bg-surface-inverse animate-pulse" />
               ) : (
                 <div className="w-2 h-2 rounded-full bg-border" />
               )}
@@ -107,9 +107,9 @@ function DeepChatTransitionOverlay({ onCancel }: DeepChatTransitionOverlayProps)
         className="w-full max-w-xs mb-8"
         style={{ animation: 'dcto-step 0.5s cubic-bezier(0.16, 1, 0.3, 1) both', animationDelay: '700ms' }}
       >
-        <div className="h-1 bg-surface-sunken rounded-xl border border-border overflow-hidden">
+        <div className="h-1 bg-surface-sunken rounded-full overflow-hidden">
           <div
-            className="h-full bg-black transition-all duration-[1.5s] ease-out"
+            className="h-full bg-surface-inverse rounded-full transition-all duration-[1.5s] ease-out"
             style={{ width: `${progressWidth}%` }}
           />
         </div>
@@ -140,7 +140,7 @@ function DeepChatTransitionOverlay({ onCancel }: DeepChatTransitionOverlayProps)
         {/* Dot indicators */}
         <div className="flex justify-center gap-1.5 mt-2.5">
           {TRANSITION_TIPS.map((_, i) => (
-            <div key={i} className={`w-1 h-1 rounded-full transition-all duration-300 ${i === tipIdx ? 'bg-black w-3' : 'bg-border'}`} />
+            <div key={i} className={`w-1 h-1 rounded-full transition-all duration-300 ${i === tipIdx ? 'bg-surface-inverse w-3' : 'bg-border'}`} />
           ))}
         </div>
       </div>
@@ -159,10 +159,13 @@ function DeepChatTransitionOverlay({ onCancel }: DeepChatTransitionOverlayProps)
           className="flex items-center gap-2 text-txt-tertiary"
           style={{ animation: 'dcto-step 0.5s cubic-bezier(0.16, 1, 0.3, 1) both', animationDelay: '1100ms' }}
         >
-          <span className="text-[11px] font-mono">잠시 후 대화가 시작돼요</span>
+          <span className="text-[10px] font-mono">잠시 후 대화가 시작돼요</span>
           <ArrowRight size={12} className="animate-[dcto-arrow_1s_ease-in-out_infinite]" />
         </div>
       )}
+
+      {/* Footer */}
+      <div className="absolute bottom-6 text-[10px] font-mono text-txt-disabled">DRAFT</div>
     </div>
   )
 }
@@ -196,7 +199,7 @@ export const OnboardingShell: React.FC<OnboardingShellProps> = ({
       <div className={`flex-1 flex flex-col min-w-0 transition-opacity duration-500 ${deepChatTransition ? 'opacity-0' : 'opacity-100'}`}>
         {/* Header */}
         <div className="px-4 sm:px-6 py-3.5 border-b border-border flex items-center gap-3 bg-surface-card/80 backdrop-blur-md shrink-0">
-          <div className="w-9 h-9 bg-black rounded-xl flex items-center justify-center ob-avatar shrink-0">
+          <div className="w-9 h-9 bg-surface-inverse rounded-xl flex items-center justify-center ob-avatar shrink-0">
             <span className="text-white text-sm font-black">D</span>
           </div>
           <div className="flex-1 min-w-0">

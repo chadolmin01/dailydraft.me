@@ -160,24 +160,25 @@ function LoginContent() {
   if (phase === 'loading') {
     return (
       <div className="fixed inset-0 z-[100] bg-surface-bg flex flex-col items-center justify-center">
-        <div className="relative w-20 h-20 flex items-center justify-center mb-6">
-          <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
-             <circle cx="50" cy="50" r="42" fill="none" stroke="var(--border-default)" strokeWidth="1.5" opacity="0.3" />
-             <circle
-                cx="50" cy="50" r="42"
-                fill="none"
-                stroke="var(--text-primary)"
-                strokeWidth="2.5"
-                strokeDasharray="264"
-                strokeDashoffset={264 - (264 * progress) / 100}
-                className="transition-all duration-150 ease-out"
-                strokeLinecap="round"
-             />
-          </svg>
-          <div className="w-10 h-10 bg-surface-inverse text-txt-inverse flex items-center justify-center font-black text-lg rounded-xl">D</div>
+        <div
+          className="w-12 h-12 bg-surface-inverse rounded-2xl flex items-center justify-center mb-8"
+          style={{ animation: 'dcto-logo 0.6s cubic-bezier(0.16, 1, 0.3, 1) both' }}
+        >
+          <span className="text-white text-lg font-black">D</span>
         </div>
-        <div className="text-xs text-txt-tertiary font-medium tracking-wide">
-           Draft
+
+        <div className="w-48 mb-4" style={{ animation: 'dcto-step 0.5s cubic-bezier(0.16, 1, 0.3, 1) both', animationDelay: '200ms' }}>
+          <div className="h-1 bg-surface-sunken rounded-full overflow-hidden">
+            <div
+              className="h-full bg-surface-inverse rounded-full transition-all duration-150 ease-out"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center gap-1.5 text-[10px] font-mono text-txt-disabled" style={{ animation: 'dcto-step 0.5s cubic-bezier(0.16, 1, 0.3, 1) both', animationDelay: '400ms' }}>
+          <span>DRAFT</span>
+          <span className="text-txt-tertiary">{progress}%</span>
         </div>
       </div>
     )

@@ -660,6 +660,11 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       dispatch({ type: 'SET_TYPING', isTyping: false })
       dispatch({ type: 'SET_AI_ACTIVITY', label: null })
 
+      // Store generated bio for guide page inline editor
+      if (summaryResult?.bio) {
+        try { localStorage.setItem('onboarding-bio', summaryResult.bio) } catch {}
+      }
+
       const name = stateRef.current.profile.name
       if (summaryResult?.summary) {
         await pushAi(`분석 완료!\n\n"${summaryResult.summary}"\n\n${name}님에게 딱 맞는 팀을 찾아볼게요.`, undefined, 500)
@@ -924,11 +929,21 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   // U13: Show loading state while auth is loading
   if (authLoading) {
     return (
-      <div className="fixed inset-0 bg-surface-bg flex flex-col items-center justify-center gap-4">
-        <div className="w-14 h-14 bg-black rounded-2xl flex items-center justify-center">
+      <div className="fixed inset-0 bg-surface-bg flex flex-col items-center justify-center">
+        <div
+          className="w-12 h-12 bg-surface-inverse rounded-2xl flex items-center justify-center mb-8"
+          style={{ animation: 'dcto-logo 0.6s cubic-bezier(0.16, 1, 0.3, 1) both' }}
+        >
           <span className="text-white text-lg font-black">D</span>
         </div>
-        <Loader2 size={20} className="animate-spin text-txt-disabled" />
+
+        <div className="w-48 mb-4">
+          <div className="h-1 bg-surface-sunken rounded-full overflow-hidden">
+            <div className="h-full w-1/3 bg-surface-inverse rounded-full animate-[indeterminate_1.5s_ease-in-out_infinite]" />
+          </div>
+        </div>
+
+        <span className="text-[10px] font-mono text-txt-disabled">DRAFT</span>
       </div>
     )
   }
