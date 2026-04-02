@@ -1,6 +1,17 @@
 import type { InteractiveQuestion } from './types'
 
 /**
+ * Required interactive elements that MUST be completed before finishing deep chat.
+ * If the AI didn't trigger them during conversation, they're shown at wrap-up.
+ */
+export const REQUIRED_INTERACTIVE_IDS: { id: string; prompt: string }[] = [
+  { id: 'spectrum_communication', prompt: '소통 스타일은 어떤 편이세요?' },
+  { id: 'this_or_that_risk', prompt: '도전 성향은 어떠세요?' },
+  { id: 'quick_number_hours', prompt: '주당 얼마나 시간을 투자할 수 있으세요?' },
+  { id: 'emoji_grid_strengths', prompt: '마지막으로 본인의 강점을 골라주세요!' },
+]
+
+/**
  * Predefined interactive question bank.
  * AI references these by key via [INTERACTIVE: key] tag.
  *

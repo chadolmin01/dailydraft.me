@@ -43,13 +43,15 @@ const SUMMARIZE_PROMPT = `아래는 Draft 플랫폼 온보딩에서 AI와 사용
   "strengths": [<문자열 배열, 자신이 잘하는 것>],
   "wants_from_team": [<문자열 배열, 팀원에게 기대하는 역량>],
   "project_interests": [<문자열 배열, 만들고 싶은 것이나 관심 프로젝트>],
-  "summary": "<2-3문장으로 이 사용자의 팀 매칭 포인트 요약>"
+  "summary": "<2-3문장으로 이 사용자의 팀 매칭 포인트 요약>",
+  "bio": "<1-2문장 자기소개. 프로필에 바로 노출됨. 예: 'UX에 관심 많은 컴공 3학년입니다. 사이드 프로젝트로 실력을 키우고 싶어요!'>"
 }
 
 ## 규칙
 - 대화에서 언급되지 않은 항목은 중간값(5) 또는 null 사용
 - 배열은 대화에서 추출 가능한 것만 포함, 빈 배열 가능
 - summary는 팀 매칭 시 다른 사용자에게 보여줄 수 있는 간결한 소개
+- bio는 사용자의 자기소개란에 자동으로 채워질 텍스트. 친근하고 자연스러운 어조. 반말 금지. 1-2문장.
 - 반드시 유효한 JSON만 출력`
 
 export async function POST(request: Request) {
@@ -206,6 +208,17 @@ export async function POST(request: Request) {
 
     if (parsed.personality) {
       updateData.personality = parsed.personality
+    }
+
+    // Auto-fill bio from AI if generated and user doesn't have one yet
+    if (parsed.bio) {
+      const { data: existingProfile } = await supabase.from('profiles')
+        .select('bio')
+        .eq('user_id', user.id)
+        .single()
+      if (!existingProfile?.bio) {
+        updateData.bio = parsed.bio
+      }
     }
 
     const visionSummaryJson = (parsed.summary || parsed.work_style || Object.keys(behavioralTraits).length > 0)

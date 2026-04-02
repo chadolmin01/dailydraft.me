@@ -22,7 +22,7 @@ import { InterestsInputStep, InterestsConfirmStep } from './onboarding/steps/Int
 import { DeepChatOfferStep, DeepChatOfferFinishStep } from './onboarding/steps/DeepChatOfferStep'
 import { DeepChatFooter, DefaultFooter } from './onboarding/steps/DeepChatStep'
 import { ScenarioCard, ThisOrThat, DragRank, EmojiGrid, QuickNumber, SpectrumPick } from './onboarding/interactive'
-import { INTERACTIVE_QUESTIONS } from '@/src/lib/onboarding/interactive-questions'
+import { INTERACTIVE_QUESTIONS, REQUIRED_INTERACTIVE_IDS } from '@/src/lib/onboarding/interactive-questions'
 import type { StructuredResponse, InteractiveElementConfig, ScenarioCardQuestion, ThisOrThatQuestion, DragRankQuestion, EmojiGridQuestion, QuickNumberQuestion, SpectrumPickQuestion } from '@/src/lib/onboarding/types'
 
 // ── localStorage key for progress persistence ──
@@ -57,6 +57,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
   // C1: AbortController for AI calls
   const abortRef = useRef<AbortController | null>(null)
+
+  // Required interactives wrap-up queue
+  const pendingRequiredRef = useRef<{ id: string; prompt: string }[]>([])
 
   // Refs to avoid stale closures in async callbacks
   const stateRef = useRef(state)
@@ -437,6 +440,12 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     const updatedMessages = [...stateRef.current.deepChatMessages, userMsg]
     dispatch({ type: 'SET_DEEP_CHAT_MESSAGES', messages: updatedMessages })
 
+    // If in required wrap-up mode, show next required or complete
+    if (pendingRequiredRef.current.length > 0) {
+      await showNextRequiredOrComplete()
+      return
+    }
+
     // Send to AI for follow-up
     const profileCtx = buildProfileCtx(stateRef.current.profile)
     const activityLabel = AI_ACTIVITY_LABELS[Math.min(updatedMessages.filter(m => m.role === 'user').length - 1, AI_ACTIVITY_LABELS.length - 1)]
@@ -563,6 +572,38 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     }
   }
 
+  /** Get required interactive IDs not yet answered */
+  const getMissingRequired = () => {
+    const answered = new Set(stateRef.current.structuredResponses.map(r => r.questionId))
+    return REQUIRED_INTERACTIVE_IDS.filter(r => !answered.has(r.id))
+  }
+
+  /** Show the next pending required interactive, or complete if done */
+  const showNextRequiredOrComplete = async () => {
+    const next = pendingRequiredRef.current.shift()
+    if (!next) {
+      await completeDeepChat()
+      return
+    }
+    const questionDef = INTERACTIVE_QUESTIONS[next.id]
+    if (!questionDef) {
+      await showNextRequiredOrComplete()
+      return
+    }
+    const config: InteractiveElementConfig = {
+      type: questionDef.type,
+      questionId: next.id,
+      measuredFields: questionDef.measuredFields,
+    }
+    dispatch({ type: 'ADD_BUBBLE', bubble: {
+      id: `ai-req-${Date.now()}-${Math.random()}`,
+      role: 'ai',
+      content: next.prompt,
+      attachment: 'interactive-element',
+      interactiveConfig: config,
+    } })
+  }
+
   const handleDeepChatFinish = async () => {
     const s = stateRef.current
     if (s.isTyping) return
@@ -571,12 +612,34 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       await pushAi(`아직 ${3 - uMsgCount}개 정도 더 이야기하면 더 정확한 매칭이 가능해요.\n그래도 지금 마무리할까요?`, 'deep-chat-offer-finish', 400)
       return
     }
+
+    // Check for missing required interactives
+    const missing = getMissingRequired()
+    if (missing.length > 0) {
+      pendingRequiredRef.current = [...missing]
+      pushUser('대화 완료!')
+      await pushAi('좋아요! 마지막으로 몇 가지만 빠르게 체크할게요.', undefined, 400)
+      await showNextRequiredOrComplete()
+      return
+    }
+
     pushUser('대화 완료!')
     await completeDeepChat()
   }
 
   const forceFinishDeepChat = async () => {
     if (stateRef.current.isTyping) return // #12: add isTyping guard
+
+    // Check for missing required interactives even on force finish
+    const missing = getMissingRequired()
+    if (missing.length > 0) {
+      pendingRequiredRef.current = [...missing]
+      pushUser('지금 마무리할게요')
+      await pushAi('좋아요! 마지막으로 몇 가지만 빠르게 체크할게요.', undefined, 400)
+      await showNextRequiredOrComplete()
+      return
+    }
+
     pushUser('지금 마무리할게요')
     await completeDeepChat()
   }
