@@ -106,9 +106,9 @@ export function ExploreProjectGrid({
                       <span className="text-[10px] font-mono font-bold bg-status-danger-text text-white px-2 py-0.5 border border-status-danger-text">D-{p.daysLeft} URGENT</span>
                     </Tooltip>
                   ) : (
-                    <span className="text-[10px] font-mono font-bold bg-indicator-online text-white px-2 py-0.5 border border-indicator-online flex items-center gap-1">
-                      <span className="w-1 h-1 bg-white animate-pulse" />
-                      모집중
+                    <span className="text-[10px] font-mono font-bold bg-white/90 backdrop-blur-sm text-black px-2 py-0.5 border border-white/60 flex items-center gap-1">
+                      <span className="w-1 h-1 bg-black rounded-full" />
+                      OPEN
                     </span>
                   )}
                 </div>
@@ -125,7 +125,7 @@ export function ExploreProjectGrid({
                     </Tooltip>
                   )}
                   {updateBadge && (
-                    <span className="text-[10px] font-mono bg-amber-400 text-black px-2 py-0.5 font-bold border border-indicator-premium-border">{updateBadge}</span>
+                    <span className="text-[10px] font-mono bg-white/90 backdrop-blur-sm text-txt-secondary px-2 py-0.5 font-medium border border-white/60">{updateBadge}</span>
                   )}
                   {!updateBadge && !p.matchLabel && p.tags.slice(0, 2).map(tag => (
                     <span key={tag} className="text-[10px] font-mono bg-black/60 backdrop-blur-sm text-white px-2 py-0.5 border border-white/10">{tag}</span>
@@ -156,7 +156,7 @@ export function ExploreProjectGrid({
                     <div className="w-5 h-5 bg-surface-sunken rounded-xl border border-border flex items-center justify-center">
                       <Users size={10} className="text-txt-disabled" />
                     </div>
-                    <span className="text-[10px] font-mono text-txt-tertiary">팀 모집중</span>
+                    <span className="text-[10px] font-mono text-txt-tertiary">RECRUITING</span>
                   </div>
                   <div className="flex items-center gap-2 text-xs font-mono">
                     {p.viewsCount > 0 && (

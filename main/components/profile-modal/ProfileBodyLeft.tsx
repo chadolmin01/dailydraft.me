@@ -156,7 +156,7 @@ export function ProfileBodyLeft({
       {/* User's Projects */}
       <section>
         <h3 className="text-[10px] font-bold text-txt-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
-          <span className="w-0.5 h-3 bg-emerald-500 rounded-full" />
+          <span className="w-0.5 h-3 bg-neutral-800 rounded-full" />
           <Rocket size={11} /> 프로젝트
           <span className="text-[10px] font-mono text-txt-tertiary font-normal">({userProjects.length})</span>
         </h3>

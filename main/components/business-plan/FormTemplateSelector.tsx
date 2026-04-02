@@ -19,11 +19,11 @@ const TEMPLATE_ICONS: Record<FormTemplateType, React.ReactNode> = {
 }
 
 const TEMPLATE_COLORS: Record<FormTemplateType, { bg: string; border: string; icon: string }> = {
-  'yebi-chogi': { bg: 'bg-status-info-bg', border: 'border-status-info-text/20 hover:border-status-info-text', icon: 'text-status-info-text' },
-  'student-300': { bg: 'bg-purple-50', border: 'border-purple-200 hover:border-purple-400', icon: 'text-purple-600' },
-  'saengae-chungnyeon': { bg: 'bg-status-success-bg', border: 'border-status-success-text/20 hover:border-status-success-text', icon: 'text-status-success-text' },
-  'oneul-jeongtong': { bg: 'bg-amber-50', border: 'border-amber-200 hover:border-amber-400', icon: 'text-indicator-premium-border' },
-  'gyeonggi-g-star': { bg: 'bg-rose-50', border: 'border-rose-200 hover:border-rose-400', icon: 'text-rose-600' },
+  'yebi-chogi': { bg: 'bg-surface-sunken', border: 'border-border hover:border-surface-inverse', icon: 'text-txt-primary' },
+  'student-300': { bg: 'bg-surface-sunken', border: 'border-border hover:border-surface-inverse', icon: 'text-txt-primary' },
+  'saengae-chungnyeon': { bg: 'bg-surface-sunken', border: 'border-border hover:border-surface-inverse', icon: 'text-txt-primary' },
+  'oneul-jeongtong': { bg: 'bg-surface-sunken', border: 'border-border hover:border-surface-inverse', icon: 'text-txt-primary' },
+  'gyeonggi-g-star': { bg: 'bg-surface-sunken', border: 'border-border hover:border-surface-inverse', icon: 'text-txt-primary' },
 }
 
 export const FormTemplateSelector: React.FC<FormTemplateSelectorProps> = ({

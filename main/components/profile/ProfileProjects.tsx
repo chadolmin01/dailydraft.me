@@ -42,9 +42,9 @@ export function ProfileProjects({ opportunities }: ProfileProjectsProps) {
                     {isUrgent ? (
                       <span className="text-[10px] font-mono font-bold bg-indicator-alert text-white px-2 py-0.5">D-{daysLeft} URGENT</span>
                     ) : (
-                      <span className="text-[10px] font-mono font-bold bg-indicator-online text-white px-2 py-0.5 flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 bg-indicator-online rounded-full animate-pulse" />
-                        {opp.status === 'active' ? '모집중' : opp.status}
+                      <span className="text-[10px] font-mono font-bold bg-white/20 text-white px-2 py-0.5 flex items-center gap-1 border border-white/30">
+                        <span className="w-1.5 h-1.5 bg-white rounded-full" />
+                        {opp.status === 'active' ? 'OPEN' : opp.status}
                       </span>
                     )}
                   </div>

@@ -101,7 +101,7 @@ export function ProfileBodyRight({
       {teamPref && Object.keys(teamPref).length > 0 && (
         <section>
           <h3 className="text-[10px] font-bold text-txt-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
-            <span className="w-0.5 h-3 bg-emerald-500 rounded-full" />
+            <span className="w-0.5 h-3 bg-neutral-800 rounded-full" />
             <Users size={11} /> 팀 선호
           </h3>
           <div className="space-y-1.5">
@@ -131,7 +131,7 @@ export function ProfileBodyRight({
       {availability && (availability.hours_per_week != null || availability.prefer_online != null) && (
         <section>
           <h3 className="text-[10px] font-bold text-txt-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
-            <span className="w-0.5 h-3 bg-amber-500 rounded-full" />
+            <span className="w-0.5 h-3 bg-neutral-600 rounded-full" />
             <Clock size={11} /> 가용 시간
           </h3>
           <div className="space-y-1.5">

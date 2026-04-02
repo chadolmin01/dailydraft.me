@@ -36,13 +36,13 @@ export const AFFILIATION_LABELS: Record<string, string> = {
 }
 
 export const TRAIT_COLORS: Record<string, { bar: string; dot: string; text: string }> = {
-  risk:          { bar: 'bg-rose-500',    dot: 'bg-rose-400',    text: 'text-rose-600' },
-  time:          { bar: 'bg-amber-500',   dot: 'bg-amber-400',   text: 'text-amber-600' },
-  communication: { bar: 'bg-sky-500',     dot: 'bg-sky-400',     text: 'text-sky-600' },
-  decision:      { bar: 'bg-emerald-500', dot: 'bg-emerald-400', text: 'text-emerald-600' },
-  collaboration: { bar: 'bg-violet-500',  dot: 'bg-violet-400',  text: 'text-violet-600' },
-  planning:      { bar: 'bg-teal-500',    dot: 'bg-teal-400',    text: 'text-teal-600' },
-  perfectionism: { bar: 'bg-orange-500',  dot: 'bg-orange-400',  text: 'text-orange-600' },
+  risk:          { bar: 'bg-neutral-800', dot: 'bg-neutral-600', text: 'text-txt-primary' },
+  time:          { bar: 'bg-neutral-700', dot: 'bg-neutral-500', text: 'text-txt-primary' },
+  communication: { bar: 'bg-neutral-600', dot: 'bg-neutral-400', text: 'text-txt-primary' },
+  decision:      { bar: 'bg-neutral-800', dot: 'bg-neutral-600', text: 'text-txt-primary' },
+  collaboration: { bar: 'bg-neutral-700', dot: 'bg-neutral-500', text: 'text-txt-primary' },
+  planning:      { bar: 'bg-neutral-600', dot: 'bg-neutral-400', text: 'text-txt-primary' },
+  perfectionism: { bar: 'bg-neutral-700', dot: 'bg-neutral-500', text: 'text-txt-primary' },
 }
 
 export const traitLabels = [

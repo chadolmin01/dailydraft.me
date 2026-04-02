@@ -85,7 +85,7 @@ export function ExploreHeroCarousel() {
             <div className={`absolute inset-0 px-4 sm:px-6 flex items-start pt-4 sm:pt-10 transition-all duration-300 ${order[0] === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
               <div className="w-full">
                 <div className="inline-flex items-center gap-2 px-2 h-6 bg-surface-card rounded-xl border border-border mb-3">
-                  <div className="w-1.5 h-1.5 bg-indicator-online animate-pulse" />
+                  <div className="w-1.5 h-1.5 bg-black rounded-full" />
                   <span className="text-[10px] font-mono font-bold text-black tracking-wider">TEAM</span>
                 </div>
                 <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-txt-primary mb-1.5 break-keep leading-tight tracking-tight">
@@ -198,7 +198,7 @@ function SlidePreview({ index, isAuthenticated, tone = 'white' }: { index: numbe
     return (
       <div>
         <div className={`inline-flex items-center gap-1.5 px-1.5 py-0.5 border mb-2 ${c.badge}`}>
-          <div className="w-1 h-1 bg-indicator-online animate-pulse" />
+          <div className="w-1 h-1 bg-current rounded-full" />
           <span className={`text-[0.5rem] font-mono font-bold tracking-wider ${c.label}`}>TEAM</span>
         </div>
         <h3 className={`text-sm font-bold leading-snug break-keep ${c.title}`}>

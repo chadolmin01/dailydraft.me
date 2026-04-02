@@ -134,7 +134,7 @@ const SelectionScreen: React.FC<SelectionScreenProps> = ({ onSelect, skipToLevel
              {/* Left Text Area */}
              <div className="col-span-5 space-y-6 lg:space-y-8">
                 <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-surface-card rounded-xl border border-border">
-                  <span className="w-1.5 h-1.5 bg-indicator-online animate-pulse"></span>
+                  <span className="w-1.5 h-1.5 bg-txt-secondary rounded-full"></span>
                   <span className="text-[10px] font-medium text-txt-tertiary">System Operational</span>
                 </div>
 

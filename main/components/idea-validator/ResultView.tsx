@@ -233,12 +233,12 @@ const ResultView: React.FC<ResultViewProps> = ({
             {/* Success Metrics */}
             <section>
                <h2 className="text-xl font-bold text-txt-primary mb-4 flex items-center gap-2">
-                  <BarChart size={20} className="text-emerald-500" /> Success Metrics
+                  <BarChart size={20} className="text-txt-primary" /> Success Metrics
                </h2>
                <div className="space-y-3">
                   {prd.successMetrics.map((metric, i) => (
-                     <div key={i} className="flex items-center gap-3 p-3 bg-emerald-50/50 border border-emerald-100">
-                        <Check size={16} className="text-emerald-600 shrink-0" />
+                     <div key={i} className="flex items-center gap-3 p-3 bg-surface-sunken border border-border">
+                        <Check size={16} className="text-txt-primary shrink-0" />
                         <span className="text-txt-secondary font-medium text-sm">{metric}</span>
                      </div>
                   ))}
@@ -249,7 +249,7 @@ const ResultView: React.FC<ResultViewProps> = ({
          {/* Features Grid */}
          <section>
             <h2 className="text-xl font-bold text-txt-primary mb-6 flex items-center gap-2">
-               <Zap size={20} className="text-status-warning-text" /> Core Features
+               <Zap size={20} className="text-txt-primary" /> Core Features
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                {prd.coreFeatures.map((feature, i) => (
@@ -329,7 +329,7 @@ const ResultView: React.FC<ResultViewProps> = ({
                  <h1 className="text-3xl font-bold text-txt-primary mb-4">{jd.roleTitle}</h1>
                  <div className="flex flex-wrap items-center gap-4 text-sm font-medium text-txt-tertiary">
                     <span className="flex items-center gap-1.5"><MapPin size={16} className="text-txt-tertiary"/> Remote / Seoul, KR</span>
-                    <span className="flex items-center gap-1.5 text-emerald-600 bg-emerald-50 px-3 py-1"><DollarSign size={16}/> Significant Equity Offered</span>
+                    <span className="flex items-center gap-1.5 text-txt-primary bg-surface-sunken px-3 py-1 border border-border"><DollarSign size={16}/> Significant Equity Offered</span>
                  </div>
               </div>
               <div className="flex gap-3 mt-4 md:mt-0">
@@ -533,20 +533,20 @@ const ResultView: React.FC<ResultViewProps> = ({
                                <ActionCard
                                    title="Development"
                                    items={actionPlan.developer}
-                                   color="bg-indigo-100 text-indigo-700"
+                                   color="bg-surface-sunken text-txt-primary"
                                    icon={<Cpu size={20} />}
                                />
                                <ActionCard
                                    title="Design & UX"
                                    items={actionPlan.designer}
-                                   color="bg-pink-100 text-pink-700"
+                                   color="bg-surface-sunken text-txt-primary"
                                    icon={<Paintbrush size={20} />}
                                />
                                <div className="md:col-span-2">
                                    <ActionCard
                                        title="Business & VC"
                                        items={actionPlan.vc}
-                                       color="bg-emerald-100 text-emerald-700"
+                                       color="bg-surface-sunken text-txt-primary"
                                        icon={<DollarSign size={20} />}
                                    />
                                </div>
@@ -587,22 +587,22 @@ const ResultView: React.FC<ResultViewProps> = ({
               <ScoreBar
                 label="Tech Feasibility"
                 score={scores.developer}
-                colorClass="bg-indigo-500"
-                icon={<Cpu size={16} className="text-brand" />}
+                colorClass="bg-neutral-800"
+                icon={<Cpu size={16} className="text-txt-primary" />}
               />
 
               <ScoreBar
                 label="UX & Design"
                 score={scores.designer}
-                colorClass="bg-pink-500"
-                icon={<Paintbrush size={16} className="text-pink-500" />}
+                colorClass="bg-neutral-600"
+                icon={<Paintbrush size={16} className="text-txt-secondary" />}
               />
 
               <ScoreBar
                 label="Business Model"
                 score={scores.vc}
-                colorClass="bg-emerald-500"
-                icon={<DollarSign size={16} className="text-emerald-500" />}
+                colorClass="bg-neutral-700"
+                icon={<DollarSign size={16} className="text-txt-secondary" />}
               />
            </div>
         </div>

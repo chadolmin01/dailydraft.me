@@ -109,18 +109,18 @@ export const FeedbackTooltip: React.FC<FeedbackTooltipProps> = ({
 }) => {
   const severityConfig = {
     high: {
-      bg: 'bg-red-900',
-      badge: 'bg-indicator-alert',
+      bg: 'bg-surface-inverse',
+      badge: 'bg-surface-inverse',
       text: '심각',
     },
     medium: {
-      bg: 'bg-yellow-900',
-      badge: 'bg-status-warning-text',
+      bg: 'bg-neutral-800',
+      badge: 'bg-neutral-700',
       text: '주의',
     },
     low: {
-      bg: 'bg-surface-inverse',
-      badge: 'bg-txt-tertiary',
+      bg: 'bg-neutral-700',
+      badge: 'bg-neutral-600',
       text: '참고',
     },
   }

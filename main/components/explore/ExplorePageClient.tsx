@@ -517,7 +517,7 @@ function ExplorePageContent() {
 
       <DashboardLayout
         size="wide"
-        className="pt-1"
+        className="pt-6"
         sidebar={
           <ExploreSidebar
             {...filterProps}

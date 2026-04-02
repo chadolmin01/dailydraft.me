@@ -156,7 +156,7 @@ export function ExploreSidebar({
           </label>
           <div className="mt-3 pt-3 border-t border-border">
             <p className="text-[10px] font-mono text-txt-disabled flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 bg-indicator-online animate-pulse" />
+              <span className="w-1.5 h-1.5 bg-txt-secondary rounded-full" />
               {recruitingOnly ? 'ACTIVE FILTER ON' : 'NO FILTER APPLIED'}
             </p>
           </div>
