@@ -48,8 +48,6 @@ const SKILL_SUGGESTIONS = [
   'Flutter', 'Swift', 'Kotlin', 'Java', 'Go',
   'Figma', 'SQL', 'AWS', 'Docker', 'Git',
 ]
-const SKILL_LEVELS = ['초급', '중급', '고급']
-
 type TabId = 'info' | 'ai'
 
 export default function ProfileEditPage() {
@@ -80,9 +78,8 @@ export default function ProfileEditPage() {
   const [currentSituation, setCurrentSituation] = useState('')
   const [interestTags, setInterestTags] = useState<string[]>([])
   const [customTag, setCustomTag] = useState('')
-  const [skills, setSkills] = useState<Array<{ name: string; level: string }>>([])
+  const [skills, setSkills] = useState<Array<{ name: string }>>([])
   const [newSkillName, setNewSkillName] = useState('')
-  const [newSkillLevel, setNewSkillLevel] = useState('중급')
   const [personality, setPersonality] = useState<Record<string, number>>({ risk: 5, time: 5, communication: 5, decision: 5 })
   const [workStyle, setWorkStyle] = useState<Record<string, number>>({ collaboration: 5, planning: 5, perfectionism: 5 })
   const [workStyleTraits, setWorkStyleTraits] = useState<Record<string, string>>({})
@@ -135,7 +132,7 @@ export default function ProfileEditPage() {
     setLocation(profile.location || '')
     setCurrentSituation(profile.current_situation || '')
     setInterestTags(profile.interest_tags || [])
-    setSkills((profile.skills as Array<{ name: string; level: string }>) || [])
+    setSkills(((profile.skills || []) as Array<{ name: string }>).map(s => ({ name: s.name })))
     const p = profile.personality as Record<string, number> | null
     if (p) setPersonality({ risk: p.risk || 5, time: p.time || 5, communication: p.communication || 5, decision: p.decision || 5 })
     if (profile.vision_summary) {
@@ -210,9 +207,8 @@ export default function ProfileEditPage() {
   /* ─── Form helpers ─── */
   const toggleTag = (tag: string) => setInterestTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag])
   const addCustomTag = () => { const tag = customTag.trim(); if (tag && !interestTags.includes(tag)) { setInterestTags(prev => [...prev, tag]); setCustomTag('') } }
-  const addSkill = (name?: string) => { const n = (name || newSkillName).trim(); if (n && !skills.some(s => s.name === n)) { setSkills(prev => [...prev, { name: n, level: newSkillLevel }]); if (!name) setNewSkillName('') } }
+  const addSkill = (name?: string) => { const n = (name || newSkillName).trim(); if (n && !skills.some(s => s.name === n)) { setSkills(prev => [...prev, { name: n }]); if (!name) setNewSkillName('') } }
   const removeSkill = (name: string) => setSkills(prev => prev.filter(s => s.name !== name))
-  const updateSkillLevel = (name: string, level: string) => setSkills(prev => prev.map(s => s.name === name ? { ...s, level } : s))
 
   const handleSave = async () => {
     setSaveError(null); setSaved(false)
@@ -446,27 +442,17 @@ export default function ProfileEditPage() {
                   })}
                 </div>
                 {skills.length > 0 && (
-                  <div className="space-y-2 mb-4">
+                  <div className="flex flex-wrap gap-1.5 mb-4">
                     {skills.map((skill) => (
-                      <div key={skill.name} className="flex items-center gap-3 px-3 py-2 border border-border">
-                        <span className="flex-1 text-sm text-txt-primary font-medium">{skill.name}</span>
-                        <div className="flex items-center gap-1">
-                          {SKILL_LEVELS.map((level) => (
-                            <button key={level} type="button" onClick={() => updateSkillLevel(skill.name, level)}
-                              className={`px-2 py-1 text-[10px] font-medium transition-colors ${skill.level === level ? 'bg-surface-inverse text-txt-inverse' : 'text-txt-tertiary hover:text-txt-secondary'}`}
-                            >{level}</button>
-                          ))}
-                        </div>
-                        <button onClick={() => removeSkill(skill.name)} className="p-1 text-txt-tertiary hover:text-txt-secondary transition-colors"><X size={14} /></button>
-                      </div>
+                      <span key={skill.name} className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium bg-surface-card rounded-xl border border-border text-txt-primary">
+                        {skill.name}
+                        <button onClick={() => removeSkill(skill.name)} className="text-txt-disabled hover:text-status-danger-text transition-colors"><X size={12} /></button>
+                      </span>
                     ))}
                   </div>
                 )}
                 <div className="flex gap-2">
                   <input type="text" value={newSkillName} onChange={(e) => setNewSkillName(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())} placeholder="스킬 직접 입력" maxLength={30} className={`flex-1 ${inputClass}`} />
-                  <select value={newSkillLevel} onChange={(e) => setNewSkillLevel(e.target.value)} className="px-3 py-3 text-xs border border-border bg-transparent text-txt-secondary focus:outline-none focus:border-border transition-colors">
-                    {SKILL_LEVELS.map((level) => <option key={level} value={level}>{level}</option>)}
-                  </select>
                   <button type="button" onClick={() => addSkill()} className="px-4 py-3 border border-border text-txt-secondary hover:bg-surface-sunken transition-colors rounded-xl"><Plus size={16} /></button>
                 </div>
               </Card>

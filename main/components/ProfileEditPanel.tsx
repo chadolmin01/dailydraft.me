@@ -53,9 +53,8 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
   const [currentSituation, setCurrentSituation] = useState('')
   const [interestTags, setInterestTags] = useState<string[]>([])
   const [customTag, setCustomTag] = useState('')
-  const [skills, setSkills] = useState<Array<{ name: string; level: string }>>([])
+  const [skills, setSkills] = useState<Array<{ name: string }>>([])
   const [newSkillName, setNewSkillName] = useState('')
-  const [newSkillLevel, setNewSkillLevel] = useState('중급')
   const [personality, setPersonality] = useState<Record<string, number>>({ risk: 5, time: 5, communication: 5, decision: 5 })
   const [workStyle, setWorkStyle] = useState<Record<string, number>>({ collaboration: 5, planning: 5, perfectionism: 5 })
   const [workStyleTraits, setWorkStyleTraits] = useState<Record<string, string>>({})
@@ -93,8 +92,8 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
       setLocation(profile.location || '')
       setCurrentSituation(profile.current_situation || '')
       setInterestTags(profile.interest_tags || [])
-      const profileSkills = profile.skills as Array<{ name: string; level: string }> | null
-      setSkills(profileSkills || [])
+      const profileSkills = profile.skills as Array<{ name: string }> | null
+      setSkills(profileSkills?.map(s => ({ name: s.name })) || [])
 
       // AI analysis data
       const p = profile.personality as Record<string, number> | null
@@ -232,17 +231,13 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
   const addSkill = (name?: string) => {
     const skillName = (name || newSkillName).trim()
     if (skillName && !skills.some(s => s.name === skillName)) {
-      setSkills(prev => [...prev, { name: skillName, level: newSkillLevel }])
+      setSkills(prev => [...prev, { name: skillName }])
       if (!name) setNewSkillName('')
     }
   }
 
   const removeSkill = (name: string) => {
     setSkills(prev => prev.filter(s => s.name !== name))
-  }
-
-  const updateSkillLevel = (name: string, level: string) => {
-    setSkills(prev => prev.map(s => s.name === name ? { ...s, level } : s))
   }
 
   const handleSave = async () => {
@@ -402,11 +397,8 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
           setSkills={setSkills}
           newSkillName={newSkillName}
           setNewSkillName={setNewSkillName}
-          newSkillLevel={newSkillLevel}
-          setNewSkillLevel={setNewSkillLevel}
           addSkill={addSkill}
           removeSkill={removeSkill}
-          updateSkillLevel={updateSkillLevel}
         />
 
         <EditContact

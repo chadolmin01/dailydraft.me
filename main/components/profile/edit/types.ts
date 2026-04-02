@@ -44,15 +44,12 @@ export interface EditAffiliationProps {
 }
 
 export interface EditSkillsProps {
-  skills: Array<{ name: string; level: string }>
-  setSkills: React.Dispatch<React.SetStateAction<Array<{ name: string; level: string }>>>
+  skills: Array<{ name: string }>
+  setSkills: React.Dispatch<React.SetStateAction<Array<{ name: string }>>>
   newSkillName: string
   setNewSkillName: (v: string) => void
-  newSkillLevel: string
-  setNewSkillLevel: (v: string) => void
   addSkill: (name?: string) => void
   removeSkill: (name: string) => void
-  updateSkillLevel: (name: string, level: string) => void
 }
 
 export interface EditContactProps {

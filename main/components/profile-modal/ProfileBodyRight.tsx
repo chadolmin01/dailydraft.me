@@ -25,7 +25,7 @@ export function ProfileBodyRight({
   traits: Record<string, unknown> | undefined
   teamPref: Record<string, string> | undefined
   availability: { hours_per_week?: number; prefer_online?: boolean } | undefined
-  skills: Array<{ name: string; level: string }> | null
+  skills: Array<{ name: string }> | null
 }) {
   // Resolve categorical labels for work_style
   const getTraitLabel = (traitKey: string, scoreKey: string, source: Record<string, number> | null | undefined) => {
@@ -162,11 +162,9 @@ export function ProfileBodyRight({
             {skills.map((skill) => (
               <span
                 key={skill.name}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white text-txt-primary text-xs font-medium border border-border-strong/60 rounded-xl hover:border-brand/40 hover:text-brand transition-colors"
+                className="inline-flex items-center px-2.5 py-1.5 bg-white text-txt-primary text-xs font-medium border border-border-strong/60 rounded-xl hover:border-brand/40 hover:text-brand transition-colors"
               >
                 {skill.name}
-                <span className="text-txt-disabled">·</span>
-                <span className="text-brand text-[10px] font-bold">{skill.level}</span>
               </span>
             ))}
           </div>

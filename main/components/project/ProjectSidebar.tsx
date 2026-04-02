@@ -184,18 +184,13 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
             필요 스킬
           </h3>
           <div className="flex flex-wrap gap-1.5">
-            {(opportunity.needed_skills as Array<{ name: string; level?: string }>).map((skill, i) => (
+            {(opportunity.needed_skills as Array<{ name: string }>).map((skill, i) => (
               <span
                 key={i}
                 className="inline-flex items-center gap-1 px-2 py-1 bg-surface-card rounded-xl border border-border text-xs text-txt-secondary"
               >
                 <Code size={10} className="text-txt-disabled" />
                 {skill.name}
-                {skill.level && (
-                  <span className="text-[0.5rem] text-txt-disabled font-mono">
-                    {skill.level}
-                  </span>
-                )}
               </span>
             ))}
           </div>

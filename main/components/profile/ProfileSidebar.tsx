@@ -214,15 +214,11 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
             <span className="w-4 h-4 bg-indicator-online text-white flex items-center justify-center text-[0.5rem] font-bold rounded">S</span>
             TECH STACK
           </h3>
-          <div className="space-y-1.5">
+          <div className="flex flex-wrap gap-1.5">
             {skills.map((skill, idx) => (
-              <div key={idx} className="flex items-center justify-between py-1 border-b border-border last:border-0">
-                <span className="flex items-center gap-2 text-xs text-txt-secondary">
-                  <span className="text-[10px] font-mono text-txt-tertiary">{String(idx + 1).padStart(2, '0')}</span>
-                  {skill.name}
-                </span>
-                <span className="text-[10px] font-mono font-bold bg-brand-bg text-brand border border-brand-border px-1.5 py-0.5 rounded-full">{skill.level}</span>
-              </div>
+              <span key={idx} className="text-[10px] font-mono bg-surface-sunken text-txt-primary border border-border px-2 py-0.5 font-medium rounded-full">
+                {skill.name}
+              </span>
             ))}
           </div>
         </div>

@@ -8,14 +8,11 @@ const supabase = createClient(url, serviceKey)
 function calculateSkillComplementarity(mySkills, theirSkills) {
   if (theirSkills.length === 0) return 30
   const myNames = new Set(mySkills.map(s => s.name))
-  const lw = { '초급': 1, '중급': 2, '고급': 3 }
-  let cs = 0, tw = 0
+  let cs = 0
   for (const s of theirSkills) {
-    const w = lw[s.level] || 1
-    tw += w
-    cs += w * (myNames.has(s.name) ? 0.3 : 1.0)
+    cs += myNames.has(s.name) ? 0.3 : 1.0
   }
-  return tw === 0 ? 30 : Math.min(100, (cs / tw) * 100)
+  return Math.min(100, (cs / theirSkills.length) * 100)
 }
 
 function calculateInterestOverlap(myTags, theirTags) {

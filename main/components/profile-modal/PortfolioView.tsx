@@ -10,7 +10,7 @@ export function PortfolioView({
   onBack,
 }: {
   profile: { nickname: string; desired_position: string | null; portfolio_url: string | null; github_url: string | null; linkedin_url: string | null; avatar_url: string | null }
-  skills: Array<{ name: string; level: string }> | null
+  skills: Array<{ name: string }> | null
   onBack: () => void
 }) {
   // Only allow https:// URLs for iframe embedding
@@ -137,11 +137,9 @@ export function PortfolioView({
               {skills.map((skill) => (
                 <span
                   key={skill.name}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white text-tag-default-text text-xs border border-border font-medium"
+                  className="inline-flex items-center px-3 py-1.5 bg-white text-tag-default-text text-xs border border-border font-medium"
                 >
                   {skill.name}
-                  <span className="text-txt-tertiary">·</span>
-                  <span className="text-txt-tertiary text-[10px]">{skill.level}</span>
                 </span>
               ))}
             </div>

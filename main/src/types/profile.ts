@@ -2,7 +2,7 @@ export type CurrentSituation = 'solo' | 'has_project' | 'want_to_join' | 'explor
 
 export interface Skill {
   name: string
-  level: '초급' | '중급' | '고급'
+  level?: string // deprecated, kept for backward compatibility with existing DB data
 }
 
 export interface Personality {

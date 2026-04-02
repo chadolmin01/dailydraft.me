@@ -74,7 +74,7 @@ export async function saveProfileCheckpoint(profile: ProfileDraft): Promise<void
       major: profile.major || undefined,
       location: profile.locations.length > 0 ? profile.locations.join(', ') : '미설정',
       currentSituation: profile.situation || 'exploring',
-      skills: profile.skills.map(s => ({ name: s, level: '중급' })),
+      skills: profile.skills.map(s => ({ name: s })),
       interestTags: profile.interests,
       personality: { risk: 5, time: 5, communication: 5, decision: 5 },
     }),
@@ -109,7 +109,7 @@ export async function saveProfileFinal(
       major: profile.major || undefined,
       location: profile.locations.length > 0 ? profile.locations.join(', ') : '미설정',
       currentSituation: profile.situation || 'exploring',
-      skills: profile.skills.map(s => ({ name: s, level: '중급' })),
+      skills: profile.skills.map(s => ({ name: s })),
       interestTags: profile.interests,
       // Only send default personality when deep chat was skipped.
       // When deep chat was done, summarize API already wrote AI-analyzed values — don't overwrite.
