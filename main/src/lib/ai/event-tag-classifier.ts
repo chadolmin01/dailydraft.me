@@ -27,7 +27,7 @@ export async function classifyEventTags(event: TransformedEvent): Promise<string
 
   try {
     const tags = await geminiRateLimiter.schedule(async () => {
-      const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
       const prompt = buildPrompt(event);
 
       const { data } = await safeGenerate({

@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     // 입력 길이 제한
     const sanitizedIdea = idea.slice(0, 5000);
     const sanitizedConversation = typeof fullConversation === 'string'
-      ? fullConversation.slice(0, 30000)
+      ? fullConversation.slice(0, 15000)
       : '대화 내용 없음';
     const validAdvice = Array.isArray(reflectedAdvice)
       ? reflectedAdvice.filter((a: unknown) => typeof a === 'string').slice(0, 20).map((a: string) => a.slice(0, 1000))
@@ -68,10 +68,10 @@ export async function POST(request: NextRequest) {
     `;
 
     const model = genAI.getGenerativeModel({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-2.5-flash',
       generationConfig: {
         responseMimeType: 'application/json',
-        maxOutputTokens: 8192,
+        maxOutputTokens: 4096,
         temperature: 0.7,
       }
     });
