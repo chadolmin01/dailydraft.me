@@ -8,6 +8,7 @@ import {
   Briefcase, MapPin, Calendar, ChevronRight, Loader2, AlertCircle,
   MessageCircle, ExternalLink, Sparkles, Check
 } from 'lucide-react'
+import { toast } from 'sonner'
 import { useAuth } from '@/src/context/AuthContext'
 import { useOpportunity, useUpdateOpportunity, useSimilarOpportunities, type SimilarOpportunity } from '@/src/hooks/useOpportunities'
 import { useProfileByUserId, type CreatorProfile } from '@/src/hooks/usePublicProfiles'
@@ -592,31 +593,42 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                             const next = isFilled
                               ? current.filter(r => r !== role)
                               : [...current, role]
-                            updateOpportunity.mutate({
-                              id: opportunity.id,
-                              updates: { filled_roles: next } as any,
-                            })
+                            updateOpportunity.mutate(
+                              { id: opportunity.id, updates: { filled_roles: next } as any },
+                              {
+                                onSuccess: () => {
+                                  toast.success(
+                                    isFilled
+                                      ? `${role} 포지션을 다시 모집합니다`
+                                      : `${role} 포지션 모집이 완료되었습니다`
+                                  )
+                                },
+                              }
+                            )
                           }}
-                          className={`w-full flex items-center justify-between p-3 border transition-colors ${
+                          className={`group w-full flex items-center justify-between p-3 border transition-all ${
                             isFilled
-                              ? 'bg-surface-sunken border-border'
-                              : 'bg-brand-bg border-brand-border hover:bg-brand/10'
+                              ? 'bg-surface-sunken border-border hover:border-brand/40 hover:bg-brand-bg/50'
+                              : 'bg-brand-bg border-brand-border hover:bg-status-success-bg hover:border-status-success-text/30'
                           }`}
                         >
                           <div className="flex items-center gap-2">
                             {isFilled ? (
-                              <Check size={14} className="text-status-success-text" />
+                              <Check size={14} className="text-status-success-text group-hover:text-brand transition-colors" />
                             ) : (
-                              <Briefcase size={14} className="text-brand" />
+                              <Briefcase size={14} className="text-brand group-hover:text-status-success-text transition-colors" />
                             )}
                             <span className={`font-medium text-sm ${isFilled ? 'text-txt-tertiary' : 'text-txt-primary'}`}>
                               {role}
                             </span>
                           </div>
-                          <span className={`text-[10px] font-bold ${
-                            isFilled ? 'text-status-success-text' : 'text-brand'
-                          }`}>
-                            {isFilled ? '모집완료' : '모집중'}
+                          <span className="text-[10px] font-bold">
+                            <span className={`group-hover:hidden ${isFilled ? 'text-status-success-text' : 'text-brand'}`}>
+                              {isFilled ? '모집완료' : '모집중'}
+                            </span>
+                            <span className={`hidden group-hover:inline ${isFilled ? 'text-brand' : 'text-status-success-text'}`}>
+                              {isFilled ? '다시 모집하기' : '모집완료로 변경'}
+                            </span>
                           </span>
                         </button>
                       )
