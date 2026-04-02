@@ -1,13 +1,15 @@
 import { NextRequest } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
+import { createAdminClient } from '@/src/lib/supabase/admin'
 import { ApiResponse } from '@/src/lib/api-utils'
 import {
   notifyApplicationAccepted,
   notifyApplicationRejected,
   notifyNewConnection,
+  notifyInterviewScheduled,
 } from '@/src/lib/notifications/create-notification'
 
-// PATCH: Accept or reject application
+// PATCH: Accept, reject, or schedule interview for application
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -27,7 +29,7 @@ export async function PATCH(
     const body = await request.json()
     const { status } = body
 
-    if (!status || !['accepted', 'rejected'].includes(status)) {
+    if (!status || !['interviewing', 'accepted', 'rejected'].includes(status)) {
       return ApiResponse.badRequest('올바르지 않은 상태값입니다')
     }
 
@@ -83,6 +85,63 @@ export async function PATCH(
 
     const opportunityTitle = application.opportunities?.title || '프로젝트'
     const opportunityId = application.opportunities?.id || ''
+    const supabaseAdmin = createAdminClient()
+
+    // If interviewing, create coffee chat and notify
+    if (status === 'interviewing') {
+      // Fetch applicant email & profile
+      const { data: applicantAuth } = await supabaseAdmin.auth.admin.getUserById(application.applicant_id)
+      const { data: applicantProfile } = await supabaseAdmin
+        .from('profiles')
+        .select('nickname, contact_email')
+        .eq('user_id', application.applicant_id)
+        .single()
+
+      const applicantEmail = (applicantProfile as any)?.contact_email || applicantAuth?.user?.email || ''
+      const applicantName = (applicantProfile as any)?.nickname || '지원자'
+
+      // Fetch creator profile for name
+      const { data: creatorProfile } = await supabaseAdmin
+        .from('profiles')
+        .select('nickname')
+        .eq('user_id', user.id)
+        .single()
+      const creatorName = (creatorProfile as any)?.nickname || '프로젝트 리더'
+
+      // Create coffee chat linked to this application
+      const { data: coffeeChat, error: chatError } = await supabaseAdmin
+        .from('coffee_chats')
+        .insert({
+          opportunity_id: application.opportunity_id,
+          application_id: application.id,
+          requester_user_id: application.applicant_id,
+          requester_email: applicantEmail,
+          requester_name: applicantName,
+          owner_user_id: user.id,
+          status: 'pending',
+          message: body.message || '지원서를 통해 약속이 잡혔습니다',
+        } as never)
+        .select('id')
+        .single()
+
+      if (chatError) {
+        console.error('Coffee chat creation error:', chatError.message)
+      }
+
+      // Notify applicant
+      await notifyInterviewScheduled(
+        application.applicant_id,
+        creatorName,
+        opportunityTitle,
+        opportunityId
+      )
+
+      return ApiResponse.ok({
+        success: true,
+        status,
+        coffee_chat_id: coffeeChat?.id || null,
+      })
+    }
 
     // If accepted, create connection and send notifications
     if (status === 'accepted') {
@@ -97,6 +156,12 @@ export async function PATCH(
       if (connectionError) {
         // Don't fail the whole request if connection creation fails
       }
+
+      // Update linked coffee chat outcome if exists
+      await supabaseAdmin
+        .from('coffee_chats')
+        .update({ outcome: 'team_formed' } as never)
+        .eq('application_id', id)
 
       // Notify applicant that their application was accepted
       await notifyApplicationAccepted(
@@ -115,6 +180,12 @@ export async function PATCH(
 
     // If rejected, notify the applicant
     if (status === 'rejected') {
+      // Update linked coffee chat status if exists
+      await supabaseAdmin
+        .from('coffee_chats')
+        .update({ status: 'declined' } as never)
+        .eq('application_id', id)
+
       await notifyApplicationRejected(
         application.applicant_id,
         opportunityTitle,

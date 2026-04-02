@@ -197,8 +197,9 @@ export async function POST(req: NextRequest) {
           .eq('id', chatId)
       }
 
-      // Auto-add to team when project-based coffee chat is accepted
-      if (type === 'accepted' && !isPersonMode && chat.opportunity_id) {
+      // Auto-add to team when standalone project-based coffee chat is accepted
+      // (application-linked coffee chats handle team-add via application accept flow)
+      if (type === 'accepted' && !isPersonMode && chat.opportunity_id && !chat.application_id) {
         await supabaseAdmin
           .from('accepted_connections')
           .upsert(

@@ -14,6 +14,8 @@ import { EditUpdateForm } from '@/components/EditUpdateForm'
 import { InlineUpdateEditor } from '@/components/InlineUpdateEditor'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { UPDATE_TYPE_CONFIG } from '@/components/project/types'
+import { ApplicationManageSection } from '@/components/project/ApplicationManageSection'
+import { TeamManageSection } from '@/components/project/TeamManageSection'
 import { timeAgo } from '@/src/lib/utils'
 import Link from 'next/link'
 
@@ -25,7 +27,7 @@ export default function ProjectManagePage() {
   )
 }
 
-type Tab = 'updates' | 'team' | 'coffeechats'
+type Tab = 'updates' | 'team' | 'applications'
 
 function ProjectManageContent() {
   const router = useRouter()
@@ -74,7 +76,7 @@ function ProjectManageContent() {
   const TABS: { key: Tab; label: string; icon: React.ReactNode }[] = [
     { key: 'updates', label: '주간 업데이트', icon: <Clock size={14} /> },
     { key: 'team', label: '팀원', icon: <Users size={14} /> },
-    { key: 'coffeechats', label: '커피챗 요청', icon: <MessageCircle size={14} /> },
+    { key: 'applications', label: '지원 관리', icon: <MessageCircle size={14} /> },
   ]
 
   return (
@@ -227,15 +229,11 @@ function ProjectManageContent() {
         })()}
 
         {tab === 'team' && (
-          <div className="text-center py-12 text-txt-disabled text-sm">
-            팀원 관리는 <Link href={`/projects/${id}/edit`} className="underline hover:text-txt-secondary">프로젝트 수정</Link> 페이지에서 할 수 있습니다
-          </div>
+          <TeamManageSection opportunityId={id} />
         )}
 
-        {tab === 'coffeechats' && (
-          <div className="text-center py-12 text-txt-disabled text-sm">
-            커피챗 요청 목록은 준비 중입니다
-          </div>
+        {tab === 'applications' && (
+          <ApplicationManageSection opportunityId={id} />
         )}
       </div>
 

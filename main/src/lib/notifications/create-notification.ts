@@ -212,6 +212,25 @@ export async function notifyPersonCoffeeChatResponse(
   })
 }
 
+export async function notifyInterviewScheduled(
+  applicantId: string,
+  creatorName: string,
+  opportunityTitle: string,
+  opportunityId: string
+) {
+  return createNotification({
+    userId: applicantId,
+    type: 'coffee_chat',
+    title: '프로젝트 리더가 면담을 원합니다',
+    message: `${creatorName}님이 '${opportunityTitle}' 프로젝트에 대해 이야기를 나누고 싶어합니다.`,
+    link: '/profile?tab=coffee-chats',
+    metadata: {
+      opportunity_id: opportunityId,
+      opportunity_title: opportunityTitle,
+    },
+  })
+}
+
 export async function notifyProjectInvitation(
   invitedUserId: string,
   inviterName: string,

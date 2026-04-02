@@ -9,6 +9,7 @@ export interface CoffeeChat {
   id: string
   opportunity_id: string | null
   target_user_id: string | null
+  application_id: string | null
   requester_email: string
   requester_user_id: string | null
   requester_name: string | null

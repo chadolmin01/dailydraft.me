@@ -73,6 +73,7 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
         .select('id, requester_user_id, requester_name, message, created_at')
         .eq('opportunity_id', opportunityId)
         .eq('status', 'accepted')
+        .is('application_id', null)
         .order('created_at', { ascending: false })
       if (error || !chats) return []
 

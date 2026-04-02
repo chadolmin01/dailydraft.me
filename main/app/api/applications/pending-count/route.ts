@@ -33,7 +33,7 @@ export async function GET() {
       .from('applications')
       .select('*', { count: 'exact', head: true })
       .in('opportunity_id', opportunityIds)
-      .eq('status', 'pending')
+      .in('status', ['pending', 'interviewing'])
 
     if (error) {
       console.error('pending-count error:', error.message)
