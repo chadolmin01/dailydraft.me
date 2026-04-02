@@ -1,16 +1,19 @@
 'use client'
 
-import React, { useState, useEffect, useCallback, Suspense } from 'react'
+import React, { useState, useEffect, useCallback, useRef, useMemo, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ArrowLeft, Loader2, Plus, X, Sparkles, AlertCircle } from 'lucide-react'
 import type { Area } from 'react-easy-crop'
 import { toast } from 'sonner'
 import { useCreateOpportunity } from '@/src/hooks/useOpportunities'
+import { useAutoSaveDraft } from '@/src/hooks/useAutoSaveDraft'
 import { TYPE_OPTIONS, CATEGORY_TAGS, TYPE_THEMES } from './constants'
 import { getCroppedImg, ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE, uploadImagesToSupabase } from './utils'
 import { ImageUploadSection } from './components/ImageUploadSection'
 import { CropModal } from './components/CropModal'
 import { ProjectInfoSidebar } from './components/ProjectInfoSidebar'
+import { RolesGrid } from './components/RolesGrid'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 
 export default function NewProjectPage() {
   return (
@@ -43,6 +46,15 @@ function NewProjectContent() {
   const [imagePreviews, setImagePreviews] = useState<string[]>([])
   const [imageUploading, setImageUploading] = useState(false)
 
+  // Inline validation
+  const [fieldErrors, setFieldErrors] = useState<{ title?: string; description?: string; roles?: string }>({})
+  const titleRef = useRef<HTMLInputElement>(null)
+  const descriptionRef = useRef<HTMLTextAreaElement>(null)
+  const rolesRef = useRef<HTMLDivElement>(null)
+
+  // Confirm modal
+  const [showConfirm, setShowConfirm] = useState(false)
+
   // Crop state
   const [cropSrc, setCropSrc] = useState<string | null>(null)
   const [cropQueue, setCropQueue] = useState<File[]>([])
@@ -55,6 +67,7 @@ function NewProjectContent() {
   }, [])
 
   // Read AI-generated draft from localStorage
+  const [aiDraftConsumed, setAiDraftConsumed] = useState(false)
   useEffect(() => {
     try {
       const saved = localStorage.getItem('draft-pending-opportunity')
@@ -65,8 +78,35 @@ function NewProjectContent() {
       if (draft.neededRoles?.length) setSelectedRoles(draft.neededRoles)
       if (draft.tags?.length) setSelectedTags(draft.tags)
       localStorage.removeItem('draft-pending-opportunity')
+      setAiDraftConsumed(true)
     } catch { /* ignore parse errors */ }
   }, [])
+
+  // Auto-save draft to localStorage
+  const formData = useMemo(() => ({
+    title, description, type, selectedRoles, selectedTags,
+    locationType, painPoint, timeCommitment, compensationType,
+    compensationDetails, links,
+  }), [title, description, type, selectedRoles, selectedTags, locationType, painPoint, timeCommitment, compensationType, compensationDetails, links])
+
+  const handleRestore = useCallback((data: typeof formData) => {
+    setTitle(data.title)
+    setDescription(data.description)
+    setType(data.type)
+    setSelectedRoles(data.selectedRoles)
+    setSelectedTags(data.selectedTags)
+    setLocationType(data.locationType)
+    setPainPoint(data.painPoint)
+    setTimeCommitment(data.timeCommitment)
+    setCompensationType(data.compensationType)
+    setCompensationDetails(data.compensationDetails)
+    setLinks(data.links)
+  }, [])
+
+  const { clearDraft } = useAutoSaveDraft(formData, {
+    enabled: !aiDraftConsumed,
+    onRestore: handleRestore,
+  })
 
   const toggleRole = (role: string) => {
     setSelectedRoles(prev =>
@@ -204,15 +244,32 @@ function NewProjectContent() {
     setLinks(prev => prev.map((l, i) => i === idx ? { ...l, [field]: value } : l))
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handlePreSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    if (!title.trim()) { setError('프로젝트 이름을 입력해주세요 (필수)'); return }
-    if (title.trim().length < 2) { setError('프로젝트 이름은 2자 이상이어야 해요'); return }
-    if (!description.trim()) { setError('프로젝트 소개를 입력해주세요 (필수)'); return }
-    if (description.trim().length < 20) { setError('프로젝트 소개는 20자 이상 작성해주세요'); return }
-    if (selectedRoles.length === 0) { setError('필요한 역할을 최소 1개 선택해주세요'); return }
+    const errors: typeof fieldErrors = {}
 
+    if (!title.trim()) errors.title = '프로젝트 이름을 입력해주세요'
+    else if (title.trim().length < 2) errors.title = '프로젝트 이름은 2자 이상이어야 해요'
+
+    if (!description.trim()) errors.description = '프로젝트 소개를 입력해주세요'
+    else if (description.trim().length < 20) errors.description = '프로젝트 소개는 20자 이상 작성해주세요'
+
+    if (selectedRoles.length === 0) errors.roles = '필요한 역할을 최소 1개 선택해주세요'
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors)
+      // Scroll to first error field
+      const firstErrorRef = errors.title ? titleRef : errors.description ? descriptionRef : rolesRef
+      firstErrorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      return
+    }
+
+    setFieldErrors({})
+    setShowConfirm(true)
+  }
+
+  const handleConfirmedSubmit = async () => {
     const projectLinks = links
       .filter(l => l.url.trim())
       .reduce((acc, l) => ({ ...acc, [l.label.trim() || l.url.trim()]: l.url.trim() }), {} as Record<string, string>)
@@ -236,6 +293,7 @@ function NewProjectContent() {
         demo_images: demoImages.length > 0 ? demoImages : null,
         status: 'active',
       })
+      clearDraft()
       toast.success('프로젝트가 등록되었습니다! 프로젝트 페이지로 이동합니다')
       router.push(returnTo || `/p/${result.id}`)
     } catch {
@@ -250,7 +308,7 @@ function NewProjectContent() {
     <div className="flex-1 overflow-y-auto bg-surface-bg">
       <div className="max-w-4xl mx-auto px-4 py-2 md:py-4">
 
-        <form onSubmit={handleSubmit} className="bg-surface-card shadow-md overflow-hidden border border-border">
+        <form onSubmit={handlePreSubmit} className="bg-surface-card shadow-md overflow-hidden border border-border">
 
           {/* ─── Window Bar ─── */}
           <div className="bg-surface-sunken border-b-2 border-border px-3 sm:px-5 py-2.5 flex items-center justify-between relative">
@@ -322,13 +380,22 @@ function NewProjectContent() {
           {/* ─── Title & Tags ─── */}
           <div className="px-4 sm:px-8 pt-5 pb-4">
             <input
+              ref={titleRef}
               type="text"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => {
+                setTitle(e.target.value)
+                if (fieldErrors.title) setFieldErrors(prev => ({ ...prev, title: undefined }))
+              }}
+              onBlur={() => {
+                if (!title.trim()) setFieldErrors(prev => ({ ...prev, title: '프로젝트 이름을 입력해주세요' }))
+                else if (title.trim().length < 2) setFieldErrors(prev => ({ ...prev, title: '프로젝트 이름은 2자 이상이어야 해요' }))
+              }}
               placeholder={theme.titlePlaceholder}
               maxLength={100}
-              className="w-full text-2xl font-bold text-txt-primary placeholder:text-txt-disabled border-none outline-none bg-transparent leading-tight break-keep"
+              className={`w-full text-2xl font-bold text-txt-primary placeholder:text-txt-disabled border-none outline-none bg-transparent leading-tight break-keep ${fieldErrors.title ? 'ring-1 ring-status-danger-text/30 rounded px-1 -mx-1' : ''}`}
             />
+            {fieldErrors.title && <p className="text-status-danger-text text-xs mt-1">{fieldErrors.title}</p>}
 
             <div className="flex flex-wrap gap-1.5 mt-4">
               {CATEGORY_TAGS.map(tag => (
@@ -348,8 +415,23 @@ function NewProjectContent() {
             </div>
           </div>
 
+          {/* ─── Mobile-only Roles — 필수 필드를 상단에 배치 ─── */}
+          <div className="md:hidden px-4 sm:px-8 pt-4">
+            <RolesGrid
+              ref={rolesRef}
+              theme={theme}
+              selectedRoles={selectedRoles}
+              onToggleRole={(role) => {
+                toggleRole(role)
+                if (fieldErrors.roles) setFieldErrors(prev => ({ ...prev, roles: undefined }))
+              }}
+              rolesLabel={theme.rolesLabel}
+              error={fieldErrors.roles}
+            />
+          </div>
+
           {/* Divider */}
-          <div className="mx-4 sm:mx-8 border-t border-border" />
+          <div className="mx-4 sm:mx-8 border-t border-border mt-4 md:mt-0" />
 
           {/* ─── Body: 2-Column ─── */}
           <div className="px-4 sm:px-8 py-5 sm:py-6">
@@ -378,13 +460,22 @@ function NewProjectContent() {
                     </button>
                   </div>
                   <textarea
+                    ref={descriptionRef}
                     value={description}
-                    onChange={(e) => setDescription(e.target.value)}
+                    onChange={(e) => {
+                      setDescription(e.target.value)
+                      if (fieldErrors.description) setFieldErrors(prev => ({ ...prev, description: undefined }))
+                    }}
+                    onBlur={() => {
+                      if (!description.trim()) setFieldErrors(prev => ({ ...prev, description: '프로젝트 소개를 입력해주세요' }))
+                      else if (description.trim().length < 20) setFieldErrors(prev => ({ ...prev, description: '프로젝트 소개는 20자 이상 작성해주세요' }))
+                    }}
                     placeholder={theme.descPlaceholder}
                     rows={7}
                     maxLength={2000}
-                    className="w-full text-base sm:text-sm text-txt-secondary leading-[1.8] placeholder:text-txt-disabled border border-border p-3 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand resize-none bg-transparent transition-all"
+                    className={`w-full text-base sm:text-sm text-txt-secondary leading-[1.8] placeholder:text-txt-disabled border p-3 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand resize-none bg-transparent transition-all ${fieldErrors.description ? 'border-status-danger-text/30' : 'border-border'}`}
                   />
+                  {fieldErrors.description && <p className="text-status-danger-text text-xs mt-1">{fieldErrors.description}</p>}
                   <p className={`text-[10px] mt-1 text-right font-mono ${description.length >= 1800 ? 'text-status-danger-text font-bold' : description.length >= 1500 ? 'text-status-warning-text' : 'text-txt-disabled'}`}>{description.length}/2000</p>
                 </section>
 
@@ -455,13 +546,18 @@ function NewProjectContent() {
                 timeCommitment={timeCommitment}
                 compensationType={compensationType}
                 compensationDetails={compensationDetails}
-                onToggleRole={toggleRole}
+                onToggleRole={(role) => {
+                  toggleRole(role)
+                  if (fieldErrors.roles) setFieldErrors(prev => ({ ...prev, roles: undefined }))
+                }}
                 onSetLocationType={setLocationType}
                 onSetTimeCommitment={(v) => setTimeCommitment(prev => prev === v ? '' : v)}
                 onSetCompensationType={(v) => setCompensationType(prev => prev === v ? '' : v)}
                 onSetCompensationDetails={setCompensationDetails}
                 isPending={createOpportunity.isPending}
                 imageUploading={imageUploading}
+                hideRolesOnMobile
+                rolesError={fieldErrors.roles}
               />
             </div>
           </div>
@@ -498,6 +594,18 @@ function NewProjectContent() {
             onCropCancel={handleCropCancel}
           />
         )}
+
+        {/* ─── Confirm Modal ─── */}
+        <ConfirmModal
+          isOpen={showConfirm}
+          onClose={() => setShowConfirm(false)}
+          onConfirm={handleConfirmedSubmit}
+          title="프로젝트 등록"
+          message="프로젝트를 등록하시겠어요? 등록 후 바로 공개됩니다."
+          confirmText="등록하기"
+          cancelText="취소"
+          variant="info"
+        />
       </div>
     </div>
   )

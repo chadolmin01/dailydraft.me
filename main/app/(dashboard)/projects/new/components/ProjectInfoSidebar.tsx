@@ -1,7 +1,8 @@
 import React from 'react'
 import { Loader2, Sparkles, MapPin, Clock } from 'lucide-react'
-import { ROLE_OPTIONS, LOCATION_TYPE_OPTIONS, TIME_OPTIONS, COMPENSATION_OPTIONS } from '../constants'
+import { LOCATION_TYPE_OPTIONS, TIME_OPTIONS, COMPENSATION_OPTIONS } from '../constants'
 import type { TypeTheme } from '../constants'
+import { RolesGrid } from './RolesGrid'
 
 interface ProjectInfoSidebarProps {
   theme: TypeTheme
@@ -18,6 +19,8 @@ interface ProjectInfoSidebarProps {
   isPending: boolean
   imageUploading: boolean
   submitLabel?: string
+  hideRolesOnMobile?: boolean
+  rolesError?: string
 }
 
 export function ProjectInfoSidebar({
@@ -35,32 +38,21 @@ export function ProjectInfoSidebar({
   isPending,
   imageUploading,
   submitLabel,
+  hideRolesOnMobile,
+  rolesError,
 }: ProjectInfoSidebarProps) {
   return (
     <div className="md:col-span-2 space-y-6">
 
       {/* Roles */}
-      <div>
-        <h3 className="text-[10px] font-medium text-txt-tertiary mb-2">
-          {theme.rolesLabel}
-        </h3>
-        <div className="grid grid-cols-3 gap-1.5">
-          {ROLE_OPTIONS.map(({ value, icon: Icon }) => (
-            <button
-              key={value}
-              type="button"
-              onClick={() => onToggleRole(value)}
-              className={`flex flex-col items-center justify-center aspect-square border transition-colors ${
-                selectedRoles.includes(value)
-                  ? theme.roleOn
-                  : 'bg-surface-sunken text-txt-secondary border-border-subtle hover:bg-accent-secondary hover:border-border'
-              }`}
-            >
-              <Icon size={18} className={selectedRoles.includes(value) ? `${theme.roleIconOn} mb-1.5` : 'text-txt-disabled mb-1.5'} />
-              <span className="text-xs font-medium">{value}</span>
-            </button>
-          ))}
-        </div>
+      <div className={hideRolesOnMobile ? 'hidden md:block' : undefined}>
+        <RolesGrid
+          theme={theme}
+          selectedRoles={selectedRoles}
+          onToggleRole={onToggleRole}
+          rolesLabel={theme.rolesLabel}
+          error={rolesError}
+        />
       </div>
 
       {/* Project Info */}
