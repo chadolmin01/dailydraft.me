@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { hapticMedium, hapticSuccess } from '@/src/utils/haptic'
@@ -50,6 +50,9 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
   const [showWriteUpdate, setShowWriteUpdate] = useState(false)
   const [hasInterested, setHasInterested] = useState(false)
   const [showTypeSelector, setShowTypeSelector] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+  const sheetRef = useRef<HTMLDivElement>(null)
+  const dragRef = useRef({ startY: 0, dragging: false })
   const { user } = useAuth()
   const updateOpportunity = useUpdateOpportunity()
   const { expressInterest, loading: interestLoading } = useInterests({ opportunityId: currentId ?? '' })
@@ -146,6 +149,10 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
       fetch(`/api/opportunities/${currentId}/view`, { method: 'POST' }).catch(() => {})
     }
   }, [currentId])
+
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 640)
+  }, [])
 
   useEffect(() => {
     if (projectId) {
@@ -258,8 +265,8 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
 
       {/* Modal */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
+        initial={isMobile ? { opacity: 1, y: '100%' } : { opacity: 0, scale: 0.95, y: 20 }}
+        animate={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
         className="fixed inset-0 z-modal flex items-end sm:items-center justify-center pt-6 px-0 pb-[env(safe-area-inset-bottom)] sm:p-4 md:p-8"
         onClick={onClose}
@@ -268,7 +275,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
             {canGoBack && (
               <button
                 onClick={(e) => { e.stopPropagation(); goBack() }}
-                className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-surface-card/90 backdrop-blur-sm border border-border shadow-lg flex items-center justify-center hover:bg-surface-card active:scale-95 transition-all"
+                className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-surface-card/90 backdrop-blur-sm border border-border shadow-lg hidden sm:flex items-center justify-center hover:bg-surface-card active:scale-95 transition-all"
                 aria-label="이전 프로젝트"
               >
                 <ChevronLeft size={20} className="text-txt-primary" />
@@ -280,7 +287,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
               <button
                 onClick={(e) => { e.stopPropagation(); goNext() }}
                 disabled={!canGoForward}
-                className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-surface-card/90 backdrop-blur-sm border border-border shadow-lg flex items-center justify-center hover:bg-surface-card active:scale-95 transition-all disabled:opacity-40"
+                className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-surface-card/90 backdrop-blur-sm border border-border shadow-lg hidden sm:flex items-center justify-center hover:bg-surface-card active:scale-95 transition-all disabled:opacity-40"
                 aria-label="다음 유사 프로젝트"
                 title={nextSimilar ? nextSimilar.title : undefined}
               >
@@ -293,6 +300,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
             )}
 
             <div
+              ref={sheetRef}
               onClick={(e) => e.stopPropagation()}
               className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl max-h-[85vh] sm:max-h-[90vh] modal-glass rounded-t-2xl sm:rounded-2xl overflow-hidden flex flex-col relative"
               role="dialog"
@@ -300,7 +308,34 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
               aria-label={opportunity?.title || '프로젝트 상세'}
             >
               {/* Mobile drag handle */}
-              <div className="sm:hidden flex justify-center pt-2 pb-0.5">
+              <div
+                className="sm:hidden flex justify-center pt-2 pb-0.5 touch-none cursor-grab active:cursor-grabbing"
+                onTouchStart={(e) => {
+                  dragRef.current.startY = e.touches[0].clientY
+                  dragRef.current.dragging = true
+                }}
+                onTouchMove={(e) => {
+                  if (!dragRef.current.dragging || !sheetRef.current) return
+                  const diff = e.touches[0].clientY - dragRef.current.startY
+                  if (diff > 0) {
+                    sheetRef.current.style.transform = `translateY(${diff}px)`
+                    sheetRef.current.style.transition = 'none'
+                  }
+                }}
+                onTouchEnd={(e) => {
+                  if (!dragRef.current.dragging || !sheetRef.current) return
+                  dragRef.current.dragging = false
+                  const diff = e.changedTouches[0].clientY - dragRef.current.startY
+                  if (diff > 80) {
+                    sheetRef.current.style.transition = 'transform 0.2s ease-out'
+                    sheetRef.current.style.transform = 'translateY(100%)'
+                    setTimeout(onClose, 200)
+                  } else {
+                    sheetRef.current.style.transition = 'transform 0.2s ease-out'
+                    sheetRef.current.style.transform = 'translateY(0)'
+                  }
+                }}
+              >
                 <div className="w-9 h-1 rounded-full bg-border/60" />
               </div>
               {/* Window Bar */}
@@ -420,14 +455,18 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                     onTouchStart={(e) => {
                       const touch = e.touches[0]
                       ;(e.currentTarget as HTMLElement).dataset.touchStartX = String(touch.clientX)
+                      ;(e.currentTarget as HTMLElement).dataset.touchStartY = String(touch.clientY)
                     }}
                     onTouchEnd={(e) => {
                       const startX = Number((e.currentTarget as HTMLElement).dataset.touchStartX)
+                      const startY = Number((e.currentTarget as HTMLElement).dataset.touchStartY)
                       const endX = e.changedTouches[0].clientX
-                      const diff = startX - endX
-                      if (Math.abs(diff) > 60) {
-                        if (diff > 0 && canGoForward) goNext()
-                        else if (diff < 0 && canGoBack) goBack()
+                      const endY = e.changedTouches[0].clientY
+                      const diffX = startX - endX
+                      const diffY = startY - endY
+                      if (Math.abs(diffX) > 60 && Math.abs(diffX) > Math.abs(diffY) * 2) {
+                        if (diffX > 0 && canGoForward) goNext()
+                        else if (diffX < 0 && canGoBack) goBack()
                       }
                     }}
                   >

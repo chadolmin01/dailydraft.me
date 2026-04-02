@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { hapticMedium } from '@/src/utils/haptic'
 import {
@@ -23,6 +23,9 @@ import { useBackHandler } from '@/src/hooks/useBackHandler'
 
 export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileId, byUserId, matchData, onClose, onSelectProject, initialCoffeeChatOpen, initialCoffeeChatMessage }) => {
   const { isAuthenticated, user } = useAuth()
+  const [isMobile, setIsMobile] = useState(false)
+  const sheetRef = useRef<HTMLDivElement>(null)
+  const dragRef = useRef({ startY: 0, dragging: false })
   const [shareCopied, setShareCopied] = useState(false)
   const [showCoffeeChatForm, setShowCoffeeChatForm] = useState(false)
   const [showInviteModal, setShowInviteModal] = useState(false)
@@ -60,6 +63,10 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
     enabled: !!profileUserId,
     staleTime: 1000 * 60 * 2,
   })
+
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 640)
+  }, [])
 
   useEffect(() => {
     if (profileId) {
@@ -188,8 +195,8 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
 
       {/* Modal */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
+        initial={isMobile ? { opacity: 1, y: '100%' } : { opacity: 0, scale: 0.95, y: 20 }}
+        animate={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
         className="fixed inset-0 z-modal flex items-end sm:items-center justify-center pt-6 px-0 pb-[env(safe-area-inset-bottom)] sm:p-4 md:p-8"
         onClick={onClose}
@@ -202,9 +209,36 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
               aria-label={profile?.nickname || '프로필'}
             >
             {/* Main modal */}
-            <div className={`modal-glass rounded-t-2xl sm:rounded-2xl overflow-hidden flex flex-col relative transition-all duration-300 ${sidePanel ? 'w-full sm:w-3/5' : 'w-full'}`}>
+            <div ref={sheetRef} className={`modal-glass rounded-t-2xl sm:rounded-2xl overflow-hidden flex flex-col relative transition-all duration-300 ${sidePanel ? 'w-full sm:w-3/5' : 'w-full'}`}>
               {/* Mobile drag handle */}
-              <div className="sm:hidden flex justify-center pt-2 pb-0.5">
+              <div
+                className="sm:hidden flex justify-center pt-2 pb-0.5 touch-none cursor-grab active:cursor-grabbing"
+                onTouchStart={(e) => {
+                  dragRef.current.startY = e.touches[0].clientY
+                  dragRef.current.dragging = true
+                }}
+                onTouchMove={(e) => {
+                  if (!dragRef.current.dragging || !sheetRef.current) return
+                  const diff = e.touches[0].clientY - dragRef.current.startY
+                  if (diff > 0) {
+                    sheetRef.current.style.transform = `translateY(${diff}px)`
+                    sheetRef.current.style.transition = 'none'
+                  }
+                }}
+                onTouchEnd={(e) => {
+                  if (!dragRef.current.dragging || !sheetRef.current) return
+                  dragRef.current.dragging = false
+                  const diff = e.changedTouches[0].clientY - dragRef.current.startY
+                  if (diff > 80) {
+                    sheetRef.current.style.transition = 'transform 0.2s ease-out'
+                    sheetRef.current.style.transform = 'translateY(100%)'
+                    setTimeout(onClose, 200)
+                  } else {
+                    sheetRef.current.style.transition = 'transform 0.2s ease-out'
+                    sheetRef.current.style.transform = 'translateY(0)'
+                  }
+                }}
+              >
                 <div className="w-9 h-1 rounded-full bg-border/60" />
               </div>
               {/* Window Bar */}
