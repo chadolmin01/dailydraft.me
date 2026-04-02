@@ -2,6 +2,22 @@ import type { NextConfig } from 'next'
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const withPWAInit = require('next-pwa')
 
+// Customize default runtimeCaching: make APIs & page navigations NetworkOnly
+// to prevent stale SW cache from breaking Next.js App Router client navigation
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const defaultCache = require('next-pwa/cache') as Array<{options?: {cacheName?: string}; handler: string}>
+const runtimeCaching = defaultCache.map(entry => {
+  const name = entry.options?.cacheName
+  // APIs: never cache — React Query handles caching client-side
+  // Pages/RSC payloads: never cache — prevents stale navigation
+  // next-data: also skip cache
+  if (name === 'apis' || name === 'others' || name === 'next-data') {
+    const { networkTimeoutSeconds: _, ...rest } = (entry.options || {}) as Record<string, unknown>
+    return { ...entry, handler: 'NetworkOnly', options: rest }
+  }
+  return entry
+})
+
 const withPWA = withPWAInit({
   dest: 'public',
   disable: process.env.NODE_ENV === 'development',
@@ -10,6 +26,7 @@ const withPWA = withPWAInit({
   fallbacks: {
     document: '/offline',
   },
+  runtimeCaching,
 })
 
 const nextConfig: NextConfig = {
