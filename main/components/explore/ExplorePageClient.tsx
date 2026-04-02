@@ -1,13 +1,16 @@
 'use client'
 
-import React, { useState, useEffect, useMemo, useCallback, Suspense } from 'react'
+import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react'
 import dynamic from 'next/dynamic'
 import { LayoutGrid, Users, Sparkles } from 'lucide-react'
+import { toast } from 'sonner'
 import Link from 'next/link'
 import { useSearchParams as useNextSearchParams, useRouter, usePathname } from 'next/navigation'
 import { DashboardLayout } from '@/components/ui/DashboardLayout'
 import { SkeletonGrid, SkeletonSidebar } from '@/components/ui/Skeleton'
 import { ProfileCompletionBanner } from '@/components/ui/ProfileCompletionBanner'
+import { StarterGuideCard } from '@/components/starter-guide/StarterGuideCard'
+import { useStarterGuide } from '@/src/hooks/useStarterGuide'
 
 const ModalLoadingFallback = () => (
   <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-modal-backdrop">
@@ -154,6 +157,14 @@ function ExplorePageContent() {
 
   const searchQuery = useDebouncedValue(searchInput, 300)
   const { isAuthenticated, user, isLoading: isAuthLoading } = useAuth()
+  const guide = useStarterGuide()
+
+  // Starter guide: completion toast
+  useEffect(() => {
+    if (guide.justCompleted) {
+      toast.success('시작 가이드를 모두 완료했어요! 🎉')
+    }
+  }, [guide.justCompleted])
 
   // Sync search to URL (preserves modal params)
   useEffect(() => {
@@ -457,11 +468,21 @@ function ExplorePageContent() {
     peopleCount: talentCards.length,
   } as const
 
+  // Starter guide: 10s dwell → mark explore visited
+  useEffect(() => {
+    if (!guide.visible) return
+    const timer = setTimeout(() => guide.markExploreVisited(), 10_000)
+    return () => clearTimeout(timer)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [guide.visible])
+
   const handleSelectProject = useCallback((id: string) => {
+    guide.markExploreVisited()
     setSelectedProfileId(null)
     setProfileByUserId(false)
     setSelectedProjectId(id)
-  }, [])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [guide.markExploreVisited])
 
   const handleSelectProfile = useCallback((id: string, byUserId: boolean) => {
     setSelectedProjectId(null)
@@ -471,10 +492,27 @@ function ExplorePageContent() {
 
   return (
     <div className="bg-surface-bg min-h-full">
-      <ExploreHeroCarousel />
+      <div className="relative">
+        <ExploreHeroCarousel />
+        {guide.visible && (
+          <div className="absolute inset-0 z-10 flex items-end sm:items-center justify-center pb-6 sm:pb-0 animate-[fadeIn_0.3s_ease-out]">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/20 to-transparent sm:bg-black/20 sm:backdrop-blur-[2px]" />
+            <div className="relative w-full max-w-md mx-4 animate-[slideUp_0.4s_cubic-bezier(0.16,1,0.3,1)]">
+              <StarterGuideCard
+                steps={guide.steps}
+                completedCount={guide.completedCount}
+                total={guide.total}
+                showLinkHint={guide.showLinkHint}
+                onSoftDismiss={guide.softDismiss}
+                onPermanentDismiss={guide.permanentDismiss}
+              />
+            </div>
+          </div>
+        )}
+      </div>
 
       <div className="max-w-screen-xl mx-auto px-4 mt-1">
-        <ProfileCompletionBanner />
+        {!guide.visible && <ProfileCompletionBanner />}
       </div>
 
       <DashboardLayout

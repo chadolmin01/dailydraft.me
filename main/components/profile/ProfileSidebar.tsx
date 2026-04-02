@@ -158,6 +158,7 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
         <Edit3 size={12} /> 프로필 설정
       </button>
 
+
       {/* --- SOCIAL LINKS --- */}
       {showLinksSection && (
         <div className="relative bg-surface-card rounded-xl border border-border p-4 shadow-md">

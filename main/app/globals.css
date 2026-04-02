@@ -478,6 +478,11 @@ a[class*="px-"]:active {
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(24px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 /* ── Search expand ── */
 @keyframes expandDown {
   from { opacity: 0; max-height: 0; padding-top: 0; padding-bottom: 0; }
@@ -682,13 +687,18 @@ a[class*="px-"]:active {
 }
 
 /* ── Toast Enhancements ── */
-.toast-success {
-  border-left: 4px solid var(--indicator-online) !important;
-  background-color: var(--status-success-bg) !important;
-}
+.toast-success,
 .toast-error {
-  border-left: 4px solid var(--status-danger-accent) !important;
-  background-color: var(--status-danger-bg) !important;
+  background-color: var(--surface-inverse) !important;
+  color: var(--text-inverse) !important;
+  border-color: transparent !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15) !important;
+}
+.toast-success [data-icon] {
+  color: var(--indicator-online) !important;
+}
+.toast-error [data-icon] {
+  color: var(--status-danger-accent) !important;
 }
 
 /* ============================================================

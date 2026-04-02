@@ -35,11 +35,15 @@ export function Providers({ children }: { children: React.ReactNode }) {
         position="top-center"
         toastOptions={{
           style: {
-            borderRadius: '12px',
-            border: '1px solid var(--border-subtle)',
-            boxShadow: 'var(--shadow-lg)',
+            borderRadius: '16px',
+            border: 'none',
+            background: 'var(--surface-inverse)',
+            color: 'var(--text-inverse)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.15)',
             fontFamily: '"Noto Sans KR", sans-serif',
             fontSize: '0.8125rem',
+            fontWeight: 500,
+            padding: '12px 16px',
           },
           classNames: {
             success: 'toast-success',

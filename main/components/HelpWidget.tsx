@@ -15,7 +15,9 @@ import {
   CheckCircle2,
   Sparkles,
   AlertCircle,
+  RotateCcw,
 } from 'lucide-react'
+import { toast } from 'sonner'
 
 // ── FAQ Data ──
 const FAQ_ITEMS = [
@@ -134,7 +136,7 @@ export function HelpWidget() {
 
           {/* Content */}
           <div className="flex-1 overflow-y-auto min-h-0">
-            {tab === 'faq' && <FaqTab />}
+            {tab === 'faq' && <FaqTab onClose={() => setIsOpen(false)} />}
             {tab === 'chat' && <ChatTab />}
             {tab === 'report' && <ReportTab />}
           </div>
@@ -144,12 +146,49 @@ export function HelpWidget() {
   )
 }
 
+// ── Starter Guide Reset ──
+const STARTER_GUIDE_KEY = 'draft_starter_guide'
+
+function resetStarterGuide(onClose: () => void) {
+  try {
+    const raw = localStorage.getItem(STARTER_GUIDE_KEY)
+    if (raw) {
+      const state = JSON.parse(raw)
+      state.softDismissedAt = null
+      state.permanentlyDismissed = false
+      state.completedAt = null
+      localStorage.setItem(STARTER_GUIDE_KEY, JSON.stringify(state))
+    } else {
+      localStorage.setItem(STARTER_GUIDE_KEY, JSON.stringify({
+        version: 1,
+        steps: { profile: false, explore: false, project: false },
+        softDismissedAt: null,
+        permanentlyDismissed: false,
+        completedAt: null,
+      }))
+    }
+  } catch {
+    localStorage.removeItem(STARTER_GUIDE_KEY)
+  }
+  toast.success('시작 가이드가 다시 표시됩니다')
+  onClose()
+}
+
 // ── FAQ Tab ──
-function FaqTab() {
+function FaqTab({ onClose }: { onClose: () => void }) {
   const [openIdx, setOpenIdx] = useState<string | null>(null)
 
   return (
     <div className="p-3 space-y-3">
+      {/* Starter guide restart */}
+      <button
+        onClick={() => resetStarterGuide(onClose)}
+        className="w-full flex items-center gap-2.5 px-3 py-2.5 text-left border border-border bg-surface-sunken rounded-xl hover:bg-surface-card transition-colors group"
+      >
+        <RotateCcw size={13} className="text-txt-disabled group-hover:text-brand shrink-0 transition-colors" />
+        <span className="text-[12px] font-medium text-txt-secondary group-hover:text-txt-primary transition-colors">시작 가이드 다시 보기</span>
+      </button>
+
       {FAQ_ITEMS.map((cat) => (
         <div key={cat.category}>
           <h4 className="text-[10px] font-medium text-txt-disabled mb-1.5 px-1">{cat.category}</h4>
