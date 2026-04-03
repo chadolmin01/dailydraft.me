@@ -1,9 +1,12 @@
 'use client'
 
 import React from 'react'
-import { ChevronRight, Rocket, Sparkles } from 'lucide-react'
+import Image from 'next/image'
+import { ChevronRight, Rocket, Sparkles, User } from 'lucide-react'
 import Link from 'next/link'
 import { useAuth } from '@/src/context/AuthContext'
+import { useProfile } from '@/src/hooks/useProfile'
+import { useProfileCompletion } from '@/src/hooks/useProfileCompletion'
 import { cleanNickname } from '@/src/lib/clean-nickname'
 import type { CategoryItem, TrendingTag, ActiveTab, TalentCard, UserRecommendation } from './types'
 
@@ -35,11 +38,49 @@ export function ExploreSidebar({
   onSelectProfile,
 }: ExploreSidebarProps) {
   const { isAuthenticated } = useAuth()
+  const { data: profile } = useProfile()
+  const completion = useProfileCompletion(profile)
   const showAiRecs = isAuthenticated && sidebarRecs.length > 0
   const showLoading = isAuthenticated && recsLoading && sidebarRecs.length === 0
   return (
     <div className="space-y-4">
-      {/* AI 추천 인재 — 최상단 배치 */}
+      {/* 내 프로필 카드 */}
+      {isAuthenticated && profile && (
+        <Link href="/profile" className="block bg-surface-card rounded-xl border border-border p-4 hover:shadow-md transition-shadow group">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 rounded-full bg-brand-bg flex items-center justify-center text-sm font-bold text-brand shrink-0 overflow-hidden">
+              {profile.avatar_url ? (
+                <Image src={profile.avatar_url} alt="" width={40} height={40} className="object-cover w-full h-full" />
+              ) : (
+                cleanNickname(profile.nickname || '').slice(0, 2).toUpperCase() || <User size={16} />
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold text-txt-primary truncate">{cleanNickname(profile.nickname || '') || '이름 미설정'}</p>
+              <p className="text-[11px] text-txt-tertiary truncate">
+                {[profile.desired_position, profile.university].filter(Boolean).join(' · ') || '프로필을 완성해보세요'}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-[10px] text-txt-tertiary">프로필 완성도</span>
+            <span className="text-[10px] font-mono font-bold text-txt-primary">{completion.pct}%</span>
+          </div>
+          <div className="w-full h-1.5 bg-surface-sunken rounded-full overflow-hidden">
+            <div
+              className="h-full bg-brand transition-all rounded-full"
+              style={{ width: `${completion.pct}%` }}
+            />
+          </div>
+          {completion.pct < 100 && (
+            <p className="text-[10px] text-txt-disabled mt-2 group-hover:text-brand transition-colors">
+              {completion.fields.find(f => !f.done)?.label} 추가하기 →
+            </p>
+          )}
+        </Link>
+      )}
+
+      {/* AI 추천 인재 */}
       {onSelectProfile && (
         <div className="bg-surface-card rounded-xl border border-border p-4">
           <h3 className="text-xs font-medium text-txt-tertiary mb-3 flex items-center gap-2">
