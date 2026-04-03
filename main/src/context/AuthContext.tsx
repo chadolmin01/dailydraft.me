@@ -60,40 +60,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Initialize auth state
   useEffect(() => {
     let mounted = true
-    let profileFetched = false
 
-    // Fast path: read local session from cookies/cache (usually instant)
-    // Provides early user state before the server round-trip completes
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!mounted) return
-      if (session?.user) {
-        setUser(session.user)
-        profileFetched = true
-        fetchProfile(session.user.id)
-          .then(p => { if (mounted) setProfile(p) })
-          .catch(() => { if (mounted) setProfile(null) })
-      }
-    }).catch(() => {})
+    const initializeAuth = async () => {
+      let profileFetched = false
 
-    // Authoritative validation: server round-trip
-    // Always trust the server response — getSession() may return null
-    // due to timing issues with Supabase client initialization
-    supabase.auth.getUser().then(({ data: { user: serverUser }, error }) => {
-      if (!mounted) return
-      if (error || !serverUser) {
-        setUser(null)
-        setProfile(null)
-      } else {
-        setUser(serverUser)
-        if (!profileFetched) {
-          fetchProfile(serverUser.id)
-            .then(p => { if (mounted) setProfile(p) })
-            .catch(() => { if (mounted) setProfile(null) })
+      // Fast path: read local session from cookies/cache (usually instant)
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (!mounted) return
+        if (session?.user) {
+          setUser(session.user)
+          const p = await fetchProfile(session.user.id)
+          if (mounted) setProfile(p)
+          profileFetched = true
         }
-      }
-    }).catch(() => {}).finally(() => {
+      } catch { /* getSession failed — continue to authoritative path */ }
+
+      if (!mounted) return
+
+      // Authoritative validation: server round-trip
+      // Always trust the server response — getSession() may return null
+      // due to timing issues with Supabase client initialization
+      try {
+        const { data: { user: serverUser }, error } = await supabase.auth.getUser()
+        if (!mounted) return
+        if (error || !serverUser) {
+          setUser(null)
+          setProfile(null)
+        } else {
+          setUser(serverUser)
+          if (!profileFetched) {
+            const p = await fetchProfile(serverUser.id)
+            if (mounted) setProfile(p)
+          }
+        }
+      } catch { /* getUser failed */ }
+
       if (mounted) setIsLoading(false)
-    })
+    }
+
+    initializeAuth()
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(

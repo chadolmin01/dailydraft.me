@@ -23,7 +23,7 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
   selectedRole,
   initialMessage,
 }) => {
-  const { user } = useAuth()
+  const { user, profile } = useAuth()
   const requestChat = useRequestCoffeeChat()
   const requestPersonChat = useRequestPersonCoffeeChat()
   const isPersonMode = !!targetUserId && !opportunityId
@@ -45,7 +45,7 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
     if (!message.trim() || !user?.email) return
     setError(null)
     try {
-      const name = user.user_metadata?.full_name || user.email.split('@')[0]
+      const name = profile?.nickname || user.email.split('@')[0]
       if (isPersonMode && targetUserId) {
         await requestPersonChat.mutateAsync({
           targetUserId,
