@@ -67,17 +67,32 @@ export function ExploreTabBar({
               {query && <span className="ml-1 text-[10px] font-mono bg-brand-bg text-brand px-1.5 py-0.5">{peopleCount}</span>}
             </button>
           </div>
-          {onMobileSearchToggle && (
+          <div className="flex items-center gap-1">
+            {/* 필터 버튼 — 모바일에서 탭 줄에 표시 */}
             <button
-              onClick={onMobileSearchToggle}
-              className={`md:hidden w-10 h-10 flex items-center justify-center transition-colors ${
-                mobileSearchOpen ? 'text-brand bg-brand-bg' : 'text-txt-tertiary hover:text-txt-secondary'
-              }`}
-              aria-label="검색"
+              onClick={onFilterButtonClick}
+              className="md:hidden w-10 h-10 flex items-center justify-center text-txt-tertiary hover:text-txt-secondary transition-colors relative"
+              aria-label="필터"
             >
-              {mobileSearchOpen ? <X size={18} /> : <Search size={18} />}
+              <Filter size={18} />
+              {activeFilterCount > 0 && (
+                <span className="absolute top-1 right-1 min-w-[14px] h-3.5 flex items-center justify-center text-[9px] font-bold bg-brand text-white rounded-full px-0.5">
+                  {activeFilterCount}
+                </span>
+              )}
             </button>
-          )}
+            {onMobileSearchToggle && (
+              <button
+                onClick={onMobileSearchToggle}
+                className={`md:hidden w-10 h-10 flex items-center justify-center transition-colors ${
+                  mobileSearchOpen ? 'text-brand bg-brand-bg' : 'text-txt-tertiary hover:text-txt-secondary'
+                }`}
+                aria-label="검색"
+              >
+                {mobileSearchOpen ? <X size={18} /> : <Search size={18} />}
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -106,49 +121,35 @@ export function ExploreTabBar({
         </div>
       )}
 
-      {/* Sort options + filter button */}
-      <div className="flex items-center justify-between gap-2 mb-3">
-        <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide mask-fade-r">
-          {activeTab === 'projects' ? (
-            SORT_OPTIONS.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => onSortChange(tab.id as SortBy)}
-                className={`shrink-0 flex items-center gap-1 px-3 py-2 text-xs font-medium rounded-xl transition-colors ${
-                  sortBy === tab.id ? 'bg-surface-sunken text-txt-primary' : 'text-txt-tertiary hover:text-txt-secondary'
-                }`}
-              >
-                <tab.icon size={12} />
-                {tab.label}
-              </button>
-            ))
-          ) : (
-            PEOPLE_SORT_OPTIONS.map((opt) => (
-              <button
-                key={opt.id}
-                onClick={() => onPeopleSortChange(opt.id as PeopleSortBy)}
-                className={`shrink-0 flex items-center gap-1 px-3 py-2 text-xs font-medium rounded-xl transition-colors ${
-                  peopleSortBy === opt.id ? 'bg-surface-sunken text-txt-primary' : 'text-txt-tertiary hover:text-txt-secondary'
-                }`}
-              >
-                <opt.icon size={12} />
-                {opt.label}
-              </button>
-            ))
-          )}
-        </div>
-        <button
-          onClick={onFilterButtonClick}
-          className="shrink-0 flex items-center gap-1 px-3 py-2 text-xs font-bold border rounded-xl transition-all bg-surface-card text-txt-secondary border-border hover:border-border hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]"
-        >
-          <Filter size={12} />
-          필터
-          {activeFilterCount > 0 && (
-            <span className="ml-0.5 min-w-[16px] h-4 flex items-center justify-center text-[10px] font-bold bg-brand text-white rounded-full px-1">
-              {activeFilterCount}
-            </span>
-          )}
-        </button>
+      {/* Sort options */}
+      <div className="flex items-center gap-1 mb-3 overflow-x-auto scrollbar-hide mask-fade-r">
+        {activeTab === 'projects' ? (
+          SORT_OPTIONS.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => onSortChange(tab.id as SortBy)}
+              className={`shrink-0 flex items-center gap-1 px-3 py-2 text-xs font-medium rounded-xl transition-colors ${
+                sortBy === tab.id ? 'bg-surface-sunken text-txt-primary' : 'text-txt-tertiary hover:text-txt-secondary'
+              }`}
+            >
+              <tab.icon size={12} />
+              {tab.label}
+            </button>
+          ))
+        ) : (
+          PEOPLE_SORT_OPTIONS.map((opt) => (
+            <button
+              key={opt.id}
+              onClick={() => onPeopleSortChange(opt.id as PeopleSortBy)}
+              className={`shrink-0 flex items-center gap-1 px-3 py-2 text-xs font-medium rounded-xl transition-colors ${
+                peopleSortBy === opt.id ? 'bg-surface-sunken text-txt-primary' : 'text-txt-tertiary hover:text-txt-secondary'
+              }`}
+            >
+              <opt.icon size={12} />
+              {opt.label}
+            </button>
+          ))
+        )}
       </div>
     </>
   )

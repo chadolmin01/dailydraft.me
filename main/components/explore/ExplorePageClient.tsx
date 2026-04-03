@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react'
 import dynamic from 'next/dynamic'
 import { AnimatePresence } from 'framer-motion'
-import { LayoutGrid, Users, Sparkles } from 'lucide-react'
+import { LayoutGrid, Users, Sparkles, Filter } from 'lucide-react'
 import { toast } from 'sonner'
 import Link from 'next/link'
 import { useSearchParams as useNextSearchParams, useRouter, usePathname } from 'next/navigation'
@@ -235,18 +235,16 @@ function ExplorePageContent() {
     const filterOpp = (opp: OpportunityWithCreator) => {
       const normalizedType = opp.type === 'team_building' ? 'startup' : (opp.type || 'side_project')
       if (typeFilter !== 'all' && normalizedType !== typeFilter) return false
-      // Role filter
+      // Role filter — slug 정확 매칭
       if (projectRoleFilter !== 'all') {
-        const roles = (opp.needed_roles || []).map((r: string) => r.toLowerCase())
-        const filterDef = PROJECT_ROLE_FILTERS.find(f => f.id === projectRoleFilter)
-        if (filterDef && 'keywords' in filterDef) {
-          if (!filterDef.keywords.some((kw: string) => roles.some((r: string) => r.includes(kw.toLowerCase())))) return false
-        }
+        const roles = opp.needed_roles || []
+        if (!roles.includes(projectRoleFilter)) return false
       }
       if (recruitingOnly && opp.status !== 'active') return false
+      // Category filter — slug 정확 매칭
       if (selectedCategory !== 'all') {
-        const tags = (opp.interest_tags || []).map(t => t.toLowerCase())
-        if (!tags.some(t => t.includes(selectedCategory.toLowerCase()))) return false
+        const tags = opp.interest_tags || []
+        if (!tags.includes(selectedCategory)) return false
       }
       if (query) {
         if (searchScope === 'people') return false
@@ -320,13 +318,12 @@ function ExplorePageContent() {
   }, [selectedProfileId, profileByUserId, publicProfiles, recsMap])
   const talentCards = useMemo(() => publicProfiles
     .filter((profile: PublicProfile) => {
-      // Role filter
+      // Role filter — positionSlugs로 매칭
       if (peopleRoleFilter !== 'all') {
-        const role = (profile.desired_position || '').toLowerCase()
+        const position = profile.desired_position || ''
         const filterDef = PEOPLE_ROLE_FILTERS.find(f => f.id === peopleRoleFilter)
-        if (filterDef && 'keywords' in filterDef) {
-          const keywords = filterDef.keywords
-          if (!keywords.some(kw => role.includes(kw))) return false
+        if (filterDef && 'positionSlugs' in filterDef) {
+          if (!filterDef.positionSlugs.includes(position)) return false
         }
       }
       if (!query) return true
@@ -559,9 +556,23 @@ function ExplorePageContent() {
           />
         }
       >
-        {/* 검색바: 모바일 숨김, 데스크톱만 */}
-        <div className="hidden md:block">
-          <ExploreSearchBar {...searchProps} />
+        {/* 검색바 + 필터: 데스크톱만 */}
+        <div className="hidden md:flex items-start gap-2">
+          <div className="flex-1">
+            <ExploreSearchBar {...searchProps} />
+          </div>
+          <button
+            onClick={() => setIsFilterSheetOpen(true)}
+            className="shrink-0 mt-0.5 flex items-center gap-1.5 px-4 py-3 text-xs font-bold border rounded-xl transition-all bg-surface-card text-txt-secondary border-border hover:border-border hover:shadow-sm"
+          >
+            <Filter size={14} />
+            필터
+            {activeFilterChips.length > 0 && (
+              <span className="ml-0.5 min-w-[16px] h-4 flex items-center justify-center text-[10px] font-bold bg-brand text-white rounded-full px-1">
+                {activeFilterChips.length}
+              </span>
+            )}
+          </button>
         </div>
 
         <ExploreTabBar
