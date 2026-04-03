@@ -15,8 +15,8 @@ export default function DashboardLayout({
       <RouteProgressBar />
       <InstallPrompt />
       <TopNavbar />
-      <main className="pt-14 sm:pt-20 pb-16 md:pb-0">
-        <div className="min-h-[calc(100vh-5rem)]">
+      <main className="pt-14 pb-16 md:pb-0">
+        <div className="min-h-[calc(100vh-3.5rem)]">
           <PageTransition>{children}</PageTransition>
         </div>
       </main>

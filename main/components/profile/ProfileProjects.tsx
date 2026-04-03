@@ -1,8 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Plus, Rocket, Clock, FolderOpen } from 'lucide-react'
-import { EmptyState } from '@/components/ui/EmptyState'
+import { Plus, Rocket, Clock } from 'lucide-react'
 import { calculateDaysLeft } from '@/src/hooks/useOpportunities'
 import type { Opportunity } from '@/src/types/opportunity'
 
@@ -19,16 +18,22 @@ export function ProfileProjects({ opportunities }: ProfileProjectsProps) {
           MY PROJECTS
           <span className="text-[10px] font-mono text-txt-tertiary">({opportunities.length})</span>
         </h3>
-        <Link
-          href="/projects/new"
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-brand text-white border border-brand hover:bg-brand-hover transition-colors hover:opacity-90 active:scale-[0.97]"
-        >
-          <Plus size={14} /> 새 프로젝트
-        </Link>
+        {opportunities.length > 0 && (
+          <span className="text-[10px] font-mono text-txt-disabled">tap + to add</span>
+        )}
       </div>
 
       {opportunities.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Link
+            href="/projects/new?from=/profile"
+            className="relative bg-surface-card rounded-xl border-2 border-dashed border-border overflow-hidden group hover:border-brand hover:shadow-lg transition-all cursor-pointer h-[21.25rem] flex flex-col items-center justify-center gap-3"
+          >
+            <div className="w-14 h-14 rounded-xl bg-surface-sunken flex items-center justify-center group-hover:bg-brand-bg transition-colors">
+              <Plus size={28} className="text-txt-disabled group-hover:text-brand transition-colors" />
+            </div>
+            <span className="text-sm font-medium text-txt-tertiary group-hover:text-brand transition-colors">새 프로젝트</span>
+          </Link>
           {opportunities.map((opp, oppIdx) => {
             const daysLeft = calculateDaysLeft(opp.created_at)
             const isUrgent = daysLeft > 0 && daysLeft <= 3
@@ -85,13 +90,18 @@ export function ProfileProjects({ opportunities }: ProfileProjectsProps) {
           })}
         </div>
       ) : (
-        <EmptyState
-          icon={FolderOpen}
-          title="아직 등록한 프로젝트가 없습니다"
-          description="아이디어를 프로젝트로 만들고 팀원을 모집해보세요"
-          actionLabel="프로젝트 만들기"
-          actionHref="/projects/new?from=/profile"
-        />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Link
+            href="/projects/new?from=/profile"
+            className="relative bg-surface-card rounded-xl border-2 border-dashed border-border overflow-hidden group hover:border-brand hover:shadow-lg transition-all cursor-pointer h-[21.25rem] flex flex-col items-center justify-center gap-3"
+          >
+            <div className="w-14 h-14 rounded-xl bg-surface-sunken flex items-center justify-center group-hover:bg-brand-bg transition-colors">
+              <Plus size={28} className="text-txt-disabled group-hover:text-brand transition-colors" />
+            </div>
+            <span className="text-sm font-medium text-txt-tertiary group-hover:text-brand transition-colors">새 프로젝트</span>
+            <span className="text-xs text-txt-disabled">아이디어를 프로젝트로 만들어보세요</span>
+          </Link>
+        </div>
       )}
     </section>
   )

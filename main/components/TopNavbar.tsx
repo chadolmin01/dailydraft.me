@@ -173,7 +173,7 @@ export const TopNavbar: React.FC = () => {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 w-full h-14 sm:h-20 z-fixed">
+      <nav className="fixed top-0 left-0 w-full h-14 z-fixed">
         {/* 배경 레이어 — backdrop-filter를 nav가 아닌 별도 div에 적용하여 드롭다운 overflow 가림 방지 */}
         <div className={`absolute inset-0 transition-all duration-300 ${
           isScrolled
@@ -303,9 +303,9 @@ export const TopNavbar: React.FC = () => {
             {/* 새 프로젝트 CTA — auth 불필요, 즉시 렌더 (미인증 시 middleware가 /login 리다이렉트) */}
             <Link
               href="/projects/new"
-              className="hidden md:flex items-center gap-1.5 px-3.5 py-1.5 bg-surface-inverse text-txt-inverse text-xs font-bold hover:bg-accent-hover transition-all border border-surface-inverse hover:opacity-90 active:scale-[0.97] rounded-xl"
+              className="hidden md:flex items-center gap-2 px-5 py-2.5 bg-brand text-white text-sm font-bold hover:bg-brand-hover transition-all shadow-sm hover:shadow-md active:scale-[0.97] rounded-xl"
             >
-              <Plus size={14} strokeWidth={2.5} />
+              <Plus size={16} strokeWidth={2.5} />
               <span>새 프로젝트</span>
             </Link>
 
@@ -425,7 +425,7 @@ export const TopNavbar: React.FC = () => {
             className="md:hidden fixed inset-0 bg-black/20 backdrop-blur-sm z-[299] animate-in fade-in duration-200"
             onClick={() => setIsMobileMenuOpen(false)}
           />
-          <div className="md:hidden fixed top-14 sm:top-20 left-0 right-0 bg-surface-card/95 backdrop-blur-xl border-b border-border shadow-lg z-fixed animate-in slide-in-from-bottom-2 duration-200">
+          <div className="md:hidden fixed top-14 left-0 right-0 bg-surface-card/95 backdrop-blur-xl border-b border-border shadow-lg z-fixed animate-in slide-in-from-bottom-2 duration-200">
             <div className="px-4 py-4 space-y-1.5">
               <form
                 className="relative mb-3"
