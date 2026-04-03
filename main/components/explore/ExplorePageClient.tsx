@@ -323,7 +323,7 @@ function ExplorePageContent() {
         const position = profile.desired_position || ''
         const filterDef = PEOPLE_ROLE_FILTERS.find(f => f.id === peopleRoleFilter)
         if (filterDef && 'positionSlugs' in filterDef) {
-          if (!filterDef.positionSlugs.includes(position)) return false
+          if (!(filterDef as { positionSlugs: string[] }).positionSlugs.includes(position)) return false
         }
       }
       if (!query) return true
@@ -397,8 +397,8 @@ function ExplorePageContent() {
       const count = f.id === 'all'
         ? publicProfiles.length
         : publicProfiles.filter(p => {
-            const role = (p.desired_position || '').toLowerCase()
-            return 'keywords' in f && f.keywords.some(kw => role.includes(kw))
+            const position = p.desired_position || ''
+            return 'positionSlugs' in f && f.positionSlugs.includes(position)
           }).length
       return { id: f.id, label: f.label, count, icon: PEOPLE_CATEGORY_ICONS[f.id] || Users }
     }),
