@@ -14,7 +14,6 @@ const hiddenRoutes = [
   '/business-plan',
   '/validated-ideas',
   '/idea-validator',
-  '/waitlist',
   '/project/',        // legacy /project/* flows (trailing slash to avoid matching /projects)
 ]
 
@@ -40,7 +39,6 @@ const hiddenApiRoutes = [
   '/api/startup-ideas',
   '/api/subscriptions',
   '/api/usage',
-  '/api/waitlist',
   '/api/webhooks/tosspayments',
   '/api/cron/analyze-startup-ideas',
   '/api/cron/expire-boosts',
