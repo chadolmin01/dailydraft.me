@@ -50,28 +50,10 @@ export async function GET(
           backgroundColor: '#FFFFFF',
           padding: '60px',
           fontFamily: 'sans-serif',
-          position: 'relative',
-          overflow: 'hidden',
         }}
       >
-        {/* Grid pattern */}
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            display: 'flex',
-            backgroundImage:
-              'linear-gradient(#E0E0E0 1px, transparent 1px), linear-gradient(90deg, #E0E0E0 1px, transparent 1px)',
-            backgroundSize: '60px 60px',
-            opacity: 0.3,
-          }}
-        />
-
         {/* Top: Type badge + status */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', position: 'relative' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div
             style={{
               fontSize: '13px',
@@ -79,7 +61,7 @@ export async function GET(
               color: '#262626',
               border: '2px solid #D0D0D0',
               padding: '6px 14px',
-              letterSpacing: '2px',
+              display: 'flex',
             }}
           >
             {type}
@@ -96,13 +78,13 @@ export async function GET(
               gap: '6px',
             }}
           >
-            <div style={{ width: '8px', height: '8px', backgroundColor: '#16A34A', borderRadius: '50%' }} />
+            <div style={{ width: '8px', height: '8px', backgroundColor: '#16A34A', borderRadius: '50%', display: 'flex' }} />
             모집 중
           </div>
         </div>
 
         {/* Middle: Title + Description */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', position: 'relative' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div
             style={{
               fontSize: '48px',
@@ -110,7 +92,6 @@ export async function GET(
               color: '#262626',
               lineHeight: 1.2,
               maxWidth: '900px',
-              letterSpacing: '-1px',
             }}
           >
             {title.length > 50 ? title.slice(0, 50) + '...' : title}
@@ -122,6 +103,7 @@ export async function GET(
                 color: '#555555',
                 maxWidth: '800px',
                 lineHeight: 1.5,
+                display: 'flex',
               }}
             >
               {description}
@@ -140,6 +122,7 @@ export async function GET(
                     backgroundColor: '#F5F5F5',
                     padding: '6px 16px',
                     border: '1px solid #E0E0E0',
+                    display: 'flex',
                   }}
                 >
                   {role}
@@ -150,7 +133,7 @@ export async function GET(
         </div>
 
         {/* Bottom: Draft logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', position: 'relative' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div
             style={{
               width: '36px',
@@ -166,7 +149,7 @@ export async function GET(
           >
             D
           </div>
-          <div style={{ fontSize: '18px', fontWeight: 700, color: '#262626', letterSpacing: '-0.5px' }}>
+          <div style={{ fontSize: '18px', fontWeight: 700, color: '#262626', display: 'flex' }}>
             Draft.
           </div>
           <div style={{ fontSize: '13px', color: '#8E8E8E', marginLeft: '8px', display: 'flex' }}>
