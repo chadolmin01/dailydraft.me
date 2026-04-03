@@ -2,10 +2,11 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { User, LogOut, Bell, Menu, X, Plus, Settings, Search, ChevronRight, Shield, FolderOpen, Compass, Briefcase, AlertTriangle, Sun, Moon } from 'lucide-react'
+import { User, LogOut, Bell, Menu, X, Plus, Settings, Search, ChevronRight, Shield, FolderOpen, Compass, Briefcase, AlertTriangle, Sun, Moon, Building2 } from 'lucide-react'
 import Link from 'next/link'
 import { useAuth } from '@/src/context/AuthContext'
 import { useAdmin } from '@/src/hooks/useAdmin'
+import { useInstitutionAdmin } from '@/src/hooks/useInstitutionAdmin'
 import { NotificationDropdown } from '@/components/NotificationDropdown'
 import { useTheme } from '@/src/context/ThemeContext'
 import { useBackHandler } from '@/src/hooks/useBackHandler'
@@ -77,6 +78,7 @@ export const TopNavbar: React.FC = () => {
   const pathname = usePathname()
   const { signOut, user, isAuthenticated, isLoading: authLoading, profile } = useAuth()
   const { isAdmin } = useAdmin()
+  const { isInstitutionAdmin } = useInstitutionAdmin()
   const { theme, toggleTheme } = useTheme()
 
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -359,7 +361,15 @@ export const TopNavbar: React.FC = () => {
                         <DropdownItem icon={User} onClick={() => router.push('/profile')}>내 프로필</DropdownItem>
                         <DropdownItem icon={Settings} disabled>설정</DropdownItem>
                       </div>
-                      {isAdmin && (
+                      {isInstitutionAdmin && (
+                        <>
+                          <div className="mx-3 border-t border-border-subtle" />
+                          <div className="py-1.5 px-1.5">
+                            <p className="px-2.5 py-1 text-[10px] text-txt-disabled">Institution</p>
+                            <DropdownItem icon={Building2} onClick={() => router.push('/institution')}>기관 대시보드</DropdownItem>
+                          </div>
+                        </>
+                      )}
                         <>
                           <div className="mx-3 border-t border-border-subtle" />
                           <div className="py-1.5 px-1.5">
