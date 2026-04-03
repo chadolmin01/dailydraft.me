@@ -1,7 +1,9 @@
 'use client'
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { supabase } from '../lib/supabase/client'
 import { useAuth } from '../context/AuthContext'
+import { portfolioKeys, fetchPortfolioItems } from '../lib/queries/profile-queries'
 
 export interface PortfolioItem {
   id: string
@@ -10,15 +12,13 @@ export interface PortfolioItem {
   description: string | null
   image_url: string | null
   link_url: string | null
-  display_order: number
-  created_at: string
-  updated_at: string
+  display_order: number | null
+  created_at: string | null
+  updated_at: string | null
 }
 
-const portfolioKeys = {
-  all: ['portfolio_items'] as const,
-  list: (userId: string) => [...portfolioKeys.all, userId] as const,
-}
+// Re-export keys
+export { portfolioKeys }
 
 export function usePortfolioItems(userId?: string) {
   const { user } = useAuth()
@@ -26,11 +26,7 @@ export function usePortfolioItems(userId?: string) {
 
   return useQuery({
     queryKey: portfolioKeys.list(targetId),
-    queryFn: async () => {
-      const res = await fetch(`/api/portfolio?user_id=${targetId}`)
-      if (!res.ok) return [] as PortfolioItem[]
-      return res.json() as Promise<PortfolioItem[]>
-    },
+    queryFn: () => fetchPortfolioItems(supabase, targetId),
     enabled: !!targetId,
     staleTime: 1000 * 60 * 2,
     retry: false,

@@ -13,15 +13,16 @@ type OpportunityUpdate = TablesUpdate<'opportunities'>
 // Re-export for consumers that import from this hook
 export type { OpportunityWithCreator } from '../types/opportunity'
 
-// Query keys
+import { opportunityKeys as sharedOpportunityKeys, fetchMyOpportunities } from '../lib/queries/profile-queries'
+
+// Query keys — merge shared keys with local-only keys
 export const opportunityKeys = {
-  all: ['opportunities'] as const,
-  lists: () => [...opportunityKeys.all, 'list'] as const,
-  list: (filters: Record<string, unknown>) => [...opportunityKeys.lists(), filters] as const,
-  details: () => [...opportunityKeys.all, 'detail'] as const,
-  detail: (id: string) => [...opportunityKeys.details(), id] as const,
-  my: (userId: string) => [...opportunityKeys.all, 'my', userId] as const,
-  recommended: (userId: string) => [...opportunityKeys.all, 'recommended', userId] as const,
+  ...sharedOpportunityKeys,
+  lists: () => [...sharedOpportunityKeys.all, 'list'] as const,
+  list: (filters: Record<string, unknown>) => [...sharedOpportunityKeys.all, 'list', filters] as const,
+  details: () => [...sharedOpportunityKeys.all, 'detail'] as const,
+  detail: (id: string) => [...sharedOpportunityKeys.all, 'detail', id] as const,
+  recommended: (userId: string) => [...sharedOpportunityKeys.all, 'recommended', userId] as const,
 }
 
 // Fetch all active opportunities
@@ -117,18 +118,7 @@ export function useMyOpportunities() {
 
   return useQuery({
     queryKey: opportunityKeys.my(user?.id ?? ''),
-    queryFn: () => withRetry(async () => {
-      if (!user?.id) return []
-
-      const { data, error } = await supabase
-        .from('opportunities')
-        .select('*')
-        .eq('creator_id', user.id)
-        .order('created_at', { ascending: false })
-
-      if (error) throw error
-      return data as Opportunity[]
-    }),
+    queryFn: () => withRetry(() => fetchMyOpportunities(supabase, user!.id)),
     enabled: !isAuthLoading && !!user?.id,
     staleTime: 1000 * 60 * 2,
     retry: (failureCount) => failureCount < 3,

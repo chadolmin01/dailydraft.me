@@ -5,15 +5,13 @@ import { supabase } from '../lib/supabase/client'
 import { useAuth } from '../context/AuthContext'
 import type { Tables, TablesUpdate } from '../types/database'
 import { withRetry } from '../lib/query-utils'
+import { profileKeys, fetchProfile } from '../lib/queries/profile-queries'
 
 type Profile = Tables<'profiles'>
 type ProfileUpdate = TablesUpdate<'profiles'>
 
-// Query keys
-export const profileKeys = {
-  all: ['profiles'] as const,
-  detail: (userId: string) => [...profileKeys.all, userId] as const,
-}
+// Re-export keys so existing consumers don't break
+export { profileKeys }
 
 // Fetch current user's profile
 export function useProfile() {
@@ -21,21 +19,7 @@ export function useProfile() {
 
   return useQuery({
     queryKey: profileKeys.detail(user?.id ?? ''),
-    queryFn: () => withRetry(async () => {
-      if (!user?.id) return null
-
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', user.id)
-        .single()
-
-      if (error && error.code !== 'PGRST116') {
-        throw error
-      }
-
-      return data as Profile | null
-    }),
+    queryFn: () => withRetry(() => fetchProfile(supabase, user!.id)),
     enabled: !isAuthLoading && !!user?.id,
     staleTime: 1000 * 60 * 2,
     retry: (failureCount) => failureCount < 3,
@@ -47,21 +31,7 @@ export function useProfile() {
 export function useProfileById(userId: string | undefined) {
   return useQuery({
     queryKey: profileKeys.detail(userId ?? ''),
-    queryFn: () => withRetry(async () => {
-      if (!userId) return null
-
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', userId)
-        .single()
-
-      if (error && error.code !== 'PGRST116') {
-        throw error
-      }
-
-      return data as Profile | null
-    }),
+    queryFn: () => withRetry(() => fetchProfile(supabase, userId!)),
     enabled: !!userId,
     staleTime: 1000 * 60 * 2,
     retry: (failureCount) => failureCount < 3,
