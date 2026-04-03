@@ -46,7 +46,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       <div className="flex flex-col lg:flex-row gap-8 lg:gap-10">
         {/* Sidebar — below content on mobile, left column on desktop */}
         {sidebar && (
-          <aside className="order-last lg:order-first w-full lg:w-56 shrink-0 lg:sticky lg:top-20 lg:self-start">
+          <aside className="order-last lg:order-first w-full lg:w-64 shrink-0 lg:sticky lg:top-20 lg:self-start lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto">
             {sidebar}
           </aside>
         )}

@@ -125,7 +125,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
             ) : (
               <>
                 <Camera size={14} className="text-white" />
-                <span className="text-[0.5rem] font-bold text-white">{profile?.avatar_url ? '변경' : '추가'}</span>
+                <span className="text-[10px] font-bold text-white">{profile?.avatar_url ? '변경' : '추가'}</span>
               </>
             )}
           </div>
@@ -192,7 +192,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
         <h2 className="text-lg sm:text-xl font-bold text-txt-primary truncate">{cleanNickname(profile?.nickname || '') || 'User'}</h2>
       )}
       {uniVerified && (
-        <span className="flex items-center gap-0.5 px-1.5 py-0.5 bg-indicator-online/20 border border-indicator-online/40 text-indicator-online text-[0.5rem] font-mono font-bold shrink-0 rounded-full">
+        <span className="flex items-center gap-0.5 px-1.5 py-0.5 bg-indicator-online/20 border border-indicator-online/40 text-indicator-online text-[10px] font-mono font-bold shrink-0 rounded-full">
           <ShieldCheck size={8} /> V
         </span>
       )}
@@ -302,9 +302,9 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-4 border-t border-border">
       {infoItems.map((item) => (
         <div key={item.label} className="flex items-start gap-2">
-          <item.icon size={12} className="text-txt-tertiary mt-0.5" />
+          <item.icon size={14} className="text-txt-tertiary mt-0.5" />
           <div className="min-w-0 flex-1">
-            <p className="text-[0.5rem] text-txt-tertiary">{item.label}</p>
+            <p className="text-[10px] text-txt-tertiary">{item.label}</p>
             {isEditable ? (
               <EditableField variant="inline"
                 value={item.value}
@@ -329,7 +329,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
       <div className="mt-4 pt-4 border-t border-border space-y-3">
         {profile?.interest_tags && profile.interest_tags.length > 0 && (
           <div className="flex gap-1.5 flex-wrap">
-            <span className="text-[0.5rem] text-txt-tertiary self-center mr-1">TAGS</span>
+            <span className="text-[10px] text-txt-tertiary self-center mr-1">TAGS</span>
             {profile.interest_tags.map((tag, idx) => (
               <span key={idx} className="text-[10px] font-mono bg-white text-txt-primary border border-border px-2 py-0.5 font-medium rounded-full">
                 {tag}
@@ -340,7 +340,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
 
         {strengths.length > 0 && (
           <div className="flex gap-1.5 flex-wrap">
-            <span className="text-[0.5rem] text-txt-tertiary self-center mr-1 flex items-center gap-1"><Sparkles size={9} /> STRENGTHS</span>
+            <span className="text-[10px] text-txt-tertiary self-center mr-1 flex items-center gap-1"><Sparkles size={9} /> STRENGTHS</span>
             {strengths.map((s, idx) => (
               <span key={idx} className="text-[10px] font-mono bg-indicator-online/20 text-indicator-online border border-indicator-online/30 px-2 py-0.5 font-medium rounded-full">
                 {s}
@@ -420,7 +420,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
               {renderName()}
               {renderSubtitle()}
               {profile?.current_situation && (
-                <span className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 text-[0.5rem] font-mono font-bold bg-brand/10 text-brand border border-brand/30 rounded-full">
+                <span className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 text-[10px] font-mono font-bold bg-brand/10 text-brand border border-brand/30 rounded-full">
                   <Target size={8} /> {SITUATION_LABELS[profile.current_situation] || profile.current_situation}
                 </span>
               )}
@@ -456,7 +456,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
           {renderName()}
           {renderSubtitle()}
           {profile?.current_situation && (
-            <span className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 text-[0.5rem] font-mono font-bold bg-brand/10 text-brand border border-brand/30 rounded-full">
+            <span className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 text-[10px] font-mono font-bold bg-brand/10 text-brand border border-brand/30 rounded-full">
               <Target size={8} /> {SITUATION_LABELS[profile.current_situation] || profile.current_situation}
             </span>
           )}

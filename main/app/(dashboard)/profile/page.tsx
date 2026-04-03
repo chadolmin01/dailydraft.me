@@ -18,7 +18,7 @@ import {
   AiOnboardingModal,
 } from '@/components/profile'
 import { useRouter } from 'next/navigation'
-import { Sparkles } from 'lucide-react'
+import { Sparkles, Briefcase, FolderOpen, Activity } from 'lucide-react'
 import { SkeletonProfile, SkeletonGrid } from '@/components/ui/Skeleton'
 
 export default function ProfilePage() {
@@ -32,6 +32,7 @@ export default function ProfilePage() {
   const { data: uniData } = useUniversityVerification()
   const uniVerified = uniData?.is_verified ?? false
   const [showAiConfirm, setShowAiConfirm] = useState(false)
+  const [activeTab, setActiveTab] = useState<'portfolio' | 'projects' | 'activity'>('portfolio')
 
   // Parse strengths from vision_summary
   let strengths: string[] = []
@@ -42,7 +43,7 @@ export default function ProfilePage() {
     } catch { /* plain text */ }
   }
 
-  if (isLoading) return (
+  if (isLoading || !profile) return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
       <SkeletonProfile />
       <SkeletonGrid count={2} cols={2} />
@@ -105,10 +106,40 @@ export default function ProfilePage() {
           strengths={strengths}
           isEditable
         />
-        <ProfilePortfolio items={portfolioItems} isEditable />
-        <ProfileProjects opportunities={myOpportunities} />
-        <ProfileCoffeeChats />
-        <ProfileInvitations />
+        {/* ── Tab bar ── */}
+        <div className="flex items-center gap-1 border-b border-border mb-6">
+          {([
+            { key: 'portfolio' as const, label: '포트폴리오', icon: Briefcase, count: portfolioItems.length },
+            { key: 'projects' as const, label: '프로젝트', icon: FolderOpen, count: myOpportunities.length },
+            { key: 'activity' as const, label: '활동', icon: Activity },
+          ]).map(tab => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px ${
+                activeTab === tab.key
+                  ? 'border-txt-primary text-txt-primary'
+                  : 'border-transparent text-txt-tertiary hover:text-txt-secondary'
+              }`}
+            >
+              <tab.icon size={14} />
+              {tab.label}
+              {tab.count != null && tab.count > 0 && (
+                <span className="ml-0.5 text-[11px] font-mono text-txt-tertiary">{tab.count}</span>
+              )}
+            </button>
+          ))}
+        </div>
+
+        {/* ── Tab content ── */}
+        {activeTab === 'portfolio' && <ProfilePortfolio items={portfolioItems} isEditable />}
+        {activeTab === 'projects' && <ProfileProjects opportunities={myOpportunities} />}
+        {activeTab === 'activity' && (
+          <>
+            <ProfileCoffeeChats />
+            <ProfileInvitations />
+          </>
+        )}
       </DashboardLayout>
     </div>
   )
