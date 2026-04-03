@@ -20,6 +20,7 @@ import {
   BarChart3,
   Gift,
   AlertCircle,
+  Building2,
 } from 'lucide-react'
 
 interface AdminStats {
@@ -86,6 +87,7 @@ export default function AdminDashboardPage() {
   const adminLinks = [
     { href: '/admin/users', label: '사용자 관리', desc: '전체 사용자 조회, 검색, 삭제', icon: Users },
     { href: '/admin/opportunities', label: 'Opportunity 관리', desc: '기회 게시글 조회, 필터, 삭제', icon: Briefcase },
+    { href: '/admin/institutions', label: '기관 관리', desc: '기관 생성, 수정, 삭제 및 멤버 배정', icon: Building2 },
     { href: '/admin/invite-codes', label: '초대 코드 관리', desc: '프리미엄 초대 코드 발송', icon: Gift },
     { href: '/admin/error-logs', label: '에러 로그', desc: '시스템 에러 모니터링', icon: AlertCircle },
   ]

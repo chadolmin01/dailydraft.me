@@ -2,6 +2,7 @@ import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
 import { parseNickname } from '@/src/lib/clean-nickname'
+import { autoEnrollByEmail, autoEnrollByUniversity } from '@/src/lib/institution/auto-enroll'
 import type { TablesInsert } from '@/src/types/database'
 
 export async function POST(request: Request) {
@@ -91,6 +92,16 @@ export async function POST(request: Request) {
     if (result.error) {
       console.error('[onboarding/complete] Supabase error:', JSON.stringify(result.error))
       return ApiResponse.internalError('프로필 저장에 실패했습니다', result.error.message)
+    }
+
+    // Institution 자동 등록: 이메일 도메인 → 대학명 순으로 시도
+    try {
+      const enrolled = await autoEnrollByEmail(supabase, user.id, user.email || '')
+      if (!enrolled && inferredUniversity) {
+        await autoEnrollByUniversity(supabase, user.id, inferredUniversity)
+      }
+    } catch (e) {
+      console.warn('[onboarding/complete] Auto-enroll failed (non-blocking):', e)
     }
 
     return ApiResponse.ok({

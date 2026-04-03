@@ -18,6 +18,8 @@ import {
   ChevronRight,
   X,
   Building2,
+  Trash2,
+  RefreshCw,
 } from 'lucide-react'
 
 const ROLE_LABELS: Record<string, string> = {
@@ -108,6 +110,39 @@ export default function InstitutionMembersPage() {
     },
     onError: (err: Error) => {
       setAddError(err.message)
+    },
+  })
+
+  const changeRole = useMutation({
+    mutationFn: async ({ memberId, role }: { memberId: string; role: string }) => {
+      const res = await fetch(`/api/institution/members/${memberId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role }),
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.error?.message || '역할 변경 실패')
+      }
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['institution-members'] })
+    },
+  })
+
+  const removeMember = useMutation({
+    mutationFn: async (memberId: string) => {
+      const res = await fetch(`/api/institution/members/${memberId}`, { method: 'DELETE' })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.error?.message || '멤버 제거 실패')
+      }
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['institution-members'] })
+      queryClient.invalidateQueries({ queryKey: ['institution-stats'] })
     },
   })
 
@@ -228,6 +263,7 @@ export default function InstitutionMembersPage() {
                     <th className="text-left text-[10px] font-medium text-txt-tertiary px-5 py-3">스킬</th>
                     <th className="text-left text-[10px] font-medium text-txt-tertiary px-5 py-3">상태</th>
                     <th className="text-left text-[10px] font-medium text-txt-tertiary px-5 py-3">가입일</th>
+                    <th className="text-right text-[10px] font-medium text-txt-tertiary px-5 py-3">관리</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -275,6 +311,35 @@ export default function InstitutionMembersPage() {
                         </td>
                         <td className="px-5 py-3.5 text-xs text-txt-tertiary font-mono">
                           {new Date(member.joined_at).toLocaleDateString('ko-KR')}
+                        </td>
+                        <td className="px-5 py-3.5">
+                          {member.role !== 'admin' && (
+                            <div className="flex items-center justify-end gap-1">
+                              <button
+                                onClick={() => changeRole.mutate({
+                                  memberId: member.id,
+                                  role: member.role === 'student' ? 'mentor' : 'student',
+                                })}
+                                disabled={changeRole.isPending}
+                                title={member.role === 'student' ? '멘토로 변경' : '학생으로 변경'}
+                                className="p-1.5 text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken transition-colors"
+                              >
+                                <RefreshCw size={13} />
+                              </button>
+                              <button
+                                onClick={() => {
+                                  if (confirm(`"${profile?.nickname || '이름 없음'}" 멤버를 제거하시겠습니까?`)) {
+                                    removeMember.mutate(member.id)
+                                  }
+                                }}
+                                disabled={removeMember.isPending}
+                                title="멤버 제거"
+                                className="p-1.5 text-txt-tertiary hover:text-status-danger-text hover:bg-status-danger-bg transition-colors"
+                              >
+                                <Trash2 size={13} />
+                              </button>
+                            </div>
+                          )}
                         </td>
                       </tr>
                     )

@@ -447,6 +447,12 @@ export const TopNavbar: React.FC = () => {
               {isAuthenticated && (
                 <MobileNavItem href="/profile" active={pathname === '/profile'}>마이페이지</MobileNavItem>
               )}
+              {isInstitutionAdmin && (
+                <MobileNavItem href="/institution" active={pathname.startsWith('/institution')}>기관 대시보드</MobileNavItem>
+              )}
+              {isAdmin && (
+                <MobileNavItem href="/admin" active={pathname.startsWith('/admin')}>관리자</MobileNavItem>
+              )}
               <Link
                 href={isAuthenticated ? '/projects/new' : '/login'}
                 className="w-full mt-2 flex items-center justify-center gap-1.5 px-4 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-semibold transition-all hover:opacity-90 active:scale-[0.97] rounded-xl"

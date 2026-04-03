@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
+import { autoEnrollByEmail } from '@/src/lib/institution/auto-enroll'
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
@@ -59,6 +60,10 @@ export async function GET(request: Request) {
         }
 
         if (profile.onboarding_completed) {
+          // 이메일 도메인 기반 institution 자동 등록 (non-blocking)
+          try {
+            await autoEnrollByEmail(supabase as Parameters<typeof autoEnrollByEmail>[0], user.id, user.email || '')
+          } catch { /* non-blocking */ }
           return NextResponse.redirect(`${origin}/explore`)
         } else {
           return NextResponse.redirect(`${origin}/onboarding`)
