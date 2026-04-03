@@ -1,4 +1,5 @@
-import { Code2, Palette, Lightbulb, Megaphone, Users, BarChart3 } from 'lucide-react'
+import { PROJECT_ROLES } from '@/src/constants/roles'
+import { PROJECT_CATEGORIES, categoryLabel } from '@/src/constants/categories'
 
 export const TYPE_OPTIONS = [
   { value: 'side_project', label: '함께 만들기' },
@@ -6,14 +7,11 @@ export const TYPE_OPTIONS = [
   { value: 'study', label: '함께 배우기' },
 ]
 
-export const ROLE_OPTIONS = [
-  { value: '개발자', icon: Code2 },
-  { value: '디자이너', icon: Palette },
-  { value: '기획자', icon: Lightbulb },
-  { value: '마케터', icon: Megaphone },
-  { value: 'PM', icon: Users },
-  { value: '데이터분석', icon: BarChart3 },
-]
+export const ROLE_OPTIONS = PROJECT_ROLES.map(r => ({
+  value: r.slug,
+  label: r.label,
+  icon: r.icon,
+}))
 
 export const LOCATION_TYPE_OPTIONS = [
   { value: 'remote', label: '원격' },
@@ -33,10 +31,14 @@ export const COMPENSATION_OPTIONS = [
   { value: 'hybrid', label: '혼합' },
 ]
 
-export const CATEGORY_TAGS = [
-  'AI/ML', '웹/앱 개발', '데이터분석', '디자인/UX', '핀테크', '에듀테크', '헬스케어',
-  '커머스', '소셜/커뮤니티', '게임', '콘텐츠/미디어', '하드웨어/IoT', '공모전/해커톤', '포트폴리오',
-]
+export const CATEGORY_TAGS = PROJECT_CATEGORIES.map(c => c.slug)
+
+/** slug -> 한글 라벨 조회. 못 찾으면 slug 그대로 반환 */
+export const CATEGORY_TAG_LABELS: Record<string, string> = Object.fromEntries(
+  PROJECT_CATEGORIES.map(c => [c.slug, c.label])
+)
+
+export { categoryLabel }
 
 export type TypeTheme = {
   badge: string

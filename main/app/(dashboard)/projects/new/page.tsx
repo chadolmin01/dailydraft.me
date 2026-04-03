@@ -7,7 +7,7 @@ import type { Area } from 'react-easy-crop'
 import { toast } from 'sonner'
 import { useCreateOpportunity } from '@/src/hooks/useOpportunities'
 import { useAutoSaveDraft } from '@/src/hooks/useAutoSaveDraft'
-import { TYPE_OPTIONS, CATEGORY_TAGS, TYPE_THEMES } from './constants'
+import { TYPE_OPTIONS, CATEGORY_TAGS, CATEGORY_TAG_LABELS, TYPE_THEMES } from './constants'
 import { getCroppedImg, ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE, uploadImagesToSupabase } from './utils'
 import { ImageUploadSection } from './components/ImageUploadSection'
 import { CropModal } from './components/CropModal'
@@ -427,12 +427,12 @@ function NewProjectContent() {
             {fieldErrors.title && <p className="text-status-danger-text text-xs mt-1">{fieldErrors.title}</p>}
 
             <div className="flex flex-wrap gap-1.5 mt-4">
-              {CATEGORY_TAGS.map(tag => (
+              {CATEGORY_TAGS.map(slug => (
                 <AnimatedChip
-                  key={tag}
-                  label={tag}
-                  selected={selectedTags.includes(tag)}
-                  onToggle={() => toggleTag(tag)}
+                  key={slug}
+                  label={CATEGORY_TAG_LABELS[slug] ?? slug}
+                  selected={selectedTags.includes(slug)}
+                  onToggle={() => toggleTag(slug)}
                   selectedClass={theme.chipOn}
                   unselectedClass="bg-surface-sunken text-txt-secondary border-border-subtle hover:border-border hover:text-txt-primary"
                 />

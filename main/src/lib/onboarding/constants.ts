@@ -1,10 +1,13 @@
 import { Briefcase, Clock, Users, Target, Sparkles, Heart, Lightbulb, Zap } from 'lucide-react'
 import type { DeepChatTopic, Step } from './types'
+import { POSITIONS } from '@/src/constants/roles'
+import { PROJECT_CATEGORIES } from '@/src/constants/categories'
 
-export const POSITION_OPTIONS = [
-  '프론트엔드 개발', '백엔드 개발', '풀스택 개발', 'UI/UX 디자인',
-  'PM / 기획', '마케팅', '데이터분석', '기타',
-]
+/**
+ * 온보딩 포지션 선택지 (slug 배열).
+ * @deprecated PositionStep에서 POSITIONS를 직접 import하므로 신규 코드에서는 사용하지 말 것.
+ */
+export const POSITION_OPTIONS = POSITIONS.map(p => p.slug)
 
 export const SITUATION_OPTIONS = [
   { value: 'has_project', label: '팀원을 찾고 있어요', desc: '프로젝트 진행 중' },
@@ -23,7 +26,11 @@ export const AFFILIATION_OPTIONS = [
 
 export const POPULAR_SKILLS = ['React', 'Python', 'TypeScript', 'Figma', 'Java', 'Node.js', 'Flutter', 'SQL']
 
-export const INTEREST_OPTIONS = ['AI/ML', '웹/앱 개발', '데이터분석', '디자인/UX', '핀테크', '에듀테크', '헬스케어', '커머스', '소셜/커뮤니티', '게임', '콘텐츠/미디어', '하드웨어/IoT', '공모전/해커톤', '포트폴리오']
+/**
+ * 온보딩 관심 분야 선택지 (slug 배열).
+ * @deprecated InterestsStep에서 PROJECT_CATEGORIES를 직접 import하므로 신규 코드에서는 사용하지 말 것.
+ */
+export const INTEREST_OPTIONS = PROJECT_CATEGORIES.map(c => c.slug)
 
 export const DEEP_CHAT_TOPICS: DeepChatTopic[] = [
   { id: 'experience', label: '프로젝트 경험', icon: Briefcase, keywords: ['프로젝트', '경험', '해본', '만들', '개발', '참여', '역할'] },

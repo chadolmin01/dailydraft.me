@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { ArrowRight, Send, Sparkles, X } from 'lucide-react'
-import { INTEREST_OPTIONS } from '@/src/lib/onboarding/constants'
+import { PROJECT_CATEGORIES, categoryLabel } from '@/src/constants/categories'
 
 // ── Interests Input ──
 
@@ -41,18 +41,18 @@ export const InterestsInputStep: React.FC<InterestsInputStepProps> = ({
       <div>
         <p className="text-[10px] font-medium text-txt-tertiary mb-2">빠른 선택</p>
         <div className="flex flex-wrap gap-1.5">
-          {INTEREST_OPTIONS.map((tag, idx) => (
+          {PROJECT_CATEGORIES.map((cat, idx) => (
             <button
-              key={tag}
-              onClick={() => onToggleInterest(tag)}
+              key={cat.slug}
+              onClick={() => onToggleInterest(cat.slug)}
               className={`ob-chip ob-hover px-3 py-1.5 text-[12px] font-medium border rounded-full transition-all ${
-                interests.includes(tag)
+                interests.includes(cat.slug)
                   ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
                   : 'bg-surface-card text-txt-primary border-border hover:bg-black hover:text-white'
               }`}
               style={{ animationDelay: `${idx * 25}ms` }}
             >
-              {tag}
+              {cat.label}
             </button>
           ))}
         </div>
@@ -61,7 +61,7 @@ export const InterestsInputStep: React.FC<InterestsInputStepProps> = ({
         <div className="flex flex-wrap gap-1 pt-1">
           {interests.map(t => (
             <span key={t} className="ob-tag-pop inline-flex items-center gap-1 px-2.5 py-1 bg-brand text-white text-[11px] font-medium rounded-full">
-              {t}
+              {categoryLabel(t)}
               <button onClick={() => onRemoveInterest(t)} className="hover:text-white/60 transition-colors p-2 sm:p-0 -m-1 sm:m-0"><X size={11} /></button>
             </span>
           ))}
@@ -90,7 +90,7 @@ export const InterestsConfirmStep: React.FC<InterestsConfirmStepProps> = ({
       <div className="flex flex-wrap gap-1.5">
         {interests.map((tag, idx) => (
           <span key={tag} className="ob-chip inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand text-white text-[13px] font-medium rounded-full" style={{ animationDelay: `${idx * 40}ms` }}>
-            {tag}
+            {categoryLabel(tag)}
             <button onClick={() => onRemoveInterest(tag)} className="hover:text-white/60 transition-colors"><X size={13} /></button>
           </span>
         ))}

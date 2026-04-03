@@ -10,8 +10,8 @@ interface RolesGridProps {
   error?: string
 }
 
-function RoleButton({ value, icon: Icon, selected, themeRoleOn, themeRoleIconOn, onToggle }: {
-  value: string
+function RoleButton({ label, icon: Icon, selected, themeRoleOn, themeRoleIconOn, onToggle }: {
+  label: string
   icon: React.ElementType
   selected: boolean
   themeRoleOn: string
@@ -36,7 +36,7 @@ function RoleButton({ value, icon: Icon, selected, themeRoleOn, themeRoleIconOn,
       }`}
     >
       <Icon size={18} className={selected ? `${themeRoleIconOn} mb-1.5` : 'text-txt-disabled mb-1.5'} />
-      <span className="text-xs font-medium">{value}</span>
+      <span className="text-xs font-medium">{label}</span>
     </button>
   )
 }
@@ -49,10 +49,10 @@ export const RolesGrid = forwardRef<HTMLDivElement, RolesGridProps>(
           {rolesLabel}
         </h3>
         <div className={`grid grid-cols-3 gap-1.5 ${error ? 'ring-1 ring-status-danger-text/30 rounded-xl' : ''}`}>
-          {ROLE_OPTIONS.map(({ value, icon: Icon }) => (
+          {ROLE_OPTIONS.map(({ value, label, icon: Icon }) => (
             <RoleButton
               key={value}
-              value={value}
+              label={label}
               icon={Icon}
               selected={selectedRoles.includes(value)}
               themeRoleOn={theme.roleOn}

@@ -7,7 +7,7 @@ import type { Area } from 'react-easy-crop'
 import { toast } from 'sonner'
 import { useOpportunity, useUpdateOpportunity, useDeleteOpportunity } from '@/src/hooks/useOpportunities'
 import { useAuth } from '@/src/context/AuthContext'
-import { TYPE_OPTIONS, CATEGORY_TAGS, TYPE_THEMES } from '../../new/constants'
+import { TYPE_OPTIONS, CATEGORY_TAGS, CATEGORY_TAG_LABELS, TYPE_THEMES } from '../../new/constants'
 import { getCroppedImg, ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE, uploadImagesToSupabase } from '../../new/utils'
 import { ImageUploadSection } from '../../new/components/ImageUploadSection'
 import { CropModal } from '../../new/components/CropModal'
@@ -460,12 +460,12 @@ function EditProjectContent() {
                 className="w-full text-2xl font-bold text-txt-primary placeholder:text-txt-disabled border-none outline-none bg-transparent leading-tight break-keep"
               />
               <div className="flex flex-wrap gap-1.5 mt-4">
-                {CATEGORY_TAGS.map(tag => (
+                {CATEGORY_TAGS.map(slug => (
                   <AnimatedChip
-                    key={tag}
-                    label={tag}
-                    selected={selectedTags.includes(tag)}
-                    onToggle={() => toggleTag(tag)}
+                    key={slug}
+                    label={CATEGORY_TAG_LABELS[slug] ?? slug}
+                    selected={selectedTags.includes(slug)}
+                    onToggle={() => toggleTag(slug)}
                     selectedClass={theme.chipOn}
                     unselectedClass="bg-surface-sunken text-txt-secondary border-border-subtle hover:border-border hover:text-txt-primary"
                   />

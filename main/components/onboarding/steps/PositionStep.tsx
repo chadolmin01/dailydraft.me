@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useRef, useCallback } from 'react'
-import { POSITION_OPTIONS } from '@/src/lib/onboarding/constants'
+import { POSITIONS } from '@/src/constants/roles'
 
 interface PositionStepProps {
   onSelect: (position: string) => void
@@ -22,7 +22,7 @@ export const PositionStep: React.FC<PositionStepProps> = ({ onSelect }) => {
       next = (idx - 1 + buttons.length) % buttons.length
     } else if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
-      onSelect(POSITION_OPTIONS[idx])
+      onSelect(POSITIONS[idx].slug)
       return
     }
     if (next >= 0) buttons[next].focus()
@@ -30,18 +30,18 @@ export const PositionStep: React.FC<PositionStepProps> = ({ onSelect }) => {
 
   return (
     <div ref={containerRef} className="mt-3 flex flex-wrap gap-1.5" role="listbox" aria-label="포지션 선택">
-      {POSITION_OPTIONS.map((pos, idx) => (
+      {POSITIONS.map((pos, idx) => (
         <button
-          key={pos}
+          key={pos.slug}
           role="option"
           aria-selected={false}
           tabIndex={idx === 0 ? 0 : -1}
-          onClick={() => onSelect(pos)}
+          onClick={() => onSelect(pos.slug)}
           onKeyDown={(e) => handleKeyDown(e, idx)}
           className="ob-chip ob-hover px-3.5 py-2 bg-surface-card rounded-lg border border-border text-[13px] font-medium text-txt-primary hover:bg-black hover:text-white"
           style={{ animationDelay: `${idx * 40}ms` }}
         >
-          {pos}
+          {pos.label}
         </button>
       ))}
     </div>

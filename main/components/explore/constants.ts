@@ -1,26 +1,46 @@
-import { LayoutGrid, Users, Sparkles, Zap, Star, Flame, Clock, FolderOpen, User, Code2, TrendingUp, Palette, ClipboardList, Megaphone, GraduationCap, ShoppingBag, Video, Gamepad2, Leaf } from 'lucide-react'
+/**
+ * Explore 페이지 전용 상수.
+ * 카테고리/역할/유형 등 공통 상수는 @/src/constants에서 파생.
+ */
+import { LayoutGrid, Users, Sparkles, Star, Flame, Clock, FolderOpen, User, Code2, TrendingUp } from 'lucide-react'
+import { PROJECT_CATEGORIES } from '@/src/constants/categories'
+import { PROJECT_ROLES, PEOPLE_CATEGORY_ICONS } from '@/src/constants/roles'
+import { PROJECT_TYPES } from '@/src/constants/project'
 
-export const CATEGORY_ICONS: Record<string, React.ElementType> = {
-  all: LayoutGrid,
-  'AI/ML': Sparkles,
-  '웹/앱 개발': Code2,
-  '핀테크': Star,
-  '헬스케어': Zap,
-  '소셜/커뮤니티': Users,
-  '교육/에듀테크': GraduationCap,
-  '커머스/F&B': ShoppingBag,
-  '콘텐츠/미디어': Video,
-  '게임/엔터': Gamepad2,
-  '환경/ESG': Leaf,
-}
+/* ── 카테고리/역할: @/src/constants 에서 파생 ─────────────── */
 
-export const PEOPLE_CATEGORY_ICONS: Record<string, React.ElementType> = {
-  all: Users,
-  developer: Code2,
-  designer: Palette,
-  pm: ClipboardList,
-  marketer: Megaphone,
-}
+/** Explore 사이드바 아이콘 맵 (slug → icon) */
+export const CATEGORY_ICONS: Record<string, React.ElementType> = Object.fromEntries(
+  [['all', LayoutGrid], ...PROJECT_CATEGORIES.map(c => [c.slug, c.icon])]
+)
+
+export { PEOPLE_CATEGORY_ICONS }
+
+/** 유형 필터 (전체 + PROJECT_TYPES) */
+export const TYPE_FILTERS = [
+  { id: 'all', label: '전체' },
+  ...PROJECT_TYPES.map(t => ({ id: t.value, label: t.label })),
+]
+
+/**
+ * 프로젝트 역할 필터.
+ * DB가 slug로 통일됨 → id=slug, 키워드 매칭 불필요.
+ */
+export const PROJECT_ROLE_FILTERS = [
+  { id: 'all', label: '전체' },
+  ...PROJECT_ROLES.map(r => ({ id: r.slug, label: r.filterLabel })),
+]
+
+/**
+ * 사람 역할 필터.
+ * positionSlugs: 이 역할에 해당하는 포지션 slug 목록 (desired_position 매칭용).
+ */
+export const PEOPLE_ROLE_FILTERS = [
+  { id: 'all', label: '전체' },
+  ...PROJECT_ROLES.map(r => ({ id: r.slug, label: r.label, positionSlugs: r.positionSlugs })),
+]
+
+/* ── Explore 전용 상수 (변경 없음) ────────────────────────── */
 
 export const TABS = [
   { id: 'projects', label: '프로젝트', icon: LayoutGrid },
@@ -31,31 +51,7 @@ export const SORT_OPTIONS = [
   { id: 'ai', label: 'AI 추천', icon: Sparkles, beta: false },
   { id: 'trending', label: '트렌딩', icon: Flame, beta: false },
   { id: 'latest', label: '최신', icon: Clock, beta: false },
-  { id: 'popular', label: '인기', icon: Star, beta: false },
-] as const
-
-export const TYPE_FILTERS = [
-  { id: 'all', label: '전체' },
-  { id: 'side_project', label: '함께 만들기' },
-  { id: 'startup', label: '창업 준비' },
-  { id: 'study', label: '함께 배우기' },
-] as const
-
-export const PEOPLE_ROLE_FILTERS = [
-  { id: 'all', label: '전체' },
-  { id: 'developer', label: '개발자', keywords: ['개발', 'developer', 'engineer', 'frontend', 'backend', 'fullstack', 'ios', 'android', 'web'] },
-  { id: 'designer', label: '디자이너', keywords: ['디자인', 'designer', 'ux', 'ui', 'graphic', '그래픽'] },
-  { id: 'pm', label: '기획자', keywords: ['기획', 'pm', 'product', 'planner', '매니저', 'manager'] },
-  { id: 'marketer', label: '마케터', keywords: ['마케팅', 'marketer', 'marketing', 'growth', '그로스'] },
-] as const
-
-export const PROJECT_ROLE_FILTERS = [
-  { id: 'all', label: '전체' },
-  { id: '개발자', label: '개발자 구함', keywords: ['개발', '프론트엔드', '백엔드', '풀스택'] },
-  { id: '디자이너', label: '디자이너 구함', keywords: ['디자이너', '디자인', 'UX', 'UI'] },
-  { id: '기획자', label: '기획자 구함', keywords: ['기획', 'PM', 'PO'] },
-  { id: '마케터', label: '마케터 구함', keywords: ['마케팅', '마케터'] },
-  { id: '데이터분석', label: '데이터 구함', keywords: ['데이터', '분석'] },
+  { id: 'popular', label: '인���', icon: Star, beta: false },
 ] as const
 
 export const PEOPLE_SORT_OPTIONS = [

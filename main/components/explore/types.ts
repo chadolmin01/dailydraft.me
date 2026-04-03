@@ -48,8 +48,8 @@ export type SortBy = 'latest' | 'popular' | 'trending' | 'ai'
 export type TypeFilter = 'all' | 'side_project' | 'startup' | 'study'
 export type SearchScope = 'all' | 'projects' | 'people' | 'skills'
 export type ActiveTab = 'projects' | 'people'
-export type PeopleRoleFilter = 'all' | 'developer' | 'designer' | 'pm' | 'marketer'
-export type ProjectRoleFilter = 'all' | '개발자' | '디자이너' | '기획자' | '마케터' | '데이터분석'
+export type PeopleRoleFilter = 'all' | 'developer' | 'designer' | 'pm' | 'marketer' | 'data'
+export type ProjectRoleFilter = 'all' | 'developer' | 'designer' | 'pm' | 'marketer' | 'data'
 export type PeopleSortBy = 'latest' | 'ai' | 'popular'
 
 export interface ActiveFilterChip {
