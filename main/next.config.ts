@@ -15,6 +15,15 @@ const runtimeCaching = defaultCache.map(entry => {
     const { networkTimeoutSeconds: _, ...rest } = (entry.options || {}) as Record<string, unknown>
     return { ...entry, handler: 'NetworkOnly', options: rest }
   }
+  // JS/CSS: NetworkFirst — prevents serving stale old design after deploy
+  // Next.js uses content-hashed filenames, so cache misses are rare anyway
+  if (name === 'static-js-assets' || name === 'static-style-assets') {
+    return { ...entry, handler: 'NetworkFirst' }
+  }
+  // Start URL: NetworkFirst with short timeout — always show latest HTML
+  if (name === 'start-url') {
+    return { ...entry, handler: 'NetworkFirst' }
+  }
   return entry
 })
 

@@ -43,6 +43,14 @@ nul
 # Screenshots
 *.png
 
+# PWA (next-pwa build artifacts — regenerated on every build)
+public/sw.js
+public/sw.js.map
+public/workbox-*.js
+public/workbox-*.js.map
+public/fallback-*.js
+public/swe-worker-*.js
+
 # Vercel
 .vercel/
 .vercel
