@@ -64,23 +64,33 @@ export default function OgImage() {
               color: '#fff',
               fontSize: 72,
               fontWeight: 900,
-              letterSpacing: '16px',
-              textTransform: 'uppercase' as const,
+              letterSpacing: '-2px',
             }}
           >
-            DRAFT
+            Draft.
           </span>
 
-          {/* Tagline */}
+          {/* Tagline — matches splash screen */}
           <span
             style={{
-              color: '#444',
+              color: '#555',
               fontSize: 16,
               letterSpacing: '6px',
               textTransform: 'uppercase' as const,
             }}
           >
-            Build your team
+            where projects begin
+          </span>
+
+          {/* Korean subtitle */}
+          <span
+            style={{
+              color: '#333',
+              fontSize: 14,
+              letterSpacing: '1px',
+            }}
+          >
+            모든 프로젝트는 여기서 시작됩니다
           </span>
         </div>
 

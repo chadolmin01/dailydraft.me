@@ -307,7 +307,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowPreview(true)}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-[#374151] bg-white border border-[#E5E7EB] rounded-xl hover:bg-[#F9FAFB] transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-[#374151] bg-white border border-[#E5E7EB] rounded-lg hover:bg-[#F9FAFB] transition-colors"
             >
               <Eye size={16} />
               미리보기
@@ -358,7 +358,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
             onClick={handlePrevStep}
             disabled={currentStep === 1}
             className={`
-              flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl transition-colors
+              flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors
               ${currentStep === 1
                 ? 'text-[#D1D5DB] cursor-not-allowed'
                 : 'text-[#374151] hover:bg-[#F3F4F6]'
@@ -389,7 +389,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
           {currentStep < WIZARD_STEPS.length ? (
             <button
               onClick={handleNextStep}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#111827] text-white rounded-xl hover:bg-[#374151] transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#111827] text-white rounded-lg hover:bg-[#374151] transition-colors"
             >
               다음
               <ArrowRight size={16} />
@@ -397,7 +397,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
           ) : (
             <button
               onClick={() => setShowPreview(true)}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#3B82F6] text-white rounded-xl hover:bg-[#2563EB] transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#3B82F6] text-white rounded-lg hover:bg-[#2563EB] transition-colors"
             >
               <Eye size={16} />
               완료 및 미리보기

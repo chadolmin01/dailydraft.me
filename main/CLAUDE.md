@@ -2,20 +2,36 @@
 
 ## 프로젝트 구조
 - `main/`: Next.js 메인 앱 (포트 3000)
+- `archive/`: 레거시 프로젝트 (idea-snap, idea-validator, draft-documentation, prd)
 - `.claude/skills/`: 설치된 스킬들 (symlink)
 - `.agents/skills/`: 스킬 원본 파일
 
 ## 설치된 Skills
 
-| 스킬 | 용도 | 우선순위 |
-|------|------|----------|
-| `pdf` | 서버사이드 PDF 생성 (Puppeteer) | 1 |
-| `vercel-react-best-practices` | React 성능 최적화 패턴 | 2 |
-| `vercel-composition-patterns` | 컴포넌트 구조 패턴 | 3 |
-| `browser-use` | 브라우저 자동화/테스트 | 4 |
-| `frontend-design` | UI 디자인 가이드 | 5 |
-| `web-design-guidelines` | 웹 디자인 표준 | - |
-| `find-skills` | 스킬 검색 | - |
+### 프로젝트 스킬 (`.claude/skills/`)
+| 스킬 | 용도 |
+|------|------|
+| `pdf` | 서버사이드 PDF 생성 (Puppeteer) |
+| `vercel-react-best-practices` | React 성능 최적화 패턴 |
+| `vercel-composition-patterns` | 컴포넌트 구조 패턴 |
+| `browser-use` | 브라우저 자동화/테스트 |
+| `frontend-design` | UI 디자인 가이드 |
+| `web-design-guidelines` | 웹 디자인 표준 |
+| `find-skills` | 스킬 검색 |
+
+### 글로벌 스킬 (`~/.claude/skills/`)
+| 스킬 | 용도 |
+|------|------|
+| `supabase-postgres-best-practices` | Supabase 공식 — DB 쿼리, RLS, 인덱싱 |
+| `nextjs-supabase-auth` | Next.js + Supabase Auth 통합 패턴 |
+| `nextjs-react-typescript` | Next.js + React + TS 종합 가이드 |
+| `on-page-seo-auditor` | SEO 감사/최적화 |
+| `deployment-pipeline-design` | 배포 파이프라인 설계 |
+| `qa-testing-strategy` | QA 테스트 전략 |
+| `tailwindcss` | Tailwind CSS 패턴 가이드 |
+| `secure` | 보안 감사 |
+| `sprint-planning` | Anthropic 공식 스프린트 플래닝 |
+| `sprint-planner` | 스프린트 플래너 |
 
 ## 서버 관리 (필수 규칙)
 

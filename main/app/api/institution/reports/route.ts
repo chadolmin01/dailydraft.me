@@ -126,7 +126,7 @@ export async function GET() {
       ;(updatesResult.data || []).forEach((u) => {
         updateCounts[u.opportunity_id] = (updateCounts[u.opportunity_id] || 0) + 1
         if (!lastUpdateAt[u.opportunity_id]) {
-          lastUpdateAt[u.opportunity_id] = u.created_at! // already ordered desc
+          lastUpdateAt[u.opportunity_id] = u.created_at ?? new Date().toISOString()
         }
       })
 

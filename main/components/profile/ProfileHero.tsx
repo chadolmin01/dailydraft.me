@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   Target,
   Sparkles,
+  Edit3,
   Pencil,
   Check,
   X,
@@ -22,87 +23,13 @@ import {
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { useUpdateProfile } from '@/src/hooks/useProfile'
+import { useProfileDraft } from '@/src/hooks/useProfileDraft'
 import { useAuth } from '@/src/context/AuthContext'
 import { supabase } from '@/src/lib/supabase/client'
 import { cleanNickname } from '@/src/lib/clean-nickname'
 import type { Profile } from './types'
 import { SITUATION_LABELS } from './types'
-
-/* ── Inline Field ───────────────────────────────────────── */
-
-function InlineField({
-  value,
-  draft,
-  placeholder,
-  className,
-  multiline,
-  onEdit,
-}: {
-  value: string
-  draft: string | undefined
-  placeholder?: string
-  className?: string
-  multiline?: boolean
-  onEdit: (val: string) => void
-}) {
-  const [editing, setEditing] = useState(false)
-  const ref = useRef<HTMLInputElement | HTMLTextAreaElement>(null)
-  const display = draft ?? value
-  const isChanged = draft !== undefined && draft !== value
-
-  useEffect(() => {
-    if (editing && ref.current) {
-      ref.current.focus()
-      if ('select' in ref.current) ref.current.select()
-    }
-  }, [editing])
-
-  if (editing) {
-    const close = () => setEditing(false)
-
-    if (multiline) {
-      return (
-        <textarea
-          ref={ref as React.RefObject<HTMLTextAreaElement>}
-          value={display}
-          onChange={(e) => onEdit(e.target.value)}
-          onBlur={close}
-          onKeyDown={(e) => { if (e.key === 'Escape') close() }}
-          placeholder={placeholder}
-          rows={3}
-          className={`bg-surface-bg border border-border rounded-xl outline-none w-full px-2 py-1.5 resize-none focus:border-brand transition-colors ${className || ''}`}
-        />
-      )
-    }
-
-    return (
-      <input
-        ref={ref as React.RefObject<HTMLInputElement>}
-        value={display}
-        onChange={(e) => onEdit(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === 'Escape') close()
-        }}
-        onBlur={close}
-        placeholder={placeholder}
-        className={`bg-surface-bg border border-border rounded-xl outline-none px-2 py-0.5 focus:border-brand transition-colors ${className || ''}`}
-      />
-    )
-  }
-
-  return (
-    <span
-      className="group/edit inline-flex items-center gap-1 cursor-pointer rounded-lg px-1 -mx-1 hover:bg-surface-sunken/60 transition-colors"
-      onClick={() => setEditing(true)}
-      title="클릭하여 수정"
-    >
-      <span className={`${display ? '' : 'text-txt-disabled italic'} ${isChanged ? 'text-brand' : ''}`}>
-        {display || placeholder}
-      </span>
-      <Pencil size={9} className="opacity-0 group-hover/edit:opacity-40 transition-opacity shrink-0" />
-    </span>
-  )
-}
+import { EditableField } from './EditableField'
 
 /* ── ProfileHero ────────────────────────────────────────── */
 
@@ -115,7 +42,7 @@ interface ProfileHeroProps {
 }
 
 export function ProfileHero({ profile, email, uniVerified, strengths, isEditable = false }: ProfileHeroProps) {
-  const bio = (profile as Record<string, unknown> | null)?.bio as string | null
+  const bio = profile?.bio ?? null
   const coverUrl = profile?.cover_image_url
   const { user } = useAuth()
   const router = useRouter()
@@ -125,57 +52,28 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
   const [avatarUploading, setAvatarUploading] = useState(false)
   const [editingBio, setEditingBio] = useState(false)
 
-  // Draft state — only tracks fields user has touched
-  const [drafts, setDrafts] = useState<Record<string, string>>({})
+  const heroDefaults = useMemo(() => ({
+    nickname: profile?.nickname || '',
+    bio: bio || '',
+    desired_position: profile?.desired_position || '',
+    university: profile?.university || '',
+    location: profile?.location || '',
+    contact_email: profile?.contact_email || email || '',
+  }), [profile, bio, email])
 
-  // Reset drafts when profile updates (after successful save)
-  useEffect(() => { setDrafts({}); setEditingBio(false) }, [profile])
+  const { drafts, hasPendingChanges, isPending, editField, handleSave, handleCancel } = useProfileDraft(
+    profile, heroDefaults, {
+      onSuccess: () => toast.success('프로필이 저장되었습니다'),
+      onError: () => toast.error('프로필 저장에 실패했습니다'),
+    }
+  )
+
+  // Reset editingBio when profile updates
+  useEffect(() => { setEditingBio(false) }, [profile])
 
   useEffect(() => {
     if (editingBio && bioRef.current) bioRef.current.focus()
   }, [editingBio])
-
-  const hasPendingChanges = useMemo(() => {
-    return Object.entries(drafts).some(([field, val]) => {
-      const original = field === 'bio' ? (bio || '') :
-        field === 'nickname' ? (profile?.nickname || '') :
-        field === 'desired_position' ? (profile?.desired_position || '') :
-        field === 'university' ? (profile?.university || '') :
-        field === 'location' ? (profile?.location || '') :
-        field === 'contact_email' ? (profile?.contact_email || email || '') : ''
-      return val !== original
-    })
-  }, [drafts, profile, bio, email])
-
-  const editField = (field: string) => (val: string) => {
-    setDrafts(prev => ({ ...prev, [field]: val }))
-  }
-
-  const handleSave = () => {
-    if (!hasPendingChanges) return
-    // Only send fields that actually changed
-    const updates: Record<string, string | null> = {}
-    for (const [field, val] of Object.entries(drafts)) {
-      const trimmed = val.trim()
-      const original = field === 'bio' ? (bio || '') :
-        field === 'nickname' ? (profile?.nickname || '') :
-        field === 'desired_position' ? (profile?.desired_position || '') :
-        field === 'university' ? (profile?.university || '') :
-        field === 'location' ? (profile?.location || '') :
-        field === 'contact_email' ? (profile?.contact_email || email || '') : ''
-      if (trimmed !== original) {
-        updates[field] = trimmed || null
-      }
-    }
-    if (Object.keys(updates).length > 0) {
-      updateProfile.mutate(updates, {
-        onSuccess: () => toast.success('프로필이 저장되었습니다'),
-        onError: () => toast.error('프로필 저장에 실패했습니다'),
-      })
-    }
-  }
-
-  const handleCancel = () => setDrafts({})
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -260,7 +158,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
       <div className="flex items-center justify-end gap-2 pt-4 mt-4 border-t border-border">
         <button
           onClick={handleCancel}
-          disabled={updateProfile.isPending}
+          disabled={isPending}
           className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-txt-secondary border border-border hover:bg-surface-sunken transition-colors rounded-xl"
         >
           <X size={12} />
@@ -268,10 +166,10 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
         </button>
         <button
           onClick={handleSave}
-          disabled={updateProfile.isPending}
+          disabled={isPending}
           className="flex items-center gap-1 px-4 py-1.5 text-xs font-bold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97] disabled:opacity-50 rounded-xl"
         >
-          {updateProfile.isPending ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
+          {isPending ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
           저장
         </button>
       </div>
@@ -283,7 +181,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
     <div className="flex items-center gap-2 flex-wrap">
       {isEditable ? (
         <h2 className="text-lg sm:text-xl font-bold text-txt-primary">
-          <InlineField
+          <EditableField variant="inline"
             value={profile?.nickname || ''}
             draft={drafts.nickname}
             placeholder="이름"
@@ -306,7 +204,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
   const renderSubtitle = () => (
     <p className="text-xs sm:text-sm text-txt-primary/70 truncate">
       {isEditable ? (
-        <InlineField
+        <EditableField variant="inline"
           value={profile?.desired_position || ''}
           draft={drafts.desired_position}
           placeholder="포지션 미설정"
@@ -402,14 +300,14 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
 
   /* ── Info grid ── */
   const renderInfoGrid = () => (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-4 border-t border-border">
+    <div className="flex flex-wrap items-start gap-x-6 gap-y-3 pt-4 border-t border-border">
       {infoItems.map((item) => (
         <div key={item.label} className="flex items-start gap-2">
           <item.icon size={12} className="text-txt-tertiary mt-0.5" />
           <div className="min-w-0 flex-1">
             <p className="text-[0.5rem] text-txt-tertiary">{item.label}</p>
             {isEditable ? (
-              <InlineField
+              <EditableField variant="inline"
                 value={item.value}
                 draft={drafts[item.field]}
                 placeholder={item.placeholder}
@@ -459,7 +357,15 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
   const renderGuideRestart = () => {
     if (!isEditable) return null
     return (
-      <div className="absolute top-3 right-3 z-10 group/guide">
+      <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5">
+        <button
+          onClick={() => router.push('/profile/edit')}
+          className="flex items-center gap-1 px-2 py-1 text-[10px] text-txt-tertiary hover:text-txt-primary bg-surface-card/80 backdrop-blur-sm border border-border rounded-lg transition-colors"
+        >
+          <Edit3 size={10} />
+          <span className="hidden sm:inline">설정</span>
+        </button>
+        <div className="group/guide relative">
         <button
             onClick={() => {
               const key = 'draft_starter_guide'
@@ -489,6 +395,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
           <span className="absolute top-[calc(100%+6px)] right-0 px-2.5 py-1.5 text-[10px] font-medium bg-surface-inverse text-txt-inverse rounded-lg shadow-lg whitespace-nowrap opacity-0 pointer-events-none group-hover/guide:opacity-100 transition-opacity">
             시작 가이드 다시 보기
           </span>
+        </div>
       </div>
     )
   }
@@ -498,7 +405,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
   /* ════════════════════════════════════════════════════════ */
   if (coverUrl) {
     return (
-      <div className="relative group bg-surface-card text-txt-primary mb-6 border border-border shadow-md overflow-hidden rounded-2xl">
+      <div className="relative group bg-surface-card text-txt-primary mb-6 overflow-hidden rounded-2xl">
         {renderGuideRestart()}
 
         {/* Cover image */}
@@ -550,7 +457,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
   /* Variant B: no cover image                              */
   /* ════════════════════════════════════════════════════════ */
   return (
-    <div className="relative group bg-surface-card text-txt-primary p-5 pb-6 mb-6 border border-border shadow-md rounded-2xl">
+    <div className="relative group text-txt-primary p-5 pb-6 mb-2 rounded-2xl">
       {renderGuideRestart()}
 
       <div className="flex items-start gap-4 mb-4">

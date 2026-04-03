@@ -3,7 +3,7 @@ import type { Profile } from '@/components/profile/types'
 
 export function useProfileCompletion(profile: Profile | null | undefined) {
   return useMemo(() => {
-    const bio = (profile as Record<string, unknown> | null)?.bio as string | null
+    const bio = profile?.bio ?? null
     const skills = profile?.skills as Array<{ name: string; level: string }> | null
 
     const fields = [

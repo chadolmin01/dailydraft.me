@@ -29,6 +29,7 @@ export const metadata: Metadata = {
   keywords: ['팀빌딩', 'AI매칭', '사이드프로젝트', '팀원모집', '개발자', '디자이너', '기획자', '스타트업'],
   icons: {
     icon: [
+      { url: '/favicon.ico', sizes: '32x32', type: 'image/x-icon' },
       { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
       { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
       { url: '/icon-192x192.png', sizes: '192x192', type: 'image/png' },

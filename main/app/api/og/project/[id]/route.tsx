@@ -47,13 +47,30 @@ export async function GET(
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          backgroundColor: '#000000',
+          backgroundColor: '#0A0A0A',
           padding: '60px',
           fontFamily: 'sans-serif',
+          position: 'relative',
+          overflow: 'hidden',
         }}
       >
+        {/* Grid pattern — matches main OG */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            display: 'flex',
+            backgroundImage:
+              'linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)',
+            backgroundSize: '60px 60px',
+          }}
+        />
+
         {/* Top: Type badge */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', position: 'relative' }}>
           <div
             style={{
               fontSize: '14px',
@@ -84,7 +101,7 @@ export async function GET(
         </div>
 
         {/* Middle: Title + Description */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', position: 'relative' }}>
           <div
             style={{
               fontSize: '48px',
@@ -130,7 +147,7 @@ export async function GET(
         </div>
 
         {/* Bottom: Draft logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', position: 'relative' }}>
           <div
             style={{
               width: '40px',
@@ -141,13 +158,13 @@ export async function GET(
               justifyContent: 'center',
               fontWeight: 900,
               fontSize: '20px',
-              color: '#000000',
+              color: '#0A0A0A',
             }}
           >
             D
           </div>
-          <div style={{ fontSize: '20px', fontWeight: 700, color: 'rgba(255,255,255,0.5)' }}>
-            Draft
+          <div style={{ fontSize: '20px', fontWeight: 700, color: 'rgba(255,255,255,0.5)', letterSpacing: '-0.5px' }}>
+            Draft.
           </div>
         </div>
       </div>

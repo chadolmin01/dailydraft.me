@@ -197,7 +197,32 @@
       "Bash(mv:*)",
       "Bash(while read f)",
       "Bash(\"C:/project/Draft/main/.env.local\":*)",
-      "Bash(sed:*)"
+      "Bash(sed:*)",
+      "Bash(find C:\\\\project\\\\Draft\\\\main:*)",
+      "Bash(git diff:*)",
+      "Bash(grep \"\"version\"\":*)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(d.get\\(''type'',''unknown''\\)\\)\")",
+      "Read(//c/project/Draft/main/$APPDATA/gcloud/**)",
+      "Read(//c/project/Draft/main/$HOME/.config/gcloud/**)",
+      "Bash(python3:*)",
+      "Bash(gh run:*)",
+      "WebFetch(domain:dailydraft.me)",
+      "Bash(/tmp/explore_summary.txt:*)",
+      "Read(//tmp/**)",
+      "Bash(do curl:*)",
+      "Bash(du:*)",
+      "Bash(npm run:*)",
+      "Bash(diff:*)",
+      "Bash(do cp:*)",
+      "Bash(lsof main:*)",
+      "Bash(source:*)",
+      "Bash(set:*)",
+      "Bash(PYTHONIOENCODING=utf-8 browser-use state:*)",
+      "Bash(PYTHONIOENCODING=utf-8 browser-use screenshot:*)",
+      "Bash(gh:*)",
+      "Bash(do if:*)",
+      "Bash(xargs grep:*)",
+      "Bash(read f:*)"
     ]
   }
 }
