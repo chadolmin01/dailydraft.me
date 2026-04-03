@@ -51,7 +51,7 @@ export const SORT_OPTIONS = [
   { id: 'ai', label: 'AI 추천', icon: Sparkles, beta: false },
   { id: 'trending', label: '트렌딩', icon: Flame, beta: false },
   { id: 'latest', label: '최신', icon: Clock, beta: false },
-  { id: 'popular', label: '인���', icon: Star, beta: false },
+  { id: 'popular', label: '인기', icon: Star, beta: false },
 ] as const
 
 export const PEOPLE_SORT_OPTIONS = [

@@ -6,6 +6,7 @@ import { ChevronRight, Rocket, Sparkles, User } from 'lucide-react'
 import Link from 'next/link'
 import { useAuth } from '@/src/context/AuthContext'
 import { useProfile } from '@/src/hooks/useProfile'
+import { positionLabel } from '@/src/constants/roles'
 import { useProfileCompletion } from '@/src/hooks/useProfileCompletion'
 import { cleanNickname } from '@/src/lib/clean-nickname'
 import type { CategoryItem, TrendingTag, ActiveTab, TalentCard, UserRecommendation } from './types'
@@ -58,7 +59,7 @@ export function ExploreSidebar({
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold text-txt-primary truncate">{cleanNickname(profile.nickname || '') || '이름 미설정'}</p>
               <p className="text-[11px] text-txt-tertiary truncate">
-                {[profile.desired_position, profile.university].filter(Boolean).join(' · ') || '프로필을 완성해보세요'}
+                {[positionLabel(profile.desired_position || '') || profile.desired_position, profile.university].filter(Boolean).join(' · ') || '프로필을 완성해보세요'}
               </p>
             </div>
           </div>

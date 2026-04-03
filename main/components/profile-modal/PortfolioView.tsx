@@ -3,6 +3,7 @@ import {
   Globe, Github, Linkedin, Code2,
 } from 'lucide-react'
 import { cleanNickname } from '@/src/lib/clean-nickname'
+import { positionLabel } from '@/src/constants/roles'
 
 export function PortfolioView({
   profile,
@@ -35,7 +36,7 @@ export function PortfolioView({
           </div>
           <div>
             <p className="text-sm font-bold text-txt-primary">{cleanNickname(profile.nickname)}</p>
-            <p className="text-[10px] font-mono text-txt-tertiary">{profile.desired_position || 'Explorer'}</p>
+            <p className="text-[10px] font-mono text-txt-tertiary">{positionLabel(profile.desired_position || '') || 'Explorer'}</p>
           </div>
         </div>
       </div>

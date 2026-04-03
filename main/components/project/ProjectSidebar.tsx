@@ -7,6 +7,7 @@ import {
   Monitor, Camera, ArrowRight, Check, X as XIcon, Loader2,
 } from 'lucide-react'
 import { ProjectSidebarProps, linkIcons } from './types'
+import { positionLabel } from '@/src/constants/roles'
 
 const ROLE_ICON_MAP: Record<string, React.ElementType> = {
   '개발자': Code,
@@ -54,7 +55,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
             <div className="min-w-0">
               <p className="font-semibold text-txt-primary text-sm">{creator.nickname}</p>
               <p className="text-xs text-txt-disabled truncate">
-                {creator.desired_position || '메이커'}
+                {positionLabel(creator.desired_position || '') || '메이커'}
                 {creator.university && ` · ${creator.university}`}
               </p>
             </div>

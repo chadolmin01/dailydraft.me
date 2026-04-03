@@ -6,6 +6,7 @@ import { Users, Loader2, Calendar, Check, X, Coffee, User } from 'lucide-react'
 import { toast } from 'sonner'
 import { SkeletonFeed } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { positionLabel } from '@/src/constants/roles'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { timeAgo } from '@/src/lib/utils'
 
@@ -269,7 +270,7 @@ function ApplicationCard({
             )}
           </div>
           <p className="text-xs text-txt-disabled">
-            {profile?.desired_position || '포지션 미설정'}
+            {positionLabel(profile?.desired_position || '') || '포지션 미설정'}
             {' · '}
             {timeAgo(application.created_at)}
           </p>

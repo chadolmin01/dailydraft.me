@@ -28,6 +28,7 @@ import { supabase } from '@/src/lib/supabase/client'
 import { cleanNickname } from '@/src/lib/clean-nickname'
 import type { Profile } from './types'
 import { SITUATION_LABELS } from './types'
+import { positionLabel } from '@/src/constants/roles'
 import { EditableField } from './EditableField'
 
 /* ── ProfileHero ────────────────────────────────────────── */
@@ -211,7 +212,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
           onEdit={editField('desired_position')}
         />
       ) : (
-        <>{profile?.desired_position || '포지션 미설정'}</>
+        <>{positionLabel(profile?.desired_position || '') || '포지션 미설정'}</>
       )}
       {profile?.university && ` · ${profile.university}`}
     </p>

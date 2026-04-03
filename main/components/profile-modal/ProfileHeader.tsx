@@ -2,6 +2,7 @@ import Image from 'next/image'
 import { MapPin, Building2, Target } from 'lucide-react'
 import { cleanNickname } from '@/src/lib/clean-nickname'
 import { SITUATION_LABELS, AFFILIATION_LABELS, type MatchData } from './types'
+import { positionLabel } from '@/src/constants/roles'
 
 export function ProfileHeader({
   profile,
@@ -75,7 +76,7 @@ export function ProfileHeader({
               )}
             </div>
             <p className={`text-sm ${coverUrl ? 'text-white/80' : 'text-txt-tertiary'}`}>
-              {profile.desired_position || 'Explorer'}
+              {positionLabel(profile.desired_position || '') || 'Explorer'}
             </p>
             {profile.current_situation && (
               <span className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 text-[10px] font-mono font-bold bg-brand/15 text-brand border border-brand/30">

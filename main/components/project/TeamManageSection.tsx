@@ -6,6 +6,7 @@ import { Users, Loader2, UserMinus, UserPlus, ChevronDown, Mail, MessageCircle, 
 import { toast } from 'sonner'
 import { SkeletonFeed } from '@/components/ui/Skeleton'
 import { supabase } from '@/src/lib/supabase/client'
+import { positionLabel } from '@/src/constants/roles'
 import { useAuth } from '@/src/context/AuthContext'
 import { ROLE_OPTIONS } from '@/app/(dashboard)/projects/new/constants'
 
@@ -217,7 +218,7 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
                     {chat.profile?.nickname || chat.requester_name || '알 수 없음'}
                   </p>
                   <p className="text-xs text-txt-disabled truncate">
-                    {chat.profile?.desired_position || '포지션 미설정'}
+                    {positionLabel(chat.profile?.desired_position || '') || '포지션 미설정'}
                     {' · '}
                     {new Date(chat.created_at).toLocaleDateString('ko-KR')} 커피챗
                   </p>
@@ -343,7 +344,7 @@ function MemberCard({
             )}
           </div>
           <p className="text-xs text-txt-disabled">
-            {member.profile?.desired_position || '포지션 미설정'}
+            {positionLabel(member.profile?.desired_position || '') || '포지션 미설정'}
             {' · '}
             {new Date(member.connected_at).toLocaleDateString('ko-KR')} 합류
           </p>

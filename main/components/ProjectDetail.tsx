@@ -20,6 +20,7 @@ import { Modal } from '@/components/ui/Modal'
 import type { Opportunity } from '@/src/types/opportunity'
 import { UPDATE_TYPE_CONFIG } from '@/components/project/types'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { positionLabel } from '@/src/constants/roles'
 import { timeAgo } from '@/src/lib/utils'
 
 const TYPE_LABEL: Record<string, string> = {
@@ -541,7 +542,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                     <div>
                       <p className="font-bold text-txt-primary text-sm">{creator.nickname}</p>
                       <p className="text-xs text-txt-tertiary">
-                        {creator.desired_position || '메이커'}
+                        {positionLabel(creator.desired_position || '') || '메이커'}
                         {creator.university && ` · ${creator.university}`}
                       </p>
                     </div>
