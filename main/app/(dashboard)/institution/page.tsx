@@ -13,7 +13,6 @@ import {
   Briefcase,
   FileText,
   UserPlus,
-  Loader2,
   ShieldX,
   ArrowRight,
   BarChart3,
@@ -21,6 +20,7 @@ import {
   UserCheck,
   Handshake,
   Building2,
+  Send,
 } from 'lucide-react'
 
 export default function InstitutionDashboardPage() {
@@ -98,6 +98,12 @@ export default function InstitutionDashboardPage() {
       label: '활동 리포트',
       desc: '정부 평가용 현황 보고서 생성 & 내보내기',
       icon: Download,
+    },
+    {
+      href: '/institution/announce',
+      label: '전체 공지 발송',
+      desc: '소속 멤버 전체에게 이메일 공지 발송',
+      icon: Send,
     },
   ]
 

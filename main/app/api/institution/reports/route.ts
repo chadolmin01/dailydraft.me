@@ -88,13 +88,15 @@ export async function GET() {
     const plans = plansResult.data || []
     const recentJoins = recentJoinsResult.count || 0
 
-    // Get application counts for teams (depends on team IDs)
+    // Get application counts, activity metrics for teams (depends on team IDs)
     const opportunityIds = teams.map((t) => t.id)
     let applications: { opportunity_id: string }[] = []
     let teamMemberCounts: Record<string, number> = {}
+    let updateCounts: Record<string, number> = {}
+    let lastUpdateAt: Record<string, string> = {}
+    let coffeeChatCounts: Record<string, number> = {}
     if (opportunityIds.length > 0) {
-      // Also fetch team member counts via applications with status='accepted'
-      const [appResult, acceptedResult] = await Promise.all([
+      const [appResult, acceptedResult, updatesResult, coffeeChatsResult] = await Promise.all([
         supabase
           .from('applications')
           .select('opportunity_id')
@@ -104,11 +106,35 @@ export async function GET() {
           .select('opportunity_id')
           .in('opportunity_id', opportunityIds)
           .eq('status', 'accepted'),
+        supabase
+          .from('project_updates')
+          .select('opportunity_id, created_at')
+          .in('opportunity_id', opportunityIds)
+          .order('created_at', { ascending: false }),
+        supabase
+          .from('coffee_chats')
+          .select('opportunity_id')
+          .in('opportunity_id', opportunityIds),
       ])
       applications = appResult.data || []
 
       ;(acceptedResult.data || []).forEach((a) => {
         teamMemberCounts[a.opportunity_id] = (teamMemberCounts[a.opportunity_id] || 0) + 1
+      })
+
+      // Aggregate update counts and last update time
+      ;(updatesResult.data || []).forEach((u) => {
+        updateCounts[u.opportunity_id] = (updateCounts[u.opportunity_id] || 0) + 1
+        if (!lastUpdateAt[u.opportunity_id]) {
+          lastUpdateAt[u.opportunity_id] = u.created_at // already ordered desc
+        }
+      })
+
+      // Aggregate coffee chat counts
+      ;(coffeeChatsResult.data || []).forEach((c) => {
+        if (c.opportunity_id) {
+          coffeeChatCounts[c.opportunity_id] = (coffeeChatCounts[c.opportunity_id] || 0) + 1
+        }
       })
     }
 
@@ -148,6 +174,9 @@ export async function GET() {
       memberCount: (teamMemberCounts?.[t.id] || 0) + 1, // +1 for creator
       status: t.status,
       createdAt: t.created_at,
+      updateCount: updateCounts[t.id] || 0,
+      lastUpdateAt: lastUpdateAt[t.id] || null,
+      coffeeChatCount: coffeeChatCounts[t.id] || 0,
     }))
 
     return ApiResponse.ok({
