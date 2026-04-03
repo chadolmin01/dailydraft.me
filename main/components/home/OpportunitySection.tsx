@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { AnimatePresence } from 'framer-motion'
 import { Zap, ArrowRight, MessageCircle, Heart } from 'lucide-react'
 import { SkeletonGrid } from '@/components/ui/Skeleton'
 import { useOpportunities } from '@/src/hooks/useOpportunities'
@@ -194,12 +195,15 @@ export const OpportunitySection: React.FC = () => {
         </ScrollReveal>
       </div>
 
-      {selectedProjectId && (
-        <ProjectDetailModal
-          projectId={selectedProjectId}
-          onClose={() => setSelectedProjectId(null)}
-        />
-      )}
+      <AnimatePresence>
+        {selectedProjectId && (
+          <ProjectDetailModal
+            key="project-modal"
+            projectId={selectedProjectId}
+            onClose={() => setSelectedProjectId(null)}
+          />
+        )}
+      </AnimatePresence>
     </section>
   )
 }

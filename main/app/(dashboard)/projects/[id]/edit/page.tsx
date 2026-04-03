@@ -12,6 +12,7 @@ import { getCroppedImg, ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE, uploadImagesToSupab
 import { ImageUploadSection } from '../../new/components/ImageUploadSection'
 import { CropModal } from '../../new/components/CropModal'
 import { ProjectInfoSidebar } from '../../new/components/ProjectInfoSidebar'
+import { AnimatedChip } from '../../new/components/AnimatedChip'
 import { TeamManageSection } from '@/components/project/TeamManageSection'
 
 export default function EditProjectPage() {
@@ -143,23 +144,19 @@ function EditProjectContent() {
     }
   }
 
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || [])
-    const totalImages = imagePreviews.length
-    const remaining = 5 - totalImages
+  const processFiles = useCallback((files: File[]) => {
+    const remaining = 5 - imagePreviews.length
     const toAdd = files.slice(0, remaining)
     if (toAdd.length === 0) return
 
     const invalid = toAdd.filter(f => !ALLOWED_IMAGE_TYPES.includes(f.type))
     if (invalid.length > 0) {
       setError(`JPG, PNG, WebP, GIF만 업로드 가능합니다`)
-      e.target.value = ''
       return
     }
     const tooLarge = toAdd.filter(f => f.size > MAX_IMAGE_SIZE)
     if (tooLarge.length > 0) {
       setError(`5MB 이하 파일만 업로드 가능합니다`)
-      e.target.value = ''
       return
     }
     setError('')
@@ -171,8 +168,16 @@ function EditProjectContent() {
     setCrop({ x: 0, y: 0 })
     setZoom(1)
     setCroppedAreaPixels(null)
+  }, [imagePreviews.length])
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    processFiles(Array.from(e.target.files || []))
     e.target.value = ''
   }
+
+  const handleDropFiles = useCallback((files: File[]) => {
+    processFiles(files)
+  }, [processFiles])
 
   const handleCropConfirm = async () => {
     if (!cropSrc || !croppedAreaPixels) return
@@ -334,59 +339,55 @@ function EditProjectContent() {
       <div className="max-w-4xl mx-auto px-4 py-2 md:py-4">
 
         {/* ─── Tab Bar ─── */}
-        <div className="bg-surface-card rounded-xl border border-border border-b-0 shadow-md">
-          <div className="px-3 sm:px-5 py-2.5 flex items-center justify-between">
-            <div className="flex items-center gap-3">
+        <div className="bg-surface-card rounded-t-xl border border-border-subtle border-b-0 shadow-sm">
+          <div className="px-3 sm:px-5 py-3 grid grid-cols-3 items-center">
+            <div>
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="hidden sm:flex items-center gap-1 text-xs text-txt-tertiary hover:text-txt-secondary transition-colors"
+                className="hidden sm:inline-flex items-center gap-1.5 text-xs text-txt-tertiary hover:text-txt-primary transition-colors"
               >
                 <ArrowLeft size={14} />
                 <span>돌아가기</span>
               </button>
-              <div className="w-px h-3 bg-border hidden sm:block" />
-              <div className="flex items-center gap-1.5 hidden sm:flex">
-                <div className="w-2.5 h-2.5 bg-[#FF5F57]" />
-                <div className="w-2.5 h-2.5 bg-[#FEBC2E]" />
-                <div className="w-2.5 h-2.5 bg-[#28C840]" />
+            </div>
+
+            <div className="flex items-center justify-center">
+              <div className="inline-flex items-center gap-0.5 bg-surface-sunken rounded-xl p-0.5">
+                <button
+                  type="button"
+                  onClick={() => setTab('info')}
+                  className={`text-[10px] font-medium px-3 py-1.5 rounded-lg transition-all ${
+                    tab === 'info'
+                      ? 'bg-surface-inverse text-txt-inverse'
+                      : 'text-txt-tertiary hover:text-txt-secondary'
+                  }`}
+                >
+                  프로젝트 정보
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTab('team')}
+                  className={`text-[10px] font-medium px-3 py-1.5 rounded-lg transition-all ${
+                    tab === 'team'
+                      ? 'bg-surface-inverse text-txt-inverse'
+                      : 'text-txt-tertiary hover:text-txt-secondary'
+                  }`}
+                >
+                  팀 관리
+                </button>
               </div>
             </div>
 
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={() => setTab('info')}
-                className={`text-[10px] font-medium px-3 py-1.5 transition-colors ${
-                  tab === 'info'
-                    ? 'bg-surface-inverse text-txt-inverse'
-                    : 'bg-surface-sunken text-txt-tertiary hover:text-txt-secondary'
-                }`}
-              >
-                프로젝트 정보
-              </button>
-              <button
-                type="button"
-                onClick={() => setTab('team')}
-                className={`text-[10px] font-medium px-3 py-1.5 transition-colors ${
-                  tab === 'team'
-                    ? 'bg-surface-inverse text-txt-inverse'
-                    : 'bg-surface-sunken text-txt-tertiary hover:text-txt-secondary'
-                }`}
-              >
-                팀 관리
-              </button>
-            </div>
-
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-end gap-2">
               {lastSavedAt && (
-                <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-mono text-status-success-text bg-status-success-bg border border-status-success-text/20">
+                <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-mono rounded-full text-status-success-text bg-status-success-bg border border-status-success-text/20">
                   <Check size={9} />
                   {lastSavedAt.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })} 저장됨
                 </span>
               )}
-              <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold transition-colors ${theme.status}`}>
-                <span className={`w-1.5 h-1.5 animate-pulse ${theme.statusDot}`} />
+              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-medium rounded-full transition-colors ${theme.status}`}>
+                <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${theme.statusDot}`} />
                 수정 중
               </span>
             </div>
@@ -395,23 +396,29 @@ function EditProjectContent() {
 
         {/* ─── Tab: Info ─── */}
         {tab === 'info' && (
-          <form onSubmit={handleSubmit} className="bg-surface-card shadow-md overflow-hidden border border-border border-t-0">
+          <form onSubmit={handleSubmit} className="bg-surface-card shadow-sm overflow-hidden border border-border-subtle border-t-0 rounded-b-xl">
 
             {/* Type selector */}
-            <div className="bg-surface-sunken border-b-2 border-border px-3 sm:px-5 py-2.5 flex items-center justify-center">
-              <div className="flex items-center gap-1">
+            <div className="border-b border-border-subtle px-3 sm:px-5 py-3 flex items-center justify-center">
+              <div className="relative inline-flex items-center gap-0.5 bg-surface-sunken rounded-xl p-0.5">
+                {/* Sliding background */}
+                <div
+                  className={`absolute top-0.5 bottom-0.5 rounded-lg transition-all duration-300 ${TYPE_THEMES[type].slidingBg}`}
+                  style={{
+                    width: `calc((100% - 4px) / ${TYPE_OPTIONS.length})`,
+                    left: `calc(${TYPE_OPTIONS.findIndex(o => o.value === type)} * (100% - 4px) / ${TYPE_OPTIONS.length} + 2px)`,
+                  }}
+                />
                 {TYPE_OPTIONS.map(opt => (
                   <button
                     key={opt.value}
                     type="button"
                     onClick={() => setType(opt.value)}
-                    className={`text-[10px] font-medium px-2.5 py-1 transition-colors ${
-                      type === opt.value
-                        ? TYPE_THEMES[opt.value].badge
-                        : 'bg-surface-sunken text-txt-tertiary hover:text-txt-secondary'
-                    }`}
+                    className="relative z-10 flex-1 text-[10px] font-medium px-2.5 py-1 rounded-lg transition-colors"
                   >
-                    {opt.label}
+                    <span className={`relative ${type === opt.value ? 'text-txt-inverse' : 'text-txt-tertiary hover:text-txt-secondary'}`}>
+                      {opt.label}
+                    </span>
                   </button>
                 ))}
               </div>
@@ -419,8 +426,8 @@ function EditProjectContent() {
 
             {/* Error Banner */}
             {error && (
-              <div className="px-4 sm:px-8 pt-3">
-                <div className="flex items-center gap-2 px-3 py-2 bg-status-danger-bg border border-status-danger-text/20 text-status-danger-text text-xs">
+              <div key={error} className="px-4 sm:px-8 pt-3 animate-fade-in error-shake">
+                <div className="flex items-center gap-2 px-3 py-2 bg-status-danger-bg border border-status-danger-text/20 rounded-lg text-status-danger-text text-xs">
                   <AlertCircle size={13} className="shrink-0" />
                   <span>{error}</span>
                   <button type="button" onClick={() => setError('')} className="ml-auto hover:opacity-70">
@@ -438,6 +445,7 @@ function EditProjectContent() {
                 onImageSelect={handleImageSelect}
                 onRemoveImage={removeImage}
                 onSetAsMain={setAsMain}
+                onDropFiles={handleDropFiles}
               />
             </div>
 
@@ -453,23 +461,19 @@ function EditProjectContent() {
               />
               <div className="flex flex-wrap gap-1.5 mt-4">
                 {CATEGORY_TAGS.map(tag => (
-                  <button
+                  <AnimatedChip
                     key={tag}
-                    type="button"
-                    onClick={() => toggleTag(tag)}
-                    className={`px-2.5 py-1 text-xs border transition-colors ${
-                      selectedTags.includes(tag)
-                        ? theme.chipOn
-                        : 'bg-surface-sunken text-txt-secondary border-border-subtle hover:border-border hover:text-txt-primary'
-                    }`}
-                  >
-                    {tag}
-                  </button>
+                    label={tag}
+                    selected={selectedTags.includes(tag)}
+                    onToggle={() => toggleTag(tag)}
+                    selectedClass={theme.chipOn}
+                    unselectedClass="bg-surface-sunken text-txt-secondary border-border-subtle hover:border-border hover:text-txt-primary"
+                  />
                 ))}
               </div>
             </div>
 
-            <div className="mx-4 sm:mx-8 border-t border-border" />
+            <div className="mx-4 sm:mx-8 border-t border-border-subtle" />
 
             {/* Body: 2-Column */}
             <div className="px-4 sm:px-8 py-5 sm:py-6">
@@ -488,7 +492,7 @@ function EditProjectContent() {
                         type="button"
                         onClick={generateDescription}
                         disabled={aiLoading || !title.trim()}
-                        className="flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-medium border border-border text-txt-secondary hover:border-border hover:text-txt-primary transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-medium border border-border-subtle rounded-lg text-txt-secondary hover:border-brand/30 hover:text-txt-primary transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                       >
                         {aiLoading ? (
                           <><Loader2 size={10} className="animate-spin" /> 생성 중...</>
@@ -503,13 +507,25 @@ function EditProjectContent() {
                       placeholder={theme.descPlaceholder}
                       rows={7}
                       maxLength={2000}
-                      className="w-full text-base sm:text-sm text-txt-secondary leading-[1.8] placeholder:text-txt-disabled border border-border p-3 focus:outline-none focus:border-surface-inverse resize-none bg-transparent"
+                      className="w-full text-base sm:text-sm text-txt-secondary leading-[1.8] placeholder:text-txt-disabled border border-border-subtle rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-brand/10 focus:border-brand resize-none bg-transparent transition-all"
                     />
-                    <p className="text-[10px] text-txt-disabled mt-1 text-right font-mono">{description.length}/2000</p>
+                    <div className="mt-1.5 flex items-center gap-3">
+                      <div className="flex-1 h-1 bg-surface-sunken rounded-full overflow-hidden">
+                        <div
+                          className={`h-full rounded-full progress-bar-spring ${
+                            description.length >= 1800 ? 'bg-status-danger-text' :
+                            description.length >= 1500 ? 'bg-status-warning-text' :
+                            description.length >= 20 ? 'bg-brand' : 'bg-txt-disabled/30'
+                          }`}
+                          style={{ width: `${Math.min((description.length / 2000) * 100, 100)}%` }}
+                        />
+                      </div>
+                      <p className={`text-[10px] font-mono shrink-0 ${description.length >= 1800 ? 'text-status-danger-text font-bold' : description.length >= 1500 ? 'text-status-warning-text' : 'text-txt-disabled'}`}>{description.length}/2000</p>
+                    </div>
                   </section>
 
                   {/* Pain Point */}
-                  <section className={`p-4 border border-border-subtle transition-colors ${theme.painBg}`}>
+                  <section className={`p-4 border border-border-subtle rounded-xl transition-colors ${theme.painBg}`}>
                     <h3 className="text-[10px] font-medium text-txt-tertiary mb-2">
                       {theme.painLabel}
                     </h3>
@@ -536,7 +552,7 @@ function EditProjectContent() {
                             value={link.label}
                             onChange={(e) => updateLink(idx, 'label', e.target.value)}
                             placeholder="이름"
-                            className="px-3 py-2 border border-border text-base sm:text-sm focus:outline-none focus:border-border w-1/3 bg-transparent"
+                            className="px-3 py-2 border border-border-subtle rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand/10 focus:border-brand w-1/3 bg-transparent transition-all"
                           />
                           <input
                             type="url"
@@ -544,7 +560,7 @@ function EditProjectContent() {
                             onChange={(e) => updateLink(idx, 'url', e.target.value)}
                             placeholder="https://..."
                             inputMode="url"
-                            className="px-3 py-2 border border-border text-base sm:text-sm focus:outline-none focus:border-border flex-1 bg-transparent"
+                            className="px-3 py-2 border border-border-subtle rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand/10 focus:border-brand flex-1 bg-transparent transition-all"
                           />
                           <button
                             type="button"
@@ -586,19 +602,19 @@ function EditProjectContent() {
                   />
 
                   {/* Delete */}
-                  <div className="border border-status-danger-text/20 p-4">
+                  <div className="border border-status-danger-text/20 rounded-xl p-4">
                     <h3 className="text-[10px] font-medium text-status-danger-text mb-2">
                       위험 영역
                     </h3>
                     {showDeleteConfirm ? (
-                      <div className="space-y-2">
+                      <div className="space-y-2 animate-fade-in">
                         <p className="text-xs text-txt-secondary">정말 이 프로젝트를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.</p>
                         <div className="flex gap-2">
                           <button
                             type="button"
                             onClick={handleDelete}
                             disabled={deleteOpportunity.isPending}
-                            className="flex-1 py-2 bg-status-danger-text text-white text-xs font-bold hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-1.5"
+                            className="flex-1 py-2 bg-status-danger-text text-white text-xs font-bold rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-1.5 active:scale-[0.95]"
                           >
                             {deleteOpportunity.isPending ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}
                             삭제 확인
@@ -606,7 +622,7 @@ function EditProjectContent() {
                           <button
                             type="button"
                             onClick={() => setShowDeleteConfirm(false)}
-                            className="flex-1 py-2 border border-border text-txt-secondary text-xs font-bold hover:bg-surface-sunken transition-colors"
+                            className="flex-1 py-2 border border-border text-txt-secondary text-xs font-bold rounded-lg hover:bg-surface-sunken transition-colors active:scale-[0.95]"
                           >
                             취소
                           </button>
@@ -616,7 +632,7 @@ function EditProjectContent() {
                       <button
                         type="button"
                         onClick={() => setShowDeleteConfirm(true)}
-                        className="w-full py-2 border border-status-danger-text/30 text-status-danger-text text-xs font-medium hover:bg-status-danger-bg transition-colors flex items-center justify-center gap-1.5"
+                        className="w-full py-2 border border-status-danger-text/30 text-status-danger-text text-xs font-medium rounded-lg hover:bg-status-danger-bg transition-colors flex items-center justify-center gap-1.5 active:scale-[0.97]"
                       >
                         <Trash2 size={12} />
                         프로젝트 삭제
@@ -628,19 +644,22 @@ function EditProjectContent() {
             </div>
 
             {/* Mobile Footer */}
-            <div className="md:hidden px-4 py-4 bg-surface-card border-t-2 border-border">
+            <div className="md:hidden px-4 py-4 bg-surface-card border-t border-border-subtle">
               <button
                 type="submit"
                 disabled={updateOpportunity.isPending || imageUploading}
-                className={`w-full h-12 font-bold text-sm flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${theme.mobileBtn}`}
+                className={`group/mob relative w-full h-12 font-bold text-sm rounded-xl flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden active:scale-[0.97] ${theme.mobileBtn}`}
               >
-                {imageUploading ? (
-                  <><Loader2 size={14} className="animate-spin" /> 이미지 업로드 중...</>
-                ) : updateOpportunity.isPending ? (
-                  <><Loader2 size={14} className="animate-spin" /> 저장 중...</>
-                ) : (
-                  <><Save size={14} /> 변경사항 저장</>
-                )}
+                <span className="absolute inset-0 -translate-x-full group-hover/mob:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/15 to-transparent" />
+                <span className="relative flex items-center gap-2">
+                  {imageUploading ? (
+                    <><Loader2 size={14} className="animate-spin" /> 이미지 업로드 중...</>
+                  ) : updateOpportunity.isPending ? (
+                    <><Loader2 size={14} className="animate-spin" /> 저장 중...</>
+                  ) : (
+                    <><Save size={14} /> 변경사항 저장</>
+                  )}
+                </span>
               </button>
             </div>
           </form>
@@ -648,7 +667,7 @@ function EditProjectContent() {
 
         {/* ─── Tab: Team ─── */}
         {tab === 'team' && (
-          <div className="bg-surface-card shadow-md overflow-hidden border border-border border-t-0">
+          <div className="bg-surface-card shadow-sm overflow-hidden border border-border-subtle border-t-0 rounded-b-xl">
             <TeamManageSection opportunityId={id} />
           </div>
         )}

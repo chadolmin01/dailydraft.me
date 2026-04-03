@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import { AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import {
@@ -186,12 +187,15 @@ export default function MyProjectsPage() {
         )}
       </div>
 
-      {selectedProjectId && (
-        <ProjectDetailModal
-          projectId={selectedProjectId}
-          onClose={() => setSelectedProjectId(null)}
-        />
-      )}
+      <AnimatePresence>
+        {selectedProjectId && (
+          <ProjectDetailModal
+            key="project-modal"
+            projectId={selectedProjectId}
+            onClose={() => setSelectedProjectId(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   )
 }

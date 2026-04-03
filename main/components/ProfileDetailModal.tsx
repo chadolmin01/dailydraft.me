@@ -34,6 +34,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
   const [hasInterested, setHasInterested] = useState(false)
   const [interestCount, setInterestCount] = useState(0)
   const [interestLoading, setInterestLoading] = useState(false)
+  useBackHandler(!!profileId, onClose, 'profile-detail')
   useBackHandler(showCoffeeChatForm, () => setShowCoffeeChatForm(false), 'profile-coffee')
   useBackHandler(showInviteModal, () => setShowInviteModal(false), 'profile-invite')
   useBackHandler(!!sidePanel, () => setSidePanel(null), 'profile-side')
@@ -188,6 +189,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
         transition={{ duration: 0.2 }}
         onClick={onClose}
         className="fixed inset-0 bg-black/60 backdrop-blur-md z-modal-backdrop"
@@ -197,7 +199,8 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
       <motion.div
         initial={isMobile ? { opacity: 1, y: '100%' } : { opacity: 0, scale: 0.95, y: 20 }}
         animate={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+        exit={isMobile ? { opacity: 1, y: '100%' } : { opacity: 0, scale: 0.95, y: 20 }}
+        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
         className="fixed inset-0 z-modal flex items-end sm:items-center justify-center pt-6 px-0 pb-[env(safe-area-inset-bottom)] sm:p-4 md:p-8"
         onClick={onClose}
       >
@@ -209,7 +212,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
               aria-label={profile?.nickname || '프로필'}
             >
             {/* Main modal */}
-            <div ref={sheetRef} className={`modal-glass rounded-t-2xl sm:rounded-2xl overflow-hidden flex flex-col relative transition-all duration-300 ${sidePanel ? 'w-full sm:w-3/5' : 'w-full'}`}>
+            <div ref={sheetRef} className={`modal-glass rounded-t-2xl overflow-hidden flex flex-col relative transition-all duration-300 ${sidePanel ? 'w-full sm:w-3/5' : 'w-full'}`}>
               {/* Mobile drag handle */}
               <div
                 className="sm:hidden flex justify-center pt-2 pb-0.5 touch-none cursor-grab active:cursor-grabbing"

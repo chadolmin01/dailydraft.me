@@ -63,18 +63,20 @@ export const Modal: React.FC<ModalProps> = ({
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [isOpen, handleKeyDown])
 
-  if (!isOpen) return null
-
   return (
     <div
-      className="fixed inset-0 z-modal-backdrop flex items-end sm:items-center justify-center p-0 pt-6 sm:p-4"
+      className={cn(
+        'fixed inset-0 z-modal-backdrop flex items-end sm:items-center justify-center p-0 pt-6 sm:p-4',
+        'transition-opacity duration-200',
+        isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+      )}
       role="dialog"
       aria-modal="true"
       aria-label={title}
     >
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-surface-inverse/40 backdrop-blur-sm"
+        className="absolute inset-0 bg-surface-inverse/40 backdrop-blur-sm transition-opacity duration-200"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -86,7 +88,10 @@ export const Modal: React.FC<ModalProps> = ({
         className={cn(
           'relative z-modal bg-surface-elevated w-full shadow-lg border border-border rounded-t-xl sm:rounded-xl',
           'pb-[max(1rem,env(safe-area-inset-bottom,1rem))] sm:pb-0',
-          'animate-in fade-in zoom-in-95 duration-200',
+          'transition-all duration-200',
+          isOpen
+            ? 'opacity-100 scale-100 translate-y-0'
+            : 'opacity-0 scale-95 translate-y-2',
           sizeMap[size],
           className
         )}

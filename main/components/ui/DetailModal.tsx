@@ -10,7 +10,6 @@ import {
   ArrowUpRight,
   Share2,
   Bookmark,
-  CheckCircle2,
   Briefcase,
   Cpu,
   FileText,
@@ -19,7 +18,8 @@ import {
   Download,
 } from 'lucide-react'
 import { Opportunity } from '@/types'
-import { useBackHandler } from '@/src/hooks/useBackHandler'
+import { Modal } from './Modal'
+import { Button } from './Button'
 
 interface DetailModalProps {
   isOpen: boolean
@@ -29,37 +29,16 @@ interface DetailModalProps {
 
 export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data }) => {
   const [activeTab, setActiveTab] = useState<'details' | 'analysis'>('details')
-  useBackHandler(isOpen, onClose, 'detail')
 
   // Reset tab when modal opens/changes
   useEffect(() => {
     if (isOpen) setActiveTab('details')
   }, [isOpen, data])
 
-  // Prevent background scrolling
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = 'unset'
-    }
-    return () => {
-      document.body.style.overflow = 'unset'
-    }
-  }, [isOpen])
-
-  if (!isOpen || !data) return null
+  if (!data) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
-        onClick={onClose}
-      ></div>
-
-      {/* Modal Content */}
-      <div className="relative bg-surface-card w-full max-w-4xl h-[85vh] border border-border shadow-lg flex flex-col overflow-hidden animate-[scale-in_0.2s_ease-out]">
+    <Modal isOpen={isOpen} onClose={onClose} size="xl" showClose={false} className="bg-surface-card h-[85vh] flex flex-col overflow-hidden">
         {/* Header */}
         <div className="bg-surface-card border-b border-border sticky top-0 z-10 shrink-0">
           <div className="flex justify-between items-start p-6 pb-4">
@@ -214,16 +193,16 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
             {/* Sidebar */}
             <div className="w-full md:w-80 bg-surface-sunken border-l border-border p-6 md:p-8 space-y-6 flex flex-col h-full overflow-y-auto custom-scrollbar">
               <div className="space-y-3">
-                <button className="w-full bg-brand text-white py-3 rounded-xl text-sm font-bold hover:bg-brand-hover transition-all hover:opacity-90 active:scale-[0.97] flex items-center justify-center gap-2 border border-brand">
+                <Button variant="blue" fullWidth className="py-3">
                   Apply Now <ArrowUpRight size={16} />
-                </button>
+                </Button>
                 <div className="flex gap-2">
-                  <button className="flex-1 bg-surface-card rounded-lg border border-border py-2.5 text-xs font-bold hover:bg-black hover:text-white transition-all flex items-center justify-center gap-2">
+                  <Button variant="secondary" size="sm" fullWidth>
                     <Bookmark size={14} /> Save
-                  </button>
-                  <button className="flex-1 bg-surface-card rounded-lg border border-border py-2.5 text-xs font-bold hover:bg-black hover:text-white transition-all flex items-center justify-center gap-2">
+                  </Button>
+                  <Button variant="secondary" size="sm" fullWidth>
                     <Share2 size={14} /> Share
-                  </button>
+                  </Button>
                 </div>
               </div>
 
@@ -273,15 +252,14 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
             </div>
           </div>
         </div>
-      </div>
-    </div>
+    </Modal>
   )
 }
 
 const MetricBar = ({
   label,
   score,
-  color = 'bg-draft-blue',
+  color = 'bg-brand',
 }: {
   label: string
   score: number

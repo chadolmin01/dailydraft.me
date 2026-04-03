@@ -81,36 +81,36 @@ export const Dashboard: React.FC = () => {
       case 'PROJECT':
         return {
           variant: 'solid' as const,
-          cardClass: 'bg-[#222222] border border-[#333] hover:border-white/40 text-white',
+          cardClass: 'bg-surface-inverse border border-border-strong hover:border-white/40 text-white',
           badgeClass: 'bg-white text-black border-transparent',
           textClass: 'text-white',
           subTextClass: 'text-white/50',
           organizationClass: 'text-white/60',
-          fitBadgeClass: 'bg-[#333] border-[#444] text-white',
+          fitBadgeClass: 'bg-border-strong border-border-strong text-white',
           icon: <Rocket size={10} />,
           text: 'PROJECT'
         }
       case 'PROGRAM':
         return {
           variant: 'solid' as const,
-          cardClass: 'bg-[#0052CC] border border-brand hover:border-brand-hover text-white',
-          badgeClass: 'bg-white text-[#0052CC] border-transparent shadow-sm',
+          cardClass: 'bg-brand border border-brand hover:border-brand-hover text-white',
+          badgeClass: 'bg-white text-brand border-transparent shadow-sm',
           textClass: 'text-white',
           subTextClass: 'text-brand-border',
           organizationClass: 'text-brand-bg',
-          fitBadgeClass: 'bg-white text-[#0052CC] border-status-info-text/20',
+          fitBadgeClass: 'bg-white text-brand border-status-info-text/20',
           icon: <Landmark size={10} />,
           text: 'PROGRAM'
         }
       case 'TALENT':
         return {
           variant: 'solid' as const,
-          cardClass: 'bg-[#059669] border border-emerald-600 hover:border-emerald-400 text-white',
-          badgeClass: 'bg-white text-[#059669] border-transparent shadow-sm',
+          cardClass: 'bg-status-success-text border border-status-success-text hover:border-status-success-text/60 text-white',
+          badgeClass: 'bg-white text-status-success-text border-transparent shadow-sm',
           textClass: 'text-white',
-          subTextClass: 'text-emerald-200',
-          organizationClass: 'text-emerald-100',
-          fitBadgeClass: 'bg-white text-[#059669] border-emerald-200',
+          subTextClass: 'text-status-success-text/40',
+          organizationClass: 'text-status-success-text/30',
+          fitBadgeClass: 'bg-white text-status-success-text border-status-success-text/30',
           icon: <User size={10} />,
           text: 'TALENT'
         }

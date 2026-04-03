@@ -60,35 +60,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Initialize auth state
   useEffect(() => {
     let mounted = true
-    let steps = 0
-    const markStep = () => {
-      steps++
-      // Only finish loading after BOTH getSession and getUser complete
-      if (steps >= 2 && mounted) setIsLoading(false)
-    }
+    let profileFetched = false
 
-    // Step 1: Fast path — read local session (no network, instant)
+    // Fast path: read local session from cookies/cache (usually instant)
+    // Provides early user state before the server round-trip completes
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!mounted) return
       if (session?.user) {
         setUser(session.user)
-        // Fetch profile in background — UI already shows auth state
+        profileFetched = true
         fetchProfile(session.user.id)
           .then(p => { if (mounted) setProfile(p) })
           .catch(() => { if (mounted) setProfile(null) })
       }
-    }).catch(() => {}).finally(markStep)
+    }).catch(() => {})
 
-    // Step 2: Background — validate with server (handles expired tokens)
+    // Authoritative validation: server round-trip
+    // Always trust the server response — getSession() may return null
+    // due to timing issues with Supabase client initialization
     supabase.auth.getUser().then(({ data: { user: serverUser }, error }) => {
       if (!mounted) return
       if (error || !serverUser) {
-        // Server says invalid — clear state
         setUser(null)
         setProfile(null)
+      } else {
+        setUser(serverUser)
+        if (!profileFetched) {
+          fetchProfile(serverUser.id)
+            .then(p => { if (mounted) setProfile(p) })
+            .catch(() => { if (mounted) setProfile(null) })
+        }
       }
-      // If valid, getSession already set the correct user
-    }).catch(() => {}).finally(markStep)
+    }).catch(() => {}).finally(() => {
+      if (mounted) setIsLoading(false)
+    })
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(

@@ -628,6 +628,30 @@ a[class*="px-"]:active {
   animation: iconBounce 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+/* ── Error Shake ── */
+@keyframes errorShake {
+  0%   { transform: translateX(0); }
+  15%  { transform: translateX(-6px); }
+  30%  { transform: translateX(6px); }
+  45%  { transform: translateX(-4px); }
+  60%  { transform: translateX(4px); }
+  100% { transform: translateX(0); }
+}
+.error-shake { animation: errorShake 0.4s ease-out; }
+
+/* ── Chip/Role Bounce (click feedback) ── */
+@keyframes chipBounce {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+.chip-bounce { animation: chipBounce 0.2s ease-out; }
+
+/* ── Progress Bar Spring ── */
+.progress-bar-spring {
+  transition: width 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
 /* ── Bell Swing (empty notifications) ── */
 @keyframes bellSwing {
   0%, 100% { transform: rotate(0deg); }

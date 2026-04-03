@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react'
 import dynamic from 'next/dynamic'
+import { AnimatePresence } from 'framer-motion'
 import { LayoutGrid, Users, Sparkles } from 'lucide-react'
 import { toast } from 'sonner'
 import Link from 'next/link'
@@ -584,29 +585,34 @@ function ExplorePageContent() {
         )}
       </DashboardLayout>
 
-      {selectedProjectId && (
-        <ProjectDetailModal
-          projectId={selectedProjectId}
-          onClose={() => setSelectedProjectId(null)}
-        />
-      )}
+      <AnimatePresence>
+        {selectedProjectId && (
+          <ProjectDetailModal
+            key="project-modal"
+            projectId={selectedProjectId}
+            onClose={() => setSelectedProjectId(null)}
+          />
+        )}
+      </AnimatePresence>
 
-      {selectedProfileId && (
-        <ProfileDetailModal
-          key={selectedProfileId}
-          profileId={selectedProfileId}
-          byUserId={profileByUserId}
-          matchData={selectedMatchData}
-          onClose={() => { setSelectedProfileId(null); setProfileByUserId(false); setInitialCoffeeChatOpen(false); setInitialCoffeeChatMessage(undefined) }}
-          onSelectProject={(projectId) => {
-            setSelectedProfileId(null)
-            setProfileByUserId(false)
-            setSelectedProjectId(projectId)
-          }}
-          initialCoffeeChatOpen={initialCoffeeChatOpen}
-          initialCoffeeChatMessage={initialCoffeeChatMessage}
-        />
-      )}
+      <AnimatePresence>
+        {selectedProfileId && (
+          <ProfileDetailModal
+            key="profile-modal"
+            profileId={selectedProfileId}
+            byUserId={profileByUserId}
+            matchData={selectedMatchData}
+            onClose={() => { setSelectedProfileId(null); setProfileByUserId(false); setInitialCoffeeChatOpen(false); setInitialCoffeeChatMessage(undefined) }}
+            onSelectProject={(projectId) => {
+              setSelectedProfileId(null)
+              setProfileByUserId(false)
+              setSelectedProjectId(projectId)
+            }}
+            initialCoffeeChatOpen={initialCoffeeChatOpen}
+            initialCoffeeChatMessage={initialCoffeeChatMessage}
+          />
+        )}
+      </AnimatePresence>
     </div>
   )
 }

@@ -2,6 +2,8 @@
 
 import React, { useState, useCallback, useRef } from 'react'
 import { X, FileUp, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react'
+import { Modal } from './Modal'
+import { Button } from './Button'
 
 export interface StructuredIdea {
   problem: string
@@ -166,190 +168,171 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
     onClose()
   }
 
-  if (!isOpen) return null
-
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <div
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-        onClick={handleClose}
-      />
+    <Modal isOpen={isOpen} onClose={handleClose} showClose={false} className="max-w-lg bg-surface-card overflow-hidden max-h-[85vh] flex flex-col">
+      {/* Header */}
+      <div className="flex items-center justify-between p-6 pb-0 shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-surface-inverse flex items-center justify-center text-txt-inverse shadow-sm">
+            <FileUp size={18} />
+          </div>
+          <div>
+            <h2 className="font-bold text-lg text-txt-primary">{current.title}</h2>
+            <p className="text-sm text-txt-tertiary">{current.description}</p>
+          </div>
+        </div>
+        <button
+          onClick={handleClose}
+          className="p-2 hover:bg-surface-sunken transition-colors border border-transparent hover:border-border"
+        >
+          <X size={18} className="text-txt-tertiary" />
+        </button>
+      </div>
 
-      <div className="relative bg-surface-card w-full max-w-lg border border-border shadow-lg overflow-hidden max-h-[85vh] flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 pb-0 shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-black flex items-center justify-center text-white shadow-sm">
-              <FileUp size={18} />
+      {/* Content */}
+      <div className="p-6 overflow-y-auto flex-1">
+        {/* Processing Step */}
+        {step === 'processing' && (
+          <div className="flex flex-col items-center justify-center py-16">
+            <div className="relative mb-6">
+              <div className="w-14 h-14 border-[3px] border-border-subtle" />
+              <div className="absolute inset-0 w-14 h-14 border-[3px] border-border border-t-transparent animate-spin" />
             </div>
-            <div>
-              <h2 className="font-bold text-lg text-txt-primary">{current.title}</h2>
-              <p className="text-sm text-txt-tertiary">{current.description}</p>
+            <p className="text-sm font-medium text-txt-primary mb-1">{processingStatus}</p>
+            <p className="text-xs text-txt-tertiary">잠시만 기다려주세요</p>
+          </div>
+        )}
+
+        {/* Upload Step */}
+        {step === 'upload' && (
+          <div
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            onClick={() => fileInputRef.current?.click()}
+            className={`
+              relative p-12 border text-center cursor-pointer transition-all duration-200
+              ${isDragging
+                ? 'border-border bg-surface-sunken'
+                : 'border-border hover:border-border hover:bg-surface-sunken'
+              }
+            `}
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf,.docx,.pptx,.txt"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+            <div className="flex flex-col items-center gap-4">
+              <div className={`
+                w-14 h-14 flex items-center justify-center transition-colors
+                ${isDragging ? 'bg-surface-inverse text-txt-inverse' : 'bg-surface-sunken text-txt-tertiary'}
+              `}>
+                <FileUp size={24} />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-txt-primary mb-1">
+                  파일을 드래그하거나 클릭하여 선택
+                </p>
+                <p className="text-xs text-txt-tertiary">
+                  PDF, DOCX, PPTX, TXT · 최대 10MB
+                </p>
+              </div>
             </div>
           </div>
-          <button
-            onClick={handleClose}
-            className="p-2 hover:bg-surface-sunken transition-colors border border-transparent hover:border-border"
-          >
-            <X size={18} className="text-txt-tertiary" />
-          </button>
-        </div>
+        )}
 
-        {/* Content */}
-        <div className="p-6 overflow-y-auto flex-1">
-          {/* Processing Step */}
-          {step === 'processing' && (
-            <div className="flex flex-col items-center justify-center py-16">
-              <div className="relative mb-6">
-                <div className="w-14 h-14 border-[3px] border-border-subtle" />
-                <div className="absolute inset-0 w-14 h-14 border-[3px] border-border border-t-transparent animate-spin" />
-              </div>
-              <p className="text-sm font-medium text-txt-primary mb-1">{processingStatus}</p>
-              <p className="text-xs text-txt-tertiary">잠시만 기다려주세요</p>
-            </div>
-          )}
-
-          {/* Upload Step */}
-          {step === 'upload' && (
-            <div
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-              onClick={() => fileInputRef.current?.click()}
-              className={`
-                relative p-12 border text-center cursor-pointer transition-all duration-200
-                ${isDragging
-                  ? 'border-border bg-surface-sunken'
-                  : 'border-border hover:border-border hover:bg-surface-sunken'
-                }
-              `}
-            >
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".pdf,.docx,.pptx,.txt"
-                onChange={handleFileChange}
-                className="hidden"
-              />
-              <div className="flex flex-col items-center gap-4">
-                <div className={`
-                  w-14 h-14 flex items-center justify-center transition-colors
-                  ${isDragging ? 'bg-surface-inverse text-txt-inverse' : 'bg-surface-sunken text-txt-tertiary'}
-                `}>
-                  <FileUp size={24} />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-txt-primary mb-1">
-                    파일을 드래그하거나 클릭하여 선택
-                  </p>
-                  <p className="text-xs text-txt-tertiary">
-                    PDF, DOCX, PPTX, TXT · 최대 10MB
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Structured Step */}
-          {step === 'structured' && (
-            <div className="space-y-5">
-              <div className="flex items-center gap-2 text-indicator-online bg-status-success-bg px-4 py-3 border border-indicator-online/20">
-                <CheckCircle2 size={18} />
-                <span className="text-sm font-medium">분석이 완료되었습니다</span>
-              </div>
-
-              {/* Problem Field */}
-              <div>
-                <label className="block text-[10px] font-medium text-txt-tertiary mb-2">
-                  Problem
-                  <span className="text-txt-disabled font-normal ml-1 normal-case tracking-normal">해결하려는 문제</span>
-                </label>
-                <textarea
-                  value={structuredData.problem}
-                  onChange={(e) => setStructuredData(prev => ({ ...prev, problem: e.target.value }))}
-                  className="w-full h-24 px-4 py-3 bg-surface-sunken rounded-xl border border-border focus:border-border resize-none focus:outline-none focus:ring-2 focus:ring-brand text-base sm:text-sm placeholder:text-txt-disabled transition-shadow"
-                  placeholder="해결하려는 문제를 입력하세요..."
-                />
-              </div>
-
-              {/* Solution Field */}
-              <div>
-                <label className="block text-[10px] font-medium text-txt-tertiary mb-2">
-                  Solution
-                  <span className="text-txt-disabled font-normal ml-1 normal-case tracking-normal">핵심 솔루션</span>
-                </label>
-                <textarea
-                  value={structuredData.solution}
-                  onChange={(e) => setStructuredData(prev => ({ ...prev, solution: e.target.value }))}
-                  className="w-full h-24 px-4 py-3 bg-surface-sunken rounded-xl border border-border focus:border-border resize-none focus:outline-none focus:ring-2 focus:ring-brand text-base sm:text-sm placeholder:text-txt-disabled transition-shadow"
-                  placeholder="핵심 솔루션을 입력하세요..."
-                />
-              </div>
-
-              {/* Target Field */}
-              <div>
-                <label className="block text-[10px] font-medium text-txt-tertiary mb-2">
-                  Target
-                  <span className="text-txt-disabled font-normal ml-1 normal-case tracking-normal">타겟 고객</span>
-                </label>
-                <textarea
-                  value={structuredData.target}
-                  onChange={(e) => setStructuredData(prev => ({ ...prev, target: e.target.value }))}
-                  className="w-full h-24 px-4 py-3 bg-surface-sunken rounded-xl border border-border focus:border-border resize-none focus:outline-none focus:ring-2 focus:ring-brand text-base sm:text-sm placeholder:text-txt-disabled transition-shadow"
-                  placeholder="타겟 고객을 입력하세요..."
-                />
-              </div>
-
-              {/* Back link */}
-              <button
-                onClick={() => {
-                  setStep('upload')
-                  setStructuredData({ problem: '', solution: '', target: '' })
-                }}
-                className="text-sm text-txt-tertiary hover:text-txt-secondary transition-colors"
-              >
-                ← 다른 파일 선택
-              </button>
-            </div>
-          )}
-
-          {/* Error Message */}
-          {error && (
-            <div className="mt-4 px-4 py-3 bg-status-danger-text/5 border border-status-danger-text/20 text-sm text-status-danger-text flex items-center gap-2">
-              <AlertCircle size={16} />
-              {error}
-            </div>
-          )}
-        </div>
-
-        {/* Footer */}
+        {/* Structured Step */}
         {step === 'structured' && (
-          <div className="p-6 pt-0 flex justify-end gap-3 shrink-0">
+          <div className="space-y-5">
+            <div className="flex items-center gap-2 text-indicator-online bg-status-success-bg px-4 py-3 border border-indicator-online/20">
+              <CheckCircle2 size={18} />
+              <span className="text-sm font-medium">분석이 완료되었습니다</span>
+            </div>
+
+            {/* Problem Field */}
+            <div>
+              <label className="block text-[10px] font-medium text-txt-tertiary mb-2">
+                Problem
+                <span className="text-txt-disabled font-normal ml-1 normal-case tracking-normal">해결하려는 문제</span>
+              </label>
+              <textarea
+                value={structuredData.problem}
+                onChange={(e) => setStructuredData(prev => ({ ...prev, problem: e.target.value }))}
+                className="w-full h-24 px-4 py-3 bg-surface-sunken rounded-xl border border-border focus:border-border resize-none focus:outline-none focus:ring-2 focus:ring-brand text-base sm:text-sm placeholder:text-txt-disabled transition-shadow"
+                placeholder="해결하려는 문제를 입력하세요..."
+              />
+            </div>
+
+            {/* Solution Field */}
+            <div>
+              <label className="block text-[10px] font-medium text-txt-tertiary mb-2">
+                Solution
+                <span className="text-txt-disabled font-normal ml-1 normal-case tracking-normal">핵심 솔루션</span>
+              </label>
+              <textarea
+                value={structuredData.solution}
+                onChange={(e) => setStructuredData(prev => ({ ...prev, solution: e.target.value }))}
+                className="w-full h-24 px-4 py-3 bg-surface-sunken rounded-xl border border-border focus:border-border resize-none focus:outline-none focus:ring-2 focus:ring-brand text-base sm:text-sm placeholder:text-txt-disabled transition-shadow"
+                placeholder="핵심 솔루션을 입력하세요..."
+              />
+            </div>
+
+            {/* Target Field */}
+            <div>
+              <label className="block text-[10px] font-medium text-txt-tertiary mb-2">
+                Target
+                <span className="text-txt-disabled font-normal ml-1 normal-case tracking-normal">타겟 고객</span>
+              </label>
+              <textarea
+                value={structuredData.target}
+                onChange={(e) => setStructuredData(prev => ({ ...prev, target: e.target.value }))}
+                className="w-full h-24 px-4 py-3 bg-surface-sunken rounded-xl border border-border focus:border-border resize-none focus:outline-none focus:ring-2 focus:ring-brand text-base sm:text-sm placeholder:text-txt-disabled transition-shadow"
+                placeholder="타겟 고객을 입력하세요..."
+              />
+            </div>
+
+            {/* Back link */}
             <button
-              onClick={handleClose}
-              disabled={isLoading}
-              className="px-5 py-2.5 text-sm font-bold text-txt-secondary hover:bg-surface-sunken transition-colors border border-border disabled:opacity-50"
+              onClick={() => {
+                setStep('upload')
+                setStructuredData({ problem: '', solution: '', target: '' })
+              }}
+              className="text-sm text-txt-tertiary hover:text-txt-secondary transition-colors"
             >
-              취소
-            </button>
-            <button
-              onClick={handleSave}
-              disabled={isLoading || (!structuredData.problem && !structuredData.solution && !structuredData.target)}
-              className="px-5 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-bold hover:bg-surface-inverse transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 hover:opacity-90 active:scale-[0.97]"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 size={16} className="animate-spin" />
-                  저장 중...
-                </>
-              ) : (
-                '저장하기'
-              )}
+              ← 다른 파일 선택
             </button>
           </div>
         )}
+
+        {/* Error Message */}
+        {error && (
+          <div className="mt-4 px-4 py-3 bg-status-danger-text/5 border border-status-danger-text/20 text-sm text-status-danger-text flex items-center gap-2">
+            <AlertCircle size={16} />
+            {error}
+          </div>
+        )}
       </div>
-    </div>
+
+      {/* Footer */}
+      {step === 'structured' && (
+        <div className="p-6 pt-0 flex justify-end gap-3 shrink-0">
+          <Button variant="secondary" onClick={handleClose} disabled={isLoading}>
+            취소
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleSave}
+            disabled={isLoading || (!structuredData.problem && !structuredData.solution && !structuredData.target)}
+            loading={isLoading}
+          >
+            {isLoading ? '저장 중...' : '저장하기'}
+          </Button>
+        </div>
+      )}
+    </Modal>
   )
 }
 

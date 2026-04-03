@@ -22,9 +22,9 @@ interface CropModalProps {
 export function CropModal({ cropSrc, crop, zoom, cropQueueLength, onCropChange, onZoomChange, onCropComplete, onCropConfirm, onCropCancel }: CropModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
-      <div className="bg-surface-card rounded-xl border border-border w-full max-w-lg flex flex-col overflow-hidden shadow-lg">
+      <div className="bg-surface-card rounded-xl border border-border-subtle w-full max-w-lg flex flex-col overflow-hidden shadow-lg">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-2.5 border-b-2 border-border bg-surface-sunken">
+        <div className="flex items-center justify-between px-4 py-2.5 border-b border-border-subtle">
           <div className="flex items-center gap-2">
             <Crop size={13} className="text-txt-tertiary" />
             <span className="text-[10px] font-medium text-txt-secondary">이미지 크롭</span>
@@ -71,14 +71,14 @@ export function CropModal({ cropSrc, crop, zoom, cropQueueLength, onCropChange, 
             <button
               type="button"
               onClick={onCropCancel}
-              className="flex-1 py-2.5 text-xs font-medium border border-border text-txt-secondary hover:bg-surface-sunken transition-colors"
+              className="flex-1 py-2.5 text-xs font-medium border border-border rounded-lg text-txt-secondary hover:bg-surface-sunken transition-colors"
             >
               건너뛰기
             </button>
             <button
               type="button"
               onClick={onCropConfirm}
-              className="flex-1 py-2.5 text-xs font-medium bg-surface-inverse text-txt-inverse border border-surface-inverse hover:opacity-90 transition-opacity flex items-center justify-center gap-1.5"
+              className="flex-1 py-2.5 text-xs font-medium bg-surface-inverse text-txt-inverse border border-surface-inverse rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-1.5"
             >
               <Check size={13} />
               적용

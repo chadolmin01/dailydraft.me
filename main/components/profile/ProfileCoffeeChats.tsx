@@ -23,6 +23,7 @@ import { useCoffeeChats, useAcceptCoffeeChat, useDeclineCoffeeChat, useUpdateCha
 import type { CoffeeChat, ParsedInvitation, CoffeeChatOutcome } from '@/src/hooks/useCoffeeChats'
 import { CoffeeChatAcceptModal } from '@/components/coffee-chat/CoffeeChatAcceptModal'
 import type { InvitationData } from '@/components/coffee-chat/CoffeeChatAcceptModal'
+import { AnimatePresence } from 'framer-motion'
 import { ProfileDetailModal } from '@/components/ProfileDetailModal'
 
 type Tab = 'received' | 'sent'
@@ -342,14 +343,16 @@ export function ProfileCoffeeChats() {
       />
 
       {/* Profile Detail Modal */}
-      {viewingProfileUserId && (
-        <ProfileDetailModal
-          key={viewingProfileUserId}
-          profileId={viewingProfileUserId}
-          byUserId
-          onClose={() => setViewingProfileUserId(null)}
-        />
-      )}
+      <AnimatePresence>
+        {viewingProfileUserId && (
+          <ProfileDetailModal
+            key="profile-modal"
+            profileId={viewingProfileUserId}
+            byUserId
+            onClose={() => setViewingProfileUserId(null)}
+          />
+        )}
+      </AnimatePresence>
     </section>
   )
 }

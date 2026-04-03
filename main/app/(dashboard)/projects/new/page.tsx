@@ -13,6 +13,7 @@ import { ImageUploadSection } from './components/ImageUploadSection'
 import { CropModal } from './components/CropModal'
 import { ProjectInfoSidebar } from './components/ProjectInfoSidebar'
 import { RolesGrid } from './components/RolesGrid'
+import { AnimatedChip } from './components/AnimatedChip'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
 
 export default function NewProjectPage() {
@@ -147,8 +148,7 @@ function NewProjectContent() {
     }
   }
 
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || [])
+  const processFiles = useCallback((files: File[]) => {
     const remaining = 5 - imageFiles.length
     const toAdd = files.slice(0, remaining)
     if (toAdd.length === 0) return
@@ -156,13 +156,11 @@ function NewProjectContent() {
     const invalid = toAdd.filter(f => !ALLOWED_IMAGE_TYPES.includes(f.type))
     if (invalid.length > 0) {
       setError(`JPG, PNG, WebP, GIF만 업로드 가능합니다 (${invalid.map(f => f.name).join(', ')})`)
-      e.target.value = ''
       return
     }
     const tooLarge = toAdd.filter(f => f.size > MAX_IMAGE_SIZE)
     if (tooLarge.length > 0) {
       setError(`5MB 이하 파일만 업로드 가능합니다 (${tooLarge.map(f => f.name).join(', ')})`)
-      e.target.value = ''
       return
     }
     setError('')
@@ -174,8 +172,16 @@ function NewProjectContent() {
     setCrop({ x: 0, y: 0 })
     setZoom(1)
     setCroppedAreaPixels(null)
+  }, [imageFiles.length])
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    processFiles(Array.from(e.target.files || []))
     e.target.value = ''
   }
+
+  const handleDropFiles = useCallback((files: File[]) => {
+    processFiles(files)
+  }, [processFiles])
 
   const handleCropConfirm = async () => {
     if (!cropSrc || !croppedAreaPixels) return
@@ -304,59 +310,81 @@ function NewProjectContent() {
 
   const theme = TYPE_THEMES[type] || TYPE_THEMES.side_project
 
+  const formProgress = useMemo(() => {
+    let score = 0
+    if (title.trim().length >= 2) score += 30
+    if (description.trim().length >= 20) score += 30
+    if (selectedRoles.length > 0) score += 30
+    if (selectedTags.length > 0) score += 5
+    if (imagePreviews.length > 0) score += 5
+    return score
+  }, [title, description, selectedRoles, selectedTags, imagePreviews])
+
   return (
     <div className="flex-1 overflow-y-auto bg-surface-bg">
       <div className="max-w-4xl mx-auto px-4 py-2 md:py-4">
 
-        <form onSubmit={handlePreSubmit} className="bg-surface-card shadow-md overflow-hidden border border-border">
+        <form onSubmit={handlePreSubmit} className="bg-surface-card shadow-sm overflow-hidden border border-border-subtle rounded-xl">
 
-          {/* ─── Window Bar ─── */}
-          <div className="bg-surface-sunken border-b-2 border-border px-3 sm:px-5 py-2.5 flex items-center justify-between relative">
-            <div className="flex items-center gap-3">
+          {/* ─── Progress Bar ─── */}
+          <div className="h-1 bg-surface-sunken overflow-hidden">
+            <div
+              className="h-full bg-brand progress-bar-spring"
+              style={{ width: `${formProgress}%` }}
+            />
+          </div>
+
+          {/* ─── Header ─── */}
+          <div className="border-b border-border-subtle px-3 sm:px-5 py-3 grid grid-cols-3 items-center">
+            <div>
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="hidden sm:flex items-center gap-1 text-xs text-txt-tertiary hover:text-txt-secondary transition-colors"
+                className="hidden sm:inline-flex items-center gap-1.5 text-xs text-txt-tertiary hover:text-txt-primary transition-colors"
               >
                 <ArrowLeft size={14} />
                 <span>돌아가기</span>
               </button>
-              <div className="w-px h-3 bg-border hidden sm:block" />
-              <div className="flex items-center gap-1.5 hidden sm:flex">
-                <div className="w-2.5 h-2.5 bg-[#FF5F57]" />
-                <div className="w-2.5 h-2.5 bg-[#FEBC2E]" />
-                <div className="w-2.5 h-2.5 bg-[#28C840]" />
+            </div>
+
+            {/* Type selector with sliding background */}
+            <div className="flex items-center justify-center">
+              <div className="relative inline-flex items-center gap-0.5 bg-surface-sunken rounded-xl p-0.5">
+                {/* Sliding background */}
+                <div
+                  className={`absolute top-0.5 bottom-0.5 rounded-lg transition-all duration-300 ${TYPE_THEMES[type].slidingBg}`}
+                  style={{
+                    width: `calc((100% - 4px) / ${TYPE_OPTIONS.length})`,
+                    left: `calc(${TYPE_OPTIONS.findIndex(o => o.value === type)} * (100% - 4px) / ${TYPE_OPTIONS.length} + 2px)`,
+                  }}
+                />
+                {TYPE_OPTIONS.map(opt => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setType(opt.value)}
+                    className="relative z-10 flex-1 text-[10px] font-medium px-2.5 py-1 rounded-lg transition-colors"
+                  >
+                    <span className={`relative ${type === opt.value ? 'text-txt-inverse' : 'text-txt-tertiary hover:text-txt-secondary'}`}>
+                      {opt.label}
+                    </span>
+                  </button>
+                ))}
               </div>
             </div>
 
-            {/* Type selector — absolute center */}
-            <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1">
-              {TYPE_OPTIONS.map(opt => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => setType(opt.value)}
-                  className={`text-[10px] font-medium px-2.5 py-1 transition-colors ${
-                    type === opt.value
-                      ? TYPE_THEMES[opt.value].badge
-                      : 'bg-surface-sunken text-txt-tertiary hover:text-txt-secondary'
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
+            <div className="flex justify-end">
+              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-medium rounded-full transition-colors ${theme.status}`}>
+                <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${theme.statusDot}`} />
+                작성 중
+              </span>
             </div>
-
-            <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold transition-colors ${theme.status}`}>
-              <span className={`w-1.5 h-1.5 animate-pulse ${theme.statusDot}`} />
-              작성 중
-            </span>
           </div>
 
           {/* ─── Error Banner ─── */}
           {error && (
-            <div className="px-4 sm:px-8 pt-3">
-              <div className="flex items-center gap-2 px-3 py-2 bg-status-danger-bg border border-status-danger-text/20 text-status-danger-text text-xs">
+            <div key={error} className="px-4 sm:px-8 pt-3 animate-fade-in error-shake">
+              <div className="flex items-center gap-2 px-3 py-2 bg-status-danger-bg border border-status-danger-text/20 rounded-lg text-status-danger-text text-xs">
                 <AlertCircle size={13} className="shrink-0" />
                 <span>{error}</span>
                 <button type="button" onClick={() => setError('')} className="ml-auto hover:opacity-70">
@@ -374,6 +402,7 @@ function NewProjectContent() {
               onImageSelect={handleImageSelect}
               onRemoveImage={removeImage}
               onSetAsMain={setAsMain}
+              onDropFiles={handleDropFiles}
             />
           </div>
 
@@ -399,18 +428,14 @@ function NewProjectContent() {
 
             <div className="flex flex-wrap gap-1.5 mt-4">
               {CATEGORY_TAGS.map(tag => (
-                <button
+                <AnimatedChip
                   key={tag}
-                  type="button"
-                  onClick={() => toggleTag(tag)}
-                  className={`px-2.5 py-1 text-xs border transition-colors ${
-                    selectedTags.includes(tag)
-                      ? theme.chipOn
-                      : 'bg-surface-sunken text-txt-secondary border-border-subtle hover:border-border hover:text-txt-primary'
-                  }`}
-                >
-                  {tag}
-                </button>
+                  label={tag}
+                  selected={selectedTags.includes(tag)}
+                  onToggle={() => toggleTag(tag)}
+                  selectedClass={theme.chipOn}
+                  unselectedClass="bg-surface-sunken text-txt-secondary border-border-subtle hover:border-border hover:text-txt-primary"
+                />
               ))}
             </div>
           </div>
@@ -431,7 +456,7 @@ function NewProjectContent() {
           </div>
 
           {/* Divider */}
-          <div className="mx-4 sm:mx-8 border-t border-border mt-4 md:mt-0" />
+          <div className="mx-4 sm:mx-8 border-t border-border-subtle mt-4 md:mt-0" />
 
           {/* ─── Body: 2-Column ─── */}
           <div className="px-4 sm:px-8 py-5 sm:py-6">
@@ -450,7 +475,7 @@ function NewProjectContent() {
                       type="button"
                       onClick={generateDescription}
                       disabled={aiLoading || !title.trim()}
-                      className="flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-medium border border-border text-txt-secondary hover:border-border hover:text-txt-primary transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-medium border border-border-subtle rounded-lg text-txt-secondary hover:border-brand/30 hover:text-txt-primary transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                       {aiLoading ? (
                         <><Loader2 size={10} className="animate-spin" /> 생성 중...</>
@@ -473,14 +498,26 @@ function NewProjectContent() {
                     placeholder={theme.descPlaceholder}
                     rows={7}
                     maxLength={2000}
-                    className={`w-full text-base sm:text-sm text-txt-secondary leading-[1.8] placeholder:text-txt-disabled border p-3 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand resize-none bg-transparent transition-all ${fieldErrors.description ? 'border-status-danger-text/30' : 'border-border'}`}
+                    className={`w-full text-base sm:text-sm text-txt-secondary leading-[1.8] placeholder:text-txt-disabled border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-brand/10 focus:border-brand resize-none bg-transparent transition-all ${fieldErrors.description ? 'border-status-danger-text/30' : 'border-border-subtle'}`}
                   />
                   {fieldErrors.description && <p className="text-status-danger-text text-xs mt-1">{fieldErrors.description}</p>}
-                  <p className={`text-[10px] mt-1 text-right font-mono ${description.length >= 1800 ? 'text-status-danger-text font-bold' : description.length >= 1500 ? 'text-status-warning-text' : 'text-txt-disabled'}`}>{description.length}/2000</p>
+                  <div className="mt-1.5 flex items-center gap-3">
+                    <div className="flex-1 h-1 bg-surface-sunken rounded-full overflow-hidden">
+                      <div
+                        className={`h-full rounded-full progress-bar-spring ${
+                          description.length >= 1800 ? 'bg-status-danger-text' :
+                          description.length >= 1500 ? 'bg-status-warning-text' :
+                          description.length >= 20 ? 'bg-brand' : 'bg-txt-disabled/30'
+                        }`}
+                        style={{ width: `${Math.min((description.length / 2000) * 100, 100)}%` }}
+                      />
+                    </div>
+                    <p className={`text-[10px] font-mono shrink-0 ${description.length >= 1800 ? 'text-status-danger-text font-bold' : description.length >= 1500 ? 'text-status-warning-text' : 'text-txt-disabled'}`}>{description.length}/2000</p>
+                  </div>
                 </section>
 
                 {/* Pain Point */}
-                <section className={`p-4 border border-border-subtle transition-colors ${theme.painBg}`}>
+                <section className={`p-4 border border-border-subtle rounded-xl transition-colors ${theme.painBg}`}>
                   <h3 className="text-[10px] font-medium text-txt-tertiary mb-2">
                     {theme.painLabel}
                   </h3>
@@ -507,7 +544,7 @@ function NewProjectContent() {
                           value={link.label}
                           onChange={(e) => updateLink(idx, 'label', e.target.value)}
                           placeholder="예: GitHub, 노션"
-                          className="px-3 py-2 border border-border text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand w-1/3 bg-transparent transition-all"
+                          className="px-3 py-2 border border-border-subtle rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand/10 focus:border-brand w-1/3 bg-transparent transition-all"
                         />
                         <input
                           type="url"
@@ -515,7 +552,7 @@ function NewProjectContent() {
                           onChange={(e) => updateLink(idx, 'url', e.target.value)}
                           placeholder="https://github.com/..."
                           inputMode="url"
-                          className="px-3 py-2 border border-border text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand flex-1 bg-transparent transition-all"
+                          className="px-3 py-2 border border-border-subtle rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand/10 focus:border-brand flex-1 bg-transparent transition-all"
                         />
                         <button
                           type="button"
@@ -563,19 +600,22 @@ function NewProjectContent() {
           </div>
 
           {/* Mobile Footer */}
-          <div className="md:hidden px-4 py-4 bg-surface-card border-t-2 border-border">
+          <div className="md:hidden px-4 py-4 bg-surface-card border-t border-border-subtle">
             <button
               type="submit"
               disabled={createOpportunity.isPending || imageUploading}
-              className={`w-full h-12 font-bold text-sm flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${theme.mobileBtn}`}
+              className={`group/mob relative w-full h-12 font-bold text-sm rounded-xl flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden active:scale-[0.97] ${theme.mobileBtn}`}
             >
-              {imageUploading ? (
-                <><Loader2 size={14} className="animate-spin" /> 이미지 업로드 중...</>
-              ) : createOpportunity.isPending ? (
-                <><Loader2 size={14} className="animate-spin" /> 생성 중...</>
-              ) : (
-                '프로젝트 등록하기'
-              )}
+              <span className="absolute inset-0 -translate-x-full group-hover/mob:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/15 to-transparent" />
+              <span className="relative flex items-center gap-2">
+                {imageUploading ? (
+                  <><Loader2 size={14} className="animate-spin" /> 이미지 업로드 중...</>
+                ) : createOpportunity.isPending ? (
+                  <><Loader2 size={14} className="animate-spin" /> 생성 중...</>
+                ) : (
+                  '프로젝트 등록하기'
+                )}
+              </span>
             </button>
           </div>
         </form>
