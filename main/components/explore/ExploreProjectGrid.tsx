@@ -25,6 +25,7 @@ interface ExploreProjectGridProps {
   recruitingOnly: boolean
   onLoadMore: () => void
   onSelectProject: (id: string) => void
+  onPrefetchProject?: (id: string) => void
 }
 
 export function ExploreProjectGrid({
@@ -40,6 +41,7 @@ export function ExploreProjectGrid({
   recruitingOnly,
   onLoadMore,
   onSelectProject,
+  onPrefetchProject,
 }: ExploreProjectGridProps) {
   const { isAuthenticated } = useAuth()
   const sentinelRef = useRef<HTMLDivElement>(null)
@@ -87,6 +89,7 @@ export function ExploreProjectGrid({
               role="button"
               tabIndex={0}
               onClick={() => { onSelectProject(p.id); trackProjectView() }}
+              onMouseEnter={() => onPrefetchProject?.(p.id)}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectProject(p.id) } }}
               style={{ animationDelay: `${Math.min(index * 60, 600)}ms` }}
               className="stagger-item relative bg-surface-card rounded-xl border border-border overflow-hidden group hover:shadow-md hover:border-brand/30 hover:-translate-y-0.5 hover-spring cursor-pointer min-h-[21.25rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985] active:shadow-none active:border-brand/50"

@@ -35,8 +35,10 @@ import { useInfinitePublicProfiles, type PublicProfile } from '@/src/hooks/usePu
 import { useUserRecommendations, type UserRecommendation } from '@/src/hooks/useUserRecommendations'
 import { FALLBACK_CATEGORIES, FALLBACK_TRENDING_TAGS } from '@/src/lib/fallbacks/explore'
 import { PEOPLE_ROLE_FILTERS, PROJECT_ROLE_FILTERS, PEOPLE_CATEGORY_ICONS } from '@/components/explore/constants'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { supabase } from '@/src/lib/supabase/client'
 import { useAuth } from '@/src/context/AuthContext'
+import { opportunityKeys } from '@/src/hooks/useOpportunities'
 import { CATEGORY_ICONS, PAGE_SIZE, PEOPLE_PAGE_SIZE, TYPE_FILTERS } from './constants'
 import {
   ExploreHeroCarousel,
@@ -160,6 +162,7 @@ function ExplorePageContent() {
 
   const searchQuery = useDebouncedValue(searchInput, 300)
   const { isAuthenticated, user, isLoading: isAuthLoading } = useAuth()
+  const queryClient = useQueryClient()
   const guide = useStarterGuide()
 
   // Starter guide: completion toast
@@ -506,13 +509,26 @@ function ExplorePageContent() {
     onFilterButtonClick: () => setIsFilterSheetOpen(true),
   } as const
 
+  const handlePrefetchProject = useCallback((id: string) => {
+    queryClient.prefetchQuery({
+      queryKey: opportunityKeys.detail(id),
+      queryFn: async () => {
+        const { data, error } = await supabase.from('opportunities').select('*').eq('id', id).single()
+        if (error) throw error
+        return data
+      },
+      staleTime: 1000 * 60 * 2,
+    })
+  }, [queryClient])
+
   const handleSelectProject = useCallback((id: string) => {
     guide.markExploreVisited()
     setSelectedProfileId(null)
     setProfileByUserId(false)
+    handlePrefetchProject(id)
     setSelectedProjectId(id)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [guide.markExploreVisited])
+  }, [guide.markExploreVisited, handlePrefetchProject])
 
   const handleSelectProfile = useCallback((id: string, byUserId: boolean) => {
     setSelectedProjectId(null)
@@ -609,6 +625,7 @@ function ExplorePageContent() {
             recruitingOnly={recruitingOnly}
             onLoadMore={() => fetchNextOpp()}
             onSelectProject={handleSelectProject}
+            onPrefetchProject={handlePrefetchProject}
           />
         )}
 

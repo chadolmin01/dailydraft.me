@@ -15,9 +15,13 @@ import ProfilePageClient from '@/components/profile/ProfilePageClient'
 
 export default async function ProfilePage() {
   const supabase = await createServerSupabaseClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  // getSession() = local JWT decode (fast), getUser() = network call (slow)
+  // Middleware already validated auth, so session is safe to trust here
+  const { data: { session } } = await supabase.auth.getSession()
 
-  if (!user) redirect('/login')
+  if (!session?.user) redirect('/login')
+
+  const user = session.user
 
   const queryClient = new QueryClient()
 
