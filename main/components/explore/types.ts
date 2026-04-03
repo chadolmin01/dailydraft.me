@@ -52,4 +52,10 @@ export type PeopleRoleFilter = 'all' | 'developer' | 'designer' | 'pm' | 'market
 export type ProjectRoleFilter = 'all' | '개발자' | '디자이너' | '기획자' | '마케터' | '데이터분석'
 export type PeopleSortBy = 'latest' | 'ai' | 'popular'
 
+export interface ActiveFilterChip {
+  key: string        // 'type:side_project', 'role:디자이너' etc.
+  label: string      // '함께 만들기', '디자이너 구함' etc.
+  onRemove: () => void
+}
+
 export type { UserRecommendation }

@@ -37,17 +37,18 @@ import { FALLBACK_CATEGORIES, FALLBACK_TRENDING_TAGS } from '@/src/lib/fallbacks
 import { PEOPLE_ROLE_FILTERS, PROJECT_ROLE_FILTERS, PEOPLE_CATEGORY_ICONS } from '@/components/explore/constants'
 import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/src/context/AuthContext'
-import { CATEGORY_ICONS, PAGE_SIZE, PEOPLE_PAGE_SIZE } from './constants'
+import { CATEGORY_ICONS, PAGE_SIZE, PEOPLE_PAGE_SIZE, TYPE_FILTERS } from './constants'
 import {
   ExploreHeroCarousel,
   ExploreSearchBar,
   ExploreSidebar,
   ExploreTabBar,
-  ExploreMobileFilter,
   ExploreProjectGrid,
   ExplorePeopleGrid,
 } from '@/components/explore'
-import type { ActiveTab, SortBy, TypeFilter, SearchScope, PeopleRoleFilter, PeopleSortBy, ProjectRoleFilter } from '@/components/explore/types'
+import { FilterSheet } from '@/components/explore/FilterSheet'
+import { ActiveFilterChips } from '@/components/explore/ActiveFilterChips'
+import type { ActiveTab, SortBy, TypeFilter, SearchScope, PeopleRoleFilter, PeopleSortBy, ProjectRoleFilter, ActiveFilterChip } from '@/components/explore/types'
 
 function useDebouncedValue<T>(value: T, delay: number): T {
   const [debounced, setDebounced] = useState(value)
@@ -154,7 +155,7 @@ function ExplorePageContent() {
   const [peopleSortBy, setPeopleSortBy] = useState<PeopleSortBy>('latest')
   const [searchInput, setSearchInput] = useState(initialQuery)
   const [searchScope, setSearchScope] = useState<SearchScope>(initialScope)
-  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
+  const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false)
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
 
   const searchQuery = useDebouncedValue(searchInput, 300)
@@ -421,6 +422,42 @@ function ExplorePageContent() {
       .map(([tag, count]) => ({ tag, count }))
   }, [publicProfiles])
 
+  // ── Derived: active filter chips ──
+  const activeFilterChips = useMemo<ActiveFilterChip[]>(() => {
+    const chips: ActiveFilterChip[] = []
+    if (activeTab === 'projects') {
+      if (typeFilter !== 'all') {
+        const tf = TYPE_FILTERS.find(t => t.id === typeFilter)
+        chips.push({ key: `type:${typeFilter}`, label: tf?.label ?? typeFilter, onRemove: () => setTypeFilter('all') })
+      }
+      if (projectRoleFilter !== 'all') {
+        const rf = PROJECT_ROLE_FILTERS.find(r => r.id === projectRoleFilter)
+        chips.push({ key: `role:${projectRoleFilter}`, label: rf?.label ?? projectRoleFilter, onRemove: () => setProjectRoleFilter('all') })
+      }
+      if (selectedCategory !== 'all') {
+        const cat = projectCategories.find(c => c.id === selectedCategory)
+        chips.push({ key: `cat:${selectedCategory}`, label: cat?.label ?? selectedCategory, onRemove: () => setSelectedCategory('all') })
+      }
+      if (recruitingOnly) {
+        chips.push({ key: 'recruiting', label: '모집 중만', onRemove: () => setRecruitingOnly(false) })
+      }
+    } else {
+      if (peopleRoleFilter !== 'all') {
+        const rf = PEOPLE_ROLE_FILTERS.find(r => r.id === peopleRoleFilter)
+        chips.push({ key: `prole:${peopleRoleFilter}`, label: rf?.label ?? peopleRoleFilter, onRemove: () => setPeopleRoleFilter('all') })
+      }
+    }
+    return chips
+  }, [activeTab, typeFilter, projectRoleFilter, selectedCategory, recruitingOnly, peopleRoleFilter, projectCategories])
+
+  const handleResetFilters = useCallback(() => {
+    setTypeFilter('all')
+    setProjectRoleFilter('all')
+    setSelectedCategory('all')
+    setRecruitingOnly(false)
+    setPeopleRoleFilter('all')
+  }, [])
+
   const { data: liveTrending } = useQuery({
     queryKey: ['explore', 'trending'],
     queryFn: async () => {
@@ -467,17 +504,13 @@ function ExplorePageContent() {
     onTabChange: setActiveTab,
     sortBy,
     onSortChange: setSortBy,
-    typeFilter,
-    onTypeFilterChange: setTypeFilter,
-    peopleRoleFilter,
-    onPeopleRoleFilterChange: setPeopleRoleFilter,
-    projectRoleFilter,
-    onProjectRoleFilterChange: setProjectRoleFilter,
     peopleSortBy,
     onPeopleSortChange: setPeopleSortBy,
     query,
     projectCount: projectCards.length,
     peopleCount: talentCards.length,
+    activeFilterCount: activeFilterChips.length,
+    onFilterButtonClick: () => setIsFilterSheetOpen(true),
   } as const
 
   const handleSelectProject = useCallback((id: string) => {
@@ -496,24 +529,21 @@ function ExplorePageContent() {
 
   return (
     <div className="bg-surface-bg min-h-full">
-      <div className="relative">
-        <ExploreHeroCarousel />
-        {guide.visible && (
-          <div className="absolute inset-0 z-10 flex items-end sm:items-center justify-center pb-6 sm:pb-0 animate-[fadeIn_0.3s_ease-out]">
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/20 to-transparent sm:bg-black/20 sm:backdrop-blur-[2px]" />
-            <div className="relative w-full max-w-md mx-4 animate-[slideUp_0.4s_cubic-bezier(0.16,1,0.3,1)]">
-              <StarterGuideCard
-                steps={guide.steps}
-                completedCount={guide.completedCount}
-                total={guide.total}
-                showLinkHint={guide.showLinkHint}
-                onSoftDismiss={guide.softDismiss}
-                onPermanentDismiss={guide.permanentDismiss}
-              />
-            </div>
-          </div>
-        )}
-      </div>
+      {/* TODO: 히어로 캐러셀 비활성화 — 추후 광고/배너 슬롯으로 재활용 */}
+      {/* <ExploreHeroCarousel /> */}
+
+      {guide.visible && (
+        <div className="max-w-screen-xl mx-auto px-4 pt-4">
+          <StarterGuideCard
+            steps={guide.steps}
+            completedCount={guide.completedCount}
+            total={guide.total}
+            showLinkHint={guide.showLinkHint}
+            onSoftDismiss={guide.softDismiss}
+            onPermanentDismiss={guide.permanentDismiss}
+          />
+        </div>
+      )}
 
       <div className="max-w-screen-xl mx-auto px-4 mt-1">
         {!guide.visible && <ProfileCompletionBanner />}
@@ -544,15 +574,9 @@ function ExplorePageContent() {
           onMobileSearchToggle={() => setMobileSearchOpen(prev => !prev)}
           searchInput={searchInput}
           onSearchInputChange={setSearchInput}
-          isMobileFilterOpen={isMobileFilterOpen}
-          onMobileFilterToggle={() => setIsMobileFilterOpen(prev => !prev)}
         />
 
-        <ExploreMobileFilter
-          isOpen={isMobileFilterOpen}
-          onToggle={() => setIsMobileFilterOpen(false)}
-          {...filterProps}
-        />
+        <ActiveFilterChips chips={activeFilterChips} onClearAll={handleResetFilters} />
 
         {!isAuthenticated && ((activeTab === 'projects' && sortBy === 'ai') || (activeTab === 'people' && peopleSortBy === 'ai')) && (
           <div className="flex items-center gap-3 px-4 py-3 mb-4 border border-brand-border bg-brand-bg">
@@ -595,6 +619,24 @@ function ExplorePageContent() {
           />
         )}
       </DashboardLayout>
+
+      <FilterSheet
+        isOpen={isFilterSheetOpen}
+        onClose={() => setIsFilterSheetOpen(false)}
+        activeTab={activeTab}
+        typeFilter={typeFilter}
+        onTypeFilterChange={setTypeFilter}
+        projectRoleFilter={projectRoleFilter}
+        onProjectRoleFilterChange={setProjectRoleFilter}
+        categories={projectCategories}
+        selectedCategory={selectedCategory}
+        onCategoryChange={setSelectedCategory}
+        recruitingOnly={recruitingOnly}
+        onRecruitingOnlyChange={setRecruitingOnly}
+        peopleRoleFilter={peopleRoleFilter}
+        onPeopleRoleFilterChange={setPeopleRoleFilter}
+        onReset={handleResetFilters}
+      />
 
       <AnimatePresence>
         {selectedProjectId && (

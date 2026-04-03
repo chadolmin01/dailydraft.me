@@ -2,20 +2,14 @@
 
 import React from 'react'
 import { LayoutGrid, Users, Search, X, Filter } from 'lucide-react'
-import { SORT_OPTIONS, TYPE_FILTERS, PROJECT_ROLE_FILTERS, PEOPLE_ROLE_FILTERS, PEOPLE_SORT_OPTIONS } from './constants'
-import type { ActiveTab, SortBy, TypeFilter, PeopleRoleFilter, PeopleSortBy, ProjectRoleFilter } from './types'
+import { SORT_OPTIONS, PEOPLE_SORT_OPTIONS } from './constants'
+import type { ActiveTab, SortBy, PeopleSortBy } from './types'
 
 interface ExploreTabBarProps {
   activeTab: ActiveTab
   onTabChange: (tab: ActiveTab) => void
   sortBy: SortBy
   onSortChange: (sort: SortBy) => void
-  typeFilter: TypeFilter
-  onTypeFilterChange: (filter: TypeFilter) => void
-  peopleRoleFilter: PeopleRoleFilter
-  onPeopleRoleFilterChange: (filter: PeopleRoleFilter) => void
-  projectRoleFilter: ProjectRoleFilter
-  onProjectRoleFilterChange: (filter: ProjectRoleFilter) => void
   peopleSortBy: PeopleSortBy
   onPeopleSortChange: (sort: PeopleSortBy) => void
   query: string
@@ -25,8 +19,8 @@ interface ExploreTabBarProps {
   onMobileSearchToggle?: () => void
   searchInput?: string
   onSearchInputChange?: (v: string) => void
-  isMobileFilterOpen?: boolean
-  onMobileFilterToggle?: () => void
+  activeFilterCount: number
+  onFilterButtonClick: () => void
 }
 
 export function ExploreTabBar({
@@ -34,12 +28,6 @@ export function ExploreTabBar({
   onTabChange,
   sortBy,
   onSortChange,
-  typeFilter,
-  onTypeFilterChange,
-  peopleRoleFilter,
-  onPeopleRoleFilterChange,
-  projectRoleFilter,
-  onProjectRoleFilterChange,
   peopleSortBy,
   onPeopleSortChange,
   query,
@@ -49,12 +37,12 @@ export function ExploreTabBar({
   onMobileSearchToggle,
   searchInput,
   onSearchInputChange,
-  isMobileFilterOpen,
-  onMobileFilterToggle,
+  activeFilterCount,
+  onFilterButtonClick,
 }: ExploreTabBarProps) {
   return (
     <>
-      {/* 탭 + 모바일 검색 아이콘 */}
+      {/* Tabs + mobile search icon */}
       <div className="border-b-2 border-border mb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center shrink-0">
@@ -93,7 +81,7 @@ export function ExploreTabBar({
         </div>
       </div>
 
-      {/* 모바일 인라인 검색 */}
+      {/* Mobile inline search */}
       {mobileSearchOpen && onSearchInputChange && (
         <div className="md:hidden mb-3 animate-in slide-in-from-top-2 duration-150">
           <div className="relative flex items-center bg-surface-card rounded-xl border border-border">
@@ -118,7 +106,7 @@ export function ExploreTabBar({
         </div>
       )}
 
-      {/* 정렬 옵션 */}
+      {/* Sort options + filter button */}
       {activeTab === 'projects' && (
         <div className="flex items-center gap-1 mb-3 overflow-x-auto scrollbar-hide mask-fade-r">
           {SORT_OPTIONS.map((tab) => (
@@ -136,6 +124,18 @@ export function ExploreTabBar({
               )}
             </button>
           ))}
+          <button
+            onClick={onFilterButtonClick}
+            className="shrink-0 ml-auto flex items-center gap-1 px-3 py-2 text-xs font-bold border rounded-xl transition-all bg-surface-card text-txt-secondary border-border hover:border-border hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]"
+          >
+            <Filter size={12} />
+            필터
+            {activeFilterCount > 0 && (
+              <span className="ml-0.5 min-w-[16px] h-4 flex items-center justify-center text-[10px] font-bold bg-brand text-white rounded-full px-1">
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
         </div>
       )}
 
@@ -156,89 +156,18 @@ export function ExploreTabBar({
               )}
             </button>
           ))}
-        </div>
-      )}
-
-      {/* Type filter chips + 모바일 필터 */}
-      {activeTab === 'projects' && (
-        <div className="flex items-center gap-1.5 mb-4 overflow-x-auto scrollbar-hide mask-fade-r">
-          {TYPE_FILTERS.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => onTypeFilterChange(t.id as TypeFilter)}
-              className={`shrink-0 px-3 py-2 text-xs font-bold border rounded-xl transition-all ${
-                typeFilter === t.id
-                  ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
-                  : 'bg-surface-card text-txt-secondary border-border hover:border-border hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]'
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
-          {onMobileFilterToggle && (
-            <button
-              onClick={onMobileFilterToggle}
-              className={`lg:hidden shrink-0 ml-auto px-3 py-2 text-xs font-bold border rounded-xl transition-all flex items-center gap-1 ${
-                isMobileFilterOpen
-                  ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
-                  : 'bg-surface-card text-txt-secondary border-border hover:border-border'
-              }`}
-            >
-              <Filter size={12} />
-              필터
-            </button>
-          )}
-        </div>
-      )}
-
-      {/* Project role filter chips */}
-      {activeTab === 'projects' && (
-        <div className="flex items-center gap-1.5 mb-4 overflow-x-auto scrollbar-hide mask-fade-r">
-          {PROJECT_ROLE_FILTERS.map((r) => (
-            <button
-              key={r.id}
-              onClick={() => onProjectRoleFilterChange(r.id as ProjectRoleFilter)}
-              className={`shrink-0 px-3 py-2 text-xs font-bold border rounded-xl transition-all ${
-                projectRoleFilter === r.id
-                  ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
-                  : 'bg-surface-card text-txt-secondary border-border hover:border-border hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]'
-              }`}
-            >
-              {r.label}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* People role filter chips + 모바일 필터 */}
-      {activeTab === 'people' && (
-        <div className="flex items-center gap-1.5 mb-4 overflow-x-auto scrollbar-hide mask-fade-r">
-          {PEOPLE_ROLE_FILTERS.map((r) => (
-            <button
-              key={r.id}
-              onClick={() => onPeopleRoleFilterChange(r.id as PeopleRoleFilter)}
-              className={`shrink-0 px-3 py-2 text-xs font-bold border rounded-xl transition-all ${
-                peopleRoleFilter === r.id
-                  ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
-                  : 'bg-surface-card text-txt-secondary border-border hover:border-border hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]'
-              }`}
-            >
-              {r.label}
-            </button>
-          ))}
-          {onMobileFilterToggle && (
-            <button
-              onClick={onMobileFilterToggle}
-              className={`lg:hidden shrink-0 ml-auto px-3 py-2 text-xs font-bold border rounded-xl transition-all flex items-center gap-1 ${
-                isMobileFilterOpen
-                  ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
-                  : 'bg-surface-card text-txt-secondary border-border hover:border-border'
-              }`}
-            >
-              <Filter size={12} />
-              필터
-            </button>
-          )}
+          <button
+            onClick={onFilterButtonClick}
+            className="shrink-0 ml-auto flex items-center gap-1 px-3 py-2 text-xs font-bold border rounded-xl transition-all bg-surface-card text-txt-secondary border-border hover:border-border hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]"
+          >
+            <Filter size={12} />
+            필터
+            {activeFilterCount > 0 && (
+              <span className="ml-0.5 min-w-[16px] h-4 flex items-center justify-center text-[10px] font-bold bg-brand text-white rounded-full px-1">
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
         </div>
       )}
     </>
