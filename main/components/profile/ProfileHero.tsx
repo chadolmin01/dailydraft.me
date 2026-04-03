@@ -10,7 +10,6 @@ import {
   ShieldCheck,
   Target,
   Sparkles,
-  Edit3,
   Pencil,
   Check,
   X,
@@ -300,7 +299,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
 
   /* ── Info grid ── */
   const renderInfoGrid = () => (
-    <div className="flex flex-wrap items-start gap-x-6 gap-y-3 pt-4 border-t border-border">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-4 border-t border-border">
       {infoItems.map((item) => (
         <div key={item.label} className="flex items-start gap-2">
           <item.icon size={12} className="text-txt-tertiary mt-0.5" />
@@ -357,15 +356,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
   const renderGuideRestart = () => {
     if (!isEditable) return null
     return (
-      <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5">
-        <button
-          onClick={() => router.push('/profile/edit')}
-          className="flex items-center gap-1 px-2 py-1 text-[10px] text-txt-tertiary hover:text-txt-primary bg-surface-card/80 backdrop-blur-sm border border-border rounded-lg transition-colors"
-        >
-          <Edit3 size={10} />
-          <span className="hidden sm:inline">설정</span>
-        </button>
-        <div className="group/guide relative">
+      <div className="absolute top-3 right-3 z-10 group/guide">
         <button
             onClick={() => {
               const key = 'draft_starter_guide'
@@ -395,7 +386,6 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
           <span className="absolute top-[calc(100%+6px)] right-0 px-2.5 py-1.5 text-[10px] font-medium bg-surface-inverse text-txt-inverse rounded-lg shadow-lg whitespace-nowrap opacity-0 pointer-events-none group-hover/guide:opacity-100 transition-opacity">
             시작 가이드 다시 보기
           </span>
-        </div>
       </div>
     )
   }
@@ -405,7 +395,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
   /* ════════════════════════════════════════════════════════ */
   if (coverUrl) {
     return (
-      <div className="relative group bg-surface-card text-txt-primary mb-6 overflow-hidden rounded-2xl">
+      <div className="relative group bg-surface-card text-txt-primary mb-6 border border-border shadow-md overflow-hidden rounded-2xl">
         {renderGuideRestart()}
 
         {/* Cover image */}
@@ -457,7 +447,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
   /* Variant B: no cover image                              */
   /* ════════════════════════════════════════════════════════ */
   return (
-    <div className="relative group text-txt-primary p-5 pb-6 mb-2 rounded-2xl">
+    <div className="relative group bg-surface-card text-txt-primary p-5 pb-6 mb-6 border border-border shadow-md rounded-2xl">
       {renderGuideRestart()}
 
       <div className="flex items-start gap-4 mb-4">

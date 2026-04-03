@@ -1,6 +1,5 @@
 export { ProfileHero } from './ProfileHero'
-export { ProfileLinksBar } from './ProfileLinksBar'
-export { ProfileInfoCards } from './ProfileInfoCards'
+export { ProfileSidebar } from './ProfileSidebar'
 export { ProfilePortfolio } from './ProfilePortfolio'
 export { ProfileProjects } from './ProfileProjects'
 export { ProfileCoffeeChats } from './ProfileCoffeeChats'

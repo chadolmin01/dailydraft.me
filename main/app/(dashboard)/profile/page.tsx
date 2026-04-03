@@ -10,8 +10,7 @@ import { useProfileCompletion } from '@/src/hooks/useProfileCompletion'
 import { useUniversityVerification } from '@/src/hooks/useUniversityVerification'
 import {
   ProfileHero,
-  ProfileLinksBar,
-  ProfileInfoCards,
+  ProfileSidebar,
   ProfilePortfolio,
   ProfileProjects,
   ProfileCoffeeChats,
@@ -87,7 +86,18 @@ export default function ProfilePage() {
           />
         </>
       )}
-      <DashboardLayout size="wide">
+      <DashboardLayout
+        size="wide"
+        sidebar={
+          <ProfileSidebar
+            profile={profile!}
+            email={user?.email}
+            uniVerified={uniVerified}
+            completion={completion}
+            isEditable
+          />
+        }
+      >
         <ProfileHero
           profile={profile!}
           email={user?.email}
@@ -95,8 +105,6 @@ export default function ProfilePage() {
           strengths={strengths}
           isEditable
         />
-        <ProfileLinksBar profile={profile!} isEditable />
-        <ProfileInfoCards profile={profile!} completion={completion} isEditable />
         <ProfilePortfolio items={portfolioItems} isEditable />
         <ProfileProjects opportunities={myOpportunities} />
         <ProfileCoffeeChats />
