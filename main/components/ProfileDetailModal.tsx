@@ -163,7 +163,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
         animate={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, scale: 1, y: 0 }}
         exit={isMobile ? { opacity: 1, y: '100%' } : { opacity: 0, scale: 0.95, y: 20 }}
         transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-        className="fixed inset-0 z-modal flex items-end sm:items-center justify-center pt-6 px-0 pb-[env(safe-area-inset-bottom)] sm:p-4 md:p-8"
+        className="fixed inset-0 z-modal flex items-end sm:items-center justify-center px-0 pb-[env(safe-area-inset-bottom)] sm:p-4 md:p-8"
         onClick={onClose}
       >
             <div
