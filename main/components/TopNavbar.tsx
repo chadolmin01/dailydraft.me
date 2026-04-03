@@ -370,6 +370,7 @@ export const TopNavbar: React.FC = () => {
                           </div>
                         </>
                       )}
+                      {isAdmin && (
                         <>
                           <div className="mx-3 border-t border-border-subtle" />
                           <div className="py-1.5 px-1.5">
