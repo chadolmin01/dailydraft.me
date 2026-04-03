@@ -69,9 +69,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { data: { session } } = await supabase.auth.getSession()
         if (!mounted) return
         if (session?.user) {
-          setUser(session.user)
           const p = await fetchProfile(session.user.id)
-          if (mounted) setProfile(p)
+          if (!mounted) return
+          // Batch: user + profile in same tick → single render
+          setUser(session.user)
+          setProfile(p)
           profileFetched = true
         }
       } catch { /* getSession failed — continue to authoritative path */ }
@@ -87,12 +89,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (error || !serverUser) {
           setUser(null)
           setProfile(null)
-        } else {
+        } else if (!profileFetched) {
+          const p = await fetchProfile(serverUser.id)
+          if (!mounted) return
+          // Batch: user + profile in same tick → single render
           setUser(serverUser)
-          if (!profileFetched) {
-            const p = await fetchProfile(serverUser.id)
-            if (mounted) setProfile(p)
-          }
+          setProfile(p)
         }
       } catch { /* getUser failed */ }
 
@@ -119,12 +121,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return
         }
 
-        setUser(session?.user ?? null)
-
         if (session?.user) {
           const profileData = await fetchProfile(session.user.id)
-          if (mounted) setProfile(profileData)
+          if (!mounted) return
+          // Batch: user + profile in same tick → single render
+          setUser(session.user)
+          setProfile(profileData)
         } else {
+          setUser(null)
           setProfile(null)
         }
       }
