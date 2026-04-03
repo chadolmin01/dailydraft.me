@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og'
 
-export const alt = 'Draft'
+export const alt = 'Draft — where projects begin'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -11,7 +11,7 @@ export default function OgImage() {
         style={{
           width: '100%',
           height: '100%',
-          background: '#0A0A0A',
+          background: '#FFFFFF',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -20,7 +20,7 @@ export default function OgImage() {
           fontFamily: 'sans-serif',
         }}
       >
-        {/* Subtle grid lines */}
+        {/* Subtle grid */}
         <div
           style={{
             position: 'absolute',
@@ -30,8 +30,9 @@ export default function OgImage() {
             bottom: 0,
             display: 'flex',
             backgroundImage:
-              'linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)',
+              'linear-gradient(#E0E0E0 1px, transparent 1px), linear-gradient(90deg, #E0E0E0 1px, transparent 1px)',
             backgroundSize: '60px 60px',
+            opacity: 0.4,
           }}
         />
 
@@ -41,27 +42,28 @@ export default function OgImage() {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: 24,
+            gap: 20,
+            position: 'relative',
           }}
         >
           {/* Logo mark */}
           <div
             style={{
-              width: 56,
-              height: 56,
-              background: '#fff',
+              width: 64,
+              height: 64,
+              background: '#262626',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <span style={{ color: '#0A0A0A', fontSize: 36, fontWeight: 900 }}>D</span>
+            <span style={{ color: '#FFFFFF', fontSize: 40, fontWeight: 900 }}>D</span>
           </div>
 
           {/* Brand name */}
           <span
             style={{
-              color: '#fff',
+              color: '#262626',
               fontSize: 72,
               fontWeight: 900,
               letterSpacing: '-2px',
@@ -70,11 +72,11 @@ export default function OgImage() {
             Draft.
           </span>
 
-          {/* Tagline — matches splash screen */}
+          {/* Tagline */}
           <span
             style={{
-              color: '#555',
-              fontSize: 16,
+              color: '#8E8E8E',
+              fontSize: 18,
               letterSpacing: '6px',
               textTransform: 'uppercase' as const,
             }}
@@ -85,28 +87,43 @@ export default function OgImage() {
           {/* Korean subtitle */}
           <span
             style={{
-              color: '#333',
-              fontSize: 14,
-              letterSpacing: '1px',
+              color: '#555555',
+              fontSize: 16,
             }}
           >
-            모든 프로젝트는 여기서 시작됩니다
+            프로젝트를 공유하고, 피드백 받고, 함께할 사람을 만나세요.
           </span>
         </div>
 
-        {/* Domain */}
+        {/* Domain — bottom right */}
         <div
           style={{
             position: 'absolute',
             bottom: 32,
             right: 48,
-            color: '#2a2a2a',
+            color: '#8E8E8E',
             fontSize: 14,
             letterSpacing: '2px',
             display: 'flex',
           }}
         >
           dailydraft.me
+        </div>
+
+        {/* Mono label — top left */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 32,
+            left: 48,
+            color: '#C7C7C7',
+            fontSize: 11,
+            letterSpacing: '4px',
+            fontWeight: 700,
+            display: 'flex',
+          }}
+        >
+          DRAFT
         </div>
       </div>
     ),

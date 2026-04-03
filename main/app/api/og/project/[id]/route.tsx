@@ -47,14 +47,14 @@ export async function GET(
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          backgroundColor: '#0A0A0A',
+          backgroundColor: '#FFFFFF',
           padding: '60px',
           fontFamily: 'sans-serif',
           position: 'relative',
           overflow: 'hidden',
         }}
       >
-        {/* Grid pattern — matches main OG */}
+        {/* Grid pattern */}
         <div
           style={{
             position: 'absolute',
@@ -64,19 +64,20 @@ export async function GET(
             bottom: 0,
             display: 'flex',
             backgroundImage:
-              'linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)',
+              'linear-gradient(#E0E0E0 1px, transparent 1px), linear-gradient(90deg, #E0E0E0 1px, transparent 1px)',
             backgroundSize: '60px 60px',
+            opacity: 0.3,
           }}
         />
 
-        {/* Top: Type badge */}
+        {/* Top: Type badge + status */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', position: 'relative' }}>
           <div
             style={{
-              fontSize: '14px',
+              fontSize: '13px',
               fontWeight: 700,
-              color: '#ffffff',
-              border: '2px solid rgba(255,255,255,0.3)',
+              color: '#262626',
+              border: '2px solid #D0D0D0',
               padding: '6px 14px',
               letterSpacing: '2px',
             }}
@@ -85,17 +86,17 @@ export async function GET(
           </div>
           <div
             style={{
-              fontSize: '14px',
+              fontSize: '13px',
               fontWeight: 700,
-              color: '#22c55e',
-              backgroundColor: 'rgba(34,197,94,0.15)',
+              color: '#16A34A',
+              backgroundColor: '#F0FDF4',
               padding: '6px 14px',
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
             }}
           >
-            <div style={{ width: '8px', height: '8px', backgroundColor: '#22c55e', borderRadius: '50%' }} />
+            <div style={{ width: '8px', height: '8px', backgroundColor: '#16A34A', borderRadius: '50%' }} />
             모집 중
           </div>
         </div>
@@ -106,9 +107,10 @@ export async function GET(
             style={{
               fontSize: '48px',
               fontWeight: 800,
-              color: '#ffffff',
+              color: '#262626',
               lineHeight: 1.2,
               maxWidth: '900px',
+              letterSpacing: '-1px',
             }}
           >
             {title.length > 50 ? title.slice(0, 50) + '...' : title}
@@ -117,9 +119,9 @@ export async function GET(
             <div
               style={{
                 fontSize: '20px',
-                color: 'rgba(255,255,255,0.6)',
+                color: '#555555',
                 maxWidth: '800px',
-                lineHeight: 1.4,
+                lineHeight: 1.5,
               }}
             >
               {description}
@@ -127,16 +129,17 @@ export async function GET(
           )}
           {/* Role tags */}
           {roles.length > 0 && (
-            <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+            <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
               {roles.map((role) => (
                 <div
                   key={role}
                   style={{
-                    fontSize: '16px',
+                    fontSize: '15px',
                     fontWeight: 600,
-                    color: '#60a5fa',
-                    backgroundColor: 'rgba(96,165,250,0.15)',
+                    color: '#262626',
+                    backgroundColor: '#F5F5F5',
                     padding: '6px 16px',
+                    border: '1px solid #E0E0E0',
                   }}
                 >
                   {role}
@@ -150,21 +153,24 @@ export async function GET(
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', position: 'relative' }}>
           <div
             style={{
-              width: '40px',
-              height: '40px',
-              backgroundColor: '#ffffff',
+              width: '36px',
+              height: '36px',
+              backgroundColor: '#262626',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               fontWeight: 900,
-              fontSize: '20px',
-              color: '#0A0A0A',
+              fontSize: '18px',
+              color: '#FFFFFF',
             }}
           >
             D
           </div>
-          <div style={{ fontSize: '20px', fontWeight: 700, color: 'rgba(255,255,255,0.5)', letterSpacing: '-0.5px' }}>
+          <div style={{ fontSize: '18px', fontWeight: 700, color: '#262626', letterSpacing: '-0.5px' }}>
             Draft.
+          </div>
+          <div style={{ fontSize: '13px', color: '#8E8E8E', marginLeft: '8px', display: 'flex' }}>
+            dailydraft.me
           </div>
         </div>
       </div>
