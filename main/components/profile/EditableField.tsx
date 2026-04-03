@@ -73,7 +73,7 @@ export function EditableField(props: EditableFieldProps) {
           }}
           onBlur={close}
           placeholder={placeholder}
-          className={`bg-surface-bg border border-border rounded-xl outline-none px-2 py-0.5 focus:border-brand transition-colors ${className || ''}`}
+          className={`bg-surface-bg border border-border rounded-xl outline-none w-full px-2 py-0.5 focus:border-brand transition-colors ${className || ''}`}
         />
       )
     }

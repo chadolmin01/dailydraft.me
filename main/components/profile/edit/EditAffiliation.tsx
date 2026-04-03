@@ -167,7 +167,7 @@ export const EditAffiliation: React.FC<EditAffiliationProps> = ({
             ) : verifyStep === 'idle' ? (
               <div className="space-y-2">
                 <p className="text-xs text-txt-tertiary">대학 이메일(.ac.kr)로 인증하면 프로필에 인증 배지가 표시됩니다.</p>
-                <div className="flex gap-1.5">
+                <div className="flex flex-wrap gap-1.5">
                   <input
                     type="email"
                     value={verifyEmail}
@@ -207,14 +207,14 @@ export const EditAffiliation: React.FC<EditAffiliationProps> = ({
                 <p className="text-xs text-txt-tertiary">
                   <strong>{verifyEmail}</strong>로 발송된 6자리 코드를 입력하세요.
                 </p>
-                <div className="flex gap-1.5">
+                <div className="flex flex-wrap gap-1.5">
                   <input
                     type="text"
                     value={verifyCode}
                     onChange={e => { setVerifyCode(e.target.value.replace(/\D/g, '').slice(0, 6)); setVerifyError('') }}
                     placeholder="000000"
                     maxLength={6}
-                    className="w-32 px-3 py-2 text-base sm:text-sm font-mono text-center tracking-widest border border-border bg-surface-card rounded-lg focus:outline-none focus:border-accent transition-colors"
+                    className="w-24 sm:w-32 px-3 py-2 text-base sm:text-sm font-mono text-center tracking-widest border border-border bg-surface-card rounded-lg focus:outline-none focus:border-accent transition-colors"
                   />
                   <button
                     type="button"

@@ -158,7 +158,7 @@ export const EditAIProfile: React.FC<EditAIProfileProps> = ({
         <h4 className="text-xs font-medium text-txt-secondary">팀 선호</h4>
         <div>
           <label className="block text-xs text-txt-tertiary mb-1.5">역할</label>
-          <div className="flex gap-1.5">
+          <div className="flex flex-wrap gap-1.5">
             {['리더', '팔로워', '유연'].map(r => (
               <button key={r} type="button" onClick={() => setTeamRole(r)}
                 className={`px-3 py-1.5 text-xs font-medium border transition-colors ${teamRole === r ? 'bg-brand text-white border-brand' : 'bg-surface-card text-txt-secondary border-border hover:border-border'}`}
@@ -168,7 +168,7 @@ export const EditAIProfile: React.FC<EditAIProfileProps> = ({
         </div>
         <div>
           <label className="block text-xs text-txt-tertiary mb-1.5">선호 인원</label>
-          <div className="flex gap-1.5">
+          <div className="flex flex-wrap gap-1.5">
             {['2-3명', '4-5명', '6명+'].map(s => (
               <button key={s} type="button" onClick={() => setTeamSize(s)}
                 className={`px-3 py-1.5 text-xs font-medium border transition-colors ${teamSize === s ? 'bg-brand text-white border-brand' : 'bg-surface-card text-txt-secondary border-border hover:border-border'}`}
@@ -178,7 +178,7 @@ export const EditAIProfile: React.FC<EditAIProfileProps> = ({
         </div>
         <div>
           <label className="block text-xs text-txt-tertiary mb-1.5">분위기</label>
-          <div className="flex gap-1.5">
+          <div className="flex flex-wrap gap-1.5">
             {['실무형', '캐주얼', '균형'].map(a => (
               <button key={a} type="button" onClick={() => setTeamAtmosphere(a)}
                 className={`px-3 py-1.5 text-xs font-medium border transition-colors ${teamAtmosphere === a ? 'bg-brand text-white border-brand' : 'bg-surface-card text-txt-secondary border-border hover:border-border'}`}
