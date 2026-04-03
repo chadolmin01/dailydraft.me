@@ -398,7 +398,7 @@ function ExplorePageContent() {
         ? publicProfiles.length
         : publicProfiles.filter(p => {
             const position = p.desired_position || ''
-            return 'positionSlugs' in f && f.positionSlugs.includes(position)
+            return 'positionSlugs' in f && (f as { positionSlugs: string[] }).positionSlugs.includes(position)
           }).length
       return { id: f.id, label: f.label, count, icon: PEOPLE_CATEGORY_ICONS[f.id] || Users }
     }),
