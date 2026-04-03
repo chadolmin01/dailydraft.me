@@ -361,17 +361,17 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                           onClick={() => setShowTypeSelector(!showTypeSelector)}
                           className="text-[10px] font-medium px-2 py-0.5 bg-surface-card text-txt-tertiary border border-border hover:border-border hover:text-txt-secondary transition-colors flex items-center gap-1"
                         >
-                          {opportunity.type === 'side_project' ? 'SIDE PROJECT' :
-                           opportunity.type === 'startup' ? 'STARTUP' :
-                           opportunity.type === 'study' ? 'STUDY' : 'PROJECT'}
+                          {opportunity.type === 'side_project' ? '함께 만들기' :
+                           opportunity.type === 'startup' ? '창업 준비' :
+                           opportunity.type === 'study' ? '함께 배우기' : 'PROJECT'}
                           <Edit3 size={8} />
                         </button>
                         {showTypeSelector && (
                           <div className="absolute top-full left-0 mt-1 bg-surface-card rounded-xl border border-border shadow-md z-10 min-w-[8rem]">
                             {[
-                              { value: 'side_project', label: 'SIDE PROJECT' },
-                              { value: 'startup', label: 'STARTUP' },
-                              { value: 'study', label: 'STUDY' },
+                              { value: 'side_project', label: '함께 만들기' },
+                              { value: 'startup', label: '창업 준비' },
+                              { value: 'study', label: '함께 배우기' },
                             ].map((opt) => (
                               <button
                                 key={opt.value}
@@ -396,9 +396,9 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                       </div>
                     ) : (
                       <span className="text-[10px] font-medium px-2 py-0.5 bg-surface-card text-txt-tertiary border border-border">
-                        {opportunity.type === 'side_project' ? 'SIDE PROJECT' :
-                         opportunity.type === 'startup' ? 'STARTUP' :
-                         opportunity.type === 'study' ? 'STUDY' : opportunity.type?.toUpperCase() || 'PROJECT'}
+                        {opportunity.type === 'side_project' ? '함께 만들기' :
+                         opportunity.type === 'startup' ? '창업 준비' :
+                         opportunity.type === 'study' ? '함께 배우기' : opportunity.type?.toUpperCase() || 'PROJECT'}
                       </span>
                     )}
                     {opportunity.status === 'active' && (

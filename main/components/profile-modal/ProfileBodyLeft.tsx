@@ -164,7 +164,7 @@ export function ProfileBodyLeft({
           <>
             <div className="space-y-2">
               {userProjects.slice(0, 2).map((project) => {
-                const typeLabel = project.type === 'startup' || project.type === 'team_building' ? '스타트업' : project.type === 'study' ? '스터디' : '사이드'
+                const typeLabel = project.type === 'startup' || project.type === 'team_building' ? '창업 준비' : project.type === 'study' ? '함께 배우기' : '함께 만들기'
                 return (
                   <button
                     key={project.id}

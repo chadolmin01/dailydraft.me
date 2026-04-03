@@ -2,8 +2,8 @@
 
 import React from 'react'
 import { LayoutGrid, Users, Search, X, Filter } from 'lucide-react'
-import { SORT_OPTIONS, TYPE_FILTERS, PEOPLE_ROLE_FILTERS, PEOPLE_SORT_OPTIONS } from './constants'
-import type { ActiveTab, SortBy, TypeFilter, PeopleRoleFilter, PeopleSortBy } from './types'
+import { SORT_OPTIONS, TYPE_FILTERS, PROJECT_ROLE_FILTERS, PEOPLE_ROLE_FILTERS, PEOPLE_SORT_OPTIONS } from './constants'
+import type { ActiveTab, SortBy, TypeFilter, PeopleRoleFilter, PeopleSortBy, ProjectRoleFilter } from './types'
 
 interface ExploreTabBarProps {
   activeTab: ActiveTab
@@ -14,6 +14,8 @@ interface ExploreTabBarProps {
   onTypeFilterChange: (filter: TypeFilter) => void
   peopleRoleFilter: PeopleRoleFilter
   onPeopleRoleFilterChange: (filter: PeopleRoleFilter) => void
+  projectRoleFilter: ProjectRoleFilter
+  onProjectRoleFilterChange: (filter: ProjectRoleFilter) => void
   peopleSortBy: PeopleSortBy
   onPeopleSortChange: (sort: PeopleSortBy) => void
   query: string
@@ -36,6 +38,8 @@ export function ExploreTabBar({
   onTypeFilterChange,
   peopleRoleFilter,
   onPeopleRoleFilterChange,
+  projectRoleFilter,
+  onProjectRoleFilterChange,
   peopleSortBy,
   onPeopleSortChange,
   query,
@@ -184,6 +188,25 @@ export function ExploreTabBar({
               필터
             </button>
           )}
+        </div>
+      )}
+
+      {/* Project role filter chips */}
+      {activeTab === 'projects' && (
+        <div className="flex items-center gap-1.5 mb-4 overflow-x-auto scrollbar-hide mask-fade-r">
+          {PROJECT_ROLE_FILTERS.map((r) => (
+            <button
+              key={r.id}
+              onClick={() => onProjectRoleFilterChange(r.id as ProjectRoleFilter)}
+              className={`shrink-0 px-3 py-2 text-xs font-bold border rounded-xl transition-all ${
+                projectRoleFilter === r.id
+                  ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
+                  : 'bg-surface-card text-txt-secondary border-border hover:border-border hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]'
+              }`}
+            >
+              {r.label}
+            </button>
+          ))}
         </div>
       )}
 

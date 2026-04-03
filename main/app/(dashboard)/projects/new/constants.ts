@@ -1,9 +1,9 @@
 import { Code2, Palette, Lightbulb, Megaphone, Users, BarChart3 } from 'lucide-react'
 
 export const TYPE_OPTIONS = [
-  { value: 'side_project', label: 'SIDE PROJECT' },
-  { value: 'startup', label: 'STARTUP' },
-  { value: 'study', label: 'STUDY' },
+  { value: 'side_project', label: '함께 만들기' },
+  { value: 'startup', label: '창업 준비' },
+  { value: 'study', label: '함께 배우기' },
 ]
 
 export const ROLE_OPTIONS = [
@@ -34,8 +34,8 @@ export const COMPENSATION_OPTIONS = [
 ]
 
 export const CATEGORY_TAGS = [
-  'AI/ML', 'SaaS', 'Fintech', 'HealthTech', 'Social',
-  'EdTech', 'E-Commerce', 'DevTools', 'Blockchain', 'IoT',
+  'AI/ML', '웹/앱 개발', '데이터분석', '디자인/UX', '핀테크', '에듀테크', '헬스케어',
+  '커머스', '소셜/커뮤니티', '게임', '콘텐츠/미디어', '하드웨어/IoT', '공모전/해커톤', '포트폴리오',
 ]
 
 export type TypeTheme = {
@@ -76,7 +76,7 @@ export const TYPE_THEMES: Record<string, TypeTheme> = {
     descPlaceholder: '어떤 걸 만들고 있는지, 현재 어디까지 진행했는지 자유롭게 적어주세요',
     painLabel: '해결하려는 문제',
     painPlaceholder: '이 프로젝트로 어떤 불편함을 해결하나요?',
-    ctaTitle: '사이드 프로젝트를 시작해볼까요?',
+    ctaTitle: '함께 만들 팀원을 찾아볼까요?',
     ctaDesc: '등록하면 관심있는 팀원이 커피챗을 신청할 수 있어요.',
     rolesLabel: '함께할 포지션 *',
   },
@@ -96,8 +96,8 @@ export const TYPE_THEMES: Record<string, TypeTheme> = {
     descPlaceholder: '어떤 시장을 타겟하는지, 비즈니스 모델과 현재 단계를 설명해주세요',
     painLabel: '타겟 시장의 문제',
     painPlaceholder: '고객이 겪고 있는 핵심 문제는 무엇인가요?',
-    ctaTitle: '공동창업자를 찾을 준비가 되었나요?',
-    ctaDesc: '등록 후 잠재적 공동창업자가 커피챗을 신청할 수 있습니다.',
+    ctaTitle: '함께 창업할 팀원을 찾아볼까요?',
+    ctaDesc: '등록하면 관심있는 팀원이 커피챗을 신청할 수 있어요.',
     rolesLabel: '모집 중인 포지션 *',
   },
   study: {
@@ -116,7 +116,7 @@ export const TYPE_THEMES: Record<string, TypeTheme> = {
     descPlaceholder: '무엇을 공부하는지, 어떤 방식으로 진행하는지 알려주세요',
     painLabel: '스터디 목표',
     painPlaceholder: '이 스터디를 통해 달성하고 싶은 목표는?',
-    ctaTitle: '스터디원을 모집해볼까요?',
+    ctaTitle: '함께 배울 스터디원을 찾아볼까요?',
     ctaDesc: '등록하면 관심있는 스터디원이 참여 신청할 수 있어요.',
     rolesLabel: '찾고 있는 스터디원 *',
   },

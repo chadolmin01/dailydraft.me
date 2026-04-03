@@ -27,8 +27,8 @@ const POSITION_OPTIONS = [
   'PM/PO', 'UI/UX 디자이너', '데이터 분석가', 'AI/ML 엔지니어', '마케터', '기획자',
 ]
 const INTEREST_OPTIONS = [
-  'AI/ML', 'SaaS', '에듀테크', '핀테크', '헬스케어', '소셜', '커머스',
-  '콘텐츠', '게임', '블록체인', '모빌리티', '부동산', 'HR테크', '푸드테크',
+  'AI/ML', '웹/앱 개발', '데이터분석', '디자인/UX', '핀테크', '에듀테크', '헬스케어',
+  '커머스', '소셜/커뮤니티', '게임', '콘텐츠/미디어', '하드웨어/IoT', '공모전/해커톤', '포트폴리오',
 ]
 const SITUATION_OPTIONS = [
   { value: 'has_project', label: '프로젝트 진행 중 — 팀원을 찾고 있어요' },
@@ -123,7 +123,7 @@ export default function ProfileEditPage() {
     setAffiliationType(profile.affiliation_type || 'student')
     setUniversity(profile.university || '')
     setMajor(profile.major || '')
-    setBio((profile as Record<string, unknown>).bio as string || '')
+    setBio(profile.bio || '')
     setVision(profile.vision_summary || '')
     setContactEmail(profile.contact_email || '')
     setPortfolioUrl(profile.portfolio_url || '')

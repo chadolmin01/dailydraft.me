@@ -23,9 +23,9 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { timeAgo } from '@/src/lib/utils'
 
 const TYPE_LABEL: Record<string, string> = {
-  side_project: 'SIDE PROJECT',
-  startup: 'STARTUP',
-  study: 'STUDY',
+  side_project: '함께 만들기',
+  startup: '창업 준비',
+  study: '함께 배우기',
 }
 
 function SimilarProjectsSection({ opportunityId }: { opportunityId: string | undefined }) {
@@ -277,9 +277,9 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
               {/* Type Badge */}
               <div className="flex items-center gap-2 mb-4">
                 <span className="text-[10px] font-medium px-2 py-1 border border-border text-black">
-                  {opportunity.type === 'side_project' ? 'SIDE PROJECT' :
-                   opportunity.type === 'startup' ? 'STARTUP' :
-                   opportunity.type === 'study' ? 'STUDY' : opportunity.type?.toUpperCase() || 'PROJECT'}
+                  {opportunity.type === 'side_project' ? '함께 만들기' :
+                   opportunity.type === 'startup' ? '창업 준비' :
+                   opportunity.type === 'study' ? '함께 배우기' : opportunity.type?.toUpperCase() || 'PROJECT'}
                 </span>
                 {opportunity.status === 'active' ? (
                   <span className="inline-flex items-center gap-1 px-2 py-1 bg-status-success-bg border border-status-success-text/30 text-status-success-text text-[10px] font-bold">

@@ -2,7 +2,6 @@
 
 import React, { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import { hapticMedium } from '@/src/utils/haptic'
 import {
   X, Briefcase, Share2, Heart,
   Loader2, AlertCircle, ShieldCheck,
@@ -20,6 +19,7 @@ import { ProfileBodyRight } from './profile-modal/ProfileBodyRight'
 import { ProfileSidePanel } from './profile-modal/ProfileSidePanel'
 import { PortfolioView } from './profile-modal/PortfolioView'
 import { useBackHandler } from '@/src/hooks/useBackHandler'
+import { useProfileInterest } from '@/src/hooks/useProfileInterest'
 
 export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileId, byUserId, matchData, onClose, onSelectProject, initialCoffeeChatOpen, initialCoffeeChatMessage }) => {
   const { isAuthenticated, user } = useAuth()
@@ -31,9 +31,6 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
   const [showInviteModal, setShowInviteModal] = useState(false)
   const [modalView, setModalView] = useState<'profile' | 'portfolio'>('profile')
   const [sidePanel, setSidePanel] = useState<null | 'projects' | 'portfolio'>(null)
-  const [hasInterested, setHasInterested] = useState(false)
-  const [interestCount, setInterestCount] = useState(0)
-  const [interestLoading, setInterestLoading] = useState(false)
   useBackHandler(!!profileId, onClose, 'profile-detail')
   useBackHandler(showCoffeeChatForm, () => setShowCoffeeChatForm(false), 'profile-coffee')
   useBackHandler(showInviteModal, () => setShowInviteModal(false), 'profile-invite')
@@ -44,6 +41,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
     byUserId ? { byUserId: true } : undefined
   )
   const profileUserId = profile?.user_id as string | undefined
+  const { hasInterested, interestCount, interestLoading, handleInterest } = useProfileInterest(profile?.id, profileUserId)
   const { data: portfolioItems = [] } = usePortfolioItems(profileUserId)
 
   // Fetch this user's active projects
@@ -92,42 +90,6 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
     }
   }, [initialCoffeeChatOpen, profile, user])
 
-  useEffect(() => {
-    if (profile?.id && user) {
-      fetch(`/api/profile/${profile.id}/interest`)
-        .then(r => r.json())
-        .then(d => {
-          setHasInterested(!!d.interested)
-          setInterestCount(d.interest_count ?? 0)
-        })
-        .catch(() => toast.error('관심 정보를 불러오지 못했습니다'))
-    } else {
-      setHasInterested(false)
-      setInterestCount(0)
-    }
-  }, [profile?.id, user])
-
-  const handleInterest = async () => {
-    hapticMedium()
-    if (!user) return
-    if (user.id === profile?.user_id) { toast.error('내 프로필에는 관심 표시를 할 수 없어요'); return }
-    if (!profile?.id || interestLoading) return
-    setInterestLoading(true)
-    try {
-      const res = await fetch(`/api/profile/${profile.id}/interest`, { method: 'POST' })
-      const data = await res.json()
-      if (res.ok) {
-        setHasInterested(data.interested)
-        setInterestCount(data.interest_count ?? 0)
-        toast.success(data.interested ? '관심을 표시했어요' : '관심 표시를 취소했어요')
-      } else {
-        toast.error('관심 표시에 실패했어요')
-      }
-    } catch {
-      toast.error('네트워크 오류가 발생했어요')
-    }
-    setInterestLoading(false)
-  }
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -142,7 +104,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
   const coverUrl = profile?.cover_image_url
   const affiliationType = profile?.affiliation_type
 
-  const bio = (profile as Record<string, unknown> | null)?.bio as string | null
+  const bio = profile?.bio ?? null
   let visionSummary: string | null = null
   let visionParsed: Record<string, unknown> | null = null
   if (profile?.vision_summary) {

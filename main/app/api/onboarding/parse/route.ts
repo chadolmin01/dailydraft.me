@@ -43,14 +43,14 @@ export async function POST(request: Request) {
 사용자 입력: "${trimmed}"
 
 규칙:
-- 기존 카테고리에 매칭되면 해당 이름 사용: AI/ML, Web, Mobile, HealthTech, EdTech, Fintech, Social, E-commerce, IoT, Game, Blockchain, DevTools
+- 기존 카테고리에 매칭되면 해당 이름 사용: AI/ML, 웹/앱 개발, 데이터분석, 디자인/UX, 핀테크, 에듀테크, 헬스케어, 커머스, 소셜/커뮤니티, 게임, 콘텐츠/미디어, 하드웨어/IoT, 공모전/해커톤, 포트폴리오
 - 기존 카테고리에 없는 새로운 관심 분야도 자유롭게 추가 가능
 - 간결하고 명확한 태그로 정리 (예: "Sustainability", "음악", "로봇공학", "우주산업")
 - 너무 넓은 개념은 구체화 (예: "기술" → 제외, "AI 스타트업" → "AI/ML")
 - 중복 제거, 최대 8개
 - JSON 배열만 반환, 다른 텍스트 없이
 
-예시: ["AI/ML", "Sustainability", "Game", "로봇공학"]`
+예시: ["AI/ML", "Sustainability", "게임", "로봇공학"]`
 
     let items: string[] = []
     try {

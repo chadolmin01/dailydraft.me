@@ -34,7 +34,7 @@ export function ProfileSidePanel({
       {/* Side panel content */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
         {sidePanel === 'projects' && userProjects.map((project) => {
-          const typeLabel = project.type === 'startup' || project.type === 'team_building' ? '스타트업' : project.type === 'study' ? '스터디' : '사이드'
+          const typeLabel = project.type === 'startup' || project.type === 'team_building' ? '창업 준비' : project.type === 'study' ? '함께 배우기' : '함께 만들기'
           return (
             <button
               key={project.id}

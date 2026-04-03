@@ -7,10 +7,10 @@ import { useAuth } from '@/src/context/AuthContext'
 
 // Showcase data — decorative cards for login page marquee
 const projectCards = [
-  { title: '사이드 프로젝트', desc: '함께 만들어갈 팀원을 찾고 있어요', roles: ['프론트엔드', '디자이너'], tags: ['React', 'Figma'] },
+  { title: '함께 만들기', desc: '함께 만들어갈 팀원을 찾고 있어요', roles: ['프론트엔드', '디자이너'], tags: ['React', 'Figma'] },
   { title: 'AI 프로젝트', desc: 'AI 기반 서비스를 함께 만들어요', roles: ['백엔드', 'AI/ML'], tags: ['Python', 'LLM'] },
   { title: '앱 개발', desc: '모바일 앱을 함께 개발할 팀원 모집', roles: ['풀스택'], tags: ['Next.js', 'Supabase'] },
-  { title: '스터디 그룹', desc: '함께 공부하고 성장해요', roles: ['기획자', '프론트엔드'], tags: ['스터디', '개발'] },
+  { title: '함께 배우기', desc: '함께 공부하고 성장해요', roles: ['기획자', '프론트엔드'], tags: ['스터디', '개발'] },
   { title: '포트폴리오 프로젝트', desc: '프로젝트 경험을 함께 쌓아요', roles: ['디자이너', '백엔드'], tags: ['Figma', 'Node.js'] },
 ]
 
@@ -387,7 +387,7 @@ function LoginContent() {
             <div className="flex justify-end gap-2">
                <div className="px-3 py-1.5 bg-surface-card rounded-full border border-border text-[0.6875rem] font-bold shadow-sm">커피챗</div>
                <div className="px-3 py-1.5 bg-surface-card rounded-full border border-border text-[0.6875rem] font-bold shadow-sm">팀빌딩</div>
-               <div className="px-3 py-1.5 bg-surface-card rounded-full border border-border text-[0.6875rem] font-bold shadow-sm">사이드 프로젝트</div>
+               <div className="px-3 py-1.5 bg-surface-card rounded-full border border-border text-[0.6875rem] font-bold shadow-sm">함께 만들기</div>
             </div>
          </div>
       </div>

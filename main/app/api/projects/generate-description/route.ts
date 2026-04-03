@@ -17,9 +17,9 @@ export async function POST(request: Request) {
     }
 
     const typeLabel: Record<string, string> = {
-      side_project: '사이드 프로젝트',
-      startup: '스타트업',
-      study: '스터디',
+      side_project: '함께 만들기',
+      startup: '창업 준비',
+      study: '함께 배우기',
     }
 
     const locationLabel: Record<string, string> = {

@@ -34,7 +34,7 @@ import { cleanNickname } from '@/src/lib/clean-nickname'
 import { useInfinitePublicProfiles, type PublicProfile } from '@/src/hooks/usePublicProfiles'
 import { useUserRecommendations, type UserRecommendation } from '@/src/hooks/useUserRecommendations'
 import { FALLBACK_CATEGORIES, FALLBACK_TRENDING_TAGS } from '@/src/lib/fallbacks/explore'
-import { PEOPLE_ROLE_FILTERS, PEOPLE_CATEGORY_ICONS } from '@/components/explore/constants'
+import { PEOPLE_ROLE_FILTERS, PROJECT_ROLE_FILTERS, PEOPLE_CATEGORY_ICONS } from '@/components/explore/constants'
 import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/src/context/AuthContext'
 import { CATEGORY_ICONS, PAGE_SIZE, PEOPLE_PAGE_SIZE } from './constants'
@@ -47,7 +47,7 @@ import {
   ExploreProjectGrid,
   ExplorePeopleGrid,
 } from '@/components/explore'
-import type { ActiveTab, SortBy, TypeFilter, SearchScope, PeopleRoleFilter, PeopleSortBy } from '@/components/explore/types'
+import type { ActiveTab, SortBy, TypeFilter, SearchScope, PeopleRoleFilter, PeopleSortBy, ProjectRoleFilter } from '@/components/explore/types'
 
 function useDebouncedValue<T>(value: T, delay: number): T {
   const [debounced, setDebounced] = useState(value)
@@ -150,6 +150,7 @@ function ExplorePageContent() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('projects')
   const [recruitingOnly, setRecruitingOnly] = useState(false)
   const [peopleRoleFilter, setPeopleRoleFilter] = useState<PeopleRoleFilter>('all')
+  const [projectRoleFilter, setProjectRoleFilter] = useState<ProjectRoleFilter>('all')
   const [peopleSortBy, setPeopleSortBy] = useState<PeopleSortBy>('latest')
   const [searchInput, setSearchInput] = useState(initialQuery)
   const [searchScope, setSearchScope] = useState<SearchScope>(initialScope)
@@ -233,6 +234,14 @@ function ExplorePageContent() {
     const filterOpp = (opp: OpportunityWithCreator) => {
       const normalizedType = opp.type === 'team_building' ? 'startup' : (opp.type || 'side_project')
       if (typeFilter !== 'all' && normalizedType !== typeFilter) return false
+      // Role filter
+      if (projectRoleFilter !== 'all') {
+        const roles = (opp.needed_roles || []).map((r: string) => r.toLowerCase())
+        const filterDef = PROJECT_ROLE_FILTERS.find(f => f.id === projectRoleFilter)
+        if (filterDef && 'keywords' in filterDef) {
+          if (!filterDef.keywords.some((kw: string) => roles.some((r: string) => r.includes(kw.toLowerCase())))) return false
+        }
+      }
       if (recruitingOnly && opp.status !== 'active') return false
       if (selectedCategory !== 'all') {
         const tags = (opp.interest_tags || []).map(t => t.toLowerCase())
@@ -298,7 +307,7 @@ function ExplorePageContent() {
       })
       .map((opp: OpportunityWithCreator) => toCard(opp))
   },
-    [opportunities, typeFilter, recruitingOnly, selectedCategory, query, searchScope, sortBy, aiScoreMap]
+    [opportunities, typeFilter, projectRoleFilter, recruitingOnly, selectedCategory, query, searchScope, sortBy, aiScoreMap]
   )
 
   // ── Derived: talent cards ──
@@ -462,6 +471,8 @@ function ExplorePageContent() {
     onTypeFilterChange: setTypeFilter,
     peopleRoleFilter,
     onPeopleRoleFilterChange: setPeopleRoleFilter,
+    projectRoleFilter,
+    onProjectRoleFilterChange: setProjectRoleFilter,
     peopleSortBy,
     onPeopleSortChange: setPeopleSortBy,
     query,

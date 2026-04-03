@@ -23,7 +23,7 @@ export const AFFILIATION_OPTIONS = [
 
 export const POPULAR_SKILLS = ['React', 'Python', 'TypeScript', 'Figma', 'Java', 'Node.js', 'Flutter', 'SQL']
 
-export const INTEREST_OPTIONS = ['AI/ML', 'Web', 'Mobile', 'HealthTech', 'EdTech', 'Fintech', 'Social', 'E-commerce', 'IoT', 'Game', 'Blockchain', 'DevTools']
+export const INTEREST_OPTIONS = ['AI/ML', '웹/앱 개발', '데이터분석', '디자인/UX', '핀테크', '에듀테크', '헬스케어', '커머스', '소셜/커뮤니티', '게임', '콘텐츠/미디어', '하드웨어/IoT', '공모전/해커톤', '포트폴리오']
 
 export const DEEP_CHAT_TOPICS: DeepChatTopic[] = [
   { id: 'experience', label: '프로젝트 경험', icon: Briefcase, keywords: ['프로젝트', '경험', '해본', '만들', '개발', '참여', '역할'] },

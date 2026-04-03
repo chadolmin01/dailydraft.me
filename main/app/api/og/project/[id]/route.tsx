@@ -30,9 +30,9 @@ export async function GET(
       title = opportunity.title || title
       description = (opportunity.description || '').slice(0, 100)
       roles = (opportunity.needed_roles || []).slice(0, 3)
-      type = opportunity.type === 'startup' ? 'STARTUP' :
-             opportunity.type === 'study' ? 'STUDY' :
-             opportunity.type === 'side_project' ? 'SIDE PROJECT' : 'PROJECT'
+      type = opportunity.type === 'startup' ? '창업 준비' :
+             opportunity.type === 'study' ? '함께 배우기' :
+             opportunity.type === 'side_project' ? '함께 만들기' : 'PROJECT'
     }
   } catch {
     // Use defaults

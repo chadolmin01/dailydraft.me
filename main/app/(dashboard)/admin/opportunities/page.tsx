@@ -50,7 +50,7 @@ const statusLabels: Record<string, { label: string; cls: string }> = {
 
 const typeLabels: Record<string, string> = {
   project: '프로젝트',
-  study: '스터디',
+  study: '함께 배우기',
   competition: '공모전',
   club: '동아리',
   other: '기타',

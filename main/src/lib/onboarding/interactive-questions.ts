@@ -196,7 +196,7 @@ export const INTERACTIVE_QUESTIONS: Record<string, InteractiveQuestion> = {
     options: [
       { id: 'serious', emoji: '🔥', label: '실전 몰입형' },
       { id: 'learning', emoji: '📚', label: '학습 중심' },
-      { id: 'side', emoji: '🎮', label: '사이드 프로젝트' },
+      { id: 'side', emoji: '🎮', label: '함께 만들기' },
       { id: 'remote', emoji: '🏠', label: '재택/비대면' },
       { id: 'cafe', emoji: '☕', label: '카페/대면' },
       { id: 'contest', emoji: '🏆', label: '대회/공모전' },
