@@ -16,7 +16,7 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
   const currentPhaseIndex = phases.findIndex(p => pathname.startsWith(p.path));
 
   return (
-    <div className="min-h-screen bg-surface-sunken">
+    <div className="min-h-screen bg-surface-bg">
       {/* Header */}
       <div className="bg-surface-card border-b border-border">
         <div className="max-w-5xl mx-auto px-6 py-6">

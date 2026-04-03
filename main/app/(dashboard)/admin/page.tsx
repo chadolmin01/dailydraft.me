@@ -55,7 +55,7 @@ export default function AdminDashboardPage() {
 
   if (isAdminLoading) {
     return (
-      <div className="flex-1 flex items-center justify-center h-screen bg-surface-sunken">
+      <div className="flex-1 flex items-center justify-center h-screen bg-surface-bg">
         <div className="space-y-4 w-full max-w-xs">
           <div className="h-6 bg-surface-card rounded skeleton-shimmer w-40 mx-auto" />
           <div className="h-4 bg-surface-card rounded skeleton-shimmer w-32 mx-auto" />
@@ -66,7 +66,7 @@ export default function AdminDashboardPage() {
 
   if (!isAdmin) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center h-screen bg-surface-sunken">
+      <div className="flex-1 flex flex-col items-center justify-center h-screen bg-surface-bg">
         <ShieldX size={48} className="text-status-danger-text/70 mb-4" />
         <p className="text-txt-secondary">접근 권한이 없습니다</p>
       </div>
@@ -91,7 +91,7 @@ export default function AdminDashboardPage() {
   ]
 
   return (
-    <div className="flex-1 overflow-y-auto h-screen bg-surface-sunken">
+    <div className="flex-1 overflow-y-auto h-screen bg-surface-bg">
       <div className="max-w-[87.5rem] mx-auto p-8 lg:p-12 space-y-8">
         {/* Header */}
         <div className="border-b border-border pb-6">

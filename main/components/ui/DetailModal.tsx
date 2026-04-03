@@ -191,7 +191,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
             </div>
 
             {/* Sidebar */}
-            <div className="w-full md:w-80 bg-surface-sunken border-l border-border p-6 md:p-8 space-y-6 flex flex-col h-full overflow-y-auto custom-scrollbar">
+            <div className="w-full md:w-80 bg-surface-card border-l border-border p-6 md:p-8 space-y-6 flex flex-col h-full overflow-y-auto custom-scrollbar">
               <div className="space-y-3">
                 <Button variant="blue" fullWidth className="py-3">
                   Apply Now <ArrowUpRight size={16} />

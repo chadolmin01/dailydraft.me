@@ -119,7 +119,7 @@ function BusinessPlanPageContent() {
 
   // Template selection screen
   return (
-    <div className="min-h-screen bg-surface-sunken p-6">
+    <div className="min-h-screen bg-surface-bg p-6">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
