@@ -10,6 +10,7 @@ export function ProfileActions({
   setShowCoffeeChatForm,
   showInviteModal,
   setShowInviteModal,
+  initialMessage,
 }: {
   targetUserId: string
   targetName: string
@@ -17,6 +18,7 @@ export function ProfileActions({
   setShowCoffeeChatForm: (v: boolean) => void
   showInviteModal: boolean
   setShowInviteModal: (v: boolean) => void
+  initialMessage?: string
 }) {
   const { data: existingChats = [] } = useCoffeeChats({
     targetUserId,
@@ -68,6 +70,7 @@ export function ProfileActions({
             <CoffeeChatRequestForm
               targetUserId={targetUserId}
               onClose={() => setShowCoffeeChatForm(false)}
+              initialMessage={initialMessage}
             />
           </div>
         </div>

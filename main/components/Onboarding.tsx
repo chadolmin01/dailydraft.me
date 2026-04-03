@@ -1,6 +1,8 @@
 'use client'
 
 import React, { useEffect, useRef, useCallback } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { Loader2 } from 'lucide-react'
 import { useAuth } from '@/src/context/AuthContext'
 import { useOnboarding, useDerivedState } from '@/src/hooks/useOnboarding'
 import { determineResumeStep } from '@/src/lib/onboarding/resume'
@@ -19,22 +21,45 @@ import { SkillsInputStep, SkillsConfirmStep } from './onboarding/steps/SkillsSte
 import { InterestsInputStep, InterestsConfirmStep } from './onboarding/steps/InterestsStep'
 import { DeepChatOfferStep, DeepChatOfferFinishStep } from './onboarding/steps/DeepChatOfferStep'
 import { DeepChatFooter, DefaultFooter } from './onboarding/steps/DeepChatStep'
+import { ScenarioCard, ThisOrThat, DragRank, EmojiGrid, QuickNumber, SpectrumPick } from './onboarding/interactive'
+import { INTERACTIVE_QUESTIONS, REQUIRED_INTERACTIVE_IDS } from '@/src/lib/onboarding/interactive-questions'
+import type { StructuredResponse, InteractiveElementConfig, ScenarioCardQuestion, ThisOrThatQuestion, DragRankQuestion, EmojiGridQuestion, QuickNumberQuestion, SpectrumPickQuestion } from '@/src/lib/onboarding/types'
+
+// ── localStorage key for progress persistence ──
+const STORAGE_KEY = 'draft-onboarding-progress'
 
 interface OnboardingProps {
   onComplete: () => void
 }
 
 export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
-  const { signOut, profile: authProfile, isLoading: authLoading } = useAuth()
+  const searchParams = useSearchParams()
+  const { signOut, profile: authProfile, isLoading: authLoading, isAuthenticated } = useAuth()
   const [state, dispatch] = useOnboarding()
-  const { coveredTopics, userMsgCount, currentSuggestions, canGoBack } = useDerivedState(state)
+  const { coveredTopics, userMsgCount, currentSuggestions, canGoBack, canUndo } = useDerivedState(state)
 
   const chatEndRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const deepChatInputRef = useRef<HTMLInputElement>(null)
   const queueRef = useRef(false)
   const savingRef = useRef(false)
-  const onCompleteTimerRef = useRef<ReturnType<typeof setTimeout>>(null)
+
+  // C4: Centralized timer tracking for cleanup
+  const timerRefs = useRef<Set<ReturnType<typeof setTimeout>>>(new Set())
+  const safeTimeout = useCallback((fn: () => void, ms: number) => {
+    const id = setTimeout(() => {
+      timerRefs.current.delete(id)
+      fn()
+    }, ms)
+    timerRefs.current.add(id)
+    return id
+  }, [])
+
+  // C1: AbortController for AI calls
+  const abortRef = useRef<AbortController | null>(null)
+
+  // Required interactives wrap-up queue
+  const pendingRequiredRef = useRef<{ id: string; prompt: string }[]>([])
 
   // Refs to avoid stale closures in async callbacks
   const stateRef = useRef(state)
@@ -44,21 +69,23 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
   // ── Scroll on bubble change ──
   useEffect(() => {
-    const t = setTimeout(() => {
+    const id = safeTimeout(() => {
       const container = scrollContainerRef.current
       if (container) {
         container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' })
       }
     }, 80)
-    return () => clearTimeout(t)
-  }, [state.bubbles, state.isTyping])
+    return () => { clearTimeout(id); timerRefs.current.delete(id) }
+  }, [state.bubbles, state.isTyping, safeTimeout])
 
   useEffect(() => { dispatch({ type: 'SET_MOUNTED' }) }, [dispatch])
 
-  // Cleanup onComplete timer on unmount (#15)
+  // C4: Cleanup all timers + abort on unmount
   useEffect(() => {
     return () => {
-      if (onCompleteTimerRef.current) clearTimeout(onCompleteTimerRef.current)
+      timerRefs.current.forEach(id => clearTimeout(id))
+      timerRefs.current.clear()
+      abortRef.current?.abort()
     }
   }, [])
 
@@ -71,18 +98,45 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     return () => clearInterval(interval)
   }, [dispatch])
 
+  // ── U2: Save progress to localStorage ──
+  const saveProgress = useCallback((step: string, profile: typeof state.profile) => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ step, profile, ts: Date.now() }))
+    } catch { /* quota exceeded — ignore */ }
+  }, [])
+
+  const loadProgress = useCallback(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY)
+      if (!raw) return null
+      const data = JSON.parse(raw)
+      // Expire after 24 hours
+      if (Date.now() - data.ts > 24 * 60 * 60 * 1000) {
+        localStorage.removeItem(STORAGE_KEY)
+        return null
+      }
+      return data as { step: string; profile: typeof state.profile }
+    } catch {
+      return null
+    }
+  }, [])
+
+  const clearProgress = useCallback(() => {
+    try { localStorage.removeItem(STORAGE_KEY) } catch { /* ignore */ }
+  }, [])
+
   // ── Push helpers ──
   const pushAi = useCallback((content: string, attachment?: Bubble['attachment'], delay?: number) => {
     const typingMs = delay ?? Math.min(400 + content.length * 15, 1400)
     return new Promise<void>((resolve) => {
       dispatch({ type: 'SET_TYPING', isTyping: true })
-      setTimeout(() => {
+      safeTimeout(() => {
         dispatch({ type: 'ADD_BUBBLE', bubble: { id: `ai-${Date.now()}-${Math.random()}`, role: 'ai', content, attachment } })
         dispatch({ type: 'SET_TYPING', isTyping: false })
-        setTimeout(resolve, 80)
+        safeTimeout(resolve, 80)
       }, typingMs)
     })
-  }, [dispatch])
+  }, [dispatch, safeTimeout])
 
   const pushUser = useCallback((content: string) => {
     dispatch({ type: 'ADD_BUBBLE', bubble: { id: `user-${Date.now()}-${Math.random()}`, role: 'user', content } })
@@ -91,9 +145,16 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   // ── Init: wait for auth, then resume or start fresh ──
   useEffect(() => {
     if (queueRef.current || authLoading) return
+    // Race condition fix: if authenticated, wait for profile to load from DB
+    // (isLoading becomes false before fetchProfile completes)
+    if (isAuthenticated && authProfile === null) return
     queueRef.current = true
 
-    const resumeResult = determineResumeStep(authProfile as Record<string, unknown> | null)
+    const redoChat = searchParams.get('mode') === 'redo-chat'
+    const resumeResult = determineResumeStep(
+      authProfile as Record<string, unknown> | null,
+      { redoChat },
+    )
 
     if (resumeResult) {
       dispatch({ type: 'SET_PROFILE', profile: resumeResult.draft })
@@ -102,7 +163,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
         // Resume deep chat with previous messages
         const run = async () => {
           dispatch({ type: 'SET_DEEP_CHAT_MESSAGES', messages: resumeResult.messages! })
-          await new Promise(r => setTimeout(r, 400))
+          await new Promise(r => safeTimeout(r as () => void, 400))
           // Restore chat bubbles from transcript (no animation class)
           const restoredBubbles: Bubble[] = resumeResult.messages!.map((msg, i) => ({
             id: `restored-${i}-${Date.now()}`,
@@ -112,30 +173,46 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
           dispatch({ type: 'SET_BUBBLES', bubbles: restoredBubbles })
           dispatch({ type: 'SET_STEP', step: 'deep-chat' })
           await pushAi('이어서 대화를 계속할까요?', undefined, 600)
-          setTimeout(() => deepChatInputRef.current?.focus(), 200)
+          safeTimeout(() => deepChatInputRef.current?.focus(), 200)
         }
-        run()
+        run().catch(console.error)
       } else {
-        // Resume to deep-chat-offer
+        // Resume to deep-chat-offer (or redo)
         const run = async () => {
-          await new Promise(r => setTimeout(r, 400))
-          await pushAi(`${resumeResult.draft.name}님, 돌아오셨군요!\n이어서 AI 대화를 진행할까요?`, 'deep-chat-offer', 600)
+          await new Promise(r => safeTimeout(r as () => void, 400))
+          const msg = redoChat
+            ? `${resumeResult.draft.name}님, AI 매칭 분석을 다시 진행할게요!\n새로운 대화로 프로필을 업데이트합니다.`
+            : `${resumeResult.draft.name}님, 돌아오셨군요!\n이어서 AI 대화를 진행할까요?`
+          await pushAi(msg, 'deep-chat-offer', 600)
           dispatch({ type: 'SET_STEP', step: 'deep-chat-offer' })
         }
-        run()
+        run().catch(console.error)
       }
+      return
+    }
+
+    // U2: Try to restore from localStorage
+    const saved = loadProgress()
+    if (saved?.profile?.name) {
+      dispatch({ type: 'SET_PROFILE', profile: saved.profile })
+      const run = async () => {
+        await new Promise(r => safeTimeout(r as () => void, 600))
+        await pushAi(`${saved.profile.name}님, 돌아오셨군요!\n이어서 프로필을 완성할까요?`, 'deep-chat-offer', 600)
+        dispatch({ type: 'SET_STEP', step: 'deep-chat-offer' })
+      }
+      run().catch(console.error)
       return
     }
 
     // Fresh start
     const run = async () => {
-      await new Promise(r => setTimeout(r, 600))
+      await new Promise(r => safeTimeout(r as () => void, 600))
       await pushAi('안녕하세요!\nDraft에 오신 것을 환영합니다.', undefined, 1000)
       await pushAi('프로필을 설정하면 딱 맞는 프로젝트와\n팀원을 추천해드릴 수 있어요.', 'cta', 900)
       dispatch({ type: 'SET_STEP', step: 'cta' })
     }
-    run()
-  }, [authLoading, authProfile, pushAi, pushUser, dispatch])
+    run().catch(console.error)
+  }, [authLoading, authProfile, isAuthenticated, searchParams, pushAi, pushUser, dispatch, safeTimeout, loadProgress])
 
   // ── Step handlers ──
 
@@ -161,6 +238,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     if (profile.locations.length > 0) parts.push(profile.locations.join(', '))
     pushUser(parts.join(' · '))
     dispatch({ type: 'PUSH_STEP', step: 'position' })
+    saveProgress('position', profile)
     await pushAi(`${profile.name.trim()}님, 반가워요!\n어떤 분야에서 활동하고 계신가요?`, 'position', 800)
   }
 
@@ -169,6 +247,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     dispatch({ type: 'SET_PROFILE', profile: { position: pos } })
     pushUser(pos)
     dispatch({ type: 'PUSH_STEP', step: 'situation' })
+    saveProgress('situation', { ...stateRef.current.profile, position: pos })
     await pushAi('현재 어떤 상황에 계신가요?\nDraft에서의 목표에 맞게 추천해드릴게요.', 'situation', 700)
   }
 
@@ -177,6 +256,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     dispatch({ type: 'SET_PROFILE', profile: { situation: sit.value } })
     pushUser(sit.label)
     dispatch({ type: 'PUSH_STEP', step: 'skills-input' })
+    saveProgress('skills-input', { ...stateRef.current.profile, situation: sit.value })
     await pushAi('어떤 기술을 사용할 수 있나요?\n편하게 말씀해주세요!', 'skills-input', 700)
   }
 
@@ -190,7 +270,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     if (text) {
       dispatch({ type: 'SET_AI_ACTIVITY', label: '입력한 스킬을 정리하고 있어요' })
       dispatch({ type: 'SET_TYPING', isTyping: true })
-      const result = await aiParse(text, 'skills')
+      const result = await aiParse(text, 'skills', abortRef.current?.signal)
       dispatch({ type: 'SET_TYPING', isTyping: false })
       dispatch({ type: 'SET_AI_ACTIVITY', label: null })
       if (result === null) parseFailed = true
@@ -223,6 +303,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     const { profile } = stateRef.current
     pushUser(profile.skills.length > 0 ? profile.skills.join(', ') + ' 확인!' : '건너뛰기')
     dispatch({ type: 'PUSH_STEP', step: 'interests-input' })
+    saveProgress('interests-input', profile)
     await pushAi('마지막이에요! 관심 있는 분야가 있나요?\n편하게 말씀해주세요!', 'interests-input', 600)
   }
 
@@ -236,7 +317,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     if (text) {
       dispatch({ type: 'SET_AI_ACTIVITY', label: '관심 분야를 분석하고 있어요' })
       dispatch({ type: 'SET_TYPING', isTyping: true })
-      const result = await aiParse(text, 'interests')
+      const result = await aiParse(text, 'interests', abortRef.current?.signal)
       dispatch({ type: 'SET_TYPING', isTyping: false })
       dispatch({ type: 'SET_AI_ACTIVITY', label: null })
       if (result === null) parseFailed = true
@@ -272,40 +353,66 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     const { profile } = stateRef.current
     pushUser(profile.interests.length > 0 ? profile.interests.join(', ') + ' 확인!' : '완료!')
     dispatch({ type: 'PUSH_STEP', step: 'deep-chat-offer' })
+    saveProgress('deep-chat-offer', profile)
     await pushAi('기본 프로필이 완성됐어요!\n\nAI와 짧은 대화를 나누면 팀 매칭 정확도가 확 올라가요.\n경험, 작업 스타일, 목표 등 몇 가지만 알려주시면 됩니다.', 'deep-chat-offer', 800)
   }
+
+  // U1: Cancel transition handler
+  const handleCancelTransition = useCallback(() => {
+    abortRef.current?.abort()
+    dispatch({ type: 'SET_DEEP_CHAT_TRANSITION', value: false })
+    dispatch({ type: 'SET_STEP', step: 'deep-chat-offer' })
+  }, [dispatch])
 
   const handleDeepChatAccept = async () => {
     const s = stateRef.current
     if (s.isTyping || savingRef.current || s.step !== 'deep-chat-offer') return
     pushUser('좋아요, 해볼게요!')
 
-    await new Promise(r => setTimeout(r, 400))
+    await new Promise(r => safeTimeout(r as () => void, 400))
     dispatch({ type: 'SET_DEEP_CHAT_TRANSITION', value: true })
+
+    // C1: Create new abort controller
+    abortRef.current?.abort()
+    abortRef.current = new AbortController()
 
     const profileCtx = buildProfileCtx(s.profile)
 
     // Checkpoint save
     try { await saveProfileCheckpoint(s.profile) } catch { /* continue anyway */ }
 
-    try {
-      const { reply: firstQ, suggestions: firstSuggestions } = await aiDeepChat([], profileCtx)
+    // U1: 10-second timeout
+    const timeoutId = safeTimeout(() => {
+      abortRef.current?.abort()
+    }, 10000)
 
-      await new Promise(r => setTimeout(r, 800))
+    try {
+      const { reply: firstQ, suggestions: firstSuggestions, interactiveElement: _firstInteractive } = await aiDeepChat([], profileCtx, abortRef.current.signal)
+
+      clearTimeout(timeoutId)
+      timerRefs.current.delete(timeoutId)
+
+      await new Promise(r => safeTimeout(r as () => void, 800))
       dispatch({ type: 'SET_BUBBLES', bubbles: [] })
       dispatch({ type: 'SET_STEP', step: 'deep-chat' })
       dispatch({ type: 'SET_DEEP_CHAT_TRANSITION', value: false })
       dispatch({ type: 'SET_DYNAMIC_SUGGESTIONS', suggestions: firstSuggestions })
 
-      await new Promise(r => setTimeout(r, 300))
-      const aiMsg: DeepChatMessage = { role: 'assistant', content: firstQ }
+      await new Promise(r => safeTimeout(r as () => void, 300))
+      const aiMsg: DeepChatMessage = { role: 'assistant', content: firstQ, timestamp: new Date().toISOString() }
       dispatch({ type: 'SET_DEEP_CHAT_MESSAGES', messages: [aiMsg] })
       await pushAi(firstQ, undefined, 600)
-      setTimeout(() => deepChatInputRef.current?.focus(), 200)
-    } catch {
+      safeTimeout(() => deepChatInputRef.current?.focus(), 200)
+    } catch (err) {
+      clearTimeout(timeoutId)
+      timerRefs.current.delete(timeoutId)
       // Escape the transition overlay on any failure
       dispatch({ type: 'SET_DEEP_CHAT_TRANSITION', value: false })
-      await pushAi('AI 연결에 문제가 있어요. 다시 시도해주세요!', 'deep-chat-offer', 400)
+      // Don't show error message if user voluntarily cancelled
+      const isAbort = err instanceof DOMException && err.name === 'AbortError'
+      if (!isAbort) {
+        await pushAi('AI 연결에 문제가 있어요. 다시 시도해주세요!', 'deep-chat-offer', 400)
+      }
       dispatch({ type: 'SET_STEP', step: 'deep-chat-offer' })
     }
   }
@@ -318,6 +425,84 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     await finishOnboarding()
   }
 
+  // ── Interactive element response handler ──
+  const handleInteractiveResponse = async (bubbleId: string, response: StructuredResponse) => {
+    dispatch({ type: 'SET_BUBBLE_ANSWERED', bubbleId })
+    dispatch({ type: 'ADD_STRUCTURED_RESPONSE', response })
+
+    // Add user message with natural language summary
+    pushUser(response.naturalLanguage)
+    const userMsg: DeepChatMessage = {
+      role: 'user',
+      content: response.naturalLanguage,
+      timestamp: new Date().toISOString(),
+    }
+    const updatedMessages = [...stateRef.current.deepChatMessages, userMsg]
+    dispatch({ type: 'SET_DEEP_CHAT_MESSAGES', messages: updatedMessages })
+
+    // If in required wrap-up mode, show next required or complete
+    if (pendingRequiredRef.current.length > 0) {
+      await showNextRequiredOrComplete()
+      return
+    }
+
+    // Send to AI for follow-up
+    const profileCtx = buildProfileCtx(stateRef.current.profile)
+    const activityLabel = AI_ACTIVITY_LABELS[Math.min(updatedMessages.filter(m => m.role === 'user').length - 1, AI_ACTIVITY_LABELS.length - 1)]
+    dispatch({ type: 'SET_AI_ACTIVITY', label: activityLabel })
+    dispatch({ type: 'SET_TYPING', isTyping: true })
+    dispatch({ type: 'SET_SHOW_SUGGESTIONS', value: false })
+
+    abortRef.current?.abort()
+    abortRef.current = new AbortController()
+
+    try {
+      const { reply, offTopic, suggestions, interactiveElement } = await aiDeepChat(updatedMessages, profileCtx, abortRef.current.signal)
+
+      if (offTopic) {
+        dispatch({ type: 'SET_DEEP_CHAT_MESSAGES', messages: stateRef.current.deepChatMessages })
+        dispatch({ type: 'SET_TYPING', isTyping: false })
+        dispatch({ type: 'ADD_BUBBLE', bubble: { id: `ai-${Date.now()}-${Math.random()}`, role: 'ai', content: reply, offTopic: true } })
+      } else {
+        const aiMsg: DeepChatMessage = { role: 'assistant', content: reply, timestamp: new Date().toISOString() }
+        const finalMessages = [...updatedMessages, aiMsg]
+        dispatch({ type: 'SET_DEEP_CHAT_MESSAGES', messages: finalMessages })
+
+        // Check if AI wants to show an interactive element
+        const questionDef = interactiveElement ? INTERACTIVE_QUESTIONS[interactiveElement] : null
+        if (questionDef && stateRef.current.interactiveElementCount < 5) {
+          const config: InteractiveElementConfig = {
+            type: questionDef.type,
+            questionId: interactiveElement!,
+            measuredFields: questionDef.measuredFields,
+          }
+          dispatch({ type: 'SET_TYPING', isTyping: false })
+          dispatch({ type: 'ADD_BUBBLE', bubble: {
+            id: `ai-${Date.now()}-${Math.random()}`,
+            role: 'ai',
+            content: reply,
+            attachment: 'interactive-element',
+            interactiveConfig: config,
+          } })
+          dispatch({ type: 'INCREMENT_INTERACTIVE_COUNT' })
+        } else {
+          await pushAi(reply, undefined, 300)
+        }
+      }
+      dispatch({ type: 'SET_DYNAMIC_SUGGESTIONS', suggestions: interactiveElement ? [] : suggestions })
+    } catch (err) {
+      const isAbort = err instanceof DOMException && err.name === 'AbortError'
+      if (!isAbort) {
+        await pushAi('일시적인 오류가 발생했어요. 다시 말씀해주세요!', undefined, 300)
+      }
+    } finally {
+      dispatch({ type: 'SET_TYPING', isTyping: false })
+      dispatch({ type: 'SET_AI_ACTIVITY', label: null })
+      dispatch({ type: 'SET_SHOW_SUGGESTIONS', value: true })
+      safeTimeout(() => deepChatInputRef.current?.focus(), 200)
+    }
+  }
+
   const sendDeepChatMessage = async (text: string) => {
     const s = stateRef.current
     if (s.isTyping || !text.trim() || s.step !== 'deep-chat') return
@@ -325,7 +510,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     dispatch({ type: 'SET_SHOW_SUGGESTIONS', value: false })
     dispatch({ type: 'SET_DYNAMIC_SUGGESTIONS', suggestions: [] })
     pushUser(text.trim())
-    const userMsg: DeepChatMessage = { role: 'user', content: text.trim() }
+    const userMsg: DeepChatMessage = { role: 'user', content: text.trim(), timestamp: new Date().toISOString() }
     const updatedMessages = [...s.deepChatMessages, userMsg]
     dispatch({ type: 'SET_DEEP_CHAT_MESSAGES', messages: updatedMessages })
     const profileCtx = buildProfileCtx(s.profile)
@@ -333,28 +518,90 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     const activityLabel = AI_ACTIVITY_LABELS[Math.min(msgCount - 1, AI_ACTIVITY_LABELS.length - 1)]
     dispatch({ type: 'SET_AI_ACTIVITY', label: activityLabel })
     dispatch({ type: 'SET_TYPING', isTyping: true })
+
+    // C1: Fresh abort controller per message
+    abortRef.current?.abort()
+    abortRef.current = new AbortController()
+
     try {
-      const { reply, offTopic, suggestions } = await aiDeepChat(updatedMessages, profileCtx)
+      const { reply, offTopic, suggestions, interactiveElement } = await aiDeepChat(updatedMessages, profileCtx, abortRef.current.signal)
 
       if (offTopic) {
         // Don't add off-topic exchange to history — rollback to previous state
         dispatch({ type: 'SET_DEEP_CHAT_MESSAGES', messages: s.deepChatMessages })
-        await pushAi(reply, undefined, 300)
+        // U5: Mark off-topic bubble
+        dispatch({ type: 'SET_TYPING', isTyping: false })
+        dispatch({ type: 'ADD_BUBBLE', bubble: { id: `ai-${Date.now()}-${Math.random()}`, role: 'ai', content: reply, offTopic: true } })
       } else {
-        const aiMsg: DeepChatMessage = { role: 'assistant', content: reply }
+        const aiMsg: DeepChatMessage = { role: 'assistant', content: reply, timestamp: new Date().toISOString() }
         const finalMessages = [...updatedMessages, aiMsg]
         dispatch({ type: 'SET_DEEP_CHAT_MESSAGES', messages: finalMessages })
-        await pushAi(reply, undefined, 300)
+
+        // Check if AI wants to show an interactive element
+        const questionDef = interactiveElement ? INTERACTIVE_QUESTIONS[interactiveElement] : null
+        if (questionDef && stateRef.current.interactiveElementCount < 5) {
+          const config: InteractiveElementConfig = {
+            type: questionDef.type,
+            questionId: interactiveElement!,
+            measuredFields: questionDef.measuredFields,
+          }
+          dispatch({ type: 'SET_TYPING', isTyping: false })
+          dispatch({ type: 'ADD_BUBBLE', bubble: {
+            id: `ai-${Date.now()}-${Math.random()}`,
+            role: 'ai',
+            content: reply,
+            attachment: 'interactive-element',
+            interactiveConfig: config,
+          } })
+          dispatch({ type: 'INCREMENT_INTERACTIVE_COUNT' })
+        } else {
+          await pushAi(reply, undefined, 300)
+        }
       }
-      dispatch({ type: 'SET_DYNAMIC_SUGGESTIONS', suggestions })
-    } catch {
-      await pushAi('일시적인 오류가 발생했어요. 다시 말씀해주세요!', undefined, 300)
+      dispatch({ type: 'SET_DYNAMIC_SUGGESTIONS', suggestions: interactiveElement ? [] : suggestions })
+    } catch (err) {
+      const isAbort = err instanceof DOMException && err.name === 'AbortError'
+      if (!isAbort) {
+        await pushAi('일시적인 오류가 발생했어요. 다시 말씀해주세요!', undefined, 300)
+      }
     } finally {
       dispatch({ type: 'SET_TYPING', isTyping: false })
       dispatch({ type: 'SET_AI_ACTIVITY', label: null })
       dispatch({ type: 'SET_SHOW_SUGGESTIONS', value: true })
-      setTimeout(() => deepChatInputRef.current?.focus(), 200)
+      safeTimeout(() => deepChatInputRef.current?.focus(), 200)
     }
+  }
+
+  /** Get required interactive IDs not yet answered */
+  const getMissingRequired = () => {
+    const answered = new Set(stateRef.current.structuredResponses.map(r => r.questionId))
+    return REQUIRED_INTERACTIVE_IDS.filter(r => !answered.has(r.id))
+  }
+
+  /** Show the next pending required interactive, or complete if done */
+  const showNextRequiredOrComplete = async () => {
+    const next = pendingRequiredRef.current.shift()
+    if (!next) {
+      await completeDeepChat()
+      return
+    }
+    const questionDef = INTERACTIVE_QUESTIONS[next.id]
+    if (!questionDef) {
+      await showNextRequiredOrComplete()
+      return
+    }
+    const config: InteractiveElementConfig = {
+      type: questionDef.type,
+      questionId: next.id,
+      measuredFields: questionDef.measuredFields,
+    }
+    dispatch({ type: 'ADD_BUBBLE', bubble: {
+      id: `ai-req-${Date.now()}-${Math.random()}`,
+      role: 'ai',
+      content: next.prompt,
+      attachment: 'interactive-element',
+      interactiveConfig: config,
+    } })
   }
 
   const handleDeepChatFinish = async () => {
@@ -365,12 +612,34 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       await pushAi(`아직 ${3 - uMsgCount}개 정도 더 이야기하면 더 정확한 매칭이 가능해요.\n그래도 지금 마무리할까요?`, 'deep-chat-offer-finish', 400)
       return
     }
+
+    // Check for missing required interactives
+    const missing = getMissingRequired()
+    if (missing.length > 0) {
+      pendingRequiredRef.current = [...missing]
+      pushUser('대화 완료!')
+      await pushAi('좋아요! 마지막으로 몇 가지만 빠르게 체크할게요.', undefined, 400)
+      await showNextRequiredOrComplete()
+      return
+    }
+
     pushUser('대화 완료!')
     await completeDeepChat()
   }
 
   const forceFinishDeepChat = async () => {
     if (stateRef.current.isTyping) return // #12: add isTyping guard
+
+    // Check for missing required interactives even on force finish
+    const missing = getMissingRequired()
+    if (missing.length > 0) {
+      pendingRequiredRef.current = [...missing]
+      pushUser('지금 마무리할게요')
+      await pushAi('좋아요! 마지막으로 몇 가지만 빠르게 체크할게요.', undefined, 400)
+      await showNextRequiredOrComplete()
+      return
+    }
+
     pushUser('지금 마무리할게요')
     await completeDeepChat()
   }
@@ -384,11 +653,17 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       // Use ref for coveredTopics to avoid stale count (#10)
       await pushAi(`${coveredTopicsRef.current.length}개 영역을 분석해서 프로필에 반영하고 있어요...`, undefined, 400)
 
-      // Read latest messages from ref (#2)
+      // Read latest messages + structured responses from ref (#2)
       const currentMessages = stateRef.current.deepChatMessages
-      const summaryResult = await summarizeTranscript(currentMessages)
+      const currentStructured = stateRef.current.structuredResponses
+      const summaryResult = await summarizeTranscript(currentMessages, abortRef.current?.signal, currentStructured)
       dispatch({ type: 'SET_TYPING', isTyping: false })
       dispatch({ type: 'SET_AI_ACTIVITY', label: null })
+
+      // Store generated bio for guide page inline editor
+      if (summaryResult?.bio) {
+        try { localStorage.setItem('onboarding-bio', summaryResult.bio) } catch {}
+      }
 
       const name = stateRef.current.profile.name
       if (summaryResult?.summary) {
@@ -418,8 +693,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       // Read latest state from ref (#2)
       const s = stateRef.current
       await saveProfileFinal(s.profile, s.deepChatMessages)
-      // #15: store timer ref for cleanup on unmount
-      onCompleteTimerRef.current = setTimeout(onComplete, 1500)
+      // U2: Clear localStorage on successful save
+      clearProgress()
+      safeTimeout(onComplete, 1500)
     } catch (err) {
       console.error('[Onboarding] save error:', err)
       savingRef.current = false
@@ -492,6 +768,126 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
             onFinish={forceFinishDeepChat}
           />
         )
+      case 'interactive-element': {
+        if (bubble.answered || !bubble.interactiveConfig) return null
+        const question = INTERACTIVE_QUESTIONS[bubble.interactiveConfig.questionId]
+        if (!question) return null
+        const bId = bubble.id
+        const mFields = bubble.interactiveConfig.measuredFields
+
+        switch (question.type) {
+          case 'scenario-card': {
+            const q = question as ScenarioCardQuestion
+            return (
+              <ScenarioCard
+                options={q.options}
+                onSelect={(opt) => handleInteractiveResponse(bId, {
+                  questionId: bubble.interactiveConfig!.questionId,
+                  type: 'scenario-card',
+                  value: opt.id,
+                  naturalLanguage: opt.label + ': ' + opt.description.replace(/\n/g, ' '),
+                  measuredFields: mFields,
+                })}
+              />
+            )
+          }
+          case 'this-or-that': {
+            const q = question as ThisOrThatQuestion
+            return (
+              <ThisOrThat
+                optionA={q.optionA}
+                optionB={q.optionB}
+                onSelect={(opt) => handleInteractiveResponse(bId, {
+                  questionId: bubble.interactiveConfig!.questionId,
+                  type: 'this-or-that',
+                  value: opt.id,
+                  naturalLanguage: `${opt.label} 스타일이에요: ${opt.description.replace(/\n/g, ' ')}`,
+                  measuredFields: mFields,
+                })}
+              />
+            )
+          }
+          case 'drag-rank': {
+            const q = question as DragRankQuestion
+            return (
+              <DragRank
+                items={q.items}
+                onConfirm={(ordered) => handleInteractiveResponse(bId, {
+                  questionId: bubble.interactiveConfig!.questionId,
+                  type: 'drag-rank',
+                  value: ordered.map(item => item.label),
+                  naturalLanguage: `우선순위: ${ordered.map((item, i) => `${i + 1}. ${item.label}`).join(', ')}`,
+                  measuredFields: mFields,
+                })}
+              />
+            )
+          }
+          case 'emoji-grid': {
+            const q = question as EmojiGridQuestion
+            return (
+              <EmojiGrid
+                options={q.options}
+                minSelect={q.minSelect}
+                maxSelect={q.maxSelect}
+                onConfirm={(selected) => handleInteractiveResponse(bId, {
+                  questionId: bubble.interactiveConfig!.questionId,
+                  type: 'emoji-grid',
+                  value: selected.map(s => s.id),
+                  naturalLanguage: selected.map(s => `${s.emoji} ${s.label}`).join(', '),
+                  measuredFields: mFields,
+                })}
+              />
+            )
+          }
+          case 'quick-number': {
+            const q = question as QuickNumberQuestion
+            return (
+              <QuickNumber
+                presets={q.presets}
+                unit={q.unit}
+                subQuestion={q.subQuestion}
+                onConfirm={(value, subAnswer) => {
+                  let nl = `주 ${value}시간`
+                  if (q.subQuestion && subAnswer !== undefined) {
+                    nl += subAnswer ? `, ${q.subQuestion.yesLabel}` : `, ${q.subQuestion.noLabel}`
+                  }
+                  handleInteractiveResponse(bId, {
+                    questionId: bubble.interactiveConfig!.questionId,
+                    type: 'quick-number',
+                    value: { hours: value, semesterAvailable: subAnswer ?? null },
+                    naturalLanguage: nl,
+                    measuredFields: mFields,
+                  })
+                }}
+              />
+            )
+          }
+          case 'spectrum-pick': {
+            const q = question as SpectrumPickQuestion
+            return (
+              <SpectrumPick
+                leftLabel={q.leftLabel}
+                leftDescription={q.leftDescription}
+                rightLabel={q.rightLabel}
+                rightDescription={q.rightDescription}
+                points={q.points}
+                onSelect={(value) => {
+                  const label = value <= 2 ? q.leftLabel : value >= 4 ? q.rightLabel : '중간'
+                  handleInteractiveResponse(bId, {
+                    questionId: bubble.interactiveConfig!.questionId,
+                    type: 'spectrum-pick',
+                    value,
+                    naturalLanguage: `${label} (${value}/${q.points})`,
+                    measuredFields: mFields,
+                  })
+                }}
+              />
+            )
+          }
+          default:
+            return null
+        }
+      }
       default:
         return null
     }
@@ -507,11 +903,13 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       currentSuggestions={currentSuggestions}
       coveredTopics={coveredTopics}
       hasMessages={state.deepChatMessages.length > 0}
+      canUndo={canUndo}
       inputRef={deepChatInputRef}
       onInputChange={(v: string) => dispatch({ type: 'SET_DEEP_CHAT_INPUT', value: v })}
       onSend={() => sendDeepChatMessage(stateRef.current.deepChatInput)}
       onSuggestionClick={(text: string) => sendDeepChatMessage(text)}
       onFinish={handleDeepChatFinish}
+      onUndo={() => dispatch({ type: 'UNDO_LAST_EXCHANGE' })}
     />
   ) : (
     <DefaultFooter canGoBack={canGoBack} onGoBack={() => dispatch({ type: 'GO_BACK' })} />
@@ -528,6 +926,28 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     />
   )
 
+  // U13: Show loading state while auth is loading
+  if (authLoading) {
+    return (
+      <div className="fixed inset-0 bg-surface-bg flex flex-col items-center justify-center">
+        <div
+          className="w-12 h-12 bg-surface-inverse rounded-2xl flex items-center justify-center mb-8"
+          style={{ animation: 'dcto-logo 0.6s cubic-bezier(0.16, 1, 0.3, 1) both' }}
+        >
+          <span className="text-white text-lg font-black">D</span>
+        </div>
+
+        <div className="w-48 mb-4">
+          <div className="h-1 bg-surface-sunken rounded-full overflow-hidden">
+            <div className="h-full w-1/3 bg-surface-inverse rounded-full animate-[indeterminate_1.5s_ease-in-out_infinite]" />
+          </div>
+        </div>
+
+        <span className="text-[10px] font-mono text-txt-disabled">DRAFT</span>
+      </div>
+    )
+  }
+
   return (
     <OnboardingShell
       step={state.step}
@@ -535,7 +955,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       tipIndex={state.tipIndex}
       mounted={state.mounted}
       deepChatTransition={state.deepChatTransition}
+      coveredTopics={coveredTopics}
       onSignOut={signOut}
+      onCancelTransition={handleCancelTransition}
       footer={footer}
       sidebar={sidebar}
     >

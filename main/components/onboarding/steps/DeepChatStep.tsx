@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { Send, CheckCircle2, Lightbulb, ArrowLeft } from 'lucide-react'
+import { Send, CheckCircle2, Lightbulb, Undo2 } from 'lucide-react'
 import { DEEP_CHAT_TOPICS } from '@/src/lib/onboarding/constants'
 
 interface DeepChatFooterProps {
@@ -12,17 +12,19 @@ interface DeepChatFooterProps {
   currentSuggestions: string[]
   coveredTopics: string[]
   hasMessages: boolean
+  canUndo: boolean
   inputRef: React.RefObject<HTMLInputElement | null>
   onInputChange: (v: string) => void
   onSend: () => void
   onSuggestionClick: (text: string) => void
   onFinish: () => void
+  onUndo: () => void
 }
 
 export const DeepChatFooter: React.FC<DeepChatFooterProps> = ({
   deepChatInput, isTyping, userMsgCount,
   showSuggestions, currentSuggestions, coveredTopics, hasMessages,
-  inputRef, onInputChange, onSend, onSuggestionClick, onFinish,
+  canUndo, inputRef, onInputChange, onSend, onSuggestionClick, onFinish, onUndo,
 }) => {
   return (
     <div className="border-t border-border bg-surface-card/80 backdrop-blur-md">
@@ -53,6 +55,15 @@ export const DeepChatFooter: React.FC<DeepChatFooterProps> = ({
       <div className="px-4 py-3">
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center gap-2">
+            {canUndo && (
+              <button
+                onClick={onUndo}
+                className="w-10 h-10 flex items-center justify-center text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken rounded-lg transition-colors shrink-0"
+                title="이전 답변 되돌리기"
+              >
+                <Undo2 size={16} />
+              </button>
+            )}
             <div className="flex-1 relative">
               <input
                 ref={inputRef}
@@ -61,8 +72,7 @@ export const DeepChatFooter: React.FC<DeepChatFooterProps> = ({
                 onChange={(e) => onInputChange(e.target.value)}
                 placeholder={userMsgCount === 0 ? '첫 번째 질문에 답해보세요...' : '이어서 이야기해주세요...'}
                 className="w-full pl-4 pr-11 py-3 bg-surface-card rounded-lg border border-border text-base sm:text-sm font-medium focus:outline-none focus:border-surface-inverse focus:bg-white transition-all placeholder:text-txt-tertiary"
-                onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && onSend()}
-                disabled={isTyping}
+                onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && !isTyping && onSend()}
               />
               <button
                 onClick={onSend}
@@ -75,7 +85,7 @@ export const DeepChatFooter: React.FC<DeepChatFooterProps> = ({
             <button
               onClick={onFinish}
               disabled={isTyping}
-              className={`ob-hover px-4 py-3 text-[13px] font-bold flex items-center gap-1.5 hover:opacity-90 active:scale-[0.97] disabled:opacity-50 shrink-0 transition-all ${
+              className={`ob-hover px-4 py-3 rounded-xl text-[13px] font-bold flex items-center gap-1.5 hover:opacity-90 active:scale-[0.97] disabled:opacity-50 shrink-0 transition-all ${
                 userMsgCount >= 3 ? 'bg-brand text-white border border-brand' : 'bg-surface-inverse text-txt-inverse'
               }`}
             >
@@ -96,7 +106,7 @@ export const DeepChatFooter: React.FC<DeepChatFooterProps> = ({
               </span>
             </div>
             <span className="text-[10px] text-txt-disabled font-mono">
-              {userMsgCount < 3 ? `${3 - userMsgCount}개 더 답하면 완료 가능` : '언제든 완료 가능'}
+              {userMsgCount < 3 ? `${3 - userMsgCount}개 더 답하면 완료 가능 · 더 많은 대화 = 더 정확한 매칭` : '언제든 완료 가능'}
             </span>
           </div>
         </div>
@@ -117,9 +127,12 @@ export const DefaultFooter: React.FC<DefaultFooterProps> = ({ canGoBack, onGoBac
     <div className="px-4 py-3 border-t border-border bg-surface-card/60 backdrop-blur-sm">
       <div className="max-w-2xl mx-auto flex items-center justify-between">
         {canGoBack ? (
-          <button onClick={onGoBack} className="flex items-center gap-1.5 text-[12px] text-txt-tertiary hover:text-txt-primary font-medium transition-colors ob-hover">
-            <ArrowLeft size={14} />
-            이전 단계
+          <button
+            onClick={onGoBack}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium text-txt-secondary border border-border rounded-lg hover:bg-surface-sunken hover:text-txt-primary transition-all active:scale-[0.97]"
+          >
+            <Undo2 size={13} />
+            이전으로
           </button>
         ) : (
           <span className="text-[10px] text-txt-tertiary">Draft Onboarding</span>

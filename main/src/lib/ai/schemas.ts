@@ -233,6 +233,7 @@ export const OnboardingSummarySchema = z.object({
   wants_from_team: z.array(z.string()).default([]),
   project_interests: z.array(z.string()).default([]),
   summary: z.string().default(''),
+  bio: z.string().default(''),
 })
 
 // ── 9. Onboarding: Parse (skills/interests) ──

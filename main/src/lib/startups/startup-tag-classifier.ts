@@ -20,7 +20,7 @@ interface StartupInput {
  */
 export async function classifyStartupTags(startup: StartupInput): Promise<string[]> {
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
     const prompt = buildPrompt(startup);
 
     const { data } = await safeGenerate({
@@ -121,7 +121,7 @@ export async function classifyStartupCategory(startup: StartupInput): Promise<st
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
     const categoryList = STARTUP_CATEGORIES.join(', ');
 

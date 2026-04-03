@@ -14,6 +14,8 @@ import { EditUpdateForm } from '@/components/EditUpdateForm'
 import { InlineUpdateEditor } from '@/components/InlineUpdateEditor'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { UPDATE_TYPE_CONFIG } from '@/components/project/types'
+import { ApplicationManageSection } from '@/components/project/ApplicationManageSection'
+import { TeamManageSection } from '@/components/project/TeamManageSection'
 import { timeAgo } from '@/src/lib/utils'
 import Link from 'next/link'
 
@@ -25,7 +27,7 @@ export default function ProjectManagePage() {
   )
 }
 
-type Tab = 'updates' | 'team' | 'coffeechats'
+type Tab = 'updates' | 'team' | 'applications'
 
 function ProjectManageContent() {
   const router = useRouter()
@@ -74,7 +76,7 @@ function ProjectManageContent() {
   const TABS: { key: Tab; label: string; icon: React.ReactNode }[] = [
     { key: 'updates', label: '주간 업데이트', icon: <Clock size={14} /> },
     { key: 'team', label: '팀원', icon: <Users size={14} /> },
-    { key: 'coffeechats', label: '커피챗 요청', icon: <MessageCircle size={14} /> },
+    { key: 'applications', label: '지원 관리', icon: <MessageCircle size={14} /> },
   ]
 
   return (
@@ -114,14 +116,14 @@ function ProjectManageContent() {
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className={`text-[0.625rem] font-mono font-bold px-2 py-0.5 border ${
+              <span className={`text-[10px] font-mono font-bold px-2 py-0.5 border ${
                 opportunity.status === 'active'
                   ? 'bg-status-success-bg text-status-success-text border-status-success-text/30'
                   : 'bg-surface-sunken text-txt-tertiary border-border'
               }`}>
                 {opportunity.status === 'active' ? '모집중' : '마감'}
               </span>
-              <span className="text-[0.625rem] font-mono text-txt-disabled">
+              <span className="text-[10px] font-mono text-txt-disabled">
                 Week {Math.max(1, Math.ceil((Date.now() - new Date(opportunity.created_at ?? '').getTime()) / (7 * 24 * 60 * 60 * 1000)))} 진행중
               </span>
             </div>
@@ -161,7 +163,7 @@ function ProjectManageContent() {
             : 1
           return (
             <div>
-              <h2 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">
+              <h2 className="text-[10px] font-medium text-txt-tertiary mb-4">
                 주간 업데이트
               </h2>
 
@@ -182,12 +184,12 @@ function ProjectManageContent() {
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1.5">
-                              <span className={`text-[0.625rem] font-bold px-2 py-0.5 border ${config.badgeColor}`}>
+                              <span className={`text-[10px] font-bold px-2 py-0.5 border ${config.badgeColor}`}>
                                 {config.label}
                               </span>
-                              <span className="text-[0.625rem] font-mono text-txt-disabled">Week {update.week_number}</span>
+                              <span className="text-[10px] font-mono text-txt-disabled">Week {update.week_number}</span>
                               {update.created_at && (
-                                <span className="text-[0.625rem] font-mono text-txt-disabled">· {timeAgo(update.created_at)}</span>
+                                <span className="text-[10px] font-mono text-txt-disabled">· {timeAgo(update.created_at)}</span>
                               )}
                             </div>
                             <p className="font-semibold text-sm text-txt-primary mb-1">{firstLine}</p>
@@ -227,15 +229,11 @@ function ProjectManageContent() {
         })()}
 
         {tab === 'team' && (
-          <div className="text-center py-12 text-txt-disabled text-sm">
-            팀원 관리는 <Link href={`/projects/${id}/edit`} className="underline hover:text-txt-secondary">프로젝트 수정</Link> 페이지에서 할 수 있습니다
-          </div>
+          <TeamManageSection opportunityId={id} />
         )}
 
-        {tab === 'coffeechats' && (
-          <div className="text-center py-12 text-txt-disabled text-sm">
-            커피챗 요청 목록은 준비 중입니다
-          </div>
+        {tab === 'applications' && (
+          <ApplicationManageSection opportunityId={id} />
         )}
       </div>
 

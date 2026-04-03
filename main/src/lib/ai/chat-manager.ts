@@ -39,16 +39,80 @@ export async function startAIChatSession(): Promise<string> {
   return result.response.text()
 }
 
+/**
+ * 대화가 6턴 이상이면 이전 턴들을 요약 텍스트로 압축하고
+ * 최근 4턴만 전체 전송하여 토큰 사용량을 절감합니다.
+ * 요약은 별도 API 호출 없이 이전 턴 content를 concat + truncate 방식으로 생성.
+ */
+function compressHistory(
+  messages: ChatMessage[]
+): { role: string; parts: { text: string }[] }[] {
+  // 첫 메시지(시스템/인트로)를 제외한 실제 대화 메시지
+  const conversation = messages.slice(1)
+
+  const RECENT_TURN_COUNT = 4
+  // 턴 수 기준: user+model 쌍이 아닌 메시지 개수 기준
+  if (conversation.length <= RECENT_TURN_COUNT * 2) {
+    // 6턴 이하면 압축 불필요 — 전체 전송
+    return conversation.map((msg) => ({
+      role: msg.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: msg.content }],
+    }))
+  }
+
+  // 이전 대화 (최근 4턴 제외)와 최근 4턴 분리
+  // 최근 8개 메시지 = 최근 4턴(user+model 쌍)
+  const recentCount = RECENT_TURN_COUNT * 2
+  const olderMessages = conversation.slice(0, -recentCount)
+  const recentMessages = conversation.slice(-recentCount)
+
+  // 이전 대화를 간단한 요약 텍스트로 압축 (추가 API 호출 없이 concat + truncate)
+  const MAX_SUMMARY_LENGTH = 1500
+  const summaryText = olderMessages
+    .map((msg) => {
+      const speaker = msg.role === 'user' ? '사용자' : 'AI'
+      // 각 메시지를 150자로 truncate하여 핵심만 보존
+      const truncatedContent =
+        msg.content.length > 150
+          ? msg.content.slice(0, 150) + '...'
+          : msg.content
+      return `${speaker}: ${truncatedContent}`
+    })
+    .join('\n')
+    .slice(0, MAX_SUMMARY_LENGTH)
+
+  // 요약을 user 메시지로 시작하여 올바른 user-model 교대 구조 유지
+  const compressedHistory: { role: string; parts: { text: string }[] }[] = [
+    {
+      role: 'user',
+      parts: [
+        {
+          text: `[이전 대화 요약]\n${summaryText}\n\n(위는 이전 대화의 요약입니다. 이어서 최근 대화를 계속합니다.)`,
+        },
+      ],
+    },
+    {
+      role: 'model',
+      parts: [
+        {
+          text: '네, 이전 대화 내용을 참고하여 계속 진행하겠습니다.',
+        },
+      ],
+    },
+    ...recentMessages.map((msg) => ({
+      role: msg.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: msg.content }],
+    })),
+  ]
+
+  return compressedHistory
+}
+
 export async function sendChatMessage(
   conversationHistory: ChatMessage[],
   userMessage: string
 ): Promise<string> {
-  const historyForGemini = conversationHistory
-    .slice(1)
-    .map((msg) => ({
-      role: msg.role === 'assistant' ? 'model' : 'user',
-      parts: [{ text: msg.content }],
-    }))
+  const historyForGemini = compressHistory(conversationHistory)
 
   const chat = chatModel.startChat({
     history: historyForGemini,

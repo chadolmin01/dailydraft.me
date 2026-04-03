@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import { AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import {
@@ -18,22 +19,30 @@ import { useMyOpportunities } from '@/src/hooks/useOpportunities'
 import { useAuth } from '@/src/context/AuthContext'
 import type { Opportunity } from '@/src/types/opportunity'
 
+const ModalLoadingFallback = () => (
+  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-modal-backdrop">
+    <div className="bg-surface-card rounded-xl border border-border px-6 py-4 shadow-lg">
+      <span className="text-sm text-txt-secondary font-mono">로딩 중...</span>
+    </div>
+  </div>
+)
+
 const ProjectDetailModal = dynamic(
   () => import('@/components/ProjectDetailModal').then(m => ({ default: m.ProjectDetailModal })),
-  { ssr: false }
+  { ssr: false, loading: ModalLoadingFallback }
 )
 
 function StatusBadge({ status }: { status: string }) {
   if (status === 'active') {
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-status-success-bg border border-status-success-text/30 text-status-success-text text-[0.625rem] font-bold">
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-status-success-bg border border-status-success-text/30 text-status-success-text text-[10px] font-bold">
         <span className="w-1.5 h-1.5 bg-indicator-online animate-pulse" />
         모집중
       </span>
     )
   }
   return (
-    <span className="px-2 py-0.5 bg-surface-sunken text-txt-tertiary text-[0.625rem] font-bold border border-border">
+    <span className="px-2 py-0.5 bg-surface-sunken text-txt-tertiary text-[10px] font-bold border border-border">
       마감
     </span>
   )
@@ -51,13 +60,13 @@ export default function MyProjectsPage() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-lg font-bold text-txt-primary">내 프로젝트</h1>
-            <p className="text-[0.625rem] text-txt-tertiary mt-0.5">
+            <p className="text-[10px] text-txt-tertiary mt-0.5">
               MY PROJECTS · {myProjects.length}개
             </p>
           </div>
           <Link
             href="/projects/new"
-            className="flex items-center gap-1.5 px-4 py-2 bg-surface-inverse text-txt-inverse text-sm font-bold border border-surface-inverse hover:opacity-90 active:scale-[0.97] transition-all"
+            className="flex items-center gap-1.5 px-4 py-2 bg-surface-inverse text-txt-inverse text-sm font-bold border border-surface-inverse hover:opacity-90 active:scale-[0.97] transition-all rounded-xl"
           >
             <Plus size={16} />
             새 프로젝트
@@ -78,7 +87,7 @@ export default function MyProjectsPage() {
             </p>
             <Link
               href="/projects/new"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-surface-inverse text-txt-inverse text-sm font-bold border border-surface-inverse hover:opacity-90 active:scale-[0.97] transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-surface-inverse text-txt-inverse text-sm font-bold border border-surface-inverse hover:opacity-90 active:scale-[0.97] transition-all rounded-xl"
             >
               <Rocket size={16} />
               첫 프로젝트 만들기
@@ -115,15 +124,15 @@ export default function MyProjectsPage() {
                       {/* Roles */}
                       {opp.needed_roles && opp.needed_roles.length > 0 && (
                         <div className="flex items-center gap-1.5 mb-3 flex-wrap">
-                          <span className="text-[0.625rem] font-medium text-brand bg-brand-bg px-1.5 py-0.5 border border-brand-border">NEED</span>
+                          <span className="text-[10px] font-medium text-brand bg-brand-bg px-1.5 py-0.5 border border-brand-border">NEED</span>
                           {opp.needed_roles.slice(0, 3).map((role: string) => (
-                            <span key={role} className="text-[0.625rem] bg-surface-sunken text-txt-secondary px-2 py-0.5 border border-border font-medium">{role}</span>
+                            <span key={role} className="text-[10px] bg-surface-sunken text-txt-secondary px-2 py-0.5 border border-border font-medium">{role}</span>
                           ))}
                         </div>
                       )}
 
                       {/* Stats footer */}
-                      <div className="flex items-center gap-4 text-[0.625rem] font-mono text-txt-tertiary">
+                      <div className="flex items-center gap-4 text-[10px] font-mono text-txt-tertiary">
                         <span className="flex items-center gap-1">
                           <Clock size={10} />
                           {daysAgo === 0 ? '오늘' : `${daysAgo}일 전`}
@@ -178,10 +187,15 @@ export default function MyProjectsPage() {
         )}
       </div>
 
-      <ProjectDetailModal
-        projectId={selectedProjectId}
-        onClose={() => setSelectedProjectId(null)}
-      />
+      <AnimatePresence>
+        {selectedProjectId && (
+          <ProjectDetailModal
+            key="project-modal"
+            projectId={selectedProjectId}
+            onClose={() => setSelectedProjectId(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   )
 }

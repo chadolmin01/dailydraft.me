@@ -270,7 +270,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
         <div className="p-4 border-b border-border">
           <button
             onClick={onClose}
-            className="hidden sm:flex items-center gap-2 text-sm text-txt-secondary hover:text-txt-primary mb-3"
+            className="hidden sm:flex items-center gap-2 text-sm text-txt-secondary hover:text-txt-primary transition-colors mb-3"
           >
             <ArrowLeft size={16} />
             돌아가기
@@ -281,14 +281,14 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
             </div>
             <div>
               <h1 className="font-bold text-txt-primary text-sm">{template.shortName}</h1>
-              <p className="text-[0.625rem] text-txt-tertiary font-mono">{template.pages}p</p>
+              <p className="text-[10px] text-txt-tertiary font-mono">{template.pages}p</p>
             </div>
           </div>
         </div>
 
         {/* Steps */}
         <div className="flex-1 p-4 overflow-y-auto">
-          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
+          <h3 className="text-[10px] font-medium text-txt-tertiary mb-3">
             Progress
           </h3>
           <StepWizardCompact
@@ -338,7 +338,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
                   style={{ width: `${validationResult.percentage}%` }}
                 />
               </div>
-              <div className="mt-1.5 flex justify-between text-[0.625rem]">
+              <div className="mt-1.5 flex justify-between text-[10px]">
                 <span className="text-txt-tertiary">
                   {validationResult.percentage >= passingScore
                     ? '합격 기준 충족'
@@ -376,7 +376,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
               <TrendingUp size={16} className="text-txt-tertiary" />
               <span className="text-sm font-medium text-txt-secondary">상세 분석</span>
             </div>
-            <span className="text-[0.625rem] font-mono text-txt-tertiary">
+            <span className="text-[10px] font-mono text-txt-tertiary">
               {completedSteps.length}/{WIZARD_STEPS.length}
             </span>
           </button>
@@ -486,7 +486,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
               flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors
               ${currentStep === 1
                 ? 'text-txt-disabled cursor-not-allowed'
-                : 'text-txt-secondary hover:bg-surface-sunken'
+                : 'text-txt-secondary hover:bg-surface-sunken transition-colors'
               }
             `}
           >
@@ -543,7 +543,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
               <h3 className="font-bold text-txt-primary">실시간 점수 분석</h3>
               <button
                 onClick={() => setShowValidation(false)}
-                className="p-1 hover:bg-surface-sunken"
+                className="p-1 hover:bg-surface-sunken transition-colors"
               >
                 <X size={18} />
               </button>
@@ -572,7 +572,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
               {/* Rejection Warnings Summary */}
               {totalWarningCounts.total > 0 && (
                 <div className="border-t border-border-subtle pt-4">
-                  <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
+                  <h4 className="text-[10px] font-medium text-txt-tertiary mb-3">
                     탈락 위험 요소
                   </h4>
                   {Object.entries(allWarnings).map(([section, warnings]) => {
@@ -595,7 +595,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
 
               {/* Legacy Validation Panel */}
               <div className="border-t border-border-subtle pt-4">
-                <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
+                <h4 className="text-[10px] font-medium text-txt-tertiary mb-3">
                   상세 체크리스트
                 </h4>
                 <ValidationPanel
@@ -632,10 +632,10 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
                 </div>
                 <div>
                   <h1 className="font-bold text-txt-primary text-sm">{template.shortName}</h1>
-                  <p className="text-[0.625rem] text-txt-tertiary font-mono">{template.pages}p</p>
+                  <p className="text-[10px] text-txt-tertiary font-mono">{template.pages}p</p>
                 </div>
               </div>
-              <button onClick={() => setShowMobileSidebar(false)} className="p-1.5 text-txt-disabled hover:text-txt-primary">
+              <button onClick={() => setShowMobileSidebar(false)} className="p-1.5 text-txt-disabled hover:text-txt-primary transition-colors">
                 <X size={18} />
               </button>
             </div>

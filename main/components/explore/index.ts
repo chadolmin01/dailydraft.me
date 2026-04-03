@@ -1,7 +1,6 @@
 export { ExploreHeroCarousel } from './ExploreHeroCarousel'
 export { ExploreSearchBar } from './ExploreSearchBar'
 export { ExploreSidebar } from './ExploreSidebar'
-export { ExploreAsidePanel } from './ExploreAsidePanel'
 export { ExploreTabBar } from './ExploreTabBar'
 export { ExploreMobileFilter } from './ExploreMobileFilter'
 export { ExploreProjectGrid } from './ExploreProjectGrid'

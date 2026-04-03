@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
 
     // 1단계: 분석
     const analysisModel = genAI.getGenerativeModel({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-2.5-flash',
       systemInstruction: ANALYSIS_PROMPT,
       generationConfig: { responseMimeType: 'application/json' }
     });
@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
 
     // 2단계: PRD 생성
     const prdModel = genAI.getGenerativeModel({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-2.5-flash',
       systemInstruction: PRD_PROMPT,
       generationConfig: { responseMimeType: 'application/json' }
     });

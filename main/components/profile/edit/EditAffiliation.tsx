@@ -34,7 +34,7 @@ export const EditAffiliation: React.FC<EditAffiliationProps> = ({
 }) => {
   return (
     <section>
-      <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4 flex items-center gap-2">
+      <h3 className="text-[10px] font-medium text-txt-tertiary mb-4 flex items-center gap-2">
         <Briefcase size={14} /> 소속 & 포지션
       </h3>
       <div className="space-y-4">
@@ -158,7 +158,7 @@ export const EditAffiliation: React.FC<EditAffiliationProps> = ({
                 대학 인증
               </span>
               {uniVerified && (
-                <span className="px-1.5 py-0.5 text-[0.625rem] font-bold bg-indicator-online text-white">VERIFIED</span>
+                <span className="px-1.5 py-0.5 text-[10px] font-bold bg-indicator-online text-white">VERIFIED</span>
               )}
             </div>
 

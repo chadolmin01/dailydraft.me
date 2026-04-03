@@ -17,7 +17,9 @@ import {
   Camera,
   Heart,
   Eye,
+  RotateCcw,
 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { useUpdateProfile } from '@/src/hooks/useProfile'
 import { useAuth } from '@/src/context/AuthContext'
@@ -68,7 +70,7 @@ function InlineField({
           onKeyDown={(e) => { if (e.key === 'Escape') close() }}
           placeholder={placeholder}
           rows={3}
-          className={`bg-surface-bg border border-border rounded-lg outline-none w-full px-2 py-1.5 resize-none focus:border-brand transition-colors ${className || ''}`}
+          className={`bg-surface-bg border border-border rounded-xl outline-none w-full px-2 py-1.5 resize-none focus:border-brand transition-colors ${className || ''}`}
         />
       )
     }
@@ -83,14 +85,14 @@ function InlineField({
         }}
         onBlur={close}
         placeholder={placeholder}
-        className={`bg-surface-bg border border-border rounded-lg outline-none px-2 py-0.5 focus:border-brand transition-colors ${className || ''}`}
+        className={`bg-surface-bg border border-border rounded-xl outline-none px-2 py-0.5 focus:border-brand transition-colors ${className || ''}`}
       />
     )
   }
 
   return (
     <span
-      className="group/edit inline-flex items-center gap-1 cursor-pointer rounded-sm px-1 -mx-1 hover:bg-surface-sunken/60 transition-colors"
+      className="group/edit inline-flex items-center gap-1 cursor-pointer rounded-lg px-1 -mx-1 hover:bg-surface-sunken/60 transition-colors"
       onClick={() => setEditing(true)}
       title="클릭하여 수정"
     >
@@ -116,6 +118,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
   const bio = (profile as Record<string, unknown> | null)?.bio as string | null
   const coverUrl = profile?.cover_image_url
   const { user } = useAuth()
+  const router = useRouter()
   const updateProfile = useUpdateProfile()
   const avatarInputRef = useRef<HTMLInputElement>(null)
   const bioRef = useRef<HTMLTextAreaElement>(null)
@@ -301,7 +304,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
 
   /* ── Subtitle ── */
   const renderSubtitle = () => (
-    <p className="text-xs sm:text-sm text-txt-secondary truncate">
+    <p className="text-xs sm:text-sm text-txt-primary/70 truncate">
       {isEditable ? (
         <InlineField
           value={profile?.desired_position || ''}
@@ -335,7 +338,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
               onKeyDown={(e) => { if (e.key === 'Escape') setEditingBio(false) }}
               placeholder="자기소개를 입력하세요"
               rows={3}
-              className="bg-surface-bg border border-border rounded-lg outline-none w-full px-3 py-2 resize-none focus:border-brand transition-colors text-base sm:text-sm text-txt-secondary leading-relaxed"
+              className="bg-surface-bg border border-border rounded-xl outline-none w-full px-3 py-2 resize-none focus:border-brand transition-colors text-base sm:text-sm text-txt-secondary leading-relaxed"
             />
           </div>
         )
@@ -350,7 +353,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
               onClick={() => setEditingBio(true)}
               title="클릭하여 수정"
             >
-              <span className={`text-sm leading-relaxed ${isChanged ? 'text-brand' : 'text-txt-secondary'}`}>
+              <span className={`text-sm leading-relaxed ${isChanged ? 'text-brand' : 'text-txt-primary/80'}`}>
                 {bioValue}
               </span>
               <Pencil size={9} className="opacity-0 group-hover/edit:opacity-40 transition-opacity shrink-0 mt-1" />
@@ -368,14 +371,14 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
           <div className="flex flex-col items-center gap-1.5 py-1">
             <Pencil size={16} className="text-txt-disabled group-hover/bio:text-brand transition-colors" />
             <p className="text-sm font-medium text-txt-tertiary group-hover/bio:text-txt-primary transition-colors">자기소개를 작성해보세요</p>
-            <p className="text-[0.625rem] text-txt-disabled">나를 소개하는 한 줄을 남겨보세요</p>
+            <p className="text-[10px] text-txt-disabled">나를 소개하는 한 줄을 남겨보세요</p>
           </div>
         </div>
       )
     }
 
     // Not editable
-    if (bio) return <p className={`text-sm text-txt-secondary leading-relaxed ${marginClass}`}>{bio}</p>
+    if (bio) return <p className={`text-sm text-txt-primary/80 leading-relaxed ${marginClass}`}>{bio}</p>
     return null
   }
 
@@ -385,12 +388,12 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
     const likes = profile?.interest_count ?? 0
     return (
       <div className="flex items-center gap-4 mt-2">
-        <span className="flex items-center gap-1.5 text-xs font-mono text-txt-tertiary">
-          <Eye size={13} className="text-txt-disabled" />
+        <span className="flex items-center gap-1.5 text-xs font-mono text-txt-secondary">
+          <Eye size={13} className="text-txt-tertiary" />
           <span className="font-bold text-txt-primary">{views}</span>
         </span>
-        <span className="flex items-center gap-1.5 text-xs font-mono text-txt-tertiary">
-          <Heart size={13} className={likes > 0 ? 'text-rose-400 fill-rose-400' : 'text-txt-disabled'} />
+        <span className="flex items-center gap-1.5 text-xs font-mono text-txt-secondary">
+          <Heart size={13} className={likes > 0 ? 'text-rose-400 fill-rose-400' : 'text-txt-tertiary'} />
           <span className="font-bold text-txt-primary">{likes}</span>
         </span>
       </div>
@@ -402,9 +405,9 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-4 border-t border-border">
       {infoItems.map((item) => (
         <div key={item.label} className="flex items-start gap-2">
-          <item.icon size={12} className="text-txt-disabled mt-0.5" />
+          <item.icon size={12} className="text-txt-tertiary mt-0.5" />
           <div className="min-w-0 flex-1">
-            <p className="text-[0.5rem] text-txt-disabled">{item.label}</p>
+            <p className="text-[0.5rem] text-txt-tertiary">{item.label}</p>
             {isEditable ? (
               <InlineField
                 value={item.value}
@@ -429,9 +432,9 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
       <div className="mt-4 pt-4 border-t border-border space-y-3">
         {profile?.interest_tags && profile.interest_tags.length > 0 && (
           <div className="flex gap-1.5 flex-wrap">
-            <span className="text-[0.5rem] text-txt-disabled self-center mr-1">TAGS</span>
+            <span className="text-[0.5rem] text-txt-tertiary self-center mr-1">TAGS</span>
             {profile.interest_tags.map((tag, idx) => (
-              <span key={idx} className="text-[0.625rem] font-mono bg-white text-tag-default-text border border-border px-2 py-0.5 font-medium rounded-full">
+              <span key={idx} className="text-[10px] font-mono bg-white text-txt-primary border border-border px-2 py-0.5 font-medium rounded-full">
                 {tag}
               </span>
             ))}
@@ -440,9 +443,9 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
 
         {strengths.length > 0 && (
           <div className="flex gap-1.5 flex-wrap">
-            <span className="text-[0.5rem] text-txt-disabled self-center mr-1 flex items-center gap-1"><Sparkles size={9} /> STRENGTHS</span>
+            <span className="text-[0.5rem] text-txt-tertiary self-center mr-1 flex items-center gap-1"><Sparkles size={9} /> STRENGTHS</span>
             {strengths.map((s, idx) => (
-              <span key={idx} className="text-[0.625rem] font-mono bg-indicator-online/20 text-indicator-online border border-indicator-online/30 px-2 py-0.5 font-medium rounded-full">
+              <span key={idx} className="text-[10px] font-mono bg-indicator-online/20 text-indicator-online border border-indicator-online/30 px-2 py-0.5 font-medium rounded-full">
                 {s}
               </span>
             ))}
@@ -452,12 +455,51 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
     )
   }
 
+  /* ── Starter guide restart (top-right micro button) ── */
+  const renderGuideRestart = () => {
+    if (!isEditable) return null
+    return (
+      <div className="absolute top-3 right-3 z-10 group/guide">
+        <button
+            onClick={() => {
+              const key = 'draft_starter_guide'
+              try {
+                const raw = localStorage.getItem(key)
+                if (raw) {
+                  const s = JSON.parse(raw)
+                  s.softDismissedAt = null
+                  s.permanentlyDismissed = false
+                  s.completedAt = null
+                  localStorage.setItem(key, JSON.stringify(s))
+                } else {
+                  localStorage.setItem(key, JSON.stringify({
+                    version: 1, steps: { profile: false, explore: false, project: false },
+                    softDismissedAt: null, permanentlyDismissed: false, completedAt: null,
+                  }))
+                }
+              } catch { localStorage.removeItem(key) }
+              toast.success('시작 가이드가 다시 표시됩니다')
+              router.push('/explore')
+            }}
+            className="flex items-center gap-1 px-2 py-1 text-[10px] text-txt-tertiary hover:text-txt-primary bg-surface-card/80 backdrop-blur-sm border border-border rounded-lg transition-colors"
+          >
+            <RotateCcw size={10} />
+            <span className="hidden sm:inline">가이드</span>
+          </button>
+          <span className="absolute top-[calc(100%+6px)] right-0 px-2.5 py-1.5 text-[10px] font-medium bg-surface-inverse text-txt-inverse rounded-lg shadow-lg whitespace-nowrap opacity-0 pointer-events-none group-hover/guide:opacity-100 transition-opacity">
+            시작 가이드 다시 보기
+          </span>
+      </div>
+    )
+  }
+
   /* ════════════════════════════════════════════════════════ */
   /* Variant A: with cover image                            */
   /* ════════════════════════════════════════════════════════ */
   if (coverUrl) {
     return (
-      <div className="relative bg-surface-card text-txt-primary mb-6 border border-border shadow-md overflow-hidden rounded-2xl">
+      <div className="relative group bg-surface-card text-txt-primary mb-6 border border-border shadow-md overflow-hidden rounded-2xl">
+        {renderGuideRestart()}
 
         {/* Cover image */}
         <div className="relative h-32 sm:h-40 lg:h-48">
@@ -481,7 +523,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
               {renderName()}
               {renderSubtitle()}
               {profile?.current_situation && (
-                <span className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 text-[0.5rem] font-mono font-bold bg-brand/20 text-brand-border border border-brand/30 rounded-full">
+                <span className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 text-[0.5rem] font-mono font-bold bg-brand/10 text-brand border border-brand/30 rounded-full">
                   <Target size={8} /> {SITUATION_LABELS[profile.current_situation] || profile.current_situation}
                 </span>
               )}
@@ -508,7 +550,8 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
   /* Variant B: no cover image                              */
   /* ════════════════════════════════════════════════════════ */
   return (
-    <div className="relative bg-surface-card text-txt-primary p-5 pb-6 mb-6 border border-border shadow-md rounded-2xl">
+    <div className="relative group bg-surface-card text-txt-primary p-5 pb-6 mb-6 border border-border shadow-md rounded-2xl">
+      {renderGuideRestart()}
 
       <div className="flex items-start gap-4 mb-4">
         {renderAvatar('hero')}
@@ -516,7 +559,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
           {renderName()}
           {renderSubtitle()}
           {profile?.current_situation && (
-            <span className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 text-[0.5rem] font-mono font-bold bg-brand/20 text-brand-border border border-brand/30 rounded-full">
+            <span className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 text-[0.5rem] font-mono font-bold bg-brand/10 text-brand border border-brand/30 rounded-full">
               <Target size={8} /> {SITUATION_LABELS[profile.current_situation] || profile.current_situation}
             </span>
           )}

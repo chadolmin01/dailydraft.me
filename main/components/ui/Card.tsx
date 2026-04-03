@@ -9,7 +9,7 @@ interface CardProps {
   title?: string
   action?: React.ReactNode
   onClick?: () => void
-  variant?: 'default' | 'sketch' | 'technical' | 'flat' | 'solid'
+  variant?: 'default' | 'technical' | 'flat' | 'solid'
 }
 
 export const Card: React.FC<CardProps> = ({
@@ -26,7 +26,7 @@ export const Card: React.FC<CardProps> = ({
   const defaultClasses = 'bg-surface-card border border-border hover:shadow-md hover-spring'
   const technicalClasses = 'bg-surface-card border border-border'
   const flatClasses = 'bg-surface-sunken rounded-xl border border-border'
-  const solidClasses = ''
+  const solidClasses = 'bg-surface-card'
 
   let variantClasses = defaultClasses
   if (variant === 'technical') variantClasses = technicalClasses

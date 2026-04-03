@@ -132,12 +132,12 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
             </div>
 
             {/* Open Questions */}
-           <div className="bg-amber-50 border border-amber-200 p-5 flex flex-col gap-4">
-                <span className="bg-amber-100 text-amber-700 text-xs font-bold font-mono px-2 py-1 border border-amber-300 whitespace-nowrap self-start">논의 필요 사항</span>
+           <div className="bg-surface-sunken border border-border p-5 flex flex-col gap-4">
+                <span className="bg-surface-inverse text-txt-inverse text-xs font-bold font-mono px-2 py-1 border border-surface-inverse whitespace-nowrap self-start">논의 필요 사항</span>
                 <div className="flex flex-col gap-2">
                     {result.openQuestions.map((q, i) => (
-                        <span key={i} className="text-sm text-amber-900 font-medium flex items-center gap-2 break-keep">
-                            <span className="w-1.5 h-1.5 bg-indicator-premium flex-shrink-0"></span> {q}
+                        <span key={i} className="text-sm text-txt-secondary font-medium flex items-center gap-2 break-keep">
+                            <span className="w-1.5 h-1.5 bg-surface-inverse flex-shrink-0"></span> {q}
                         </span>
                     ))}
                 </div>
@@ -451,7 +451,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
             <div className="bg-surface-sunken p-6 border border-border">
                 <div className="flex items-center gap-2 mb-4 text-txt-disabled">
                     <History className="w-4 h-4" />
-                    <span className="text-[0.625rem] font-medium">Input History Timeline</span>
+                    <span className="text-[10px] font-medium">Input History Timeline</span>
                 </div>
 
                 <div className="space-y-4">

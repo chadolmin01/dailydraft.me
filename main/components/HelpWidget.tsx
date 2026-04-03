@@ -15,7 +15,9 @@ import {
   CheckCircle2,
   Sparkles,
   AlertCircle,
+  RotateCcw,
 } from 'lucide-react'
+import { toast } from 'sonner'
 
 // ── FAQ Data ──
 const FAQ_ITEMS = [
@@ -134,7 +136,7 @@ export function HelpWidget() {
 
           {/* Content */}
           <div className="flex-1 overflow-y-auto min-h-0">
-            {tab === 'faq' && <FaqTab />}
+            {tab === 'faq' && <FaqTab onClose={() => setIsOpen(false)} />}
             {tab === 'chat' && <ChatTab />}
             {tab === 'report' && <ReportTab />}
           </div>
@@ -144,12 +146,49 @@ export function HelpWidget() {
   )
 }
 
+// ── Starter Guide Reset ──
+const STARTER_GUIDE_KEY = 'draft_starter_guide'
+
+function resetStarterGuide(onClose: () => void) {
+  try {
+    const raw = localStorage.getItem(STARTER_GUIDE_KEY)
+    if (raw) {
+      const state = JSON.parse(raw)
+      state.softDismissedAt = null
+      state.permanentlyDismissed = false
+      state.completedAt = null
+      localStorage.setItem(STARTER_GUIDE_KEY, JSON.stringify(state))
+    } else {
+      localStorage.setItem(STARTER_GUIDE_KEY, JSON.stringify({
+        version: 1,
+        steps: { profile: false, explore: false, project: false },
+        softDismissedAt: null,
+        permanentlyDismissed: false,
+        completedAt: null,
+      }))
+    }
+  } catch {
+    localStorage.removeItem(STARTER_GUIDE_KEY)
+  }
+  toast.success('시작 가이드가 다시 표시됩니다')
+  onClose()
+}
+
 // ── FAQ Tab ──
-function FaqTab() {
+function FaqTab({ onClose }: { onClose: () => void }) {
   const [openIdx, setOpenIdx] = useState<string | null>(null)
 
   return (
     <div className="p-3 space-y-3">
+      {/* Starter guide restart */}
+      <button
+        onClick={() => resetStarterGuide(onClose)}
+        className="w-full flex items-center gap-2.5 px-3 py-2.5 text-left border border-border bg-surface-sunken rounded-xl hover:bg-surface-card transition-colors group"
+      >
+        <RotateCcw size={13} className="text-txt-disabled group-hover:text-brand shrink-0 transition-colors" />
+        <span className="text-[12px] font-medium text-txt-secondary group-hover:text-txt-primary transition-colors">시작 가이드 다시 보기</span>
+      </button>
+
       {FAQ_ITEMS.map((cat) => (
         <div key={cat.category}>
           <h4 className="text-[10px] font-medium text-txt-disabled mb-1.5 px-1">{cat.category}</h4>
@@ -293,7 +332,7 @@ function ChatTab() {
             onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send()}
             placeholder="질문을 입력하세요..."
             disabled={isLoading}
-            className="flex-1 px-3 py-2 text-[12px] bg-surface-card rounded-lg border border-border focus:outline-none focus:border-brand transition-colors placeholder:text-txt-disabled disabled:opacity-50"
+            className="flex-1 px-3 py-2 text-[12px] bg-surface-card rounded-xl border border-border focus:outline-none focus:border-brand transition-colors placeholder:text-txt-disabled disabled:opacity-50"
           />
           <button
             onClick={() => send()}
@@ -355,7 +394,7 @@ function ReportTab() {
         <p className="text-[12px] text-txt-tertiary text-center">빠르게 확인하고 처리하겠습니다.<br />감사합니다!</p>
         <button
           onClick={() => setSubmitted(false)}
-          className="mt-2 px-4 py-2 text-[12px] font-bold bg-surface-card rounded-lg border border-border text-txt-secondary hover:bg-black hover:text-white hover:border-border transition-colors"
+          className="mt-2 px-4 py-2 text-[12px] font-bold bg-surface-card rounded-xl border border-border text-txt-secondary hover:bg-black hover:text-white hover:border-border transition-colors"
         >
           새 리포트 작성
         </button>
@@ -395,7 +434,7 @@ function ReportTab() {
           onChange={e => setTitle(e.target.value)}
           placeholder="간단히 요약해주세요"
           maxLength={200}
-          className="w-full px-3 py-2 text-[12px] bg-surface-card rounded-lg border border-border focus:outline-none focus:border-brand transition-colors placeholder:text-txt-disabled"
+          className="w-full px-3 py-2 text-[12px] bg-surface-card rounded-xl border border-border focus:outline-none focus:border-brand transition-colors placeholder:text-txt-disabled"
         />
       </div>
 
@@ -408,7 +447,7 @@ function ReportTab() {
           placeholder="어떤 상황에서 발생했는지, 기대했던 동작은 무엇인지 알려주세요"
           rows={4}
           maxLength={5000}
-          className="w-full px-3 py-2 text-[12px] bg-surface-sunken rounded-lg border border-border focus:outline-none focus:border-brand transition-colors resize-none placeholder:text-txt-disabled"
+          className="w-full px-3 py-2 text-[12px] bg-surface-sunken rounded-xl border border-border focus:outline-none focus:border-brand transition-colors resize-none placeholder:text-txt-disabled"
         />
         <p className="text-[9px] text-txt-disabled text-right mt-0.5 font-mono">{description.length}/5000</p>
       </div>

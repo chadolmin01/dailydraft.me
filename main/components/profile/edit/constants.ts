@@ -28,5 +28,3 @@ export const SKILL_SUGGESTIONS = [
   'Flutter', 'Swift', 'Kotlin', 'Java', 'Go',
   'Figma', 'SQL', 'AWS', 'Docker', 'Git',
 ]
-
-export const SKILL_LEVELS = ['초급', '중급', '고급']

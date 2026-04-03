@@ -45,7 +45,7 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
               </h2>
               <Badges badges={(opportunity as unknown as { badges?: string[] | null }).badges ?? null} className="mt-1" />
               {!isOwner && matchScore != null && matchScore >= 60 && (
-                <span className={`text-[0.625rem] font-mono font-bold px-1.5 py-0.5 border shrink-0 mt-1 ${
+                <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 border shrink-0 mt-1 ${
                   matchScore >= 80 ? 'bg-status-success-bg text-status-success-text border-indicator-online/20'
                   : 'bg-white/20 text-white/80 border-white/30'
                 }`}>
@@ -56,14 +56,14 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
             <div className="flex flex-wrap items-center gap-3 text-sm text-white/70">
               {creator ? (
                 <span className="flex items-center gap-2">
-                  <div className="w-5 h-5 bg-white/20 backdrop-blur rounded-full flex items-center justify-center text-[0.5625rem] font-bold text-white">
+                  <div className="w-5 h-5 bg-white/20 backdrop-blur rounded-full flex items-center justify-center text-[10px] font-bold text-white">
                     {creator.nickname.charAt(0)}
                   </div>
                   <span className="font-medium text-white/90">{creator.nickname}</span>
                 </span>
               ) : (
                 <span className="flex items-center gap-2">
-                  <div className="w-5 h-5 bg-white/20 backdrop-blur rounded-full flex items-center justify-center text-[0.5625rem] font-bold text-white/70">?</div>
+                  <div className="w-5 h-5 bg-white/20 backdrop-blur rounded-full flex items-center justify-center text-[10px] font-bold text-white/70">?</div>
                   <span className="font-medium text-white/90">익명</span>
                 </span>
               )}
@@ -149,7 +149,7 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
         </h2>
         <Badges badges={(opportunity as unknown as { badges?: string[] | null }).badges ?? null} className="mt-1" />
         {!isOwner && matchScore != null && matchScore >= 60 && (
-          <span className={`text-[0.625rem] font-mono font-bold px-1.5 py-0.5 border shrink-0 mt-1 ${
+          <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 border shrink-0 mt-1 ${
             matchScore >= 80 ? 'bg-status-success-bg text-status-success-text border-indicator-online/20'
             : 'bg-brand-bg text-brand border-brand-border'
           }`}>
@@ -160,14 +160,14 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
       <div className="flex flex-wrap items-center gap-4 text-sm text-txt-tertiary">
         {creator ? (
           <span className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-surface-inverse rounded-full flex items-center justify-center text-[0.625rem] font-bold text-txt-inverse">
+            <div className="w-6 h-6 bg-surface-inverse rounded-full flex items-center justify-center text-[10px] font-bold text-txt-inverse">
               {creator.nickname.charAt(0)}
             </div>
             <span className="font-medium text-txt-secondary">{creator.nickname}</span>
           </span>
         ) : (
           <span className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-surface-sunken flex items-center justify-center text-[0.625rem] font-bold text-txt-tertiary border border-border">?</div>
+            <div className="w-6 h-6 bg-surface-sunken flex items-center justify-center text-[10px] font-bold text-txt-tertiary border border-border">?</div>
             <span className="font-medium text-txt-secondary">익명</span>
           </span>
         )}

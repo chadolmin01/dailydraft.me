@@ -93,7 +93,7 @@ const StepItem: React.FC<StepItemProps> = ({
         >
           {step.title}
         </div>
-        <div className="text-[0.625rem] text-txt-tertiary hidden md:block max-w-[6.25rem]">
+        <div className="text-[10px] text-txt-tertiary hidden md:block max-w-[6.25rem]">
           {step.description}
         </div>
       </div>
@@ -179,12 +179,12 @@ export const StepWizardCompact: React.FC<StepWizardProps> = ({
 
             {/* Progress indicator */}
             {isCompleted && (
-              <span className="text-[0.625rem] font-mono text-status-success-text bg-status-success-bg px-2 py-0.5">
+              <span className="text-[10px] font-mono text-status-success-text bg-status-success-bg px-2 py-0.5">
                 DONE
               </span>
             )}
             {isActive && !isCompleted && (
-              <span className="text-[0.625rem] font-mono text-brand bg-brand-bg px-2 py-0.5 animate-pulse">
+              <span className="text-[10px] font-mono text-brand bg-brand-bg px-2 py-0.5 animate-pulse">
                 IN PROGRESS
               </span>
             )}

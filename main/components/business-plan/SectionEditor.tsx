@@ -42,7 +42,7 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({
             배점: {section.weight}점
           </p>
         </div>
-        <div className="text-[0.625rem] font-medium text-txt-tertiary bg-surface-sunken px-2 py-1 border border-border-subtle">
+        <div className="text-[10px] font-medium text-txt-tertiary bg-surface-sunken px-2 py-1 border border-border-subtle">
           {section.type.toUpperCase()}
         </div>
       </div>
@@ -175,7 +175,7 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
             `}
           />
           {/* Character count */}
-          <div className="absolute bottom-2 right-2 text-[0.625rem] text-txt-tertiary font-mono">
+          <div className="absolute bottom-2 right-2 text-[10px] text-txt-tertiary font-mono">
             {charCount.toLocaleString()}/{maxLength.toLocaleString()}
           </div>
         </div>
@@ -291,7 +291,7 @@ export const BasicInfoEditor: React.FC<BasicInfoEditorProps> = ({
             ${errors.oneLiner ? 'border-status-danger-text/20 bg-status-danger-bg/50' : 'border-border'}
           `}
         />
-        <div className="flex justify-between text-[0.625rem] text-txt-tertiary">
+        <div className="flex justify-between text-[10px] text-txt-tertiary">
           <span>{errors.oneLiner || ''}</span>
           <span className="font-mono">{data.oneLiner.length}/50</span>
         </div>
@@ -313,7 +313,7 @@ export const BasicInfoEditor: React.FC<BasicInfoEditorProps> = ({
             ${errors.targetCustomer ? 'border-status-danger-text/20 bg-status-danger-bg/50' : 'border-border'}
           `}
         />
-        <p className="text-[0.625rem] text-txt-tertiary">
+        <p className="text-[10px] text-txt-tertiary">
           구체적으로 작성할수록 AI가 더 정확한 내용을 생성합니다
         </p>
       </div>

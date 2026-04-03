@@ -1,6 +1,6 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useInfiniteQuery } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase/client'
 import type { Tables } from '../types/database'
 import { withRetry } from '../lib/query-utils'
@@ -47,6 +47,30 @@ export function usePublicProfiles(options?: {
       if (error) throw error
       return data as PublicProfile[]
     }),
+  })
+}
+
+// Infinite scroll: fetch public profiles page by page
+export function useInfinitePublicProfiles(pageSize = 12) {
+  return useInfiniteQuery({
+    queryKey: [...publicProfileKeys.all, 'infinite', pageSize],
+    queryFn: ({ pageParam = 0 }) => withRetry(async () => {
+      const { data, error, count } = await supabase
+        .from('profiles')
+        .select('id, user_id, nickname, desired_position, interest_tags, location, profile_visibility, vision_summary, avatar_url, interest_count, created_at, badges, university, affiliation_type', { count: 'exact' })
+        .eq('profile_visibility', 'public')
+        .order('updated_at', { ascending: false })
+        .range(pageParam, pageParam + pageSize - 1)
+
+      if (error) throw error
+      return { items: data as PublicProfile[], totalCount: count ?? 0, nextOffset: pageParam + pageSize }
+    }),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) =>
+      lastPage.items.length < pageSize ? undefined : lastPage.nextOffset,
+    staleTime: 1000 * 60 * 2,
+    retry: (failureCount) => failureCount < 3,
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
   })
 }
 

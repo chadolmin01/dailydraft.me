@@ -44,15 +44,12 @@ export interface EditAffiliationProps {
 }
 
 export interface EditSkillsProps {
-  skills: Array<{ name: string; level: string }>
-  setSkills: React.Dispatch<React.SetStateAction<Array<{ name: string; level: string }>>>
+  skills: Array<{ name: string }>
+  setSkills: React.Dispatch<React.SetStateAction<Array<{ name: string }>>>
   newSkillName: string
   setNewSkillName: (v: string) => void
-  newSkillLevel: string
-  setNewSkillLevel: (v: string) => void
   addSkill: (name?: string) => void
   removeSkill: (name: string) => void
-  updateSkillLevel: (name: string, level: string) => void
 }
 
 export interface EditContactProps {
@@ -84,6 +81,8 @@ export interface EditAIProfileProps {
   setPersonality: React.Dispatch<React.SetStateAction<Record<string, number>>>
   workStyle: Record<string, number>
   setWorkStyle: React.Dispatch<React.SetStateAction<Record<string, number>>>
+  workStyleTraits: Record<string, string>
+  setWorkStyleTraits: React.Dispatch<React.SetStateAction<Record<string, string>>>
   teamRole: string
   setTeamRole: (v: string) => void
   teamSize: string

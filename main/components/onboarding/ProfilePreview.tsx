@@ -99,7 +99,7 @@ export const ProfilePreview: React.FC<ProfilePreviewProps> = ({
               {step === 'done' ? (
                 <div className="flex items-center gap-1 text-status-success-text/70"><Sparkles size={10} fill="currentColor" /><span className="text-[10px] font-medium">Done</span></div>
               ) : step === 'deep-chat' ? (
-                <div className="flex items-center gap-1 text-[#818CF8]"><MessageCircle size={10} /><span className="text-[10px] font-medium">AI Chat</span></div>
+                <div className="flex items-center gap-1 text-brand"><MessageCircle size={10} /><span className="text-[10px] font-medium">AI Chat</span></div>
               ) : (
                 <span className="text-[9px] text-txt-secondary font-mono">설정 중...</span>
               )}

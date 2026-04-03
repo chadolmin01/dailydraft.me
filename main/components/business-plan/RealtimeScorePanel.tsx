@@ -90,9 +90,9 @@ export const RealtimeScorePanel: React.FC<RealtimeScorePanelProps> = ({
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             {scoreStatus.icon}
-            <span className="text-[0.625rem] font-medium text-txt-secondary">전체 점수</span>
+            <span className="text-[10px] font-medium text-txt-secondary">전체 점수</span>
             {isValidating && (
-              <span className="inline-flex items-center px-2 py-0.5 text-[0.625rem] font-medium bg-surface-sunken text-txt-secondary">
+              <span className="inline-flex items-center px-2 py-0.5 text-[10px] font-medium bg-surface-sunken text-txt-secondary">
                 <span className="animate-pulse">분석 중...</span>
               </span>
             )}
@@ -145,7 +145,7 @@ export const RealtimeScorePanel: React.FC<RealtimeScorePanelProps> = ({
 
       {/* Section Scores */}
       <div className="p-4 border-b border-border-subtle">
-        <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
+        <h4 className="text-[10px] font-medium text-txt-tertiary mb-3">
           섹션별 점수
         </h4>
 
@@ -165,7 +165,7 @@ export const RealtimeScorePanel: React.FC<RealtimeScorePanelProps> = ({
       {/* Top Improvements */}
       {topImprovements.length > 0 && (
         <div className="p-4">
-          <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-1">
+          <h4 className="text-[10px] font-medium text-txt-tertiary mb-3 flex items-center gap-1">
             <Zap size={12} className="text-status-warning-text" />
             점수 향상 팁
           </h4>
@@ -178,7 +178,7 @@ export const RealtimeScorePanel: React.FC<RealtimeScorePanelProps> = ({
                 className="w-full text-left p-3 bg-surface-sunken hover:bg-surface-card border border-transparent hover:border-border transition-colors group"
               >
                 <div className="flex items-start gap-2">
-                  <div className={`shrink-0 mt-0.5 w-5 h-5 flex items-center justify-center text-[0.625rem] font-bold ${
+                  <div className={`shrink-0 mt-0.5 w-5 h-5 flex items-center justify-center text-[10px] font-bold ${
                     improvement.priority === 'high' ? 'bg-status-danger-bg text-status-danger-text' :
                     improvement.priority === 'medium' ? 'bg-status-warning-bg text-status-warning-text' :
                     'bg-surface-sunken text-txt-secondary'
@@ -187,10 +187,10 @@ export const RealtimeScorePanel: React.FC<RealtimeScorePanelProps> = ({
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-[0.625rem] text-txt-tertiary">
+                      <span className="text-[10px] text-txt-tertiary">
                         {SECTION_NAMES[improvement.section]}
                       </span>
-                      <span className="text-[0.625rem] text-txt-tertiary">•</span>
+                      <span className="text-[10px] text-txt-tertiary">•</span>
                       <span className="text-xs font-medium text-txt-secondary">
                         {improvement.checkName}
                       </span>
@@ -241,7 +241,7 @@ const SectionScoreRow: React.FC<SectionScoreRowProps> = ({
             <div className="text-sm font-medium text-txt-primary">
               {SECTION_NAMES[sectionType]}
             </div>
-            <div className="text-[0.625rem] text-txt-tertiary">
+            <div className="text-[10px] text-txt-tertiary">
               {checks.filter(c => c.passed).length}/{checks.length} 항목 충족
             </div>
           </div>
@@ -296,7 +296,7 @@ const SectionScoreRow: React.FC<SectionScoreRowProps> = ({
                       {check.name}
                     </span>
                     {!check.passed && check.potentialGain && (
-                      <span className="text-[0.625rem] font-medium text-status-success-text bg-status-success-bg px-1.5 py-0.5">
+                      <span className="text-[10px] font-medium text-status-success-text bg-status-success-bg px-1.5 py-0.5">
                         +{check.potentialGain}점
                       </span>
                     )}

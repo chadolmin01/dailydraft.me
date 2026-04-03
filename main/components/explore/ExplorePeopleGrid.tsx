@@ -1,9 +1,8 @@
 'use client'
 
-import React from 'react'
+import React, { useRef, useEffect } from 'react'
 import Image from 'next/image'
 import { Users, Coffee } from 'lucide-react'
-import { Tooltip } from '@/components/ui/Tooltip'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { SkeletonGrid } from '@/components/ui/Skeleton'
 import { ErrorState } from '@/components/ui/ErrorState'
@@ -18,6 +17,7 @@ interface ExplorePeopleGridProps {
   isError: boolean
   onRetry: () => void
   hasMore: boolean
+  isFetchingMore: boolean
   onLoadMore: () => void
   onSelectProfile: (id: string, byUserId: boolean) => void
   peopleSortBy: PeopleSortBy
@@ -29,10 +29,24 @@ export function ExplorePeopleGrid({
   isError,
   onRetry,
   hasMore,
+  isFetchingMore,
   onLoadMore,
   onSelectProfile,
   peopleSortBy,
 }: ExplorePeopleGridProps) {
+  const sentinelRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = sentinelRef.current
+    if (!el || !hasMore) return
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) onLoadMore() },
+      { rootMargin: '200px' },
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [hasMore, onLoadMore])
+
   return (
     <section>
       {isError ? (
@@ -70,11 +84,11 @@ export function ExplorePeopleGrid({
                     <h3 className="font-semibold text-sm text-txt-primary truncate">{t.name}</h3>
                     <Badges badges={t.badges} />
                     {peopleSortBy === 'ai' && t.matchScore != null && t.matchScore > 0 ? (
-                      <span className={`text-[0.5625rem] font-mono font-bold px-1 py-px shrink-0 border ${getMatchColorClass(t.matchScore)}`}>
+                      <span className={`text-[10px] font-mono font-bold px-1 py-px shrink-0 border ${getMatchColorClass(t.matchScore)}`}>
                         {t.matchScore}%
                       </span>
                     ) : (
-                      <span className={`text-[0.5625rem] font-mono font-bold px-1 py-px shrink-0 border ${
+                      <span className={`text-[10px] font-mono font-bold px-1 py-px shrink-0 border ${
                         t.status === 'OPEN' ? 'bg-status-success-bg text-status-success-text border-indicator-online/20'
                         : t.status === 'BUSY' ? 'bg-status-neutral-bg text-status-neutral-text border-border'
                         : 'bg-surface-sunken text-txt-tertiary border-border'
@@ -90,18 +104,18 @@ export function ExplorePeopleGrid({
                   {t.tags.length > 0 && (
                     <div className="flex items-center gap-1 mt-1 overflow-hidden">
                       {t.tags.slice(0, 3).map(tag => (
-                        <span key={tag} className="text-[0.625rem] bg-surface-card text-tag-default-text px-1.5 py-px border border-border font-medium shrink-0">{tag}</span>
+                        <span key={tag} className="text-[10px] bg-surface-card text-tag-default-text px-1.5 py-px border border-border font-medium shrink-0">{tag}</span>
                       ))}
                       {t.tags.length > 3 && (
-                        <span className="text-[0.625rem] text-txt-disabled font-mono">+{t.tags.length - 3}</span>
+                        <span className="text-[10px] text-txt-disabled font-mono">+{t.tags.length - 3}</span>
                       )}
                     </div>
                   )}
                 </div>
                 {t.status === 'OPEN' && (
-                  <Tooltip text="커피챗 가능">
+                  <span title="커피챗 가능">
                     <Coffee size={14} className="text-indicator-online shrink-0" />
-                  </Tooltip>
+                  </span>
                 )}
               </div>
             ))}
@@ -134,21 +148,17 @@ export function ExplorePeopleGrid({
                         <h3 className="font-semibold text-base text-txt-primary truncate">{t.name}</h3>
                         <Badges badges={t.badges} />
                         {peopleSortBy === 'ai' && t.matchScore != null && t.matchScore > 0 ? (
-                          <Tooltip text="AI 프로필 유사도">
-                            <span className={`text-[0.625rem] font-mono font-bold px-1.5 py-0.5 shrink-0 border ${getMatchColorClass(t.matchScore)}`}>
-                              {t.matchScore}%
-                            </span>
-                          </Tooltip>
+                          <span title="AI 프로필 유사도" className={`text-[10px] font-mono font-bold px-1.5 py-0.5 shrink-0 border ${getMatchColorClass(t.matchScore)}`}>
+                            {t.matchScore}%
+                          </span>
                         ) : (
-                          <Tooltip text={t.status === 'OPEN' ? '커피챗/협업 가능' : t.status === 'BUSY' ? '바쁨 · 메시지 가능' : '현재 불가'}>
-                            <span className={`text-[0.625rem] font-mono font-bold px-1.5 py-0.5 shrink-0 border ${
-                              t.status === 'OPEN' ? 'bg-status-success-bg text-status-success-text border-indicator-online/20'
-                              : t.status === 'BUSY' ? 'bg-status-neutral-bg text-status-neutral-text border-border'
-                              : 'bg-surface-sunken text-txt-tertiary border-border'
-                            }`}>
-                              {t.status}
-                            </span>
-                          </Tooltip>
+                          <span title={t.status === 'OPEN' ? '커피챗/협업 가능' : t.status === 'BUSY' ? '바쁨 · 메시지 가능' : '현재 불가'} className={`text-[10px] font-mono font-bold px-1.5 py-0.5 shrink-0 border ${
+                            t.status === 'OPEN' ? 'bg-status-success-bg text-status-success-text border-indicator-online/20'
+                            : t.status === 'BUSY' ? 'bg-status-neutral-bg text-status-neutral-text border-border'
+                            : 'bg-surface-sunken text-txt-tertiary border-border'
+                          }`}>
+                            {t.status}
+                          </span>
                         )}
                       </div>
                       <p className="text-sm text-txt-secondary truncate">
@@ -174,11 +184,11 @@ export function ExplorePeopleGrid({
                 </div>
                 <div className="px-4 pb-4 h-[3.25rem] shrink-0 flex items-end">
                   <div className="flex items-center justify-between w-full pt-2 border-t border-border">
-                    <span className="text-[0.625rem] font-mono text-txt-tertiary">{t.role}</span>
+                    <span className="text-[10px] font-mono text-txt-tertiary">{t.role}</span>
                     {t.status === 'OPEN' ? (
-                      <span className="text-[0.625rem] font-mono text-indicator-online flex items-center gap-1 bg-status-success-bg px-1.5 py-0.5 border border-indicator-online/20"><Coffee size={9} /> AVAILABLE</span>
+                      <span className="text-[10px] font-mono text-indicator-online flex items-center gap-1 bg-status-success-bg px-1.5 py-0.5 border border-indicator-online/20"><Coffee size={9} /> AVAILABLE</span>
                     ) : (
-                      <span className="text-[0.625rem] font-mono text-txt-tertiary flex items-center gap-1 bg-surface-sunken px-1.5 py-0.5 border border-border">{t.status}</span>
+                      <span className="text-[10px] font-mono text-txt-tertiary flex items-center gap-1 bg-surface-sunken px-1.5 py-0.5 border border-border">{t.status}</span>
                     )}
                   </div>
                 </div>
@@ -188,14 +198,11 @@ export function ExplorePeopleGrid({
         </>
       )}
 
-      {talentCards.length > 0 && hasMore && !isLoading && (
-        <div className="text-center mt-6">
-          <button
-            onClick={onLoadMore}
-            className="px-6 py-2.5 text-sm font-bold text-txt-secondary border border-border hover:bg-surface-sunken hover:shadow-md transition-all active:scale-[0.97] active:shadow-none"
-          >
-            더 보기
-          </button>
+      {talentCards.length > 0 && hasMore && (
+        <div ref={sentinelRef} className="flex justify-center py-8">
+          {isFetchingMore && (
+            <span className="text-xs font-mono text-txt-tertiary animate-pulse">로딩 중...</span>
+          )}
         </div>
       )}
     </section>

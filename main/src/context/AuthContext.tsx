@@ -60,35 +60,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Initialize auth state
   useEffect(() => {
     let mounted = true
-    let steps = 0
-    const markStep = () => {
-      steps++
-      // Only finish loading after BOTH getSession and getUser complete
-      if (steps >= 2 && mounted) setIsLoading(false)
+
+    const initializeAuth = async () => {
+      let profileFetched = false
+
+      // Fast path: read local session from cookies/cache (usually instant)
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (!mounted) return
+        if (session?.user) {
+          const p = await fetchProfile(session.user.id)
+          if (!mounted) return
+          // Batch: user + profile in same tick → single render
+          setUser(session.user)
+          setProfile(p)
+          profileFetched = true
+        }
+      } catch { /* getSession failed — continue to authoritative path */ }
+
+      if (!mounted) return
+
+      // Authoritative validation: server round-trip
+      // Always trust the server response — getSession() may return null
+      // due to timing issues with Supabase client initialization
+      try {
+        const { data: { user: serverUser }, error } = await supabase.auth.getUser()
+        if (!mounted) return
+        if (error || !serverUser) {
+          setUser(null)
+          setProfile(null)
+        } else if (!profileFetched) {
+          const p = await fetchProfile(serverUser.id)
+          if (!mounted) return
+          // Batch: user + profile in same tick → single render
+          setUser(serverUser)
+          setProfile(p)
+        }
+      } catch { /* getUser failed */ }
+
+      if (mounted) setIsLoading(false)
     }
 
-    // Step 1: Fast path — read local session (no network, instant)
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!mounted) return
-      if (session?.user) {
-        setUser(session.user)
-        // Fetch profile in background — UI already shows auth state
-        fetchProfile(session.user.id)
-          .then(p => { if (mounted) setProfile(p) })
-          .catch(() => { if (mounted) setProfile(null) })
-      }
-    }).catch(() => {}).finally(markStep)
-
-    // Step 2: Background — validate with server (handles expired tokens)
-    supabase.auth.getUser().then(({ data: { user: serverUser }, error }) => {
-      if (!mounted) return
-      if (error || !serverUser) {
-        // Server says invalid — clear state
-        setUser(null)
-        setProfile(null)
-      }
-      // If valid, getSession already set the correct user
-    }).catch(() => {}).finally(markStep)
+    initializeAuth()
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -108,12 +121,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return
         }
 
-        setUser(session?.user ?? null)
-
         if (session?.user) {
           const profileData = await fetchProfile(session.user.id)
-          if (mounted) setProfile(profileData)
+          if (!mounted) return
+          // Batch: user + profile in same tick → single render
+          setUser(session.user)
+          setProfile(profileData)
         } else {
+          setUser(null)
           setProfile(null)
         }
       }
@@ -168,6 +183,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       provider: 'google',
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
+        queryParams: {
+          prompt: 'select_account',
+        },
       },
     })
     return { error }
@@ -187,22 +205,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Sign out
   const signOut = async () => {
     try {
+      // Call server-side signout to clear httpOnly auth cookies
+      await fetch('/api/auth/signout', { method: 'POST' })
+    } catch (e) {
+      console.error('Server signout error:', e)
+    }
+    try {
       await supabase.auth.signOut({ scope: 'local' })
     } catch (e) {
-      console.error('Sign out error (clearing local state anyway):', e)
+      console.error('Client signout error:', e)
     }
     setUser(null)
     setProfile(null)
-
-    // Force-clear all Supabase auth cookies in case the client missed any
-    if (typeof document !== 'undefined') {
-      document.cookie.split(';').forEach(c => {
-        const name = c.trim().split('=')[0]
-        if (name.startsWith('sb-')) {
-          document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`
-        }
-      })
-    }
   }
 
   const value: AuthContextType = {

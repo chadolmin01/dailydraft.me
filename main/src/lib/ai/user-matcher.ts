@@ -79,27 +79,22 @@ function calculateSkillComplementarity(
   }
 
   const mySkillNames = new Set(mySkills.map((s) => s.name))
-  const levelWeight = { '초급': 1, '중급': 2, '고급': 3 }
 
   let complementScore = 0
-  let totalWeight = 0
 
   for (const skill of theirSkills) {
-    const weight = levelWeight[skill.level] || 1
-    totalWeight += weight
-
     if (!mySkillNames.has(skill.name)) {
       // They have a skill I don't — highly complementary
-      complementScore += weight * 1.0
+      complementScore += 1.0
     } else {
       // Shared skill — still useful but less complementary
-      complementScore += weight * 0.3
+      complementScore += 0.3
     }
   }
 
-  if (totalWeight === 0) return 30
+  if (theirSkills.length === 0) return 30
 
-  return Math.min(100, (complementScore / totalWeight) * 100)
+  return Math.min(100, (complementScore / theirSkills.length) * 100)
 }
 
 /**

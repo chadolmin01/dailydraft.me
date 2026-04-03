@@ -17,22 +17,25 @@ export const EditBasicInfo: React.FC<EditBasicInfoProps> = ({
     <>
       {/* 기본 정보 */}
       <section>
-        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4 flex items-center gap-2">
+        <h3 className="text-[10px] font-medium text-txt-tertiary mb-4 flex items-center gap-2">
           <User size={14} /> 기본 정보
         </h3>
         <div className="space-y-4">
           <div>
             <label className="block text-xs font-medium text-txt-secondary mb-1.5">닉네임 <span className="text-status-danger-text">*</span></label>
-            <input
-              type="text"
-              value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
-              maxLength={30}
-              placeholder="어떻게 불러드릴까요?"
-              className={`w-full px-3 py-2.5 text-base sm:text-sm border bg-surface-card rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all ${!nickname.trim() ? 'border-status-danger-text/30' : 'border-border'}`}
-            />
+            <div className="relative">
+              <input
+                type="text"
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value.slice(0, 7))}
+                maxLength={7}
+                placeholder="어떻게 불러드릴까요?"
+                className={`w-full px-3 py-2.5 text-base sm:text-sm border bg-surface-card rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all ${!nickname.trim() ? 'border-status-danger-text/30' : 'border-border'}`}
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono text-txt-disabled">{nickname.length}/7</span>
+            </div>
             {!nickname.trim() && (
-              <p className="text-[0.6875rem] text-status-danger-text mt-1">닉네임은 필수예요</p>
+              <p className="text-xs text-status-danger-text mt-1">닉네임은 필수예요</p>
             )}
           </div>
           <div>
@@ -52,7 +55,7 @@ export const EditBasicInfo: React.FC<EditBasicInfoProps> = ({
 
       {/* 현재 상황 */}
       <section>
-        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4 flex items-center gap-2">
+        <h3 className="text-[10px] font-medium text-txt-tertiary mb-4 flex items-center gap-2">
           <Target size={14} /> 현재 상황
         </h3>
         <div className="space-y-1.5">

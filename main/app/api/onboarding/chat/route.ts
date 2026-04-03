@@ -66,15 +66,36 @@ const SYSTEM_PROMPT = (profile: ProfileContext) => `당신은 Draft 플랫폼의
 - 대화가 5회 이상 진행되면 "거의 다 파악한 것 같아요!" 같이 자연스럽게 마무리 유도. 완료 버튼을 누르라고 직접 언급하지 말 것
 - 답변 끝에 이모지 남용 금지. 최대 1개
 
-## 추천 답변 생성 (반드시 지킬 것)
+## 인터랙티브 요소 (반드시 지킬 것)
 
-- 모든 응답의 **마지막 줄**에 반드시 아래 형식으로 추천 답변 2~3개를 추가하세요:
-  [SUGGESTIONS: "추천답변1", "추천답변2", "추천답변3"]
-- 추천 답변은 **방금 한 질문에 대한 자연스러운 답변**이어야 합니다
-- 짧고 구체적으로 (10~25자). 너무 길거나 추상적이면 안 됨
-- 사용자가 바로 클릭해서 보낼 수 있는 실제 답변이어야 합니다
-- 첫 메시지 예시: [SUGGESTIONS: "아직 해본 적 없어요", "학교 팀프로젝트 해봤어요", "개인 프로젝트 진행 중이에요"]
-- 대화 맥락에 맞는 다양한 선택지를 제공하세요 (긍정/부정/중간 등)
+대화 중 적절한 시점에 인터랙티브 UI 요소를 삽입할 수 있습니다.
+텍스트 질문 대신 UI 요소를 사용하면 사용자가 더 쉽고 정확하게 답할 수 있습니다.
+
+사용 가능한 요소 ID:
+- scenario_collaboration: 팀 협업 상황 시나리오 (협업 스타일)
+- scenario_decision: 의사결정 상황 시나리오 (결정 스타일)
+- this_or_that_planning: 기획형 vs 실행형
+- this_or_that_perfectionism: 완성도 vs 속도
+- this_or_that_risk: 안정적 도전 vs 과감한 도전 (위험 감수 성향)
+- drag_rank_goals: 프로젝트 목표 우선순위
+- drag_rank_wants: 팀원에게 기대하는 것
+- emoji_grid_atmosphere: 선호하는 팀 분위기
+- emoji_grid_team_size: 선호하는 팀 규모
+- emoji_grid_strengths: 자신의 강점 (최대 3개 선택)
+- quick_number_hours: 주당 투자 가능 시간
+- spectrum_communication: 소통 스타일
+- spectrum_teamrole: 리더/팔로워 성향
+
+사용법: 응답 끝에 [INTERACTIVE: 요소ID] 태그를 추가하세요.
+예시: "팀에서 의견이 다를 때 어떻게 하시는지 궁금해요! [INTERACTIVE: scenario_collaboration]"
+
+규칙:
+- 대화당 최대 7개까지 사용 (적극적으로 활용하세요!)
+- 연속 2개 사용 금지 (사이에 일반 대화 1회 이상 넣기)
+- 첫 메시지에는 사용하지 않기 (먼저 자유 대화로 라포 형성)
+- 사용자가 자유 텍스트로 답한 내용을 잘 반영한 뒤 인터랙티브 요소를 제시
+- 텍스트 질문보다 인터랙티브 요소가 있는 항목은 반드시 인터랙티브를 우선 사용하세요
+- 특히 다음 요소는 대화 중 반드시 1회 이상 사용하세요: scenario_collaboration, this_or_that_risk, quick_number_hours, emoji_grid_strengths
 
 ## 가드레일 (반드시 지킬 것)
 - 사용자가 팀 매칭/프로젝트/프로필과 **전혀 관련 없는 질문**을 하면 (예: 코딩 과제 풀어줘, 날씨 알려줘, 숙제 도와줘, 번역해줘, 일반 상식 질문 등), 반드시 응답 맨 앞에 **[OFF_TOPIC]** 태그를 붙이고 정중히 거절한 뒤 본 대화로 유도하세요.
@@ -149,19 +170,38 @@ export async function POST(request: Request) {
       reply = reply.replace('[OFF_TOPIC]', '').trim()
     }
 
-    // Extract [SUGGESTIONS: ...] from the reply
+    // Extract [INTERACTIVE: ...] from the reply
+    let interactiveElement: string | null = null
+    const interactiveMatch = reply.match(/\[INTERACTIVE:\s*([a-z_]+)\]\s*/i)
+    if (interactiveMatch) {
+      reply = reply.replace(interactiveMatch[0], '').trim()
+      interactiveElement = interactiveMatch[1]
+    }
+
+    // Strip any [SUGGESTIONS] the model may have included (we'll generate separately)
+    reply = reply.replace(/\[SUGGESTIONS:\s*.+?\]\s*$/s, '').trim()
+
+    // Generate focused suggestions via a separate single-turn call (no chat history)
+    // This avoids context drift where suggestions reflect old conversation rather than the current question
     let suggestions: string[] = []
-    const sugMatch = reply.match(/\[SUGGESTIONS:\s*(.+?)\]\s*$/)
-    if (sugMatch) {
-      reply = reply.replace(sugMatch[0], '').trim()
-      // Parse "item1", "item2", "item3" format
-      const items = sugMatch[1].match(/"([^"]+)"/g)
-      if (items) {
-        suggestions = items.map(s => s.replace(/^"|"$/g, ''))
+    if (!interactiveElement && !offTopic) {
+      try {
+        const sugModel = genAI.getGenerativeModel({ model: 'gemini-2.5-flash-lite' })
+        // Extract the last question sentence from the reply to anchor suggestions
+        const sentences = reply.split(/(?<=[.!?])\s+/)
+        const lastQuestion = sentences.filter(s => s.includes('?')).pop() || reply
+        const sugResult = await sugModel.generateContent(
+          `다음 질문에 대해 사용자가 바로 클릭해서 보낼 수 있는 짧고 구체적인 한국어 답변 3개를 JSON 배열로만 응답하세요. 배열 외 다른 텍스트 없이 딱 JSON만 반환하세요.\n\n질문: "${lastQuestion}"\n\n형식: ["답변1", "답변2", "답변3"]`
+        )
+        const raw = sugResult.response.text().trim()
+        const parsed = JSON.parse(raw.replace(/^```json\s*|```$/g, '').trim())
+        if (Array.isArray(parsed)) suggestions = parsed.slice(0, 3).map(String)
+      } catch {
+        // Suggestions are non-critical; silently skip on failure
       }
     }
 
-    return ApiResponse.ok({ reply, offTopic, suggestions })
+    return ApiResponse.ok({ reply, offTopic, suggestions, interactiveElement })
   } catch (error) {
     console.error('Onboarding chat error:', error)
     return ApiResponse.internalError('채팅 처리 중 오류가 발생했습니다')

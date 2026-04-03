@@ -11,22 +11,20 @@ interface ResumeResult {
  *
  * Logic:
  * - !profile || !onboarding_completed → null (fresh start)
- * - onboarding_completed && ai_chat_completed → null (shouldn't be here)
- * - onboarding_completed && !ai_chat_completed:
- *   - has ai_chat_transcript? → resume to 'deep-chat', restore messages
- *   - no transcript? → resume to 'deep-chat-offer'
- *   - build ProfileDraft from DB columns
+ * - onboarding_completed && ai_chat_completed && !redoChat → null (shouldn't be here)
+ * - onboarding_completed && !ai_chat_completed (or redoChat) → deep-chat-offer / deep-chat
  */
 export function determineResumeStep(
   authProfile: Record<string, unknown> | null,
+  options?: { redoChat?: boolean },
 ): ResumeResult | null {
   if (!authProfile) return null
 
   const p = authProfile
   // Not completed basic onboarding — fresh start
   if (!p.onboarding_completed || !p.nickname) return null
-  // Fully completed — shouldn't be in onboarding
-  if (p.onboarding_completed && p.ai_chat_completed) return null
+  // Fully completed and not redo — shouldn't be in onboarding
+  if (p.ai_chat_completed && !options?.redoChat) return null
 
   // Build profile draft from DB
   const skills = Array.isArray(p.skills)
@@ -49,8 +47,8 @@ export function determineResumeStep(
     interests,
   }
 
-  // Has existing transcript → resume deep chat with messages
-  if (Array.isArray(p.ai_chat_transcript) && p.ai_chat_transcript.length > 0) {
+  // Has existing transcript (and not redo) → resume deep chat with messages
+  if (!options?.redoChat && Array.isArray(p.ai_chat_transcript) && p.ai_chat_transcript.length > 0) {
     const messages: DeepChatMessage[] = (p.ai_chat_transcript as Array<{ role: string; content: string }>)
       .map(m => ({
         role: m.role as 'user' | 'assistant',
@@ -59,6 +57,6 @@ export function determineResumeStep(
     return { step: 'deep-chat', draft, messages }
   }
 
-  // No transcript → offer deep chat
+  // No transcript or redo → offer deep chat
   return { step: 'deep-chat-offer', draft }
 }

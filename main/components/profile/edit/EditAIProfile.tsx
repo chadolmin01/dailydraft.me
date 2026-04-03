@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { Sparkles, Plus, X } from 'lucide-react'
+import { CATEGORICAL_LABELS } from '@/src/lib/onboarding/constants'
 import type { EditAIProfileProps } from './types'
 
 function TagEditor({ label, tags, onChange, suggestions }: { label: string; tags: string[]; onChange: (t: string[]) => void; suggestions: string[] }) {
@@ -43,11 +44,31 @@ function TagEditor({ label, tags, onChange, suggestions }: { label: string; tags
   )
 }
 
+function CategoricalSelector({ traitKey, label, value, onChange }: {
+  traitKey: string; label: string; value: string;
+  onChange: (key: string, val: string) => void
+}) {
+  const options = CATEGORICAL_LABELS[traitKey]
+  if (!options) return null
+  return (
+    <div>
+      <span className="text-xs text-txt-secondary block mb-1.5">{label}</span>
+      <div className="flex flex-wrap gap-1.5">
+        {Object.entries(options).map(([id, lbl]) => (
+          <button key={id} type="button" onClick={() => onChange(traitKey, id)}
+            className={`px-3 py-1.5 text-xs font-medium border transition-colors ${value === id ? 'bg-brand text-white border-brand' : 'bg-surface-card text-txt-secondary border-border hover:border-border'}`}
+          >{lbl}</button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export const EditAIProfile: React.FC<EditAIProfileProps> = ({
   personality,
   setPersonality,
-  workStyle,
-  setWorkStyle,
+  workStyleTraits,
+  setWorkStyleTraits,
   teamRole,
   setTeamRole,
   teamSize,
@@ -63,21 +84,54 @@ export const EditAIProfile: React.FC<EditAIProfileProps> = ({
   strengths,
   setStrengths,
 }) => {
+  const handleTraitChange = (key: string, val: string) => {
+    setWorkStyleTraits(prev => ({ ...prev, [key]: val }))
+  }
+
   return (
     <section>
-      <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4 flex items-center gap-2">
+      <h3 className="text-[10px] font-medium text-txt-tertiary mb-4 flex items-center gap-2">
         <Sparkles size={14} /> AI 프로필 분석
       </h3>
       <p className="text-xs text-txt-tertiary mb-4">온보딩 AI 대화에서 분석된 데이터입니다. 직접 수정할 수 있어요.</p>
 
-      {/* 성향 슬라이더 */}
+      {/* 작업 스타일 — 선택형 버튼 */}
+      <div className="space-y-4 mb-6">
+        <h4 className="text-xs font-medium text-txt-secondary">작업 스타일</h4>
+        <CategoricalSelector traitKey="collaboration_style" label="협업 스타일" value={workStyleTraits.collaboration_style || ''} onChange={handleTraitChange} />
+        <CategoricalSelector traitKey="planning_style" label="작업 방식" value={workStyleTraits.planning_style || ''} onChange={handleTraitChange} />
+        <CategoricalSelector traitKey="quality_style" label="품질 기준" value={workStyleTraits.quality_style || ''} onChange={handleTraitChange} />
+      </div>
+
+      {/* 성향 — decision 선택형 + communication 1-5 spectrum + risk/time 슬라이더 */}
       <div className="space-y-4 mb-6">
         <h4 className="text-xs font-medium text-txt-secondary">성향 점수</h4>
+
+        <CategoricalSelector traitKey="decision_style" label="의사결정 스타일" value={workStyleTraits.decision_style || ''} onChange={handleTraitChange} />
+
+        {/* communication: 1-5 spectrum */}
+        <div>
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-xs text-txt-secondary">소통 선호</span>
+            <span className="text-xs font-mono text-txt-tertiary">{Math.round(personality.communication / 2)}/5</span>
+          </div>
+          <input
+            type="range"
+            min={1} max={5} step={1}
+            value={Math.round(personality.communication / 2)}
+            onChange={e => setPersonality(p => ({ ...p, communication: parseInt(e.target.value) * 2 }))}
+            className="w-full h-1.5 accent-brand cursor-pointer"
+          />
+          <div className="flex justify-between">
+            <span className="text-[9px] text-txt-tertiary font-mono">혼자 집중</span>
+            <span className="text-[9px] text-txt-tertiary font-mono">수시 소통</span>
+          </div>
+        </div>
+
+        {/* risk: 1-10 slider (AI 추론) */}
         {[
           { key: 'risk', label: '도전 성향', low: '안정 추구', high: '도전적' },
           { key: 'time', label: '시간 투자', low: '여유 없음', high: '풀타임' },
-          { key: 'communication', label: '소통 선호', low: '혼자 집중', high: '수시 소통' },
-          { key: 'decision', label: '실행 속도', low: '신중한 계획', high: '빠른 실행' },
         ].map(item => (
           <div key={item.key}>
             <div className="flex items-center justify-between mb-1">
@@ -89,34 +143,6 @@ export const EditAIProfile: React.FC<EditAIProfileProps> = ({
               min={1} max={10} step={1}
               value={personality[item.key]}
               onChange={e => setPersonality(p => ({ ...p, [item.key]: parseInt(e.target.value) }))}
-              className="w-full h-1.5 accent-brand cursor-pointer"
-            />
-            <div className="flex justify-between">
-              <span className="text-[9px] text-txt-tertiary font-mono">{item.low}</span>
-              <span className="text-[9px] text-txt-tertiary font-mono">{item.high}</span>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* 작업 스타일 슬라이더 */}
-      <div className="space-y-4 mb-6">
-        <h4 className="text-xs font-medium text-txt-secondary">작업 스타일</h4>
-        {[
-          { key: 'collaboration', label: '협업 스타일', low: '독립형', high: '팀 소통형' },
-          { key: 'planning', label: '작업 방식', low: '바로 실행', high: '기획 우선' },
-          { key: 'perfectionism', label: '품질 기준', low: '속도 우선', high: '완벽주의' },
-        ].map(item => (
-          <div key={item.key}>
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-xs text-txt-secondary">{item.label}</span>
-              <span className="text-xs font-mono text-txt-tertiary">{workStyle[item.key]}/10</span>
-            </div>
-            <input
-              type="range"
-              min={1} max={10} step={1}
-              value={workStyle[item.key]}
-              onChange={e => setWorkStyle(p => ({ ...p, [item.key]: parseInt(e.target.value) }))}
               className="w-full h-1.5 accent-brand cursor-pointer"
             />
             <div className="flex justify-between">

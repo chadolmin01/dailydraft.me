@@ -12,5 +12,4 @@ export {
   AFFILIATION_LABELS,
   TRAIT_COLORS,
   traitLabels,
-  workStyleLabels,
 } from './types'

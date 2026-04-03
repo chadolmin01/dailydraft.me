@@ -20,36 +20,16 @@ function calculateSkillMatch(
 ): number {
   if (neededSkills.length === 0) return 50 // Default if no skills specified
 
-  let totalScore = 0
+  let matchedCount = 0
 
   for (const needed of neededSkills) {
     const userSkill = userSkills.find((s) => s.name === needed.name)
-
     if (userSkill) {
-      // Level matching score
-      const levelScore = {
-        초급: 1,
-        중급: 2,
-        고급: 3,
-      }
-
-      const userLevel = levelScore[userSkill.level] || 0
-      const neededLevel = levelScore[needed.level] || 0
-
-      // Perfect match: 100, one level off: 70, two levels off: 40
-      if (userLevel >= neededLevel) {
-        totalScore += 100
-      } else if (userLevel === neededLevel - 1) {
-        totalScore += 70
-      } else {
-        totalScore += 40
-      }
+      matchedCount++
     }
   }
 
-  if (neededSkills.length === 0) return 50
-
-  return (totalScore / (neededSkills.length * 100)) * 100
+  return (matchedCount / neededSkills.length) * 100
 }
 
 /**

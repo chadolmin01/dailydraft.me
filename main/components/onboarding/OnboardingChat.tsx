@@ -19,8 +19,12 @@ interface OnboardingChatProps {
   renderAttachment: (bubble: Bubble) => React.ReactNode
 }
 
-function isActiveBubble(bubbles: Bubble[], id: string, attachment: BubbleAttachment | undefined, step: Step): boolean {
+function isActiveBubble(bubbles: Bubble[], id: string, attachment: BubbleAttachment | undefined, step: Step, bubble?: Bubble): boolean {
   if (!attachment) return false
+  // Interactive elements: active if not yet answered (multiple can exist)
+  if (attachment === 'interactive-element') {
+    return ATTACHMENT_TO_STEP[attachment] === step && !bubble?.answered
+  }
   const last = [...bubbles].reverse().find(b => b.attachment === attachment)
   if (last?.id !== id) return false
   return ATTACHMENT_TO_STEP[attachment] === step
@@ -38,7 +42,7 @@ export const OnboardingChat: React.FC<OnboardingChatProps> = ({
           const prev = bubbles[i - 1]
           const showAvatar = isAi && (!prev || prev.role !== 'ai')
           const isGrouped = isAi && prev?.role === 'ai'
-          const active = isActiveBubble(bubbles, bubble.id, bubble.attachment, step)
+          const active = isActiveBubble(bubbles, bubble.id, bubble.attachment, step, bubble)
 
           return (
             <div key={bubble.id}>
@@ -47,14 +51,18 @@ export const OnboardingChat: React.FC<OnboardingChatProps> = ({
                 {isAi && (
                   <div className="w-8 mr-2 shrink-0 flex flex-col items-center">
                     {showAvatar ? (
-                      <div className="w-7 h-7 bg-black flex items-center justify-center mt-0.5">
+                      <div className="w-7 h-7 bg-black rounded-lg flex items-center justify-center mt-0.5">
                         <span className="text-white text-[10px] font-black">D</span>
                       </div>
                     ) : <div className="w-7" />}
                   </div>
                 )}
                 <div className={`flex flex-col ${isAi ? 'items-start' : 'items-end'} max-w-[80%] sm:max-w-[72%]`}>
-                  <div className={`ob-bubble text-[14px] leading-[1.6] whitespace-pre-wrap px-4 py-2.5 ${isAi ? 'bg-surface-card text-txt-primary border border-border shadow-md' : 'bg-surface-inverse text-txt-inverse'}`}>
+                  <div className={`ob-bubble text-[14px] leading-[1.6] whitespace-pre-wrap px-4 py-2.5 rounded-2xl ${
+                    bubble.offTopic
+                      ? 'bg-surface-sunken text-txt-secondary border border-border italic'
+                      : isAi ? 'bg-surface-card text-txt-primary border border-border shadow-md' : 'bg-surface-inverse text-txt-inverse'
+                  }`}>
                     {bubble.content}
                   </div>
                   {active && (

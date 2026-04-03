@@ -92,12 +92,12 @@ export const RejectionWarnings: React.FC<RejectionWarningsProps> = ({
 
         <div className="flex items-center gap-2">
           {severityCounts.high > 0 && (
-            <span className="px-2 py-0.5 bg-status-danger-bg text-status-danger-text text-[0.625rem] font-bold">
+            <span className="px-2 py-0.5 bg-status-danger-bg text-status-danger-text text-[10px] font-bold">
               심각 {severityCounts.high}
             </span>
           )}
           {severityCounts.medium > 0 && (
-            <span className="px-2 py-0.5 bg-status-warning-bg text-status-warning-text text-[0.625rem] font-bold">
+            <span className="px-2 py-0.5 bg-status-warning-bg text-status-warning-text text-[10px] font-bold">
               주의 {severityCounts.medium}
             </span>
           )}
@@ -179,7 +179,7 @@ const WarningItem: React.FC<WarningItemProps> = ({
                 {pattern.name}
               </span>
               {match.count > 1 && (
-                <span className="text-[0.625rem] font-medium text-txt-tertiary">
+                <span className="text-[10px] font-medium text-txt-tertiary">
                   ({match.count}회 감지)
                 </span>
               )}
@@ -191,7 +191,7 @@ const WarningItem: React.FC<WarningItemProps> = ({
 
           <div className="flex items-center gap-2 shrink-0">
             {autoFixAvailable && (
-              <span className="px-2 py-0.5 bg-status-info-bg text-status-info-text text-[0.625rem] font-medium">
+              <span className="px-2 py-0.5 bg-status-info-bg text-status-info-text text-[10px] font-medium">
                 자동 수정 가능
               </span>
             )}
@@ -210,7 +210,7 @@ const WarningItem: React.FC<WarningItemProps> = ({
           {/* Matched Text */}
           {match.matches.length > 0 && (
             <div className="mb-3">
-              <div className="text-[0.625rem] text-txt-tertiary mb-1">
+              <div className="text-[10px] text-txt-tertiary mb-1">
                 감지된 표현
               </div>
               <div className="flex flex-wrap gap-1.5">
@@ -234,7 +234,7 @@ const WarningItem: React.FC<WarningItemProps> = ({
           {/* Auto Fix Suggestion */}
           {autoFixAvailable && suggestedFix && (
             <div className="mb-3 p-3 bg-status-info-bg border border-status-info-text/20">
-              <div className="text-[0.625rem] text-status-info-text mb-1.5">
+              <div className="text-[10px] text-status-info-text mb-1.5">
                 수정 제안
               </div>
               <p className="text-xs text-brand">{suggestedFix}</p>
@@ -244,7 +244,7 @@ const WarningItem: React.FC<WarningItemProps> = ({
           {/* Source Suggestions for missing source pattern */}
           {pattern.id === 'MISSING_SOURCE' && (
             <div className="mb-3">
-              <div className="text-[0.625rem] text-txt-tertiary mb-1.5">
+              <div className="text-[10px] text-txt-tertiary mb-1.5">
                 추천 출처
               </div>
               <div className="space-y-1">

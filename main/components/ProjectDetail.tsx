@@ -6,10 +6,11 @@ import Link from 'next/link'
 import {
   ArrowLeft, ArrowRight, Share2, Heart, Coffee, Users, Eye, Clock,
   Briefcase, MapPin, Calendar, ChevronRight, Loader2, AlertCircle,
-  MessageCircle, ExternalLink, Sparkles
+  MessageCircle, ExternalLink, Sparkles, Check
 } from 'lucide-react'
+import { toast } from 'sonner'
 import { useAuth } from '@/src/context/AuthContext'
-import { useOpportunity, useUpdateOpportunity } from '@/src/hooks/useOpportunities'
+import { useOpportunity, useUpdateOpportunity, useSimilarOpportunities, type SimilarOpportunity } from '@/src/hooks/useOpportunities'
 import { useProfileByUserId, type CreatorProfile } from '@/src/hooks/usePublicProfiles'
 import { useCoffeeChats } from '@/src/hooks/useCoffeeChats'
 import { useProjectUpdates } from '@/src/hooks/useProjectUpdates'
@@ -20,6 +21,64 @@ import type { Opportunity } from '@/src/types/opportunity'
 import { UPDATE_TYPE_CONFIG } from '@/components/project/types'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { timeAgo } from '@/src/lib/utils'
+
+const TYPE_LABEL: Record<string, string> = {
+  side_project: 'SIDE PROJECT',
+  startup: 'STARTUP',
+  study: 'STUDY',
+}
+
+function SimilarProjectsSection({ opportunityId }: { opportunityId: string | undefined }) {
+  const { data: similar, isLoading } = useSimilarOpportunities(opportunityId)
+
+  if (isLoading || !similar || similar.length === 0) return null
+
+  return (
+    <div className="border-t border-border bg-surface-bg">
+      <div className="max-w-6xl mx-auto px-6 py-10">
+        <div className="flex items-center gap-2 mb-6">
+          <Sparkles size={14} className="text-brand" />
+          <span className="text-[10px] font-mono font-bold text-txt-tertiary uppercase tracking-widest">
+            비슷한 프로젝트
+          </span>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {similar.map((proj: SimilarOpportunity) => (
+            <Link
+              key={proj.id}
+              href={`/p/${proj.id}`}
+              className="group block bg-surface-card border border-border p-5 hover:border-brand/40 transition-colors"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[9px] font-mono font-bold text-txt-tertiary tracking-widest">
+                  {TYPE_LABEL[proj.type] || proj.type.toUpperCase()}
+                </span>
+                <span className="text-[9px] font-mono text-brand bg-brand/10 px-1.5 py-0.5 rounded-full">
+                  {Math.round(proj.similarity * 100)}% 유사
+                </span>
+              </div>
+              <h3 className="text-sm font-bold text-txt-primary leading-snug mb-2 group-hover:text-brand transition-colors line-clamp-2">
+                {proj.title}
+              </h3>
+              <p className="text-xs text-txt-tertiary leading-relaxed line-clamp-2 mb-3">
+                {proj.description}
+              </p>
+              {proj.interest_tags.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {proj.interest_tags.slice(0, 3).map((tag) => (
+                    <span key={tag} className="text-[9px] font-mono bg-surface-sunken text-txt-secondary px-1.5 py-0.5 rounded-full">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </Link>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
 
 // CTA Overlay Component
 const SignupCTA: React.FC<{ onClose: () => void; onSignup: () => void }> = ({ onClose, onSignup }) => (
@@ -43,12 +102,12 @@ const SignupCTA: React.FC<{ onClose: () => void; onSignup: () => void }> = ({ on
       </p>
       <button
         onClick={onSignup}
-        className="w-full bg-black hover:bg-surface-inverse/90 text-white px-8 py-4 font-bold text-sm flex items-center justify-center gap-2 transition-colors border border-surface-inverse hover:opacity-90 active:scale-[0.97] mb-3"
+        className="w-full bg-black hover:bg-surface-inverse/90 text-white px-8 py-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-colors border border-surface-inverse hover:opacity-90 active:scale-[0.97] mb-3"
       >
         무료로 시작하기
         <ArrowRight size={16} />
       </button>
-      <p className="text-[0.625rem] text-txt-disabled mb-4">
+      <p className="text-[10px] text-txt-disabled mb-4">
         가입 30초 · 무료 · 바로 사용 가능
       </p>
       <button
@@ -170,7 +229,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
           <p className="text-txt-tertiary mb-6">{error || '존재하지 않거나 삭제된 프로젝트입니다.'}</p>
           <Link
             href="/"
-            className="inline-flex items-center gap-2 bg-surface-inverse text-txt-inverse px-6 py-3 font-bold text-sm hover:bg-surface-inverse/90 transition-colors border border-surface-inverse hover:opacity-90 active:scale-[0.97]"
+            className="inline-flex items-center gap-2 bg-surface-inverse text-txt-inverse px-6 py-3 rounded-xl font-bold text-sm hover:bg-surface-inverse/90 transition-colors border border-surface-inverse hover:opacity-90 active:scale-[0.97]"
           >
             <ArrowLeft size={16} />
             홈으로 돌아가기
@@ -217,18 +276,18 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
             <div className="flex-1">
               {/* Type Badge */}
               <div className="flex items-center gap-2 mb-4">
-                <span className="text-[0.625rem] font-medium px-2 py-1 border border-border text-black">
+                <span className="text-[10px] font-medium px-2 py-1 border border-border text-black">
                   {opportunity.type === 'side_project' ? 'SIDE PROJECT' :
                    opportunity.type === 'startup' ? 'STARTUP' :
                    opportunity.type === 'study' ? 'STUDY' : opportunity.type?.toUpperCase() || 'PROJECT'}
                 </span>
                 {opportunity.status === 'active' ? (
-                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-status-success-bg border border-status-success-text/30 text-status-success-text text-[0.625rem] font-bold">
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-status-success-bg border border-status-success-text/30 text-status-success-text text-[10px] font-bold">
                     <span className="w-1.5 h-1.5 bg-indicator-online animate-pulse" />
                     모집 중
                   </span>
                 ) : (
-                  <span className="px-2 py-1 bg-surface-sunken text-txt-tertiary text-[0.625rem] font-bold border border-border">
+                  <span className="px-2 py-1 bg-surface-sunken text-txt-tertiary text-[10px] font-bold border border-border">
                     마감
                   </span>
                 )}
@@ -243,7 +302,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
               <div className="flex flex-wrap items-center gap-4 text-sm text-txt-tertiary">
                 {creator && (
                   <span className="flex items-center gap-1.5">
-                    <div className="w-5 h-5 bg-surface-sunken flex items-center justify-center text-[0.625rem] font-bold text-txt-secondary border border-border">
+                    <div className="w-5 h-5 bg-surface-sunken flex items-center justify-center text-[10px] font-bold text-txt-secondary border border-border">
                       {creator.nickname.charAt(0)}
                     </div>
                     {creator.nickname}
@@ -270,7 +329,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
             <div className="hidden md:flex flex-col gap-3 shrink-0">
               <button
                 onClick={handleCoffeeChatAction}
-                className="bg-brand hover:bg-brand-hover text-white px-8 py-3.5 font-bold text-sm flex items-center justify-center gap-2 transition-colors border border-brand hover:opacity-90 active:scale-[0.97]"
+                className="bg-brand hover:bg-brand-hover text-white px-8 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-colors border border-brand hover:opacity-90 active:scale-[0.97]"
               >
                 <Coffee size={16} />
                 커피챗 신청
@@ -317,7 +376,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
           <div className="lg:col-span-2 space-y-10">
             {/* Project Description */}
             <section>
-              <h2 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">
+              <h2 className="text-[10px] font-medium text-txt-tertiary mb-4">
                 프로젝트 소개
               </h2>
               <div className="prose prose-gray max-w-none">
@@ -330,7 +389,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
             {/* Pain Point (if exists) */}
             {opportunity.pain_point && (
               <section className="bg-surface-sunken rounded-xl border border-border p-6">
-                <h2 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
+                <h2 className="text-[10px] font-medium text-txt-tertiary mb-3">
                   해결하려는 문제
                 </h2>
                 <p className="text-txt-secondary leading-relaxed break-keep text-[0.9375rem]">
@@ -344,7 +403,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
             <section>
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
-                  <h2 className="text-[0.625rem] font-medium text-txt-tertiary">
+                  <h2 className="text-[10px] font-medium text-txt-tertiary">
                     주간 업데이트
                   </h2>
                   {!opportunity.show_updates && isOwner && (
@@ -362,7 +421,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                           updates: { show_updates: !opportunity.show_updates },
                         })
                       }}
-                      className={`text-[0.625rem] font-mono px-2 py-0.5 border transition-colors ${
+                      className={`text-[10px] font-mono px-2 py-0.5 border transition-colors ${
                         opportunity.show_updates
                           ? 'bg-status-success-bg text-status-success-text border-status-success-text/30'
                           : 'bg-surface-sunken text-txt-disabled border-border hover:border-border'
@@ -371,7 +430,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                       {opportunity.show_updates ? '공개 중' : '비공개'}
                     </button>
                   )}
-                  <span className="text-[0.625rem] font-mono text-txt-disabled">
+                  <span className="text-[10px] font-mono text-txt-disabled">
                     {realUpdates.length}개의 업데이트
                   </span>
                   {isOwner && (
@@ -402,14 +461,14 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
                           <div className="bg-surface-card rounded-xl border border-border p-5 hover:shadow-md hover-spring">
                             <div className="flex items-center gap-2 mb-2">
-                              <span className={`text-[0.625rem] font-bold px-2 py-0.5 border ${config.badgeColor}`}>
+                              <span className={`text-[10px] font-bold px-2 py-0.5 border ${config.badgeColor}`}>
                                 {config.label}
                               </span>
-                              <span className="text-[0.625rem] font-mono text-txt-disabled">
+                              <span className="text-[10px] font-mono text-txt-disabled">
                                 Week {update.week_number}
                               </span>
                               {update.created_at && (
-                                <span className="text-[0.625rem] font-mono text-txt-disabled">· {timeAgo(update.created_at)}</span>
+                                <span className="text-[10px] font-mono text-txt-disabled">· {timeAgo(update.created_at)}</span>
                               )}
                             </div>
                             <h3 className="font-bold text-txt-primary mb-1.5">{update.title}</h3>
@@ -446,7 +505,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
             {/* Feedback Section */}
             <section>
-              <h2 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">
+              <h2 className="text-[10px] font-medium text-txt-tertiary mb-4">
                 커뮤니티 피드백
               </h2>
               <div className="bg-surface-sunken rounded-xl border border-border p-8 text-center">
@@ -457,7 +516,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                 </p>
                 <button
                   onClick={handleCoffeeChatAction}
-                  className="inline-flex items-center gap-2 bg-surface-inverse text-txt-inverse px-5 py-2.5 font-bold text-sm hover:bg-surface-inverse/90 transition-colors border border-surface-inverse hover:opacity-90 active:scale-[0.97]"
+                  className="inline-flex items-center gap-2 bg-surface-inverse text-txt-inverse px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-surface-inverse/90 transition-colors border border-surface-inverse hover:opacity-90 active:scale-[0.97]"
                 >
                   피드백 작성하기
                   <ChevronRight size={14} />
@@ -470,7 +529,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
           <aside className="space-y-6">
             {/* Team Section */}
             <div className="border border-border p-6">
-              <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">
+              <h3 className="text-[10px] font-medium text-txt-tertiary mb-4">
                 팀 정보
               </h3>
               {creator ? (
@@ -493,7 +552,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                       {(Array.isArray(creator.skills) ? creator.skills : []).slice(0, 5).map((skill, i) => {
                         const label = typeof skill === 'string' ? skill : (skill as any)?.name || ''
                         return (
-                          <span key={label || i} className="text-[0.625rem] bg-surface-sunken text-txt-secondary px-2 py-0.5 font-medium border border-border">
+                          <span key={label || i} className="text-[10px] bg-surface-sunken text-txt-secondary px-2 py-0.5 font-medium border border-border">
                             {label}
                           </span>
                         )
@@ -517,34 +576,106 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
             {/* Needed Roles */}
             {opportunity.needed_roles && opportunity.needed_roles.length > 0 && (
               <div className="border border-border p-6">
-                <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">
+                <h3 className="text-[10px] font-medium text-txt-tertiary mb-4">
                   모집 중인 포지션
                 </h3>
                 <div className="space-y-3">
-                  {opportunity.needed_roles.map((role) => (
-                    <div
-                      key={role}
-                      className="flex items-center justify-between p-3 bg-brand-bg border border-brand-border"
-                    >
-                      <div className="flex items-center gap-2">
-                        <Briefcase size={14} className="text-brand" />
-                        <span className="font-medium text-sm text-txt-primary">{role}</span>
-                      </div>
-                      <button
-                        onClick={handleCoffeeChatAction}
-                        className="text-[0.625rem] font-bold text-brand hover:text-brand-hover transition-colors"
+                  {opportunity.needed_roles.map((role) => {
+                    const filledRoles = (opportunity as any).filled_roles as string[] | null
+                    const isFilled = filledRoles?.includes(role) ?? false
+
+                    if (isOwner) {
+                      return (
+                        <button
+                          key={role}
+                          onClick={() => {
+                            const current = (filledRoles || []) as string[]
+                            const next = isFilled
+                              ? current.filter(r => r !== role)
+                              : [...current, role]
+                            updateOpportunity.mutate(
+                              { id: opportunity.id, updates: { filled_roles: next } as any },
+                              {
+                                onSuccess: () => {
+                                  toast.success(
+                                    isFilled
+                                      ? `${role} 포지션을 다시 모집합니다`
+                                      : `${role} 포지션 모집이 완료되었습니다`
+                                  )
+                                },
+                              }
+                            )
+                          }}
+                          className={`group w-full flex items-center justify-between p-3 border transition-all ${
+                            isFilled
+                              ? 'bg-surface-sunken border-border hover:border-brand/40 hover:bg-brand-bg/50'
+                              : 'bg-brand-bg border-brand-border hover:bg-status-success-bg hover:border-status-success-text/30'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            {isFilled ? (
+                              <Check size={14} className="text-status-success-text group-hover:text-brand transition-colors" />
+                            ) : (
+                              <Briefcase size={14} className="text-brand group-hover:text-status-success-text transition-colors" />
+                            )}
+                            <span className={`font-medium text-sm ${isFilled ? 'text-txt-tertiary' : 'text-txt-primary'}`}>
+                              {role}
+                            </span>
+                          </div>
+                          <span className="text-[10px] font-bold">
+                            <span className={`group-hover:hidden ${isFilled ? 'text-status-success-text' : 'text-brand'}`}>
+                              {isFilled ? '모집완료' : '모집중'}
+                            </span>
+                            <span className={`hidden group-hover:inline ${isFilled ? 'text-brand' : 'text-status-success-text'}`}>
+                              {isFilled ? '다시 모집하기' : '모집완료로 변경'}
+                            </span>
+                          </span>
+                        </button>
+                      )
+                    }
+
+                    if (isFilled) {
+                      return (
+                        <div
+                          key={role}
+                          className="flex items-center justify-between p-3 bg-surface-sunken border border-border opacity-60"
+                        >
+                          <div className="flex items-center gap-2">
+                            <Check size={14} className="text-status-success-text" />
+                            <span className="font-medium text-sm text-txt-tertiary">{role}</span>
+                          </div>
+                          <span className="text-[10px] font-bold text-txt-disabled">
+                            모집완료
+                          </span>
+                        </div>
+                      )
+                    }
+
+                    return (
+                      <div
+                        key={role}
+                        className="flex items-center justify-between p-3 bg-brand-bg border border-brand-border"
                       >
-                        커피챗 신청 &rarr;
-                      </button>
-                    </div>
-                  ))}
+                        <div className="flex items-center gap-2">
+                          <Briefcase size={14} className="text-brand" />
+                          <span className="font-medium text-sm text-txt-primary">{role}</span>
+                        </div>
+                        <button
+                          onClick={handleCoffeeChatAction}
+                          className="text-[10px] font-bold text-brand hover:text-brand-hover transition-colors"
+                        >
+                          커피챗 신청 &rarr;
+                        </button>
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
             )}
 
             {/* Project Info */}
             <div className="border border-border p-6">
-              <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">
+              <h3 className="text-[10px] font-medium text-txt-tertiary mb-4">
                 프로젝트 정보
               </h3>
               <div className="space-y-3 text-sm">
@@ -594,7 +725,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
             {/* Project Links */}
             {projectLinks && Object.keys(projectLinks).length > 0 && (
               <div className="border border-border p-6">
-                <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-4">
+                <h3 className="text-[10px] font-medium text-txt-tertiary mb-4">
                   링크
                 </h3>
                 <div className="space-y-2">
@@ -632,6 +763,9 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
         </div>
       </div>
 
+      {/* Similar Projects Section */}
+      <SimilarProjectsSection opportunityId={opportunity?.id} />
+
       {/* Mobile Fixed CTA */}
       <div
         className="fixed left-0 right-0 bg-surface-card border-t border-border p-4 md:hidden z-30"
@@ -639,7 +773,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
       >
         <button
           onClick={handleCoffeeChatAction}
-          className="w-full bg-brand text-white py-3.5 font-bold text-sm flex items-center justify-center gap-2 border border-brand hover:opacity-90 active:scale-[0.97] transition-all"
+          className="w-full bg-brand text-white py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 border border-brand hover:opacity-90 active:scale-[0.97] transition-all"
         >
           <Coffee size={16} />
           커피챗 신청

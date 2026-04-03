@@ -97,9 +97,9 @@ export function CoffeeChatResponseEmail({
         <p style={text}>
           <strong>{requesterName}</strong>님, <strong>{ownerName}</strong>님이 <strong>{projectTitle}</strong> 프로젝트 커피챗을{' '}
           {accepted ? (
-            <span style={{ color: '#059669', fontWeight: 700 }}>수락</span>
+            <span style={{ fontWeight: 700 }}>수락</span>
           ) : (
-            <span style={{ color: '#dc2626', fontWeight: 700 }}>거절</span>
+            <span style={{ fontWeight: 700 }}>거절</span>
           )}
           했습니다.
         </p>
@@ -107,15 +107,15 @@ export function CoffeeChatResponseEmail({
         {accepted && contactInfo && (
           <div style={{
             padding: '20px',
-            backgroundColor: '#f0fdf4',
-            border: '2px solid #bbf7d0',
+            backgroundColor: '#fafafa',
+            border: '2px solid #000',
             marginBottom: '24px',
           }}>
-            <p style={{ ...label, marginBottom: '8px', color: '#86efac' }}>CONTACT INFO</p>
+            <p style={{ ...label, marginBottom: '8px' }}>CONTACT INFO</p>
             <p style={{ fontSize: '16px', color: '#111', fontWeight: 700, margin: 0 }}>
               {contactInfo}
             </p>
-            <p style={{ fontSize: '12px', color: '#666', margin: '8px 0 0 0' }}>
+            <p style={{ fontSize: '12px', color: '#999', margin: '8px 0 0 0', fontFamily: '"JetBrains Mono", monospace' }}>
               위 연락처로 직접 연락해주세요.
             </p>
           </div>

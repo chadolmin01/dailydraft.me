@@ -20,7 +20,7 @@ export function ProfileSidePanel({
     <div className="hidden md:flex w-2/5 modal-glass rounded-2xl flex-col overflow-hidden">
       {/* Side panel header */}
       <div className="modal-bar border-b border-border/40 px-4 h-10 flex items-center justify-between shrink-0">
-        <h3 className="text-[0.625rem] font-medium text-txt-tertiary">
+        <h3 className="text-[10px] font-medium text-txt-tertiary">
           {sidePanel === 'projects' ? `프로젝트 (${userProjects.length})` : `포트폴리오 (${portfolioItems.length})`}
         </h3>
         <button
@@ -50,9 +50,9 @@ export function ProfileSidePanel({
                 <div className="min-w-0">
                   <p className="text-sm font-bold text-txt-primary truncate group-hover/proj:text-brand transition-colors">{project.title}</p>
                   <div className="flex items-center gap-2 mt-1.5">
-                    <span className="text-[0.625rem] font-mono text-brand bg-brand-bg px-1.5 py-0.5 border border-brand-border">{typeLabel}</span>
+                    <span className="text-[10px] font-mono text-brand bg-brand-bg px-1.5 py-0.5 border border-brand-border">{typeLabel}</span>
                     {(project.needed_roles || []).slice(0, 2).map((role: string) => (
-                      <span key={role} className="text-[0.625rem] font-mono text-txt-tertiary">{role}</span>
+                      <span key={role} className="text-[10px] font-mono text-txt-tertiary">{role}</span>
                     ))}
                   </div>
                 </div>
@@ -61,12 +61,12 @@ export function ProfileSidePanel({
               {(project.interest_tags || []).length > 0 && (
                 <div className="flex flex-wrap gap-1 mt-2">
                   {(project.interest_tags as string[]).slice(0, 3).map((tag: string) => (
-                    <span key={tag} className="text-[0.625rem] font-mono bg-white text-txt-tertiary px-1.5 py-0.5 border border-border">{tag}</span>
+                    <span key={tag} className="text-[10px] font-mono bg-white text-txt-tertiary px-1.5 py-0.5 border border-border">{tag}</span>
                   ))}
                 </div>
               )}
               {(project.applications_count ?? 0) > 0 && (
-                <p className="text-[0.625rem] font-mono text-txt-tertiary mt-2">{project.applications_count}명 지원</p>
+                <p className="text-[10px] font-mono text-txt-tertiary mt-2">{project.applications_count}명 지원</p>
               )}
             </button>
           )
@@ -89,7 +89,7 @@ export function ProfileSidePanel({
               <p className="text-sm font-bold text-txt-primary truncate">{item.title}</p>
               {item.description && <p className="text-xs text-txt-tertiary mt-1 line-clamp-2">{item.description}</p>}
               {item.link_url && (
-                <p className="flex items-center gap-1 text-[0.625rem] font-mono text-txt-tertiary mt-2">
+                <p className="flex items-center gap-1 text-[10px] font-mono text-txt-tertiary mt-2">
                   <ExternalLink size={10} /> Link
                 </p>
               )}

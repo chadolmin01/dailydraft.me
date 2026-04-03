@@ -91,7 +91,7 @@ export const CopyableText: React.FC<CopyableTextProps> = ({
     >
       <span className="truncate">{text}</span>
       {copied ? (
-        <Check size={iconSize} className="text-green-500 shrink-0" />
+        <Check size={iconSize} className="text-status-success-text shrink-0" />
       ) : (
         <Copy size={iconSize} className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
       )}

@@ -5,9 +5,10 @@
  * with the same API surface as the old @google/generative-ai SDK.
  *
  * Auth priority:
- *   1. GEMINI_API_KEY  → direct API key auth (simplest, works locally)
- *   2. GOOGLE_PROJECT_ID + GOOGLE_CREDENTIALS_JSON → Vertex AI with service account
- *   3. GOOGLE_PROJECT_ID only → Vertex AI with ADC (gcloud auth)
+ *   1. GEMINI_API_KEY + VERTEX_AI_EXPRESS=true → Vertex AI Express Mode (apiKey + vertexai)
+ *   2. GEMINI_API_KEY only → direct API key auth (AI Studio)
+ *   3. GOOGLE_PROJECT_ID + GOOGLE_CREDENTIALS_JSON → Vertex AI with service account
+ *   4. GOOGLE_PROJECT_ID only → Vertex AI with ADC (gcloud auth)
  *
  * Lazy-initialized to avoid build-time errors when env vars are missing.
  */
@@ -19,16 +20,23 @@ function getAI(): GoogleGenAI {
   if (_ai) return _ai
 
   const apiKey = process.env.GEMINI_API_KEY
+  const vertexExpress = process.env.VERTEX_AI_EXPRESS === 'true'
   const project = process.env.GOOGLE_PROJECT_ID
   const location = process.env.GOOGLE_LOCATION || 'us-central1'
 
-  // 1) API key auth (preferred for simplicity)
+  // 1) Vertex AI Express Mode — apiKey + vertexai (no project/location needed)
+  if (apiKey && vertexExpress) {
+    _ai = new GoogleGenAI({ apiKey, vertexai: true })
+    return _ai
+  }
+
+  // 2) Direct API key auth (AI Studio)
   if (apiKey) {
     _ai = new GoogleGenAI({ apiKey })
     return _ai
   }
 
-  // 2) Vertex AI auth
+  // 3) Vertex AI with service account or ADC
   if (project) {
     _ai = new GoogleGenAI({
       vertexai: true,
@@ -41,7 +49,7 @@ function getAI(): GoogleGenAI {
     return _ai
   }
 
-  // 3) No credentials at all — stub that throws on use
+  // 4) No credentials at all — stub that throws on use
   console.warn('[gemini-client] No GEMINI_API_KEY or GOOGLE_PROJECT_ID — AI calls will fail at runtime')
   _ai = new Proxy({} as GoogleGenAI, {
     get(_, prop) {

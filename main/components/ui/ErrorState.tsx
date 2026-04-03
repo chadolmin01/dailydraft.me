@@ -1,50 +1,81 @@
 'use client'
 
 import React from 'react'
-import { AlertTriangle, RefreshCw } from 'lucide-react'
+import { AlertTriangle, AlertCircle, RefreshCw, ServerCrash } from 'lucide-react'
+import { Button } from './Button'
 
 interface ErrorStateProps {
+  title?: string
   message?: string
   onRetry?: () => void
-  size?: 'compact' | 'default'
   className?: string
+  size?: 'compact' | 'default'
+  variant?: 'inline'
 }
 
 export const ErrorState: React.FC<ErrorStateProps> = ({
-  message = '데이터를 불러오는 데 실패했습니다',
+  title,
+  message = '일시적인 오류가 발생했습니다. 잠시 �� 다시 시도해주세요.',
   onRetry,
-  size = 'default',
   className = '',
+  size = 'default',
+  variant,
 }) => {
+  const defaultTitle = size === 'compact' ? '데이터를 불러오는 데 실패했습니다' : '데이터를 불러올 수 없습니다'
+  const displayTitle = title ?? defaultTitle
+
+  if (variant === 'inline') {
+    return (
+      <div className={`flex items-center gap-2 text-status-danger-text ${className}`}>
+        <AlertCircle size={16} />
+        <span className="text-sm">{displayTitle}</span>
+        {onRetry && (
+          <button
+            onClick={onRetry}
+            className="text-sm font-medium underline hover:no-underline"
+          >
+            다시 ���도
+          </button>
+        )}
+      </div>
+    )
+  }
+
   const isCompact = size === 'compact'
 
-  return (
-    <div className={`
-      bg-surface-card border border-status-danger-text/20 text-center
-      ${isCompact ? 'py-6 px-4' : 'py-12 px-6'}
-      ${className}
-    `}>
-      <div className={`inline-flex items-center justify-center bg-status-danger-text/10 border border-status-danger-text/20 ${isCompact ? 'w-10 h-10 mb-2' : 'w-14 h-14 mb-4'}`}>
-        <AlertTriangle size={isCompact ? 20 : 24} className="text-status-danger-text" />
+  if (isCompact) {
+    return (
+      <div className={`flex flex-col items-center justify-center py-8 text-center ${className}`}>
+        <div className="w-10 h-10 bg-status-danger-text/10 border border-status-danger-text/20 flex items-center justify-center mb-2">
+          <AlertTriangle size={20} className="text-status-danger-text" />
+        </div>
+        <p className="text-xs font-medium text-txt-secondary mb-1">{displayTitle}</p>
+        <p className="text-xs text-txt-tertiary mb-3">{message}</p>
+        {onRetry && (
+          <Button variant="secondary" size="sm" onClick={onRetry}>
+            <RefreshCw size={12} />
+            다시 시도
+          </Button>
+        )}
       </div>
+    )
+  }
 
-      <p className={`font-medium text-txt-secondary ${isCompact ? 'text-xs mb-1' : 'text-sm mb-1.5'}`}>
-        {message}
-      </p>
-
+  return (
+    <div className={`flex flex-col items-center justify-center py-16 text-center ${className}`}>
+      <div className="w-14 h-14 bg-status-danger-text/10 border border-status-danger-text/20 flex items-center justify-center mb-4">
+        <ServerCrash size={28} className="text-status-danger-text/70" />
+      </div>
+      <h3 className="text-lg font-bold text-txt-primary mb-2">{displayTitle}</h3>
+      <p className="text-sm text-txt-tertiary max-w-sm mb-6">{message}</p>
       {onRetry && (
-        <button
-          onClick={onRetry}
-          className={`
-            inline-flex items-center gap-1.5 font-bold text-txt-secondary border border-border
-            hover:bg-surface-sunken transition-all hover:opacity-90 active:scale-[0.97]
-            ${isCompact ? 'px-3 py-1.5 text-xs mt-3' : 'px-4 py-2 text-sm mt-4'}
-          `}
-        >
-          <RefreshCw size={isCompact ? 12 : 14} />
+        <Button variant="primary" onClick={onRetry}>
+          <RefreshCw size={16} />
           다시 시도
-        </button>
+        </Button>
       )}
     </div>
   )
 }
+
+export default ErrorState

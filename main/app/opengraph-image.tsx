@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og'
 
-export const alt = 'Draft - 모든 프로젝트는 여기서 시작됩니다'
+export const alt = 'Draft'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -11,83 +11,95 @@ export default function OgImage() {
         style={{
           width: '100%',
           height: '100%',
-          background: '#18181B',
+          background: '#0A0A0A',
           display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
           alignItems: 'center',
-          padding: 80,
+          justifyContent: 'center',
           position: 'relative',
+          overflow: 'hidden',
+          fontFamily: 'sans-serif',
         }}
       >
-        {/* Corner marks */}
-        <div style={{ position: 'absolute', top: 24, left: 24, width: 40, height: 40, borderTop: '3px solid #333', borderLeft: '3px solid #333', display: 'flex' }} />
-        <div style={{ position: 'absolute', top: 24, right: 24, width: 40, height: 40, borderTop: '3px solid #333', borderRight: '3px solid #333', display: 'flex' }} />
-        <div style={{ position: 'absolute', bottom: 24, left: 24, width: 40, height: 40, borderBottom: '3px solid #333', borderLeft: '3px solid #333', display: 'flex' }} />
-        <div style={{ position: 'absolute', bottom: 24, right: 24, width: 40, height: 40, borderBottom: '3px solid #333', borderRight: '3px solid #333', display: 'flex' }} />
-
-        {/* Logo */}
+        {/* Subtle grid lines */}
         <div
           style={{
-            width: 80,
-            height: 80,
-            background: '#FAFAFA',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: 40,
+            backgroundImage:
+              'linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)',
+            backgroundSize: '60px 60px',
           }}
-        >
-          <span style={{ color: '#18181B', fontSize: 48, fontWeight: 900, fontFamily: 'sans-serif' }}>D</span>
-        </div>
+        />
 
-        {/* Title */}
+        {/* Center content */}
         <div
           style={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: 16,
-          }}
-        >
-          <span
-            style={{
-              color: '#fff',
-              fontSize: 64,
-              fontWeight: 900,
-              fontFamily: 'sans-serif',
-              letterSpacing: '-2px',
-            }}
-          >
-            Draft.
-          </span>
-          <span
-            style={{
-              color: '#888',
-              fontSize: 24,
-              fontFamily: 'sans-serif',
-              fontWeight: 400,
-            }}
-          >
-            모든 프로젝트는 여기서 시작됩니다
-          </span>
-        </div>
-
-        {/* Bottom label */}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 40,
-            display: 'flex',
             gap: 24,
           }}
         >
-          <span style={{ color: '#555', fontSize: 14, fontFamily: 'monospace', letterSpacing: '2px', textTransform: 'uppercase' as const }}>
-            SHARE / FEEDBACK / TEAM UP
+          {/* Logo mark */}
+          <div
+            style={{
+              width: 56,
+              height: 56,
+              background: '#fff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <span style={{ color: '#0A0A0A', fontSize: 36, fontWeight: 900 }}>D</span>
+          </div>
+
+          {/* Brand name */}
+          <span
+            style={{
+              color: '#fff',
+              fontSize: 72,
+              fontWeight: 900,
+              letterSpacing: '16px',
+              textTransform: 'uppercase' as const,
+            }}
+          >
+            DRAFT
           </span>
+
+          {/* Tagline */}
+          <span
+            style={{
+              color: '#444',
+              fontSize: 16,
+              letterSpacing: '6px',
+              textTransform: 'uppercase' as const,
+            }}
+          >
+            Build your team
+          </span>
+        </div>
+
+        {/* Domain */}
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 32,
+            right: 48,
+            color: '#2a2a2a',
+            fontSize: 14,
+            letterSpacing: '2px',
+            display: 'flex',
+          }}
+        >
+          dailydraft.me
         </div>
       </div>
     ),
-    { ...size }
+    { ...size },
   )
 }

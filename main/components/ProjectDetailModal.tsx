@@ -1,16 +1,16 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { hapticMedium, hapticSuccess } from '@/src/utils/haptic'
 import {
-  Loader2, AlertCircle, X, Share2, Edit3,
+  Loader2, AlertCircle, X, Share2, Edit3, ChevronLeft, ChevronRight,
 } from 'lucide-react'
 import { toast } from 'sonner'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/src/lib/supabase/client'
-import { useOpportunity, useUpdateOpportunity } from '@/src/hooks/useOpportunities'
+import { useOpportunity, useUpdateOpportunity, useSimilarOpportunities, opportunityKeys } from '@/src/hooks/useOpportunities'
 import { useProfileByUserId } from '@/src/hooks/usePublicProfiles'
 import { useProjectUpdates } from '@/src/hooks/useProjectUpdates'
 import { useAuth } from '@/src/context/AuthContext'
@@ -28,7 +28,21 @@ interface ProjectDetailModalProps {
 }
 
 export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectId, onClose }) => {
+  if (!projectId) return null
   const router = useRouter()
+  const queryClient = useQueryClient()
+
+  // Navigation history — enables ← → between similar projects
+  const [navHistory, setNavHistory] = useState<string[]>([projectId])
+  const [navIndex, setNavIndex] = useState(0)
+  const currentId = navHistory[navIndex]
+
+  // Reset navigation when modal opens with a new projectId
+  useEffect(() => {
+    setNavHistory([projectId])
+    setNavIndex(0)
+  }, [projectId])
+
   const [showCta, setShowCta] = useState(false)
   const [showCoffeeChatForm, setShowCoffeeChatForm] = useState(false)
   const [selectedRole, setSelectedRole] = useState<string | undefined>(undefined)
@@ -36,31 +50,69 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
   const [showWriteUpdate, setShowWriteUpdate] = useState(false)
   const [hasInterested, setHasInterested] = useState(false)
   const [showTypeSelector, setShowTypeSelector] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+  const sheetRef = useRef<HTMLDivElement>(null)
+  const dragRef = useRef({ startY: 0, dragging: false })
   const { user } = useAuth()
   const updateOpportunity = useUpdateOpportunity()
-  const { expressInterest, loading: interestLoading } = useInterests({ opportunityId: projectId ?? '' })
+  const { expressInterest, loading: interestLoading } = useInterests({ opportunityId: currentId ?? '' })
   const { data: myChatsForProject = [] } = useCoffeeChats({
-    opportunityId: projectId ?? undefined,
-    enabled: !!projectId,
+    opportunityId: currentId ?? undefined,
+    enabled: !!currentId,
   })
 
+  useBackHandler(!!projectId, onClose, 'project-detail')
   useBackHandler(showCoffeeChatForm, () => setShowCoffeeChatForm(false), 'coffee-chat')
   useBackHandler(showWriteUpdate, () => setShowWriteUpdate(false), 'write-update')
   useBackHandler(showCta, () => setShowCta(false), 'project-cta')
 
-  const { data: opportunity, isLoading: loading } = useOpportunity(projectId ?? undefined)
+  const { data: opportunity, isLoading: loading } = useOpportunity(currentId ?? undefined)
   const { data: creator } = useProfileByUserId(opportunity?.creator_id ?? undefined)
   const { data: updates = [] } = useProjectUpdates(opportunity?.id)
 
+  // Prefetch similar projects — starts immediately when modal opens
+  const { data: similar = [], isLoading: similarLoading } = useSimilarOpportunities(currentId)
+
+  useEffect(() => {
+    similar.forEach(proj => {
+      queryClient.prefetchQuery({
+        queryKey: opportunityKeys.detail(proj.id),
+        queryFn: async () => {
+          const { data, error } = await supabase.from('opportunities').select('*').eq('id', proj.id).single()
+          if (error) throw error
+          return data
+        },
+        staleTime: 1000 * 60 * 2,
+      })
+    })
+  }, [similar, queryClient])
+
+  const canGoBack = navIndex > 0
+  const nextSimilar = similar[0]
+  const canGoForward = !similarLoading && !!nextSimilar
+
+  const goNext = () => {
+    if (!nextSimilar) return
+    hapticMedium()
+    setNavHistory(prev => [...prev.slice(0, navIndex + 1), nextSimilar.id])
+    setNavIndex(prev => prev + 1)
+  }
+
+  const goBack = () => {
+    if (navIndex === 0) return
+    hapticMedium()
+    setNavIndex(prev => prev - 1)
+  }
+
   // Fetch team members (accepted connections)
   const { data: teamMembers = [] } = useQuery({
-    queryKey: ['team-public', projectId],
+    queryKey: ['team-public', currentId],
     queryFn: async () => {
-      if (!projectId) return []
+      if (!currentId) return []
       const { data: connections } = await supabase
         .from('accepted_connections')
         .select('id, applicant_id, assigned_role, status')
-        .eq('opportunity_id', projectId)
+        .eq('opportunity_id', currentId)
         .eq('status', 'active')
       if (!connections || connections.length === 0) return []
       const userIds = connections.map(c => c.applicant_id)
@@ -75,7 +127,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
         role: c.assigned_role || profileMap.get(c.applicant_id)?.desired_position || null,
       }))
     },
-    enabled: !!projectId,
+    enabled: !!currentId,
     staleTime: 1000 * 60 * 2,
   })
 
@@ -90,14 +142,18 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
     setShowCoffeeChatForm(false)
     setHasInterested(false)
     setShowTypeSelector(false)
-  }, [projectId])
+  }, [currentId])
 
   // 조회수 트래킹
   useEffect(() => {
-    if (projectId) {
-      fetch(`/api/opportunities/${projectId}/view`, { method: 'POST' }).catch(() => {})
+    if (currentId) {
+      fetch(`/api/opportunities/${currentId}/view`, { method: 'POST' }).catch(() => {})
     }
-  }, [projectId])
+  }, [currentId])
+
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 640)
+  }, [])
 
   useEffect(() => {
     if (projectId) {
@@ -155,7 +211,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
 
   const handleShare = async () => {
     const appUrl = window.location.origin
-    const url = `${appUrl}/p/${projectId}`
+    const url = `${appUrl}/p/${currentId}`
     const shareData = {
       title: opportunity?.title || 'Draft 프로젝트',
       text: opportunity?.needed_roles?.length
@@ -198,39 +254,91 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
     : 0
 
   return (
-    <AnimatePresence>
-      {projectId && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            key="project-backdrop"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-md z-modal-backdrop"
-          />
+    <>
+      {/* Backdrop */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+        onClick={onClose}
+        className="fixed inset-0 bg-black/60 backdrop-blur-md z-modal-backdrop"
+      />
 
-          {/* Modal */}
-          <motion.div
-            key="project-modal"
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.97, y: 10 }}
-            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-0 z-modal flex items-end sm:items-center justify-center pt-6 px-0 pb-[env(safe-area-inset-bottom)] sm:p-4 md:p-8"
-            onClick={onClose}
-          >
+      {/* Modal */}
+      <motion.div
+        initial={isMobile ? { opacity: 1, y: '100%' } : { opacity: 0, scale: 0.95, y: 20 }}
+        animate={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, scale: 1, y: 0 }}
+        exit={isMobile ? { opacity: 1, y: '100%' } : { opacity: 0, scale: 0.95, y: 20 }}
+        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+        className="fixed inset-0 z-modal flex items-end sm:items-center justify-center pt-6 px-0 pb-[env(safe-area-inset-bottom)] sm:p-4 md:p-8"
+        onClick={onClose}
+      >
+            {/* Left nav button */}
+            {canGoBack && (
+              <button
+                onClick={(e) => { e.stopPropagation(); goBack() }}
+                className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-surface-card/90 backdrop-blur-sm border border-border shadow-lg hidden sm:flex items-center justify-center hover:bg-surface-card active:scale-95 transition-all"
+                aria-label="이전 프로젝트"
+              >
+                <ChevronLeft size={20} className="text-txt-primary" />
+              </button>
+            )}
+
+            {/* Right nav button */}
+            {(canGoForward || similarLoading) && (
+              <button
+                onClick={(e) => { e.stopPropagation(); goNext() }}
+                disabled={!canGoForward}
+                className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-surface-card/90 backdrop-blur-sm border border-border shadow-lg hidden sm:flex items-center justify-center hover:bg-surface-card active:scale-95 transition-all disabled:opacity-40"
+                aria-label="다음 유사 프로젝트"
+                title={nextSimilar ? nextSimilar.title : undefined}
+              >
+                {similarLoading ? (
+                  <Loader2 size={16} className="text-txt-disabled animate-spin" />
+                ) : (
+                  <ChevronRight size={20} className="text-txt-primary" />
+                )}
+              </button>
+            )}
+
             <div
+              ref={sheetRef}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl max-h-[85vh] sm:max-h-[90vh] modal-glass rounded-t-2xl sm:rounded-2xl overflow-hidden flex flex-col relative"
+              className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl max-h-[85vh] sm:max-h-[90vh] modal-glass rounded-t-2xl overflow-hidden flex flex-col relative"
               role="dialog"
               aria-modal="true"
               aria-label={opportunity?.title || '프로젝트 상세'}
             >
               {/* Mobile drag handle */}
-              <div className="sm:hidden flex justify-center pt-2 pb-0.5">
+              <div
+                className="sm:hidden flex justify-center pt-2 pb-0.5 touch-none cursor-grab active:cursor-grabbing"
+                onTouchStart={(e) => {
+                  dragRef.current.startY = e.touches[0].clientY
+                  dragRef.current.dragging = true
+                }}
+                onTouchMove={(e) => {
+                  if (!dragRef.current.dragging || !sheetRef.current) return
+                  const diff = e.touches[0].clientY - dragRef.current.startY
+                  if (diff > 0) {
+                    sheetRef.current.style.transform = `translateY(${diff}px)`
+                    sheetRef.current.style.transition = 'none'
+                  }
+                }}
+                onTouchEnd={(e) => {
+                  if (!dragRef.current.dragging || !sheetRef.current) return
+                  dragRef.current.dragging = false
+                  const diff = e.changedTouches[0].clientY - dragRef.current.startY
+                  if (diff > 80) {
+                    sheetRef.current.style.transition = 'transform 0.2s ease-out'
+                    sheetRef.current.style.transform = 'translateY(100%)'
+                    setTimeout(onClose, 200)
+                  } else {
+                    sheetRef.current.style.transition = 'transform 0.2s ease-out'
+                    sheetRef.current.style.transform = 'translateY(0)'
+                  }
+                }}
+              >
                 <div className="w-9 h-1 rounded-full bg-border/60" />
               </div>
               {/* Window Bar */}
@@ -251,7 +359,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                       <div className="relative">
                         <button
                           onClick={() => setShowTypeSelector(!showTypeSelector)}
-                          className="text-[0.625rem] font-medium px-2 py-0.5 bg-surface-card text-txt-tertiary border border-border hover:border-border hover:text-txt-secondary transition-colors flex items-center gap-1"
+                          className="text-[10px] font-medium px-2 py-0.5 bg-surface-card text-txt-tertiary border border-border hover:border-border hover:text-txt-secondary transition-colors flex items-center gap-1"
                         >
                           {opportunity.type === 'side_project' ? 'SIDE PROJECT' :
                            opportunity.type === 'startup' ? 'STARTUP' :
@@ -274,7 +382,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                                   )
                                   setShowTypeSelector(false)
                                 }}
-                                className={`w-full text-left px-3 py-1.5 text-[0.625rem] font-medium transition-colors ${
+                                className={`w-full text-left px-3 py-1.5 text-[10px] font-medium transition-colors ${
                                   opportunity.type === opt.value
                                     ? 'bg-surface-inverse text-txt-inverse'
                                     : 'text-txt-secondary hover:bg-surface-sunken'
@@ -287,14 +395,14 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                         )}
                       </div>
                     ) : (
-                      <span className="text-[0.625rem] font-medium px-2 py-0.5 bg-surface-card text-txt-tertiary border border-border">
+                      <span className="text-[10px] font-medium px-2 py-0.5 bg-surface-card text-txt-tertiary border border-border">
                         {opportunity.type === 'side_project' ? 'SIDE PROJECT' :
                          opportunity.type === 'startup' ? 'STARTUP' :
                          opportunity.type === 'study' ? 'STUDY' : opportunity.type?.toUpperCase() || 'PROJECT'}
                       </span>
                     )}
                     {opportunity.status === 'active' && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-status-success-bg text-status-success-text text-[0.625rem] font-bold border border-status-success-text/30">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-status-success-bg text-status-success-text text-[10px] font-bold border border-status-success-text/30">
                         <span className="w-1.5 h-1.5 bg-indicator-online animate-pulse" />
                         모집 중
                       </span>
@@ -308,7 +416,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                     aria-label="공유"
                   >
                     {shareCopied ? (
-                      <span className="text-[0.625rem] font-medium text-status-success-text px-1 icon-bounce">복사됨!</span>
+                      <span className="text-[10px] font-medium text-status-success-text px-1 icon-bounce">복사됨!</span>
                     ) : (
                       <Share2 size={14} className="text-txt-disabled" />
                     )}
@@ -344,8 +452,27 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                 </div>
               ) : (
                 <>
-                  {/* Scrollable Content */}
-                  <div className="flex-1 overflow-y-auto">
+                  {/* Scrollable Content — swipe left/right to navigate similar projects */}
+                  <div
+                    className="flex-1 overflow-y-auto"
+                    onTouchStart={(e) => {
+                      const touch = e.touches[0]
+                      ;(e.currentTarget as HTMLElement).dataset.touchStartX = String(touch.clientX)
+                      ;(e.currentTarget as HTMLElement).dataset.touchStartY = String(touch.clientY)
+                    }}
+                    onTouchEnd={(e) => {
+                      const startX = Number((e.currentTarget as HTMLElement).dataset.touchStartX)
+                      const startY = Number((e.currentTarget as HTMLElement).dataset.touchStartY)
+                      const endX = e.changedTouches[0].clientX
+                      const endY = e.changedTouches[0].clientY
+                      const diffX = startX - endX
+                      const diffY = startY - endY
+                      if (Math.abs(diffX) > 60 && Math.abs(diffX) > Math.abs(diffY) * 2) {
+                        if (diffX > 0 && canGoForward) goNext()
+                        else if (diffX < 0 && canGoBack) goBack()
+                      }
+                    }}
+                  >
 
                     <ProjectHeader
                       opportunity={opportunity}
@@ -405,8 +532,6 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
               )}
             </div>
           </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+    </>
   )
 }

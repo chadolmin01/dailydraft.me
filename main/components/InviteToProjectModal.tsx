@@ -111,7 +111,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
             <>
               {/* 1. Project Selection */}
               <div>
-                <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-2">
+                <label className="block text-[10px] font-medium text-txt-tertiary mb-2">
                   1. 프로젝트 선택
                 </label>
                 <div className="space-y-1.5">
@@ -126,7 +126,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
                       }`}
                     >
                       <span className="truncate">{opp.title}</span>
-                      <span className="text-[0.625rem] font-mono font-bold bg-indicator-online/10 text-indicator-online px-1.5 py-0.5 border border-indicator-online/20 shrink-0 ml-2">
+                      <span className="text-[10px] font-mono font-bold bg-indicator-online/10 text-indicator-online px-1.5 py-0.5 border border-indicator-online/20 shrink-0 ml-2">
                         모집중
                       </span>
                     </button>
@@ -137,7 +137,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
               {/* 2. Role Selection */}
               {selectedProject && (
                 <div>
-                  <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-2">
+                  <label className="block text-[10px] font-medium text-txt-tertiary mb-2">
                     2. 역할 선택
                   </label>
                   {neededRoles.length > 0 ? (
@@ -171,7 +171,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
               {/* 3. Message */}
               {selectedProject && selectedRole && (
                 <div>
-                  <label className="block text-[0.625rem] font-medium text-txt-tertiary mb-2">
+                  <label className="block text-[10px] font-medium text-txt-tertiary mb-2">
                     3. 메시지 (선택)
                   </label>
                   <textarea

@@ -95,7 +95,7 @@ export default function AdminDashboardPage() {
       <div className="max-w-[87.5rem] mx-auto p-8 lg:p-12 space-y-8">
         {/* Header */}
         <div className="border-b border-border pb-6">
-          <div className="text-[0.625rem] font-medium text-txt-tertiary mb-2 flex items-center gap-2">
+          <div className="text-[10px] font-medium text-txt-tertiary mb-2 flex items-center gap-2">
             <span className="w-2 h-2 bg-black" />
             Admin Dashboard
           </div>
@@ -127,7 +127,7 @@ export default function AdminDashboardPage() {
                     </div>
                     <div className="min-w-0">
                       <div className="text-2xl font-bold font-mono text-txt-primary">{stat.value}</div>
-                      <div className="text-[0.625rem] font-medium text-txt-tertiary">{stat.label}</div>
+                      <div className="text-[10px] font-medium text-txt-tertiary">{stat.label}</div>
                     </div>
                   </div>
                 </Card>
@@ -138,7 +138,7 @@ export default function AdminDashboardPage() {
 
         {/* Quick Links */}
         <div>
-          <div className="text-[0.625rem] font-medium text-txt-tertiary mb-4 flex items-center gap-2">
+          <div className="text-[10px] font-medium text-txt-tertiary mb-4 flex items-center gap-2">
             <BarChart3 size={14} />
             관리 도구
           </div>

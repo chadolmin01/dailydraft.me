@@ -19,11 +19,11 @@ const TEMPLATE_ICONS: Record<FormTemplateType, React.ReactNode> = {
 }
 
 const TEMPLATE_COLORS: Record<FormTemplateType, { bg: string; border: string; icon: string }> = {
-  'yebi-chogi': { bg: 'bg-status-info-bg', border: 'border-status-info-text/20 hover:border-status-info-text', icon: 'text-status-info-text' },
-  'student-300': { bg: 'bg-purple-50', border: 'border-purple-200 hover:border-purple-400', icon: 'text-purple-600' },
-  'saengae-chungnyeon': { bg: 'bg-status-success-bg', border: 'border-status-success-text/20 hover:border-status-success-text', icon: 'text-status-success-text' },
-  'oneul-jeongtong': { bg: 'bg-amber-50', border: 'border-amber-200 hover:border-amber-400', icon: 'text-indicator-premium-border' },
-  'gyeonggi-g-star': { bg: 'bg-rose-50', border: 'border-rose-200 hover:border-rose-400', icon: 'text-rose-600' },
+  'yebi-chogi': { bg: 'bg-surface-sunken', border: 'border-border hover:border-surface-inverse', icon: 'text-txt-primary' },
+  'student-300': { bg: 'bg-surface-sunken', border: 'border-border hover:border-surface-inverse', icon: 'text-txt-primary' },
+  'saengae-chungnyeon': { bg: 'bg-surface-sunken', border: 'border-border hover:border-surface-inverse', icon: 'text-txt-primary' },
+  'oneul-jeongtong': { bg: 'bg-surface-sunken', border: 'border-border hover:border-surface-inverse', icon: 'text-txt-primary' },
+  'gyeonggi-g-star': { bg: 'bg-surface-sunken', border: 'border-border hover:border-surface-inverse', icon: 'text-txt-primary' },
 }
 
 export const FormTemplateSelector: React.FC<FormTemplateSelectorProps> = ({
@@ -67,7 +67,7 @@ export const FormTemplateSelector: React.FC<FormTemplateSelectorProps> = ({
           {/* Recommended */}
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-3">
-              <span className="text-[0.625rem] font-bold font-mono text-status-info-text bg-status-info-bg px-2 py-0.5 border border-status-info-text/20">
+              <span className="text-[10px] font-bold font-mono text-status-info-text bg-status-info-bg px-2 py-0.5 border border-status-info-text/20">
                 RECOMMENDED
               </span>
               <span className="text-xs text-txt-tertiary">가장 범용적인 PSST 표준 양식</span>
@@ -82,7 +82,7 @@ export const FormTemplateSelector: React.FC<FormTemplateSelectorProps> = ({
 
           {/* Other templates */}
           <div>
-            <h3 className="text-[0.625rem] font-medium text-txt-secondary mb-3">
+            <h3 className="text-[10px] font-medium text-txt-secondary mb-3">
               Other Templates
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -155,14 +155,14 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onSelect, feature
           <p className="text-sm text-txt-secondary mb-2">{template.description}</p>
 
           <div className="flex items-center gap-3">
-            <span className="text-[0.625rem] font-mono text-txt-tertiary">
+            <span className="text-[10px] font-mono text-txt-tertiary">
               {template.pages}p
             </span>
             <div className="flex flex-wrap gap-1">
               {template.features.slice(0, 3).map((feature, idx) => (
                 <span
                   key={idx}
-                  className="text-[0.625rem] px-1.5 py-0.5 bg-surface-sunken text-txt-secondary"
+                  className="text-[10px] px-1.5 py-0.5 bg-surface-sunken text-txt-secondary"
                 >
                   {feature}
                 </span>

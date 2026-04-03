@@ -1,10 +1,47 @@
 import { NextRequest } from 'next/server';
+import crypto from 'crypto';
 import { genAI } from '@/src/lib/ai/gemini-client';
 import { createClient } from '@/src/lib/supabase/server';
 import { ApiResponse } from '@/src/lib/api-utils';
 import { safeGenerate } from '@/src/lib/ai/safe-generate';
 import { IdeaAnalyzeSchema } from '@/src/lib/ai/schemas';
 import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter';
+
+// --- In-memory cache (1시간 TTL) ---
+interface CacheEntry {
+  data: unknown;
+  expiresAt: number;
+}
+
+const analyzeCache = new Map<string, CacheEntry>();
+const CACHE_TTL_MS = 60 * 60 * 1000; // 1시간
+const MAX_CACHE_SIZE = 200;
+
+function getCacheKey(idea: string, level: string): string {
+  const hash = crypto.createHash('sha256').update(`${idea}::${level}`).digest('hex');
+  return hash;
+}
+
+function getCachedResult(key: string): unknown | null {
+  const entry = analyzeCache.get(key);
+  if (!entry) return null;
+  if (Date.now() > entry.expiresAt) {
+    analyzeCache.delete(key);
+    return null;
+  }
+  return entry.data;
+}
+
+function setCacheResult(key: string, data: unknown): void {
+  // 캐시 크기 제한 — 가장 오래된 항목 정리
+  if (analyzeCache.size >= MAX_CACHE_SIZE) {
+    const firstKey = analyzeCache.keys().next().value;
+    if (firstKey !== undefined) {
+      analyzeCache.delete(firstKey);
+    }
+  }
+  analyzeCache.set(key, { data, expiresAt: Date.now() + CACHE_TTL_MS });
+}
 
 function getAnalyzeSystemInstruction(level: string) {
   const baseInstruction = `당신은 "Draft." 스타트업 아이디어 검증 엔진입니다. 사용자가 아이디어를 입력하면 세 가지 페르소나(개발자, 디자이너, VC)로 응답합니다. 한국어로 응답하십시오.`;
@@ -76,6 +113,15 @@ export async function POST(request: NextRequest) {
       ? conversationHistory.filter((h: unknown) => typeof h === 'string').slice(0, 20).map((h: string) => h.slice(0, 2000))
       : [];
 
+    // 캐시 확인 — conversationHistory가 없는 초기 분석만 캐싱 (대화 진행 중은 매번 새로 생성)
+    if (validHistory.length === 0) {
+      const cacheKey = getCacheKey(sanitizedIdea, sanitizedLevel);
+      const cached = getCachedResult(cacheKey);
+      if (cached) {
+        return ApiResponse.ok({ success: true, result: cached, cached: true });
+      }
+    }
+
     const historyContext = validHistory.length > 0
       ? `[이전 대화 및 결정 내역]:\n${validHistory.join('\n')}\n\n`
       : '';
@@ -124,7 +170,7 @@ export async function POST(request: NextRequest) {
     const temperature = level === 'sketch' ? 0.9 : 0.7;
 
     const model = genAI.getGenerativeModel({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-2.5-flash',
       systemInstruction: getAnalyzeSystemInstruction(sanitizedLevel),
       generationConfig: {
         responseMimeType: 'application/json',
@@ -136,6 +182,12 @@ export async function POST(request: NextRequest) {
     const { data: parsed } = await safeGenerate({
       model, prompt, schema: IdeaAnalyzeSchema,
     });
+
+    // 초기 분석 결과를 캐시에 저장 (대화 진행 중이 아닌 경우만)
+    if (validHistory.length === 0) {
+      const cacheKey = getCacheKey(sanitizedIdea, sanitizedLevel);
+      setCacheResult(cacheKey, parsed);
+    }
 
     return ApiResponse.ok({ success: true, result: parsed });
   } catch (error) {

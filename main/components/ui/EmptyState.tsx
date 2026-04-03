@@ -3,6 +3,7 @@
 import React from 'react'
 import { Plus, type LucideIcon } from 'lucide-react'
 import Link from 'next/link'
+import { Button } from './Button'
 
 interface EmptyStateProps {
   icon: LucideIcon
@@ -32,21 +33,24 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   const ActionButton = () => {
     if (!hasAction) return null
 
-    const buttonContent = (
-      <>
-        <Plus size={isCompact ? 14 : 16} />
-        <span>{actionLabel}</span>
-      </>
-    )
-
-    const buttonClass = isCompact
-      ? 'inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold bg-brand text-white rounded-full hover:bg-brand-hover active:scale-[0.97]'
-      : 'inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold bg-brand text-white rounded-full hover:bg-brand-hover active:scale-[0.97]'
+    const buttonSize = isCompact ? 'sm' as const : 'md' as const
 
     if (actionHref) {
-      return <Link href={actionHref} className={buttonClass}>{buttonContent}</Link>
+      return (
+        <Link href={actionHref}>
+          <Button variant="blue" size={buttonSize} className="rounded-full">
+            <Plus size={isCompact ? 14 : 16} />
+            {actionLabel}
+          </Button>
+        </Link>
+      )
     }
-    return <button onClick={onAction} className={buttonClass}>{buttonContent}</button>
+    return (
+      <Button variant="blue" size={buttonSize} onClick={onAction} className="rounded-full">
+        <Plus size={isCompact ? 14 : 16} />
+        {actionLabel}
+      </Button>
+    )
   }
 
   return (

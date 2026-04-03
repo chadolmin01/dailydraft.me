@@ -1,14 +1,14 @@
 'use client'
 
-import React from 'react'
+import React, { useRef, useEffect } from 'react'
 import Image from 'next/image'
 import { Rocket, Users, FolderOpen, Eye, Heart } from 'lucide-react'
-import { Tooltip } from '@/components/ui/Tooltip'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { SkeletonGrid } from '@/components/ui/Skeleton'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { useAuth } from '@/src/context/AuthContext'
 import { getUpdateBadge } from './constants'
+import { trackProjectView } from '@/src/lib/pwa/engagement-tracker'
 import { Badges } from '@/components/ui/Badge'
 import type { ProjectCard } from './types'
 
@@ -18,6 +18,7 @@ interface ExploreProjectGridProps {
   isError: boolean
   onRetry: () => void
   hasMore: boolean
+  isFetchingMore: boolean
   totalCount: number
   searchQuery: string
   selectedCategory: string
@@ -32,6 +33,7 @@ export function ExploreProjectGrid({
   isError,
   onRetry,
   hasMore,
+  isFetchingMore,
   totalCount,
   searchQuery,
   selectedCategory,
@@ -40,6 +42,18 @@ export function ExploreProjectGrid({
   onSelectProject,
 }: ExploreProjectGridProps) {
   const { isAuthenticated } = useAuth()
+  const sentinelRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = sentinelRef.current
+    if (!el || !hasMore) return
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) onLoadMore() },
+      { rootMargin: '200px' },
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [hasMore, onLoadMore])
 
   if (isError) {
     return <ErrorState message="프로젝트를 불러오는 데 실패했습니다" onRetry={onRetry} />
@@ -72,7 +86,7 @@ export function ExploreProjectGrid({
               key={p.id}
               role="button"
               tabIndex={0}
-              onClick={() => onSelectProject(p.id)}
+              onClick={() => { onSelectProject(p.id); trackProjectView() }}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectProject(p.id) } }}
               style={{ animationDelay: `${Math.min(index * 60, 600)}ms` }}
               className="stagger-item relative bg-surface-card rounded-xl border border-border overflow-hidden group hover:shadow-md hover:border-brand/30 hover:-translate-y-0.5 hover-spring cursor-pointer min-h-[21.25rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985] active:shadow-none active:border-brand/50"
@@ -87,22 +101,29 @@ export function ExploreProjectGrid({
                 )}
                 <div className="absolute top-3 left-3 z-[1]">
                   {isUrgent ? (
-                    <Tooltip text={`마감 ${p.daysLeft}일 전`} position="bottom">
-                      <span className="text-[0.625rem] font-mono font-bold bg-status-danger-text text-white px-2 py-0.5 border border-status-danger-text">D-{p.daysLeft} URGENT</span>
-                    </Tooltip>
+                    <span title={`마감 ${p.daysLeft}일 전`} className="text-[10px] font-mono font-bold bg-status-danger-text text-white px-2 py-0.5 border border-status-danger-text">D-{p.daysLeft} URGENT</span>
                   ) : (
-                    <span className="text-[0.625rem] font-mono font-bold bg-indicator-online text-white px-2 py-0.5 border border-indicator-online flex items-center gap-1">
-                      <span className="w-1 h-1 bg-white animate-pulse" />
-                      모집중
+                    <span className="text-[10px] font-mono font-bold bg-white/90 backdrop-blur-sm text-black px-2 py-0.5 border border-white/60 flex items-center gap-1">
+                      <span className="w-1 h-1 bg-black rounded-full" />
+                      OPEN
                     </span>
                   )}
                 </div>
-                <div className="absolute top-3 right-3 flex gap-1 z-[1]">
-                  {updateBadge && (
-                    <span className="text-[0.625rem] font-mono bg-amber-400 text-black px-2 py-0.5 font-bold border border-indicator-premium-border">{updateBadge}</span>
+                <div className="absolute top-3 right-3 flex flex-col items-end gap-1 z-[1]">
+                  {p.matchLabel && (
+                    <span title="AI가 프로필 기반으로 추천했어요" className={`animate-badge-pop text-[10px] font-mono font-bold px-2 py-0.5 border flex items-center gap-1 ${
+                      p.matchLabel === '잘 맞는 프로젝트'
+                        ? 'bg-indicator-online text-white border-indicator-online'
+                        : 'bg-black/80 backdrop-blur-sm text-white border-white/20'
+                    }`}>
+                      ✦ {p.matchLabel}
+                    </span>
                   )}
-                  {!updateBadge && p.tags.slice(0, 2).map(tag => (
-                    <span key={tag} className="text-[0.625rem] font-mono bg-black/60 backdrop-blur-sm text-white px-2 py-0.5 border border-white/10">{tag}</span>
+                  {updateBadge && (
+                    <span className="text-[10px] font-mono bg-white/90 backdrop-blur-sm text-txt-secondary px-2 py-0.5 font-medium border border-white/60">{updateBadge}</span>
+                  )}
+                  {!updateBadge && !p.matchLabel && p.tags.slice(0, 2).map(tag => (
+                    <span key={tag} className="text-[10px] font-mono bg-black/60 backdrop-blur-sm text-white px-2 py-0.5 border border-white/10">{tag}</span>
                   ))}
                 </div>
                 <div className="relative z-[1] w-10 h-10 bg-surface-card flex items-center justify-center shadow-sm border border-border">
@@ -114,19 +135,9 @@ export function ExploreProjectGrid({
                 <div className="flex items-center gap-2 mb-1.5">
                   <h3 className="font-bold text-base text-txt-primary truncate">{p.title}</h3>
                   <Badges badges={p.badges} />
-                  {p.matchLabel && (
-                    <Tooltip text="AI가 프로필 기반으로 추천했어요">
-                      <span className={`text-[0.625rem] font-mono font-bold px-1.5 py-0.5 border shrink-0 ${
-                        p.matchLabel === '잘 맞는 프로젝트' ? 'bg-status-success-bg text-status-success-text border-indicator-online/20'
-                        : 'bg-brand-bg text-brand border-brand-border'
-                      }`}>
-                        {p.matchLabel}
-                      </span>
-                    </Tooltip>
-                  )}
                 </div>
                 <div className="flex items-center gap-1.5 mb-2 overflow-hidden">
-                  <span className="text-[0.625rem] font-medium text-brand shrink-0 bg-brand-bg px-1.5 py-0.5 border border-brand-border">NEED</span>
+                  <span className="text-[10px] font-medium text-brand shrink-0 bg-brand-bg px-1.5 py-0.5 border border-brand-border">NEED</span>
                   {p.roles.slice(0, 2).map(role => (
                     <span key={role} className="text-xs bg-surface-card text-txt-secondary px-2 py-0.5 border border-border font-medium shrink-0">{role}</span>
                   ))}
@@ -140,9 +151,9 @@ export function ExploreProjectGrid({
                     <div className="w-5 h-5 bg-surface-sunken rounded-xl border border-border flex items-center justify-center">
                       <Users size={10} className="text-txt-disabled" />
                     </div>
-                    <span className="text-[0.625rem] font-mono text-txt-tertiary">팀 모집중</span>
+                    <span className="text-[10px] font-mono text-txt-tertiary">RECRUITING</span>
                   </div>
-                  <div className="flex items-center gap-2 text-[0.6875rem] font-mono">
+                  <div className="flex items-center gap-2 text-xs font-mono">
                     {p.viewsCount > 0 && (
                       <span className="flex items-center gap-1 text-txt-secondary"><Eye size={12} />{p.viewsCount}</span>
                     )}
@@ -160,14 +171,11 @@ export function ExploreProjectGrid({
         })}
       </div>
 
-      {hasMore && !isLoading && (
-        <div className="text-center mt-6">
-          <button
-            onClick={onLoadMore}
-            className="px-6 py-2.5 text-sm font-bold text-txt-secondary border border-border hover:bg-surface-sunken hover:shadow-md transition-all active:scale-[0.97] active:shadow-none"
-          >
-            더 보기{!searchQuery && selectedCategory === 'all' && !recruitingOnly ? ` (${totalCount - projectCards.length}개 남음)` : ''}
-          </button>
+      {hasMore && (
+        <div ref={sentinelRef} className="flex justify-center py-8">
+          {isFetchingMore && (
+            <span className="text-xs font-mono text-txt-tertiary animate-pulse">로딩 중...</span>
+          )}
         </div>
       )}
     </section>

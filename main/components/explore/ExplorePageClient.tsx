@@ -1,13 +1,17 @@
 'use client'
 
-import React, { useState, useEffect, useMemo, useCallback, Suspense } from 'react'
+import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react'
 import dynamic from 'next/dynamic'
+import { AnimatePresence } from 'framer-motion'
 import { LayoutGrid, Users, Sparkles } from 'lucide-react'
+import { toast } from 'sonner'
 import Link from 'next/link'
 import { useSearchParams as useNextSearchParams, useRouter, usePathname } from 'next/navigation'
 import { DashboardLayout } from '@/components/ui/DashboardLayout'
 import { SkeletonGrid, SkeletonSidebar } from '@/components/ui/Skeleton'
 import { ProfileCompletionBanner } from '@/components/ui/ProfileCompletionBanner'
+import { StarterGuideCard } from '@/components/starter-guide/StarterGuideCard'
+import { useStarterGuide } from '@/src/hooks/useStarterGuide'
 
 const ModalLoadingFallback = () => (
   <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-modal-backdrop">
@@ -25,15 +29,15 @@ const ProfileDetailModal = dynamic(
   () => import('@/components/ProfileDetailModal').then(m => ({ default: m.ProfileDetailModal })),
   { ssr: false, loading: ModalLoadingFallback }
 )
-import { useOpportunities, type OpportunityWithCreator, calculateDaysLeft } from '@/src/hooks/useOpportunities'
+import { useInfiniteOpportunities, type OpportunityWithCreator, calculateDaysLeft } from '@/src/hooks/useOpportunities'
 import { cleanNickname } from '@/src/lib/clean-nickname'
-import { usePublicProfiles, type PublicProfile } from '@/src/hooks/usePublicProfiles'
+import { useInfinitePublicProfiles, type PublicProfile } from '@/src/hooks/usePublicProfiles'
 import { useUserRecommendations, type UserRecommendation } from '@/src/hooks/useUserRecommendations'
 import { FALLBACK_CATEGORIES, FALLBACK_TRENDING_TAGS } from '@/src/lib/fallbacks/explore'
 import { PEOPLE_ROLE_FILTERS, PEOPLE_CATEGORY_ICONS } from '@/components/explore/constants'
 import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/src/context/AuthContext'
-import { CATEGORY_ICONS, PAGE_SIZE, PEOPLE_PAGE_SIZE } from '@/components/explore/constants'
+import { CATEGORY_ICONS, PAGE_SIZE, PEOPLE_PAGE_SIZE } from './constants'
 import {
   ExploreHeroCarousel,
   ExploreSearchBar,
@@ -81,6 +85,8 @@ function ExplorePageContent() {
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null)
   const [profileByUserId, setProfileByUserId] = useState(false)
+  const [initialCoffeeChatOpen, setInitialCoffeeChatOpen] = useState(false)
+  const [initialCoffeeChatMessage, setInitialCoffeeChatMessage] = useState<string | undefined>(undefined)
   const hydratedRef = React.useRef(false)
 
   // Hydrate modal state from URL on mount
@@ -89,9 +95,22 @@ function ExplorePageContent() {
     const project = params.get('project')
     const profile = params.get('profile')
     const byUserId = params.get('profileBy') === 'userId'
+    const coffeeChat = params.get('coffeeChat')
+    const msg = params.get('msg')
     if (project) setSelectedProjectId(project)
     if (profile) setSelectedProfileId(profile)
     if (byUserId) setProfileByUserId(byUserId)
+    if (coffeeChat) {
+      setSelectedProfileId(coffeeChat)
+      setProfileByUserId(true)
+      setInitialCoffeeChatOpen(true)
+      if (msg) setInitialCoffeeChatMessage(decodeURIComponent(msg))
+      // URL에서 coffeeChat/msg 파라미터 제거
+      params.delete('coffeeChat')
+      params.delete('msg')
+      const qs = params.toString()
+      window.history.replaceState(null, '', `${window.location.pathname}${qs ? `?${qs}` : ''}`)
+    }
     hydratedRef.current = true
   }, [])
 
@@ -136,11 +155,17 @@ function ExplorePageContent() {
   const [searchScope, setSearchScope] = useState<SearchScope>(initialScope)
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
-  const [displayLimit, setDisplayLimit] = useState(PAGE_SIZE)
-  const [peopleDisplayLimit, setPeopleDisplayLimit] = useState(PEOPLE_PAGE_SIZE)
 
   const searchQuery = useDebouncedValue(searchInput, 300)
   const { isAuthenticated, user, isLoading: isAuthLoading } = useAuth()
+  const guide = useStarterGuide()
+
+  // Starter guide: completion toast
+  useEffect(() => {
+    if (guide.justCompleted) {
+      toast.success('시작 가이드를 모두 완료했어요! 🎉')
+    }
+  }, [guide.justCompleted])
 
   // Sync search to URL (preserves modal params)
   useEffect(() => {
@@ -158,12 +183,28 @@ function ExplorePageContent() {
   }, [searchQuery, searchScope, pathname, router])
 
   // ── Data ──
-  const { data: oppData, isLoading: opportunitiesLoading, isError: oppError, refetch: refetchOpp } = useOpportunities({ limit: displayLimit })
-  const opportunities = oppData?.items ?? []
-  const totalCount = oppData?.totalCount ?? 0
-  const hasMore = displayLimit < totalCount
+  const {
+    data: oppPages,
+    isLoading: opportunitiesLoading,
+    isError: oppError,
+    refetch: refetchOpp,
+    fetchNextPage: fetchNextOpp,
+    hasNextPage: hasMoreOpp,
+    isFetchingNextPage: isFetchingMoreOpp,
+  } = useInfiniteOpportunities(PAGE_SIZE)
+  const opportunities = useMemo(() => oppPages?.pages.flatMap(p => p.items) ?? [], [oppPages])
+  const totalCount = oppPages?.pages[0]?.totalCount ?? 0
 
-  const { data: publicProfiles = [], isLoading: profilesLoading, isError: profilesError, refetch: refetchProfiles } = usePublicProfiles({ limit: peopleDisplayLimit })
+  const {
+    data: profilePages,
+    isLoading: profilesLoading,
+    isError: profilesError,
+    refetch: refetchProfiles,
+    fetchNextPage: fetchNextProfiles,
+    hasNextPage: hasMoreProfiles,
+    isFetchingNextPage: isFetchingMoreProfiles,
+  } = useInfinitePublicProfiles(PEOPLE_PAGE_SIZE)
+  const publicProfiles = useMemo(() => profilePages?.pages.flatMap(p => p.items) ?? [], [profilePages])
   const { data: allRecs = [], isLoading: recsLoading } = useUserRecommendations({ limit: 15 })
   const sidebarRecs = allRecs.slice(0, 4)
 
@@ -310,7 +351,6 @@ function ExplorePageContent() {
         avatarUrl: profile.avatar_url,
         matchScore: rec?.match_score ?? null,
         matchReason: rec?.match_reason ?? null,
-        matchReasonDetail: (rec as unknown as Record<string, unknown>)?.match_reason_detail ?? null,
         badges: profile.badges ?? null,
         interestCount: profile.interest_count || 0,
         createdAt: profile.created_at,
@@ -430,10 +470,12 @@ function ExplorePageContent() {
   } as const
 
   const handleSelectProject = useCallback((id: string) => {
+    guide.markExploreVisited()
     setSelectedProfileId(null)
     setProfileByUserId(false)
     setSelectedProjectId(id)
-  }, [])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [guide.markExploreVisited])
 
   const handleSelectProfile = useCallback((id: string, byUserId: boolean) => {
     setSelectedProjectId(null)
@@ -443,15 +485,32 @@ function ExplorePageContent() {
 
   return (
     <div className="bg-surface-bg min-h-full">
-      <ExploreHeroCarousel />
+      <div className="relative">
+        <ExploreHeroCarousel />
+        {guide.visible && (
+          <div className="absolute inset-0 z-10 flex items-end sm:items-center justify-center pb-6 sm:pb-0 animate-[fadeIn_0.3s_ease-out]">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/20 to-transparent sm:bg-black/20 sm:backdrop-blur-[2px]" />
+            <div className="relative w-full max-w-md mx-4 animate-[slideUp_0.4s_cubic-bezier(0.16,1,0.3,1)]">
+              <StarterGuideCard
+                steps={guide.steps}
+                completedCount={guide.completedCount}
+                total={guide.total}
+                showLinkHint={guide.showLinkHint}
+                onSoftDismiss={guide.softDismiss}
+                onPermanentDismiss={guide.permanentDismiss}
+              />
+            </div>
+          </div>
+        )}
+      </div>
 
       <div className="max-w-screen-xl mx-auto px-4 mt-1">
-        <ProfileCompletionBanner />
+        {!guide.visible && <ProfileCompletionBanner />}
       </div>
 
       <DashboardLayout
         size="wide"
-        className="pt-1"
+        className="pt-6"
         sidebar={
           <ExploreSidebar
             {...filterProps}
@@ -488,7 +547,7 @@ function ExplorePageContent() {
           <div className="flex items-center gap-3 px-4 py-3 mb-4 border border-brand-border bg-brand-bg">
             <Sparkles size={16} className="text-brand shrink-0" />
             <p className="text-xs text-txt-secondary flex-1">로그인하면 내 관심사에 맞는 AI 추천을 받을 수 있어요</p>
-            <Link href="/login" className="shrink-0 px-3 py-1.5 bg-surface-inverse text-txt-inverse text-xs font-bold border border-surface-inverse hover:bg-surface-inverse transition-colors">
+            <Link href="/login" className="shrink-0 px-3 py-1.5 bg-surface-inverse text-txt-inverse rounded-xl text-xs font-bold border border-surface-inverse hover:bg-surface-inverse transition-colors">
               로그인
             </Link>
           </div>
@@ -500,12 +559,13 @@ function ExplorePageContent() {
             isLoading={opportunitiesLoading}
             isError={oppError}
             onRetry={() => refetchOpp()}
-            hasMore={hasMore}
+            hasMore={hasMoreOpp ?? false}
+            isFetchingMore={isFetchingMoreOpp}
             totalCount={totalCount}
             searchQuery={searchQuery}
             selectedCategory={selectedCategory}
             recruitingOnly={recruitingOnly}
-            onLoadMore={() => setDisplayLimit(prev => prev + PAGE_SIZE)}
+            onLoadMore={() => fetchNextOpp()}
             onSelectProject={handleSelectProject}
           />
         )}
@@ -516,34 +576,43 @@ function ExplorePageContent() {
             isLoading={profilesLoading}
             isError={profilesError}
             onRetry={() => refetchProfiles()}
-            hasMore={publicProfiles.length >= peopleDisplayLimit}
-            onLoadMore={() => setPeopleDisplayLimit(prev => prev + PEOPLE_PAGE_SIZE)}
+            hasMore={hasMoreProfiles ?? false}
+            isFetchingMore={isFetchingMoreProfiles}
+            onLoadMore={() => fetchNextProfiles()}
             onSelectProfile={handleSelectProfile}
             peopleSortBy={peopleSortBy}
           />
         )}
       </DashboardLayout>
 
-      {selectedProjectId && (
-        <ProjectDetailModal
-          projectId={selectedProjectId}
-          onClose={() => setSelectedProjectId(null)}
-        />
-      )}
+      <AnimatePresence>
+        {selectedProjectId && (
+          <ProjectDetailModal
+            key="project-modal"
+            projectId={selectedProjectId}
+            onClose={() => setSelectedProjectId(null)}
+          />
+        )}
+      </AnimatePresence>
 
-      {selectedProfileId && (
-        <ProfileDetailModal
-          profileId={selectedProfileId}
-          byUserId={profileByUserId}
-          matchData={selectedMatchData}
-          onClose={() => { setSelectedProfileId(null); setProfileByUserId(false) }}
-          onSelectProject={(projectId) => {
-            setSelectedProfileId(null)
-            setProfileByUserId(false)
-            setSelectedProjectId(projectId)
-          }}
-        />
-      )}
+      <AnimatePresence>
+        {selectedProfileId && (
+          <ProfileDetailModal
+            key="profile-modal"
+            profileId={selectedProfileId}
+            byUserId={profileByUserId}
+            matchData={selectedMatchData}
+            onClose={() => { setSelectedProfileId(null); setProfileByUserId(false); setInitialCoffeeChatOpen(false); setInitialCoffeeChatMessage(undefined) }}
+            onSelectProject={(projectId) => {
+              setSelectedProfileId(null)
+              setProfileByUserId(false)
+              setSelectedProjectId(projectId)
+            }}
+            initialCoffeeChatOpen={initialCoffeeChatOpen}
+            initialCoffeeChatMessage={initialCoffeeChatMessage}
+          />
+        )}
+      </AnimatePresence>
     </div>
   )
 }

@@ -56,7 +56,7 @@ export const ValidationSourceBadge: React.FC<ValidationSourceBadgeProps> = ({
     return (
       <button
         onClick={onClick}
-        className={`inline-flex items-center gap-1 px-1.5 py-0.5 border text-[0.625rem] font-medium transition-colors hover:opacity-80 ${config.color}`}
+        className={`inline-flex items-center gap-1 px-1.5 py-0.5 border text-[10px] font-medium transition-colors hover:opacity-80 ${config.color}`}
       >
         {config.icon}
         {config.label}
@@ -83,7 +83,7 @@ export const ValidationSourceBadge: React.FC<ValidationSourceBadgeProps> = ({
       {timestamp && (
         <>
           <span className="text-txt-disabled">|</span>
-          <span className="opacity-70 text-[0.625rem]">{timestamp}</span>
+          <span className="opacity-70 text-[10px]">{timestamp}</span>
         </>
       )}
       <ChevronRight size={12} className="opacity-50" />
@@ -169,7 +169,7 @@ export const ValidationFeedbackModal: React.FC<ValidationFeedbackModalProps> = (
 
         {/* Content */}
         <div className="p-4 max-h-[25rem] overflow-y-auto">
-          <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
+          <h4 className="text-[10px] font-medium text-txt-tertiary mb-3">
             주요 피드백
           </h4>
 
@@ -187,7 +187,7 @@ export const ValidationFeedbackModal: React.FC<ValidationFeedbackModalProps> = (
 
           {conversationSnippet && (
             <div className="mt-6">
-              <h4 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
+              <h4 className="text-[10px] font-medium text-txt-tertiary mb-3">
                 대화 발췌
               </h4>
               <div className="p-3 bg-surface-sunken">

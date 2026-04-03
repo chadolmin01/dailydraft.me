@@ -65,7 +65,7 @@ export function ProfileHeader({
                 {cleanNickname(profile.nickname)}
               </h2>
               {matchData && matchData.match_score > 0 && (
-                <span className={`text-[0.625rem] font-mono font-bold px-1.5 py-0.5 border shrink-0 ${
+                <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 border shrink-0 ${
                   matchData.match_score >= 80 ? 'bg-status-success-bg text-status-success-text border-indicator-online/20'
                   : matchData.match_score >= 60 ? 'bg-brand-bg text-brand border-brand-border'
                   : 'bg-surface-card text-txt-tertiary border-border'
@@ -78,7 +78,7 @@ export function ProfileHeader({
               {profile.desired_position || 'Explorer'}
             </p>
             {profile.current_situation && (
-              <span className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 text-[0.625rem] font-mono font-bold bg-brand/15 text-brand border border-brand/30">
+              <span className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 text-[10px] font-mono font-bold bg-brand/15 text-brand border border-brand/30">
                 <Target size={9} /> {SITUATION_LABELS[profile.current_situation] || profile.current_situation}
               </span>
             )}
@@ -116,7 +116,7 @@ export function ProfileHeader({
         )}
       </div>
 
-      <div className="mx-4 sm:mx-8 border-t border-border" />
+      <div className="mx-4 sm:mx-8 border-t border-border-strong/40" />
     </>
   )
 }

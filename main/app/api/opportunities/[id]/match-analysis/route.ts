@@ -102,8 +102,6 @@ export async function GET(
     const neededSkills = (opportunity.needed_skills || []) as unknown as Skill[]
     const userSkills = (profile.skills || []) as unknown as Skill[]
 
-    const levelScore: Record<string, number> = { '초급': 1, '중급': 2, '고급': 3 }
-
     const skillAnalysis: SkillAnalysis[] = neededSkills.map((needed) => {
       const userSkill = userSkills.find((s) => s.name === needed.name)
 
@@ -111,35 +109,18 @@ export async function GET(
         return {
           name: needed.name,
           userLevel: null,
-          requiredLevel: needed.level,
+          requiredLevel: needed.name,
           match: 'missing' as const,
           score: 0,
         }
       }
 
-      const userLevelNum = levelScore[userSkill.level] || 0
-      const neededLevelNum = levelScore[needed.level] || 0
-
-      let match: 'perfect' | 'partial' | 'missing' = 'partial'
-      let score = 70
-
-      if (userLevelNum >= neededLevelNum) {
-        match = 'perfect'
-        score = 100
-      } else if (userLevelNum === neededLevelNum - 1) {
-        match = 'partial'
-        score = 70
-      } else {
-        match = 'partial'
-        score = 40
-      }
-
       return {
         name: needed.name,
-        userLevel: userSkill.level,
-        requiredLevel: needed.level,
-        match,
-        score,
+        userLevel: userSkill.name,
+        requiredLevel: needed.name,
+        match: 'perfect' as const,
+        score: 100,
       }
     })
 

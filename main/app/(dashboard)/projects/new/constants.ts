@@ -40,6 +40,7 @@ export const CATEGORY_TAGS = [
 
 export type TypeTheme = {
   badge: string
+  slidingBg: string
   status: string
   statusDot: string
   roleOn: string
@@ -61,6 +62,7 @@ export type TypeTheme = {
 export const TYPE_THEMES: Record<string, TypeTheme> = {
   side_project: {
     badge: 'bg-indigo-600 text-txt-inverse',
+    slidingBg: 'bg-indigo-600',
     status: 'bg-indigo-100/70 text-indigo-600',
     statusDot: 'bg-indigo-500',
     roleOn: 'bg-indigo-600 text-txt-inverse border-indigo-600',
@@ -80,6 +82,7 @@ export const TYPE_THEMES: Record<string, TypeTheme> = {
   },
   startup: {
     badge: 'bg-surface-inverse text-txt-inverse',
+    slidingBg: 'bg-surface-inverse',
     status: 'bg-status-success-bg/70 text-indicator-online',
     statusDot: 'bg-indicator-online',
     roleOn: 'bg-surface-inverse text-txt-inverse border-surface-inverse',
@@ -99,6 +102,7 @@ export const TYPE_THEMES: Record<string, TypeTheme> = {
   },
   study: {
     badge: 'bg-teal-600 text-txt-inverse',
+    slidingBg: 'bg-teal-600',
     status: 'bg-teal-100/70 text-teal-600',
     statusDot: 'bg-teal-500',
     roleOn: 'bg-teal-600 text-txt-inverse border-teal-600',

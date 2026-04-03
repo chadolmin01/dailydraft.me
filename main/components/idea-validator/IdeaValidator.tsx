@@ -157,8 +157,8 @@ const IdeaValidator: React.FC<IdeaValidatorProps> = ({ onClose, onComplete, embe
           </div>
 
           <div className="flex items-center space-x-3">
-            <div className="hidden md:flex items-center space-x-2 text-[0.625rem] font-mono text-status-success-text bg-status-success-bg px-2 py-1 border border-status-success-text/20">
-              <span className="w-1.5 h-1.5 bg-indicator-online animate-pulse"></span>
+            <div className="hidden md:flex items-center space-x-2 text-[10px] font-mono text-txt-secondary bg-surface-sunken px-2 py-1 border border-border">
+              <span className="w-1.5 h-1.5 bg-txt-secondary rounded-full"></span>
               <span>SYSTEM OPERATIONAL</span>
             </div>
             {onClose && (

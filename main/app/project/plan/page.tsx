@@ -201,7 +201,7 @@ export default function PlanPage() {
         <div className="lg:col-span-2 space-y-4">
           {/* Triangle Visual */}
           <div className="bg-surface-card rounded-xl border border-border p-4">
-            <div className="text-[0.625rem] font-medium text-txt-disabled mb-2">Alignment Map</div>
+            <div className="text-[10px] font-medium text-txt-disabled mb-2">Alignment Map</div>
             <div className="h-[17.5rem]">
               <TriangleVisual
                 inputs={inputs}
@@ -239,7 +239,7 @@ export default function PlanPage() {
                 Project Dashboard
               </h3>
               {result && (
-                <span className="text-[0.625rem] font-mono text-txt-disabled flex items-center gap-1">
+                <span className="text-[10px] font-mono text-txt-disabled flex items-center gap-1">
                   <Clock className="w-3 h-3" />
                   {new Date().toLocaleTimeString()}
                 </span>
@@ -249,13 +249,13 @@ export default function PlanPage() {
             {/* Activity Log */}
             {logs.length > 0 && (
               <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-4 border-b border-border">
-                <span className="text-[0.625rem] font-medium text-txt-disabled whitespace-nowrap">Updates</span>
+                <span className="text-[10px] font-medium text-txt-disabled whitespace-nowrap">Updates</span>
                 {logs.slice(0, 3).map(log => (
                   <div key={log.id} className="flex items-center gap-1.5 px-2 py-1 bg-surface-sunken rounded-xl border border-border whitespace-nowrap">
-                    <span className="text-[0.625rem] text-txt-disabled font-mono">
+                    <span className="text-[10px] text-txt-disabled font-mono">
                       {log.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
-                    <span className={`text-[0.625rem] font-bold px-1 ${getRoleColor(log.role)}`}>
+                    <span className={`text-[10px] font-bold px-1 ${getRoleColor(log.role)}`}>
                       {log.role.split(' ')[0]}
                     </span>
                   </div>

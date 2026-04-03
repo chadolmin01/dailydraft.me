@@ -57,12 +57,12 @@ export const ProjectOverlays: React.FC<ProjectOverlaysProps> = ({
             </p>
             <button
               onClick={handleSignup}
-              className="bg-black hover:bg-surface-inverse/90 text-white px-8 py-3.5 font-bold text-sm flex items-center gap-2 transition-colors mx-auto mb-3 border border-surface-inverse hover:opacity-90 active:scale-[0.97]"
+              className="bg-black hover:bg-surface-inverse/90 text-white px-8 py-3.5 rounded-xl font-bold text-sm flex items-center gap-2 transition-colors mx-auto mb-3 border border-surface-inverse hover:opacity-90 active:scale-[0.97]"
             >
               무료로 시작하기
               <ArrowRight size={16} />
             </button>
-            <p className="text-[0.625rem] text-txt-disabled mb-6">
+            <p className="text-[10px] text-txt-disabled mb-6">
               가입 30초 · 무료 · 바로 사용 가능
             </p>
             <button

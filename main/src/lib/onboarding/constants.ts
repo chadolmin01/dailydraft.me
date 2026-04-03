@@ -54,6 +54,32 @@ export const ONBOARDING_TIPS = [
   '완성된 프로필은 커피챗 수락률이 2배 높아요',
 ]
 
+// ─── Categorical ↔ Score mappings ────────────────────────────
+
+/** categorical ID → 1-10 숫자 변환 (DB 저장용) */
+export const CATEGORICAL_TO_SCORE: Record<string, Record<string, number>> = {
+  collaboration_style: { solo: 2, organize: 6, share: 8 },
+  decision_style: { careful: 3, consult: 5, fast: 8 },
+  planning_style: { build_first: 3, plan_first: 8 },
+  quality_style: { speed: 3, quality: 8 },
+}
+
+/** 1-10 숫자 → categorical ID 역변환 (기존 유저 호환용) */
+export const SCORE_TO_CATEGORICAL: Record<string, (v: number) => string> = {
+  collaboration_style: (v) => v <= 4 ? 'solo' : v <= 7 ? 'organize' : 'share',
+  decision_style: (v) => v <= 4 ? 'careful' : v <= 6 ? 'consult' : 'fast',
+  planning_style: (v) => v <= 5 ? 'build_first' : 'plan_first',
+  quality_style: (v) => v <= 5 ? 'speed' : 'quality',
+}
+
+/** categorical ID → 한글 라벨 (UI 표시용) */
+export const CATEGORICAL_LABELS: Record<string, Record<string, string>> = {
+  collaboration_style: { solo: '혼자 파고든다', share: '바로 팀에 공유', organize: '정리 후 분배' },
+  decision_style: { fast: '빠르게 결정', careful: '충분히 검토', consult: '의견 모아서' },
+  planning_style: { plan_first: '기획형', build_first: '실행형' },
+  quality_style: { quality: '완성도', speed: '속도' },
+}
+
 /** Maps bubble attachment to the step it belongs to */
 export const ATTACHMENT_TO_STEP: Record<string, Step> = {
   'cta': 'cta',
@@ -66,6 +92,7 @@ export const ATTACHMENT_TO_STEP: Record<string, Step> = {
   'interests-confirm': 'interests-confirm',
   'deep-chat-offer': 'deep-chat-offer',
   'deep-chat-offer-finish': 'deep-chat',
+  'interactive-element': 'deep-chat',
 }
 
 /** All steps in order, for progress calculation */

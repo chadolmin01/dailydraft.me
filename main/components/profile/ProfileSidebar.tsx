@@ -13,6 +13,7 @@ import {
   Loader2,
 } from 'lucide-react'
 import { useUpdateProfile } from '@/src/hooks/useProfile'
+import { CATEGORICAL_LABELS, SCORE_TO_CATEGORICAL } from '@/src/lib/onboarding/constants'
 import type { Profile } from './types'
 
 /* ── Link inline field ──────────────────────────────────── */
@@ -157,10 +158,11 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
         <Edit3 size={12} /> 프로필 설정
       </button>
 
+
       {/* --- SOCIAL LINKS --- */}
       {showLinksSection && (
         <div className="relative bg-surface-card rounded-xl border border-border p-4 shadow-md">
-          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
+          <h3 className="text-[10px] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
             <span className="w-4 h-4 bg-brand text-white flex items-center justify-center text-[0.5rem] font-bold rounded">L</span>
             LINKS
           </h3>
@@ -193,10 +195,10 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
           </div>
           {isEditable && hasPendingChanges && (
             <div className="flex items-center justify-end gap-2 pt-3 mt-3 border-t border-border">
-              <button onClick={handleCancel} disabled={updateProfile.isPending} className="flex items-center gap-1 px-2.5 py-1 text-[0.625rem] font-bold text-txt-secondary border border-border hover:bg-surface-sunken transition-colors rounded-lg">
+              <button onClick={handleCancel} disabled={updateProfile.isPending} className="flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold text-txt-secondary border border-border hover:bg-surface-sunken transition-colors rounded-xl">
                 <X size={10} /> 취소
               </button>
-              <button onClick={handleSave} disabled={updateProfile.isPending} className="flex items-center gap-1 px-3 py-1 text-[0.625rem] font-bold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97] disabled:opacity-50 rounded-lg">
+              <button onClick={handleSave} disabled={updateProfile.isPending} className="flex items-center gap-1 px-3 py-1 text-[10px] font-bold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97] disabled:opacity-50 rounded-xl">
                 {updateProfile.isPending ? <Loader2 size={10} className="animate-spin" /> : <Check size={10} />}
                 저장
               </button>
@@ -208,56 +210,77 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
       {/* --- TECH STACK --- */}
       {skills && skills.length > 0 && (
         <div className="relative bg-surface-card rounded-xl border border-border p-4 shadow-md">
-          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
+          <h3 className="text-[10px] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
             <span className="w-4 h-4 bg-indicator-online text-white flex items-center justify-center text-[0.5rem] font-bold rounded">S</span>
             TECH STACK
           </h3>
-          <div className="space-y-1.5">
+          <div className="flex flex-wrap gap-1.5">
             {skills.map((skill, idx) => (
-              <div key={idx} className="flex items-center justify-between py-1 border-b border-border last:border-0">
-                <span className="flex items-center gap-2 text-xs text-txt-secondary">
-                  <span className="text-[0.625rem] font-mono text-txt-tertiary">{String(idx + 1).padStart(2, '0')}</span>
-                  {skill.name}
-                </span>
-                <span className="text-[0.625rem] font-mono font-bold bg-brand-bg text-brand border border-brand-border px-1.5 py-0.5 rounded-full">{skill.level}</span>
-              </div>
+              <span key={idx} className="text-[10px] font-mono bg-surface-sunken text-txt-primary border border-border px-2 py-0.5 font-medium rounded-full">
+                {skill.name}
+              </span>
             ))}
           </div>
         </div>
       )}
 
       {/* --- PERSONALITY --- */}
-      {profile?.personality && (
-        <div className="relative bg-surface-card rounded-xl border border-border p-4 shadow-md">
-          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
-            <span className="w-4 h-4 bg-indicator-premium text-white flex items-center justify-center text-[0.5rem] font-bold rounded">P</span>
-            PERSONALITY
-          </h3>
-          <div className="space-y-2">
-            {Object.entries(profile.personality as Record<string, number>).map(([key, value]) => (
-              <div key={key} className="flex items-center justify-between">
-                <span className="text-[0.625rem] text-txt-secondary">{key.replace(/_/g, ' ')}</span>
-                <div className="flex items-center gap-2">
-                  <div className="w-16 h-1.5 bg-surface-sunken rounded-xl border border-border overflow-hidden">
-                    <div className="h-full bg-brand transition-all" style={{ width: `${(value / 10) * 100}%` }} />
-                  </div>
-                  <span className="text-[0.625rem] font-mono text-txt-tertiary w-8 text-right">{value}/10</span>
+      {profile?.personality && (() => {
+        const p = profile.personality as Record<string, number>
+        // Resolve decision categorical label
+        let visionTraits: Record<string, unknown> | undefined
+        try {
+          const vs = profile.vision_summary ? JSON.parse(profile.vision_summary as string) : null
+          visionTraits = vs?.traits as Record<string, unknown> | undefined
+        } catch { /* skip */ }
+        const decisionCatId = (visionTraits?.decision_style as string) || (p.decision != null ? SCORE_TO_CATEGORICAL.decision_style(p.decision) : undefined)
+        const decisionLabel = decisionCatId ? CATEGORICAL_LABELS.decision_style?.[decisionCatId] : undefined
+
+        return (
+          <div className="relative bg-surface-card rounded-xl border border-border p-4 shadow-md">
+            <h3 className="text-[10px] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
+              <span className="w-4 h-4 bg-indicator-premium text-white flex items-center justify-center text-[0.5rem] font-bold rounded">P</span>
+              PERSONALITY
+            </h3>
+            <div className="space-y-2">
+              {/* decision — categorical label */}
+              {decisionLabel && (
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-txt-secondary">의사결정</span>
+                  <span className="text-xs font-semibold text-txt-primary">{decisionLabel}</span>
                 </div>
-              </div>
-            ))}
+              )}
+              {/* communication, risk, time — slider bars */}
+              {(['communication', 'risk', 'time'] as const).map(key => {
+                const value = p[key]
+                if (value == null) return null
+                const labels: Record<string, string> = { risk: '도전 성향', time: '시간 투자', communication: '소통 선호' }
+                return (
+                  <div key={key} className="flex items-center justify-between">
+                    <span className="text-[10px] text-txt-secondary">{labels[key]}</span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-16 h-1.5 bg-surface-sunken rounded-xl border border-border overflow-hidden">
+                        <div className="h-full bg-brand transition-all" style={{ width: `${(value / 10) * 100}%` }} />
+                      </div>
+                      <span className="text-[10px] font-mono text-txt-tertiary w-8 text-right">{value}/10</span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
           </div>
-        </div>
-      )}
+        )
+      })()}
 
       {/* --- COMPLETION --- */}
       <div className="relative bg-surface-card rounded-xl border border-border p-4 shadow-md">
-        <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
+        <h3 className="text-[10px] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
           <span className="w-4 h-4 bg-indicator-online text-white flex items-center justify-center text-[0.5rem] font-bold rounded">%</span>
           COMPLETION
         </h3>
         <div className="flex items-center justify-between mb-2">
           <span className="text-lg font-mono font-bold text-txt-primary">{completion.pct}%</span>
-          <span className="text-[0.625rem] font-mono text-txt-tertiary">{completion.completedCount}/{completion.fields.length} FIELDS</span>
+          <span className="text-[10px] font-mono text-txt-tertiary">{completion.completedCount}/{completion.fields.length} FIELDS</span>
         </div>
         <div className="w-full h-2 bg-surface-sunken rounded-xl border border-border overflow-hidden mb-3">
           <div className="h-full bg-indicator-online transition-all" style={{ width: `${completion.pct}%` }} />
@@ -265,13 +288,13 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
         <div className="space-y-1">
           {completion.fields.map((f, idx) => (
             <div key={f.label} className="flex items-center gap-2 text-xs py-0.5">
-              <span className="text-[0.625rem] font-mono text-txt-tertiary w-4">{String(idx + 1).padStart(2, '0')}</span>
+              <span className="text-[10px] font-mono text-txt-tertiary w-4">{String(idx + 1).padStart(2, '0')}</span>
               {f.done ? (
                 <span className="w-3.5 h-3.5 bg-indicator-online text-white flex items-center justify-center rounded"><Check size={10} /></span>
               ) : (
                 <span className="w-3.5 h-3.5 border border-border rounded" />
               )}
-              <span className={f.done ? 'text-txt-tertiary line-through font-mono text-[0.625rem]' : 'text-txt-secondary font-mono text-[0.625rem]'}>{f.label}</span>
+              <span className={f.done ? 'text-txt-tertiary line-through font-mono text-[10px]' : 'text-txt-secondary font-mono text-[10px]'}>{f.label}</span>
             </div>
           ))}
         </div>

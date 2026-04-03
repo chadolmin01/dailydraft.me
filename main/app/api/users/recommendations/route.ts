@@ -1,5 +1,5 @@
 import { createClient } from '@/src/lib/supabase/server'
-import { rankUserMatches, generateAIMatchReasons, type CandidateProfile } from '@/src/lib/ai/user-matcher'
+import { rankUserMatches, type CandidateProfile } from '@/src/lib/ai/user-matcher'
 import type { Profile } from '@/src/types/profile'
 import type { ProfileAnalysisResult } from '@/src/types/profile-analysis'
 import { ApiResponse } from '@/src/lib/api-utils'
@@ -118,27 +118,7 @@ export async function GET() {
       match_details: r.match_details,
     }))
 
-    // Generate AI-powered match reasons (single Gemini call for all)
-    const aiReasons = await generateAIMatchReasons(
-      {
-        nickname: myProfile.nickname,
-        desired_position: myProfile.desired_position,
-        skills: myProfile.skills || [],
-        interest_tags: myProfile.interest_tags || [],
-        current_situation: myProfile.current_situation,
-        founder_type: myProfile.profile_analysis?.founder_type || null,
-        vision_summary: myProfile.vision_summary,
-      },
-      top15
-    )
-
-    // Override rule-based reasons with AI reasons where available
-    const results = top15.map((r) => ({
-      ...r,
-      match_reason: aiReasons.get(r.user_id) || r.match_reason,
-    }))
-
-    return ApiResponse.ok(results)
+    return ApiResponse.ok(top15)
   } catch (error) {
     console.error('User recommendations error:', error)
     return ApiResponse.internalError()

@@ -10,19 +10,19 @@ const BADGE_VARIANTS = {
   },
   hot: {
     label: 'HOT',
-    className: 'bg-red-50 text-red-600 border-red-200',
+    className: 'bg-surface-inverse text-txt-inverse border-surface-inverse',
   },
   new: {
     label: 'NEW',
-    className: 'bg-blue-50 text-blue-600 border-blue-200',
+    className: 'bg-surface-sunken text-txt-primary border-border',
   },
   verified: {
     label: 'VERIFIED',
-    className: 'bg-status-success-bg text-status-success-text border-indicator-online/20',
+    className: 'bg-surface-sunken text-txt-secondary border-border',
   },
   trending: {
     label: 'TRENDING',
-    className: 'bg-amber-50 text-amber-600 border-amber-200',
+    className: 'bg-surface-inverse text-txt-inverse border-surface-inverse',
   },
 } as const
 
@@ -39,7 +39,7 @@ export function Badge({ variant, className = '' }: BadgeProps) {
 
   return (
     <span
-      className={`text-[0.5625rem] font-medium px-2 py-0.5 rounded-full border shrink-0 ${config.className} ${className}`}
+      className={`text-[10px] font-medium px-2 py-0.5 rounded-full border shrink-0 ${config.className} ${className}`}
     >
       {config.label}
     </span>

@@ -16,12 +16,14 @@ import {
   ArrowRight,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { SkeletonFeed } from '@/components/ui/Skeleton'
 import { useCoffeeChats, useAcceptCoffeeChat, useDeclineCoffeeChat, useUpdateChatOutcome } from '@/src/hooks/useCoffeeChats'
 import type { CoffeeChat, ParsedInvitation, CoffeeChatOutcome } from '@/src/hooks/useCoffeeChats'
 import { CoffeeChatAcceptModal } from '@/components/coffee-chat/CoffeeChatAcceptModal'
 import type { InvitationData } from '@/components/coffee-chat/CoffeeChatAcceptModal'
+import { AnimatePresence } from 'framer-motion'
 import { ProfileDetailModal } from '@/components/ProfileDetailModal'
 
 type Tab = 'received' | 'sent'
@@ -53,6 +55,7 @@ export function ProfileCoffeeChats() {
   const [chatError, setChatError] = useState<string | null>(null)
   const [tab, setTab] = useState<Tab>('received')
   const [acceptModalChat, setAcceptModalChat] = useState<CoffeeChat | null>(null)
+  const [declineTarget, setDeclineTarget] = useState<string | null>(null)
   const [viewingProfileUserId, setViewingProfileUserId] = useState<string | null>(null)
 
   const { data: chats = [], isLoading: chatsLoading } = useCoffeeChats({ asOwner: true })
@@ -102,7 +105,7 @@ export function ProfileCoffeeChats() {
       <div className="flex items-center gap-1 mb-4">
         <button
           onClick={() => setTab('received')}
-          className={`flex items-center gap-1.5 px-3 py-2 text-[0.6875rem] font-medium border rounded-lg transition-colors ${
+          className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium border rounded-lg transition-colors ${
             tab === 'received'
               ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
               : 'bg-surface-card text-txt-tertiary border-border hover:border-border'
@@ -111,12 +114,12 @@ export function ProfileCoffeeChats() {
           <Coffee size={12} />
           받은 커피챗
           {pendingChats.length > 0 && (
-            <span className="bg-indicator-alert text-white px-1.5 py-0.5 text-[0.5625rem] leading-none rounded-full">{pendingChats.length}</span>
+            <span className="bg-indicator-alert text-white px-1.5 py-0.5 text-[10px] leading-none rounded-full">{pendingChats.length}</span>
           )}
         </button>
         <button
           onClick={() => setTab('sent')}
-          className={`flex items-center gap-1.5 px-3 py-2 text-[0.6875rem] font-medium border rounded-lg transition-colors ${
+          className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium border rounded-lg transition-colors ${
             tab === 'sent'
               ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
               : 'bg-surface-card text-txt-tertiary border-border hover:border-border'
@@ -125,7 +128,7 @@ export function ProfileCoffeeChats() {
           <Send size={12} />
           보낸 커피챗
           {sentChats.length > 0 && (
-            <span className="bg-txt-tertiary text-white px-1.5 py-0.5 text-[0.5625rem] leading-none rounded-full">{sentChats.length}</span>
+            <span className="bg-txt-tertiary text-white px-1.5 py-0.5 text-[10px] leading-none rounded-full">{sentChats.length}</span>
           )}
         </button>
       </div>
@@ -178,14 +181,14 @@ export function ProfileCoffeeChats() {
                             <span className="font-bold text-sm text-txt-primary">{chat.requester_name || chat.requester_email}</span>
                           )}
                           {!chat.opportunity_id && (
-                            <span className="text-[0.625rem] font-mono font-bold bg-brand-bg text-brand px-1.5 py-0.5 border border-brand-border">개인</span>
+                            <span className="text-[10px] font-mono font-bold bg-brand-bg text-brand px-1.5 py-0.5 border border-brand-border">개인</span>
                           )}
-                          <span className="text-[0.625rem] font-mono font-bold bg-indicator-premium/10 text-indicator-premium-border px-1.5 py-0.5 border border-indicator-premium-border/20">PENDING</span>
+                          <span className="text-[10px] font-mono font-bold bg-indicator-premium/10 text-indicator-premium-border px-1.5 py-0.5 border border-indicator-premium-border/20">PENDING</span>
                         </div>
                         {chat.message && (
                           <p className="text-xs text-txt-tertiary line-clamp-2 border-l border-border pl-2">{chat.message}</p>
                         )}
-                        <p className="text-[0.625rem] font-mono text-txt-tertiary mt-1">
+                        <p className="text-[10px] font-mono text-txt-tertiary mt-1">
                           {new Date(chat.created_at).toLocaleDateString('ko-KR')}
                         </p>
                       </div>
@@ -199,7 +202,7 @@ export function ProfileCoffeeChats() {
                         수락
                       </button>
                       <button
-                        onClick={() => handleDeclineChat(chat.id)}
+                        onClick={() => setDeclineTarget(chat.id)}
                         className="px-3 py-1.5 text-xs font-bold border border-border text-txt-secondary hover:bg-surface-sunken hover:shadow-md active:scale-[0.97] transition-all"
                       >
                         거절
@@ -237,13 +240,13 @@ export function ProfileCoffeeChats() {
                         ) : (
                           <span className="font-medium text-sm text-txt-primary">{chat.requester_name || chat.requester_email}</span>
                         )}
-                        <span className={`text-[0.625rem] font-mono font-bold px-1.5 py-0.5 border ${
+                        <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 border ${
                           chat.status === 'accepted' ? 'bg-status-success-bg text-indicator-online border-indicator-online/20' : 'bg-surface-sunken text-txt-tertiary border-border'
                         }`}>
                           {chat.status === 'accepted' ? 'ACCEPTED' : 'DECLINED'}
                         </span>
                       </div>
-                      <p className="text-[0.625rem] font-mono text-txt-tertiary mt-0.5">
+                      <p className="text-[10px] font-mono text-txt-tertiary mt-0.5">
                         {new Date(chat.created_at).toLocaleDateString('ko-KR')}
                       </p>
                     </div>
@@ -252,7 +255,7 @@ export function ProfileCoffeeChats() {
                   {/* Outcome tracking + Next steps (accepted chats only) */}
                   {chat.status === 'accepted' && (
                     <div className="border-t border-border px-4 py-3 bg-surface-sunken/30">
-                      <p className="text-[0.625rem] font-medium text-txt-tertiary mb-2">결과 추적</p>
+                      <p className="text-[10px] font-medium text-txt-tertiary mb-2">결과 추적</p>
                       <div className="flex flex-wrap gap-1.5">
                         {OUTCOME_OPTIONS.map((opt) => {
                           const Icon = opt.icon
@@ -262,7 +265,7 @@ export function ProfileCoffeeChats() {
                               key={opt.value}
                               onClick={() => updateOutcomeMutation.mutate({ chatId: chat.id, outcome: opt.value })}
                               disabled={updateOutcomeMutation.isPending}
-                              className={`flex items-center gap-1 px-2.5 py-1 text-[0.625rem] font-bold border transition-all ${
+                              className={`flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold border transition-all ${
                                 isActive ? opt.color : 'bg-surface-card text-txt-disabled border-border hover:border-border'
                               }`}
                             >
@@ -326,12 +329,30 @@ export function ProfileCoffeeChats() {
         />
       )}
 
-      {/* Profile Detail Modal */}
-      <ProfileDetailModal
-        profileId={viewingProfileUserId}
-        byUserId
-        onClose={() => setViewingProfileUserId(null)}
+      {/* Decline Confirm Modal */}
+      <ConfirmModal
+        isOpen={!!declineTarget}
+        onClose={() => setDeclineTarget(null)}
+        onConfirm={async () => {
+          if (declineTarget) await handleDeclineChat(declineTarget)
+        }}
+        title="커피챗 거절"
+        message="이 커피챗 요청을 거절하시겠습니까? 거절 후에는 되돌릴 수 없습니다."
+        confirmText="거절하기"
+        variant="warning"
       />
+
+      {/* Profile Detail Modal */}
+      <AnimatePresence>
+        {viewingProfileUserId && (
+          <ProfileDetailModal
+            key="profile-modal"
+            profileId={viewingProfileUserId}
+            byUserId
+            onClose={() => setViewingProfileUserId(null)}
+          />
+        )}
+      </AnimatePresence>
     </section>
   )
 }
@@ -364,7 +385,7 @@ function SentChatCard({ chat }: { chat: CoffeeChat }) {
             <span className="font-medium text-sm text-txt-primary">
               {chat.opportunity_id ? '프로젝트 커피챗' : '개인 커피챗'}
             </span>
-            <span className={`text-[0.625rem] font-mono font-bold px-1.5 py-0.5 border ${
+            <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 border ${
               chat.status === 'pending' ? 'bg-indicator-premium/10 text-indicator-premium-border border-indicator-premium-border/20' :
               isAccepted ? 'bg-status-success-bg text-indicator-online border-indicator-online/20' :
               'bg-surface-sunken text-txt-tertiary border-border'
@@ -372,7 +393,7 @@ function SentChatCard({ chat }: { chat: CoffeeChat }) {
               {chat.status === 'pending' ? 'PENDING' : isAccepted ? 'ACCEPTED' : 'DECLINED'}
             </span>
             {outcomeInfo && (
-              <span className={`text-[0.625rem] font-mono font-bold px-1.5 py-0.5 border ${outcomeInfo.color}`}>
+              <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 border ${outcomeInfo.color}`}>
                 {outcomeInfo.label}
               </span>
             )}
@@ -380,7 +401,7 @@ function SentChatCard({ chat }: { chat: CoffeeChat }) {
           {chat.message && (
             <p className="text-xs text-txt-tertiary line-clamp-1 border-l border-border pl-2 mb-0.5">{chat.message}</p>
           )}
-          <p className="text-[0.625rem] font-mono text-txt-tertiary mt-0.5">
+          <p className="text-[10px] font-mono text-txt-tertiary mt-0.5">
             {new Date(chat.created_at).toLocaleDateString('ko-KR')}
           </p>
         </div>
@@ -392,7 +413,7 @@ function SentChatCard({ chat }: { chat: CoffeeChat }) {
           {/* Invitation message */}
           {invitation?.message && (
             <div className="px-4 py-3 bg-status-success-bg/30">
-              <p className="text-[0.625rem] font-medium text-indicator-online mb-1.5">
+              <p className="text-[10px] font-medium text-indicator-online mb-1.5">
                 초대편지
               </p>
               <p className="text-sm text-txt-primary whitespace-pre-wrap leading-relaxed">
@@ -404,7 +425,7 @@ function SentChatCard({ chat }: { chat: CoffeeChat }) {
           {/* Contact info */}
           {contactParts.length > 0 && (
             <div className="px-4 py-3 border-t border-border/50">
-              <p className="text-[0.625rem] font-medium text-txt-tertiary mb-2">
+              <p className="text-[10px] font-medium text-txt-tertiary mb-2">
                 연락처
               </p>
               <div className="space-y-1.5">
@@ -432,7 +453,7 @@ function SentChatCard({ chat }: { chat: CoffeeChat }) {
             <div className="px-4 py-3 border-t border-border/50 bg-surface-sunken/50">
               <div className="flex items-center gap-1.5 mb-1.5">
                 <FileText size={12} className="text-txt-tertiary" />
-                <p className="text-[0.625rem] font-medium text-txt-tertiary">
+                <p className="text-[10px] font-medium text-txt-tertiary">
                   요청사항
                 </p>
               </div>

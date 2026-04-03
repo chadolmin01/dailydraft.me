@@ -19,6 +19,7 @@ import { useProfile, useUpdateProfile } from '@/src/hooks/useProfile'
 import { usePortfolioItems, useCreatePortfolioItem, useDeletePortfolioItem } from '@/src/hooks/usePortfolioItems'
 import { UNIVERSITY_LIST, LOCATION_OPTIONS } from '@/src/lib/constants/profile-options'
 import { supabase } from '@/src/lib/supabase/client'
+import { CATEGORICAL_TO_SCORE, SCORE_TO_CATEGORICAL, CATEGORICAL_LABELS } from '@/src/lib/onboarding/constants'
 
 /* ─── Constants ─── */
 const POSITION_OPTIONS = [
@@ -47,8 +48,6 @@ const SKILL_SUGGESTIONS = [
   'Flutter', 'Swift', 'Kotlin', 'Java', 'Go',
   'Figma', 'SQL', 'AWS', 'Docker', 'Git',
 ]
-const SKILL_LEVELS = ['초급', '중급', '고급']
-
 type TabId = 'info' | 'ai'
 
 export default function ProfileEditPage() {
@@ -79,11 +78,11 @@ export default function ProfileEditPage() {
   const [currentSituation, setCurrentSituation] = useState('')
   const [interestTags, setInterestTags] = useState<string[]>([])
   const [customTag, setCustomTag] = useState('')
-  const [skills, setSkills] = useState<Array<{ name: string; level: string }>>([])
+  const [skills, setSkills] = useState<Array<{ name: string }>>([])
   const [newSkillName, setNewSkillName] = useState('')
-  const [newSkillLevel, setNewSkillLevel] = useState('중급')
   const [personality, setPersonality] = useState<Record<string, number>>({ risk: 5, time: 5, communication: 5, decision: 5 })
   const [workStyle, setWorkStyle] = useState<Record<string, number>>({ collaboration: 5, planning: 5, perfectionism: 5 })
+  const [workStyleTraits, setWorkStyleTraits] = useState<Record<string, string>>({})
   const [teamRole, setTeamRole] = useState('')
   const [teamSize, setTeamSize] = useState('')
   const [teamAtmosphere, setTeamAtmosphere] = useState('')
@@ -133,17 +132,29 @@ export default function ProfileEditPage() {
     setLocation(profile.location || '')
     setCurrentSituation(profile.current_situation || '')
     setInterestTags(profile.interest_tags || [])
-    setSkills((profile.skills as Array<{ name: string; level: string }>) || [])
+    setSkills(((profile.skills || []) as Array<{ name: string }>).map(s => ({ name: s.name })))
     const p = profile.personality as Record<string, number> | null
     if (p) setPersonality({ risk: p.risk || 5, time: p.time || 5, communication: p.communication || 5, decision: p.decision || 5 })
     if (profile.vision_summary) {
       try {
         const v = JSON.parse(profile.vision_summary)
-        if (v.work_style) setWorkStyle({ collaboration: v.work_style.collaboration || 5, planning: v.work_style.planning || 5, perfectionism: v.work_style.perfectionism || 5 })
+        const ws = v.work_style
+        if (ws) setWorkStyle({ collaboration: ws.collaboration || 5, planning: ws.planning || 5, perfectionism: ws.perfectionism || 5 })
         if (v.team_preference) { setTeamRole(v.team_preference.role || ''); setTeamSize(v.team_preference.preferred_size || ''); setTeamAtmosphere(v.team_preference.atmosphere || '') }
         if (v.availability) { setHoursPerWeek(v.availability.hours_per_week?.toString() || ''); setPreferOnline(v.availability.prefer_online || false) }
         setGoals(v.goals || [])
         setStrengths(v.strengths || [])
+        // Read categorical traits
+        const traits: Record<string, string> = {}
+        if (v.traits?.collaboration_style) traits.collaboration_style = v.traits.collaboration_style
+        else if (ws?.collaboration) traits.collaboration_style = SCORE_TO_CATEGORICAL.collaboration_style(ws.collaboration)
+        if (v.traits?.decision_style) traits.decision_style = v.traits.decision_style
+        else if (p?.decision) traits.decision_style = SCORE_TO_CATEGORICAL.decision_style(p.decision)
+        if (v.traits?.planning_style) traits.planning_style = v.traits.planning_style
+        else if (ws?.planning) traits.planning_style = SCORE_TO_CATEGORICAL.planning_style(ws.planning)
+        if (v.traits?.quality_style) traits.quality_style = v.traits.quality_style
+        else if (ws?.perfectionism) traits.quality_style = SCORE_TO_CATEGORICAL.quality_style(ws.perfectionism)
+        setWorkStyleTraits(traits)
       } catch { /* not JSON */ }
     }
     fetch('/api/profile/verify-university').then(r => r.json()).then(d => { if (d.is_verified) setUniVerified(true) }).catch(() => {})
@@ -196,20 +207,28 @@ export default function ProfileEditPage() {
   /* ─── Form helpers ─── */
   const toggleTag = (tag: string) => setInterestTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag])
   const addCustomTag = () => { const tag = customTag.trim(); if (tag && !interestTags.includes(tag)) { setInterestTags(prev => [...prev, tag]); setCustomTag('') } }
-  const addSkill = (name?: string) => { const n = (name || newSkillName).trim(); if (n && !skills.some(s => s.name === n)) { setSkills(prev => [...prev, { name: n, level: newSkillLevel }]); if (!name) setNewSkillName('') } }
+  const addSkill = (name?: string) => { const n = (name || newSkillName).trim(); if (n && !skills.some(s => s.name === n)) { setSkills(prev => [...prev, { name: n }]); if (!name) setNewSkillName('') } }
   const removeSkill = (name: string) => setSkills(prev => prev.filter(s => s.name !== name))
-  const updateSkillLevel = (name: string, level: string) => setSkills(prev => prev.map(s => s.name === name ? { ...s, level } : s))
 
   const handleSave = async () => {
     setSaveError(null); setSaved(false)
     try {
+      // Convert categorical → numeric scores
+      const finalWorkStyle = { ...workStyle }
+      const finalPersonality = { ...personality }
+      if (workStyleTraits.collaboration_style) { const s = CATEGORICAL_TO_SCORE.collaboration_style[workStyleTraits.collaboration_style]; if (s != null) finalWorkStyle.collaboration = s }
+      if (workStyleTraits.planning_style) { const s = CATEGORICAL_TO_SCORE.planning_style[workStyleTraits.planning_style]; if (s != null) finalWorkStyle.planning = s }
+      if (workStyleTraits.quality_style) { const s = CATEGORICAL_TO_SCORE.quality_style[workStyleTraits.quality_style]; if (s != null) finalWorkStyle.perfectionism = s }
+      if (workStyleTraits.decision_style) { const s = CATEGORICAL_TO_SCORE.decision_style[workStyleTraits.decision_style]; if (s != null) finalPersonality.decision = s }
+
       let existingVision: Record<string, unknown> = {}
       if (profile?.vision_summary) { try { existingVision = JSON.parse(profile.vision_summary) } catch { /* */ } }
       const visionJson = JSON.stringify({
-        ...existingVision, work_style: workStyle,
+        ...existingVision, work_style: finalWorkStyle,
         team_preference: { role: teamRole || undefined, preferred_size: teamSize || undefined, atmosphere: teamAtmosphere || undefined },
         availability: { hours_per_week: hoursPerWeek ? parseInt(hoursPerWeek) : null, prefer_online: preferOnline },
         goals, strengths,
+        traits: { ...((existingVision as Record<string, unknown>).traits || {}), ...workStyleTraits },
       })
       await updateProfile.mutateAsync({
         nickname: nickname.trim() || undefined, desired_position: position.trim() || undefined,
@@ -220,7 +239,7 @@ export default function ProfileEditPage() {
         linkedin_url: linkedinUrl.trim() || undefined, github_url: githubUrl.trim() || undefined,
         location: location.trim() || undefined, current_situation: currentSituation || undefined,
         interest_tags: interestTags.length > 0 ? interestTags : undefined,
-        skills: skills.length > 0 ? skills : undefined, personality,
+        skills: skills.length > 0 ? skills : undefined, personality: finalPersonality,
       })
       setSaved(true); setTimeout(() => setSaved(false), 2000)
       toast.success('프로필이 저장되었습니다')
@@ -243,7 +262,7 @@ export default function ProfileEditPage() {
         <div className="max-w-7xl mx-auto px-6 sm:px-10 pt-6">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <button onClick={() => router.push('/profile')} className="hidden sm:flex p-2 border border-border text-txt-secondary hover:bg-surface-sunken transition-colors">
+              <button onClick={() => router.push('/profile')} className="hidden sm:flex p-2 border border-border text-txt-secondary hover:bg-surface-sunken transition-colors rounded-lg">
                 <ArrowLeft size={14} />
               </button>
               <h1 className="text-lg font-bold text-txt-primary">프로필 편집</h1>
@@ -251,7 +270,7 @@ export default function ProfileEditPage() {
             <button
               onClick={handleSave}
               disabled={updateProfile.isPending}
-              className="flex items-center gap-1.5 px-5 py-2 bg-surface-inverse text-txt-inverse text-[0.625rem] font-medium border border-surface-inverse hover:bg-surface-inverse/90 disabled:opacity-50 transition-all hover:opacity-90 active:scale-[0.97]"
+              className="flex items-center gap-1.5 px-5 py-2 bg-surface-inverse text-txt-inverse text-[10px] font-medium border border-surface-inverse hover:bg-surface-inverse/90 disabled:opacity-50 transition-all hover:opacity-90 active:scale-[0.97] rounded-xl"
             >
               {updateProfile.isPending ? <Loader2 size={12} className="animate-spin" /> : <Save size={12} />}
               {saved ? 'Saved' : 'Save'}
@@ -307,12 +326,15 @@ export default function ProfileEditPage() {
                 <div className="space-y-4">
                   <div>
                     <label className={fieldLabel}>닉네임</label>
-                    <input type="text" value={nickname} onChange={(e) => setNickname(e.target.value)} maxLength={30} placeholder="닉네임" className={inputClass} />
+                    <div className="relative">
+                      <input type="text" value={nickname} onChange={(e) => setNickname(e.target.value.slice(0, 7))} maxLength={7} placeholder="닉네임" className={inputClass} />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono text-txt-disabled">{nickname.length}/7</span>
+                    </div>
                   </div>
                   <div>
                     <label className={fieldLabel}>자기소개</label>
                     <textarea value={bio} onChange={(e) => setBio(e.target.value)} maxLength={500} placeholder="자신을 소개해주세요. 어떤 일을 하고, 어떤 프로젝트에 관심이 있는지 자유롭게 작성하세요." rows={4} className={`${inputClass} resize-none`} />
-                    <p className="text-[0.625rem] font-mono text-txt-tertiary mt-1 text-right">{bio.length}/500</p>
+                    <p className="text-[10px] font-mono text-txt-tertiary mt-1 text-right">{bio.length}/500</p>
                   </div>
                 </div>
               </Card>
@@ -336,11 +358,11 @@ export default function ProfileEditPage() {
                       <Image src={profile.cover_image_url} alt="cover" fill className="object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <span className="text-[0.625rem] font-mono text-txt-tertiary flex items-center gap-1.5"><ImageIcon size={12} /> 커버 이미지</span>
+                        <span className="text-[10px] font-mono text-txt-tertiary flex items-center gap-1.5"><ImageIcon size={12} /> 커버 이미지</span>
                       </div>
                     )}
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 flex items-center justify-center transition-colors">
-                      <span className="text-[0.625rem] font-mono text-white opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1"><Camera size={11} /> 변경</span>
+                      <span className="text-[10px] font-mono text-white opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1"><Camera size={11} /> 변경</span>
                     </div>
                     {uploadingCover && <div className="absolute inset-0 bg-black/50 flex items-center justify-center"><Loader2 size={14} className="animate-spin text-white" /></div>}
                   </button>
@@ -420,28 +442,18 @@ export default function ProfileEditPage() {
                   })}
                 </div>
                 {skills.length > 0 && (
-                  <div className="space-y-2 mb-4">
+                  <div className="flex flex-wrap gap-1.5 mb-4">
                     {skills.map((skill) => (
-                      <div key={skill.name} className="flex items-center gap-3 px-3 py-2 border border-border">
-                        <span className="flex-1 text-sm text-txt-primary font-medium">{skill.name}</span>
-                        <div className="flex items-center gap-1">
-                          {SKILL_LEVELS.map((level) => (
-                            <button key={level} type="button" onClick={() => updateSkillLevel(skill.name, level)}
-                              className={`px-2 py-1 text-[0.625rem] font-medium transition-colors ${skill.level === level ? 'bg-surface-inverse text-txt-inverse' : 'text-txt-tertiary hover:text-txt-secondary'}`}
-                            >{level}</button>
-                          ))}
-                        </div>
-                        <button onClick={() => removeSkill(skill.name)} className="p-1 text-txt-tertiary hover:text-txt-secondary transition-colors"><X size={14} /></button>
-                      </div>
+                      <span key={skill.name} className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium bg-surface-card rounded-xl border border-border text-txt-primary">
+                        {skill.name}
+                        <button onClick={() => removeSkill(skill.name)} className="text-txt-disabled hover:text-status-danger-text transition-colors"><X size={12} /></button>
+                      </span>
                     ))}
                   </div>
                 )}
                 <div className="flex gap-2">
                   <input type="text" value={newSkillName} onChange={(e) => setNewSkillName(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())} placeholder="스킬 직접 입력" maxLength={30} className={`flex-1 ${inputClass}`} />
-                  <select value={newSkillLevel} onChange={(e) => setNewSkillLevel(e.target.value)} className="px-3 py-3 text-xs border border-border bg-transparent text-txt-secondary focus:outline-none focus:border-border transition-colors">
-                    {SKILL_LEVELS.map((level) => <option key={level} value={level}>{level}</option>)}
-                  </select>
-                  <button type="button" onClick={() => addSkill()} className="px-4 py-3 border border-border text-txt-secondary hover:bg-surface-sunken transition-colors"><Plus size={16} /></button>
+                  <button type="button" onClick={() => addSkill()} className="px-4 py-3 border border-border text-txt-secondary hover:bg-surface-sunken transition-colors rounded-xl"><Plus size={16} /></button>
                 </div>
               </Card>
 
@@ -465,7 +477,7 @@ export default function ProfileEditPage() {
                 )}
                 <div className="flex gap-2">
                   <input type="text" value={customTag} onChange={(e) => setCustomTag(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addCustomTag())} placeholder="직접 입력" maxLength={20} className={`flex-1 ${inputClass}`} />
-                  <button type="button" onClick={addCustomTag} className="px-4 py-3 border border-border text-txt-secondary hover:bg-surface-sunken transition-colors"><Plus size={16} /></button>
+                  <button type="button" onClick={addCustomTag} className="px-4 py-3 border border-border text-txt-secondary hover:bg-surface-sunken transition-colors rounded-xl"><Plus size={16} /></button>
                 </div>
               </Card>
 
@@ -509,7 +521,7 @@ export default function ProfileEditPage() {
                         )}
                         <div className="flex-1 min-w-0">
                           <p className="text-sm text-txt-primary font-medium truncate">{item.title}</p>
-                          {item.description && <p className="text-[0.625rem] text-txt-tertiary truncate">{item.description}</p>}
+                          {item.description && <p className="text-[10px] text-txt-tertiary truncate">{item.description}</p>}
                         </div>
                         {item.link_url && (
                           <a href={item.link_url} target="_blank" rel="noopener noreferrer" className="p-1 text-txt-tertiary hover:text-txt-secondary"><ExternalLink size={14} /></a>
@@ -548,8 +560,8 @@ export default function ProfileEditPage() {
                         e.target.value = ''
                       }} />
                       <div className="flex items-center gap-2">
-                        <button type="button" onClick={() => portfolioImageInputRef.current?.click()} className="px-3 py-2 text-xs border border-border text-txt-secondary hover:bg-surface-sunken transition-colors flex items-center gap-1.5"><Camera size={12} /> 이미지 선택</button>
-                        {newPortfolioImage && <span className="text-[0.625rem] font-mono text-indicator-online">업로드 완료</span>}
+                        <button type="button" onClick={() => portfolioImageInputRef.current?.click()} className="px-3 py-2 text-xs border border-border text-txt-secondary hover:bg-surface-sunken transition-colors flex items-center gap-1.5 rounded-xl"><Camera size={12} /> 이미지 선택</button>
+                        {newPortfolioImage && <span className="text-[10px] font-mono text-indicator-online">업로드 완료</span>}
                       </div>
                     </div>
                     <div className="flex items-center gap-2 pt-1">
@@ -567,14 +579,14 @@ export default function ProfileEditPage() {
                           setShowPortfolioForm(false)
                           toast.success('포트폴리오 항목이 추가되었습니다')
                         } catch { toast.error('추가에 실패했습니다') }
-                      }} disabled={createPortfolio.isPending} className="px-4 py-2 text-xs font-bold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 disabled:opacity-50 transition-colors">
+                      }} disabled={createPortfolio.isPending} className="px-4 py-2 text-xs font-bold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 disabled:opacity-50 transition-colors rounded-xl">
                         {createPortfolio.isPending ? '추가 중...' : '추가'}
                       </button>
-                      <button type="button" onClick={() => { setShowPortfolioForm(false); setNewPortfolioTitle(''); setNewPortfolioDesc(''); setNewPortfolioLink(''); setNewPortfolioImage('') }} className="px-4 py-2 text-xs border border-border text-txt-secondary hover:bg-surface-sunken transition-colors">취소</button>
+                      <button type="button" onClick={() => { setShowPortfolioForm(false); setNewPortfolioTitle(''); setNewPortfolioDesc(''); setNewPortfolioLink(''); setNewPortfolioImage('') }} className="px-4 py-2 text-xs border border-border text-txt-secondary hover:bg-surface-sunken transition-colors rounded-xl">취소</button>
                     </div>
                   </div>
                 ) : (
-                  <button type="button" onClick={() => setShowPortfolioForm(true)} className="w-full px-3 py-2.5 text-xs font-bold border border-border text-txt-secondary hover:border-border hover:bg-surface-sunken transition-colors flex items-center justify-center gap-1.5">
+                  <button type="button" onClick={() => setShowPortfolioForm(true)} className="w-full px-3 py-2.5 text-xs font-bold border border-border text-txt-secondary hover:border-border hover:bg-surface-sunken transition-colors flex items-center justify-center gap-1.5 rounded-xl">
                     <Plus size={14} /> 항목 추가
                   </button>
                 )}
@@ -585,7 +597,7 @@ export default function ProfileEditPage() {
                 <Card title="대학 인증" icon={<ShieldCheck size={16} className={uniVerified ? 'text-indicator-online' : 'text-txt-tertiary'} />}>
                   {uniVerified ? (
                     <div className="flex items-center gap-2">
-                      <span className="px-2 py-1 text-[0.625rem] font-bold bg-indicator-online text-white">VERIFIED</span>
+                      <span className="px-2 py-1 text-[10px] font-bold bg-indicator-online text-white">VERIFIED</span>
                       <span className="text-xs text-indicator-online">대학 인증이 완료되었습니다.</span>
                     </div>
                   ) : verifyStep === 'idle' ? (
@@ -601,7 +613,7 @@ export default function ProfileEditPage() {
                             setVerifyStep('sent')
                             toast.success('인증 코드가 발송되었습니다')
                           } catch { setVerifyError('요청에 실패했습니다') } finally { setVerifySending(false) }
-                        }} className="px-4 py-3 text-xs font-bold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 disabled:opacity-50 transition-colors">{verifySending ? '전송 중...' : '인증 코드 전송'}</button>
+                        }} className="px-4 py-3 text-xs font-bold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 disabled:opacity-50 transition-colors rounded-xl">{verifySending ? '전송 중...' : '인증 코드 전송'}</button>
                       </div>
                       {verifyError && <p className="text-xs text-status-danger-text">{verifyError}</p>}
                     </div>
@@ -617,8 +629,8 @@ export default function ProfileEditPage() {
                             const data = await res.json(); if (!res.ok) { setVerifyError(data.error); return }
                             setUniVerified(true); toast.success('대학 인증이 완료되었습니다!')
                           } catch { setVerifyError('요청에 실패했습니다') } finally { setVerifySending(false) }
-                        }} className="px-4 py-3 text-xs font-bold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 disabled:opacity-50 transition-colors">{verifySending ? '확인 중...' : '인증 확인'}</button>
-                        <button type="button" onClick={() => { setVerifyStep('idle'); setVerifyCode(''); setVerifyError('') }} className="px-3 py-3 text-xs text-txt-tertiary hover:text-txt-primary transition-colors">재전송</button>
+                        }} className="px-4 py-3 text-xs font-bold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 disabled:opacity-50 transition-colors rounded-xl">{verifySending ? '확인 중...' : '인증 확인'}</button>
+                        <button type="button" onClick={() => { setVerifyStep('idle'); setVerifyCode(''); setVerifyError('') }} className="px-3 py-3 text-xs text-txt-tertiary hover:text-txt-primary transition-colors rounded-xl">재전송</button>
                       </div>
                       {verifyError && <p className="text-xs text-status-danger-text">{verifyError}</p>}
                     </div>
@@ -635,8 +647,8 @@ export default function ProfileEditPage() {
                     <p className="text-xs text-txt-tertiary">온보딩 AI 대화에서 분석된 데이터입니다. 직접 수정할 수 있어요.</p>
                     <button
                       type="button"
-                      onClick={() => router.push('/onboarding')}
-                      className="flex items-center gap-1.5 px-3 py-1.5 text-[0.625rem] font-medium border border-border text-txt-secondary hover:bg-surface-sunken hover:border-border transition-colors shrink-0"
+                      onClick={() => router.push('/onboarding?mode=redo-chat')}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-medium border border-border text-txt-secondary hover:bg-surface-sunken hover:border-border transition-colors shrink-0 rounded-xl"
                     >
                       <Sparkles size={12} />
                       AI 온보딩 다시하기
@@ -646,11 +658,29 @@ export default function ProfileEditPage() {
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <Card title="성향 점수">
                       <div className="space-y-5">
+                        {/* decision — categorical */}
+                        <div>
+                          <span className="text-xs font-medium text-txt-secondary block mb-2">의사결정 스타일</span>
+                          <div className="flex flex-wrap gap-2">
+                            {Object.entries(CATEGORICAL_LABELS.decision_style).map(([id, lbl]) => (
+                              <button key={id} type="button" onClick={() => setWorkStyleTraits(prev => ({ ...prev, decision_style: id }))}
+                                className={`px-3 py-2 text-xs font-medium border transition-colors ${workStyleTraits.decision_style === id ? chipActive : chipDefault}`}>{lbl}</button>
+                            ))}
+                          </div>
+                        </div>
+                        {/* communication — 1-5 spectrum */}
+                        <div>
+                          <div className="flex items-center justify-between mb-1.5">
+                            <span className="text-xs font-medium text-txt-secondary">소통 선호</span>
+                            <span className="text-xs font-mono text-txt-tertiary">{Math.round(personality.communication / 2)}/5</span>
+                          </div>
+                          <input type="range" min={1} max={5} step={1} value={Math.round(personality.communication / 2)} onChange={e => setPersonality(p => ({ ...p, communication: parseInt(e.target.value) * 2 }))} className="w-full h-1.5 accent-brand cursor-pointer" />
+                          <div className="flex justify-between mt-1"><span className="text-[9px] text-txt-tertiary font-mono">혼자 집중</span><span className="text-[9px] text-txt-tertiary font-mono">수시 소통</span></div>
+                        </div>
+                        {/* risk, time — 1-10 sliders */}
                         {[
                           { key: 'risk', label: '도전 성향', low: '안정 추구', high: '도전적' },
                           { key: 'time', label: '시간 투자', low: '여유 없음', high: '풀타임' },
-                          { key: 'communication', label: '소통 선호', low: '혼자 집중', high: '수시 소통' },
-                          { key: 'decision', label: '실행 속도', low: '신중한 계획', high: '빠른 실행' },
                         ].map(item => (
                           <div key={item.key}>
                             <div className="flex items-center justify-between mb-1.5">
@@ -667,17 +697,18 @@ export default function ProfileEditPage() {
                     <Card title="작업 스타일">
                       <div className="space-y-5">
                         {[
-                          { key: 'collaboration', label: '협업 스타일', low: '독립형', high: '팀 소통형' },
-                          { key: 'planning', label: '작업 방식', low: '바로 실행', high: '기획 우선' },
-                          { key: 'perfectionism', label: '품질 기준', low: '속도 우선', high: '완벽주의' },
+                          { traitKey: 'collaboration_style', label: '협업 스타일' },
+                          { traitKey: 'planning_style', label: '작업 방식' },
+                          { traitKey: 'quality_style', label: '품질 기준' },
                         ].map(item => (
-                          <div key={item.key}>
-                            <div className="flex items-center justify-between mb-1.5">
-                              <span className="text-xs font-medium text-txt-secondary">{item.label}</span>
-                              <span className="text-xs font-mono text-txt-tertiary">{workStyle[item.key]}/10</span>
+                          <div key={item.traitKey}>
+                            <span className="text-xs font-medium text-txt-secondary block mb-2">{item.label}</span>
+                            <div className="flex flex-wrap gap-2">
+                              {Object.entries(CATEGORICAL_LABELS[item.traitKey]).map(([id, lbl]) => (
+                                <button key={id} type="button" onClick={() => setWorkStyleTraits(prev => ({ ...prev, [item.traitKey]: id }))}
+                                  className={`px-3 py-2 text-xs font-medium border transition-colors ${workStyleTraits[item.traitKey] === id ? chipActive : chipDefault}`}>{lbl}</button>
+                              ))}
                             </div>
-                            <input type="range" min={1} max={10} step={1} value={workStyle[item.key]} onChange={e => setWorkStyle(p => ({ ...p, [item.key]: parseInt(e.target.value) }))} className="w-full h-1.5 accent-brand cursor-pointer" />
-                            <div className="flex justify-between mt-1"><span className="text-[9px] text-txt-tertiary font-mono">{item.low}</span><span className="text-[9px] text-txt-tertiary font-mono">{item.high}</span></div>
                           </div>
                         ))}
                       </div>
@@ -751,19 +782,19 @@ export default function ProfileEditPage() {
           <div className="bg-surface-card rounded-xl border border-border shadow-lg w-full max-w-lg mx-4 flex flex-col">
             <div className="flex items-center justify-between px-4 py-2.5 border-b-2 border-border bg-surface-sunken">
               <span className="text-xs font-medium text-txt-secondary">{cropType === 'avatar' ? 'CROP AVATAR' : 'CROP COVER'}</span>
-              <button onClick={() => setCropImage(null)} className="p-1 hover:bg-surface-card transition-colors"><X size={16} className="text-txt-tertiary" /></button>
+              <button onClick={() => setCropImage(null)} className="p-1 hover:bg-surface-card transition-colors rounded-lg"><X size={16} className="text-txt-tertiary" /></button>
             </div>
             <div className="relative w-full" style={{ height: cropType === 'avatar' ? 320 : 240 }}>
               <Cropper image={cropImage} crop={crop} zoom={zoom} aspect={cropType === 'avatar' ? 1 : 3} cropShape={cropType === 'avatar' ? 'round' : 'rect'} onCropChange={setCrop} onZoomChange={setZoom} onCropComplete={onCropComplete} />
             </div>
             <div className="flex items-center gap-3 px-4 py-3">
-              <span className="text-[0.625rem] font-mono text-txt-tertiary">ZOOM</span>
+              <span className="text-[10px] font-mono text-txt-tertiary">ZOOM</span>
               <input type="range" min={1} max={3} step={0.1} value={zoom} onChange={e => setZoom(Number(e.target.value))} className="flex-1 h-1.5 accent-brand cursor-pointer" />
-              <span className="text-[0.625rem] font-mono text-txt-tertiary w-8 text-right">{zoom.toFixed(1)}x</span>
+              <span className="text-[10px] font-mono text-txt-tertiary w-8 text-right">{zoom.toFixed(1)}x</span>
             </div>
             <div className="flex items-center justify-end gap-2 px-4 py-2.5 border-t-2 border-border">
-              <button onClick={() => setCropImage(null)} className="py-2.5 px-4 text-xs font-medium border border-border text-txt-secondary hover:border-border transition-colors">취소</button>
-              <button onClick={handleCropConfirm} className="flex items-center gap-1.5 px-4 py-2.5 bg-surface-inverse text-txt-inverse text-xs font-bold border border-surface-inverse hover:bg-surface-inverse/90 transition-all hover:opacity-90 active:scale-[0.97]">
+              <button onClick={() => setCropImage(null)} className="py-2.5 px-4 text-xs font-medium border border-border text-txt-secondary hover:border-border transition-colors rounded-xl">취소</button>
+              <button onClick={handleCropConfirm} className="flex items-center gap-1.5 px-4 py-2.5 bg-surface-inverse text-txt-inverse text-xs font-bold border border-surface-inverse hover:bg-surface-inverse/90 transition-all hover:opacity-90 active:scale-[0.97] rounded-xl">
                 <Camera size={12} /> 적용
               </button>
             </div>
@@ -780,7 +811,7 @@ function Card({ title, icon, children }: { title: string; icon?: React.ReactNode
     <div className="bg-surface-card rounded-xl border border-border shadow-md">
       <div className="flex items-center gap-2 px-5 sm:px-6 py-3 border-b border-border bg-surface-sunken">
         {icon}
-        <h3 className="text-[0.625rem] font-medium text-txt-tertiary">{title}</h3>
+        <h3 className="text-[10px] font-medium text-txt-tertiary">{title}</h3>
       </div>
       <div className="p-5 sm:p-6">
         {children}
@@ -812,7 +843,7 @@ function TagEditor({ tags, onChange, suggestions, chipDefault }: { tags: string[
       </div>
       <div className="flex gap-2">
         <input type="text" value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); add(input.trim()); setInput('') } }} placeholder="직접 입력" maxLength={20} className="flex-1 px-4 py-2.5 text-base sm:text-sm border border-border bg-transparent focus:outline-none focus:border-border transition-colors" />
-        <button type="button" onClick={() => { add(input.trim()); setInput('') }} className="px-3 py-2.5 border border-border text-txt-secondary hover:bg-surface-sunken transition-colors"><Plus size={14} /></button>
+        <button type="button" onClick={() => { add(input.trim()); setInput('') }} className="px-3 py-2.5 border border-border text-txt-secondary hover:bg-surface-sunken transition-colors rounded-xl"><Plus size={14} /></button>
       </div>
     </div>
   )

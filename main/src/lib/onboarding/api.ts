@@ -1,12 +1,13 @@
-import type { DeepChatMessage, ProfileDraft } from './types'
+import type { DeepChatMessage, ProfileDraft, StructuredResponse } from './types'
 
 /** Parse free-text skills/interests via AI */
-export async function aiParse(text: string, type: 'skills' | 'interests'): Promise<string[] | null> {
+export async function aiParse(text: string, type: 'skills' | 'interests', signal?: AbortSignal): Promise<string[] | null> {
   try {
     const res = await fetch('/api/onboarding/parse', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text, type }),
+      signal,
     })
     if (!res.ok) return null
     const { items } = await res.json()
@@ -20,15 +21,17 @@ export async function aiParse(text: string, type: 'skills' | 'interests'): Promi
 export async function aiDeepChat(
   messages: DeepChatMessage[],
   profileCtx: Record<string, unknown>,
-): Promise<{ reply: string; offTopic: boolean; suggestions: string[] }> {
+  signal?: AbortSignal,
+): Promise<{ reply: string; offTopic: boolean; suggestions: string[]; interactiveElement: string | null }> {
   try {
     const res = await fetch('/api/onboarding/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ messages, profile: profileCtx }),
+      signal,
     })
     if (!res.ok) {
-      return { reply: '죄송해요, 일시적인 오류가 발생했어요. 다시 말씀해주세요!', offTopic: false, suggestions: [] }
+      return { reply: '죄송해요, 일시적인 오류가 발생했어요. 다시 말씀해주세요!', offTopic: false, suggestions: [], interactiveElement: null }
     }
     const json = await res.json()
     const data = json?.data || json
@@ -36,9 +39,12 @@ export async function aiDeepChat(
       reply: data?.reply || '어떤 프로젝트 경험이 있으신지 알려주세요!',
       offTopic: !!data?.offTopic,
       suggestions: Array.isArray(data?.suggestions) ? data.suggestions : [],
+      interactiveElement: data?.interactiveElement || null,
     }
-  } catch {
-    return { reply: '죄송해요, 네트워크 오류가 발생했어요. 인터넷 연결을 확인하고 다시 시도해주세요.', offTopic: false, suggestions: [] }
+  } catch (err) {
+    // Re-throw AbortError so callers can distinguish cancellation from real errors
+    if (err instanceof DOMException && err.name === 'AbortError') throw err
+    return { reply: '죄송해요, 네트워크 오류가 발생했어요. 인터넷 연결을 확인하고 다시 시도해주세요.', offTopic: false, suggestions: [], interactiveElement: null }
   }
 }
 
@@ -68,7 +74,7 @@ export async function saveProfileCheckpoint(profile: ProfileDraft): Promise<void
       major: profile.major || undefined,
       location: profile.locations.length > 0 ? profile.locations.join(', ') : '미설정',
       currentSituation: profile.situation || 'exploring',
-      skills: profile.skills.map(s => ({ name: s, level: '중급' })),
+      skills: profile.skills.map(s => ({ name: s })),
       interestTags: profile.interests,
       personality: { risk: 5, time: 5, communication: 5, decision: 5 },
     }),
@@ -85,7 +91,11 @@ export async function saveProfileFinal(
 ): Promise<void> {
   const hasDeepChat = deepChatMessages.length > 0
   const transcript = hasDeepChat
-    ? deepChatMessages.map(m => ({ role: m.role, content: m.content, timestamp: new Date().toISOString() }))
+    ? deepChatMessages.map(m => ({
+        role: m.role,
+        content: m.content,
+        timestamp: m.timestamp || new Date().toISOString(),
+      }))
     : undefined
 
   const res = await fetch('/api/onboarding/complete', {
@@ -99,7 +109,7 @@ export async function saveProfileFinal(
       major: profile.major || undefined,
       location: profile.locations.length > 0 ? profile.locations.join(', ') : '미설정',
       currentSituation: profile.situation || 'exploring',
-      skills: profile.skills.map(s => ({ name: s, level: '중급' })),
+      skills: profile.skills.map(s => ({ name: s })),
       interestTags: profile.interests,
       // Only send default personality when deep chat was skipped.
       // When deep chat was done, summarize API already wrote AI-analyzed values — don't overwrite.
@@ -119,18 +129,22 @@ export async function saveProfileFinal(
 /** Summarize deep chat transcript */
 export async function summarizeTranscript(
   messages: DeepChatMessage[],
-): Promise<{ summary?: string } | null> {
+  signal?: AbortSignal,
+  structuredResponses?: StructuredResponse[],
+): Promise<{ summary?: string; bio?: string } | null> {
   try {
     const res = await fetch('/api/onboarding/summarize', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         transcript: messages.map(m => ({ role: m.role, content: m.content })),
+        structuredData: structuredResponses?.length ? structuredResponses : undefined,
       }),
+      signal,
     })
     if (!res.ok) return null
     const json = await res.json()
-    return { summary: json?.profile?.summary }
+    return { summary: json?.profile?.summary, bio: json?.profile?.bio }
   } catch {
     return null
   }

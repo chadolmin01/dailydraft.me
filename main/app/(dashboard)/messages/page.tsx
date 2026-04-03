@@ -106,7 +106,7 @@ export default function MessagesPage() {
           {/* 대화 목록 — 모바일에서는 스레드 열면 숨김 */}
           <div className={`w-full md:w-80 bg-surface-card rounded-xl border border-border shadow-md shrink-0 flex flex-col ${mobileShowThread ? 'hidden md:flex' : 'flex'}`}>
             <div className="p-4 border-b border-border">
-              <h2 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
+              <h2 className="text-[10px] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
                 <Mail size={12} /> MESSAGES
               </h2>
               <div className="relative">
@@ -116,7 +116,7 @@ export default function MessagesPage() {
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   placeholder="이름으로 검색..."
-                  className="w-full pl-9 pr-3 py-2 text-base sm:text-sm border border-border bg-surface-bg focus:outline-none focus:border-accent transition-colors"
+                  className="w-full pl-9 pr-3 py-2 text-base sm:text-sm border border-border bg-surface-bg focus:outline-none focus:border-accent transition-colors rounded-xl"
                 />
               </div>
             </div>
@@ -167,7 +167,7 @@ export default function MessagesPage() {
                             <span className="text-sm font-medium text-txt-primary truncate">
                               {cleanNickname(partner?.nickname || '') || 'Unknown'}
                             </span>
-                            <span className="text-[0.625rem] font-mono text-txt-disabled shrink-0 ml-2">
+                            <span className="text-[10px] font-mono text-txt-disabled shrink-0 ml-2">
                               {timeAgo(conv.lastAt)}
                             </span>
                           </div>
@@ -176,7 +176,7 @@ export default function MessagesPage() {
                           </p>
                         </div>
                         {conv.unreadCount > 0 && (
-                          <span className="px-1.5 py-0.5 text-[0.625rem] font-bold bg-brand text-white shrink-0">
+                          <span className="px-1.5 py-0.5 text-[10px] font-bold bg-brand text-white shrink-0">
                             {conv.unreadCount}
                           </span>
                         )}
@@ -216,7 +216,7 @@ export default function MessagesPage() {
                       {cleanNickname(selectedProfile?.nickname || '') || 'Unknown'}
                     </p>
                     {selectedProfile?.desired_position && (
-                      <p className="text-[0.625rem] text-txt-disabled">
+                      <p className="text-[10px] text-txt-disabled">
                         {selectedProfile.desired_position}
                       </p>
                     )}
@@ -235,7 +235,7 @@ export default function MessagesPage() {
                       return (
                         <div key={msg.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
                           <div className={`group relative max-w-[75%] ${isMine ? 'order-2' : ''}`}>
-                            <div className={`px-3.5 py-2.5 text-sm leading-relaxed ${
+                            <div className={`px-3.5 py-2.5 text-sm leading-relaxed rounded-xl ${
                               isMine
                                 ? 'bg-surface-inverse text-txt-inverse border border-surface-inverse shadow-sm'
                                 : 'bg-surface-sunken text-txt-primary border border-border'
@@ -243,11 +243,11 @@ export default function MessagesPage() {
                               <p className="whitespace-pre-wrap break-words">{msg.content}</p>
                             </div>
                             <div className={`flex items-center gap-2 mt-1 ${isMine ? 'justify-end' : 'justify-start'}`}>
-                              <span className="text-[0.5625rem] font-mono text-txt-disabled">
+                              <span className="text-[10px] font-mono text-txt-disabled">
                                 {timeAgo(msg.created_at)}
                               </span>
                               {isMine && msg.is_read && (
-                                <span className="text-[0.5625rem] font-mono text-brand">읽음</span>
+                                <span className="text-[10px] font-mono text-brand">읽음</span>
                               )}
                               <button
                                 onClick={() => deleteMessage.mutate(msg.id)}
@@ -275,12 +275,12 @@ export default function MessagesPage() {
                       onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend() } }}
                       placeholder="쪽지를 입력하세요..."
                       maxLength={2000}
-                      className="flex-1 px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-bg focus:outline-none focus:border-accent transition-colors"
+                      className="flex-1 px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-bg focus:outline-none focus:border-accent transition-colors rounded-xl"
                     />
                     <button
                       onClick={handleSend}
                       disabled={!messageInput.trim() || sendMessage.isPending}
-                      className="px-4 py-2.5 bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 disabled:opacity-40 transition-colors hover:opacity-90 active:scale-[0.97]"
+                      className="px-4 py-2.5 bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 disabled:opacity-40 transition-colors hover:opacity-90 active:scale-[0.97] rounded-xl"
                     >
                       {sendMessage.isPending ? (
                         <Loader2 size={16} className="animate-spin" />

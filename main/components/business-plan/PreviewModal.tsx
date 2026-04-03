@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from 'react'
 import { X, Download, FileText, File, Loader2, Printer } from 'lucide-react'
+import { toast } from 'sonner'
 import {
   BusinessPlanData,
   FormTemplate,
@@ -79,7 +80,7 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
       }
     } catch (error) {
       console.error('Export error:', error)
-      alert('내보내기 중 오류가 발생했습니다.')
+      toast.error('내보내기 중 오류가 발생했습니다')
     } finally {
       setIsExporting(false)
       setExportFormat(null)

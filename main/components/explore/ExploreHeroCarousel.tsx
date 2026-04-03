@@ -43,7 +43,7 @@ export function ExploreHeroCarousel() {
 
   return (
     <PageContainer size="wide" className="pt-3 pb-1">
-      <div className="flex gap-3 h-[12rem] sm:h-[18rem]">
+      <div className="flex gap-3 h-[16rem] sm:h-[18rem]">
 
         {/* ===== 왼쪽: 메인 강조 슬라이드 ===== */}
         <div
@@ -76,61 +76,78 @@ export function ExploreHeroCarousel() {
                 }`} />
               </button>
             ))}
-            <span className="text-[0.625rem] font-mono text-txt-disabled ml-1">{active + 1}/{SLIDE_COUNT}</span>
+            <span className="text-[10px] font-mono text-txt-disabled ml-1">{active + 1}/{SLIDE_COUNT}</span>
           </div>
 
           {/* 메인 슬라이드 콘텐츠 */}
           <div className="relative z-10 h-full">
-            {/* Slide 0: CTA */}
-            <div className={`absolute inset-0 px-4 sm:px-6 flex items-start pt-6 sm:pt-10 transition-all duration-300 ${order[0] === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+            {/* Slide 0: 팀원 모집 */}
+            <div className={`absolute inset-0 px-4 sm:px-6 flex items-start pt-4 sm:pt-10 transition-all duration-300 ${order[0] === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
               <div className="w-full">
                 <div className="inline-flex items-center gap-2 px-2 h-6 bg-surface-card rounded-xl border border-border mb-3">
-                  <div className="w-1.5 h-1.5 bg-indicator-online animate-pulse" />
-                  <span className="text-[0.625rem] font-mono font-bold text-black tracking-wider">OPEN BETA</span>
+                  <div className="w-1.5 h-1.5 bg-black rounded-full" />
+                  <span className="text-[10px] font-mono font-bold text-black tracking-wider">TEAM</span>
                 </div>
                 <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-txt-primary mb-1.5 break-keep leading-tight tracking-tight">
-                  모든 프로젝트는 <span className="text-txt-tertiary">Draft에서 시작됩니다.</span>
+                  Draft 팀에 <span className="text-txt-tertiary">합류하고 싶다면?</span>
                 </h2>
-                <p className="text-sm text-txt-tertiary break-keep mb-4 sm:mb-6">
-                  프로젝트를 공유하고, 피드백 받고, 함께할 사람을 만나세요.
+                <p className="text-sm text-txt-tertiary break-keep mb-3 sm:mb-6">
+                  같이 만들어갈 팀원을 찾고 있어요. 프로젝트 페이지에서 지원해보세요.
                 </p>
                 <Link
-                  href={isAuthenticated ? '/projects/new' : '/login'}
+                  href="/projects/b0de922b-c9ed-4f21-9a48-5454e6af5501"
                   className="group inline-flex items-center gap-2 px-5 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-bold hover:bg-surface-inverse transition-all hover:opacity-90 active:scale-[0.97] border border-surface-inverse"
+                  onClick={(e) => e.stopPropagation()}
                 >
-                  {isAuthenticated ? '프로젝트 올리기' : '시작하기'}
+                  팀원 공고 보기
                   <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
             </div>
 
-            {/* Slide 1: How it works */}
-            <div className={`absolute inset-0 px-4 sm:px-6 flex items-start pt-6 sm:pt-10 transition-all duration-300 ${order[0] === 1 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+            {/* Slide 1: 사용자 인터뷰 */}
+            <div className={`absolute inset-0 px-4 sm:px-6 flex items-start pt-4 sm:pt-10 transition-all duration-300 ${order[0] === 1 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
               <div className="w-full">
                 <div className="inline-flex items-center gap-2 px-2 h-6 bg-surface-card rounded-xl border border-border mb-3">
-                  <span className="text-[0.625rem] font-mono font-bold text-black tracking-wider">HOW IT WORKS</span>
+                  <span className="text-[10px] font-mono font-bold text-black tracking-wider">RESEARCH</span>
                 </div>
                 <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-txt-primary mb-1.5 break-keep leading-tight tracking-tight">
-                  올리고, 피드백 받고, <span className="text-txt-tertiary">함께 만들어가세요.</span>
+                  서비스 인터뷰에 <span className="text-txt-tertiary">참여해주세요.</span>
                 </h2>
-                <p className="text-sm text-txt-tertiary break-keep">
-                  아이디어 공유부터 팀빌딩까지, 간단한 3단계로 시작합니다.
+                <p className="text-sm text-txt-tertiary break-keep mb-3 sm:mb-6">
+                  Draft 팀이 솔직한 의견을 듣고 싶어요. 커피챗으로 편하게 연락주세요.
                 </p>
+                <Link
+                  href="/explore?coffeeChat=38c7770c-f545-4f84-a8af-7e6b34c86285&msg=인터뷰+신청드립니다"
+                  className="group inline-flex items-center gap-2 px-5 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-bold hover:bg-surface-inverse transition-all hover:opacity-90 active:scale-[0.97] border border-surface-inverse"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  커피챗 신청하기
+                  <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                </Link>
               </div>
             </div>
 
-            {/* Slide 2: Feedback */}
-            <div className={`absolute inset-0 px-4 sm:px-6 flex items-start pt-6 sm:pt-10 transition-all duration-300 ${order[0] === 2 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+            {/* Slide 2: 프로젝트 홍보 */}
+            <div className={`absolute inset-0 px-4 sm:px-6 flex items-start pt-4 sm:pt-10 transition-all duration-300 ${order[0] === 2 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
               <div className="w-full">
                 <div className="inline-flex items-center gap-2 px-2 h-6 bg-surface-card rounded-xl border border-border mb-3">
-                  <span className="text-[0.625rem] font-mono font-bold text-black tracking-wider">FEEDBACK</span>
+                  <span className="text-[10px] font-mono font-bold text-black tracking-wider">PROMO</span>
                 </div>
                 <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-txt-primary mb-1.5 break-keep leading-tight tracking-tight">
-                  혼자 고민하지 마세요. <span className="text-txt-tertiary">솔직한 피드백이 기다립니다.</span>
+                  내 프로젝트를 <span className="text-txt-tertiary">알리고 싶다면?</span>
                 </h2>
-                <p className="text-sm text-txt-tertiary break-keep">
-                  다양한 전공, 다양한 시각에서 프로젝트를 함께 점검합니다.
+                <p className="text-sm text-txt-tertiary break-keep mb-3 sm:mb-6">
+                  Draft를 통해 더 많은 사람에게 닿아보세요. 커피챗으로 문의해주세요.
                 </p>
+                <Link
+                  href="/explore?coffeeChat=38c7770c-f545-4f84-a8af-7e6b34c86285&msg=프로젝트+홍보+문의드립니다"
+                  className="group inline-flex items-center gap-2 px-5 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-bold hover:bg-surface-inverse transition-all hover:opacity-90 active:scale-[0.97] border border-surface-inverse"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  홍보 문의하기
+                  <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                </Link>
               </div>
             </div>
           </div>
@@ -181,14 +198,14 @@ function SlidePreview({ index, isAuthenticated, tone = 'white' }: { index: numbe
     return (
       <div>
         <div className={`inline-flex items-center gap-1.5 px-1.5 py-0.5 border mb-2 ${c.badge}`}>
-          <div className="w-1 h-1 bg-indicator-online animate-pulse" />
-          <span className={`text-[0.5rem] font-mono font-bold tracking-wider ${c.label}`}>OPEN BETA</span>
+          <div className="w-1 h-1 bg-current rounded-full" />
+          <span className={`text-[0.5rem] font-mono font-bold tracking-wider ${c.label}`}>TEAM</span>
         </div>
         <h3 className={`text-sm font-bold leading-snug break-keep ${c.title}`}>
-          모든 프로젝트는 Draft에서 시작됩니다.
+          Draft 팀에 합류하고 싶다면?
         </h3>
-        <p className={`text-[0.625rem] mt-1 break-keep ${c.sub}`}>
-          {isAuthenticated ? '프로젝트를 올려보세요' : '가입하고 시작하세요'}
+        <p className={`text-[10px] mt-1 break-keep ${c.sub}`}>
+          팀원 공고를 확인해보세요
         </p>
       </div>
     )
@@ -198,13 +215,13 @@ function SlidePreview({ index, isAuthenticated, tone = 'white' }: { index: numbe
     return (
       <div>
         <div className={`inline-flex items-center gap-1.5 px-1.5 py-0.5 border mb-2 ${c.badge}`}>
-          <span className={`text-[0.5rem] font-mono font-bold tracking-wider ${c.label}`}>HOW IT WORKS</span>
+          <span className={`text-[0.5rem] font-mono font-bold tracking-wider ${c.label}`}>RESEARCH</span>
         </div>
         <h3 className={`text-sm font-bold leading-snug break-keep ${c.title}`}>
-          올리고, 피드백 받고, 함께 만들어가세요.
+          서비스 인터뷰에 참여해주세요.
         </h3>
-        <p className={`text-[0.625rem] mt-1 break-keep ${c.sub}`}>
-          간단한 3단계로 시작합니다
+        <p className={`text-[10px] mt-1 break-keep ${c.sub}`}>
+          커피챗으로 편하게 연락주세요
         </p>
       </div>
     )
@@ -213,13 +230,13 @@ function SlidePreview({ index, isAuthenticated, tone = 'white' }: { index: numbe
   return (
     <div>
       <div className={`inline-flex items-center gap-1.5 px-1.5 py-0.5 border mb-2 ${c.badge}`}>
-        <span className={`text-[0.5rem] font-mono font-bold tracking-wider ${c.label}`}>FEEDBACK</span>
+        <span className={`text-[0.5rem] font-mono font-bold tracking-wider ${c.label}`}>PROMO</span>
       </div>
       <h3 className={`text-sm font-bold leading-snug break-keep ${c.title}`}>
-        혼자 고민하지 마세요.
+        내 프로젝트를 알리고 싶다면?
       </h3>
-      <p className={`text-[0.625rem] mt-1 break-keep ${c.sub}`}>
-        솔직한 피드백이 기다립니다
+      <p className={`text-[10px] mt-1 break-keep ${c.sub}`}>
+        커피챗으로 홍보 문의해보세요
       </p>
     </div>
   )

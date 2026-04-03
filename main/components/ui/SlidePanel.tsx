@@ -51,7 +51,7 @@ export const SlidePanel: React.FC<SlidePanelProps> = ({
 
       {/* Panel */}
       <div
-        className={`fixed top-0 right-0 z-modal h-full ${width} max-w-[calc(100vw-2rem)] bg-surface-bg border-l-2 border-border shadow-lg flex flex-col transition-transform duration-300 ease-out ${
+        className={`fixed top-0 right-0 z-modal h-full ${width} max-w-[calc(100vw-2rem)] bg-surface-bg border-l border-border shadow-lg rounded-l-xl flex flex-col transition-transform duration-300 ease-out ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
@@ -65,7 +65,7 @@ export const SlidePanel: React.FC<SlidePanelProps> = ({
             {headerActions}
             <button
               onClick={onClose}
-              className="p-2 hover:bg-surface-sunken transition-colors text-txt-tertiary hover:text-txt-primary border border-transparent hover:border-border"
+              className="p-2 hover:bg-surface-sunken transition-colors text-txt-tertiary hover:text-txt-primary border border-transparent hover:border-border rounded-lg"
             >
               <X size={18} />
             </button>

@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import React, { useEffect, useRef, useState } from 'react'
+import { motion } from 'framer-motion'
 import { hapticMedium } from '@/src/utils/haptic'
 import {
   X, Briefcase, Share2, Heart,
@@ -21,8 +21,11 @@ import { ProfileSidePanel } from './profile-modal/ProfileSidePanel'
 import { PortfolioView } from './profile-modal/PortfolioView'
 import { useBackHandler } from '@/src/hooks/useBackHandler'
 
-export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileId, byUserId, matchData, onClose, onSelectProject }) => {
+export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileId, byUserId, matchData, onClose, onSelectProject, initialCoffeeChatOpen, initialCoffeeChatMessage }) => {
   const { isAuthenticated, user } = useAuth()
+  const [isMobile, setIsMobile] = useState(false)
+  const sheetRef = useRef<HTMLDivElement>(null)
+  const dragRef = useRef({ startY: 0, dragging: false })
   const [shareCopied, setShareCopied] = useState(false)
   const [showCoffeeChatForm, setShowCoffeeChatForm] = useState(false)
   const [showInviteModal, setShowInviteModal] = useState(false)
@@ -31,6 +34,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
   const [hasInterested, setHasInterested] = useState(false)
   const [interestCount, setInterestCount] = useState(0)
   const [interestLoading, setInterestLoading] = useState(false)
+  useBackHandler(!!profileId, onClose, 'profile-detail')
   useBackHandler(showCoffeeChatForm, () => setShowCoffeeChatForm(false), 'profile-coffee')
   useBackHandler(showInviteModal, () => setShowInviteModal(false), 'profile-invite')
   useBackHandler(!!sidePanel, () => setSidePanel(null), 'profile-side')
@@ -62,6 +66,10 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
   })
 
   useEffect(() => {
+    setIsMobile(window.innerWidth < 640)
+  }, [])
+
+  useEffect(() => {
     if (profileId) {
       document.body.style.overflow = 'hidden'
       setModalView('profile')
@@ -79,6 +87,12 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
   }, [profile?.id])
 
   useEffect(() => {
+    if (initialCoffeeChatOpen && profile && user && user.id !== profile.user_id) {
+      setShowCoffeeChatForm(true)
+    }
+  }, [initialCoffeeChatOpen, profile, user])
+
+  useEffect(() => {
     if (profile?.id && user) {
       fetch(`/api/profile/${profile.id}/interest`)
         .then(r => r.json())
@@ -86,7 +100,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
           setHasInterested(!!d.interested)
           setInterestCount(d.interest_count ?? 0)
         })
-        .catch(() => {})
+        .catch(() => toast.error('관심 정보를 불러오지 못했습니다'))
     } else {
       setHasInterested(false)
       setInterestCount(0)
@@ -142,6 +156,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
   const displayBio = bio || visionSummary
   const visionGoals = Array.isArray(visionParsed?.goals) ? (visionParsed.goals as string[]) : []
   const workStyle = visionParsed?.work_style as Record<string, number> | undefined
+  const visionTraits = visionParsed?.traits as Record<string, unknown> | undefined
   const teamPref = visionParsed?.team_preference as Record<string, string> | undefined
   const availability = visionParsed?.availability as { hours_per_week?: number; prefer_online?: boolean } | undefined
 
@@ -169,30 +184,26 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
   }
 
   return (
-    <AnimatePresence>
-      {profileId && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            key="profile-backdrop"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-md z-modal-backdrop"
-          />
+    <>
+      {/* Backdrop */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+        onClick={onClose}
+        className="fixed inset-0 bg-black/60 backdrop-blur-md z-modal-backdrop"
+      />
 
-          {/* Modal */}
-          <motion.div
-            key="profile-modal"
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.97, y: 10 }}
-            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-0 z-modal flex items-end sm:items-center justify-center pt-6 px-0 pb-[env(safe-area-inset-bottom)] sm:p-4 md:p-8"
-            onClick={onClose}
-          >
+      {/* Modal */}
+      <motion.div
+        initial={isMobile ? { opacity: 1, y: '100%' } : { opacity: 0, scale: 0.95, y: 20 }}
+        animate={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, scale: 1, y: 0 }}
+        exit={isMobile ? { opacity: 1, y: '100%' } : { opacity: 0, scale: 0.95, y: 20 }}
+        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+        className="fixed inset-0 z-modal flex items-end sm:items-center justify-center pt-6 px-0 pb-[env(safe-area-inset-bottom)] sm:p-4 md:p-8"
+        onClick={onClose}
+      >
             <div
               onClick={(e) => e.stopPropagation()}
               className={`flex flex-col sm:flex-row gap-0 sm:gap-4 max-h-[85vh] sm:max-h-[90vh] transition-all duration-300 ${sidePanel ? 'w-full max-w-[90rem]' : 'w-full max-w-lg md:max-w-2xl lg:max-w-3xl'}`}
@@ -201,9 +212,36 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
               aria-label={profile?.nickname || '프로필'}
             >
             {/* Main modal */}
-            <div className={`modal-glass rounded-t-2xl sm:rounded-2xl overflow-hidden flex flex-col relative transition-all duration-300 ${sidePanel ? 'w-full sm:w-3/5' : 'w-full'}`}>
+            <div ref={sheetRef} className={`modal-glass rounded-t-2xl overflow-hidden flex flex-col relative transition-all duration-300 ${sidePanel ? 'w-full sm:w-3/5' : 'w-full'}`}>
               {/* Mobile drag handle */}
-              <div className="sm:hidden flex justify-center pt-2 pb-0.5">
+              <div
+                className="sm:hidden flex justify-center pt-2 pb-0.5 touch-none cursor-grab active:cursor-grabbing"
+                onTouchStart={(e) => {
+                  dragRef.current.startY = e.touches[0].clientY
+                  dragRef.current.dragging = true
+                }}
+                onTouchMove={(e) => {
+                  if (!dragRef.current.dragging || !sheetRef.current) return
+                  const diff = e.touches[0].clientY - dragRef.current.startY
+                  if (diff > 0) {
+                    sheetRef.current.style.transform = `translateY(${diff}px)`
+                    sheetRef.current.style.transition = 'none'
+                  }
+                }}
+                onTouchEnd={(e) => {
+                  if (!dragRef.current.dragging || !sheetRef.current) return
+                  dragRef.current.dragging = false
+                  const diff = e.changedTouches[0].clientY - dragRef.current.startY
+                  if (diff > 80) {
+                    sheetRef.current.style.transition = 'transform 0.2s ease-out'
+                    sheetRef.current.style.transform = 'translateY(100%)'
+                    setTimeout(onClose, 200)
+                  } else {
+                    sheetRef.current.style.transition = 'transform 0.2s ease-out'
+                    sheetRef.current.style.transform = 'translateY(0)'
+                  }
+                }}
+              >
                 <div className="w-9 h-1 rounded-full bg-border/60" />
               </div>
               {/* Window Bar */}
@@ -223,7 +261,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                 {!loading && profile && (
                   <div className="flex items-center gap-2">
                     {profile.current_situation && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-status-success-bg text-status-success-text text-[0.625rem] font-bold border border-status-success-text/30">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-status-success-bg text-status-success-text text-[10px] font-bold border border-status-success-text/30">
                         <Briefcase size={10} />
                         {SITUATION_LABELS[profile.current_situation] || profile.current_situation}
                       </span>
@@ -242,7 +280,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                     <button
                       onClick={handleInterest}
                       disabled={interestLoading}
-                      className={`flex items-center gap-1 px-2 py-1 text-[0.625rem] font-mono font-bold transition-colors border ${
+                      className={`flex items-center gap-1 px-2 py-1 text-[10px] font-mono font-bold transition-colors border ${
                         hasInterested
                           ? 'bg-status-danger-bg text-status-danger-text border-status-danger-text/20'
                           : 'text-txt-disabled border-transparent hover:bg-surface-sunken hover:border-border hover:text-status-danger-text'
@@ -259,7 +297,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                     aria-label="공유"
                   >
                     {shareCopied ? (
-                      <span className="text-[0.625rem] font-medium text-status-success-text px-1 icon-bounce">복사됨!</span>
+                      <span className="text-[10px] font-medium text-status-success-text px-1 icon-bounce">복사됨!</span>
                     ) : (
                       <Share2 size={14} className="text-txt-disabled" />
                     )}
@@ -311,7 +349,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                   />
 
                   {/* 2-Column Grid Body */}
-                  <div className="px-4 sm:px-8 py-5">
+                  <div className="px-4 sm:px-8 py-5 bg-surface-sunken/50">
                     <div className="grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-10">
                       <ProfileBodyLeft
                         profile={profile}
@@ -329,11 +367,13 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                         setSidePanel={setSidePanel}
                         onClose={onClose}
                         onSelectProject={onSelectProject}
+                        initialCoffeeChatMessage={initialCoffeeChatMessage}
                       />
 
                       <ProfileBodyRight
                         personality={personality}
                         workStyle={workStyle}
+                        traits={visionTraits}
                         teamPref={teamPref}
                         availability={availability}
                         skills={skills}
@@ -357,8 +397,6 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
             )}
             </div>
           </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+    </>
   )
 }

@@ -1,16 +1,20 @@
 'use client'
 
-import React, { useState, useEffect, useCallback, Suspense } from 'react'
+import React, { useState, useEffect, useCallback, useRef, useMemo, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ArrowLeft, Loader2, Plus, X, Sparkles, AlertCircle } from 'lucide-react'
 import type { Area } from 'react-easy-crop'
 import { toast } from 'sonner'
 import { useCreateOpportunity } from '@/src/hooks/useOpportunities'
+import { useAutoSaveDraft } from '@/src/hooks/useAutoSaveDraft'
 import { TYPE_OPTIONS, CATEGORY_TAGS, TYPE_THEMES } from './constants'
 import { getCroppedImg, ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE, uploadImagesToSupabase } from './utils'
 import { ImageUploadSection } from './components/ImageUploadSection'
 import { CropModal } from './components/CropModal'
 import { ProjectInfoSidebar } from './components/ProjectInfoSidebar'
+import { RolesGrid } from './components/RolesGrid'
+import { AnimatedChip } from './components/AnimatedChip'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 
 export default function NewProjectPage() {
   return (
@@ -43,6 +47,15 @@ function NewProjectContent() {
   const [imagePreviews, setImagePreviews] = useState<string[]>([])
   const [imageUploading, setImageUploading] = useState(false)
 
+  // Inline validation
+  const [fieldErrors, setFieldErrors] = useState<{ title?: string; description?: string; roles?: string }>({})
+  const titleRef = useRef<HTMLInputElement>(null)
+  const descriptionRef = useRef<HTMLTextAreaElement>(null)
+  const rolesRef = useRef<HTMLDivElement>(null)
+
+  // Confirm modal
+  const [showConfirm, setShowConfirm] = useState(false)
+
   // Crop state
   const [cropSrc, setCropSrc] = useState<string | null>(null)
   const [cropQueue, setCropQueue] = useState<File[]>([])
@@ -55,6 +68,7 @@ function NewProjectContent() {
   }, [])
 
   // Read AI-generated draft from localStorage
+  const [aiDraftConsumed, setAiDraftConsumed] = useState(false)
   useEffect(() => {
     try {
       const saved = localStorage.getItem('draft-pending-opportunity')
@@ -65,8 +79,35 @@ function NewProjectContent() {
       if (draft.neededRoles?.length) setSelectedRoles(draft.neededRoles)
       if (draft.tags?.length) setSelectedTags(draft.tags)
       localStorage.removeItem('draft-pending-opportunity')
+      setAiDraftConsumed(true)
     } catch { /* ignore parse errors */ }
   }, [])
+
+  // Auto-save draft to localStorage
+  const formData = useMemo(() => ({
+    title, description, type, selectedRoles, selectedTags,
+    locationType, painPoint, timeCommitment, compensationType,
+    compensationDetails, links,
+  }), [title, description, type, selectedRoles, selectedTags, locationType, painPoint, timeCommitment, compensationType, compensationDetails, links])
+
+  const handleRestore = useCallback((data: typeof formData) => {
+    setTitle(data.title)
+    setDescription(data.description)
+    setType(data.type)
+    setSelectedRoles(data.selectedRoles)
+    setSelectedTags(data.selectedTags)
+    setLocationType(data.locationType)
+    setPainPoint(data.painPoint)
+    setTimeCommitment(data.timeCommitment)
+    setCompensationType(data.compensationType)
+    setCompensationDetails(data.compensationDetails)
+    setLinks(data.links)
+  }, [])
+
+  const { clearDraft } = useAutoSaveDraft(formData, {
+    enabled: !aiDraftConsumed,
+    onRestore: handleRestore,
+  })
 
   const toggleRole = (role: string) => {
     setSelectedRoles(prev =>
@@ -107,8 +148,7 @@ function NewProjectContent() {
     }
   }
 
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || [])
+  const processFiles = useCallback((files: File[]) => {
     const remaining = 5 - imageFiles.length
     const toAdd = files.slice(0, remaining)
     if (toAdd.length === 0) return
@@ -116,13 +156,11 @@ function NewProjectContent() {
     const invalid = toAdd.filter(f => !ALLOWED_IMAGE_TYPES.includes(f.type))
     if (invalid.length > 0) {
       setError(`JPG, PNG, WebP, GIF만 업로드 가능합니다 (${invalid.map(f => f.name).join(', ')})`)
-      e.target.value = ''
       return
     }
     const tooLarge = toAdd.filter(f => f.size > MAX_IMAGE_SIZE)
     if (tooLarge.length > 0) {
       setError(`5MB 이하 파일만 업로드 가능합니다 (${tooLarge.map(f => f.name).join(', ')})`)
-      e.target.value = ''
       return
     }
     setError('')
@@ -134,8 +172,16 @@ function NewProjectContent() {
     setCrop({ x: 0, y: 0 })
     setZoom(1)
     setCroppedAreaPixels(null)
+  }, [imageFiles.length])
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    processFiles(Array.from(e.target.files || []))
     e.target.value = ''
   }
+
+  const handleDropFiles = useCallback((files: File[]) => {
+    processFiles(files)
+  }, [processFiles])
 
   const handleCropConfirm = async () => {
     if (!cropSrc || !croppedAreaPixels) return
@@ -144,7 +190,7 @@ function NewProjectContent() {
       const previewUrl = URL.createObjectURL(croppedFile)
       setImageFiles(prev => [...prev, croppedFile])
       setImagePreviews(prev => [...prev, previewUrl])
-    } catch { /* ignore crop errors */ }
+    } catch { toast.error('이미지 처리에 실패했습니다') }
 
     URL.revokeObjectURL(cropSrc)
 
@@ -204,15 +250,32 @@ function NewProjectContent() {
     setLinks(prev => prev.map((l, i) => i === idx ? { ...l, [field]: value } : l))
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handlePreSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    if (!title.trim()) { setError('프로젝트 이름을 입력해주세요 (필수)'); return }
-    if (title.trim().length < 2) { setError('프로젝트 이름은 2자 이상이어야 해요'); return }
-    if (!description.trim()) { setError('프로젝트 소개를 입력해주세요 (필수)'); return }
-    if (description.trim().length < 20) { setError('프로젝트 소개는 20자 이상 작성해주세요'); return }
-    if (selectedRoles.length === 0) { setError('필요한 역할을 최소 1개 선택해주세요'); return }
+    const errors: typeof fieldErrors = {}
 
+    if (!title.trim()) errors.title = '프로젝트 이름을 입력해주세요'
+    else if (title.trim().length < 2) errors.title = '프로젝트 이름은 2자 이상이어야 해요'
+
+    if (!description.trim()) errors.description = '프로젝트 소개를 입력해주세요'
+    else if (description.trim().length < 20) errors.description = '프로젝트 소개는 20자 이상 작성해주세요'
+
+    if (selectedRoles.length === 0) errors.roles = '필요한 역할을 최소 1개 선택해주세요'
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors)
+      // Scroll to first error field
+      const firstErrorRef = errors.title ? titleRef : errors.description ? descriptionRef : rolesRef
+      firstErrorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      return
+    }
+
+    setFieldErrors({})
+    setShowConfirm(true)
+  }
+
+  const handleConfirmedSubmit = async () => {
     const projectLinks = links
       .filter(l => l.url.trim())
       .reduce((acc, l) => ({ ...acc, [l.label.trim() || l.url.trim()]: l.url.trim() }), {} as Record<string, string>)
@@ -236,6 +299,7 @@ function NewProjectContent() {
         demo_images: demoImages.length > 0 ? demoImages : null,
         status: 'active',
       })
+      clearDraft()
       toast.success('프로젝트가 등록되었습니다! 프로젝트 페이지로 이동합니다')
       router.push(returnTo || `/p/${result.id}`)
     } catch {
@@ -246,59 +310,81 @@ function NewProjectContent() {
 
   const theme = TYPE_THEMES[type] || TYPE_THEMES.side_project
 
+  const formProgress = useMemo(() => {
+    let score = 0
+    if (title.trim().length >= 2) score += 30
+    if (description.trim().length >= 20) score += 30
+    if (selectedRoles.length > 0) score += 30
+    if (selectedTags.length > 0) score += 5
+    if (imagePreviews.length > 0) score += 5
+    return score
+  }, [title, description, selectedRoles, selectedTags, imagePreviews])
+
   return (
     <div className="flex-1 overflow-y-auto bg-surface-bg">
       <div className="max-w-4xl mx-auto px-4 py-2 md:py-4">
 
-        <form onSubmit={handleSubmit} className="bg-surface-card shadow-md overflow-hidden border border-border">
+        <form onSubmit={handlePreSubmit} className="bg-surface-card shadow-sm overflow-hidden border border-border-subtle rounded-xl">
 
-          {/* ─── Window Bar ─── */}
-          <div className="bg-surface-sunken border-b-2 border-border px-3 sm:px-5 py-2.5 flex items-center justify-between relative">
-            <div className="flex items-center gap-3">
+          {/* ─── Progress Bar ─── */}
+          <div className="h-1 bg-surface-sunken overflow-hidden">
+            <div
+              className="h-full bg-brand progress-bar-spring"
+              style={{ width: `${formProgress}%` }}
+            />
+          </div>
+
+          {/* ─── Header ─── */}
+          <div className="border-b border-border-subtle px-3 sm:px-5 py-3 grid grid-cols-3 items-center">
+            <div>
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="hidden sm:flex items-center gap-1 text-xs text-txt-tertiary hover:text-txt-secondary transition-colors"
+                className="hidden sm:inline-flex items-center gap-1.5 text-xs text-txt-tertiary hover:text-txt-primary transition-colors"
               >
                 <ArrowLeft size={14} />
                 <span>돌아가기</span>
               </button>
-              <div className="w-px h-3 bg-border hidden sm:block" />
-              <div className="flex items-center gap-1.5 hidden sm:flex">
-                <div className="w-2.5 h-2.5 bg-[#FF5F57]" />
-                <div className="w-2.5 h-2.5 bg-[#FEBC2E]" />
-                <div className="w-2.5 h-2.5 bg-[#28C840]" />
+            </div>
+
+            {/* Type selector with sliding background */}
+            <div className="flex items-center justify-center">
+              <div className="relative inline-flex items-center gap-0.5 bg-surface-sunken rounded-xl p-0.5">
+                {/* Sliding background */}
+                <div
+                  className={`absolute top-0.5 bottom-0.5 rounded-lg transition-all duration-300 ${TYPE_THEMES[type].slidingBg}`}
+                  style={{
+                    width: `calc((100% - 4px) / ${TYPE_OPTIONS.length})`,
+                    left: `calc(${TYPE_OPTIONS.findIndex(o => o.value === type)} * (100% - 4px) / ${TYPE_OPTIONS.length} + 2px)`,
+                  }}
+                />
+                {TYPE_OPTIONS.map(opt => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setType(opt.value)}
+                    className="relative z-10 flex-1 text-[10px] font-medium px-2.5 py-1 rounded-lg transition-colors"
+                  >
+                    <span className={`relative ${type === opt.value ? 'text-txt-inverse' : 'text-txt-tertiary hover:text-txt-secondary'}`}>
+                      {opt.label}
+                    </span>
+                  </button>
+                ))}
               </div>
             </div>
 
-            {/* Type selector — absolute center */}
-            <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1">
-              {TYPE_OPTIONS.map(opt => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => setType(opt.value)}
-                  className={`text-[0.625rem] font-medium px-2.5 py-1 transition-colors ${
-                    type === opt.value
-                      ? TYPE_THEMES[opt.value].badge
-                      : 'bg-surface-sunken text-txt-tertiary hover:text-txt-secondary'
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
+            <div className="flex justify-end">
+              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-medium rounded-full transition-colors ${theme.status}`}>
+                <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${theme.statusDot}`} />
+                작성 중
+              </span>
             </div>
-
-            <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[0.625rem] font-bold transition-colors ${theme.status}`}>
-              <span className={`w-1.5 h-1.5 animate-pulse ${theme.statusDot}`} />
-              작성 중
-            </span>
           </div>
 
           {/* ─── Error Banner ─── */}
           {error && (
-            <div className="px-4 sm:px-8 pt-3">
-              <div className="flex items-center gap-2 px-3 py-2 bg-status-danger-bg border border-status-danger-text/20 text-status-danger-text text-xs">
+            <div key={error} className="px-4 sm:px-8 pt-3 animate-fade-in error-shake">
+              <div className="flex items-center gap-2 px-3 py-2 bg-status-danger-bg border border-status-danger-text/20 rounded-lg text-status-danger-text text-xs">
                 <AlertCircle size={13} className="shrink-0" />
                 <span>{error}</span>
                 <button type="button" onClick={() => setError('')} className="ml-auto hover:opacity-70">
@@ -316,40 +402,61 @@ function NewProjectContent() {
               onImageSelect={handleImageSelect}
               onRemoveImage={removeImage}
               onSetAsMain={setAsMain}
+              onDropFiles={handleDropFiles}
             />
           </div>
 
           {/* ─── Title & Tags ─── */}
           <div className="px-4 sm:px-8 pt-5 pb-4">
             <input
+              ref={titleRef}
               type="text"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => {
+                setTitle(e.target.value)
+                if (fieldErrors.title) setFieldErrors(prev => ({ ...prev, title: undefined }))
+              }}
+              onBlur={() => {
+                if (!title.trim()) setFieldErrors(prev => ({ ...prev, title: '프로젝트 이름을 입력해주세요' }))
+                else if (title.trim().length < 2) setFieldErrors(prev => ({ ...prev, title: '프로젝트 이름은 2자 이상이어야 해요' }))
+              }}
               placeholder={theme.titlePlaceholder}
               maxLength={100}
-              className="w-full text-2xl font-bold text-txt-primary placeholder:text-txt-disabled border-none outline-none bg-transparent leading-tight break-keep"
+              className={`w-full text-2xl font-bold text-txt-primary placeholder:text-txt-disabled border-none outline-none bg-transparent leading-tight break-keep ${fieldErrors.title ? 'ring-1 ring-status-danger-text/30 rounded px-1 -mx-1' : ''}`}
             />
+            {fieldErrors.title && <p className="text-status-danger-text text-xs mt-1">{fieldErrors.title}</p>}
 
             <div className="flex flex-wrap gap-1.5 mt-4">
               {CATEGORY_TAGS.map(tag => (
-                <button
+                <AnimatedChip
                   key={tag}
-                  type="button"
-                  onClick={() => toggleTag(tag)}
-                  className={`px-2.5 py-1 text-xs border transition-colors ${
-                    selectedTags.includes(tag)
-                      ? theme.chipOn
-                      : 'bg-surface-sunken text-txt-secondary border-border-subtle hover:border-border hover:text-txt-primary'
-                  }`}
-                >
-                  {tag}
-                </button>
+                  label={tag}
+                  selected={selectedTags.includes(tag)}
+                  onToggle={() => toggleTag(tag)}
+                  selectedClass={theme.chipOn}
+                  unselectedClass="bg-surface-sunken text-txt-secondary border-border-subtle hover:border-border hover:text-txt-primary"
+                />
               ))}
             </div>
           </div>
 
+          {/* ─── Mobile-only Roles — 필수 필드를 상단에 배치 ─── */}
+          <div className="md:hidden px-4 sm:px-8 pt-4">
+            <RolesGrid
+              ref={rolesRef}
+              theme={theme}
+              selectedRoles={selectedRoles}
+              onToggleRole={(role) => {
+                toggleRole(role)
+                if (fieldErrors.roles) setFieldErrors(prev => ({ ...prev, roles: undefined }))
+              }}
+              rolesLabel={theme.rolesLabel}
+              error={fieldErrors.roles}
+            />
+          </div>
+
           {/* Divider */}
-          <div className="mx-4 sm:mx-8 border-t border-border" />
+          <div className="mx-4 sm:mx-8 border-t border-border-subtle mt-4 md:mt-0" />
 
           {/* ─── Body: 2-Column ─── */}
           <div className="px-4 sm:px-8 py-5 sm:py-6">
@@ -361,14 +468,14 @@ function NewProjectContent() {
                 {/* Description */}
                 <section>
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-[0.625rem] font-medium text-txt-tertiary">
+                    <h3 className="text-[10px] font-medium text-txt-tertiary">
                       프로젝트 소개 <span className="text-status-danger-text">*</span>
                     </h3>
                     <button
                       type="button"
                       onClick={generateDescription}
                       disabled={aiLoading || !title.trim()}
-                      className="flex items-center gap-1.5 px-2.5 py-1 text-[0.625rem] font-medium border border-border text-txt-secondary hover:border-border hover:text-txt-primary transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-medium border border-border-subtle rounded-lg text-txt-secondary hover:border-brand/30 hover:text-txt-primary transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                       {aiLoading ? (
                         <><Loader2 size={10} className="animate-spin" /> 생성 중...</>
@@ -378,19 +485,40 @@ function NewProjectContent() {
                     </button>
                   </div>
                   <textarea
+                    ref={descriptionRef}
                     value={description}
-                    onChange={(e) => setDescription(e.target.value)}
+                    onChange={(e) => {
+                      setDescription(e.target.value)
+                      if (fieldErrors.description) setFieldErrors(prev => ({ ...prev, description: undefined }))
+                    }}
+                    onBlur={() => {
+                      if (!description.trim()) setFieldErrors(prev => ({ ...prev, description: '프로젝트 소개를 입력해주세요' }))
+                      else if (description.trim().length < 20) setFieldErrors(prev => ({ ...prev, description: '프로젝트 소개는 20자 이상 작성해주세요' }))
+                    }}
                     placeholder={theme.descPlaceholder}
                     rows={7}
                     maxLength={2000}
-                    className="w-full text-base sm:text-sm text-txt-secondary leading-[1.8] placeholder:text-txt-disabled border border-border p-3 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand resize-none bg-transparent transition-all"
+                    className={`w-full text-base sm:text-sm text-txt-secondary leading-[1.8] placeholder:text-txt-disabled border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-brand/10 focus:border-brand resize-none bg-transparent transition-all ${fieldErrors.description ? 'border-status-danger-text/30' : 'border-border-subtle'}`}
                   />
-                  <p className={`text-[0.625rem] mt-1 text-right font-mono ${description.length >= 1800 ? 'text-status-danger-text font-bold' : description.length >= 1500 ? 'text-status-warning-text' : 'text-txt-disabled'}`}>{description.length}/2000</p>
+                  {fieldErrors.description && <p className="text-status-danger-text text-xs mt-1">{fieldErrors.description}</p>}
+                  <div className="mt-1.5 flex items-center gap-3">
+                    <div className="flex-1 h-1 bg-surface-sunken rounded-full overflow-hidden">
+                      <div
+                        className={`h-full rounded-full progress-bar-spring ${
+                          description.length >= 1800 ? 'bg-status-danger-text' :
+                          description.length >= 1500 ? 'bg-status-warning-text' :
+                          description.length >= 20 ? 'bg-brand' : 'bg-txt-disabled/30'
+                        }`}
+                        style={{ width: `${Math.min((description.length / 2000) * 100, 100)}%` }}
+                      />
+                    </div>
+                    <p className={`text-[10px] font-mono shrink-0 ${description.length >= 1800 ? 'text-status-danger-text font-bold' : description.length >= 1500 ? 'text-status-warning-text' : 'text-txt-disabled'}`}>{description.length}/2000</p>
+                  </div>
                 </section>
 
                 {/* Pain Point */}
-                <section className={`p-4 border border-border-subtle transition-colors ${theme.painBg}`}>
-                  <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-2">
+                <section className={`p-4 border border-border-subtle rounded-xl transition-colors ${theme.painBg}`}>
+                  <h3 className="text-[10px] font-medium text-txt-tertiary mb-2">
                     {theme.painLabel}
                   </h3>
                   <textarea
@@ -405,7 +533,7 @@ function NewProjectContent() {
 
                 {/* Links */}
                 <section>
-                  <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-2">
+                  <h3 className="text-[10px] font-medium text-txt-tertiary mb-2">
                     프로젝트 링크
                   </h3>
                   <div className="space-y-2">
@@ -416,7 +544,7 @@ function NewProjectContent() {
                           value={link.label}
                           onChange={(e) => updateLink(idx, 'label', e.target.value)}
                           placeholder="예: GitHub, 노션"
-                          className="px-3 py-2 border border-border text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand w-1/3 bg-transparent transition-all"
+                          className="px-3 py-2 border border-border-subtle rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand/10 focus:border-brand w-1/3 bg-transparent transition-all"
                         />
                         <input
                           type="url"
@@ -424,7 +552,7 @@ function NewProjectContent() {
                           onChange={(e) => updateLink(idx, 'url', e.target.value)}
                           placeholder="https://github.com/..."
                           inputMode="url"
-                          className="px-3 py-2 border border-border text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand flex-1 bg-transparent transition-all"
+                          className="px-3 py-2 border border-border-subtle rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand/10 focus:border-brand flex-1 bg-transparent transition-all"
                         />
                         <button
                           type="button"
@@ -455,31 +583,39 @@ function NewProjectContent() {
                 timeCommitment={timeCommitment}
                 compensationType={compensationType}
                 compensationDetails={compensationDetails}
-                onToggleRole={toggleRole}
+                onToggleRole={(role) => {
+                  toggleRole(role)
+                  if (fieldErrors.roles) setFieldErrors(prev => ({ ...prev, roles: undefined }))
+                }}
                 onSetLocationType={setLocationType}
                 onSetTimeCommitment={(v) => setTimeCommitment(prev => prev === v ? '' : v)}
                 onSetCompensationType={(v) => setCompensationType(prev => prev === v ? '' : v)}
                 onSetCompensationDetails={setCompensationDetails}
                 isPending={createOpportunity.isPending}
                 imageUploading={imageUploading}
+                hideRolesOnMobile
+                rolesError={fieldErrors.roles}
               />
             </div>
           </div>
 
           {/* Mobile Footer */}
-          <div className="md:hidden px-4 py-4 bg-surface-card border-t-2 border-border">
+          <div className="md:hidden px-4 py-4 bg-surface-card border-t border-border-subtle">
             <button
               type="submit"
               disabled={createOpportunity.isPending || imageUploading}
-              className={`w-full h-12 font-bold text-sm flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${theme.mobileBtn}`}
+              className={`group/mob relative w-full h-12 font-bold text-sm rounded-xl flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden active:scale-[0.97] ${theme.mobileBtn}`}
             >
-              {imageUploading ? (
-                <><Loader2 size={14} className="animate-spin" /> 이미지 업로드 중...</>
-              ) : createOpportunity.isPending ? (
-                <><Loader2 size={14} className="animate-spin" /> 생성 중...</>
-              ) : (
-                '프로젝트 등록하기'
-              )}
+              <span className="absolute inset-0 -translate-x-full group-hover/mob:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/15 to-transparent" />
+              <span className="relative flex items-center gap-2">
+                {imageUploading ? (
+                  <><Loader2 size={14} className="animate-spin" /> 이미지 업로드 중...</>
+                ) : createOpportunity.isPending ? (
+                  <><Loader2 size={14} className="animate-spin" /> 생성 중...</>
+                ) : (
+                  '프로젝트 등록하기'
+                )}
+              </span>
             </button>
           </div>
         </form>
@@ -498,6 +634,18 @@ function NewProjectContent() {
             onCropCancel={handleCropCancel}
           />
         )}
+
+        {/* ─── Confirm Modal ─── */}
+        <ConfirmModal
+          isOpen={showConfirm}
+          onClose={() => setShowConfirm(false)}
+          onConfirm={handleConfirmedSubmit}
+          title="프로젝트 등록"
+          message="프로젝트를 등록하시겠어요? 등록 후 바로 공개됩니다."
+          confirmText="등록하기"
+          cancelText="취소"
+          variant="info"
+        />
       </div>
     </div>
   )

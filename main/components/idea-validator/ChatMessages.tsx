@@ -36,7 +36,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
               <div className="max-w-[70%] space-y-1">
                 <div className="flex items-center gap-2 mb-1 justify-end">
                   <span className="text-xs font-bold text-txt-primary">Me</span>
-                  <span className="text-[0.625rem] font-mono text-txt-tertiary">
+                  <span className="text-[10px] font-mono text-txt-tertiary">
                     {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
                 </div>
@@ -62,7 +62,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
                   <div className="max-w-[70%] space-y-1">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-xs font-bold text-txt-primary">Draft AI</span>
-                      <span className="text-[0.625rem] font-mono text-txt-tertiary">
+                      <span className="text-[10px] font-mono text-txt-tertiary">
                         {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
@@ -78,7 +78,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
                       <span className="text-white font-bold text-xs">D</span>
                     </div>
                     <span className="text-xs font-bold text-txt-primary">Draft AI</span>
-                    <span className="text-[0.625rem] font-mono text-txt-tertiary">
+                    <span className="text-[10px] font-mono text-txt-tertiary">
                       {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>
@@ -122,14 +122,14 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
                   {msg.id === lastMsg?.id && msg.responses?.some(r => r.isReflected) && (
                     <div className="ml-10 mt-4 flex items-center justify-between p-3 bg-surface-sunken rounded-xl border border-border">
                       <div className="flex items-center gap-3">
-                        <div className="text-[0.625rem] font-medium text-txt-tertiary">
+                        <div className="text-[10px] font-medium text-txt-tertiary">
                           {msg.responses.filter(r => r.isReflected).length}개 조언 선택됨
                         </div>
                       </div>
                       <button
                         onClick={onConsolidatedSend}
                         disabled={isTyping}
-                        className="bg-black hover:bg-surface-inverse/90 text-white px-5 py-2 font-bold text-xs transition-all flex items-center gap-2 disabled:opacity-50 hover:opacity-90 active:scale-[0.97]"
+                        className="bg-black hover:bg-surface-inverse/90 text-white px-5 py-2 rounded-xl font-bold text-xs transition-all flex items-center gap-2 disabled:opacity-50 hover:opacity-90 active:scale-[0.97]"
                       >
                         다음 단계
                         <ArrowRight size={14} />

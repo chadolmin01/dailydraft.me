@@ -105,7 +105,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
     <div className="bg-surface-card rounded-xl border border-border">
       {/* Header */}
       <div className="p-4 border-b border-border">
-        <h3 className="text-[0.625rem] font-medium text-txt-tertiary flex items-center gap-2">
+        <h3 className="text-[10px] font-medium text-txt-tertiary flex items-center gap-2">
           <MessageCircle size={14} />
           {COMMENT_LABEL} ({comments.length})
         </h3>
@@ -132,16 +132,20 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
               placeholder={`${COMMENT_VERB}을 남겨주세요...`}
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="flex-1 px-3 py-1.5 text-base sm:text-sm border border-border focus:outline-none focus:border-border bg-surface-card rounded-lg text-txt-primary placeholder-txt-disabled"
+              className="flex-1 px-3 py-1.5 text-base sm:text-sm border border-border focus:outline-none focus:border-border bg-surface-card rounded-xl text-txt-primary placeholder-txt-disabled"
               maxLength={500}
             />
             <button
               type="submit"
               disabled={submitting || !content.trim()}
               className="px-3 py-1.5 bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 transition-colors disabled:bg-surface-sunken disabled:text-txt-disabled disabled:border-border disabled:cursor-not-allowed flex items-center justify-center"
+              aria-label="댓글 전송"
             >
               {submitting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
             </button>
+          </div>
+          <div className="text-[10px] text-txt-tertiary font-mono text-right mt-1">
+            {content.length}/500
           </div>
         </form>
       ) : (
@@ -149,7 +153,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
           <p className="text-sm text-txt-tertiary mb-3">로그인하고 {COMMENT_VERB}을 남겨보세요</p>
           <button
             onClick={onLoginClick}
-            className="inline-flex items-center gap-2 bg-surface-inverse text-txt-inverse px-5 py-2 text-xs font-bold border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97]"
+            className="inline-flex items-center gap-2 bg-surface-inverse text-txt-inverse px-5 py-2 rounded-xl text-xs font-bold border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97]"
           >
             로그인하기 <ArrowRight size={12} />
           </button>
@@ -229,7 +233,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
     <div className="p-4">
       {/* Author info */}
       <div className="flex items-center gap-2 mb-2">
-        <div className="w-6 h-6 bg-surface-inverse text-txt-inverse rounded-full flex items-center justify-center text-[0.625rem] font-bold shrink-0">
+        <div className="w-6 h-6 bg-surface-inverse text-txt-inverse rounded-full flex items-center justify-center text-[10px] font-bold shrink-0">
           {cleanNickname(comment.nickname).charAt(0)}
         </div>
         <span className="font-bold text-sm text-txt-primary">{cleanNickname(comment.nickname)}</span>

@@ -4,6 +4,8 @@ import { ApiResponse } from '@/src/lib/api-utils'
 import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
 import { safeGenerate } from '@/src/lib/ai/safe-generate'
 import { OnboardingSummarySchema } from '@/src/lib/ai/schemas'
+import { CATEGORICAL_TO_SCORE } from '@/src/lib/onboarding/constants'
+import { generateProfileEmbedding } from '@/src/lib/ai/embeddings'
 
 interface TranscriptMessage {
   role: 'user' | 'assistant'
@@ -41,13 +43,15 @@ const SUMMARIZE_PROMPT = `아래는 Draft 플랫폼 온보딩에서 AI와 사용
   "strengths": [<문자열 배열, 자신이 잘하는 것>],
   "wants_from_team": [<문자열 배열, 팀원에게 기대하는 역량>],
   "project_interests": [<문자열 배열, 만들고 싶은 것이나 관심 프로젝트>],
-  "summary": "<2-3문장으로 이 사용자의 팀 매칭 포인트 요약>"
+  "summary": "<2-3문장으로 이 사용자의 팀 매칭 포인트 요약>",
+  "bio": "<1-2문장 자기소개. 프로필에 바로 노출됨. 예: 'UX에 관심 많은 컴공 3학년입니다. 사이드 프로젝트로 실력을 키우고 싶어요!'>"
 }
 
 ## 규칙
 - 대화에서 언급되지 않은 항목은 중간값(5) 또는 null 사용
 - 배열은 대화에서 추출 가능한 것만 포함, 빈 배열 가능
 - summary는 팀 매칭 시 다른 사용자에게 보여줄 수 있는 간결한 소개
+- bio는 사용자의 자기소개란에 자동으로 채워질 텍스트. 친근하고 자연스러운 어조. 반말 금지. 1-2문장.
 - 반드시 유효한 JSON만 출력`
 
 export async function POST(request: Request) {
@@ -60,14 +64,25 @@ export async function POST(request: Request) {
     if (rateLimitResponse) return rateLimitResponse
 
     const body = await request.json()
-    const { transcript } = body as { transcript: TranscriptMessage[] }
+    const { transcript, structuredData } = body as {
+      transcript: TranscriptMessage[]
+      structuredData?: Array<{ questionId: string; scoreMappings?: Record<string, number>; value: unknown; measuredFields: string[] }>
+    }
 
     if (!Array.isArray(transcript) || transcript.length === 0) {
       return ApiResponse.badRequest('No transcript provided')
     }
 
+    // C9: Limit transcript size to prevent abuse
+    const MAX_TRANSCRIPT_MESSAGES = 40
+    const MAX_MSG_CONTENT_LENGTH = 3000
+    const trimmedTranscript = transcript.slice(0, MAX_TRANSCRIPT_MESSAGES).map(m => ({
+      ...m,
+      content: typeof m.content === 'string' ? m.content.slice(0, MAX_MSG_CONTENT_LENGTH) : '',
+    }))
+
     // Format conversation for analysis
-    const conversationText = transcript
+    const conversationText = trimmedTranscript
       .map(m => `${m.role === 'user' ? '사용자' : 'AI'}: ${m.content}`)
       .join('\n\n')
 
@@ -80,6 +95,112 @@ export async function POST(request: Request) {
       extractJson: 'object',
     })
 
+    // Merge structured data from interactive elements (higher priority than AI inference)
+    // Strategy: categorical values stored as-is, numeric values stored as numbers
+    const behavioralTraits: Record<string, unknown> = {}
+
+    if (structuredData?.length) {
+      for (const sr of structuredData) {
+        const field = sr.measuredFields[0] // primary field
+
+        // Categorical: store selected option ID directly
+        if (['collaboration_style', 'decision_style', 'planning_style', 'quality_style', 'risk_style'].includes(field)) {
+          behavioralTraits[field] = sr.value // e.g. "solo", "fast", "plan_first", "quality", "adventurous"
+        }
+
+        // Strengths from emoji grid
+        if (sr.measuredFields.includes('strengths') && Array.isArray(sr.value)) {
+          const strengthMap: Record<string, string> = { planning: '기획력', implementation: '빠른 구현', design: '디자인 감각', communication: '소통', problem_solving: '문제 해결', leadership: '리더십' }
+          parsed.strengths = (sr.value as string[]).map(id => strengthMap[id] || id)
+        }
+
+        // Spectrum 1-5: store as number (actual resolution exists)
+        if (field === 'communication' && typeof sr.value === 'number') {
+          if (!parsed.personality) parsed.personality = { risk: 5, time: 5, communication: 5, decision: 5 }
+          // Scale 1-5 → 1-10 for DB compatibility
+          ;(parsed.personality as Record<string, number>).communication = sr.value * 2
+        }
+        if (field === 'team_role' && typeof sr.value === 'number') {
+          if (!parsed.team_preference) parsed.team_preference = { role: '유연', preferred_size: null, atmosphere: '균형' }
+          parsed.team_preference.role = sr.value >= 4 ? '리더' : sr.value <= 2 ? '팔로워' : '유연'
+          behavioralTraits.team_role = sr.value // also store raw 1-5
+        }
+
+        // Lists: store ordered arrays directly
+        if (sr.measuredFields.includes('goals') && Array.isArray(sr.value)) {
+          parsed.goals = sr.value as string[]
+        }
+        if (sr.measuredFields.includes('wants_from_team') && Array.isArray(sr.value)) {
+          parsed.wants_from_team = sr.value as string[]
+        }
+
+        // Multi-select: store selected IDs
+        if (sr.measuredFields.includes('atmosphere') && Array.isArray(sr.value)) {
+          const atm = sr.value as string[]
+          behavioralTraits.atmosphere = atm // e.g. ["serious", "remote"]
+          if (!parsed.team_preference) parsed.team_preference = { role: '유연', preferred_size: null, atmosphere: '균형' }
+          parsed.team_preference.atmosphere = atm.includes('serious') ? '실무형' : atm.includes('side') || atm.includes('cafe') ? '캐주얼' : '균형'
+          if (!parsed.availability) parsed.availability = { hours_per_week: null, prefer_online: false, semester_available: true }
+          parsed.availability.prefer_online = atm.includes('remote')
+        }
+        if (sr.measuredFields.includes('preferred_size') && Array.isArray(sr.value)) {
+          const picked = (sr.value as string[])[0]
+          behavioralTraits.preferred_size = picked // e.g. "small"
+          if (!parsed.team_preference) parsed.team_preference = { role: '유연', preferred_size: null, atmosphere: '균형' }
+          const sizeMap: Record<string, string> = { duo: '2-3명', small: '2-3명', medium: '4-5명', large: '6명+' }
+          parsed.team_preference.preferred_size = sizeMap[picked] || null
+        }
+
+        // Numbers + booleans
+        if (sr.measuredFields.includes('hours_per_week') && typeof sr.value === 'object' && sr.value !== null) {
+          const qv = sr.value as { hours?: number; semesterAvailable?: boolean | null }
+          if (!parsed.availability) parsed.availability = { hours_per_week: null, prefer_online: false, semester_available: true }
+          if (typeof qv.hours === 'number') {
+            parsed.availability.hours_per_week = qv.hours
+            // Also set personality.time from actual hours
+            if (!parsed.personality) parsed.personality = { risk: 5, time: 5, communication: 5, decision: 5 }
+            ;(parsed.personality as Record<string, number>).time = Math.min(10, Math.round(qv.hours / 3))
+          }
+          if (typeof qv.semesterAvailable === 'boolean') parsed.availability.semester_available = qv.semesterAvailable
+        }
+      }
+    }
+
+    // Overwrite numeric fields from categorical interactive answers
+    if (behavioralTraits.collaboration_style) {
+      const score = CATEGORICAL_TO_SCORE.collaboration_style[behavioralTraits.collaboration_style as string]
+      if (score != null) {
+        if (!parsed.work_style) parsed.work_style = { collaboration: 5, planning: 5, perfectionism: 5 }
+        ;(parsed.work_style as Record<string, number>).collaboration = score
+      }
+    }
+    if (behavioralTraits.decision_style) {
+      const score = CATEGORICAL_TO_SCORE.decision_style[behavioralTraits.decision_style as string]
+      if (score != null) {
+        if (!parsed.personality) parsed.personality = { risk: 5, time: 5, communication: 5, decision: 5 }
+        ;(parsed.personality as Record<string, number>).decision = score
+      }
+    }
+    if (behavioralTraits.planning_style) {
+      const score = CATEGORICAL_TO_SCORE.planning_style[behavioralTraits.planning_style as string]
+      if (score != null) {
+        if (!parsed.work_style) parsed.work_style = { collaboration: 5, planning: 5, perfectionism: 5 }
+        ;(parsed.work_style as Record<string, number>).planning = score
+      }
+    }
+    if (behavioralTraits.quality_style) {
+      const score = CATEGORICAL_TO_SCORE.quality_style[behavioralTraits.quality_style as string]
+      if (score != null) {
+        if (!parsed.work_style) parsed.work_style = { collaboration: 5, planning: 5, perfectionism: 5 }
+        ;(parsed.work_style as Record<string, number>).perfectionism = score
+      }
+    }
+    if (behavioralTraits.risk_style) {
+      if (!parsed.personality) parsed.personality = { risk: 5, time: 5, communication: 5, decision: 5 }
+      ;(parsed.personality as Record<string, number>).risk = behavioralTraits.risk_style === 'adventurous' ? 8 : 3
+      behavioralTraits.risk_style = behavioralTraits.risk_style // keep in traits
+    }
+
     // Save to DB: personality + vision_summary (스키마가 클램핑 완료)
     const updateData: Record<string, unknown> = {
       ai_chat_completed: true,
@@ -89,17 +210,56 @@ export async function POST(request: Request) {
       updateData.personality = parsed.personality
     }
 
-    if (parsed.summary || parsed.work_style) {
-      updateData.vision_summary = JSON.stringify({
-        work_style: parsed.work_style || null,
-        availability: parsed.availability || null,
-        team_preference: parsed.team_preference || null,
-        goals: parsed.goals || [],
-        strengths: parsed.strengths || [],
-        wants_from_team: parsed.wants_from_team || [],
-        project_interests: parsed.project_interests || [],
-        summary: parsed.summary || '',
-      })
+    // Auto-fill bio from AI if generated and user doesn't have one yet
+    if (parsed.bio) {
+      const { data: existingProfile } = await supabase.from('profiles')
+        .select('bio')
+        .eq('user_id', user.id)
+        .single()
+      if (!existingProfile?.bio) {
+        updateData.bio = parsed.bio
+      }
+    }
+
+    const visionSummaryJson = (parsed.summary || parsed.work_style || Object.keys(behavioralTraits).length > 0)
+      ? {
+          work_style: parsed.work_style || null,
+          availability: parsed.availability || null,
+          team_preference: parsed.team_preference || null,
+          goals: parsed.goals || [],
+          strengths: parsed.strengths || [],
+          wants_from_team: parsed.wants_from_team || [],
+          project_interests: parsed.project_interests || [],
+          summary: parsed.summary || '',
+          ...(Object.keys(behavioralTraits).length > 0 && { traits: behavioralTraits }),
+        }
+      : null
+
+    if (visionSummaryJson) {
+      updateData.vision_summary = JSON.stringify(visionSummaryJson)
+    }
+
+    // Generate vision_embedding for vector similarity matching
+    // Fetch current profile to get skills/interests/position (saved by checkpoint earlier)
+    if (parsed.summary) {
+      try {
+        const { data: currentProfile } = await supabase.from('profiles')
+          .select('skills, interest_tags, desired_position')
+          .eq('user_id', user.id)
+          .single()
+
+        const embedding = await generateProfileEmbedding({
+          visionSummary: parsed.summary,
+          skills: (currentProfile?.skills as Array<{ name: string; level: string }>) ?? undefined,
+          interestTags: currentProfile?.interest_tags as string[] ?? undefined,
+          desiredPosition: (currentProfile?.desired_position as string) ?? undefined,
+        })
+
+        updateData.vision_embedding = embedding
+      } catch (embeddingError) {
+        // Non-fatal: profile still saves, embedding can be backfilled later
+        console.error('Embedding generation failed:', embeddingError)
+      }
     }
 
     await supabase.from('profiles')

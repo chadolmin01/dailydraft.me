@@ -6,8 +6,12 @@ export function SplashScreen() {
   const [phase, setPhase] = useState<'grid' | 'logo' | 'out' | 'done'>('grid')
 
   useEffect(() => {
-    // Check if already shown this session
-    if (sessionStorage.getItem('draft-splash-shown')) {
+    // Skip if already shown this session, or if a modal is about to open via URL params
+    const hasDeepLink = typeof window !== 'undefined' && (
+      new URLSearchParams(window.location.search).has('project') ||
+      new URLSearchParams(window.location.search).has('profile')
+    )
+    if (sessionStorage.getItem('draft-splash-shown') || hasDeepLink) {
       setPhase('done')
       return
     }
@@ -65,14 +69,14 @@ export function SplashScreen() {
         }`}
       >
         {/* D mark */}
-        <div className="w-20 h-20 bg-surface-inverse rounded-2xl flex items-center justify-center shadow-xl">
+        <div className="w-20 h-20 bg-surface-inverse flex items-center justify-center">
           <span className="text-txt-inverse font-black text-4xl leading-none">D</span>
         </div>
 
         {/* Wordmark */}
         <div className="flex flex-col items-center gap-1.5">
           <span className="text-txt-primary font-bold text-2xl tracking-tight">Draft.</span>
-          <span className="text-txt-tertiary text-[0.6875rem] tracking-wide">
+          <span className="text-txt-tertiary text-xs tracking-wide">
             where projects begin
           </span>
         </div>
@@ -80,10 +84,10 @@ export function SplashScreen() {
 
       {/* Corner dots — minimal frame */}
       <div className={`splash-corners ${phase === 'grid' ? '' : 'splash-corners-visible'}`}>
-        <div className="absolute top-10 left-10 w-2 h-2 rounded-full bg-border-strong" />
-        <div className="absolute top-10 right-10 w-2 h-2 rounded-full bg-border-strong" />
-        <div className="absolute bottom-10 left-10 w-2 h-2 rounded-full bg-border-strong" />
-        <div className="absolute bottom-10 right-10 w-2 h-2 rounded-full bg-border-strong" />
+        <div className="absolute top-10 left-10 w-2 h-2 bg-border-strong" />
+        <div className="absolute top-10 right-10 w-2 h-2 bg-border-strong" />
+        <div className="absolute bottom-10 left-10 w-2 h-2 bg-border-strong" />
+        <div className="absolute bottom-10 right-10 w-2 h-2 bg-border-strong" />
       </div>
 
       <style jsx>{`

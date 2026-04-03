@@ -175,7 +175,7 @@ export const AiFieldButton: React.FC<AiFieldButtonProps> = ({
       disabled={disabled || isGenerating}
       className={`
         flex items-center gap-1.5 font-medium transition-all
-        ${compact ? 'px-2 py-1 text-[0.625rem]' : 'px-3 py-1.5 text-xs'}
+        ${compact ? 'px-2 py-1 text-[10px]' : 'px-3 py-1.5 text-xs'}
         ${isGenerating
           ? 'bg-surface-sunken text-txt-tertiary cursor-wait'
           : disabled

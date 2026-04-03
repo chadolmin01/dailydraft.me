@@ -36,7 +36,7 @@ const GnbIconBtn = ({ label, onClick, children, className }: {
     >
       {children}
     </button>
-    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2.5 py-1 bg-surface-inverse text-txt-inverse text-[0.625rem] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-tooltip hidden md:block shadow-sm border border-surface-inverse">
+    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2.5 py-1 bg-surface-inverse text-txt-inverse text-[10px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-tooltip hidden md:block shadow-sm border border-surface-inverse">
       {label}
     </div>
   </div>
@@ -49,7 +49,7 @@ const DropdownItem = ({ icon: Icon, children, onClick, disabled, danger }: {
   <button
     onClick={onClick}
     disabled={disabled}
-    className={`w-full flex items-center gap-2.5 px-2.5 py-2 text-xs rounded-sm transition-colors text-left ${
+    className={`w-full flex items-center gap-2.5 px-2.5 py-2 text-xs rounded-lg transition-colors text-left ${
       disabled ? 'text-txt-disabled cursor-not-allowed'
         : danger ? 'text-status-danger-text hover:bg-status-danger-bg'
         : 'text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary'
@@ -64,7 +64,7 @@ const DropdownItem = ({ icon: Icon, children, onClick, disabled, danger }: {
 const MobileNavItem = ({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) => (
   <Link
     href={href}
-    className={`block px-4 py-2.5 rounded-sm text-sm font-medium transition-colors ${
+    className={`block px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
       active ? 'bg-surface-sunken text-txt-primary' : 'text-txt-secondary hover:bg-surface-sunken'
     }`}
   >
@@ -171,12 +171,14 @@ export const TopNavbar: React.FC = () => {
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 w-full h-14 sm:h-20 z-fixed transition-all duration-300 overflow-hidden ${
-        isScrolled
-          ? 'bg-surface-card/80 backdrop-blur-xl shadow-soft'
-          : 'bg-surface-card/60 backdrop-blur-md'
-      }`}>
-        <div className="w-full px-2.5 sm:px-10 lg:px-16 xl:px-24 h-full flex items-center gap-2 sm:gap-3">
+      <nav className="fixed top-0 left-0 w-full h-14 sm:h-20 z-fixed">
+        {/* 배경 레이어 — backdrop-filter를 nav가 아닌 별도 div에 적용하여 드롭다운 overflow 가림 방지 */}
+        <div className={`absolute inset-0 transition-all duration-300 ${
+          isScrolled
+            ? 'bg-surface-card/80 backdrop-blur-xl shadow-soft'
+            : 'bg-surface-card/60 backdrop-blur-md'
+        }`} />
+        <div className="relative w-full px-2.5 sm:px-10 lg:px-16 xl:px-24 h-full flex items-center gap-2 sm:gap-3">
 
           {/* ===== 좌측: 로고 ===== */}
           <Link href="/explore" className="flex items-center gap-2.5 shrink-0 group mr-1">
@@ -199,7 +201,7 @@ export const TopNavbar: React.FC = () => {
               onClick={() => { if (!isSearchOpen) { setIsSearchOpen(true); setTimeout(() => searchInputRef.current?.focus(), 50) } }}
               className={`flex items-center transition-all duration-200 cursor-text ${
                 isSearchOpen
-                  ? 'bg-surface-card shadow-md border border-border'
+                  ? 'bg-surface-card shadow-md border border-border rounded-xl'
                   : 'bg-surface-card rounded-xl border border-border hover:shadow-soft hover:border-border'
               }`}
             >
@@ -230,7 +232,7 @@ export const TopNavbar: React.FC = () => {
             {/* 드롭다운 — 검색바 아래로 자연스럽게 열림 */}
             {isSearchOpen && (
               <div className="absolute top-full left-0 right-0 mt-1.5 z-popover">
-                <div className="bg-surface-card shadow-lg border border-border overflow-hidden search-expand max-h-[60vh] overflow-y-auto">
+                <div className="bg-surface-card shadow-lg border border-border rounded-xl overflow-hidden search-expand max-h-[60vh] overflow-y-auto">
 
                   {/* 바로가기 */}
                   <div className="px-2 pt-2 pb-1">
@@ -242,9 +244,9 @@ export const TopNavbar: React.FC = () => {
                         <button
                           key={item.href || item.label}
                           onClick={() => handleNavClick(item.href)}
-                          className="w-full flex items-center gap-3 px-2.5 py-2 rounded-sm text-sm transition-colors text-left text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary"
+                          className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm transition-colors text-left text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary"
                         >
-                          <div className="w-7 h-7 rounded-sm bg-surface-sunken flex items-center justify-center shrink-0">
+                          <div className="w-7 h-7 rounded-lg bg-surface-sunken flex items-center justify-center shrink-0">
                             <item.icon size={14} />
                           </div>
                           <span>{item.label}</span>
@@ -264,9 +266,9 @@ export const TopNavbar: React.FC = () => {
                         <p className="px-2.5 pt-1 pb-1.5 text-[10px] text-txt-disabled">콘텐츠 검색</p>
                         <button
                           onClick={handleSearch}
-                          className="w-full flex items-center gap-3 px-2.5 py-2 rounded-sm text-sm text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary transition-colors text-left"
+                          className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary transition-colors text-left"
                         >
-                          <div className="w-7 h-7 rounded-sm bg-surface-inverse text-txt-inverse flex items-center justify-center shrink-0">
+                          <div className="w-7 h-7 rounded-lg bg-surface-inverse text-txt-inverse flex items-center justify-center shrink-0">
                             <Search size={14} />
                           </div>
                           <span>&ldquo;{searchQuery.trim()}&rdquo; 탐색에서 검색</span>
@@ -280,13 +282,13 @@ export const TopNavbar: React.FC = () => {
                   <div className="mx-3 border-t border-border-subtle" />
                   <div className="px-4 py-2 flex items-center gap-3">
                     <span className="flex items-center gap-1.5 text-[10px] text-txt-disabled">
-                      <kbd className="px-1.5 py-0.5 bg-surface-sunken rounded-xl border border-border rounded font-mono">↑↓</kbd> 이동
+                      <kbd className="px-1.5 py-0.5 bg-surface-sunken rounded-lg border border-border font-mono">↑↓</kbd> 이동
                     </span>
                     <span className="flex items-center gap-1.5 text-[10px] text-txt-disabled">
-                      <kbd className="px-1.5 py-0.5 bg-surface-sunken rounded-xl border border-border rounded font-mono">Enter</kbd> 열기
+                      <kbd className="px-1.5 py-0.5 bg-surface-sunken rounded-lg border border-border font-mono">Enter</kbd> 열기
                     </span>
                     <span className="flex items-center gap-1.5 text-[10px] text-txt-disabled">
-                      <kbd className="px-1.5 py-0.5 bg-surface-sunken rounded-xl border border-border rounded font-mono">Esc</kbd> 닫기
+                      <kbd className="px-1.5 py-0.5 bg-surface-sunken rounded-lg border border-border font-mono">Esc</kbd> 닫기
                     </span>
                   </div>
                 </div>
@@ -296,35 +298,31 @@ export const TopNavbar: React.FC = () => {
 
           {/* ===== 우측 액션 ===== */}
           <div className="flex items-center gap-2 shrink-0 ml-auto">
-            {authLoading ? (
-              <>
-                {/* 스켈레톤: auth 로딩 중 레이아웃 점프 방지 */}
-                <div className="hidden md:block w-[100px] h-8 bg-surface-sunken skeleton-shimmer" />
-                <div className="w-8 h-8 bg-surface-sunken skeleton-shimmer" />
-                <div className="w-8 h-8 bg-surface-sunken skeleton-shimmer" />
-              </>
-            ) : isAuthenticated ? (
-              <>
-                {/* 새 프로젝트 CTA */}
-                <button
-                  onClick={() => router.push('/projects/new')}
-                  className="hidden md:flex items-center gap-1.5 px-3.5 py-1.5 bg-surface-inverse text-txt-inverse text-xs font-bold hover:bg-accent-hover transition-all border border-surface-inverse hover:opacity-90 active:scale-[0.97] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none active:scale-[0.97]"
-                >
-                  <Plus size={14} strokeWidth={2.5} />
-                  <span>새 프로젝트</span>
-                </button>
+            {/* 새 프로젝트 CTA — auth 불필요, 즉시 렌더 (미인증 시 middleware가 /login 리다이렉트) */}
+            <Link
+              href="/projects/new"
+              className="hidden md:flex items-center gap-1.5 px-3.5 py-1.5 bg-surface-inverse text-txt-inverse text-xs font-bold hover:bg-accent-hover transition-all border border-surface-inverse hover:opacity-90 active:scale-[0.97] rounded-xl"
+            >
+              <Plus size={14} strokeWidth={2.5} />
+              <span>새 프로젝트</span>
+            </Link>
 
-                {/* 다크모드 토글 */}
-                <button
-                  onClick={() => { import('@/src/utils/haptic').then(h => h.hapticLight()); toggleTheme() }}
-                  aria-label={theme === 'dark' ? '라이트 모드' : '다크 모드'}
-                  className="w-9 h-9 flex items-center justify-center rounded-full text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken transition-colors"
-                >
-                  {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
-                </button>
+            {/* 다크모드 토글 — auth 불필요, 즉시 렌더 */}
+            <button
+              onClick={() => { import('@/src/utils/haptic').then(h => h.hapticLight()); toggleTheme() }}
+              aria-label={theme === 'dark' ? '라이트 모드' : '다크 모드'}
+              className="w-9 h-9 flex items-center justify-center rounded-full text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken transition-colors"
+            >
+              {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+            </button>
 
-                {/* 알림 */}
-                <NotificationDropdown />
+            {/* 알림 + 프로필: 인증 확인되면 즉시 실제 UI / 미확인 중이면 플레이스홀더 / 비인증이면 로그인 */}
+            {isAuthenticated ? (
+              <>
+                {/* 알림 드롭다운 — 데스크탑 전용 (모바일은 하단 탭바에서 처리) */}
+                <div className="hidden md:block">
+                  <NotificationDropdown />
+                </div>
 
                 {/* 프로필 */}
                 <div className="relative ml-1" ref={menuRef}>
@@ -332,7 +330,7 @@ export const TopNavbar: React.FC = () => {
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
                     aria-label="프로필 메뉴"
                     aria-expanded={isMenuOpen}
-                    className={`w-10 h-10 rounded-full flex items-center justify-center text-[0.6875rem] font-bold transition-all border ${
+                    className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold transition-all border ${
                       isMenuOpen
                         ? 'bg-surface-inverse text-txt-inverse border-surface-inverse scale-95'
                         : 'bg-surface-sunken text-txt-secondary border-border-subtle hover:border-border'
@@ -343,7 +341,7 @@ export const TopNavbar: React.FC = () => {
 
                   {/* 드롭다운 */}
                   {isMenuOpen && (
-                    <div className="absolute right-0 top-11 w-[calc(100vw-2rem)] sm:w-60 max-w-60 bg-surface-card shadow-lg border border-border py-1.5 animate-in fade-in zoom-in-95 duration-150 z-dropdown">
+                    <div className="absolute right-0 top-11 w-[calc(100vw-2rem)] sm:w-60 max-w-60 bg-surface-card shadow-lg border border-border rounded-xl py-1.5 animate-in fade-in zoom-in-95 duration-150 z-popover">
                       {/* 유저 헤더 */}
                       <div className="px-4 pt-3 pb-3">
                         <div className="flex items-center gap-3">
@@ -352,7 +350,7 @@ export const TopNavbar: React.FC = () => {
                           </div>
                           <div className="min-w-0">
                             <p className="text-sm font-semibold text-txt-primary truncate">{displayName}</p>
-                            <p className="text-[0.6875rem] text-txt-tertiary truncate">{user?.email || ''}</p>
+                            <p className="text-xs text-txt-tertiary truncate">{user?.email || ''}</p>
                           </div>
                         </div>
                       </div>
@@ -365,7 +363,7 @@ export const TopNavbar: React.FC = () => {
                         <>
                           <div className="mx-3 border-t border-border-subtle" />
                           <div className="py-1.5 px-1.5">
-                            <p className="px-2.5 py-1 text-[0.625rem] text-txt-disabled">Admin</p>
+                            <p className="px-2.5 py-1 text-[10px] text-txt-disabled">Admin</p>
                             <DropdownItem icon={Shield} onClick={() => router.push('/admin')}>관리자 대시보드</DropdownItem>
                             <DropdownItem icon={User} onClick={() => router.push('/admin/users')}>사용자 관리</DropdownItem>
                             <DropdownItem icon={Briefcase} onClick={() => router.push('/admin/opportunities')}>기회 관리</DropdownItem>
@@ -382,16 +380,18 @@ export const TopNavbar: React.FC = () => {
                   )}
                 </div>
               </>
-            ) : (
+            ) : authLoading ? (
               <>
-                {/* 비로그인: 로그인 버튼 */}
-                <Link
-                  href="/login"
-                  className="hidden md:flex items-center gap-1.5 px-4 py-1.5 bg-surface-inverse text-txt-inverse text-xs font-bold hover:bg-accent-hover transition-all border border-surface-inverse hover:opacity-90 active:scale-[0.97]"
-                >
-                  로그인
-                </Link>
+                <div className="w-8 h-8 bg-surface-sunken rounded-full animate-pulse" />
+                <div className="w-10 h-10 bg-surface-sunken rounded-full animate-pulse" />
               </>
+            ) : (
+              <Link
+                href="/login"
+                className="px-4 py-1.5 bg-surface-sunken text-txt-secondary text-xs font-bold border border-border hover:bg-surface-inverse hover:text-txt-inverse transition-all rounded-xl"
+              >
+                로그인
+              </Link>
             )}
 
             {/* 모바일 햄버거 */}
@@ -399,7 +399,7 @@ export const TopNavbar: React.FC = () => {
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label={isMobileMenuOpen ? '메뉴 닫기' : '메뉴 열기'}
               aria-expanded={isMobileMenuOpen}
-              className="md:hidden w-11 h-11 flex items-center justify-center text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken transition-colors border border-border"
+              className="md:hidden w-11 h-11 flex items-center justify-center text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken transition-colors border border-border rounded-lg"
             >
               {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
@@ -429,34 +429,20 @@ export const TopNavbar: React.FC = () => {
                   name="mq"
                   type="text"
                   placeholder="검색..."
-                  className="w-full pl-10 pr-4 py-2.5 bg-surface-sunken rounded-sm text-base sm:text-sm placeholder:text-txt-disabled focus:outline-none focus:bg-surface-card focus:ring-1 focus:ring-border transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 bg-surface-sunken rounded-lg text-base sm:text-sm placeholder:text-txt-disabled focus:outline-none focus:bg-surface-card focus:ring-1 focus:ring-border transition-all"
                 />
               </form>
               <MobileNavItem href="/explore" active={pathname === '/explore'}>탐색</MobileNavItem>
-              {authLoading ? (
-                <div className="space-y-2 mt-2">
-                  <div className="h-10 bg-surface-sunken skeleton-shimmer rounded-sm" />
-                  <div className="h-10 bg-surface-sunken skeleton-shimmer rounded-sm" />
-                </div>
-              ) : isAuthenticated ? (
-                <>
-                  <MobileNavItem href="/profile" active={pathname === '/profile'}>마이페이지</MobileNavItem>
-                  <button
-                    onClick={() => { router.push('/projects/new'); setIsMobileMenuOpen(false) }}
-                    className="w-full mt-2 flex items-center justify-center gap-1.5 px-4 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-semibold transition-all hover:opacity-90 active:scale-[0.97]"
-                  >
-                    <Plus size={15} strokeWidth={2.5} /> 새 프로젝트
-                  </button>
-                </>
-              ) : (
-                <Link
-                  href="/login"
-                  className="w-full mt-2 flex items-center justify-center gap-1.5 px-4 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-semibold transition-all hover:opacity-90 active:scale-[0.97]"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  로그인
-                </Link>
+              {isAuthenticated && (
+                <MobileNavItem href="/profile" active={pathname === '/profile'}>마이페이지</MobileNavItem>
               )}
+              <Link
+                href={isAuthenticated ? '/projects/new' : '/login'}
+                className="w-full mt-2 flex items-center justify-center gap-1.5 px-4 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-semibold transition-all hover:opacity-90 active:scale-[0.97] rounded-xl"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                {isAuthenticated ? <><Plus size={15} strokeWidth={2.5} /> 새 프로젝트</> : '로그인'}
+              </Link>
             </div>
           </div>
         </>

@@ -10,49 +10,11 @@ interface TaskCardProps {
   onClick: (task: Task) => void;
 }
 
-const getTaskStyles = (type: TaskType) => {
-  switch (type) {
-    case 'PLANNING':
-      return {
-        card: 'bg-amber-50 hover:bg-amber-100 border-amber-200',
-        badge: 'bg-white/80 text-amber-800 ring-1 ring-amber-200'
-      };
-    case 'DESIGN':
-      return {
-        card: 'bg-pink-50 hover:bg-pink-100 border-pink-200',
-        badge: 'bg-white/80 text-pink-800 ring-1 ring-pink-200'
-      };
-    case 'ARCHITECTURE':
-      return {
-        card: 'bg-slate-50 hover:bg-slate-100 border-slate-200',
-        badge: 'bg-white/80 text-slate-700 ring-1 ring-slate-200'
-      };
-    case 'FRONTEND':
-      return {
-        card: 'bg-status-info-bg hover:bg-status-info-bg border-status-info-text/20',
-        badge: 'bg-white/80 text-status-info-text ring-1 ring-status-info-text/20'
-      };
-    case 'BACKEND':
-      return {
-        card: 'bg-emerald-50 hover:bg-emerald-100 border-emerald-200',
-        badge: 'bg-white/80 text-emerald-700 ring-1 ring-emerald-200'
-      };
-    case 'DEVOPS':
-      return {
-        card: 'bg-orange-50 hover:bg-orange-100 border-orange-200',
-        badge: 'bg-white/80 text-orange-700 ring-1 ring-orange-200'
-      };
-    case 'MARKETING':
-      return {
-        card: 'bg-purple-50 hover:bg-purple-100 border-purple-200',
-        badge: 'bg-white/80 text-purple-700 ring-1 ring-purple-200'
-      };
-    default:
-      return {
-        card: 'bg-surface-card hover:bg-surface-sunken border-border',
-        badge: 'bg-surface-sunken text-txt-secondary border-border'
-      };
-  }
+const getTaskStyles = (_type: TaskType) => {
+  return {
+    card: 'bg-surface-card hover:bg-surface-sunken border-border',
+    badge: 'bg-surface-sunken text-txt-secondary ring-1 ring-border'
+  };
 };
 
 const getPriorityColor = (p: string) => {
@@ -76,9 +38,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onDragStart, onClick }
     >
       <div className="flex justify-between items-start mb-2">
         <div className="flex items-center gap-2">
-          <span className="text-[0.625rem] font-mono text-txt-tertiary">{task.id}</span>
+          <span className="text-[10px] font-mono text-txt-tertiary">{task.id}</span>
           {task.synced && (
-            <div className="flex items-center gap-1 text-[0.625rem] text-txt-tertiary bg-white/50 px-1.5 py-0.5 border border-surface-inverse/5" title={`${task.externalTicketId}에 동기화됨`}>
+            <div className="flex items-center gap-1 text-[10px] text-txt-tertiary bg-white/50 px-1.5 py-0.5 border border-surface-inverse/5" title={`${task.externalTicketId}에 동기화됨`}>
               <LinkIcon size={8} />
               <span>{task.externalTicketId}</span>
             </div>
@@ -98,7 +60,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onDragStart, onClick }
       </p>
 
       <div className="flex items-center justify-between mt-auto">
-        <span className={`text-[0.625rem] px-2 py-1 font-bold shadow-md ${styles.badge}`}>
+        <span className={`text-[10px] px-2 py-1 font-bold shadow-md ${styles.badge}`}>
           {task.type}
         </span>
 
@@ -120,12 +82,12 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onDragStart, onClick }
           </div>
 
           {task.assignee ? (
-            <div className="w-6 h-6 bg-surface-card rounded-xl border border-border text-txt-secondary flex items-center justify-center text-[0.625rem] font-bold shadow-md">
+            <div className="w-6 h-6 bg-surface-card rounded-xl border border-border text-txt-secondary flex items-center justify-center text-[10px] font-bold shadow-md">
               {task.assignee}
             </div>
           ) : (
             <div className="w-6 h-6 border border-border flex items-center justify-center text-txt-disabled hover:border-border hover:text-txt-secondary transition-colors bg-white/50">
-              <span className="text-[0.625rem]">+</span>
+              <span className="text-[10px]">+</span>
             </div>
           )}
         </div>

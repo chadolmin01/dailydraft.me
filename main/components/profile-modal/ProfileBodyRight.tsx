@@ -1,138 +1,217 @@
-import { Code2, Clock, Users } from 'lucide-react'
+'use client'
+
+import { useState } from 'react'
+import { Code2, Clock, Users, Zap, Brain, Target, ChevronDown, Sparkles } from 'lucide-react'
 import { SliderBar } from './SliderBar'
-import { traitLabels, workStyleLabels } from './types'
+import { traitLabels, TRAIT_COLORS } from './types'
+import { CATEGORICAL_LABELS, SCORE_TO_CATEGORICAL } from '@/src/lib/onboarding/constants'
+
+/* ── Section Header ─────────────────────────────── */
+
+function SectionHeader({ icon: Icon, label, color, count }: {
+  icon: React.ComponentType<{ size?: number; className?: string }>
+  label: string
+  color: string
+  count?: number
+}) {
+  return (
+    <h3 className="flex items-center gap-2 mb-3">
+      <span className={`w-6 h-6 ${color} text-white flex items-center justify-center rounded-lg shadow-sm`}>
+        <Icon size={12} />
+      </span>
+      <span className="text-xs font-bold text-txt-primary uppercase tracking-wide">{label}</span>
+      {count != null && (
+        <span className="ml-auto text-[10px] font-mono text-txt-tertiary bg-surface-sunken px-1.5 py-0.5 rounded-full">{count}</span>
+      )}
+    </h3>
+  )
+}
+
+/* ── Trait Badge (interactive) ──────────────────── */
+
+function TraitBadge({ label, value, icon: Icon, colorClass }: {
+  label: string
+  value: string
+  icon?: React.ComponentType<{ size?: number; className?: string }>
+  colorClass?: string
+}) {
+  const [hovered, setHovered] = useState(false)
+
+  return (
+    <div
+      className={`group flex items-center justify-between px-3 py-2.5 bg-white rounded-xl border transition-all cursor-default ${
+        hovered ? 'border-border-strong shadow-sm -translate-y-0.5' : 'border-border hover:border-border-strong'
+      }`}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <span className="text-[11px] text-txt-secondary font-medium flex items-center gap-1.5">
+        {Icon && <Icon size={12} className={`${colorClass || 'text-txt-tertiary'} transition-transform ${hovered ? 'scale-110' : ''}`} />}
+        {label}
+      </span>
+      <span className={`text-xs font-bold ${colorClass || 'text-txt-primary'} transition-colors`}>{value}</span>
+    </div>
+  )
+}
+
+/* ── Collapsible Section ────────────────────────── */
+
+function CollapsibleSection({ children, title, icon: Icon, color, defaultOpen = true, count }: {
+  children: React.ReactNode
+  title: string
+  icon: React.ComponentType<{ size?: number; className?: string }>
+  color: string
+  defaultOpen?: boolean
+  count?: number
+}) {
+  const [open, setOpen] = useState(defaultOpen)
+
+  return (
+    <section className="group/section">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center gap-2 mb-3 cursor-pointer"
+      >
+        <span className={`w-6 h-6 ${color} text-white flex items-center justify-center rounded-lg shadow-sm transition-transform ${open ? '' : 'scale-95 opacity-80'}`}>
+          <Icon size={12} />
+        </span>
+        <span className="text-xs font-bold text-txt-primary uppercase tracking-wide">{title}</span>
+        {count != null && (
+          <span className="text-[10px] font-mono text-txt-tertiary bg-surface-sunken px-1.5 py-0.5 rounded-full">{count}</span>
+        )}
+        <ChevronDown size={12} className={`ml-auto text-txt-tertiary transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+      </button>
+      <div className={`transition-all duration-300 ease-out overflow-hidden ${open ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
+        {children}
+      </div>
+    </section>
+  )
+}
+
+/* ── Skill Tag ──────────────────────────────────── */
+
+function SkillTag({ name }: { name: string }) {
+  return (
+    <span className="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-lg border border-border bg-white text-txt-primary hover:border-border-strong hover:shadow-sm hover:-translate-y-0.5 transition-all select-none">
+      {name}
+    </span>
+  )
+}
+
+/* ── Main Component ─────────────────────────────── */
 
 export function ProfileBodyRight({
   personality,
   workStyle,
+  traits,
   teamPref,
   availability,
   skills,
 }: {
   personality: Record<string, number> | null
   workStyle: Record<string, number> | undefined
+  traits: Record<string, unknown> | undefined
   teamPref: Record<string, string> | undefined
   availability: { hours_per_week?: number; prefer_online?: boolean } | undefined
-  skills: Array<{ name: string; level: string }> | null
+  skills: Array<{ name: string }> | null
 }) {
+  const getTraitLabel = (traitKey: string, scoreKey: string, source: Record<string, number> | null | undefined) => {
+    const catId = traits?.[traitKey] as string | undefined
+    const resolved = catId || (source?.[scoreKey] != null ? SCORE_TO_CATEGORICAL[traitKey]?.(source[scoreKey]) : undefined)
+    return resolved ? CATEGORICAL_LABELS[traitKey]?.[resolved] : undefined
+  }
+
+  const collabLabel = getTraitLabel('collaboration_style', 'collaboration', workStyle)
+  const planningLabel = getTraitLabel('planning_style', 'planning', workStyle)
+  const qualityLabel = getTraitLabel('quality_style', 'perfectionism', workStyle)
+  const decisionLabel = getTraitLabel('decision_style', 'decision', personality)
+
+  const hasWorkStyleBadges = collabLabel || planningLabel || qualityLabel
+  const hasPersonality = personality && Object.keys(personality).length > 0
+  const hasTeamPref = teamPref && Object.keys(teamPref).length > 0
+  const hasAvailability = availability && (availability.hours_per_week != null || availability.prefer_online != null)
+  const hasSkills = skills && skills.length > 0
+
+  const isEmpty = !hasPersonality && !hasWorkStyleBadges && !hasTeamPref && !hasAvailability && !hasSkills
+
   return (
-    <div className="md:col-span-2 space-y-6">
-      {/* Empty state when right column has no data */}
-      {!(personality && Object.keys(personality).length > 0) &&
-       !(workStyle && Object.keys(workStyle).length > 0) &&
-       !(teamPref && Object.keys(teamPref).length > 0) &&
-       !(availability && (availability.hours_per_week != null || availability.prefer_online != null)) &&
-       !(skills && skills.length > 0) && (
-        <div className="px-4 py-8 border border-border bg-surface-sunken/30 text-center">
-          <p className="text-xs text-txt-disabled font-mono">아직 등록된 성향·스킬 정보가 없습니다</p>
+    <div className="md:col-span-2 space-y-4 md:bg-white/60 md:border md:border-border md:rounded-xl md:p-5">
+      {/* Empty state */}
+      {isEmpty && (
+        <div className="px-4 py-10 border border-border bg-white text-center rounded-xl">
+          <Sparkles size={20} className="mx-auto text-txt-disabled mb-2" />
+          <p className="text-xs text-txt-tertiary font-medium">아직 등록된 성향·스킬 정보가 없습니다</p>
         </div>
       )}
 
-      {/* Personality Traits */}
-      {personality && Object.keys(personality).length > 0 && (
-        <section>
-          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
-            성향 점수
-          </h3>
-          <div className="space-y-3">
-            {traitLabels.map(({ key, label, low, high }) => {
-              const val = personality[key]
+      {/* ── Personality Traits ── */}
+      {hasPersonality && (
+        <CollapsibleSection title="성향 분석" icon={Brain} color="bg-violet-500" count={Object.keys(personality!).length}>
+          <div className="space-y-1">
+            {decisionLabel && (
+              <TraitBadge label="의사결정" value={decisionLabel} icon={Zap} colorClass="text-violet-500" />
+            )}
+            {traitLabels.filter(t => t.key === 'communication').map(({ key, label, low, high }) => {
+              const val = personality![key]
+              if (val == null) return null
+              return <SliderBar key={key} value={val} low={low} high={high} label={label} colorKey={key} />
+            })}
+            {traitLabels.filter(t => t.key === 'risk' || t.key === 'time').map(({ key, label, low, high }) => {
+              const val = personality![key]
               if (val == null) return null
               return <SliderBar key={key} value={val} low={low} high={high} label={label} colorKey={key} />
             })}
           </div>
-        </section>
+        </CollapsibleSection>
       )}
 
-      {/* Work Style (vision_summary.work_style) */}
-      {workStyle && Object.keys(workStyle).length > 0 && (
-        <section>
-          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3">
-            작업 스타일
-          </h3>
-          <div className="space-y-3">
-            {workStyleLabels.map(({ key, label, low, high }) => {
-              const val = workStyle[key]
-              if (val == null) return null
-              return <SliderBar key={key} value={val} low={low} high={high} label={label} colorKey={key} />
-            })}
+      {/* ── Work Style ── */}
+      {hasWorkStyleBadges && (
+        <CollapsibleSection title="작업 스타일" icon={Target} color="bg-sky-500">
+          <div className="space-y-1.5">
+            {collabLabel && <TraitBadge label="협업 방식" value={collabLabel} colorClass="text-sky-600" />}
+            {planningLabel && <TraitBadge label="작업 방식" value={planningLabel} colorClass="text-indigo-600" />}
+            {qualityLabel && <TraitBadge label="품질 기준" value={qualityLabel} colorClass="text-rose-600" />}
           </div>
-        </section>
+        </CollapsibleSection>
       )}
 
-      {/* Team Preference */}
-      {teamPref && Object.keys(teamPref).length > 0 && (
-        <section>
-          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-1">
-            <Users size={11} /> 팀 선호
-          </h3>
-          <div className="space-y-2">
-            {teamPref.role && (
-              <div className="flex items-center justify-between px-3 py-2 bg-surface-card rounded-xl border border-border hover:bg-surface-sunken transition-colors">
-                <span className="text-[0.625rem] text-txt-tertiary font-mono">역할</span>
-                <span className="text-xs font-medium text-txt-secondary">{teamPref.role}</span>
-              </div>
+      {/* ── Team Preference ── */}
+      {hasTeamPref && (
+        <CollapsibleSection title="팀 선호" icon={Users} color="bg-emerald-500">
+          <div className="space-y-1.5">
+            {teamPref!.role && <TraitBadge label="역할" value={teamPref!.role} colorClass="text-emerald-600" />}
+            {teamPref!.preferred_size && <TraitBadge label="선호 규모" value={teamPref!.preferred_size} colorClass="text-emerald-600" />}
+            {teamPref!.atmosphere && <TraitBadge label="분위기" value={teamPref!.atmosphere} colorClass="text-emerald-600" />}
+          </div>
+        </CollapsibleSection>
+      )}
+
+      {/* ── Availability ── */}
+      {hasAvailability && (
+        <CollapsibleSection title="가용 시간" icon={Clock} color="bg-amber-500">
+          <div className="space-y-1.5">
+            {availability!.hours_per_week != null && (
+              <TraitBadge label="주당 시간" value={`${availability!.hours_per_week}시간`} colorClass="text-amber-600" />
             )}
-            {teamPref.preferred_size && (
-              <div className="flex items-center justify-between px-3 py-2 bg-surface-card rounded-xl border border-border hover:bg-surface-sunken transition-colors">
-                <span className="text-[0.625rem] text-txt-tertiary font-mono">선호 규모</span>
-                <span className="text-xs font-medium text-txt-secondary">{teamPref.preferred_size}</span>
-              </div>
-            )}
-            {teamPref.atmosphere && (
-              <div className="flex items-center justify-between px-3 py-2 bg-surface-card rounded-xl border border-border hover:bg-surface-sunken transition-colors">
-                <span className="text-[0.625rem] text-txt-tertiary font-mono">분위기</span>
-                <span className="text-xs font-medium text-txt-secondary">{teamPref.atmosphere}</span>
-              </div>
+            {availability!.prefer_online != null && (
+              <TraitBadge label="작업 방식" value={availability!.prefer_online ? '온라인 선호' : '오프라인 선호'} colorClass="text-amber-600" />
             )}
           </div>
-        </section>
+        </CollapsibleSection>
       )}
 
-      {/* Availability */}
-      {availability && (availability.hours_per_week != null || availability.prefer_online != null) && (
+      {/* ── Skills ── */}
+      {hasSkills && (
         <section>
-          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-1">
-            <Clock size={11} /> 가용 시간
-          </h3>
-          <div className="space-y-2">
-            {availability.hours_per_week != null && (
-              <div className="flex items-center justify-between px-3 py-2 bg-surface-card rounded-xl border border-border hover:bg-surface-sunken transition-colors">
-                <span className="text-[0.625rem] text-txt-tertiary font-mono">주당 시간</span>
-                <span className="text-xs font-medium text-txt-secondary">{availability.hours_per_week}시간</span>
-              </div>
-            )}
-            {availability.prefer_online != null && (
-              <div className="flex items-center justify-between px-3 py-2 bg-surface-card rounded-xl border border-border hover:bg-surface-sunken transition-colors">
-                <span className="text-[0.625rem] text-txt-tertiary font-mono">작업 방식</span>
-                <span className="text-xs font-medium text-txt-secondary">{availability.prefer_online ? '온라인 선호' : '오프라인 선호'}</span>
-              </div>
-            )}
-          </div>
-        </section>
-      )}
-
-      {/* Skills */}
-      {skills && skills.length > 0 && (
-        <section>
-          <h3 className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-1">
-            <Code2 size={11} /> 스킬
-          </h3>
-          <div className="flex flex-wrap gap-2">
-            {skills.map((skill) => (
-              <span
-                key={skill.name}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white text-tag-default-text text-xs border border-border hover:bg-surface-sunken hover:border-brand/40 hover:text-brand transition-colors"
-              >
-                {skill.name}
-                <span className="text-txt-tertiary">·</span>
-                <span className="text-txt-tertiary text-[0.625rem]">{skill.level}</span>
-              </span>
+          <SectionHeader icon={Code2} label="기술 스택" color="bg-neutral-800" count={skills!.length} />
+          <div className="flex flex-wrap gap-1.5">
+            {skills!.map((skill) => (
+              <SkillTag key={skill.name} name={skill.name} />
             ))}
           </div>
         </section>
       )}
-
     </div>
   )
 }

@@ -85,7 +85,7 @@ export default function InstitutionBusinessPlansPage() {
         <div className="border-b border-border pb-6">
           <button
             onClick={() => router.push('/institution')}
-            className="text-[0.625rem] font-medium text-txt-tertiary mb-2 flex items-center gap-1 hover:text-txt-primary transition-colors"
+            className="text-[10px] font-medium text-txt-tertiary mb-2 flex items-center gap-1 hover:text-txt-primary transition-colors"
           >
             <ChevronLeft size={12} />
             Institution Dashboard
@@ -100,19 +100,19 @@ export default function InstitutionBusinessPlansPage() {
         <div className="grid grid-cols-3 gap-4">
           <Card padding="p-5">
             <div className="text-3xl font-bold font-mono text-txt-primary">{totalPlans}</div>
-            <div className="text-[0.625rem] font-medium text-txt-tertiary mt-1">
+            <div className="text-[10px] font-medium text-txt-tertiary mt-1">
               총 사업계획서
             </div>
           </Card>
           <Card padding="p-5">
             <div className="text-3xl font-bold font-mono text-txt-primary">{membersWithPlans.length}</div>
-            <div className="text-[0.625rem] font-medium text-txt-tertiary mt-1">
+            <div className="text-[10px] font-medium text-txt-tertiary mt-1">
               작성 학생 수
             </div>
           </Card>
           <Card padding="p-5">
             <div className="text-3xl font-bold font-mono text-txt-primary">{completionRate}%</div>
-            <div className="text-[0.625rem] font-medium text-txt-tertiary mt-1">
+            <div className="text-[10px] font-medium text-txt-tertiary mt-1">
               참여율
             </div>
           </Card>
@@ -120,7 +120,7 @@ export default function InstitutionBusinessPlansPage() {
 
         {/* Progress Bar */}
         <Card padding="p-6">
-          <div className="text-[0.625rem] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
+          <div className="text-[10px] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
             <BarChart3 size={14} />
             학생별 사업계획서 작성 현황
           </div>
@@ -130,7 +130,7 @@ export default function InstitutionBusinessPlansPage() {
               style={{ width: `${completionRate}%` }}
             />
           </div>
-          <div className="flex justify-between text-[0.625rem] font-mono text-txt-tertiary">
+          <div className="flex justify-between text-[10px] font-mono text-txt-tertiary">
             <span>{membersWithPlans.length}명 작성</span>
             <span>{members.length - membersWithPlans.length}명 미작성</span>
           </div>
@@ -157,11 +157,11 @@ export default function InstitutionBusinessPlansPage() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-border">
-                    <th className="text-left text-[0.625rem] font-medium text-txt-tertiary px-5 py-3">이름</th>
-                    <th className="text-left text-[0.625rem] font-medium text-txt-tertiary px-5 py-3">학과</th>
-                    <th className="text-center text-[0.625rem] font-medium text-txt-tertiary px-5 py-3">사업계획서</th>
-                    <th className="text-center text-[0.625rem] font-medium text-txt-tertiary px-5 py-3">프로젝트</th>
-                    <th className="text-left text-[0.625rem] font-medium text-txt-tertiary px-5 py-3">주요 스킬</th>
+                    <th className="text-left text-[10px] font-medium text-txt-tertiary px-5 py-3">이름</th>
+                    <th className="text-left text-[10px] font-medium text-txt-tertiary px-5 py-3">학과</th>
+                    <th className="text-center text-[10px] font-medium text-txt-tertiary px-5 py-3">사업계획서</th>
+                    <th className="text-center text-[10px] font-medium text-txt-tertiary px-5 py-3">프로젝트</th>
+                    <th className="text-left text-[10px] font-medium text-txt-tertiary px-5 py-3">주요 스킬</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -196,7 +196,7 @@ export default function InstitutionBusinessPlansPage() {
                         <td className="px-5 py-3.5">
                           <div className="flex flex-wrap gap-1">
                             {member.skills.slice(0, 3).map((skill, j) => (
-                              <span key={j} className="px-1.5 py-0.5 text-[0.5625rem] font-mono bg-surface-sunken text-txt-secondary border border-border">
+                              <span key={j} className="px-1.5 py-0.5 text-[10px] font-mono bg-surface-sunken text-txt-secondary border border-border">
                                 {skill}
                               </span>
                             ))}

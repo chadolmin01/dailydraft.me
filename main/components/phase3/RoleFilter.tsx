@@ -11,13 +11,13 @@ interface RoleFilterProps {
 
 const ROLES: { id: TaskType | 'ALL'; label: string; color: string }[] = [
   { id: 'ALL', label: '전체 보기', color: 'bg-surface-inverse text-white border-surface-inverse' },
-  { id: 'PLANNING', label: '기획', color: 'bg-status-warning-bg text-status-warning-text border-status-warning-text/20' },
-  { id: 'DESIGN', label: '디자인', color: 'bg-pink-100 text-pink-800 border-pink-200' },
-  { id: 'ARCHITECTURE', label: '아키텍처', color: 'bg-slate-100 text-slate-800 border-slate-200' },
-  { id: 'FRONTEND', label: '프론트엔드', color: 'bg-status-info-bg text-status-info-text border-status-info-text/20' },
-  { id: 'BACKEND', label: '백엔드', color: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
-  { id: 'DEVOPS', label: '인프라', color: 'bg-orange-100 text-orange-800 border-orange-200' },
-  { id: 'MARKETING', label: '마케팅', color: 'bg-purple-100 text-purple-800 border-purple-200' },
+  { id: 'PLANNING', label: '기획', color: 'bg-surface-sunken text-txt-primary border-border' },
+  { id: 'DESIGN', label: '디자인', color: 'bg-surface-sunken text-txt-primary border-border' },
+  { id: 'ARCHITECTURE', label: '아키텍처', color: 'bg-surface-sunken text-txt-primary border-border' },
+  { id: 'FRONTEND', label: '프론트엔드', color: 'bg-surface-sunken text-txt-primary border-border' },
+  { id: 'BACKEND', label: '백엔드', color: 'bg-surface-sunken text-txt-primary border-border' },
+  { id: 'DEVOPS', label: '인프라', color: 'bg-surface-sunken text-txt-primary border-border' },
+  { id: 'MARKETING', label: '마케팅', color: 'bg-surface-sunken text-txt-primary border-border' },
 ];
 
 export const RoleFilter: React.FC<RoleFilterProps> = ({ currentFilter, onFilterChange, tasks }) => {
@@ -54,7 +54,7 @@ export const RoleFilter: React.FC<RoleFilterProps> = ({ currentFilter, onFilterC
               <span className={`w-2 h-2 ${role.color.split(' ')[0].replace('100', '400')}`}></span>
             )}
             {role.label}
-            <span className={`px-1.5 py-0.5 text-[0.625rem] ${isActive ? 'bg-white/40 text-current' : 'bg-surface-sunken text-txt-tertiary'}`}>
+            <span className={`px-1.5 py-0.5 text-[10px] ${isActive ? 'bg-white/40 text-current' : 'bg-surface-sunken text-txt-tertiary'}`}>
               {count}
             </span>
           </button>
