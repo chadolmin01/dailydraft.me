@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { Check, ChevronRight, Rocket, Sparkles } from 'lucide-react'
+import { ChevronRight, Rocket, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 import { useAuth } from '@/src/context/AuthContext'
 import { cleanNickname } from '@/src/lib/clean-nickname'
@@ -14,8 +14,6 @@ interface ExploreSidebarProps {
   onCategoryChange: (id: string) => void
   trendingTags: TrendingTag[]
   onTagClick: (tag: string) => void
-  recruitingOnly: boolean
-  onRecruitingOnlyChange: (value: boolean) => void
   talentCards?: TalentCard[]
   sidebarRecs?: UserRecommendation[]
   recsLoading?: boolean
@@ -30,8 +28,6 @@ export function ExploreSidebar({
   onCategoryChange,
   trendingTags,
   onTagClick,
-  recruitingOnly,
-  onRecruitingOnlyChange,
   talentCards = [],
   sidebarRecs = [],
   recsLoading,
@@ -136,32 +132,6 @@ export function ExploreSidebar({
         </div>
       </div>
 
-      {/* 필터 */}
-      {activeTab === 'projects' && (
-        <div className="bg-surface-card rounded-xl border border-border p-4">
-          <h3 className="text-xs font-medium text-txt-tertiary mb-3">필터</h3>
-          <label className="flex items-center gap-2.5 text-sm text-txt-secondary cursor-pointer group">
-            <div className={`w-4 h-4 border flex items-center justify-center transition-all ${
-              recruitingOnly ? 'bg-indicator-online border-indicator-online' : 'border-border group-hover:border-txt-secondary'
-            }`}>
-              {recruitingOnly && <Check size={10} className="text-white" strokeWidth={3} />}
-            </div>
-            <input
-              type="checkbox"
-              className="sr-only"
-              checked={recruitingOnly}
-              onChange={(e) => onRecruitingOnlyChange(e.target.checked)}
-            />
-            모집 중만 보기
-          </label>
-          <div className="mt-3 pt-3 border-t border-border">
-            <p className="text-[10px] font-mono text-txt-disabled flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 bg-txt-secondary rounded-full" />
-              {recruitingOnly ? 'ACTIVE FILTER ON' : 'NO FILTER APPLIED'}
-            </p>
-          </div>
-        </div>
-      )}
 
       {activeTab === 'people' && (
         <div className="bg-surface-card rounded-xl border border-border p-4">

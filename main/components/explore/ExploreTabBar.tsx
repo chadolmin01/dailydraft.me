@@ -107,69 +107,49 @@ export function ExploreTabBar({
       )}
 
       {/* Sort options + filter button */}
-      {activeTab === 'projects' && (
-        <div className="flex items-center gap-1 mb-3 overflow-x-auto scrollbar-hide mask-fade-r">
-          {SORT_OPTIONS.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => onSortChange(tab.id as SortBy)}
-              className={`shrink-0 flex items-center gap-1 px-3 py-2 text-xs font-medium rounded-xl transition-colors ${
-                sortBy === tab.id ? 'bg-surface-sunken text-txt-primary' : 'text-txt-tertiary hover:text-txt-secondary'
-              }`}
-            >
-              <tab.icon size={12} />
-              {tab.label}
-              {tab.beta && (
-                <span className="text-[0.5rem] font-medium bg-brand text-white px-1 py-px leading-none">beta</span>
-              )}
-            </button>
-          ))}
-          <button
-            onClick={onFilterButtonClick}
-            className="shrink-0 ml-auto flex items-center gap-1 px-3 py-2 text-xs font-bold border rounded-xl transition-all bg-surface-card text-txt-secondary border-border hover:border-border hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]"
-          >
-            <Filter size={12} />
-            필터
-            {activeFilterCount > 0 && (
-              <span className="ml-0.5 min-w-[16px] h-4 flex items-center justify-center text-[10px] font-bold bg-brand text-white rounded-full px-1">
-                {activeFilterCount}
-              </span>
-            )}
-          </button>
+      <div className="flex items-center justify-between gap-2 mb-3">
+        <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide mask-fade-r">
+          {activeTab === 'projects' ? (
+            SORT_OPTIONS.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => onSortChange(tab.id as SortBy)}
+                className={`shrink-0 flex items-center gap-1 px-3 py-2 text-xs font-medium rounded-xl transition-colors ${
+                  sortBy === tab.id ? 'bg-surface-sunken text-txt-primary' : 'text-txt-tertiary hover:text-txt-secondary'
+                }`}
+              >
+                <tab.icon size={12} />
+                {tab.label}
+              </button>
+            ))
+          ) : (
+            PEOPLE_SORT_OPTIONS.map((opt) => (
+              <button
+                key={opt.id}
+                onClick={() => onPeopleSortChange(opt.id as PeopleSortBy)}
+                className={`shrink-0 flex items-center gap-1 px-3 py-2 text-xs font-medium rounded-xl transition-colors ${
+                  peopleSortBy === opt.id ? 'bg-surface-sunken text-txt-primary' : 'text-txt-tertiary hover:text-txt-secondary'
+                }`}
+              >
+                <opt.icon size={12} />
+                {opt.label}
+              </button>
+            ))
+          )}
         </div>
-      )}
-
-      {activeTab === 'people' && (
-        <div className="flex items-center gap-1 mb-3 overflow-x-auto scrollbar-hide mask-fade-r">
-          {PEOPLE_SORT_OPTIONS.map((opt) => (
-            <button
-              key={opt.id}
-              onClick={() => onPeopleSortChange(opt.id as PeopleSortBy)}
-              className={`shrink-0 flex items-center gap-1 px-3 py-2 text-xs font-medium rounded-xl transition-colors ${
-                peopleSortBy === opt.id ? 'bg-surface-sunken text-txt-primary' : 'text-txt-tertiary hover:text-txt-secondary'
-              }`}
-            >
-              <opt.icon size={12} />
-              {opt.label}
-              {opt.beta && (
-                <span className="text-[0.5rem] font-medium bg-brand text-white px-1 py-px leading-none">beta</span>
-              )}
-            </button>
-          ))}
-          <button
-            onClick={onFilterButtonClick}
-            className="shrink-0 ml-auto flex items-center gap-1 px-3 py-2 text-xs font-bold border rounded-xl transition-all bg-surface-card text-txt-secondary border-border hover:border-border hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]"
-          >
-            <Filter size={12} />
-            필터
-            {activeFilterCount > 0 && (
-              <span className="ml-0.5 min-w-[16px] h-4 flex items-center justify-center text-[10px] font-bold bg-brand text-white rounded-full px-1">
-                {activeFilterCount}
-              </span>
-            )}
-          </button>
-        </div>
-      )}
+        <button
+          onClick={onFilterButtonClick}
+          className="shrink-0 flex items-center gap-1 px-3 py-2 text-xs font-bold border rounded-xl transition-all bg-surface-card text-txt-secondary border-border hover:border-border hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]"
+        >
+          <Filter size={12} />
+          필터
+          {activeFilterCount > 0 && (
+            <span className="ml-0.5 min-w-[16px] h-4 flex items-center justify-center text-[10px] font-bold bg-brand text-white rounded-full px-1">
+              {activeFilterCount}
+            </span>
+          )}
+        </button>
+      </div>
     </>
   )
 }

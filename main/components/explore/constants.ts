@@ -1,4 +1,4 @@
-import { LayoutGrid, Users, Sparkles, Zap, Star, Flame, Clock, FolderOpen, User, Code2, TrendingUp, Palette, ClipboardList, Megaphone } from 'lucide-react'
+import { LayoutGrid, Users, Sparkles, Zap, Star, Flame, Clock, FolderOpen, User, Code2, TrendingUp, Palette, ClipboardList, Megaphone, GraduationCap, ShoppingBag, Video, Gamepad2, Leaf } from 'lucide-react'
 
 export const CATEGORY_ICONS: Record<string, React.ElementType> = {
   all: LayoutGrid,
@@ -7,6 +7,11 @@ export const CATEGORY_ICONS: Record<string, React.ElementType> = {
   '핀테크': Star,
   '헬스케어': Zap,
   '소셜/커뮤니티': Users,
+  '교육/에듀테크': GraduationCap,
+  '커머스/F&B': ShoppingBag,
+  '콘텐츠/미디어': Video,
+  '게임/엔터': Gamepad2,
+  '환경/ESG': Leaf,
 }
 
 export const PEOPLE_CATEGORY_ICONS: Record<string, React.ElementType> = {
@@ -23,7 +28,7 @@ export const TABS = [
 ] as const
 
 export const SORT_OPTIONS = [
-  { id: 'ai', label: 'AI 추천', icon: Sparkles, beta: true },
+  { id: 'ai', label: 'AI 추천', icon: Sparkles, beta: false },
   { id: 'trending', label: '트렌딩', icon: Flame, beta: false },
   { id: 'latest', label: '최신', icon: Clock, beta: false },
   { id: 'popular', label: '인기', icon: Star, beta: false },
@@ -54,7 +59,7 @@ export const PROJECT_ROLE_FILTERS = [
 ] as const
 
 export const PEOPLE_SORT_OPTIONS = [
-  { id: 'ai', label: 'AI 추천', icon: Sparkles, beta: true },
+  { id: 'ai', label: 'AI 추천', icon: Sparkles, beta: false },
   { id: 'latest', label: '최신', icon: Clock, beta: false },
   { id: 'popular', label: '인기', icon: TrendingUp, beta: false },
 ] as const

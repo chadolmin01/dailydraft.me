@@ -478,8 +478,6 @@ function ExplorePageContent() {
     onCategoryChange: setSelectedCategory,
     trendingTags: projectTrendingTags,
     onTagClick: (tag: string) => { setSearchInput(tag); setSearchScope('skills'); setActiveTab('projects') },
-    recruitingOnly,
-    onRecruitingOnlyChange: setRecruitingOnly,
   } as const : {
     activeTab,
     categories: peopleCategories,
@@ -487,8 +485,6 @@ function ExplorePageContent() {
     onCategoryChange: (id: string) => setPeopleRoleFilter(id as PeopleRoleFilter),
     trendingTags: peopleTrendingTags,
     onTagClick: (tag: string) => { setSearchInput(tag); setSearchScope('skills'); setActiveTab('people') },
-    recruitingOnly: false,
-    onRecruitingOnlyChange: () => {},
   } as const
 
   const searchProps = {
