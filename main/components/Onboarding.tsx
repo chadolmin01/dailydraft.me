@@ -19,7 +19,7 @@ import { PositionStep } from './onboarding/steps/PositionStep'
 import { SituationStep } from './onboarding/steps/SituationStep'
 import { SkillsInputStep, SkillsConfirmStep } from './onboarding/steps/SkillsStep'
 import { InterestsInputStep, InterestsConfirmStep } from './onboarding/steps/InterestsStep'
-import { DeepChatOfferStep, DeepChatOfferFinishStep } from './onboarding/steps/DeepChatOfferStep'
+import { DeepChatOfferStep } from './onboarding/steps/DeepChatOfferStep'
 import { DeepChatFooter, DefaultFooter } from './onboarding/steps/DeepChatStep'
 import { ScenarioCard, ThisOrThat, DragRank, EmojiGrid, QuickNumber, SpectrumPick } from './onboarding/interactive'
 import { INTERACTIVE_QUESTIONS, REQUIRED_INTERACTIVE_IDS } from '@/src/lib/onboarding/interactive-questions'
@@ -490,6 +490,22 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
         }
       }
       dispatch({ type: 'SET_DYNAMIC_SUGGESTIONS', suggestions: interactiveElement ? [] : suggestions })
+
+      // Auto-finish check after interactive response follow-up
+      if (!offTopic && !interactiveElement) {
+        const uCount = stateRef.current.deepChatMessages.filter(m => m.role === 'user').length
+        const missing = getMissingRequired()
+        if (uCount >= 5 && missing.length === 0) {
+          safeTimeout(() => autoFinishDeepChat(), 800)
+          return
+        }
+        if (uCount >= 5 && missing.length > 0) {
+          pendingRequiredRef.current = [...missing]
+          await pushAi('거의 다 파악한 것 같아요! 마지막으로 몇 가지만 빠르게 체크할게요.', undefined, 400)
+          await showNextRequiredOrComplete()
+          return
+        }
+      }
     } catch (err) {
       const isAbort = err instanceof DOMException && err.name === 'AbortError'
       if (!isAbort) {
@@ -559,6 +575,23 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
         }
       }
       dispatch({ type: 'SET_DYNAMIC_SUGGESTIONS', suggestions: interactiveElement ? [] : suggestions })
+
+      // Auto-finish: 5+ user messages AND all required interactives answered
+      if (!offTopic && !interactiveElement) {
+        const uCount = stateRef.current.deepChatMessages.filter(m => m.role === 'user').length
+        const missing = getMissingRequired()
+        if (uCount >= 5 && missing.length === 0) {
+          safeTimeout(() => autoFinishDeepChat(), 800)
+          return
+        }
+        // If 5+ messages but missing required interactives, start wrap-up
+        if (uCount >= 5 && missing.length > 0) {
+          pendingRequiredRef.current = [...missing]
+          await pushAi('거의 다 파악한 것 같아요! 마지막으로 몇 가지만 빠르게 체크할게요.', undefined, 400)
+          await showNextRequiredOrComplete()
+          return
+        }
+      }
     } catch (err) {
       const isAbort = err instanceof DOMException && err.name === 'AbortError'
       if (!isAbort) {
@@ -570,6 +603,13 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       dispatch({ type: 'SET_SHOW_SUGGESTIONS', value: true })
       safeTimeout(() => deepChatInputRef.current?.focus(), 200)
     }
+  }
+
+  /** Auto-finish deep chat (no user action needed) */
+  const autoFinishDeepChat = async () => {
+    if (stateRef.current.isTyping || stateRef.current.step !== 'deep-chat') return
+    pushUser('대화 완료!')
+    await completeDeepChat()
   }
 
   /** Get required interactive IDs not yet answered */
@@ -602,46 +642,6 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       attachment: 'interactive-element',
       interactiveConfig: config,
     } })
-  }
-
-  const handleDeepChatFinish = async () => {
-    const s = stateRef.current
-    if (s.isTyping) return
-    const uMsgCount = s.deepChatMessages.filter(m => m.role === 'user').length
-    if (uMsgCount < 3) {
-      await pushAi(`아직 ${3 - uMsgCount}개 정도 더 이야기하면 더 정확한 매칭이 가능해요.\n그래도 지금 마무리할까요?`, 'deep-chat-offer-finish', 400)
-      return
-    }
-
-    // Check for missing required interactives
-    const missing = getMissingRequired()
-    if (missing.length > 0) {
-      pendingRequiredRef.current = [...missing]
-      pushUser('대화 완료!')
-      await pushAi('좋아요! 마지막으로 몇 가지만 빠르게 체크할게요.', undefined, 400)
-      await showNextRequiredOrComplete()
-      return
-    }
-
-    pushUser('대화 완료!')
-    await completeDeepChat()
-  }
-
-  const forceFinishDeepChat = async () => {
-    if (stateRef.current.isTyping) return // #12: add isTyping guard
-
-    // Check for missing required interactives even on force finish
-    const missing = getMissingRequired()
-    if (missing.length > 0) {
-      pendingRequiredRef.current = [...missing]
-      pushUser('지금 마무리할게요')
-      await pushAi('좋아요! 마지막으로 몇 가지만 빠르게 체크할게요.', undefined, 400)
-      await showNextRequiredOrComplete()
-      return
-    }
-
-    pushUser('지금 마무리할게요')
-    await completeDeepChat()
   }
 
   const completeDeepChat = async () => {
@@ -761,13 +761,6 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
         )
       case 'deep-chat-offer':
         return <DeepChatOfferStep onAccept={handleDeepChatAccept} onSkip={handleDeepChatSkip} />
-      case 'deep-chat-offer-finish':
-        return (
-          <DeepChatOfferFinishStep
-            onContinue={() => dispatch({ type: 'REMOVE_BUBBLES_BY_ATTACHMENT', attachment: 'deep-chat-offer-finish' })}
-            onFinish={forceFinishDeepChat}
-          />
-        )
       case 'interactive-element': {
         if (bubble.answered || !bubble.interactiveConfig) return null
         const question = INTERACTIVE_QUESTIONS[bubble.interactiveConfig.questionId]
@@ -908,7 +901,6 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       onInputChange={(v: string) => dispatch({ type: 'SET_DEEP_CHAT_INPUT', value: v })}
       onSend={() => sendDeepChatMessage(stateRef.current.deepChatInput)}
       onSuggestionClick={(text: string) => sendDeepChatMessage(text)}
-      onFinish={handleDeepChatFinish}
       onUndo={() => dispatch({ type: 'UNDO_LAST_EXCHANGE' })}
     />
   ) : (

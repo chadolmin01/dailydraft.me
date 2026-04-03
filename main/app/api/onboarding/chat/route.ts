@@ -191,7 +191,7 @@ export async function POST(request: Request) {
         const sentences = reply.split(/(?<=[.!?])\s+/)
         const lastQuestion = sentences.filter(s => s.includes('?')).pop() || reply
         const sugResult = await sugModel.generateContent(
-          `다음 질문에 대해 사용자가 바로 클릭해서 보낼 수 있는 짧고 구체적인 한국어 답변 3개를 JSON 배열로만 응답하세요. 배열 외 다른 텍스트 없이 딱 JSON만 반환하세요.\n\n질문: "${lastQuestion}"\n\n형식: ["답변1", "답변2", "답변3"]`
+          `다음 질문에 대해 사용자가 탭 한 번으로 보낼 수 있는 아주 짧은 한국어 답변 3개를 JSON 배열로만 응답하세요. 각 답변은 반드시 5단어(15자) 이내의 키워드형으로. 긴 문장 절대 금지. 배열 외 다른 텍스트 없이 JSON만.\n\n질문: "${lastQuestion}"\n\n좋은 예: ["있어요", "아직 없어요", "팀프 정도요"]\n나쁜 예: ["해커톤에서 프론트엔드를 담당했어요", "학교 수업에서 팀 프로젝트를 했습니다"]\n\n형식: ["답변1", "답변2", "답변3"]`
         )
         const raw = sugResult.response.text().trim()
         const parsed = JSON.parse(raw.replace(/^```json\s*|```$/g, '').trim())

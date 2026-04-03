@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { Send, CheckCircle2, Lightbulb, Undo2 } from 'lucide-react'
+import { Send, Lightbulb, Undo2 } from 'lucide-react'
 import { DEEP_CHAT_TOPICS } from '@/src/lib/onboarding/constants'
 
 interface DeepChatFooterProps {
@@ -17,14 +17,13 @@ interface DeepChatFooterProps {
   onInputChange: (v: string) => void
   onSend: () => void
   onSuggestionClick: (text: string) => void
-  onFinish: () => void
   onUndo: () => void
 }
 
 export const DeepChatFooter: React.FC<DeepChatFooterProps> = ({
   deepChatInput, isTyping, userMsgCount,
   showSuggestions, currentSuggestions, coveredTopics, hasMessages,
-  canUndo, inputRef, onInputChange, onSend, onSuggestionClick, onFinish, onUndo,
+  canUndo, inputRef, onInputChange, onSend, onSuggestionClick, onUndo,
 }) => {
   return (
     <div className="border-t border-border bg-surface-card/80 backdrop-blur-md">
@@ -82,15 +81,6 @@ export const DeepChatFooter: React.FC<DeepChatFooterProps> = ({
                 <Send size={16} />
               </button>
             </div>
-            <button
-              onClick={onFinish}
-              disabled={isTyping}
-              className={`ob-hover px-4 py-3 rounded-xl text-[13px] font-bold flex items-center gap-1.5 hover:opacity-90 active:scale-[0.97] disabled:opacity-50 shrink-0 transition-all ${
-                userMsgCount >= 3 ? 'bg-brand text-white border border-brand' : 'bg-surface-inverse text-txt-inverse'
-              }`}
-            >
-              <CheckCircle2 size={14} />완료
-            </button>
           </div>
           {/* Topic progress bar */}
           <div className="flex items-center justify-between mt-2">
@@ -105,9 +95,6 @@ export const DeepChatFooter: React.FC<DeepChatFooterProps> = ({
                 {coveredTopics.length}/{DEEP_CHAT_TOPICS.length} topics
               </span>
             </div>
-            <span className="text-[10px] text-txt-disabled font-mono">
-              {userMsgCount < 3 ? `${3 - userMsgCount}개 더 답하면 완료 가능 · 더 많은 대화 = 더 정확한 매칭` : '언제든 완료 가능'}
-            </span>
           </div>
         </div>
       </div>

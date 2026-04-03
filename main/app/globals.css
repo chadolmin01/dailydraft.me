@@ -507,7 +507,7 @@ a[class*="px-"]:active {
 @keyframes typing { 0% { max-width:0 } 100% { max-width:100% } }
 .ob-bubble { animation:ob-bubble-in 0.5s cubic-bezier(0.34,1.4,0.64,1) both }
 .ob-chip { animation:ob-chip-in 0.35s cubic-bezier(0.34,1.4,0.64,1) both }
-.ob-form { animation:ob-form-in 0.5s cubic-bezier(0.16,1,0.3,1) both;overflow:hidden }
+.ob-form { animation:ob-form-in 0.5s cubic-bezier(0.16,1,0.3,1) both }
 .ob-cta { animation:ob-cta-glow 2s ease-in-out infinite }
 .ob-dot { animation:ob-dot 1.4s ease-in-out infinite }
 .ob-avatar { animation:ob-avatar-pulse 3s ease-in-out infinite }
