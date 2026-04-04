@@ -231,13 +231,17 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
             <textarea
               ref={bioRef}
               value={bioValue}
-              onChange={(e) => editField('bio')(e.target.value)}
+              onChange={(e) => editField('bio')(e.target.value.slice(0, 500))}
               onBlur={() => setEditingBio(false)}
               onKeyDown={(e) => { if (e.key === 'Escape') setEditingBio(false) }}
               placeholder="자기소개를 입력하세요"
               rows={3}
+              maxLength={500}
               className="bg-surface-bg border border-border rounded-xl outline-none w-full px-3 py-2 resize-none focus:border-brand transition-colors text-base sm:text-sm text-txt-secondary leading-relaxed"
             />
+            <p className={`text-[10px] font-mono text-right mt-1 ${bioValue.length >= 450 ? 'text-status-danger-text font-bold' : bioValue.length >= 350 ? 'text-status-warning-text' : 'text-txt-disabled'}`}>
+              {bioValue.length}/500
+            </p>
           </div>
         )
       }
