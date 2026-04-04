@@ -305,7 +305,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
             <div
               ref={sheetRef}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-lg md:max-w-3xl lg:max-w-6xl h-[85vh] sm:h-[90vh] modal-glass rounded-t-2xl sm:rounded-2xl overflow-hidden flex flex-col relative"
+              className="w-full max-w-lg md:max-w-3xl lg:max-w-6xl modal-glass rounded-t-2xl sm:rounded-2xl overflow-hidden flex flex-col relative"
               role="dialog"
               aria-modal="true"
               aria-label={opportunity?.title || '프로젝트 상세'}
@@ -450,9 +450,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                 </div>
               ) : (
                 <>
-                  {/* Scrollable Content */}
                   <div
-                    className="flex-1 overflow-y-auto min-h-0"
                     onTouchStart={(e) => {
                       const touch = e.touches[0]
                       ;(e.currentTarget as HTMLElement).dataset.touchStartX = String(touch.clientX)
