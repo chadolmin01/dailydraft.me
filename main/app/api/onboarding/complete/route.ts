@@ -3,6 +3,7 @@ import { ApiResponse } from '@/src/lib/api-utils'
 import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
 import { parseNickname } from '@/src/lib/clean-nickname'
 import { autoEnrollByEmail, autoEnrollByUniversity } from '@/src/lib/institution/auto-enroll'
+import { generateProfileEmbedding } from '@/src/lib/ai/embeddings'
 import type { TablesInsert } from '@/src/types/database'
 
 export async function POST(request: Request) {
@@ -64,6 +65,19 @@ export async function POST(request: Request) {
       ...(aiChatCompleted && { ai_chat_completed: true }),
     }
 
+    // ── Generate embedding directly from profile data (no AI dependency) ──
+    try {
+      const embedding = await generateProfileEmbedding({
+        skills: Array.isArray(skills) ? skills : undefined,
+        interestTags: Array.isArray(interestTags) ? interestTags : undefined,
+        desiredPosition: desiredPosition || undefined,
+      })
+      profileData.vision_embedding = embedding
+    } catch (embeddingError) {
+      // Non-fatal: profile still saves, embedding can be backfilled later
+      console.error('[onboarding/complete] Embedding generation failed:', embeddingError)
+    }
+
     // DB 컬럼이 있을 수도 없을 수도 있는 필드
     const optionalFields: Record<string, unknown> = {
       age_range: ageRange || null,
@@ -74,7 +88,6 @@ export async function POST(request: Request) {
     const fullData = { ...profileData, ...optionalFields }
 
     // Upsert: INSERT or UPDATE based on user_id conflict
-    // Dynamic fields require type assertion since optional DB columns may not be in generated types
     let result = await supabase.from('profiles').upsert(
       fullData as unknown as TablesInsert<'profiles'>,
       { onConflict: 'user_id' }
@@ -94,14 +107,22 @@ export async function POST(request: Request) {
       return ApiResponse.internalError('프로필 저장에 실패했습니다', result.error.message)
     }
 
-    // Institution 자동 등록: 이메일 도메인 → 대학명 순으로 시도
-    try {
-      const enrolled = await autoEnrollByEmail(supabase, user.id, user.email || '')
-      if (!enrolled && inferredUniversity) {
-        await autoEnrollByUniversity(supabase, user.id, inferredUniversity)
-      }
-    } catch (e) {
-      console.warn('[onboarding/complete] Auto-enroll failed (non-blocking):', e)
+    // ── Background tasks (non-blocking) ──
+
+    // Institution 자동 등록
+    autoEnrollByEmail(supabase, user.id, user.email || '')
+      .then(enrolled => {
+        if (!enrolled && inferredUniversity) {
+          return autoEnrollByUniversity(supabase, user.id, inferredUniversity)
+        }
+      })
+      .catch(e => console.warn('[onboarding/complete] Auto-enroll failed:', e))
+
+    // AI bio 생성 (인터뷰 완료 시에만, fire-and-forget)
+    if (aiChatCompleted && visionSummary) {
+      generateAiBio(supabase, user.id, skills, interestTags, desiredPosition).catch(e =>
+        console.warn('[onboarding/complete] AI bio failed:', e)
+      )
     }
 
     return ApiResponse.ok({
@@ -110,5 +131,47 @@ export async function POST(request: Request) {
     })
   } catch {
     return ApiResponse.internalError('온보딩 완료 처리 중 오류가 발생했습니다')
+  }
+}
+
+/** Background: generate AI bio and save to profile */
+async function generateAiBio(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  userId: string,
+  skills: Array<{ name: string }> | undefined,
+  interestTags: string[] | undefined,
+  desiredPosition: string | undefined,
+) {
+  const { chatModel } = await import('@/src/lib/ai/gemini-client')
+
+  const parts: string[] = []
+  if (desiredPosition) parts.push(`직군: ${desiredPosition}`)
+  if (skills?.length) parts.push(`기술: ${skills.map(s => s.name).join(', ')}`)
+  if (interestTags?.length) parts.push(`관심분야: ${interestTags.join(', ')}`)
+
+  if (parts.length === 0) return
+
+  const prompt = `아래 사용자 정보를 바탕으로 팀 매칭 프로필에 들어갈 자기소개(bio)를 1-2문장으로 작성해주세요.
+친근하고 자연스러운 존댓말. 반드시 1-2문장만. JSON으로만 응답: {"bio": "..."}
+
+${parts.join('\n')}`
+
+  const result = await chatModel.generateContent(prompt)
+  const text = result.response?.text?.() || ''
+  const match = text.match(/\{[\s\S]*\}/)
+  if (!match) return
+
+  const parsed = JSON.parse(match[0])
+  if (!parsed?.bio || typeof parsed.bio !== 'string') return
+
+  const { data: existing } = await supabase.from('profiles')
+    .select('bio')
+    .eq('user_id', userId)
+    .single()
+
+  if (!existing?.bio) {
+    await supabase.from('profiles')
+      .update({ bio: parsed.bio })
+      .eq('user_id', userId)
   }
 }

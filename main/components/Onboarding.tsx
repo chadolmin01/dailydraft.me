@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { useAuth } from '@/src/context/AuthContext'
 import { determineResumeStep } from '@/src/lib/onboarding/resume'
-import { saveProfileCheckpoint, saveProfileFromInterview, generateBioFromInterview } from '@/src/lib/onboarding/api'
+import { saveProfileCheckpoint, saveProfileFromInterview } from '@/src/lib/onboarding/api'
 import { AFFILIATION_OPTIONS, SITUATION_OPTIONS, POPULAR_SKILLS, ALL_SKILLS } from '@/src/lib/onboarding/constants'
 import { POSITIONS } from '@/src/constants/roles'
 import { PROJECT_CATEGORIES } from '@/src/constants/categories'
@@ -161,7 +161,6 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     const save = saveProfileFromInterview(profileRef.current, responses)
       .then(() => {
         try { localStorage.removeItem(STORAGE_KEY) } catch { /* ignore */ }
-        generateBioFromInterview(responses).catch(() => {})
       })
       .catch(err => console.error('[Onboarding] save error:', err))
 

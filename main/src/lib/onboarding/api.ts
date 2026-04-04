@@ -23,78 +23,47 @@ export async function saveProfileCheckpoint(profile: ProfileDraft): Promise<void
   }
 }
 
-/** Save profile after scripted interview (no AI chat) */
+/** Save profile after scripted interview — single API call handles everything */
 export async function saveProfileFromInterview(
   profile: ProfileDraft,
   structuredResponses: StructuredResponse[],
 ): Promise<void> {
-  // Derive personality scores directly from structured responses
   const byId = Object.fromEntries(structuredResponses.map(r => [r.questionId, r.value]))
 
-  // Numeric personality scores (1-5 scale)
+  // ── Personality scores from actual 6 interview questions (1-5 scale) ──
   const commRaw = byId['spectrum_communication'] as number | undefined
   const riskRaw = byId['this_or_that_risk'] as string | undefined
-  const hoursRaw = byId['quick_number_hours'] as { hours?: number } | undefined
-  const decisionRaw = byId['scenario_decision'] as string | undefined
+  const hoursRaw = byId['quick_number_hours'] as { hours?: number; semesterAvailable?: boolean } | undefined
+  const planningRaw = byId['this_or_that_planning'] as string | undefined
+  const teamRoleRaw = byId['spectrum_teamrole'] as number | undefined
+  const strengthsRaw = byId['emoji_grid_strengths'] as string[] | undefined
 
   const communication = commRaw ?? 3
   const risk = riskRaw === 'adventurous' ? 4 : riskRaw === 'stable' ? 2 : 3
   const hours = hoursRaw?.hours ?? 10
   const time = Math.min(Math.round(hours / 6), 5) || 1
-  const decision = decisionRaw === 'fast' ? 4 : decisionRaw === 'careful' ? 2 : decisionRaw === 'consult' ? 3 : 3
+  // decision: no dedicated question → derive from planning preference
+  const decision = planningRaw === 'build_first' ? 4 : planningRaw === 'plan_first' ? 2 : 3
 
-  // Categorical work style traits
-  const collabRaw = byId['scenario_collaboration'] as string | undefined
-  const planningRaw = byId['this_or_that_planning'] as string | undefined
-  const qualityRaw = byId['this_or_that_perfectionism'] as string | undefined
-
-  // Build behavioral traits for vision_summary
-  const behavioralTraits: Record<string, string> = {}
-  if (collabRaw) behavioralTraits.collaboration_style = collabRaw
-  if (decisionRaw) behavioralTraits.decision_style = decisionRaw
-  if (planningRaw) behavioralTraits.planning_style = planningRaw
-  if (qualityRaw) behavioralTraits.quality_style = qualityRaw
-
-  // Build work_style numeric scores (1-5 scale)
-  const workStyle: Record<string, number> = { collaboration: 3, planning: 3, perfectionism: 3 }
-  if (collabRaw) {
-    const scores: Record<string, number> = { solo: 1, organize: 3, share: 5 }
-    workStyle.collaboration = scores[collabRaw] ?? 3
-  }
-  if (planningRaw) {
-    const scores: Record<string, number> = { build_first: 2, plan_first: 4 }
-    workStyle.planning = scores[planningRaw] ?? 3
-  }
-  if (qualityRaw) {
-    const scores: Record<string, number> = { speed: 2, quality: 4 }
-    workStyle.perfectionism = scores[qualityRaw] ?? 3
+  // ── Work style traits ──
+  const workStyle = {
+    planning: planningRaw === 'build_first' ? 2 : planningRaw === 'plan_first' ? 4 : 3,
   }
 
-  // Additional structured data
-  const strengthsRaw = byId['emoji_grid_strengths'] as string[] | undefined
-  const teamRoleRaw = byId['spectrum_teamrole'] as number | undefined
-  const goalsRaw = byId['drag_rank_goals'] as string[] | undefined
-  const wantsRaw = byId['drag_rank_wants'] as string[] | undefined
-  const atmosphereRaw = byId['emoji_grid_atmosphere'] as string[] | undefined
-  const teamSizeRaw = byId['emoji_grid_team_size'] as string[] | undefined
-  const semesterRaw = hoursRaw as { hours?: number; semesterAvailable?: boolean } | undefined
-
-  // Build vision_summary JSON
-  const visionSummary: Record<string, unknown> = {
+  // ── Vision summary (for profile display) ──
+  const visionSummary = {
     work_style: workStyle,
-    behavioral_traits: Object.keys(behavioralTraits).length > 0 ? behavioralTraits : undefined,
+    behavioral_traits: {
+      ...(riskRaw && { risk_style: riskRaw }),
+      ...(planningRaw && { planning_style: planningRaw }),
+    },
     strengths: strengthsRaw,
-    goals: goalsRaw,
     team_preference: {
       role: teamRoleRaw != null ? (teamRoleRaw >= 4 ? '리더' : teamRoleRaw <= 2 ? '팔로워' : '유연') : undefined,
-      preferred_size: teamSizeRaw?.[0],
-      atmosphere: atmosphereRaw,
-      wants_from_team: wantsRaw,
     },
     availability: {
       hours_per_week: hours,
-      prefer_online: undefined,
-      semester_available: semesterRaw?.semesterAvailable,
+      semester_available: hoursRaw?.semesterAvailable,
     },
   }
 
@@ -121,23 +90,5 @@ export async function saveProfileFromInterview(
     const errData = await res.json().catch(() => null)
     const errMsg = errData?.error?.message || (typeof errData?.error === 'string' ? errData.error : null) || '저장에 실패했습니다.'
     throw new Error(errMsg)
-  }
-}
-
-/** Fire-and-forget: generate AI bio from interview structured responses */
-export async function generateBioFromInterview(
-  structuredResponses: StructuredResponse[],
-): Promise<void> {
-  try {
-    await fetch('/api/onboarding/summarize', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        transcript: [],
-        structuredData: structuredResponses,
-      }),
-    })
-  } catch {
-    // Non-blocking — ignore errors
   }
 }
