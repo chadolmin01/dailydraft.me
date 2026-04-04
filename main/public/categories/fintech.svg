@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" width="800" height="400">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e3a5f"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="400" fill="url(#g)"/>
+  <!-- Horizontal lines -->
+  <g stroke="rgba(255,255,255,0.06)" stroke-width="1">
+    <line x1="0" y1="100" x2="800" y2="100"/><line x1="0" y1="150" x2="800" y2="150"/><line x1="0" y1="200" x2="800" y2="200"/><line x1="0" y1="250" x2="800" y2="250"/><line x1="0" y1="300" x2="800" y2="300"/>
+  </g>
+  <!-- Rising chart line -->
+  <polyline points="200,280 280,240 340,260 400,200 460,210 520,160 600,130 680,120" fill="none" stroke="rgba(96,165,250,0.6)" stroke-width="3"/>
+  <!-- Area fill -->
+  <polygon points="200,280 280,240 340,260 400,200 460,210 520,160 600,130 680,120 680,310 200,310" fill="rgba(59,130,246,0.12)"/>
+  <!-- Dot on chart -->
+  <circle cx="520" cy="160" r="5" fill="rgba(147,197,253,0.9)"/>
+  <circle cx="680" cy="120" r="5" fill="rgba(147,197,253,0.9)"/>
+  <!-- Bar chart mini -->
+  <g fill="rgba(255,255,255,0.12)">
+    <rect x="220" y="200" width="20" height="80"/>
+    <rect x="250" y="220" width="20" height="60"/>
+    <rect x="280" y="180" width="20" height="100"/>
+  </g>
+  <circle cx="400" cy="200" r="120" fill="rgba(29,78,216,0.12)"/>
+</svg>

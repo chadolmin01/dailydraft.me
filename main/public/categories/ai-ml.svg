@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" width="800" height="400">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4f46e5"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="400" fill="url(#g)"/>
+  <!-- Background dots grid -->
+  <g fill="rgba(255,255,255,0.06)">
+    <circle cx="80" cy="80" r="3"/><circle cx="160" cy="80" r="3"/><circle cx="240" cy="80" r="3"/><circle cx="320" cy="80" r="3"/><circle cx="400" cy="80" r="3"/><circle cx="480" cy="80" r="3"/><circle cx="560" cy="80" r="3"/><circle cx="640" cy="80" r="3"/><circle cx="720" cy="80" r="3"/>
+    <circle cx="80" cy="160" r="3"/><circle cx="160" cy="160" r="3"/><circle cx="240" cy="160" r="3"/><circle cx="320" cy="160" r="3"/><circle cx="400" cy="160" r="3"/><circle cx="480" cy="160" r="3"/><circle cx="560" cy="160" r="3"/><circle cx="640" cy="160" r="3"/><circle cx="720" cy="160" r="3"/>
+    <circle cx="80" cy="240" r="3"/><circle cx="160" cy="240" r="3"/><circle cx="240" cy="240" r="3"/><circle cx="320" cy="240" r="3"/><circle cx="400" cy="240" r="3"/><circle cx="480" cy="240" r="3"/><circle cx="560" cy="240" r="3"/><circle cx="640" cy="240" r="3"/><circle cx="720" cy="240" r="3"/>
+    <circle cx="80" cy="320" r="3"/><circle cx="160" cy="320" r="3"/><circle cx="240" cy="320" r="3"/><circle cx="320" cy="320" r="3"/><circle cx="400" cy="320" r="3"/><circle cx="480" cy="320" r="3"/><circle cx="560" cy="320" r="3"/><circle cx="640" cy="320" r="3"/><circle cx="720" cy="320" r="3"/>
+  </g>
+  <!-- Neural network nodes -->
+  <g stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none">
+    <line x1="280" y1="200" x2="360" y2="140"/><line x1="280" y1="200" x2="360" y2="200"/><line x1="280" y1="200" x2="360" y2="260"/>
+    <line x1="360" y1="140" x2="440" y2="170"/><line x1="360" y1="200" x2="440" y2="170"/><line x1="360" y1="260" x2="440" y2="170"/>
+    <line x1="440" y1="170" x2="520" y2="200"/>
+  </g>
+  <g fill="rgba(255,255,255,0.35)">
+    <circle cx="280" cy="200" r="10"/>
+    <circle cx="360" cy="140" r="8"/><circle cx="360" cy="200" r="8"/><circle cx="360" cy="260" r="8"/>
+    <circle cx="440" cy="170" r="10"/>
+    <circle cx="520" cy="200" r="8"/>
+  </g>
+  <!-- Glow center -->
+  <circle cx="400" cy="200" r="120" fill="rgba(139,92,246,0.15)"/>
+</svg>

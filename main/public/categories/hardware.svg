@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" width="800" height="400">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#334155"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="400" fill="url(#g)"/>
+  <!-- Circuit grid -->
+  <g stroke="rgba(100,116,139,0.3)" stroke-width="1" fill="none">
+    <line x1="200" y1="150" x2="280" y2="150"/><line x1="280" y1="150" x2="280" y2="200"/>
+    <line x1="280" y1="200" x2="320" y2="200"/><line x1="320" y1="200" x2="320" y2="170"/>
+    <line x1="320" y1="170" x2="380" y2="170"/>
+    <line x1="480" y1="170" x2="540" y2="170"/><line x1="540" y1="170" x2="540" y2="200"/>
+    <line x1="540" y1="200" x2="580" y2="200"/><line x1="580" y1="200" x2="580" y2="150"/>
+    <line x1="580" y1="150" x2="650" y2="150"/>
+    <line x1="200" y1="250" x2="280" y2="250"/><line x1="280" y1="250" x2="280" y2="230"/>
+    <line x1="280" y1="230" x2="380" y2="230"/>
+    <line x1="480" y1="230" x2="580" y2="230"/><line x1="580" y1="230" x2="580" y2="250"/>
+    <line x1="580" y1="250" x2="650" y2="250"/>
+  </g>
+  <!-- Chip -->
+  <rect x="380" y="155" width="100" height="90" rx="4" fill="rgba(100,116,139,0.3)" stroke="rgba(148,163,184,0.5)" stroke-width="2"/>
+  <!-- Chip pins -->
+  <g stroke="rgba(148,163,184,0.6)" stroke-width="2">
+    <line x1="395" y1="155" x2="395" y2="145"/><line x1="415" y1="155" x2="415" y2="145"/><line x1="435" y1="155" x2="435" y2="145"/><line x1="455" y1="155" x2="455" y2="145"/><line x1="465" y1="155" x2="465" y2="145"/>
+    <line x1="395" y1="245" x2="395" y2="255"/><line x1="415" y1="245" x2="415" y2="255"/><line x1="435" y1="245" x2="435" y2="255"/><line x1="455" y1="245" x2="455" y2="255"/><line x1="465" y1="245" x2="465" y2="255"/>
+    <line x1="380" y1="170" x2="370" y2="170"/><line x1="380" y1="185" x2="370" y2="185"/><line x1="380" y1="200" x2="370" y2="200"/><line x1="380" y1="215" x2="370" y2="215"/><line x1="380" y1="230" x2="370" y2="230"/>
+    <line x1="480" y1="170" x2="490" y2="170"/><line x1="480" y1="185" x2="490" y2="185"/><line x1="480" y1="200" x2="490" y2="200"/><line x1="480" y1="215" x2="490" y2="215"/><line x1="480" y1="230" x2="490" y2="230"/>
+  </g>
+  <!-- Chip inner detail -->
+  <rect x="398" y="170" width="64" height="60" rx="2" fill="rgba(148,163,184,0.12)"/>
+  <g fill="rgba(148,163,184,0.2)">
+    <rect x="405" y="177" width="20" height="20" rx="1"/>
+    <rect x="430" y="177" width="25" height="10" rx="1"/>
+    <rect x="430" y="192" width="15" height="10" rx="1"/>
+    <rect x="405" y="202" width="45" height="8" rx="1"/>
+    <rect x="405" y="215" width="30" height="8" rx="1"/>
+  </g>
+  <!-- Solder joints -->
+  <g fill="rgba(148,163,184,0.4)">
+    <circle cx="280" cy="150" r="3"/><circle cx="280" cy="200" r="3"/><circle cx="320" cy="200" r="3"/><circle cx="320" cy="170" r="3"/>
+    <circle cx="540" cy="170" r="3"/><circle cx="540" cy="200" r="3"/><circle cx="580" cy="200" r="3"/><circle cx="580" cy="150" r="3"/>
+    <circle cx="280" cy="250" r="3"/><circle cx="280" cy="230" r="3"/>
+    <circle cx="580" cy="230" r="3"/><circle cx="580" cy="250" r="3"/>
+  </g>
+</svg>

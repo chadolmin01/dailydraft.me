@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" width="800" height="400">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#9f1239"/>
+      <stop offset="100%" stop-color="#c026d3"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="400" fill="url(#g)"/>
+  <!-- Geometric shapes -->
+  <circle cx="400" cy="200" r="80" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+  <circle cx="400" cy="200" r="50" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"/>
+  <!-- Color swatches -->
+  <rect x="260" y="150" width="36" height="36" rx="6" fill="rgba(255,255,255,0.25)"/>
+  <rect x="306" y="150" width="36" height="36" rx="6" fill="rgba(255,192,203,0.35)"/>
+  <rect x="260" y="196" width="36" height="36" rx="6" fill="rgba(200,162,200,0.3)"/>
+  <rect x="306" y="196" width="36" height="36" rx="6" fill="rgba(255,255,255,0.12)"/>
+  <!-- Pen tool -->
+  <path d="M460 150 L480 170 L490 220 L470 240 L450 230 L440 180 Z" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+  <circle cx="490" cy="220" r="5" fill="rgba(255,255,255,0.5)"/>
+  <circle cx="470" cy="240" r="5" fill="rgba(255,255,255,0.5)"/>
+  <!-- Grid dots -->
+  <g fill="rgba(255,255,255,0.08)">
+    <circle cx="180" cy="120" r="2"/><circle cx="220" cy="120" r="2"/><circle cx="260" cy="120" r="2"/>
+    <circle cx="540" cy="280" r="2"/><circle cx="580" cy="280" r="2"/><circle cx="620" cy="280" r="2"/>
+    <circle cx="580" cy="120" r="2"/><circle cx="620" cy="120" r="2"/><circle cx="660" cy="120" r="2"/>
+  </g>
+  <circle cx="400" cy="200" r="130" fill="rgba(192,38,211,0.12)"/>
+</svg>

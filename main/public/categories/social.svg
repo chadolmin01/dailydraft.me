@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" width="800" height="400">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d9488"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="400" fill="url(#g)"/>
+  <!-- Connection lines -->
+  <g stroke="rgba(255,255,255,0.15)" stroke-width="1.5" fill="none">
+    <line x1="400" y1="200" x2="300" y2="140"/>
+    <line x1="400" y1="200" x2="500" y2="140"/>
+    <line x1="400" y1="200" x2="280" y2="230"/>
+    <line x1="400" y1="200" x2="520" y2="250"/>
+    <line x1="400" y1="200" x2="340" y2="290"/>
+    <line x1="300" y1="140" x2="220" y2="100"/>
+    <line x1="500" y1="140" x2="580" y2="100"/>
+    <line x1="280" y1="230" x2="200" y2="270"/>
+    <line x1="520" y1="250" x2="600" y2="290"/>
+  </g>
+  <!-- Nodes -->
+  <g fill="rgba(255,255,255,0.8)">
+    <circle cx="400" cy="200" r="14"/>
+    <circle cx="300" cy="140" r="10"/>
+    <circle cx="500" cy="140" r="10"/>
+    <circle cx="280" cy="230" r="8"/>
+    <circle cx="520" cy="250" r="8"/>
+    <circle cx="340" cy="290" r="8"/>
+    <circle cx="220" cy="100" r="6"/>
+    <circle cx="580" cy="100" r="6"/>
+    <circle cx="200" cy="270" r="6"/>
+    <circle cx="600" cy="290" r="6"/>
+  </g>
+  <circle cx="400" cy="200" r="140" fill="rgba(5,150,105,0.12)"/>
+</svg>

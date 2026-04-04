@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" width="800" height="400">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#14532d"/>
+      <stop offset="100%" stop-color="#16a34a"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="400" fill="url(#g)"/>
+  <!-- Concentric circles -->
+  <circle cx="400" cy="200" r="160" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+  <circle cx="400" cy="200" r="120" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+  <circle cx="400" cy="200" r="80" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+  <!-- Leaf shape -->
+  <path d="M400 140 Q450 160 440 210 Q400 240 360 210 Q350 160 400 140 Z" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+  <!-- Leaf vein -->
+  <line x1="400" y1="140" x2="395" y2="240" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+  <line x1="397" y1="175" x2="430" y2="165" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+  <line x1="395" y1="195" x2="428" y2="192" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+  <line x1="396" y1="215" x2="420" y2="220" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+  <!-- Stem -->
+  <path d="M395 240 Q380 270 370 300" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="2"/>
+  <!-- Small leaves scattered -->
+  <path d="M230 180 Q245 165 255 180 Q245 195 230 180 Z" fill="rgba(255,255,255,0.15)"/>
+  <path d="M560 240 Q575 225 585 240 Q575 255 560 240 Z" fill="rgba(255,255,255,0.15)"/>
+  <circle cx="400" cy="200" r="120" fill="rgba(22,163,74,0.12)"/>
+</svg>

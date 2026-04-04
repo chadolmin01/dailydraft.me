@@ -10,7 +10,13 @@ import { useAuth } from '@/src/context/AuthContext'
 import { getUpdateBadge } from './constants'
 import { trackProjectView } from '@/src/lib/pwa/engagement-tracker'
 import { Badges } from '@/components/ui/Badge'
+import { CATEGORY_SLUGS } from '@/src/constants/categories'
 import type { ProjectCard } from './types'
+
+function getCategoryCover(tags: string[]): string {
+  const match = tags.find(t => CATEGORY_SLUGS.includes(t))
+  return `/categories/${match ?? 'portfolio'}.svg`
+}
 
 interface ExploreProjectGridProps {
   projectCards: ProjectCard[]
@@ -96,12 +102,18 @@ export function ExploreProjectGrid({
             >
               {/* 헤더: 커버 */}
               <div className="relative h-36 shrink-0 bg-surface-inverse flex items-end p-4">
-                {p.coverImage && (
-                  <>
-                    <Image src={p.coverImage} alt="" fill sizes="(max-width:768px) 100vw, 50vw" className="object-cover" quality={85} onError={(e) => { e.currentTarget.style.display = 'none' }} />
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/30" />
-                  </>
-                )}
+                <>
+                  <Image
+                    src={p.coverImage ?? getCategoryCover(p.tags)}
+                    alt=""
+                    fill
+                    sizes="(max-width:768px) 100vw, 50vw"
+                    className="object-cover"
+                    quality={85}
+                    onError={(e) => { e.currentTarget.src = getCategoryCover(p.tags) }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/30" />
+                </>
                 <div className="absolute top-3 left-3 z-[1]">
                   {isUrgent ? (
                     <span title={`마감 ${p.daysLeft}일 전`} className="text-[10px] font-mono font-bold bg-status-danger-text text-white px-2 py-0.5 border border-status-danger-text">D-{p.daysLeft} URGENT</span>

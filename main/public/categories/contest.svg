@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" width="800" height="400">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#92400e"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="400" fill="url(#g)"/>
+  <!-- Radiating lines -->
+  <g stroke="rgba(255,255,255,0.07)" stroke-width="1">
+    <line x1="400" y1="200" x2="400" y2="0"/><line x1="400" y1="200" x2="600" y2="0"/>
+    <line x1="400" y1="200" x2="700" y2="100"/><line x1="400" y1="200" x2="800" y2="200"/>
+    <line x1="400" y1="200" x2="700" y2="300"/><line x1="400" y1="200" x2="600" y2="400"/>
+    <line x1="400" y1="200" x2="200" y2="400"/><line x1="400" y1="200" x2="100" y2="300"/>
+    <line x1="400" y1="200" x2="0" y2="200"/><line x1="400" y1="200" x2="100" y2="100"/>
+    <line x1="400" y1="200" x2="200" y2="0"/>
+  </g>
+  <!-- Trophy -->
+  <!-- Cup body -->
+  <path d="M360 150 Q355 200 370 220 Q390 240 400 240 Q410 240 430 220 Q445 200 440 150 Z" fill="rgba(255,255,255,0.25)" stroke="rgba(255,255,255,0.45)" stroke-width="2"/>
+  <!-- Cup handles -->
+  <path d="M360 160 Q340 165 342 185 Q344 205 360 200" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2.5"/>
+  <path d="M440 160 Q460 165 458 185 Q456 205 440 200" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2.5"/>
+  <!-- Stem and base -->
+  <rect x="394" y="240" width="12" height="25" fill="rgba(255,255,255,0.3)"/>
+  <rect x="370" y="263" width="60" height="10" rx="5" fill="rgba(255,255,255,0.3)"/>
+  <!-- Star on trophy -->
+  <polygon points="400,165 404,177 416,177 407,185 410,197 400,190 390,197 393,185 384,177 396,177" fill="rgba(255,215,0,0.6)"/>
+  <!-- Small stars -->
+  <g fill="rgba(255,215,0,0.3)">
+    <polygon points="270,130 272,136 278,136 273,140 275,146 270,143 265,146 267,140 262,136 268,136"/>
+    <polygon points="530,150 532,156 538,156 533,160 535,166 530,163 525,166 527,160 522,156 528,156"/>
+    <polygon points="250,280 252,284 256,284 253,287 254,291 250,289 246,291 247,287 244,284 248,284"/>
+  </g>
+  <circle cx="400" cy="200" r="130" fill="rgba(217,119,6,0.15)"/>
+</svg>

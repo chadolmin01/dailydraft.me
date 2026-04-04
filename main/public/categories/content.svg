@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" width="800" height="400">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#9d174d"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="400" fill="url(#g)"/>
+  <!-- Wave pattern -->
+  <g stroke="rgba(255,255,255,0.08)" stroke-width="1.5" fill="none">
+    <path d="M0 140 Q100 100 200 140 Q300 180 400 140 Q500 100 600 140 Q700 180 800 140"/>
+    <path d="M0 200 Q100 160 200 200 Q300 240 400 200 Q500 160 600 200 Q700 240 800 200"/>
+    <path d="M0 260 Q100 220 200 260 Q300 300 400 260 Q500 220 600 260 Q700 300 800 260"/>
+  </g>
+  <!-- Play button circle -->
+  <circle cx="400" cy="200" r="52" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.35)" stroke-width="2.5"/>
+  <polygon points="390,180 390,220 430,200" fill="rgba(255,255,255,0.7)"/>
+  <!-- Small circles -->
+  <circle cx="270" cy="150" r="6" fill="rgba(255,255,255,0.2)"/>
+  <circle cx="530" cy="250" r="6" fill="rgba(255,255,255,0.2)"/>
+  <circle cx="240" cy="280" r="4" fill="rgba(255,255,255,0.15)"/>
+  <circle cx="560" cy="130" r="4" fill="rgba(255,255,255,0.15)"/>
+  <circle cx="400" cy="200" r="130" fill="rgba(124,58,237,0.15)"/>
+</svg>

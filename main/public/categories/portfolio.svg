@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" width="800" height="400">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#18181b"/>
+      <stop offset="100%" stop-color="#3f3f46"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="400" fill="url(#g)"/>
+  <!-- Subtle grid -->
+  <g stroke="rgba(255,255,255,0.04)" stroke-width="1">
+    <line x1="0" y1="100" x2="800" y2="100"/><line x1="0" y1="200" x2="800" y2="200"/><line x1="0" y1="300" x2="800" y2="300"/>
+    <line x1="100" y1="0" x2="100" y2="400"/><line x1="200" y1="0" x2="200" y2="400"/><line x1="300" y1="0" x2="300" y2="400"/><line x1="400" y1="0" x2="400" y2="400"/><line x1="500" y1="0" x2="500" y2="400"/><line x1="600" y1="0" x2="600" y2="400"/><line x1="700" y1="0" x2="700" y2="400"/>
+  </g>
+  <!-- Grid of image placeholder boxes -->
+  <g fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.12)" stroke-width="1">
+    <rect x="270" y="130" width="80" height="60" rx="4"/>
+    <rect x="360" y="130" width="80" height="60" rx="4"/>
+    <rect x="450" y="130" width="80" height="60" rx="4"/>
+    <rect x="270" y="200" width="80" height="60" rx="4"/>
+    <rect x="360" y="200" width="80" height="60" rx="4"/>
+    <rect x="450" y="200" width="80" height="60" rx="4"/>
+  </g>
+  <!-- Highlight on one card -->
+  <rect x="360" y="130" width="80" height="60" rx="4" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
+  <!-- Image placeholder icons -->
+  <g fill="rgba(255,255,255,0.2)">
+    <rect x="285" y="148" width="50" height="5" rx="2.5"/>
+    <rect x="285" y="158" width="35" height="5" rx="2.5"/>
+    <rect x="375" y="148" width="50" height="5" rx="2.5"/>
+    <rect x="375" y="158" width="35" height="5" rx="2.5"/>
+    <rect x="465" y="148" width="50" height="5" rx="2.5"/>
+    <rect x="465" y="158" width="35" height="5" rx="2.5"/>
+    <rect x="285" y="218" width="50" height="5" rx="2.5"/>
+    <rect x="285" y="228" width="35" height="5" rx="2.5"/>
+    <rect x="375" y="218" width="50" height="5" rx="2.5"/>
+    <rect x="375" y="228" width="35" height="5" rx="2.5"/>
+    <rect x="465" y="218" width="50" height="5" rx="2.5"/>
+    <rect x="465" y="228" width="35" height="5" rx="2.5"/>
+  </g>
+  <circle cx="400" cy="200" r="130" fill="rgba(63,63,70,0.2)"/>
+</svg>

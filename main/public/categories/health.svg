@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" width="800" height="400">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#065f46"/>
+      <stop offset="100%" stop-color="#0891b2"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="400" fill="url(#g)"/>
+  <!-- Heartbeat line -->
+  <polyline points="100,200 200,200 240,200 260,150 280,250 300,200 400,200 500,200" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2.5"/>
+  <polyline points="500,200 600,200 700,200" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+  <!-- Plus / Cross -->
+  <rect x="372" y="155" width="56" height="16" rx="8" fill="rgba(255,255,255,0.3)"/>
+  <rect x="392" y="135" width="16" height="56" rx="8" fill="rgba(255,255,255,0.3)"/>
+  <!-- Circles -->
+  <circle cx="260" cy="150" r="5" fill="rgba(255,255,255,0.5)"/>
+  <circle cx="300" cy="200" r="5" fill="rgba(255,255,255,0.5)"/>
+  <!-- Background circles -->
+  <circle cx="200" cy="300" r="40" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+  <circle cx="600" cy="120" r="30" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+  <circle cx="400" cy="200" r="130" fill="rgba(8,145,178,0.12)"/>
+</svg>

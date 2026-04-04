@@ -49,6 +49,8 @@ const nextConfig: NextConfig = {
 
   // Image optimization with allowed remote patterns
   images: {
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
     remotePatterns: [
       // Supabase Storage
       {
