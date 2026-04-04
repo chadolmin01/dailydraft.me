@@ -497,7 +497,7 @@ function NewProjectContent() {
                     }}
                     placeholder={theme.descPlaceholder}
                     rows={7}
-                    maxLength={2000}
+                    maxLength={500}
                     className={`w-full text-base sm:text-sm text-txt-secondary leading-[1.8] placeholder:text-txt-disabled border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-brand/10 focus:border-brand resize-none bg-transparent transition-all ${fieldErrors.description ? 'border-status-danger-text/30' : 'border-border-subtle'}`}
                   />
                   {fieldErrors.description && <p className="text-status-danger-text text-xs mt-1">{fieldErrors.description}</p>}
@@ -505,14 +505,14 @@ function NewProjectContent() {
                     <div className="flex-1 h-1 bg-surface-sunken rounded-full overflow-hidden">
                       <div
                         className={`h-full rounded-full progress-bar-spring ${
-                          description.length >= 1800 ? 'bg-status-danger-text' :
-                          description.length >= 1500 ? 'bg-status-warning-text' :
+                          description.length >= 450 ? 'bg-status-danger-text' :
+                          description.length >= 350 ? 'bg-status-warning-text' :
                           description.length >= 20 ? 'bg-brand' : 'bg-txt-disabled/30'
                         }`}
-                        style={{ width: `${Math.min((description.length / 2000) * 100, 100)}%` }}
+                        style={{ width: `${Math.min((description.length / 500) * 100, 100)}%` }}
                       />
                     </div>
-                    <p className={`text-[10px] font-mono shrink-0 ${description.length >= 1800 ? 'text-status-danger-text font-bold' : description.length >= 1500 ? 'text-status-warning-text' : 'text-txt-disabled'}`}>{description.length}/2000</p>
+                    <p className={`text-[10px] font-mono shrink-0 ${description.length >= 450 ? 'text-status-danger-text font-bold' : description.length >= 350 ? 'text-status-warning-text' : 'text-txt-disabled'}`}>{description.length}/500</p>
                   </div>
                 </section>
 
