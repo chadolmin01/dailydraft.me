@@ -45,27 +45,24 @@ export const Hero: React.FC = () => {
 
       {/* Floating UI Cards — desktop only */}
       <div className="absolute inset-0 pointer-events-none z-0">
-        {/* Card 1: AI 온보딩 채팅 미리보기 */}
+        {/* Card 1: AI 온보딩 스텝 미리보기 */}
         <FloatingCard className="top-20 -left-6 w-56" delay={0}>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-mono font-bold text-txt-primary tracking-tight">AI 온보딩</span>
               <span className="text-[10px] font-mono font-medium bg-brand/10 text-brand px-2 py-0.5 rounded-full">진행 중</span>
             </div>
-            <div className="space-y-1.5">
-              <div className="bg-surface-sunken rounded-lg px-3 py-2 text-xs text-txt-secondary w-fit leading-relaxed">
-                어떤 프로젝트에 관심 있어요?
-              </div>
-              <div className="bg-brand/10 rounded-lg px-3 py-2 text-xs text-brand w-fit ml-auto leading-relaxed">
-                AI 기반 서비스요!
-              </div>
-              <div className="bg-surface-sunken rounded-lg px-3 py-2 text-xs text-txt-secondary w-fit leading-relaxed">
-                프로필 생성 중...
+            <div className="space-y-2">
+              <div className="text-xs font-medium text-txt-primary">어떤 분야에서 활동하세요?</div>
+              <div className="flex flex-wrap gap-1.5">
+                <span className="px-2.5 py-1 bg-brand text-white rounded-xl text-[11px] font-medium">프론트엔드</span>
+                <span className="px-2.5 py-1 bg-surface-sunken text-txt-secondary rounded-xl text-[11px]">백엔드</span>
+                <span className="px-2.5 py-1 bg-surface-sunken text-txt-secondary rounded-xl text-[11px]">디자인</span>
               </div>
             </div>
             <div className="flex items-center justify-between pt-2 border-t border-border">
-              <span className="text-[10px] font-mono text-txt-tertiary">STEP 2 / 4</span>
-              <span className="text-[10px] font-mono text-txt-tertiary">50%</span>
+              <span className="text-[10px] font-mono text-txt-tertiary">STEP 2 / 5</span>
+              <span className="text-[10px] font-mono text-txt-tertiary">40%</span>
             </div>
           </div>
         </FloatingCard>

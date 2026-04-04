@@ -11,12 +11,12 @@ const tabs = [
     id: 'onboarding',
     label: 'AI 온보딩',
     icon: MessageSquare,
-    title: '1분 대화로 완성되는 프로필',
-    description: 'AI와 짧은 대화만 나누면, 당신의 강점·관심사·파운더 유형까지 자동으로 분석해 프로필을 만들어줍니다.',
+    title: '몇 가지 질문으로 완성되는 프로필',
+    description: '기본 정보를 입력하고 인터랙티브 질문에 답하면, 팀 성향·소통 스타일·강점까지 자동으로 분석해 프로필을 만들어줍니다.',
     bullets: [
-      '기술 스택, 관심 분야 자동 추출',
-      '파운더 유형 분석 (빌더·비즈니스·크리에이터)',
-      'AI 추천 분야 생성',
+      '기술 스택, 관심 분야 선택',
+      '팀 성향·소통 스타일 분석',
+      'AI 강점 분석 및 추천 분야 생성',
     ],
     cta: '프로필 만들기',
   },
@@ -77,30 +77,48 @@ const tabs = [
 
 /* ── Mockup UIs ── */
 const OnboardingMockup = () => (
-  <div className="space-y-3">
-    <div className="bg-surface-sunken rounded-xl px-4 py-2.5 text-sm text-txt-secondary w-fit max-w-[80%]">
-      반갑습니다! 어떤 분야에 관심 있으세요?
-    </div>
-    <div className="bg-brand/10 rounded-xl px-4 py-2.5 text-sm text-brand w-fit max-w-[80%] ml-auto">
-      AI/ML 쪽이요. 최근에 LLM 프로젝트 했어요
-    </div>
-    <div className="bg-surface-sunken rounded-xl px-4 py-2.5 text-sm text-txt-secondary w-fit max-w-[80%]">
-      좋아요! 기술 스택도 알려주세요
-    </div>
-    <div className="bg-brand/10 rounded-xl px-4 py-2.5 text-sm text-brand w-fit max-w-[80%] ml-auto">
-      Python, TypeScript, React
-    </div>
-    <motion.div
-      className="mt-4 bg-surface-card border border-brand-border rounded-xl p-4"
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: 0.3 }}
-    >
-      <div className="flex items-center gap-2 mb-2">
-        <Check size={14} className="text-brand" />
-        <span className="text-xs font-bold text-brand">프로필 생성 완료</span>
+  <div className="space-y-4">
+    {/* 진행 바 */}
+    <div className="flex items-center gap-2">
+      <div className="flex-1 h-1 bg-surface-sunken rounded-full overflow-hidden">
+        <div className="h-full bg-brand rounded-full" style={{ width: '60%' }} />
       </div>
-      <div className="text-[10px] text-txt-tertiary">빌더 유형 · AI/ML · 풀스택</div>
+      <span className="text-[10px] font-mono text-txt-tertiary shrink-0">3 / 5</span>
+    </div>
+
+    {/* 현재 질문: 스텝 선택형 */}
+    <div>
+      <div className="text-sm font-bold text-txt-primary mb-2.5">Draft에서 무엇을 하고 싶으세요?</div>
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center gap-2.5 px-3 py-2.5 border-2 border-brand bg-brand/5 rounded-xl">
+          <div className="w-4 h-4 rounded-full border-2 border-brand bg-brand flex items-center justify-center shrink-0">
+            <div className="w-1.5 h-1.5 rounded-full bg-white" />
+          </div>
+          <span className="text-xs font-medium text-txt-primary">팀원 구하기</span>
+        </div>
+        <div className="flex items-center gap-2.5 px-3 py-2.5 border border-border rounded-xl">
+          <div className="w-4 h-4 rounded-full border-2 border-border shrink-0" />
+          <span className="text-xs text-txt-secondary">프로젝트 찾기</span>
+        </div>
+        <div className="flex items-center gap-2.5 px-3 py-2.5 border border-border rounded-xl">
+          <div className="w-4 h-4 rounded-full border-2 border-border shrink-0" />
+          <span className="text-xs text-txt-secondary">네트워킹</span>
+        </div>
+      </div>
+    </div>
+
+    {/* 인터뷰 미리보기 힌트 */}
+    <motion.div
+      className="bg-surface-card border border-brand-border rounded-xl p-3"
+      initial={{ opacity: 0, y: 4 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.4 }}
+    >
+      <div className="flex items-center gap-2 mb-1">
+        <Check size={12} className="text-brand" />
+        <span className="text-[10px] font-bold text-brand">다음: 성향 인터뷰</span>
+      </div>
+      <div className="text-[10px] text-txt-tertiary">팀 스타일·소통 방식·강점을 파악해요</div>
     </motion.div>
   </div>
 )

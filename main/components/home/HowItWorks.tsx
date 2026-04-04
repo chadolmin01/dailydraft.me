@@ -8,13 +8,13 @@ import { SectionLabel, SectionTitle } from './shared'
 const steps = [
   {
     icon: UserPlus,
-    title: '가입 & AI 온보딩',
-    description: '1분 대화로 프로필 완성. 관심사, 기술 스택, 목표를 AI가 정리해줍니다.',
+    title: '가입 & 온보딩',
+    description: '기본 정보 입력 후 인터랙티브 질문 몇 가지에 답하면 프로필이 완성돼요.',
   },
   {
     icon: Brain,
     title: 'AI가 분석해요',
-    description: '강점, 파운더 유형, 추천 분야를 생성합니다. 당신만의 프로필이 만들어져요.',
+    description: '팀 성향, 소통 스타일, 강점을 분석해 당신만의 프로필과 추천 분야를 만들어줍니다.',
   },
   {
     icon: Compass,
