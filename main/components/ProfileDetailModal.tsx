@@ -174,13 +174,13 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
       >
             <div
               onClick={(e) => e.stopPropagation()}
-              className={`flex flex-col sm:flex-row gap-0 sm:gap-4 max-h-[85vh] sm:max-h-[90vh] transition-all duration-300 ${sidePanel ? 'w-full max-w-[90rem]' : 'w-full max-w-lg md:max-w-2xl lg:max-w-3xl'}`}
+              className={`flex flex-col sm:flex-row gap-0 sm:gap-4 transition-all duration-300 ${sidePanel ? 'w-full max-w-[90rem]' : 'w-full max-w-lg md:max-w-2xl lg:max-w-3xl'}`}
               role="dialog"
               aria-modal="true"
               aria-label={profile?.nickname || '프로필'}
             >
             {/* Main modal */}
-            <div ref={sheetRef} className={`modal-glass rounded-t-2xl sm:rounded-2xl overflow-hidden flex flex-col relative transition-all duration-300 ${sidePanel ? 'w-full sm:w-3/5' : 'w-full'}`}>
+            <div ref={sheetRef} className={`modal-glass rounded-t-2xl sm:rounded-2xl overflow-hidden flex flex-col relative transition-all duration-300 max-h-[85vh] sm:max-h-[90vh] ${sidePanel ? 'w-full sm:w-3/5' : 'w-full'}`}>
               {/* Mobile drag handle */}
               <div
                 className="sm:hidden flex justify-center pt-2 pb-0.5 touch-none cursor-grab active:cursor-grabbing"
