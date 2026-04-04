@@ -91,6 +91,8 @@ export function useInfiniteOpportunities(pageSize = 12) {
 
 // Fetch single opportunity by ID
 export function useOpportunity(id: string | undefined) {
+  const queryClient = useQueryClient()
+
   return useQuery({
     queryKey: opportunityKeys.detail(id ?? ''),
     queryFn: () => withRetry(async () => {
@@ -109,6 +111,21 @@ export function useOpportunity(id: string | undefined) {
     staleTime: 1000 * 60 * 2,
     retry: (failureCount) => failureCount < 3,
     retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
+    // 리스트 캐시에 이미 있으면 즉시 표시 (스켈레톤 없이 모달 바로 오픈)
+    placeholderData: () => {
+      if (!id) return undefined
+      const listCaches = queryClient.getQueriesData<{ pages: { items: OpportunityWithCreator[] }[] }>({
+        queryKey: ['opportunities', 'list', 'infinite'],
+      })
+      for (const [, cached] of listCaches) {
+        if (!cached?.pages) continue
+        for (const page of cached.pages) {
+          const found = page.items?.find(item => item.id === id)
+          if (found) return found
+        }
+      }
+      return undefined
+    },
   })
 }
 
