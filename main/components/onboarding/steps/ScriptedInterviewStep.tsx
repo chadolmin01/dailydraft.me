@@ -247,7 +247,7 @@ export function ScriptedInterviewStep({ profile, introMessage, onAnswer, onCompl
 
           {/* Visual */}
           <div className="flex justify-center mb-10">
-            <img src="/onboarding/1.svg" alt="환영" className="w-full max-w-[280px] object-contain ob-avatar" />
+            <img src="/onboarding/1.svg" alt="환영" className="w-full max-w-[280px] object-contain ob-avatar ob-img-fade" onLoad={e => e.currentTarget.classList.add('loaded')} />
           </div>
 
           {/* Message */}
@@ -365,7 +365,8 @@ export function ScriptedInterviewStep({ profile, introMessage, onAnswer, onCompl
                 <img
                   src={visual.illustration}
                   alt={visual.label}
-                  className="w-full h-full object-contain max-h-[200px] sm:max-h-[280px] md:max-h-[360px]"
+                  className="w-full h-full object-contain max-h-[200px] sm:max-h-[280px] md:max-h-[360px] ob-img-fade"
+                  onLoad={e => e.currentTarget.classList.add('loaded')}
                   onError={(e) => {
                     const target = e.currentTarget
                     target.style.display = 'none'

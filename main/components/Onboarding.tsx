@@ -120,6 +120,20 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     } catch { /* ignore */ }
   }, [authLoading, authProfile, isAuthenticated, searchParams])
 
+  /* ── Prefetch all onboarding SVGs (Toss-style: zero-delay rendering) ── */
+  useEffect(() => {
+    const svgs = [
+      '/onboarding/1.svg', '/onboarding/2.svg', '/onboarding/3.svg',
+      '/onboarding/4.svg', '/onboarding/5.svg', '/onboarding/6.svg',
+      '/onboarding/done.svg', '/onboarding/leader_follower.svg',
+      '/onboarding/add_project.svg',
+    ]
+    svgs.forEach(src => {
+      const img = new Image()
+      img.src = src
+    })
+  }, [])
+
   /* ── Navigation ── */
   const goTo = useCallback((nextStep: Step, dir: SlideDir = 'forward') => {
     setSlideDir(dir)
