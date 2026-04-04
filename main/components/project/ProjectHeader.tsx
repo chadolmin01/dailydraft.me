@@ -59,77 +59,80 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
           </div>
         )}
 
-        {/* Title & Meta overlay — bottom */}
-        <div className="absolute bottom-0 left-0 right-0 px-4 sm:px-8 pb-4 sm:pb-5">
-          <div className="flex items-start gap-2 mb-2">
-            <h2 className="text-xl sm:text-2xl font-black text-white break-keep leading-tight drop-shadow-sm">
-              {opportunity.title}
-            </h2>
-            <Badges badges={(opportunity as unknown as { badges?: string[] | null }).badges ?? null} className="mt-1" />
-            {!isOwner && matchScore != null && matchScore >= 60 && (
-              <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 border shrink-0 mt-1 ${
-                matchScore >= 80
-                  ? 'bg-status-success-bg text-status-success-text border-indicator-online/20'
-                  : 'bg-white/20 text-white/80 border-white/30'
-              }`}>
-                {matchScore >= 80 ? '잘 맞는 프로젝트' : '관심 가능'}
-              </span>
-            )}
+        {/* Bottom overlay — title/meta left, interest/views right */}
+        <div className="absolute bottom-0 left-0 right-0 px-4 sm:px-8 pb-4 sm:pb-5 flex items-end justify-between gap-3">
+          {/* Left: title + meta */}
+          <div className="min-w-0 flex-1">
+            <div className="flex items-start gap-2 mb-2">
+              <h2 className="text-xl sm:text-2xl font-black text-white break-keep leading-tight drop-shadow-sm">
+                {opportunity.title}
+              </h2>
+              <Badges badges={(opportunity as unknown as { badges?: string[] | null }).badges ?? null} className="mt-1" />
+              {!isOwner && matchScore != null && matchScore >= 60 && (
+                <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 border shrink-0 mt-1 ${
+                  matchScore >= 80
+                    ? 'bg-status-success-bg text-status-success-text border-indicator-online/20'
+                    : 'bg-white/20 text-white/80 border-white/30'
+                }`}>
+                  {matchScore >= 80 ? '잘 맞는 프로젝트' : '관심 가능'}
+                </span>
+              )}
+            </div>
+            <div className="flex flex-wrap items-center gap-3 text-sm text-white/70">
+              {creator ? (
+                <span className="flex items-center gap-2">
+                  <div className="w-5 h-5 bg-white/20 backdrop-blur rounded-full flex items-center justify-center text-[10px] font-bold text-white">
+                    {creator.nickname.charAt(0)}
+                  </div>
+                  <span className="font-medium text-white/90">{creator.nickname}</span>
+                </span>
+              ) : (
+                <span className="flex items-center gap-2">
+                  <div className="w-5 h-5 bg-white/20 backdrop-blur rounded-full flex items-center justify-center text-[10px] font-bold text-white/70">?</div>
+                  <span className="font-medium text-white/90">익명</span>
+                </span>
+              )}
+              {opportunity.created_at && (
+                <span className="flex items-center gap-1.5">
+                  <Calendar size={12} />
+                  {daysAgo === 0 ? '오늘' : `${daysAgo}일 전`}
+                </span>
+              )}
+              {opportunity.location_type && (
+                <span className="flex items-center gap-1.5">
+                  <MapPin size={12} />
+                  {opportunity.location_type === 'remote' ? '원격' :
+                   opportunity.location_type === 'offline' ? '오프라인' : '혼합'}
+                </span>
+              )}
+            </div>
           </div>
-          <div className="flex flex-wrap items-center gap-3 text-sm text-white/70">
-            {creator ? (
-              <span className="flex items-center gap-2">
-                <div className="w-5 h-5 bg-white/20 backdrop-blur rounded-full flex items-center justify-center text-[10px] font-bold text-white">
-                  {creator.nickname.charAt(0)}
-                </div>
-                <span className="font-medium text-white/90">{creator.nickname}</span>
-              </span>
-            ) : (
-              <span className="flex items-center gap-2">
-                <div className="w-5 h-5 bg-white/20 backdrop-blur rounded-full flex items-center justify-center text-[10px] font-bold text-white/70">?</div>
-                <span className="font-medium text-white/90">익명</span>
-              </span>
-            )}
-            {opportunity.created_at && (
-              <span className="flex items-center gap-1.5">
-                <Calendar size={12} />
-                {daysAgo === 0 ? '오늘' : `${daysAgo}일 전`}
-              </span>
-            )}
-            {opportunity.location_type && (
-              <span className="flex items-center gap-1.5">
-                <MapPin size={12} />
-                {opportunity.location_type === 'remote' ? '원격' :
-                 opportunity.location_type === 'offline' ? '오프라인' : '혼합'}
-              </span>
-            )}
+
+          {/* Right: interest + views */}
+          <div className="flex flex-col items-end gap-1.5 shrink-0">
+            <button
+              onClick={() => {
+                hapticMedium()
+                if (isOwner) { toast('내 프로젝트에는 관심 표시를 할 수 없어요'); return }
+                handleInterest()
+              }}
+              disabled={interestLoading}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 border text-xs font-bold rounded-full backdrop-blur-sm transition-all disabled:opacity-40 disabled:cursor-default ${
+                hasInterested
+                  ? 'bg-red-500/90 text-white border-red-400/60'
+                  : 'bg-white/90 text-black border-white/60 hover:bg-white'
+              }`}
+            >
+              <Heart size={11} className={hasInterested ? 'fill-current heart-burst' : ''} />
+              {hasInterested ? '관심 표현됨' : '관심 있어요'}
+              <span className="font-mono opacity-70">{(opportunity.interest_count ?? 0) + (hasInterested ? 1 : 0)}</span>
+            </button>
+            <span className="flex items-center gap-1 px-2 py-1 bg-black/40 backdrop-blur-sm text-white/70 text-[10px] font-mono rounded-full">
+              <Eye size={10} />
+              {opportunity.views_count ?? 0}
+            </span>
           </div>
         </div>
-      </div>
-
-      {/* Interest button + stats */}
-      <div className="px-4 sm:px-8 pt-3 pb-3 flex items-center gap-3">
-        <button
-          onClick={() => {
-            hapticMedium()
-            if (isOwner) { toast('내 프로젝트에는 관심 표시를 할 수 없어요'); return }
-            handleInterest()
-          }}
-          disabled={interestLoading}
-          className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 border text-xs font-bold rounded-full transition-all ${
-            hasInterested
-              ? 'border-status-danger-text/20 bg-status-danger-bg text-status-danger-text'
-              : 'border-border bg-surface-card text-txt-secondary hover:border-status-danger-text/20 hover:text-status-danger-text'
-          } disabled:opacity-40 disabled:cursor-default`}
-        >
-          <Heart size={12} className={`${hasInterested ? 'fill-current heart-burst' : ''} transition-transform`} />
-          {hasInterested ? '관심 표현됨' : '관심 있어요'}
-          <span className="text-txt-disabled font-mono">{(opportunity.interest_count ?? 0) + (hasInterested ? 1 : 0)}</span>
-        </button>
-        <span className="flex items-center gap-1 text-xs text-txt-disabled">
-          <Eye size={12} />
-          {opportunity.views_count ?? 0}
-        </span>
       </div>
 
       {/* Extra images gallery */}
