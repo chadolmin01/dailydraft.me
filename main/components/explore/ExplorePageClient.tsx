@@ -539,26 +539,6 @@ function ExplorePageContent() {
 
   return (
     <div className="bg-surface-bg min-h-full">
-      {/* TODO: 히어로 캐러셀 비활성화 — 추후 광고/배너 슬롯으로 재활용 */}
-      {/* <ExploreHeroCarousel /> */}
-
-      {guide.visible && (
-        <div className="max-w-screen-xl mx-auto px-4 pt-4">
-          <StarterGuideCard
-            steps={guide.steps}
-            completedCount={guide.completedCount}
-            total={guide.total}
-            showLinkHint={guide.showLinkHint}
-            onSoftDismiss={guide.softDismiss}
-            onPermanentDismiss={guide.permanentDismiss}
-          />
-        </div>
-      )}
-
-      <div className="max-w-screen-xl mx-auto px-4 mt-1">
-        {!guide.visible && <ProfileCompletionBanner />}
-      </div>
-
       <DashboardLayout
         size="wide"
         className="pt-6"
@@ -573,6 +553,19 @@ function ExplorePageContent() {
           />
         }
       >
+        {/* 배너: DashboardLayout 안에서 높이 예산 내 렌더링 */}
+        {guide.visible && (
+          <StarterGuideCard
+            steps={guide.steps}
+            completedCount={guide.completedCount}
+            total={guide.total}
+            showLinkHint={guide.showLinkHint}
+            onSoftDismiss={guide.softDismiss}
+            onPermanentDismiss={guide.permanentDismiss}
+          />
+        )}
+        {!guide.visible && <ProfileCompletionBanner />}
+
         {/* 검색바 + 필터: 데스크톱만 */}
         <div className="hidden md:flex items-start gap-2">
           <div className="flex-1">
