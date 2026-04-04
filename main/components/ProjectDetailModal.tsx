@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { hapticMedium, hapticSuccess } from '@/src/utils/haptic'
 import {
-  Loader2, AlertCircle, X, Share2, Edit3, ChevronLeft, ChevronRight,
+  Loader2, AlertCircle, X, Share2, Edit3, ChevronLeft, ChevronRight, Heart, Coffee,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -305,7 +305,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
             <div
               ref={sheetRef}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl max-h-[85vh] sm:max-h-[90vh] modal-glass rounded-t-2xl sm:rounded-2xl overflow-hidden flex flex-col relative"
+              className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl h-[85vh] sm:h-[90vh] modal-glass rounded-t-2xl sm:rounded-2xl overflow-hidden flex flex-col relative"
               role="dialog"
               aria-modal="true"
               aria-label={opportunity?.title || '프로젝트 상세'}
@@ -341,89 +341,87 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
               >
                 <div className="w-9 h-1 rounded-full bg-border/60" />
               </div>
-              {/* Window Bar */}
-              <div className="modal-bar border-b border-border/40 px-3 sm:px-4 h-10 flex items-center justify-between shrink-0">
+              {/* Top Bar */}
+              <div className="modal-bar border-b border-border/40 px-4 sm:px-5 h-11 flex items-center justify-between shrink-0">
+                {/* Left: close (mobile) + badges */}
                 <div className="flex items-center gap-2">
-                  <button onClick={onClose} className="sm:hidden p-1.5 -ml-1 hover:bg-surface-card transition-colors" aria-label="닫기">
+                  <button onClick={onClose} className="sm:hidden p-1 -ml-1 hover:bg-surface-sunken rounded-full transition-colors" aria-label="닫기">
                     <X size={18} className="text-txt-tertiary" />
                   </button>
-                  <button onClick={onClose} className="group hidden sm:flex w-3 h-3 rounded-full bg-[#FF5F57] hover:brightness-90 transition-all items-center justify-center" aria-label="닫기">
-                    <X size={7} className="text-[#FF5F57] group-hover:text-[#4A0002] transition-colors" />
-                  </button>
-                  <div className="hidden sm:block w-3 h-3 rounded-full bg-[#FEBC2E]" />
-                  <div className="hidden sm:block w-3 h-3 rounded-full bg-[#28C840]" />
-                </div>
-                {!loading && opportunity && (
-                  <div className="flex items-center gap-2">
-                    {isOwner ? (
-                      <div className="relative">
-                        <button
-                          onClick={() => setShowTypeSelector(!showTypeSelector)}
-                          className="text-[10px] font-medium px-2 py-0.5 bg-surface-card text-txt-tertiary border border-border hover:border-border hover:text-txt-secondary transition-colors flex items-center gap-1"
-                        >
+                  {!loading && opportunity && (
+                    <>
+                      {isOwner ? (
+                        <div className="relative">
+                          <button
+                            onClick={() => setShowTypeSelector(!showTypeSelector)}
+                            className="text-[11px] font-bold px-2.5 py-1 bg-surface-sunken text-txt-secondary rounded-full border border-border hover:border-txt-primary transition-colors flex items-center gap-1"
+                          >
+                            {opportunity.type === 'side_project' ? '함께 만들기' :
+                             opportunity.type === 'startup' ? '창업 준비' :
+                             opportunity.type === 'study' ? '함께 배우기' : 'PROJECT'}
+                            <Edit3 size={9} />
+                          </button>
+                          {showTypeSelector && (
+                            <div className="absolute top-full left-0 mt-1 bg-surface-card rounded-xl border border-border shadow-md z-10 min-w-[8rem] overflow-hidden">
+                              {[
+                                { value: 'side_project', label: '함께 만들기' },
+                                { value: 'startup', label: '창업 준비' },
+                                { value: 'study', label: '함께 배우기' },
+                              ].map((opt) => (
+                                <button
+                                  key={opt.value}
+                                  onClick={() => {
+                                    updateOpportunity.mutate(
+                                      { id: opportunity.id, updates: { type: opt.value as 'side_project' | 'startup' | 'study' } },
+                                      { onSuccess: () => toast.success('프로젝트 유형이 변경되었습니다'), onError: () => toast.error('변경에 실패했어요') },
+                                    )
+                                    setShowTypeSelector(false)
+                                  }}
+                                  className={`w-full text-left px-3 py-2 text-[11px] font-medium transition-colors ${
+                                    opportunity.type === opt.value
+                                      ? 'bg-surface-inverse text-txt-inverse'
+                                      : 'text-txt-secondary hover:bg-surface-sunken'
+                                  }`}
+                                >
+                                  {opt.label}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-[11px] font-bold px-2.5 py-1 bg-surface-sunken text-txt-tertiary rounded-full border border-border">
                           {opportunity.type === 'side_project' ? '함께 만들기' :
                            opportunity.type === 'startup' ? '창업 준비' :
-                           opportunity.type === 'study' ? '함께 배우기' : 'PROJECT'}
-                          <Edit3 size={8} />
-                        </button>
-                        {showTypeSelector && (
-                          <div className="absolute top-full left-0 mt-1 bg-surface-card rounded-xl border border-border shadow-md z-10 min-w-[8rem]">
-                            {[
-                              { value: 'side_project', label: '함께 만들기' },
-                              { value: 'startup', label: '창업 준비' },
-                              { value: 'study', label: '함께 배우기' },
-                            ].map((opt) => (
-                              <button
-                                key={opt.value}
-                                onClick={() => {
-                                  updateOpportunity.mutate(
-                                    { id: opportunity.id, updates: { type: opt.value as 'side_project' | 'startup' | 'study' } },
-                                    { onSuccess: () => toast.success('프로젝트 유형이 변경되었습니다'), onError: () => toast.error('변경에 실패했어요') },
-                                  )
-                                  setShowTypeSelector(false)
-                                }}
-                                className={`w-full text-left px-3 py-1.5 text-[10px] font-medium transition-colors ${
-                                  opportunity.type === opt.value
-                                    ? 'bg-surface-inverse text-txt-inverse'
-                                    : 'text-txt-secondary hover:bg-surface-sunken'
-                                }`}
-                              >
-                                {opt.label}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    ) : (
-                      <span className="text-[10px] font-medium px-2 py-0.5 bg-surface-card text-txt-tertiary border border-border">
-                        {opportunity.type === 'side_project' ? '함께 만들기' :
-                         opportunity.type === 'startup' ? '창업 준비' :
-                         opportunity.type === 'study' ? '함께 배우기' : opportunity.type?.toUpperCase() || 'PROJECT'}
-                      </span>
-                    )}
-                    {opportunity.status === 'active' && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-status-success-bg text-status-success-text text-[10px] font-bold border border-status-success-text/30">
-                        <span className="w-1.5 h-1.5 bg-indicator-online animate-pulse" />
-                        모집 중
-                      </span>
-                    )}
-                  </div>
-                )}
+                           opportunity.type === 'study' ? '함께 배우기' : opportunity.type?.toUpperCase() || 'PROJECT'}
+                        </span>
+                      )}
+                      {opportunity.status === 'active' && (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-status-success-bg text-status-success-text text-[11px] font-bold rounded-full border border-status-success-text/20">
+                          <span className="w-1.5 h-1.5 rounded-full bg-indicator-online animate-pulse" />
+                          모집 중
+                        </span>
+                      )}
+                    </>
+                  )}
+                </div>
+
+                {/* Right: share + close */}
                 <div className="flex items-center gap-1">
                   <button
                     onClick={handleShare}
-                    className="p-2 hover:bg-surface-sunken transition-colors border border-transparent hover:border-border"
+                    className="p-2 hover:bg-surface-sunken rounded-full transition-colors"
                     aria-label="공유"
                   >
                     {shareCopied ? (
-                      <span className="text-[10px] font-medium text-status-success-text px-1 icon-bounce">복사됨!</span>
+                      <span className="text-[11px] font-bold text-status-success-text icon-bounce">복사됨!</span>
                     ) : (
-                      <Share2 size={14} className="text-txt-disabled" />
+                      <Share2 size={15} className="text-txt-disabled" />
                     )}
                   </button>
                   <button
                     onClick={onClose}
-                    className="p-2 hover:bg-surface-sunken transition-colors border border-transparent hover:border-border"
+                    className="hidden sm:flex p-2 hover:bg-surface-sunken rounded-full transition-colors"
                     aria-label="닫기"
                   >
                     <X size={18} className="text-txt-disabled" />
@@ -452,9 +450,9 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                 </div>
               ) : (
                 <>
-                  {/* Scrollable Content — swipe left/right to navigate similar projects */}
+                  {/* Scrollable Content */}
                   <div
-                    className="flex-1 overflow-y-auto"
+                    className="flex-1 overflow-y-auto min-h-0"
                     onTouchStart={(e) => {
                       const touch = e.touches[0]
                       ;(e.currentTarget as HTMLElement).dataset.touchStartX = String(touch.clientX)
@@ -473,7 +471,6 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                       }
                     }}
                   >
-
                     <ProjectHeader
                       opportunity={opportunity}
                       creator={creator}
@@ -485,12 +482,13 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                       handleInterest={handleInterest}
                     />
 
-                    {/* Divider */}
-                    <div className="mx-4 sm:mx-8 border-t border-border" />
+                    <div className="border-t border-border" />
 
-                    {/* Body: 2-Column Layout */}
-                    <div className="px-4 sm:px-8 py-4 sm:py-6">
-                      <div className="grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-10">
+                    {/* Body: 2-col (desktop) / single col (mobile) */}
+                    <div className="px-4 sm:px-6 py-5 grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-8 items-start">
+
+                      {/* Left: tabbed content */}
+                      <div className="md:col-span-3">
                         <ProjectContent
                           opportunity={opportunity}
                           updates={updates}
@@ -499,8 +497,10 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                           handleSignup={handleSignup}
                           updateOpportunity={updateOpportunity}
                         />
+                      </div>
 
-                        {/* Right Column (2/5) - Sidebar */}
+                      {/* Right: sticky sidebar — desktop only */}
+                      <div className="hidden md:flex md:flex-col md:col-span-2 sticky top-0 self-start h-[calc(90vh-5rem)]">
                         <ProjectSidebar
                           opportunity={opportunity}
                           creator={creator}
@@ -514,6 +514,56 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                         />
                       </div>
                     </div>
+
+                    {/* Mobile: sidebar info inline (no CTA — CTA is in sticky bar below) */}
+                    <div className="md:hidden px-4 pb-6 border-t border-border pt-5">
+                      <ProjectSidebar
+                        opportunity={opportunity}
+                        creator={creator}
+                        isOwner={isOwner}
+                        existingChat={existingChat}
+                        hasInterested={hasInterested}
+                        handleAction={handleAction}
+                        onClose={onClose}
+                        router={router}
+                        teamMembers={teamMembers}
+                        hideCta
+                      />
+                    </div>
+                  </div>
+
+                  {/* Mobile sticky bottom CTA */}
+                  <div className="md:hidden shrink-0 px-4 py-3 border-t border-border bg-surface-card">
+                    {isOwner ? (
+                      <button
+                        onClick={() => { onClose(); router.push(`/projects/${opportunity.id}/edit`) }}
+                        className="w-full py-3.5 border border-border rounded-full font-black text-[14px] text-txt-secondary hover:bg-surface-inverse hover:text-txt-inverse hover:border-surface-inverse transition-all flex items-center justify-center gap-2"
+                      >
+                        <Edit3 size={15} />
+                        프로젝트 수정하기
+                      </button>
+                    ) : (
+                      <div className="flex gap-2">
+                        <button
+                          onClick={handleInterest}
+                          disabled={interestLoading}
+                          className={`shrink-0 w-12 h-12 flex items-center justify-center rounded-full border transition-all disabled:opacity-40 ${
+                            hasInterested
+                              ? 'bg-status-danger-bg border-status-danger-text/20 text-status-danger-text'
+                              : 'border-border text-txt-secondary hover:border-txt-primary'
+                          }`}
+                        >
+                          <Heart size={18} className={hasInterested ? 'fill-current' : ''} />
+                        </button>
+                        <button
+                          onClick={() => handleAction()}
+                          className="flex-1 py-3.5 bg-surface-inverse text-txt-inverse rounded-full font-black text-[14px] hover:opacity-90 active:scale-[0.97] transition-all flex items-center justify-center gap-2"
+                        >
+                          <Coffee size={16} />
+                          커피챗 신청하기
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   <ProjectOverlays

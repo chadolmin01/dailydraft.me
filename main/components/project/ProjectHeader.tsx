@@ -40,7 +40,7 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
           {/* Title & Meta overlay */}
           <div className="absolute bottom-0 left-0 right-0 px-4 sm:px-8 pb-4 sm:pb-5">
             <div className="flex items-start gap-2 mb-2">
-              <h2 className="text-xl sm:text-2xl font-bold text-white break-keep leading-tight drop-shadow-sm">
+              <h2 className="text-xl sm:text-2xl font-black text-white break-keep leading-tight drop-shadow-sm">
                 {opportunity.title}
               </h2>
               <Badges badges={(opportunity as unknown as { badges?: string[] | null }).badges ?? null} className="mt-1" />
@@ -89,7 +89,7 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
           {opportunity.interest_tags && opportunity.interest_tags.length > 0 && (
             <div className="flex flex-wrap gap-1.5">
               {opportunity.interest_tags.map((tag) => (
-                <span key={tag} className="px-2.5 py-1 bg-surface-card text-txt-tertiary text-xs border border-border">
+                <span key={tag} className="px-2.5 py-1 bg-surface-card text-txt-tertiary text-xs border border-border rounded-full">
                   {tag}
                 </span>
               ))}
@@ -99,7 +99,7 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
             <button
               onClick={() => { hapticMedium(); if (isOwner) { toast('내 프로젝트에는 관심 표시를 할 수 없어요'); return } handleInterest() }}
               disabled={interestLoading}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 border text-xs font-bold transition-all ${
+              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 border text-xs font-bold rounded-full transition-all ${
                 hasInterested
                   ? 'border-status-danger-text/20 bg-status-danger-bg text-status-danger-text'
                   : 'border-border bg-surface-card text-txt-secondary hover:border-status-danger-text/20 hover:text-status-danger-text'
@@ -144,7 +144,7 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
     /* Plain Header -- no images */
     <div className="px-4 sm:px-8 pt-4 sm:pt-6 pb-3">
       <div className="flex items-start gap-2 mb-3">
-        <h2 className="text-2xl font-bold text-txt-primary break-keep leading-tight">
+        <h2 className="text-2xl font-black text-txt-primary break-keep leading-tight">
           {opportunity.title}
         </h2>
         <Badges badges={(opportunity as unknown as { badges?: string[] | null }).badges ?? null} className="mt-1" />
@@ -188,7 +188,7 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
       {opportunity.interest_tags && opportunity.interest_tags.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mt-3">
           {opportunity.interest_tags.map((tag) => (
-            <span key={tag} className="px-2.5 py-1 bg-surface-card text-txt-tertiary text-xs border border-border">
+            <span key={tag} className="px-2.5 py-1 bg-surface-card text-txt-tertiary text-xs border border-border rounded-full">
               {tag}
             </span>
           ))}

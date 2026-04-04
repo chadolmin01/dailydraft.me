@@ -2,9 +2,7 @@ export interface MatchData {
   match_score: number
   match_reason: string
   match_details: {
-    vision: number
     skill: number
-    founder: number
     interest: number
     situation: number
   }

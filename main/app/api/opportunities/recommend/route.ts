@@ -16,10 +16,10 @@ export async function GET() {
       return ApiResponse.unauthorized()
     }
 
-    // Get user profile with vision_embedding
+    // Get user profile (no embedding needed)
     const { data: profileData, error: profileError } = await supabase
       .from('profiles')
-      .select('id, user_id, nickname, desired_position, skills, interest_tags, personality, current_situation, vision_summary, location, profile_analysis, onboarding_completed, vision_embedding')
+      .select('id, user_id, nickname, desired_position, skills, interest_tags, personality, current_situation, vision_summary, location, onboarding_completed')
       .eq('user_id', user.id)
       .single()
 
@@ -27,48 +27,29 @@ export async function GET() {
       return ApiResponse.notFound('Profile not found')
     }
 
-    const profile = profileData as unknown as Profile & { vision_embedding?: string }
+    const profile = profileData as unknown as Profile
 
-    let opportunities: Opportunity[] = []
+    // Get active opportunities (pure DB query, no embedding)
+    const { data: opps, error: oppError } = await supabase
+      .from('opportunities')
+      .select('id, type, title, description, status, creator_id, needed_roles, needed_skills, interest_tags, location_type, location, time_commitment, compensation_type, compensation_details, applications_count, views_count, created_at, updated_at')
+      .eq('status', 'active')
+      .neq('creator_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(50)
 
-    // If user has vision_embedding, use pgvector similarity search
-    if (profile.vision_embedding) {
-      // Get opportunities with similarity score from pgvector
-      const { data: similarOpps, error: similarError } = await supabase.rpc('match_opportunities', {
-          query_embedding: profile.vision_embedding,
-          match_threshold: 0.3,
-          match_count: 50,
-          exclude_creator_id: user.id
-        })
-
-      if (!similarError && similarOpps && similarOpps.length > 0) {
-        opportunities = similarOpps as unknown as Opportunity[]
-      }
+    if (oppError) {
+      return ApiResponse.internalError()
     }
 
-    // Fallback: Get opportunities without similarity if no results or no embedding
-    if (opportunities.length === 0) {
-      const { data: fallbackOpps, error: oppError } = await supabase
-        .from('opportunities')
-        .select('id, type, title, description, status, creator_id, needed_roles, needed_skills, interest_tags, location_type, location, time_commitment, compensation_type, compensation_details, applications_count, views_count, created_at, updated_at')
-        .eq('status', 'active')
-        .neq('creator_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(50)
-
-      if (oppError) {
-        return ApiResponse.internalError()
-      }
-
-      opportunities = (fallbackOpps || []) as unknown as Opportunity[]
-    }
+    const opportunities = (opps || []) as unknown as Opportunity[]
 
     if (opportunities.length === 0) {
       return ApiResponse.ok([])
     }
 
-    // Rank opportunities with full matching algorithm
-    const ranked = rankOpportunities(profile as Profile, opportunities)
+    // Rank opportunities with pure algorithmic matching
+    const ranked = rankOpportunities(profile, opportunities)
 
     // Return top 20
     return ApiResponse.ok(ranked.slice(0, 20))

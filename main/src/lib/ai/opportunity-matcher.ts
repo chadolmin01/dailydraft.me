@@ -5,7 +5,6 @@ interface MatchResult {
   opportunityId: string
   score: number
   skillMatch: number
-  visionSimilarity: number
   practicalCompatibility: number
   roleMatch: number
   reason: string
@@ -30,50 +29,6 @@ function calculateSkillMatch(
   }
 
   return (matchedCount / neededSkills.length) * 100
-}
-
-/**
- * Calculate cosine similarity between two vectors
- */
-function cosineSimilarity(a: number[], b: number[]): number {
-  if (a.length !== b.length) return 0
-
-  let dotProduct = 0
-  let normA = 0
-  let normB = 0
-
-  for (let i = 0; i < a.length; i++) {
-    dotProduct += a[i] * b[i]
-    normA += a[i] * a[i]
-    normB += b[i] * b[i]
-  }
-
-  if (normA === 0 || normB === 0) return 0
-
-  return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB))
-}
-
-/**
- * Calculate vision similarity (0-100)
- * If pgvector similarity is provided (from RPC), use it directly
- * Otherwise, calculate using JavaScript cosine similarity
- */
-function calculateVisionSimilarity(
-  userEmbedding: number[] | null,
-  opportunityEmbedding: number[] | null,
-  pgvectorSimilarity?: number
-): number {
-  // If pgvector already calculated similarity, use it (scaled 0-100)
-  if (pgvectorSimilarity !== undefined) {
-    return pgvectorSimilarity * 100
-  }
-
-  if (!userEmbedding || !opportunityEmbedding) return 50 // Default if no embeddings
-
-  const similarity = cosineSimilarity(userEmbedding, opportunityEmbedding)
-
-  // Convert from [-1, 1] to [0, 100]
-  return ((similarity + 1) / 2) * 100
 }
 
 /**
@@ -148,7 +103,6 @@ function generateMatchReason(
   opportunity: Opportunity,
   scores: {
     skillMatch: number
-    visionSimilarity: number
     practicalCompatibility: number
     roleMatch: number
   }
@@ -182,11 +136,6 @@ function generateMatchReason(
     reasons.push({ priority: 5, text: '필요한 스킬 일부를 보유하고 있어요' })
   }
 
-  // Vision similarity - only mention if strong
-  if (scores.visionSimilarity >= 75) {
-    reasons.push({ priority: 3, text: '비전과 목표가 유사해요' })
-  }
-
   // Interest overlap
   const overlappingTags = (opportunity.interest_tags || []).filter((tag) =>
     (profile.interest_tags || []).includes(tag)
@@ -194,16 +143,16 @@ function generateMatchReason(
 
   if (overlappingTags.length >= 2) {
     const tags = overlappingTags.slice(0, 2).join(', ')
-    reasons.push({ priority: 4, text: `${tags}에 함께 관심있어요` })
+    reasons.push({ priority: 3, text: `${tags}에 함께 관심있어요` })
   } else if (overlappingTags.length === 1) {
-    reasons.push({ priority: 6, text: `${overlappingTags[0]} 분야에 관심있어요` })
+    reasons.push({ priority: 4, text: `${overlappingTags[0]} 분야에 관심있어요` })
   }
 
   // Location advantages
   if (opportunity.location_type === 'remote') {
-    reasons.push({ priority: 7, text: '원격 근무 가능' })
+    reasons.push({ priority: 6, text: '원격 근무 가능' })
   } else if (opportunity.location === profile.location && profile.location) {
-    reasons.push({ priority: 7, text: `같은 지역(${profile.location})` })
+    reasons.push({ priority: 6, text: `같은 지역(${profile.location})` })
   }
 
   // Sort by priority and take top 3
@@ -211,8 +160,7 @@ function generateMatchReason(
   const topReasons = reasons.slice(0, 3).map(r => r.text)
 
   if (topReasons.length === 0) {
-    // Provide encouraging fallback based on overall score
-    const avgScore = (scores.skillMatch + scores.visionSimilarity + scores.practicalCompatibility + scores.roleMatch) / 4
+    const avgScore = (scores.skillMatch + scores.practicalCompatibility + scores.roleMatch) / 3
     if (avgScore >= 50) {
       return '새로운 도전을 위한 좋은 기회예요'
     }
@@ -223,39 +171,29 @@ function generateMatchReason(
 }
 
 /**
- * Calculate overall match score
- * @param pgvectorSimilarity - Optional pre-calculated similarity from pgvector RPC
+ * Calculate overall match score — pure algorithmic, no embedding
  */
 export function calculateMatchScore(
   profile: Profile,
-  opportunity: Opportunity & { similarity?: number }
+  opportunity: Opportunity
 ): MatchResult {
   const skillMatch = calculateSkillMatch(
     profile.skills as unknown as Skill[],
     ((opportunity.needed_skills as unknown as Skill[]) || [])
   )
 
-  // Use pgvector similarity if available (from RPC result)
-  const visionSimilarity = calculateVisionSimilarity(
-    profile.vision_embedding as unknown as number[] | null,
-    opportunity.vision_embedding as unknown as number[] | null,
-    opportunity.similarity
-  )
-
   const practicalCompatibility = calculatePracticalCompatibility(profile, opportunity)
 
   const roleMatch = calculateRoleMatch(profile.desired_position, opportunity.needed_roles || [])
 
-  // Weighted score
+  // Weighted score (redistributed from vision removal)
   const finalScore =
-    skillMatch * 0.35 +
-    visionSimilarity * 0.15 +
-    practicalCompatibility * 0.2 +
-    roleMatch * 0.3
+    skillMatch * 0.40 +
+    practicalCompatibility * 0.25 +
+    roleMatch * 0.35
 
   const reason = generateMatchReason(profile, opportunity, {
     skillMatch,
-    visionSimilarity,
     practicalCompatibility,
     roleMatch,
   })
@@ -264,7 +202,6 @@ export function calculateMatchScore(
     opportunityId: opportunity.id,
     score: Math.round(finalScore),
     skillMatch: Math.round(skillMatch),
-    visionSimilarity: Math.round(visionSimilarity),
     practicalCompatibility: Math.round(practicalCompatibility),
     roleMatch: Math.round(roleMatch),
     reason,
@@ -273,12 +210,11 @@ export function calculateMatchScore(
 
 /**
  * Rank opportunities by match score
- * Supports opportunities with pre-calculated similarity from pgvector
  */
 export function rankOpportunities(
   profile: Profile,
-  opportunities: Array<Opportunity & { similarity?: number }>
-): Array<Opportunity & { match_score: number; match_reason: string; match_details?: { skill: number; vision: number; practical: number; role: number } }> {
+  opportunities: Opportunity[]
+): Array<Opportunity & { match_score: number; match_reason: string; match_details?: { skill: number; practical: number; role: number } }> {
   const results = opportunities.map((opp) => {
     const match = calculateMatchScore(profile, opp)
     return {
@@ -287,7 +223,6 @@ export function rankOpportunities(
       match_reason: match.reason,
       match_details: {
         skill: match.skillMatch,
-        vision: match.visionSimilarity,
         practical: match.practicalCompatibility,
         role: match.roleMatch,
       },

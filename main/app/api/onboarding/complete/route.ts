@@ -3,7 +3,6 @@ import { ApiResponse } from '@/src/lib/api-utils'
 import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
 import { parseNickname } from '@/src/lib/clean-nickname'
 import { autoEnrollByEmail, autoEnrollByUniversity } from '@/src/lib/institution/auto-enroll'
-import { generateProfileEmbedding } from '@/src/lib/ai/embeddings'
 import type { TablesInsert } from '@/src/types/database'
 
 export async function POST(request: Request) {
@@ -63,19 +62,6 @@ export async function POST(request: Request) {
       ...(visionSummary && { vision_summary: visionSummary }),
       onboarding_completed: true,
       ...(aiChatCompleted && { ai_chat_completed: true }),
-    }
-
-    // ── Generate embedding directly from profile data (no AI dependency) ──
-    try {
-      const embedding = await generateProfileEmbedding({
-        skills: Array.isArray(skills) ? skills : undefined,
-        interestTags: Array.isArray(interestTags) ? interestTags : undefined,
-        desiredPosition: desiredPosition || undefined,
-      })
-      profileData.vision_embedding = embedding
-    } catch (embeddingError) {
-      // Non-fatal: profile still saves, embedding can be backfilled later
-      console.error('[onboarding/complete] Embedding generation failed:', embeddingError)
     }
 
     // DB 컬럼이 있을 수도 없을 수도 있는 필드

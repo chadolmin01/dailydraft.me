@@ -13,14 +13,11 @@ export interface UserRecommendation {
   interest_tags: string[]
   location: string | null
   vision_summary: string | null
-  founder_type: string | null
   current_situation: string | null
   match_score: number
   match_reason: string
   match_details: {
-    vision: number
     skill: number
-    founder: number
     interest: number
     situation: number
   }

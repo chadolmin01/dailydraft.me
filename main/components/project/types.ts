@@ -43,6 +43,7 @@ export interface ProjectSidebarProps {
   onClose: () => void
   router: { push: (url: string) => void }
   teamMembers?: TeamMemberPublic[]
+  hideCta?: boolean
 }
 
 export interface ProjectOverlaysProps {

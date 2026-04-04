@@ -17,13 +17,11 @@ interface MatchAnalysis {
   overallScore: number
   breakdown: {
     skill: number
-    vision: number
     practical: number
     role: number
   }
   weights: {
     skill: number
-    vision: number
     practical: number
     role: number
   }
@@ -141,10 +139,6 @@ export async function GET(
       )
     }
 
-    if (!profile.ai_chat_completed) {
-      recommendations.push('AI 채팅을 완료하면 비전 매칭 정확도가 향상됩니다')
-    }
-
     if (matchResult.roleMatch < 50 && (opportunity.needed_roles?.length ?? 0) > 0) {
       recommendations.push(
         `이 기회는 ${opportunity.needed_roles!.slice(0, 2).join(', ')} 역할을 찾고 있습니다`
@@ -249,15 +243,13 @@ export async function GET(
       overallScore: matchResult.score,
       breakdown: {
         skill: matchResult.skillMatch,
-        vision: matchResult.visionSimilarity,
         practical: matchResult.practicalCompatibility,
         role: matchResult.roleMatch,
       },
       weights: {
-        skill: 35,
-        vision: 15,
-        practical: 20,
-        role: 30,
+        skill: 40,
+        practical: 25,
+        role: 35,
       },
       skillAnalysis,
       missingSkills,
