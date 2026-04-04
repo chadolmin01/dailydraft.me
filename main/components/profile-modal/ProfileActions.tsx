@@ -33,19 +33,19 @@ export function ProfileActions({
         <div className="flex gap-2">
           {/* Coffee Chat Button */}
           {pendingChat ? (
-            <div className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-status-warning-bg text-status-warning-text text-xs font-bold border border-status-warning-text/20">
+            <div className="flex-1 flex items-center justify-center gap-1.5 px-3 h-10 bg-status-warning-bg text-status-warning-text text-xs font-bold rounded-lg border border-status-warning-text/20">
               <Coffee size={14} />
               커피챗 대기 중
             </div>
           ) : latestChat?.status === 'accepted' ? (
-            <div className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-status-success-bg text-status-success-text text-xs font-bold border border-status-success-text/20">
+            <div className="flex-1 flex items-center justify-center gap-1.5 px-3 h-10 bg-status-success-bg text-status-success-text text-xs font-bold rounded-lg border border-status-success-text/20">
               <Coffee size={14} />
               커피챗 수락됨
             </div>
           ) : (
             <button
               onClick={() => setShowCoffeeChatForm(true)}
-              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-surface-card text-txt-secondary text-xs font-bold border border-border hover:bg-black hover:text-white hover:shadow-md active:scale-[0.97] transition-all"
+              className="flex-1 flex items-center justify-center gap-1.5 px-3 h-10 bg-surface-card text-txt-secondary text-xs font-bold rounded-lg border border-border hover:bg-black hover:text-white hover:shadow-md active:scale-[0.97] transition-all"
             >
               <Coffee size={14} />
               커피챗 신청
@@ -55,7 +55,7 @@ export function ProfileActions({
           {/* Invite to Project Button */}
           <button
             onClick={() => setShowInviteModal(true)}
-            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-surface-card text-txt-secondary text-xs font-bold border border-border hover:bg-black hover:text-white hover:shadow-md active:scale-[0.97] transition-all"
+            className="flex-1 flex items-center justify-center gap-1.5 px-3 h-10 bg-surface-card text-txt-secondary text-xs font-bold rounded-lg border border-border hover:bg-black hover:text-white hover:shadow-md active:scale-[0.97] transition-all"
           >
             <UserPlus size={14} />
             프로젝트에 초대
