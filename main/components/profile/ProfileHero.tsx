@@ -206,6 +206,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
       {isEditable ? (
         <EditableField variant="inline"
           value={profile?.desired_position || ''}
+          displayValue={positionLabel(profile?.desired_position || '')}
           draft={drafts.desired_position}
           placeholder="포지션 미설정"
           className="text-xs sm:text-sm"
@@ -313,6 +314,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
             {isEditable ? (
               <EditableField variant="inline"
                 value={item.value}
+                displayValue={item.displayValue}
                 draft={drafts[item.field]}
                 placeholder={item.placeholder}
                 className="text-xs font-medium text-txt-primary"

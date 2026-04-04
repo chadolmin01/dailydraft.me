@@ -9,6 +9,8 @@ interface EditableFieldBaseProps {
   draft: string | undefined
   placeholder?: string
   onEdit: (val: string) => void
+  /** Display text when not editing (e.g. slug→label). Falls back to draft ?? value. */
+  displayValue?: string
 }
 
 /* ── Inline variant (text / textarea) ── */
@@ -28,10 +30,11 @@ interface LinkVariantProps extends EditableFieldBaseProps {
 type EditableFieldProps = InlineVariantProps | LinkVariantProps
 
 export function EditableField(props: EditableFieldProps) {
-  const { value, draft, placeholder, onEdit } = props
+  const { value, draft, placeholder, onEdit, displayValue } = props
   const [editing, setEditing] = useState(false)
   const ref = useRef<HTMLInputElement | HTMLTextAreaElement>(null)
-  const display = draft ?? value
+  const editValue = draft ?? value
+  const display = displayValue && !editing ? displayValue : editValue
   const isChanged = draft !== undefined && draft !== value
 
   useEffect(() => {
