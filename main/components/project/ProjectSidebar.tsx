@@ -237,7 +237,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
             {!hideCta && isOwner && (
               <button
                 onClick={() => { onClose(); router.push(`/projects/${opportunity.id}/edit`) }}
-                className="w-full py-2.5 border border-border rounded-full text-txt-secondary font-bold text-sm hover:bg-surface-inverse hover:text-txt-inverse hover:border-surface-inverse transition-all flex items-center justify-center gap-2"
+                className="w-full py-3 border border-border rounded-full text-txt-secondary font-bold text-sm hover:bg-surface-inverse hover:text-txt-inverse hover:border-surface-inverse transition-all flex items-center justify-center gap-2"
               >
                 <Edit3 size={14} />
                 프로젝트 수정하기
