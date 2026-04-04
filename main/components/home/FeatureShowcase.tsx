@@ -172,31 +172,44 @@ const MatchingMockup = () => (
 )
 
 const ExploreMockup = () => (
-  <div className="space-y-3">
-    {/* Search bar */}
-    <div className="flex items-center gap-2 px-3 py-2 bg-surface-sunken rounded-xl border border-border">
-      <Search size={13} className="text-txt-tertiary shrink-0" />
-      <span className="text-xs text-txt-tertiary">프로젝트, 사람 검색...</span>
+  <div className="space-y-2.5">
+    {/* Search + filter row */}
+    <div className="flex items-center gap-2">
+      <div className="flex-1 flex items-center gap-2 px-3 py-2 bg-surface-sunken rounded-xl border border-border">
+        <Search size={12} className="text-txt-tertiary shrink-0" />
+        <span className="text-[11px] text-txt-tertiary">프로젝트 검색...</span>
+      </div>
+      <div className="px-2.5 py-2 bg-surface-sunken border border-border rounded-xl text-[10px] font-bold text-txt-secondary">
+        필터
+      </div>
     </div>
-    {/* Tabs */}
-    <div className="flex gap-1.5">
+    {/* Tab switcher */}
+    <div className="flex gap-1">
       <span className="px-3 py-1.5 bg-surface-inverse text-txt-inverse rounded-full text-[11px] font-bold">프로젝트</span>
-      <span className="px-3 py-1.5 border border-border text-txt-tertiary rounded-full text-[11px] font-medium">사람</span>
+      <span className="px-3 py-1.5 text-txt-tertiary rounded-full text-[11px] font-medium">사람</span>
     </div>
-    {/* Cards */}
-    <div className="grid grid-cols-2 gap-2">
+    {/* Project cards — list style like actual explore */}
+    <div className="space-y-2">
       {[
-        { title: 'AI 이력서 분석', tag: 'AI/ML', members: 2 },
-        { title: '캠퍼스 스터디 매칭', tag: '에듀테크', members: 3 },
-        { title: '대학생 사이드 프로젝트', tag: '소셜', members: 1 },
-        { title: '학식 알리미 앱', tag: '라이프', members: 4 },
+        { title: 'AI 이력서 자동 분석 서비스', tag: 'AI/ML', role: '프론트엔드', recruiting: true },
+        { title: '대학생 사이드프로젝트 매칭', tag: '소셜', role: '디자이너', recruiting: true },
+        { title: '캠퍼스 중고거래 앱', tag: '커머스', role: 'PM', recruiting: false },
       ].map((p) => (
-        <div key={p.title} className="bg-surface-card border border-border rounded-xl p-3 space-y-2">
-          <div className="text-[11px] font-bold text-txt-primary leading-snug line-clamp-2">{p.title}</div>
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] px-2 py-0.5 bg-surface-sunken text-txt-tertiary rounded-full">{p.tag}</span>
-            <span className="text-[10px] text-txt-tertiary">{p.members}명</span>
+        <div key={p.title} className="bg-surface-card border border-border rounded-xl px-3.5 py-3 flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-surface-sunken flex items-center justify-center shrink-0 text-txt-tertiary">
+            <Search size={13} />
           </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-[11px] font-bold text-txt-primary truncate">{p.title}</div>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <span className="text-[10px] text-txt-tertiary">{p.tag}</span>
+              <span className="text-txt-disabled text-[10px]">·</span>
+              <span className="text-[10px] text-txt-tertiary">{p.role} 모집 중</span>
+            </div>
+          </div>
+          {p.recruiting && (
+            <div className="w-1.5 h-1.5 rounded-full bg-indicator-online shrink-0" />
+          )}
         </div>
       ))}
     </div>
