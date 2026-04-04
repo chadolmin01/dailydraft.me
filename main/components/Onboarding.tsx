@@ -73,7 +73,6 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   const [profile, setProfile] = useState<ProfileDraft>(INITIAL_PROFILE)
   const [slideKey, setSlideKey] = useState(0)
   const [slideDir, setSlideDir] = useState<SlideDir>('forward')
-  const [isSaving, setIsSaving] = useState(false)
   const [attempted, setAttempted] = useState(false)
   const [introMessage, setIntroMessage] = useState<string | undefined>(undefined)
 
@@ -156,18 +155,17 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
   /* ── Interview complete ── */
   const handleInterviewComplete = useCallback(async (responses: StructuredResponse[]) => {
-    setIsSaving(true)
-    try {
-      await saveProfileFromInterview(profileRef.current, responses)
-      try { localStorage.removeItem(STORAGE_KEY) } catch { /* ignore */ }
-      setIsSaving(false)
-      // Fire-and-forget: generate AI bio in background (non-blocking)
-      generateBioFromInterview(responses).catch(() => {})
-      setTimeout(onComplete, 1500)
-    } catch (err) {
-      console.error('[Onboarding] save error:', err)
-      setIsSaving(false)
-    }
+    // Animation plays for fixed duration; save runs in parallel
+    const minDelay = new Promise(r => setTimeout(r, 4200))
+    const save = saveProfileFromInterview(profileRef.current, responses)
+      .then(() => {
+        try { localStorage.removeItem(STORAGE_KEY) } catch { /* ignore */ }
+        generateBioFromInterview(responses).catch(() => {})
+      })
+      .catch(err => console.error('[Onboarding] save error:', err))
+
+    await Promise.all([minDelay, save])
+    onComplete()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onComplete])
 
@@ -267,7 +265,6 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
         <ScriptedInterviewStep
           profile={profile}
           introMessage={introMessage}
-          isSaving={isSaving}
           onAnswer={() => {}}
           onComplete={handleInterviewComplete}
         />
@@ -329,7 +326,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     <div className="fixed inset-0 bg-surface-bg flex flex-col">
       {/* ── Progress bar ── */}
       <div className="px-6 sm:px-10 pt-8 pb-4 shrink-0">
-        <div className="max-w-lg mx-auto space-y-3">
+        <div className="max-w-2xl mx-auto space-y-3">
           <div className="flex items-center justify-between">
             <button
               onClick={handleBack}
@@ -368,7 +365,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
           slideDir === 'back' ? 'slide-in-from-left-8' : 'slide-in-from-right-8'
         }`}
       >
-        <div className="max-w-lg mx-auto w-full px-6 pt-2 pb-8 flex flex-col flex-1">
+        <div className="max-w-2xl mx-auto w-full px-6 pt-2 pb-8 flex flex-col flex-1">
           {/* Title */}
           <h2 className="text-2xl sm:text-[28px] font-black text-txt-primary leading-snug shrink-0 animate-in fade-in slide-in-from-bottom-2 duration-300">
             {step === 'skills' ? (SKILLS_TITLE[profile.position] ?? SKILLS_TITLE.other) : config?.title}
@@ -452,7 +449,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
       {/* ── Next button ── */}
       <div className="px-6 pb-8 pt-2 shrink-0">
-        <div className="max-w-lg mx-auto">
+        <div className="max-w-2xl mx-auto">
           <button
             onClick={handleNext}
             disabled={!canProceed}

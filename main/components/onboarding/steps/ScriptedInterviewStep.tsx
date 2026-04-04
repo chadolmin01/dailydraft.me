@@ -23,7 +23,6 @@ type SlideDir = 'forward' | 'back'
 interface Props {
   profile: ProfileDraft
   introMessage?: string
-  isSaving?: boolean
   onAnswer: (response: StructuredResponse) => void
   onComplete: (responses: StructuredResponse[]) => void
 }
@@ -38,7 +37,7 @@ const QUESTION_VISUALS: Record<string, { emoji: string; illustration: string | n
   emoji_grid_strengths:   { emoji: '✨', illustration: '/onboarding/6.svg', hint: '최대 3개 선택해주세요',         label: '나의 강점' },
 }
 
-export function ScriptedInterviewStep({ profile, introMessage, isSaving, onAnswer, onComplete }: Props) {
+export function ScriptedInterviewStep({ profile, introMessage, onAnswer, onComplete }: Props) {
   const [qIndex, setQIndex] = useState(0)
   const [phase, setPhase] = useState<Phase>(introMessage ? 'intro' : 'showing')
   const [responses, setResponses] = useState<StructuredResponse[]>([])
@@ -217,20 +216,12 @@ export function ScriptedInterviewStep({ profile, introMessage, isSaving, onAnswe
     }
   }
 
-  // Track save lifecycle: undefined → true (saving) → false (done)
-  const saveStartedRef = useRef(false)
-  if (isSaving) saveStartedRef.current = true
-  const saveDone = saveStartedRef.current && isSaving === false
-
-  // -- Completing screen --
+  // -- Completing screen (decorative animation, save runs in background) --
   if (phase === 'completing') {
     return (
       <div className="flex-1 flex flex-col items-center justify-center px-6 pb-10">
-        {/* Spinner → expanding circle → done illustration */}
         <div className="relative flex items-center justify-center mb-10">
-          {/* Spinning ring → expands into filled circle */}
-          <div className={`ob-complete-circle${saveDone ? ' ob-complete-done' : ''}`} />
-          {/* Done illustration slides up inside */}
+          <div className="ob-complete-circle" />
           <img
             src="/onboarding/done.svg"
             alt="완료"
@@ -242,7 +233,7 @@ export function ScriptedInterviewStep({ profile, introMessage, isSaving, onAnswe
           완벽해요!
         </h2>
         <p className="text-[14px] text-txt-secondary text-center ob-complete-text" style={{ animationDelay: '0.15s' }}>
-          {saveDone ? '프로필을 완성했어요!' : '프로필을 완성하고 있어요'}
+          프로필을 완성했어요!
         </p>
       </div>
     )
@@ -295,7 +286,7 @@ export function ScriptedInterviewStep({ profile, introMessage, isSaving, onAnswe
 
       {/* Progress bar */}
       <div className="px-6 sm:px-10 pt-8 pb-4 shrink-0">
-        <div className="max-w-lg mx-auto space-y-3">
+        <div className="max-w-2xl mx-auto space-y-3">
 
           {/* Top row: back button + counter */}
           <div className="flex items-center justify-between">
@@ -351,7 +342,7 @@ export function ScriptedInterviewStep({ profile, introMessage, isSaving, onAnswe
       >
         {/* Top section — question + illustration */}
         <div className="shrink flex flex-col min-h-0 overflow-hidden">
-          <div className="max-w-lg mx-auto w-full px-6 pt-4 flex flex-col min-h-0">
+          <div className="max-w-2xl mx-auto w-full px-6 pt-4 flex flex-col min-h-0">
 
             {/* Question */}
             <h2 className="text-2xl sm:text-[28px] font-black text-txt-primary leading-snug shrink-0 animate-in fade-in slide-in-from-bottom-2 duration-300">
@@ -367,18 +358,14 @@ export function ScriptedInterviewStep({ profile, introMessage, isSaving, onAnswe
 
             {/* Illustration */}
             <div
-              className="flex items-center justify-center min-h-0 animate-in fade-in slide-in-from-bottom-3 duration-300"
-              style={{
-                animationDelay: '30ms',
-                marginTop: question?.interactiveId === 'spectrum_communication' ? 88 : 44,
-                marginBottom: question?.interactiveId === 'spectrum_communication' ? 72 : 48,
-              }}
+              className="flex items-center justify-center min-h-0 animate-in fade-in slide-in-from-bottom-3 duration-300 mt-10 md:mt-16 mb-10 md:mb-14"
+              style={{ animationDelay: '30ms' }}
             >
               {visual?.illustration ? (
                 <img
                   src={visual.illustration}
                   alt={visual.label}
-                  className="w-full h-full object-contain max-h-[280px]"
+                  className="w-full h-full object-contain max-h-[200px] sm:max-h-[280px] md:max-h-[360px]"
                   onError={(e) => {
                     const target = e.currentTarget
                     target.style.display = 'none'
@@ -393,7 +380,7 @@ export function ScriptedInterviewStep({ profile, introMessage, isSaving, onAnswe
 
         {/* Bottom section — choices */}
         <div className="shrink-0 overflow-y-auto max-h-[45vh]">
-          <div className="max-w-lg mx-auto w-full px-6 pb-2">
+          <div className="max-w-2xl mx-auto w-full px-6 pb-2">
             <div
               className="animate-in fade-in slide-in-from-bottom-4 duration-300"
               style={{
@@ -410,7 +397,7 @@ export function ScriptedInterviewStep({ profile, introMessage, isSaving, onAnswe
       {/* Bottom button - fixed (hide for drag-rank which has its own confirm) */}
       {!isDragRank && (
         <div className="px-6 pb-8 pt-2 shrink-0">
-          <div className="max-w-lg mx-auto">
+          <div className="max-w-2xl mx-auto">
             <button
               onClick={handleConfirm}
               disabled={!selectionReady || phase === 'answered'}
