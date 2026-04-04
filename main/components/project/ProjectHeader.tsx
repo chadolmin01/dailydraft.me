@@ -51,7 +51,7 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
             {opportunity.interest_tags.slice(0, 3).map((tag) => (
               <span
                 key={tag}
-                className="text-[10px] font-mono bg-black/60 backdrop-blur-sm text-white px-2 py-0.5 border border-white/10"
+                className="text-[10px] font-mono bg-white/90 backdrop-blur-sm text-black px-2 py-0.5 border border-white/60"
               >
                 {tag}
               </span>
