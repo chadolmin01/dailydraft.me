@@ -93,11 +93,17 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape') {
+        // Close nested dialogs first (LIFO order)
+        if (sidePanel) { setSidePanel(null); return }
+        if (showInviteModal) { setShowInviteModal(false); return }
+        if (showCoffeeChatForm) { setShowCoffeeChatForm(false); return }
+        onClose()
+      }
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [onClose])
+  }, [onClose, sidePanel, showInviteModal, showCoffeeChatForm])
 
   const skills = profile?.skills as Array<{ name: string; level: string }> | null
   const personality = profile?.personality as Record<string, number> | null
@@ -311,7 +317,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                   />
 
                   {/* 2-Column Grid Body */}
-                  <div className="px-4 sm:px-8 pt-5 pb-2">
+                  <div className="px-4 sm:px-8 pt-5 pb-0">
                     <div className="grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-10">
                       <ProfileBodyLeft
                         profile={profile}
