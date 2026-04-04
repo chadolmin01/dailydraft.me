@@ -302,7 +302,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                   onBack={() => setModalView('profile')}
                 />
               ) : (
-                <div className="flex-1 overflow-y-auto">
+                <div className="flex-1 overflow-y-auto min-h-0">
                   <ProfileHeader
                     profile={profile}
                     coverUrl={coverUrl}
@@ -311,7 +311,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                   />
 
                   {/* 2-Column Grid Body */}
-                  <div className="px-4 sm:px-8 py-5">
+                  <div className="px-4 sm:px-8 pt-5 pb-2">
                     <div className="grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-10">
                       <ProfileBodyLeft
                         profile={profile}
