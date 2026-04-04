@@ -317,8 +317,8 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                   />
 
                   {/* 2-Column Grid Body */}
-                  <div className="px-4 sm:px-8 pt-5 pb-0">
-                    <div className="grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-10">
+                  <div className="px-4 sm:px-8 pt-5 pb-6">
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-10 items-start">
                       <ProfileBodyLeft
                         profile={profile}
                         displayBio={displayBio}
