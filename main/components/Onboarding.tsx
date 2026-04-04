@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useCallback, useRef, useEffect } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { useAuth } from '@/src/context/AuthContext'
 import { determineResumeStep } from '@/src/lib/onboarding/resume'
@@ -67,6 +67,7 @@ interface OnboardingProps {
 
 export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const { profile: authProfile, isLoading: authLoading, isAuthenticated } = useAuth()
 
   const [step, setStep] = useState<Step>('intro')
@@ -335,9 +336,23 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
             >
               <ArrowLeft size={15} />
             </button>
-            <span className="text-[12px] font-mono text-txt-secondary tabular-nums">
-              {stepIndex + 1} <span className="text-txt-tertiary">/ {PRE_INTERVIEW_STEPS.length}</span>
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="text-[12px] font-mono text-txt-secondary tabular-nums">
+                {stepIndex + 1} <span className="text-txt-tertiary">/ {PRE_INTERVIEW_STEPS.length}</span>
+              </span>
+              <button
+                onClick={() => {
+                  const p = profileRef.current
+                  if (p.name.trim()) {
+                    saveProfileCheckpoint(p).catch(console.error)
+                  }
+                  router.push('/explore')
+                }}
+                className="text-[12px] text-txt-tertiary hover:text-txt-secondary transition-colors"
+              >
+                건너뛰기
+              </button>
+            </div>
           </div>
           <div className="flex gap-1.5">
             {PRE_INTERVIEW_STEPS.map((_, i) => {
