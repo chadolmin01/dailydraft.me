@@ -1,11 +1,3 @@
-// ── Deep Chat ──
-
-export interface DeepChatMessage {
-  role: 'user' | 'assistant'
-  content: string
-  timestamp?: string
-}
-
 // ── Interactive Elements ──
 
 export type InteractiveElementType =

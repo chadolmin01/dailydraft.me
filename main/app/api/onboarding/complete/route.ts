@@ -33,7 +33,6 @@ export async function POST(request: Request) {
       desiredPosition,
       personality,
       visionSummary,
-      aiChatTranscript,
       aiChatCompleted,
     } = body
 
@@ -62,7 +61,6 @@ export async function POST(request: Request) {
       personality: personality || { risk: 3, time: 3, communication: 3, decision: 3 },
       ...(visionSummary && { vision_summary: visionSummary }),
       onboarding_completed: true,
-      ...(aiChatTranscript && { ai_chat_transcript: aiChatTranscript }),
       ...(aiChatCompleted && { ai_chat_completed: true }),
     }
 
