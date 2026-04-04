@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { MessageSquare, Users, Search, Coffee, Lightbulb, ArrowRight, Check, Lock, Sparkles } from 'lucide-react'
+import { MessageSquare, Users, Search, Coffee, Lightbulb, ArrowRight, Check, Lock, Sparkles, Rocket, Eye } from 'lucide-react'
 import { SectionLabel, SectionTitle } from './shared'
 
 const tabs = [
@@ -173,43 +173,45 @@ const MatchingMockup = () => (
 
 const ExploreMockup = () => (
   <div className="space-y-2.5">
-    {/* Search + filter row */}
-    <div className="flex items-center gap-2">
-      <div className="flex-1 flex items-center gap-2 px-3 py-2 bg-surface-sunken rounded-xl border border-border">
-        <Search size={12} className="text-txt-tertiary shrink-0" />
-        <span className="text-[11px] text-txt-tertiary">프로젝트 검색...</span>
-      </div>
-      <div className="px-2.5 py-2 bg-surface-sunken border border-border rounded-xl text-[10px] font-bold text-txt-secondary">
-        필터
-      </div>
+    {/* Tab bar */}
+    <div className="flex items-center gap-4 border-b border-border pb-2 mb-1">
+      <span className="text-[11px] font-bold text-brand border-b-2 border-brand pb-2 -mb-[calc(0.5rem+2px)]">프로젝트</span>
+      <span className="text-[11px] font-medium text-txt-tertiary">사람</span>
     </div>
-    {/* Tab switcher */}
-    <div className="flex gap-1">
-      <span className="px-3 py-1.5 bg-surface-inverse text-txt-inverse rounded-full text-[11px] font-bold">프로젝트</span>
-      <span className="px-3 py-1.5 text-txt-tertiary rounded-full text-[11px] font-medium">사람</span>
-    </div>
-    {/* Project cards — list style like actual explore */}
-    <div className="space-y-2">
+    {/* Project cards grid — 실제 카드 UI */}
+    <div className="grid grid-cols-2 gap-2">
       {[
-        { title: 'AI 이력서 자동 분석 서비스', tag: 'AI/ML', role: '프론트엔드', recruiting: true },
-        { title: '대학생 사이드프로젝트 매칭', tag: '소셜', role: '디자이너', recruiting: true },
-        { title: '캠퍼스 중고거래 앱', tag: '커머스', role: 'PM', recruiting: false },
+        { title: 'AI 이력서 분석', roles: ['프론트엔드', '디자이너'], views: 42, urgent: false },
+        { title: '캠퍼스 중고거래', roles: ['백엔드'], views: 18, urgent: true },
       ].map((p) => (
-        <div key={p.title} className="bg-surface-card border border-border rounded-xl px-3.5 py-3 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-surface-sunken flex items-center justify-center shrink-0 text-txt-tertiary">
-            <Search size={13} />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="text-[11px] font-bold text-txt-primary truncate">{p.title}</div>
-            <div className="flex items-center gap-1.5 mt-0.5">
-              <span className="text-[10px] text-txt-tertiary">{p.tag}</span>
-              <span className="text-txt-disabled text-[10px]">·</span>
-              <span className="text-[10px] text-txt-tertiary">{p.role} 모집 중</span>
+        <div key={p.title} className="bg-surface-card border border-border rounded-xl overflow-hidden">
+          {/* Dark cover header */}
+          <div className="relative h-16 bg-surface-inverse flex items-end p-2">
+            <span className="absolute top-2 left-2 text-[9px] font-mono font-bold bg-surface-card text-txt-primary px-1.5 py-0.5 flex items-center gap-1">
+              <span className="w-1 h-1 bg-black rounded-full inline-block" />
+              {p.urgent ? 'D-2 URGENT' : 'OPEN'}
+            </span>
+            <div className="w-6 h-6 bg-surface-card flex items-center justify-center border border-border">
+              <Rocket size={12} className="text-txt-primary" />
             </div>
           </div>
-          {p.recruiting && (
-            <div className="w-1.5 h-1.5 rounded-full bg-indicator-online shrink-0" />
-          )}
+          {/* Body */}
+          <div className="p-2.5 space-y-1.5">
+            <div className="text-[11px] font-bold text-txt-primary leading-snug">{p.title}</div>
+            <div className="flex items-center gap-1 flex-wrap">
+              <span className="text-[9px] font-mono font-bold text-brand bg-brand/10 px-1.5 py-0.5 border border-brand-border">NEED</span>
+              {p.roles.map(r => (
+                <span key={r} className="text-[9px] text-txt-secondary bg-surface-sunken px-1.5 py-0.5 border border-border">{r}</span>
+              ))}
+            </div>
+            <div className="flex items-center gap-2 pt-1 border-t border-border">
+              <span className="text-[9px] font-mono text-txt-tertiary">RECRUITING</span>
+              <span className="ml-auto text-[9px] font-mono text-txt-tertiary flex items-center gap-1">
+                <Eye size={9} />
+                {p.views}
+              </span>
+            </div>
+          </div>
         </div>
       ))}
     </div>
