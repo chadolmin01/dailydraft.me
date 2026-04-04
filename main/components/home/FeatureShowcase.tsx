@@ -412,14 +412,10 @@ export const FeatureShowcase: React.FC = () => {
 
               <div className="rounded-2xl overflow-hidden shadow-xl border border-border bg-surface-card">
                 {/* Browser chrome */}
-                <div className="flex items-center gap-1.5 px-4 py-3 border-b border-border bg-surface-sunken/60">
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F57]" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#28C840]" />
-                  <div className="ml-auto flex items-center gap-1.5 bg-surface-card rounded-md px-3 py-1 border border-border">
-                    <div className="w-1.5 h-1.5 rounded-full bg-indicator-online" />
-                    <span className="text-[10px] text-txt-tertiary font-mono">draft.im</span>
-                  </div>
+                <div className="flex items-center gap-1.5 px-3 py-2 border-b border-border bg-surface-sunken/60">
+                  <div className="w-2 h-2 rounded-full bg-[#FF5F57]" />
+                  <div className="w-2 h-2 rounded-full bg-[#FFBD2E]" />
+                  <div className="w-2 h-2 rounded-full bg-[#28C840]" />
                 </div>
 
                 {/* Mockup content */}
