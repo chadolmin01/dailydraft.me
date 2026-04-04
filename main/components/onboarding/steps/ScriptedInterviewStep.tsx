@@ -71,8 +71,10 @@ export function ScriptedInterviewStep({ profile, introMessage, isSaving, onAnswe
     setPhase('answered')
 
     if (qIndex + 1 >= total) {
-      setTimeout(() => setPhase('completing'), 400)
-      setTimeout(() => onComplete(updated), 5000)
+      setTimeout(() => {
+        setPhase('completing')
+        onComplete(updated)
+      }, 400)
     } else {
       setTimeout(() => goToSlide(qIndex + 1, 'forward'), 350)
     }
