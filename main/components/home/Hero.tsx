@@ -137,13 +137,13 @@ export const Hero: React.FC = () => {
             시작하기 — 1분이면 끝
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
           </Link>
-          <button
-            onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
+          <Link
+            href="/explore"
             className="group w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-full font-bold text-sm border border-border bg-surface-card text-txt-secondary hover:bg-surface-sunken transition-all duration-200"
           >
             프로젝트 둘러보기
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-          </button>
+          </Link>
         </div>
 
         {/* Real stats from DB — only show when data loaded and non-zero */}

@@ -27,10 +27,10 @@ export const Navbar: React.FC = () => {
 
       <div className="flex items-center gap-4">
         <div className="hidden md:flex items-center gap-5 text-xs font-medium text-txt-tertiary">
-          <Link href="#features" className="hover:text-black transition-colors">기능</Link>
           <Link href="#how-it-works" className="hover:text-black transition-colors">이용 방법</Link>
           <Link href="#projects" className="hover:text-black transition-colors">프로젝트</Link>
           <Link href="#faq" className="hover:text-black transition-colors">FAQ</Link>
+          <Link href="/explore" className="hover:text-black transition-colors">둘러보기</Link>
         </div>
         <Link
           href="/login"
