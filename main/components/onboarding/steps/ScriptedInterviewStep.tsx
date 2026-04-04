@@ -220,19 +220,19 @@ export function ScriptedInterviewStep({ profile, introMessage, onAnswer, onCompl
   if (phase === 'completing') {
     return (
       <div className="flex-1 flex flex-col items-center justify-center px-6 pb-10">
-        <div className="relative flex items-center justify-center mb-10">
-          <div className="ob-complete-circle" />
+        <div className="relative flex items-center justify-center w-[140px] h-[140px] mb-10">
+          <div className="ob-complete-dot absolute" />
           <img
             src="/onboarding/done.svg"
             alt="완료"
-            className="ob-complete-icon absolute w-[150px] h-[150px] object-contain"
+            className="ob-complete-icon absolute w-[80px] h-[80px] object-contain"
           />
         </div>
 
-        <h2 className="text-2xl sm:text-[28px] font-black text-txt-primary text-center mb-2 ob-complete-text">
+        <h2 className="text-2xl sm:text-[28px] font-black text-txt-primary text-center mb-2 ob-complete-title">
           완벽해요!
         </h2>
-        <p className="text-[14px] text-txt-secondary text-center ob-complete-text" style={{ animationDelay: '0.15s' }}>
+        <p className="text-[14px] text-txt-secondary text-center ob-complete-sub">
           프로필을 완성했어요!
         </p>
       </div>
