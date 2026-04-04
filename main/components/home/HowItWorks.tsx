@@ -35,7 +35,7 @@ const steps = [
 
 export const HowItWorks: React.FC = () => {
   return (
-    <section id="how-it-works" className="w-full py-14 px-6 md:px-10 bg-surface-card">
+    <section id="how-it-works" className="w-full py-16 px-6 md:px-10 bg-surface-card">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-10">
           <SectionLabel>HOW IT WORKS</SectionLabel>

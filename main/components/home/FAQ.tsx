@@ -44,7 +44,7 @@ export const FAQ: React.FC = () => {
   }
 
   return (
-    <section id="faq" className="w-full py-14 px-6 md:px-10">
+    <section id="faq" className="w-full py-16 px-6 md:px-10">
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-10">
           <SectionLabel>FAQ</SectionLabel>

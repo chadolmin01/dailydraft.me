@@ -29,7 +29,7 @@ const tabs = [
     bullets: [
       '스킬 + 비전 기반 매칭 알고리즘',
       '매칭 점수와 이유를 투명하게 공개',
-      '매주 새로운 추천 업데이트',
+      '프로필 업데이트 시 추천 갱신',
     ],
     cta: '매칭 받아보기',
   },
@@ -42,7 +42,7 @@ const tabs = [
     bullets: [
       '관심 태그·역할·분야별 필터',
       '프로젝트와 사람 탭 전환',
-      '실시간 업데이트 피드',
+      '최신 프로젝트 피드',
     ],
     cta: '둘러보기',
   },
@@ -285,7 +285,7 @@ export const FeatureShowcase: React.FC = () => {
   const Mockup = mockups[tab.id]
 
   return (
-    <section id="features" className="w-full py-14 px-6 md:px-10">
+    <section id="features" className="w-full py-16 px-6 md:px-10">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-10">
           <SectionLabel>FEATURES</SectionLabel>

@@ -24,7 +24,7 @@ export const FinalCTA: React.FC = () => {
           <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
         </Link>
         <p className="mt-4 text-xs text-txt-tertiary">
-          무료로 시작 · 신용카드 필요 없음
+          무료 · 가입 후 바로 시작
         </p>
       </div>
     </section>
