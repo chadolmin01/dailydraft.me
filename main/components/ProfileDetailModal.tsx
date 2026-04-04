@@ -174,7 +174,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
       >
             <div
               onClick={(e) => e.stopPropagation()}
-              className={`flex flex-col sm:flex-row gap-0 sm:gap-4 transition-all duration-300 ${sidePanel ? 'w-full max-w-[90rem]' : 'w-full max-w-lg md:max-w-2xl lg:max-w-3xl'}`}
+              className={`flex flex-col sm:flex-row gap-0 sm:gap-4 transition-all duration-300 ${sidePanel ? 'w-full max-w-[90rem]' : 'w-full max-w-lg md:max-w-3xl lg:max-w-6xl'}`}
               role="dialog"
               aria-modal="true"
               aria-label={profile?.nickname || '프로필'}
