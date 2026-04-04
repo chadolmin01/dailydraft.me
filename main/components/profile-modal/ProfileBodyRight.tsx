@@ -115,9 +115,13 @@ export function ProfileBodyRight({
   availability: { hours_per_week?: number; prefer_online?: boolean } | undefined
   skills: Array<{ name: string }> | null
 }) {
+  // 기존 1-10 데이터 호환: 5 초과면 반으로 나눠서 1-5로 보정
+  const norm = (v: number) => v > 5 ? Math.round(v / 2) : v
+
   const getTraitLabel = (traitKey: string, scoreKey: string, source: Record<string, number> | null | undefined) => {
     const catId = traits?.[traitKey] as string | undefined
-    const resolved = catId || (source?.[scoreKey] != null ? SCORE_TO_CATEGORICAL[traitKey]?.(source[scoreKey]) : undefined)
+    const raw = source?.[scoreKey]
+    const resolved = catId || (raw != null ? SCORE_TO_CATEGORICAL[traitKey]?.(norm(raw)) : undefined)
     return resolved ? CATEGORICAL_LABELS[traitKey]?.[resolved] : undefined
   }
 

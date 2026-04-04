@@ -55,8 +55,8 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
   const [customTag, setCustomTag] = useState('')
   const [skills, setSkills] = useState<Array<{ name: string }>>([])
   const [newSkillName, setNewSkillName] = useState('')
-  const [personality, setPersonality] = useState<Record<string, number>>({ risk: 5, time: 5, communication: 5, decision: 5 })
-  const [workStyle, setWorkStyle] = useState<Record<string, number>>({ collaboration: 5, planning: 5, perfectionism: 5 })
+  const [personality, setPersonality] = useState<Record<string, number>>({ risk: 3, time: 3, communication: 3, decision: 3 })
+  const [workStyle, setWorkStyle] = useState<Record<string, number>>({ collaboration: 3, planning: 3, perfectionism: 3 })
   const [workStyleTraits, setWorkStyleTraits] = useState<Record<string, string>>({})
   const [teamRole, setTeamRole] = useState('')
   const [teamSize, setTeamSize] = useState('')
@@ -97,13 +97,20 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
 
       // AI analysis data
       const p = profile.personality as Record<string, number> | null
-      if (p) setPersonality({ risk: p.risk || 5, time: p.time || 5, communication: p.communication || 5, decision: p.decision || 5 })
+      if (p) {
+        // 기존 1-10 데이터 호환: 5 초과면 반으로 나눠서 1-5로 보정
+        const norm = (v: number) => v > 5 ? Math.round(v / 2) : (v || 3)
+        setPersonality({ risk: norm(p.risk), time: norm(p.time), communication: norm(p.communication), decision: norm(p.decision) })
+      }
 
       if (profile.vision_summary) {
         try {
           const v = JSON.parse(profile.vision_summary)
           const ws = v.work_style
-          if (ws) setWorkStyle({ collaboration: ws.collaboration || 5, planning: ws.planning || 5, perfectionism: ws.perfectionism || 5 })
+          if (ws) {
+            const norm = (v: number) => v > 5 ? Math.round(v / 2) : (v || 3)
+            setWorkStyle({ collaboration: norm(ws.collaboration), planning: norm(ws.planning), perfectionism: norm(ws.perfectionism) })
+          }
           if (v.team_preference) {
             setTeamRole(v.team_preference.role || '')
             setTeamSize(v.team_preference.preferred_size || '')

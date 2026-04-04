@@ -19,15 +19,15 @@ const SUMMARIZE_PROMPT = `아래는 Draft 플랫폼 온보딩에서 AI와 사용
 
 {
   "personality": {
-    "risk": <1-10, 위험 감수 성향. 도전적=높음, 안정적=낮음>,
-    "time": <1-10, 시간 투자 가능량. 풀타임=10, 여유 없음=1>,
-    "communication": <1-10, 소통 선호도. 수시 소통=10, 혼자 집중=1>,
-    "decision": <1-10, 의사결정 스타일. 빠른 실행=10, 신중한 계획=1>
+    "risk": <1-5, 위험 감수 성향. 도전적=5, 안정적=1>,
+    "time": <1-5, 시간 투자 가능량. 풀타임=5, 여유 없음=1>,
+    "communication": <1-5, 소통 선호도. 수시 소통=5, 혼자 집중=1>,
+    "decision": <1-5, 의사결정 스타일. 빠른 실행=5, 신중한 계획=1>
   },
   "work_style": {
-    "collaboration": <1-10, 협업 vs 독립. 팀 소통형=10, 혼자 집중=1>,
-    "planning": <1-10, 기획 우선 vs 실행 우선. 기획부터=10, 바로 개발=1>,
-    "perfectionism": <1-10, 완벽주의 vs 속도. 완벽주의=10, 속도 우선=1>
+    "collaboration": <1-5, 협업 vs 독립. 팀 소통형=5, 혼자 집중=1>,
+    "planning": <1-5, 기획 우선 vs 실행 우선. 기획부터=5, 바로 개발=1>,
+    "perfectionism": <1-5, 완벽주의 vs 속도. 완벽주의=5, 속도 우선=1>
   },
   "availability": {
     "hours_per_week": <숫자, 주당 투자 가능 시간. 모르면 null>,
@@ -69,24 +69,28 @@ export async function POST(request: Request) {
       structuredData?: Array<{ questionId: string; scoreMappings?: Record<string, number>; value: unknown; measuredFields: string[] }>
     }
 
-    if (!Array.isArray(transcript) || transcript.length === 0) {
-      return ApiResponse.badRequest('No transcript provided')
+    // transcript는 선택 사항 — structuredData만으로도 동작 가능
+    let conversationText = ''
+    if (Array.isArray(transcript) && transcript.length > 0) {
+      const MAX_TRANSCRIPT_MESSAGES = 40
+      const MAX_MSG_CONTENT_LENGTH = 3000
+      const trimmedTranscript = transcript.slice(0, MAX_TRANSCRIPT_MESSAGES).map(m => ({
+        ...m,
+        content: typeof m.content === 'string' ? m.content.slice(0, MAX_MSG_CONTENT_LENGTH) : '',
+      }))
+      conversationText = trimmedTranscript
+        .map(m => `${m.role === 'user' ? '사용자' : 'AI'}: ${m.content}`)
+        .join('\n\n')
+    } else if (Array.isArray(structuredData) && structuredData.length > 0) {
+      // transcript 없을 때 structured 응답으로 컨텍스트 구성
+      conversationText = structuredData
+        .map(sr => `[${sr.measuredFields.join(', ')}]: ${JSON.stringify(sr.value)}`)
+        .join('\n')
+    } else {
+      return ApiResponse.badRequest('No transcript or structured data provided')
     }
 
-    // C9: Limit transcript size to prevent abuse
-    const MAX_TRANSCRIPT_MESSAGES = 40
-    const MAX_MSG_CONTENT_LENGTH = 3000
-    const trimmedTranscript = transcript.slice(0, MAX_TRANSCRIPT_MESSAGES).map(m => ({
-      ...m,
-      content: typeof m.content === 'string' ? m.content.slice(0, MAX_MSG_CONTENT_LENGTH) : '',
-    }))
-
-    // Format conversation for analysis
-    const conversationText = trimmedTranscript
-      .map(m => `${m.role === 'user' ? '사용자' : 'AI'}: ${m.content}`)
-      .join('\n\n')
-
-    const prompt = `${SUMMARIZE_PROMPT}\n\n## 대화 내용\n\n${conversationText}`
+    const prompt = `${SUMMARIZE_PROMPT}\n\n## 응답 데이터\n\n${conversationText}`
 
     const { data: parsed } = await safeGenerate({
       model: chatModel,
@@ -114,11 +118,10 @@ export async function POST(request: Request) {
           parsed.strengths = (sr.value as string[]).map(id => strengthMap[id] || id)
         }
 
-        // Spectrum 1-5: store as number (actual resolution exists)
+        // Spectrum 1-5: store directly
         if (field === 'communication' && typeof sr.value === 'number') {
-          if (!parsed.personality) parsed.personality = { risk: 5, time: 5, communication: 5, decision: 5 }
-          // Scale 1-5 → 1-10 for DB compatibility
-          ;(parsed.personality as Record<string, number>).communication = sr.value * 2
+          if (!parsed.personality) parsed.personality = { risk: 3, time: 3, communication: 3, decision: 3 }
+          ;(parsed.personality as Record<string, number>).communication = sr.value
         }
         if (field === 'team_role' && typeof sr.value === 'number') {
           if (!parsed.team_preference) parsed.team_preference = { role: '유연', preferred_size: null, atmosphere: '균형' }
@@ -158,7 +161,7 @@ export async function POST(request: Request) {
           if (typeof qv.hours === 'number') {
             parsed.availability.hours_per_week = qv.hours
             // Also set personality.time from actual hours
-            if (!parsed.personality) parsed.personality = { risk: 5, time: 5, communication: 5, decision: 5 }
+            if (!parsed.personality) parsed.personality = { risk: 3, time: 3, communication: 3, decision: 3 }
             ;(parsed.personality as Record<string, number>).time = Math.min(10, Math.round(qv.hours / 3))
           }
           if (typeof qv.semesterAvailable === 'boolean') parsed.availability.semester_available = qv.semesterAvailable
@@ -170,33 +173,33 @@ export async function POST(request: Request) {
     if (behavioralTraits.collaboration_style) {
       const score = CATEGORICAL_TO_SCORE.collaboration_style[behavioralTraits.collaboration_style as string]
       if (score != null) {
-        if (!parsed.work_style) parsed.work_style = { collaboration: 5, planning: 5, perfectionism: 5 }
+        if (!parsed.work_style) parsed.work_style = { collaboration: 3, planning: 3, perfectionism: 3 }
         ;(parsed.work_style as Record<string, number>).collaboration = score
       }
     }
     if (behavioralTraits.decision_style) {
       const score = CATEGORICAL_TO_SCORE.decision_style[behavioralTraits.decision_style as string]
       if (score != null) {
-        if (!parsed.personality) parsed.personality = { risk: 5, time: 5, communication: 5, decision: 5 }
+        if (!parsed.personality) parsed.personality = { risk: 3, time: 3, communication: 3, decision: 3 }
         ;(parsed.personality as Record<string, number>).decision = score
       }
     }
     if (behavioralTraits.planning_style) {
       const score = CATEGORICAL_TO_SCORE.planning_style[behavioralTraits.planning_style as string]
       if (score != null) {
-        if (!parsed.work_style) parsed.work_style = { collaboration: 5, planning: 5, perfectionism: 5 }
+        if (!parsed.work_style) parsed.work_style = { collaboration: 3, planning: 3, perfectionism: 3 }
         ;(parsed.work_style as Record<string, number>).planning = score
       }
     }
     if (behavioralTraits.quality_style) {
       const score = CATEGORICAL_TO_SCORE.quality_style[behavioralTraits.quality_style as string]
       if (score != null) {
-        if (!parsed.work_style) parsed.work_style = { collaboration: 5, planning: 5, perfectionism: 5 }
+        if (!parsed.work_style) parsed.work_style = { collaboration: 3, planning: 3, perfectionism: 3 }
         ;(parsed.work_style as Record<string, number>).perfectionism = score
       }
     }
     if (behavioralTraits.risk_style) {
-      if (!parsed.personality) parsed.personality = { risk: 5, time: 5, communication: 5, decision: 5 }
+      if (!parsed.personality) parsed.personality = { risk: 3, time: 3, communication: 3, decision: 3 }
       ;(parsed.personality as Record<string, number>).risk = behavioralTraits.risk_style === 'adventurous' ? 8 : 3
       behavioralTraits.risk_style = behavioralTraits.risk_style // keep in traits
     }

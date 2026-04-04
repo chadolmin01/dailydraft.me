@@ -6,9 +6,9 @@ import { z } from 'zod'
 const score100 = () =>
   z.number().default(50).transform(v => Math.max(0, Math.min(100, Math.round(v))))
 
-/** 1-10 점수: 성향 점수용 */
-const score10 = () =>
-  z.number().default(5).transform(v => Math.max(1, Math.min(10, Math.round(v))))
+/** 1-5 점수: 성향 점수용 */
+const score5 = () =>
+  z.number().default(3).transform(v => Math.max(1, Math.min(5, Math.round(v))))
 
 /**
  * Zod v4 호환 nested object default 헬퍼.
@@ -204,15 +204,15 @@ export const ProfileExtractionSchema = z.object({
 
 export const OnboardingSummarySchema = z.object({
   personality: defaultedObject({
-    risk: score10(),
-    time: score10(),
-    communication: score10(),
-    decision: score10(),
+    risk: score5(),
+    time: score5(),
+    communication: score5(),
+    decision: score5(),
   }),
   work_style: defaultedObject({
-    collaboration: score10(),
-    planning: score10(),
-    perfectionism: score10(),
+    collaboration: score5(),
+    planning: score5(),
+    perfectionism: score5(),
   }),
   availability: defaultedObject({
     hours_per_week: z.number().nullable().default(null),

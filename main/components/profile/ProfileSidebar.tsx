@@ -132,7 +132,8 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
           const vs = profile.vision_summary ? JSON.parse(profile.vision_summary as string) : null
           visionTraits = vs?.traits as Record<string, unknown> | undefined
         } catch { /* skip */ }
-        const decisionCatId = (visionTraits?.decision_style as string) || (p.decision != null ? SCORE_TO_CATEGORICAL.decision_style(p.decision) : undefined)
+        const decisionRaw = p.decision != null ? (p.decision > 5 ? Math.round(p.decision / 2) : p.decision) : undefined
+        const decisionCatId = (visionTraits?.decision_style as string) || (decisionRaw != null ? SCORE_TO_CATEGORICAL.decision_style(decisionRaw) : undefined)
         const decisionLabel = decisionCatId ? CATEGORICAL_LABELS.decision_style?.[decisionCatId] : undefined
 
         return (
@@ -151,17 +152,19 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
               )}
               {/* communication, risk, time — slider bars */}
               {(['communication', 'risk', 'time'] as const).map(key => {
-                const value = p[key]
-                if (value == null) return null
+                const raw = p[key]
+                if (raw == null) return null
+                // 기존 1-10 데이터 호환: 5 초과면 반으로 나눠서 1-5로 보정
+                const value = raw > 5 ? Math.round(raw / 2) : raw
                 const labels: Record<string, string> = { risk: '도전 성향', time: '시간 투자', communication: '소통 선호' }
                 return (
                   <div key={key} className="flex items-center justify-between">
                     <span className="text-[11px] text-txt-secondary">{labels[key]}</span>
                     <div className="flex items-center gap-2">
                       <div className="w-16 h-1.5 bg-surface-sunken rounded-xl border border-border overflow-hidden">
-                        <div className="h-full bg-brand transition-all" style={{ width: `${(value / 10) * 100}%` }} />
+                        <div className="h-full bg-brand transition-all" style={{ width: `${(value / 5) * 100}%` }} />
                       </div>
-                      <span className="text-[10px] font-mono text-txt-tertiary w-8 text-right">{value}/10</span>
+                      <span className="text-[10px] font-mono text-txt-tertiary w-8 text-right">{value}/5</span>
                     </div>
                   </div>
                 )

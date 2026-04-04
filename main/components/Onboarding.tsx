@@ -1,32 +1,65 @@
 'use client'
 
-import React, { useEffect, useRef, useCallback } from 'react'
+import React, { useState, useCallback, useRef, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Loader2 } from 'lucide-react'
+import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { useAuth } from '@/src/context/AuthContext'
-import { useOnboarding, useDerivedState } from '@/src/hooks/useOnboarding'
 import { determineResumeStep } from '@/src/lib/onboarding/resume'
-import { aiParse, aiDeepChat, buildProfileCtx, saveProfileCheckpoint, saveProfileFinal, summarizeTranscript } from '@/src/lib/onboarding/api'
-import { AFFILIATION_OPTIONS, AI_ACTIVITY_LABELS, ONBOARDING_TIPS } from '@/src/lib/onboarding/constants'
-import type { Bubble, DeepChatMessage } from '@/src/lib/onboarding/types'
+import { saveProfileCheckpoint, saveProfileFromInterview, generateBioFromInterview } from '@/src/lib/onboarding/api'
+import { AFFILIATION_OPTIONS, SITUATION_OPTIONS, POPULAR_SKILLS, ALL_SKILLS } from '@/src/lib/onboarding/constants'
+import { POSITIONS } from '@/src/constants/roles'
+import { PROJECT_CATEGORIES } from '@/src/constants/categories'
+import { UNIVERSITY_LIST, LOCATION_OPTIONS } from '@/src/lib/constants/profile-options'
+import type { ProfileDraft, StructuredResponse } from '@/src/lib/onboarding/types'
+import { ScriptedInterviewStep } from './onboarding/steps/ScriptedInterviewStep'
+import { OnboardingComboBox } from './onboarding/OnboardingComboBox'
 
-import { OnboardingShell } from './onboarding/OnboardingShell'
-import { OnboardingChat } from './onboarding/OnboardingChat'
-import { ProfilePreview } from './onboarding/ProfilePreview'
-import { GreetingStep } from './onboarding/steps/GreetingStep'
-import { InfoFormStep } from './onboarding/steps/InfoFormStep'
-import { PositionStep } from './onboarding/steps/PositionStep'
-import { SituationStep } from './onboarding/steps/SituationStep'
-import { SkillsInputStep, SkillsConfirmStep } from './onboarding/steps/SkillsStep'
-import { InterestsInputStep, InterestsConfirmStep } from './onboarding/steps/InterestsStep'
-import { DeepChatOfferStep } from './onboarding/steps/DeepChatOfferStep'
-import { DeepChatFooter, DefaultFooter } from './onboarding/steps/DeepChatStep'
-import { ScenarioCard, ThisOrThat, DragRank, EmojiGrid, QuickNumber, SpectrumPick } from './onboarding/interactive'
-import { INTERACTIVE_QUESTIONS, REQUIRED_INTERACTIVE_IDS } from '@/src/lib/onboarding/interactive-questions'
-import type { StructuredResponse, InteractiveElementConfig, ScenarioCardQuestion, ThisOrThatQuestion, DragRankQuestion, EmojiGridQuestion, QuickNumberQuestion, SpectrumPickQuestion } from '@/src/lib/onboarding/types'
+/* ─── Types ─── */
 
-// ── localStorage key for progress persistence ──
+type Step = 'intro' | 'info' | 'position' | 'situation' | 'skills' | 'interests' | 'bridge' | 'interview'
+type SlideDir = 'forward' | 'back'
+
+const PRE_INTERVIEW_STEPS: Step[] = ['info', 'position', 'situation', 'skills', 'interests']
 const STORAGE_KEY = 'draft-onboarding-progress'
+
+const INITIAL_PROFILE: ProfileDraft = {
+  name: '', affiliationType: 'student', university: '', major: '',
+  locations: [], position: '', situation: '', skills: [], interests: [],
+}
+
+/* ─── Step config ─── */
+
+const STEP_CONFIG: Record<string, { title: string; hint?: string }> = {
+  info:      { title: '기본 정보를 알려주세요', hint: '닉네임만 필수 · 나중에 수정 가능' },
+  position:  { title: '어떤 분야에서 활동하세요?' },
+  situation: { title: 'Draft에서 무엇을 하고 싶으세요?' },
+  skills:    { title: '', hint: '나중에 추가할 수 있어요' },
+  interests: { title: '관심 있는 프로젝트 분야는요?', hint: '관심사가 겹치는 팀원을 추천해드려요' },
+}
+
+const SKILLS_TITLE: Record<string, string> = {
+  frontend:  '프론트엔드에서 사용하는 기술은?',
+  backend:   '백엔드에서 사용하는 기술은?',
+  fullstack: '풀스택 개발에서 사용하는 기술은?',
+  design:    '디자인에서 사용하는 도구는?',
+  pm:        '기획에서 사용하는 도구는?',
+  marketing: '마케팅에서 사용하는 도구는?',
+  data:      '데이터 분석에서 사용하는 도구는?',
+  other:     '사용할 수 있는 기술이 있나요?',
+}
+
+/* ── Shared chip style builder ── */
+
+function chipClass(active: boolean, size: 'sm' | 'md' = 'md') {
+  const base = 'font-medium border rounded-xl transition-all duration-150'
+  const pad = size === 'sm' ? 'px-3 py-2 text-[13px]' : 'px-4 py-3 text-[14px]'
+  const color = active
+    ? 'bg-brand text-white border-brand'
+    : 'bg-surface-card text-txt-primary border-border active:scale-[0.97]'
+  return `${base} ${pad} ${color}`
+}
+
+/* ─── Component ─── */
 
 interface OnboardingProps {
   onComplete: () => void
@@ -34,121 +67,25 @@ interface OnboardingProps {
 
 export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   const searchParams = useSearchParams()
-  const { signOut, profile: authProfile, isLoading: authLoading, isAuthenticated } = useAuth()
-  const [state, dispatch] = useOnboarding()
-  const { coveredTopics, userMsgCount, currentSuggestions, canGoBack, canUndo } = useDerivedState(state)
+  const { profile: authProfile, isLoading: authLoading, isAuthenticated } = useAuth()
 
-  const chatEndRef = useRef<HTMLDivElement>(null)
-  const scrollContainerRef = useRef<HTMLDivElement>(null)
-  const deepChatInputRef = useRef<HTMLInputElement>(null)
-  const queueRef = useRef(false)
-  const savingRef = useRef(false)
+  const [step, setStep] = useState<Step>('intro')
+  const [profile, setProfile] = useState<ProfileDraft>(INITIAL_PROFILE)
+  const [slideKey, setSlideKey] = useState(0)
+  const [slideDir, setSlideDir] = useState<SlideDir>('forward')
+  const [isSaving, setIsSaving] = useState(false)
+  const [attempted, setAttempted] = useState(false)
+  const [introMessage, setIntroMessage] = useState<string | undefined>(undefined)
 
-  // C4: Centralized timer tracking for cleanup
-  const timerRefs = useRef<Set<ReturnType<typeof setTimeout>>>(new Set())
-  const safeTimeout = useCallback((fn: () => void, ms: number) => {
-    const id = setTimeout(() => {
-      timerRefs.current.delete(id)
-      fn()
-    }, ms)
-    timerRefs.current.add(id)
-    return id
-  }, [])
+  const initRef = useRef(false)
+  const profileRef = useRef(profile)
+  profileRef.current = profile
 
-  // C1: AbortController for AI calls
-  const abortRef = useRef<AbortController | null>(null)
-
-  // Required interactives wrap-up queue
-  const pendingRequiredRef = useRef<{ id: string; prompt: string }[]>([])
-
-  // Refs to avoid stale closures in async callbacks
-  const stateRef = useRef(state)
-  stateRef.current = state
-  const coveredTopicsRef = useRef(coveredTopics)
-  coveredTopicsRef.current = coveredTopics
-
-  // ── Scroll on bubble change ──
+  /* ── Init: auth → resume or fresh ── */
   useEffect(() => {
-    const id = safeTimeout(() => {
-      const container = scrollContainerRef.current
-      if (container) {
-        container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' })
-      }
-    }, 80)
-    return () => { clearTimeout(id); timerRefs.current.delete(id) }
-  }, [state.bubbles, state.isTyping, safeTimeout])
-
-  useEffect(() => { dispatch({ type: 'SET_MOUNTED' }) }, [dispatch])
-
-  // C4: Cleanup all timers + abort on unmount
-  useEffect(() => {
-    return () => {
-      timerRefs.current.forEach(id => clearTimeout(id))
-      timerRefs.current.clear()
-      abortRef.current?.abort()
-    }
-  }, [])
-
-  // ── Rotating tip (functional update to avoid interval churn #7) ──
-  useEffect(() => {
-    const interval = setInterval(
-      () => dispatch({ type: 'SET_TIP_INDEX', index: -1 }), // sentinel, handled by reducer
-      6000,
-    )
-    return () => clearInterval(interval)
-  }, [dispatch])
-
-  // ── U2: Save progress to localStorage ──
-  const saveProgress = useCallback((step: string, profile: typeof state.profile) => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ step, profile, ts: Date.now() }))
-    } catch { /* quota exceeded — ignore */ }
-  }, [])
-
-  const loadProgress = useCallback(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY)
-      if (!raw) return null
-      const data = JSON.parse(raw)
-      // Expire after 24 hours
-      if (Date.now() - data.ts > 24 * 60 * 60 * 1000) {
-        localStorage.removeItem(STORAGE_KEY)
-        return null
-      }
-      return data as { step: string; profile: typeof state.profile }
-    } catch {
-      return null
-    }
-  }, [])
-
-  const clearProgress = useCallback(() => {
-    try { localStorage.removeItem(STORAGE_KEY) } catch { /* ignore */ }
-  }, [])
-
-  // ── Push helpers ──
-  const pushAi = useCallback((content: string, attachment?: Bubble['attachment'], delay?: number) => {
-    const typingMs = delay ?? Math.min(400 + content.length * 15, 1400)
-    return new Promise<void>((resolve) => {
-      dispatch({ type: 'SET_TYPING', isTyping: true })
-      safeTimeout(() => {
-        dispatch({ type: 'ADD_BUBBLE', bubble: { id: `ai-${Date.now()}-${Math.random()}`, role: 'ai', content, attachment } })
-        dispatch({ type: 'SET_TYPING', isTyping: false })
-        safeTimeout(resolve, 80)
-      }, typingMs)
-    })
-  }, [dispatch, safeTimeout])
-
-  const pushUser = useCallback((content: string) => {
-    dispatch({ type: 'ADD_BUBBLE', bubble: { id: `user-${Date.now()}-${Math.random()}`, role: 'user', content } })
-  }, [dispatch])
-
-  // ── Init: wait for auth, then resume or start fresh ──
-  useEffect(() => {
-    if (queueRef.current || authLoading) return
-    // Race condition fix: if authenticated, wait for profile to load from DB
-    // (isLoading becomes false before fetchProfile completes)
+    if (initRef.current || authLoading) return
     if (isAuthenticated && authProfile === null) return
-    queueRef.current = true
+    initRef.current = true
 
     const redoChat = searchParams.get('mode') === 'redo-chat'
     const resumeResult = determineResumeStep(
@@ -157,814 +94,576 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     )
 
     if (resumeResult) {
-      dispatch({ type: 'SET_PROFILE', profile: resumeResult.draft })
-
-      if (resumeResult.step === 'deep-chat' && resumeResult.messages) {
-        // Resume deep chat with previous messages
-        const run = async () => {
-          dispatch({ type: 'SET_DEEP_CHAT_MESSAGES', messages: resumeResult.messages! })
-          await new Promise(r => safeTimeout(r as () => void, 400))
-          // Restore chat bubbles from transcript (no animation class)
-          const restoredBubbles: Bubble[] = resumeResult.messages!.map((msg, i) => ({
-            id: `restored-${i}-${Date.now()}`,
-            role: msg.role === 'user' ? 'user' as const : 'ai' as const,
-            content: msg.content,
-          }))
-          dispatch({ type: 'SET_BUBBLES', bubbles: restoredBubbles })
-          dispatch({ type: 'SET_STEP', step: 'deep-chat' })
-          await pushAi('이어서 대화를 계속할까요?', undefined, 600)
-          safeTimeout(() => deepChatInputRef.current?.focus(), 200)
-        }
-        run().catch(console.error)
-      } else {
-        // Resume to deep-chat-offer (or redo)
-        const run = async () => {
-          await new Promise(r => safeTimeout(r as () => void, 400))
-          const msg = redoChat
-            ? `${resumeResult.draft.name}님, AI 매칭 분석을 다시 진행할게요!\n새로운 대화로 프로필을 업데이트합니다.`
-            : `${resumeResult.draft.name}님, 돌아오셨군요!\n이어서 AI 대화를 진행할까요?`
-          await pushAi(msg, 'deep-chat-offer', 600)
-          dispatch({ type: 'SET_STEP', step: 'deep-chat-offer' })
-        }
-        run().catch(console.error)
-      }
-      return
-    }
-
-    // U2: Try to restore from localStorage
-    const saved = loadProgress()
-    if (saved?.profile?.name) {
-      dispatch({ type: 'SET_PROFILE', profile: saved.profile })
-      const run = async () => {
-        await new Promise(r => safeTimeout(r as () => void, 600))
-        await pushAi(`${saved.profile.name}님, 돌아오셨군요!\n이어서 프로필을 완성할까요?`, 'deep-chat-offer', 600)
-        dispatch({ type: 'SET_STEP', step: 'deep-chat-offer' })
-      }
-      run().catch(console.error)
-      return
-    }
-
-    // Fresh start
-    const run = async () => {
-      await new Promise(r => safeTimeout(r as () => void, 600))
-      await pushAi('안녕하세요!\nDraft에 오신 것을 환영합니다.', undefined, 1000)
-      await pushAi('프로필을 설정하면 딱 맞는 프로젝트와\n팀원을 추천해드릴 수 있어요.', 'cta', 900)
-      dispatch({ type: 'SET_STEP', step: 'cta' })
-    }
-    run().catch(console.error)
-  }, [authLoading, authProfile, isAuthenticated, searchParams, pushAi, pushUser, dispatch, safeTimeout, loadProgress])
-
-  // ── Step handlers ──
-
-  const handleCtaClick = async () => {
-    if (stateRef.current.step !== 'cta') return
-    pushUser('프로필 입력하기')
-    dispatch({ type: 'SET_STEP', step: 'info' })
-    await pushAi('좋아요! 먼저 기본 정보를 알려주세요.', 'info-form', 700)
-  }
-
-  const handleInfoSubmit = async () => {
-    if (stateRef.current.isTyping) return
-    const { profile } = stateRef.current
-    if (!profile.name.trim()) return
-    const parts = [profile.name.trim()]
-    const affOpt = AFFILIATION_OPTIONS.find(a => a.value === profile.affiliationType)
-    if (profile.university) {
-      const prefix = affOpt && profile.affiliationType !== 'student' ? `${affOpt.label} · ` : ''
-      parts.push(prefix + profile.university + (profile.major ? ` ${profile.major}` : ''))
-    } else if (affOpt && profile.affiliationType !== 'student') {
-      parts.push(affOpt.label)
-    }
-    if (profile.locations.length > 0) parts.push(profile.locations.join(', '))
-    pushUser(parts.join(' · '))
-    dispatch({ type: 'PUSH_STEP', step: 'position' })
-    saveProgress('position', profile)
-    await pushAi(`${profile.name.trim()}님, 반가워요!\n어떤 분야에서 활동하고 계신가요?`, 'position', 800)
-  }
-
-  const handlePositionSelect = async (pos: string) => {
-    if (stateRef.current.isTyping || stateRef.current.step !== 'position') return
-    dispatch({ type: 'SET_PROFILE', profile: { position: pos } })
-    pushUser(pos)
-    dispatch({ type: 'PUSH_STEP', step: 'situation' })
-    saveProgress('situation', { ...stateRef.current.profile, position: pos })
-    await pushAi('현재 어떤 상황에 계신가요?\nDraft에서의 목표에 맞게 추천해드릴게요.', 'situation', 700)
-  }
-
-  const handleSituationSelect = async (sit: { value: string; label: string }) => {
-    if (stateRef.current.isTyping || stateRef.current.step !== 'situation') return
-    dispatch({ type: 'SET_PROFILE', profile: { situation: sit.value } })
-    pushUser(sit.label)
-    dispatch({ type: 'PUSH_STEP', step: 'skills-input' })
-    saveProgress('skills-input', { ...stateRef.current.profile, situation: sit.value })
-    await pushAi('어떤 기술을 사용할 수 있나요?\n편하게 말씀해주세요!', 'skills-input', 700)
-  }
-
-  const handleSkillInputSubmit = async () => {
-    if (stateRef.current.isTyping) return
-    const { profile, skillInput } = stateRef.current
-    const text = skillInput.trim()
-    pushUser(text || (profile.skills.length > 0 ? profile.skills.join(', ') : '건너뛰기'))
-    let parsed: string[] = []
-    let parseFailed = false
-    if (text) {
-      dispatch({ type: 'SET_AI_ACTIVITY', label: '입력한 스킬을 정리하고 있어요' })
-      dispatch({ type: 'SET_TYPING', isTyping: true })
-      const result = await aiParse(text, 'skills', abortRef.current?.signal)
-      dispatch({ type: 'SET_TYPING', isTyping: false })
-      dispatch({ type: 'SET_AI_ACTIVITY', label: null })
-      if (result === null) parseFailed = true
-      else parsed = result
-    }
-    const merged = Array.from(new Set([...profile.skills, ...parsed]))
-    dispatch({ type: 'SET_SKILLS', skills: merged })
-    if (parseFailed && merged.length === 0) {
-      await pushAi('AI 정리가 잠시 안 되고 있어요.\n아래에서 직접 선택하거나 다시 입력해주세요!', 'skills-input', 400)
-      return
-    }
-    dispatch({ type: 'SET_SKILL_INPUT', value: '' })
-    if (merged.length > 0) {
-      dispatch({ type: 'PUSH_STEP', step: 'skills-confirm' })
-      await pushAi(
-        parseFailed
-          ? `${merged.join(', ')}\n\n선택하신 스킬이에요! 추가하거나 빼도 돼요.\n(AI 자동 정리는 잠시 안 되고 있어요)`
-          : `${merged.join(', ')}\n\nAI가 정리했어요! 추가하거나 빼도 돼요.`,
-        'skills-confirm', 500,
+      setProfile(resumeResult.draft)
+      setIntroMessage(
+        redoChat
+          ? `${resumeResult.draft.name}님, 프로필 분석을 다시 시작할게요!`
+          : `${resumeResult.draft.name}님, 돌아오셨군요! 이어서 진행할게요.`,
       )
+      setStep('interview')
+      return
+    }
+
+    // localStorage resume
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY)
+      if (raw) {
+        const data = JSON.parse(raw)
+        if (Date.now() - data.ts < 24 * 60 * 60 * 1000 && data.profile?.name) {
+          setProfile(data.profile)
+          setIntroMessage(`${data.profile.name}님, 돌아오셨군요! 이어서 진행할게요.`)
+          setStep('interview')
+          return
+        }
+        localStorage.removeItem(STORAGE_KEY)
+      }
+    } catch { /* ignore */ }
+  }, [authLoading, authProfile, isAuthenticated, searchParams])
+
+  /* ── Navigation ── */
+  const goTo = useCallback((nextStep: Step, dir: SlideDir = 'forward') => {
+    setSlideDir(dir)
+    setSlideKey(k => k + 1)
+    setStep(nextStep)
+    setAttempted(false)
+  }, [])
+
+  const stepIndex = PRE_INTERVIEW_STEPS.indexOf(step)
+
+  const handleBack = useCallback(() => {
+    if (stepIndex <= 0) goTo('intro', 'back')
+    else goTo(PRE_INTERVIEW_STEPS[stepIndex - 1], 'back')
+  }, [stepIndex, goTo])
+
+  const handleNext = useCallback(() => {
+    if (step === 'info') {
+      setAttempted(true)
+      if (!profileRef.current.name.trim()) return
+    }
+    if (stepIndex < PRE_INTERVIEW_STEPS.length - 1) {
+      goTo(PRE_INTERVIEW_STEPS[stepIndex + 1])
     } else {
-      dispatch({ type: 'SET_SKILLS', skills: [] })
-      dispatch({ type: 'PUSH_STEP', step: 'interests-input' })
-      await pushAi('관심 있는 분야가 있나요?\n편하게 말씀해주세요!', 'interests-input', 600)
+      const p = profileRef.current
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ profile: p, ts: Date.now() })) } catch { /* ignore */ }
+      saveProfileCheckpoint(p).catch(console.error)
+      goTo('bridge')
     }
-  }
+  }, [step, stepIndex, goTo])
 
-  const handleSkillsConfirm = async () => {
-    if (stateRef.current.isTyping) return
-    const { profile } = stateRef.current
-    pushUser(profile.skills.length > 0 ? profile.skills.join(', ') + ' 확인!' : '건너뛰기')
-    dispatch({ type: 'PUSH_STEP', step: 'interests-input' })
-    saveProgress('interests-input', profile)
-    await pushAi('마지막이에요! 관심 있는 분야가 있나요?\n편하게 말씀해주세요!', 'interests-input', 600)
-  }
+  const updateProfile = useCallback((partial: Partial<ProfileDraft>) => {
+    setProfile(prev => ({ ...prev, ...partial }))
+  }, [])
 
-  const handleInterestInputSubmit = async () => {
-    if (stateRef.current.isTyping) return
-    const { profile, interestInput } = stateRef.current
-    const text = interestInput.trim()
-    pushUser(text || (profile.interests.length > 0 ? profile.interests.join(', ') : '건너뛰기'))
-    let parsed: string[] = []
-    let parseFailed = false
-    if (text) {
-      dispatch({ type: 'SET_AI_ACTIVITY', label: '관심 분야를 분석하고 있어요' })
-      dispatch({ type: 'SET_TYPING', isTyping: true })
-      const result = await aiParse(text, 'interests', abortRef.current?.signal)
-      dispatch({ type: 'SET_TYPING', isTyping: false })
-      dispatch({ type: 'SET_AI_ACTIVITY', label: null })
-      if (result === null) parseFailed = true
-      else parsed = result
-    }
-    const merged = Array.from(new Set([...profile.interests, ...parsed]))
-    dispatch({ type: 'SET_INTERESTS', interests: merged })
-    if (parseFailed && merged.length === 0) {
-      await pushAi('AI 정리가 잠시 안 되고 있어요.\n아래에서 직접 선택하거나 다시 입력해주세요!', 'interests-input', 400)
-      return
-    }
-    dispatch({ type: 'SET_INTEREST_INPUT', value: '' })
-    if (merged.length > 0) {
-      dispatch({ type: 'PUSH_STEP', step: 'interests-confirm' })
-      await pushAi(
-        parseFailed
-          ? `${merged.join(', ')}\n\n선택하신 관심 분야예요! 추가하거나 빼도 돼요.\n(AI 자동 정리는 잠시 안 되고 있어요)`
-          : `${merged.join(', ')}\n\nAI가 정리했어요!`,
-        'interests-confirm', 500,
-      )
-    } else {
-      await offerDeepChat()
-    }
-  }
-
-  const handleInterestsConfirm = async () => {
-    if (stateRef.current.isTyping) return
-    await offerDeepChat()
-  }
-
-  // ── Deep Chat Offer ──
-  const offerDeepChat = async () => {
-    const { profile } = stateRef.current
-    pushUser(profile.interests.length > 0 ? profile.interests.join(', ') + ' 확인!' : '완료!')
-    dispatch({ type: 'PUSH_STEP', step: 'deep-chat-offer' })
-    saveProgress('deep-chat-offer', profile)
-    await pushAi('기본 프로필이 완성됐어요!\n\nAI와 짧은 대화를 나누면 팀 매칭 정확도가 확 올라가요.\n경험, 작업 스타일, 목표 등 몇 가지만 알려주시면 됩니다.', 'deep-chat-offer', 800)
-  }
-
-  // U1: Cancel transition handler
-  const handleCancelTransition = useCallback(() => {
-    abortRef.current?.abort()
-    dispatch({ type: 'SET_DEEP_CHAT_TRANSITION', value: false })
-    dispatch({ type: 'SET_STEP', step: 'deep-chat-offer' })
-  }, [dispatch])
-
-  const handleDeepChatAccept = async () => {
-    const s = stateRef.current
-    if (s.isTyping || savingRef.current || s.step !== 'deep-chat-offer') return
-    pushUser('좋아요, 해볼게요!')
-
-    await new Promise(r => safeTimeout(r as () => void, 400))
-    dispatch({ type: 'SET_DEEP_CHAT_TRANSITION', value: true })
-
-    // C1: Create new abort controller
-    abortRef.current?.abort()
-    abortRef.current = new AbortController()
-
-    const profileCtx = buildProfileCtx(s.profile)
-
-    // Checkpoint save
-    try { await saveProfileCheckpoint(s.profile) } catch { /* continue anyway */ }
-
-    // U1: 10-second timeout
-    const timeoutId = safeTimeout(() => {
-      abortRef.current?.abort()
-    }, 10000)
-
+  /* ── Interview complete ── */
+  const handleInterviewComplete = useCallback(async (responses: StructuredResponse[]) => {
+    setIsSaving(true)
     try {
-      const { reply: firstQ, suggestions: firstSuggestions, interactiveElement: _firstInteractive } = await aiDeepChat([], profileCtx, abortRef.current.signal)
-
-      clearTimeout(timeoutId)
-      timerRefs.current.delete(timeoutId)
-
-      await new Promise(r => safeTimeout(r as () => void, 800))
-      dispatch({ type: 'SET_BUBBLES', bubbles: [] })
-      dispatch({ type: 'SET_STEP', step: 'deep-chat' })
-      dispatch({ type: 'SET_DEEP_CHAT_TRANSITION', value: false })
-      dispatch({ type: 'SET_DYNAMIC_SUGGESTIONS', suggestions: firstSuggestions })
-
-      await new Promise(r => safeTimeout(r as () => void, 300))
-      const aiMsg: DeepChatMessage = { role: 'assistant', content: firstQ, timestamp: new Date().toISOString() }
-      dispatch({ type: 'SET_DEEP_CHAT_MESSAGES', messages: [aiMsg] })
-      await pushAi(firstQ, undefined, 600)
-      safeTimeout(() => deepChatInputRef.current?.focus(), 200)
-    } catch (err) {
-      clearTimeout(timeoutId)
-      timerRefs.current.delete(timeoutId)
-      // Escape the transition overlay on any failure
-      dispatch({ type: 'SET_DEEP_CHAT_TRANSITION', value: false })
-      // Don't show error message if user voluntarily cancelled
-      const isAbort = err instanceof DOMException && err.name === 'AbortError'
-      if (!isAbort) {
-        await pushAi('AI 연결에 문제가 있어요. 다시 시도해주세요!', 'deep-chat-offer', 400)
-      }
-      dispatch({ type: 'SET_STEP', step: 'deep-chat-offer' })
-    }
-  }
-
-  const handleDeepChatSkip = async () => {
-    const s = stateRef.current
-    if (s.isTyping || savingRef.current || s.step !== 'deep-chat-offer') return
-    savingRef.current = true
-    pushUser('건너뛰기')
-    await finishOnboarding()
-  }
-
-  // ── Interactive element response handler ──
-  const handleInteractiveResponse = async (bubbleId: string, response: StructuredResponse) => {
-    dispatch({ type: 'SET_BUBBLE_ANSWERED', bubbleId })
-    dispatch({ type: 'ADD_STRUCTURED_RESPONSE', response })
-
-    // Add user message with natural language summary
-    pushUser(response.naturalLanguage)
-    const userMsg: DeepChatMessage = {
-      role: 'user',
-      content: response.naturalLanguage,
-      timestamp: new Date().toISOString(),
-    }
-    const updatedMessages = [...stateRef.current.deepChatMessages, userMsg]
-    dispatch({ type: 'SET_DEEP_CHAT_MESSAGES', messages: updatedMessages })
-
-    // If in required wrap-up mode, show next required or complete
-    if (pendingRequiredRef.current.length > 0) {
-      await showNextRequiredOrComplete()
-      return
-    }
-
-    // Send to AI for follow-up
-    const profileCtx = buildProfileCtx(stateRef.current.profile)
-    const activityLabel = AI_ACTIVITY_LABELS[Math.min(updatedMessages.filter(m => m.role === 'user').length - 1, AI_ACTIVITY_LABELS.length - 1)]
-    dispatch({ type: 'SET_AI_ACTIVITY', label: activityLabel })
-    dispatch({ type: 'SET_TYPING', isTyping: true })
-    dispatch({ type: 'SET_SHOW_SUGGESTIONS', value: false })
-
-    abortRef.current?.abort()
-    abortRef.current = new AbortController()
-
-    try {
-      const { reply, offTopic, suggestions, interactiveElement } = await aiDeepChat(updatedMessages, profileCtx, abortRef.current.signal)
-
-      if (offTopic) {
-        dispatch({ type: 'SET_DEEP_CHAT_MESSAGES', messages: stateRef.current.deepChatMessages })
-        dispatch({ type: 'SET_TYPING', isTyping: false })
-        dispatch({ type: 'ADD_BUBBLE', bubble: { id: `ai-${Date.now()}-${Math.random()}`, role: 'ai', content: reply, offTopic: true } })
-      } else {
-        const aiMsg: DeepChatMessage = { role: 'assistant', content: reply, timestamp: new Date().toISOString() }
-        const finalMessages = [...updatedMessages, aiMsg]
-        dispatch({ type: 'SET_DEEP_CHAT_MESSAGES', messages: finalMessages })
-
-        // Check if AI wants to show an interactive element
-        const questionDef = interactiveElement ? INTERACTIVE_QUESTIONS[interactiveElement] : null
-        if (questionDef && stateRef.current.interactiveElementCount < 5) {
-          const config: InteractiveElementConfig = {
-            type: questionDef.type,
-            questionId: interactiveElement!,
-            measuredFields: questionDef.measuredFields,
-          }
-          dispatch({ type: 'SET_TYPING', isTyping: false })
-          dispatch({ type: 'ADD_BUBBLE', bubble: {
-            id: `ai-${Date.now()}-${Math.random()}`,
-            role: 'ai',
-            content: reply,
-            attachment: 'interactive-element',
-            interactiveConfig: config,
-          } })
-          dispatch({ type: 'INCREMENT_INTERACTIVE_COUNT' })
-        } else {
-          await pushAi(reply, undefined, 300)
-        }
-      }
-      dispatch({ type: 'SET_DYNAMIC_SUGGESTIONS', suggestions: interactiveElement ? [] : suggestions })
-
-      // Auto-finish check after interactive response follow-up
-      if (!offTopic && !interactiveElement) {
-        const uCount = stateRef.current.deepChatMessages.filter(m => m.role === 'user').length
-        const missing = getMissingRequired()
-        if (uCount >= 5 && missing.length === 0) {
-          safeTimeout(() => autoFinishDeepChat(), 800)
-          return
-        }
-        if (uCount >= 5 && missing.length > 0) {
-          pendingRequiredRef.current = [...missing]
-          await pushAi('거의 다 파악한 것 같아요! 마지막으로 몇 가지만 빠르게 체크할게요.', undefined, 400)
-          await showNextRequiredOrComplete()
-          return
-        }
-      }
-    } catch (err) {
-      const isAbort = err instanceof DOMException && err.name === 'AbortError'
-      if (!isAbort) {
-        await pushAi('일시적인 오류가 발생했어요. 다시 말씀해주세요!', undefined, 300)
-      }
-    } finally {
-      dispatch({ type: 'SET_TYPING', isTyping: false })
-      dispatch({ type: 'SET_AI_ACTIVITY', label: null })
-      dispatch({ type: 'SET_SHOW_SUGGESTIONS', value: true })
-      safeTimeout(() => deepChatInputRef.current?.focus(), 200)
-    }
-  }
-
-  const sendDeepChatMessage = async (text: string) => {
-    const s = stateRef.current
-    if (s.isTyping || !text.trim() || s.step !== 'deep-chat') return
-    dispatch({ type: 'SET_DEEP_CHAT_INPUT', value: '' })
-    dispatch({ type: 'SET_SHOW_SUGGESTIONS', value: false })
-    dispatch({ type: 'SET_DYNAMIC_SUGGESTIONS', suggestions: [] })
-    pushUser(text.trim())
-    const userMsg: DeepChatMessage = { role: 'user', content: text.trim(), timestamp: new Date().toISOString() }
-    const updatedMessages = [...s.deepChatMessages, userMsg]
-    dispatch({ type: 'SET_DEEP_CHAT_MESSAGES', messages: updatedMessages })
-    const profileCtx = buildProfileCtx(s.profile)
-    const msgCount = updatedMessages.filter(m => m.role === 'user').length
-    const activityLabel = AI_ACTIVITY_LABELS[Math.min(msgCount - 1, AI_ACTIVITY_LABELS.length - 1)]
-    dispatch({ type: 'SET_AI_ACTIVITY', label: activityLabel })
-    dispatch({ type: 'SET_TYPING', isTyping: true })
-
-    // C1: Fresh abort controller per message
-    abortRef.current?.abort()
-    abortRef.current = new AbortController()
-
-    try {
-      const { reply, offTopic, suggestions, interactiveElement } = await aiDeepChat(updatedMessages, profileCtx, abortRef.current.signal)
-
-      if (offTopic) {
-        // Don't add off-topic exchange to history — rollback to previous state
-        dispatch({ type: 'SET_DEEP_CHAT_MESSAGES', messages: s.deepChatMessages })
-        // U5: Mark off-topic bubble
-        dispatch({ type: 'SET_TYPING', isTyping: false })
-        dispatch({ type: 'ADD_BUBBLE', bubble: { id: `ai-${Date.now()}-${Math.random()}`, role: 'ai', content: reply, offTopic: true } })
-      } else {
-        const aiMsg: DeepChatMessage = { role: 'assistant', content: reply, timestamp: new Date().toISOString() }
-        const finalMessages = [...updatedMessages, aiMsg]
-        dispatch({ type: 'SET_DEEP_CHAT_MESSAGES', messages: finalMessages })
-
-        // Check if AI wants to show an interactive element
-        const questionDef = interactiveElement ? INTERACTIVE_QUESTIONS[interactiveElement] : null
-        if (questionDef && stateRef.current.interactiveElementCount < 5) {
-          const config: InteractiveElementConfig = {
-            type: questionDef.type,
-            questionId: interactiveElement!,
-            measuredFields: questionDef.measuredFields,
-          }
-          dispatch({ type: 'SET_TYPING', isTyping: false })
-          dispatch({ type: 'ADD_BUBBLE', bubble: {
-            id: `ai-${Date.now()}-${Math.random()}`,
-            role: 'ai',
-            content: reply,
-            attachment: 'interactive-element',
-            interactiveConfig: config,
-          } })
-          dispatch({ type: 'INCREMENT_INTERACTIVE_COUNT' })
-        } else {
-          await pushAi(reply, undefined, 300)
-        }
-      }
-      dispatch({ type: 'SET_DYNAMIC_SUGGESTIONS', suggestions: interactiveElement ? [] : suggestions })
-
-      // Auto-finish: 5+ user messages AND all required interactives answered
-      if (!offTopic && !interactiveElement) {
-        const uCount = stateRef.current.deepChatMessages.filter(m => m.role === 'user').length
-        const missing = getMissingRequired()
-        if (uCount >= 5 && missing.length === 0) {
-          safeTimeout(() => autoFinishDeepChat(), 800)
-          return
-        }
-        // If 5+ messages but missing required interactives, start wrap-up
-        if (uCount >= 5 && missing.length > 0) {
-          pendingRequiredRef.current = [...missing]
-          await pushAi('거의 다 파악한 것 같아요! 마지막으로 몇 가지만 빠르게 체크할게요.', undefined, 400)
-          await showNextRequiredOrComplete()
-          return
-        }
-      }
-    } catch (err) {
-      const isAbort = err instanceof DOMException && err.name === 'AbortError'
-      if (!isAbort) {
-        await pushAi('일시적인 오류가 발생했어요. 다시 말씀해주세요!', undefined, 300)
-      }
-    } finally {
-      dispatch({ type: 'SET_TYPING', isTyping: false })
-      dispatch({ type: 'SET_AI_ACTIVITY', label: null })
-      dispatch({ type: 'SET_SHOW_SUGGESTIONS', value: true })
-      safeTimeout(() => deepChatInputRef.current?.focus(), 200)
-    }
-  }
-
-  /** Auto-finish deep chat (no user action needed) */
-  const autoFinishDeepChat = async () => {
-    if (stateRef.current.isTyping || stateRef.current.step !== 'deep-chat') return
-    pushUser('대화 완료!')
-    await completeDeepChat()
-  }
-
-  /** Get required interactive IDs not yet answered */
-  const getMissingRequired = () => {
-    const answered = new Set(stateRef.current.structuredResponses.map(r => r.questionId))
-    return REQUIRED_INTERACTIVE_IDS.filter(r => !answered.has(r.id))
-  }
-
-  /** Show the next pending required interactive, or complete if done */
-  const showNextRequiredOrComplete = async () => {
-    const next = pendingRequiredRef.current.shift()
-    if (!next) {
-      await completeDeepChat()
-      return
-    }
-    const questionDef = INTERACTIVE_QUESTIONS[next.id]
-    if (!questionDef) {
-      await showNextRequiredOrComplete()
-      return
-    }
-    const config: InteractiveElementConfig = {
-      type: questionDef.type,
-      questionId: next.id,
-      measuredFields: questionDef.measuredFields,
-    }
-    dispatch({ type: 'ADD_BUBBLE', bubble: {
-      id: `ai-req-${Date.now()}-${Math.random()}`,
-      role: 'ai',
-      content: next.prompt,
-      attachment: 'interactive-element',
-      interactiveConfig: config,
-    } })
-  }
-
-  const completeDeepChat = async () => {
-    const s = stateRef.current
-    if (s.deepChatMessages.length >= 2) {
-      dispatch({ type: 'SET_STEP', step: 'done' })
-      dispatch({ type: 'SET_AI_ACTIVITY', label: '프로필 데이터를 생성하고 있어요' })
-      dispatch({ type: 'SET_TYPING', isTyping: true })
-      // Use ref for coveredTopics to avoid stale count (#10)
-      await pushAi(`${coveredTopicsRef.current.length}개 영역을 분석해서 프로필에 반영하고 있어요...`, undefined, 400)
-
-      // Read latest messages + structured responses from ref (#2)
-      const currentMessages = stateRef.current.deepChatMessages
-      const currentStructured = stateRef.current.structuredResponses
-      const summaryResult = await summarizeTranscript(currentMessages, abortRef.current?.signal, currentStructured)
-      dispatch({ type: 'SET_TYPING', isTyping: false })
-      dispatch({ type: 'SET_AI_ACTIVITY', label: null })
-
-      // Store generated bio for guide page inline editor
-      if (summaryResult?.bio) {
-        try { localStorage.setItem('onboarding-bio', summaryResult.bio) } catch {}
-      }
-
-      const name = stateRef.current.profile.name
-      if (summaryResult?.summary) {
-        await pushAi(`분석 완료!\n\n"${summaryResult.summary}"\n\n${name}님에게 딱 맞는 팀을 찾아볼게요.`, undefined, 500)
-      } else {
-        await pushAi(`프로필 분석이 완료됐어요!\n${name}님에게 딱 맞는 팀을 찾아볼게요.`, undefined, 500)
-      }
-      // #3: await handleSave
-      await handleSave()
-    } else {
-      await finishOnboarding()
-    }
-  }
-
-  const finishOnboarding = async () => {
-    dispatch({ type: 'SET_STEP', step: 'done' })
-    const name = stateRef.current.profile.name
-    await pushAi(`프로필 설정이 완료됐어요!\n${name}님에게 맞는 프로젝트를 찾아볼게요.`, undefined, 600)
-    // #3: await handleSave
-    await handleSave()
-  }
-
-  const handleSave = async () => {
-    dispatch({ type: 'SET_SAVING', isSaving: true })
-    dispatch({ type: 'SET_SAVE_ERROR', error: null })
-    try {
-      // Read latest state from ref (#2)
-      const s = stateRef.current
-      await saveProfileFinal(s.profile, s.deepChatMessages)
-      // U2: Clear localStorage on successful save
-      clearProgress()
-      safeTimeout(onComplete, 1500)
+      await saveProfileFromInterview(profileRef.current, responses)
+      try { localStorage.removeItem(STORAGE_KEY) } catch { /* ignore */ }
+      setIsSaving(false)
+      // Fire-and-forget: generate AI bio in background (non-blocking)
+      generateBioFromInterview(responses).catch(() => {})
+      setTimeout(onComplete, 1500)
     } catch (err) {
       console.error('[Onboarding] save error:', err)
-      savingRef.current = false
-      dispatch({ type: 'SET_SAVE_ERROR', error: err instanceof Error ? err.message : '저장에 실패했습니다.' })
-      dispatch({ type: 'SET_SAVING', isSaving: false })
+      setIsSaving(false)
     }
-  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onComplete])
 
-  // ── Attachment renderer (#1: remove useCallback to avoid stale handler closures) ──
-  const renderAttachment = (bubble: Bubble) => {
-    switch (bubble.attachment) {
-      case 'cta':
-        return <GreetingStep onCtaClick={handleCtaClick} />
-      case 'info-form':
-        return (
-          <InfoFormStep
-            profile={state.profile}
-            onProfileChange={(p) => dispatch({ type: 'SET_PROFILE', profile: p })}
-            onSubmit={handleInfoSubmit}
-          />
-        )
-      case 'position':
-        return <PositionStep onSelect={handlePositionSelect} />
-      case 'situation':
-        return <SituationStep onSelect={handleSituationSelect} />
-      case 'skills-input':
-        return (
-          <SkillsInputStep
-            skillInput={state.skillInput}
-            skills={state.profile.skills}
-            onSkillInputChange={(v: string) => dispatch({ type: 'SET_SKILL_INPUT', value: v })}
-            onToggleSkill={(s: string) => dispatch({ type: 'TOGGLE_SKILL', skill: s })}
-            onRemoveSkill={(s: string) => dispatch({ type: 'REMOVE_SKILL', skill: s })}
-            onSubmit={handleSkillInputSubmit}
-          />
-        )
-      case 'skills-confirm':
-        return (
-          <SkillsConfirmStep
-            skills={state.profile.skills}
-            onRemoveSkill={(s: string) => dispatch({ type: 'REMOVE_SKILL', skill: s })}
-            onConfirm={handleSkillsConfirm}
-          />
-        )
-      case 'interests-input':
-        return (
-          <InterestsInputStep
-            interestInput={state.interestInput}
-            interests={state.profile.interests}
-            onInterestInputChange={(v: string) => dispatch({ type: 'SET_INTEREST_INPUT', value: v })}
-            onToggleInterest={(t: string) => dispatch({ type: 'TOGGLE_INTEREST', tag: t })}
-            onRemoveInterest={(t: string) => dispatch({ type: 'REMOVE_INTEREST', tag: t })}
-            onSubmit={handleInterestInputSubmit}
-          />
-        )
-      case 'interests-confirm':
-        return (
-          <InterestsConfirmStep
-            interests={state.profile.interests}
-            onRemoveInterest={(t: string) => dispatch({ type: 'REMOVE_INTEREST', tag: t })}
-            onConfirm={handleInterestsConfirm}
-          />
-        )
-      case 'deep-chat-offer':
-        return <DeepChatOfferStep onAccept={handleDeepChatAccept} onSkip={handleDeepChatSkip} />
-      case 'interactive-element': {
-        if (bubble.answered || !bubble.interactiveConfig) return null
-        const question = INTERACTIVE_QUESTIONS[bubble.interactiveConfig.questionId]
-        if (!question) return null
-        const bId = bubble.id
-        const mFields = bubble.interactiveConfig.measuredFields
-
-        switch (question.type) {
-          case 'scenario-card': {
-            const q = question as ScenarioCardQuestion
-            return (
-              <ScenarioCard
-                options={q.options}
-                onSelect={(opt) => handleInteractiveResponse(bId, {
-                  questionId: bubble.interactiveConfig!.questionId,
-                  type: 'scenario-card',
-                  value: opt.id,
-                  naturalLanguage: opt.label + ': ' + opt.description.replace(/\n/g, ' '),
-                  measuredFields: mFields,
-                })}
-              />
-            )
-          }
-          case 'this-or-that': {
-            const q = question as ThisOrThatQuestion
-            return (
-              <ThisOrThat
-                optionA={q.optionA}
-                optionB={q.optionB}
-                onSelect={(opt) => handleInteractiveResponse(bId, {
-                  questionId: bubble.interactiveConfig!.questionId,
-                  type: 'this-or-that',
-                  value: opt.id,
-                  naturalLanguage: `${opt.label} 스타일이에요: ${opt.description.replace(/\n/g, ' ')}`,
-                  measuredFields: mFields,
-                })}
-              />
-            )
-          }
-          case 'drag-rank': {
-            const q = question as DragRankQuestion
-            return (
-              <DragRank
-                items={q.items}
-                onConfirm={(ordered) => handleInteractiveResponse(bId, {
-                  questionId: bubble.interactiveConfig!.questionId,
-                  type: 'drag-rank',
-                  value: ordered.map(item => item.label),
-                  naturalLanguage: `우선순위: ${ordered.map((item, i) => `${i + 1}. ${item.label}`).join(', ')}`,
-                  measuredFields: mFields,
-                })}
-              />
-            )
-          }
-          case 'emoji-grid': {
-            const q = question as EmojiGridQuestion
-            return (
-              <EmojiGrid
-                options={q.options}
-                minSelect={q.minSelect}
-                maxSelect={q.maxSelect}
-                onConfirm={(selected) => handleInteractiveResponse(bId, {
-                  questionId: bubble.interactiveConfig!.questionId,
-                  type: 'emoji-grid',
-                  value: selected.map(s => s.id),
-                  naturalLanguage: selected.map(s => `${s.emoji} ${s.label}`).join(', '),
-                  measuredFields: mFields,
-                })}
-              />
-            )
-          }
-          case 'quick-number': {
-            const q = question as QuickNumberQuestion
-            return (
-              <QuickNumber
-                presets={q.presets}
-                unit={q.unit}
-                subQuestion={q.subQuestion}
-                onConfirm={(value, subAnswer) => {
-                  let nl = `주 ${value}시간`
-                  if (q.subQuestion && subAnswer !== undefined) {
-                    nl += subAnswer ? `, ${q.subQuestion.yesLabel}` : `, ${q.subQuestion.noLabel}`
-                  }
-                  handleInteractiveResponse(bId, {
-                    questionId: bubble.interactiveConfig!.questionId,
-                    type: 'quick-number',
-                    value: { hours: value, semesterAvailable: subAnswer ?? null },
-                    naturalLanguage: nl,
-                    measuredFields: mFields,
-                  })
-                }}
-              />
-            )
-          }
-          case 'spectrum-pick': {
-            const q = question as SpectrumPickQuestion
-            return (
-              <SpectrumPick
-                leftLabel={q.leftLabel}
-                leftDescription={q.leftDescription}
-                rightLabel={q.rightLabel}
-                rightDescription={q.rightDescription}
-                points={q.points}
-                onSelect={(value) => {
-                  const label = value <= 2 ? q.leftLabel : value >= 4 ? q.rightLabel : '중간'
-                  handleInteractiveResponse(bId, {
-                    questionId: bubble.interactiveConfig!.questionId,
-                    type: 'spectrum-pick',
-                    value,
-                    naturalLanguage: `${label} (${value}/${q.points})`,
-                    measuredFields: mFields,
-                  })
-                }}
-              />
-            )
-          }
-          default:
-            return null
-        }
-      }
-      default:
-        return null
+  /* ── Can proceed? ── */
+  const canProceed = (() => {
+    switch (step) {
+      case 'info': return profile.name.trim().length > 0
+      case 'position': return profile.position !== ''
+      case 'situation': return profile.situation !== ''
+      case 'skills': return true
+      case 'interests': return true
+      default: return false
     }
-  }
+  })()
 
-  // ── Footer ──
-  const footer = state.step === 'deep-chat' ? (
-    <DeepChatFooter
-      deepChatInput={state.deepChatInput}
-      isTyping={state.isTyping}
-      userMsgCount={userMsgCount}
-      showSuggestions={state.showSuggestions}
-      currentSuggestions={currentSuggestions}
-      coveredTopics={coveredTopics}
-      hasMessages={state.deepChatMessages.length > 0}
-      canUndo={canUndo}
-      inputRef={deepChatInputRef}
-      onInputChange={(v: string) => dispatch({ type: 'SET_DEEP_CHAT_INPUT', value: v })}
-      onSend={() => sendDeepChatMessage(stateRef.current.deepChatInput)}
-      onSuggestionClick={(text: string) => sendDeepChatMessage(text)}
-      onUndo={() => dispatch({ type: 'UNDO_LAST_EXCHANGE' })}
-    />
-  ) : (
-    <DefaultFooter canGoBack={canGoBack} onGoBack={() => dispatch({ type: 'GO_BACK' })} />
-  )
+  const isOptional = step === 'skills' || step === 'interests'
+  const hasSelection = step === 'skills' ? profile.skills.length > 0 : step === 'interests' ? profile.interests.length > 0 : true
 
-  // ── Sidebar ──
-  const sidebar = (
-    <ProfilePreview
-      profile={state.profile}
-      step={state.step}
-      coveredTopics={coveredTopics}
-      userMsgCount={userMsgCount}
-      hasDeepChatMessages={state.deepChatMessages.length > 0}
-    />
-  )
-
-  // U13: Show loading state while auth is loading
+  /* ── Auth loading ── */
   if (authLoading) {
     return (
       <div className="fixed inset-0 bg-surface-bg flex flex-col items-center justify-center">
-        <div
-          className="w-12 h-12 bg-surface-inverse rounded-2xl flex items-center justify-center mb-8"
-          style={{ animation: 'dcto-logo 0.6s cubic-bezier(0.16, 1, 0.3, 1) both' }}
-        >
+        <div className="w-12 h-12 bg-surface-inverse rounded-2xl flex items-center justify-center mb-8" style={{ animation: 'dcto-logo 0.6s cubic-bezier(0.16, 1, 0.3, 1) both' }}>
           <span className="text-white text-lg font-black">D</span>
         </div>
-
         <div className="w-48 mb-4">
           <div className="h-1 bg-surface-sunken rounded-full overflow-hidden">
             <div className="h-full w-1/3 bg-surface-inverse rounded-full animate-[indeterminate_1.5s_ease-in-out_infinite]" />
           </div>
         </div>
-
         <span className="text-[10px] font-mono text-txt-disabled">DRAFT</span>
       </div>
     )
   }
 
+  /* ── Bridge screen ── */
+  if (step === 'bridge') {
+    return (
+      <div className="fixed inset-0 bg-surface-bg flex flex-col items-center justify-center p-6">
+        <div className="max-w-md w-full flex flex-col items-center">
+          <img
+            src="/onboarding/1.svg"
+            alt="기본 프로필 완성"
+            className="w-full max-w-[220px] object-contain mb-8"
+            style={{ animation: 'ob-bubble-in 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) both' }}
+          />
+          <h2
+            className="text-2xl sm:text-[28px] font-black text-txt-primary leading-tight mb-2 text-center"
+            style={{ animation: 'ob-bubble-in 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) 0.1s both' }}
+          >
+            기본 프로필 완성!
+          </h2>
+          <p
+            className="text-[14px] text-txt-secondary leading-relaxed text-center mb-10"
+            style={{ animation: 'ob-bubble-in 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) 0.2s both' }}
+          >
+            간단한 심화 질문에 답하면
+            <br />
+            <span className="font-bold text-txt-primary">매칭 정확도가 훨씬 올라가요</span>
+          </p>
+          <div
+            className="w-full space-y-3"
+            style={{ animation: 'ob-chip-in 0.35s cubic-bezier(0.34, 1.4, 0.64, 1) 0.35s both' }}
+          >
+            <button
+              onClick={() => goTo('interview')}
+              className="w-full flex items-center justify-center gap-2 py-4 bg-brand text-white rounded-full text-[15px] font-black hover:opacity-90 active:scale-[0.97] transition-all"
+            >
+              심화 질문 시작하기
+              <ArrowRight size={16} />
+            </button>
+            <button
+              onClick={() => {
+                try { localStorage.removeItem(STORAGE_KEY) } catch { /* ignore */ }
+                onComplete()
+              }}
+              className="w-full flex items-center justify-center py-4 text-txt-secondary rounded-full text-[14px] font-bold hover:text-txt-primary active:scale-[0.97] transition-all"
+            >
+              나중에 할게요
+            </button>
+          </div>
+          <p
+            className="text-[12px] text-txt-tertiary text-center mt-4 font-mono"
+            style={{ animation: 'ob-bubble-in 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) 0.4s both' }}
+          >
+            약 1분 · 6개 질문
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  /* ── Interview phase ── */
+  if (step === 'interview') {
+    return (
+      <div className="fixed inset-0 bg-surface-bg flex flex-col">
+        <ScriptedInterviewStep
+          profile={profile}
+          introMessage={introMessage}
+          isSaving={isSaving}
+          onAnswer={() => {}}
+          onComplete={handleInterviewComplete}
+        />
+      </div>
+    )
+  }
+
+  /* ── Intro screen ── */
+  if (step === 'intro') {
+    return (
+      <div className="fixed inset-0 bg-surface-bg flex flex-col items-center justify-center p-6">
+        <div className="max-w-lg w-full flex flex-col items-center">
+          <img
+            src="/onboarding/1.svg"
+            alt="환영"
+            className="w-full max-w-[280px] object-contain mb-10"
+            style={{ animation: 'ob-bubble-in 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) both' }}
+          />
+          <h2
+            className="text-2xl sm:text-[28px] font-black text-txt-primary leading-tight mb-3 text-center"
+            style={{ animation: 'ob-bubble-in 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) 0.1s both' }}
+          >
+            프로필을 만들어볼까요?
+          </h2>
+          <p
+            className="text-[15px] text-txt-secondary leading-relaxed mb-10 text-center"
+            style={{ animation: 'ob-bubble-in 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) 0.2s both' }}
+          >
+            간단한 정보와 선호도만 알려주면
+            <br />
+            딱 맞는 팀원을 찾아드릴게요
+          </p>
+          <div
+            className="w-full"
+            style={{ animation: 'ob-chip-in 0.35s cubic-bezier(0.34, 1.4, 0.64, 1) 0.35s both' }}
+          >
+            <button
+              onClick={() => goTo('info')}
+              className="w-full flex items-center justify-center gap-2 py-4 bg-brand text-white rounded-full text-[15px] font-black hover:opacity-90 active:scale-[0.97] transition-all"
+            >
+              시작하기
+              <ArrowRight size={16} />
+            </button>
+            <p className="text-[12px] text-txt-tertiary text-center mt-3 font-mono">
+              약 2분 · 간단한 선택
+            </p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  /* ── Pre-interview steps ── */
+  const config = STEP_CONFIG[step]
+  const aff = AFFILIATION_OPTIONS.find(a => a.value === profile.affiliationType) || AFFILIATION_OPTIONS[0]
+  const showUnivCombo = profile.affiliationType === 'student' || profile.affiliationType === 'graduate'
+
   return (
-    <OnboardingShell
-      step={state.step}
-      userMsgCount={userMsgCount}
-      tipIndex={state.tipIndex}
-      mounted={state.mounted}
-      deepChatTransition={state.deepChatTransition}
-      coveredTopics={coveredTopics}
-      onSignOut={signOut}
-      onCancelTransition={handleCancelTransition}
-      footer={footer}
-      sidebar={sidebar}
-    >
-      <OnboardingChat
-        bubbles={state.bubbles}
-        isTyping={state.isTyping}
-        isSaving={state.isSaving}
-        saveError={state.saveError}
-        aiActivity={state.aiActivity}
-        step={state.step}
-        chatEndRef={chatEndRef}
-        scrollContainerRef={scrollContainerRef}
-        onRetrySave={handleSave}
-        renderAttachment={renderAttachment}
-      />
-    </OnboardingShell>
+    <div className="fixed inset-0 bg-surface-bg flex flex-col">
+      {/* ── Progress bar ── */}
+      <div className="px-6 sm:px-10 pt-8 pb-4 shrink-0">
+        <div className="max-w-lg mx-auto space-y-3">
+          <div className="flex items-center justify-between">
+            <button
+              onClick={handleBack}
+              className="w-7 h-7 flex items-center justify-center rounded-lg text-txt-secondary hover:text-txt-primary hover:bg-surface-sunken transition-colors shrink-0"
+              aria-label="이전"
+            >
+              <ArrowLeft size={15} />
+            </button>
+            <span className="text-[12px] font-mono text-txt-secondary tabular-nums">
+              {stepIndex + 1} <span className="text-txt-tertiary">/ {PRE_INTERVIEW_STEPS.length}</span>
+            </span>
+          </div>
+          <div className="flex gap-1.5">
+            {PRE_INTERVIEW_STEPS.map((_, i) => {
+              const isDone = i < stepIndex
+              const isCurrent = i === stepIndex
+              return (
+                <div key={i} className="flex-1 h-[5px] rounded-full overflow-hidden bg-surface-sunken">
+                  <div
+                    className={`h-full rounded-full transition-all duration-500 ease-out ${
+                      isDone ? 'bg-surface-inverse w-full' : isCurrent ? 'bg-brand' : 'w-0'
+                    }`}
+                    style={isCurrent ? { width: '100%', animation: 'segment-fill 0.6s cubic-bezier(0.16, 1, 0.3, 1) both' } : undefined}
+                  />
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Content ── */}
+      <div
+        key={slideKey}
+        className={`flex-1 flex flex-col min-h-0 overflow-y-auto animate-in fade-in duration-300 ${
+          slideDir === 'back' ? 'slide-in-from-left-8' : 'slide-in-from-right-8'
+        }`}
+      >
+        <div className="max-w-lg mx-auto w-full px-6 pt-2 pb-8 flex flex-col flex-1">
+          {/* Title */}
+          <h2 className="text-2xl sm:text-[28px] font-black text-txt-primary leading-snug shrink-0 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            {step === 'skills' ? (SKILLS_TITLE[profile.position] ?? SKILLS_TITLE.other) : config?.title}
+          </h2>
+          {config?.hint && (
+            <p className="text-[12px] font-medium text-txt-secondary mt-2 shrink-0 animate-in fade-in duration-300" style={{ animationDelay: '50ms' }}>
+              {config.hint}
+            </p>
+          )}
+
+          {/* Step content */}
+          <div className="flex-1 mt-6 animate-in fade-in slide-in-from-bottom-4 duration-300" style={{ animationDelay: '60ms' }}>
+            {step === 'info' && (
+              <InfoContent
+                profile={profile}
+                aff={aff}
+                showUnivCombo={showUnivCombo}
+                attempted={attempted}
+                onChange={updateProfile}
+                onSubmit={handleNext}
+              />
+            )}
+            {step === 'position' && (
+              <div className="flex flex-wrap gap-2">
+                {POSITIONS.map((pos) => (
+                  <button
+                    key={pos.slug}
+                    onClick={() => updateProfile({ position: pos.slug })}
+                    className={chipClass(profile.position === pos.slug)}
+                  >
+                    {pos.label}
+                  </button>
+                ))}
+              </div>
+            )}
+            {step === 'situation' && (
+              <div className="space-y-2">
+                {SITUATION_OPTIONS.map((sit) => (
+                  <button
+                    key={sit.value}
+                    onClick={() => updateProfile({ situation: sit.value })}
+                    className={`w-full text-left px-5 py-4 border rounded-xl transition-all duration-150 ${
+                      profile.situation === sit.value
+                        ? 'bg-brand border-brand'
+                        : 'bg-surface-card border-border active:scale-[0.99]'
+                    }`}
+                  >
+                    <div className={`text-[14px] font-bold ${profile.situation === sit.value ? 'text-white' : 'text-txt-primary'}`}>
+                      {sit.label}
+                    </div>
+                    <div className={`text-[12px] mt-0.5 ${profile.situation === sit.value ? 'text-white/70' : 'text-txt-tertiary'}`}>
+                      {sit.desc}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+            {step === 'skills' && (
+              <SkillsContent profile={profile} onChange={updateProfile} />
+            )}
+            {step === 'interests' && (
+              <div className="flex flex-wrap gap-2">
+                {PROJECT_CATEGORIES.map((c) => (
+                  <button
+                    key={c.slug}
+                    onClick={() => updateProfile({
+                      interests: profile.interests.includes(c.slug)
+                        ? profile.interests.filter(x => x !== c.slug)
+                        : [...profile.interests, c.slug],
+                    })}
+                    className={chipClass(profile.interests.includes(c.slug))}
+                  >
+                    {c.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Next button ── */}
+      <div className="px-6 pb-8 pt-2 shrink-0">
+        <div className="max-w-lg mx-auto">
+          <button
+            onClick={handleNext}
+            disabled={!canProceed}
+            className={`w-full flex items-center justify-center gap-2 py-4 rounded-full text-[14px] font-black transition-all duration-200 active:scale-[0.97] ${
+              canProceed
+                ? 'bg-surface-inverse text-white hover:opacity-90'
+                : 'bg-surface-sunken text-txt-disabled cursor-not-allowed'
+            }`}
+          >
+            {isOptional && !hasSelection ? '건너뛰기' : '다음으로'}
+            <ArrowRight size={16} />
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ─── Info Form ─── */
+
+const INPUT_CLASS = 'w-full px-4 py-3 bg-surface-card rounded-xl border border-border text-[14px] font-medium text-txt-primary focus:outline-none focus:border-surface-inverse transition-colors placeholder:text-txt-tertiary'
+
+function InfoContent({
+  profile, aff, showUnivCombo, attempted, onChange, onSubmit,
+}: {
+  profile: ProfileDraft
+  aff: (typeof AFFILIATION_OPTIONS)[number]
+  showUnivCombo: boolean
+  attempted: boolean
+  onChange: (partial: Partial<ProfileDraft>) => void
+  onSubmit: () => void
+}) {
+  const nameEmpty = attempted && !profile.name.trim()
+  // 소속 유형 버튼을 클릭한 적 있는지 추적
+  const [affTouched, setAffTouched] = useState(false)
+  const showDetails = affTouched
+
+  return (
+    <div className="space-y-5">
+      {/* Name */}
+      <div>
+        <label className="text-[11px] font-medium text-txt-tertiary mb-2 block">닉네임 *</label>
+        <div className="relative">
+          <input
+            type="text"
+            value={profile.name}
+            onChange={(e) => onChange({ name: e.target.value.slice(0, 7) })}
+            maxLength={7}
+            placeholder="어떻게 불러드릴까요?"
+            className={`${INPUT_CLASS} ${nameEmpty ? '!border-status-danger-text' : ''}`}
+            autoFocus
+            onKeyDown={(e) => e.key === 'Enter' && onSubmit()}
+          />
+          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-mono text-txt-disabled">
+            {profile.name.length}/7
+          </span>
+        </div>
+        {nameEmpty && <p className="text-[11px] text-status-danger-text mt-1 font-medium">닉네임을 입력해주세요</p>}
+      </div>
+
+      {/* Affiliation type — always visible */}
+      <div>
+        <label className="text-[11px] font-medium text-txt-tertiary mb-2 block">소속 유형</label>
+        <div className="flex flex-wrap gap-1.5">
+          {AFFILIATION_OPTIONS.map((a) => (
+            <button
+              key={a.value}
+              type="button"
+              onClick={() => { onChange({ affiliationType: a.value }); setAffTouched(true) }}
+              className={chipClass(profile.affiliationType === a.value, 'sm')}
+            >
+              {a.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* University + Major + Location — revealed after affiliation button click */}
+      {showDetails && (
+        <div
+          className="space-y-5"
+          style={{ animation: 'ob-reveal 0.35s cubic-bezier(0.16, 1, 0.3, 1) both' }}
+        >
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-[11px] font-medium text-txt-tertiary mb-2 block">
+                {aff.orgPlaceholder === '대학교' ? '소속' : aff.orgPlaceholder.replace(' (선택)', '')}
+              </label>
+              {showUnivCombo ? (
+                <OnboardingComboBox
+                  value={profile.university}
+                  onChange={(v) => onChange({ university: v })}
+                  options={UNIVERSITY_LIST}
+                  placeholder={aff.orgPlaceholder}
+                />
+              ) : (
+                <input
+                  type="text"
+                  value={profile.university}
+                  onChange={(e) => onChange({ university: e.target.value })}
+                  placeholder={aff.orgPlaceholder}
+                  className={INPUT_CLASS}
+                />
+              )}
+            </div>
+            <div>
+              <label className="text-[11px] font-medium text-txt-tertiary mb-2 block">
+                {aff.rolePlaceholder.replace(' (선택)', '')}
+              </label>
+              <input
+                type="text"
+                value={profile.major}
+                onChange={(e) => onChange({ major: e.target.value })}
+                placeholder={aff.rolePlaceholder}
+                className={INPUT_CLASS}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="text-[11px] font-medium text-txt-tertiary mb-2 block">활동 지역</label>
+            <div className="flex flex-wrap gap-1.5">
+              {LOCATION_OPTIONS.map((loc) => (
+                <button
+                  key={loc}
+                  type="button"
+                  onClick={() => onChange({
+                    locations: profile.locations.includes(loc)
+                      ? profile.locations.filter(l => l !== loc)
+                      : [...profile.locations, loc],
+                  })}
+                  className={chipClass(profile.locations.includes(loc), 'sm')}
+                >
+                  {loc}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+/* ─── Skills Step ─── */
+
+function SkillsContent({
+  profile, onChange,
+}: {
+  profile: ProfileDraft
+  onChange: (partial: Partial<ProfileDraft>) => void
+}) {
+  const [customInput, setCustomInput] = useState('')
+  const recommended = POPULAR_SKILLS[profile.position] ?? POPULAR_SKILLS.other
+
+  const toggle = (s: string) => {
+    onChange({
+      skills: profile.skills.includes(s)
+        ? profile.skills.filter(x => x !== s)
+        : [...profile.skills, s],
+    })
+  }
+
+  const addCustom = () => {
+    const trimmed = customInput.trim()
+    if (!trimmed || profile.skills.includes(trimmed)) return
+    onChange({ skills: [...profile.skills, trimmed] })
+    setCustomInput('')
+  }
+
+  return (
+    <div className="space-y-5">
+      {/* Recommended chips */}
+      <div className="flex flex-wrap gap-2">
+        {recommended.map((s) => (
+          <button key={s} onClick={() => toggle(s)} className={chipClass(profile.skills.includes(s))}>
+            {s}
+          </button>
+        ))}
+      </div>
+
+      {/* Custom input */}
+      <div className="flex gap-2">
+        <input
+          type="text"
+          value={customInput}
+          onChange={(e) => setCustomInput(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && addCustom()}
+          placeholder="직접 입력"
+          maxLength={30}
+          className={INPUT_CLASS}
+        />
+        <button
+          onClick={addCustom}
+          disabled={!customInput.trim()}
+          className="px-4 py-3 bg-surface-card border border-border rounded-xl text-[14px] font-medium text-txt-primary hover:bg-surface-sunken transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+        >
+          추가
+        </button>
+      </div>
+
+      {/* Custom tags (only those not in recommended) */}
+      {profile.skills.filter(s => !recommended.includes(s)).length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {profile.skills.filter(s => !recommended.includes(s)).map((s) => (
+            <button key={s} onClick={() => toggle(s)} className={chipClass(true)}>
+              {s} ✕
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   )
 }

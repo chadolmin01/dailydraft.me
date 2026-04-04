@@ -6,7 +6,6 @@ import { toast } from 'sonner'
 import {
   Check,
   Circle,
-  ArrowRight,
   CheckCircle2,
   Plus,
   Search,
@@ -146,12 +145,12 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
         {/* ── Welcome Phase ── */}
         {phase === 'welcome' && (
           <div className="flex flex-col items-center animate-slide-up-fade">
-            <div
-              className="w-12 h-12 bg-surface-inverse rounded-2xl flex items-center justify-center mb-8"
-              style={{ animation: 'dcto-logo 0.6s cubic-bezier(0.16, 1, 0.3, 1) both' }}
-            >
-              <span className="text-white text-lg font-black">D</span>
-            </div>
+            <img
+              src="/onboarding/1.svg"
+              alt="준비 완료"
+              className="w-full max-w-[200px] object-contain mb-8"
+              style={{ animation: 'dcto-step 0.5s cubic-bezier(0.16, 1, 0.3, 1) both' }}
+            />
 
             <div className="flex items-center gap-2 mb-2" style={{ animation: 'dcto-step 0.5s cubic-bezier(0.16, 1, 0.3, 1) both', animationDelay: '300ms' }}>
               <CheckCircle2 size={16} className="text-txt-primary" />
@@ -163,66 +162,59 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
             <p className="text-sm text-txt-secondary" style={{ animation: 'dcto-step 0.5s cubic-bezier(0.16, 1, 0.3, 1) both', animationDelay: '450ms' }}>
               이제 Draft를 시작해볼까요?
             </p>
-
-            <span className="mt-8 text-[10px] font-mono text-txt-disabled" style={{ animation: 'dcto-step 0.5s cubic-bezier(0.16, 1, 0.3, 1) both', animationDelay: '600ms' }}>DRAFT</span>
           </div>
         )}
 
         {/* ── CTA Phase ── */}
         {phase === 'cta' && (
-          <div className="bg-surface-card rounded-xl border border-border shadow-lg overflow-hidden animate-slide-up-fade">
-            {/* Header */}
-            <div className="p-5 sm:p-8 pb-5 sm:pb-6">
-              <span className="text-[10px] font-medium text-txt-tertiary">
-                NEXT STEP
-              </span>
-              <h2 className="text-lg font-bold text-txt-primary mt-1.5 break-keep">
-                {cta.title}
-              </h2>
+          <div className="flex flex-col items-center animate-slide-up-fade">
+
+            {/* Illustration */}
+            <div className="flex justify-center mb-10">
+              <img
+                src="/onboarding/add_project.svg"
+                alt="시작하기"
+                className="w-full max-w-[260px] object-contain animate-in fade-in slide-in-from-bottom-3 duration-500"
+              />
             </div>
 
-            {/* CTAs */}
-            <div className="px-5 sm:px-8 pb-5 sm:pb-6 space-y-3">
+            {/* Message */}
+            <h2 className="text-2xl sm:text-[28px] font-black text-txt-primary leading-tight mb-2 text-center animate-in fade-in slide-in-from-bottom-2 duration-300" style={{ animationDelay: '100ms' }}>
+              {cta.title}
+            </h2>
+            <p className="text-[14px] text-txt-secondary text-center mb-10 animate-in fade-in duration-300" style={{ animationDelay: '200ms' }}>
+              이제 Draft에서 첫 발을 내딛어 보세요
+            </p>
+
+            {/* CTA Buttons */}
+            <div className="w-full space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-300" style={{ animationDelay: '350ms' }}>
               {/* Primary */}
               <Link
                 href={cta.primary.href}
-                className="block rounded-xl border-2 border-surface-inverse p-4 shadow-sm transition-all hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-surface-inverse hover:text-txt-inverse group animate-fade-in"
-                style={{ animationDelay: '200ms', animationFillMode: 'both' }}
+                className="w-full flex items-center justify-center gap-2 py-4 bg-brand text-white rounded-full text-[15px] font-black hover:opacity-90 active:scale-[0.97] transition-all"
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <PrimaryIcon size={18} className="shrink-0" />
-                    <span className="font-bold text-sm">{cta.primary.label}</span>
-                  </div>
-                  <ArrowRight size={16} className="shrink-0 opacity-50 group-hover:opacity-100 transition-opacity" />
-                </div>
-                <p className="text-xs text-txt-disabled group-hover:text-txt-inverse/60 mt-1.5 ml-[30px]">
-                  {cta.primary.desc}
-                </p>
+                <PrimaryIcon size={16} />
+                {cta.primary.label}
               </Link>
 
               {/* Secondary */}
               <Link
                 href={cta.secondary.href}
-                className="flex items-center justify-between rounded-xl border border-border p-4 transition-colors hover:bg-surface-sunken group animate-fade-in"
-                style={{ animationDelay: '400ms', animationFillMode: 'both' }}
+                className="w-full flex items-center justify-center gap-2 py-4 bg-surface-sunken text-txt-secondary rounded-full text-[14px] font-bold hover:bg-surface-card hover:text-txt-primary active:scale-[0.97] transition-all"
               >
-                <div className="flex items-center gap-3">
-                  <SecondaryIcon size={18} className="shrink-0 text-txt-tertiary" />
-                  <span className="text-sm font-medium text-txt-secondary">{cta.secondary.label}</span>
-                </div>
-                <ArrowRight size={16} className="shrink-0 text-txt-disabled group-hover:text-txt-secondary transition-colors" />
+                <SecondaryIcon size={16} />
+                {cta.secondary.label}
               </Link>
             </div>
 
             {/* Profile Nudge */}
             {showNudge && (
               <div
-                className="mx-5 sm:mx-8 mb-5 sm:mb-6 pt-5 sm:pt-6 border-t border-border animate-fade-in"
-                style={{ animationDelay: '600ms', animationFillMode: 'both' }}
+                className="w-full mt-8 pt-6 border-t border-border animate-in fade-in duration-300"
+                style={{ animationDelay: '500ms' }}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-[10px] font-medium text-txt-tertiary">
+                  <span className="text-[10px] font-mono uppercase text-txt-tertiary">
                     PROFILE
                   </span>
                   <span className="text-[10px] font-mono font-bold text-txt-primary">
@@ -239,7 +231,7 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
                 </div>
 
                 {/* Field checklist */}
-                <div className="flex flex-wrap gap-x-3 gap-y-1 mb-4">
+                <div className="flex flex-wrap gap-x-3 gap-y-1 mb-3">
                   {completion.fields.map((f) => (
                     <span
                       key={f.label}
@@ -255,28 +247,14 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
                   ))}
                 </div>
 
-                {/* Nudge actions */}
-                <div className="flex items-center gap-3">
-                  <Link
-                    href="/profile/edit"
-                    className="text-xs font-bold text-txt-primary underline underline-offset-2 hover:text-brand transition-colors"
-                  >
-                    프로필 완성하러 가기
-                  </Link>
-                  <Link
-                    href="/explore"
-                    className="text-xs text-txt-disabled hover:text-txt-secondary transition-colors"
-                  >
-                    나중에
-                  </Link>
-                </div>
+                <Link
+                  href="/profile/edit"
+                  className="text-xs font-bold text-txt-primary underline underline-offset-2 hover:text-brand transition-colors"
+                >
+                  프로필 완성하러 가기 →
+                </Link>
               </div>
             )}
-
-            {/* Footer */}
-            <div className="px-4 py-2 border-t border-border flex justify-center text-[10px] font-mono text-txt-disabled">
-              DRAFT
-            </div>
           </div>
         )}
 

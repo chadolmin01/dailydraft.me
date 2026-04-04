@@ -6,10 +6,10 @@ export interface Skill {
 }
 
 export interface Personality {
-  risk?: number // 위험 감수 수준 (1-10)
-  time?: number // 시간 투자 가능량 (1-10)
-  communication?: number // 커뮤니케이션 스타일 (1-10)
-  decision?: number // 의사결정 스타일 (1-10)
+  risk?: number // 위험 감수 수준 (1-5)
+  time?: number // 시간 투자 가능량 (1-5)
+  communication?: number // 커뮤니케이션 스타일 (1-5)
+  decision?: number // 의사결정 스타일 (1-5)
 }
 
 export interface Profile {

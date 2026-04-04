@@ -1,9 +1,8 @@
-import type { DeepChatMessage, ProfileDraft, Step } from './types'
+import type { ProfileDraft } from './types'
 
 interface ResumeResult {
-  step: Step
+  step: string
   draft: ProfileDraft
-  messages?: DeepChatMessage[]
 }
 
 /**
@@ -47,16 +46,6 @@ export function determineResumeStep(
     interests,
   }
 
-  // Has existing transcript (and not redo) → resume deep chat with messages
-  if (!options?.redoChat && Array.isArray(p.ai_chat_transcript) && p.ai_chat_transcript.length > 0) {
-    const messages: DeepChatMessage[] = (p.ai_chat_transcript as Array<{ role: string; content: string }>)
-      .map(m => ({
-        role: m.role as 'user' | 'assistant',
-        content: m.content,
-      }))
-    return { step: 'deep-chat', draft, messages }
-  }
-
-  // No transcript or redo → offer deep chat
-  return { step: 'deep-chat-offer', draft }
+  // Resume to interview step
+  return { step: 'interview', draft }
 }

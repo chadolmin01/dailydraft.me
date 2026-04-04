@@ -23,7 +23,7 @@ function buildProfileAnalysisPrompt(profile: ProfileInput): string {
 
   const personality = profile.personality
     ? Object.entries(profile.personality)
-        .map(([k, v]) => `${k}: ${v}/10`)
+        .map(([k, v]) => `${k}: ${v}/5`)
         .join(', ')
     : '없음'
 

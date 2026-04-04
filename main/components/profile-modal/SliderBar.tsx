@@ -3,8 +3,10 @@
 import { useState, useEffect, useRef } from 'react'
 import { TRAIT_COLORS } from './types'
 
-export function SliderBar({ value, low, high, label, colorKey }: { value: number; low: string; high: string; label: string; colorKey?: string }) {
-  const pct = Math.min(Math.max((value / 10) * 100, 5), 100)
+export function SliderBar({ value: rawValue, low, high, label, colorKey }: { value: number; low: string; high: string; label: string; colorKey?: string }) {
+  // 기존 1-10 데이터 호환: 5 초과면 반으로 나눠서 1-5로 보정
+  const value = rawValue > 5 ? Math.round(rawValue / 2) : rawValue
+  const pct = Math.min(Math.max((value / 5) * 100, 10), 100)
   const colors = (colorKey && TRAIT_COLORS[colorKey]) || { bar: 'bg-neutral-500', barBg: 'bg-neutral-100', dot: 'bg-neutral-500', text: 'text-neutral-600', accent: 'neutral' }
   const [animated, setAnimated] = useState(false)
   const [hovering, setHovering] = useState(false)
@@ -17,8 +19,8 @@ export function SliderBar({ value, low, high, label, colorKey }: { value: number
 
   // Interpret value
   const getInterpretation = () => {
-    if (value <= 3) return low
-    if (value >= 8) return high
+    if (value <= 2) return low
+    if (value >= 4) return high
     return '보통'
   }
 
@@ -34,7 +36,7 @@ export function SliderBar({ value, low, high, label, colorKey }: { value: number
           {label}
         </span>
         <span className={`text-xs font-bold tabular-nums ${colors.text} transition-colors`}>
-          {value}<span className="text-txt-tertiary font-normal">/10</span>
+          {value}<span className="text-txt-tertiary font-normal">/5</span>
         </span>
       </div>
 
@@ -51,8 +53,8 @@ export function SliderBar({ value, low, high, label, colorKey }: { value: number
       </div>
 
       <div className="flex justify-between mt-1.5">
-        <span className={`text-[10px] font-medium ${value <= 3 ? colors.text + ' font-bold' : 'text-txt-tertiary'} transition-colors`}>{low}</span>
-        <span className={`text-[10px] font-medium ${value >= 8 ? colors.text + ' font-bold' : 'text-txt-tertiary'} transition-colors`}>{high}</span>
+        <span className={`text-[10px] font-medium ${value <= 2 ? colors.text + ' font-bold' : 'text-txt-tertiary'} transition-colors`}>{low}</span>
+        <span className={`text-[10px] font-medium ${value >= 4 ? colors.text + ' font-bold' : 'text-txt-tertiary'} transition-colors`}>{high}</span>
       </div>
 
       {/* Hover tooltip */}

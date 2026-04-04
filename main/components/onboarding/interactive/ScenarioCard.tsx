@@ -10,16 +10,15 @@ const ICON_MAP: Record<string, React.FC<{ size?: number; className?: string }>> 
 
 interface ScenarioCardProps {
   options: ScenarioOption[]
-  onSelect: (option: ScenarioOption) => void
+  onChange: (option: ScenarioOption, ready: boolean) => void
 }
 
-export const ScenarioCard: React.FC<ScenarioCardProps> = ({ options, onSelect }) => {
+export const ScenarioCard: React.FC<ScenarioCardProps> = ({ options, onChange }) => {
   const [selected, setSelected] = useState<string | null>(null)
 
   const handleSelect = (option: ScenarioOption) => {
-    if (selected) return
     setSelected(option.id)
-    setTimeout(() => onSelect(option), 400)
+    onChange(option, true)
   }
 
   return (
@@ -27,19 +26,15 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({ options, onSelect })
       {options.map((option, i) => {
         const Icon = ICON_MAP[option.icon] || Zap
         const isSelected = selected === option.id
-        const isDimmed = selected !== null && !isSelected
 
         return (
           <button
             key={option.id}
             onClick={() => handleSelect(option)}
-            disabled={selected !== null}
             className={`ob-chip ob-hover w-full text-left px-4 py-3.5 rounded-xl border transition-all duration-300 ${
               isSelected
-                ? 'bg-surface-inverse text-txt-inverse border-surface-inverse scale-[0.98]'
-                : isDimmed
-                  ? 'bg-surface-sunken border-border opacity-40 scale-[0.97]'
-                  : 'bg-surface-card border-border hover:border-surface-inverse'
+                ? 'bg-brand text-white border-brand scale-[0.98]'
+                : 'bg-surface-card border-border hover:border-brand'
             }`}
             style={{ animationDelay: `${i * 60}ms` }}
           >
@@ -54,7 +49,7 @@ export const ScenarioCard: React.FC<ScenarioCardProps> = ({ options, onSelect })
                   {option.label}
                 </div>
                 <div className={`text-[11px] mt-0.5 whitespace-pre-line leading-relaxed ${
-                  isSelected ? 'text-white/70' : 'text-txt-tertiary'
+                  isSelected ? 'text-white' : 'text-txt-tertiary'
                 }`}>
                   {option.description}
                 </div>

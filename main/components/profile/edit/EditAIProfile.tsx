@@ -113,13 +113,13 @@ export const EditAIProfile: React.FC<EditAIProfileProps> = ({
         <div>
           <div className="flex items-center justify-between mb-1">
             <span className="text-xs text-txt-secondary">소통 선호</span>
-            <span className="text-xs font-mono text-txt-tertiary">{Math.round(personality.communication / 2)}/5</span>
+            <span className="text-xs font-mono text-txt-tertiary">{personality.communication}/5</span>
           </div>
           <input
             type="range"
             min={1} max={5} step={1}
-            value={Math.round(personality.communication / 2)}
-            onChange={e => setPersonality(p => ({ ...p, communication: parseInt(e.target.value) * 2 }))}
+            value={personality.communication}
+            onChange={e => setPersonality(p => ({ ...p, communication: parseInt(e.target.value) }))}
             className="w-full h-1.5 accent-brand cursor-pointer"
           />
           <div className="flex justify-between">

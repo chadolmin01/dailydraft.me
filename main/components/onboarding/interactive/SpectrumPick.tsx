@@ -8,92 +8,81 @@ interface SpectrumPickProps {
   rightLabel: string
   rightDescription: string
   points: number
-  onSelect: (value: number) => void
+  onChange: (value: number, ready: boolean) => void
 }
 
 export const SpectrumPick: React.FC<SpectrumPickProps> = ({
-  leftLabel, leftDescription, rightLabel, rightDescription, points, onSelect,
+  leftLabel, leftDescription, rightLabel, rightDescription, points, onChange,
 }) => {
   const [selected, setSelected] = useState<number | null>(null)
 
   const handleSelect = (value: number) => {
-    if (selected !== null) return
     setSelected(value)
-    setTimeout(() => onSelect(value), 400)
+    onChange(value, true)
   }
 
   const pointValues = Array.from({ length: points }, (_, i) => i + 1)
 
   return (
-    <div className="mt-3 ob-chip">
-      {/* Anchors */}
-      <div className="flex justify-between items-start mb-4">
-        <div className="flex-1 text-left pr-2">
-          <div className="text-[12px] font-bold text-txt-primary">{leftLabel}</div>
-          <div className="text-[10px] text-txt-tertiary mt-0.5 whitespace-pre-line leading-relaxed">
-            {leftDescription}
-          </div>
-        </div>
-        <div className="flex-1 text-right pl-2">
-          <div className="text-[12px] font-bold text-txt-primary">{rightLabel}</div>
-          <div className="text-[10px] text-txt-tertiary mt-0.5 whitespace-pre-line leading-relaxed">
-            {rightDescription}
-          </div>
-        </div>
-      </div>
+    <div>
+      {/* Spectrum bar */}
+      <div className="relative py-2">
+        {/* Track — clipped to node centers so line doesn't overshoot */}
+        <div
+          className="absolute top-1/2 h-1 rounded-full -translate-y-1/2 bg-border"
+          style={{ left: 'calc(24px)', right: 'calc(24px)' }}
+        />
 
-      {/* Spectrum line with points */}
-      <div className="relative px-2">
-        {/* Background line */}
-        <div className="absolute top-1/2 left-2 right-2 h-px bg-border -translate-y-1/2" />
-
-        {/* Filled line */}
+        {/* Fill */}
         {selected !== null && (
           <div
-            className="absolute top-1/2 left-2 h-0.5 bg-surface-inverse -translate-y-1/2 transition-all duration-300"
-            style={{ width: `${((selected - 1) / (points - 1)) * 100}%` }}
+            className="absolute top-1/2 h-1 bg-brand rounded-full -translate-y-1/2 transition-all duration-300"
+            style={{
+              left: 'calc(24px)',
+              width: `calc((100% - 48px) * ${(selected - 1) / (points - 1)})`,
+            }}
           />
         )}
 
-        {/* Points */}
-        <div className="relative flex justify-between">
+        {/* Points — z-10 so nodes render above the track line */}
+        <div className="relative z-10 flex justify-between px-0">
           {pointValues.map((value) => {
             const isSelected = selected === value
-            const isPast = selected !== null && value <= selected
+            const isPast = selected !== null && value < selected
 
             return (
               <button
                 key={value}
                 onClick={() => handleSelect(value)}
-                disabled={selected !== null}
-                className={`relative w-8 h-8 rounded-full border-2 transition-all duration-300 ${
+                className={`relative w-12 h-12 rounded-full border-2 flex items-center justify-center transition-all duration-200 active:scale-[0.92] ${
                   isSelected
-                    ? 'bg-surface-inverse border-surface-inverse scale-110'
+                    ? 'bg-brand border-brand scale-105 shadow-sm'
                     : isPast
-                      ? 'bg-surface-inverse border-surface-inverse scale-90'
-                      : selected !== null
-                        ? 'bg-surface-sunken border-border opacity-40'
-                        : 'bg-surface-card border-border hover:border-surface-inverse hover:scale-110'
+                      ? 'bg-brand border-brand'
+                      : 'bg-surface-card border-border hover:border-brand'
                 }`}
               >
-                {isSelected && (
-                  <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-txt-inverse">
-                    {value}
-                  </span>
-                )}
+                <span className={`text-[12px] font-bold ${
+                  isSelected || isPast ? 'text-white' : 'text-txt-disabled'
+                }`}>
+                  {value}
+                </span>
               </button>
             )
           })}
         </div>
       </div>
 
-      {/* Scale labels */}
-      <div className="flex justify-between mt-2 px-1">
-        {pointValues.map((value) => (
-          <span key={value} className="text-[9px] font-mono text-txt-disabled w-8 text-center">
-            {value}
-          </span>
-        ))}
+      {/* Labels */}
+      <div className="flex justify-between mt-3 px-1">
+        <div className={`text-left transition-colors duration-300 ${selected !== null && selected <= 2 ? 'text-brand' : 'text-txt-secondary'}`}>
+          <div className="text-[13px] font-bold">{leftLabel}</div>
+          <div className="text-[11px] leading-relaxed whitespace-pre-line mt-0.5 text-txt-tertiary">{leftDescription}</div>
+        </div>
+        <div className={`text-right transition-colors duration-300 ${selected !== null && selected >= 4 ? 'text-brand' : 'text-txt-secondary'}`}>
+          <div className="text-[13px] font-bold">{rightLabel}</div>
+          <div className="text-[11px] leading-relaxed whitespace-pre-line mt-0.5 text-txt-tertiary">{rightDescription}</div>
+        </div>
       </div>
     </div>
   )
