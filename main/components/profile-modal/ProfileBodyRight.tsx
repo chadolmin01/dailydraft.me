@@ -139,7 +139,7 @@ export function ProfileBodyRight({
   const isEmpty = !hasPersonality && !hasWorkStyleBadges && !hasTeamPref && !hasAvailability && !hasSkills
 
   return (
-    <div className="md:col-span-2 space-y-4 md:bg-white/60 md:border md:border-border md:rounded-xl md:p-5">
+    <div className="md:col-span-2 space-y-4 md:bg-white/60 md:border md:border-border md:rounded-xl md:p-5 md:self-start">
       {/* Empty state */}
       {isEmpty && (
         <div className="px-4 py-10 border border-border bg-white text-center rounded-xl">
