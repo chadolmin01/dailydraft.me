@@ -156,7 +156,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   /* ── Interview complete ── */
   const handleInterviewComplete = useCallback(async (responses: StructuredResponse[]) => {
     // Animation plays for fixed duration; save runs in parallel
-    const minDelay = new Promise(r => setTimeout(r, 4200))
+    const minDelay = new Promise(r => setTimeout(r, 5600))
     const save = saveProfileFromInterview(profileRef.current, responses)
       .then(() => {
         try { localStorage.removeItem(STORAGE_KEY) } catch { /* ignore */ }
