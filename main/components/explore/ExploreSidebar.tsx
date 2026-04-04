@@ -59,7 +59,7 @@ export function ExploreSidebar({
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold text-txt-primary truncate">{cleanNickname(profile.nickname || '') || '이름 미설정'}</p>
               <p className="text-[11px] text-txt-tertiary truncate">
-                {[positionLabel(profile.desired_position || '') || profile.desired_position, profile.university].filter(Boolean).join(' · ') || '프로필을 완성해보세요'}
+                {[positionLabel(profile.desired_position || ''), profile.university].filter(Boolean).join(' · ') || '프로필을 완성해보세요'}
               </p>
             </div>
           </div>

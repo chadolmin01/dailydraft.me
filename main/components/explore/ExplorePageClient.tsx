@@ -35,6 +35,7 @@ import { useInfinitePublicProfiles, type PublicProfile } from '@/src/hooks/usePu
 import { useUserRecommendations, type UserRecommendation } from '@/src/hooks/useUserRecommendations'
 import { FALLBACK_CATEGORIES, FALLBACK_TRENDING_TAGS } from '@/src/lib/fallbacks/explore'
 import { PEOPLE_ROLE_FILTERS, PROJECT_ROLE_FILTERS, PEOPLE_CATEGORY_ICONS } from '@/components/explore/constants'
+import { positionLabel } from '@/src/constants/roles'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/src/lib/supabase/client'
 import { useAuth } from '@/src/context/AuthContext'
@@ -353,7 +354,7 @@ function ExplorePageContent() {
       return {
         id: profile.id,
         name: cleanNickname(profile.nickname || 'Anonymous'),
-        role: profile.desired_position || 'Explorer',
+        role: positionLabel(profile.desired_position || '') || 'Explorer',
         tags: (profile.interest_tags || []).slice(0, 3),
         status: 'OPEN' as const,
         visionSummary: visionText,

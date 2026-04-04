@@ -145,7 +145,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
   }
 
   const infoItems = [
-    { icon: Briefcase, label: 'POSITION', value: profile?.desired_position || '', field: 'desired_position', placeholder: '포지션' },
+    { icon: Briefcase, label: 'POSITION', value: profile?.desired_position || '', displayValue: positionLabel(profile?.desired_position || ''), field: 'desired_position', placeholder: '포지션' },
     { icon: Building2, label: 'SCHOOL', value: profile?.university || '', field: 'university', placeholder: '학교' },
     { icon: MapPin, label: 'LOCATION', value: profile?.location || '', field: 'location', placeholder: '위치' },
     { icon: Mail, label: 'CONTACT', value: profile?.contact_email || email || '', field: 'contact_email', placeholder: '이메일' },
@@ -319,7 +319,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
                 onEdit={editField(item.field)}
               />
             ) : (
-              <p className="text-xs font-medium text-txt-primary truncate">{item.value || '미설정'}</p>
+              <p className="text-xs font-medium text-txt-primary truncate">{(item.displayValue ?? item.value) || '미설정'}</p>
             )}
           </div>
         </div>
