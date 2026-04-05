@@ -20,8 +20,8 @@ export const LOCATION_TYPE_OPTIONS = [
 ]
 
 export const TIME_OPTIONS = [
-  { value: 'part_time', label: '파트타임' },
-  { value: 'full_time', label: '풀타임' },
+  { value: 'part_time', label: '파트타임 (주 10시간 이하)' },
+  { value: 'full_time', label: '풀타임 (주 20시간 이상)' },
 ]
 
 export const COMPENSATION_OPTIONS = [
