@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Code2, Brain, ChevronDown, Sparkles } from 'lucide-react'
+import { Code2, Clock, Users, Brain, ChevronDown, Sparkles } from 'lucide-react'
 import { SliderBar } from './SliderBar'
 import { traitLabels } from './types'
 
@@ -101,6 +101,8 @@ function SkillTag({ name }: { name: string }) {
 
 export function ProfileBodyRight({
   personality,
+  teamPref,
+  availability,
   skills,
 }: {
   personality: Record<string, number> | null
@@ -111,9 +113,11 @@ export function ProfileBodyRight({
   skills: Array<{ name: string }> | null
 }) {
   const hasPersonality = personality && Object.keys(personality).length > 0
+  const hasTeamPref = teamPref && (teamPref.preferred_size || teamPref.atmosphere)
+  const hasAvailability = availability && availability.hours_per_week != null
   const hasSkills = skills && skills.length > 0
 
-  const isEmpty = !hasPersonality && !hasSkills
+  const isEmpty = !hasPersonality && !hasTeamPref && !hasAvailability && !hasSkills
 
   return (
     <div className="md:col-span-2 space-y-4 md:bg-white/60 md:border md:border-border md:rounded-xl md:p-5 md:self-start">
@@ -134,6 +138,25 @@ export function ProfileBodyRight({
               if (val == null) return null
               return <SliderBar key={key} value={val} low={low} high={high} label={label} colorKey={key} />
             })}
+          </div>
+        </CollapsibleSection>
+      )}
+
+      {/* ── Team Preference ── */}
+      {hasTeamPref && (
+        <CollapsibleSection title="팀 선호" icon={Users} color="bg-emerald-500">
+          <div className="space-y-1.5">
+            {teamPref!.preferred_size && <TraitBadge label="선호 규모" value={teamPref!.preferred_size} colorClass="text-emerald-600" />}
+            {teamPref!.atmosphere && <TraitBadge label="분위기" value={teamPref!.atmosphere} colorClass="text-emerald-600" />}
+          </div>
+        </CollapsibleSection>
+      )}
+
+      {/* ── Availability ── */}
+      {hasAvailability && (
+        <CollapsibleSection title="가용 시간" icon={Clock} color="bg-amber-500">
+          <div className="space-y-1.5">
+            <TraitBadge label="주당 시간" value={`${availability!.hours_per_week}시간`} colorClass="text-amber-600" />
           </div>
         </CollapsibleSection>
       )}
