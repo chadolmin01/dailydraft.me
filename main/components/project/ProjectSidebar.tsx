@@ -59,12 +59,12 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
     <div className="flex flex-col h-full gap-4">
 
       {/* Tab bar */}
-      <div className="flex gap-0 border-b border-border shrink-0">
+      <div className="flex gap-0 shrink-0">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`relative px-4 py-2 text-[12px] font-bold transition-colors ${
+            className={`relative px-4 py-2.5 text-[15px] font-bold transition-colors ${
               activeTab === tab.id
                 ? 'text-txt-primary'
                 : 'text-txt-tertiary hover:text-txt-secondary'
@@ -72,7 +72,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
           >
             {tab.label}
             {activeTab === tab.id && (
-              <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-txt-primary rounded-full" />
+              <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#3182F6] rounded-full" />
             )}
           </button>
         ))}
@@ -86,27 +86,27 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
           <div className="space-y-4 pr-1">
             {/* Creator */}
             {creator ? (
-              <div className="flex items-center gap-3 p-3 bg-surface-card rounded-xl border border-border">
-                <div className="w-10 h-10 bg-surface-inverse text-txt-inverse rounded-full flex items-center justify-center font-bold text-sm shrink-0">
+              <div className="flex items-center gap-3 p-4 bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl">
+                <div className="w-12 h-12 bg-[#3182F6] text-white rounded-full flex items-center justify-center font-bold text-base shrink-0">
                   {creator.nickname.charAt(0)}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="font-bold text-txt-primary text-sm">{creator.nickname}</p>
-                  <p className="text-[11px] text-txt-disabled truncate">
+                  <p className="font-bold text-txt-primary text-[15px]">{creator.nickname}</p>
+                  <p className="text-[13px] text-txt-tertiary truncate">
                     {positionLabel(creator.desired_position || '') || '메이커'}
                     {creator.university && ` · ${creator.university}`}
                   </p>
                 </div>
-                <span className="shrink-0 text-[10px] font-bold text-txt-disabled bg-surface-sunken px-2 py-0.5 rounded-full">
+                <span className="shrink-0 text-[12px] font-semibold text-txt-disabled bg-[#E5E5EA] dark:bg-[#3A3A3C] px-2.5 py-1 rounded-full">
                   메이커
                 </span>
               </div>
             ) : (
-              <div className="flex items-center gap-3 p-3 bg-surface-card rounded-xl border border-border">
-                <div className="w-10 h-10 bg-surface-sunken rounded-full flex items-center justify-center font-bold text-sm text-txt-disabled border border-border">?</div>
+              <div className="flex items-center gap-3 p-4 bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl">
+                <div className="w-12 h-12 bg-[#E5E5EA] dark:bg-[#3A3A3C] rounded-full flex items-center justify-center font-bold text-base text-txt-disabled">?</div>
                 <div>
-                  <p className="font-bold text-txt-primary text-sm">익명 메이커</p>
-                  <p className="text-[11px] text-txt-disabled">프로필 비공개</p>
+                  <p className="font-bold text-txt-primary text-[15px]">익명 메이커</p>
+                  <p className="text-[13px] text-txt-tertiary">프로필 비공개</p>
                 </div>
               </div>
             )}
@@ -114,17 +114,17 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
             {/* Team members */}
             {teamMembers.length > 0 && (
               <div className="space-y-2">
-                <p className="text-[10px] font-medium text-txt-tertiary flex items-center gap-1">
-                  <Users size={10} /> 멤버 {teamMembers.length}명
+                <p className="text-[15px] font-bold text-txt-primary flex items-center gap-1.5">
+                  <Users size={14} /> 멤버 {teamMembers.length}명
                 </p>
                 {teamMembers.map(member => (
-                  <div key={member.id} className="flex items-center gap-2.5 p-2.5 bg-surface-card rounded-xl border border-border">
-                    <div className="w-8 h-8 bg-surface-inverse text-white rounded-full flex items-center justify-center font-bold text-xs shrink-0">
+                  <div key={member.id} className="flex items-center gap-3 p-3 bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl">
+                    <div className="w-9 h-9 bg-[#3182F6] text-white rounded-full flex items-center justify-center font-bold text-xs shrink-0">
                       {member.nickname.charAt(0)}
                     </div>
                     <div className="min-w-0">
-                      <p className="font-medium text-txt-primary text-[13px] truncate">{member.nickname}</p>
-                      {member.role && <p className="text-[11px] text-txt-disabled truncate">{member.role}</p>}
+                      <p className="font-medium text-txt-primary text-[14px] truncate">{member.nickname}</p>
+                      {member.role && <p className="text-[12px] text-txt-tertiary truncate">{member.role}</p>}
                     </div>
                   </div>
                 ))}
@@ -132,7 +132,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
             )}
 
             {/* 모집 중인 포지션 */}
-            <p className="text-[10px] font-medium text-txt-tertiary">모집 중인 포지션</p>
+            <p className="text-[15px] font-bold text-txt-primary">모집 중인 포지션</p>
 
             {opportunity.needed_roles && opportunity.needed_roles.length > 0 ? (
               <div className="space-y-2">
@@ -141,37 +141,37 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
                   const RoleIcon = getRoleIcon(label)
 
                   if (chatStatus === 'accepted') return (
-                    <div key={role} className="flex items-center gap-3 h-14 px-3.5 bg-status-success-bg rounded-xl border border-indicator-online/20">
-                      <div className="w-8 h-8 bg-status-success-bg border border-indicator-online/30 rounded-lg flex items-center justify-center shrink-0">
-                        <Check size={14} className="text-status-success-text" />
+                    <div key={role} className="flex items-center gap-3 h-16 px-4 bg-[#E8F5E9] dark:bg-[#1B3A2D] rounded-2xl">
+                      <div className="w-9 h-9 bg-[#E8F5E9] dark:bg-[#1B3A2D] rounded-xl flex items-center justify-center shrink-0">
+                        <Check size={14} className="text-[#34C759]" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <span className="text-sm font-medium text-status-success-text">{label}</span>
-                        <p className="text-[10px] text-status-success-text/70">수락됨</p>
+                        <span className="text-[15px] font-medium text-[#34C759]">{label}</span>
+                        <p className="text-[12px] text-[#34C759]/70">수락됨</p>
                       </div>
                     </div>
                   )
 
                   if (chatStatus === 'pending') return (
-                    <div key={role} className="flex items-center gap-3 h-14 px-3.5 bg-surface-card rounded-xl border border-indicator-premium/30">
-                      <div className="w-8 h-8 bg-surface-sunken border border-border rounded-lg flex items-center justify-center shrink-0">
+                    <div key={role} className="flex items-center gap-3 h-16 px-4 bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl">
+                      <div className="w-9 h-9 bg-[#E5E5EA] dark:bg-[#3A3A3C] rounded-xl flex items-center justify-center shrink-0">
                         <Loader2 size={14} className="text-indicator-premium animate-spin" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <span className="text-sm font-medium text-txt-secondary">{label}</span>
-                        <p className="text-[10px] text-indicator-premium">대기 중...</p>
+                        <span className="text-[15px] font-medium text-txt-secondary">{label}</span>
+                        <p className="text-[12px] text-indicator-premium">대기 중...</p>
                       </div>
                     </div>
                   )
 
                   if (chatStatus === 'declined') return (
-                    <div key={role} className="flex items-center gap-3 h-14 px-3.5 bg-surface-card rounded-xl border border-border opacity-60">
-                      <div className="w-8 h-8 bg-surface-sunken border border-border rounded-lg flex items-center justify-center shrink-0">
+                    <div key={role} className="flex items-center gap-3 h-16 px-4 bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl opacity-60">
+                      <div className="w-9 h-9 bg-[#E5E5EA] dark:bg-[#3A3A3C] rounded-xl flex items-center justify-center shrink-0">
                         <XIcon size={14} className="text-txt-disabled" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <span className="text-sm font-medium text-txt-tertiary">{label}</span>
-                        <p className="text-[10px] text-txt-disabled">거절됨</p>
+                        <span className="text-[15px] font-medium text-txt-tertiary">{label}</span>
+                        <p className="text-[12px] text-txt-disabled">거절됨</p>
                       </div>
                     </div>
                   )
@@ -180,53 +180,53 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
                     <button
                       key={role}
                       onClick={() => handleAction(role)}
-                      className="group w-full flex items-center gap-3 h-14 px-3.5 bg-surface-card rounded-xl border border-border hover:border-brand/40 hover:bg-brand-bg hover:shadow-sm active:scale-[0.98] transition-all cursor-pointer text-left"
+                      className="group w-full flex items-center gap-3 h-16 px-4 bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl hover:bg-[#EDF0F3] dark:hover:bg-[#252527] active:scale-[0.98] transition-all cursor-pointer text-left"
                     >
-                      <div className="w-8 h-8 bg-surface-sunken border border-border rounded-lg flex items-center justify-center shrink-0 group-hover:bg-brand group-hover:border-brand transition-colors">
+                      <div className="w-9 h-9 bg-[#E5E5EA] dark:bg-[#3A3A3C] rounded-xl flex items-center justify-center shrink-0 group-hover:bg-[#3182F6] transition-colors">
                         <RoleIcon size={14} className="text-txt-disabled group-hover:text-white transition-colors" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <span className="text-sm font-medium text-txt-secondary group-hover:text-brand transition-colors">{label}</span>
-                        <p className="text-[10px] text-txt-disabled group-hover:text-brand/60 transition-colors flex items-center gap-1">
-                          <Coffee size={9} /> 커피챗 신청하기
+                        <span className="text-[15px] font-medium text-txt-secondary group-hover:text-[#3182F6] transition-colors">{label}</span>
+                        <p className="text-[12px] text-txt-disabled group-hover:text-[#3182F6]/60 transition-colors flex items-center gap-1">
+                          <Coffee size={10} /> 커피챗 신청하기
                         </p>
                       </div>
-                      <ArrowRight size={14} className="text-txt-disabled group-hover:text-brand group-hover:translate-x-0.5 transition-all shrink-0" />
+                      <ArrowRight size={14} className="text-txt-disabled group-hover:text-[#3182F6] group-hover:translate-x-0.5 transition-all shrink-0" />
                     </button>
                   )
                 })}
               </div>
             ) : (
-              <p className="text-[12px] text-txt-disabled py-1">모집 중인 포지션이 없습니다</p>
+              <p className="text-[13px] text-txt-disabled py-1">모집 중인 포지션이 없습니다</p>
             )}
 
             {/* 커피챗 신청하기 — 포지션 바로 아래 */}
             {!hideCta && !isOwner && !existingChat && (
               <button
                 onClick={() => handleAction()}
-                className="w-full py-3 bg-surface-inverse text-txt-inverse rounded-full font-black text-sm hover:opacity-90 active:scale-[0.97] transition-all flex items-center justify-center gap-2"
+                className="w-full h-14 bg-[#3182F6] text-white rounded-2xl font-semibold text-[16px] hover:bg-[#2272EB] active:scale-[0.97] transition-all flex items-center justify-center gap-2"
               >
-                <Coffee size={14} />
+                <Coffee size={16} />
                 커피챗 신청하기
               </button>
             )}
 
             {/* 수락된 경우 연락처 */}
             {!hideCta && !isOwner && chatStatus === 'accepted' && existingChat?.contact_info && (
-              <div className="bg-status-success-bg border border-indicator-online/20 rounded-xl p-3">
-                <p className="text-[11px] font-bold text-status-success-text mb-1">커피챗 수락됨</p>
-                <p className="text-[12px] text-status-success-text/80">연락처: {existingChat.contact_info}</p>
+              <div className="bg-[#E8F5E9] dark:bg-[#1B3A2D] rounded-2xl p-4">
+                <p className="text-[13px] font-bold text-[#34C759] mb-1">커피챗 수락됨</p>
+                <p className="text-[14px] text-[#34C759]/80">연락처: {existingChat.contact_info}</p>
               </div>
             )}
 
             {/* Skills */}
             {Array.isArray(opportunity.needed_skills) && opportunity.needed_skills.length > 0 && (
               <div>
-                <p className="text-[10px] font-medium text-txt-tertiary mb-2">필요 스킬</p>
+                <p className="text-[15px] font-bold text-txt-primary mb-2">필요 스킬</p>
                 <div className="flex flex-wrap gap-1.5">
                   {(opportunity.needed_skills as Array<{ name: string }>).map((skill, i) => (
-                    <span key={i} className="inline-flex items-center gap-1 px-2 py-1 bg-surface-card rounded-full border border-border text-[11px] text-txt-secondary">
-                      <Code size={9} className="text-txt-disabled" />
+                    <span key={i} className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#F2F3F5] dark:bg-[#2C2C2E] rounded-full text-[13px] text-txt-secondary">
+                      <Code size={10} className="text-txt-disabled" />
                       {skill.name}
                     </span>
                   ))}
@@ -238,9 +238,9 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
             {!hideCta && isOwner && (
               <button
                 onClick={() => { onClose(); router.push(`/projects/${opportunity.id}/edit`) }}
-                className="w-full py-3 border border-border rounded-full text-txt-secondary font-bold text-sm hover:bg-surface-inverse hover:text-txt-inverse hover:border-surface-inverse transition-all flex items-center justify-center gap-2"
+                className="w-full h-14 bg-[#F2F3F5] dark:bg-[#2C2C2E] rounded-2xl text-txt-secondary font-semibold text-[16px] hover:bg-[#E5E5EA] dark:hover:bg-[#3A3A3C] transition-all flex items-center justify-center gap-2"
               >
-                <Edit3 size={14} />
+                <Edit3 size={15} />
                 프로젝트 수정하기
               </button>
             )}
@@ -254,41 +254,41 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
             {/* 조건 카드 그리드 */}
             <div className="grid grid-cols-2 gap-2">
               {opportunity.time_commitment && (
-                <div className="bg-surface-card border border-border rounded-xl p-3 flex flex-col gap-1">
-                  <Clock size={14} className="text-txt-disabled" />
-                  <span className="text-[10px] text-txt-tertiary mt-0.5">시간 투자</span>
-                  <span className="text-[13px] font-black text-txt-primary">
+                <div className="bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl p-4 flex flex-col gap-1">
+                  <Clock size={16} className="text-[#3182F6]" />
+                  <span className="text-[12px] text-txt-tertiary mt-0.5">시간 투자</span>
+                  <span className="text-[15px] font-bold text-txt-primary">
                     {opportunity.time_commitment === 'part_time' ? '파트타임' : '풀타임'}
                   </span>
                 </div>
               )}
               {opportunity.location_type && (
-                <div className="bg-surface-card border border-border rounded-xl p-3 flex flex-col gap-1">
-                  <MapPin size={14} className="text-txt-disabled" />
-                  <span className="text-[10px] text-txt-tertiary mt-0.5">활동 방식</span>
-                  <span className="text-[13px] font-black text-txt-primary">
+                <div className="bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl p-4 flex flex-col gap-1">
+                  <MapPin size={16} className="text-[#3182F6]" />
+                  <span className="text-[12px] text-txt-tertiary mt-0.5">활동 방식</span>
+                  <span className="text-[15px] font-bold text-txt-primary">
                     {opportunity.location_type === 'remote' ? '원격' :
                      opportunity.location_type === 'onsite' ? '오프라인' : '혼합'}
                   </span>
                 </div>
               )}
               {opportunity.compensation_type && (
-                <div className="bg-surface-card border border-border rounded-xl p-3 flex flex-col gap-1">
-                  <Sparkles size={14} className="text-txt-disabled" />
-                  <span className="text-[10px] text-txt-tertiary mt-0.5">보상</span>
-                  <span className="text-[13px] font-black text-txt-primary">
+                <div className="bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl p-4 flex flex-col gap-1">
+                  <Sparkles size={16} className="text-[#3182F6]" />
+                  <span className="text-[12px] text-txt-tertiary mt-0.5">보상</span>
+                  <span className="text-[15px] font-bold text-txt-primary">
                     {opportunity.compensation_type === 'equity' ? '지분' :
                      opportunity.compensation_type === 'salary' ? '유급' :
                      opportunity.compensation_type === 'hybrid' ? '혼합' : '무급'}
                   </span>
                 </div>
               )}
-              <div className="bg-surface-card border border-border rounded-xl p-3 flex flex-col gap-1">
-                <Eye size={14} className="text-txt-disabled" />
-                <span className="text-[10px] text-txt-tertiary mt-0.5">조회 · 관심</span>
-                <span className="text-[13px] font-black text-txt-primary">
+              <div className="bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl p-4 flex flex-col gap-1">
+                <Eye size={16} className="text-[#3182F6]" />
+                <span className="text-[12px] text-txt-tertiary mt-0.5">조회 · 관심</span>
+                <span className="text-[15px] font-bold text-txt-primary">
                   {opportunity.views_count ?? 0}
-                  <span className="text-txt-tertiary font-medium text-[11px]"> · </span>
+                  <span className="text-txt-tertiary font-medium text-[13px]"> · </span>
                   {(opportunity.interest_count ?? 0) + (hasInterested ? 1 : 0)}
                 </span>
               </div>
@@ -296,8 +296,8 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
 
             {/* 보상 상세 */}
             {opportunity.compensation_details && (
-              <div className="bg-surface-sunken rounded-xl p-3">
-                <p className="text-[11px] text-txt-tertiary leading-relaxed break-keep">
+              <div className="bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl p-4">
+                <p className="text-[13px] text-txt-tertiary leading-relaxed break-keep">
                   {opportunity.compensation_details}
                 </p>
               </div>
@@ -306,7 +306,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
             {/* 링크 */}
             {Array.isArray(opportunity.project_links) && opportunity.project_links.length > 0 && (
               <div className="space-y-1.5">
-                <p className="text-[10px] font-medium text-txt-tertiary">링크</p>
+                <p className="text-[15px] font-bold text-txt-primary">링크</p>
                 {(opportunity.project_links as Array<{ type: string; url: string; label?: string }>).map((link, i) => {
                   const LinkIcon = linkIcons[link.type] || ExternalLink
                   return (
@@ -315,13 +315,13 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
                       href={link.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2.5 py-2 px-3 bg-surface-card rounded-xl border border-border hover:border-txt-primary transition-colors group"
+                      className="flex items-center gap-2.5 py-2.5 px-4 bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl hover:bg-[#EDF0F3] dark:hover:bg-[#252527] transition-colors group"
                     >
-                      <LinkIcon size={13} className="text-txt-disabled group-hover:text-txt-primary transition-colors shrink-0" />
-                      <span className="text-[13px] text-txt-secondary group-hover:text-txt-primary transition-colors truncate">
+                      <LinkIcon size={14} className="text-txt-disabled group-hover:text-txt-primary transition-colors shrink-0" />
+                      <span className="text-[14px] text-txt-secondary group-hover:text-txt-primary transition-colors truncate">
                         {link.label || link.type}
                       </span>
-                      <ExternalLink size={10} className="text-txt-disabled ml-auto shrink-0" />
+                      <ExternalLink size={11} className="text-txt-disabled ml-auto shrink-0" />
                     </a>
                   )
                 })}

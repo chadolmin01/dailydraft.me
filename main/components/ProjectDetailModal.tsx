@@ -278,7 +278,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
             {canGoBack && (
               <button
                 onClick={(e) => { e.stopPropagation(); goBack() }}
-                className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-surface-card/90 backdrop-blur-sm border border-border shadow-lg hidden sm:flex items-center justify-center hover:bg-surface-card active:scale-95 transition-all"
+                className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-surface-card/90 dark:bg-[#1C1C1E]/90 backdrop-blur-sm shadow-lg hidden sm:flex items-center justify-center hover:bg-surface-card active:scale-95 transition-all"
                 aria-label="이전 프로젝트"
               >
                 <ChevronLeft size={20} className="text-txt-primary" />
@@ -290,7 +290,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
               <button
                 onClick={(e) => { e.stopPropagation(); goNext() }}
                 disabled={!canGoForward}
-                className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-surface-card/90 backdrop-blur-sm border border-border shadow-lg hidden sm:flex items-center justify-center hover:bg-surface-card active:scale-95 transition-all disabled:opacity-40"
+                className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-surface-card/90 dark:bg-[#1C1C1E]/90 backdrop-blur-sm shadow-lg hidden sm:flex items-center justify-center hover:bg-surface-card active:scale-95 transition-all disabled:opacity-40"
                 aria-label="다음 유사 프로젝트"
                 title={nextSimilar ? nextSimilar.title : undefined}
               >
@@ -305,7 +305,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
             <div
               ref={sheetRef}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-lg md:max-w-3xl lg:max-w-6xl max-h-[92vh] modal-glass rounded-t-2xl sm:rounded-2xl overflow-hidden flex flex-col relative"
+              className="w-full max-w-lg md:max-w-3xl lg:max-w-6xl max-h-[92vh] bg-surface-card dark:bg-[#1C1C1E] shadow-2xl rounded-t-2xl sm:rounded-2xl overflow-hidden flex flex-col relative"
               role="dialog"
               aria-modal="true"
               aria-label={opportunity?.title || '프로젝트 상세'}
@@ -342,10 +342,10 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                 <div className="w-9 h-1 rounded-full bg-border/60" />
               </div>
               {/* Top Bar */}
-              <div className="modal-bar border-b border-border/40 px-4 sm:px-5 h-11 flex items-center justify-between shrink-0">
+              <div className="px-4 sm:px-5 h-14 flex items-center justify-between shrink-0">
                 {/* Left: close (mobile) + badges */}
                 <div className="flex items-center gap-2">
-                  <button onClick={onClose} className="sm:hidden p-1 -ml-1 hover:bg-surface-sunken rounded-full transition-colors" aria-label="닫기">
+                  <button onClick={onClose} className="sm:hidden p-1 -ml-1 hover:bg-[#F2F3F5] dark:hover:bg-[#2C2C2E] rounded-full transition-colors" aria-label="닫기">
                     <X size={18} className="text-txt-tertiary" />
                   </button>
                   {!loading && opportunity && (
@@ -354,15 +354,15 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                         <div className="relative">
                           <button
                             onClick={() => setShowTypeSelector(!showTypeSelector)}
-                            className="text-[11px] font-bold px-2.5 py-1 bg-surface-sunken text-txt-secondary rounded-full border border-border hover:border-txt-primary transition-colors flex items-center gap-1"
+                            className="text-[13px] font-semibold px-3 py-1.5 bg-[#F2F3F5] dark:bg-[#2C2C2E] text-txt-secondary rounded-full hover:bg-[#E5E5EA] dark:hover:bg-[#3A3A3C] transition-colors flex items-center gap-1"
                           >
                             {opportunity.type === 'side_project' ? '함께 만들기' :
                              opportunity.type === 'startup' ? '창업 준비' :
                              opportunity.type === 'study' ? '함께 배우기' : 'PROJECT'}
-                            <Edit3 size={9} />
+                            <Edit3 size={10} />
                           </button>
                           {showTypeSelector && (
-                            <div className="absolute top-full left-0 mt-1 bg-surface-card rounded-xl border border-border shadow-md z-10 min-w-[8rem] overflow-hidden">
+                            <div className="absolute top-full left-0 mt-1 bg-surface-card rounded-2xl shadow-lg z-10 min-w-[8rem] overflow-hidden">
                               {[
                                 { value: 'side_project', label: '함께 만들기' },
                                 { value: 'startup', label: '창업 준비' },
@@ -377,10 +377,10 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                                     )
                                     setShowTypeSelector(false)
                                   }}
-                                  className={`w-full text-left px-3 py-2 text-[11px] font-medium transition-colors ${
+                                  className={`w-full text-left px-3 py-2.5 text-[13px] font-medium transition-colors ${
                                     opportunity.type === opt.value
-                                      ? 'bg-surface-inverse text-txt-inverse'
-                                      : 'text-txt-secondary hover:bg-surface-sunken'
+                                      ? 'bg-[#3182F6] text-white'
+                                      : 'text-txt-secondary hover:bg-[#F2F3F5] dark:hover:bg-[#2C2C2E]'
                                   }`}
                                 >
                                   {opt.label}
@@ -390,15 +390,15 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                           )}
                         </div>
                       ) : (
-                        <span className="text-[11px] font-bold px-2.5 py-1 bg-surface-sunken text-txt-tertiary rounded-full border border-border">
+                        <span className="text-[13px] font-semibold px-3 py-1.5 bg-[#F2F3F5] dark:bg-[#2C2C2E] text-txt-tertiary rounded-full">
                           {opportunity.type === 'side_project' ? '함께 만들기' :
                            opportunity.type === 'startup' ? '창업 준비' :
                            opportunity.type === 'study' ? '함께 배우기' : opportunity.type?.toUpperCase() || 'PROJECT'}
                         </span>
                       )}
                       {opportunity.status === 'active' && (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-status-success-bg text-status-success-text text-[11px] font-bold rounded-full border border-status-success-text/20">
-                          <span className="w-1.5 h-1.5 rounded-full bg-indicator-online animate-pulse" />
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#E8F5E9] dark:bg-[#1B3A2D] text-[#34C759] text-[13px] font-semibold rounded-full">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#34C759] animate-pulse" />
                           모집 중
                         </span>
                       )}
@@ -410,18 +410,18 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                 <div className="flex items-center gap-1">
                   <button
                     onClick={handleShare}
-                    className="p-2 hover:bg-surface-sunken rounded-full transition-colors"
+                    className="p-2 hover:bg-[#F2F3F5] dark:hover:bg-[#2C2C2E] rounded-full transition-colors"
                     aria-label="공유"
                   >
                     {shareCopied ? (
-                      <span className="text-[11px] font-bold text-status-success-text icon-bounce">복사됨!</span>
+                      <span className="text-[13px] font-semibold text-[#34C759] icon-bounce">복사됨!</span>
                     ) : (
-                      <Share2 size={15} className="text-txt-disabled" />
+                      <Share2 size={16} className="text-txt-disabled" />
                     )}
                   </button>
                   <button
                     onClick={onClose}
-                    className="hidden sm:flex p-2 hover:bg-surface-sunken rounded-full transition-colors"
+                    className="hidden sm:flex p-2 hover:bg-[#F2F3F5] dark:hover:bg-[#2C2C2E] rounded-full transition-colors"
                     aria-label="닫기"
                   >
                     <X size={18} className="text-txt-disabled" />
@@ -481,10 +481,8 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                       handleInterest={handleInterest}
                     />
 
-                    <div className="border-t border-border" />
-
                     {/* Body: 2-col (desktop) / single col (mobile) */}
-                    <div className="px-4 sm:px-6 py-5 grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-8 items-start">
+                    <div className="px-5 sm:px-8 py-6 grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-10 items-start">
 
                       {/* Left: tabbed content */}
                       <div className="md:col-span-3">
@@ -515,7 +513,9 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                     </div>
 
                     {/* Mobile: sidebar info inline (no CTA — CTA is in sticky bar below) */}
-                    <div className="md:hidden px-4 pb-6 border-t border-border pt-5">
+                    <div className="md:hidden pb-6">
+                      <div className="h-2 bg-[#F2F3F5] dark:bg-[#2C2C2E]" />
+                      <div className="px-5 pt-5">
                       <ProjectSidebar
                         opportunity={opportunity}
                         creator={creator}
@@ -528,15 +528,16 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                         teamMembers={teamMembers}
                         hideCta
                       />
+                      </div>
                     </div>
                   </div>
 
                   {/* Mobile sticky bottom CTA */}
-                  <div className="md:hidden shrink-0 px-4 py-3 border-t border-border bg-surface-card">
+                  <div className="md:hidden shrink-0 px-5 py-3 bg-surface-card dark:bg-[#1C1C1E] shadow-[0_-1px_12px_rgba(0,0,0,0.06)]">
                     {isOwner ? (
                       <button
                         onClick={() => { onClose(); router.push(`/projects/${opportunity.id}/edit`) }}
-                        className="w-full py-3.5 border border-border rounded-full font-black text-[14px] text-txt-secondary hover:bg-surface-inverse hover:text-txt-inverse hover:border-surface-inverse transition-all flex items-center justify-center gap-2"
+                        className="w-full h-14 bg-[#F2F3F5] dark:bg-[#2C2C2E] rounded-2xl font-semibold text-[16px] text-txt-secondary hover:bg-[#E5E5EA] dark:hover:bg-[#3A3A3C] transition-all flex items-center justify-center gap-2"
                       >
                         <Edit3 size={15} />
                         프로젝트 수정하기
@@ -546,17 +547,17 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                         <button
                           onClick={handleInterest}
                           disabled={interestLoading}
-                          className={`shrink-0 w-12 h-12 flex items-center justify-center rounded-full border transition-all disabled:opacity-40 ${
+                          className={`shrink-0 w-14 h-14 flex items-center justify-center rounded-2xl transition-all disabled:opacity-40 ${
                             hasInterested
-                              ? 'bg-status-danger-bg border-status-danger-text/20 text-status-danger-text'
-                              : 'border-border text-txt-secondary hover:border-txt-primary'
+                              ? 'bg-[#FFF0F0] dark:bg-[#3A1C1C] text-[#FF3B30]'
+                              : 'bg-[#F2F3F5] dark:bg-[#2C2C2E] text-txt-secondary hover:bg-[#E5E5EA]'
                           }`}
                         >
                           <Heart size={18} className={hasInterested ? 'fill-current' : ''} />
                         </button>
                         <button
                           onClick={() => handleAction()}
-                          className="flex-1 py-3.5 bg-surface-inverse text-txt-inverse rounded-full font-black text-[14px] hover:opacity-90 active:scale-[0.97] transition-all flex items-center justify-center gap-2"
+                          className="flex-1 h-14 bg-[#3182F6] text-white rounded-2xl font-semibold text-[16px] hover:bg-[#2272EB] active:scale-[0.97] transition-all flex items-center justify-center gap-2"
                         >
                           <Coffee size={16} />
                           커피챗 신청하기
