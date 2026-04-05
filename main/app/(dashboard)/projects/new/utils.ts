@@ -23,23 +23,12 @@ export async function getCroppedImg(src: string, cropArea: Area): Promise<File> 
     cropArea.x, cropArea.y, cropArea.width, cropArea.height,
     0, 0, cropArea.width, cropArea.height,
   )
+  // JPEG로 출력 — PNG보다 용량 훨씬 작음
   return new Promise((resolve, reject) => {
     canvas.toBlob(blob => {
       if (!blob) return reject(new Error('Canvas to blob failed'))
-      resolve(new File([blob], `cropped-${Date.now()}.png`, { type: 'image/png' }))
-    }, 'image/png')
-  })
-}
-
-/** 버킷 존재 확인 및 생성 (최초 1회) */
-async function ensureBucket() {
-  const { data: buckets } = await supabase.storage.listBuckets()
-  if (buckets?.find(b => b.name === BUCKET)) return
-
-  await supabase.storage.createBucket(BUCKET, {
-    public: true,
-    fileSizeLimit: 10 * 1024 * 1024,
-    allowedMimeTypes: ALLOWED_IMAGE_TYPES,
+      resolve(new File([blob], `cropped-${Date.now()}.jpg`, { type: 'image/jpeg' }))
+    }, 'image/jpeg', 0.9)
   })
 }
 
@@ -48,20 +37,22 @@ export async function uploadImagesToSupabase(files: File[]): Promise<string[]> {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('로그인이 필요합니다')
 
-  await ensureBucket()
+  // 버킷은 이미 DB에 존재 — ensureBucket 제거 (listBuckets는 서비스키 전용 API)
 
   const urls: string[] = []
 
   for (const file of files) {
     // 1. 이미지 압축 (메인 스레드에서 실행 — CSP blob worker 차단 회피)
     const compressed = await imageCompression(file, {
-      maxSizeMB: 2,
+      maxSizeMB: 1.5,
       maxWidthOrHeight: 1920,
       useWebWorker: false,
     })
 
     // 2. Supabase Storage에 직접 업로드
-    const ext = file.name.split('.').pop() || 'jpg'
+    const ext = compressed.type === 'image/png' ? 'png'
+      : compressed.type === 'image/webp' ? 'webp'
+      : 'jpg'
     const path = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
 
     const { error: uploadError } = await supabase.storage
@@ -69,6 +60,7 @@ export async function uploadImagesToSupabase(files: File[]): Promise<string[]> {
       .upload(path, compressed, {
         contentType: compressed.type,
         cacheControl: '3600',
+        upsert: true,
       })
 
     if (uploadError) {

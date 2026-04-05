@@ -191,9 +191,15 @@ export default function ProfileEditPage() {
     isAvatar ? setUploadingAvatar(true) : setUploadingCover(true)
     setCropImage(null)
     try {
-      const blob = await getCroppedBlob(cropImage, croppedArea)
+      const rawBlob = await getCroppedBlob(cropImage, croppedArea)
+      // 압축: 아바타 0.5MB/512px, 커버 1MB/1920px
+      const imageCompression = (await import('browser-image-compression')).default
+      const compressed = await imageCompression(
+        new File([rawBlob], `${cropType}.jpg`, { type: 'image/jpeg' }),
+        { maxSizeMB: isAvatar ? 0.5 : 1, maxWidthOrHeight: isAvatar ? 512 : 1920, useWebWorker: false },
+      )
       const path = `${user.id}/${cropType}-${Date.now()}.jpg`
-      const { error: uploadError } = await supabase.storage.from('profile-images').upload(path, blob, { upsert: true, contentType: 'image/jpeg' })
+      const { error: uploadError } = await supabase.storage.from('profile-images').upload(path, compressed, { upsert: true, contentType: 'image/jpeg' })
       if (uploadError) throw uploadError
       const { data: { publicUrl } } = supabase.storage.from('profile-images').getPublicUrl(path)
       await updateProfile.mutateAsync(isAvatar ? { avatar_url: publicUrl } : { cover_image_url: publicUrl })
@@ -550,9 +556,11 @@ export default function ProfileEditPage() {
                       <input ref={portfolioImageInputRef} type="file" accept="image/*" className="hidden" onChange={async (e) => {
                         const f = e.target.files?.[0]
                         if (!f || !user?.id) return
-                        if (f.size > 5 * 1024 * 1024) { toast.error('5MB 이하 파일만 업로드 가능합니다'); return }
+                        if (f.size > 10 * 1024 * 1024) { toast.error('10MB 이하 파일만 업로드 가능합니다'); return }
+                        const imageCompression = (await import('browser-image-compression')).default
+                        const compressed = await imageCompression(f, { maxSizeMB: 1.5, maxWidthOrHeight: 1920, useWebWorker: false })
                         const path = `${user.id}/portfolio-${Date.now()}.jpg`
-                        const { error: uploadError } = await supabase.storage.from('profile-images').upload(path, f, { upsert: true, contentType: f.type })
+                        const { error: uploadError } = await supabase.storage.from('profile-images').upload(path, compressed, { upsert: true, contentType: compressed.type })
                         if (uploadError) { toast.error('이미지 업로드 실패'); return }
                         const { data: { publicUrl } } = supabase.storage.from('profile-images').getPublicUrl(path)
                         setNewPortfolioImage(publicUrl)
