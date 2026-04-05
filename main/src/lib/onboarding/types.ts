@@ -98,6 +98,8 @@ export interface SpectrumPickQuestion extends InteractiveQuestionBase {
   rightLabel: string
   rightDescription: string
   points: number
+  /** 각 포인트(1~N)에 대한 한줄 코멘트. 선택 시 표시. */
+  comments?: string[]
 }
 
 export type InteractiveQuestion =

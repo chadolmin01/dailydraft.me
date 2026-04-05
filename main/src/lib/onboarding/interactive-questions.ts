@@ -92,6 +92,7 @@ export const INTERACTIVE_QUESTIONS: Record<string, InteractiveQuestion> = {
     rightLabel: '새로운 시도',
     rightDescription: '실패해도 배우는\n과감한 도전',
     points: 5,
+    comments: ['검증된 길만 가요', '안정적이지만 가끔 새로운 시도도', '상황에 따라 달라요', '새로운 걸 좋아하지만 리스크 체크는 해요', '일단 해보자! 실패도 경험이에요'],
   },
 
   spectrum_planning: {
@@ -102,16 +103,18 @@ export const INTERACTIVE_QUESTIONS: Record<string, InteractiveQuestion> = {
     rightLabel: '실행부터',
     rightDescription: '일단 만들어보면서\n방향을 잡아가기',
     points: 5,
+    comments: ['계획 없이는 못 움직여요', '큰 그림은 그리고 시작해요', '반반이에요', '대충 방향 잡고 바로 시작해요', '일단 만들면서 생각해요'],
   },
 
   spectrum_quality: {
     type: 'spectrum-pick',
     measuredFields: ['quality_style'],
     leftLabel: '완성도 우선',
-    leftDescription: '시간이 걸려���\n제대로 만들기',
+    leftDescription: '시간이 걸려도\n제대로 만들기',
     rightLabel: '속도 우선',
     rightDescription: '빠르게 완성하고\n반복 개선하기',
     points: 5,
+    comments: ['완벽하지 않으면 내놓기 싫어요', '퀄리티를 챙기되 기한은 지켜요', '상황에 따라 달라요', '빠르게 내고 피드백 받아요', 'MVP 먼저! 개선은 그다음이에요'],
   },
 
   // ── Emoji Grid → strengths ──
@@ -217,6 +220,7 @@ export const INTERACTIVE_QUESTIONS: Record<string, InteractiveQuestion> = {
     rightLabel: '수시로 공유',
     rightDescription: '진행상황을\n계속 나누기',
     points: 5,
+    comments: ['혼자 집중하는 게 최고예요', '필요할 때만 소통해요', '적당히 공유하는 편이에요', '자주 얘기하는 걸 좋아해요', '실시간 소통이 편해요'],
   },
 
   spectrum_teamrole: {
@@ -227,6 +231,7 @@ export const INTERACTIVE_QUESTIONS: Record<string, InteractiveQuestion> = {
     rightLabel: '리더',
     rightDescription: '직접 방향 잡고\n팀을 이끌기',
     points: 5,
+    comments: ['맡은 일에 집중하는 타입이에요', '서포트하면서 의견도 내요', '상황에 따라 유연하게요', '주도하되 의견은 들어요', '직접 방향 잡고 이끌어요'],
   },
 }
 

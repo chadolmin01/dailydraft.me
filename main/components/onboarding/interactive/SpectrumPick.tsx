@@ -8,11 +8,12 @@ interface SpectrumPickProps {
   rightLabel: string
   rightDescription: string
   points: number
+  comments?: string[]
   onChange: (value: number, ready: boolean) => void
 }
 
 export const SpectrumPick: React.FC<SpectrumPickProps> = ({
-  leftLabel, leftDescription, rightLabel, rightDescription, points, onChange,
+  leftLabel, leftDescription, rightLabel, rightDescription, points, comments, onChange,
 }) => {
   const [selected, setSelected] = useState<number | null>(null)
 
@@ -72,6 +73,15 @@ export const SpectrumPick: React.FC<SpectrumPickProps> = ({
           })}
         </div>
       </div>
+
+      {/* Selected comment */}
+      {selected !== null && comments && comments[selected - 1] && (
+        <div className="text-center mt-4 animate-in fade-in slide-in-from-bottom-1 duration-200">
+          <span className="inline-block px-4 py-2 bg-surface-sunken rounded-full text-[13px] font-medium text-txt-primary">
+            {comments[selected - 1]}
+          </span>
+        </div>
+      )}
 
       {/* Labels */}
       <div className="flex justify-between mt-3 px-1">
