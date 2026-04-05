@@ -29,15 +29,19 @@ export default function OnboardingInterviewPage() {
   const { profile, refreshProfile } = useAuth()
   const completion = useProfileCompletion(profile)
   const queryClient = useQueryClient()
-  const [phase, setPhase] = useState<'interview' | 'guide'>('interview')
+  const [phase, setPhase] = useState<'loading' | 'interview' | 'guide'>('loading')
   const [profileDraft, setProfileDraft] = useState<ProfileDraft | null>(null)
 
-  // Prefetch all interview SVGs immediately
+  // Prefetch all interview SVGs — wait for first critical one
   useEffect(() => {
-    INTERVIEW_SVGS.forEach(src => {
-      const img = new Image()
-      img.src = src
-    })
+    let done = false
+    const critical = new window.Image()
+    critical.src = INTERVIEW_SVGS[1] // leader_follower.svg (first question)
+    critical.onload = () => { if (!done) { done = true; setPhase('interview') } }
+    critical.onerror = () => { if (!done) { done = true; setPhase('interview') } }
+    const timeout = setTimeout(() => { if (!done) { done = true; setPhase('interview') } }, 1500)
+    INTERVIEW_SVGS.forEach(src => { const img = new window.Image(); img.src = src })
+    return () => clearTimeout(timeout)
   }, [])
 
   // Load draft from sessionStorage (set by /onboarding page)
@@ -81,6 +85,16 @@ export default function OnboardingInterviewPage() {
     sessionStorage.removeItem('onboarding-draft')
     setPhase('guide')
   }, [])
+
+  if (phase === 'loading') {
+    return (
+      <div className="fixed inset-0 bg-surface-bg flex items-center justify-center">
+        <div className="w-10 h-10 bg-surface-inverse rounded-xl flex items-center justify-center animate-pulse">
+          <span className="text-txt-inverse font-black text-lg leading-none">D</span>
+        </div>
+      </div>
+    )
+  }
 
   if (phase === 'guide') {
     return <GuideCTA profile={profile} completion={completion} />
