@@ -154,6 +154,12 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
         ))}
       </div>
 
+      {profile && !profile.ai_chat_completed && (
+        <p className="text-[11px] text-brand mb-2 text-left">
+          AI 매칭 분석을 완료하면 수락률이 올라가요
+        </p>
+      )}
+
       <textarea
         value={message}
         onChange={(e) => setMessage(e.target.value)}

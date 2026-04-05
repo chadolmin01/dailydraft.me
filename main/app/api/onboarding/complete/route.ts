@@ -58,7 +58,7 @@ export async function POST(request: Request) {
       skills: skills || [],
       interest_tags: interestTags || [],
       desired_position: desiredPosition,
-      personality: personality || { risk: 3, time: 3, communication: 3, decision: 3 },
+      personality: personality || { risk: 3, time: 3, communication: 3, planning: 3, quality: 3, teamRole: 3 },
       ...(visionSummary && { vision_summary: visionSummary }),
       onboarding_completed: true,
       ...(aiChatCompleted && { ai_chat_completed: true }),

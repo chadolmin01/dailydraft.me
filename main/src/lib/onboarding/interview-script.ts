@@ -25,7 +25,7 @@ export const INTERVIEW_SCRIPT: InterviewQuestion[] = [
   {
     id: 'q_risk',
     interactiveId: 'spectrum_risk',
-    getMessage: () => '새 프���젝트를 시작할 때, 어떤 스타일이에요?',
+    getMessage: () => '새 프로젝트를 시작할 때, 어떤 스타일이에요?',
   },
   {
     id: 'q_planning',

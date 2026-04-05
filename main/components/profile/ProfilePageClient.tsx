@@ -16,8 +16,8 @@ import {
   ProfileCoffeeChats,
   ProfileInvitations,
   AiOnboardingModal,
+  AIInterviewModal,
 } from '@/components/profile'
-import { useRouter } from 'next/navigation'
 import { Sparkles, Briefcase, FolderOpen, Activity } from 'lucide-react'
 import { SkeletonProfile, SkeletonGrid } from '@/components/ui/Skeleton'
 
@@ -28,10 +28,10 @@ export default function ProfilePageClient() {
   const { data: portfolioItems = [] } = usePortfolioItems()
   const completion = useProfileCompletion(profile)
 
-  const router = useRouter()
   const { data: uniData } = useUniversityVerification()
   const uniVerified = uniData?.is_verified ?? false
   const [showAiConfirm, setShowAiConfirm] = useState(false)
+  const [showInterview, setShowInterview] = useState(false)
   const [activeTab, setActiveTab] = useState<'portfolio' | 'projects' | 'activity'>('portfolio')
 
   // Parse strengths from vision_summary
@@ -85,7 +85,11 @@ export default function ProfilePageClient() {
           <AiOnboardingModal
             isOpen={showAiConfirm}
             onClose={() => setShowAiConfirm(false)}
-            onConfirm={() => router.push('/onboarding')}
+            onConfirm={() => { setShowAiConfirm(false); setShowInterview(true) }}
+          />
+          <AIInterviewModal
+            isOpen={showInterview}
+            onClose={() => setShowInterview(false)}
           />
         </>
       )}

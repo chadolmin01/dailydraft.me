@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useCallback, useRef } from 'react'
-import { ArrowRight, ArrowLeft, Sparkles } from 'lucide-react'
+import { ArrowRight, ArrowLeft, Sparkles, Loader2, CheckCircle2 } from 'lucide-react'
 import type {
   ProfileDraft, StructuredResponse,
   ScenarioCardQuestion, ThisOrThatQuestion, DragRankQuestion,
@@ -17,7 +17,7 @@ import { EmojiGrid } from '../interactive/EmojiGrid'
 import { SpectrumPick } from '../interactive/SpectrumPick'
 import { DragRank } from '../interactive/DragRank'
 
-type Phase = 'intro' | 'showing' | 'answered' | 'completing'
+type Phase = 'intro' | 'showing' | 'answered' | 'saving' | 'completing'
 type SlideDir = 'forward' | 'back'
 
 interface Props {
@@ -25,6 +25,7 @@ interface Props {
   introMessage?: string
   onAnswer: (response: StructuredResponse) => void
   onComplete: (responses: StructuredResponse[]) => void
+  onSkip?: () => void
 }
 
 // Visual + label per question
@@ -34,12 +35,12 @@ const QUESTION_VISUALS: Record<string, { emoji: string; illustration: string | n
   spectrum_communication: { emoji: '💬', illustration: '/onboarding/2.svg',              hint: SPECTRUM_HINT, label: '소통 스타일' },
   spectrum_risk:          { emoji: '⚡', illustration: '/onboarding/3.svg',              hint: SPECTRUM_HINT, label: '도전 성향' },
   spectrum_planning:      { emoji: '🗂️', illustration: '/onboarding/5.svg',             hint: SPECTRUM_HINT, label: '작업 방식' },
-  spectrum_quality:       { emoji: '💎', illustration: null,                              hint: SPECTRUM_HINT, label: '완성도 vs 속도' },
+  spectrum_quality:       { emoji: '💎', illustration: '/onboarding/Deadline.svg',         hint: SPECTRUM_HINT, label: '완성도 vs 속도' },
   quick_number_hours:     { emoji: '⏱️', illustration: '/onboarding/4.svg',              hint: '',            label: '투자 시간' },
   emoji_grid_strengths:   { emoji: '✨', illustration: '/onboarding/6.svg',              hint: '최대 3개 선택해주세요', label: '나의 강점' },
 }
 
-export function ScriptedInterviewStep({ profile, introMessage, onAnswer, onComplete }: Props) {
+export function ScriptedInterviewStep({ profile, introMessage, onAnswer, onComplete, onSkip }: Props) {
   const [qIndex, setQIndex] = useState(0)
   const [phase, setPhase] = useState<Phase>(introMessage ? 'intro' : 'showing')
   const [responses, setResponses] = useState<StructuredResponse[]>([])
@@ -73,8 +74,12 @@ export function ScriptedInterviewStep({ profile, introMessage, onAnswer, onCompl
 
     if (qIndex + 1 >= total) {
       setTimeout(() => {
-        setPhase('completing')
-        onComplete(updated)
+        setPhase('saving')
+        // saving spinner (2s) → completing checkmark, then notify parent
+        setTimeout(() => {
+          setPhase('completing')
+          onComplete(updated)
+        }, 2000)
       }, 400)
     } else {
       setTimeout(() => goToSlide(qIndex + 1, 'forward'), 350)
@@ -218,25 +223,39 @@ export function ScriptedInterviewStep({ profile, introMessage, onAnswer, onCompl
     }
   }
 
-  // -- Completing screen (decorative animation, save runs in background) --
+  // -- Saving screen (spinner) --
+  if (phase === 'saving') {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center px-6 pb-10">
+        <div className="flex flex-col items-center animate-in fade-in duration-300">
+          <Loader2 size={36} className="text-brand animate-spin mb-6" />
+          <h2 className="text-lg font-bold text-txt-primary mb-1">
+            매칭 프로필을 만들고 있어요
+          </h2>
+          <p className="text-sm text-txt-tertiary">잠시만 기다려주세요...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // -- Completing screen (checkmark) --
   if (phase === 'completing') {
     return (
       <div className="flex-1 flex flex-col items-center justify-center px-6 pb-10">
-        <div className="relative flex items-center justify-center w-[140px] h-[140px] mb-10">
-          <div className="ob-complete-dot absolute" />
-          <img
-            src="/onboarding/done.svg"
-            alt="완료"
-            className="ob-complete-icon absolute w-[80px] h-[80px] object-contain"
-          />
+        <div className="flex flex-col items-center animate-in fade-in zoom-in-95 duration-300">
+          <div
+            className="w-16 h-16 rounded-full bg-brand flex items-center justify-center mb-6"
+            style={{ animation: 'ob-bubble-in 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) both' }}
+          >
+            <CheckCircle2 size={32} className="text-white" />
+          </div>
+          <h2 className="text-lg font-bold text-txt-primary mb-1">
+            완벽해요!
+          </h2>
+          <p className="text-sm text-txt-secondary">
+            이제 딱 맞는 팀원을 찾아볼게요
+          </p>
         </div>
-
-        <h2 className="text-2xl sm:text-[28px] font-black text-txt-primary text-center mb-2 ob-complete-title">
-          완벽해요!
-        </h2>
-        <p className="text-[14px] text-txt-secondary text-center ob-complete-sub">
-          프로필을 완성했어요!
-        </p>
       </div>
     )
   }
@@ -249,18 +268,30 @@ export function ScriptedInterviewStep({ profile, introMessage, onAnswer, onCompl
 
           {/* Visual */}
           <div className="flex justify-center mb-10">
-            <img src="/onboarding/1.svg" alt="환영" className="w-full max-w-[280px] object-contain ob-avatar ob-img-fade" onLoad={e => e.currentTarget.classList.add('loaded')} />
+            <img src="/onboarding/almost.svg" alt="거의 다 왔어요" className="w-full max-w-[260px] object-contain ob-avatar ob-img-fade" onLoad={e => e.currentTarget.classList.add('loaded')} />
           </div>
 
-          {/* Message */}
+          {/* Value proposition */}
           <h2 className="text-2xl sm:text-[28px] font-black text-txt-primary leading-tight mb-3 ob-bubble">
-            {introMessage}
+            {onSkip ? '거의 다 왔어요!' : '매칭 정확도를 높여볼까요?'}
           </h2>
-          <p className="text-[15px] text-txt-secondary leading-relaxed mb-10 ob-bubble" style={{ animationDelay: '100ms' }}>
-            선택지로 빠르게 답하면 돼요.
-            <br />
-            <span className="font-bold text-txt-primary">{total}가지</span>만 골라주면 끝!
+          <p className="text-[15px] text-txt-secondary leading-relaxed mb-4 ob-bubble" style={{ animationDelay: '100ms' }}>
+            작업 스타일을 알면<br />
+            <span className="font-bold text-txt-primary">나랑 잘 맞는 팀원</span>을 찾아드릴 수 있어요
           </p>
+
+          {/* Benefits */}
+          <div className="space-y-2 mb-10 ob-bubble" style={{ animationDelay: '180ms' }}>
+            {[
+              { emoji: '🎯', text: '성향이 맞는 팀원 매칭' },
+              { emoji: '⚡', text: '선택지만 고르면 끝 — 약 1분' },
+            ].map(({ emoji, text }) => (
+              <div key={text} className="flex items-center gap-2.5 text-[13px] text-txt-secondary">
+                <span className="text-base">{emoji}</span>
+                {text}
+              </div>
+            ))}
+          </div>
 
           {/* Start button */}
           <div className="ob-chip" style={{ animationDelay: '300ms' }}>
@@ -268,12 +299,17 @@ export function ScriptedInterviewStep({ profile, introMessage, onAnswer, onCompl
               onClick={() => goToSlide(0, 'forward')}
               className="w-full flex items-center justify-center gap-2 py-4 bg-brand text-white rounded-full text-[15px] font-black hover:opacity-90 active:scale-[0.97] transition-all"
             >
-              시작하기
-              <ArrowRight size={16} />
+              매칭 정확도 높이기
+              <Sparkles size={16} />
             </button>
-            <p className="text-[12px] text-txt-tertiary text-center mt-3 font-mono">
-              약 1분 · {total}개 질문
-            </p>
+            {onSkip && (
+              <button
+                onClick={onSkip}
+                className="w-full text-center text-[13px] text-txt-tertiary hover:text-txt-secondary transition-colors mt-4 py-1"
+              >
+                나중에 할게요
+              </button>
+            )}
           </div>
         </div>
       </div>

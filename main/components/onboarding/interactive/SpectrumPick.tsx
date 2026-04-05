@@ -74,11 +74,13 @@ export const SpectrumPick: React.FC<SpectrumPickProps> = ({
         </div>
       </div>
 
-      {/* Selected comment */}
-      {selected !== null && comments && comments[selected - 1] && (
-        <div className="text-center mt-4 animate-in fade-in slide-in-from-bottom-1 duration-200">
-          <span className="inline-block px-4 py-2 bg-surface-sunken rounded-full text-[13px] font-medium text-txt-primary">
-            {comments[selected - 1]}
+      {/* Comment — always present to keep layout stable */}
+      {comments && comments.length > 0 && (
+        <div className="text-center mt-4">
+          <span className={`inline-block px-4 py-2 bg-surface-sunken rounded-full text-[13px] font-medium transition-colors duration-200 ${
+            selected !== null ? 'text-txt-primary' : 'text-txt-disabled'
+          }`}>
+            {selected !== null ? comments[selected - 1] : '선택해주세요'}
           </span>
         </div>
       )}

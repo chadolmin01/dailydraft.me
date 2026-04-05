@@ -340,46 +340,44 @@ function EditProjectContent() {
 
         {/* ─── Tab Bar ─── */}
         <div className="bg-surface-card rounded-t-xl border border-border-subtle border-b-0 shadow-sm">
-          <div className="px-3 sm:px-5 py-3 grid grid-cols-3 items-center">
-            <div>
-              <button
-                type="button"
-                onClick={() => router.back()}
-                className="hidden sm:inline-flex items-center gap-1.5 text-xs text-txt-tertiary hover:text-txt-primary transition-colors"
-              >
-                <ArrowLeft size={14} />
-                <span>돌아가기</span>
-              </button>
-            </div>
+          <div className="px-3 sm:px-5 py-3 flex items-center justify-between gap-2">
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="hidden sm:inline-flex items-center gap-1.5 text-xs text-txt-tertiary hover:text-txt-primary transition-colors shrink-0"
+            >
+              <ArrowLeft size={14} />
+              <span>돌아가기</span>
+            </button>
 
-            <div className="flex items-center justify-center">
+            <div className="flex items-center justify-center flex-1">
               <div className="inline-flex items-center gap-0.5 bg-surface-sunken rounded-xl p-0.5">
                 <button
                   type="button"
                   onClick={() => setTab('info')}
-                  className={`text-[10px] font-medium px-3 py-1.5 rounded-lg transition-all ${
+                  className={`text-[11px] font-medium px-3 py-1.5 rounded-lg transition-all whitespace-nowrap ${
                     tab === 'info'
                       ? 'bg-surface-inverse text-txt-inverse'
                       : 'text-txt-tertiary hover:text-txt-secondary'
                   }`}
                 >
-                  프로젝트 정보
+                  정보
                 </button>
                 <button
                   type="button"
                   onClick={() => setTab('team')}
-                  className={`text-[10px] font-medium px-3 py-1.5 rounded-lg transition-all ${
+                  className={`text-[11px] font-medium px-3 py-1.5 rounded-lg transition-all whitespace-nowrap ${
                     tab === 'team'
                       ? 'bg-surface-inverse text-txt-inverse'
                       : 'text-txt-tertiary hover:text-txt-secondary'
                   }`}
                 >
-                  팀 관리
+                  팀
                 </button>
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2">
+            <div className="flex items-center gap-2 shrink-0">
               {lastSavedAt && (
                 <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-mono rounded-full text-status-success-text bg-status-success-bg border border-status-success-text/20">
                   <Check size={9} />
@@ -414,7 +412,7 @@ function EditProjectContent() {
                     key={opt.value}
                     type="button"
                     onClick={() => setType(opt.value)}
-                    className="relative z-10 flex-1 text-[10px] font-medium px-2.5 py-1 rounded-lg transition-colors"
+                    className="relative z-10 flex-1 text-[11px] font-medium px-2.5 py-1 rounded-lg transition-colors whitespace-nowrap"
                   >
                     <span className={`relative ${type === opt.value ? 'text-txt-inverse' : 'text-txt-tertiary hover:text-txt-secondary'}`}>
                       {opt.label}

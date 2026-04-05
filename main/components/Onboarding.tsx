@@ -25,6 +25,19 @@ const INITIAL_PROFILE: ProfileDraft = {
   locations: [], position: '', situation: '', skills: [], interests: [],
 }
 
+/* ─── Skills by position ─── */
+
+const SKILLS_BY_POSITION: Record<string, string[]> = {
+  frontend:  ['React', 'Next.js', 'TypeScript', 'Vue', 'HTML/CSS', 'Tailwind'],
+  backend:   ['Node.js', 'Python', 'Java', 'Go', 'SQL', 'Spring'],
+  fullstack: ['React', 'Next.js', 'Node.js', 'TypeScript', 'Python', 'SQL'],
+  design:    ['Figma', 'Sketch', 'Photoshop', 'Illustrator', 'Framer', 'Protopie'],
+  pm:        ['Notion', 'Figma', 'Jira', 'SQL', 'GA', 'Slack'],
+  marketing: ['GA', 'SQL', 'Meta Ads', 'SEO', 'Notion', 'Canva'],
+  data:      ['Python', 'SQL', 'R', 'Pandas', 'Tableau', 'Spark'],
+  other:     ['Notion', 'Figma', 'Slack', 'Git', 'Excel'],
+}
+
 /* ─── Step config ─── */
 
 const STEP_CONFIG: Record<string, { title: string; hint?: string }> = {
@@ -36,19 +49,21 @@ const STEP_CONFIG: Record<string, { title: string; hint?: string }> = {
 
 /* ── Shared chip style builder ── */
 
-function chipClass(active: boolean, size: 'sm' | 'md' = 'md') {
+function chipClass(active: boolean, size: 'sm' | 'md' = 'md', error = false) {
   const base = 'font-medium border rounded-xl transition-all duration-150'
   const pad = size === 'sm' ? 'px-3 py-2 text-[13px]' : 'px-4 py-3 text-[14px]'
   const color = active
     ? 'bg-brand text-white border-brand'
-    : 'bg-surface-card text-txt-primary border-border active:scale-[0.97]'
+    : error
+      ? 'bg-surface-card text-txt-primary border-status-danger-text/50 active:scale-[0.97]'
+      : 'bg-surface-card text-txt-primary border-border active:scale-[0.97]'
   return `${base} ${pad} ${color}`
 }
 
 /* ─── Component ─── */
 
 interface OnboardingProps {
-  onComplete: () => void
+  onComplete: (draft?: ProfileDraft) => void
 }
 
 export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
@@ -117,17 +132,33 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   }, [stepIndex, goTo])
 
   const handleNext = useCallback(() => {
-    if (step === 'info') {
-      setAttempted(true)
-      if (!profileRef.current.name.trim()) return
+    const p = profileRef.current
+    setAttempted(true)
+
+    // Validate current step
+    switch (step) {
+      case 'info':
+        if (!p.name.trim() || p.affiliationType === '') return
+        break
+      case 'situation':
+        if (p.situation === '') return
+        break
+      case 'position':
+        if (p.position === '') return
+        break
+      case 'interests':
+        if (p.interests.length === 0) return
+        break
     }
+
+    setAttempted(false)
     if (stepIndex < PRE_INTERVIEW_STEPS.length - 1) {
       goTo(PRE_INTERVIEW_STEPS[stepIndex + 1])
     } else {
-      // Last step — save and complete
+      // Last step — save and pass draft to parent for interview flow
       const p = profileRef.current
       saveProfileCheckpoint(p).catch(console.error)
-      onComplete()
+      onComplete(p)
     }
   }, [step, stepIndex, goTo, onComplete])
 
@@ -141,13 +172,24 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       case 'info': return profile.name.trim().length > 0 && profile.affiliationType !== ''
       case 'situation': return profile.situation !== ''
       case 'position': return profile.position !== ''
-      case 'interests': return true
+      case 'interests': return profile.interests.length > 0
       default: return false
     }
   })()
 
-  const isOptional = step === 'interests'
-  const hasSelection = step === 'interests' ? profile.interests.length > 0 : true
+  /* ── Error message for current step ── */
+  const errorMsg = attempted && !canProceed ? (() => {
+    switch (step) {
+      case 'info':
+        if (!profile.name.trim()) return '닉네임을 입력해주세요'
+        if (profile.affiliationType === '') return '소속 유형을 선택해주세요'
+        return null
+      case 'situation': return '하나를 선택해주��요'
+      case 'position': return '활동 분���를 선택해주세요'
+      case 'interests': return '관심 분야를 1개 ���상 선택해주세요'
+      default: return null
+    }
+  })() : null
 
   /* ── Auth loading ── */
   if (authLoading) {
@@ -305,7 +347,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                     className={`w-full text-left px-5 py-4 border rounded-xl transition-all duration-150 ${
                       profile.situation === sit.value
                         ? 'bg-brand border-brand'
-                        : 'bg-surface-card border-border active:scale-[0.99]'
+                        : attempted && !profile.situation
+                          ? 'bg-surface-card border-status-danger-text/50 active:scale-[0.99]'
+                          : 'bg-surface-card border-border active:scale-[0.99]'
                     }`}
                   >
                     <div className={`text-[14px] font-bold ${profile.situation === sit.value ? 'text-white' : 'text-txt-primary'}`}>
@@ -319,16 +363,45 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
               </div>
             )}
             {step === 'position' && (
-              <div className="flex flex-wrap gap-2">
-                {POSITIONS.map((pos) => (
-                  <button
-                    key={pos.slug}
-                    onClick={() => updateProfile({ position: pos.slug })}
-                    className={chipClass(profile.position === pos.slug)}
+              <div>
+                <div className="flex flex-wrap gap-2">
+                  {POSITIONS.map((pos) => (
+                    <button
+                      key={pos.slug}
+                      onClick={() => updateProfile({ position: pos.slug, skills: [] })}
+                      className={chipClass(profile.position === pos.slug, 'md', attempted && !profile.position)}
+                    >
+                      {pos.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Skills — revealed after position selection */}
+                {profile.position && SKILLS_BY_POSITION[profile.position] && (
+                  <div
+                    className="mt-6"
+                    style={{ animation: 'ob-reveal 0.35s cubic-bezier(0.16, 1, 0.3, 1) both' }}
                   >
-                    {pos.label}
-                  </button>
-                ))}
+                    <label className="text-[11px] font-medium text-txt-tertiary mb-2 block">
+                      사용하는 기술이 있다면? (선택)
+                    </label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {SKILLS_BY_POSITION[profile.position].map((skill) => (
+                        <button
+                          key={skill}
+                          onClick={() => updateProfile({
+                            skills: profile.skills.includes(skill)
+                              ? profile.skills.filter(s => s !== skill)
+                              : [...profile.skills, skill],
+                          })}
+                          className={chipClass(profile.skills.includes(skill), 'sm')}
+                        >
+                          {skill}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
             {step === 'interests' && (
@@ -341,7 +414,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                         ? profile.interests.filter(x => x !== c.slug)
                         : [...profile.interests, c.slug],
                     })}
-                    className={chipClass(profile.interests.includes(c.slug))}
+                    className={chipClass(profile.interests.includes(c.slug), 'md', attempted && profile.interests.length === 0)}
                   >
                     {c.label}
                   </button>
@@ -355,16 +428,20 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       {/* ── Next button ── */}
       <div className="px-6 pb-8 pt-2 shrink-0">
         <div className="max-w-2xl mx-auto">
+          {errorMsg && (
+            <p className="text-[12px] text-status-danger-text text-center mb-2 font-medium animate-in fade-in slide-in-from-bottom-1 duration-200">
+              {errorMsg}
+            </p>
+          )}
           <button
             onClick={handleNext}
-            disabled={!canProceed}
             className={`w-full flex items-center justify-center gap-2 py-4 rounded-full text-[14px] font-black transition-all duration-200 active:scale-[0.97] ${
               canProceed
                 ? 'bg-surface-inverse text-white hover:opacity-90'
-                : 'bg-surface-sunken text-txt-disabled cursor-not-allowed'
+                : 'bg-surface-sunken text-txt-disabled'
             }`}
           >
-            {isOptional && !hasSelection ? '건너뛰기' : '다음으로'}
+            다음으로
             <ArrowRight size={16} />
           </button>
         </div>

@@ -1,7 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { Plus, Rocket, Clock } from 'lucide-react'
+import Image from 'next/image'
+import { Plus, Clock } from 'lucide-react'
 import { calculateDaysLeft } from '@/src/hooks/useOpportunities'
 import type { Opportunity } from '@/src/types/opportunity'
 
@@ -13,74 +14,73 @@ export function ProfileProjects({ opportunities }: ProfileProjectsProps) {
   return (
     <section className="mb-6">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-[10px] font-medium text-txt-tertiary flex items-center gap-2">
-          <span className="w-5 h-5 bg-brand text-white flex items-center justify-center text-[0.5rem] font-bold">P</span>
-          MY PROJECTS
-          <span className="text-[10px] font-mono text-txt-tertiary">({opportunities.length})</span>
+        <h3 className="text-[15px] font-bold text-txt-primary flex items-center gap-2">
+          내 프로젝트
+          <span className="text-[13px] font-medium text-txt-tertiary">{opportunities.length}</span>
         </h3>
-        {opportunities.length > 0 && (
-          <span className="text-[10px] font-mono text-txt-disabled">tap + to add</span>
-        )}
       </div>
 
       {opportunities.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Link
-            href="/projects/new?from=/profile"
-            className="relative bg-surface-card rounded-xl border-2 border-dashed border-border overflow-hidden group hover:border-brand hover:shadow-lg transition-all cursor-pointer h-[21.25rem] flex flex-col items-center justify-center gap-3"
-          >
-            <div className="w-14 h-14 rounded-xl bg-surface-sunken flex items-center justify-center group-hover:bg-brand-bg transition-colors">
-              <Plus size={28} className="text-txt-disabled group-hover:text-brand transition-colors" />
-            </div>
-            <span className="text-sm font-medium text-txt-tertiary group-hover:text-brand transition-colors">새 프로젝트</span>
-          </Link>
-          {opportunities.map((opp, oppIdx) => {
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {opportunities.map((opp) => {
             const daysLeft = calculateDaysLeft(opp.created_at)
             const isUrgent = daysLeft > 0 && daysLeft <= 3
+            const coverSrc = opp.demo_images?.[0] || null
+
             return (
-              <Link href={`/projects/${opp.id}`} key={opp.id} className="relative bg-surface-card rounded-xl border border-border overflow-hidden group hover:shadow-lg hover-spring cursor-pointer h-[21.25rem] flex flex-col shadow-md">
-                <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/20 z-20" />
-                <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-surface-inverse/20 z-20" />
-                <div className="relative h-36 shrink-0 bg-surface-inverse flex items-end p-4">
-                  <div className="absolute top-3 left-3 flex items-center gap-2">
-                    <span className="text-[10px] font-mono font-bold text-white/50">#{String(oppIdx + 1).padStart(2, '0')}</span>
+              <Link href={`/projects/${opp.id}`} key={opp.id} className="bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl overflow-hidden group hover:shadow-lg transition-all cursor-pointer flex flex-col">
+                {/* Cover */}
+                <div className="relative h-32 sm:h-36 shrink-0 bg-[#E5E5EA] dark:bg-[#2C2C2E] overflow-hidden">
+                  {coverSrc ? (
+                    <Image
+                      src={coverSrc}
+                      alt={opp.title}
+                      fill
+                      sizes="(max-width:640px) 100vw, 50vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      quality={80}
+                    />
+                  ) : (
+                    <div className="h-full flex items-center justify-center">
+                      <span className="text-[28px] font-bold text-txt-disabled/30">{opp.title.charAt(0)}</span>
+                    </div>
+                  )}
+                  {/* Status badge */}
+                  <div className="absolute top-2.5 left-2.5">
                     {isUrgent ? (
-                      <span className="text-[10px] font-mono font-bold bg-indicator-alert text-white px-2 py-0.5">D-{daysLeft} URGENT</span>
+                      <span className="text-[11px] font-semibold bg-[#FF3B30] text-white px-2 py-0.5 rounded-full">D-{daysLeft}</span>
                     ) : (
-                      <span className="text-[10px] font-mono font-bold bg-white/20 text-white px-2 py-0.5 flex items-center gap-1 border border-white/30">
-                        <span className="w-1.5 h-1.5 bg-white rounded-full" />
-                        {opp.status === 'active' ? 'OPEN' : opp.status}
+                      <span className="text-[11px] font-semibold bg-white/80 dark:bg-black/50 backdrop-blur-sm text-txt-primary dark:text-white px-2 py-0.5 rounded-full flex items-center gap-1">
+                        <span className={`w-1.5 h-1.5 rounded-full ${opp.status === 'active' ? 'bg-[#34C759]' : 'bg-txt-disabled'}`} />
+                        {opp.status === 'active' ? '모집 중' : '마감'}
                       </span>
                     )}
                   </div>
-                  <div className="absolute top-3 right-3 flex gap-1.5">
+                  {/* Tags */}
+                  <div className="absolute top-2.5 right-2.5 flex gap-1">
                     {(opp.interest_tags || []).slice(0, 2).map(tag => (
-                      <span key={tag} className="text-[10px] font-mono bg-white/10 text-white px-2 py-0.5 border border-white/20">{tag}</span>
+                      <span key={tag} className="text-[11px] font-medium bg-white/80 dark:bg-black/50 backdrop-blur-sm text-txt-secondary dark:text-white/80 px-2 py-0.5 rounded-full">{tag}</span>
                     ))}
                   </div>
-                  <div className="w-10 h-10 bg-surface-card rounded-xl border border-border flex items-center justify-center shadow-sm">
-                    <Rocket size={20} className="text-txt-primary" />
-                  </div>
                 </div>
-                <div className="px-4 pt-4 h-[7.5rem] shrink-0 overflow-hidden">
-                  <h4 className="font-bold text-base text-txt-primary mb-1.5 truncate">{opp.title}</h4>
+
+                {/* Info */}
+                <div className="p-4 flex-1 flex flex-col">
+                  <h4 className="font-bold text-[15px] text-txt-primary mb-1 truncate">{opp.title}</h4>
                   <div className="flex items-center gap-1.5 mb-2 overflow-hidden">
-                    <span className="text-[0.5rem] font-medium text-brand/60 shrink-0">NEED</span>
-                    {(opp.needed_roles || []).slice(0, 2).map(role => (
-                      <span key={role} className="text-[10px] font-mono bg-brand-bg text-brand border border-brand-border px-2 py-0.5 font-medium shrink-0">{role}</span>
+                    {(opp.needed_roles || []).slice(0, 3).map(role => (
+                      <span key={role} className="text-[12px] bg-[#E5E5EA] dark:bg-[#3A3A3C] text-txt-secondary px-2 py-0.5 rounded-full">{role}</span>
                     ))}
                   </div>
-                  <p className="text-sm text-txt-secondary line-clamp-2">{opp.description}</p>
-                </div>
-                <div className="px-4 pb-4 h-[4.75rem] shrink-0 flex items-end">
-                  <div className="flex items-center justify-between w-full pt-3 border-t border-border">
-                    <div className="flex items-center gap-3 text-[10px] font-mono text-txt-tertiary">
+                  <p className="text-[13px] text-txt-tertiary line-clamp-2 flex-1">{opp.description}</p>
+                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-border/50">
+                    <div className="flex items-center gap-3 text-[12px] text-txt-tertiary">
                       <span>{opp.applications_count || 0}명 지원</span>
                       <span>{opp.interest_count || 0} 관심</span>
                     </div>
                     {daysLeft > 0 && (
-                      <span className={`text-[10px] font-mono flex items-center gap-1 ${isUrgent ? 'text-status-danger-text font-bold' : 'text-txt-tertiary'}`}>
-                        <Clock size={10} /> D-{daysLeft}
+                      <span className={`text-[12px] flex items-center gap-1 ${isUrgent ? 'text-[#FF3B30] font-semibold' : 'text-txt-tertiary'}`}>
+                        <Clock size={11} /> D-{daysLeft}
                       </span>
                     )}
                   </div>
@@ -88,20 +88,32 @@ export function ProfileProjects({ opportunities }: ProfileProjectsProps) {
               </Link>
             )
           })}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+          {/* 새 프로젝트 — 목록 마지막 */}
           <Link
             href="/projects/new?from=/profile"
-            className="relative bg-surface-card rounded-xl border-2 border-dashed border-border overflow-hidden group hover:border-brand hover:shadow-lg transition-all cursor-pointer h-[21.25rem] flex flex-col items-center justify-center gap-3"
+            className="bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl overflow-hidden group hover:bg-[#EDF0F3] dark:hover:bg-[#252527] transition-all cursor-pointer flex items-center justify-center gap-3 min-h-[8rem] sm:min-h-0 sm:h-full"
           >
-            <div className="w-14 h-14 rounded-xl bg-surface-sunken flex items-center justify-center group-hover:bg-brand-bg transition-colors">
-              <Plus size={28} className="text-txt-disabled group-hover:text-brand transition-colors" />
+            <div className="w-10 h-10 rounded-xl bg-[#E5E5EA] dark:bg-[#3A3A3C] flex items-center justify-center group-hover:bg-[#3182F6] transition-colors">
+              <Plus size={20} className="text-txt-disabled group-hover:text-white transition-colors" />
             </div>
-            <span className="text-sm font-medium text-txt-tertiary group-hover:text-brand transition-colors">새 프로젝트</span>
-            <span className="text-xs text-txt-disabled">아이디어를 프로젝트로 만들어보세요</span>
+            <span className="text-[14px] font-medium text-txt-tertiary group-hover:text-[#3182F6] transition-colors">새 프로젝트</span>
           </Link>
         </div>
+      ) : (
+        /* 프로젝트 없을 때 */
+        <Link
+          href="/projects/new?from=/profile"
+          className="flex items-center gap-4 bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl p-5 group hover:bg-[#EDF0F3] dark:hover:bg-[#252527] transition-all cursor-pointer"
+        >
+          <div className="w-12 h-12 rounded-xl bg-[#E5E5EA] dark:bg-[#3A3A3C] flex items-center justify-center group-hover:bg-[#3182F6] transition-colors shrink-0">
+            <Plus size={24} className="text-txt-disabled group-hover:text-white transition-colors" />
+          </div>
+          <div>
+            <p className="text-[15px] font-semibold text-txt-primary group-hover:text-[#3182F6] transition-colors">새 프로젝트 만들기</p>
+            <p className="text-[13px] text-txt-tertiary">아이디어를 프로젝트로 만들어보세요</p>
+          </div>
+        </Link>
       )}
     </section>
   )

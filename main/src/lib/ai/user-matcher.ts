@@ -27,19 +27,6 @@ export interface UserMatchResult {
   reason: string
 }
 
-interface VisionSummary {
-  work_style?: { planning?: number }
-  team_preference?: { role?: string }
-  behavioral_traits?: { risk_style?: string; planning_style?: string }
-  strengths?: string[]
-  availability?: { hours_per_week?: number; semester_available?: boolean }
-}
-
-function parseVisionSummary(profile: Profile): VisionSummary | null {
-  if (!profile.vision_summary) return null
-  try { return JSON.parse(profile.vision_summary) } catch { return null }
-}
-
 /**
  * Team fit score (0-100)
  * Measures personality & work-style compatibility between two users

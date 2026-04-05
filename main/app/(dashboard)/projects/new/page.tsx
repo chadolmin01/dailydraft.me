@@ -335,20 +335,18 @@ function NewProjectContent() {
         <form onSubmit={handlePreSubmit} className="bg-surface-card shadow-sm overflow-hidden border border-border-subtle rounded-xl">
 
           {/* ─── Header ─── */}
-          <div className="border-b border-border-subtle px-3 sm:px-5 py-3 grid grid-cols-3 items-center">
-            <div>
-              <button
-                type="button"
-                onClick={() => router.back()}
-                className="hidden sm:inline-flex items-center gap-1.5 text-xs text-txt-tertiary hover:text-txt-primary transition-colors"
-              >
-                <ArrowLeft size={14} />
-                <span>돌아가기</span>
-              </button>
-            </div>
+          <div className="border-b border-border-subtle px-3 sm:px-5 py-3 flex items-center justify-between gap-2">
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="hidden sm:inline-flex items-center gap-1.5 text-xs text-txt-tertiary hover:text-txt-primary transition-colors shrink-0"
+            >
+              <ArrowLeft size={14} />
+              <span>돌아가기</span>
+            </button>
 
             {/* Type selector with sliding background */}
-            <div className="flex items-center justify-center">
+            <div className="flex items-center justify-center flex-1">
               <div className="relative inline-flex items-center gap-0.5 bg-surface-sunken rounded-xl p-0.5">
                 {/* Sliding background */}
                 <div
@@ -363,7 +361,7 @@ function NewProjectContent() {
                     key={opt.value}
                     type="button"
                     onClick={() => setType(opt.value)}
-                    className="relative z-10 flex-1 text-[10px] font-medium px-2.5 py-1 rounded-lg transition-colors"
+                    className="relative z-10 flex-1 text-[11px] font-medium px-2.5 py-1 rounded-lg transition-colors whitespace-nowrap"
                   >
                     <span className={`relative ${type === opt.value ? 'text-txt-inverse' : 'text-txt-tertiary hover:text-txt-secondary'}`}>
                       {opt.label}
@@ -373,7 +371,7 @@ function NewProjectContent() {
               </div>
             </div>
 
-            <div className="flex justify-end">
+            <div className="flex shrink-0">
               <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-medium rounded-full transition-colors ${theme.status}`}>
                 <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${theme.statusDot}`} />
                 작성 중

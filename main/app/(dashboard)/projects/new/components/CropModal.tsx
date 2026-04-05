@@ -4,6 +4,7 @@ import React from 'react'
 import dynamic from 'next/dynamic'
 import type { Area } from 'react-easy-crop'
 import { Crop, Check } from 'lucide-react'
+import { useBackHandler } from '@/src/hooks/useBackHandler'
 
 const Cropper = dynamic(() => import('react-easy-crop').then(m => m.default), { ssr: false }) as unknown as React.ComponentType<Partial<import('react-easy-crop').CropperProps>>
 
@@ -20,6 +21,8 @@ interface CropModalProps {
 }
 
 export function CropModal({ cropSrc, crop, zoom, cropQueueLength, onCropChange, onZoomChange, onCropComplete, onCropConfirm, onCropCancel }: CropModalProps) {
+  useBackHandler(true, onCropCancel, 'crop-modal')
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
       <div className="bg-surface-card rounded-xl border border-border-subtle w-full max-w-lg flex flex-col overflow-hidden shadow-lg">

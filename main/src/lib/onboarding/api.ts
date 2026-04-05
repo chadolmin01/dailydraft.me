@@ -15,7 +15,7 @@ export async function saveProfileCheckpoint(profile: ProfileDraft): Promise<void
       currentSituation: profile.situation || 'exploring',
       skills: profile.skills.map(s => ({ name: s })),
       interestTags: profile.interests,
-      personality: { risk: 3, time: 3, communication: 3, decision: 3 },
+      personality: { risk: 3, time: 3, communication: 3, planning: 3, quality: 3, teamRole: 3 },
     }),
   })
   if (!res.ok) {

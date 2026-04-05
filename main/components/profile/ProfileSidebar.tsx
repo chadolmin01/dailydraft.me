@@ -12,7 +12,6 @@ import {
   Loader2,
 } from 'lucide-react'
 import { useProfileDraft } from '@/src/hooks/useProfileDraft'
-import { CATEGORICAL_LABELS, SCORE_TO_CATEGORICAL } from '@/src/lib/onboarding/constants'
 import type { Profile } from './types'
 import { EditableField } from './EditableField'
 
@@ -126,15 +125,14 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
       {/* --- PERSONALITY --- */}
       {profile?.personality && (() => {
         const p = profile.personality as Record<string, number>
-        // Resolve decision categorical label
-        let visionTraits: Record<string, unknown> | undefined
-        try {
-          const vs = profile.vision_summary ? JSON.parse(profile.vision_summary as string) : null
-          visionTraits = vs?.traits as Record<string, unknown> | undefined
-        } catch { /* skip */ }
-        const decisionRaw = p.decision != null ? (p.decision > 5 ? Math.round(p.decision / 2) : p.decision) : undefined
-        const decisionCatId = (visionTraits?.decision_style as string) || (decisionRaw != null ? SCORE_TO_CATEGORICAL.decision_style(decisionRaw) : undefined)
-        const decisionLabel = decisionCatId ? CATEGORICAL_LABELS.decision_style?.[decisionCatId] : undefined
+        const traits: { key: string; label: string }[] = [
+          { key: 'communication', label: '소통 스타일' },
+          { key: 'teamRole', label: '팀 역할' },
+          { key: 'risk', label: '도전 성향' },
+          { key: 'planning', label: '작업 방식' },
+          { key: 'quality', label: '완성도 vs 속도' },
+          { key: 'time', label: '시간 투자' },
+        ]
 
         return (
           <div className="relative bg-surface-card rounded-xl border border-border p-4 shadow-md">
@@ -143,23 +141,13 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
               PERSONALITY
             </h3>
             <div className="space-y-2">
-              {/* decision — categorical label */}
-              {decisionLabel && (
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] text-txt-secondary">의사결정</span>
-                  <span className="text-xs font-semibold text-txt-primary">{decisionLabel}</span>
-                </div>
-              )}
-              {/* communication, risk, time — slider bars */}
-              {(['communication', 'risk', 'time'] as const).map(key => {
+              {traits.map(({ key, label }) => {
                 const raw = p[key]
                 if (raw == null) return null
-                // 기존 1-10 데이터 호환: 5 초과면 반으로 나눠서 1-5로 보정
                 const value = raw > 5 ? Math.round(raw / 2) : raw
-                const labels: Record<string, string> = { risk: '도전 성향', time: '시간 투자', communication: '소통 선호' }
                 return (
                   <div key={key} className="flex items-center justify-between">
-                    <span className="text-[11px] text-txt-secondary">{labels[key]}</span>
+                    <span className="text-[11px] text-txt-secondary">{label}</span>
                     <div className="flex items-center gap-2">
                       <div className="w-16 h-1.5 bg-surface-sunken rounded-xl border border-border overflow-hidden">
                         <div className="h-full bg-brand transition-all" style={{ width: `${(value / 5) * 100}%` }} />
