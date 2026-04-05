@@ -84,11 +84,14 @@ const CTA_CONFIG: Record<string, CTAItem> = {
 /* ─── Component ─── */
 
 export function GuideCTA({ profile, completion }: GuideCTAProps) {
-  const [phase, setPhase] = useState<'welcome' | 'cta'>('welcome')
+  const [showWelcome, setShowWelcome] = useState(true)
+  const [showCta, setShowCta] = useState(false)
 
   useEffect(() => {
-    const t = setTimeout(() => setPhase('cta'), 1200)
-    return () => clearTimeout(t)
+    // welcome 표시 후 fade-out → cta fade-in (cross-fade)
+    const t1 = setTimeout(() => setShowWelcome(false), 1200)  // welcome fade-out 시작
+    const t2 = setTimeout(() => setShowCta(true), 1500)       // cta fade-in 시작 (300ms 갭)
+    return () => { clearTimeout(t1); clearTimeout(t2) }
   }, [])
 
   // Bio inline editor state
@@ -142,31 +145,29 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
   return (
     <div className="fixed inset-0 z-50 bg-surface-bg flex flex-col items-center justify-center font-sans p-6">
       <div className="w-full max-w-md relative">
-        {/* ── Welcome Phase ── */}
-        {phase === 'welcome' && (
-          <div className="flex flex-col items-center animate-slide-up-fade">
-            <img
-              src="/onboarding/1.svg"
-              alt="준비 완료"
-              className="w-full max-w-[200px] object-contain mb-8"
-              style={{ animation: 'dcto-step 0.5s cubic-bezier(0.16, 1, 0.3, 1) both' }}
-            />
+        {/* ── Welcome Phase (cross-fade out) ── */}
+        <div className={`absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-300 ${showWelcome ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+          <img
+            src="/onboarding/1.svg"
+            alt="준비 완료"
+            className="w-full max-w-[200px] object-contain mb-8"
+            style={{ animation: 'dcto-step 0.5s cubic-bezier(0.16, 1, 0.3, 1) both' }}
+          />
 
-            <div className="flex items-center gap-2 mb-2" style={{ animation: 'dcto-step 0.5s cubic-bezier(0.16, 1, 0.3, 1) both', animationDelay: '300ms' }}>
-              <CheckCircle2 size={16} className="text-txt-primary" />
-              <h2 className="text-lg font-bold text-txt-primary">
-                {nickname}님, 준비 완료!
-              </h2>
-            </div>
-
-            <p className="text-sm text-txt-secondary" style={{ animation: 'dcto-step 0.5s cubic-bezier(0.16, 1, 0.3, 1) both', animationDelay: '450ms' }}>
-              이제 Draft를 시작해볼까요?
-            </p>
+          <div className="flex items-center gap-2 mb-2" style={{ animation: 'dcto-step 0.5s cubic-bezier(0.16, 1, 0.3, 1) both', animationDelay: '300ms' }}>
+            <CheckCircle2 size={16} className="text-txt-primary" />
+            <h2 className="text-lg font-bold text-txt-primary">
+              {nickname}님, 준비 완료!
+            </h2>
           </div>
-        )}
 
-        {/* ── CTA Phase ── */}
-        {phase === 'cta' && (
+          <p className="text-sm text-txt-secondary" style={{ animation: 'dcto-step 0.5s cubic-bezier(0.16, 1, 0.3, 1) both', animationDelay: '450ms' }}>
+            이제 Draft를 시작해볼까요?
+          </p>
+        </div>
+
+        {/* ── CTA Phase (cross-fade in) ── */}
+        {showCta && (
           <div className="flex flex-col items-center animate-slide-up-fade">
 
             {/* Illustration */}
@@ -259,7 +260,7 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
         )}
 
         {/* ── Bio Inline Editor ── */}
-        {generatedBio && phase === 'cta' && (
+        {generatedBio && showCta && (
           <div
             className="mt-3 bg-surface-card rounded-xl border border-border shadow-lg overflow-hidden animate-slide-up-fade"
             style={{ animationDelay: '800ms', animationFillMode: 'both' }}
