@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { DashboardLayout } from '@/components/ui/DashboardLayout'
 import { useAuth } from '@/src/context/AuthContext'
 import { useProfile } from '@/src/hooks/useProfile'
@@ -16,12 +17,12 @@ import {
   ProfileCoffeeChats,
   ProfileInvitations,
   AiOnboardingModal,
-  AIInterviewModal,
 } from '@/components/profile'
 import { Sparkles, Briefcase, FolderOpen, Activity } from 'lucide-react'
 import { SkeletonProfile, SkeletonGrid } from '@/components/ui/Skeleton'
 
 export default function ProfilePageClient() {
+  const router = useRouter()
   const { user, isLoading: isAuthLoading } = useAuth()
   const { data: profile, isPending: isProfilePending } = useProfile()
   const { data: myOpportunities = [] } = useMyOpportunities()
@@ -31,7 +32,6 @@ export default function ProfilePageClient() {
   const { data: uniData } = useUniversityVerification()
   const uniVerified = uniData?.is_verified ?? false
   const [showAiConfirm, setShowAiConfirm] = useState(false)
-  const [showInterview, setShowInterview] = useState(false)
   const [activeTab, setActiveTab] = useState<'portfolio' | 'projects' | 'activity'>('portfolio')
 
   // Parse strengths from vision_summary
@@ -85,11 +85,23 @@ export default function ProfilePageClient() {
           <AiOnboardingModal
             isOpen={showAiConfirm}
             onClose={() => setShowAiConfirm(false)}
-            onConfirm={() => { setShowAiConfirm(false); setShowInterview(true) }}
-          />
-          <AIInterviewModal
-            isOpen={showInterview}
-            onClose={() => setShowInterview(false)}
+            onConfirm={() => {
+              setShowAiConfirm(false)
+              // 온보딩 인터뷰 페이지로 이동 — 기존 프로필 데이터를 sessionStorage에 저장
+              const draft = {
+                name: profile.nickname || '',
+                affiliationType: profile.affiliation_type || 'student',
+                university: profile.university || '',
+                major: profile.major || '',
+                locations: profile.location ? profile.location.split(', ') : [],
+                position: profile.desired_position || '',
+                situation: profile.current_situation || 'exploring',
+                skills: (profile.skills as Array<{ name: string }> | null)?.map(s => s.name) ?? [],
+                interests: (profile.interest_tags as string[] | null) ?? [],
+              }
+              sessionStorage.setItem('onboarding-draft', JSON.stringify(draft))
+              router.push('/onboarding/interview')
+            }}
           />
         </>
       )}

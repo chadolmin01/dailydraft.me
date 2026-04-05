@@ -1,7 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Sparkles, X, ArrowRight } from 'lucide-react'
+import { useAuth } from '@/src/context/AuthContext'
 
 const DISMISS_KEY_PREFIX = 'ai-nudge-dismissed-'
 
@@ -10,11 +12,9 @@ function getDismissKey() {
   return `${DISMISS_KEY_PREFIX}${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
-interface AiMatchingNudgeCardProps {
-  onStartInterview: () => void
-}
-
-export function AiMatchingNudgeCard({ onStartInterview }: AiMatchingNudgeCardProps) {
+export function AiMatchingNudgeCard() {
+  const router = useRouter()
+  const { profile } = useAuth()
   const [dismissed, setDismissed] = useState(true) // default hidden to avoid flash
 
   useEffect(() => {
@@ -43,7 +43,24 @@ export function AiMatchingNudgeCard({ onStartInterview }: AiMatchingNudgeCardPro
         </div>
 
         <button
-          onClick={onStartInterview}
+          onClick={() => {
+            // 프로필 데이터를 sessionStorage에 저장 후 온보딩 인터뷰로 이동
+            if (profile) {
+              const draft = {
+                name: profile.nickname || '',
+                affiliationType: profile.affiliation_type || 'student',
+                university: profile.university || '',
+                major: profile.major || '',
+                locations: profile.location ? profile.location.split(', ') : [],
+                position: profile.desired_position || '',
+                situation: profile.current_situation || 'exploring',
+                skills: (profile.skills as Array<{ name: string }> | null)?.map(s => s.name) ?? [],
+                interests: (profile.interest_tags as string[] | null) ?? [],
+              }
+              sessionStorage.setItem('onboarding-draft', JSON.stringify(draft))
+            }
+            router.push('/onboarding/interview')
+          }}
           className="shrink-0 px-3.5 py-2 bg-surface-inverse text-txt-inverse text-xs font-bold rounded-xl group-hover:bg-brand transition-colors duration-300 flex items-center gap-1.5"
         >
           시작하기

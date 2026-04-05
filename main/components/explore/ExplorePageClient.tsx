@@ -11,7 +11,6 @@ import { DashboardLayout } from '@/components/ui/DashboardLayout'
 import { SkeletonGrid, SkeletonSidebar } from '@/components/ui/Skeleton'
 import { ProfileCompletionBanner } from '@/components/ui/ProfileCompletionBanner'
 import { AiMatchingNudgeCard } from '@/components/explore/AiMatchingNudgeCard'
-import { AIInterviewModal } from '@/components/profile/AIInterviewModal'
 import { StarterGuideCard } from '@/components/starter-guide/StarterGuideCard'
 import { useStarterGuide } from '@/src/hooks/useStarterGuide'
 
@@ -134,7 +133,6 @@ function ExplorePageContent() {
   const [searchScope, setSearchScope] = useState<SearchScope>(initialScope)
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false)
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
-  const [showInterview, setShowInterview] = useState(false)
 
   const searchQuery = useDebouncedValue(searchInput, 300)
   const { isAuthenticated, user, profile, isLoading: isAuthLoading } = useAuth()
@@ -538,7 +536,7 @@ function ExplorePageContent() {
         )}
         {!guide.visible && <ProfileCompletionBanner />}
         {isAuthenticated && profile && !profile.ai_chat_completed && (
-          <AiMatchingNudgeCard onStartInterview={() => setShowInterview(true)} />
+          <AiMatchingNudgeCard />
         )}
 
         {/* 검색바 + 필터: 데스크톱만 */}
@@ -631,7 +629,6 @@ function ExplorePageContent() {
         onReset={handleResetFilters}
       />
 
-      <AIInterviewModal isOpen={showInterview} onClose={() => setShowInterview(false)} />
 
       <AnimatePresence>
         {selectedProjectId && (
