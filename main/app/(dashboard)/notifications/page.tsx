@@ -79,8 +79,8 @@ export default function NotificationsPage() {
       return res.json()
     },
     enabled: !isAuthLoading && !!user,
-    refetchOnWindowFocus: true,
-    staleTime: 10_000,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 2, // 2분
   })
 
   const markReadMutation = useMutation({

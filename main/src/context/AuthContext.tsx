@@ -62,44 +62,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     let mounted = true
 
     const initializeAuth = async () => {
-      let profileFetched = false
-
-      // Fast path: read local session from cookies/cache (usually instant)
+      // Fast path: read local session (instant — JWT decode only)
       try {
         const { data: { session } } = await supabase.auth.getSession()
         if (!mounted) return
         if (session?.user) {
-          const p = await fetchProfile(session.user.id)
-          if (!mounted) return
-          // Batch: user + profile in same tick → single render
+          // Set user immediately → unblock isLoading FAST
           setUser(session.user)
-          setProfile(p)
           setIsLoading(false)
-          profileFetched = true
+
+          // Fetch profile in background (non-blocking)
+          fetchProfile(session.user.id).then(p => {
+            if (mounted) setProfile(p)
+          })
+
+          // Background: validate session is still valid on server
+          supabase.auth.getUser().then(({ data: { user: serverUser }, error }) => {
+            if (!mounted) return
+            if (error || !serverUser) {
+              setUser(null)
+              setProfile(null)
+            }
+          }).catch(() => {})
+          return
         }
       } catch { /* getSession failed — continue to authoritative path */ }
 
       if (!mounted) return
 
-      // Authoritative validation: server round-trip (background)
-      // If fast path succeeded, this silently verifies the session.
-      // If session was revoked/expired, it will log the user out.
+      // Fallback: no local session — try server
       try {
         const { data: { user: serverUser }, error } = await supabase.auth.getUser()
         if (!mounted) return
-        if (error || !serverUser) {
-          setUser(null)
-          setProfile(null)
-        } else if (!profileFetched) {
-          const p = await fetchProfile(serverUser.id)
-          if (!mounted) return
+        if (!error && serverUser) {
           setUser(serverUser)
-          setProfile(p)
+          const p = await fetchProfile(serverUser.id)
+          if (mounted) setProfile(p)
         }
       } catch { /* getUser failed */ }
 
-      // If fast path didn't finish loading, finish it now
-      if (mounted && !profileFetched) setIsLoading(false)
+      if (mounted) setIsLoading(false)
     }
 
     initializeAuth()

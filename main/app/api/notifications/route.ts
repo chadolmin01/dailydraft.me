@@ -39,16 +39,12 @@ export async function GET(request: NextRequest) {
       return ApiResponse.internalError('알림 조회 중 오류가 발생했습니다')
     }
 
-    // 읽지 않은 알림 수도 함께 반환
-    const { count: unreadCount } = await supabase
-      .from('event_notifications')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', user.id)
-      .eq('status', 'unread')
+    // 메인 쿼리 결과에서 unread 카운트 계산 (별도 DB 호출 제거)
+    const unreadCount = (notifications || []).filter(n => n.status === 'unread').length
 
     return ApiResponse.ok({
       notifications,
-      unread_count: unreadCount || 0,
+      unread_count: unreadCount,
     })
   } catch {
     return ApiResponse.internalError('알림 조회 중 오류가 발생했습니다')
