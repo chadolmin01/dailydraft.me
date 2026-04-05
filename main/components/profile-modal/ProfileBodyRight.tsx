@@ -1,10 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Code2, Clock, Users, Zap, Brain, Target, ChevronDown, Sparkles } from 'lucide-react'
+import { Code2, Brain, ChevronDown, Sparkles } from 'lucide-react'
 import { SliderBar } from './SliderBar'
-import { traitLabels, TRAIT_COLORS } from './types'
-import { CATEGORICAL_LABELS, SCORE_TO_CATEGORICAL } from '@/src/lib/onboarding/constants'
+import { traitLabels } from './types'
 
 /* ── Section Header ─────────────────────────────── */
 
@@ -102,41 +101,19 @@ function SkillTag({ name }: { name: string }) {
 
 export function ProfileBodyRight({
   personality,
-  workStyle,
-  traits,
-  teamPref,
-  availability,
   skills,
 }: {
   personality: Record<string, number> | null
-  workStyle: Record<string, number> | undefined
-  traits: Record<string, unknown> | undefined
-  teamPref: Record<string, string> | undefined
-  availability: { hours_per_week?: number; prefer_online?: boolean } | undefined
+  workStyle?: Record<string, number> | undefined
+  traits?: Record<string, unknown> | undefined
+  teamPref?: Record<string, string> | undefined
+  availability?: { hours_per_week?: number; prefer_online?: boolean } | undefined
   skills: Array<{ name: string }> | null
 }) {
-  // 기존 1-10 데이터 호환: 5 초과면 반으로 나눠서 1-5로 보정
-  const norm = (v: number) => v > 5 ? Math.round(v / 2) : v
-
-  const getTraitLabel = (traitKey: string, scoreKey: string, source: Record<string, number> | null | undefined) => {
-    const catId = traits?.[traitKey] as string | undefined
-    const raw = source?.[scoreKey]
-    const resolved = catId || (raw != null ? SCORE_TO_CATEGORICAL[traitKey]?.(norm(raw)) : undefined)
-    return resolved ? CATEGORICAL_LABELS[traitKey]?.[resolved] : undefined
-  }
-
-  const collabLabel = getTraitLabel('collaboration_style', 'collaboration', workStyle)
-  const planningLabel = getTraitLabel('planning_style', 'planning', workStyle)
-  const qualityLabel = getTraitLabel('quality_style', 'perfectionism', workStyle)
-  const decisionLabel = getTraitLabel('decision_style', 'decision', personality)
-
-  const hasWorkStyleBadges = collabLabel || planningLabel || qualityLabel
   const hasPersonality = personality && Object.keys(personality).length > 0
-  const hasTeamPref = teamPref && Object.keys(teamPref).length > 0
-  const hasAvailability = availability && (availability.hours_per_week != null || availability.prefer_online != null)
   const hasSkills = skills && skills.length > 0
 
-  const isEmpty = !hasPersonality && !hasWorkStyleBadges && !hasTeamPref && !hasAvailability && !hasSkills
+  const isEmpty = !hasPersonality && !hasSkills
 
   return (
     <div className="md:col-span-2 space-y-4 md:bg-white/60 md:border md:border-border md:rounded-xl md:p-5 md:self-start">
@@ -157,42 +134,6 @@ export function ProfileBodyRight({
               if (val == null) return null
               return <SliderBar key={key} value={val} low={low} high={high} label={label} colorKey={key} />
             })}
-          </div>
-        </CollapsibleSection>
-      )}
-
-      {/* ── Work Style ── */}
-      {hasWorkStyleBadges && (
-        <CollapsibleSection title="작업 스타일" icon={Target} color="bg-sky-500">
-          <div className="space-y-1.5">
-            {collabLabel && <TraitBadge label="협업 방식" value={collabLabel} colorClass="text-sky-600" />}
-            {planningLabel && <TraitBadge label="작업 방식" value={planningLabel} colorClass="text-indigo-600" />}
-            {qualityLabel && <TraitBadge label="품질 기준" value={qualityLabel} colorClass="text-rose-600" />}
-          </div>
-        </CollapsibleSection>
-      )}
-
-      {/* ── Team Preference ── */}
-      {hasTeamPref && (
-        <CollapsibleSection title="팀 선호" icon={Users} color="bg-emerald-500">
-          <div className="space-y-1.5">
-            {teamPref!.role && <TraitBadge label="역할" value={teamPref!.role} colorClass="text-emerald-600" />}
-            {teamPref!.preferred_size && <TraitBadge label="선호 규모" value={teamPref!.preferred_size} colorClass="text-emerald-600" />}
-            {teamPref!.atmosphere && <TraitBadge label="분위기" value={teamPref!.atmosphere} colorClass="text-emerald-600" />}
-          </div>
-        </CollapsibleSection>
-      )}
-
-      {/* ── Availability ── */}
-      {hasAvailability && (
-        <CollapsibleSection title="가용 시간" icon={Clock} color="bg-amber-500">
-          <div className="space-y-1.5">
-            {availability!.hours_per_week != null && (
-              <TraitBadge label="주당 시간" value={`${availability!.hours_per_week}시간`} colorClass="text-amber-600" />
-            )}
-            {availability!.prefer_online != null && (
-              <TraitBadge label="작업 방식" value={availability!.prefer_online ? '온라인 선호' : '오프라인 선호'} colorClass="text-amber-600" />
-            )}
           </div>
         </CollapsibleSection>
       )}
