@@ -62,18 +62,27 @@ export function AIInterviewModal({ isOpen, onClose }: AIInterviewModalProps) {
   const handleComplete = useCallback(async (responses: StructuredResponse[]) => {
     if (!profileDraft) return
     setIsCompleting(true)
+
+    // 최대 8초 타임아웃 — 어떤 상황에서도 닫힘 보장
+    const timeout = setTimeout(() => { setIsCompleting(false); onClose() }, 8000)
+
     try {
-      await saveProfileFromInterview(profileDraft, responses)
-      // Wait for completing animation
-      await new Promise(resolve => setTimeout(resolve, 2500))
-      // Invalidate caches
+      // 저장 + completing 애니메이션(2.5초)을 병렬 실행
+      await Promise.all([
+        saveProfileFromInterview(profileDraft, responses).catch(err => {
+          console.error('Failed to save interview:', err)
+        }),
+        new Promise(resolve => setTimeout(resolve, 2500)),
+      ])
+      // 캐시 갱신
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['profile'] }),
         refreshProfile(),
-      ])
+      ]).catch(() => {})
     } catch (err) {
-      console.error('Failed to save interview:', err)
+      console.error('Interview complete error:', err)
     } finally {
+      clearTimeout(timeout)
       setIsCompleting(false)
       onClose()
     }
