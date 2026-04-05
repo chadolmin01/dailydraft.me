@@ -28,14 +28,15 @@ interface Props {
 }
 
 // Visual + label per question
+const SPECTRUM_HINT = '1부터 5 사이에서 골라주세요'
 const QUESTION_VISUALS: Record<string, { emoji: string; illustration: string | null; hint: string; label: string }> = {
-  spectrum_teamrole:      { emoji: '👥', illustration: '/onboarding/leader_follower.svg', hint: '1부터 5 사이에서 골라���세요', label: '팀 역할' },
-  spectrum_communication: { emoji: '💬', illustration: '/onboarding/2.svg', hint: '1부터 5 사이에서 골라주세요', label: '��통 스타일' },
-  spectrum_risk:          { emoji: '⚡', illustration: '/onboarding/3.svg', hint: '1부터 5 사이에서 골라주세요', label: '도전 성향' },
-  spectrum_planning:      { emoji: '🗂️', illustration: '/onboarding/5.svg', hint: '1부터 5 사이에서 골라주세요', label: '��업 방식' },
-  spectrum_quality:       { emoji: '💎', illustration: null,                hint: '1부터 5 사이에서 골라주세요', label: '완성도 vs 속도' },
-  quick_number_hours:     { emoji: '⏱️', illustration: '/onboarding/4.svg', hint: '',                          label: '투자 시간' },
-  emoji_grid_strengths:   { emoji: '✨', illustration: '/onboarding/6.svg', hint: '최대 3개 선택해주세요',         label: '나의 ��점' },
+  spectrum_teamrole:      { emoji: '👥', illustration: '/onboarding/leader_follower.svg', hint: SPECTRUM_HINT, label: '팀 역할' },
+  spectrum_communication: { emoji: '💬', illustration: '/onboarding/2.svg',              hint: SPECTRUM_HINT, label: '소통 스타일' },
+  spectrum_risk:          { emoji: '⚡', illustration: '/onboarding/3.svg',              hint: SPECTRUM_HINT, label: '도전 성향' },
+  spectrum_planning:      { emoji: '🗂️', illustration: '/onboarding/5.svg',             hint: SPECTRUM_HINT, label: '작업 방식' },
+  spectrum_quality:       { emoji: '💎', illustration: null,                              hint: SPECTRUM_HINT, label: '완성도 vs 속도' },
+  quick_number_hours:     { emoji: '⏱️', illustration: '/onboarding/4.svg',              hint: '',            label: '투자 시간' },
+  emoji_grid_strengths:   { emoji: '✨', illustration: '/onboarding/6.svg',              hint: '최대 3개 선택해주세요', label: '나의 강점' },
 }
 
 export function ScriptedInterviewStep({ profile, introMessage, onAnswer, onComplete }: Props) {
