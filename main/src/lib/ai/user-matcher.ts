@@ -1,4 +1,21 @@
 import type { Profile, Skill, CurrentSituation } from '@/src/types/profile'
+import { positionToRole } from '@/src/constants/roles'
+
+type RoleGroup = 'tech' | 'creative' | 'biz'
+
+function toRoleGroup(desiredPosition: string | null): RoleGroup {
+  const role = positionToRole(desiredPosition || '')
+  if (role === 'developer' || role === 'data') return 'tech'
+  if (role === 'designer') return 'creative'
+  return 'biz'
+}
+
+/** 내 직렬 × 상대 직렬 → { skill, teamfit } (interest 20% + situation 15% 고정) */
+const USER_WEIGHT_MATRIX: Record<RoleGroup, Record<RoleGroup, { skill: number; teamfit: number }>> = {
+  tech:     { tech: { skill: 0.20, teamfit: 0.45 }, creative: { skill: 0.10, teamfit: 0.55 }, biz: { skill: 0.05, teamfit: 0.60 } },
+  creative: { tech: { skill: 0.20, teamfit: 0.45 }, creative: { skill: 0.15, teamfit: 0.50 }, biz: { skill: 0.05, teamfit: 0.60 } },
+  biz:      { tech: { skill: 0.30, teamfit: 0.35 }, creative: { skill: 0.15, teamfit: 0.50 }, biz: { skill: 0.05, teamfit: 0.60 } },
+}
 
 export interface UserMatchResult {
   userId: string
@@ -6,7 +23,77 @@ export interface UserMatchResult {
   skillComplementarity: number
   interestOverlap: number
   situationCompatibility: number
+  teamFit: number
   reason: string
+}
+
+interface VisionSummary {
+  work_style?: { planning?: number }
+  team_preference?: { role?: string }
+  behavioral_traits?: { risk_style?: string; planning_style?: string }
+  strengths?: string[]
+  availability?: { hours_per_week?: number; semester_available?: boolean }
+}
+
+function parseVisionSummary(profile: Profile): VisionSummary | null {
+  if (!profile.vision_summary) return null
+  try { return JSON.parse(profile.vision_summary) } catch { return null }
+}
+
+/**
+ * Team fit score (0-100)
+ * Measures personality & work-style compatibility between two users
+ * All personality fields are 1-5 spectrum values
+ */
+function calculateTeamFit(myProfile: Profile, candidate: Profile): number {
+  const checks: number[] = []
+
+  // 1. Leader-follower complementarity (personality.teamRole 1~5)
+  const myRole = myProfile.personality?.teamRole
+  const theirRole = candidate.personality?.teamRole
+  if (myRole != null && theirRole != null) {
+    // 리더(4-5) + 팔로워(1-2) = 보완 → 높은 점수
+    const sum = myRole + theirRole
+    const diff = Math.abs(myRole - theirRole)
+    if (diff >= 3) checks.push(100)       // 리더+팔로워 (1+5, 2+5, 1+4)
+    else if (diff >= 2) checks.push(80)   // 약간 보완적
+    else if (sum >= 5 && sum <= 7) checks.push(70) // 둘 다 중간~유연
+    else checks.push(40)                  // 리더+리더 or 팔로워+팔로워
+  }
+
+  // 2. Communication style similarity (personality.communication 1~5)
+  const myComm = myProfile.personality?.communication
+  const theirComm = candidate.personality?.communication
+  if (myComm != null && theirComm != null) {
+    const diff = Math.abs(myComm - theirComm)
+    checks.push(diff <= 1 ? 100 : diff === 2 ? 70 : 40)
+  }
+
+  // 3. Planning style compatibility (personality.planning 1~5)
+  const myPlanning = myProfile.personality?.planning
+  const theirPlanning = candidate.personality?.planning
+  if (myPlanning != null && theirPlanning != null) {
+    const diff = Math.abs(myPlanning - theirPlanning)
+    checks.push(diff <= 1 ? 90 : diff === 2 ? 65 : 45)
+  }
+
+  // 4. Risk tolerance similarity (personality.risk 1~5)
+  const myRisk = myProfile.personality?.risk
+  const theirRisk = candidate.personality?.risk
+  if (myRisk != null && theirRisk != null) {
+    const diff = Math.abs(myRisk - theirRisk)
+    checks.push(diff <= 1 ? 90 : diff === 2 ? 60 : 35)
+  }
+
+  // 5. Quality/speed alignment (personality.quality 1~5)
+  const myQuality = myProfile.personality?.quality
+  const theirQuality = candidate.personality?.quality
+  if (myQuality != null && theirQuality != null) {
+    const diff = Math.abs(myQuality - theirQuality)
+    checks.push(diff <= 1 ? 85 : diff === 2 ? 60 : 40)
+  }
+
+  return checks.length > 0 ? checks.reduce((a, b) => a + b, 0) / checks.length : 50
 }
 
 export interface CandidateProfile extends Profile {
@@ -107,9 +194,25 @@ function generateUserMatchReason(
     skillComplementarity: number
     interestOverlap: number
     situationCompatibility: number
+    teamFit: number
   }
 ): string {
   const reasons: { priority: number; text: string }[] = []
+
+  // Team fit reasons
+  if (scores.teamFit >= 80) {
+    const myRole = myProfile.personality?.teamRole
+    const theirRole = candidate.personality?.teamRole
+    if (myRole != null && theirRole != null && Math.abs(myRole - theirRole) >= 3) {
+      reasons.push({ priority: 2, text: '리더-서포터 조합이 잘 맞아요' })
+    }
+    const commDiff = Math.abs((myProfile.personality?.communication ?? 3) - (candidate.personality?.communication ?? 3))
+    if (commDiff <= 1) {
+      reasons.push({ priority: 3, text: '소통 스타일이 비슷해요' })
+    }
+  } else if (scores.teamFit >= 60) {
+    reasons.push({ priority: 5, text: '작업 방식이 잘 맞아요' })
+  }
 
   // Skill complementarity
   if (scores.skillComplementarity >= 70) {
@@ -188,19 +291,24 @@ function calculateUserMatch(
     myProfile.current_situation,
     candidate.current_situation
   )
+  const teamfit = calculateTeamFit(myProfile, candidate)
 
-  // Pure algorithmic weights
-  const weights = { skill: 0.50, interest: 0.30, situation: 0.20 }
+  // 내 직렬 × 상대 직렬 → 동적 가중치
+  const myGroup = toRoleGroup(myProfile.desired_position)
+  const theirGroup = toRoleGroup(candidate.desired_position)
+  const w = USER_WEIGHT_MATRIX[myGroup][theirGroup]
 
   const finalScore =
-    skill * weights.skill +
-    interest * weights.interest +
-    situation * weights.situation
+    skill * w.skill +
+    interest * 0.20 +
+    situation * 0.15 +
+    teamfit * w.teamfit
 
   const reason = generateUserMatchReason(myProfile, candidate, {
     skillComplementarity: skill,
     interestOverlap: interest,
     situationCompatibility: situation,
+    teamFit: teamfit,
   })
 
   return {
@@ -209,6 +317,7 @@ function calculateUserMatch(
     skillComplementarity: Math.round(skill),
     interestOverlap: Math.round(interest),
     situationCompatibility: Math.round(situation),
+    teamFit: Math.round(teamfit),
     reason,
   }
 }
@@ -227,6 +336,7 @@ export function rankUserMatches(
       skill: number
       interest: number
       situation: number
+      teamfit: number
     }
   }
 > {
@@ -241,6 +351,7 @@ export function rankUserMatches(
           skill: match.skillComplementarity,
           interest: match.interestOverlap,
           situation: match.situationCompatibility,
+          teamfit: match.teamFit,
         },
       }
     })

@@ -6,10 +6,13 @@ export interface Skill {
 }
 
 export interface Personality {
-  risk?: number // 위험 감수 수준 (1-5)
-  time?: number // 시간 투자 가능량 (1-5)
-  communication?: number // 커뮤니케이션 스타일 (1-5)
-  decision?: number // 의사결정 스타일 (1-5)
+  risk?: number // 안정←→도전 (1-5)
+  time?: number // 주당 투자 시간 (1-5)
+  communication?: number // 조용히 작업←→수시 공유 (1-5)
+  planning?: number // 계획부터←→실행부터 (1-5)
+  quality?: number // 완성도←→속도 (1-5)
+  teamRole?: number // 팔로워←→리더 (1-5)
+  decision?: number // @deprecated — planning으로 대체, 기존 데이터 호환용
 }
 
 export interface Profile {

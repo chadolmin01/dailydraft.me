@@ -30,37 +30,26 @@ export async function saveProfileFromInterview(
 ): Promise<void> {
   const byId = Object.fromEntries(structuredResponses.map(r => [r.questionId, r.value]))
 
-  // ── Personality scores from actual 6 interview questions (1-5 scale) ──
-  const commRaw = byId['spectrum_communication'] as number | undefined
-  const riskRaw = byId['this_or_that_risk'] as string | undefined
-  const hoursRaw = byId['quick_number_hours'] as { hours?: number; semesterAvailable?: boolean } | undefined
-  const planningRaw = byId['this_or_that_planning'] as string | undefined
-  const teamRoleRaw = byId['spectrum_teamrole'] as number | undefined
-  const strengthsRaw = byId['emoji_grid_strengths'] as string[] | undefined
+  // ── All 5 spectrum values: direct 1-5 scale ──
+  const communication = (byId['spectrum_communication'] as number | undefined) ?? 3
+  const risk = (byId['spectrum_risk'] as number | undefined) ?? 3
+  const planning = (byId['spectrum_planning'] as number | undefined) ?? 3
+  const quality = (byId['spectrum_quality'] as number | undefined) ?? 3
+  const teamRole = (byId['spectrum_teamrole'] as number | undefined) ?? 3
 
-  const communication = commRaw ?? 3
-  const risk = riskRaw === 'adventurous' ? 4 : riskRaw === 'stable' ? 2 : 3
+  const hoursRaw = byId['quick_number_hours'] as { hours?: number; semesterAvailable?: boolean } | undefined
   const hours = hoursRaw?.hours ?? 10
   const time = Math.min(Math.round(hours / 6), 5) || 1
-  // decision: no dedicated question → derive from planning preference
-  const decision = planningRaw === 'build_first' ? 4 : planningRaw === 'plan_first' ? 2 : 3
 
-  // ── Work style traits ──
-  const workStyle = {
-    planning: planningRaw === 'build_first' ? 2 : planningRaw === 'plan_first' ? 4 : 3,
-  }
+  const strengthsRaw = byId['emoji_grid_strengths'] as string[] | undefined
 
-  // ── Vision summary (for profile display) ──
+  // ── Vision summary (for profile display + matching) ──
   const visionSummary = {
-    work_style: workStyle,
-    behavioral_traits: {
-      ...(riskRaw && { risk_style: riskRaw }),
-      ...(planningRaw && { planning_style: planningRaw }),
+    work_style: { planning },
+    team_preference: {
+      role: teamRole >= 4 ? '리더' : teamRole <= 2 ? '팔로워' : '유연',
     },
     strengths: strengthsRaw,
-    team_preference: {
-      role: teamRoleRaw != null ? (teamRoleRaw >= 4 ? '리더' : teamRoleRaw <= 2 ? '팔로워' : '유연') : undefined,
-    },
     availability: {
       hours_per_week: hours,
       semester_available: hoursRaw?.semesterAvailable,
@@ -80,7 +69,7 @@ export async function saveProfileFromInterview(
       currentSituation: profile.situation || 'exploring',
       skills: profile.skills.map(s => ({ name: s })),
       interestTags: profile.interests,
-      personality: { risk, time, communication, decision },
+      personality: { risk, time, communication, planning, quality, teamRole },
       visionSummary: JSON.stringify(visionSummary),
       aiChatCompleted: true,
     }),

@@ -1,5 +1,22 @@
 import type { Opportunity } from '@/src/types/opportunity'
 import type { Profile, Skill } from '@/src/types/profile'
+import { positionToRole } from '@/src/constants/roles'
+
+type RoleGroup = 'tech' | 'creative' | 'biz'
+
+function toRoleGroup(desiredPosition: string | null): RoleGroup {
+  const role = positionToRole(desiredPosition || '')
+  if (role === 'developer' || role === 'data') return 'tech'
+  if (role === 'designer') return 'creative'
+  return 'biz'
+}
+
+/** 내 직렬 기준 프리셋 (role 30% 고정) */
+const OPP_WEIGHTS: Record<RoleGroup, { skill: number; personality: number; practical: number }> = {
+  tech:     { skill: 0.25, personality: 0.15, practical: 0.30 },
+  creative: { skill: 0.15, personality: 0.20, practical: 0.35 },
+  biz:      { skill: 0.05, personality: 0.30, practical: 0.35 },
+}
 
 interface MatchResult {
   opportunityId: string
@@ -7,7 +24,53 @@ interface MatchResult {
   skillMatch: number
   practicalCompatibility: number
   roleMatch: number
+  personalityFit: number
   reason: string
+}
+
+/**
+ * Personality fit for opportunity (0-100)
+ * Maps personality traits to project type
+ */
+function calculatePersonalityFit(profile: Profile, opportunity: Opportunity): number {
+  const checks: number[] = []
+  const type = (opportunity as Record<string, unknown>).type as string || 'side_project'
+
+  // risk tolerance vs project type
+  if (profile.personality?.risk != null) {
+    if (type === 'startup') {
+      checks.push(profile.personality.risk >= 4 ? 100 : profile.personality.risk >= 3 ? 70 : 40)
+    } else if (type === 'study') {
+      checks.push(70)
+    } else {
+      checks.push(60)
+    }
+  }
+
+  // planning style vs project type
+  if (profile.personality?.planning != null) {
+    if (type === 'startup') {
+      // 창업 → 실행형(4-5)이 약간 유리
+      checks.push(profile.personality.planning >= 4 ? 90 : 60)
+    } else {
+      checks.push(60)
+    }
+  }
+
+  // quality style vs project type
+  if (profile.personality?.quality != null) {
+    if (type === 'startup') {
+      // 창업 → 속도 우선(4-5)이 유리
+      checks.push(profile.personality.quality >= 4 ? 85 : 55)
+    } else if (type === 'study') {
+      // 스터디 → 완성도(1-2)가 약간 유리
+      checks.push(profile.personality.quality <= 2 ? 80 : 60)
+    } else {
+      checks.push(60)
+    }
+  }
+
+  return checks.length > 0 ? checks.reduce((a, b) => a + b, 0) / checks.length : 50
 }
 
 /**
@@ -105,9 +168,16 @@ function generateMatchReason(
     skillMatch: number
     practicalCompatibility: number
     roleMatch: number
+    personalityFit: number
   }
 ): string {
   const reasons: { priority: number; text: string }[] = []
+
+  // Personality fit (only for startup type)
+  const oppType = (opportunity as Record<string, unknown>).type as string
+  if (scores.personalityFit >= 80 && oppType === 'startup') {
+    reasons.push({ priority: 4, text: '도전적인 프로젝트에 잘 맞는 성향이에요' })
+  }
 
   // Role match is most impactful when 100%
   if (scores.roleMatch === 100 && profile.desired_position) {
@@ -185,17 +255,22 @@ export function calculateMatchScore(
   const practicalCompatibility = calculatePracticalCompatibility(profile, opportunity)
 
   const roleMatch = calculateRoleMatch(profile.desired_position, opportunity.needed_roles || [])
+  const personalityFit = calculatePersonalityFit(profile, opportunity)
 
-  // Weighted score (redistributed from vision removal)
+  // 내 직렬 기준 동적 가중치 (role 30% 고정)
+  const w = OPP_WEIGHTS[toRoleGroup(profile.desired_position)]
+
   const finalScore =
-    skillMatch * 0.40 +
-    practicalCompatibility * 0.25 +
-    roleMatch * 0.35
+    skillMatch * w.skill +
+    practicalCompatibility * w.practical +
+    roleMatch * 0.30 +
+    personalityFit * w.personality
 
   const reason = generateMatchReason(profile, opportunity, {
     skillMatch,
     practicalCompatibility,
     roleMatch,
+    personalityFit,
   })
 
   return {
@@ -204,6 +279,7 @@ export function calculateMatchScore(
     skillMatch: Math.round(skillMatch),
     practicalCompatibility: Math.round(practicalCompatibility),
     roleMatch: Math.round(roleMatch),
+    personalityFit: Math.round(personalityFit),
     reason,
   }
 }
@@ -214,7 +290,7 @@ export function calculateMatchScore(
 export function rankOpportunities(
   profile: Profile,
   opportunities: Opportunity[]
-): Array<Opportunity & { match_score: number; match_reason: string; match_details?: { skill: number; practical: number; role: number } }> {
+): Array<Opportunity & { match_score: number; match_reason: string; match_details?: { skill: number; practical: number; role: number; personality: number } }> {
   const results = opportunities.map((opp) => {
     const match = calculateMatchScore(profile, opp)
     return {
@@ -225,6 +301,7 @@ export function rankOpportunities(
         skill: match.skillMatch,
         practical: match.practicalCompatibility,
         role: match.roleMatch,
+        personality: match.personalityFit,
       },
     }
   })

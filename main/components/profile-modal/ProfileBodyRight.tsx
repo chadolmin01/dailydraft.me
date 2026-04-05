@@ -152,15 +152,7 @@ export function ProfileBodyRight({
       {hasPersonality && (
         <CollapsibleSection title="성향 분석" icon={Brain} color="bg-violet-500" count={Object.keys(personality!).length}>
           <div className="space-y-1">
-            {decisionLabel && (
-              <TraitBadge label="의사결정" value={decisionLabel} icon={Zap} colorClass="text-violet-500" />
-            )}
-            {traitLabels.filter(t => t.key === 'communication').map(({ key, label, low, high }) => {
-              const val = personality![key]
-              if (val == null) return null
-              return <SliderBar key={key} value={val} low={low} high={high} label={label} colorKey={key} />
-            })}
-            {traitLabels.filter(t => t.key === 'risk' || t.key === 'time').map(({ key, label, low, high }) => {
+            {traitLabels.map(({ key, label, low, high }) => {
               const val = personality![key]
               if (val == null) return null
               return <SliderBar key={key} value={val} low={low} high={high} label={label} colorKey={key} />

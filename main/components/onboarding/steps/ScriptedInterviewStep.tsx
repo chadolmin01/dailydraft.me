@@ -29,12 +29,13 @@ interface Props {
 
 // Visual + label per question
 const QUESTION_VISUALS: Record<string, { emoji: string; illustration: string | null; hint: string; label: string }> = {
-  spectrum_communication: { emoji: '💬', illustration: '/onboarding/2.svg', hint: '1부터 5 사이에서 골라주세요', label: '소통 스타일' },
-  this_or_that_risk:      { emoji: '⚡', illustration: '/onboarding/3.svg', hint: '직관대로 골라주세요',          label: '프로젝트 성향' },
-  quick_number_hours:     { emoji: '⏱️', illustration: '/onboarding/4.svg', hint: '', label: '투자 시간' },
-  this_or_that_planning:  { emoji: '🗂️', illustration: '/onboarding/5.svg', hint: '평소 스타일로 골라주세요',     label: '작업 방식' },
-  spectrum_teamrole:      { emoji: '👥', illustration: '/onboarding/leader_follower.svg', hint: '1부터 5 사이에서 골라주세요', label: '팀 역할' },
-  emoji_grid_strengths:   { emoji: '✨', illustration: '/onboarding/6.svg', hint: '최대 3개 선택해주세요',         label: '나의 강점' },
+  spectrum_teamrole:      { emoji: '👥', illustration: '/onboarding/leader_follower.svg', hint: '1부터 5 사이에서 골라���세요', label: '팀 역할' },
+  spectrum_communication: { emoji: '💬', illustration: '/onboarding/2.svg', hint: '1부터 5 사이에서 골라주세요', label: '��통 스타일' },
+  spectrum_risk:          { emoji: '⚡', illustration: '/onboarding/3.svg', hint: '1부터 5 사이에서 골라주세요', label: '도전 성향' },
+  spectrum_planning:      { emoji: '🗂️', illustration: '/onboarding/5.svg', hint: '1부터 5 사이에서 골라주세요', label: '��업 방식' },
+  spectrum_quality:       { emoji: '💎', illustration: null,                hint: '1부터 5 사이에서 골라주세요', label: '완성도 vs 속도' },
+  quick_number_hours:     { emoji: '⏱️', illustration: '/onboarding/4.svg', hint: '',                          label: '투자 시간' },
+  emoji_grid_strengths:   { emoji: '✨', illustration: '/onboarding/6.svg', hint: '최대 3개 선택해주세요',         label: '나의 ��점' },
 }
 
 export function ScriptedInterviewStep({ profile, introMessage, onAnswer, onComplete }: Props) {

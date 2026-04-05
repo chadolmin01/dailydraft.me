@@ -24,18 +24,23 @@ export const INTERVIEW_SCRIPT: InterviewQuestion[] = [
   },
   {
     id: 'q_risk',
-    interactiveId: 'this_or_that_risk',
-    getMessage: () => '프로젝트를 고를 때 어떤 스타일이에요?',
+    interactiveId: 'spectrum_risk',
+    getMessage: () => '새 프���젝트를 시작할 때, 어떤 스타일이에요?',
+  },
+  {
+    id: 'q_planning',
+    interactiveId: 'spectrum_planning',
+    getMessage: () => '프로젝트 킥오프 때, 보통 어떻게 시작해요?',
+  },
+  {
+    id: 'q_quality',
+    interactiveId: 'spectrum_quality',
+    getMessage: () => '데드라인이 다가올 때, 어떤 편이에요?',
   },
   {
     id: 'q_hours',
     interactiveId: 'quick_number_hours',
     getMessage: () => '일주일에 프로젝트에 쓸 수 있는 시간은 어느 정도예요?',
-  },
-  {
-    id: 'q_planning',
-    interactiveId: 'this_or_that_planning',
-    getMessage: () => '프로젝트 시작할 때 어떤 스타일이에요?',
   },
   {
     id: 'q_strengths',

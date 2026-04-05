@@ -6,7 +6,7 @@ import type { InteractiveQuestion } from './types'
  */
 export const REQUIRED_INTERACTIVE_IDS: { id: string; prompt: string }[] = [
   { id: 'spectrum_communication', prompt: '소통 스타일은 어떤 편이세요?' },
-  { id: 'this_or_that_risk', prompt: '도전 성향은 어떠세요?' },
+  { id: 'spectrum_risk', prompt: '도전 성향은 어떤 편이세요?' },
   { id: 'quick_number_hours', prompt: '주당 얼마나 시간을 투자할 수 있으세요?' },
   { id: 'emoji_grid_strengths', prompt: '마지막으로 본인의 강점을 골라주세요!' },
 ]
@@ -82,65 +82,36 @@ export const INTERACTIVE_QUESTIONS: Record<string, InteractiveQuestion> = {
     ],
   },
 
-  // ── This or That → categorical values ──
+  // ── Spectrum → 1-5 personality traits ──
 
-  this_or_that_planning: {
-    type: 'this-or-that',
-    measuredFields: ['planning_style'],
-    optionA: {
-      id: 'plan_first',
-      emoji: '📝',
-      label: '기획형',
-      description: '문서 정리부터.\n계획 세우고 시작해요',
-      scores: {},
-    },
-    optionB: {
-      id: 'build_first',
-      emoji: '⚡',
-      label: '실행형',
-      description: '일단 만들어보면서\n방향을 잡아가요',
-      scores: {},
-    },
-  },
-
-  this_or_that_perfectionism: {
-    type: 'this-or-that',
-    measuredFields: ['quality_style'],
-    optionA: {
-      id: 'quality',
-      emoji: '💎',
-      label: '완성도',
-      description: '시간 더 걸려도\n제대로 만들어요',
-      scores: {},
-    },
-    optionB: {
-      id: 'speed',
-      emoji: '🚀',
-      label: '속도',
-      description: '빠르게 완성하고\n반복 개선해요',
-      scores: {},
-    },
-  },
-
-  // ── This or That → risk tolerance ──
-
-  this_or_that_risk: {
-    type: 'this-or-that',
+  spectrum_risk: {
+    type: 'spectrum-pick',
     measuredFields: ['risk_style'],
-    optionA: {
-      id: 'stable',
-      emoji: '🛡️',
-      label: '안정적 도전',
-      description: '검증된 아이디어로\n확실하게 진행해요',
-      scores: {},
-    },
-    optionB: {
-      id: 'adventurous',
-      emoji: '🔥',
-      label: '과감한 도전',
-      description: '새로운 걸 시도해보고\n실패해도 배워요',
-      scores: {},
-    },
+    leftLabel: '검증된 방식',
+    leftDescription: '확실한 아이디어로\n안정적으로 진행',
+    rightLabel: '새로운 시도',
+    rightDescription: '실패해도 배우는\n과감한 도전',
+    points: 5,
+  },
+
+  spectrum_planning: {
+    type: 'spectrum-pick',
+    measuredFields: ['planning_style'],
+    leftLabel: '계획부터',
+    leftDescription: '문서 정리하고\n계획 세운 뒤 시작',
+    rightLabel: '실행부터',
+    rightDescription: '일단 만들어보면서\n방향을 잡아가기',
+    points: 5,
+  },
+
+  spectrum_quality: {
+    type: 'spectrum-pick',
+    measuredFields: ['quality_style'],
+    leftLabel: '완성도 우선',
+    leftDescription: '시간이 걸려���\n제대로 만들기',
+    rightLabel: '속도 우선',
+    rightDescription: '빠르게 완성하고\n반복 개선하기',
+    points: 5,
   },
 
   // ── Emoji Grid → strengths ──
