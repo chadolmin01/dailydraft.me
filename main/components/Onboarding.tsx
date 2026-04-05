@@ -5,25 +5,23 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { useAuth } from '@/src/context/AuthContext'
 import { determineResumeStep } from '@/src/lib/onboarding/resume'
-import { saveProfileCheckpoint, saveProfileFromInterview } from '@/src/lib/onboarding/api'
-import { AFFILIATION_OPTIONS, SITUATION_OPTIONS, POPULAR_SKILLS, ALL_SKILLS } from '@/src/lib/onboarding/constants'
+import { saveProfileCheckpoint } from '@/src/lib/onboarding/api'
+import { AFFILIATION_OPTIONS, SITUATION_OPTIONS } from '@/src/lib/onboarding/constants'
 import { POSITIONS } from '@/src/constants/roles'
 import { PROJECT_CATEGORIES } from '@/src/constants/categories'
 import { UNIVERSITY_LIST, LOCATION_OPTIONS } from '@/src/lib/constants/profile-options'
-import type { ProfileDraft, StructuredResponse } from '@/src/lib/onboarding/types'
-import { ScriptedInterviewStep } from './onboarding/steps/ScriptedInterviewStep'
+import type { ProfileDraft } from '@/src/lib/onboarding/types'
 import { OnboardingComboBox } from './onboarding/OnboardingComboBox'
 
 /* ─── Types ─── */
 
-type Step = 'intro' | 'info' | 'position' | 'situation' | 'skills' | 'interests' | 'bridge' | 'interview'
+type Step = 'intro' | 'info' | 'situation' | 'position' | 'interests'
 type SlideDir = 'forward' | 'back'
 
-const PRE_INTERVIEW_STEPS: Step[] = ['info', 'position', 'situation', 'skills', 'interests']
-const STORAGE_KEY = 'draft-onboarding-progress'
+const PRE_INTERVIEW_STEPS: Step[] = ['info', 'situation', 'position', 'interests']
 
 const INITIAL_PROFILE: ProfileDraft = {
-  name: '', affiliationType: 'student', university: '', major: '',
+  name: '', affiliationType: '', university: '', major: '',
   locations: [], position: '', situation: '', skills: [], interests: [],
 }
 
@@ -31,21 +29,9 @@ const INITIAL_PROFILE: ProfileDraft = {
 
 const STEP_CONFIG: Record<string, { title: string; hint?: string }> = {
   info:      { title: '기본 정보를 알려주세요', hint: '닉네임만 필수 · 나중에 수정 가능' },
-  position:  { title: '어떤 분야에서 활동하세요?' },
   situation: { title: 'Draft에서 무엇을 하고 싶으세요?' },
-  skills:    { title: '', hint: '나중에 추가할 수 있어요' },
+  position:  { title: '어떤 분야에서 활동하세요?' },
   interests: { title: '관심 있는 프로젝트 분야는요?', hint: '관심사가 겹치는 팀원을 추천해드려요' },
-}
-
-const SKILLS_TITLE: Record<string, string> = {
-  frontend:  '프론트엔드에서 사용하는 기술은?',
-  backend:   '백엔드에서 사용하는 기술은?',
-  fullstack: '풀스택 개발에서 사용하는 기술은?',
-  design:    '디자인에서 사용하는 도구는?',
-  pm:        '기획에서 사용하는 도구는?',
-  marketing: '마케팅에서 사용하는 도구는?',
-  data:      '데이터 분석에서 사용하는 도구는?',
-  other:     '사용할 수 있는 기술이 있나요?',
 }
 
 /* ── Shared chip style builder ── */
@@ -75,7 +61,6 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   const [slideKey, setSlideKey] = useState(0)
   const [slideDir, setSlideDir] = useState<SlideDir>('forward')
   const [attempted, setAttempted] = useState(false)
-  const [introMessage, setIntroMessage] = useState<string | undefined>(undefined)
 
   const initRef = useRef(false)
   const profileRef = useRef(profile)
@@ -87,37 +72,19 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     if (isAuthenticated && authProfile === null) return
     initRef.current = true
 
+    // If redo-chat mode, redirect to interview directly via profile page
     const redoChat = searchParams.get('mode') === 'redo-chat'
-    const resumeResult = determineResumeStep(
-      authProfile as Record<string, unknown> | null,
-      { redoChat },
-    )
-
-    if (resumeResult) {
-      setProfile(resumeResult.draft)
-      setIntroMessage(
-        redoChat
-          ? `${resumeResult.draft.name}님, 프로필 분석을 다시 시작할게요!`
-          : `${resumeResult.draft.name}님, 돌아오셨군요! 이어서 진행할게요.`,
+    if (redoChat) {
+      const resumeResult = determineResumeStep(
+        authProfile as Record<string, unknown> | null,
+        { redoChat },
       )
-      setStep('interview')
-      return
-    }
-
-    // localStorage resume
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY)
-      if (raw) {
-        const data = JSON.parse(raw)
-        if (Date.now() - data.ts < 24 * 60 * 60 * 1000 && data.profile?.name) {
-          setProfile(data.profile)
-          setIntroMessage(`${data.profile.name}님, 돌아오셨군요! 이어서 진행할게요.`)
-          setStep('interview')
-          return
-        }
-        localStorage.removeItem(STORAGE_KEY)
+      if (resumeResult) {
+        setProfile(resumeResult.draft)
+        setStep('info') // start fresh
+        return
       }
-    } catch { /* ignore */ }
+    }
   }, [authLoading, authProfile, isAuthenticated, searchParams])
 
   /* ── Prefetch all onboarding SVGs (Toss-style: zero-delay rendering) ── */
@@ -157,46 +124,30 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     if (stepIndex < PRE_INTERVIEW_STEPS.length - 1) {
       goTo(PRE_INTERVIEW_STEPS[stepIndex + 1])
     } else {
+      // Last step — save and complete
       const p = profileRef.current
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ profile: p, ts: Date.now() })) } catch { /* ignore */ }
       saveProfileCheckpoint(p).catch(console.error)
-      goTo('bridge')
+      onComplete()
     }
-  }, [step, stepIndex, goTo])
+  }, [step, stepIndex, goTo, onComplete])
 
   const updateProfile = useCallback((partial: Partial<ProfileDraft>) => {
     setProfile(prev => ({ ...prev, ...partial }))
   }, [])
 
-  /* ── Interview complete ── */
-  const handleInterviewComplete = useCallback(async (responses: StructuredResponse[]) => {
-    // Animation plays for fixed duration; save runs in parallel
-    const minDelay = new Promise(r => setTimeout(r, 5600))
-    const save = saveProfileFromInterview(profileRef.current, responses)
-      .then(() => {
-        try { localStorage.removeItem(STORAGE_KEY) } catch { /* ignore */ }
-      })
-      .catch(err => console.error('[Onboarding] save error:', err))
-
-    await Promise.all([minDelay, save])
-    onComplete()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [onComplete])
-
   /* ── Can proceed? ── */
   const canProceed = (() => {
     switch (step) {
-      case 'info': return profile.name.trim().length > 0
-      case 'position': return profile.position !== ''
+      case 'info': return profile.name.trim().length > 0 && profile.affiliationType !== ''
       case 'situation': return profile.situation !== ''
-      case 'skills': return true
+      case 'position': return profile.position !== ''
       case 'interests': return true
       default: return false
     }
   })()
 
-  const isOptional = step === 'skills' || step === 'interests'
-  const hasSelection = step === 'skills' ? profile.skills.length > 0 : step === 'interests' ? profile.interests.length > 0 : true
+  const isOptional = step === 'interests'
+  const hasSelection = step === 'interests' ? profile.interests.length > 0 : true
 
   /* ── Auth loading ── */
   if (authLoading) {
@@ -211,77 +162,6 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
           </div>
         </div>
         <span className="text-[10px] font-mono text-txt-disabled">DRAFT</span>
-      </div>
-    )
-  }
-
-  /* ── Bridge screen ── */
-  if (step === 'bridge') {
-    return (
-      <div className="fixed inset-0 bg-surface-bg flex flex-col items-center justify-center p-6">
-        <div className="max-w-md w-full flex flex-col items-center">
-          <img
-            src="/onboarding/1.svg"
-            alt="기본 프로필 완성"
-            className="w-full max-w-[220px] object-contain mb-8"
-            style={{ animation: 'ob-bubble-in 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) both' }}
-          />
-          <h2
-            className="text-2xl sm:text-[28px] font-black text-txt-primary leading-tight mb-2 text-center"
-            style={{ animation: 'ob-bubble-in 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) 0.1s both' }}
-          >
-            기본 프로필 완성!
-          </h2>
-          <p
-            className="text-[14px] text-txt-secondary leading-relaxed text-center mb-10"
-            style={{ animation: 'ob-bubble-in 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) 0.2s both' }}
-          >
-            간단한 심화 질문에 답하면
-            <br />
-            <span className="font-bold text-txt-primary">매칭 정확도가 훨씬 올라가요</span>
-          </p>
-          <div
-            className="w-full space-y-3"
-            style={{ animation: 'ob-chip-in 0.35s cubic-bezier(0.34, 1.4, 0.64, 1) 0.35s both' }}
-          >
-            <button
-              onClick={() => goTo('interview')}
-              className="w-full flex items-center justify-center gap-2 py-4 bg-brand text-white rounded-full text-[15px] font-black hover:opacity-90 active:scale-[0.97] transition-all"
-            >
-              심화 질문 시작하기
-              <ArrowRight size={16} />
-            </button>
-            <button
-              onClick={() => {
-                try { localStorage.removeItem(STORAGE_KEY) } catch { /* ignore */ }
-                onComplete()
-              }}
-              className="w-full flex items-center justify-center py-4 text-txt-secondary rounded-full text-[14px] font-bold hover:text-txt-primary active:scale-[0.97] transition-all"
-            >
-              나중에 할게요
-            </button>
-          </div>
-          <p
-            className="text-[12px] text-txt-tertiary text-center mt-4 font-mono"
-            style={{ animation: 'ob-bubble-in 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) 0.4s both' }}
-          >
-            약 1분 · 6개 질문
-          </p>
-        </div>
-      </div>
-    )
-  }
-
-  /* ── Interview phase ── */
-  if (step === 'interview') {
-    return (
-      <div className="fixed inset-0 bg-surface-bg flex flex-col">
-        <ScriptedInterviewStep
-          profile={profile}
-          introMessage={introMessage}
-          onAnswer={() => {}}
-          onComplete={handleInterviewComplete}
-        />
       </div>
     )
   }
@@ -396,7 +276,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
         <div className="max-w-2xl mx-auto w-full px-6 pt-2 pb-8 flex flex-col flex-1">
           {/* Title */}
           <h2 className="text-2xl sm:text-[28px] font-black text-txt-primary leading-snug shrink-0 animate-in fade-in slide-in-from-bottom-2 duration-300">
-            {step === 'skills' ? (SKILLS_TITLE[profile.position] ?? SKILLS_TITLE.other) : config?.title}
+            {config?.title}
           </h2>
           {config?.hint && (
             <p className="text-[12px] font-medium text-txt-secondary mt-2 shrink-0 animate-in fade-in duration-300" style={{ animationDelay: '50ms' }}>
@@ -415,19 +295,6 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                 onChange={updateProfile}
                 onSubmit={handleNext}
               />
-            )}
-            {step === 'position' && (
-              <div className="flex flex-wrap gap-2">
-                {POSITIONS.map((pos) => (
-                  <button
-                    key={pos.slug}
-                    onClick={() => updateProfile({ position: pos.slug })}
-                    className={chipClass(profile.position === pos.slug)}
-                  >
-                    {pos.label}
-                  </button>
-                ))}
-              </div>
             )}
             {step === 'situation' && (
               <div className="space-y-2">
@@ -451,8 +318,18 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                 ))}
               </div>
             )}
-            {step === 'skills' && (
-              <SkillsContent profile={profile} onChange={updateProfile} />
+            {step === 'position' && (
+              <div className="flex flex-wrap gap-2">
+                {POSITIONS.map((pos) => (
+                  <button
+                    key={pos.slug}
+                    onClick={() => updateProfile({ position: pos.slug })}
+                    className={chipClass(profile.position === pos.slug)}
+                  >
+                    {pos.label}
+                  </button>
+                ))}
+              </div>
             )}
             {step === 'interests' && (
               <div className="flex flex-wrap gap-2">
@@ -622,73 +499,3 @@ function InfoContent({
   )
 }
 
-/* ─── Skills Step ─── */
-
-function SkillsContent({
-  profile, onChange,
-}: {
-  profile: ProfileDraft
-  onChange: (partial: Partial<ProfileDraft>) => void
-}) {
-  const [customInput, setCustomInput] = useState('')
-  const recommended = POPULAR_SKILLS[profile.position] ?? POPULAR_SKILLS.other
-
-  const toggle = (s: string) => {
-    onChange({
-      skills: profile.skills.includes(s)
-        ? profile.skills.filter(x => x !== s)
-        : [...profile.skills, s],
-    })
-  }
-
-  const addCustom = () => {
-    const trimmed = customInput.trim()
-    if (!trimmed || profile.skills.includes(trimmed)) return
-    onChange({ skills: [...profile.skills, trimmed] })
-    setCustomInput('')
-  }
-
-  return (
-    <div className="space-y-5">
-      {/* Recommended chips */}
-      <div className="flex flex-wrap gap-2">
-        {recommended.map((s) => (
-          <button key={s} onClick={() => toggle(s)} className={chipClass(profile.skills.includes(s))}>
-            {s}
-          </button>
-        ))}
-      </div>
-
-      {/* Custom input */}
-      <div className="flex gap-2">
-        <input
-          type="text"
-          value={customInput}
-          onChange={(e) => setCustomInput(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && addCustom()}
-          placeholder="직접 입력"
-          maxLength={30}
-          className={INPUT_CLASS}
-        />
-        <button
-          onClick={addCustom}
-          disabled={!customInput.trim()}
-          className="px-4 py-3 bg-surface-card border border-border rounded-xl text-[14px] font-medium text-txt-primary hover:bg-surface-sunken transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
-        >
-          추가
-        </button>
-      </div>
-
-      {/* Custom tags (only those not in recommended) */}
-      {profile.skills.filter(s => !recommended.includes(s)).length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {profile.skills.filter(s => !recommended.includes(s)).map((s) => (
-            <button key={s} onClick={() => toggle(s)} className={chipClass(true)}>
-              {s} ✕
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
