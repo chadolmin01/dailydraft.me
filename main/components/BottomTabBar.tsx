@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Compass, FolderKanban, User, MessageSquare, Bell } from 'lucide-react'
+import { Compass, FolderKanban, User, Bell, Menu } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { useUnreadCount } from '@/src/hooks/useMessages'
 import { useAuth } from '@/src/context/AuthContext'
@@ -24,11 +24,11 @@ function useUnreadNotificationCount() {
 }
 
 const TABS = [
-  { key: 'projects', label: 'MY',     path: '/projects',      icon: FolderKanban },
-  { key: 'messages', label: 'MSG',    path: '/messages',      icon: MessageSquare },
-  { key: 'explore',  label: null,     path: '/explore',       icon: Compass },   // center — visual highlight
-  { key: 'notifications', label: 'NOTIF', path: '/notifications', icon: Bell },
-  { key: 'profile',  label: 'PROFILE', path: '/profile',     icon: User },
+  { key: 'projects',      label: 'MY',     path: '/projects',      icon: FolderKanban },
+  { key: 'profile',       label: '프로필', path: '/profile',       icon: User },
+  { key: 'explore',       label: null,     path: '/explore',       icon: Compass },   // center — highlight
+  { key: 'notifications', label: '알림',   path: '/notifications', icon: Bell },
+  { key: 'more',          label: '더보기', path: '/more',          icon: Menu },
 ] as const
 
 export function BottomTabBar() {
@@ -40,6 +40,7 @@ export function BottomTabBar() {
   if (!user || isLoading) return null
 
   const segment = pathname?.split('/')[1] || 'explore'
+  const totalMsgUnread = msgUnread || 0
 
   return (
     <nav
@@ -48,15 +49,19 @@ export function BottomTabBar() {
     >
       <div className="flex items-center h-[3.25rem]">
         {TABS.map((tab) => {
-          const isActive = segment === tab.key
-          const Icon = tab.icon
           const isExplore = tab.key === 'explore'
+          const isActive = segment === tab.key
+            || (tab.key === 'more' && (segment === 'messages' || segment === 'settings'))
+          const Icon = tab.icon
+
+          // 배지: 알림탭엔 알림 수, 더보기탭엔 메시지 수
           const badge =
-            tab.key === 'messages' ? msgUnread
-            : tab.key === 'notifications' ? notifUnread
+            tab.key === 'notifications' ? (notifUnread || 0)
+            : tab.key === 'more' ? totalMsgUnread
             : 0
           const badgeText = badge > 0 ? (badge > 9 ? '9+' : String(badge)) : null
 
+          // 중앙 탐색 — 하이라이트 스타일
           if (isExplore) {
             return (
               <Link
@@ -88,7 +93,6 @@ export function BottomTabBar() {
                 isActive ? 'text-txt-primary' : 'text-txt-tertiary active:text-txt-secondary'
               }`}
             >
-              {/* Active indicator */}
               {isActive && (
                 <span className="absolute top-0 left-1/2 -translate-x-1/2 w-5 h-[2px] rounded-full bg-txt-primary" />
               )}

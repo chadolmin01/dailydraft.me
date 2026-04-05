@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { User, LogOut, Bell, Menu, X, Plus, Settings, Search, ChevronRight, Shield, FolderOpen, Compass, Briefcase, AlertTriangle, Sun, Moon, Building2 } from 'lucide-react'
+import { User, LogOut, Bell, X, Plus, Settings, Search, ChevronRight, Shield, FolderOpen, Compass, Briefcase, AlertTriangle, Sun, Moon, Building2 } from 'lucide-react'
 import Link from 'next/link'
 import { useAuth } from '@/src/context/AuthContext'
 import { useAdmin } from '@/src/hooks/useAdmin'
@@ -61,18 +61,6 @@ const DropdownItem = ({ icon: Icon, children, onClick, disabled, danger }: {
   </button>
 )
 
-// 모바일 네비 아이템
-const MobileNavItem = ({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) => (
-  <Link
-    href={href}
-    className={`block px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-      active ? 'bg-surface-sunken text-txt-primary' : 'text-txt-secondary hover:bg-surface-sunken'
-    }`}
-  >
-    {children}
-  </Link>
-)
-
 export const TopNavbar: React.FC = () => {
   const router = useRouter()
   const pathname = usePathname()
@@ -82,11 +70,9 @@ export const TopNavbar: React.FC = () => {
   const { theme, toggleTheme } = useTheme()
 
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
 
-  useBackHandler(isMobileMenuOpen, () => setIsMobileMenuOpen(false), 'mobile-menu')
   useBackHandler(isSearchOpen, () => setIsSearchOpen(false), 'search')
   useBackHandler(isMenuOpen, () => setIsMenuOpen(false), 'profile-menu')
   const [searchQuery, setSearchQuery] = useState('')
@@ -114,7 +100,6 @@ export const TopNavbar: React.FC = () => {
 
   // 라우트 변경 시 메뉴 닫기
   useEffect(() => {
-    setIsMobileMenuOpen(false)
     setIsMenuOpen(false)
     setIsSearchOpen(false)
   }, [pathname])
@@ -173,7 +158,7 @@ export const TopNavbar: React.FC = () => {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 w-full h-14 z-fixed">
+      <nav className="hidden md:block fixed top-0 left-0 w-full h-14 z-fixed">
         {/* 배경 레이어 — backdrop-filter를 nav가 아닌 별도 div에 적용하여 드롭다운 overflow 가림 방지 */}
         <div className={`absolute inset-0 transition-all duration-300 ${
           isScrolled
@@ -405,65 +390,10 @@ export const TopNavbar: React.FC = () => {
               </Link>
             )}
 
-            {/* 모바일 햄버거 */}
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              aria-label={isMobileMenuOpen ? '메뉴 닫기' : '메뉴 열기'}
-              aria-expanded={isMobileMenuOpen}
-              className="md:hidden w-11 h-11 flex items-center justify-center text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken transition-colors border border-border rounded-lg"
-            >
-              {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
-            </button>
           </div>
         </div>
       </nav>
 
-      {/* ===== 모바일 드로어 ===== */}
-      {isMobileMenuOpen && (
-        <>
-          <div
-            className="md:hidden fixed inset-0 bg-black/20 backdrop-blur-sm z-[299] animate-in fade-in duration-200"
-            onClick={() => setIsMobileMenuOpen(false)}
-          />
-          <div className="md:hidden fixed top-14 left-0 right-0 bg-surface-card/95 backdrop-blur-xl border-b border-border shadow-lg z-fixed animate-in slide-in-from-bottom-2 duration-200">
-            <div className="px-4 py-4 space-y-1.5">
-              <form
-                className="relative mb-3"
-                onSubmit={(e) => {
-                  e.preventDefault()
-                  const input = (e.currentTarget.elements.namedItem('mq') as HTMLInputElement)?.value?.trim()
-                  if (input) { router.push(`/explore?q=${encodeURIComponent(input)}`); setIsMobileMenuOpen(false) }
-                }}
-              >
-                <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-txt-disabled pointer-events-none" />
-                <input
-                  name="mq"
-                  type="text"
-                  placeholder="검색..."
-                  className="w-full pl-10 pr-4 py-2.5 bg-surface-sunken rounded-lg text-base sm:text-sm placeholder:text-txt-disabled focus:outline-none focus:bg-surface-card focus:ring-1 focus:ring-border transition-all"
-                />
-              </form>
-              <MobileNavItem href="/explore" active={pathname === '/explore'}>탐색</MobileNavItem>
-              {isAuthenticated && (
-                <MobileNavItem href="/profile" active={pathname === '/profile'}>마이페이지</MobileNavItem>
-              )}
-              {isInstitutionAdmin && (
-                <MobileNavItem href="/institution" active={pathname.startsWith('/institution')}>기관 대시보드</MobileNavItem>
-              )}
-              {isAdmin && (
-                <MobileNavItem href="/admin" active={pathname.startsWith('/admin')}>관리자</MobileNavItem>
-              )}
-              <Link
-                href={isAuthenticated ? '/projects/new' : '/login'}
-                className="w-full mt-2 flex items-center justify-center gap-1.5 px-4 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-semibold transition-all hover:opacity-90 active:scale-[0.97] rounded-xl"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {isAuthenticated ? <><Plus size={15} strokeWidth={2.5} /> 새 프로젝트</> : '로그인'}
-              </Link>
-            </div>
-          </div>
-        </>
-      )}
     </>
   )
 }
