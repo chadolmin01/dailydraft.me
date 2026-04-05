@@ -8,6 +8,12 @@ import { ScriptedInterviewStep } from '@/components/onboarding/steps/ScriptedInt
 import { saveProfileFromInterview } from '@/src/lib/onboarding/api'
 import type { ProfileDraft, StructuredResponse } from '@/src/lib/onboarding/types'
 
+const INTERVIEW_SVGS = [
+  '/onboarding/leader_follower.svg', '/onboarding/2.svg', '/onboarding/3.svg',
+  '/onboarding/4.svg', '/onboarding/5.svg', '/onboarding/6.svg',
+  '/onboarding/Deadline.svg', '/onboarding/done.svg', '/onboarding/add_project.svg',
+]
+
 interface AIInterviewModalProps {
   isOpen: boolean
   onClose: () => void
@@ -17,6 +23,20 @@ export function AIInterviewModal({ isOpen, onClose }: AIInterviewModalProps) {
   const { profile, refreshProfile } = useAuth()
   const queryClient = useQueryClient()
   const [isCompleting, setIsCompleting] = useState(false)
+  const [svgReady, setSvgReady] = useState(false)
+
+  // SVG 프리로드 — 모달 열릴 때 �� 번째 SVG 로드 대기
+  useEffect(() => {
+    if (!isOpen) { setSvgReady(false); return }
+    let done = false
+    const critical = new window.Image()
+    critical.src = INTERVIEW_SVGS[0]
+    critical.onload = () => { if (!done) { done = true; setSvgReady(true) } }
+    critical.onerror = () => { if (!done) { done = true; setSvgReady(true) } }
+    const timeout = setTimeout(() => { if (!done) { done = true; setSvgReady(true) } }, 1500)
+    INTERVIEW_SVGS.forEach(src => { const img = new window.Image(); img.src = src })
+    return () => clearTimeout(timeout)
+  }, [isOpen])
 
   // Body scroll lock
   useEffect(() => {
@@ -60,6 +80,17 @@ export function AIInterviewModal({ isOpen, onClose }: AIInterviewModalProps) {
   }, [profileDraft, queryClient, refreshProfile, onClose])
 
   if (!isOpen || !profileDraft) return null
+
+  // SVG 프리로드 대기
+  if (!svgReady) {
+    return (
+      <div className="fixed inset-0 z-[500] bg-surface-bg flex items-center justify-center">
+        <div className="w-10 h-10 bg-surface-inverse rounded-xl flex items-center justify-center animate-pulse">
+          <span className="text-txt-inverse font-black text-lg leading-none">D</span>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="fixed inset-0 z-[500] bg-surface-bg flex flex-col">
