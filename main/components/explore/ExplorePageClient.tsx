@@ -10,6 +10,8 @@ import { useSearchParams as useNextSearchParams, useRouter, usePathname } from '
 import { DashboardLayout } from '@/components/ui/DashboardLayout'
 import { SkeletonGrid, SkeletonSidebar } from '@/components/ui/Skeleton'
 import { ProfileCompletionBanner } from '@/components/ui/ProfileCompletionBanner'
+import { AiMatchingNudgeCard } from '@/components/explore/AiMatchingNudgeCard'
+import { AIInterviewModal } from '@/components/profile/AIInterviewModal'
 import { StarterGuideCard } from '@/components/starter-guide/StarterGuideCard'
 import { useStarterGuide } from '@/src/hooks/useStarterGuide'
 
@@ -25,10 +27,7 @@ const ProjectDetailModal = dynamic(
   () => import('@/components/ProjectDetailModal').then(m => ({ default: m.ProjectDetailModal })),
   { ssr: false, loading: ModalLoadingFallback }
 )
-const ProfileDetailModal = dynamic(
-  () => import('@/components/ProfileDetailModal').then(m => ({ default: m.ProfileDetailModal })),
-  { ssr: false, loading: ModalLoadingFallback }
-)
+import { ProfileDetailModal } from '@/components/ProfileDetailModal'
 import { useInfiniteOpportunities, type OpportunityWithCreator, calculateDaysLeft } from '@/src/hooks/useOpportunities'
 import { cleanNickname } from '@/src/lib/clean-nickname'
 import { useInfinitePublicProfiles, type PublicProfile } from '@/src/hooks/usePublicProfiles'
@@ -78,74 +77,49 @@ export default function ExplorePageClient() {
 }
 
 function ExplorePageContent() {
-  const urlParams = useNextSearchParams()
+  const searchParams = useNextSearchParams()
   const router = useRouter()
   const pathname = usePathname()
-  const initialQuery = urlParams.get('q') || ''
-  const initialScope = urlParams.get('scope') as SearchScope || 'all'
+  const initialQuery = searchParams.get('q') || ''
+  const initialScope = searchParams.get('scope') as SearchScope || 'all'
 
-  // ── Modal state (local state + URL sync via window.history) ──
-  // Initialize as null to avoid SSR/hydration mismatch, then sync from URL in useEffect
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
-  const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null)
-  const [profileByUserId, setProfileByUserId] = useState(false)
+  // ── Modal state: URL이 single source of truth ──
+  const selectedProjectId = searchParams.get('project')
+  const selectedProfileId = searchParams.get('profile')
+  const profileByUserId = searchParams.get('profileBy') === 'userId'
+
+  // Coffee chat: 일회성 transient state (URL에서 읽고 즉시 제거)
   const [initialCoffeeChatOpen, setInitialCoffeeChatOpen] = useState(false)
   const [initialCoffeeChatMessage, setInitialCoffeeChatMessage] = useState<string | undefined>(undefined)
-  const hydratedRef = React.useRef(false)
+  const coffeeChatHandledRef = useRef(false)
 
-  // Hydrate modal state from URL on mount
+  // ref로 최신 searchParams 추적 (useCallback 안정성 유지)
+  const searchParamsRef = useRef(searchParams)
+  searchParamsRef.current = searchParams
+
+  // URL params 업데이트 헬퍼 (stable reference)
+  const replaceParams = useCallback((updates: Record<string, string | null>) => {
+    const params = new URLSearchParams(searchParamsRef.current.toString())
+    for (const [key, value] of Object.entries(updates)) {
+      if (value === null) params.delete(key)
+      else params.set(key, value)
+    }
+    const qs = params.toString()
+    router.replace(`${pathname}${qs ? `?${qs}` : ''}`, { scroll: false })
+  }, [pathname, router])
+
+  // coffeeChat 딥링크 처리 (최초 1회)
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const project = params.get('project')
-    const profile = params.get('profile')
-    const byUserId = params.get('profileBy') === 'userId'
-    const coffeeChat = params.get('coffeeChat')
-    const msg = params.get('msg')
-    if (project) setSelectedProjectId(project)
-    if (profile) setSelectedProfileId(profile)
-    if (byUserId) setProfileByUserId(byUserId)
+    if (coffeeChatHandledRef.current) return
+    const coffeeChat = searchParams.get('coffeeChat')
+    const msg = searchParams.get('msg')
     if (coffeeChat) {
-      setSelectedProfileId(coffeeChat)
-      setProfileByUserId(true)
+      coffeeChatHandledRef.current = true
       setInitialCoffeeChatOpen(true)
       if (msg) setInitialCoffeeChatMessage(decodeURIComponent(msg))
-      // URL에서 coffeeChat/msg 파라미터 제거
-      params.delete('coffeeChat')
-      params.delete('msg')
-      const qs = params.toString()
-      window.history.replaceState(null, '', `${window.location.pathname}${qs ? `?${qs}` : ''}`)
+      replaceParams({ profile: coffeeChat, profileBy: 'userId', coffeeChat: null, msg: null })
     }
-    hydratedRef.current = true
-  }, [])
-
-  // Sync modal state → URL (without Next.js navigation) — only after hydration
-  useEffect(() => {
-    if (!hydratedRef.current) return
-    const params = new URLSearchParams(window.location.search)
-    if (selectedProjectId) params.set('project', selectedProjectId)
-    else params.delete('project')
-    if (selectedProfileId) params.set('profile', selectedProfileId)
-    else params.delete('profile')
-    if (profileByUserId && selectedProfileId) params.set('profileBy', 'userId')
-    else params.delete('profileBy')
-    const qs = params.toString()
-    const newUrl = `${window.location.pathname}${qs ? `?${qs}` : ''}`
-    if (newUrl !== `${window.location.pathname}${window.location.search}`) {
-      window.history.replaceState(null, '', newUrl)
-    }
-  }, [selectedProjectId, selectedProfileId, profileByUserId])
-
-  // Handle browser back/forward
-  useEffect(() => {
-    const onPopState = () => {
-      const params = new URLSearchParams(window.location.search)
-      setSelectedProjectId(params.get('project'))
-      setSelectedProfileId(params.get('profile'))
-      setProfileByUserId(params.get('profileBy') === 'userId')
-    }
-    window.addEventListener('popstate', onPopState)
-    return () => window.removeEventListener('popstate', onPopState)
-  }, [])
+  }, [searchParams, replaceParams])
 
   // ── State ──
   const [selectedCategory, setSelectedCategory] = useState('all')
@@ -160,9 +134,10 @@ function ExplorePageContent() {
   const [searchScope, setSearchScope] = useState<SearchScope>(initialScope)
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false)
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
+  const [showInterview, setShowInterview] = useState(false)
 
   const searchQuery = useDebouncedValue(searchInput, 300)
-  const { isAuthenticated, user, isLoading: isAuthLoading } = useAuth()
+  const { isAuthenticated, user, profile, isLoading: isAuthLoading } = useAuth()
   const queryClient = useQueryClient()
   const guide = useStarterGuide()
 
@@ -175,14 +150,15 @@ function ExplorePageContent() {
 
   // Sync search to URL (preserves modal params)
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
+    const params = new URLSearchParams(searchParamsRef.current.toString())
     if (searchQuery) params.set('q', searchQuery)
     else params.delete('q')
     if (searchScope !== 'all') params.set('scope', searchScope)
     else params.delete('scope')
     const qs = params.toString()
     const newPath = `${pathname}${qs ? `?${qs}` : ''}`
-    const currentPath = `${pathname}${window.location.search}`
+    const currentQs = searchParamsRef.current.toString()
+    const currentPath = `${pathname}${currentQs ? `?${currentQs}` : ''}`
     if (newPath !== currentPath) {
       router.replace(newPath, { scroll: false })
     }
@@ -524,18 +500,14 @@ function ExplorePageContent() {
 
   const handleSelectProject = useCallback((id: string) => {
     guide.markExploreVisited()
-    setSelectedProfileId(null)
-    setProfileByUserId(false)
     handlePrefetchProject(id)
-    setSelectedProjectId(id)
+    replaceParams({ project: id, profile: null, profileBy: null })
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [guide.markExploreVisited, handlePrefetchProject])
+  }, [guide.markExploreVisited, handlePrefetchProject, replaceParams])
 
   const handleSelectProfile = useCallback((id: string, byUserId: boolean) => {
-    setSelectedProjectId(null)
-    setSelectedProfileId(id)
-    setProfileByUserId(byUserId)
-  }, [])
+    replaceParams({ project: null, profile: id, profileBy: byUserId ? 'userId' : null })
+  }, [replaceParams])
 
   return (
     <div className="bg-surface-bg min-h-full">
@@ -565,6 +537,9 @@ function ExplorePageContent() {
           />
         )}
         {!guide.visible && <ProfileCompletionBanner />}
+        {isAuthenticated && profile && !profile.ai_chat_completed && (
+          <AiMatchingNudgeCard onStartInterview={() => setShowInterview(true)} />
+        )}
 
         {/* 검색바 + 필터: 데스크톱만 */}
         <div className="hidden md:flex items-start gap-2">
@@ -656,12 +631,14 @@ function ExplorePageContent() {
         onReset={handleResetFilters}
       />
 
+      <AIInterviewModal isOpen={showInterview} onClose={() => setShowInterview(false)} />
+
       <AnimatePresence>
         {selectedProjectId && (
           <ProjectDetailModal
             key="project-modal"
             projectId={selectedProjectId}
-            onClose={() => setSelectedProjectId(null)}
+            onClose={() => replaceParams({ project: null })}
           />
         )}
       </AnimatePresence>
@@ -673,11 +650,10 @@ function ExplorePageContent() {
             profileId={selectedProfileId}
             byUserId={profileByUserId}
             matchData={selectedMatchData}
-            onClose={() => { setSelectedProfileId(null); setProfileByUserId(false); setInitialCoffeeChatOpen(false); setInitialCoffeeChatMessage(undefined) }}
+            onClose={() => { replaceParams({ profile: null, profileBy: null }); setInitialCoffeeChatOpen(false); setInitialCoffeeChatMessage(undefined) }}
             onSelectProject={(projectId) => {
-              setSelectedProfileId(null)
-              setProfileByUserId(false)
-              setSelectedProjectId(projectId)
+              handlePrefetchProject(projectId)
+              replaceParams({ profile: null, profileBy: null, project: projectId })
             }}
             initialCoffeeChatOpen={initialCoffeeChatOpen}
             initialCoffeeChatMessage={initialCoffeeChatMessage}
