@@ -202,7 +202,7 @@ function LoginContent() {
 
          {/* Center Form */}
          <div className="flex-1 px-5 sm:px-8 md:px-10 flex flex-col justify-center animate-slide-up-fade" style={{ animationDelay: '0.1s' }}>
-            <h1 className="text-2xl sm:text-3xl font-bold text-txt-primary mb-2 tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-txt-primary mb-2 tracking-tight">
                {isSignUp ? '계정 만들기' : '다시 만나서 반가워요!'}
             </h1>
             <p className="text-txt-secondary text-sm mb-8 leading-relaxed">
@@ -264,7 +264,7 @@ function LoginContent() {
                            type="text"
                            value={nickname}
                            onChange={(e) => setNickname(e.target.value)}
-                           className="w-full px-4 py-3 bg-surface-sunken rounded-xl border border-border text-base sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand focus:bg-surface-card transition-all placeholder:text-txt-disabled"
+                           className="w-full px-4 py-3.5 bg-surface-sunken rounded-xl border border-border text-base sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand focus:bg-surface-card transition-all placeholder:text-txt-disabled"
                            placeholder="닉네임을 입력하세요"
                            required={isSignUp}
                         />
@@ -277,7 +277,7 @@ function LoginContent() {
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full px-4 py-3 bg-surface-sunken rounded-xl border border-border text-base sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand focus:bg-surface-card transition-all placeholder:text-txt-disabled font-mono"
+                        className="w-full px-4 py-3.5 bg-surface-sunken rounded-xl border border-border text-base sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand focus:bg-surface-card transition-all placeholder:text-txt-disabled font-mono"
                         placeholder="email@example.com"
                         inputMode="email"
                         autoComplete="email"
@@ -291,7 +291,7 @@ function LoginContent() {
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="w-full px-4 py-3 bg-surface-sunken rounded-xl border border-border text-base sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand focus:bg-surface-card transition-all placeholder:text-txt-disabled"
+                        className="w-full px-4 py-3.5 bg-surface-sunken rounded-xl border border-border text-base sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand focus:bg-surface-card transition-all placeholder:text-txt-disabled"
                         placeholder="비밀번호를 입력하세요"
                         required
                         minLength={6}

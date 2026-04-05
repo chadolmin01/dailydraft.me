@@ -186,8 +186,8 @@ export default function NotificationsPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-[10px] font-medium text-txt-tertiary mb-1 flex items-center gap-2">
-              <Bell size={12} /> NOTIFICATIONS
+            <h1 className="text-xl font-bold text-txt-primary mb-1 flex items-center gap-2">
+              <Bell size={20} /> 알림
             </h1>
             <p className="text-sm text-txt-tertiary">
               {unreadCount > 0 ? `${unreadCount}개의 새 알림` : '새 알림 없음'}
@@ -234,7 +234,7 @@ export default function NotificationsPage() {
         </div>
 
         {/* Notification List */}
-        <div className="bg-surface-card rounded-xl border border-border shadow-md">
+        <div className="bg-surface-card rounded-xl shadow-sm">
           {isLoading ? (
             <div className="p-4 space-y-3">
               {[0,1,2,3].map(i => (
@@ -276,7 +276,7 @@ export default function NotificationsPage() {
                 <button
                   key={n.id}
                   onClick={() => handleNotificationClick(n)}
-                  className={`w-full flex items-start gap-4 px-5 py-4 text-left transition-colors border-b border-border-subtle last:border-b-0 ${
+                  className={`w-full flex items-start gap-4 px-5 py-5 text-left transition-colors border-b border-border/40 last:border-b-0 ${
                     isUnread
                       ? 'hover:bg-surface-sunken'
                       : 'opacity-50 hover:opacity-70'
@@ -305,7 +305,7 @@ export default function NotificationsPage() {
                     }`}>
                       {n.message}
                     </p>
-                    <p className="text-[10px] text-txt-disabled mt-1.5 font-mono">
+                    <p className="text-[11px] text-txt-disabled mt-1.5">
                       {timeAgo(n.created_at)}
                       {!isUnread && ' · 확인됨'}
                     </p>

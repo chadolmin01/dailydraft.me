@@ -44,7 +44,7 @@ export function BottomTabBar() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-fixed md:hidden bg-surface-card/[0.97] backdrop-blur-xl border-t border-border/40"
+      className="fixed bottom-0 left-0 right-0 z-fixed md:hidden bg-surface-card/[0.97] backdrop-blur-xl border-t border-border/20"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
     >
       <div className="flex items-center h-[3.25rem]">
@@ -73,7 +73,7 @@ export function BottomTabBar() {
                 <div className={`w-12 h-10 rounded-xl flex items-center justify-center transition-all duration-200 ${
                   isActive
                     ? 'bg-surface-inverse shadow-lg scale-105'
-                    : 'bg-surface-card border border-border shadow-sm'
+                    : 'bg-surface-card shadow-sm'
                 }`}>
                   <Icon
                     size={20}

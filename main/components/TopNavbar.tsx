@@ -162,7 +162,7 @@ export const TopNavbar: React.FC = () => {
         {/* 배경 레이어 — backdrop-filter를 nav가 아닌 별도 div에 적용하여 드롭다운 overflow 가림 방지 */}
         <div className={`absolute inset-0 transition-all duration-300 ${
           isScrolled
-            ? 'bg-surface-card/80 backdrop-blur-xl shadow-soft'
+            ? 'bg-surface-card/80 backdrop-blur-xl shadow-md'
             : 'bg-surface-card/60 backdrop-blur-md'
         }`} />
         <div className="relative w-full px-2.5 sm:px-10 lg:px-16 xl:px-24 h-full flex items-center gap-2 sm:gap-3">
@@ -219,7 +219,7 @@ export const TopNavbar: React.FC = () => {
             {/* 드롭다운 — 검색바 아래로 자연스럽게 열림 */}
             {isSearchOpen && (
               <div className="absolute top-full left-0 right-0 mt-1.5 z-popover">
-                <div className="bg-surface-card shadow-lg border border-border rounded-xl overflow-hidden search-expand max-h-[60vh] overflow-y-auto">
+                <div className="bg-surface-card shadow-lg rounded-xl overflow-hidden search-expand max-h-[60vh] overflow-y-auto">
 
                   {/* 바로가기 */}
                   <div className="px-2 pt-2 pb-1">
@@ -328,7 +328,7 @@ export const TopNavbar: React.FC = () => {
 
                   {/* 드롭다운 */}
                   {isMenuOpen && (
-                    <div className="absolute right-0 top-11 w-[calc(100vw-2rem)] sm:w-60 max-w-60 bg-surface-card shadow-lg border border-border rounded-xl py-1.5 animate-in fade-in zoom-in-95 duration-150 z-popover">
+                    <div className="absolute right-0 top-11 w-[calc(100vw-2rem)] sm:w-60 max-w-60 bg-surface-card shadow-lg rounded-xl py-1.5 animate-in fade-in zoom-in-95 duration-150 z-popover">
                       {/* 유저 헤더 */}
                       <div className="px-4 pt-3 pb-3">
                         <div className="flex items-center gap-3">

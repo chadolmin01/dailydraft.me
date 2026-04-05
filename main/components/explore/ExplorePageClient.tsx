@@ -571,7 +571,7 @@ function ExplorePageContent() {
         <ActiveFilterChips chips={activeFilterChips} onClearAll={handleResetFilters} />
 
         {!isAuthenticated && ((activeTab === 'projects' && sortBy === 'ai') || (activeTab === 'people' && peopleSortBy === 'ai')) && (
-          <div className="flex items-center gap-3 px-4 py-3 mb-4 border border-brand-border bg-brand-bg">
+          <div className="flex items-center gap-3 px-4 py-3 mb-4 shadow-sm border-l-4 border-l-brand bg-brand-bg">
             <Sparkles size={16} className="text-brand shrink-0" />
             <p className="text-xs text-txt-secondary flex-1">로그인하면 내 관심사에 맞는 AI 추천을 받을 수 있어요</p>
             <Link href="/login" className="shrink-0 px-3 py-1.5 bg-surface-inverse text-txt-inverse rounded-xl text-xs font-bold border border-surface-inverse hover:bg-surface-inverse transition-colors">

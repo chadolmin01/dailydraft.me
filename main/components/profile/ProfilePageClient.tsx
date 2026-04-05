@@ -60,7 +60,7 @@ export default function ProfilePageClient() {
             onClick={() => setShowAiConfirm(true)}
             className="group block mx-auto max-w-screen-xl px-4 sm:px-6 pt-4 cursor-pointer"
           >
-            <div className="relative overflow-hidden bg-surface-card rounded-xl border border-border shadow-md hover:shadow-lg transition-all duration-300">
+            <div className="relative overflow-hidden bg-surface-card rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
               <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-brand via-brand/60 to-transparent" />
               <div className="flex items-center gap-4 px-5 py-4">
                 <div className="relative w-10 h-10 bg-surface-inverse rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-300">
@@ -113,7 +113,7 @@ export default function ProfilePageClient() {
           isEditable
         />
         {/* ── Tab bar ── */}
-        <div className="flex items-center gap-1 border-b border-border mb-6">
+        <div className="flex items-center gap-1 border-b border-border/40 mb-6">
           {([
             { key: 'portfolio' as const, label: '포트폴리오', icon: Briefcase, count: portfolioItems.length },
             { key: 'projects' as const, label: '프로젝트', icon: FolderOpen, count: myOpportunities.length },
@@ -122,7 +122,7 @@ export default function ProfilePageClient() {
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px ${
+              className={`flex items-center gap-1.5 px-5 py-3 text-sm font-medium transition-colors border-b-2 -mb-px ${
                 activeTab === tab.key
                   ? 'border-txt-primary text-txt-primary'
                   : 'border-transparent text-txt-tertiary hover:text-txt-secondary'

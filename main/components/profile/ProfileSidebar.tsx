@@ -59,7 +59,7 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
 
       {/* --- SOCIAL LINKS --- */}
       {showLinksSection && (
-        <div className="relative bg-surface-card rounded-xl border border-border p-4 shadow-md">
+        <div className="relative bg-surface-card rounded-xl shadow-sm p-5">
           <h3 className="text-[11px] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
             <span className="w-4 h-4 bg-brand text-white flex items-center justify-center text-[10px] font-bold rounded">L</span>
             LINKS
@@ -92,7 +92,7 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
             )}
           </div>
           {isEditable && hasPendingChanges && (
-            <div className="flex items-center justify-end gap-2 pt-3 mt-3 border-t border-border">
+            <div className="flex items-center justify-end gap-2 pt-3 mt-3 border-t border-border/40">
               <button onClick={handleCancel} disabled={isPending} className="flex items-center gap-1 px-2.5 py-1 text-[11px] font-bold text-txt-secondary border border-border hover:bg-surface-sunken transition-colors rounded-xl">
                 <X size={10} /> 취소
               </button>
@@ -107,7 +107,7 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
 
       {/* --- TECH STACK --- */}
       {skills && skills.length > 0 && (
-        <div className="relative bg-surface-card rounded-xl border border-border p-4 shadow-md">
+        <div className="relative bg-surface-card rounded-xl shadow-sm p-5">
           <h3 className="text-[11px] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
             <span className="w-4 h-4 bg-indicator-online text-white flex items-center justify-center text-[10px] font-bold rounded">S</span>
             TECH STACK
@@ -135,7 +135,7 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
         ]
 
         return (
-          <div className="relative bg-surface-card rounded-xl border border-border p-4 shadow-md">
+          <div className="relative bg-surface-card rounded-xl shadow-sm p-5">
             <h3 className="text-[11px] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
               <span className="w-4 h-4 bg-indicator-premium text-white flex items-center justify-center text-[10px] font-bold rounded">P</span>
               PERSONALITY
@@ -163,7 +163,7 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
       })()}
 
       {/* --- COMPLETION --- */}
-      <div className="relative bg-surface-card rounded-xl border border-border p-4 shadow-md">
+      <div className="relative bg-surface-card rounded-xl shadow-sm p-5">
         <h3 className="text-[10px] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
           <span className="w-4 h-4 bg-indicator-online text-white flex items-center justify-center text-[10px] font-bold rounded">%</span>
           COMPLETION

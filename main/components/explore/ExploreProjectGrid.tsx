@@ -98,7 +98,7 @@ export function ExploreProjectGrid({
               onMouseEnter={() => onPrefetchProject?.(p.id)}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectProject(p.id) } }}
               style={{ animationDelay: `${Math.min(index * 60, 600)}ms` }}
-              className="stagger-item relative bg-surface-card rounded-xl border border-border overflow-hidden group hover:shadow-md hover:border-brand/30 hover:-translate-y-0.5 hover-spring cursor-pointer min-h-[21.25rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985] active:shadow-none active:border-brand/50"
+              className="stagger-item relative bg-surface-card rounded-xl shadow-sm overflow-hidden group hover:shadow-md hover:-translate-y-0.5 hover-spring cursor-pointer min-h-[21.25rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985] active:shadow-none"
             >
               {/* 헤더: 커버 */}
               <div className="relative h-36 shrink-0 bg-surface-inverse flex items-end p-4">
@@ -146,7 +146,7 @@ export function ExploreProjectGrid({
                 </div>
               </div>
               {/* 본문 */}
-              <div className="px-4 pt-4 h-[7.5rem] shrink-0 overflow-hidden">
+              <div className="px-5 pt-5 h-[7.5rem] shrink-0 overflow-hidden">
                 <div className="flex items-center gap-2 mb-1.5">
                   <h3 className="font-bold text-base text-txt-primary truncate">{p.title}</h3>
                   <Badges badges={p.badges} />
@@ -160,8 +160,8 @@ export function ExploreProjectGrid({
                 <p className="text-sm text-txt-secondary line-clamp-2">{p.desc}</p>
               </div>
               {/* 푸터 */}
-              <div className="px-4 pb-4 h-[4.75rem] shrink-0 flex items-end">
-                <div className="flex items-center justify-between w-full pt-3 border-t border-border">
+              <div className="px-5 pb-4 h-[4.75rem] shrink-0 flex items-end">
+                <div className="flex items-center justify-between w-full pt-3 border-t border-border/50">
                   <div className="flex items-center gap-2">
                     <div className="w-5 h-5 bg-surface-sunken rounded-xl border border-border flex items-center justify-center">
                       <Users size={10} className="text-txt-disabled" />

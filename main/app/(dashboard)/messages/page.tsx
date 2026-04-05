@@ -104,10 +104,10 @@ export default function MessagesPage() {
         <div className="flex gap-0 md:gap-4 h-[calc(100dvh-3.5rem-3rem-var(--bottom-tab-height))]">
 
           {/* 대화 목록 — 모바일에서는 스레드 열면 숨김 */}
-          <div className={`w-full md:w-80 bg-surface-card rounded-xl border border-border shadow-md shrink-0 flex flex-col ${mobileShowThread ? 'hidden md:flex' : 'flex'}`}>
-            <div className="p-4 border-b border-border">
-              <h2 className="text-[10px] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
-                <Mail size={12} /> MESSAGES
+          <div className={`w-full md:w-80 bg-surface-card rounded-xl shadow-sm shrink-0 flex flex-col ${mobileShowThread ? 'hidden md:flex' : 'flex'}`}>
+            <div className="p-4 border-b border-border/40">
+              <h2 className="text-xl font-bold text-txt-primary mb-3 flex items-center gap-2">
+                <Mail size={20} /> 쪽지
               </h2>
               <div className="relative">
                 <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-txt-disabled" />
@@ -167,7 +167,7 @@ export default function MessagesPage() {
                             <span className="text-sm font-medium text-txt-primary truncate">
                               {cleanNickname(partner?.nickname || '') || 'Unknown'}
                             </span>
-                            <span className="text-[10px] font-mono text-txt-disabled shrink-0 ml-2">
+                            <span className="text-[11px] text-txt-disabled shrink-0 ml-2">
                               {timeAgo(conv.lastAt)}
                             </span>
                           </div>
@@ -189,7 +189,7 @@ export default function MessagesPage() {
           </div>
 
           {/* 메시지 스레드 */}
-          <div className={`flex-1 bg-surface-card rounded-xl border border-border shadow-md flex flex-col ${!mobileShowThread ? 'hidden md:flex' : 'flex'}`}>
+          <div className={`flex-1 bg-surface-card rounded-xl shadow-sm flex flex-col ${!mobileShowThread ? 'hidden md:flex' : 'flex'}`}>
             {!selectedPartner ? (
               <div className="flex-1 flex flex-col items-center justify-center text-center px-8">
                 <div className="w-16 h-16 rounded-full bg-surface-sunken flex items-center justify-center empty-float mb-4">
@@ -201,7 +201,7 @@ export default function MessagesPage() {
             ) : (
               <>
                 {/* 스레드 헤더 */}
-                <div className="px-4 py-3 border-b border-border flex items-center gap-3 shrink-0">
+                <div className="px-4 py-3 border-b border-border/40 flex items-center gap-3 shrink-0">
                   <button
                     onClick={() => { setMobileShowThread(false); setSelectedPartner(null) }}
                     className="md:hidden p-1 hover:bg-surface-sunken transition-colors"
@@ -216,7 +216,7 @@ export default function MessagesPage() {
                       {cleanNickname(selectedProfile?.nickname || '') || 'Unknown'}
                     </p>
                     {selectedProfile?.desired_position && (
-                      <p className="text-[10px] text-txt-disabled">
+                      <p className="text-[11px] text-txt-disabled">
                         {selectedProfile.desired_position}
                       </p>
                     )}
@@ -224,7 +224,7 @@ export default function MessagesPage() {
                 </div>
 
                 {/* 메시지 목록 */}
-                <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+                <div className="flex-1 overflow-y-auto px-5 py-5 space-y-3">
                   {messages.length === 0 ? (
                     <div className="flex items-center justify-center h-full">
                       <p className="text-xs text-txt-disabled font-mono">첫 쪽지를 보내보세요</p>
@@ -243,11 +243,11 @@ export default function MessagesPage() {
                               <p className="whitespace-pre-wrap break-words">{msg.content}</p>
                             </div>
                             <div className={`flex items-center gap-2 mt-1 ${isMine ? 'justify-end' : 'justify-start'}`}>
-                              <span className="text-[10px] font-mono text-txt-disabled">
+                              <span className="text-[11px] text-txt-disabled">
                                 {timeAgo(msg.created_at)}
                               </span>
                               {isMine && msg.is_read && (
-                                <span className="text-[10px] font-mono text-brand">읽음</span>
+                                <span className="text-[11px] text-brand">읽음</span>
                               )}
                               <button
                                 onClick={() => deleteMessage.mutate(msg.id)}
@@ -266,7 +266,7 @@ export default function MessagesPage() {
                 </div>
 
                 {/* 입력 */}
-                <div className="px-4 py-3 border-t border-border shrink-0">
+                <div className="px-4 py-3 border-t border-border/40 shrink-0">
                   <div className="flex gap-2">
                     <input
                       type="text"
