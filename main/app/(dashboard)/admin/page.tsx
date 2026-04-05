@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 import { useAdmin } from '@/src/hooks/useAdmin'
@@ -21,6 +21,8 @@ import {
   Gift,
   AlertCircle,
   Building2,
+  RotateCcw,
+  Wrench,
 } from 'lucide-react'
 
 interface AdminStats {
@@ -83,6 +85,23 @@ export default function AdminDashboardPage() {
     { label: 'COFFEE CHATS', value: stats?.totalCoffeeChats ?? '-', icon: Coffee, color: 'bg-surface-inverse' },
     { label: 'TOTAL VIEWS', value: stats?.totalViews ?? '-', icon: Eye, color: 'bg-black' },
   ]
+
+  const [resetting, setResetting] = useState(false)
+
+  const handleResetOnboarding = async () => {
+    if (!confirm('온보딩을 리셋하고 테스트하시겠습니까?\n(personality, vision_summary 초기화됨)')) return
+    setResetting(true)
+    try {
+      const res = await fetch('/api/admin/reset-onboarding', { method: 'POST' })
+      if (res.ok) {
+        router.push('/onboarding')
+      } else {
+        alert('리셋 실패')
+      }
+    } finally {
+      setResetting(false)
+    }
+  }
 
   const adminLinks = [
     { href: '/admin/users', label: '사용자 관리', desc: '전체 사용자 조회, 검색, 삭제', icon: Users },
@@ -168,6 +187,36 @@ export default function AdminDashboardPage() {
             })}
           </div>
         </div>
+        {/* Dev Tools */}
+        <div>
+          <div className="text-[10px] font-medium text-txt-tertiary mb-4 flex items-center gap-2">
+            <Wrench size={14} />
+            Dev Tools
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Card padding="p-5" className="group">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-surface-sunken flex items-center justify-center">
+                    <RotateCcw size={18} className="text-txt-secondary" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-txt-primary text-sm">온보딩 테스트</h3>
+                    <p className="text-xs text-txt-tertiary mt-0.5">onboarding_completed 리셋 후 온보딩 재진입</p>
+                  </div>
+                </div>
+                <button
+                  onClick={handleResetOnboarding}
+                  disabled={resetting}
+                  className="px-4 py-2 text-xs font-bold bg-surface-inverse text-white rounded-lg hover:opacity-90 disabled:opacity-50 transition-all"
+                >
+                  {resetting ? '리셋 중...' : '리셋 & 테스트'}
+                </button>
+              </div>
+            </Card>
+          </div>
+        </div>
+
       </div>
     </div>
   )
