@@ -6,7 +6,7 @@ import type { Area } from 'react-easy-crop'
 import { Crop, Check } from 'lucide-react'
 import { useBackHandler } from '@/src/hooks/useBackHandler'
 
-const Cropper = dynamic(() => import('react-easy-crop').then(m => m.default), { ssr: false }) as unknown as React.ComponentType<Partial<import('react-easy-crop').CropperProps>>
+const Cropper = dynamic(() => import('react-easy-crop').then(m => m.default), { ssr: false }) as unknown as React.ComponentType<import('react-easy-crop').CropperProps>
 
 interface CropModalProps {
   cropSrc: string
@@ -40,13 +40,14 @@ export function CropModal({ cropSrc, crop, zoom, cropQueueLength, onCropChange, 
           )}
         </div>
 
-        {/* Crop area */}
-        <div className="relative w-full h-72 sm:h-80 bg-black">
+        {/* Crop area — react-easy-crop needs explicit container styles */}
+        <div className="relative w-full h-72 sm:h-80 bg-black [&_.reactEasyCrop_Container]:!absolute [&_.reactEasyCrop_Container]:!inset-0">
           <Cropper
             image={cropSrc}
             crop={crop}
             zoom={zoom}
             aspect={16 / 9}
+            objectFit="contain"
             onCropChange={onCropChange}
             onZoomChange={onZoomChange}
             onCropComplete={onCropComplete}
