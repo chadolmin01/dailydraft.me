@@ -6,7 +6,7 @@ import type { Area } from 'react-easy-crop'
 import { Crop, Check } from 'lucide-react'
 import { useBackHandler } from '@/src/hooks/useBackHandler'
 
-const Cropper = dynamic(() => import('react-easy-crop').then(m => m.default), { ssr: false }) as unknown as React.ComponentType<import('react-easy-crop').CropperProps>
+const Cropper = dynamic(() => import('react-easy-crop').then(m => m.default), { ssr: false }) as unknown as React.ComponentType<Partial<import('react-easy-crop').CropperProps>>
 
 interface CropModalProps {
   cropSrc: string
