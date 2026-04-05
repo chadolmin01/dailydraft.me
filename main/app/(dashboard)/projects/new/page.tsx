@@ -322,17 +322,17 @@ function NewProjectContent() {
 
   return (
     <div className="flex-1 overflow-y-auto bg-surface-bg">
+      {/* ─── Sticky Progress Bar ─── */}
+      <div className="sticky top-0 z-10 h-1 bg-surface-sunken">
+        <div
+          className="h-full bg-brand progress-bar-spring"
+          style={{ width: `${formProgress}%` }}
+        />
+      </div>
+
       <div className="max-w-4xl mx-auto px-4 py-2 md:py-4">
 
         <form onSubmit={handlePreSubmit} className="bg-surface-card shadow-sm overflow-hidden border border-border-subtle rounded-xl">
-
-          {/* ─── Progress Bar ─── */}
-          <div className="h-1 bg-surface-sunken overflow-hidden">
-            <div
-              className="h-full bg-brand progress-bar-spring"
-              style={{ width: `${formProgress}%` }}
-            />
-          </div>
 
           {/* ─── Header ─── */}
           <div className="border-b border-border-subtle px-3 sm:px-5 py-3 grid grid-cols-3 items-center">
