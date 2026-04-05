@@ -263,7 +263,7 @@ export default function AdminInstitutionsPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="기관명 또는 대학명으로 검색..."
-              className="w-full pl-10 pr-4 py-2.5 bg-surface-card rounded-lg border border-border text-base sm:text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-surface-inverse"
+              className="w-full pl-10 pr-4 py-2.5 bg-surface-card rounded-xl border border-border text-base sm:text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-surface-inverse"
             />
           </div>
           <button
@@ -375,7 +375,7 @@ export default function AdminInstitutionsPage() {
                   onChange={(e) => setFormName(e.target.value)}
                   placeholder="예: FLIP 창업지원센터"
                   required
-                  className="w-full px-3 py-2.5 bg-surface-sunken rounded-lg border border-border text-base sm:text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-surface-inverse"
+                  className="w-full px-3 py-2.5 bg-surface-sunken rounded-xl border border-border text-base sm:text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-surface-inverse"
                 />
               </div>
               <div>
@@ -386,7 +386,7 @@ export default function AdminInstitutionsPage() {
                   onChange={(e) => setFormUniversity(e.target.value)}
                   placeholder="예: 경희대학교"
                   required
-                  className="w-full px-3 py-2.5 bg-surface-sunken rounded-lg border border-border text-base sm:text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-surface-inverse"
+                  className="w-full px-3 py-2.5 bg-surface-sunken rounded-xl border border-border text-base sm:text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-surface-inverse"
                 />
               </div>
               <div>
@@ -415,7 +415,7 @@ export default function AdminInstitutionsPage() {
                   onChange={(e) => setFormDescription(e.target.value)}
                   placeholder="기관 설명 (선택)"
                   rows={2}
-                  className="w-full px-3 py-2.5 bg-surface-sunken rounded-lg border border-border text-base sm:text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-surface-inverse resize-none"
+                  className="w-full px-3 py-2.5 bg-surface-sunken rounded-xl border border-border text-base sm:text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-surface-inverse resize-none"
                 />
               </div>
               <div>
@@ -427,7 +427,7 @@ export default function AdminInstitutionsPage() {
                   value={formEmailDomains}
                   onChange={(e) => setFormEmailDomains(e.target.value)}
                   placeholder="예: khu.ac.kr, khu.edu"
-                  className="w-full px-3 py-2.5 bg-surface-sunken rounded-lg border border-border text-base sm:text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-surface-inverse"
+                  className="w-full px-3 py-2.5 bg-surface-sunken rounded-xl border border-border text-base sm:text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-surface-inverse"
                 />
               </div>
               <div>
@@ -437,7 +437,7 @@ export default function AdminInstitutionsPage() {
                   value={formContactEmail}
                   onChange={(e) => setFormContactEmail(e.target.value)}
                   placeholder="기관 담당자 이메일 (선택)"
-                  className="w-full px-3 py-2.5 bg-surface-sunken rounded-lg border border-border text-base sm:text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-surface-inverse"
+                  className="w-full px-3 py-2.5 bg-surface-sunken rounded-xl border border-border text-base sm:text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-surface-inverse"
                 />
               </div>
               {formError && (
@@ -479,7 +479,7 @@ export default function AdminInstitutionsPage() {
                   onChange={(e) => setAssignEmail(e.target.value)}
                   placeholder="유저의 Draft 가입 이메일"
                   required
-                  className="w-full px-3 py-2.5 bg-surface-sunken rounded-lg border border-border text-base sm:text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-surface-inverse"
+                  className="w-full px-3 py-2.5 bg-surface-sunken rounded-xl border border-border text-base sm:text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-surface-inverse"
                 />
               </div>
               <div>

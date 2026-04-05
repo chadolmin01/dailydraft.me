@@ -11,7 +11,7 @@ export default function CalendarPage() {
           <div className="flex justify-between items-center border-b border-border pb-6">
             <div>
               <div className="text-[10px] font-medium text-txt-tertiary mb-2 flex items-center gap-2">
-                <span className="w-2 h-2 bg-black"></span>
+                <span className="w-2 h-2 bg-surface-inverse"></span>
                 CALENDAR
               </div>
               <div className="h-8 w-32 bg-surface-sunken" />

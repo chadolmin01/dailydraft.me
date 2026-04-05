@@ -77,13 +77,13 @@ export default function AdminDashboardPage() {
   }
 
   const statCards = [
-    { label: 'TOTAL USERS', value: stats?.totalUsers ?? '-', icon: Users, color: 'bg-black' },
+    { label: 'TOTAL USERS', value: stats?.totalUsers ?? '-', icon: Users, color: 'bg-surface-inverse' },
     { label: 'NEW USERS (7D)', value: stats?.recentUsers ?? '-', icon: UserPlus, color: 'bg-surface-inverse' },
     { label: 'OPPORTUNITIES', value: stats?.totalOpportunities ?? '-', icon: Briefcase, color: 'bg-surface-inverse' },
     { label: 'ACTIVE', value: stats?.activeOpportunities ?? '-', icon: TrendingUp, color: 'bg-surface-inverse' },
     { label: 'APPLICATIONS', value: stats?.totalApplications ?? '-', icon: FileText, color: 'bg-surface-inverse' },
     { label: 'COFFEE CHATS', value: stats?.totalCoffeeChats ?? '-', icon: Coffee, color: 'bg-surface-inverse' },
-    { label: 'TOTAL VIEWS', value: stats?.totalViews ?? '-', icon: Eye, color: 'bg-black' },
+    { label: 'TOTAL VIEWS', value: stats?.totalViews ?? '-', icon: Eye, color: 'bg-surface-inverse' },
   ]
 
   const [resetting, setResetting] = useState(false)
@@ -117,7 +117,7 @@ export default function AdminDashboardPage() {
         {/* Header */}
         <div className="border-b border-border pb-6">
           <div className="text-[10px] font-medium text-txt-tertiary mb-2 flex items-center gap-2">
-            <span className="w-2 h-2 bg-black" />
+            <span className="w-2 h-2 bg-surface-inverse" />
             Admin Dashboard
           </div>
           <h1 className="text-3xl font-bold text-txt-primary tracking-tight">관리자 대시보드</h1>
@@ -171,15 +171,15 @@ export default function AdminDashboardPage() {
                   <Card padding="p-5" className="group cursor-pointer hover-spring hover:border-border">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-surface-sunken flex items-center justify-center group-hover:bg-black transition-colors">
-                          <Icon size={18} className="text-txt-secondary group-hover:text-white transition-colors" />
+                        <div className="w-10 h-10 bg-surface-sunken flex items-center justify-center group-hover:bg-surface-inverse transition-colors">
+                          <Icon size={18} className="text-txt-secondary group-hover:text-txt-inverse transition-colors" />
                         </div>
                         <div>
                           <h3 className="font-semibold text-txt-primary text-sm">{link.label}</h3>
                           <p className="text-xs text-txt-tertiary mt-0.5">{link.desc}</p>
                         </div>
                       </div>
-                      <ArrowRight size={16} className="text-txt-disabled group-hover:text-black transition-colors" />
+                      <ArrowRight size={16} className="text-txt-disabled group-hover:text-surface-inverse transition-colors" />
                     </div>
                   </Card>
                 </Link>
@@ -208,7 +208,7 @@ export default function AdminDashboardPage() {
                 <button
                   onClick={handleResetOnboarding}
                   disabled={resetting}
-                  className="px-4 py-2 text-xs font-bold bg-surface-inverse text-white rounded-lg hover:opacity-90 disabled:opacity-50 transition-all"
+                  className="px-4 py-2 text-xs font-bold bg-surface-inverse text-txt-inverse rounded-xl hover:opacity-90 disabled:opacity-50 transition-all"
                 >
                   {resetting ? '리셋 중...' : '리셋 & 테스트'}
                 </button>

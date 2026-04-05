@@ -149,7 +149,7 @@ export default function AdminOpportunitiesPage() {
           <div className="flex items-center justify-between">
             <div>
               <div className="text-[10px] font-medium text-txt-tertiary mb-2 flex items-center gap-2">
-                <span className="w-2 h-2 bg-black" />
+                <span className="w-2 h-2 bg-surface-inverse" />
                 Admin / Opportunities
               </div>
               <h1 className="text-3xl font-bold text-txt-primary tracking-tight">Opportunity 관리</h1>
@@ -322,7 +322,7 @@ export default function AdminOpportunitiesPage() {
               <button
                 onClick={() => setDeleteTarget(null)}
                 disabled={deleteMutation.isPending}
-                className="px-4 py-2 text-sm text-txt-secondary border border-border hover:bg-black hover:text-white transition-colors"
+                className="px-4 py-2 text-sm text-txt-secondary border border-border hover:bg-surface-inverse hover:text-txt-inverse transition-colors"
               >
                 취소
               </button>

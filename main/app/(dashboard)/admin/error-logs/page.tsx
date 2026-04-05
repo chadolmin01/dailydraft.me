@@ -238,7 +238,7 @@ export default function ErrorLogsPage() {
             <p className="text-txt-secondary mb-4">에러 로그를 불러올 수 없습니다</p>
             <button
               onClick={() => refetch()}
-              className="px-4 py-2 border border-border text-txt-secondary text-sm hover:bg-black hover:text-white transition-colors"
+              className="px-4 py-2 border border-border text-txt-secondary text-sm hover:bg-surface-inverse hover:text-txt-inverse transition-colors"
             >
               다시 시도
             </button>
