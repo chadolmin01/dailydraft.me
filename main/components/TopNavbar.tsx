@@ -158,8 +158,28 @@ export const TopNavbar: React.FC = () => {
 
   return (
     <>
+      {/* ===== 모바일 GNB (인스타 스타일) ===== */}
+      <nav className="md:hidden fixed top-0 left-0 w-full h-12 z-fixed">
+        <div className={`absolute inset-0 transition-all duration-300 ${
+          isScrolled
+            ? 'bg-surface-card/90 backdrop-blur-xl'
+            : 'bg-surface-card'
+        }`} />
+        <div className="relative w-full px-4 h-full flex items-center justify-between">
+          <Link href="/projects/new" aria-label="새 프로젝트" className="w-9 h-9 flex items-center justify-center text-txt-primary active:scale-90 transition-transform">
+            <Plus size={24} strokeWidth={1.8} />
+          </Link>
+          <Link href="/explore" className="font-bold text-[20px] tracking-tight text-txt-primary">
+            Draft
+          </Link>
+          <Link href="/notifications" aria-label="알림" className="w-9 h-9 flex items-center justify-center text-txt-primary active:scale-90 transition-transform">
+            <Bell size={22} strokeWidth={1.8} />
+          </Link>
+        </div>
+      </nav>
+
+      {/* ===== 데스크탑 GNB ===== */}
       <nav className="hidden md:block fixed top-0 left-0 w-full h-14 z-fixed">
-        {/* 배경 레이어 — backdrop-filter를 nav가 아닌 별도 div에 적용하여 드롭다운 overflow 가림 방지 */}
         <div className={`absolute inset-0 transition-all duration-300 ${
           isScrolled
             ? 'bg-surface-card/80 backdrop-blur-xl shadow-md'
