@@ -74,15 +74,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           // Batch: user + profile in same tick → single render
           setUser(session.user)
           setProfile(p)
+          setIsLoading(false)
           profileFetched = true
         }
       } catch { /* getSession failed — continue to authoritative path */ }
 
       if (!mounted) return
 
-      // Authoritative validation: server round-trip
-      // Always trust the server response — getSession() may return null
-      // due to timing issues with Supabase client initialization
+      // Authoritative validation: server round-trip (background)
+      // If fast path succeeded, this silently verifies the session.
+      // If session was revoked/expired, it will log the user out.
       try {
         const { data: { user: serverUser }, error } = await supabase.auth.getUser()
         if (!mounted) return
@@ -92,13 +93,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } else if (!profileFetched) {
           const p = await fetchProfile(serverUser.id)
           if (!mounted) return
-          // Batch: user + profile in same tick → single render
           setUser(serverUser)
           setProfile(p)
         }
       } catch { /* getUser failed */ }
 
-      if (mounted) setIsLoading(false)
+      // If fast path didn't finish loading, finish it now
+      if (mounted && !profileFetched) setIsLoading(false)
     }
 
     initializeAuth()
