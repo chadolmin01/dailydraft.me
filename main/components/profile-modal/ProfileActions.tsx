@@ -65,7 +65,7 @@ export function ProfileActions({
 
       {/* Coffee Chat Form Overlay */}
       {showCoffeeChatForm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-popover p-4" onClick={() => setShowCoffeeChatForm(false)}>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-popover p-4" onClick={(e) => { e.stopPropagation(); setShowCoffeeChatForm(false) }}>
           <div className="bg-surface-card rounded-xl border border-border shadow-lg w-full max-w-md p-6" onClick={e => e.stopPropagation()}>
             <CoffeeChatRequestForm
               targetUserId={targetUserId}

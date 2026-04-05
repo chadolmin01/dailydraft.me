@@ -451,6 +451,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
               ) : (
                 <>
                   <div
+                    className="overflow-y-auto flex-1 min-h-0"
                     onTouchStart={(e) => {
                       const touch = e.touches[0]
                       ;(e.currentTarget as HTMLElement).dataset.touchStartX = String(touch.clientX)

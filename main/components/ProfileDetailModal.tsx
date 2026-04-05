@@ -308,7 +308,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                   onBack={() => setModalView('profile')}
                 />
               ) : (
-                <div>
+                <div className="overflow-y-auto flex-1 min-h-0">
                   <ProfileHeader
                     profile={profile}
                     coverUrl={coverUrl}

@@ -54,7 +54,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
 
   if (sent) {
     return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-popover p-4" onClick={onClose}>
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-popover p-4" onClick={(e) => { e.stopPropagation(); onClose() }}>
         <div className="bg-surface-card rounded-xl border border-border shadow-lg w-full max-w-md" onClick={e => e.stopPropagation()}>
           <div className="p-6 text-center">
             <div className="w-14 h-14 bg-status-success-bg border border-status-success-text/20 flex items-center justify-center mb-4 mx-auto shadow-sm">
@@ -77,7 +77,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-popover p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-popover p-4" onClick={(e) => { e.stopPropagation(); onClose() }}>
       <div className="bg-surface-card rounded-xl border border-border shadow-lg w-full max-w-md max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-surface-sunken shrink-0">

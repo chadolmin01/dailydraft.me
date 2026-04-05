@@ -10,7 +10,7 @@ import {
   Users,
 } from 'lucide-react'
 import { ProjectSidebarProps, linkIcons } from './types'
-import { positionLabel } from '@/src/constants/roles'
+import { positionLabel, projectRoleLabel } from '@/src/constants/roles'
 
 type SidebarTab = 'team' | 'info'
 
@@ -137,39 +137,40 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
             {opportunity.needed_roles && opportunity.needed_roles.length > 0 ? (
               <div className="space-y-2">
                 {opportunity.needed_roles.map((role) => {
-                  const RoleIcon = getRoleIcon(role)
+                  const label = projectRoleLabel(role)
+                  const RoleIcon = getRoleIcon(label)
 
                   if (chatStatus === 'accepted') return (
-                    <div key={role} className="flex items-center gap-3 py-3 px-3.5 bg-status-success-bg rounded-xl border border-indicator-online/20">
+                    <div key={role} className="flex items-center gap-3 h-14 px-3.5 bg-status-success-bg rounded-xl border border-indicator-online/20">
                       <div className="w-8 h-8 bg-status-success-bg border border-indicator-online/30 rounded-lg flex items-center justify-center shrink-0">
                         <Check size={14} className="text-status-success-text" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <span className="text-sm font-medium text-status-success-text">{role}</span>
+                        <span className="text-sm font-medium text-status-success-text">{label}</span>
                         <p className="text-[10px] text-status-success-text/70">수락됨</p>
                       </div>
                     </div>
                   )
 
                   if (chatStatus === 'pending') return (
-                    <div key={role} className="flex items-center gap-3 py-3 px-3.5 bg-surface-card rounded-xl border border-indicator-premium/30">
+                    <div key={role} className="flex items-center gap-3 h-14 px-3.5 bg-surface-card rounded-xl border border-indicator-premium/30">
                       <div className="w-8 h-8 bg-surface-sunken border border-border rounded-lg flex items-center justify-center shrink-0">
                         <Loader2 size={14} className="text-indicator-premium animate-spin" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <span className="text-sm font-medium text-txt-secondary">{role}</span>
+                        <span className="text-sm font-medium text-txt-secondary">{label}</span>
                         <p className="text-[10px] text-indicator-premium">대기 중...</p>
                       </div>
                     </div>
                   )
 
                   if (chatStatus === 'declined') return (
-                    <div key={role} className="flex items-center gap-3 py-3 px-3.5 bg-surface-card rounded-xl border border-border opacity-60">
+                    <div key={role} className="flex items-center gap-3 h-14 px-3.5 bg-surface-card rounded-xl border border-border opacity-60">
                       <div className="w-8 h-8 bg-surface-sunken border border-border rounded-lg flex items-center justify-center shrink-0">
                         <XIcon size={14} className="text-txt-disabled" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <span className="text-sm font-medium text-txt-tertiary">{role}</span>
+                        <span className="text-sm font-medium text-txt-tertiary">{label}</span>
                         <p className="text-[10px] text-txt-disabled">거절됨</p>
                       </div>
                     </div>
@@ -179,13 +180,13 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
                     <button
                       key={role}
                       onClick={() => handleAction(role)}
-                      className="group w-full flex items-center gap-3 py-3 px-3.5 bg-surface-card rounded-xl border border-border hover:border-brand/40 hover:bg-brand-bg hover:shadow-sm active:scale-[0.98] transition-all cursor-pointer text-left"
+                      className="group w-full flex items-center gap-3 h-14 px-3.5 bg-surface-card rounded-xl border border-border hover:border-brand/40 hover:bg-brand-bg hover:shadow-sm active:scale-[0.98] transition-all cursor-pointer text-left"
                     >
                       <div className="w-8 h-8 bg-surface-sunken border border-border rounded-lg flex items-center justify-center shrink-0 group-hover:bg-brand group-hover:border-brand transition-colors">
                         <RoleIcon size={14} className="text-txt-disabled group-hover:text-white transition-colors" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <span className="text-sm font-medium text-txt-secondary group-hover:text-brand transition-colors">{role}</span>
+                        <span className="text-sm font-medium text-txt-secondary group-hover:text-brand transition-colors">{label}</span>
                         <p className="text-[10px] text-txt-disabled group-hover:text-brand/60 transition-colors flex items-center gap-1">
                           <Coffee size={9} /> 커피챗 신청하기
                         </p>
