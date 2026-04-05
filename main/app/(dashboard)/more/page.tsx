@@ -1,21 +1,64 @@
 'use client'
 
+import { useState, useEffect, useCallback, useRef } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { MessageSquare, Sun, Moon, LogOut, Shield, Building2, ChevronRight, Plus } from 'lucide-react'
+import { MessageSquare, Sun, Moon, LogOut, Shield, Building2, ChevronRight, Plus, Download, Share, Smartphone } from 'lucide-react'
 import { useAuth } from '@/src/context/AuthContext'
 import { useAdmin } from '@/src/hooks/useAdmin'
 import { useInstitutionAdmin } from '@/src/hooks/useInstitutionAdmin'
 import { useTheme } from '@/src/context/ThemeContext'
 import { useUnreadCount } from '@/src/hooks/useMessages'
 
+interface BeforeInstallPromptEvent extends Event {
+  prompt(): Promise<void>
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>
+}
+
+function useInstallApp() {
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
+  const [isInstalled, setIsInstalled] = useState(false)
+  const [isIOS, setIsIOS] = useState(false)
+  const [showIOSGuide, setShowIOSGuide] = useState(false)
+
+  useEffect(() => {
+    // 이미 설치된 경우
+    const standalone = window.matchMedia('(display-mode: standalone)').matches
+      || (window.navigator as unknown as { standalone?: boolean }).standalone === true
+    setIsInstalled(standalone)
+
+    // iOS 감지
+    setIsIOS(/iPad|iPhone|iPod/.test(navigator.userAgent))
+
+    // Android: beforeinstallprompt 캡처
+    const handler = (e: Event) => {
+      e.preventDefault()
+      setDeferredPrompt(e as BeforeInstallPromptEvent)
+    }
+    window.addEventListener('beforeinstallprompt', handler)
+    return () => window.removeEventListener('beforeinstallprompt', handler)
+  }, [])
+
+  const install = useCallback(async () => {
+    if (deferredPrompt) {
+      await deferredPrompt.prompt()
+      const { outcome } = await deferredPrompt.userChoice
+      if (outcome === 'accepted') setIsInstalled(true)
+      setDeferredPrompt(null)
+    } else {
+      setShowIOSGuide(true)
+    }
+  }, [deferredPrompt])
+
+  return { isInstalled, isIOS, canInstall: !!deferredPrompt || isIOS, install, showIOSGuide, setShowIOSGuide }
+}
+
 export default function MorePage() {
-  const router = useRouter()
   const { signOut, user, profile } = useAuth()
   const { isAdmin } = useAdmin()
   const { isInstitutionAdmin } = useInstitutionAdmin()
   const { theme, toggleTheme } = useTheme()
   const { data: msgUnread = 0 } = useUnreadCount()
+  const { isInstalled, isIOS, canInstall, install, showIOSGuide, setShowIOSGuide } = useInstallApp()
 
   const displayName = profile?.nickname || user?.user_metadata?.full_name || user?.email?.split('@')[0] || ''
 
@@ -72,7 +115,53 @@ export default function MorePage() {
         </Link>
       </div>
 
-      {/* 메뉴 그룹 2: 설정 */}
+      {/* 앱 설치 */}
+      {!isInstalled && (
+        <div className="bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl overflow-hidden mb-4">
+          <button
+            onClick={install}
+            className="w-full flex items-center gap-4 px-4 py-3.5 active:bg-[#E5E5EA] dark:active:bg-[#2C2C2E] transition-colors"
+          >
+            <Smartphone size={20} className="text-[#34C759] shrink-0" />
+            <div className="flex-1 text-left">
+              <span className="text-[15px] text-txt-primary block">Draft 앱 설치</span>
+              <span className="text-[12px] text-txt-tertiary">홈 화면에 추가하면 앱처럼 사용할 수 있어요</span>
+            </div>
+            <Download size={16} className="text-txt-disabled shrink-0" />
+          </button>
+
+          {/* iOS 설치 가이드 */}
+          {showIOSGuide && (
+            <div className="px-4 pb-4 pt-1 space-y-2.5 border-t border-border/30 mx-4 pt-3">
+              <p className="text-[13px] font-semibold text-txt-primary">홈 화면에 추가하는 방법</p>
+              <div className="flex items-center gap-3">
+                <span className="w-5 h-5 bg-[#E5E5EA] dark:bg-[#3A3A3C] rounded-md flex items-center justify-center text-[11px] font-bold text-txt-secondary shrink-0">1</span>
+                <p className="text-[13px] text-txt-secondary flex items-center gap-1">
+                  하단의 <Share size={13} className="text-[#3182F6]" /> 공유 버튼 탭
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="w-5 h-5 bg-[#E5E5EA] dark:bg-[#3A3A3C] rounded-md flex items-center justify-center text-[11px] font-bold text-txt-secondary shrink-0">2</span>
+                <p className="text-[13px] text-txt-secondary flex items-center gap-1">
+                  <Plus size={13} className="text-[#3182F6]" /> &quot;홈 화면에 추가&quot; 탭
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="w-5 h-5 bg-[#E5E5EA] dark:bg-[#3A3A3C] rounded-md flex items-center justify-center text-[11px] font-bold text-txt-secondary shrink-0">3</span>
+                <p className="text-[13px] text-txt-secondary">&quot;추가&quot;를 탭하면 완료!</p>
+              </div>
+              <button
+                onClick={() => setShowIOSGuide(false)}
+                className="text-[12px] text-txt-tertiary hover:text-txt-secondary mt-1"
+              >
+                닫기
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* 설정 */}
       <div className="bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl overflow-hidden mb-4">
         <button
           onClick={() => { import('@/src/utils/haptic').then(h => h.hapticLight()); toggleTheme() }}
