@@ -76,7 +76,7 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
       } else if (format === 'docx') {
         // For DOCX, we would need to implement client-side generation
         // Using the docx library
-        alert('DOCX 내보내기는 곧 지원될 예정입니다.')
+        toast.info('DOCX 내보내기는 곧 지원될 예정입니다.')
       }
     } catch (error) {
       console.error('Export error:', error)

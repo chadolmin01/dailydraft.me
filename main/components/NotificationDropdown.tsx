@@ -197,9 +197,9 @@ export function NotificationDropdown() {
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute right-0 top-11 w-[calc(100vw-2rem)] sm:w-96 max-w-[24rem] bg-surface-elevated border border-border shadow-lg z-popover animate-in fade-in zoom-in-95 duration-150">
+        <div className="absolute right-0 top-11 w-[calc(100vw-2rem)] sm:w-96 max-w-[24rem] bg-surface-elevated shadow-lg z-popover animate-in fade-in zoom-in-95 duration-150">
           {/* Header */}
-          <div className="px-4 pt-3 pb-2 border-b border-border">
+          <div className="px-4 pt-3 pb-2 border-b border-border/40">
             <div className="flex items-center justify-between mb-2">
               <h3 className="font-semibold text-sm text-txt-primary">알림</h3>
               <div className="flex items-center gap-2">
@@ -319,7 +319,7 @@ export function NotificationDropdown() {
 
           {/* Footer */}
           {allNotifications.length > 0 && (
-            <div className="border-t border-border px-4 py-2">
+            <div className="border-t border-border/40 px-4 py-2">
               <button
                 onClick={() => { router.push('/notifications'); setIsOpen(false) }}
                 className="w-full text-center text-[11px] text-txt-tertiary hover:text-txt-primary transition-colors py-1"

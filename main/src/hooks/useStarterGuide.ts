@@ -167,7 +167,8 @@ export function useStarterGuide() {
   const isDismissed = state.permanentlyDismissed || (state.softDismissedAt !== null && !isSoftDismissExpired)
   const onboardingDone = profile?.onboarding_completed ?? false
 
-  const visible = hydrated && isAuthenticated && onboardingDone && !isDismissed
+  // Auto-hide once all steps are completed
+  const visible = hydrated && isAuthenticated && onboardingDone && !isDismissed && !allDone
 
   // Bonus hint: show link nudge after profile step done
   const profileRecord = profile as Record<string, unknown> | null

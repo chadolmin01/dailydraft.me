@@ -8,6 +8,7 @@ import { AppState, ValidationLevel } from './types';
 import { validationResultsStore } from '@/src/lib/validationResultsStore';
 import { useAuth } from '@/src/context/AuthContext';
 import { useCreateValidatedIdea, type ValidationLevel as DBValidationLevel } from '@/src/hooks/useValidatedIdeas';
+import { toast } from 'sonner';
 
 // Preloaded context from external startup idea (e.g., from Explore page)
 interface PreloadedStartupContext {
@@ -59,7 +60,7 @@ const IdeaValidator: React.FC<IdeaValidatorProps> = ({ onClose, onComplete, embe
       }
       setView(AppState.CHAT);
     } else {
-      alert("일반 등록 모드는 데모에서 지원하지 않습니다. (AI 검증 모드를 체험해보세요)");
+      toast.info("일반 등록 모드는 데모에서 지원하지 않습니다. (AI 검증 모드를 체험해보세요)");
     }
   };
 

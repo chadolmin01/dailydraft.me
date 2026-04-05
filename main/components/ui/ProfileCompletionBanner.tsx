@@ -29,7 +29,7 @@ export function ProfileCompletionBanner() {
   const remaining = incomplete.length - displayFields.length
 
   return (
-    <div className="group relative overflow-hidden border border-border bg-surface-card rounded-xl shadow-sm mb-4 transition-all duration-300 hover:shadow-md">
+    <div className="group relative overflow-hidden bg-surface-card rounded-xl shadow-sm mb-4 transition-all duration-300 hover:shadow-md">
       {/* Progress accent bar */}
       <div className="absolute top-0 left-0 h-[2px] bg-brand transition-all duration-700 ease-out" style={{ width: `${pct}%` }} />
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-surface-sunken" />

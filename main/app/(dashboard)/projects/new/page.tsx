@@ -382,7 +382,7 @@ function NewProjectContent() {
           {/* ─── Error Banner ─── */}
           {error && (
             <div key={error} className="px-4 sm:px-8 pt-3 animate-fade-in error-shake">
-              <div className="flex items-center gap-2 px-3 py-2 bg-status-danger-bg border border-status-danger-text/20 rounded-lg text-status-danger-text text-xs">
+              <div className="flex items-center gap-2 px-3 py-2 bg-status-danger-bg border border-status-danger-text/20 rounded-xl text-status-danger-text text-xs">
                 <AlertCircle size={13} className="shrink-0" />
                 <span>{error}</span>
                 <button type="button" onClick={() => setError('')} className="ml-auto hover:opacity-70">

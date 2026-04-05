@@ -24,6 +24,7 @@ import {
   RotateCcw,
   Wrench,
 } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface AdminStats {
   totalUsers: number
@@ -96,7 +97,7 @@ export default function AdminDashboardPage() {
       if (res.ok) {
         router.push('/onboarding')
       } else {
-        alert('리셋 실패')
+        toast.error('리셋 실패')
       }
     } finally {
       setResetting(false)

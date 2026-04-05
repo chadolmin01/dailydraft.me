@@ -29,7 +29,7 @@ export function PushNotificationBanner() {
   }
 
   return (
-    <div className="mb-4 flex items-start gap-3 px-4 py-3 bg-surface-card border border-border rounded-xl">
+    <div className="mb-4 flex items-start gap-3 px-4 py-3 bg-surface-card rounded-xl shadow-sm">
       <div className="w-8 h-8 rounded-lg bg-surface-sunken border border-border flex items-center justify-center shrink-0">
         <Bell size={14} className="text-txt-secondary" />
       </div>

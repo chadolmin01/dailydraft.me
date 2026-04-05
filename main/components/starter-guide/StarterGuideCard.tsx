@@ -29,7 +29,7 @@ export function StarterGuideCard({
   // ── Confirm dismiss view ──
   if (confirmDismiss) {
     return (
-      <div className="border border-border bg-surface-card rounded-2xl shadow-xl overflow-hidden">
+      <div className="bg-surface-card rounded-2xl shadow-xl overflow-hidden">
         <div className="px-4 py-4 sm:px-5 sm:py-5 space-y-3">
           <p className="text-[12px] sm:text-[13px] text-txt-secondary leading-relaxed">
             프로필을 완성하면 팀 매칭 정확도가 높아져요.
@@ -60,7 +60,7 @@ export function StarterGuideCard({
 
   // ── Main card ──
   return (
-    <div className="border border-border bg-surface-card rounded-2xl shadow-xl overflow-hidden">
+    <div className="bg-surface-card rounded-2xl shadow-xl overflow-hidden">
       {/* Header */}
       <div className="px-3 sm:px-4 pt-3 sm:pt-4 pb-2 sm:pb-3">
         <div className="flex items-center justify-between mb-2">

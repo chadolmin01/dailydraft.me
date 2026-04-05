@@ -7,6 +7,7 @@ import TriangleVisual from '@/components/TriangleVisual';
 import ResultSection from '@/components/ResultSection';
 import { useGeneratePRD, type PRDResult } from '@/src/lib/api/prd';
 import { Clock, FileText } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function PlanPage() {
   const [inputs, setInputs] = useState<RoleInputData[]>([
@@ -148,7 +149,7 @@ export default function PlanPage() {
 
     } catch (error) {
       console.error("Analysis failed", error);
-      alert("분석에 실패했습니다. 잠시 후 다시 시도해주세요.");
+      toast.error("분석에 실패했습니다. 잠시 후 다시 시도해주세요.");
     } finally {
       setIsAnalyzing(false);
     }

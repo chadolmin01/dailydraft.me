@@ -22,12 +22,12 @@ export const EVENT_APPLICATION_STATUS_LABELS: Record<EventApplicationStatus, str
 };
 
 export const EVENT_APPLICATION_STATUS_COLORS: Record<EventApplicationStatus, string> = {
-  interested: 'bg-gray-100 text-gray-700',
-  preparing: 'bg-blue-100 text-blue-700',
-  applied: 'bg-purple-100 text-purple-700',
-  accepted: 'bg-green-100 text-green-700',
-  rejected: 'bg-red-100 text-red-700',
-  pending: 'bg-yellow-100 text-yellow-700',
+  interested: 'bg-surface-sunken text-txt-secondary',
+  preparing: 'bg-status-info-bg text-status-info-text',
+  applied: 'bg-brand-bg text-brand',
+  accepted: 'bg-status-success-bg text-status-success-text',
+  rejected: 'bg-status-danger-bg text-status-danger-text',
+  pending: 'bg-status-warning-bg text-status-warning-text',
 };
 
 export interface ChecklistItem {

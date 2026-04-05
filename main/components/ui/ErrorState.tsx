@@ -46,7 +46,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
   if (isCompact) {
     return (
       <div className={`flex flex-col items-center justify-center py-8 text-center ${className}`}>
-        <div className="w-10 h-10 bg-status-danger-text/10 border border-status-danger-text/20 flex items-center justify-center mb-2">
+        <div className="w-10 h-10 rounded-xl bg-status-danger-text/10 border border-status-danger-text/20 flex items-center justify-center mb-2">
           <AlertTriangle size={20} className="text-status-danger-text" />
         </div>
         <p className="text-xs font-medium text-txt-secondary mb-1">{displayTitle}</p>
@@ -63,7 +63,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
 
   return (
     <div className={`flex flex-col items-center justify-center py-16 text-center ${className}`}>
-      <div className="w-14 h-14 bg-status-danger-text/10 border border-status-danger-text/20 flex items-center justify-center mb-4">
+      <div className="w-14 h-14 rounded-xl bg-status-danger-text/10 border border-status-danger-text/20 flex items-center justify-center mb-4">
         <ServerCrash size={28} className="text-status-danger-text/70" />
       </div>
       <h3 className="text-lg font-bold text-txt-primary mb-2">{displayTitle}</h3>
