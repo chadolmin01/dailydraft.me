@@ -84,7 +84,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
       setAffiliationType(profile.affiliation_type || 'student')
       setUniversity(profile.university || '')
       setMajor(profile.major || '')
-      setVision(profile.vision_summary || '')
+      setVision(profile.bio || '')
       setContactEmail(profile.contact_email || '')
       setPortfolioUrl(profile.portfolio_url || '')
       setLinkedinUrl(profile.linkedin_url || '')
@@ -296,6 +296,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
         university: university.trim() || undefined,
         major: major.trim() || undefined,
         vision_summary: visionJson,
+        bio: vision.trim() || undefined,
         contact_email: contactEmail.trim() || undefined,
         portfolio_url: portfolioUrl.trim() || undefined,
         linkedin_url: linkedinUrl.trim() || undefined,
