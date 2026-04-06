@@ -127,7 +127,7 @@ export const TopNavbar: React.FC = () => {
   // 페이지 바로가기 목록
   const NAV_ITEMS = [
     { label: '탐색', href: '/explore', icon: Compass, keywords: ['탐색', 'explore', '검색'] },
-    { label: '마이페이지', href: '/profile', icon: User, keywords: ['프로필', 'profile', '마이페이지', '내정보'] },
+    { label: '프로필', href: '/profile', icon: User, keywords: ['프로필', 'profile', '마이페이지', '내정보'] },
     { label: '새 프로젝트', href: '/projects/new', icon: Plus, keywords: ['새 프로젝트', 'new', '만들기', '생성'] },
     { label: '내 프로젝트', href: '/projects', icon: FolderOpen, keywords: ['프로젝트', 'projects', '내 프로젝트'] },
   ]
@@ -198,7 +198,8 @@ export const TopNavbar: React.FC = () => {
           {/* ===== 데스크탑 네비게이션 (pill tabs) ===== */}
           <div className="hidden md:flex items-center bg-surface-sunken/60 p-0.5 rounded-full">
             <NavPill href="/explore" active={pathname === '/explore'}>탐색</NavPill>
-            <NavPill href="/profile" active={pathname === '/profile'}>마이페이지</NavPill>
+            <NavPill href="/profile" active={pathname === '/profile'}>프로필</NavPill>
+            <NavPill href="/projects" active={pathname?.startsWith('/projects') ?? false}>프로젝트</NavPill>
           </div>
 
           {/* ===== 중앙: 유니버설 검색 ===== */}

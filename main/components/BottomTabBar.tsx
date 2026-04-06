@@ -24,8 +24,8 @@ function useUnreadNotificationCount() {
 }
 
 const TABS = [
-  { key: 'projects',      label: 'MY',     path: '/projects',      icon: FolderKanban },
-  { key: 'profile',       label: '프로필', path: '/profile',       icon: User },
+  { key: 'projects',      label: '프로젝트', path: '/projects',      icon: FolderKanban },
+  { key: 'profile',       label: '프로필',   path: '/profile',       icon: User },
   { key: 'explore',       label: null,     path: '/explore',       icon: Compass },   // center — highlight
   { key: 'notifications', label: '알림',   path: '/notifications', icon: Bell },
   { key: 'more',          label: '더보기', path: '/more',          icon: Menu },
