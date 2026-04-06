@@ -131,10 +131,10 @@ function calculatePracticalCompatibility(
 
   // Time commitment (using personality.time as proxy)
   if (opportunity.time_commitment && profile.personality?.time) {
-    if (opportunity.time_commitment === 'full_time' && profile.personality.time >= 7) {
+    if (opportunity.time_commitment === 'full_time' && profile.personality.time >= 4) {
       score += 100
       totalChecks++
-    } else if (opportunity.time_commitment === 'part_time' && profile.personality.time <= 5) {
+    } else if (opportunity.time_commitment === 'part_time' && profile.personality.time <= 2) {
       score += 100
       totalChecks++
     } else {

@@ -98,8 +98,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
       // AI analysis data
       const p = profile.personality as Record<string, number> | null
       if (p) {
-        // 기존 1-10 데이터 호환: 5 초과면 반으로 나눠서 1-5로 보정
-        const norm = (v: number) => v > 5 ? Math.round(v / 2) : (v || 3)
+        const norm = (v: number) => Math.min(v || 3, 5)
         setPersonality({ risk: norm(p.risk), time: norm(p.time), communication: norm(p.communication), decision: norm(p.decision) })
       }
 
@@ -108,7 +107,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
           const v = JSON.parse(profile.vision_summary)
           const ws = v.work_style
           if (ws) {
-            const norm = (v: number) => v > 5 ? Math.round(v / 2) : (v || 3)
+            const norm = (v: number) => Math.min(v || 3, 5)
             setWorkStyle({ collaboration: norm(ws.collaboration), planning: norm(ws.planning), perfectionism: norm(ws.perfectionism) })
           }
           if (v.team_preference) {

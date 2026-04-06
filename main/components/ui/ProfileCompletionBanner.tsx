@@ -60,7 +60,7 @@ export function ProfileCompletionBanner() {
 
         {/* CTA */}
         <Link
-          href="/profile/edit"
+          href="/profile"
           className="shrink-0 px-3.5 py-2 bg-surface-inverse text-txt-inverse text-xs font-bold rounded-xl border border-surface-inverse hover:bg-brand transition-colors duration-300 flex items-center gap-1.5"
         >
           완성하기 <ArrowRight size={12} />

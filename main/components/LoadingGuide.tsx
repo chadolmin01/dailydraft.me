@@ -57,7 +57,7 @@ const CTA_CONFIG: Record<string, CTAItem> = {
       href: '/explore',
       icon: Search,
     },
-    secondary: { label: '프로필 완성하기', href: '/profile/edit', icon: UserPen },
+    secondary: { label: '프로필 완성하기', href: '/profile', icon: UserPen },
   },
   solo: {
     title: '같이 시작할 사람을 찾아볼까요?',
@@ -253,7 +253,7 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
               </div>
 
               <Link
-                href="/profile/edit"
+                href="/profile"
                 className="text-xs font-bold text-txt-primary underline underline-offset-2 hover:text-brand transition-colors"
               >
                 프로필 완성하러 가기 →

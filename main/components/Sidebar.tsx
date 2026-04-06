@@ -70,7 +70,7 @@ export const Sidebar: React.FC = () => {
 
   const handleMenuAction = async (action: string) => {
     if (action === 'profile') router.push('/profile')
-    if (action === 'settings') router.push('/profile/edit')
+    if (action === 'settings') router.push('/profile')
     if (action === 'usage') router.push('/usage')
     if (action === 'institution') router.push('/institution')
     if (action === 'error-logs') router.push('/admin/error-logs')

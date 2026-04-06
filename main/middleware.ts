@@ -132,9 +132,9 @@ export async function middleware(request: NextRequest) {
     return NextResponse.json({ error: { code: 'NOT_FOUND', message: '페이지를 찾을 수 없습니다' } }, { status: 404 })
   }
 
-  // /settings → /profile/edit redirect (설정 페이지 미구현, 프로필 편집으로 대체)
+  // /settings → /profile redirect (설정 페이지 미구현, 프로필로 대체)
   if (pathname === '/settings' || pathname.startsWith('/settings/')) {
-    return NextResponse.redirect(new URL('/profile/edit', request.url))
+    return NextResponse.redirect(new URL('/profile', request.url))
   }
 
   // Block hidden pages — redirect to /explore

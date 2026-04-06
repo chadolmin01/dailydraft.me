@@ -18,6 +18,8 @@ import {
   Heart,
   Eye,
   RotateCcw,
+  Plus,
+  ChevronDown,
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
@@ -28,10 +30,18 @@ import { supabase } from '@/src/lib/supabase/client'
 import { cleanNickname } from '@/src/lib/clean-nickname'
 import type { Profile } from './types'
 import { SITUATION_LABELS } from './types'
+import { INTEREST_OPTIONS } from './edit/constants'
 import { positionLabel } from '@/src/constants/roles'
 import { EditableField } from './EditableField'
 
 /* ── ProfileHero ────────────────────────────────────────── */
+
+const SITUATION_OPTIONS = [
+  { value: 'has_project', label: '프로젝트 진행 중' },
+  { value: 'want_to_join', label: '팀 합류 희망' },
+  { value: 'solo', label: '팀원 탐색 중' },
+  { value: 'exploring', label: '탐색 중' },
+]
 
 interface ProfileHeroProps {
   profile: Profile
@@ -51,6 +61,14 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
   const bioRef = useRef<HTMLTextAreaElement>(null)
   const [avatarUploading, setAvatarUploading] = useState(false)
   const [editingBio, setEditingBio] = useState(false)
+
+  // Inline interest tags editing
+  const [showTagEditor, setShowTagEditor] = useState(false)
+  const [customTagInput, setCustomTagInput] = useState('')
+
+  // Inline situation dropdown
+  const [showSituationDropdown, setShowSituationDropdown] = useState(false)
+  const situationRef = useRef<HTMLDivElement>(null)
 
   const heroDefaults = useMemo(() => ({
     nickname: profile?.nickname || '',
@@ -74,6 +92,18 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
   useEffect(() => {
     if (editingBio && bioRef.current) bioRef.current.focus()
   }, [editingBio])
+
+  // Close situation dropdown on outside click
+  useEffect(() => {
+    if (!showSituationDropdown) return
+    const handler = (e: MouseEvent) => {
+      if (situationRef.current && !situationRef.current.contains(e.target as Node)) {
+        setShowSituationDropdown(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [showSituationDropdown])
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -100,6 +130,28 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
       setAvatarUploading(false)
       if (avatarInputRef.current) avatarInputRef.current.value = ''
     }
+  }
+
+  const toggleInterestTag = (tag: string) => {
+    const current = profile?.interest_tags || []
+    const updated = current.includes(tag)
+      ? current.filter(t => t !== tag)
+      : [...current, tag]
+    updateProfile.mutate({ interest_tags: updated })
+  }
+
+  const addCustomInterestTag = () => {
+    const tag = customTagInput.trim()
+    if (!tag) return
+    const current = profile?.interest_tags || []
+    if (current.includes(tag)) return
+    updateProfile.mutate({ interest_tags: [...current, tag] })
+    setCustomTagInput('')
+  }
+
+  const handleSituationChange = (value: string) => {
+    updateProfile.mutate({ current_situation: value })
+    setShowSituationDropdown(false)
   }
 
   /* ── Avatar with upload overlay ── */
@@ -219,6 +271,48 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
     </p>
   )
 
+  /* ── Situation badge (inline editable) ── */
+  const renderSituation = () => {
+    const situation = profile?.current_situation
+    if (!isEditable && !situation) return null
+
+    if (isEditable) {
+      return (
+        <div className="relative inline-block" ref={situationRef}>
+          <button
+            onClick={() => setShowSituationDropdown(prev => !prev)}
+            className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 text-[10px] font-mono font-bold bg-brand/10 text-brand border border-brand/30 rounded-full hover:bg-brand/20 transition-colors"
+          >
+            <Target size={8} />
+            {situation ? (SITUATION_LABELS[situation] || situation) : '상황 선택'}
+            <ChevronDown size={8} />
+          </button>
+          {showSituationDropdown && (
+            <div className="absolute top-full left-0 mt-1 z-20 bg-surface-card border border-border rounded-xl shadow-lg py-1 min-w-[180px]">
+              {SITUATION_OPTIONS.map(opt => (
+                <button
+                  key={opt.value}
+                  onClick={() => handleSituationChange(opt.value)}
+                  className={`w-full text-left px-3 py-2 text-xs transition-colors ${
+                    situation === opt.value ? 'bg-brand/10 text-brand font-bold' : 'text-txt-secondary hover:bg-surface-sunken'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )
+    }
+
+    return (
+      <span className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 text-[10px] font-mono font-bold bg-brand/10 text-brand border border-brand/30 rounded-full">
+        <Target size={8} /> {SITUATION_LABELS[situation!] || situation}
+      </span>
+    )
+  }
+
   /* ── Bio ── */
   const renderBio = (marginClass = 'mb-4') => {
     const bioValue = drafts.bio ?? bio ?? ''
@@ -329,19 +423,73 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
     </div>
   )
 
-  /* ── Tags + Strengths ── */
+  /* ── Tags + Strengths (with inline editing for interest tags) ── */
   const renderTags = () => {
-    if (!((profile?.interest_tags && profile.interest_tags.length > 0) || strengths.length > 0)) return null
+    const interestTags = profile?.interest_tags || []
+    const hasContent = interestTags.length > 0 || strengths.length > 0 || (isEditable)
+    if (!hasContent) return null
+
     return (
       <div className="mt-4 pt-4 border-t border-border space-y-3">
-        {profile?.interest_tags && profile.interest_tags.length > 0 && (
-          <div className="flex gap-1.5 flex-wrap">
-            <span className="text-[10px] text-txt-tertiary self-center mr-1">TAGS</span>
-            {profile.interest_tags.map((tag, idx) => (
-              <span key={idx} className="text-[10px] font-mono bg-white text-txt-primary border border-border px-2 py-0.5 font-medium rounded-full">
-                {tag}
-              </span>
-            ))}
+        {/* Interest Tags */}
+        {(interestTags.length > 0 || isEditable) && (
+          <div>
+            <div className="flex gap-1.5 flex-wrap">
+              <span className="text-[10px] text-txt-tertiary self-center mr-1">TAGS</span>
+              {interestTags.map((tag, idx) => (
+                <span key={idx} className="text-[10px] font-mono bg-white text-txt-primary border border-border px-2 py-0.5 font-medium rounded-full inline-flex items-center gap-1">
+                  {tag}
+                  {isEditable && (
+                    <button
+                      onClick={() => toggleInterestTag(tag)}
+                      className="hover:text-status-danger-text transition-colors p-0.5 -mr-0.5"
+                    >
+                      <X size={8} />
+                    </button>
+                  )}
+                </span>
+              ))}
+              {isEditable && (
+                <button
+                  onClick={() => setShowTagEditor(prev => !prev)}
+                  className="text-[10px] font-mono text-txt-tertiary border border-dashed border-border px-2 py-0.5 font-medium rounded-full hover:border-brand hover:text-brand transition-colors inline-flex items-center gap-0.5"
+                >
+                  <Plus size={8} /> 추가
+                </button>
+              )}
+            </div>
+            {isEditable && showTagEditor && (
+              <div className="mt-2 space-y-2">
+                <div className="flex flex-wrap gap-1">
+                  {INTEREST_OPTIONS.filter(t => !interestTags.includes(t)).map(tag => (
+                    <button
+                      key={tag}
+                      onClick={() => toggleInterestTag(tag)}
+                      className="text-[10px] font-mono px-2 py-0.5 border border-border bg-surface-sunken text-txt-secondary rounded-full hover:border-brand hover:text-brand transition-colors"
+                    >
+                      + {tag}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex gap-1">
+                  <input
+                    type="text"
+                    value={customTagInput}
+                    onChange={e => setCustomTagInput(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addCustomInterestTag() } }}
+                    placeholder="직접 입력"
+                    maxLength={20}
+                    className="flex-1 px-2 py-1 text-xs border border-border bg-surface-card rounded-lg focus:outline-none focus:border-brand transition-colors"
+                  />
+                  <button
+                    onClick={addCustomInterestTag}
+                    className="px-2 py-1 text-xs border border-border text-txt-secondary hover:bg-surface-sunken transition-colors rounded-lg"
+                  >
+                    <Plus size={12} />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -426,11 +574,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
             <div className="flex-1 min-w-0 pb-0.5">
               {renderName()}
               {renderSubtitle()}
-              {profile?.current_situation && (
-                <span className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 text-[10px] font-mono font-bold bg-brand/10 text-brand border border-brand/30 rounded-full">
-                  <Target size={8} /> {SITUATION_LABELS[profile.current_situation] || profile.current_situation}
-                </span>
-              )}
+              {renderSituation()}
               {renderStats()}
             </div>
           </div>
@@ -462,11 +606,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
         <div className="flex-1 min-w-0 pt-1">
           {renderName()}
           {renderSubtitle()}
-          {profile?.current_situation && (
-            <span className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 text-[10px] font-mono font-bold bg-brand/10 text-brand border border-brand/30 rounded-full">
-              <Target size={8} /> {SITUATION_LABELS[profile.current_situation] || profile.current_situation}
-            </span>
-          )}
+          {renderSituation()}
           {renderStats()}
         </div>
       </div>

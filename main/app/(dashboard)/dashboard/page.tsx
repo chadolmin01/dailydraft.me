@@ -203,7 +203,7 @@ export default function DashboardPage() {
                 <div className="bg-surface-card rounded-xl border border-border p-8 text-center">
                   <Rocket size={24} className="text-txt-disabled mx-auto mb-2" />
                   <p className="text-sm text-txt-tertiary">프로필을 완성하면 맞춤 추천을 받을 수 있어요</p>
-                  <Link href="/profile/edit" className="text-xs text-brand font-bold mt-2 inline-block hover:underline">프로필 완성하기</Link>
+                  <Link href="/profile" className="text-xs text-brand font-bold mt-2 inline-block hover:underline">프로필 완성하기</Link>
                 </div>
               ) : (
                 <div className="space-y-3">

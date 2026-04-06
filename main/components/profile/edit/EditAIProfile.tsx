@@ -128,7 +128,7 @@ export const EditAIProfile: React.FC<EditAIProfileProps> = ({
           </div>
         </div>
 
-        {/* risk: 1-10 slider (AI 추론) */}
+        {/* risk, time: 1-5 slider */}
         {[
           { key: 'risk', label: '도전 성향', low: '안정 추구', high: '도전적' },
           { key: 'time', label: '시간 투자', low: '여유 없음', high: '풀타임' },
@@ -136,11 +136,11 @@ export const EditAIProfile: React.FC<EditAIProfileProps> = ({
           <div key={item.key}>
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs text-txt-secondary">{item.label}</span>
-              <span className="text-xs font-mono text-txt-tertiary">{personality[item.key]}/10</span>
+              <span className="text-xs font-mono text-txt-tertiary">{personality[item.key]}/5</span>
             </div>
             <input
               type="range"
-              min={1} max={10} step={1}
+              min={1} max={5} step={1}
               value={personality[item.key]}
               onChange={e => setPersonality(p => ({ ...p, [item.key]: parseInt(e.target.value) }))}
               className="w-full h-1.5 accent-brand cursor-pointer"
