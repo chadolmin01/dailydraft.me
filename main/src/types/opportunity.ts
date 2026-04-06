@@ -26,7 +26,8 @@ export interface OpportunityWithCreator extends Opportunity {
     contact_email?: string | null
     desired_position?: string | null
     university?: string | null
-  }
+    interest_tags?: string[] | null
+  } | null
 }
 
 // Opportunity with AI match scoring

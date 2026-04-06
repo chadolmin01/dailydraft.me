@@ -89,7 +89,7 @@ export function useInfiniteOpportunities(pageSize = 12) {
   })
 }
 
-// Fetch single opportunity by ID
+// Fetch single opportunity by ID — creator profile을 병렬로 함께 가져옴
 export function useOpportunity(id: string | undefined) {
   const queryClient = useQueryClient()
 
@@ -98,14 +98,27 @@ export function useOpportunity(id: string | undefined) {
     queryFn: () => withRetry(async () => {
       if (!id) return null
 
-      const { data, error } = await supabase
+      const { data: opp, error } = await supabase
         .from('opportunities')
         .select('*')
         .eq('id', id)
         .single()
 
       if (error) throw error
-      return data as OpportunityWithCreator
+
+      // creator profile을 같은 queryFn 안에서 즉시 fetch
+      // (별도 useQuery 훅 대기 없이 한 번의 React Query 사이클로 완료)
+      let creator = undefined
+      if (opp.creator_id) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('user_id, nickname, desired_position, university, interest_tags, skills, location, contact_email')
+          .eq('user_id', opp.creator_id)
+          .maybeSingle()
+        creator = data || undefined
+      }
+
+      return { ...opp, creator } as OpportunityWithCreator
     }),
     enabled: !!id,
     staleTime: 1000 * 60 * 2,

@@ -11,7 +11,7 @@ import { toast } from 'sonner'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/src/lib/supabase/client'
 import { useOpportunity, useUpdateOpportunity, useSimilarOpportunities, opportunityKeys } from '@/src/hooks/useOpportunities'
-import { useProfileByUserId } from '@/src/hooks/usePublicProfiles'
+// creator profile은 useOpportunity에서 join으로 함께 로드
 import { useProjectUpdates } from '@/src/hooks/useProjectUpdates'
 import { useAuth } from '@/src/context/AuthContext'
 import { useCoffeeChats } from '@/src/hooks/useCoffeeChats'
@@ -67,7 +67,8 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
   useBackHandler(showCta, () => setShowCta(false), 'project-cta')
 
   const { data: opportunity, isLoading: loading } = useOpportunity(currentId ?? undefined)
-  const { data: creator } = useProfileByUserId(opportunity?.creator_id ?? undefined)
+  // creator는 opportunity에 join되어 함께 로드됨 (별도 쿼리 불필요)
+  const creator = opportunity?.creator ?? null
   const { data: updates = [] } = useProjectUpdates(opportunity?.id)
 
   // Prefetch similar projects — starts immediately when modal opens
