@@ -63,7 +63,6 @@ export function ProfileSidebar({ profile, completion, isEditable = false, onOpen
     const updated = [...current, { name: trimmed }]
     updateProfile.mutate({ skills: updated as any })
     setNewSkillName('')
-    setShowSkillInput(false)
   }
 
   const removeSkill = (name: string) => {
@@ -138,11 +137,7 @@ export function ProfileSidebar({ profile, completion, isEditable = false, onOpen
           </h3>
           <div className="flex flex-wrap gap-1.5">
             {(skills || []).map((skill, idx) => (
-              <span key={idx} className={`text-[10px] font-mono px-2 py-0.5 font-medium rounded-full inline-flex items-center gap-1 transition-all ${
-                showSkillInput
-                  ? 'bg-brand/10 text-brand border border-brand/30'
-                  : 'bg-surface-sunken text-txt-primary border border-border'
-              }`}>
+              <span key={idx} className="text-[10px] font-mono px-2 py-0.5 font-medium rounded-full inline-flex items-center gap-1 transition-all bg-brand/10 text-brand border border-brand/30">
                 {skill.name}
                 {isEditable && showSkillInput && (
                   <button

@@ -437,11 +437,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
             <div className="flex gap-1.5 flex-wrap">
               <span className="text-[10px] text-txt-tertiary self-center mr-1">TAGS</span>
               {interestTags.map((tag, idx) => (
-                <span key={idx} className={`text-[10px] font-mono px-2 py-0.5 font-medium rounded-full inline-flex items-center gap-1 transition-all ${
-                  showTagEditor
-                    ? 'bg-brand/10 text-brand border border-brand/30'
-                    : 'bg-white text-txt-primary border border-border'
-                }`}>
+                <span key={idx} className="text-[10px] font-mono px-2 py-0.5 font-medium rounded-full inline-flex items-center gap-1 transition-all bg-brand/10 text-brand border border-brand/30">
                   {tag}
                   {isEditable && showTagEditor && (
                     <button
