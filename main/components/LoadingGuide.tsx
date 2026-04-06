@@ -134,6 +134,12 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
     setGeneratedBio(null)
   }, [])
 
+  // Preload CTA illustration to prevent layout shift
+  useEffect(() => {
+    const img = new Image()
+    img.src = '/onboarding/add_project.svg'
+  }, [])
+
   const situation = profile?.current_situation ?? 'exploring'
   const cta = CTA_CONFIG[situation] ?? CTA_CONFIG.exploring
   const nickname = profile?.nickname ?? '회원'
@@ -166,104 +172,100 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
           </p>
         </div>
 
-        {/* ── CTA Phase (cross-fade in) ── */}
-        {showCta && (
-          <div className="flex flex-col items-center animate-slide-up-fade">
+        {/* ── CTA Phase (cross-fade in — always rendered, opacity transition) ── */}
+        <div className={`flex flex-col items-center transition-all duration-500 ease-out ${showCta ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
 
-            {/* Illustration */}
-            <div className="flex justify-center mb-10">
-              <img
-                src="/onboarding/add_project.svg"
-                alt="시작하기"
-                className="w-full max-w-[260px] object-contain animate-in fade-in slide-in-from-bottom-3 duration-500"
-              />
-            </div>
-
-            {/* Message */}
-            <h2 className="text-2xl sm:text-[28px] font-black text-txt-primary leading-tight mb-2 text-center animate-in fade-in slide-in-from-bottom-2 duration-300" style={{ animationDelay: '100ms' }}>
-              {cta.title}
-            </h2>
-            <p className="text-[14px] text-txt-secondary text-center mb-10 animate-in fade-in duration-300" style={{ animationDelay: '200ms' }}>
-              이제 Draft에서 첫 발을 내딛어 보세요
-            </p>
-
-            {/* CTA Buttons */}
-            <div className="w-full space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-300" style={{ animationDelay: '350ms' }}>
-              {/* Primary */}
-              <Link
-                href={cta.primary.href}
-                className="w-full flex items-center justify-center gap-2 py-4 bg-brand text-white rounded-full text-[15px] font-black hover:opacity-90 active:scale-[0.97] transition-all"
-              >
-                <PrimaryIcon size={16} />
-                {cta.primary.label}
-              </Link>
-
-              {/* Secondary */}
-              <Link
-                href={cta.secondary.href}
-                className="w-full flex items-center justify-center gap-2 py-4 bg-surface-sunken text-txt-secondary rounded-full text-[14px] font-bold hover:bg-surface-card hover:text-txt-primary active:scale-[0.97] transition-all"
-              >
-                <SecondaryIcon size={16} />
-                {cta.secondary.label}
-              </Link>
-            </div>
-
-            {/* Profile Nudge */}
-            {showNudge && (
-              <div
-                className="w-full mt-8 pt-6 border-t border-border animate-in fade-in duration-300"
-                style={{ animationDelay: '500ms' }}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-[10px] font-mono uppercase text-txt-tertiary">
-                    PROFILE
-                  </span>
-                  <span className="text-[10px] font-mono font-bold text-txt-primary">
-                    {completion.pct}%
-                  </span>
-                </div>
-
-                {/* Progress bar */}
-                <div className="w-full h-1 bg-surface-sunken rounded-full overflow-hidden mb-3">
-                  <div
-                    className="h-full bg-brand rounded-full transition-all duration-500"
-                    style={{ width: `${completion.pct}%` }}
-                  />
-                </div>
-
-                {/* Field checklist */}
-                <div className="flex flex-wrap gap-x-3 gap-y-1 mb-3">
-                  {completion.fields.map((f) => (
-                    <span
-                      key={f.label}
-                      className="flex items-center gap-1 text-xs text-txt-secondary"
-                    >
-                      {f.done ? (
-                        <Check size={12} className="text-brand" />
-                      ) : (
-                        <Circle size={12} className="text-txt-disabled" />
-                      )}
-                      {f.label}
-                    </span>
-                  ))}
-                </div>
-
-                <Link
-                  href="/profile/edit"
-                  className="text-xs font-bold text-txt-primary underline underline-offset-2 hover:text-brand transition-colors"
-                >
-                  프로필 완성하러 가기 →
-                </Link>
-              </div>
-            )}
+          {/* Illustration — preloaded via link[rel=preload] avoids layout shift */}
+          <div className="flex justify-center mb-10">
+            <img
+              src="/onboarding/add_project.svg"
+              alt="시작하기"
+              className="w-full max-w-[260px] object-contain"
+            />
           </div>
-        )}
+
+          {/* Message */}
+          <h2 className="text-2xl sm:text-[28px] font-black text-txt-primary leading-tight mb-2 text-center">
+            {cta.title}
+          </h2>
+          <p className="text-[14px] text-txt-secondary text-center mb-10">
+            이제 Draft에서 첫 발을 내딛어 보세요
+          </p>
+
+          {/* CTA Buttons */}
+          <div className="w-full space-y-3">
+            {/* Primary */}
+            <Link
+              href={cta.primary.href}
+              className="w-full flex items-center justify-center gap-2 py-4 bg-brand text-white rounded-full text-[15px] font-black hover:opacity-90 active:scale-[0.97] transition-all"
+            >
+              <PrimaryIcon size={16} />
+              {cta.primary.label}
+            </Link>
+
+            {/* Secondary */}
+            <Link
+              href={cta.secondary.href}
+              className="w-full flex items-center justify-center gap-2 py-4 bg-surface-sunken text-txt-secondary rounded-full text-[14px] font-bold hover:bg-surface-card hover:text-txt-primary active:scale-[0.97] transition-all"
+            >
+              <SecondaryIcon size={16} />
+              {cta.secondary.label}
+            </Link>
+          </div>
+
+          {/* Profile Nudge */}
+          {showNudge && (
+            <div
+              className={`w-full mt-8 pt-6 border-t border-border transition-opacity duration-300 ${showCta ? 'opacity-100' : 'opacity-0'}`}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] font-mono uppercase text-txt-tertiary">
+                  PROFILE
+                </span>
+                <span className="text-[10px] font-mono font-bold text-txt-primary">
+                  {completion.pct}%
+                </span>
+              </div>
+
+              {/* Progress bar */}
+              <div className="w-full h-1 bg-surface-sunken rounded-full overflow-hidden mb-3">
+                <div
+                  className="h-full bg-brand rounded-full transition-all duration-500"
+                  style={{ width: `${completion.pct}%` }}
+                />
+              </div>
+
+              {/* Field checklist */}
+              <div className="flex flex-wrap gap-x-3 gap-y-1 mb-3">
+                {completion.fields.map((f) => (
+                  <span
+                    key={f.label}
+                    className="flex items-center gap-1 text-xs text-txt-secondary"
+                  >
+                    {f.done ? (
+                      <Check size={12} className="text-brand" />
+                    ) : (
+                      <Circle size={12} className="text-txt-disabled" />
+                    )}
+                    {f.label}
+                  </span>
+                ))}
+              </div>
+
+              <Link
+                href="/profile/edit"
+                className="text-xs font-bold text-txt-primary underline underline-offset-2 hover:text-brand transition-colors"
+              >
+                프로필 완성하러 가기 →
+              </Link>
+            </div>
+          )}
+        </div>
 
         {/* ── Bio Inline Editor ── */}
-        {generatedBio && showCta && (
+        {generatedBio && (
           <div
-            className="mt-3 bg-surface-card rounded-xl border border-border shadow-lg overflow-hidden animate-slide-up-fade"
-            style={{ animationDelay: '800ms', animationFillMode: 'both' }}
+            className={`mt-3 bg-surface-card rounded-xl border border-border shadow-lg overflow-hidden transition-all duration-500 ${showCta ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}
           >
             <div className="p-5">
               <div className="flex items-center gap-2 mb-3">
