@@ -83,12 +83,6 @@ export interface EditAIProfileProps {
   setWorkStyle: React.Dispatch<React.SetStateAction<Record<string, number>>>
   workStyleTraits: Record<string, string>
   setWorkStyleTraits: React.Dispatch<React.SetStateAction<Record<string, string>>>
-  teamRole: string
-  setTeamRole: (v: string) => void
-  teamSize: string
-  setTeamSize: (v: string) => void
-  teamAtmosphere: string
-  setTeamAtmosphere: (v: string) => void
   hoursPerWeek: string
   setHoursPerWeek: (v: string) => void
   preferOnline: boolean
