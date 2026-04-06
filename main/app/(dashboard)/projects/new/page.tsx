@@ -473,23 +473,37 @@ function NewProjectContent() {
 
                 {/* Description */}
                 <section>
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-[10px] font-medium text-txt-tertiary">
-                      프로젝트 소개 <span className="text-status-danger-text">*</span>
-                    </h3>
-                    <button
-                      type="button"
-                      onClick={generateDescription}
-                      disabled={aiLoading || !title.trim()}
-                      className="flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-medium border border-border-subtle rounded-lg text-txt-secondary hover:border-brand/30 hover:text-txt-primary transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-                    >
-                      {aiLoading ? (
-                        <><Loader2 size={10} className="animate-spin" /> 생성 중...</>
-                      ) : (
-                        <><Sparkles size={10} /> AI 작성</>
-                      )}
-                    </button>
+                  {/* AI 소개글 생성 CTA */}
+                  <div className="mb-3 bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 bg-[#3182F6]/10 dark:bg-[#3182F6]/20 rounded-xl flex items-center justify-center shrink-0">
+                        <Sparkles size={18} className="text-[#3182F6]" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[13px] font-semibold text-txt-primary">AI로 소개글 작성</p>
+                        <p className="text-[11px] text-txt-tertiary mt-0.5">위에 입력한 정보를 바탕으로 자동 생성해요</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={generateDescription}
+                        disabled={aiLoading || !title.trim()}
+                        className="shrink-0 h-9 px-4 text-[12px] font-semibold bg-[#3182F6] text-white rounded-xl disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95 flex items-center gap-1.5"
+                      >
+                        {aiLoading ? (
+                          <><Loader2 size={13} className="animate-spin" /> 생성 중</>
+                        ) : (
+                          '생성하기'
+                        )}
+                      </button>
+                    </div>
+                    {!title.trim() && (
+                      <p className="text-[11px] text-txt-disabled mt-2 pl-12">프로젝트 이름을 먼저 입력해주세요</p>
+                    )}
                   </div>
+
+                  <h3 className="text-[10px] font-medium text-txt-tertiary mb-2">
+                    프로젝트 소개 <span className="text-status-danger-text">*</span>
+                  </h3>
                   <textarea
                     ref={descriptionRef}
                     value={description}
