@@ -108,9 +108,9 @@ export const QuickNumber: React.FC<QuickNumberProps> = ({ presets, subQuestion, 
         ))}
       </div>
 
-      {/* Sub question */}
-      {subQuestion && selected !== null && (
-        <div className="mt-6 animate-in fade-in slide-in-from-bottom-4 duration-350">
+      {/* Sub question — 미리 공간 확보해서 레이아웃 시프트 방지 */}
+      {subQuestion && (
+        <div className={`mt-6 transition-all duration-300 ${selected !== null ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}>
           <p className="text-[13px] font-semibold text-txt-secondary mb-3">{subQuestion.question}</p>
           <div className="grid grid-cols-2 gap-2.5">
             {[
