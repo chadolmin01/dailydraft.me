@@ -33,7 +33,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
   const [sidePanel, setSidePanel] = useState<null | 'projects' | 'portfolio'>(null)
   useBackHandler(!!profileId, onClose, 'profile-detail')
   useBackHandler(showCoffeeChatForm, () => setShowCoffeeChatForm(false), 'profile-coffee')
-  useBackHandler(showInviteModal, () => setShowInviteModal(false), 'profile-invite')
+  // showInviteModal은 InviteToProjectModal 내부에서 자체 useBackHandler 등록
   useBackHandler(!!sidePanel, () => setSidePanel(null), 'profile-side')
 
   const { data: profile, isLoading: loading } = useDetailedPublicProfile(
@@ -91,17 +91,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
   }, [initialCoffeeChatOpen, profile, user])
 
 
-  // ESC → history.back() → useBackHandler의 LIFO 스택이 순서대로 처리
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault()
-        window.history.back()
-      }
-    }
-    window.addEventListener('keydown', handleKey)
-    return () => window.removeEventListener('keydown', handleKey)
-  }, [])
+  // ESC는 useBackHandler의 글로벌 핸들러가 처리
 
   const skills = profile?.skills as Array<{ name: string; level: string }> | null
   const personality = profile?.personality as Record<string, number> | null

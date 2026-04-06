@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useCallback } from 'react'
+import React from 'react'
 import { X } from 'lucide-react'
 import { cn } from '@/src/lib/utils'
 import { useScrollLock } from '@/src/hooks/useScrollLock'
@@ -50,18 +50,7 @@ export const Modal: React.FC<ModalProps> = ({
   useBackHandler(isOpen, onClose)
   const containerRef = useFocusTrap<HTMLDivElement>(isOpen)
 
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
-    },
-    [onClose]
-  )
-
-  useEffect(() => {
-    if (!isOpen) return
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [isOpen, handleKeyDown])
+  // ESC는 useBackHandler의 글로벌 핸들러가 처리
 
   return (
     <div

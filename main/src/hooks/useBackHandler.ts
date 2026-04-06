@@ -39,6 +39,16 @@ function scheduleBack() {
 function ensureGlobalListener() {
   if (listenerAttached) return
   listenerAttached = true
+
+  // 단일 글로벌 ESC 핸들러 — 스택 최상단만 닫음
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && handlerStack.length > 0) {
+      e.preventDefault()
+      e.stopImmediatePropagation()
+      window.history.back()
+    }
+  }, true) // capture phase — 다른 ESC 핸들러보다 먼저 실행
+
   window.addEventListener('popstate', (event) => {
     const state = event.state
     const isModalEntry = state && typeof state === 'object' && BACK_KEY in state
