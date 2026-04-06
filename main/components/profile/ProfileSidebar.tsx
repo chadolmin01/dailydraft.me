@@ -138,9 +138,13 @@ export function ProfileSidebar({ profile, completion, isEditable = false, onOpen
           </h3>
           <div className="flex flex-wrap gap-1.5">
             {(skills || []).map((skill, idx) => (
-              <span key={idx} className="text-[10px] font-mono bg-surface-sunken text-txt-primary border border-border px-2 py-0.5 font-medium rounded-full inline-flex items-center gap-1">
+              <span key={idx} className={`text-[10px] font-mono px-2 py-0.5 font-medium rounded-full inline-flex items-center gap-1 transition-all ${
+                showSkillInput
+                  ? 'bg-brand/10 text-brand border border-brand/30'
+                  : 'bg-surface-sunken text-txt-primary border border-border'
+              }`}>
                 {skill.name}
-                {isEditable && (
+                {isEditable && showSkillInput && (
                   <button
                     onClick={() => removeSkill(skill.name)}
                     className="hover:text-status-danger-text transition-colors p-0.5 -mr-0.5"
@@ -150,7 +154,7 @@ export function ProfileSidebar({ profile, completion, isEditable = false, onOpen
                 )}
               </span>
             ))}
-            {isEditable && (
+            {isEditable && !showSkillInput && (
               <button
                 onClick={() => setShowSkillInput(true)}
                 className="text-[10px] font-mono text-txt-tertiary border border-dashed border-border px-2 py-0.5 font-medium rounded-full hover:border-brand hover:text-brand transition-colors inline-flex items-center gap-0.5"
@@ -161,6 +165,7 @@ export function ProfileSidebar({ profile, completion, isEditable = false, onOpen
           </div>
           {isEditable && showSkillInput && (
             <div className="mt-3 space-y-2">
+              <p className="text-[10px] text-txt-tertiary">탭하여 추가 / 위 태그의 X로 제거</p>
               <div className="flex flex-wrap gap-1">
                 {SKILL_SUGGESTIONS.filter(s => !(skills || []).some(sk => sk.name === s)).map(s => (
                   <button
@@ -188,13 +193,13 @@ export function ProfileSidebar({ profile, completion, isEditable = false, onOpen
                 >
                   <Plus size={12} />
                 </button>
-                <button
-                  onClick={() => { setShowSkillInput(false); setNewSkillName('') }}
-                  className="px-2 py-1 text-xs text-txt-tertiary hover:text-txt-secondary transition-colors"
-                >
-                  <X size={12} />
-                </button>
               </div>
+              <button
+                onClick={() => { setShowSkillInput(false); setNewSkillName('') }}
+                className="w-full flex items-center justify-center gap-1 px-3 py-1.5 text-[11px] font-bold bg-surface-inverse text-txt-inverse rounded-xl hover:opacity-90 active:scale-[0.97] transition-all"
+              >
+                <Check size={10} /> 완료
+              </button>
             </div>
           )}
         </div>

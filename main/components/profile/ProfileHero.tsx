@@ -437,9 +437,13 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
             <div className="flex gap-1.5 flex-wrap">
               <span className="text-[10px] text-txt-tertiary self-center mr-1">TAGS</span>
               {interestTags.map((tag, idx) => (
-                <span key={idx} className="text-[10px] font-mono bg-white text-txt-primary border border-border px-2 py-0.5 font-medium rounded-full inline-flex items-center gap-1">
+                <span key={idx} className={`text-[10px] font-mono px-2 py-0.5 font-medium rounded-full inline-flex items-center gap-1 transition-all ${
+                  showTagEditor
+                    ? 'bg-brand/10 text-brand border border-brand/30'
+                    : 'bg-white text-txt-primary border border-border'
+                }`}>
                   {tag}
-                  {isEditable && (
+                  {isEditable && showTagEditor && (
                     <button
                       onClick={() => toggleInterestTag(tag)}
                       className="hover:text-status-danger-text transition-colors p-0.5 -mr-0.5"
@@ -449,9 +453,9 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
                   )}
                 </span>
               ))}
-              {isEditable && (
+              {isEditable && !showTagEditor && (
                 <button
-                  onClick={() => setShowTagEditor(prev => !prev)}
+                  onClick={() => setShowTagEditor(true)}
                   className="text-[10px] font-mono text-txt-tertiary border border-dashed border-border px-2 py-0.5 font-medium rounded-full hover:border-brand hover:text-brand transition-colors inline-flex items-center gap-0.5"
                 >
                   <Plus size={8} /> 추가
@@ -460,6 +464,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
             </div>
             {isEditable && showTagEditor && (
               <div className="mt-2 space-y-2">
+                <p className="text-[10px] text-txt-tertiary">탭하여 추가 / 위 태그의 X로 제거</p>
                 <div className="flex flex-wrap gap-1">
                   {INTEREST_OPTIONS.filter(t => !interestTags.includes(t)).map(tag => (
                     <button
@@ -488,6 +493,12 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
                     <Plus size={12} />
                   </button>
                 </div>
+                <button
+                  onClick={() => { setShowTagEditor(false); setCustomTagInput('') }}
+                  className="w-full flex items-center justify-center gap-1 px-3 py-1.5 text-[11px] font-bold bg-surface-inverse text-txt-inverse rounded-xl hover:opacity-90 active:scale-[0.97] transition-all"
+                >
+                  <Check size={10} /> 완료
+                </button>
               </div>
             )}
           </div>
