@@ -149,15 +149,17 @@ export default function ProfilePageClient() {
           ))}
         </div>
 
-        {/* ── Tab content ── */}
-        {activeTab === 'portfolio' && <ProfilePortfolio items={portfolioItems} isEditable />}
-        {activeTab === 'projects' && <ProfileProjects opportunities={myOpportunities} />}
-        {activeTab === 'activity' && (
-          <>
-            <ProfileCoffeeChats />
-            <ProfileInvitations />
-          </>
-        )}
+        {/* ── Tab content — min-height prevents sidebar jump on tab switch ── */}
+        <div className="min-h-[50vh]">
+          {activeTab === 'portfolio' && <ProfilePortfolio items={portfolioItems} isEditable />}
+          {activeTab === 'projects' && <ProfileProjects opportunities={myOpportunities} />}
+          {activeTab === 'activity' && (
+            <>
+              <ProfileCoffeeChats />
+              <ProfileInvitations />
+            </>
+          )}
+        </div>
       </DashboardLayout>
     </div>
   )

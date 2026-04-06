@@ -1,12 +1,13 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import type { Area } from 'react-easy-crop'
-import { Crop, Check } from 'lucide-react'
+import { Crop, Check, Loader2 } from 'lucide-react'
 import { useBackHandler } from '@/src/hooks/useBackHandler'
 
-const Cropper = dynamic(() => import('react-easy-crop').then(m => m.default), { ssr: false }) as unknown as React.ComponentType<Partial<import('react-easy-crop').CropperProps>>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const Cropper = dynamic(() => import('react-easy-crop').then(m => m.default), { ssr: false }) as any
 
 interface CropModalProps {
   cropSrc: string
@@ -23,8 +24,29 @@ interface CropModalProps {
 export function CropModal({ cropSrc, crop, zoom, cropQueueLength, onCropChange, onZoomChange, onCropComplete, onCropConfirm, onCropCancel }: CropModalProps) {
   useBackHandler(true, onCropCancel, 'crop-modal')
 
+  // 모바일에서 이미지가 로드되기 전에 Cropper를 렌더하면 검은 화면이 됨
+  // blob URL → 실제 이미지 로드 완료까지 대기
+  const [imageReady, setImageReady] = useState(false)
+  useEffect(() => {
+    setImageReady(false)
+    const img = new Image()
+    img.onload = () => setImageReady(true)
+    img.onerror = () => setImageReady(true) // 에러 시에도 Cropper에 위임
+    img.src = cropSrc
+  }, [cropSrc])
+
+  // 모달이 열릴 때 body 스크롤 잠금 (모바일 터치 이벤트 충돌 방지)
+  useEffect(() => {
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = prev }
+  }, [])
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+      style={{ touchAction: 'none' }}
+    >
       <div className="bg-surface-card rounded-xl border border-border-subtle w-full max-w-lg flex flex-col overflow-hidden shadow-lg">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-2.5 border-b border-border-subtle">
@@ -40,19 +62,24 @@ export function CropModal({ cropSrc, crop, zoom, cropQueueLength, onCropChange, 
           )}
         </div>
 
-        {/* Crop area — react-easy-crop needs explicit container styles */}
-        <div className="relative w-full h-72 sm:h-80 bg-black [&_.reactEasyCrop_Container]:!absolute [&_.reactEasyCrop_Container]:!inset-0">
-          <Cropper
-            image={cropSrc}
-            crop={crop}
-            zoom={zoom}
-            aspect={16 / 9}
-            objectFit="contain"
-            onCropChange={onCropChange}
-            onZoomChange={onZoomChange}
-            onCropComplete={onCropComplete}
-            showGrid
-          />
+        {/* Crop area */}
+        <div className="relative w-full h-72 sm:h-80 bg-black" style={{ touchAction: 'none' }}>
+          {imageReady ? (
+            <Cropper
+              image={cropSrc}
+              crop={crop}
+              zoom={zoom}
+              aspect={16 / 9}
+              onCropChange={onCropChange}
+              onZoomChange={onZoomChange}
+              onCropComplete={onCropComplete}
+              showGrid
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Loader2 size={24} className="animate-spin text-white/50" />
+            </div>
+          )}
         </div>
 
         {/* Controls */}
