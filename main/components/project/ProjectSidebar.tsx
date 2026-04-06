@@ -45,6 +45,8 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
   onClose,
   router,
   teamMembers = [],
+  onMemberClick,
+  onCreatorClick,
   hideCta = false,
   isTeamMember = false,
   onLeaveTeam,
@@ -92,7 +94,10 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
           <div className="space-y-4 pr-1">
             {/* Creator */}
             {creator ? (
-              <div className="flex items-center gap-3 p-4 bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl">
+              <button
+                onClick={() => creator.user_id && onCreatorClick?.(creator.user_id)}
+                className="w-full flex items-center gap-3 p-4 bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl hover:bg-[#EDF0F3] dark:hover:bg-[#252527] transition-colors cursor-pointer text-left"
+              >
                 <div className="w-12 h-12 bg-[#3182F6] text-white rounded-full flex items-center justify-center font-bold text-base shrink-0">
                   {creator.nickname.charAt(0)}
                 </div>
@@ -106,7 +111,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
                 <span className="shrink-0 text-[12px] font-semibold text-txt-disabled bg-[#E5E5EA] dark:bg-[#3A3A3C] px-2.5 py-1 rounded-full">
                   메이커
                 </span>
-              </div>
+              </button>
             ) : (
               <div className="flex items-center gap-3 p-4 bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl">
                 <div className="w-12 h-12 bg-[#E5E5EA] dark:bg-[#3A3A3C] rounded-full flex items-center justify-center font-bold text-base text-txt-disabled">?</div>
@@ -124,7 +129,11 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
                   <Users size={14} /> 멤버 {teamMembers.length}명
                 </p>
                 {teamMembers.map(member => (
-                  <div key={member.id} className="flex items-center gap-3 p-3 bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl">
+                  <button
+                    key={member.id}
+                    onClick={() => onMemberClick?.(member.user_id)}
+                    className="w-full flex items-center gap-3 p-3 bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl hover:bg-[#EDF0F3] dark:hover:bg-[#252527] transition-colors cursor-pointer text-left"
+                  >
                     <div className="w-9 h-9 bg-[#3182F6] text-white rounded-full flex items-center justify-center font-bold text-xs shrink-0">
                       {member.nickname.charAt(0)}
                     </div>
@@ -132,7 +141,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
                       <p className="font-medium text-txt-primary text-[14px] truncate">{member.nickname}</p>
                       {member.role && <p className="text-[12px] text-txt-tertiary truncate">{member.role}</p>}
                     </div>
-                  </div>
+                  </button>
                 ))}
               </div>
             )}

@@ -22,6 +22,7 @@ import { ProjectSidebar } from '@/components/project/ProjectSidebar'
 import { ProjectOverlays } from '@/components/project/ProjectOverlays'
 import { useBackHandler } from '@/src/hooks/useBackHandler'
 import { projectRoleLabel } from '@/src/constants/roles'
+import { ProfileDetailModal } from '@/components/ProfileDetailModal'
 
 interface ProjectDetailModalProps {
   projectId: string | null
@@ -51,6 +52,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
   const [showWriteUpdate, setShowWriteUpdate] = useState(false)
   const [hasInterested, setHasInterested] = useState(false)
   const [showTypeSelector, setShowTypeSelector] = useState(false)
+  const [viewingProfileUserId, setViewingProfileUserId] = useState<string | null>(null)
   const [isMobile, setIsMobile] = useState(false)
   const sheetRef = useRef<HTMLDivElement>(null)
   const dragRef = useRef({ startY: 0, dragging: false })
@@ -125,6 +127,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
       const profileMap = new Map((profiles || []).map(p => [p.user_id, p]))
       return connections.map(c => ({
         id: c.id,
+        user_id: c.applicant_id,
         nickname: profileMap.get(c.applicant_id)?.nickname || '알 수 없음',
         role: c.assigned_role || profileMap.get(c.applicant_id)?.desired_position || null,
       }))
@@ -555,6 +558,8 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                           onClose={onClose}
                           router={router}
                           teamMembers={teamMembers}
+                          onMemberClick={(userId) => setViewingProfileUserId(userId)}
+                          onCreatorClick={(userId) => setViewingProfileUserId(userId)}
                           isTeamMember={!!myMembership}
                           onLeaveTeam={() => leaveTeam.mutate()}
                           isLeaving={leaveTeam.isPending}
@@ -577,6 +582,8 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                         onClose={onClose}
                         router={router}
                         teamMembers={teamMembers}
+                        onMemberClick={(userId) => setViewingProfileUserId(userId)}
+                        onCreatorClick={(userId) => setViewingProfileUserId(userId)}
                         isTeamMember={!!myMembership}
                         onLeaveTeam={() => leaveTeam.mutate()}
                         isLeaving={leaveTeam.isPending}
@@ -655,6 +662,14 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
               )}
             </div>
           </motion.div>
+      {/* Profile modal for team member / creator click */}
+      {viewingProfileUserId && (
+        <ProfileDetailModal
+          profileId={viewingProfileUserId}
+          byUserId
+          onClose={() => setViewingProfileUserId(null)}
+        />
+      )}
     </>
   )
 }

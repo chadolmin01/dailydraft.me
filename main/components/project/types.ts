@@ -29,6 +29,7 @@ export interface ProjectContentProps {
 
 export interface TeamMemberPublic {
   id: string
+  user_id: string
   nickname: string
   role: string | null
 }
@@ -43,6 +44,8 @@ export interface ProjectSidebarProps {
   onClose: () => void
   router: { push: (url: string) => void }
   teamMembers?: TeamMemberPublic[]
+  onMemberClick?: (userId: string) => void
+  onCreatorClick?: (userId: string) => void
   hideCta?: boolean
   isTeamMember?: boolean
   onLeaveTeam?: () => void
