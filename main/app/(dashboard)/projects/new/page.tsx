@@ -474,32 +474,77 @@ function NewProjectContent() {
                 {/* Description */}
                 <section>
                   {/* AI 소개글 생성 CTA */}
-                  <div className="mb-3 bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 bg-[#3182F6]/10 dark:bg-[#3182F6]/20 rounded-xl flex items-center justify-center shrink-0">
-                        <Sparkles size={18} className="text-[#3182F6]" />
+                  {(() => {
+                    const aiFields = [
+                      { label: '프로젝트 이름', filled: !!title.trim() },
+                      { label: '모집 역할', filled: selectedRoles.length > 0 },
+                      { label: '활동 방식', filled: !!locationType },
+                      { label: '해결할 문제', filled: !!painPoint.trim() },
+                      { label: '시간 투자', filled: !!timeCommitment },
+                      { label: '보상 방식', filled: !!compensationType },
+                    ]
+                    const filledCount = aiFields.filter(f => f.filled).length
+                    const totalCount = aiFields.length
+                    const canGenerate = filledCount >= 2 && !!title.trim()
+                    const pct = Math.round((filledCount / totalCount) * 100)
+
+                    return (
+                      <div className="mb-3 bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl p-4 space-y-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 bg-[#3182F6]/10 dark:bg-[#3182F6]/20 rounded-xl flex items-center justify-center shrink-0">
+                            <Sparkles size={18} className="text-[#3182F6]" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[13px] font-semibold text-txt-primary">AI로 소개글 작성</p>
+                            <p className="text-[11px] text-txt-tertiary mt-0.5">
+                              {canGenerate
+                                ? '준비 완료! 더 채우면 더 정확한 소개글이 나와요'
+                                : '정보를 더 채워주세요 (최소 2개)'}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <span className="text-[12px] font-bold text-[#3182F6]">{filledCount}/{totalCount}</span>
+                            <button
+                              type="button"
+                              onClick={generateDescription}
+                              disabled={aiLoading || !canGenerate}
+                              className="h-9 px-4 text-[12px] font-semibold bg-[#3182F6] text-white rounded-xl disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95 flex items-center gap-1.5"
+                            >
+                              {aiLoading ? (
+                                <><Loader2 size={13} className="animate-spin" /> 생성 중</>
+                              ) : (
+                                '생성하기'
+                              )}
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Progress bar */}
+                        <div className="h-1.5 bg-[#E5E5EA] dark:bg-[#3A3A3C] rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-[#3182F6] rounded-full transition-all duration-500"
+                            style={{ width: `${pct}%` }}
+                          />
+                        </div>
+
+                        {/* Field chips */}
+                        <div className="flex flex-wrap gap-1.5">
+                          {aiFields.map(f => (
+                            <span
+                              key={f.label}
+                              className={`px-2.5 py-1 text-[11px] rounded-full transition-all ${
+                                f.filled
+                                  ? 'bg-[#3182F6]/10 text-[#3182F6] font-medium'
+                                  : 'bg-[#E5E5EA] dark:bg-[#3A3A3C] text-txt-disabled'
+                              }`}
+                            >
+                              {f.filled ? '✓ ' : ''}{f.label}
+                            </span>
+                          ))}
+                        </div>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[13px] font-semibold text-txt-primary">AI로 소개글 작성</p>
-                        <p className="text-[11px] text-txt-tertiary mt-0.5">작성한 내용을 바탕으로 소개글을 만들어줘요</p>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={generateDescription}
-                        disabled={aiLoading || !title.trim()}
-                        className="shrink-0 h-9 px-4 text-[12px] font-semibold bg-[#3182F6] text-white rounded-xl disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95 flex items-center gap-1.5"
-                      >
-                        {aiLoading ? (
-                          <><Loader2 size={13} className="animate-spin" /> 생성 중</>
-                        ) : (
-                          '생성하기'
-                        )}
-                      </button>
-                    </div>
-                    {!title.trim() && (
-                      <p className="text-[11px] text-txt-disabled mt-2 pl-12">프로젝트 이름을 먼저 입력해주세요</p>
-                    )}
-                  </div>
+                    )
+                  })()}
 
                   <h3 className="text-[10px] font-medium text-txt-tertiary mb-2">
                     프로젝트 소개 <span className="text-status-danger-text">*</span>
