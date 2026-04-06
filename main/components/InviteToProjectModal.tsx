@@ -54,19 +54,19 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
 
   if (sent) {
     return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-popover p-4" onClick={(e) => { e.stopPropagation(); onClose() }}>
-        <div className="bg-surface-card rounded-xl border border-border shadow-lg w-full max-w-md" onClick={e => e.stopPropagation()}>
-          <div className="p-6 text-center">
-            <div className="w-14 h-14 bg-status-success-bg border border-status-success-text/20 flex items-center justify-center mb-4 mx-auto shadow-sm">
-              <Check size={24} className="text-status-success-text" />
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-popover p-4" onClick={(e) => { e.stopPropagation(); onClose() }}>
+        <div className="bg-surface-card dark:bg-[#1C1C1E] rounded-2xl shadow-2xl w-full max-w-md" onClick={e => e.stopPropagation()}>
+          <div className="p-8 text-center">
+            <div className="w-14 h-14 bg-[#E8F5E9] dark:bg-[#1B3A2D] rounded-2xl flex items-center justify-center mb-4 mx-auto">
+              <Check size={24} className="text-[#34C759]" />
             </div>
-            <h3 className="text-xl font-bold text-txt-primary mb-2">초대 완료!</h3>
-            <p className="text-txt-tertiary text-sm mb-6">
+            <h3 className="text-[20px] font-bold text-txt-primary mb-2">초대 완료!</h3>
+            <p className="text-[14px] text-txt-tertiary mb-6">
               {targetName}님에게 프로젝트 초대가 전송되었습니다.
             </p>
             <button
               onClick={onClose}
-              className="text-sm text-txt-disabled hover:text-txt-secondary transition-colors"
+              className="text-[14px] text-txt-tertiary hover:text-txt-secondary transition-colors"
             >
               돌아가기
             </button>
@@ -77,32 +77,32 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-popover p-4" onClick={(e) => { e.stopPropagation(); onClose() }}>
-      <div className="bg-surface-card rounded-xl border border-border shadow-lg w-full max-w-md max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-popover p-4" onClick={(e) => { e.stopPropagation(); onClose() }}>
+      <div className="bg-surface-card dark:bg-[#1C1C1E] rounded-2xl shadow-2xl w-full max-w-md max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-surface-sunken shrink-0">
-          <h3 className="text-sm font-bold text-txt-primary">프로젝트에 초대</h3>
-          <button onClick={onClose} className="p-2.5 sm:p-1 hover:bg-surface-card transition-colors">
-            <X size={16} className="text-txt-disabled" />
+        <div className="flex items-center justify-between px-5 py-4 shrink-0">
+          <h3 className="text-[17px] font-bold text-txt-primary">프로젝트에 초대</h3>
+          <button onClick={onClose} className="p-1.5 bg-[#F2F3F5] dark:bg-[#2C2C2E] hover:bg-[#E5E5EA] dark:hover:bg-[#3A3A3C] rounded-full transition-colors">
+            <X size={16} className="text-txt-tertiary" />
           </button>
         </div>
 
         {/* Body */}
-        <div className="p-4 space-y-5 overflow-y-auto flex-1">
+        <div className="px-5 pb-5 space-y-5 overflow-y-auto flex-1">
           {loadingProjects ? (
             <div className="space-y-2 py-2">
               {[0,1,2].map(i => (
-                <div key={i} className="h-12 bg-surface-sunken rounded skeleton-shimmer" />
+                <div key={i} className="h-12 bg-[#F2F3F5] dark:bg-[#2C2C2E] rounded-2xl skeleton-shimmer" />
               ))}
             </div>
           ) : activeProjects.length === 0 ? (
             <div className="text-center py-8">
               <FolderOpen size={32} className="text-txt-disabled mx-auto mb-3" />
-              <p className="text-sm font-bold text-txt-primary mb-1">모집 중인 프로젝트가 없습니다</p>
-              <p className="text-xs text-txt-tertiary mb-4">프로젝트를 먼저 만들어주세요</p>
+              <p className="text-[15px] font-bold text-txt-primary mb-1">모집 중인 프로젝트가 없습니다</p>
+              <p className="text-[13px] text-txt-tertiary mb-4">프로젝트를 먼저 만들어주세요</p>
               <a
                 href="/projects/new"
-                className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand text-white text-xs font-bold border border-brand hover:bg-brand-hover hover:opacity-90 active:scale-[0.97] transition-all"
+                className="inline-flex items-center gap-1.5 px-5 py-3 bg-[#3182F6] text-white text-[14px] font-semibold rounded-2xl hover:bg-[#2272EB] active:scale-[0.97] transition-all"
               >
                 프로젝트 만들기
               </a>
@@ -111,22 +111,22 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
             <>
               {/* 1. Project Selection */}
               <div>
-                <label className="block text-[10px] font-medium text-txt-tertiary mb-2">
+                <label className="block text-[13px] font-semibold text-txt-secondary mb-2.5">
                   1. 프로젝트 선택
                 </label>
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   {activeProjects.map(opp => (
                     <button
                       key={opp.id}
                       onClick={() => { setSelectedProject(opp.id); setSelectedRole(null) }}
-                      className={`w-full flex items-center justify-between px-3 py-2.5 text-left text-sm border transition-all ${
+                      className={`w-full flex items-center justify-between px-4 py-3 text-left text-[14px] rounded-2xl transition-all ${
                         selectedProject === opp.id
-                          ? 'bg-brand-bg text-brand border-brand-border font-bold'
-                          : 'bg-surface-card text-txt-secondary border-border hover:bg-surface-sunken'
+                          ? 'bg-[#EBF4FF] dark:bg-[#1A2A42] text-[#3182F6] font-bold'
+                          : 'bg-[#F7F8F9] dark:bg-[#1C1C1E] text-txt-secondary hover:bg-[#EDF0F3] dark:hover:bg-[#252527]'
                       }`}
                     >
                       <span className="truncate">{opp.title}</span>
-                      <span className="text-[10px] font-mono font-bold bg-indicator-online/10 text-indicator-online px-1.5 py-0.5 border border-indicator-online/20 shrink-0 ml-2">
+                      <span className="text-[11px] font-semibold text-[#34C759] bg-[#E8F5E9] dark:bg-[#1B3A2D] px-2 py-0.5 rounded-full shrink-0 ml-2">
                         모집중
                       </span>
                     </button>
@@ -137,7 +137,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
               {/* 2. Role Selection */}
               {selectedProject && (
                 <div>
-                  <label className="block text-[10px] font-medium text-txt-tertiary mb-2">
+                  <label className="block text-[13px] font-semibold text-txt-secondary mb-2.5">
                     2. 역할 선택
                   </label>
                   {neededRoles.length > 0 ? (
@@ -146,10 +146,10 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
                         <button
                           key={role}
                           onClick={() => setSelectedRole(role)}
-                          className={`px-3 py-1.5 text-xs font-bold border transition-all ${
+                          className={`px-3.5 py-2 text-[13px] font-semibold rounded-full transition-all ${
                             selectedRole === role
-                              ? 'bg-brand text-white border-brand shadow-sm'
-                              : 'bg-surface-card text-txt-secondary border-border hover:bg-black hover:text-white'
+                              ? 'bg-[#3182F6] text-white'
+                              : 'bg-[#F2F3F5] dark:bg-[#2C2C2E] text-txt-secondary hover:bg-[#E5E5EA] dark:hover:bg-[#3A3A3C]'
                           }`}
                         >
                           {role}
@@ -162,7 +162,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
                       placeholder="역할을 입력하세요 (예: Frontend Developer)"
                       value={selectedRole || ''}
                       onChange={e => setSelectedRole(e.target.value || null)}
-                      className="w-full px-3 py-2 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:border-brand"
+                      className="w-full px-4 py-3 text-[14px] bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3182F6]/20"
                     />
                   )}
                 </div>
@@ -171,7 +171,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
               {/* 3. Message */}
               {selectedProject && selectedRole && (
                 <div>
-                  <label className="block text-[10px] font-medium text-txt-tertiary mb-2">
+                  <label className="block text-[13px] font-semibold text-txt-secondary mb-2.5">
                     3. 메시지 (선택)
                   </label>
                   <textarea
@@ -180,13 +180,13 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
                     placeholder="함께 하고 싶어서 연락드립니다..."
                     rows={3}
                     maxLength={500}
-                    className="w-full px-3 py-2 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:border-brand resize-none"
+                    className="w-full px-4 py-3 text-[14px] bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3182F6]/20 resize-none"
                   />
                 </div>
               )}
 
               {error && (
-                <p className="text-xs text-status-danger-text">{error}</p>
+                <p className="text-[12px] text-[#FF3B30]">{error}</p>
               )}
             </>
           )}
@@ -194,14 +194,14 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
 
         {/* Footer */}
         {activeProjects.length > 0 && (
-          <div className="px-4 py-3 border-t border-border shrink-0">
+          <div className="px-5 pb-5 shrink-0">
             <button
               onClick={handleSubmit}
               disabled={!selectedProject || !selectedRole || createInvitation.isPending}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-brand text-white border border-brand text-sm font-bold hover:bg-brand-hover hover:opacity-90 active:scale-[0.97] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 h-14 bg-[#3182F6] text-white text-[15px] font-semibold rounded-2xl hover:bg-[#2272EB] active:scale-[0.97] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {createInvitation.isPending ? (
-                <><Loader2 size={14} className="animate-spin" /> 전송 중...</>
+                <><Loader2 size={16} className="animate-spin" /> 전송 중...</>
               ) : (
                 '초대 보내기'
               )}

@@ -75,35 +75,35 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
 
     return (
       <div className="text-center py-4">
-        <div className="w-14 h-14 bg-status-success-bg rounded-lg border border-status-success-text/20 flex items-center justify-center mb-4 mx-auto shadow-sm success-pop">
-          <Coffee size={24} className="text-status-success-text" />
+        <div className="w-14 h-14 bg-[#E8F5E9] dark:bg-[#1B3A2D] rounded-2xl flex items-center justify-center mb-4 mx-auto">
+          <Coffee size={24} className="text-[#34C759]" />
         </div>
-        <h3 className="text-xl font-bold text-txt-primary mb-2 animate-in fade-in">커피챗 신청 완료!</h3>
-        <p className="text-txt-tertiary text-sm mb-6">
+        <h3 className="text-[20px] font-bold text-txt-primary mb-2">커피챗 신청 완료!</h3>
+        <p className="text-[14px] text-txt-tertiary mb-6">
           {isPersonMode
             ? '상대방에게 알림이 전송되었습니다. 수락되면 연락처를 받을 수 있어요.'
             : '메이커에게 알림이 전송되었습니다. 수락되면 연락처를 받을 수 있어요.'}
         </p>
 
         {showPushPrompt && (
-          <div className="mb-6 px-4 py-4 bg-surface-sunken border border-border rounded-xl text-left">
+          <div className="mb-6 px-4 py-4 bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl text-left">
             <div className="flex items-start gap-3">
-              <Bell size={16} className="text-txt-secondary shrink-0 mt-0.5" />
+              <Bell size={16} className="text-[#3182F6] shrink-0 mt-0.5" />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-txt-primary mb-0.5">답장 오면 알려드릴게요</p>
-                <p className="text-xs text-txt-tertiary mb-3">수락/거절 알림을 브라우저로 바로 받아보세요.</p>
+                <p className="text-[14px] font-bold text-txt-primary mb-0.5">답장 오면 알려드릴게요</p>
+                <p className="text-[12px] text-txt-tertiary mb-3">수락/거절 알림을 브라우저로 바로 받아보세요.</p>
                 <div className="flex gap-2">
                   <button
                     onClick={subscribe}
                     disabled={pushLoading}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-surface-inverse text-txt-inverse text-xs font-bold hover:opacity-80 transition-opacity disabled:opacity-40"
+                    className="flex items-center gap-1.5 px-4 py-2 bg-[#3182F6] text-white text-[13px] font-semibold rounded-xl hover:bg-[#2272EB] transition-colors disabled:opacity-40"
                   >
                     {pushLoading ? <Loader2 size={12} className="animate-spin" /> : <Bell size={12} />}
                     알림 허용
                   </button>
                   <button
                     onClick={() => { setSent(false); setMessage(''); onClose() }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-txt-disabled hover:text-txt-secondary transition-colors"
+                    className="flex items-center gap-1.5 px-4 py-2 text-[13px] text-txt-tertiary hover:text-txt-secondary transition-colors"
                   >
                     <BellOff size={12} />
                     괜찮아요
@@ -117,7 +117,7 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
         {(!showPushPrompt || isSubscribed) && (
           <button
             onClick={() => { setSent(false); setMessage(''); onClose() }}
-            className="text-sm text-txt-disabled hover:text-txt-secondary transition-colors"
+            className="text-[14px] text-txt-tertiary hover:text-txt-secondary transition-colors"
           >
             돌아가기
           </button>
@@ -128,16 +128,18 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
 
   return (
     <div className="text-center py-4">
-      <Coffee size={28} className="text-txt-primary mb-4 mx-auto" />
-      <h3 className="text-lg font-bold text-txt-primary mb-1">
-        {isPersonMode ? '커피챗 신청' : '커피챗 신청'}
+      <div className="w-12 h-12 bg-[#EBF4FF] dark:bg-[#1A2A42] rounded-2xl flex items-center justify-center mb-4 mx-auto">
+        <Coffee size={22} className="text-[#3182F6]" />
+      </div>
+      <h3 className="text-[18px] font-bold text-txt-primary mb-1">
+        커피챗 신청
       </h3>
       {selectedRole && (
-        <span className="inline-block px-2.5 py-1 bg-surface-sunken text-txt-secondary text-xs font-medium border border-border mb-2">
+        <span className="inline-block px-3 py-1 bg-[#F2F3F5] dark:bg-[#2C2C2E] text-txt-secondary text-[12px] font-semibold rounded-full mb-2">
           {selectedRole} 포지션
         </span>
       )}
-      <p className="text-txt-tertiary text-xs mb-5">
+      <p className="text-[13px] text-txt-tertiary mb-5">
         {isPersonMode ? '상대방에게 보낼 메시지를 작성해주세요' : '메이커에게 보낼 메시지를 작성해주세요'}
       </p>
 
@@ -147,7 +149,7 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
           <button
             key={tpl.id}
             onClick={() => setMessage(tpl.message)}
-            className="text-xs px-3 py-1.5 bg-surface-sunken text-txt-secondary border border-border rounded-lg hover:bg-black hover:text-white hover:border-border transition-colors"
+            className="text-[12px] px-3 py-1.5 bg-[#F2F3F5] dark:bg-[#2C2C2E] text-txt-secondary rounded-full hover:bg-[#E5E5EA] dark:hover:bg-[#3A3A3C] transition-colors"
           >
             {tpl.label}
           </button>
@@ -155,7 +157,7 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
       </div>
 
       {profile && !profile.ai_chat_completed && (
-        <p className="text-[11px] text-brand mb-2 text-left">
+        <p className="text-[11px] text-[#3182F6] mb-2 text-left">
           AI 매칭 분석을 완료하면 수락률이 올라가요
         </p>
       )}
@@ -169,31 +171,31 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
         }
         rows={4}
         maxLength={500}
-        className="w-full px-4 py-3 border border-border text-base sm:text-sm text-left bg-surface-card rounded-xl focus:outline-none focus:border-brand resize-none"
+        className="w-full px-4 py-3 text-[14px] text-left bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3182F6]/20 resize-none"
       />
-      <div className="text-[10px] text-txt-tertiary font-mono text-right mt-1 mb-4">
+      <div className="text-[12px] text-txt-tertiary text-right mt-1.5 mb-4">
         {message.length}/500
       </div>
 
       {error && (
-        <p className="text-xs text-status-danger-text mb-3">{error}</p>
+        <p className="text-[12px] text-[#FF3B30] mb-3">{error}</p>
       )}
 
       <button
         onClick={handleSubmit}
         disabled={!message.trim() || isPending}
-        className="w-full bg-brand text-white border border-brand py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-brand-hover hover:opacity-90 active:scale-[0.97] transition-all disabled:opacity-40 disabled:cursor-not-allowed mb-3"
+        className="w-full h-14 bg-[#3182F6] text-white rounded-2xl font-semibold text-[15px] flex items-center justify-center gap-2 hover:bg-[#2272EB] active:scale-[0.97] transition-all disabled:opacity-40 disabled:cursor-not-allowed mb-3"
       >
         {isPending ? (
-          <><Loader2 size={14} className="animate-spin" /> 전송 중...</>
+          <><Loader2 size={16} className="animate-spin" /> 전송 중...</>
         ) : (
-          <><Coffee size={14} /> 신청하기</>
+          <><Coffee size={16} /> 신청하기</>
         )}
       </button>
 
       <button
         onClick={onClose}
-        className="text-sm text-txt-disabled hover:text-txt-secondary transition-colors"
+        className="text-[14px] text-txt-tertiary hover:text-txt-secondary transition-colors"
       >
         돌아가기
       </button>
