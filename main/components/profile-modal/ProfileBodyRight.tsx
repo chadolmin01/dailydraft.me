@@ -85,7 +85,7 @@ export function ProfileBodyRight({
 
       {/* ── Personality Traits ── */}
       {hasPersonality && (
-        <CollapsibleSection title="성향 분석" icon={Brain} count={Object.keys(personality!).length}>
+        <CollapsibleSection title="성향 분석" icon={Brain}>
           <div className="space-y-1">
             {traitLabels.map(({ key, label, low, high }) => {
               const val = personality![key]
