@@ -86,8 +86,8 @@ export const Modal: React.FC<ModalProps> = ({
         ref={containerRef}
         tabIndex={-1}
         className={cn(
-          'relative z-modal bg-surface-elevated w-full shadow-lg border border-border rounded-t-xl sm:rounded-xl',
-          'pb-[max(1rem,env(safe-area-inset-bottom,1rem))] sm:pb-0',
+          'relative z-modal bg-surface-elevated w-full shadow-2xl rounded-2xl sm:rounded-2xl',
+          'pb-[max(0.5rem,env(safe-area-inset-bottom,0.5rem))] sm:pb-0',
           'transition-all duration-200',
           isOpen
             ? 'opacity-100 scale-100 translate-y-0'
@@ -98,9 +98,9 @@ export const Modal: React.FC<ModalProps> = ({
       >
         {/* Header */}
         {(title || showClose) && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+          <div className="flex items-center justify-between px-6 py-4">
             {title && (
-              <h2 className="font-bold text-txt-primary text-base">
+              <h2 className="font-bold text-txt-primary text-[17px]">
                 {title}
               </h2>
             )}
@@ -109,9 +109,9 @@ export const Modal: React.FC<ModalProps> = ({
               <button
                 onClick={onClose}
                 aria-label="닫기"
-                className="p-1 hover:bg-surface-sunken transition-colors text-txt-tertiary hover:text-txt-secondary border border-transparent hover:border-border rounded-lg"
+                className="p-1.5 bg-surface-sunken hover:bg-border transition-colors text-txt-tertiary rounded-full"
               >
-                <X size={18} />
+                <X size={16} />
               </button>
             )}
           </div>

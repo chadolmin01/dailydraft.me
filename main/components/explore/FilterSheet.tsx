@@ -46,20 +46,20 @@ export function FilterSheet({
 }: FilterSheetProps) {
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="필터" size="md">
-      <div className="px-6 py-4 space-y-6 max-h-[60vh] overflow-y-auto">
+      <div className="px-6 py-2 space-y-5 max-h-[60vh] overflow-y-auto">
         {/* Type filter — projects only */}
         {activeTab === 'projects' && (
           <section>
-            <h3 className="text-[10px] font-mono uppercase text-txt-tertiary tracking-wider mb-2.5">유형</h3>
-            <div className="flex flex-wrap gap-1.5">
+            <h3 className="text-[13px] font-semibold text-txt-secondary mb-3">유형</h3>
+            <div className="flex flex-wrap gap-2">
               {TYPE_FILTERS.filter(t => t.id !== 'all').map((t) => (
                 <button
                   key={t.id}
                   onClick={() => onTypeFilterChange(typeFilter === t.id ? 'all' : t.id as TypeFilter)}
-                  className={`shrink-0 px-3 py-2 text-xs font-bold border rounded-xl transition-all ${
+                  className={`shrink-0 px-3.5 py-2 text-[13px] font-semibold rounded-full transition-all ${
                     typeFilter === t.id
-                      ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
-                      : 'bg-surface-card text-txt-secondary border-border hover:border-border hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]'
+                      ? 'bg-[#3182F6] text-white'
+                      : 'bg-[#F2F3F5] dark:bg-[#2C2C2E] text-txt-secondary hover:bg-[#E5E5EA] dark:hover:bg-[#3A3A3C]'
                   }`}
                 >
                   {t.label}
@@ -72,19 +72,19 @@ export function FilterSheet({
         {/* Category filter — projects only */}
         {activeTab === 'projects' && (
           <section>
-            <h3 className="text-[10px] font-mono uppercase text-txt-tertiary tracking-wider mb-2.5">분야</h3>
-            <div className="flex flex-wrap gap-1.5">
+            <h3 className="text-[13px] font-semibold text-txt-secondary mb-3">분야</h3>
+            <div className="flex flex-wrap gap-2">
               {categories.filter(c => c.id !== 'all').map((cat) => (
                 <button
                   key={cat.id}
                   onClick={() => onCategoryChange(selectedCategory === cat.id ? 'all' : cat.id)}
-                  className={`shrink-0 flex items-center gap-1.5 px-3 py-2 text-xs font-bold border rounded-xl transition-all ${
+                  className={`shrink-0 flex items-center gap-1.5 px-3.5 py-2 text-[13px] font-semibold rounded-full transition-all ${
                     selectedCategory === cat.id
-                      ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
-                      : 'bg-surface-card text-txt-secondary border-border hover:border-border hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]'
+                      ? 'bg-[#3182F6] text-white'
+                      : 'bg-[#F2F3F5] dark:bg-[#2C2C2E] text-txt-secondary hover:bg-[#E5E5EA] dark:hover:bg-[#3A3A3C]'
                   }`}
                 >
-                  <cat.icon size={12} />
+                  <cat.icon size={13} />
                   {cat.label}
                 </button>
               ))}
@@ -94,17 +94,17 @@ export function FilterSheet({
 
         {/* Role filter */}
         <section>
-          <h3 className="text-[10px] font-mono uppercase text-txt-tertiary tracking-wider mb-2.5">역할</h3>
-          <div className="flex flex-wrap gap-1.5">
+          <h3 className="text-[13px] font-semibold text-txt-secondary mb-3">역할</h3>
+          <div className="flex flex-wrap gap-2">
             {activeTab === 'projects'
               ? PROJECT_ROLE_FILTERS.filter(r => r.id !== 'all').map((r) => (
                   <button
                     key={r.id}
                     onClick={() => onProjectRoleFilterChange(projectRoleFilter === r.id ? 'all' : r.id as ProjectRoleFilter)}
-                    className={`shrink-0 px-3 py-2 text-xs font-bold border rounded-xl transition-all ${
+                    className={`shrink-0 px-3.5 py-2 text-[13px] font-semibold rounded-full transition-all ${
                       projectRoleFilter === r.id
-                        ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
-                        : 'bg-surface-card text-txt-secondary border-border hover:border-border hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]'
+                        ? 'bg-[#3182F6] text-white'
+                        : 'bg-[#F2F3F5] dark:bg-[#2C2C2E] text-txt-secondary hover:bg-[#E5E5EA] dark:hover:bg-[#3A3A3C]'
                     }`}
                   >
                     {r.label}
@@ -114,10 +114,10 @@ export function FilterSheet({
                   <button
                     key={r.id}
                     onClick={() => onPeopleRoleFilterChange(peopleRoleFilter === r.id ? 'all' : r.id as PeopleRoleFilter)}
-                    className={`shrink-0 px-3 py-2 text-xs font-bold border rounded-xl transition-all ${
+                    className={`shrink-0 px-3.5 py-2 text-[13px] font-semibold rounded-full transition-all ${
                       peopleRoleFilter === r.id
-                        ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
-                        : 'bg-surface-card text-txt-secondary border-border hover:border-border hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)]'
+                        ? 'bg-[#3182F6] text-white'
+                        : 'bg-[#F2F3F5] dark:bg-[#2C2C2E] text-txt-secondary hover:bg-[#E5E5EA] dark:hover:bg-[#3A3A3C]'
                     }`}
                   >
                     {r.label}
@@ -129,12 +129,12 @@ export function FilterSheet({
 
         {/* Recruiting only — projects only */}
         {activeTab === 'projects' && (
-          <section className="pt-2 border-t border-border">
-            <label className="flex items-center gap-2.5 text-sm text-txt-secondary cursor-pointer min-h-[44px]">
-              <div className={`w-5 h-5 sm:w-4 sm:h-4 border rounded flex items-center justify-center transition-all ${
-                recruitingOnly ? 'bg-surface-inverse border-surface-inverse' : 'border-border'
+          <section>
+            <label className="flex items-center gap-3 text-[14px] text-txt-primary cursor-pointer min-h-[44px] bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl px-4 py-3">
+              <div className={`w-5 h-5 rounded-md flex items-center justify-center transition-all ${
+                recruitingOnly ? 'bg-[#3182F6]' : 'bg-[#E5E5EA] dark:bg-[#3A3A3C]'
               }`}>
-                {recruitingOnly && <Check size={10} className="text-txt-inverse" strokeWidth={3} />}
+                {recruitingOnly && <Check size={12} className="text-white" strokeWidth={3} />}
               </div>
               <input
                 type="checkbox"
@@ -142,23 +142,23 @@ export function FilterSheet({
                 checked={recruitingOnly}
                 onChange={(e) => onRecruitingOnlyChange(e.target.checked)}
               />
-              모집 중만 보기
+              <span className="font-medium">모집 중만 보기</span>
             </label>
           </section>
         )}
       </div>
 
       {/* Sticky footer */}
-      <div className="sticky bottom-0 flex items-center justify-between px-6 py-4 border-t border-border bg-surface-elevated">
+      <div className="flex items-center gap-3 px-6 py-4">
         <button
           onClick={onReset}
-          className="text-xs font-bold text-txt-tertiary hover:text-txt-secondary transition-colors"
+          className="px-5 py-3 text-[14px] font-semibold text-txt-secondary bg-[#F2F3F5] dark:bg-[#2C2C2E] rounded-xl hover:bg-[#E5E5EA] dark:hover:bg-[#3A3A3C] transition-colors"
         >
           초기화
         </button>
         <button
           onClick={onClose}
-          className="px-6 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-bold rounded-xl hover:opacity-90 transition-opacity"
+          className="flex-1 py-3 bg-[#3182F6] text-white text-[15px] font-bold rounded-xl hover:bg-[#2272EB] transition-colors active:scale-[0.98]"
         >
           적용하기
         </button>
