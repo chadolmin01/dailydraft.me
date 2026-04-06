@@ -160,12 +160,12 @@ export function ExploreSidebar({
               >
                 <div className="flex items-center justify-between mb-0.5">
                   <span className="flex items-center gap-1.5 text-sm text-txt-secondary group-hover:text-txt-primary transition-colors">
-                    <span className="w-4 h-4 bg-surface-sunken rounded-xl border border-border flex items-center justify-center text-[0.5rem] font-mono text-txt-disabled">{idx + 1}</span>
+                    <span className="w-4 h-4 bg-surface-sunken rounded-full flex items-center justify-center text-[0.5rem] font-medium text-txt-disabled">{idx + 1}</span>
                     {item.tag}
                   </span>
-                  <span className="text-[10px] font-mono text-txt-disabled">{item.count}</span>
+                  <span className="text-[10px] text-txt-disabled">{item.count}</span>
                 </div>
-                <div className="w-full h-1 bg-surface-sunken rounded-xl border border-border overflow-hidden">
+                <div className="w-full h-1 bg-surface-sunken rounded-full overflow-hidden">
                   <div className="h-full bg-indicator-trending/60 transition-all group-hover:bg-indicator-trending" style={{ width: `${barWidth}%` }} />
                 </div>
               </button>
@@ -181,23 +181,23 @@ export function ExploreSidebar({
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
               <span className="text-txt-tertiary">공개 프로필</span>
-              <span className="text-[10px] font-mono font-bold bg-surface-sunken px-1.5 py-0.5 text-txt-primary">
+              <span className="text-[10px] font-bold bg-[#F2F3F5] dark:bg-[#2C2C2E] px-2 py-0.5 rounded-full text-txt-primary">
                 {categories.find(c => c.id === 'all')?.count ?? 0}
               </span>
             </div>
             {selectedCategory !== 'all' && (
               <div className="flex items-center justify-between text-sm">
                 <span className="text-txt-tertiary">필터 결과</span>
-                <span className="text-[10px] font-mono font-bold bg-brand-bg px-1.5 py-0.5 text-brand">
+                <span className="text-[10px] font-bold bg-brand-bg px-2 py-0.5 rounded-full text-brand">
                   {categories.find(c => c.id === selectedCategory)?.count ?? 0}
                 </span>
               </div>
             )}
           </div>
           <div className="mt-3 pt-3 border-t border-border">
-            <p className="text-[10px] font-mono text-txt-disabled flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 bg-brand animate-pulse" />
-              {selectedCategory !== 'all' ? 'ROLE FILTER ON' : 'ALL ROLES'}
+            <p className="text-[10px] text-txt-disabled flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 bg-brand rounded-full animate-pulse" />
+              {selectedCategory !== 'all' ? '필터 적용 중' : '전체 역할'}
             </p>
           </div>
         </div>

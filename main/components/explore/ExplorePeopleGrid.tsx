@@ -71,7 +71,7 @@ export function ExplorePeopleGrid({
                 onClick={() => onSelectProfile(t.id, false)}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectProfile(t.id, false) } }}
                 style={{ animationDelay: `${Math.min(index * 40, 400)}ms` }}
-                className="stagger-item relative bg-surface-card rounded-xl shadow-sm overflow-hidden flex items-center gap-3 px-4 py-4 cursor-pointer hover:shadow-md hover-spring focus-visible:ring-2 focus-visible:ring-accent outline-none active:scale-[0.985]"
+                className="stagger-item relative bg-surface-card rounded-2xl shadow-sm overflow-hidden flex items-center gap-3 px-4 py-4 cursor-pointer hover:shadow-md hover-spring focus-visible:ring-2 focus-visible:ring-accent outline-none active:scale-[0.985]"
               >
                 <div className="relative w-10 h-10 bg-brand-bg border border-brand-border rounded-full flex items-center justify-center text-sm font-bold text-brand shrink-0 overflow-hidden">
                   {t.name.substring(0, 2)}
@@ -84,16 +84,16 @@ export function ExplorePeopleGrid({
                     <h3 className="font-semibold text-sm text-txt-primary truncate">{t.name}</h3>
                     <Badges badges={t.badges} />
                     {peopleSortBy === 'ai' && t.matchScore != null && t.matchScore > 0 ? (
-                      <span className={`text-[10px] font-mono font-bold px-1 py-px shrink-0 border ${getMatchColorClass(t.matchScore)}`}>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${getMatchColorClass(t.matchScore)}`}>
                         {t.matchScore}%
                       </span>
                     ) : (
-                      <span className={`text-[10px] font-mono font-bold px-1 py-px shrink-0 border ${
-                        t.status === 'OPEN' ? 'bg-status-success-bg text-status-success-text border-indicator-online/20'
-                        : t.status === 'BUSY' ? 'bg-status-neutral-bg text-status-neutral-text border-border'
-                        : 'bg-surface-sunken text-txt-tertiary border-border'
+                      <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${
+                        t.status === 'OPEN' ? 'bg-[#E8F5E9] dark:bg-[#1B3A2D] text-[#34C759]'
+                        : t.status === 'BUSY' ? 'bg-[#F2F3F5] dark:bg-[#2C2C2E] text-txt-tertiary'
+                        : 'bg-[#F2F3F5] dark:bg-[#2C2C2E] text-txt-tertiary'
                       }`}>
-                        {t.status}
+                        {t.status === 'OPEN' ? '가능' : t.status === 'BUSY' ? '바쁨' : t.status}
                       </span>
                     )}
                   </div>
@@ -102,19 +102,19 @@ export function ExplorePeopleGrid({
                     {t.affiliationType && AFFILIATION_LABELS[t.affiliationType] ? ` · ${AFFILIATION_LABELS[t.affiliationType]}` : ''}
                   </p>
                   {t.tags.length > 0 && (
-                    <div className="flex items-center gap-1 mt-1 overflow-hidden">
+                    <div className="flex items-center gap-1 mt-1.5 overflow-hidden">
                       {t.tags.slice(0, 3).map(tag => (
-                        <span key={tag} className="text-[10px] bg-surface-card text-tag-default-text px-1.5 py-px border border-border font-medium shrink-0">{tag}</span>
+                        <span key={tag} className="text-[10px] bg-[#F2F3F5] dark:bg-[#2C2C2E] text-txt-secondary px-2 py-0.5 rounded-full font-medium shrink-0">{tag}</span>
                       ))}
                       {t.tags.length > 3 && (
-                        <span className="text-[10px] text-txt-disabled font-mono">+{t.tags.length - 3}</span>
+                        <span className="text-[10px] text-txt-disabled">+{t.tags.length - 3}</span>
                       )}
                     </div>
                   )}
                 </div>
                 {t.status === 'OPEN' && (
                   <span title="커피챗 가능">
-                    <Coffee size={14} className="text-indicator-online shrink-0" />
+                    <Coffee size={14} className="text-[#34C759] shrink-0" />
                   </span>
                 )}
               </div>
@@ -131,10 +131,8 @@ export function ExplorePeopleGrid({
                 onClick={() => onSelectProfile(t.id, false)}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectProfile(t.id, false) } }}
                 style={{ animationDelay: `${Math.min(index * 60, 600)}ms` }}
-                className="stagger-item relative bg-surface-card rounded-xl shadow-sm overflow-hidden group hover:shadow-md hover:-translate-y-0.5 hover-spring cursor-pointer h-[13.75rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985] active:shadow-none"
+                className="stagger-item relative bg-surface-card rounded-2xl shadow-sm overflow-hidden group hover:shadow-md hover:-translate-y-0.5 hover-spring cursor-pointer h-[13.75rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985] active:shadow-none"
               >
-                <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/15" />
-                <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-surface-inverse/15" />
                 <div className="px-5 pt-5 h-[4.75rem] shrink-0">
                   <div className="flex gap-3">
                     <div className="relative w-12 h-12 bg-brand-bg border border-brand-border rounded-full flex items-center justify-center text-base font-bold text-brand shrink-0 overflow-hidden">
@@ -148,16 +146,16 @@ export function ExplorePeopleGrid({
                         <h3 className="font-semibold text-base text-txt-primary truncate">{t.name}</h3>
                         <Badges badges={t.badges} />
                         {peopleSortBy === 'ai' && t.matchScore != null && t.matchScore > 0 ? (
-                          <span title="AI 프로필 유사도" className={`text-[10px] font-mono font-bold px-1.5 py-0.5 shrink-0 border ${getMatchColorClass(t.matchScore)}`}>
+                          <span title="AI 프로필 유사도" className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${getMatchColorClass(t.matchScore)}`}>
                             {t.matchScore}%
                           </span>
                         ) : (
-                          <span title={t.status === 'OPEN' ? '커피챗/협업 가능' : t.status === 'BUSY' ? '바쁨 · 메시지 가능' : '현재 불가'} className={`text-[10px] font-mono font-bold px-1.5 py-0.5 shrink-0 border ${
-                            t.status === 'OPEN' ? 'bg-status-success-bg text-status-success-text border-indicator-online/20'
-                            : t.status === 'BUSY' ? 'bg-status-neutral-bg text-status-neutral-text border-border'
-                            : 'bg-surface-sunken text-txt-tertiary border-border'
+                          <span title={t.status === 'OPEN' ? '커피챗/협업 가���' : t.status === 'BUSY' ? '바쁨 · 메시지 가능' : '현재 불가'} className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${
+                            t.status === 'OPEN' ? 'bg-[#E8F5E9] dark:bg-[#1B3A2D] text-[#34C759]'
+                            : t.status === 'BUSY' ? 'bg-[#F2F3F5] dark:bg-[#2C2C2E] text-txt-tertiary'
+                            : 'bg-[#F2F3F5] dark:bg-[#2C2C2E] text-txt-tertiary'
                           }`}>
-                            {t.status}
+                            {t.status === 'OPEN' ? '가능' : t.status === 'BUSY' ? '바쁨' : t.status}
                           </span>
                         )}
                       </div>
@@ -177,18 +175,18 @@ export function ExplorePeopleGrid({
                   {t.tags.length > 0 && (
                     <div className="flex items-center gap-1.5 overflow-hidden">
                       {t.tags.map(tag => (
-                        <span key={tag} className="text-xs bg-surface-card text-tag-default-text px-2 py-0.5 border border-border font-medium shrink-0">{tag}</span>
+                        <span key={tag} className="text-[11px] bg-[#F2F3F5] dark:bg-[#2C2C2E] text-txt-secondary px-2.5 py-0.5 rounded-full font-medium shrink-0">{tag}</span>
                       ))}
                     </div>
                   )}
                 </div>
                 <div className="px-5 pb-4 h-[3.25rem] shrink-0 flex items-end">
                   <div className="flex items-center justify-between w-full pt-2 border-t border-border/50">
-                    <span className="text-[10px] font-mono text-txt-tertiary">{t.role}</span>
+                    <span className="text-[11px] text-txt-tertiary">{t.role}</span>
                     {t.status === 'OPEN' ? (
-                      <span className="text-[10px] font-mono text-indicator-online flex items-center gap-1 bg-status-success-bg px-1.5 py-0.5 border border-indicator-online/20"><Coffee size={9} /> AVAILABLE</span>
+                      <span className="text-[10px] font-semibold text-[#34C759] flex items-center gap-1 bg-[#E8F5E9] dark:bg-[#1B3A2D] px-2.5 py-1 rounded-full"><Coffee size={9} /> 가능</span>
                     ) : (
-                      <span className="text-[10px] font-mono text-txt-tertiary flex items-center gap-1 bg-surface-sunken px-1.5 py-0.5 border border-border">{t.status}</span>
+                      <span className="text-[10px] font-medium text-txt-tertiary flex items-center gap-1 bg-[#F2F3F5] dark:bg-[#2C2C2E] px-2.5 py-1 rounded-full">{t.status === 'BUSY' ? '바쁨' : t.status}</span>
                     )}
                   </div>
                 </div>
@@ -201,7 +199,7 @@ export function ExplorePeopleGrid({
       {talentCards.length > 0 && hasMore && (
         <div ref={sentinelRef} className="flex justify-center py-8">
           {isFetchingMore && (
-            <span className="text-xs font-mono text-txt-tertiary animate-pulse">로딩 중...</span>
+            <span className="text-xs text-txt-tertiary animate-pulse">로딩 중...</span>
           )}
         </div>
       )}
