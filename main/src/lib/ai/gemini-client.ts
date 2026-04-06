@@ -100,6 +100,36 @@ function createModel(modelName: string, modelConfig?: Record<string, any>) {
       return wrapResponse(response)
     },
 
+    generateContentStream: async (input: any) => {
+      const ai = getAI()
+      let contents: any
+      let config: Record<string, any> = modelConfig ? { ...modelConfig } : {}
+
+      if (typeof input === 'string') {
+        contents = input
+      } else {
+        contents = input.contents ?? input
+        if (input.generationConfig) {
+          config = { ...config, ...input.generationConfig }
+        }
+      }
+
+      const response = await ai.models.generateContentStream({
+        model: modelName,
+        contents,
+        config: Object.keys(config).length > 0 ? config : undefined,
+      })
+
+      // Wrap the async iterable to provide .text() compat on each chunk
+      const stream = (async function* () {
+        for await (const chunk of response) {
+          yield { text: () => chunk.text ?? '' }
+        }
+      })()
+
+      return { stream }
+    },
+
     startChat: (chatConfig?: Record<string, any>) => {
       const ai = getAI()
       const mergedConfig = {
@@ -116,6 +146,15 @@ function createModel(modelName: string, modelConfig?: Record<string, any>) {
         sendMessage: async (msg: string) => {
           const response = await chat.sendMessage({ message: msg })
           return wrapResponse(response)
+        },
+        sendMessageStream: async (msg: string) => {
+          const response = await chat.sendMessageStream({ message: msg })
+          const stream = (async function* () {
+            for await (const chunk of response) {
+              yield { text: () => chunk.text ?? '' }
+            }
+          })()
+          return { stream }
         },
       }
     },

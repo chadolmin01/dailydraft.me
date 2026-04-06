@@ -12,9 +12,7 @@ import {
   ChevronDown,
   ChevronRight,
   Loader2,
-  CheckCircle2,
   Sparkles,
-  AlertCircle,
   RotateCcw,
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -97,6 +95,7 @@ export function HelpWidget() {
         >
           <style dangerouslySetInnerHTML={{ __html: `
             @keyframes helpWidgetIn { 0% { opacity:0;transform:translateY(12px) scale(0.95) } 100% { opacity:1;transform:translateY(0) scale(1) } }
+            @keyframes fadeSlideIn { 0% { opacity:0;transform:translateY(4px) } 100% { opacity:1;transform:translateY(0) } }
           `}} />
 
           {/* Header */}
@@ -221,6 +220,12 @@ function FaqTab({ onClose }: { onClose: () => void }) {
 }
 
 // ── Chat Tab ──
+const QUICK_ANSWERS: Record<string, string> = {
+  '프로젝트 등록 방법': '/explore 페이지에서 "새 프로젝트" 버튼을 클릭하세요. 제목, 설명, 모집 포지션 등을 입력하면 바로 등록됩니다.',
+  '커피챗이 뭐예요?': '관심 있는 팀원에게 1:1 대화를 요청하는 기능이에요. 상대방이 수락하면 연락처가 공유됩니다. 프로필이나 프로젝트 상세에서 "커피챗 요청" 버튼을 눌러보세요!',
+  'AI 매칭 원리': 'AI가 기술 스택, 작업 성향(온보딩 AI 대화 기반), 관심 분야를 종합 분석해서 맞는 팀원과 프로젝트를 추천해드려요. /network에서 확인할 수 있습니다.',
+}
+
 function ChatTab() {
   const [messages, setMessages] = useState<ChatMsg[]>([])
   const [input, setInput] = useState('')
@@ -241,6 +246,14 @@ function ChatTab() {
     if (!text || isLoading) return
     setInput('')
     const userMsg: ChatMsg = { role: 'user', content: text }
+
+    // Quick answer — no API call needed
+    const quickReply = QUICK_ANSWERS[text]
+    if (quickReply) {
+      setMessages(prev => [...prev, userMsg, { role: 'assistant', content: quickReply }])
+      return
+    }
+
     const updated = [...messages, userMsg]
     setMessages(updated)
     setIsLoading(true)
@@ -252,22 +265,74 @@ function ChatTab() {
         body: JSON.stringify({ messages: updated }),
       })
       if (!res.ok) throw new Error()
-      const data = await res.json()
-      const reply = data?.reply || '답변을 생성하지 못했어요. 다시 질문해주세요.'
-      const isOffTopic = !!data?.offTopic
 
-      if (isOffTopic) {
-        // Don't keep off-topic exchange in history — rollback and show warning
-        setMessages(prev => prev.slice(0, -1))
-        setMessages(prev => [...prev, { role: 'assistant', content: reply }])
-      } else {
-        setMessages(prev => [...prev, { role: 'assistant', content: reply }])
+      // Stream SSE response
+      const reader = res.body?.getReader()
+      if (!reader) throw new Error()
+
+      const decoder = new TextDecoder()
+      let fullText = ''
+      // Add empty assistant message to fill incrementally
+      setMessages(prev => [...prev, { role: 'assistant', content: '' }])
+
+      let buffer = ''
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split('\n')
+        buffer = lines.pop() || ''
+
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue
+          const payload = line.slice(6)
+          if (payload === '[DONE]') break
+          try {
+            const { text: chunk, error } = JSON.parse(payload)
+            if (error) throw new Error()
+            if (chunk) {
+              fullText += chunk
+              const snapshot = fullText
+              setMessages(prev => {
+                const copy = [...prev]
+                copy[copy.length - 1] = { role: 'assistant', content: snapshot }
+                return copy
+              })
+            }
+          } catch { /* skip malformed chunk */ }
+        }
+      }
+
+      if (!fullText.trim()) {
+        setMessages(prev => {
+          const copy = [...prev]
+          copy[copy.length - 1] = { role: 'assistant', content: '답변을 생성하지 못했어요. 다시 질문해주세요.' }
+          return copy
+        })
+      }
+
+      // Check off-topic
+      if (fullText.startsWith('[OFF_TOPIC]')) {
+        const cleaned = fullText.replace('[OFF_TOPIC]', '').trim()
+        setMessages(prev => {
+          // Remove the user message (second to last) and update assistant reply
+          const copy = [...prev]
+          copy.splice(copy.length - 2, 1) // remove user msg
+          copy[copy.length - 1] = { role: 'assistant', content: cleaned }
+          return copy
+        })
       }
     } catch {
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: '죄송해요, 일시적인 오류가 발생했어요. 다시 시도해주세요.',
-      }])
+      setMessages(prev => {
+        // If we already added an empty assistant message, update it
+        if (prev.length > 0 && prev[prev.length - 1].role === 'assistant' && !prev[prev.length - 1].content) {
+          const copy = [...prev]
+          copy[copy.length - 1] = { role: 'assistant', content: '죄송해요, 일시적인 오류가 발생했어요. 다시 시도해주세요.' }
+          return copy
+        }
+        return [...prev, { role: 'assistant', content: '죄송해요, 일시적인 오류가 발생했어요. 다시 시도해주세요.' }]
+      })
     } finally {
       setIsLoading(false)
       setTimeout(() => inputRef.current?.focus(), 100)
@@ -297,7 +362,7 @@ function ChatTab() {
         )}
 
         {messages.map((msg, i) => (
-          <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+          <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-[fadeSlideIn_0.2s_ease-out]`}>
             <div className={`max-w-[85%] px-3 py-2 text-[12px] leading-relaxed ${
               msg.role === 'user'
                 ? 'bg-surface-inverse text-txt-inverse'
@@ -348,58 +413,19 @@ function ChatTab() {
 }
 
 // ── Report Tab ──
+const SUPPORT_EMAIL = 'chadolmin01@gmail.com'
+
 function ReportTab() {
   const [category, setCategory] = useState('')
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitted, setSubmitted] = useState(false)
-  const [error, setError] = useState<string | null>(null)
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!category || !title.trim() || !description.trim()) return
-    setIsSubmitting(true)
-    setError(null)
-
-    try {
-      const res = await fetch('/api/help/report', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          category,
-          title: title.trim(),
-          description: description.trim(),
-          pageUrl: window.location.href,
-        }),
-      })
-      if (!res.ok) throw new Error()
-      setSubmitted(true)
-      setCategory('')
-      setTitle('')
-      setDescription('')
-    } catch {
-      setError('리포트 전송에 실패했습니다. 다시 시도해주세요.')
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  if (submitted) {
-    return (
-      <div className="flex flex-col items-center justify-center py-12 px-4 gap-3">
-        <div className="w-12 h-12 bg-status-success-bg flex items-center justify-center">
-          <CheckCircle2 size={24} className="text-status-success-text" />
-        </div>
-        <h4 className="text-[14px] font-bold text-txt-primary">리포트가 접수되었습니다</h4>
-        <p className="text-[12px] text-txt-tertiary text-center">빠르게 확인하고 처리하겠습니다.<br />감사합니다!</p>
-        <button
-          onClick={() => setSubmitted(false)}
-          className="mt-2 px-4 py-2 text-[12px] font-bold bg-surface-card rounded-xl border border-border text-txt-secondary hover:bg-black hover:text-white hover:border-border transition-colors"
-        >
-          새 리포트 작성
-        </button>
-      </div>
-    )
+    const catLabel = REPORT_CATEGORIES.find(c => c.value === category)?.label || category
+    const subject = `[Draft ${catLabel}] ${title.trim()}`
+    const body = `${description.trim()}\n\n---\n페이지: ${window.location.href}\n카테고리: ${catLabel}`
+    window.location.href = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
   }
 
   return (
@@ -449,27 +475,19 @@ function ReportTab() {
           maxLength={5000}
           className="w-full px-3 py-2 text-[12px] bg-surface-sunken rounded-xl border border-border focus:outline-none focus:border-brand transition-colors resize-none placeholder:text-txt-disabled"
         />
-        <p className="text-[9px] text-txt-disabled text-right mt-0.5 font-mono">{description.length}/5000</p>
       </div>
-
-      {error && (
-        <div className="flex items-center gap-2 px-3 py-2 bg-status-danger-bg border border-status-danger-text/20">
-          <AlertCircle size={12} className="text-status-danger-text shrink-0" />
-          <p className="text-[11px] text-status-danger-text">{error}</p>
-        </div>
-      )}
 
       {/* Submit */}
       <button
         onClick={handleSubmit}
-        disabled={!category || !title.trim() || !description.trim() || isSubmitting}
+        disabled={!category || !title.trim() || !description.trim()}
         className="w-full py-2.5 text-[12px] font-bold bg-brand text-white border border-brand hover:bg-brand-hover disabled:opacity-30 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.97]"
       >
-        {isSubmitting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
-        리포트 제출
+        <Send size={14} />
+        메일로 리포트 보내기
       </button>
 
-      <p className="text-[9px] text-txt-disabled text-center font-mono">현재 페이지 URL이 자동으로 포함됩니다</p>
+      <p className="text-[9px] text-txt-disabled text-center font-mono">메일 앱이 열리며 현재 페이지 URL이 자동 포함됩니다</p>
     </div>
   )
 }

@@ -67,7 +67,7 @@ export async function POST(request: Request) {
     }))
 
     const model = genAI.getGenerativeModel({
-      model: 'gemini-2.5-flash-lite',
+      model: 'gemini-2.0-flash-lite',
       systemInstruction: SYSTEM_PROMPT,
     })
 
@@ -76,15 +76,36 @@ export async function POST(request: Request) {
     })
 
     const lastMsg = messages[messages.length - 1].content
-    const result = await chat.sendMessage(lastMsg)
-    let reply = result.response.text().trim()
 
-    const offTopic = reply.startsWith('[OFF_TOPIC]')
-    if (offTopic) {
-      reply = reply.replace('[OFF_TOPIC]', '').trim()
-    }
+    // Stream response for faster TTFB
+    const { stream } = await chat.sendMessageStream(lastMsg)
 
-    return ApiResponse.ok({ reply, offTopic })
+    const encoder = new TextEncoder()
+    const readable = new ReadableStream({
+      async start(controller) {
+        try {
+          for await (const chunk of stream) {
+            const text = chunk.text()
+            if (text) {
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text })}\n\n`))
+            }
+          }
+          controller.enqueue(encoder.encode('data: [DONE]\n\n'))
+          controller.close()
+        } catch (err) {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: true })}\n\n`))
+          controller.close()
+        }
+      },
+    })
+
+    return new Response(readable, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        Connection: 'keep-alive',
+      },
+    })
   } catch (error) {
     console.error('Help chat error:', error)
     return ApiResponse.internalError('도움 채팅 처리 중 오류가 발생했습니다')
