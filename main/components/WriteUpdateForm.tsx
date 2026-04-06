@@ -63,7 +63,7 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
       setUpdateType('general')
       toast.success(
         weekNumber === 1
-          ? '첫 번째 업데이트! 좋은 시작이에요 🎉'
+          ? '첫 번째 업데이트! 좋은 시작이에요'
           : `Week ${weekNumber} 완료! 꾸준한 기록이 쌓이고 있어요`
       )
       onClose()
@@ -75,31 +75,31 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="주간 업데이트 작성" size="md">
-      <div className="px-6 py-5 space-y-4">
+      <div className="px-6 py-5 space-y-5">
         {/* Week + Type */}
         <div className="flex gap-3">
           <div className="w-24">
-            <label className="block text-[10px] font-medium text-txt-tertiary mb-1">Week</label>
+            <label className="block text-[12px] font-medium text-txt-tertiary mb-1.5">Week</label>
             <input
               type="number"
               min={1}
               value={weekNumber}
               onChange={(e) => setWeekNumber(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-border text-base sm:text-sm focus:outline-none focus:border-border bg-surface-card rounded-lg text-txt-primary"
+              className="w-full px-3 py-2.5 bg-[#F7F8F9] dark:bg-[#1C1C1E] text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#3182F6]/30 rounded-xl text-txt-primary"
             />
           </div>
           <div className="flex-1">
-            <label className="block text-[10px] font-medium text-txt-tertiary mb-1">유형</label>
+            <label className="block text-[12px] font-medium text-txt-tertiary mb-1.5">유형</label>
             <div className="flex flex-wrap gap-1.5">
               {UPDATE_TYPES.map((t) => (
                 <button
                   key={t.value}
                   type="button"
                   onClick={() => setUpdateType(t.value)}
-                  className={`px-3 py-1.5 text-xs border transition-colors ${
+                  className={`px-3.5 py-2 text-[13px] font-medium rounded-xl transition-colors ${
                     updateType === t.value
-                      ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
-                      : 'bg-surface-card text-txt-secondary border-border hover:border-border'
+                      ? 'bg-[#3182F6] text-white'
+                      : 'bg-[#F7F8F9] dark:bg-[#1C1C1E] text-txt-secondary hover:bg-[#EDF0F3] dark:hover:bg-[#252527]'
                   }`}
                 >
                   {t.label}
@@ -111,43 +111,43 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
 
         {/* Title */}
         <div>
-          <label className="block text-[10px] font-medium text-txt-tertiary mb-1">제목</label>
+          <label className="block text-[12px] font-medium text-txt-tertiary mb-1.5">제목</label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="이번 주의 가장 큰 진전은?"
             maxLength={100}
-            className="w-full px-3 py-2 border border-border text-base sm:text-sm focus:outline-none focus:border-border bg-surface-card rounded-lg text-txt-primary placeholder-txt-disabled"
+            className="w-full px-4 py-3 bg-[#F7F8F9] dark:bg-[#1C1C1E] text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#3182F6]/30 rounded-xl text-txt-primary placeholder-txt-disabled"
           />
-          <div className="text-[10px] text-txt-tertiary font-mono text-right mt-1">
+          <div className="text-[11px] text-txt-disabled text-right mt-1">
             {title.length}/100
           </div>
         </div>
 
         {/* Content */}
         <div>
-          <label className="block text-[10px] font-medium text-txt-tertiary mb-1">내용</label>
-          <p className="text-[10px] text-txt-disabled mb-1.5">팁: 구체적인 숫자나 결과물이 있으면 더 좋아요</p>
+          <label className="block text-[12px] font-medium text-txt-tertiary mb-1.5">내용</label>
+          <p className="text-[11px] text-txt-disabled mb-2">구체적인 숫자나 결과물이 있으면 더 좋아요</p>
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder={"이번 주 성과:\n\n다음 주 계획:\n\n배운 점 또는 고민 (선택):"}
             rows={6}
             maxLength={2000}
-            className="w-full px-3 py-2 border border-border text-base sm:text-sm focus:outline-none focus:border-border resize-none bg-surface-card rounded-lg text-txt-primary placeholder-txt-disabled"
+            className="w-full px-4 py-3 bg-[#F7F8F9] dark:bg-[#1C1C1E] text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#3182F6]/30 resize-none rounded-xl text-txt-primary placeholder-txt-disabled"
           />
-          <div className="text-[10px] text-txt-tertiary font-mono text-right mt-1">
+          <div className="text-[11px] text-txt-disabled text-right mt-1">
             {content.length}/2000
           </div>
         </div>
 
-        {error && <p className="text-xs text-status-danger-text">{error}</p>}
+        {error && <p className="text-xs text-[#FF3B30]">{error}</p>}
 
         <button
           onClick={handleSubmit}
           disabled={createUpdate.isPending}
-          className="w-full py-2.5 bg-surface-inverse text-txt-inverse text-sm font-bold border border-surface-inverse hover:bg-surface-inverse/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.97]"
+          className="w-full py-3.5 bg-[#3182F6] text-white text-[15px] font-semibold rounded-2xl hover:bg-[#2272EB] transition-colors disabled:opacity-50 flex items-center justify-center gap-2 active:scale-[0.97]"
         >
           {createUpdate.isPending ? (
             <><Loader2 size={14} className="animate-spin" /> 저장 중...</>
