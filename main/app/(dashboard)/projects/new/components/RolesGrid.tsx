@@ -29,14 +29,14 @@ function RoleChip({ label, icon: Icon, selected, themeRoleOn, themeRoleIconOn, o
       type="button"
       onClick={handleClick}
       onAnimationEnd={() => setBouncing(false)}
-      className={`flex items-center gap-2 h-11 px-4 rounded-2xl transition-all active:scale-[0.95] ${bouncing ? 'chip-bounce' : ''} ${
+      className={`flex items-center gap-1.5 h-9 px-3 rounded-xl transition-all active:scale-[0.95] ${bouncing ? 'chip-bounce' : ''} ${
         selected
           ? themeRoleOn
           : 'bg-[#F7F8F9] dark:bg-[#1C1C1E] text-txt-secondary hover:bg-[#EDF0F3] dark:hover:bg-[#252527]'
       }`}
     >
-      <Icon size={16} className={selected ? themeRoleIconOn : 'text-txt-disabled'} />
-      <span className="text-[14px] font-medium">{label}</span>
+      <Icon size={14} className={selected ? themeRoleIconOn : 'text-txt-disabled'} />
+      <span className="text-[13px] font-medium">{label}</span>
     </button>
   )
 }
