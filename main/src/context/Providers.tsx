@@ -33,6 +33,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <SplashScreen />
       <Toaster
         position="top-center"
+        style={{ zIndex: 9999 }}
         toastOptions={{
           style: {
             borderRadius: '16px',

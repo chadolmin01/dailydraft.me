@@ -418,7 +418,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                             <Edit3 size={10} />
                           </button>
                           {showTypeSelector && (
-                            <div className="absolute top-full left-0 mt-1 bg-surface-card rounded-2xl shadow-lg z-10 min-w-[8rem] overflow-hidden">
+                            <div className="absolute top-full left-0 mt-1 bg-surface-card rounded-2xl shadow-lg z-popover min-w-[8rem] overflow-hidden">
                               {[
                                 { value: 'side_project', label: '함께 만들기' },
                                 { value: 'startup', label: '창업 준비' },
