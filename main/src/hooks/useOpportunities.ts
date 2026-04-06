@@ -10,7 +10,10 @@ import { withRetry } from '../lib/query-utils'
 type OpportunityInsert = TablesInsert<'opportunities'>
 type OpportunityUpdate = TablesUpdate<'opportunities'>
 
-// FK join으로 creator profile을 함께 가져오는 select 문자열
+// ⚠️ CRITICAL: 모든 opportunities 쿼리에서 이 상수를 사용할 것.
+// select('*')만 쓰면 creator가 null → "익명" 표시 버그 발생.
+// 서버 prefetch(explore/page.tsx)에서는 JOIN 실패 시 select('*') fallback 필수.
+// 새 쿼리 추가 시 반드시 이 상수 사용 여부 확인.
 export const OPP_WITH_CREATOR_SELECT = '*, creator:profiles!opportunities_creator_id_fkey(id, user_id, nickname, desired_position, university, interest_tags, skills, location, contact_email)'
 
 // Re-export for consumers that import from this hook

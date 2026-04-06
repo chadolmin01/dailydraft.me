@@ -77,13 +77,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           })
 
           // Background: validate session is still valid on server
+          // ⚠️ 네트워크 에러 시 로그아웃하면 안 됨 — 실제 인증 만료만 처리
           supabase.auth.getUser().then(({ data: { user: serverUser }, error }) => {
             if (!mounted) return
-            if (error || !serverUser) {
+            if (error) {
+              // session_not_found / invalid_token 등 인증 에러만 로그아웃
+              // 네트워크 에러, 타임아웃 등은 로컬 세션 유지
+              const authErrorCodes = ['session_not_found', 'user_not_found', 'bad_jwt']
+              const isAuthError = authErrorCodes.some(code =>
+                error.message?.includes(code) || (error as any).code === code
+              ) || error.status === 401 || error.status === 403
+              if (isAuthError) {
+                setUser(null)
+                setProfile(null)
+              }
+            } else if (!serverUser) {
               setUser(null)
               setProfile(null)
             }
-          }).catch(() => {})
+          }).catch(() => { /* 네트워크 에러 — 로컬 세션 유지 */ })
           return
         }
       } catch { /* getSession failed — continue to authoritative path */ }
@@ -110,7 +122,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (!mounted) return
-        if (event === 'INITIAL_SESSION') return
+
+        // INITIAL_SESSION: getSession()이 null을 반환했을 때의 안전망
+        // 브라우저 재진입 시 Supabase 내부 캐시가 늦게 초기화되면
+        // getSession()=null → 여기서 세션을 복구
+        if (event === 'INITIAL_SESSION') {
+          if (session?.user && !user) {
+            setUser(session.user)
+            setIsLoading(false)
+            fetchProfile(session.user.id).then(p => {
+              if (mounted) setProfile(p)
+            })
+          } else if (!session) {
+            // 진짜 세션이 없는 경우 — isLoading만 확실히 해제
+            setIsLoading(false)
+          }
+          return
+        }
 
         if (event === 'TOKEN_REFRESHED' && !session) {
           setUser(null)
