@@ -12,6 +12,7 @@ import {
   ChevronDown,
   ChevronRight,
   Loader2,
+  CheckCircle2,
   Sparkles,
   RotateCcw,
 } from 'lucide-react'
@@ -415,32 +416,53 @@ function ChatTab() {
 }
 
 // ── Report Tab ──
-const SUPPORT_EMAIL = 'chadolmin01@gmail.com'
-
 function ReportTab() {
   const [category, setCategory] = useState('')
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
 
-  const [showFallback, setShowFallback] = useState(false)
-  const [mailtoUrl, setMailtoUrl] = useState('')
+  const handleSubmit = async () => {
+    if (!category || !title.trim() || !description.trim() || isSubmitting) return
+    setIsSubmitting(true)
+    try {
+      const res = await fetch('/api/help/report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          category,
+          title: title.trim(),
+          description: description.trim(),
+          pageUrl: window.location.href,
+        }),
+      })
+      if (!res.ok) throw new Error()
+      setSubmitted(true)
+      toast.success('리포트가 접수되었습니다!')
+    } catch {
+      toast.error('리포트 전송에 실패했습니다. 다시 시도해주세요.')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
-  const handleSubmit = () => {
-    if (!category || !title.trim() || !description.trim()) return
-    const catLabel = REPORT_CATEGORIES.find(c => c.value === category)?.label || category
-    const subject = `[Draft ${catLabel}] ${title.trim()}`
-    const body = `${description.trim()}\n\n---\n페이지: ${window.location.href}\n카테고리: ${catLabel}`
-    const url = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
-
-    // Try opening mailto — show fallback after timeout if nothing happened
-    setMailtoUrl(url)
-    window.location.href = url
-    toast.info('메일 앱이 열립니다. 열리지 않으면 아래 이메일로 직접 보내주세요.')
-
-    // If mail app doesn't open (no blur within 2s), show fallback
-    const timer = setTimeout(() => setShowFallback(true), 2000)
-    const handleBlur = () => { clearTimeout(timer); window.removeEventListener('blur', handleBlur) }
-    window.addEventListener('blur', handleBlur)
+  if (submitted) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 px-4 gap-3 animate-[fadeSlideIn_0.2s_ease-out]">
+        <div className="w-12 h-12 bg-[#E8F5E9] rounded-2xl flex items-center justify-center">
+          <CheckCircle2 size={24} className="text-[#4CAF50]" />
+        </div>
+        <h4 className="text-[14px] font-bold text-txt-primary">리포트가 접수되었습니다</h4>
+        <p className="text-[12px] text-txt-tertiary text-center">빠르게 확인하고 처리하겠습니다.</p>
+        <button
+          onClick={() => { setSubmitted(false); setCategory(''); setTitle(''); setDescription('') }}
+          className="mt-2 px-4 py-2.5 text-[12px] font-semibold bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-2xl text-txt-secondary active:scale-[0.97] transition-all"
+        >
+          새 리포트 작성
+        </button>
+      </div>
+    )
   }
 
   return (
@@ -495,27 +517,12 @@ function ReportTab() {
       {/* Submit */}
       <button
         onClick={handleSubmit}
-        disabled={!category || !title.trim() || !description.trim()}
+        disabled={!category || !title.trim() || !description.trim() || isSubmitting}
         className="w-full h-12 text-[14px] font-semibold bg-[#3182F6] text-white rounded-2xl disabled:opacity-30 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 active:scale-[0.97]"
       >
-        <Send size={15} />
-        메일로 리포트 보내기
+        {isSubmitting ? <Loader2 size={15} className="animate-spin" /> : <Send size={15} />}
+        {isSubmitting ? '전송 중...' : '리포트 제출'}
       </button>
-
-      <p className="text-[11px] text-txt-disabled text-center">메일 앱이 열리며 현재 페이지 URL이 자동 포함됩니다</p>
-
-      {showFallback && (
-        <div className="bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-2xl p-4 space-y-2 animate-[fadeSlideIn_0.2s_ease-out]">
-          <p className="text-[12px] text-txt-secondary">메일 앱이 열리지 않았나요? 아래 주소로 직접 보내주세요.</p>
-          <button
-            onClick={() => { navigator.clipboard.writeText(SUPPORT_EMAIL); toast.success('이메일 주소가 복사되었습니다') }}
-            className="flex items-center gap-2 w-full px-3 py-2.5 bg-surface-card rounded-xl text-[13px] font-mono text-txt-primary hover:bg-surface-sunken transition-colors"
-          >
-            {SUPPORT_EMAIL}
-            <span className="ml-auto text-[10px] text-txt-tertiary">복사</span>
-          </button>
-        </div>
-      )}
     </div>
   )
 }
