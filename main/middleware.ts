@@ -21,7 +21,7 @@ const hiddenRoutes = [
 const hiddenApiRoutes = [
   '/api/ai-chat',
   '/api/dev',
-  '/api/applications',
+  // '/api/applications' — 지원 관리·pending-count 활성 기능이므로 차단 제외
   '/api/boosts',
   '/api/business-plan',
   '/api/event-applications',
