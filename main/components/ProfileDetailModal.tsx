@@ -16,7 +16,6 @@ import { type ProfileDetailModalProps } from './profile-modal/types'
 import { ProfileHeader } from './profile-modal/ProfileHeader'
 import { ProfileBodyLeft } from './profile-modal/ProfileBodyLeft'
 import { ProfileBodyRight } from './profile-modal/ProfileBodyRight'
-import { ProfileSidePanel } from './profile-modal/ProfileSidePanel'
 import { PortfolioView } from './profile-modal/PortfolioView'
 import { useBackHandler } from '@/src/hooks/useBackHandler'
 import { useProfileInterest } from '@/src/hooks/useProfileInterest'
@@ -30,11 +29,9 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
   const [showCoffeeChatForm, setShowCoffeeChatForm] = useState(false)
   const [showInviteModal, setShowInviteModal] = useState(false)
   const [modalView, setModalView] = useState<'profile' | 'portfolio'>('profile')
-  const [sidePanel, setSidePanel] = useState<null | 'projects' | 'portfolio'>(null)
   useBackHandler(!!profileId, onClose, 'profile-detail')
   useBackHandler(showCoffeeChatForm, () => setShowCoffeeChatForm(false), 'profile-coffee')
   // showInviteModal은 InviteToProjectModal 내부에서 자체 useBackHandler 등록
-  useBackHandler(!!sidePanel, () => setSidePanel(null), 'profile-side')
 
   const { data: profile, isLoading: loading } = useDetailedPublicProfile(
     profileId ?? undefined,
@@ -71,7 +68,6 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
     if (profileId) {
       document.body.style.overflow = 'hidden'
       setModalView('profile')
-      setSidePanel(null)
     } else {
       document.body.style.overflow = ''
     }
@@ -162,13 +158,13 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
       >
             <div
               onClick={(e) => e.stopPropagation()}
-              className={`flex flex-col sm:flex-row gap-0 sm:gap-4 transition-all duration-300 ${sidePanel ? 'w-full max-w-[90rem]' : 'w-full max-w-lg md:max-w-3xl lg:max-w-6xl'}`}
+              className="w-full max-w-lg md:max-w-3xl lg:max-w-6xl"
               role="dialog"
               aria-modal="true"
               aria-label={profile?.nickname || '프로필'}
             >
             {/* Main modal */}
-            <div ref={sheetRef} className={`bg-surface-card dark:bg-[#1C1C1E] rounded-2xl overflow-hidden flex flex-col relative transition-all duration-300 max-h-[92vh] shadow-2xl ${sidePanel ? 'w-full sm:w-3/5' : 'w-full'}`}>
+            <div ref={sheetRef} className="bg-surface-card dark:bg-[#1C1C1E] rounded-2xl overflow-hidden flex flex-col relative max-h-[92vh] shadow-2xl w-full">
               {/* Mobile drag handle */}
               <div
                 className="sm:hidden flex justify-center pt-2.5 pb-1 touch-none cursor-grab active:cursor-grabbing"
@@ -299,7 +295,6 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                         setShowCoffeeChatForm={setShowCoffeeChatForm}
                         showInviteModal={showInviteModal}
                         setShowInviteModal={setShowInviteModal}
-                        setSidePanel={setSidePanel}
                         onClose={onClose}
                         onSelectProject={onSelectProject}
                         initialCoffeeChatMessage={initialCoffeeChatMessage}
@@ -319,17 +314,6 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
               )}
             </div>
 
-            {/* Side Panel */}
-            {sidePanel && (
-              <ProfileSidePanel
-                sidePanel={sidePanel}
-                userProjects={userProjects}
-                portfolioItems={portfolioItems}
-                setSidePanel={setSidePanel}
-                onClose={onClose}
-                onSelectProject={onSelectProject}
-              />
-            )}
             </div>
           </motion.div>
     </>
