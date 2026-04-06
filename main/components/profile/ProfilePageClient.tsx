@@ -10,6 +10,8 @@ import { useMyOpportunities } from '@/src/hooks/useOpportunities'
 import { usePortfolioItems } from '@/src/hooks/usePortfolioItems'
 import { useProfileCompletion } from '@/src/hooks/useProfileCompletion'
 import { useUniversityVerification } from '@/src/hooks/useUniversityVerification'
+import { useCoffeeChats } from '@/src/hooks/useCoffeeChats'
+import { useProjectInvitations } from '@/src/hooks/useProjectInvitations'
 import {
   ProfileHero,
   ProfileSidebar,
@@ -41,6 +43,11 @@ export default function ProfilePageClient() {
     enabled: !!user,
     staleTime: 1000 * 60 * 2,
   })
+
+  // Prefetch: 활동 탭 데이터를 미리 로딩 (탭 전환 시 즉시 표시)
+  useCoffeeChats({ asOwner: true })
+  useCoffeeChats({ asOwner: false })
+  useProjectInvitations({ asSender: false })
 
   const { data: uniData } = useUniversityVerification()
   const uniVerified = uniData?.is_verified ?? false
