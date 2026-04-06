@@ -91,18 +91,17 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
   }, [initialCoffeeChatOpen, profile, user])
 
 
+  // ESC → history.back() → useBackHandler의 LIFO 스택이 순서대로 처리
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        if (sidePanel) { setSidePanel(null); return }
-        if (showInviteModal) { setShowInviteModal(false); return }
-        if (showCoffeeChatForm) { setShowCoffeeChatForm(false); return }
-        onClose()
+        e.preventDefault()
+        window.history.back()
       }
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [onClose, sidePanel, showInviteModal, showCoffeeChatForm])
+  }, [])
 
   const skills = profile?.skills as Array<{ name: string; level: string }> | null
   const personality = profile?.personality as Record<string, number> | null

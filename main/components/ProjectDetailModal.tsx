@@ -199,16 +199,17 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
     return () => { document.body.style.overflow = '' }
   }, [projectId])
 
+  // ESC → history.back() → useBackHandler의 LIFO 스택이 순서대로 처리
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        if (showCta) setShowCta(false)
-        else onClose()
+        e.preventDefault()
+        window.history.back()
       }
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [onClose, showCta])
+  }, [])
 
   const handleToggleFilledRole = (role: string, currentlyFilled: boolean) => {
     if (!opportunity) return
