@@ -43,7 +43,7 @@ export function CropModal({ cropSrc, crop, zoom, cropQueueLength, onCropChange, 
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+      className="fixed inset-0 z-modal flex items-center justify-center bg-black/80 p-4"
       style={{ touchAction: 'none' }}
     >
       <div className="bg-surface-card rounded-xl border border-border-subtle w-full max-w-lg flex flex-col overflow-hidden shadow-lg">
