@@ -23,15 +23,25 @@ export default async function ExplorePage() {
     queryClient.prefetchInfiniteQuery({
       queryKey: ['opportunities', 'list', 'infinite', PAGE_SIZE],
       queryFn: async ({ pageParam = 0 }: { pageParam: number }) => {
-        const { data, error, count } = await supabase
+        // creator JOIN 시도, 실패 시 JOIN 없이 fallback (클라이언트가 재fetch)
+        let result = await supabase
           .from('opportunities')
           .select('*, creator:profiles!opportunities_creator_id_fkey(id, user_id, nickname, desired_position, university, interest_tags, skills, location, contact_email)', { count: 'exact' })
           .eq('status', 'active')
           .order('created_at', { ascending: false })
           .range(pageParam, pageParam + PAGE_SIZE - 1)
 
-        if (error) throw error
-        return { items: data ?? [], totalCount: count ?? 0, nextOffset: pageParam + PAGE_SIZE }
+        if (result.error) {
+          result = await supabase
+            .from('opportunities')
+            .select('*', { count: 'exact' })
+            .eq('status', 'active')
+            .order('created_at', { ascending: false })
+            .range(pageParam, pageParam + PAGE_SIZE - 1)
+        }
+
+        if (result.error) throw result.error
+        return { items: result.data ?? [], totalCount: result.count ?? 0, nextOffset: pageParam + PAGE_SIZE }
       },
       initialPageParam: 0,
     }),
