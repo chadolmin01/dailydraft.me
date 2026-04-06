@@ -120,10 +120,14 @@ export function useBackHandler(isOpen: boolean, onClose: () => void, modalId?: s
         entryIdRef.current = null
         const idx = handlerStack.findIndex(e => e.id === id)
         if (idx !== -1) handlerStack.splice(idx, 1)
-        const currentState = window.history.state
-        if (currentState && typeof currentState === 'object' && currentState[BACK_KEY]) {
-          scheduleBack()
+        // popstate(뒤로가기/ESC)로 닫힌 경우 추가 back 방지
+        if (!closingFromBackRef.current) {
+          const currentState = window.history.state
+          if (currentState && typeof currentState === 'object' && currentState[BACK_KEY]) {
+            scheduleBack()
+          }
         }
+        closingFromBackRef.current = false
       }
     }
   }, [])
