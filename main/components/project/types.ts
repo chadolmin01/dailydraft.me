@@ -47,6 +47,7 @@ export interface ProjectSidebarProps {
   isTeamMember?: boolean
   onLeaveTeam?: () => void
   isLeaving?: boolean
+  onToggleFilledRole?: (role: string, currentlyFilled: boolean) => void
 }
 
 export interface ProjectOverlaysProps {

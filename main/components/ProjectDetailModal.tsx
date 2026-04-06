@@ -21,6 +21,7 @@ import { ProjectContent } from '@/components/project/ProjectContent'
 import { ProjectSidebar } from '@/components/project/ProjectSidebar'
 import { ProjectOverlays } from '@/components/project/ProjectOverlays'
 import { useBackHandler } from '@/src/hooks/useBackHandler'
+import { projectRoleLabel } from '@/src/constants/roles'
 
 interface ProjectDetailModalProps {
   projectId: string | null
@@ -208,6 +209,27 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
   }, [onClose, showCta])
+
+  const handleToggleFilledRole = (role: string, currentlyFilled: boolean) => {
+    if (!opportunity) return
+    const filledRoles = ((opportunity as any).filled_roles || []) as string[]
+    const next = currentlyFilled
+      ? filledRoles.filter((r: string) => r !== role)
+      : [...filledRoles, role]
+    updateOpportunity.mutate(
+      { id: opportunity.id, updates: { filled_roles: next } as any },
+      {
+        onSuccess: () => {
+          toast.success(
+            currentlyFilled
+              ? `${projectRoleLabel(role)} 포지션을 다시 모집합니다`
+              : `${projectRoleLabel(role)} 모집이 완료되었습니다`
+          )
+        },
+        onError: () => toast.error('변경에 실패했어요'),
+      }
+    )
+  }
 
   const handleAction = (role?: string) => {
     if (isOwner) return
@@ -545,6 +567,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                           isTeamMember={!!myMembership}
                           onLeaveTeam={() => leaveTeam.mutate()}
                           isLeaving={leaveTeam.isPending}
+                          onToggleFilledRole={handleToggleFilledRole}
                         />
                       </div>
                     </div>
@@ -566,6 +589,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                         isTeamMember={!!myMembership}
                         onLeaveTeam={() => leaveTeam.mutate()}
                         isLeaving={leaveTeam.isPending}
+                        onToggleFilledRole={handleToggleFilledRole}
                         hideCta
                       />
                       </div>

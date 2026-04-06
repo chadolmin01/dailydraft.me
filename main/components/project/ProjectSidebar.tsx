@@ -7,8 +7,9 @@ import {
   Eye, Heart, ExternalLink, Edit3, Code,
   Palette, Megaphone, PenTool, BarChart3,
   Monitor, Camera, ArrowRight, Check, X as XIcon, Loader2,
-  Users, LogOut,
+  Users, LogOut, Lock, Unlock,
 } from 'lucide-react'
+import { toast } from 'sonner'
 import { ProjectSidebarProps, linkIcons } from './types'
 import { positionLabel, projectRoleLabel } from '@/src/constants/roles'
 
@@ -48,6 +49,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
   isTeamMember = false,
   onLeaveTeam,
   isLeaving = false,
+  onToggleFilledRole,
 }) => {
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false)
   const [activeTab, setActiveTab] = useState<SidebarTab>('team')
@@ -179,43 +181,51 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
                 {opportunity.needed_roles.map((role) => {
                   const label = projectRoleLabel(role)
                   const RoleIcon = getRoleIcon(label)
+                  const filledRoles = (opportunity as any).filled_roles as string[] | null
+                  const isFilled = filledRoles?.includes(role) ?? false
 
-                  if (chatStatus === 'accepted') return (
+                  // Owner: toggleable per-role status
+                  if (isOwner) return (
+                    <button
+                      key={role}
+                      onClick={() => onToggleFilledRole?.(role, isFilled)}
+                      className={`group w-full flex items-center gap-3 h-16 px-4 rounded-2xl transition-all active:scale-[0.98] text-left ${
+                        isFilled
+                          ? 'bg-[#E8F5E9] dark:bg-[#1B3A2D] hover:bg-[#D7ECD9] dark:hover:bg-[#1B3A2D]/80'
+                          : 'bg-[#F7F8F9] dark:bg-[#1C1C1E] hover:bg-[#EDF0F3] dark:hover:bg-[#252527]'
+                      }`}
+                    >
+                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                        isFilled ? 'bg-[#34C759]/20' : 'bg-[#E5E5EA] dark:bg-[#3A3A3C]'
+                      }`}>
+                        {isFilled
+                          ? <Lock size={14} className="text-[#34C759]" />
+                          : <Unlock size={14} className="text-txt-disabled" />
+                        }
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span className={`text-[15px] font-medium ${isFilled ? 'text-[#34C759]' : 'text-txt-secondary'}`}>{label}</span>
+                        <p className={`text-[12px] ${isFilled ? 'text-[#34C759]/70' : 'text-txt-disabled'}`}>
+                          {isFilled ? '모집 완료 · 탭하여 해제' : '모집 중 · 탭하여 마감'}
+                        </p>
+                      </div>
+                    </button>
+                  )
+
+                  // Filled role: show locked (non-owner)
+                  if (isFilled) return (
                     <div key={role} className="flex items-center gap-3 h-16 px-4 bg-[#E8F5E9] dark:bg-[#1B3A2D] rounded-2xl">
-                      <div className="w-9 h-9 bg-[#E8F5E9] dark:bg-[#1B3A2D] rounded-xl flex items-center justify-center shrink-0">
+                      <div className="w-9 h-9 bg-[#34C759]/20 rounded-xl flex items-center justify-center shrink-0">
                         <Check size={14} className="text-[#34C759]" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <span className="text-[15px] font-medium text-[#34C759]">{label}</span>
-                        <p className="text-[12px] text-[#34C759]/70">수락됨</p>
+                        <p className="text-[12px] text-[#34C759]/70">모집 완료</p>
                       </div>
                     </div>
                   )
 
-                  if (chatStatus === 'pending') return (
-                    <div key={role} className="flex items-center gap-3 h-16 px-4 bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl">
-                      <div className="w-9 h-9 bg-[#E5E5EA] dark:bg-[#3A3A3C] rounded-xl flex items-center justify-center shrink-0">
-                        <Loader2 size={14} className="text-indicator-premium animate-spin" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <span className="text-[15px] font-medium text-txt-secondary">{label}</span>
-                        <p className="text-[12px] text-indicator-premium">대기 중...</p>
-                      </div>
-                    </div>
-                  )
-
-                  if (chatStatus === 'declined') return (
-                    <div key={role} className="flex items-center gap-3 h-16 px-4 bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl opacity-60">
-                      <div className="w-9 h-9 bg-[#E5E5EA] dark:bg-[#3A3A3C] rounded-xl flex items-center justify-center shrink-0">
-                        <XIcon size={14} className="text-txt-disabled" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <span className="text-[15px] font-medium text-txt-tertiary">{label}</span>
-                        <p className="text-[12px] text-txt-disabled">거절됨</p>
-                      </div>
-                    </div>
-                  )
-
+                  // Open role: coffee chat action
                   return (
                     <button
                       key={role}
