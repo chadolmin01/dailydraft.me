@@ -45,9 +45,7 @@ export const TRAIT_COLORS: Record<string, { bar: string; barBg: string; dot: str
 
 export const traitLabels = [
   { key: 'communication', label: '소통 스타일', low: '조용히 작업', high: '수시 공유' },
-  { key: 'teamRole', label: '팀 역할', low: '팔로워', high: '리더' },
   { key: 'risk', label: '도전 성향', low: '안정', high: '도전' },
   { key: 'planning', label: '작업 방식', low: '계획부터', high: '실행부터' },
   { key: 'quality', label: '완성도 vs 속도', low: '완성도', high: '속도' },
-  { key: 'time', label: '시간 투자', low: '여유 없음', high: '풀타임' },
 ]

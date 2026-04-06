@@ -208,7 +208,6 @@ export function ProfileSidebar({ profile, completion, isEditable = false, onOpen
           { key: 'risk', label: '도전 성향' },
           { key: 'planning', label: '작업 방식' },
           { key: 'quality', label: '완성도 vs 속도' },
-          { key: 'time', label: '시간 투자' },
         ]
 
         return (

@@ -122,10 +122,9 @@ export const EditAIProfile: React.FC<EditAIProfileProps> = ({
           </div>
         </div>
 
-        {/* risk, time: 1-5 slider */}
+        {/* risk: 1-5 slider */}
         {[
           { key: 'risk', label: '도전 성향', low: '안정 추구', high: '도전적' },
-          { key: 'time', label: '시간 투자', low: '여유 없음', high: '풀타임' },
         ].map(item => (
           <div key={item.key}>
             <div className="flex items-center justify-between mb-1">
