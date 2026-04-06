@@ -148,7 +148,17 @@ function NewProjectContent() {
     }
   }
 
-  const processFiles = useCallback((files: File[]) => {
+  // File → data URL 변환 (모바일에서 blob URL이 불안정하므로 data URL 사용)
+  const fileToDataUrl = useCallback((file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onloadend = () => resolve(reader.result as string)
+      reader.onerror = reject
+      reader.readAsDataURL(file)
+    })
+  }, [])
+
+  const processFiles = useCallback(async (files: File[]) => {
     const remaining = 5 - imageFiles.length
     const toAdd = files.slice(0, remaining)
     if (toAdd.length === 0) return
@@ -167,12 +177,12 @@ function NewProjectContent() {
 
     const [first, ...rest] = toAdd
     setCropQueue(rest)
-    const url = URL.createObjectURL(first)
-    setCropSrc(url)
+    const dataUrl = await fileToDataUrl(first)
+    setCropSrc(dataUrl)
     setCrop({ x: 0, y: 0 })
     setZoom(1)
     setCroppedAreaPixels(null)
-  }, [imageFiles.length])
+  }, [imageFiles.length, fileToDataUrl])
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     processFiles(Array.from(e.target.files || []))
@@ -187,17 +197,16 @@ function NewProjectContent() {
     if (!cropSrc || !croppedAreaPixels) return
     try {
       const croppedFile = await getCroppedImg(cropSrc, croppedAreaPixels)
-      const previewUrl = URL.createObjectURL(croppedFile)
+      const previewUrl = await fileToDataUrl(croppedFile)
       setImageFiles(prev => [...prev, croppedFile])
       setImagePreviews(prev => [...prev, previewUrl])
     } catch { toast.error('이미지 처리에 실패했습니다') }
 
-    URL.revokeObjectURL(cropSrc)
-
     if (cropQueue.length > 0) {
       const [next, ...rest] = cropQueue
       setCropQueue(rest)
-      setCropSrc(URL.createObjectURL(next))
+      const dataUrl = await fileToDataUrl(next)
+      setCropSrc(dataUrl)
       setCrop({ x: 0, y: 0 })
       setZoom(1)
       setCroppedAreaPixels(null)
@@ -207,12 +216,12 @@ function NewProjectContent() {
     }
   }
 
-  const handleCropCancel = () => {
-    if (cropSrc) URL.revokeObjectURL(cropSrc)
+  const handleCropCancel = async () => {
     if (cropQueue.length > 0) {
       const [next, ...rest] = cropQueue
       setCropQueue(rest)
-      setCropSrc(URL.createObjectURL(next))
+      const dataUrl = await fileToDataUrl(next)
+      setCropSrc(dataUrl)
       setCrop({ x: 0, y: 0 })
       setZoom(1)
       setCroppedAreaPixels(null)
@@ -223,7 +232,6 @@ function NewProjectContent() {
   }
 
   const removeImage = (idx: number) => {
-    URL.revokeObjectURL(imagePreviews[idx])
     setImageFiles(prev => prev.filter((_, i) => i !== idx))
     setImagePreviews(prev => prev.filter((_, i) => i !== idx))
   }

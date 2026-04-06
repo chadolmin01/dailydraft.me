@@ -24,36 +24,14 @@ interface CropModalProps {
 export function CropModal({ cropSrc, crop, zoom, cropQueueLength, onCropChange, onZoomChange, onCropComplete, onCropConfirm, onCropCancel }: CropModalProps) {
   useBackHandler(true, onCropCancel, 'crop-modal')
 
-  // blob URL → data URL 변환 (모바일 Safari에서 blob URL이 불안정)
-  const [dataUrl, setDataUrl] = useState<string | null>(null)
-  const [debug, setDebug] = useState('loading...')
+  // cropSrc는 이제 data URL로 전달됨 (부모에서 FileReader로 변환)
+  const [imageReady, setImageReady] = useState(false)
   useEffect(() => {
-    setDataUrl(null)
-    setDebug('converting...')
-
-    // blob URL을 fetch → base64 data URL로 변환
-    const convert = async () => {
-      try {
-        const res = await fetch(cropSrc)
-        const blob = await res.blob()
-        setDebug(`blob: ${blob.type}, ${(blob.size / 1024).toFixed(0)}KB`)
-        const reader = new FileReader()
-        reader.onloadend = () => {
-          const result = reader.result as string
-          setDebug(`dataUrl ready (${(result.length / 1024).toFixed(0)}KB)`)
-          setDataUrl(result)
-        }
-        reader.onerror = () => {
-          setDebug('FileReader error')
-          setDataUrl(cropSrc) // fallback to blob URL
-        }
-        reader.readAsDataURL(blob)
-      } catch (err) {
-        setDebug(`fetch error: ${err}`)
-        setDataUrl(cropSrc) // fallback to blob URL
-      }
-    }
-    convert()
+    setImageReady(false)
+    const img = new window.Image()
+    img.onload = () => setImageReady(true)
+    img.onerror = () => setImageReady(true)
+    img.src = cropSrc
   }, [cropSrc])
 
   // 모달이 열릴 때 body 스크롤 잠금 (모바일 터치 이벤트 충돌 방지)
@@ -85,13 +63,9 @@ export function CropModal({ cropSrc, crop, zoom, cropQueueLength, onCropChange, 
 
         {/* Crop area */}
         <div className="relative w-full h-72 sm:h-80 bg-black" style={{ touchAction: 'none' }}>
-          {/* 임시 디버그 — 문제 해결 후 제거 */}
-          <div className="absolute top-1 left-1 z-10 text-[9px] text-yellow-400 bg-black/70 px-1.5 py-0.5 rounded font-mono pointer-events-none">
-            {debug}
-          </div>
-          {dataUrl ? (
+          {imageReady ? (
             <Cropper
-              image={dataUrl}
+              image={cropSrc}
               crop={crop}
               zoom={zoom}
               aspect={16 / 9}
