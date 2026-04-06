@@ -83,10 +83,10 @@ export default function ProfilePageClient() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">
-                    <span className="text-[10px] font-mono font-bold text-brand uppercase tracking-wider">AI MATCHING</span>
+                    <span className="text-xs font-semibold text-brand tracking-wide">AI 매칭</span>
                   </div>
                   <p className="text-[13px] font-bold text-txt-primary">2분 대화로 매칭 정확도를 높여보세요</p>
-                  <p className="text-[11px] text-txt-tertiary mt-0.5">작업 스타일, 성향을 분석해 딱 맞는 팀원을 추천해드려요</p>
+                  <p className="text-xs text-txt-tertiary mt-0.5">작업 스타일, 성향을 분석해 딱 맞는 팀원을 추천해드려요</p>
                 </div>
                 <div className="shrink-0 px-3.5 py-2 bg-surface-inverse text-txt-inverse text-xs font-bold rounded-xl group-hover:bg-brand transition-colors duration-300 flex items-center gap-1.5">
                   시작하기
@@ -158,7 +158,7 @@ export default function ProfilePageClient() {
               <tab.icon size={14} />
               {tab.label}
               {tab.count != null && tab.count > 0 && (
-                <span className="ml-0.5 text-[11px] font-mono text-txt-tertiary">{tab.count}</span>
+                <span className="ml-0.5 text-xs text-txt-tertiary">{tab.count}</span>
               )}
             </button>
           ))}

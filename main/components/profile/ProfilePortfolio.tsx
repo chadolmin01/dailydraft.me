@@ -103,15 +103,14 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
   return (
     <section className="mb-6">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-[10px] font-medium text-txt-tertiary flex items-center gap-2">
-          <span className="w-5 h-5 bg-surface-inverse text-txt-inverse flex items-center justify-center text-[0.5rem] font-bold">F</span>
-          PORTFOLIO
-          <span className="text-[10px] font-mono text-txt-tertiary">({items.length})</span>
+        <h3 className="text-sm font-semibold text-txt-primary flex items-center gap-2">
+          포트폴리오
+          {items.length > 0 && <span className="text-xs text-txt-tertiary">{items.length}</span>}
         </h3>
         {isEditable && !showForm && (
           <button
             onClick={() => setShowForm(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold border border-border hover:bg-black hover:text-white transition-colors hover:shadow-md active:scale-[0.97]"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold border border-border rounded-xl hover:bg-surface-inverse hover:text-txt-inverse transition-colors hover:shadow-md active:scale-[0.97]"
           >
             <Plus size={14} /> 추가
           </button>
@@ -125,15 +124,13 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
             key={item.id}
             className="relative bg-surface-card rounded-xl border border-border overflow-hidden group hover:shadow-lg hover-spring shadow-md"
           >
-            <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/20 z-10" />
-            <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-surface-inverse/20 z-10" />
 
             {/* Delete button */}
             {isEditable && (
               <button
                 onClick={() => handleDelete(item.id)}
                 disabled={deletingId === item.id}
-                className="absolute top-2 right-2 z-20 w-6 h-6 bg-white/90 border border-border flex items-center justify-center sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:bg-status-danger-bg hover:border-status-danger-text/30 hover:text-status-danger-text"
+                className="absolute top-2 right-2 z-20 w-7 h-7 bg-white/90 border border-border rounded-lg flex items-center justify-center sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:bg-status-danger-bg hover:border-status-danger-text/30 hover:text-status-danger-text"
               >
                 {deletingId === item.id ? <Loader2 size={10} className="animate-spin" /> : <Trash2 size={10} />}
               </button>
@@ -153,8 +150,8 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
                 <div className="p-4">
                   <h4 className="font-bold text-sm text-txt-primary mb-1 truncate">{item.title}</h4>
                   {item.description && <p className="text-xs text-txt-secondary line-clamp-2">{item.description}</p>}
-                  <p className="flex items-center gap-1 text-[10px] font-mono text-txt-tertiary mt-2">
-                    <ExternalLink size={10} /> Link
+                  <p className="flex items-center gap-1 text-xs text-txt-tertiary mt-2">
+                    <ExternalLink size={10} /> 링크
                   </p>
                 </div>
               </a>
@@ -180,7 +177,7 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
 
         {/* Add form card */}
         {showForm && (
-          <div className="relative bg-surface-card border border-brand/30 overflow-hidden shadow-md flex flex-col">
+          <div className="relative bg-surface-card border border-brand/30 rounded-xl overflow-hidden shadow-md flex flex-col">
             {/* Image upload area */}
             <div
               className="relative h-36 bg-surface-bg border-b border-border flex items-center justify-center cursor-pointer hover:bg-surface-sunken transition-colors"
@@ -190,7 +187,7 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
                 <>
                   <Image src={imageUrl} alt="" fill className="object-cover" />
                   <div className="absolute inset-0 bg-black/30 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <span className="text-[10px] font-bold text-white">변경</span>
+                    <span className="text-xs font-medium text-white">변경</span>
                   </div>
                 </>
               ) : uploading ? (
@@ -198,7 +195,7 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
               ) : (
                 <div className="flex flex-col items-center gap-1 text-txt-disabled">
                   <Upload size={18} />
-                  <span className="text-[10px] font-bold">이미지 추가</span>
+                  <span className="text-xs font-medium">이미지 추가</span>
                 </div>
               )}
               <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
@@ -228,14 +225,14 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
               <div className="flex items-center justify-end gap-2 mt-auto pt-3">
                 <button
                   onClick={resetForm}
-                  className="flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold text-txt-secondary border border-border hover:bg-surface-sunken transition-colors"
+                  className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-txt-secondary border border-border rounded-xl hover:bg-surface-sunken transition-colors"
                 >
                   <X size={10} /> 취소
                 </button>
                 <button
                   onClick={handleCreate}
                   disabled={!title.trim() || createItem.isPending}
-                  className="flex items-center gap-1 px-3 py-1 text-[10px] font-bold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97] disabled:opacity-50"
+                  className="flex items-center gap-1 px-3 py-1 text-xs font-semibold bg-surface-inverse text-txt-inverse border border-surface-inverse rounded-xl hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97] disabled:opacity-50"
                 >
                   {createItem.isPending ? <Loader2 size={10} className="animate-spin" /> : <Plus size={10} />}
                   저장
@@ -248,12 +245,12 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
         {/* Empty state — add prompt */}
         {isEditable && items.length === 0 && !showForm && (
           <div
-            className="border border-border p-6 cursor-pointer hover:border-brand/40 hover:bg-brand-bg/30 transition-colors group/add flex flex-col items-center justify-center gap-2 min-h-[13rem] col-span-full sm:col-span-1"
+            className="border border-dashed border-border rounded-xl p-6 cursor-pointer hover:border-brand/40 hover:bg-brand-bg/30 transition-colors group/add flex flex-col items-center justify-center gap-2 min-h-[13rem] col-span-full sm:col-span-1"
             onClick={() => setShowForm(true)}
           >
             <ImageIcon size={20} className="text-txt-disabled group-hover/add:text-brand transition-colors" />
             <p className="text-sm font-medium text-txt-tertiary group-hover/add:text-txt-primary transition-colors">포트폴리오를 추가해보세요</p>
-            <p className="text-[10px] text-txt-disabled text-center">프로젝트 스크린샷, 디자인 작업물 등</p>
+            <p className="text-xs text-txt-disabled text-center">프로젝트 스크린샷, 디자인 작업물 등</p>
           </div>
         )}
       </div>

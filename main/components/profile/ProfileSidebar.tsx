@@ -75,7 +75,7 @@ export function ProfileSidebar({ profile, completion, isEditable = false, onOpen
       {/* --- 프로필 설정 버튼 --- */}
       <button
         onClick={onOpenEditPanel}
-        className="w-full flex items-center justify-center gap-2 px-3 py-3 text-sm font-bold border border-border hover:bg-black hover:text-white transition-colors hover:shadow-md active:scale-[0.97] bg-surface-card rounded-xl"
+        className="w-full flex items-center justify-center gap-2 px-3 py-3 text-sm font-semibold border border-border hover:bg-surface-inverse hover:text-txt-inverse transition-colors hover:shadow-md active:scale-[0.97] bg-surface-card rounded-xl"
       >
         <Edit3 size={14} /> 프로필 설정
       </button>
@@ -83,9 +83,9 @@ export function ProfileSidebar({ profile, completion, isEditable = false, onOpen
       {/* --- SOCIAL LINKS --- */}
       {showLinksSection && (
         <div className="relative bg-surface-card rounded-xl shadow-sm p-5">
-          <h3 className="text-[11px] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
-            <span className="w-4 h-4 bg-brand text-white flex items-center justify-center text-[10px] font-bold rounded">L</span>
-            LINKS
+          <h3 className="text-xs font-semibold text-txt-secondary mb-3 flex items-center gap-2">
+            <Globe size={14} className="text-brand" />
+            링크
           </h3>
           <div className="space-y-1.5">
             {isEditable ? (
@@ -116,10 +116,10 @@ export function ProfileSidebar({ profile, completion, isEditable = false, onOpen
           </div>
           {isEditable && hasPendingChanges && (
             <div className="flex items-center justify-end gap-2 pt-3 mt-3 border-t border-border/40">
-              <button onClick={handleCancel} disabled={isPending} className="flex items-center gap-1 px-2.5 py-1 text-[11px] font-bold text-txt-secondary border border-border hover:bg-surface-sunken transition-colors rounded-xl">
+              <button onClick={handleCancel} disabled={isPending} className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-txt-secondary border border-border hover:bg-surface-sunken transition-colors rounded-xl">
                 <X size={10} /> 취소
               </button>
-              <button onClick={handleSave} disabled={isPending} className="flex items-center gap-1 px-3 py-1 text-[11px] font-bold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97] disabled:opacity-50 rounded-xl">
+              <button onClick={handleSave} disabled={isPending} className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97] disabled:opacity-50 rounded-xl">
                 {isPending ? <Loader2 size={10} className="animate-spin" /> : <Check size={10} />}
                 저장
               </button>
@@ -131,13 +131,12 @@ export function ProfileSidebar({ profile, completion, isEditable = false, onOpen
       {/* --- TECH STACK --- */}
       {(isEditable || (skills && skills.length > 0)) && (
         <div className="relative bg-surface-card rounded-xl shadow-sm p-5">
-          <h3 className="text-[11px] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
-            <span className="w-4 h-4 bg-indicator-online text-white flex items-center justify-center text-[10px] font-bold rounded">S</span>
-            TECH STACK
+          <h3 className="text-xs font-semibold text-txt-secondary mb-3 flex items-center gap-2">
+            기술 스택
           </h3>
           <div className="flex flex-wrap gap-1.5">
             {(skills || []).map((skill, idx) => (
-              <span key={idx} className="text-[10px] font-mono px-2 py-0.5 font-medium rounded-full inline-flex items-center gap-1 transition-all bg-brand/10 text-brand border border-brand/30">
+              <span key={idx} className="text-xs px-2.5 py-1 font-medium rounded-full inline-flex items-center gap-1 transition-all bg-brand/10 text-brand border border-brand/30">
                 {skill.name}
                 {isEditable && showSkillInput && (
                   <button
@@ -152,7 +151,7 @@ export function ProfileSidebar({ profile, completion, isEditable = false, onOpen
             {isEditable && !showSkillInput && (
               <button
                 onClick={() => setShowSkillInput(true)}
-                className="text-[10px] font-mono text-txt-tertiary border border-dashed border-border px-2 py-0.5 font-medium rounded-full hover:border-brand hover:text-brand transition-colors inline-flex items-center gap-0.5"
+                className="text-xs text-txt-tertiary border border-dashed border-border px-2.5 py-1 font-medium rounded-full hover:border-brand hover:text-brand transition-colors inline-flex items-center gap-0.5"
               >
                 <Plus size={8} /> 추가
               </button>
@@ -160,13 +159,13 @@ export function ProfileSidebar({ profile, completion, isEditable = false, onOpen
           </div>
           {isEditable && showSkillInput && (
             <div className="mt-3 space-y-2">
-              <p className="text-[10px] text-txt-tertiary">탭하여 추가 / 위 태그의 X로 제거</p>
+              <p className="text-xs text-txt-tertiary">탭하여 추가 / 위 태그의 X로 제거</p>
               <div className="flex flex-wrap gap-1">
                 {SKILL_SUGGESTIONS.filter(s => !(skills || []).some(sk => sk.name === s)).map(s => (
                   <button
                     key={s}
                     onClick={() => addSkill(s)}
-                    className="text-[10px] font-mono px-2 py-0.5 border border-border bg-surface-sunken text-txt-secondary rounded-full hover:border-brand hover:text-brand transition-colors"
+                    className="text-xs px-2.5 py-1 border border-border bg-surface-sunken text-txt-secondary rounded-full hover:border-brand hover:text-brand transition-colors"
                   >
                     + {s}
                   </button>
@@ -191,7 +190,7 @@ export function ProfileSidebar({ profile, completion, isEditable = false, onOpen
               </div>
               <button
                 onClick={() => { setShowSkillInput(false); setNewSkillName('') }}
-                className="w-full flex items-center justify-center gap-1 px-3 py-1.5 text-[11px] font-bold bg-surface-inverse text-txt-inverse rounded-xl hover:opacity-90 active:scale-[0.97] transition-all"
+                className="w-full flex items-center justify-center gap-1 px-3 py-2 text-xs font-semibold bg-surface-inverse text-txt-inverse rounded-xl hover:opacity-90 active:scale-[0.97] transition-all"
               >
                 <Check size={10} /> 완료
               </button>
@@ -212,9 +211,9 @@ export function ProfileSidebar({ profile, completion, isEditable = false, onOpen
 
         return (
           <div className="relative bg-surface-card rounded-xl shadow-sm p-5">
-            <h3 className="text-[11px] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
-              <span className="w-4 h-4 bg-indicator-premium text-white flex items-center justify-center text-[10px] font-bold rounded">P</span>
-              PERSONALITY
+            <h3 className="text-xs font-semibold text-txt-secondary mb-3 flex items-center gap-2">
+              <Sparkles size={14} className="text-indicator-premium" />
+              성향 분석
             </h3>
             <div className="space-y-2">
               {traits.map(({ key, label }) => {
@@ -223,12 +222,12 @@ export function ProfileSidebar({ profile, completion, isEditable = false, onOpen
                 const value = Math.min(raw, 5)
                 return (
                   <div key={key} className="flex items-center justify-between">
-                    <span className="text-[11px] text-txt-secondary">{label}</span>
+                    <span className="text-xs text-txt-secondary">{label}</span>
                     <div className="flex items-center gap-2">
                       <div className="w-16 h-1.5 bg-surface-sunken rounded-xl border border-border overflow-hidden">
                         <div className="h-full bg-brand transition-all" style={{ width: `${(value / 5) * 100}%` }} />
                       </div>
-                      <span className="text-[10px] font-mono text-txt-tertiary w-8 text-right">{value}/5</span>
+                      <span className="text-xs text-txt-tertiary w-8 text-right">{value}/5</span>
                     </div>
                   </div>
                 )
@@ -237,7 +236,7 @@ export function ProfileSidebar({ profile, completion, isEditable = false, onOpen
             {isEditable && (
               <Link
                 href="/onboarding?mode=redo-chat"
-                className="flex items-center gap-1 mt-3 pt-3 border-t border-border/40 text-[11px] font-bold text-txt-tertiary hover:text-brand transition-colors"
+                className="flex items-center gap-1 mt-3 pt-3 border-t border-border/40 text-xs font-semibold text-txt-tertiary hover:text-brand transition-colors"
               >
                 <Sparkles size={10} /> AI 온보딩 다시하기 →
               </Link>
@@ -248,27 +247,25 @@ export function ProfileSidebar({ profile, completion, isEditable = false, onOpen
 
       {/* --- COMPLETION --- */}
       <div className="relative bg-surface-card rounded-xl shadow-sm p-5">
-        <h3 className="text-[10px] font-medium text-txt-tertiary mb-3 flex items-center gap-2">
-          <span className="w-4 h-4 bg-indicator-online text-white flex items-center justify-center text-[10px] font-bold rounded">%</span>
-          COMPLETION
+        <h3 className="text-xs font-semibold text-txt-secondary mb-3">
+          프로필 완성도
         </h3>
         <div className="flex items-center justify-between mb-2">
-          <span className="text-lg font-mono font-bold text-txt-primary">{completion.pct}%</span>
-          <span className="text-[10px] font-mono text-txt-tertiary">{completion.completedCount}/{completion.fields.length} FIELDS</span>
+          <span className="text-lg font-bold text-txt-primary">{completion.pct}%</span>
+          <span className="text-xs text-txt-tertiary">{completion.completedCount}/{completion.fields.length}개 완료</span>
         </div>
         <div className="w-full h-2 bg-surface-sunken rounded-xl border border-border overflow-hidden mb-3">
           <div className="h-full bg-indicator-online transition-all" style={{ width: `${completion.pct}%` }} />
         </div>
         <div className="space-y-1">
           {completion.fields.map((f, idx) => (
-            <div key={f.label} className="flex items-center gap-2 text-xs py-0.5">
-              <span className="text-[10px] font-mono text-txt-tertiary w-4">{String(idx + 1).padStart(2, '0')}</span>
+            <div key={f.label} className="flex items-center gap-2.5 text-xs py-0.5">
               {f.done ? (
-                <span className="w-4 h-4 bg-indicator-online text-white flex items-center justify-center rounded"><Check size={10} /></span>
+                <span className="w-4 h-4 bg-indicator-online text-white flex items-center justify-center rounded-full"><Check size={10} /></span>
               ) : (
-                <span className="w-4 h-4 border border-border rounded" />
+                <span className="w-4 h-4 border border-border rounded-full" />
               )}
-              <span className={f.done ? 'text-txt-tertiary line-through font-mono text-[10px]' : 'text-txt-secondary font-mono text-[11px]'}>{f.label}</span>
+              <span className={f.done ? 'text-txt-tertiary line-through' : 'text-txt-secondary'}>{f.label}</span>
             </div>
           ))}
         </div>

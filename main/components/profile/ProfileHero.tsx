@@ -178,7 +178,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
             ) : (
               <>
                 <Camera size={14} className="text-white" />
-                <span className="text-[10px] font-bold text-white">{profile?.avatar_url ? '변경' : '추가'}</span>
+                <span className="text-xs font-bold text-white">{profile?.avatar_url ? '변경' : '추가'}</span>
               </>
             )}
           </div>
@@ -197,10 +197,10 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
   }
 
   const infoItems = [
-    { icon: Briefcase, label: 'POSITION', value: profile?.desired_position || '', displayValue: positionLabel(profile?.desired_position || ''), field: 'desired_position', placeholder: '포지션' },
-    { icon: Building2, label: 'SCHOOL', value: profile?.university || '', field: 'university', placeholder: '학교' },
-    { icon: MapPin, label: 'LOCATION', value: profile?.location || '', field: 'location', placeholder: '위치' },
-    { icon: Mail, label: 'CONTACT', value: profile?.contact_email || email || '', field: 'contact_email', placeholder: '이메일' },
+    { icon: Briefcase, label: '포지션', value: profile?.desired_position || '', displayValue: positionLabel(profile?.desired_position || ''), field: 'desired_position', placeholder: '포지션' },
+    { icon: Building2, label: '학교', value: profile?.university || '', field: 'university', placeholder: '학교' },
+    { icon: MapPin, label: '위치', value: profile?.location || '', field: 'location', placeholder: '위치' },
+    { icon: Mail, label: '연락처', value: profile?.contact_email || email || '', field: 'contact_email', placeholder: '이메일' },
   ]
 
   /* ── Save bar ── */
@@ -245,7 +245,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
         <h2 className="text-lg sm:text-xl font-bold text-txt-primary truncate">{cleanNickname(profile?.nickname || '') || 'User'}</h2>
       )}
       {uniVerified && (
-        <span className="flex items-center gap-0.5 px-1.5 py-0.5 bg-indicator-online/20 border border-indicator-online/40 text-indicator-online text-[10px] font-mono font-bold shrink-0 rounded-full">
+        <span className="flex items-center gap-0.5 px-1.5 py-0.5 bg-indicator-online/20 border border-indicator-online/40 text-indicator-online text-xs font-semibold shrink-0 rounded-full">
           <ShieldCheck size={8} /> V
         </span>
       )}
@@ -281,7 +281,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
         <div className="relative inline-block" ref={situationRef}>
           <button
             onClick={() => setShowSituationDropdown(prev => !prev)}
-            className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 text-[10px] font-mono font-bold bg-brand/10 text-brand border border-brand/30 rounded-full hover:bg-brand/20 transition-colors"
+            className="inline-flex items-center gap-1 mt-1.5 px-2.5 py-1 text-xs font-semibold bg-brand/10 text-brand border border-brand/30 rounded-full hover:bg-brand/20 transition-colors"
           >
             <Target size={8} />
             {situation ? (SITUATION_LABELS[situation] || situation) : '상황 선택'}
@@ -307,8 +307,8 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
     }
 
     return (
-      <span className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 text-[10px] font-mono font-bold bg-brand/10 text-brand border border-brand/30 rounded-full">
-        <Target size={8} /> {SITUATION_LABELS[situation!] || situation}
+      <span className="inline-flex items-center gap-1 mt-1.5 px-2.5 py-1 text-xs font-semibold bg-brand/10 text-brand border border-brand/30 rounded-full">
+        <Target size={10} /> {SITUATION_LABELS[situation!] || situation}
       </span>
     )
   }
@@ -334,7 +334,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
               maxLength={500}
               className="bg-surface-bg border border-border rounded-xl outline-none w-full px-3 py-2 resize-none focus:border-brand transition-colors text-base sm:text-sm text-txt-secondary leading-relaxed"
             />
-            <p className={`text-[10px] font-mono text-right mt-1 ${bioValue.length >= 450 ? 'text-status-danger-text font-bold' : bioValue.length >= 350 ? 'text-status-warning-text' : 'text-txt-disabled'}`}>
+            <p className={`text-xs text-right mt-1 ${bioValue.length >= 450 ? 'text-status-danger-text font-semibold' : bioValue.length >= 350 ? 'text-status-warning-text' : 'text-txt-disabled'}`}>
               {bioValue.length}/500
             </p>
           </div>
@@ -368,7 +368,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
           <div className="flex flex-col items-center gap-1.5 py-1">
             <Pencil size={16} className="text-txt-disabled group-hover/bio:text-brand transition-colors" />
             <p className="text-sm font-medium text-txt-tertiary group-hover/bio:text-txt-primary transition-colors">자기소개를 작성해보세요</p>
-            <p className="text-[10px] text-txt-disabled">나를 소개하는 한 줄을 남겨보세요</p>
+            <p className="text-xs text-txt-disabled">나를 소개하는 한 줄을 남겨보세요</p>
           </div>
         </div>
       )
@@ -385,13 +385,13 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
     const likes = profile?.interest_count ?? 0
     return (
       <div className="flex items-center gap-4 mt-2">
-        <span className="flex items-center gap-1.5 text-xs font-mono text-txt-secondary">
+        <span className="flex items-center gap-1.5 text-xs text-txt-secondary">
           <Eye size={13} className="text-txt-tertiary" />
-          <span className="font-bold text-txt-primary">{views}</span>
+          <span className="font-semibold text-txt-primary">{views}</span>
         </span>
-        <span className="flex items-center gap-1.5 text-xs font-mono text-txt-secondary">
+        <span className="flex items-center gap-1.5 text-xs text-txt-secondary">
           <Heart size={13} className={likes > 0 ? 'text-rose-400 fill-rose-400' : 'text-txt-tertiary'} />
-          <span className="font-bold text-txt-primary">{likes}</span>
+          <span className="font-semibold text-txt-primary">{likes}</span>
         </span>
       </div>
     )
@@ -404,7 +404,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
         <div key={item.label} className="flex items-start gap-2">
           <item.icon size={14} className="text-txt-tertiary mt-0.5" />
           <div className="min-w-0 flex-1">
-            <p className="text-[10px] text-txt-tertiary">{item.label}</p>
+            <p className="text-xs text-txt-tertiary">{item.label}</p>
             {isEditable ? (
               <EditableField variant="inline"
                 value={item.value}
@@ -435,9 +435,9 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
         {(interestTags.length > 0 || isEditable) && (
           <div>
             <div className="flex gap-1.5 flex-wrap">
-              <span className="text-[10px] text-txt-tertiary self-center mr-1">TAGS</span>
+              <span className="text-xs text-txt-tertiary self-center mr-1">관심 분야</span>
               {interestTags.map((tag, idx) => (
-                <span key={idx} className="text-[10px] font-mono px-2 py-0.5 font-medium rounded-full inline-flex items-center gap-1 transition-all bg-brand/10 text-brand border border-brand/30">
+                <span key={idx} className="text-xs px-2.5 py-1 font-medium rounded-full inline-flex items-center gap-1 transition-all bg-brand/10 text-brand border border-brand/30">
                   {tag}
                   {isEditable && showTagEditor && (
                     <button
@@ -452,7 +452,7 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
               {isEditable && !showTagEditor && (
                 <button
                   onClick={() => setShowTagEditor(true)}
-                  className="text-[10px] font-mono text-txt-tertiary border border-dashed border-border px-2 py-0.5 font-medium rounded-full hover:border-brand hover:text-brand transition-colors inline-flex items-center gap-0.5"
+                  className="text-xs text-txt-tertiary border border-dashed border-border px-2.5 py-1 font-medium rounded-full hover:border-brand hover:text-brand transition-colors inline-flex items-center gap-0.5"
                 >
                   <Plus size={8} /> 추가
                 </button>
@@ -460,13 +460,13 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
             </div>
             {isEditable && showTagEditor && (
               <div className="mt-2 space-y-2">
-                <p className="text-[10px] text-txt-tertiary">탭하여 추가 / 위 태그의 X로 제거</p>
-                <div className="flex flex-wrap gap-1">
+                <p className="text-xs text-txt-tertiary">탭하여 추가 / 위 태그의 X로 제거</p>
+                <div className="flex flex-wrap gap-1.5">
                   {INTEREST_OPTIONS.filter(t => !interestTags.includes(t)).map(tag => (
                     <button
                       key={tag}
                       onClick={() => toggleInterestTag(tag)}
-                      className="text-[10px] font-mono px-2 py-0.5 border border-border bg-surface-sunken text-txt-secondary rounded-full hover:border-brand hover:text-brand transition-colors"
+                      className="text-xs px-2.5 py-1 border border-border bg-surface-sunken text-txt-secondary rounded-full hover:border-brand hover:text-brand transition-colors"
                     >
                       + {tag}
                     </button>
@@ -502,9 +502,9 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
 
         {strengths.length > 0 && (
           <div className="flex gap-1.5 flex-wrap">
-            <span className="text-[10px] text-txt-tertiary self-center mr-1 flex items-center gap-1"><Sparkles size={9} /> STRENGTHS</span>
+            <span className="text-xs text-txt-tertiary self-center mr-1 flex items-center gap-1"><Sparkles size={12} /> 강점</span>
             {strengths.map((s, idx) => (
-              <span key={idx} className="text-[10px] font-mono bg-indicator-online/20 text-indicator-online border border-indicator-online/30 px-2 py-0.5 font-medium rounded-full">
+              <span key={idx} className="text-xs bg-indicator-online/20 text-indicator-online border border-indicator-online/30 px-2.5 py-1 font-medium rounded-full">
                 {s}
               </span>
             ))}
@@ -540,12 +540,12 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
               toast.success('시작 가이드가 다시 표시됩니다')
               router.push('/explore')
             }}
-            className="flex items-center gap-1 px-2 py-1 text-[10px] text-txt-tertiary hover:text-txt-primary bg-surface-card/80 backdrop-blur-sm border border-border rounded-lg transition-colors"
+            className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-txt-tertiary hover:text-txt-primary bg-surface-card/80 backdrop-blur-sm border border-border rounded-xl transition-colors"
           >
             <RotateCcw size={10} />
             <span className="hidden sm:inline">가이드</span>
           </button>
-          <span className="absolute top-[calc(100%+6px)] right-0 px-2.5 py-1.5 text-[10px] font-medium bg-surface-inverse text-txt-inverse rounded-lg shadow-lg whitespace-nowrap opacity-0 pointer-events-none group-hover/guide:opacity-100 transition-opacity">
+          <span className="absolute top-[calc(100%+6px)] right-0 px-2.5 py-1.5 text-xs font-medium bg-surface-inverse text-txt-inverse rounded-xl shadow-lg whitespace-nowrap opacity-0 pointer-events-none group-hover/guide:opacity-100 transition-opacity">
             시작 가이드 다시 보기
           </span>
       </div>
