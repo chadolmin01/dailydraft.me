@@ -58,9 +58,6 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
   const [personality, setPersonality] = useState<Record<string, number>>({ risk: 3, time: 3, communication: 3, decision: 3 })
   const [workStyle, setWorkStyle] = useState<Record<string, number>>({ collaboration: 3, planning: 3, perfectionism: 3 })
   const [workStyleTraits, setWorkStyleTraits] = useState<Record<string, string>>({})
-  const [teamRole, setTeamRole] = useState('')
-  const [teamSize, setTeamSize] = useState('')
-  const [teamAtmosphere, setTeamAtmosphere] = useState('')
   const [hoursPerWeek, setHoursPerWeek] = useState('')
   const [preferOnline, setPreferOnline] = useState(false)
   const [goals, setGoals] = useState<string[]>([])
@@ -109,11 +106,6 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
           if (ws) {
             const norm = (v: number) => Math.min(v || 3, 5)
             setWorkStyle({ collaboration: norm(ws.collaboration), planning: norm(ws.planning), perfectionism: norm(ws.perfectionism) })
-          }
-          if (v.team_preference) {
-            setTeamRole(v.team_preference.role || '')
-            setTeamSize(v.team_preference.preferred_size || '')
-            setTeamAtmosphere(v.team_preference.atmosphere || '')
           }
           if (v.availability) {
             setHoursPerWeek(v.availability.hours_per_week?.toString() || '')
@@ -278,7 +270,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
       const visionJson = JSON.stringify({
         ...existingVision,
         work_style: finalWorkStyle,
-        team_preference: { role: teamRole || undefined, preferred_size: teamSize || undefined, atmosphere: teamAtmosphere || undefined },
+        team_preference: {},
         availability: { hours_per_week: hoursPerWeek ? parseInt(hoursPerWeek) : null, prefer_online: preferOnline },
         goals,
         strengths,

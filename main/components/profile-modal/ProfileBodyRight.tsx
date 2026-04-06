@@ -68,11 +68,10 @@ export function ProfileBodyRight({
   skills: Array<{ name: string }> | null
 }) {
   const hasPersonality = personality && Object.keys(personality).length > 0
-  const hasTeamPref = teamPref && (teamPref.preferred_size || teamPref.atmosphere)
   const hasAvailability = availability && availability.hours_per_week != null
   const hasSkills = skills && skills.length > 0
 
-  const isEmpty = !hasPersonality && !hasTeamPref && !hasAvailability && !hasSkills
+  const isEmpty = !hasPersonality && !hasAvailability && !hasSkills
 
   return (
     <div className="md:col-span-2 space-y-4 md:bg-[#F7F8F9] md:dark:bg-[#1C1C1E] md:rounded-2xl md:p-5 md:self-start">
@@ -93,16 +92,6 @@ export function ProfileBodyRight({
               if (val == null) return null
               return <SliderBar key={key} value={val} low={low} high={high} label={label} colorKey={key} />
             })}
-          </div>
-        </CollapsibleSection>
-      )}
-
-      {/* ── Team Preference ── */}
-      {hasTeamPref && (
-        <CollapsibleSection title="팀 선호" icon={Users}>
-          <div className="space-y-2">
-            {teamPref!.preferred_size && <TraitBadge label="선호 규모" value={teamPref!.preferred_size} />}
-            {teamPref!.atmosphere && <TraitBadge label="분위기" value={teamPref!.atmosphere} />}
           </div>
         </CollapsibleSection>
       )}

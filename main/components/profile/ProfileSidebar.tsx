@@ -205,7 +205,6 @@ export function ProfileSidebar({ profile, completion, isEditable = false, onOpen
         const p = profile.personality as Record<string, number>
         const traits: { key: string; label: string }[] = [
           { key: 'communication', label: '소통 스타일' },
-          { key: 'teamRole', label: '팀 역할' },
           { key: 'risk', label: '도전 성향' },
           { key: 'planning', label: '작업 방식' },
           { key: 'quality', label: '완성도 vs 속도' },
