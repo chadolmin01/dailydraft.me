@@ -86,16 +86,31 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
           </div>
         )}
 
-        {/* Views + interests (text only) */}
+        {/* Views + interests */}
         <div className="flex items-center gap-4 text-[13px] text-txt-tertiary">
           <span className="flex items-center gap-1">
             <Eye size={13} />
             조회 {opportunity.views_count ?? 0}
           </span>
-          <span className="flex items-center gap-1">
-            <Heart size={13} />
-            관심 {(opportunity.interest_count ?? 0) + (hasInterested ? 1 : 0)}
-          </span>
+          {!isOwner && handleInterest ? (
+            <button
+              onClick={handleInterest}
+              disabled={interestLoading}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-full border transition-colors active:scale-[0.97] ${
+                hasInterested
+                  ? 'bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/30 text-rose-500'
+                  : 'border-border hover:bg-surface-sunken text-txt-tertiary hover:text-txt-secondary'
+              }`}
+            >
+              <Heart size={13} className={hasInterested ? 'fill-rose-400 text-rose-400' : ''} />
+              관심 {(opportunity.interest_count ?? 0) + (hasInterested ? 1 : 0)}
+            </button>
+          ) : (
+            <span className="flex items-center gap-1">
+              <Heart size={13} className={hasInterested ? 'fill-rose-400 text-rose-400' : ''} />
+              관심 {(opportunity.interest_count ?? 0) + (hasInterested ? 1 : 0)}
+            </span>
+          )}
         </div>
       </div>
 
