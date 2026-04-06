@@ -185,7 +185,7 @@ export function NotificationDropdown() {
         onClick={() => setIsOpen(!isOpen)}
         aria-label="알림"
         aria-expanded={isOpen}
-        className="relative w-10 h-10 flex items-center justify-center text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken transition-colors"
+        className="relative w-10 h-10 flex items-center justify-center text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken rounded-xl transition-colors"
       >
         <Bell size={20} />
         {unreadCount > 0 && (
@@ -197,17 +197,17 @@ export function NotificationDropdown() {
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute right-0 top-11 w-[calc(100vw-2rem)] sm:w-96 max-w-[24rem] bg-surface-elevated shadow-lg z-popover animate-in fade-in zoom-in-95 duration-150">
+        <div className="absolute right-0 top-12 w-[calc(100vw-2rem)] sm:w-96 max-w-[24rem] bg-surface-card border border-border rounded-2xl shadow-xl z-popover animate-in fade-in zoom-in-95 duration-150 overflow-hidden">
           {/* Header */}
-          <div className="px-4 pt-3 pb-2 border-b border-border/40">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="font-semibold text-sm text-txt-primary">알림</h3>
+          <div className="px-4 pt-3.5 pb-2.5 border-b border-border/40">
+            <div className="flex items-center justify-between mb-2.5">
+              <h3 className="font-bold text-sm text-txt-primary">알림</h3>
               <div className="flex items-center gap-2">
                 {unreadCount > 0 && (
                   <button
                     onClick={() => markAllReadMutation.mutate()}
                     disabled={markAllReadMutation.isPending}
-                    className="text-[11px] text-txt-tertiary hover:text-txt-primary transition-colors flex items-center gap-1"
+                    className="text-[11px] text-txt-tertiary hover:text-brand transition-colors flex items-center gap-1 font-medium"
                   >
                     {markAllReadMutation.isPending ? (
                       <Loader2 size={12} className="animate-spin" />
@@ -219,7 +219,7 @@ export function NotificationDropdown() {
                 )}
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="text-txt-tertiary hover:text-txt-primary transition-colors"
+                  className="text-txt-tertiary hover:text-txt-primary transition-colors rounded-lg hover:bg-surface-sunken p-1"
                 >
                   <X size={14} />
                 </button>
@@ -229,20 +229,20 @@ export function NotificationDropdown() {
             <div className="flex gap-1">
               <button
                 onClick={() => setShowAll(false)}
-                className={`px-3 py-1 text-[11px] font-bold transition-all ${
+                className={`px-3 py-1.5 text-[11px] font-bold rounded-lg transition-all ${
                   !showAll
                     ? 'bg-surface-inverse text-txt-inverse'
-                    : 'text-txt-tertiary hover:text-txt-primary border border-transparent hover:border-border'
+                    : 'text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken'
                 }`}
               >
                 새 알림{unreadCount > 0 && ` (${unreadCount})`}
               </button>
               <button
                 onClick={() => setShowAll(true)}
-                className={`px-3 py-1 text-[11px] font-bold transition-all ${
+                className={`px-3 py-1.5 text-[11px] font-bold rounded-lg transition-all ${
                   showAll
                     ? 'bg-surface-inverse text-txt-inverse'
-                    : 'text-txt-tertiary hover:text-txt-primary border border-transparent hover:border-border'
+                    : 'text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken'
                 }`}
               >
                 전체 내역
@@ -261,7 +261,7 @@ export function NotificationDropdown() {
                 {!showAll && readNotifications.length > 0 && (
                   <button
                     onClick={() => setShowAll(true)}
-                    className="text-[11px] text-txt-tertiary hover:text-txt-primary mt-2 underline underline-offset-2"
+                    className="text-[11px] text-brand hover:text-brand-hover mt-2 font-medium"
                   >
                     이전 알림 보기 ({readNotifications.length})
                   </button>
@@ -277,13 +277,13 @@ export function NotificationDropdown() {
                   <button
                     key={n.id}
                     onClick={() => handleNotificationClick(n)}
-                    className={`w-full flex items-start gap-3 px-4 py-3 text-left transition-colors border-b border-border-subtle last:border-b-0 ${
+                    className={`w-full flex items-start gap-3 px-4 py-3 text-left transition-colors border-b border-border/30 last:border-b-0 ${
                       isUnread
                         ? 'hover:bg-surface-sunken'
                         : 'opacity-50 hover:opacity-70'
                     }`}
                   >
-                    <div className={`w-8 h-8 flex items-center justify-center shrink-0 mt-0.5 ${
+                    <div className={`w-8 h-8 flex items-center justify-center shrink-0 mt-0.5 rounded-lg ${
                       isUnread ? config.color : config.readColor
                     }`}>
                       <Icon size={14} />
@@ -301,7 +301,7 @@ export function NotificationDropdown() {
                           <span className="w-1.5 h-1.5 bg-brand rounded-full shrink-0" />
                         )}
                       </div>
-                      <p className={`text-[11px] line-clamp-2 mt-0.5 ${
+                      <p className={`text-[11px] line-clamp-2 mt-0.5 leading-relaxed ${
                         isUnread ? 'text-txt-tertiary' : 'text-txt-disabled'
                       }`}>
                         {n.message}
@@ -319,12 +319,12 @@ export function NotificationDropdown() {
 
           {/* Footer */}
           {allNotifications.length > 0 && (
-            <div className="border-t border-border/40 px-4 py-2">
+            <div className="border-t border-border/40 px-4 py-2.5">
               <button
                 onClick={() => { router.push('/notifications'); setIsOpen(false) }}
-                className="w-full text-center text-[11px] text-txt-tertiary hover:text-txt-primary transition-colors py-1"
+                className="w-full text-center text-[11px] font-bold text-txt-tertiary hover:text-brand transition-colors py-1"
               >
-                전체 알림 페이지
+                전체 알림 페이지 →
               </button>
             </div>
           )}
