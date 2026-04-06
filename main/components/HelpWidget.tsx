@@ -92,7 +92,7 @@ export function HelpWidget() {
       {isOpen && (
         <div
           style={{ bottom: 'calc(5rem + var(--bottom-tab-height) + env(safe-area-inset-bottom, 0px))', animation: 'helpWidgetIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) both' }}
-          className="fixed right-3 sm:right-6 z-fixed w-[calc(100vw-1.5rem)] sm:w-[24rem] max-h-[min(32rem,calc(100vh-8rem))] bg-white dark:bg-[#1C1C1E] rounded-[20px] shadow-2xl flex flex-col overflow-hidden"
+          className="fixed right-3 sm:right-6 z-fixed w-[calc(100vw-1.5rem)] sm:w-[24rem] h-[min(32rem,calc(100vh-8rem))] bg-white dark:bg-[#1C1C1E] rounded-[20px] shadow-2xl flex flex-col overflow-hidden"
         >
           <style dangerouslySetInnerHTML={{ __html: `
             @keyframes helpWidgetIn { 0% { opacity:0;transform:translateY(12px) scale(0.95) } 100% { opacity:1;transform:translateY(0) scale(1) } }
