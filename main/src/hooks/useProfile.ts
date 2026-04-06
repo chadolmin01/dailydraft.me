@@ -19,7 +19,17 @@ export function useProfile() {
 
   return useQuery({
     queryKey: profileKeys.detail(user?.id ?? ''),
-    queryFn: () => withRetry(() => fetchProfile(supabase, user!.id)),
+    queryFn: async () => {
+      console.log('[useProfile] fetch 시작', { userId: user!.id, timestamp: new Date().toISOString() })
+      try {
+        const result = await withRetry(() => fetchProfile(supabase, user!.id))
+        console.log('[useProfile] fetch 성공', { hasData: !!result })
+        return result
+      } catch (err) {
+        console.error('[useProfile] fetch 실패', err)
+        throw err
+      }
+    },
     enabled: !isAuthLoading && !!user?.id,
     staleTime: 1000 * 60 * 2,
     retry: (failureCount) => failureCount < 3,
