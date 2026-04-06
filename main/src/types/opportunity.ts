@@ -19,6 +19,7 @@ export interface ProjectLink {
 // Opportunity with creator profile info (joined query)
 export interface OpportunityWithCreator extends Opportunity {
   creator?: {
+    id: string
     nickname: string
     user_id: string
     skills?: unknown

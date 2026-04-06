@@ -112,7 +112,7 @@ export function useOpportunity(id: string | undefined) {
       if (opp.creator_id) {
         const { data } = await supabase
           .from('profiles')
-          .select('user_id, nickname, desired_position, university, interest_tags, skills, location, contact_email')
+          .select('id, user_id, nickname, desired_position, university, interest_tags, skills, location, contact_email')
           .eq('user_id', opp.creator_id)
           .maybeSingle()
         creator = data || undefined
