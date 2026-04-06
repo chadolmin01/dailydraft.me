@@ -97,6 +97,11 @@ export async function DELETE(
       .eq('opportunity_id', id)
       .single()
 
+    // Prevent creator from kicking themselves
+    if (connection?.applicant_id === user.id) {
+      return ApiResponse.badRequest('자기 자신을 추방할 수 없습니다')
+    }
+
     // Set status to 'left' instead of deleting
     const { error } = await supabase
       .from('accepted_connections')

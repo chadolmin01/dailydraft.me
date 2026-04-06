@@ -563,6 +563,9 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                         onClose={onClose}
                         router={router}
                         teamMembers={teamMembers}
+                        isTeamMember={!!myMembership}
+                        onLeaveTeam={() => leaveTeam.mutate()}
+                        isLeaving={leaveTeam.isPending}
                         hideCta
                       />
                       </div>
@@ -579,6 +582,24 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                         <Edit3 size={15} />
                         프로젝트 수정하기
                       </button>
+                    ) : myMembership ? (
+                      /* Team member — no coffee chat CTA, just interest + leave is in sidebar */
+                      <div className="flex gap-2">
+                        <button
+                          onClick={handleInterest}
+                          disabled={interestLoading}
+                          className={`shrink-0 w-14 h-14 flex items-center justify-center rounded-2xl transition-all disabled:opacity-40 ${
+                            hasInterested
+                              ? 'bg-[#FFF0F0] dark:bg-[#3A1C1C] text-[#FF3B30]'
+                              : 'bg-[#F2F3F5] dark:bg-[#2C2C2E] text-txt-secondary hover:bg-[#E5E5EA]'
+                          }`}
+                        >
+                          <Heart size={18} className={hasInterested ? 'fill-current' : ''} />
+                        </button>
+                        <div className="flex-1 h-14 bg-[#E8F5E9] dark:bg-[#1B3A2D] rounded-2xl font-semibold text-[15px] text-[#34C759] flex items-center justify-center gap-2">
+                          참여 중인 프로젝트
+                        </div>
+                      </div>
                     ) : (
                       <div className="flex gap-2">
                         <button

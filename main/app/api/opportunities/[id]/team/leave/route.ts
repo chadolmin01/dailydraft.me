@@ -14,6 +14,17 @@ export async function POST(
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return ApiResponse.unauthorized()
 
+    // Prevent creator from leaving their own project
+    const { data: opp } = await supabase
+      .from('opportunities')
+      .select('creator_id')
+      .eq('id', id)
+      .single()
+
+    if (opp?.creator_id === user.id) {
+      return ApiResponse.badRequest('프로젝트 생성자는 탈퇴할 수 없습니다')
+    }
+
     // Find the user's active membership
     const { data: membership } = await supabase
       .from('accepted_connections')

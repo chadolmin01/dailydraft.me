@@ -424,7 +424,7 @@ function MemberCard({
             type="button"
             onClick={onRemoveClick}
             className="p-1.5 text-txt-disabled hover:text-status-danger-text transition-colors"
-            title="팀원 제거"
+            title="팀원 추방"
           >
             <UserMinus size={14} />
           </button>
@@ -433,20 +433,23 @@ function MemberCard({
 
       {/* Remove confirmation */}
       {isRemoving && (
-        <div className="px-4 py-2.5 bg-status-danger-bg/50 border-t border-status-danger-text/10 flex items-center justify-between">
-          <p className="text-xs text-status-danger-text">이 팀원을 제거하시겠습니까?</p>
+        <div className="px-4 py-3 bg-status-danger-bg/50 border-t border-status-danger-text/10 space-y-2">
+          <p className="text-xs text-status-danger-text font-medium">
+            {member.profile?.nickname || '이 팀원'}님을 프로젝트에서 추방하시겠습니까?
+          </p>
+          <p className="text-[11px] text-status-danger-text/70">추방된 멤버에게 알림이 전송됩니다. 이 작업은 되돌릴 수 없습니다.</p>
           <div className="flex gap-2">
             <button
               type="button"
               onClick={onRemoveConfirm}
-              className="px-3 py-1 bg-status-danger-text text-white text-xs font-bold hover:opacity-90 transition-opacity"
+              className="px-3 py-1.5 bg-status-danger-text text-white text-xs font-bold hover:opacity-90 transition-opacity rounded-lg"
             >
-              제거
+              추방하기
             </button>
             <button
               type="button"
               onClick={onRemoveCancel}
-              className="px-3 py-1 border border-border text-xs text-txt-secondary hover:bg-surface-card rounded-xl transition-colors"
+              className="px-3 py-1.5 border border-border text-xs text-txt-secondary hover:bg-surface-card rounded-lg transition-colors"
             >
               취소
             </button>

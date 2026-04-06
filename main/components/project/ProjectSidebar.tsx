@@ -149,6 +149,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
                 ) : (
                   <div className="bg-[#FFF5F5] dark:bg-[#3A1C1C] rounded-2xl p-4 space-y-3">
                     <p className="text-[13px] font-medium text-[#FF3B30]">정말 이 프로젝트에서 나가시겠어요?</p>
+                    <p className="text-[11px] text-[#FF3B30]/70">팀에서 나가면 다시 참여하려면 생성자의 초대가 필요합니다.</p>
                     <div className="flex gap-2">
                       <button
                         onClick={() => { onLeaveTeam(); setShowLeaveConfirm(false) }}
