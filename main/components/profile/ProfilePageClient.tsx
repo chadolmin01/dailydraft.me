@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { DashboardLayout } from '@/components/ui/DashboardLayout'
 import { useAuth } from '@/src/context/AuthContext'
@@ -28,6 +29,17 @@ export default function ProfilePageClient() {
   const { data: myOpportunities = [] } = useMyOpportunities()
   const { data: portfolioItems = [] } = usePortfolioItems()
   const completion = useProfileCompletion(profile)
+
+  const { data: myTeams = [] } = useQuery<any[]>({
+    queryKey: ['my-teams'],
+    queryFn: async () => {
+      const res = await fetch('/api/users/my-teams')
+      if (!res.ok) return []
+      return res.json()
+    },
+    enabled: !!user,
+    staleTime: 1000 * 60 * 2,
+  })
 
   const { data: uniData } = useUniversityVerification()
   const uniVerified = uniData?.is_verified ?? false
@@ -128,7 +140,7 @@ export default function ProfilePageClient() {
         <div className="flex items-center gap-1 border-b border-border/40 mb-6">
           {([
             { key: 'portfolio' as const, label: '포트폴리오', icon: Briefcase, count: portfolioItems.length },
-            { key: 'projects' as const, label: '프로젝트', icon: FolderOpen, count: myOpportunities.length },
+            { key: 'projects' as const, label: '프로젝트', icon: FolderOpen, count: myOpportunities.length + myTeams.length },
             { key: 'activity' as const, label: '활동', icon: Activity },
           ]).map(tab => (
             <button
@@ -152,7 +164,7 @@ export default function ProfilePageClient() {
         {/* ── Tab content — min-height prevents sidebar jump on tab switch ── */}
         <div className="min-h-[50vh]">
           {activeTab === 'portfolio' && <ProfilePortfolio items={portfolioItems} isEditable />}
-          {activeTab === 'projects' && <ProfileProjects opportunities={myOpportunities} />}
+          {activeTab === 'projects' && <ProfileProjects opportunities={myOpportunities} joinedTeams={myTeams} />}
           {activeTab === 'activity' && (
             <>
               <ProfileCoffeeChats />

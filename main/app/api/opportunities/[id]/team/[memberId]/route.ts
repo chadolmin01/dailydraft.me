@@ -1,6 +1,7 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { NextRequest } from 'next/server'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { notifyTeamKicked } from '@/src/lib/notifications/create-notification'
 
 // PATCH: Update team member (role, notes, status)
 export async function PATCH(
@@ -80,13 +81,21 @@ export async function DELETE(
     // Verify user is the opportunity creator
     const { data: opportunity } = await supabase
       .from('opportunities')
-      .select('creator_id')
+      .select('creator_id, title')
       .eq('id', id)
       .single()
 
     if (!opportunity || opportunity.creator_id !== user.id) {
       return ApiResponse.forbidden()
     }
+
+    // Get member's user_id before updating
+    const { data: connection } = await supabase
+      .from('accepted_connections')
+      .select('applicant_id')
+      .eq('id', memberId)
+      .eq('opportunity_id', id)
+      .single()
 
     // Set status to 'left' instead of deleting
     const { error } = await supabase
@@ -97,6 +106,15 @@ export async function DELETE(
 
     if (error) {
       return ApiResponse.internalError()
+    }
+
+    // Notify the kicked member
+    if (connection) {
+      await notifyTeamKicked(
+        connection.applicant_id,
+        opportunity.title || '프로젝트',
+        id
+      )
     }
 
     return ApiResponse.ok({ success: true })

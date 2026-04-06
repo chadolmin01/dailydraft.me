@@ -326,3 +326,34 @@ export async function notifyProfileViewMilestone(
     link: '/profile',
   })
 }
+
+/** 팀원 추방 시 추방당한 멤버에게 알림 */
+export async function notifyTeamKicked(
+  memberId: string,
+  projectTitle: string,
+  projectId: string
+) {
+  return createNotification({
+    userId: memberId,
+    type: 'connection',
+    title: '팀에서 제외되었습니다',
+    message: `"${projectTitle}" 프로젝트에서 제외되었습니다.`,
+    link: `/explore`,
+  })
+}
+
+/** 팀원 자진 탈퇴 시 생성자에게 알림 */
+export async function notifyTeamLeft(
+  creatorId: string,
+  memberName: string,
+  projectTitle: string,
+  projectId: string
+) {
+  return createNotification({
+    userId: creatorId,
+    type: 'connection',
+    title: '팀원이 탈퇴했습니다',
+    message: `${memberName}님이 "${projectTitle}" 프로젝트에서 탈퇴했습니다.`,
+    link: `/projects/${projectId}/edit?tab=team`,
+  })
+}

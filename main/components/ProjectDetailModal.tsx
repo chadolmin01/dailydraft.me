@@ -8,7 +8,7 @@ import {
   Loader2, AlertCircle, X, Share2, Edit3, ChevronLeft, ChevronRight, Heart, Coffee,
 } from 'lucide-react'
 import { toast } from 'sonner'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/src/lib/supabase/client'
 import { useOpportunity, useUpdateOpportunity, useSimilarOpportunities, opportunityKeys } from '@/src/hooks/useOpportunities'
 // creator profile은 useOpportunity에서 join으로 함께 로드
@@ -68,7 +68,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
 
   const { data: opportunity, isLoading: loading } = useOpportunity(currentId ?? undefined)
   // creator는 opportunity에 join되어 함께 로드됨 (별도 쿼리 불필요)
-  const creator = opportunity?.creator ?? null
+  const creator = (opportunity?.creator ?? null) as any
   const { data: updates = [] } = useProjectUpdates(opportunity?.id)
 
   // Prefetch similar projects — starts immediately when modal opens
@@ -137,6 +137,39 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
 
   const isOwner = !!(user && opportunity && user.id === opportunity.creator_id)
   const existingChat = myChatsForProject.length > 0 ? myChatsForProject[0] : null
+
+  // Check if current user is an active team member (not owner)
+
+  const { data: myMembership } = useQuery({
+    queryKey: ['my-membership', currentId, user?.id],
+    queryFn: async () => {
+      if (!currentId || !user) return null
+      const { data } = await supabase
+        .from('accepted_connections')
+        .select('id')
+        .eq('opportunity_id', currentId)
+        .eq('applicant_id', user.id)
+        .eq('status', 'active')
+        .maybeSingle()
+      return data
+    },
+    enabled: !!currentId && !!user && !isOwner,
+    staleTime: 1000 * 60 * 2,
+  })
+
+  const leaveTeam = useMutation({
+    mutationFn: async () => {
+      const res = await fetch(`/api/opportunities/${currentId}/team/leave`, { method: 'POST' })
+      if (!res.ok) throw new Error()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['team-public', currentId] })
+      queryClient.invalidateQueries({ queryKey: ['my-membership', currentId] })
+      queryClient.invalidateQueries({ queryKey: ['my-teams'] })
+      toast.success('프로젝트에서 나왔습니다')
+    },
+    onError: () => toast.error('탈퇴에 실패했습니다'),
+  })
 
   useEffect(() => {
     setShowCta(false)
@@ -509,6 +542,9 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                           onClose={onClose}
                           router={router}
                           teamMembers={teamMembers}
+                          isTeamMember={!!myMembership}
+                          onLeaveTeam={() => leaveTeam.mutate()}
+                          isLeaving={leaveTeam.isPending}
                         />
                       </div>
                     </div>

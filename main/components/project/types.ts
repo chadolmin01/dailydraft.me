@@ -44,6 +44,9 @@ export interface ProjectSidebarProps {
   router: { push: (url: string) => void }
   teamMembers?: TeamMemberPublic[]
   hideCta?: boolean
+  isTeamMember?: boolean
+  onLeaveTeam?: () => void
+  isLeaving?: boolean
 }
 
 export interface ProjectOverlaysProps {

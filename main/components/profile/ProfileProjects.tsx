@@ -2,15 +2,30 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { Plus, Clock } from 'lucide-react'
+import { Plus, Clock, Users } from 'lucide-react'
 import { calculateDaysLeft } from '@/src/hooks/useOpportunities'
 import type { Opportunity } from '@/src/types/opportunity'
 
-interface ProfileProjectsProps {
-  opportunities: Opportunity[]
+interface JoinedTeam {
+  id: string
+  title: string
+  description: string
+  status: string
+  type: string
+  demo_images: string[] | null
+  needed_roles: string[] | null
+  interest_tags: string[] | null
+  my_role: string | null
+  joined_at: string | null
+  creator: { nickname: string; desired_position: string | null } | null
 }
 
-export function ProfileProjects({ opportunities }: ProfileProjectsProps) {
+interface ProfileProjectsProps {
+  opportunities: Opportunity[]
+  joinedTeams?: JoinedTeam[]
+}
+
+export function ProfileProjects({ opportunities, joinedTeams = [] }: ProfileProjectsProps) {
   return (
     <section className="mb-6">
       <div className="flex justify-between items-center mb-4">
@@ -114,6 +129,59 @@ export function ProfileProjects({ opportunities }: ProfileProjectsProps) {
             <p className="text-[13px] text-txt-tertiary">아이디어를 프로젝트로 만들어보세요</p>
           </div>
         </Link>
+      )}
+
+      {/* Joined Teams */}
+      {joinedTeams.length > 0 && (
+        <div className="mt-8">
+          <h3 className="text-[15px] font-bold text-txt-primary flex items-center gap-2 mb-4">
+            <Users size={15} />
+            참여 중인 팀
+            <span className="text-[13px] font-medium text-txt-tertiary">{joinedTeams.length}</span>
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {joinedTeams.map((team) => {
+              const coverSrc = team.demo_images?.[0] || null
+              return (
+                <Link href={`/explore?project=${team.id}`} key={team.id} className="bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl overflow-hidden group hover:shadow-lg transition-all cursor-pointer flex flex-col">
+                  <div className="relative h-32 sm:h-36 shrink-0 bg-[#E5E5EA] dark:bg-[#2C2C2E] overflow-hidden">
+                    {coverSrc ? (
+                      <Image
+                        src={coverSrc}
+                        alt={team.title}
+                        fill
+                        sizes="(max-width:640px) 100vw, 50vw"
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        quality={80}
+                      />
+                    ) : (
+                      <div className="h-full flex items-center justify-center">
+                        <span className="text-[28px] font-bold text-txt-disabled/30">{team.title.charAt(0)}</span>
+                      </div>
+                    )}
+                    <div className="absolute top-2.5 left-2.5">
+                      <span className="text-[11px] font-semibold bg-[#3182F6]/90 text-white px-2 py-0.5 rounded-full flex items-center gap-1">
+                        <Users size={10} /> 팀원
+                      </span>
+                    </div>
+                  </div>
+                  <div className="p-4 flex-1 flex flex-col">
+                    <h4 className="font-bold text-[15px] text-txt-primary mb-1 truncate">{team.title}</h4>
+                    <div className="flex items-center gap-1.5 mb-2">
+                      {team.my_role && (
+                        <span className="text-[12px] bg-[#3182F6]/10 text-[#3182F6] px-2 py-0.5 rounded-full font-medium">{team.my_role}</span>
+                      )}
+                      {team.creator && (
+                        <span className="text-[12px] text-txt-tertiary">by {team.creator.nickname}</span>
+                      )}
+                    </div>
+                    <p className="text-[13px] text-txt-tertiary line-clamp-2 flex-1">{team.description}</p>
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        </div>
       )}
     </section>
   )

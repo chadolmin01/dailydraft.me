@@ -7,7 +7,7 @@ import {
   Eye, Heart, ExternalLink, Edit3, Code,
   Palette, Megaphone, PenTool, BarChart3,
   Monitor, Camera, ArrowRight, Check, X as XIcon, Loader2,
-  Users,
+  Users, LogOut,
 } from 'lucide-react'
 import { ProjectSidebarProps, linkIcons } from './types'
 import { positionLabel, projectRoleLabel } from '@/src/constants/roles'
@@ -45,7 +45,11 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
   router,
   teamMembers = [],
   hideCta = false,
+  isTeamMember = false,
+  onLeaveTeam,
+  isLeaving = false,
 }) => {
+  const [showLeaveConfirm, setShowLeaveConfirm] = useState(false)
   const [activeTab, setActiveTab] = useState<SidebarTab>('team')
 
   const tabs: { id: SidebarTab; label: string }[] = [
@@ -128,6 +132,41 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
                     </div>
                   </div>
                 ))}
+              </div>
+            )}
+
+            {/* Team member: Leave button */}
+            {isTeamMember && !isOwner && onLeaveTeam && (
+              <div>
+                {!showLeaveConfirm ? (
+                  <button
+                    onClick={() => setShowLeaveConfirm(true)}
+                    className="w-full flex items-center justify-center gap-2 py-3 text-[13px] font-medium text-txt-tertiary bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl hover:text-[#FF3B30] hover:bg-[#FFF5F5] dark:hover:bg-[#3A1C1C] transition-colors"
+                  >
+                    <LogOut size={14} />
+                    프로젝트 나가기
+                  </button>
+                ) : (
+                  <div className="bg-[#FFF5F5] dark:bg-[#3A1C1C] rounded-2xl p-4 space-y-3">
+                    <p className="text-[13px] font-medium text-[#FF3B30]">정말 이 프로젝트에서 나가시겠어요?</p>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => { onLeaveTeam(); setShowLeaveConfirm(false) }}
+                        disabled={isLeaving}
+                        className="flex-1 py-2.5 text-[13px] font-semibold bg-[#FF3B30] text-white rounded-xl disabled:opacity-50 flex items-center justify-center gap-1.5"
+                      >
+                        {isLeaving ? <Loader2 size={14} className="animate-spin" /> : <LogOut size={14} />}
+                        나가기
+                      </button>
+                      <button
+                        onClick={() => setShowLeaveConfirm(false)}
+                        className="flex-1 py-2.5 text-[13px] font-medium bg-[#F7F8F9] dark:bg-[#2C2C2E] text-txt-secondary rounded-xl"
+                      >
+                        취소
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
