@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { MapPin, Building2, Target } from 'lucide-react'
+import { MapPin, Building2, Sparkles } from 'lucide-react'
 import { cleanNickname } from '@/src/lib/clean-nickname'
 import { SITUATION_LABELS, AFFILIATION_LABELS, type MatchData } from './types'
 import { positionLabel } from '@/src/constants/roles'
@@ -25,99 +25,87 @@ export function ProfileHeader({
   matchData?: MatchData | null
 }) {
   return (
-    <>
-      {/* Hero Cover */}
-      {coverUrl ? (
-        <div className="relative h-36 sm:h-44 overflow-hidden">
-          <Image
-            src={coverUrl}
-            alt=""
-            fill
-            sizes="(max-width:768px) 100vw, 768px"
-            className="object-cover"
-            quality={90}
-            onError={(e) => { e.currentTarget.style.display = 'none' }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+    <div className="px-5 sm:px-8 pt-2 pb-4">
+      {/* Avatar + Name */}
+      <div className="flex items-start gap-4">
+        {/* Avatar */}
+        <div className="relative w-16 h-16 bg-[#3182F6] rounded-full flex items-center justify-center text-xl font-bold text-white shrink-0 overflow-hidden">
+          {cleanNickname(profile.nickname).substring(0, 2)}
+          {profile.avatar_url && (
+            <Image
+              src={profile.avatar_url}
+              alt={profile.nickname}
+              width={64}
+              height={64}
+              className="absolute inset-0 w-16 h-16 object-cover"
+              quality={85}
+              onError={(e) => { e.currentTarget.style.display = 'none' }}
+            />
+          )}
         </div>
-      ) : null}
-
-      {/* Profile Header */}
-      <div className={`px-4 sm:px-8 ${coverUrl ? 'pt-0 -mt-10 relative z-10' : 'pt-4 sm:pt-6'} pb-3`}>
-        <div className="flex items-start gap-4">
-          {/* Avatar */}
-          <div className={`relative w-20 h-20 bg-surface-inverse rounded-full flex items-center justify-center text-2xl font-bold text-txt-inverse shrink-0 shadow-md border-2 ${coverUrl ? 'border-surface-card' : 'border-default'}`}>
-            {cleanNickname(profile.nickname).substring(0, 2)}
-            {profile.avatar_url && (
-              <Image
-                src={profile.avatar_url}
-                alt={profile.nickname}
-                width={80}
-                height={80}
-                className="absolute inset-0 w-20 h-20 object-cover"
-                quality={85}
-                onError={(e) => { e.currentTarget.style.display = 'none' }}
-              />
+        <div className="flex-1 min-w-0 pt-1">
+          <div className="flex items-center gap-2 mb-0.5">
+            <h2 className="text-[22px] font-bold text-txt-primary">
+              {cleanNickname(profile.nickname)}
+            </h2>
+            {matchData && matchData.match_score > 0 && (
+              <span className={`text-[12px] font-bold px-2.5 py-0.5 rounded-full shrink-0 ${
+                matchData.match_score >= 80 ? 'bg-[#E8F5E9] dark:bg-[#1B3A2D] text-[#34C759]'
+                : matchData.match_score >= 60 ? 'bg-[#EBF4FF] dark:bg-[#1A2A42] text-[#3182F6]'
+                : 'bg-[#F2F3F5] dark:bg-[#2C2C2E] text-txt-tertiary'
+              }`}>
+                {matchData.match_score}% 매치
+              </span>
             )}
           </div>
-          <div className="flex-1 min-w-0 pt-2">
-            <div className="flex items-center gap-2 mb-1">
-              <h2 className={`text-2xl font-bold ${coverUrl ? 'text-white drop-shadow-sm' : 'text-txt-primary'}`}>
-                {cleanNickname(profile.nickname)}
-              </h2>
-              {matchData && matchData.match_score > 0 && (
-                <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 border shrink-0 ${
-                  matchData.match_score >= 80 ? 'bg-status-success-bg text-status-success-text border-indicator-online/20'
-                  : matchData.match_score >= 60 ? 'bg-brand-bg text-brand border-brand-border'
-                  : 'bg-surface-card text-txt-tertiary border-border'
-                }`}>
-                  {matchData.match_score}% MATCH
-                </span>
-              )}
-            </div>
-            <p className={`text-sm ${coverUrl ? 'text-white/80' : 'text-txt-tertiary'}`}>
-              {positionLabel(profile.desired_position || '') || 'Explorer'}
-            </p>
+          <p className="text-[14px] text-txt-secondary">
+            {positionLabel(profile.desired_position || '') || 'Explorer'}
+          </p>
+          <div className="flex flex-wrap items-center gap-2 mt-2 text-[13px] text-txt-tertiary">
             {profile.current_situation && (
-              <span className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 text-[10px] font-mono font-bold bg-brand/15 text-brand border border-brand/30">
-                <Target size={9} /> {SITUATION_LABELS[profile.current_situation] || profile.current_situation}
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#E8F5E9] dark:bg-[#1B3A2D] text-[#34C759] text-[12px] font-semibold rounded-full">
+                {SITUATION_LABELS[profile.current_situation] || profile.current_situation}
               </span>
             )}
-            <div className={`flex flex-wrap items-center gap-3 mt-1.5 text-xs ${coverUrl ? 'text-white/60' : 'text-txt-tertiary'}`}>
-              {affiliationType && AFFILIATION_LABELS[affiliationType] && (
-                <span className="px-1.5 py-0.5 bg-surface-inverse/10 border border-border font-medium">
-                  {AFFILIATION_LABELS[affiliationType]}
-                </span>
-              )}
-              {profile.university && (
-                <span className="flex items-center gap-1">
-                  <Building2 size={12} />
-                  {profile.university}{profile.major ? ` · ${profile.major}` : ''}
-                </span>
-              )}
-              {profile.location && (
-                <span className="flex items-center gap-1">
-                  <MapPin size={12} />
-                  {profile.location}
-                </span>
-              )}
-            </div>
+            {affiliationType && AFFILIATION_LABELS[affiliationType] && (
+              <span className="px-2.5 py-1 bg-[#F2F3F5] dark:bg-[#2C2C2E] text-txt-secondary text-[12px] font-medium rounded-full">
+                {AFFILIATION_LABELS[affiliationType]}
+              </span>
+            )}
+            {profile.university && (
+              <span className="flex items-center gap-1">
+                <Building2 size={13} />
+                {profile.university}{profile.major ? ` · ${profile.major}` : ''}
+              </span>
+            )}
+            {profile.location && (
+              <span className="flex items-center gap-1">
+                <MapPin size={13} />
+                {profile.location}
+              </span>
+            )}
           </div>
         </div>
-
-        {/* Interest Tags below header */}
-        {profile.interest_tags && profile.interest_tags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mt-3">
-            {profile.interest_tags.map((tag) => (
-              <span key={tag} className="px-2.5 py-1 bg-white text-tag-default-text text-xs font-medium border border-border">
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
       </div>
 
-      <div className="mx-4 sm:mx-8 border-t border-border-strong/40" />
-    </>
+      {/* Match Reason */}
+      {matchData && matchData.match_reason && (
+        <div className="mt-4 flex items-start gap-2 bg-[#EBF4FF] dark:bg-[#1A2A42] rounded-2xl px-4 py-3">
+          <Sparkles size={14} className="text-[#3182F6] shrink-0 mt-0.5" />
+          <p className="text-[13px] text-[#3182F6] font-medium leading-relaxed">{matchData.match_reason}</p>
+        </div>
+      )}
+
+      {/* Interest Tags */}
+      {profile.interest_tags && profile.interest_tags.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mt-4">
+          {profile.interest_tags.map((tag) => (
+            <span key={tag} className="px-3 py-1.5 bg-[#F2F3F5] dark:bg-[#2C2C2E] text-txt-secondary text-[13px] font-medium rounded-full">
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
   )
 }

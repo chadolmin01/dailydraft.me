@@ -17,7 +17,6 @@ export function SliderBar({ value: rawValue, low, high, label, colorKey }: { val
     return () => clearTimeout(timer)
   }, [])
 
-  // Interpret value
   const getInterpretation = () => {
     if (value <= 2) return low
     if (value >= 4) return high
@@ -26,42 +25,41 @@ export function SliderBar({ value: rawValue, low, high, label, colorKey }: { val
 
   return (
     <div
-      className="group relative rounded-xl px-3 py-2.5 hover:bg-surface-sunken/50 transition-all cursor-default"
+      className="group relative rounded-2xl px-3.5 py-3 hover:bg-[#F2F3F5] dark:hover:bg-[#2C2C2E] transition-all cursor-default"
       onMouseEnter={() => setHovering(true)}
       onMouseLeave={() => setHovering(false)}
     >
       <div className="flex items-center justify-between mb-2">
-        <span className="text-xs font-semibold text-txt-primary flex items-center gap-2">
-          <span className={`w-2 h-2 rounded-full ${colors.dot} ring-2 ring-offset-1 ${hovering ? 'ring-current scale-125' : 'ring-transparent'} transition-all`} style={{ color: `var(--tw-${colors.accent}-200, transparent)` }} />
+        <span className="text-[13px] font-semibold text-txt-primary flex items-center gap-2">
+          <span className={`w-2 h-2 rounded-full ${colors.dot} transition-transform ${hovering ? 'scale-125' : ''}`} />
           {label}
         </span>
-        <span className={`text-xs font-bold tabular-nums ${colors.text} transition-colors`}>
+        <span className={`text-[13px] font-bold tabular-nums ${colors.text} transition-colors`}>
           {value}<span className="text-txt-tertiary font-normal">/5</span>
         </span>
       </div>
 
-      <div ref={barRef} className={`relative h-2.5 ${colors.barBg} rounded-full overflow-hidden`}>
+      <div ref={barRef} className="relative h-2 bg-[#F2F3F5] dark:bg-[#3A3A3C] rounded-full overflow-hidden">
         <div
           className={`h-full ${colors.bar} rounded-full transition-all duration-700 ease-out`}
           style={{ width: animated ? `${pct}%` : '0%' }}
         />
         {/* Thumb indicator */}
         <div
-          className={`absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 ${colors.bar} rounded-full border-2 border-white shadow-md transition-all duration-700 ease-out ${hovering ? 'scale-125 shadow-lg' : ''}`}
+          className={`absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 ${colors.bar} rounded-full border-2 border-white dark:border-[#1C1C1E] shadow-md transition-all duration-700 ease-out ${hovering ? 'scale-125 shadow-lg' : ''}`}
           style={{ left: animated ? `calc(${pct}% - 7px)` : '-7px' }}
         />
       </div>
 
       <div className="flex justify-between mt-1.5">
-        <span className={`text-[10px] font-medium ${value <= 2 ? colors.text + ' font-bold' : 'text-txt-tertiary'} transition-colors`}>{low}</span>
-        <span className={`text-[10px] font-medium ${value >= 4 ? colors.text + ' font-bold' : 'text-txt-tertiary'} transition-colors`}>{high}</span>
+        <span className={`text-[11px] font-medium ${value <= 2 ? colors.text + ' font-bold' : 'text-txt-tertiary'} transition-colors`}>{low}</span>
+        <span className={`text-[11px] font-medium ${value >= 4 ? colors.text + ' font-bold' : 'text-txt-tertiary'} transition-colors`}>{high}</span>
       </div>
 
       {/* Hover tooltip */}
       {hovering && (
-        <div className="absolute -top-8 left-1/2 -translate-x-1/2 px-2.5 py-1 bg-surface-inverse text-txt-inverse text-[10px] font-medium rounded-lg shadow-lg whitespace-nowrap z-10 animate-[fadeIn_0.15s_ease-out]">
+        <div className="absolute -top-8 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-[#1C1C1E] dark:bg-[#F2F3F5] text-white dark:text-[#1C1C1E] text-[11px] font-semibold rounded-xl shadow-lg whitespace-nowrap z-10 animate-[fadeIn_0.15s_ease-out]">
           {getInterpretation()} ({value}점)
-          <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[var(--surface-inverse)]" />
         </div>
       )}
     </div>

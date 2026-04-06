@@ -32,12 +32,12 @@ export function DirectMessageBox({ receiverId }: { receiverId: string }) {
   }
 
   return (
-    <div className="border border-border p-4 shadow-sm">
-      <h4 className="text-[10px] font-medium text-txt-tertiary mb-2 flex items-center gap-1.5">
-        <Send size={10} /> SEND MESSAGE
+    <div className="bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl p-4">
+      <h4 className="text-[13px] font-semibold text-txt-secondary mb-2.5 flex items-center gap-1.5">
+        <Send size={13} /> 쪽지 보내기
       </h4>
       {sent ? (
-        <p className="text-sm text-indicator-online font-medium py-2">쪽지가 전송되었습니다!</p>
+        <p className="text-[14px] text-[#34C759] font-semibold py-2">쪽지가 전송되었습니다!</p>
       ) : (
         <>
           <textarea
@@ -46,20 +46,20 @@ export function DirectMessageBox({ receiverId }: { receiverId: string }) {
             placeholder="간단한 쪽지를 보내보세요..."
             rows={2}
             maxLength={2000}
-            className="w-full px-3 py-2 text-base sm:text-sm border border-border bg-surface-bg focus:outline-none focus:border-accent resize-none transition-colors mb-2"
+            className="w-full px-4 py-3 text-[14px] bg-white dark:bg-[#2C2C2E] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3182F6]/20 resize-none transition-all mb-2.5"
           />
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono text-txt-tertiary">{content.length}/2000</span>
+            <span className="text-[12px] text-txt-tertiary">{content.length}/2000</span>
             <button
               onClick={handleSend}
               disabled={!content.trim() || sending}
-              className="flex items-center gap-1.5 px-4 py-2 bg-surface-inverse text-txt-inverse text-xs font-bold border border-surface-inverse hover:bg-surface-inverse/90 disabled:opacity-40 transition-colors hover:opacity-90 active:scale-[0.97]"
+              className="flex items-center gap-1.5 px-5 py-2.5 bg-[#3182F6] text-white text-[13px] font-semibold rounded-xl hover:bg-[#2272EB] disabled:opacity-40 transition-colors active:scale-[0.97]"
             >
-              {sending ? <Loader2 size={12} className="animate-spin" /> : <Send size={12} />}
+              {sending ? <Loader2 size={13} className="animate-spin" /> : <Send size={13} />}
               보내기
             </button>
           </div>
-          {error && <p className="text-xs text-status-danger-text mt-1">{error}</p>}
+          {error && <p className="text-[12px] text-[#FF3B30] mt-1.5">{error}</p>}
         </>
       )}
     </div>

@@ -3,8 +3,8 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import {
-  X, Briefcase, Share2, Heart,
-  Loader2, AlertCircle, ShieldCheck,
+  X, Share2, Heart,
+  Loader2, AlertCircle,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useQuery } from '@tanstack/react-query'
@@ -12,7 +12,7 @@ import { supabase } from '@/src/lib/supabase/client'
 import { useDetailedPublicProfile } from '@/src/hooks/usePublicProfiles'
 import { useAuth } from '@/src/context/AuthContext'
 import { usePortfolioItems } from '@/src/hooks/usePortfolioItems'
-import { SITUATION_LABELS, type ProfileDetailModalProps } from './profile-modal/types'
+import { type ProfileDetailModalProps } from './profile-modal/types'
 import { ProfileHeader } from './profile-modal/ProfileHeader'
 import { ProfileBodyLeft } from './profile-modal/ProfileBodyLeft'
 import { ProfileBodyRight } from './profile-modal/ProfileBodyRight'
@@ -94,7 +94,6 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        // Close nested dialogs first (LIFO order)
         if (sidePanel) { setSidePanel(null); return }
         if (showInviteModal) { setShowInviteModal(false); return }
         if (showCoffeeChatForm) { setShowCoffeeChatForm(false); return }
@@ -160,7 +159,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
         exit={{ opacity: 0 }}
         transition={{ duration: 0.2 }}
         onClick={onClose}
-        className="fixed inset-0 bg-black/60 backdrop-blur-md z-modal-backdrop"
+        className="fixed inset-0 bg-black/40 backdrop-blur-sm z-modal-backdrop"
       />
 
       {/* Modal */}
@@ -180,10 +179,10 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
               aria-label={profile?.nickname || '프로필'}
             >
             {/* Main modal */}
-            <div ref={sheetRef} className={`modal-glass rounded-t-2xl sm:rounded-2xl overflow-hidden flex flex-col relative transition-all duration-300 max-h-[92vh] ${sidePanel ? 'w-full sm:w-3/5' : 'w-full'}`}>
+            <div ref={sheetRef} className={`bg-surface-card dark:bg-[#1C1C1E] rounded-2xl overflow-hidden flex flex-col relative transition-all duration-300 max-h-[92vh] shadow-2xl ${sidePanel ? 'w-full sm:w-3/5' : 'w-full'}`}>
               {/* Mobile drag handle */}
               <div
-                className="sm:hidden flex justify-center pt-2 pb-0.5 touch-none cursor-grab active:cursor-grabbing"
+                className="sm:hidden flex justify-center pt-2.5 pb-1 touch-none cursor-grab active:cursor-grabbing"
                 onTouchStart={(e) => {
                   dragRef.current.startY = e.touches[0].clientY
                   dragRef.current.dragging = true
@@ -210,72 +209,51 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                   }
                 }}
               >
-                <div className="w-9 h-1 rounded-full bg-border/60" />
+                <div className="w-9 h-1 rounded-full bg-[#E5E5EA] dark:bg-[#3A3A3C]" />
               </div>
-              {/* Window Bar */}
-              <div className="modal-bar border-b border-border/40 px-3 sm:px-4 h-10 flex items-center justify-between shrink-0">
+
+              {/* Top Bar */}
+              <div className="px-4 sm:px-5 h-12 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-2">
-                  <button onClick={onClose} className="sm:hidden p-1.5 -ml-1 hover:bg-surface-card transition-colors" aria-label="닫기">
-                    <X size={18} className="text-txt-tertiary" />
+                  <button onClick={onClose} className="sm:hidden p-1.5 -ml-1 bg-[#F2F3F5] dark:bg-[#2C2C2E] hover:bg-[#E5E5EA] dark:hover:bg-[#3A3A3C] rounded-full transition-colors" aria-label="닫기">
+                    <X size={16} className="text-txt-tertiary" />
                   </button>
-                  <button onClick={onClose} className="group hidden sm:flex w-3 h-3 rounded-full bg-[#FF5F57] hover:brightness-90 transition-all items-center justify-center" aria-label="닫기">
-                    <X size={7} className="text-[#FF5F57] group-hover:text-[#4A0002] transition-colors" />
-                  </button>
-                  <div className="hidden sm:block w-3 h-3 rounded-full bg-[#FEBC2E]" />
-                  <div className="hidden sm:block w-3 h-3 rounded-full bg-[#28C840]" />
                 </div>
 
-                {/* Center: status badges */}
-                {!loading && profile && (
-                  <div className="flex items-center gap-2">
-                    {profile.current_situation && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-status-success-bg text-status-success-text text-[10px] font-bold border border-status-success-text/30">
-                        <Briefcase size={10} />
-                        {SITUATION_LABELS[profile.current_situation] || profile.current_situation}
-                      </span>
-                    )}
-                    {profile.is_uni_verified && (
-                      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-indicator-online text-white text-[0.5rem] font-bold uppercase tracking-wider">
-                        <ShieldCheck size={10} /> 인증
-                      </span>
-                    )}
-                  </div>
-                )}
-
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5">
                   {/* Interest (like) button */}
                   {!loading && profile && user?.id !== profile.user_id && (
                     <button
                       onClick={handleInterest}
                       disabled={interestLoading}
-                      className={`flex items-center gap-1 px-2 py-1 text-[10px] font-mono font-bold transition-colors border ${
+                      className={`flex items-center gap-1.5 px-3 py-1.5 text-[13px] font-semibold rounded-full transition-all ${
                         hasInterested
-                          ? 'bg-status-danger-bg text-status-danger-text border-status-danger-text/20'
-                          : 'text-txt-disabled border-transparent hover:bg-surface-sunken hover:border-border hover:text-status-danger-text'
+                          ? 'bg-[#FFF0F0] dark:bg-[#3A1C1C] text-[#FF3B30]'
+                          : 'bg-[#F2F3F5] dark:bg-[#2C2C2E] text-txt-secondary hover:bg-[#E5E5EA] dark:hover:bg-[#3A3A3C]'
                       }`}
                       aria-label="관심"
                     >
-                      <Heart size={12} className={hasInterested ? 'fill-current heart-burst' : ''} />
+                      <Heart size={14} className={hasInterested ? 'fill-current' : ''} />
                       {interestCount > 0 && <span>{interestCount}</span>}
                     </button>
                   )}
                   <button
                     onClick={handleShare}
-                    className="p-2 hover:bg-surface-sunken transition-colors border border-transparent hover:border-border"
+                    className="p-2 bg-[#F2F3F5] dark:bg-[#2C2C2E] hover:bg-[#E5E5EA] dark:hover:bg-[#3A3A3C] rounded-full transition-colors"
                     aria-label="공유"
                   >
                     {shareCopied ? (
-                      <span className="text-[10px] font-medium text-status-success-text px-1 icon-bounce">복사됨!</span>
+                      <span className="text-[11px] font-semibold text-[#34C759] px-1">복사됨!</span>
                     ) : (
-                      <Share2 size={14} className="text-txt-disabled" />
+                      <Share2 size={15} className="text-txt-secondary" />
                     )}
                   </button>
                   <button
                     onClick={onClose}
-                    className="p-2 hover:bg-surface-sunken transition-colors border border-transparent hover:border-border"
+                    className="hidden sm:flex p-2 bg-[#F2F3F5] dark:bg-[#2C2C2E] hover:bg-[#E5E5EA] dark:hover:bg-[#3A3A3C] rounded-full transition-colors"
                     aria-label="닫기"
                   >
-                    <X size={18} className="text-txt-disabled" />
+                    <X size={16} className="text-txt-secondary" />
                   </button>
                 </div>
               </div>
@@ -284,15 +262,15 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                 <div className="flex items-center justify-center h-[60vh]">
                   <div className="space-y-4 w-full max-w-sm px-8">
                     <div className="flex items-center gap-3">
-                      <div className="w-14 h-14 bg-surface-sunken rounded-full skeleton-shimmer" />
+                      <div className="w-14 h-14 bg-[#F2F3F5] dark:bg-[#2C2C2E] rounded-full skeleton-shimmer" />
                       <div className="flex-1 space-y-2">
-                        <div className="h-4 bg-surface-sunken rounded skeleton-shimmer w-24" />
-                        <div className="h-3 bg-surface-sunken rounded skeleton-shimmer w-32" />
+                        <div className="h-4 bg-[#F2F3F5] dark:bg-[#2C2C2E] rounded-lg skeleton-shimmer w-24" />
+                        <div className="h-3 bg-[#F2F3F5] dark:bg-[#2C2C2E] rounded-lg skeleton-shimmer w-32" />
                       </div>
                     </div>
-                    <div className="h-3 bg-surface-sunken rounded skeleton-shimmer w-full" />
-                    <div className="h-3 bg-surface-sunken rounded skeleton-shimmer w-3/4" />
-                    <div className="h-3 bg-surface-sunken rounded skeleton-shimmer w-1/2" />
+                    <div className="h-3 bg-[#F2F3F5] dark:bg-[#2C2C2E] rounded-lg skeleton-shimmer w-full" />
+                    <div className="h-3 bg-[#F2F3F5] dark:bg-[#2C2C2E] rounded-lg skeleton-shimmer w-3/4" />
+                    <div className="h-3 bg-[#F2F3F5] dark:bg-[#2C2C2E] rounded-lg skeleton-shimmer w-1/2" />
                   </div>
                 </div>
               ) : !profile ? (
@@ -317,7 +295,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
                   />
 
                   {/* 2-Column Grid Body */}
-                  <div className="px-4 sm:px-8 pt-5 pb-6">
+                  <div className="px-5 sm:px-8 pt-5 pb-6">
                     <div className="grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-10 items-start">
                       <ProfileBodyLeft
                         profile={profile}
