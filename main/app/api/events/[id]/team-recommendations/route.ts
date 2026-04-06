@@ -47,7 +47,7 @@ export async function GET(
         interest_tags,
         location_type,
         creator_id,
-        profiles!opportunities_creator_id_fkey (
+        profiles!opportunities_creator_profile_fkey (
           nickname
         )
       `)

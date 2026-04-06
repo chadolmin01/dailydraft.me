@@ -35,7 +35,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
           applications_count,
           views_count,
           created_at,
-          creator:profiles!opportunities_creator_id_fkey (
+          creator:profiles!opportunities_creator_profile_fkey (
             nickname,
             user_id
           )
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
         applications_count,
         views_count,
         created_at,
-        creator:profiles!opportunities_creator_id_fkey (
+        creator:profiles!opportunities_creator_profile_fkey (
           nickname,
           user_id
         )

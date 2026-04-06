@@ -27,7 +27,7 @@ export default async function ExplorePage() {
         // fallback 없이 throw하면 프로젝트 목록이 아예 안 뜸 (2026-04-07 장애)
         let result = await supabase
           .from('opportunities')
-          .select('*, creator:profiles!opportunities_creator_id_fkey(id, user_id, nickname, desired_position, university, interest_tags, skills, location, contact_email)', { count: 'exact' })
+          .select('*, creator:profiles!opportunities_creator_profile_fkey(id, user_id, nickname, desired_position, university, interest_tags, skills, location, contact_email)', { count: 'exact' })
           .eq('status', 'active')
           .order('created_at', { ascending: false })
           .range(pageParam, pageParam + PAGE_SIZE - 1)

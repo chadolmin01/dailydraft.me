@@ -14,7 +14,7 @@ type OpportunityUpdate = TablesUpdate<'opportunities'>
 // select('*')만 쓰면 creator가 null → "익명" 표시 버그 발생.
 // 서버 prefetch(explore/page.tsx)에서는 JOIN 실패 시 select('*') fallback 필수.
 // 새 쿼리 추가 시 반드시 이 상수 사용 여부 확인.
-export const OPP_WITH_CREATOR_SELECT = '*, creator:profiles!opportunities_creator_id_fkey(id, user_id, nickname, desired_position, university, interest_tags, skills, location, contact_email)'
+export const OPP_WITH_CREATOR_SELECT = '*, creator:profiles!opportunities_creator_profile_fkey(id, user_id, nickname, desired_position, university, interest_tags, skills, location, contact_email)'
 
 // Re-export for consumers that import from this hook
 export type { OpportunityWithCreator } from '../types/opportunity'
