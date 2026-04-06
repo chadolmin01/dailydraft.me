@@ -25,7 +25,7 @@ export default async function ExplorePage() {
       queryFn: async ({ pageParam = 0 }: { pageParam: number }) => {
         const { data, error, count } = await supabase
           .from('opportunities')
-          .select('*', { count: 'exact' })
+          .select('*, creator:profiles!opportunities_creator_id_fkey(id, user_id, nickname, desired_position, university, interest_tags, skills, location, contact_email)', { count: 'exact' })
           .eq('status', 'active')
           .order('created_at', { ascending: false })
           .range(pageParam, pageParam + PAGE_SIZE - 1)

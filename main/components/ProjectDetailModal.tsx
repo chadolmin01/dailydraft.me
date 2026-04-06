@@ -10,7 +10,7 @@ import {
 import { toast } from 'sonner'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/src/lib/supabase/client'
-import { useOpportunity, useUpdateOpportunity, useSimilarOpportunities, opportunityKeys } from '@/src/hooks/useOpportunities'
+import { useOpportunity, useUpdateOpportunity, useSimilarOpportunities, opportunityKeys, OPP_WITH_CREATOR_SELECT } from '@/src/hooks/useOpportunities'
 // creator profile은 useOpportunity에서 join으로 함께 로드
 import { useProjectUpdates } from '@/src/hooks/useProjectUpdates'
 import { useAuth } from '@/src/context/AuthContext'
@@ -80,7 +80,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
       queryClient.prefetchQuery({
         queryKey: opportunityKeys.detail(proj.id),
         queryFn: async () => {
-          const { data, error } = await supabase.from('opportunities').select('*').eq('id', proj.id).single()
+          const { data, error } = await supabase.from('opportunities').select(OPP_WITH_CREATOR_SELECT).eq('id', proj.id).single()
           if (error) throw error
           return data
         },

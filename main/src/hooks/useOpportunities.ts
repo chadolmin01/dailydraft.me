@@ -11,7 +11,7 @@ type OpportunityInsert = TablesInsert<'opportunities'>
 type OpportunityUpdate = TablesUpdate<'opportunities'>
 
 // FK join으로 creator profile을 함께 가져오는 select 문자열
-const OPP_WITH_CREATOR_SELECT = '*, creator:profiles!opportunities_creator_id_fkey(id, user_id, nickname, desired_position, university, interest_tags, skills, location, contact_email)'
+export const OPP_WITH_CREATOR_SELECT = '*, creator:profiles!opportunities_creator_id_fkey(id, user_id, nickname, desired_position, university, interest_tags, skills, location, contact_email)'
 
 // Re-export for consumers that import from this hook
 export type { OpportunityWithCreator } from '../types/opportunity'

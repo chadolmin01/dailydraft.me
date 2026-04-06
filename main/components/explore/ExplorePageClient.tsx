@@ -27,7 +27,7 @@ const ProjectDetailModal = dynamic(
   { ssr: false, loading: ModalLoadingFallback }
 )
 import { ProfileDetailModal } from '@/components/ProfileDetailModal'
-import { useInfiniteOpportunities, type OpportunityWithCreator, calculateDaysLeft } from '@/src/hooks/useOpportunities'
+import { useInfiniteOpportunities, type OpportunityWithCreator, calculateDaysLeft, OPP_WITH_CREATOR_SELECT } from '@/src/hooks/useOpportunities'
 import { cleanNickname } from '@/src/lib/clean-nickname'
 import { useInfinitePublicProfiles, type PublicProfile } from '@/src/hooks/usePublicProfiles'
 import { useUserRecommendations, type UserRecommendation } from '@/src/hooks/useUserRecommendations'
@@ -488,7 +488,7 @@ function ExplorePageContent() {
     queryClient.prefetchQuery({
       queryKey: opportunityKeys.detail(id),
       queryFn: async () => {
-        const { data, error } = await supabase.from('opportunities').select('*').eq('id', id).single()
+        const { data, error } = await supabase.from('opportunities').select(OPP_WITH_CREATOR_SELECT).eq('id', id).single()
         if (error) throw error
         return data
       },
