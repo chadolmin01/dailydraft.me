@@ -54,9 +54,9 @@ const FAQ_ITEMS = [
 ]
 
 const REPORT_CATEGORIES = [
-  { value: 'bug', label: '버그 신고', icon: Bug, color: 'text-status-danger-text' },
-  { value: 'feature', label: '기능 제안', icon: Lightbulb, color: 'text-status-warning-text' },
-  { value: 'question', label: '질문', icon: HelpCircle, color: 'text-status-info-text' },
+  { value: 'bug', label: '버그 신고', icon: Bug, color: 'text-[#FF3B30]' },
+  { value: 'feature', label: '기능 제안', icon: Lightbulb, color: 'text-[#FF9F0A]' },
+  { value: 'question', label: '질문', icon: HelpCircle, color: 'text-[#3182F6]' },
   { value: 'other', label: '기타', icon: MessageCircle, color: 'text-txt-tertiary' },
 ]
 
@@ -77,10 +77,10 @@ export function HelpWidget() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         style={{ bottom: 'calc(1.5rem + var(--bottom-tab-height) + env(safe-area-inset-bottom, 0px))' }}
-        className={`fixed right-3 sm:right-6 z-fixed w-12 h-12 flex items-center justify-center transition-all duration-300 ${
+        className={`fixed right-3 sm:right-6 z-fixed w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg ${
           isOpen
-            ? 'bg-surface-inverse text-txt-inverse rotate-90'
-            : 'bg-brand text-white border border-brand shadow-lg hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
+            ? 'bg-[#1C1C1E] dark:bg-white text-white dark:text-[#1C1C1E] rotate-90 shadow-none'
+            : 'bg-[#3182F6] text-white active:scale-90'
         }`}
         aria-label="도움말"
       >
@@ -91,7 +91,7 @@ export function HelpWidget() {
       {isOpen && (
         <div
           style={{ bottom: 'calc(5rem + var(--bottom-tab-height) + env(safe-area-inset-bottom, 0px))', animation: 'helpWidgetIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) both' }}
-          className="fixed right-3 sm:right-6 z-fixed w-[calc(100vw-1.5rem)] sm:w-[24rem] max-h-[min(32rem,calc(100vh-8rem))] bg-surface-card rounded-xl border border-border shadow-lg-xl flex flex-col"
+          className="fixed right-3 sm:right-6 z-fixed w-[calc(100vw-1.5rem)] sm:w-[24rem] max-h-[min(32rem,calc(100vh-8rem))] bg-white dark:bg-[#1C1C1E] rounded-[20px] shadow-2xl flex flex-col overflow-hidden"
         >
           <style dangerouslySetInnerHTML={{ __html: `
             @keyframes helpWidgetIn { 0% { opacity:0;transform:translateY(12px) scale(0.95) } 100% { opacity:1;transform:translateY(0) scale(1) } }
@@ -99,19 +99,19 @@ export function HelpWidget() {
           `}} />
 
           {/* Header */}
-          <div className="px-4 py-3 border-b border-border bg-surface-card shrink-0">
-            <div className="flex items-center gap-2 mb-2.5">
-              <div className="w-7 h-7 bg-brand flex items-center justify-center shrink-0">
-                <span className="text-white text-[10px] font-black">D</span>
+          <div className="px-5 pt-5 pb-3 shrink-0">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-9 h-9 bg-[#3182F6] rounded-2xl flex items-center justify-center shrink-0">
+                <span className="text-white text-[12px] font-black">D</span>
               </div>
               <div>
-                <h3 className="text-[13px] font-bold text-txt-primary leading-none">도움이 필요하신가요?</h3>
-                <p className="text-[10px] text-txt-disabled font-mono mt-0.5">FAQ · AI 챗 · 리포트</p>
+                <h3 className="text-[15px] font-bold text-txt-primary leading-tight">도움이 필요하신가요?</h3>
+                <p className="text-[12px] text-txt-tertiary mt-0.5">FAQ, AI 챗, 리포트</p>
               </div>
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-1">
+            <div className="flex gap-1.5 bg-[#F2F3F5] dark:bg-[#2C2C2E] rounded-xl p-1">
               {([
                 { key: 'faq' as Tab, label: 'FAQ', icon: HelpCircle },
                 { key: 'chat' as Tab, label: 'AI 챗', icon: Sparkles },
@@ -120,13 +120,13 @@ export function HelpWidget() {
                 <button
                   key={t.key}
                   onClick={() => setTab(t.key)}
-                  className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 text-[11px] font-bold transition-all ${
+                  className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[12px] font-semibold rounded-lg transition-all ${
                     tab === t.key
-                      ? 'bg-brand text-white'
-                      : 'bg-surface-sunken text-txt-tertiary hover:text-txt-secondary hover:bg-surface-card rounded-xl border border-border'
+                      ? 'bg-white dark:bg-[#3A3A3C] text-txt-primary shadow-sm'
+                      : 'text-txt-tertiary hover:text-txt-secondary'
                   }`}
                 >
-                  <t.icon size={12} />
+                  <t.icon size={13} />
                   {t.label}
                 </button>
               ))}
@@ -178,35 +178,35 @@ function FaqTab({ onClose }: { onClose: () => void }) {
   const [openIdx, setOpenIdx] = useState<string | null>(null)
 
   return (
-    <div className="p-3 space-y-3">
+    <div className="px-4 pb-4 space-y-4">
       {/* Starter guide restart */}
       <button
         onClick={() => resetStarterGuide(onClose)}
-        className="w-full flex items-center gap-2.5 px-3 py-2.5 text-left border border-border bg-surface-sunken rounded-xl hover:bg-surface-card transition-colors group"
+        className="w-full flex items-center gap-3 px-4 py-3 text-left bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-2xl active:opacity-80 transition-opacity group"
       >
-        <RotateCcw size={13} className="text-txt-disabled group-hover:text-brand shrink-0 transition-colors" />
-        <span className="text-[12px] font-medium text-txt-secondary group-hover:text-txt-primary transition-colors">시작 가이드 다시 보기</span>
+        <RotateCcw size={15} className="text-[#3182F6] shrink-0" />
+        <span className="text-[13px] font-medium text-txt-primary">시작 가이드 다시 보기</span>
       </button>
 
       {FAQ_ITEMS.map((cat) => (
         <div key={cat.category}>
-          <h4 className="text-[10px] font-medium text-txt-disabled mb-1.5 px-1">{cat.category}</h4>
-          <div className="space-y-0.5">
+          <h4 className="text-[12px] font-semibold text-txt-tertiary mb-2 px-1">{cat.category}</h4>
+          <div className="space-y-1.5">
             {cat.items.map((item, i) => {
               const key = `${cat.category}-${i}`
               const isOpen = openIdx === key
               return (
-                <div key={key} className="border border-border bg-surface-card rounded-xl">
+                <div key={key} className="bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-2xl overflow-hidden">
                   <button
                     onClick={() => setOpenIdx(isOpen ? null : key)}
-                    className="w-full flex items-center justify-between px-3 py-2.5 text-left hover:bg-surface-sunken transition-colors"
+                    className="w-full flex items-center justify-between px-4 py-3 text-left active:opacity-70 transition-opacity"
                   >
-                    <span className="text-[12px] font-medium text-txt-primary pr-2">{item.q}</span>
-                    {isOpen ? <ChevronDown size={13} className="text-txt-disabled shrink-0" /> : <ChevronRight size={13} className="text-txt-disabled shrink-0" />}
+                    <span className="text-[13px] font-medium text-txt-primary pr-2">{item.q}</span>
+                    {isOpen ? <ChevronDown size={14} className="text-txt-disabled shrink-0" /> : <ChevronRight size={14} className="text-txt-disabled shrink-0" />}
                   </button>
                   {isOpen && (
-                    <div className="px-3 pb-2.5 pt-0 border-t border-border-subtle">
-                      <p className="text-[11px] text-txt-secondary leading-relaxed mt-2">{item.a}</p>
+                    <div className="px-4 pb-3">
+                      <p className="text-[12px] text-txt-secondary leading-relaxed">{item.a}</p>
                     </div>
                   )}
                 </div>
@@ -342,17 +342,19 @@ function ChatTab() {
   return (
     <div className="flex flex-col h-full" style={{ minHeight: '16rem' }}>
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-2">
+      <div className="flex-1 overflow-y-auto px-4 pb-3 space-y-2.5">
         {messages.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-8 gap-2">
-            <Sparkles size={24} className="text-txt-disabled" />
-            <p className="text-[12px] text-txt-disabled text-center">Draft에 대해 궁금한 점을<br />자유롭게 물어보세요!</p>
-            <div className="flex flex-wrap gap-1 mt-2 justify-center">
+          <div className="flex flex-col items-center justify-center py-10 gap-3">
+            <div className="w-12 h-12 bg-[#F2F3F5] dark:bg-[#2C2C2E] rounded-full flex items-center justify-center">
+              <Sparkles size={22} className="text-[#3182F6]" />
+            </div>
+            <p className="text-[13px] text-txt-tertiary text-center">Draft에 대해 궁금한 점을<br />자유롭게 물어보세요!</p>
+            <div className="flex flex-wrap gap-1.5 mt-1 justify-center">
               {['프로젝트 등록 방법', '커피챗이 뭐예요?', 'AI 매칭 원리'].map(q => (
                 <button
                   key={q}
                   onClick={() => send(q)}
-                  className="px-2.5 py-1 text-[10px] font-medium bg-surface-sunken rounded-xl border border-border text-txt-tertiary hover:border-border hover:text-txt-secondary transition-colors"
+                  className="px-3 py-1.5 text-[11px] font-medium bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-full text-txt-secondary active:opacity-70 transition-opacity"
                 >
                   {q}
                 </button>
@@ -363,10 +365,10 @@ function ChatTab() {
 
         {messages.map((msg, i) => (
           <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-[fadeSlideIn_0.2s_ease-out]`}>
-            <div className={`max-w-[85%] px-3 py-2 text-[12px] leading-relaxed ${
+            <div className={`max-w-[85%] px-3.5 py-2.5 text-[13px] leading-relaxed ${
               msg.role === 'user'
-                ? 'bg-surface-inverse text-txt-inverse'
-                : 'bg-surface-sunken text-txt-primary border border-border'
+                ? 'bg-[#3182F6] text-white rounded-[18px] rounded-br-md'
+                : 'bg-[#F7F8F9] dark:bg-[#2C2C2E] text-txt-primary rounded-[18px] rounded-bl-md'
             }`}>
               {msg.content}
             </div>
@@ -375,10 +377,10 @@ function ChatTab() {
 
         {isLoading && (
           <div className="flex justify-start">
-            <div className="px-3 py-2 bg-surface-sunken rounded-xl border border-border">
-              <div className="flex items-center gap-1.5">
-                <Loader2 size={12} className="animate-spin text-txt-disabled" />
-                <span className="text-[11px] text-txt-disabled">답변 생성 중...</span>
+            <div className="px-3.5 py-2.5 bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-[18px] rounded-bl-md">
+              <div className="flex items-center gap-2">
+                <Loader2 size={13} className="animate-spin text-[#3182F6]" />
+                <span className="text-[12px] text-txt-tertiary">답변 생성 중...</span>
               </div>
             </div>
           </div>
@@ -387,8 +389,8 @@ function ChatTab() {
       </div>
 
       {/* Input */}
-      <div className="px-3 pb-3 pt-1 border-t border-border shrink-0">
-        <div className="flex items-center gap-1.5">
+      <div className="px-4 pb-4 pt-2 shrink-0">
+        <div className="flex items-center gap-2 bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-full pl-4 pr-1.5 py-1.5">
           <input
             ref={inputRef}
             type="text"
@@ -397,12 +399,12 @@ function ChatTab() {
             onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send()}
             placeholder="질문을 입력하세요..."
             disabled={isLoading}
-            className="flex-1 px-3 py-2 text-[12px] bg-surface-card rounded-xl border border-border focus:outline-none focus:border-brand transition-colors placeholder:text-txt-disabled disabled:opacity-50"
+            className="flex-1 text-[13px] bg-transparent focus:outline-none placeholder:text-txt-disabled disabled:opacity-50"
           />
           <button
             onClick={() => send()}
             disabled={isLoading || !input.trim()}
-            className="w-8 h-8 flex items-center justify-center bg-brand text-white border border-brand hover:bg-brand-hover disabled:opacity-30 transition-colors shrink-0"
+            className="w-8 h-8 flex items-center justify-center bg-[#3182F6] text-white rounded-full disabled:opacity-30 transition-opacity active:scale-90 shrink-0"
           >
             <Send size={14} />
           </button>
@@ -420,31 +422,44 @@ function ReportTab() {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
 
+  const [showFallback, setShowFallback] = useState(false)
+  const [mailtoUrl, setMailtoUrl] = useState('')
+
   const handleSubmit = () => {
     if (!category || !title.trim() || !description.trim()) return
     const catLabel = REPORT_CATEGORIES.find(c => c.value === category)?.label || category
     const subject = `[Draft ${catLabel}] ${title.trim()}`
     const body = `${description.trim()}\n\n---\n페이지: ${window.location.href}\n카테고리: ${catLabel}`
-    window.location.href = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+    const url = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+
+    // Try opening mailto — show fallback after timeout if nothing happened
+    setMailtoUrl(url)
+    window.location.href = url
+    toast.info('메일 앱이 열립니다. 열리지 않으면 아래 이메일로 직접 보내주세요.')
+
+    // If mail app doesn't open (no blur within 2s), show fallback
+    const timer = setTimeout(() => setShowFallback(true), 2000)
+    const handleBlur = () => { clearTimeout(timer); window.removeEventListener('blur', handleBlur) }
+    window.addEventListener('blur', handleBlur)
   }
 
   return (
-    <div className="p-3 space-y-3">
+    <div className="px-4 pb-4 space-y-4">
       {/* Category */}
       <div>
-        <label className="text-[10px] font-medium text-txt-disabled mb-1.5 block">카테고리 *</label>
-        <div className="grid grid-cols-2 gap-1.5">
+        <label className="text-[12px] font-semibold text-txt-tertiary mb-2 block px-1">카테고리</label>
+        <div className="grid grid-cols-2 gap-2">
           {REPORT_CATEGORIES.map(cat => (
             <button
               key={cat.value}
               onClick={() => setCategory(cat.value)}
-              className={`flex items-center gap-2 px-3 py-2 text-[11px] font-medium border transition-all ${
+              className={`flex items-center gap-2.5 px-4 py-3 text-[13px] font-medium rounded-2xl transition-all active:scale-[0.97] ${
                 category === cat.value
-                  ? 'bg-brand text-white border-brand'
-                  : 'bg-surface-card text-txt-secondary border-border hover:border-border'
+                  ? 'bg-[#3182F6] text-white shadow-sm'
+                  : 'bg-[#F7F8F9] dark:bg-[#2C2C2E] text-txt-secondary active:opacity-70'
               }`}
             >
-              <cat.icon size={13} />
+              <cat.icon size={15} />
               {cat.label}
             </button>
           ))}
@@ -453,27 +468,27 @@ function ReportTab() {
 
       {/* Title */}
       <div>
-        <label className="text-[10px] font-medium text-txt-disabled mb-1.5 block">제목 *</label>
+        <label className="text-[12px] font-semibold text-txt-tertiary mb-2 block px-1">제목</label>
         <input
           type="text"
           value={title}
           onChange={e => setTitle(e.target.value)}
           placeholder="간단히 요약해주세요"
           maxLength={200}
-          className="w-full px-3 py-2 text-[12px] bg-surface-card rounded-xl border border-border focus:outline-none focus:border-brand transition-colors placeholder:text-txt-disabled"
+          className="w-full px-4 py-3 text-[13px] bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#3182F6]/20 transition-all placeholder:text-txt-disabled"
         />
       </div>
 
       {/* Description */}
       <div>
-        <label className="text-[10px] font-medium text-txt-disabled mb-1.5 block">상세 내용 *</label>
+        <label className="text-[12px] font-semibold text-txt-tertiary mb-2 block px-1">상세 내용</label>
         <textarea
           value={description}
           onChange={e => setDescription(e.target.value)}
           placeholder="어떤 상황에서 발생했는지, 기대했던 동작은 무엇인지 알려주세요"
           rows={4}
           maxLength={5000}
-          className="w-full px-3 py-2 text-[12px] bg-surface-sunken rounded-xl border border-border focus:outline-none focus:border-brand transition-colors resize-none placeholder:text-txt-disabled"
+          className="w-full px-4 py-3 text-[13px] bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#3182F6]/20 transition-all resize-none placeholder:text-txt-disabled"
         />
       </div>
 
@@ -481,13 +496,26 @@ function ReportTab() {
       <button
         onClick={handleSubmit}
         disabled={!category || !title.trim() || !description.trim()}
-        className="w-full py-2.5 text-[12px] font-bold bg-brand text-white border border-brand hover:bg-brand-hover disabled:opacity-30 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.97]"
+        className="w-full h-12 text-[14px] font-semibold bg-[#3182F6] text-white rounded-2xl disabled:opacity-30 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 active:scale-[0.97]"
       >
-        <Send size={14} />
+        <Send size={15} />
         메일로 리포트 보내기
       </button>
 
-      <p className="text-[9px] text-txt-disabled text-center font-mono">메일 앱이 열리며 현재 페이지 URL이 자동 포함됩니다</p>
+      <p className="text-[11px] text-txt-disabled text-center">메일 앱이 열리며 현재 페이지 URL이 자동 포함됩니다</p>
+
+      {showFallback && (
+        <div className="bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-2xl p-4 space-y-2 animate-[fadeSlideIn_0.2s_ease-out]">
+          <p className="text-[12px] text-txt-secondary">메일 앱이 열리지 않았나요? 아래 주소로 직접 보내주세요.</p>
+          <button
+            onClick={() => { navigator.clipboard.writeText(SUPPORT_EMAIL); toast.success('이메일 주소가 복사되었습니다') }}
+            className="flex items-center gap-2 w-full px-3 py-2.5 bg-surface-card rounded-xl text-[13px] font-mono text-txt-primary hover:bg-surface-sunken transition-colors"
+          >
+            {SUPPORT_EMAIL}
+            <span className="ml-auto text-[10px] text-txt-tertiary">복사</span>
+          </button>
+        </div>
+      )}
     </div>
   )
 }
