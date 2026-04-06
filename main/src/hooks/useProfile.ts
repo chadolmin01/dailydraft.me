@@ -22,6 +22,7 @@ export function useProfile() {
     queryFn: () => withRetry(() => fetchProfile(supabase, user!.id)),
     enabled: !isAuthLoading && !!user?.id,
     staleTime: 1000 * 60 * 2,
+    gcTime: 1000 * 60 * 30,
     retry: (failureCount) => failureCount < 3,
     retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
   })
@@ -34,6 +35,7 @@ export function useProfileById(userId: string | undefined) {
     queryFn: () => withRetry(() => fetchProfile(supabase, userId!)),
     enabled: !!userId,
     staleTime: 1000 * 60 * 2,
+    gcTime: 1000 * 60 * 30,
     retry: (failureCount) => failureCount < 3,
     retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
   })

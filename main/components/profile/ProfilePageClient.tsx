@@ -28,7 +28,7 @@ import { SkeletonProfile, SkeletonGrid } from '@/components/ui/Skeleton'
 export default function ProfilePageClient() {
   const router = useRouter()
   const { user, isLoading: isAuthLoading } = useAuth()
-  const { data: profile, isPending: isProfilePending } = useProfile()
+  const { data: profile, isPending: isProfilePending, isError: isProfileError, refetch: refetchProfile } = useProfile()
   const { data: myOpportunities = [] } = useMyOpportunities()
   const { data: portfolioItems = [] } = usePortfolioItems()
   const completion = useProfileCompletion(profile)
@@ -66,10 +66,23 @@ export default function ProfilePageClient() {
 
   // Guard: auth 로딩 중이거나, profile 데이터 아직 없으면 스켈레톤
   // RQ v5에서 enabled=false일 때 isLoading=false지만 isPending=true
-  if (isAuthLoading || isProfilePending || !profile) return (
+  if (isAuthLoading || isProfilePending) return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
       <SkeletonProfile />
       <SkeletonGrid count={2} cols={2} />
+    </div>
+  )
+
+  // 프로필 fetch 실패 또는 데이터 없음 — 재시도 가능하게
+  if (isProfileError || !profile) return (
+    <div className="max-w-4xl mx-auto px-4 py-8 text-center space-y-3">
+      <p className="text-txt-secondary text-[15px]">프로필을 불러오지 못했습니다</p>
+      <button
+        onClick={() => refetchProfile()}
+        className="px-4 py-2 text-[14px] font-semibold bg-[#3182F6] text-white rounded-xl hover:bg-[#2272EB] transition-colors"
+      >
+        다시 시도
+      </button>
     </div>
   )
 
