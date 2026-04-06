@@ -11,7 +11,7 @@ import {
 import { toast } from 'sonner'
 import { useAuth } from '@/src/context/AuthContext'
 import { useOpportunity, useUpdateOpportunity, useSimilarOpportunities, type SimilarOpportunity } from '@/src/hooks/useOpportunities'
-import { useProfileByUserId, type CreatorProfile } from '@/src/hooks/usePublicProfiles'
+import type { OpportunityWithCreator } from '@/src/types/opportunity'
 import { useCoffeeChats } from '@/src/hooks/useCoffeeChats'
 import { useProjectUpdates } from '@/src/hooks/useProjectUpdates'
 import { WriteUpdateForm } from '@/components/WriteUpdateForm'
@@ -135,8 +135,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
   const opportunity = oppData as Opportunity | null
   const error = isError ? '프로젝트를 찾을 수 없습니다.' : null
 
-  const { data: creatorProfile } = useProfileByUserId(opportunity?.creator_id)
-  const creator = creatorProfile ?? null
+  const creator = (oppData as OpportunityWithCreator | null)?.creator ?? null
 
   const { data: realUpdates = [] } = useProjectUpdates(id)
 
@@ -548,7 +547,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                     </div>
                   </div>
 
-                  {creator.skills && (
+                  {Array.isArray(creator.skills) && creator.skills.length > 0 && (
                     <div className="flex flex-wrap gap-1.5">
                       {(Array.isArray(creator.skills) ? creator.skills : []).slice(0, 5).map((skill, i) => {
                         const label = typeof skill === 'string' ? skill : (skill as any)?.name || ''

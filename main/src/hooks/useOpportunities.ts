@@ -10,6 +10,9 @@ import { withRetry } from '../lib/query-utils'
 type OpportunityInsert = TablesInsert<'opportunities'>
 type OpportunityUpdate = TablesUpdate<'opportunities'>
 
+// FK join으로 creator profile을 함께 가져오는 select 문자열
+const OPP_WITH_CREATOR_SELECT = '*, creator:profiles!opportunities_creator_id_fkey(id, user_id, nickname, desired_position, university, interest_tags, skills, location, contact_email)'
+
 // Re-export for consumers that import from this hook
 export type { OpportunityWithCreator } from '../types/opportunity'
 
@@ -37,7 +40,7 @@ export function useOpportunities(filters?: {
     queryFn: () => withRetry(async () => {
       let query = supabase
         .from('opportunities')
-        .select('*', { count: 'exact' })
+        .select(OPP_WITH_CREATOR_SELECT, { count: 'exact' })
         .eq('status', 'active')
         .order('created_at', { ascending: false })
 
@@ -57,7 +60,7 @@ export function useOpportunities(filters?: {
       const { data, error, count } = await query
 
       if (error) throw error
-      return { items: data as OpportunityWithCreator[], totalCount: count ?? 0 }
+      return { items: data as unknown as OpportunityWithCreator[], totalCount: count ?? 0 }
     }),
     staleTime: 1000 * 60 * 2,
     retry: (failureCount) => failureCount < 3,
@@ -72,13 +75,13 @@ export function useInfiniteOpportunities(pageSize = 12) {
     queryFn: ({ pageParam = 0 }) => withRetry(async () => {
       const { data, error, count } = await supabase
         .from('opportunities')
-        .select('*', { count: 'exact' })
+        .select(OPP_WITH_CREATOR_SELECT, { count: 'exact' })
         .eq('status', 'active')
         .order('created_at', { ascending: false })
         .range(pageParam, pageParam + pageSize - 1)
 
       if (error) throw error
-      return { items: data as OpportunityWithCreator[], totalCount: count ?? 0, nextOffset: pageParam + pageSize }
+      return { items: data as unknown as OpportunityWithCreator[], totalCount: count ?? 0, nextOffset: pageParam + pageSize }
     }),
     initialPageParam: 0,
     getNextPageParam: (lastPage) =>
@@ -100,25 +103,12 @@ export function useOpportunity(id: string | undefined) {
 
       const { data: opp, error } = await supabase
         .from('opportunities')
-        .select('*')
+        .select(OPP_WITH_CREATOR_SELECT)
         .eq('id', id)
         .single()
 
       if (error) throw error
-
-      // creator profile을 같은 queryFn 안에서 즉시 fetch
-      // (별도 useQuery 훅 대기 없이 한 번의 React Query 사이클로 완료)
-      let creator = undefined
-      if (opp.creator_id) {
-        const { data } = await supabase
-          .from('profiles')
-          .select('id, user_id, nickname, desired_position, university, interest_tags, skills, location, contact_email')
-          .eq('user_id', opp.creator_id)
-          .maybeSingle()
-        creator = data || undefined
-      }
-
-      return { ...opp, creator } as OpportunityWithCreator
+      return opp as unknown as OpportunityWithCreator
     }),
     enabled: !!id,
     staleTime: 1000 * 60 * 2,
