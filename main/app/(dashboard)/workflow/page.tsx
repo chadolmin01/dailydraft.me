@@ -20,15 +20,10 @@ const toValidationLevel = (value: string | null | undefined): ValidationLevel | 
   return undefined;
 };
 
-// 동적 임포트 (코드 분할)
-const IdeaValidator = dynamic(
-  () => import('@/components/idea-validator/IdeaValidator'),
+// 동적 임포트 (코드 분할) — 새 시스템 사용
+const IdeaValidatorPage = dynamic(
+  () => import('@/components/idea-validator/IdeaValidatorPage'),
   { loading: () => <LoadingSpinner message="아이디어 검증 모듈 로딩 중..." /> }
-);
-
-const ResultView = dynamic(
-  () => import('@/components/idea-validator/ResultView'),
-  { loading: () => <LoadingSpinner message="결과 뷰 로딩 중..." /> }
 );
 
 const BusinessPlanEditor = dynamic(
@@ -259,27 +254,36 @@ function WorkflowContent() {
 
       {/* 메인 콘텐츠 */}
       <div className="flex-1 overflow-hidden">
-        {/* Step 1: 아이디어 검증 */}
+        {/* Step 1: 아이디어 검증 (새 시스템) */}
         {currentStep === 'validation' && (
-          <IdeaValidator
+          <IdeaValidatorPage
             embedded
             onComplete={handleValidationComplete}
-            skipToLevelSelect
           />
         )}
 
-        {/* Step 2: PRD & JD 확인 */}
+        {/* Step 2: PRD 확인 → 바로 사업계획서로 이동 */}
         {currentStep === 'prd' && (
           <div className="h-full overflow-y-auto p-6">
             {workflowData.projectIdea ? (
-              <ResultView
-                conversationHistory={workflowData.conversationHistory ?? ''}
-                originalIdea={workflowData.projectIdea}
-                reflectedAdvice={workflowData.reflectedAdvice}
-                validatedIdeaId={workflowData.validatedIdeaId}
-                validationLevel={workflowData.validationLevel as ValidationLevel}
-                onComplete={handlePrdComplete}
-              />
+              <div className="flex flex-col items-center justify-center h-full min-h-[25rem] text-center">
+                <div className="w-16 h-16 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl flex items-center justify-center mb-4">
+                  <span className="text-2xl">✓</span>
+                </div>
+                <h3 className="text-lg font-semibold text-txt-primary mb-2">
+                  아이디어 검증 완료
+                </h3>
+                <p className="text-sm text-txt-tertiary mb-6 max-w-md">
+                  &quot;{workflowData.projectIdea.slice(0, 80)}{workflowData.projectIdea.length > 80 ? '...' : ''}&quot;
+                </p>
+                <button
+                  type="button"
+                  onClick={handlePrdComplete}
+                  className="px-6 py-3 bg-txt-primary text-surface-card text-sm font-medium rounded-xl hover:opacity-90 transition-opacity"
+                >
+                  사업계획서 작성으로 →
+                </button>
+              </div>
             ) : (
               <div className="flex flex-col items-center justify-center h-full min-h-[25rem] text-center">
                 <div className="w-16 h-16 bg-status-warning-bg border border-status-warning-text flex items-center justify-center mb-4">
@@ -289,7 +293,7 @@ function WorkflowContent() {
                   아이디어 검증이 필요합니다
                 </h3>
                 <p className="text-sm text-txt-tertiary mb-4 max-w-md">
-                  PRD를 생성하려면 먼저 아이디어 검증을 완료해주세요.
+                  사업계획서를 작성하려면 먼저 아이디어 검증을 완료해주세요.
                 </p>
                 <button
                   type="button"

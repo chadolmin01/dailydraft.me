@@ -1,197 +1,520 @@
-import { NextRequest } from 'next/server';
-import crypto from 'crypto';
-import { genAI } from '@/src/lib/ai/gemini-client';
-import { createClient } from '@/src/lib/supabase/server';
-import { ApiResponse } from '@/src/lib/api-utils';
-import { safeGenerate } from '@/src/lib/ai/safe-generate';
-import { IdeaAnalyzeSchema } from '@/src/lib/ai/schemas';
-import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter';
+import { NextRequest } from 'next/server'
+import { createClient } from '@/src/lib/supabase/server'
+import { genAI } from '@/src/lib/ai/gemini-client'
+import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
+import { z } from 'zod'
 
-// --- In-memory cache (1시간 TTL) ---
-interface CacheEntry {
-  data: unknown;
-  expiresAt: number;
+// ── Zod Schemas ──
+
+const CategoryScoreSchema = z.object({
+  current: z.number(),
+  max: z.number(),
+  filled: z.boolean(),
+})
+
+const ScorecardSchema = z.object({
+  problemDefinition: CategoryScoreSchema,
+  solution: CategoryScoreSchema,
+  marketAnalysis: CategoryScoreSchema,
+  revenueModel: CategoryScoreSchema,
+  differentiation: CategoryScoreSchema,
+  logicalConsistency: CategoryScoreSchema,
+  feasibility: CategoryScoreSchema,
+  feedbackReflection: CategoryScoreSchema,
+  totalScore: z.number(),
+})
+
+const DiscussionTurnSchema = z.object({
+  persona: z.string(),
+  message: z.string(),
+  replyTo: z.string().nullable().optional(),
+  tone: z.enum(['agree', 'disagree', 'question', 'suggestion', 'neutral']),
+})
+
+const DiscussionResponseSchema = z.object({
+  discussion: z.array(DiscussionTurnSchema).min(4).max(6),
+  responses: z.array(z.object({
+    role: z.string(),
+    name: z.string(),
+    content: z.string(),
+    tone: z.string().optional(),
+  })).min(3),
+  metrics: z.object({
+    score: z.number().optional(),
+    keyRisks: z.array(z.string()).optional(),
+    keyStrengths: z.array(z.string()).optional(),
+    summary: z.string(),
+  }),
+  scorecard: ScorecardSchema,
+  categoryUpdates: z.array(z.object({
+    category: z.string(),
+    delta: z.number(),
+    reason: z.string(),
+  })),
+  inputRelevance: z.object({
+    isRelevant: z.boolean(),
+    reason: z.string().optional(),
+    warningMessage: z.string().optional(),
+  }).optional(),
+})
+
+// ── Constants ──
+
+const SCORECARD_CATEGORIES = [
+  'problemDefinition', 'solution', 'marketAnalysis', 'revenueModel',
+  'differentiation', 'logicalConsistency', 'feasibility', 'feedbackReflection',
+] as const
+
+const CATEGORY_INFO: Record<string, { nameKo: string; max: number }> = {
+  problemDefinition: { nameKo: '문제 정의', max: 15 },
+  solution: { nameKo: '솔루션', max: 15 },
+  marketAnalysis: { nameKo: '시장 분석', max: 10 },
+  revenueModel: { nameKo: '수익 모델', max: 10 },
+  differentiation: { nameKo: '차별화', max: 10 },
+  logicalConsistency: { nameKo: '논리 일관성', max: 15 },
+  feasibility: { nameKo: '실현 가능성', max: 15 },
+  feedbackReflection: { nameKo: '피드백 반영', max: 10 },
 }
 
-const analyzeCache = new Map<string, CacheEntry>();
-const CACHE_TTL_MS = 60 * 60 * 1000; // 1시간
-const MAX_CACHE_SIZE = 200;
+// ── Helpers ──
 
-function getCacheKey(idea: string, level: string): string {
-  const hash = crypto.createHash('sha256').update(`${idea}::${level}`).digest('hex');
-  return hash;
+function escapePromptContent(content: string): string {
+  if (!content) return ''
+  return content
+    .replace(/</g, '\uFF1C').replace(/>/g, '\uFF1E')
+    .replace(/---+/g, '\u2014')
+    .replace(/^(Human|Assistant|System|User):/gim, '$1\uFF1A')
+    .replace(/```/g, '`\u200C`\u200C`')
 }
 
-function getCachedResult(key: string): unknown | null {
-  const entry = analyzeCache.get(key);
-  if (!entry) return null;
-  if (Date.now() > entry.expiresAt) {
-    analyzeCache.delete(key);
-    return null;
+function preValidateInput(input: string): { isValid: boolean; warning?: string } {
+  const trimmed = input.trim()
+  if (trimmed.length < 5) {
+    return { isValid: false, warning: '입력이 너무 짧습니다. 아이디어에 대해 더 구체적으로 설명해주세요.' }
   }
-  return entry.data;
-}
-
-function setCacheResult(key: string, data: unknown): void {
-  // 캐시 크기 제한 — 가장 오래된 항목 정리
-  if (analyzeCache.size >= MAX_CACHE_SIZE) {
-    const firstKey = analyzeCache.keys().next().value;
-    if (firstKey !== undefined) {
-      analyzeCache.delete(firstKey);
+  const meaningless = [/^[\u314B\u314E\u3160\u315C]+$/, /^[a-z]{1,4}$/i, /^(.)\1{3,}$/, /^[!@#$%^&*()]+$/, /^[0-9]+$/]
+  for (const p of meaningless) {
+    if (p.test(trimmed)) {
+      return { isValid: false, warning: '의미 있는 내용을 입력해주세요. 아이디어 발전에 도움이 되는 답변을 부탁드립니다.' }
     }
   }
-  analyzeCache.set(key, { data, expiresAt: Date.now() + CACHE_TTL_MS });
+  return { isValid: true }
 }
 
-function getAnalyzeSystemInstruction(level: string) {
-  const baseInstruction = `당신은 "Draft." 스타트업 아이디어 검증 엔진입니다. 사용자가 아이디어를 입력하면 세 가지 페르소나(개발자, 디자이너, VC)로 응답합니다. 한국어로 응답하십시오.`;
+function isFeedbackResponse(idea: string): boolean {
+  return idea.includes('[종합 결정 사항]') || /결정.*했|선택.*했|할게요|하겠습니다|로\s*정했/.test(idea)
+}
 
-  if (level === 'sketch') {
-    return `${baseInstruction}
-    **[Level 1: 아이디어 스케치 단계]**
-    - 목표: 창업자가 아이디어를 구체화하도록 돕고 동기를 부여합니다.
-    - 태도: 친절하고, 협력적이며, 이해하기 쉬운 언어를 사용하세요.
-    - 역할:
-      1. "친절한 개발자": 기술적 장벽보다는 실현 가능성에 집중하고, 쉬운 기술 스택을 제안합니다.
-      2. "직관적인 디자이너": 복잡한 UX보다는 핵심 사용자 가치에 집중합니다.
-      3. "따뜻한 멘토(VC)": 비즈니스 모델의 압박보다는 시장의 니즈를 탐색하도록 유도합니다.
-    - 제약: 답변을 짧고 명료하게(3문장 이내) 유지하세요. 어려운 전문 용어 사용을 지양하세요.`;
-  } else if (level === 'investor') {
-    return `${baseInstruction}
-    **[Level 3: 투자자 방어(Hardcore) 단계]**
-    - 목표: 창업자의 논리를 극한까지 검증하고 약점을 파고듭니다.
-    - 태도: 매우 냉소적이고, 비판적이며, 전문적인 용어를 사용하세요. 봐주지 마세요.
-    - 역할:
-      1. "시니어 아키텍트(개발자)": 확장성(Scalability), 보안, 기술 부채, 레거시 시스템과의 통합 이슈를 집요하게 묻습니다.
-      2. "UX 리서처(디자이너)": 사용자 행동 데이터, 접근성, 다크 패턴, 브랜드 일관성에 대해 날카롭게 지적합니다.
-      3. "공격적인 VC 심사역": TAM/SAM/SOM, CAC/LTV 비율, 경쟁사 대비 확실한 해자(Moat), 엑싯(Exit) 전략을 요구합니다.
-    - 제약: 창업자가 논리적으로 방어하지 못하면 점수를 낮게 책정하세요.`;
-  } else {
-    return `${baseInstruction}
-    **[Level 2: MVP 빌딩 단계]**
-    - 목표: 현실적인 제품 출시를 위해 불필요한 기능을 덜어냅니다.
-    - 태도: 논리적이고, 현실적이며, 실무 중심적입니다. (냉철한 개발자, 깐깐한 디자이너, 현실적인 VC)
-    - 역할:
-      1. "냉철한 개발자": 서버 비용, 개발 기간, 기술적 부채를 고려하여 과도한 스펙을 자릅니다.
-      2. "깐깐한 디자이너": 사용자의 핵심 사용성을 해치는 요소를 지적합니다.
-      3. "현실적인 VC": 초기 수익 모델과 타겟 유저 확보 전략을 묻습니다.
-    - 제약: 현실적인 제약을 근거로 피드백을 제공하세요.`;
+type ScorecardData = z.infer<typeof ScorecardSchema>
+
+function applyScoreCorrections(
+  scorecard: ScorecardData,
+  categoryUpdates: { category: string; delta: number; reason: string }[],
+  currentScorecard: ScorecardData | null,
+  idea: string,
+  inputRelevance?: { isRelevant: boolean } | null
+) {
+  const corrected = structuredClone(scorecard)
+  const correctedUpdates = structuredClone(categoryUpdates)
+  const isRelevant = inputRelevance?.isRelevant !== false
+
+  // Feedback reflection bonus
+  if (isRelevant && isFeedbackResponse(idea) && corrected.feedbackReflection) {
+    const cur = corrected.feedbackReflection.current || 0
+    const bonus = Math.min(3, 10 - cur)
+    if (bonus > 0) {
+      corrected.feedbackReflection.current = cur + bonus
+      corrected.feedbackReflection.filled = true
+      const existing = correctedUpdates.find(u => u.category === 'feedbackReflection')
+      if (existing) existing.delta += bonus
+      else correctedUpdates.push({ category: 'feedbackReflection', delta: bonus, reason: '피드백 반영 완료' })
+    }
   }
+
+  let recalcTotal = 0
+  let totalIncrease = 0
+
+  for (const cat of SCORECARD_CATEGORIES) {
+    const prev = currentScorecard?.[cat]?.current || 0
+    const max = CATEGORY_INFO[cat].max
+
+    // Prevent decrease
+    if (corrected[cat].current < prev) corrected[cat].current = prev
+    // Cap at max
+    if (corrected[cat].current > max) corrected[cat].current = max
+    // Keep filled
+    if (currentScorecard?.[cat]?.filled) corrected[cat].filled = true
+    if (corrected[cat].current > 0) corrected[cat].filled = true
+
+    totalIncrease += corrected[cat].current - prev
+    recalcTotal += corrected[cat].current
+  }
+
+  // Guarantee min +2 for relevant input
+  if (isRelevant && totalIncrease < 2 && currentScorecard) {
+    for (const cat of SCORECARD_CATEGORIES) {
+      const cur = corrected[cat].current
+      const max = CATEGORY_INFO[cat].max
+      if (cur < max) {
+        const add = Math.min(2, max - cur)
+        corrected[cat].current += add
+        corrected[cat].filled = true
+        recalcTotal += add
+        const ex = correctedUpdates.find(u => u.category === cat)
+        if (ex) ex.delta += add
+        else correctedUpdates.push({ category: cat, delta: add, reason: '대화 참여 보너스' })
+        break
+      }
+    }
+  }
+
+  corrected.totalScore = recalcTotal
+  const filteredUpdates = correctedUpdates.filter(u => u.delta > 0)
+  return { scorecard: corrected, categoryUpdates: filteredUpdates }
 }
+
+async function callWithBackoff<T>(fn: () => Promise<T>, maxRetries = 3): Promise<T> {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      return await fn()
+    } catch (err: unknown) {
+      const error = err as { status?: number }
+      if (error.status !== 429 || i === maxRetries - 1) throw err
+      await new Promise(r => setTimeout(r, Math.pow(2, i) * 1000 + Math.random() * 1000))
+    }
+  }
+  throw new Error('Max retries exceeded')
+}
+
+function getScorecardValue(scorecard: ScorecardData | null, cat: string): number {
+  if (!scorecard || cat === 'totalScore') return 0
+  return (scorecard as Record<string, { current?: number }>)[cat]?.current ?? 0
+}
+
+// ── Prompt Builders ──
+
+function buildOpinionPrompt(idea: string, historyContext: string): string {
+  const safeIdea = escapePromptContent(idea)
+  const safeHistory = escapePromptContent(historyContext)
+
+  return `<context>
+${safeHistory}
+</context>
+
+<user_input>${safeIdea}</user_input>
+
+<personas>
+- Developer (개발자): 기술적 실현 가능성, 아키텍처, 개발 비용을 검토
+- Designer (디자이너): 사용자 경험, UI, 사용성, 접근성을 검토
+- VC (투자자): 시장성, 수익 모델, 성장 잠재력, 경쟁 우위를 검토
+</personas>
+
+<instructions>
+각 페르소나 관점에서 이 아이디어에 대한 의견을 작성하세요.
+
+각 의견은:
+- 강점 또는 기회 1가지 (근거 포함)
+- 우려 또는 개선점 1가지 (구체적 보완 방법 포함)
+- 총 4-5문장으로 작성
+
+JSON 형식으로 출력:
+{
+  "Developer": "의견 내용...",
+  "Designer": "의견 내용...",
+  "VC": "의견 내용..."
+}
+</instructions>`
+}
+
+function buildSynthesisPrompt(
+  idea: string,
+  opinions: { persona: string; opinion: string }[],
+  scorecard: ScorecardData | null,
+  turnNumber: number
+): string {
+  const safeIdea = escapePromptContent(idea)
+  const currentTotal = scorecard?.totalScore ?? 0
+  const targetScore = 65
+  const minIncrease = Math.max(5, Math.ceil((targetScore - currentTotal) / Math.max(1, 8 - turnNumber)))
+
+  const opinionsText = opinions
+    .map(o => `<opinion persona="${o.persona}">\n${escapePromptContent(o.opinion)}\n</opinion>`)
+    .join('\n')
+
+  return `<user_input>${safeIdea}</user_input>
+
+<collected_opinions>
+${opinionsText}
+</collected_opinions>
+
+<role>Draft AI - 스타트업 아이디어 검증 토론 코디네이터</role>
+
+<discussion_rules>
+- 4-6턴의 자연스러운 대화 (Developer, Designer, VC가 번갈아 발언)
+- 각 턴은 2-3문장, 이전 발언자에게 반응 (replyTo 필수)
+- tone: agree | disagree | question | suggestion | neutral
+- 최소 1턴은 논리적 허점이나 리스크를 직접 지적하세요 (비판적 시각)
+- 최소 1턴은 아무도 언급 안 한 새로운 기회나 피벗 방향을 제안하세요 (창의적 시각)
+</discussion_rules>
+
+<scorecard_rules>
+- 점수는 항상 증가 (감소 절대 불가)
+- 이번 턴 최소 증가: +${minIncrease}점
+- 카테고리별 최대: problemDefinition 15, solution 15, marketAnalysis 10, revenueModel 10, differentiation 10, logicalConsistency 15, feasibility 15, feedbackReflection 10
+- 새 정보 제공: +3~5, 피드백 반영: +5~8
+</scorecard_rules>
+
+<game_state>
+턴: ${turnNumber}/8
+현재: ${currentTotal}점 → 목표: ${targetScore}점
+</game_state>
+
+<current_scores>
+problemDefinition: ${getScorecardValue(scorecard, 'problemDefinition')}/15
+solution: ${getScorecardValue(scorecard, 'solution')}/15
+marketAnalysis: ${getScorecardValue(scorecard, 'marketAnalysis')}/10
+revenueModel: ${getScorecardValue(scorecard, 'revenueModel')}/10
+differentiation: ${getScorecardValue(scorecard, 'differentiation')}/10
+logicalConsistency: ${getScorecardValue(scorecard, 'logicalConsistency')}/15
+feasibility: ${getScorecardValue(scorecard, 'feasibility')}/15
+feedbackReflection: ${getScorecardValue(scorecard, 'feedbackReflection')}/10
+totalScore: ${currentTotal} → 목표: ${currentTotal + minIncrease}+
+</current_scores>
+
+<input_validation>
+입력이 아이디어 발전에 관련 있는지 판단하세요.
+관련 없으면 inputRelevance.isRelevant=false, warningMessage에 안내 메시지를 포함하세요.
+</input_validation>
+
+<output_format>
+JSON (DiscussionResponseSchema):
+- discussion: [{persona, message, replyTo, tone}] (4-6턴)
+- responses: [{role, name, content}] (Developer/Designer/VC 각 1개)
+- metrics: {keyRisks:[], keyStrengths:[], summary}
+- scorecard: 업데이트된 전체 점수
+- categoryUpdates: [{category, delta, reason}]
+- inputRelevance: {isRelevant:true}
+</output_format>`
+}
+
+// ── POST Handler ──
 
 export async function POST(request: NextRequest) {
   try {
-    if (!process.env.GOOGLE_PROJECT_ID) {
-      return ApiResponse.serviceUnavailable('AI 서비스를 사용할 수 없습니다');
-    }
-
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      return ApiResponse.unauthorized();
+      return new Response(JSON.stringify({ error: '로그인이 필요합니다' }), { status: 401 })
     }
 
-    // AI rate limit check
-    const rateLimitResponse = await checkAIRateLimit(user.id, getClientIp(request));
-    if (rateLimitResponse) return rateLimitResponse;
+    const rateLimitRes = await checkAIRateLimit(user.id, getClientIp(request))
+    if (rateLimitRes) return rateLimitRes
 
-    const { idea, conversationHistory = [], level = 'mvp' } = await request.json();
+    const body = await request.json()
+    const { idea, conversationHistory = [], currentScorecard = null, turnNumber = 1 } = body
 
     if (!idea || typeof idea !== 'string' || idea.trim().length === 0) {
-      return ApiResponse.badRequest('아이디어를 입력해주세요');
+      return new Response(JSON.stringify({ error: '아이디어를 입력해주세요' }), { status: 400 })
     }
 
-    // 입력 길이 제한
-    const sanitizedIdea = idea.slice(0, 5000);
-
-    // level 검증
-    const validLevels = ['sketch', 'mvp', 'investor'];
-    const sanitizedLevel = validLevels.includes(level) ? level : 'mvp';
-
-    // conversationHistory 검증 + 제한
+    const sanitizedIdea = idea.slice(0, 5000)
     const validHistory = Array.isArray(conversationHistory)
       ? conversationHistory.filter((h: unknown) => typeof h === 'string').slice(0, 20).map((h: string) => h.slice(0, 2000))
-      : [];
+      : []
 
-    // 캐시 확인 — conversationHistory가 없는 초기 분석만 캐싱 (대화 진행 중은 매번 새로 생성)
-    if (validHistory.length === 0) {
-      const cacheKey = getCacheKey(sanitizedIdea, sanitizedLevel);
-      const cached = getCachedResult(cacheKey);
-      if (cached) {
-        return ApiResponse.ok({ success: true, result: cached, cached: true });
-      }
+    const encoder = new TextEncoder()
+
+    // Pre-validate input
+    const preValidation = preValidateInput(sanitizedIdea)
+    if (!preValidation.isValid) {
+      const stream = new ReadableStream({
+        start(controller) {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'warning', data: { warning: preValidation.warning } })}\n\n`))
+          controller.enqueue(encoder.encode('data: [DONE]\n\n'))
+          controller.close()
+        },
+      })
+      return new Response(stream, { headers: sseHeaders() })
     }
 
     const historyContext = validHistory.length > 0
-      ? `[이전 대화 및 결정 내역]:\n${validHistory.join('\n')}\n\n`
-      : '';
+      ? `[이전 대화]:\n${validHistory.join('\n')}\n\n`
+      : ''
 
-    const prompt = `${historyContext}사용자 입력(결정사항): <USER_INPUT>${sanitizedIdea}</USER_INPUT>
+    const stream = new ReadableStream({
+      async start(controller) {
+        let closed = false
+        const send = (data: Uint8Array) => { if (!closed) try { controller.enqueue(data) } catch { closed = true } }
+        const close = () => { if (!closed) { closed = true; controller.close() } }
 
-위 입력을 바탕으로 세 가지 관점(개발자, 디자이너, VC)에서 분석하세요. 사용자가 내린 결정들을 통합하여 프로젝트를 발전시키고, 점수를 갱신하세요. 한국어로 말하세요.
+        try {
+          // ── Call 1: Opinions (JSON mode) ──
+          const flashModel = genAI.getGenerativeModel({
+            model: 'gemini-2.5-flash',
+            generationConfig: { maxOutputTokens: 1000, temperature: 0.8, responseMimeType: 'application/json' },
+          })
 
-반드시 다음 JSON 형식으로 응답하세요:
-{
-  "responses": [
-    {
-      "role": "Developer",
-      "name": "개발자",
-      "content": "개발자 관점의 피드백 (2-3문장)",
-      "tone": "Analytical",
-      "suggestedActions": ["구체적인 조언 1", "구체적인 조언 2"]
-    },
-    {
-      "role": "Designer",
-      "name": "디자이너",
-      "content": "디자이너 관점의 피드백 (2-3문장)",
-      "tone": "Creative",
-      "suggestedActions": ["구체적인 조언 1", "구체적인 조언 2"]
-    },
-    {
-      "role": "VC",
-      "name": "투자자",
-      "content": "VC 관점의 피드백 (2-3문장)",
-      "tone": "Strategic",
-      "suggestedActions": ["구체적인 조언 1", "구체적인 조언 2"]
-    }
-  ],
-  "metrics": {
-    "score": 75,
-    "developerScore": 70,
-    "designerScore": 80,
-    "vcScore": 75,
-    "keyRisks": ["주요 리스크 1", "주요 리스크 2"],
-    "keyStrengths": ["강점 1", "강점 2"],
-    "summary": "전체 요약 (1문장)"
+          let opinions: { persona: string; opinion: string }[] = []
+          try {
+            const result = await callWithBackoff(() => flashModel.generateContent(buildOpinionPrompt(sanitizedIdea, historyContext)))
+            const parsed = JSON.parse(result.response.text())
+            opinions = ['Developer', 'Designer', 'VC'].map(p => ({
+              persona: p,
+              opinion: parsed[p] || '의견을 생성하지 못했습니다.',
+            }))
+          } catch (err) {
+            console.error('Opinion generation failed:', err)
+            opinions = ['Developer', 'Designer', 'VC'].map(p => ({
+              persona: p,
+              opinion: '의견을 불러오는 중 오류가 발생했습니다.',
+            }))
+          }
+
+          // Stream opinions sequentially with delay
+          for (const { persona, opinion } of opinions) {
+            send(encoder.encode(`data: ${JSON.stringify({ type: 'opinion', data: { persona, message: opinion } })}\n\n`))
+            await new Promise(r => setTimeout(r, 800))
+          }
+
+          // Synthesizing indicator
+          send(encoder.encode(`data: ${JSON.stringify({ type: 'synthesizing', data: { message: 'AI가 토론을 종합하고 있습니다...' } })}\n\n`))
+
+          // ── Call 2: Synthesis (JSON streaming) ──
+          const synthesisModel = genAI.getGenerativeModel({
+            model: 'gemini-2.5-flash',
+            generationConfig: { maxOutputTokens: 3000, temperature: 0.65, responseMimeType: 'application/json' },
+          })
+
+          const synthesisPrompt = buildSynthesisPrompt(sanitizedIdea, opinions, currentScorecard, turnNumber)
+
+          let finalData: Record<string, unknown> | null = null
+          let sentDiscussionCount = 0
+
+          try {
+            const synthesisResult = await callWithBackoff(() =>
+              synthesisModel.generateContentStream(synthesisPrompt)
+            )
+
+            let jsonBuffer = ''
+            for await (const chunk of synthesisResult.stream) {
+              jsonBuffer += chunk.text()
+
+              // Incremental parsing: stream discussion turns as they appear
+              try {
+                const discussionMatch = jsonBuffer.match(/"discussion"\s*:\s*\[([\s\S]*)/)
+                if (discussionMatch) {
+                  const turnRegex = /\{[^{}]*"persona"\s*:\s*"[^"]*"[^{}]*"message"\s*:\s*"[^"]*"[^{}]*\}/g
+                  const turns = discussionMatch[1].match(turnRegex) || []
+
+                  for (let i = sentDiscussionCount; i < turns.length; i++) {
+                    try {
+                      const turn = JSON.parse(turns[i])
+                      if (turn.persona && turn.message && turn.message.length > 20) {
+                        send(encoder.encode(`data: ${JSON.stringify({ type: 'discussion', data: turn })}\n\n`))
+                        sentDiscussionCount = i + 1
+                      }
+                    } catch { /* partial JSON */ }
+                  }
+                }
+              } catch { /* continue buffering */ }
+            }
+
+            // Parse complete response
+            const fullResponse = JSON.parse(jsonBuffer)
+            const validated = DiscussionResponseSchema.safeParse(fullResponse)
+
+            if (validated.success) {
+              // Send remaining discussion turns
+              const disc = validated.data.discussion || []
+              for (let i = sentDiscussionCount; i < disc.length; i++) {
+                send(encoder.encode(`data: ${JSON.stringify({ type: 'discussion', data: disc[i] })}\n\n`))
+              }
+              finalData = {
+                responses: validated.data.responses,
+                metrics: validated.data.metrics,
+                scorecard: validated.data.scorecard,
+                categoryUpdates: validated.data.categoryUpdates || [],
+                inputRelevance: validated.data.inputRelevance,
+              }
+            } else {
+              // Fallback: use raw parsed data
+              finalData = {
+                responses: fullResponse.responses || [],
+                metrics: fullResponse.metrics || { summary: '검증 실패', keyStrengths: [], keyRisks: [] },
+                scorecard: fullResponse.scorecard || currentScorecard,
+                categoryUpdates: fullResponse.categoryUpdates || [],
+                inputRelevance: fullResponse.inputRelevance,
+              }
+            }
+          } catch (err) {
+            console.error('Synthesis streaming error:', err)
+            finalData = {
+              responses: opinions.map(o => ({ role: o.persona, name: o.persona, content: o.opinion })),
+              metrics: { summary: '합성 중 오류 발생', keyStrengths: [], keyRisks: [] },
+              scorecard: currentScorecard,
+              categoryUpdates: [],
+            }
+          }
+
+          // Apply score corrections and send final
+          if (finalData) {
+            const { scorecard: correctedScorecard, categoryUpdates: correctedUpdates } = applyScoreCorrections(
+              finalData.scorecard as ScorecardData,
+              (finalData.categoryUpdates || []) as { category: string; delta: number; reason: string }[],
+              currentScorecard,
+              sanitizedIdea,
+              finalData.inputRelevance as { isRelevant: boolean } | null
+            )
+
+            // Ensure all 3 personas have responses
+            const responses = (finalData.responses || []) as { role: string }[]
+            const roles = new Set(responses.map(r => r.role))
+            for (const p of ['Developer', 'Designer', 'VC']) {
+              if (!roles.has(p)) {
+                const op = opinions.find(o => o.persona === p)
+                responses.push({ role: p, name: p, content: op?.opinion || '의견 없음' } as any)
+              }
+            }
+
+            const metrics = (finalData.metrics || {}) as Record<string, unknown>
+
+            send(encoder.encode(`data: ${JSON.stringify({
+              type: 'final',
+              data: {
+                responses,
+                metrics: {
+                  ...metrics,
+                  keyStrengths: Array.isArray(metrics.keyStrengths) ? metrics.keyStrengths : [],
+                  keyRisks: Array.isArray(metrics.keyRisks) ? metrics.keyRisks : [],
+                  summary: metrics.summary || '',
+                },
+                scorecard: correctedScorecard,
+                categoryUpdates: correctedUpdates,
+              },
+            })}\n\n`))
+          }
+
+          send(encoder.encode('data: [DONE]\n\n'))
+          close()
+        } catch (err) {
+          console.error('Stream error:', err)
+          send(encoder.encode(`data: ${JSON.stringify({ type: 'error', data: { message: err instanceof Error ? err.message : 'Unknown error' } })}\n\n`))
+          close()
+        }
+      },
+    })
+
+    return new Response(stream, { headers: sseHeaders() })
+  } catch (err) {
+    console.error('Analyze Error:', err)
+    return new Response(JSON.stringify({ error: '분석 중 오류가 발생했습니다' }), { status: 500 })
   }
-}`;
+}
 
-    const maxTokens = level === 'sketch' ? 1000 : 2500;
-    const temperature = level === 'sketch' ? 0.9 : 0.7;
-
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-2.5-flash',
-      systemInstruction: getAnalyzeSystemInstruction(sanitizedLevel),
-      generationConfig: {
-        responseMimeType: 'application/json',
-        maxOutputTokens: maxTokens,
-        temperature: temperature,
-      }
-    });
-
-    const { data: parsed } = await safeGenerate({
-      model, prompt, schema: IdeaAnalyzeSchema,
-    });
-
-    // 초기 분석 결과를 캐시에 저장 (대화 진행 중이 아닌 경우만)
-    if (validHistory.length === 0) {
-      const cacheKey = getCacheKey(sanitizedIdea, sanitizedLevel);
-      setCacheResult(cacheKey, parsed);
-    }
-
-    return ApiResponse.ok({ success: true, result: parsed });
-  } catch (error) {
-    console.error('Analyze Error:', error);
-    return ApiResponse.internalError('일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요');
+function sseHeaders(): Record<string, string> {
+  return {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    'Connection': 'keep-alive',
   }
 }
