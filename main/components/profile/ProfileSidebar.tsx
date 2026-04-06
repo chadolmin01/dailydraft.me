@@ -16,7 +16,6 @@ import {
 import { useProfileDraft } from '@/src/hooks/useProfileDraft'
 import { useUpdateProfile } from '@/src/hooks/useProfile'
 import { SKILL_SUGGESTIONS } from './edit/constants'
-import { ProfileEditPanel } from '@/components/ProfileEditPanel'
 import type { Profile } from './types'
 import { EditableField } from './EditableField'
 
@@ -32,10 +31,10 @@ interface ProfileSidebarProps {
     pct: number
   }
   isEditable?: boolean
+  onOpenEditPanel?: () => void
 }
 
-export function ProfileSidebar({ profile, completion, isEditable = false }: ProfileSidebarProps) {
-  const [isPanelOpen, setIsPanelOpen] = useState(false)
+export function ProfileSidebar({ profile, completion, isEditable = false, onOpenEditPanel }: ProfileSidebarProps) {
   const skills = profile?.skills as Array<{ name: string; level: string }> | null
   const updateProfile = useUpdateProfile()
 
@@ -76,14 +75,11 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
     <div className="space-y-4">
       {/* --- 프로필 설정 버튼 --- */}
       <button
-        onClick={() => setIsPanelOpen(true)}
+        onClick={onOpenEditPanel}
         className="w-full flex items-center justify-center gap-2 px-3 py-3 text-sm font-bold border border-border hover:bg-black hover:text-white transition-colors hover:shadow-md active:scale-[0.97] bg-surface-card rounded-xl"
       >
         <Edit3 size={14} /> 프로필 설정
       </button>
-
-      {/* Slide Panel */}
-      <ProfileEditPanel isOpen={isPanelOpen} onClose={() => setIsPanelOpen(false)} />
 
       {/* --- SOCIAL LINKS --- */}
       {showLinksSection && (
@@ -280,7 +276,7 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
         </div>
         {completion.pct < 100 && (
           <button
-            onClick={() => setIsPanelOpen(true)}
+            onClick={onOpenEditPanel}
             className="w-full mt-3 px-3 py-2 text-xs font-bold bg-brand text-white border border-brand hover:bg-brand-hover transition-colors hover:opacity-90 active:scale-[0.97] rounded-xl"
           >
             프로필 완성하기

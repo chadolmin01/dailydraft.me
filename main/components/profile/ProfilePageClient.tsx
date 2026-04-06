@@ -19,6 +19,7 @@ import {
   ProfileInvitations,
   AiOnboardingModal,
 } from '@/components/profile'
+import { ProfileEditPanel } from '@/components/ProfileEditPanel'
 import { Sparkles, Briefcase, FolderOpen, Activity } from 'lucide-react'
 import { SkeletonProfile, SkeletonGrid } from '@/components/ui/Skeleton'
 
@@ -44,6 +45,7 @@ export default function ProfilePageClient() {
   const { data: uniData } = useUniversityVerification()
   const uniVerified = uniData?.is_verified ?? false
   const [showAiConfirm, setShowAiConfirm] = useState(false)
+  const [isEditPanelOpen, setIsEditPanelOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<'portfolio' | 'projects' | 'activity'>('portfolio')
 
   // Parse strengths from vision_summary
@@ -126,6 +128,7 @@ export default function ProfilePageClient() {
             uniVerified={uniVerified}
             completion={completion}
             isEditable
+            onOpenEditPanel={() => setIsEditPanelOpen(true)}
           />
         }
       >
@@ -173,6 +176,9 @@ export default function ProfilePageClient() {
           )}
         </div>
       </DashboardLayout>
+
+      {/* Rendered at root level to avoid stacking context issues */}
+      <ProfileEditPanel isOpen={isEditPanelOpen} onClose={() => setIsEditPanelOpen(false)} />
     </div>
   )
 }
