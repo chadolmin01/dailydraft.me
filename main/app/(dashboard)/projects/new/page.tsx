@@ -481,7 +481,7 @@ function NewProjectContent() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-[13px] font-semibold text-txt-primary">AI로 소개글 작성</p>
-                        <p className="text-[11px] text-txt-tertiary mt-0.5">위에 입력한 정보를 바탕으로 자동 생성해요</p>
+                        <p className="text-[11px] text-txt-tertiary mt-0.5">작성한 내용을 바탕으로 소개글을 만들어줘요</p>
                       </div>
                       <button
                         type="button"
