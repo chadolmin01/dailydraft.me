@@ -160,14 +160,14 @@ export function useRecommendedOpportunities(limit = 4) {
       // In production, this would use vector similarity search
       const { data, error } = await supabase
         .from('opportunities')
-        .select('*')
+        .select(OPP_WITH_CREATOR_SELECT)
         .eq('status', 'active')
         .neq('creator_id', user?.id ?? '')
         .order('created_at', { ascending: false })
         .limit(limit)
 
       if (error) throw error
-      return data as OpportunityWithCreator[]
+      return data as unknown as OpportunityWithCreator[]
     }),
     enabled: !isAuthLoading && !!user?.id,
     retry: (failureCount) => failureCount < 3,
@@ -190,11 +190,11 @@ export function useCreateOpportunity() {
           ...opportunity,
           creator_id: user.id,
         })
-        .select()
+        .select(OPP_WITH_CREATOR_SELECT)
         .single()
 
       if (error) throw error
-      return data as Opportunity
+      return data as unknown as OpportunityWithCreator
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: opportunityKeys.lists() })
@@ -213,14 +213,15 @@ export function useUpdateOpportunity() {
         .from('opportunities')
         .update(updates)
         .eq('id', id)
-        .select()
+        .select(OPP_WITH_CREATOR_SELECT)
         .single()
 
       if (error) throw error
-      return data as Opportunity
+      return data as unknown as OpportunityWithCreator
     },
     onSuccess: (data) => {
-      queryClient.setQueryData(opportunityKeys.detail(data.id), data)
+      // invalidate instead of setQueryData to ensure refetch with complete creator data
+      queryClient.invalidateQueries({ queryKey: opportunityKeys.detail(data.id) })
       queryClient.invalidateQueries({ queryKey: opportunityKeys.lists() })
     },
   })
