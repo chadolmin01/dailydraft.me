@@ -38,12 +38,6 @@ export const Navbar: React.FC = () => {
         >
           로그인
         </Link>
-        <Link
-          href="/login"
-          className="hidden md:flex items-center gap-1.5 text-xs font-bold bg-brand text-white rounded-full px-4 py-2 hover:bg-brand-hover transition-colors duration-200"
-        >
-          시작하기
-        </Link>
       </div>
     </nav>
   )
