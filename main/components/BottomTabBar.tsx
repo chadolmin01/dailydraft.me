@@ -33,12 +33,11 @@ const TABS = [
 
 export function BottomTabBar() {
   const pathname = usePathname()
-  const { user, isLoading } = useAuth()
   const { data: msgUnread = 0 } = useUnreadCount()
   const { data: notifUnread = 0 } = useUnreadNotificationCount()
 
-  if (!user || isLoading) return null
-
+  // 가드 제거: 항상 렌더 → auth race condition 영향 0, hydration 일관성 ↑
+  // 비로그인 유저가 탭을 눌러도 middleware가 /login으로 리다이렉트함
   const segment = pathname?.split('/')[1] || 'explore'
   const totalMsgUnread = msgUnread || 0
 

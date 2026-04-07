@@ -77,12 +77,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           })
 
           // Background: validate session is still valid on server
-          // ⚠️ 네트워크 에러 시 로그아웃하면 안 됨 — 실제 인증 만료만 처리
+          // ⚠️ 명확한 인증 에러만 로그아웃 — 일시적 null / 네트워크 에러는 무시
+          // (!serverUser 케이스를 제거: 에러 없이 null이 오는 건 모바일에서
+          //  transient 상태일 수 있음. 실제 만료는 다음 API 호출에서 401로 잡힘)
           supabase.auth.getUser().then(({ data: { user: serverUser }, error }) => {
             if (!mounted) return
             if (error) {
-              // session_not_found / invalid_token 등 인증 에러만 로그아웃
-              // 네트워크 에러, 타임아웃 등은 로컬 세션 유지
               const authErrorCodes = ['session_not_found', 'user_not_found', 'bad_jwt']
               const isAuthError = authErrorCodes.some(code =>
                 error.message?.includes(code) || (error as any).code === code
@@ -91,10 +91,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 setUser(null)
                 setProfile(null)
               }
-            } else if (!serverUser) {
-              setUser(null)
-              setProfile(null)
             }
+            // serverUser가 null이지만 에러가 없는 경우는 무시
+            // — 멀쩡한 로컬 세션을 덮어쓰면 안 됨
           }).catch(() => { /* 네트워크 에러 — 로컬 세션 유지 */ })
           return
         }
@@ -124,18 +123,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (!mounted) return
 
         // INITIAL_SESSION: getSession()이 null을 반환했을 때의 안전망
-        // 브라우저 재진입 시 Supabase 내부 캐시가 늦게 초기화되면
-        // getSession()=null → 여기서 세션을 복구
+        // session이 있으면 복구만 수행, null인 경우는 initializeAuth에 위임
+        // — 과거엔 여기서 setIsLoading(false)를 호출했지만, getSession()보다
+        //   INITIAL_SESSION이 먼저 fire되는 모바일 race condition으로
+        //   isLoading=false, user=null 중간 상태가 생겨 하단바가 숨겨졌음
         if (event === 'INITIAL_SESSION') {
-          if (session?.user && !user) {
+          if (session?.user) {
             setUser(session.user)
             setIsLoading(false)
             fetchProfile(session.user.id).then(p => {
               if (mounted) setProfile(p)
             })
-          } else if (!session) {
-            // 진짜 세션이 없는 경우 — isLoading만 확실히 해제
-            setIsLoading(false)
           }
           return
         }
