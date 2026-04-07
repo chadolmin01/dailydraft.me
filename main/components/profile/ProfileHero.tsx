@@ -7,7 +7,7 @@ import {
   Building2,
   MapPin,
   Mail,
-  ShieldCheck,
+  GraduationCap,
   Target,
   Sparkles,
   Pencil,
@@ -30,11 +30,11 @@ import { supabase } from '@/src/lib/supabase/client'
 import { cleanNickname } from '@/src/lib/clean-nickname'
 import type { Profile } from './types'
 import { SITUATION_LABELS } from './types'
-import { INTEREST_OPTIONS } from './edit/constants'
+import { INTEREST_OPTIONS, AFFILIATION_OPTIONS } from './edit/constants'
 import { positionLabel } from '@/src/constants/roles'
 import { EditableField } from './EditableField'
 
-/* ── ProfileHero ────────────────────────────────────────── */
+/* ── Constants ─────────────────────────────────────────── */
 
 const SITUATION_OPTIONS = [
   { value: 'has_project', label: '프로젝트 진행 중' },
@@ -43,17 +43,19 @@ const SITUATION_OPTIONS = [
   { value: 'exploring', label: '탐색 중' },
 ]
 
+/* ── Types ─────────────────────────────────────────────── */
+
 interface ProfileHeroProps {
   profile: Profile
   email: string | undefined
-  uniVerified: boolean
   strengths: string[]
   isEditable?: boolean
 }
 
-export function ProfileHero({ profile, email, uniVerified, strengths, isEditable = false }: ProfileHeroProps) {
+/* ── Component ─────────────────────────────────────────── */
+
+export function ProfileHero({ profile, email, strengths, isEditable = false }: ProfileHeroProps) {
   const bio = profile?.bio ?? null
-  const coverUrl = profile?.cover_image_url
   const { user } = useAuth()
   const router = useRouter()
   const updateProfile = useUpdateProfile()
@@ -66,15 +68,18 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
   const [showTagEditor, setShowTagEditor] = useState(false)
   const [customTagInput, setCustomTagInput] = useState('')
 
-  // Inline situation dropdown
+  // Inline dropdowns
   const [showSituationDropdown, setShowSituationDropdown] = useState(false)
   const situationRef = useRef<HTMLDivElement>(null)
+  const [showAffiliationDropdown, setShowAffiliationDropdown] = useState(false)
+  const affiliationRef = useRef<HTMLDivElement>(null)
 
   const heroDefaults = useMemo(() => ({
     nickname: profile?.nickname || '',
     bio: bio || '',
     desired_position: profile?.desired_position || '',
     university: profile?.university || '',
+    major: profile?.major || '',
     location: profile?.location || '',
     contact_email: profile?.contact_email || email || '',
   }), [profile, bio, email])
@@ -86,24 +91,23 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
     }
   )
 
-  // Reset editingBio when profile updates
   useEffect(() => { setEditingBio(false) }, [profile])
+  useEffect(() => { if (editingBio && bioRef.current) bioRef.current.focus() }, [editingBio])
 
+  // Close dropdowns on outside click
   useEffect(() => {
-    if (editingBio && bioRef.current) bioRef.current.focus()
-  }, [editingBio])
-
-  // Close situation dropdown on outside click
-  useEffect(() => {
-    if (!showSituationDropdown) return
+    if (!showSituationDropdown && !showAffiliationDropdown) return
     const handler = (e: MouseEvent) => {
-      if (situationRef.current && !situationRef.current.contains(e.target as Node)) {
+      if (showSituationDropdown && situationRef.current && !situationRef.current.contains(e.target as Node))
         setShowSituationDropdown(false)
-      }
+      if (showAffiliationDropdown && affiliationRef.current && !affiliationRef.current.contains(e.target as Node))
+        setShowAffiliationDropdown(false)
     }
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
-  }, [showSituationDropdown])
+  }, [showSituationDropdown, showAffiliationDropdown])
+
+  /* ── Handlers ── */
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -154,297 +158,325 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
     setShowSituationDropdown(false)
   }
 
-  /* ── Avatar with upload overlay ── */
-  const renderAvatar = (size: 'hero' | 'hero-cover') => {
-    const sizeClass = size === 'hero-cover'
-      ? 'w-14 h-14 sm:w-[72px] sm:h-[72px] border-2 border-surface-card bg-surface-card'
-      : 'w-14 h-14 sm:w-[72px] sm:h-[72px] border border-border bg-brand-bg'
-    const textClass = size === 'hero-cover' ? 'text-txt-primary' : 'text-brand'
-
-    return (
-      <div
-        className={`relative ${sizeClass} flex items-center justify-center text-lg sm:text-xl font-bold ${textClass} shrink-0 shadow-sm overflow-hidden ${isEditable ? 'group/avatar cursor-pointer' : ''}`}
-        onClick={isEditable ? () => avatarInputRef.current?.click() : undefined}
-      >
-        {profile?.avatar_url ? (
-          <Image src={profile.avatar_url} alt="" width={72} height={72} className="object-cover w-full h-full" onError={(e) => { e.currentTarget.style.display = 'none' }} />
-        ) : (
-          <span>{cleanNickname(profile?.nickname || '').slice(0, 2).toUpperCase() || 'U'}</span>
-        )}
-        {isEditable && (
-          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/avatar:opacity-100 transition-opacity flex flex-col items-center justify-center gap-0.5">
-            {avatarUploading ? (
-              <Loader2 size={16} className="text-white animate-spin" />
-            ) : (
-              <>
-                <Camera size={14} className="text-white" />
-                <span className="text-xs font-bold text-white">{profile?.avatar_url ? '변경' : '추가'}</span>
-              </>
-            )}
-          </div>
-        )}
-        {isEditable && (
-          <input
-            ref={avatarInputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleAvatarUpload}
-          />
-        )}
-      </div>
-    )
+  const handleAffiliationChange = (value: string) => {
+    updateProfile.mutate({ affiliation_type: value })
+    setShowAffiliationDropdown(false)
   }
+
+  /* ── Derived values ── */
+
+  const affConfig = AFFILIATION_OPTIONS.find(a => a.value === (profile?.affiliation_type || 'student')) || AFFILIATION_OPTIONS[0]
+  const situation = profile?.current_situation
+  const affType = profile?.affiliation_type
+  const affLabel = AFFILIATION_OPTIONS.find(a => a.value === affType)?.label
+  const interestTags = profile?.interest_tags || []
+  const views = profile?.profile_views ?? 0
+  const likes = profile?.interest_count ?? 0
+  const bioValue = drafts.bio ?? bio ?? ''
+  const bioIsChanged = drafts.bio !== undefined && drafts.bio !== (bio || '')
 
   const infoItems = [
-    { icon: Briefcase, label: '포지션', value: profile?.desired_position || '', displayValue: positionLabel(profile?.desired_position || ''), field: 'desired_position', placeholder: '포지션' },
-    { icon: Building2, label: '학교', value: profile?.university || '', field: 'university', placeholder: '학교' },
-    { icon: MapPin, label: '위치', value: profile?.location || '', field: 'location', placeholder: '위치' },
-    { icon: Mail, label: '연락처', value: profile?.contact_email || email || '', field: 'contact_email', placeholder: '이메일' },
+    { icon: Briefcase, label: '포지션', value: profile?.desired_position || '', displayValue: positionLabel(profile?.desired_position || ''), field: 'desired_position', placeholder: '포지션을 입력하세요' },
+    { icon: Building2, label: affConfig.orgLabel, value: profile?.university || '', field: 'university', placeholder: affConfig.orgPlaceholder },
+    { icon: GraduationCap, label: affConfig.roleLabel, value: profile?.major || '', field: 'major', placeholder: affConfig.rolePlaceholder },
+    { icon: MapPin, label: '활동 지역', value: profile?.location || '', field: 'location', placeholder: '지역을 입력하세요' },
+    { icon: Mail, label: '연락처', value: profile?.contact_email || email || '', field: 'contact_email', placeholder: '이메일을 입력하세요' },
   ]
 
-  /* ── Save bar ── */
-  const renderSaveBar = () => {
-    if (!isEditable || !hasPendingChanges) return null
-    return (
-      <div className="flex items-center justify-end gap-2 pt-4 mt-4 border-t border-border">
-        <button
-          onClick={handleCancel}
-          disabled={isPending}
-          className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-txt-secondary border border-border hover:bg-surface-sunken transition-colors rounded-xl"
-        >
-          <X size={12} />
-          취소
-        </button>
-        <button
-          onClick={handleSave}
-          disabled={isPending}
-          className="flex items-center gap-1 px-4 py-1.5 text-xs font-bold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97] disabled:opacity-50 rounded-xl"
-        >
-          {isPending ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
-          저장
-        </button>
-      </div>
-    )
-  }
+  /* ════════════════════════════════════════════════════════ */
+  /* RENDER                                                  */
+  /* ════════════════════════════════════════════════════════ */
 
-  /* ── Name block ── */
-  const renderName = () => (
-    <div className="flex items-center gap-2 flex-wrap">
-      {isEditable ? (
-        <h2 className="text-lg sm:text-xl font-bold text-txt-primary">
-          <EditableField variant="inline"
-            value={profile?.nickname || ''}
-            draft={drafts.nickname}
-            placeholder="이름"
-            className="text-lg sm:text-xl font-bold"
-            onEdit={editField('nickname')}
-          />
-        </h2>
-      ) : (
-        <h2 className="text-lg sm:text-xl font-bold text-txt-primary truncate">{cleanNickname(profile?.nickname || '') || 'User'}</h2>
-      )}
-      {uniVerified && (
-        <span className="flex items-center gap-0.5 px-1.5 py-0.5 bg-indicator-online/20 border border-indicator-online/40 text-indicator-online text-xs font-semibold shrink-0 rounded-full">
-          <ShieldCheck size={8} /> V
-        </span>
-      )}
-    </div>
-  )
+  return (
+    <div className="relative bg-surface-card rounded-2xl border border-border shadow-sm overflow-hidden mb-6">
+      {/* ── Top accent line ── */}
+      <div className="h-[3px] bg-gradient-to-r from-brand via-brand/50 to-transparent" />
 
-  /* ── Subtitle ── */
-  const renderSubtitle = () => (
-    <p className="text-xs sm:text-sm text-txt-primary/70 truncate">
-      {isEditable ? (
-        <EditableField variant="inline"
-          value={profile?.desired_position || ''}
-          displayValue={positionLabel(profile?.desired_position || '')}
-          draft={drafts.desired_position}
-          placeholder="포지션 미설정"
-          className="text-xs sm:text-sm"
-          onEdit={editField('desired_position')}
-        />
-      ) : (
-        <>{positionLabel(profile?.desired_position || '') || '포지션 미설정'}</>
-      )}
-      {profile?.university && ` · ${profile.university}`}
-    </p>
-  )
-
-  /* ── Situation badge (inline editable) ── */
-  const renderSituation = () => {
-    const situation = profile?.current_situation
-    if (!isEditable && !situation) return null
-
-    if (isEditable) {
-      return (
-        <div className="relative inline-block" ref={situationRef}>
-          <button
-            onClick={() => setShowSituationDropdown(prev => !prev)}
-            className="inline-flex items-center gap-1 mt-1.5 px-2.5 py-1 text-xs font-semibold bg-brand/10 text-brand border border-brand/30 rounded-full hover:bg-brand/20 transition-colors"
-          >
-            <Target size={8} />
-            {situation ? (SITUATION_LABELS[situation] || situation) : '상황 선택'}
-            <ChevronDown size={8} />
-          </button>
-          {showSituationDropdown && (
-            <div className="absolute top-full left-0 mt-1 z-20 bg-surface-card border border-border rounded-xl shadow-lg py-1 min-w-[180px]">
-              {SITUATION_OPTIONS.map(opt => (
-                <button
-                  key={opt.value}
-                  onClick={() => handleSituationChange(opt.value)}
-                  className={`w-full text-left px-3 py-2 text-xs transition-colors ${
-                    situation === opt.value ? 'bg-brand/10 text-brand font-bold' : 'text-txt-secondary hover:bg-surface-sunken'
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      )
-    }
-
-    return (
-      <span className="inline-flex items-center gap-1 mt-1.5 px-2.5 py-1 text-xs font-semibold bg-brand/10 text-brand border border-brand/30 rounded-full">
-        <Target size={10} /> {SITUATION_LABELS[situation!] || situation}
-      </span>
-    )
-  }
-
-  /* ── Bio ── */
-  const renderBio = (marginClass = 'mb-4') => {
-    const bioValue = drafts.bio ?? bio ?? ''
-    const isChanged = drafts.bio !== undefined && drafts.bio !== (bio || '')
-
-    if (isEditable) {
-      // Editing mode — textarea
-      if (editingBio) {
-        return (
-          <div className={marginClass}>
-            <textarea
-              ref={bioRef}
-              value={bioValue}
-              onChange={(e) => editField('bio')(e.target.value.slice(0, 500))}
-              onBlur={() => setEditingBio(false)}
-              onKeyDown={(e) => { if (e.key === 'Escape') setEditingBio(false) }}
-              placeholder="자기소개를 입력하세요"
-              rows={3}
-              maxLength={500}
-              className="bg-surface-bg border border-border rounded-xl outline-none w-full px-3 py-2 resize-none focus:border-brand transition-colors text-base sm:text-sm text-txt-secondary leading-relaxed"
-            />
-            <p className={`text-xs text-right mt-1 ${bioValue.length >= 450 ? 'text-status-danger-text font-semibold' : bioValue.length >= 350 ? 'text-status-warning-text' : 'text-txt-disabled'}`}>
-              {bioValue.length}/500
-            </p>
-          </div>
-        )
-      }
-
-      // Has content — show text with pencil
-      if (bioValue) {
-        return (
-          <div className={marginClass}>
-            <span
-              className="group/edit inline-flex items-start gap-1.5 cursor-pointer"
-              onClick={() => setEditingBio(true)}
-              title="클릭하여 수정"
+      <div className="p-6 sm:p-8">
+        {/* ── Guide restart (top-right) ── */}
+        {isEditable && (
+          <div className="absolute top-4 right-4 sm:top-5 sm:right-6 z-10 group/guide">
+            <button
+              onClick={() => {
+                const key = 'draft_starter_guide'
+                try {
+                  const raw = localStorage.getItem(key)
+                  if (raw) {
+                    const s = JSON.parse(raw)
+                    s.softDismissedAt = null
+                    s.permanentlyDismissed = false
+                    s.completedAt = null
+                    localStorage.setItem(key, JSON.stringify(s))
+                  } else {
+                    localStorage.setItem(key, JSON.stringify({
+                      version: 1, steps: { profile: false, explore: false, project: false },
+                      softDismissedAt: null, permanentlyDismissed: false, completedAt: null,
+                    }))
+                  }
+                } catch { localStorage.removeItem(key) }
+                toast.success('시작 가이드가 다시 표시됩니다')
+                router.push('/explore')
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-txt-tertiary hover:text-txt-primary bg-surface-bg border border-border rounded-xl transition-colors"
             >
-              <span className={`text-sm leading-relaxed ${isChanged ? 'text-brand' : 'text-txt-primary/80'}`}>
-                {bioValue}
-              </span>
-              <Pencil size={9} className="opacity-0 group-hover/edit:opacity-40 transition-opacity shrink-0 mt-1" />
+              <RotateCcw size={10} />
+              <span className="hidden sm:inline">가이드</span>
+            </button>
+            <span className="absolute top-[calc(100%+6px)] right-0 px-2.5 py-1.5 text-xs font-medium bg-surface-inverse text-txt-inverse rounded-xl shadow-lg whitespace-nowrap opacity-0 pointer-events-none group-hover/guide:opacity-100 transition-opacity">
+              시작 가이드 다시 보기
             </span>
           </div>
-        )
-      }
+        )}
 
-      // Empty — prominent empty state
-      return (
-        <div
-          className={`${marginClass} border border-border p-5 rounded-xl cursor-pointer hover:border-brand/40 hover:bg-brand-bg/30 transition-colors group/bio`}
-          onClick={() => setEditingBio(true)}
-        >
-          <div className="flex flex-col items-center gap-1.5 py-1">
-            <Pencil size={16} className="text-txt-disabled group-hover/bio:text-brand transition-colors" />
-            <p className="text-sm font-medium text-txt-tertiary group-hover/bio:text-txt-primary transition-colors">자기소개를 작성해보세요</p>
-            <p className="text-xs text-txt-disabled">나를 소개하는 한 줄을 남겨보세요</p>
-          </div>
-        </div>
-      )
-    }
-
-    // Not editable
-    if (bio) return <p className={`text-sm text-txt-primary/80 leading-relaxed ${marginClass}`}>{bio}</p>
-    return null
-  }
-
-  /* ── Stats (views + likes) ── */
-  const renderStats = () => {
-    const views = profile?.profile_views ?? 0
-    const likes = profile?.interest_count ?? 0
-    return (
-      <div className="flex items-center gap-4 mt-2">
-        <span className="flex items-center gap-1.5 text-xs text-txt-secondary">
-          <Eye size={13} className="text-txt-tertiary" />
-          <span className="font-semibold text-txt-primary">{views}</span>
-        </span>
-        <span className="flex items-center gap-1.5 text-xs text-txt-secondary">
-          <Heart size={13} className={likes > 0 ? 'text-rose-400 fill-rose-400' : 'text-txt-tertiary'} />
-          <span className="font-semibold text-txt-primary">{likes}</span>
-        </span>
-      </div>
-    )
-  }
-
-  /* ── Info grid ── */
-  const renderInfoGrid = () => (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-4 border-t border-border">
-      {infoItems.map((item) => (
-        <div key={item.label} className="flex items-start gap-2">
-          <item.icon size={14} className="text-txt-tertiary mt-0.5" />
-          <div className="min-w-0 flex-1">
-            <p className="text-xs text-txt-tertiary">{item.label}</p>
-            {isEditable ? (
-              <EditableField variant="inline"
-                value={item.value}
-                displayValue={item.displayValue}
-                draft={drafts[item.field]}
-                placeholder={item.placeholder}
-                className="text-xs font-medium text-txt-primary"
-                onEdit={editField(item.field)}
-              />
+        {/* ════════════════════════════════════════════ */}
+        {/* SECTION 1: Identity                         */}
+        {/* ════════════════════════════════════════════ */}
+        <div className="flex items-start gap-5 sm:gap-6">
+          {/* Avatar */}
+          <div
+            className={`relative w-[72px] h-[72px] sm:w-24 sm:h-24 rounded-2xl shrink-0 overflow-hidden bg-brand-bg border-2 border-border shadow-sm flex items-center justify-center ${isEditable ? 'group/avatar cursor-pointer' : ''}`}
+            onClick={isEditable ? () => avatarInputRef.current?.click() : undefined}
+          >
+            {profile?.avatar_url ? (
+              <Image src={profile.avatar_url} alt="" width={96} height={96} className="object-cover w-full h-full" onError={(e) => { e.currentTarget.style.display = 'none' }} />
             ) : (
-              <p className="text-xs font-medium text-txt-primary truncate">{(item.displayValue ?? item.value) || '미설정'}</p>
+              <span className="text-xl sm:text-2xl font-bold text-brand">
+                {cleanNickname(profile?.nickname || '').slice(0, 2).toUpperCase() || 'U'}
+              </span>
+            )}
+            {isEditable && (
+              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/avatar:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1">
+                {avatarUploading ? (
+                  <Loader2 size={18} className="text-white animate-spin" />
+                ) : (
+                  <>
+                    <Camera size={16} className="text-white" />
+                    <span className="text-[10px] font-semibold text-white">{profile?.avatar_url ? '변경' : '추가'}</span>
+                  </>
+                )}
+              </div>
+            )}
+            {isEditable && (
+              <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
             )}
           </div>
+
+          {/* Name + meta */}
+          <div className="flex-1 min-w-0 pt-0.5 sm:pt-1">
+            {/* Name */}
+            <div className="mb-1">
+              {isEditable ? (
+                <h1 className="text-xl sm:text-2xl font-bold text-txt-primary tracking-tight">
+                  <EditableField variant="inline"
+                    value={profile?.nickname || ''}
+                    draft={drafts.nickname}
+                    placeholder="이름"
+                    className="text-xl sm:text-2xl font-bold tracking-tight"
+                    onEdit={editField('nickname')}
+                  />
+                </h1>
+              ) : (
+                <h1 className="text-xl sm:text-2xl font-bold text-txt-primary tracking-tight truncate">
+                  {cleanNickname(profile?.nickname || '') || 'User'}
+                </h1>
+              )}
+            </div>
+
+            {/* Position + University subtitle */}
+            <p className="text-sm text-txt-secondary mb-2.5 truncate">
+              {isEditable ? (
+                <EditableField variant="inline"
+                  value={profile?.desired_position || ''}
+                  displayValue={positionLabel(profile?.desired_position || '')}
+                  draft={drafts.desired_position}
+                  placeholder="포지션 미설정"
+                  className="text-sm"
+                  onEdit={editField('desired_position')}
+                />
+              ) : (
+                <>{positionLabel(profile?.desired_position || '') || '포지션 미설정'}</>
+              )}
+              {profile?.university && <span className="text-txt-tertiary"> · {profile.university}</span>}
+            </p>
+
+            {/* Badges row */}
+            <div className="flex items-center gap-2 flex-wrap">
+              {/* Situation badge */}
+              {(isEditable || situation) && (
+                <div className="relative" ref={situationRef}>
+                  {isEditable ? (
+                    <button
+                      onClick={() => setShowSituationDropdown(prev => !prev)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-brand/8 text-brand border border-brand/20 rounded-full hover:bg-brand/15 transition-colors"
+                    >
+                      <Target size={10} />
+                      {situation ? (SITUATION_LABELS[situation] || situation) : '상황 선택'}
+                      <ChevronDown size={9} />
+                    </button>
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-brand/8 text-brand border border-brand/20 rounded-full">
+                      <Target size={10} /> {SITUATION_LABELS[situation!] || situation}
+                    </span>
+                  )}
+                  {showSituationDropdown && (
+                    <div className="absolute top-full left-0 mt-1.5 z-20 bg-surface-card border border-border rounded-xl shadow-lg py-1 min-w-[180px]">
+                      {SITUATION_OPTIONS.map(opt => (
+                        <button
+                          key={opt.value}
+                          onClick={() => handleSituationChange(opt.value)}
+                          className={`w-full text-left px-3.5 py-2.5 text-xs transition-colors ${
+                            situation === opt.value ? 'bg-brand/8 text-brand font-bold' : 'text-txt-secondary hover:bg-surface-sunken'
+                          }`}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Affiliation badge */}
+              {(isEditable || affLabel) && (
+                <div className="relative" ref={affiliationRef}>
+                  {isEditable ? (
+                    <button
+                      onClick={() => setShowAffiliationDropdown(prev => !prev)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-surface-sunken text-txt-secondary border border-border rounded-full hover:border-txt-tertiary transition-colors"
+                    >
+                      <Building2 size={10} />
+                      {affLabel || '소속 유형'}
+                      <ChevronDown size={9} />
+                    </button>
+                  ) : affLabel ? (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-surface-sunken text-txt-secondary border border-border rounded-full">
+                      <Building2 size={10} /> {affLabel}
+                    </span>
+                  ) : null}
+                  {showAffiliationDropdown && (
+                    <div className="absolute top-full left-0 mt-1.5 z-20 bg-surface-card border border-border rounded-xl shadow-lg py-1 min-w-[140px]">
+                      {AFFILIATION_OPTIONS.map(opt => (
+                        <button
+                          key={opt.value}
+                          onClick={() => handleAffiliationChange(opt.value)}
+                          className={`w-full text-left px-3.5 py-2.5 text-xs transition-colors ${
+                            affType === opt.value ? 'bg-brand/8 text-brand font-bold' : 'text-txt-secondary hover:bg-surface-sunken'
+                          }`}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Stats inline */}
+              <div className="flex items-center gap-3 ml-auto">
+                <span className="flex items-center gap-1 text-xs text-txt-tertiary">
+                  <Eye size={12} />
+                  <span className="font-medium text-txt-secondary">{views}</span>
+                </span>
+                <span className="flex items-center gap-1 text-xs text-txt-tertiary">
+                  <Heart size={12} className={likes > 0 ? 'text-rose-400 fill-rose-400' : ''} />
+                  <span className="font-medium text-txt-secondary">{likes}</span>
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
-      ))}
-    </div>
-  )
 
-  /* ── Tags + Strengths (with inline editing for interest tags) ── */
-  const renderTags = () => {
-    const interestTags = profile?.interest_tags || []
-    const hasContent = interestTags.length > 0 || strengths.length > 0 || (isEditable)
-    if (!hasContent) return null
+        {/* ════════════════════════════════════════════ */}
+        {/* SECTION 2: Bio                              */}
+        {/* ════════════════════════════════════════════ */}
+        <div className="mt-6">
+          {isEditable ? (
+            editingBio ? (
+              <div>
+                <textarea
+                  ref={bioRef}
+                  value={bioValue}
+                  onChange={(e) => editField('bio')(e.target.value.slice(0, 500))}
+                  onBlur={() => setEditingBio(false)}
+                  onKeyDown={(e) => { if (e.key === 'Escape') setEditingBio(false) }}
+                  placeholder="자기소개를 입력하세요"
+                  rows={4}
+                  maxLength={500}
+                  className="w-full px-4 py-3 text-sm leading-relaxed text-txt-primary bg-surface-bg border border-border rounded-xl outline-none resize-none focus:border-brand transition-colors"
+                />
+                <p className={`text-[11px] text-right mt-1 ${bioValue.length >= 450 ? 'text-status-danger-text font-semibold' : bioValue.length >= 350 ? 'text-status-warning-text' : 'text-txt-disabled'}`}>
+                  {bioValue.length}/500
+                </p>
+              </div>
+            ) : bioValue ? (
+              <div
+                className="group/bio cursor-pointer rounded-xl px-4 py-3 -mx-1 hover:bg-surface-bg transition-colors"
+                onClick={() => setEditingBio(true)}
+              >
+                <p className={`text-sm leading-relaxed ${bioIsChanged ? 'text-brand' : 'text-txt-primary/85'}`}>
+                  {bioValue}
+                </p>
+                <Pencil size={10} className="mt-1 opacity-0 group-hover/bio:opacity-30 transition-opacity text-txt-tertiary" />
+              </div>
+            ) : (
+              <div
+                className="rounded-xl border border-dashed border-border p-6 cursor-pointer hover:border-brand/30 hover:bg-brand-bg/20 transition-all group/bio"
+                onClick={() => setEditingBio(true)}
+              >
+                <div className="flex flex-col items-center gap-2">
+                  <Pencil size={18} className="text-txt-disabled group-hover/bio:text-brand transition-colors" />
+                  <p className="text-sm font-medium text-txt-tertiary group-hover/bio:text-txt-primary transition-colors">자기소개를 작성해보세요</p>
+                  <p className="text-xs text-txt-disabled">나를 소개하는 글을 남겨보세요</p>
+                </div>
+              </div>
+            )
+          ) : bio ? (
+            <p className="text-sm leading-relaxed text-txt-primary/85">{bio}</p>
+          ) : null}
+        </div>
 
-    return (
-      <div className="mt-4 pt-4 border-t border-border space-y-3">
-        {/* Interest Tags */}
+        {/* ════════════════════════════════════════════ */}
+        {/* SECTION 3: Info Grid                        */}
+        {/* ════════════════════════════════════════════ */}
+        <div className="mt-6 pt-6 border-t border-border/60">
+          <p className="text-[10px] font-mono font-medium text-txt-tertiary uppercase tracking-wider mb-4">Information</p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {infoItems.map((item) => (
+              <div key={item.field} className="bg-surface-bg rounded-xl px-3.5 py-3 border border-transparent hover:border-border transition-colors">
+                <div className="flex items-center gap-1.5 mb-1.5">
+                  <item.icon size={12} className="text-txt-tertiary" />
+                  <span className="text-[10px] font-medium text-txt-tertiary uppercase tracking-wide">{item.label}</span>
+                </div>
+                {isEditable ? (
+                  <EditableField variant="inline"
+                    value={item.value}
+                    displayValue={item.displayValue}
+                    draft={drafts[item.field]}
+                    placeholder={item.placeholder}
+                    className="text-[13px] font-medium text-txt-primary"
+                    onEdit={editField(item.field)}
+                  />
+                ) : (
+                  <p className="text-[13px] font-medium text-txt-primary truncate">{(item.displayValue ?? item.value) || '미설정'}</p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ════════════════════════════════════════════ */}
+        {/* SECTION 4: Interest Tags                    */}
+        {/* ════════════════════════════════════════════ */}
         {(interestTags.length > 0 || isEditable) && (
-          <div>
-            <div className="flex gap-1.5 flex-wrap">
-              <span className="text-xs text-txt-tertiary self-center mr-1">관심 분야</span>
+          <div className="mt-6 pt-6 border-t border-border/60">
+            <p className="text-[10px] font-mono font-medium text-txt-tertiary uppercase tracking-wider mb-3">Interests</p>
+            <div className="flex gap-2 flex-wrap">
               {interestTags.map((tag, idx) => (
-                <span key={idx} className="text-xs px-2.5 py-1 font-medium rounded-full inline-flex items-center gap-1 transition-all bg-brand/10 text-brand border border-brand/30">
+                <span key={idx} className="text-xs px-3 py-1.5 font-medium rounded-full inline-flex items-center gap-1 bg-brand/8 text-brand border border-brand/20 transition-all">
                   {tag}
                   {isEditable && showTagEditor && (
-                    <button
-                      onClick={() => toggleInterestTag(tag)}
-                      className="hover:text-status-danger-text transition-colors p-0.5 -mr-0.5"
-                    >
-                      <X size={8} />
+                    <button onClick={() => toggleInterestTag(tag)} className="hover:text-status-danger-text transition-colors p-0.5 -mr-1">
+                      <X size={10} />
                     </button>
                   )}
                 </span>
@@ -452,27 +484,29 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
               {isEditable && !showTagEditor && (
                 <button
                   onClick={() => setShowTagEditor(true)}
-                  className="text-xs text-txt-tertiary border border-dashed border-border px-2.5 py-1 font-medium rounded-full hover:border-brand hover:text-brand transition-colors inline-flex items-center gap-0.5"
+                  className="text-xs text-txt-tertiary border border-dashed border-border/80 px-3 py-1.5 font-medium rounded-full hover:border-brand hover:text-brand transition-colors inline-flex items-center gap-1"
                 >
-                  <Plus size={8} /> 추가
+                  <Plus size={10} /> 추가
                 </button>
               )}
             </div>
+
+            {/* Tag editor */}
             {isEditable && showTagEditor && (
-              <div className="mt-2 space-y-2">
-                <p className="text-xs text-txt-tertiary">탭하여 추가 / 위 태그의 X로 제거</p>
+              <div className="mt-3 p-4 bg-surface-bg rounded-xl border border-border space-y-3">
+                <p className="text-[11px] text-txt-tertiary">탭하여 추가 · 태그의 X로 제거</p>
                 <div className="flex flex-wrap gap-1.5">
                   {INTEREST_OPTIONS.filter(t => !interestTags.includes(t)).map(tag => (
                     <button
                       key={tag}
                       onClick={() => toggleInterestTag(tag)}
-                      className="text-xs px-2.5 py-1 border border-border bg-surface-sunken text-txt-secondary rounded-full hover:border-brand hover:text-brand transition-colors"
+                      className="text-xs px-3 py-1.5 border border-border bg-surface-card text-txt-secondary rounded-full hover:border-brand hover:text-brand transition-colors"
                     >
                       + {tag}
                     </button>
                   ))}
                 </div>
-                <div className="flex gap-1">
+                <div className="flex gap-2">
                   <input
                     type="text"
                     value={customTagInput}
@@ -480,18 +514,15 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
                     onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addCustomInterestTag() } }}
                     placeholder="직접 입력"
                     maxLength={20}
-                    className="flex-1 px-2 py-1 text-xs border border-border bg-surface-card rounded-lg focus:outline-none focus:border-brand transition-colors"
+                    className="flex-1 px-3 py-2 text-xs border border-border bg-surface-card rounded-lg focus:outline-none focus:border-brand transition-colors"
                   />
-                  <button
-                    onClick={addCustomInterestTag}
-                    className="px-2 py-1 text-xs border border-border text-txt-secondary hover:bg-surface-sunken transition-colors rounded-lg"
-                  >
+                  <button onClick={addCustomInterestTag} className="px-3 py-2 text-xs border border-border text-txt-secondary hover:bg-surface-sunken transition-colors rounded-lg">
                     <Plus size={12} />
                   </button>
                 </div>
                 <button
                   onClick={() => { setShowTagEditor(false); setCustomTagInput('') }}
-                  className="w-full flex items-center justify-center gap-1 px-3 py-1.5 text-[11px] font-bold bg-surface-inverse text-txt-inverse rounded-xl hover:opacity-90 active:scale-[0.97] transition-all"
+                  className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-surface-inverse text-txt-inverse rounded-xl hover:opacity-90 active:scale-[0.97] transition-all"
                 >
                   <Check size={10} /> 완료
                 </button>
@@ -500,128 +531,47 @@ export function ProfileHero({ profile, email, uniVerified, strengths, isEditable
           </div>
         )}
 
+        {/* ════════════════════════════════════════════ */}
+        {/* SECTION 5: Strengths                        */}
+        {/* ════════════════════════════════════════════ */}
         {strengths.length > 0 && (
-          <div className="flex gap-1.5 flex-wrap">
-            <span className="text-xs text-txt-tertiary self-center mr-1 flex items-center gap-1"><Sparkles size={12} /> 강점</span>
-            {strengths.map((s, idx) => (
-              <span key={idx} className="text-xs bg-indicator-online/20 text-indicator-online border border-indicator-online/30 px-2.5 py-1 font-medium rounded-full">
-                {s}
-              </span>
-            ))}
+          <div className="mt-5">
+            <p className="text-[10px] font-mono font-medium text-txt-tertiary uppercase tracking-wider mb-3 flex items-center gap-1.5">
+              <Sparkles size={10} className="text-indicator-premium" /> Strengths
+            </p>
+            <div className="flex gap-2 flex-wrap">
+              {strengths.map((s, idx) => (
+                <span key={idx} className="text-xs bg-indicator-online/10 text-indicator-online border border-indicator-online/20 px-3 py-1.5 font-medium rounded-full">
+                  {s}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ════════════════════════════════════════════ */}
+        {/* Save bar                                    */}
+        {/* ════════════════════════════════════════════ */}
+        {isEditable && hasPendingChanges && (
+          <div className="flex items-center justify-end gap-2.5 pt-6 mt-6 border-t border-border/60">
+            <button
+              onClick={handleCancel}
+              disabled={isPending}
+              className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-txt-secondary border border-border hover:bg-surface-sunken transition-colors rounded-xl"
+            >
+              <X size={12} /> 취소
+            </button>
+            <button
+              onClick={handleSave}
+              disabled={isPending}
+              className="flex items-center gap-1.5 px-5 py-2 text-xs font-semibold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97] disabled:opacity-50 rounded-xl"
+            >
+              {isPending ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
+              저장
+            </button>
           </div>
         )}
       </div>
-    )
-  }
-
-  /* ── Starter guide restart (top-right micro button) ── */
-  const renderGuideRestart = () => {
-    if (!isEditable) return null
-    return (
-      <div className="absolute top-3 right-3 z-10 group/guide">
-        <button
-            onClick={() => {
-              const key = 'draft_starter_guide'
-              try {
-                const raw = localStorage.getItem(key)
-                if (raw) {
-                  const s = JSON.parse(raw)
-                  s.softDismissedAt = null
-                  s.permanentlyDismissed = false
-                  s.completedAt = null
-                  localStorage.setItem(key, JSON.stringify(s))
-                } else {
-                  localStorage.setItem(key, JSON.stringify({
-                    version: 1, steps: { profile: false, explore: false, project: false },
-                    softDismissedAt: null, permanentlyDismissed: false, completedAt: null,
-                  }))
-                }
-              } catch { localStorage.removeItem(key) }
-              toast.success('시작 가이드가 다시 표시됩니다')
-              router.push('/explore')
-            }}
-            className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-txt-tertiary hover:text-txt-primary bg-surface-card/80 backdrop-blur-sm border border-border rounded-xl transition-colors"
-          >
-            <RotateCcw size={10} />
-            <span className="hidden sm:inline">가이드</span>
-          </button>
-          <span className="absolute top-[calc(100%+6px)] right-0 px-2.5 py-1.5 text-xs font-medium bg-surface-inverse text-txt-inverse rounded-xl shadow-lg whitespace-nowrap opacity-0 pointer-events-none group-hover/guide:opacity-100 transition-opacity">
-            시작 가이드 다시 보기
-          </span>
-      </div>
-    )
-  }
-
-  /* ════════════════════════════════════════════════════════ */
-  /* Variant A: with cover image                            */
-  /* ════════════════════════════════════════════════════════ */
-  if (coverUrl) {
-    return (
-      <div className="relative group bg-surface-card text-txt-primary mb-6 border border-border shadow-md overflow-hidden rounded-2xl max-w-full">
-        {renderGuideRestart()}
-
-        {/* Cover image */}
-        <div className="relative h-32 sm:h-40 lg:h-48">
-          <Image
-            src={coverUrl}
-            alt=""
-            fill
-            sizes="(max-width:768px) 100vw, 900px"
-            className="object-cover"
-            quality={90}
-            onError={(e) => { e.currentTarget.style.display = 'none' }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent" />
-        </div>
-
-        {/* Content below cover */}
-        <div className="relative z-10 -mt-8 sm:-mt-10 px-5 pb-5">
-          <div className="flex items-end gap-3 sm:gap-4 mb-4">
-            {renderAvatar('hero-cover')}
-            <div className="flex-1 min-w-0 pb-0.5">
-              {renderName()}
-              {renderSubtitle()}
-              {renderSituation()}
-              {renderStats()}
-            </div>
-          </div>
-
-          <div className="border-t border-border pt-4">
-            {renderBio('')}
-          </div>
-
-          <div className="mt-4">
-            {renderInfoGrid()}
-          </div>
-
-          {renderTags()}
-          {renderSaveBar()}
-        </div>
-      </div>
-    )
-  }
-
-  /* ════════════════════════════════════════════════════════ */
-  /* Variant B: no cover image                              */
-  /* ════════════════════════════════════════════════════════ */
-  return (
-    <div className="relative group bg-surface-card text-txt-primary p-5 pb-6 mb-6 border border-border shadow-md rounded-2xl overflow-hidden">
-      {renderGuideRestart()}
-
-      <div className="flex items-start gap-4 mb-4">
-        {renderAvatar('hero')}
-        <div className="flex-1 min-w-0 pt-1">
-          {renderName()}
-          {renderSubtitle()}
-          {renderSituation()}
-          {renderStats()}
-        </div>
-      </div>
-
-      {renderBio()}
-      {renderInfoGrid()}
-      {renderTags()}
-      {renderSaveBar()}
     </div>
   )
 }

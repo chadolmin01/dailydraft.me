@@ -9,7 +9,6 @@ import { useProfile } from '@/src/hooks/useProfile'
 import { useMyOpportunities } from '@/src/hooks/useOpportunities'
 import { usePortfolioItems } from '@/src/hooks/usePortfolioItems'
 import { useProfileCompletion } from '@/src/hooks/useProfileCompletion'
-import { useUniversityVerification } from '@/src/hooks/useUniversityVerification'
 import { useCoffeeChats } from '@/src/hooks/useCoffeeChats'
 import { useProjectInvitations } from '@/src/hooks/useProjectInvitations'
 import {
@@ -21,7 +20,6 @@ import {
   ProfileInvitations,
   AiOnboardingModal,
 } from '@/components/profile'
-import { ProfileEditPanel } from '@/components/ProfileEditPanel'
 import { Sparkles, Briefcase, FolderOpen, Activity } from 'lucide-react'
 import { SkeletonProfile, SkeletonGrid } from '@/components/ui/Skeleton'
 
@@ -49,10 +47,7 @@ export default function ProfilePageClient() {
   useCoffeeChats({ asOwner: false })
   useProjectInvitations({ asSender: false })
 
-  const { data: uniData } = useUniversityVerification()
-  const uniVerified = uniData?.is_verified ?? false
   const [showAiConfirm, setShowAiConfirm] = useState(false)
-  const [isEditPanelOpen, setIsEditPanelOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<'portfolio' | 'projects' | 'activity'>('portfolio')
 
   // Parse strengths from vision_summary
@@ -131,22 +126,19 @@ export default function ProfilePageClient() {
           <ProfileSidebar
             profile={profile!}
             email={user?.email}
-            uniVerified={uniVerified}
             completion={completion}
             isEditable
-            onOpenEditPanel={() => setIsEditPanelOpen(true)}
           />
         }
       >
         <ProfileHero
           profile={profile!}
           email={user?.email}
-          uniVerified={uniVerified}
           strengths={strengths}
           isEditable
         />
         {/* ── Tab bar ── */}
-        <div className="flex items-center gap-1 border-b border-border/40 mb-6">
+        <div className="flex items-center gap-0.5 bg-surface-card rounded-xl border border-border p-1 mb-6 shadow-sm">
           {([
             { key: 'portfolio' as const, label: '포트폴리오', icon: Briefcase, count: portfolioItems.length },
             { key: 'projects' as const, label: '프로젝트', icon: FolderOpen, count: myOpportunities.length + myTeams.length },
@@ -155,16 +147,16 @@ export default function ProfilePageClient() {
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`flex items-center gap-1.5 px-5 py-3 text-sm font-medium transition-colors border-b-2 -mb-px ${
+              className={`flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 text-xs font-semibold rounded-lg transition-all ${
                 activeTab === tab.key
-                  ? 'border-txt-primary text-txt-primary'
-                  : 'border-transparent text-txt-tertiary hover:text-txt-secondary'
+                  ? 'bg-surface-inverse text-txt-inverse shadow-sm'
+                  : 'text-txt-tertiary hover:text-txt-secondary hover:bg-surface-sunken/60'
               }`}
             >
-              <tab.icon size={14} />
+              <tab.icon size={13} />
               {tab.label}
               {tab.count != null && tab.count > 0 && (
-                <span className="ml-0.5 text-xs text-txt-tertiary">{tab.count}</span>
+                <span className={`text-[10px] ${activeTab === tab.key ? 'text-txt-inverse/60' : 'text-txt-disabled'}`}>{tab.count}</span>
               )}
             </button>
           ))}
@@ -183,8 +175,6 @@ export default function ProfilePageClient() {
         </div>
       </DashboardLayout>
 
-      {/* Rendered at root level to avoid stacking context issues */}
-      <ProfileEditPanel isOpen={isEditPanelOpen} onClose={() => setIsEditPanelOpen(false)} />
     </div>
   )
 }
