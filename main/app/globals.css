@@ -808,6 +808,16 @@ a[class*="px-"]:active {
   color: var(--status-danger-accent) !important;
 }
 
+/* ── Sonner Toaster: force topmost layer ──
+   Sonner section is position:fixed but can be visually below modals/buttons
+   if a default z-index conflicts with our z-modal (401) tokens. Force max. */
+[data-sonner-toaster] {
+  z-index: 2147483647 !important;
+}
+[data-sonner-toast] {
+  z-index: 2147483647 !important;
+}
+
 /* ============================================================
    CLEAN MODERN OVERRIDES
    ============================================================ */

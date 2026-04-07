@@ -9,6 +9,9 @@ const handlerStack: StackEntry[] = []
 let listenerAttached = false
 // 동기 cleanup에서 예약된 history.back() 수 — popstate에서 소비
 let pendingBackCount = 0
+// 수동 close 시 cleanup이 fire하는 history.back()의 popstate를 무시해야 하는 횟수
+// — 그렇지 않으면 부모 모달까지 같이 닫혀버림
+let pendingSuppressCount = 0
 // 동시 다중 back() 호출 방지 (batching)
 let backFlushTimer: ReturnType<typeof setTimeout> | null = null
 
@@ -26,11 +29,14 @@ function cancelPendingBacks() {
     clearTimeout(backFlushTimer)
     backFlushTimer = null
   }
+  // 취소된 back은 suppress도 함께 취소
+  pendingSuppressCount = Math.max(0, pendingSuppressCount - pendingBackCount)
   pendingBackCount = 0
 }
 
-function scheduleBack() {
+function scheduleBack(suppressNextPopstate = false) {
   pendingBackCount++
+  if (suppressNextPopstate) pendingSuppressCount++
   if (!backFlushTimer) {
     backFlushTimer = setTimeout(flushPendingBacks, 0)
   }
@@ -50,6 +56,12 @@ function ensureGlobalListener() {
   }, true) // capture phase — 다른 ESC 핸들러보다 먼저 실행
 
   window.addEventListener('popstate', (event) => {
+    // 수동 close 클린업이 발생시킨 back은 무시 (자기 URL 엔트리만 정리)
+    if (pendingSuppressCount > 0) {
+      pendingSuppressCount--
+      return
+    }
+
     const state = event.state
     const isModalEntry = state && typeof state === 'object' && BACK_KEY in state
 
@@ -105,7 +117,7 @@ export function useBackHandler(isOpen: boolean, onClose: () => void, modalId?: s
       if (!closingFromBackRef.current) {
         const currentState = window.history.state
         if (currentState && typeof currentState === 'object' && currentState[BACK_KEY]) {
-          scheduleBack()
+          scheduleBack(true)
         }
       }
       closingFromBackRef.current = false
@@ -124,7 +136,7 @@ export function useBackHandler(isOpen: boolean, onClose: () => void, modalId?: s
         if (!closingFromBackRef.current) {
           const currentState = window.history.state
           if (currentState && typeof currentState === 'object' && currentState[BACK_KEY]) {
-            scheduleBack()
+            scheduleBack(true)
           }
         }
         closingFromBackRef.current = false

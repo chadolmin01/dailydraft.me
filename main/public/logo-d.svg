@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <!-- Background: transparent for favicon, used with bg for PWA -->
+  <!-- D letterform based on spec: 3mm padding, 45mm height, R=12mm, ø40mm -->
+  <path
+    d="M128 56 L128 456 L176 456 L176 104 L256 104
+       C335.5 104 400 168.5 400 248 L400 264
+       C400 343.5 335.5 408 256 408 L176 408 L176 456 L256 456
+       C362.04 456 448 370.04 448 264 L448 248
+       C448 141.96 362.04 56 256 56 Z"
+    fill="#18181B"
+  />
+</svg>

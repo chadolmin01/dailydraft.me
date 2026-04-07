@@ -1,9 +1,9 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
-import { MessageCircle, ThumbsUp, Flag, Send, Loader2, ArrowRight } from 'lucide-react'
-import { toast } from 'sonner'
+import React, { useState, useEffect, useRef } from 'react'
+import { MessageCircle, ThumbsUp, Flag, Send, Loader2, ArrowRight, Trash2, CheckCircle2, AlertCircle } from 'lucide-react'
 import { SkeletonFeed } from '@/components/ui/Skeleton'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { useComments, Comment } from '@/src/hooks/useComments'
 import { useAuth } from '@/src/context/AuthContext'
 import { COMMENT_LABEL, COMMENT_VERB } from '@/src/constants/labels'
@@ -11,22 +11,43 @@ import { cleanNickname } from '@/src/lib/clean-nickname'
 
 const INITIAL_VISIBLE = 5
 
+type InlineMessage = { type: 'success' | 'error' | 'info'; text: string }
+
 interface CommentSectionProps {
   opportunityId: string
+  ownerId?: string | null
   onLoginClick?: () => void
 }
 
-export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, onLoginClick }) => {
+export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, ownerId, onLoginClick }) => {
   const { user, profile } = useAuth()
-  const { comments, loading, addComment, voteHelpful, reportComment } = useComments({
+  const { comments, loading, addComment, voteHelpful, reportComment, deleteComment } = useComments({
     opportunityId,
   })
+
+  const isOwner = !!user && !!ownerId && user.id === ownerId
 
   const [content, setContent] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [votedComments, setVotedComments] = useState<Set<string>>(new Set())
   const [reportedComments, setReportedComments] = useState<Set<string>>(new Set())
   const [showAll, setShowAll] = useState(false)
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
+  const [message, setMessage] = useState<InlineMessage | null>(null)
+  const messageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // 인라인 메시지 표시 (3초 후 자동 사라짐) — 사이드바 버튼 z-index 충돌 회피용
+  const showMessage = (type: InlineMessage['type'], text: string) => {
+    if (messageTimerRef.current) clearTimeout(messageTimerRef.current)
+    setMessage({ type, text })
+    messageTimerRef.current = setTimeout(() => setMessage(null), 3000)
+  }
+
+  useEffect(() => {
+    return () => {
+      if (messageTimerRef.current) clearTimeout(messageTimerRef.current)
+    }
+  }, [])
 
   useEffect(() => {
     try {
@@ -61,15 +82,15 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
 
     if (success) {
       setContent('')
-      toast.success('댓글이 등록되었습니다')
+      showMessage('success', '댓글이 등록되었습니다')
     } else {
-      toast.error('댓글 등록에 실패했어요')
+      showMessage('error', '댓글 등록에 실패했어요')
     }
     setSubmitting(false)
   }
 
   const handleVote = async (commentId: string) => {
-    if (votedComments.has(commentId)) { toast('이미 평가한 댓글이에요'); return }
+    if (votedComments.has(commentId)) { showMessage('info', '이미 평가한 댓글이에요'); return }
 
     const identifier = getVoterIdentifier()
     const success = await voteHelpful(commentId, identifier)
@@ -78,12 +99,12 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
       const newVoted = new Set(votedComments).add(commentId)
       setVotedComments(newVoted)
       localStorage.setItem(`voted_${opportunityId}`, JSON.stringify([...newVoted]))
-      toast.success('도움이 됐어요!')
+      showMessage('success', '도움이 됐어요!')
     }
   }
 
   const handleReport = async (commentId: string) => {
-    if (reportedComments.has(commentId)) { toast('이미 신고한 댓글이에요'); return }
+    if (reportedComments.has(commentId)) { showMessage('info', '이미 신고한 댓글이에요'); return }
 
     const identifier = getVoterIdentifier()
     const success = await reportComment(commentId, identifier, 'inappropriate')
@@ -92,10 +113,25 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
       const newReported = new Set(reportedComments).add(commentId)
       setReportedComments(newReported)
       localStorage.setItem(`reported_${opportunityId}`, JSON.stringify([...newReported]))
-      toast.success('신고가 접수되었습니다')
+      showMessage('success', '신고가 접수되었습니다')
     } else {
-      toast.error('신고 처리에 실패했어요')
+      showMessage('error', '신고 처리에 실패했어요')
     }
+  }
+
+  const handleDeleteConfirm = () => {
+    if (!pendingDeleteId) return
+    const id = pendingDeleteId
+    // 모달 즉시 닫기 — 낙관적 업데이트가 이미 화면에서 댓글 제거함
+    // 백그라운드 mutation이 hang되어도 UI는 멈추지 않음
+    setPendingDeleteId(null)
+    deleteComment(id).then((success) => {
+      if (success) {
+        showMessage('success', '댓글을 삭제했어요')
+      } else {
+        showMessage('error', '삭제에 실패했어요')
+      }
+    })
   }
 
   const visibleComments = showAll ? comments : comments.slice(0, INITIAL_VISIBLE)
@@ -103,6 +139,25 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
 
   return (
     <div>
+      {/* Inline message banner — 사이드바 z-index 충돌 회피용 로컬 알림 */}
+      {message && (
+        <div
+          className={`mb-3 flex items-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-medium animate-in fade-in slide-in-from-top-1 duration-200 ${
+            message.type === 'success'
+              ? 'bg-[#E8F5E9] dark:bg-[#1B3A2D] text-[#34C759]'
+              : message.type === 'error'
+              ? 'bg-[#FFE8E8] dark:bg-[#3A1C1C] text-[#FF3B30]'
+              : 'bg-[#F2F3F5] dark:bg-[#2C2C2E] text-txt-secondary'
+          }`}
+          role="status"
+          aria-live="polite"
+        >
+          {message.type === 'success' && <CheckCircle2 size={14} />}
+          {message.type === 'error' && <AlertCircle size={14} />}
+          <span>{message.text}</span>
+        </div>
+      )}
+
       {/* Comment Form */}
       {user && profile ? (
         <form onSubmit={handleSubmit} className="bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl p-4 mb-4">
@@ -122,7 +177,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
               value={content}
               onChange={(e) => setContent(e.target.value)}
               className="flex-1 px-3.5 py-2 text-[14px] bg-white dark:bg-[#2C2C2E] rounded-xl text-txt-primary placeholder-txt-disabled border-0 focus:outline-none focus:ring-2 focus:ring-[#3182F6]/30"
-              maxLength={500}
+              maxLength={200}
             />
             <button
               type="submit"
@@ -133,9 +188,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
               {submitting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
             </button>
           </div>
-          {content.length > 0 && (
-            <p className="text-[11px] text-txt-disabled text-right mt-1.5">{content.length}/500</p>
-          )}
+          <p className="text-[11px] text-txt-disabled text-right mt-1.5">{content.length}/200</p>
         </form>
       ) : (
         <div className="bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl p-5 mb-4 text-center">
@@ -161,16 +214,21 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
         </div>
       ) : (
         <div className="space-y-3">
-          {visibleComments.map((comment) => (
-            <CommentItem
-              key={comment.id}
-              comment={comment}
-              hasVoted={votedComments.has(comment.id)}
-              hasReported={reportedComments.has(comment.id)}
-              onVote={() => handleVote(comment.id)}
-              onReport={() => handleReport(comment.id)}
-            />
-          ))}
+          {visibleComments.map((comment) => {
+            const canDelete = !!user && (isOwner || (comment.user_id !== null && comment.user_id === user.id))
+            return (
+              <CommentItem
+                key={comment.id}
+                comment={comment}
+                hasVoted={votedComments.has(comment.id)}
+                hasReported={reportedComments.has(comment.id)}
+                canDelete={canDelete}
+                onVote={() => handleVote(comment.id)}
+                onReport={() => handleReport(comment.id)}
+                onDelete={() => setPendingDeleteId(comment.id)}
+              />
+            )
+          })}
           {hasMore && !showAll && (
             <button
               onClick={() => setShowAll(true)}
@@ -181,6 +239,17 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
           )}
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={pendingDeleteId !== null}
+        onClose={() => setPendingDeleteId(null)}
+        onConfirm={handleDeleteConfirm}
+        title="댓글 삭제"
+        message="이 댓글을 삭제하시겠어요? 삭제한 댓글은 복구할 수 없어요."
+        confirmText="삭제"
+        cancelText="취소"
+        variant="danger"
+      />
     </div>
   )
 }
@@ -189,16 +258,20 @@ interface CommentItemProps {
   comment: Comment
   hasVoted: boolean
   hasReported: boolean
+  canDelete: boolean
   onVote: () => void
   onReport: () => void
+  onDelete: () => void
 }
 
 const CommentItem: React.FC<CommentItemProps> = ({
   comment,
   hasVoted,
   hasReported,
+  canDelete,
   onVote,
   onReport,
+  onDelete,
 }) => {
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr)
@@ -257,6 +330,16 @@ const CommentItem: React.FC<CommentItemProps> = ({
           <Flag size={11} />
           <span>{hasReported ? '신고됨' : '신고'}</span>
         </button>
+
+        {canDelete && (
+          <button
+            onClick={onDelete}
+            className="flex items-center gap-1.5 text-[12px] font-medium px-2.5 py-1 rounded-full text-txt-disabled hover:bg-white dark:hover:bg-[#2C2C2E] hover:text-status-danger-text transition-colors ml-auto"
+          >
+            <Trash2 size={11} />
+            <span>삭제</span>
+          </button>
+        )}
       </div>
     </div>
   )

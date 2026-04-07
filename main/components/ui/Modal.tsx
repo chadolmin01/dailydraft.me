@@ -1,6 +1,7 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import { cn } from '@/src/lib/utils'
 import { useScrollLock } from '@/src/hooks/useScrollLock'
@@ -31,11 +32,7 @@ const sizeMap = {
 
 /**
  * Base modal shell with backdrop, scroll lock, focus trap, ESC close, and ARIA.
- *
- * Usage:
- *   <Modal isOpen={open} onClose={() => setOpen(false)} title="Details" size="lg">
- *     {existing modal content — no changes needed}
- *   </Modal>
+ * Rendered via createPortal to document.body — escapes transformed ancestor stacking contexts.
  */
 export const Modal: React.FC<ModalProps> = ({
   isOpen,
@@ -46,16 +43,19 @@ export const Modal: React.FC<ModalProps> = ({
   title,
   className,
 }) => {
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+
   useScrollLock(isOpen)
   useBackHandler(isOpen, onClose)
   const containerRef = useFocusTrap<HTMLDivElement>(isOpen)
 
-  // ESC는 useBackHandler의 글로벌 핸들러가 처리
+  if (!mounted) return null
 
-  return (
+  return createPortal(
     <div
       className={cn(
-        'fixed inset-0 z-modal-backdrop flex items-end sm:items-center justify-center p-0 pt-6 sm:p-4',
+        'fixed inset-0 z-[500] flex items-end sm:items-center justify-center p-0 pt-6 sm:p-4',
         'transition-opacity duration-200',
         isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
       )}
@@ -75,7 +75,7 @@ export const Modal: React.FC<ModalProps> = ({
         ref={containerRef}
         tabIndex={-1}
         className={cn(
-          'relative z-modal bg-surface-elevated w-full shadow-2xl rounded-2xl sm:rounded-2xl',
+          'relative z-[501] bg-surface-elevated w-full shadow-2xl rounded-2xl sm:rounded-2xl',
           'pb-[max(0.5rem,env(safe-area-inset-bottom,0.5rem))] sm:pb-0',
           'transition-all duration-200',
           isOpen
@@ -109,6 +109,7 @@ export const Modal: React.FC<ModalProps> = ({
         {/* Content */}
         {children}
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

@@ -62,6 +62,31 @@ export function useComments({ opportunityId, enabled = true }: UseCommentsOption
 
       if (insertError) throw insertError
     },
+    onMutate: async (data) => {
+      await queryClient.cancelQueries({ queryKey: commentKeys.list(opportunityId) })
+      const previous = queryClient.getQueryData<Comment[]>(commentKeys.list(opportunityId))
+      const optimistic: Comment = {
+        id: `temp-${Date.now()}`,
+        opportunity_id: opportunityId,
+        nickname: data.nickname,
+        school: data.school || null,
+        content: data.content,
+        helpful_count: 0,
+        user_id: null,
+        is_hidden: false,
+        report_count: 0,
+        created_at: new Date().toISOString(),
+      }
+      queryClient.setQueryData<Comment[]>(commentKeys.list(opportunityId), (old) =>
+        [optimistic, ...(old ?? [])]
+      )
+      return { previous }
+    },
+    onError: (_err, _data, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(commentKeys.list(opportunityId), context.previous)
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: commentKeys.list(opportunityId) })
     },
@@ -101,12 +126,36 @@ export function useComments({ opportunityId, enabled = true }: UseCommentsOption
     },
   })
 
+  const deleteCommentMutation = useMutation({
+    mutationFn: async (commentId: string) => {
+      const { error: deleteError } = await supabase
+        .from('comments')
+        .delete()
+        .eq('id', commentId)
+      if (deleteError) throw deleteError
+    },
+    onMutate: async (commentId) => {
+      await queryClient.cancelQueries({ queryKey: commentKeys.list(opportunityId) })
+      const previous = queryClient.getQueryData<Comment[]>(commentKeys.list(opportunityId))
+      queryClient.setQueryData<Comment[]>(commentKeys.list(opportunityId), (old) =>
+        (old ?? []).filter(c => c.id !== commentId)
+      )
+      return { previous }
+    },
+    onError: (_err, _commentId, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(commentKeys.list(opportunityId), context.previous)
+      }
+    },
+  })
+
   // 기존 인터페이스 호환 래퍼
   const addComment = useCallback(async (data: { nickname: string; school?: string; content: string }) => {
     try {
       await addCommentMutation.mutateAsync(data)
       return true
-    } catch {
+    } catch (err) {
+      console.error('[useComments] addComment failed:', err)
       return false
     }
   }, [addCommentMutation])
@@ -114,7 +163,8 @@ export function useComments({ opportunityId, enabled = true }: UseCommentsOption
   const voteHelpful = useCallback(async (commentId: string, voterIdentifier: string) => {
     try {
       return await voteHelpfulMutation.mutateAsync({ commentId, voterIdentifier })
-    } catch {
+    } catch (err) {
+      console.error('[useComments] voteHelpful failed:', err)
       return false
     }
   }, [voteHelpfulMutation])
@@ -122,10 +172,21 @@ export function useComments({ opportunityId, enabled = true }: UseCommentsOption
   const reportComment = useCallback(async (commentId: string, reporterIdentifier: string, reason?: string) => {
     try {
       return await reportCommentMutation.mutateAsync({ commentId, reporterIdentifier, reason })
-    } catch {
+    } catch (err) {
+      console.error('[useComments] reportComment failed:', err)
       return false
     }
   }, [reportCommentMutation])
+
+  const deleteComment = useCallback(async (commentId: string) => {
+    try {
+      await deleteCommentMutation.mutateAsync(commentId)
+      return true
+    } catch (err) {
+      console.error('[useComments] deleteComment failed:', err)
+      return false
+    }
+  }, [deleteCommentMutation])
 
   return {
     comments,
@@ -134,6 +195,7 @@ export function useComments({ opportunityId, enabled = true }: UseCommentsOption
     addComment,
     voteHelpful,
     reportComment,
+    deleteComment,
     refetch: () => queryClient.invalidateQueries({ queryKey: commentKeys.list(opportunityId) }),
   }
 }
