@@ -10,13 +10,17 @@ if (typeof window !== 'undefined' && (!supabaseUrl || !supabaseAnonKey)) {
   )
 }
 
-// Shared config: disable navigator.locks to prevent AbortError in React Strict Mode
+// Shared config
+// 개발: lock no-op — React Strict Mode 더블마운트의 AbortError 방지
+// 프로덕션: navigator.locks 기본값 사용 — 동시 refresh 방지 (refresh token 이중 사용 → 세션 무효화 버그)
 const clientOptions = {
   auth: {
     flowType: 'pkce' as const,
     persistSession: true,
     detectSessionInUrl: true,
-    lock: async <R>(_name: string, _acquireTimeout: number, fn: () => Promise<R>): Promise<R> => await fn(),
+    ...(process.env.NODE_ENV === 'development' && {
+      lock: async <R>(_name: string, _acquireTimeout: number, fn: () => Promise<R>): Promise<R> => await fn(),
+    }),
   },
 }
 
