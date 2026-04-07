@@ -13,6 +13,7 @@ import { supabase } from '@/src/lib/supabase/client'
 import { useOpportunity, useUpdateOpportunity, useSimilarOpportunities, opportunityKeys, OPP_WITH_CREATOR_SELECT } from '@/src/hooks/useOpportunities'
 // creator profile은 useOpportunity에서 join으로 함께 로드
 import { useProjectUpdates } from '@/src/hooks/useProjectUpdates'
+import { useComments } from '@/src/hooks/useComments'
 import { useAuth } from '@/src/context/AuthContext'
 import { useCoffeeChats } from '@/src/hooks/useCoffeeChats'
 import { useInterests } from '@/src/hooks/useInterests'
@@ -58,7 +59,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
   const dragRef = useRef({ startY: 0, dragging: false })
   const { user } = useAuth()
   const updateOpportunity = useUpdateOpportunity()
-  const { expressInterest, loading: interestLoading } = useInterests({ opportunityId: currentId ?? '' })
+  const { expressInterest, checkInterest, loading: interestLoading } = useInterests({ opportunityId: currentId ?? '' })
   const { data: myChatsForProject = [] } = useCoffeeChats({
     opportunityId: currentId ?? undefined,
     enabled: !!currentId,
@@ -73,6 +74,9 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
   // creator는 opportunity에 join되어 함께 로드됨 (별도 쿼리 불필요)
   const creator = (opportunity?.creator ?? null) as any
   const { data: updates = [] } = useProjectUpdates(opportunity?.id)
+
+  // Prefetch comments — 소개 탭에서 이미 로딩, 활동 탭 전환 시 즉시 표시
+  useComments({ opportunityId: currentId ?? '', enabled: !!currentId })
 
   // Prefetch similar projects — starts immediately when modal opens
   const { data: similar = [], isLoading: similarLoading } = useSimilarOpportunities(currentId)
@@ -182,12 +186,14 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
     setShowTypeSelector(false)
   }, [currentId])
 
-  // 조회수 트래킹
+  // 기존 관심 표시 여부 + 조회수 트래킹
   useEffect(() => {
-    if (currentId) {
-      fetch(`/api/opportunities/${currentId}/view`, { method: 'POST' }).catch(() => {})
+    if (!currentId) return
+    fetch(`/api/opportunities/${currentId}/view`, { method: 'POST' }).catch(() => {})
+    if (user?.email) {
+      checkInterest(user.email).then(setHasInterested)
     }
-  }, [currentId])
+  }, [currentId, user?.email, checkInterest])
 
   useEffect(() => {
     setIsMobile(window.innerWidth < 640)
@@ -605,44 +611,17 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                         프로젝트 수정하기
                       </button>
                     ) : myMembership ? (
-                      /* Team member — no coffee chat CTA, just interest + leave is in sidebar */
-                      <div className="flex gap-2">
-                        <button
-                          onClick={handleInterest}
-                          disabled={interestLoading}
-                          className={`shrink-0 w-14 h-14 flex items-center justify-center rounded-2xl transition-all disabled:opacity-40 ${
-                            hasInterested
-                              ? 'bg-[#FFF0F0] dark:bg-[#3A1C1C] text-[#FF3B30]'
-                              : 'bg-[#F2F3F5] dark:bg-[#2C2C2E] text-txt-secondary hover:bg-[#E5E5EA]'
-                          }`}
-                        >
-                          <Heart size={18} className={hasInterested ? 'fill-current' : ''} />
-                        </button>
-                        <div className="flex-1 h-14 bg-[#E8F5E9] dark:bg-[#1B3A2D] rounded-2xl font-semibold text-[15px] text-[#34C759] flex items-center justify-center gap-2">
-                          참여 중인 프로젝트
-                        </div>
+                      <div className="flex-1 h-14 bg-[#E8F5E9] dark:bg-[#1B3A2D] rounded-2xl font-semibold text-[15px] text-[#34C759] flex items-center justify-center gap-2">
+                        참여 중인 프로젝트
                       </div>
                     ) : (
-                      <div className="flex gap-2">
-                        <button
-                          onClick={handleInterest}
-                          disabled={interestLoading}
-                          className={`shrink-0 w-14 h-14 flex items-center justify-center rounded-2xl transition-all disabled:opacity-40 ${
-                            hasInterested
-                              ? 'bg-[#FFF0F0] dark:bg-[#3A1C1C] text-[#FF3B30]'
-                              : 'bg-[#F2F3F5] dark:bg-[#2C2C2E] text-txt-secondary hover:bg-[#E5E5EA]'
-                          }`}
-                        >
-                          <Heart size={18} className={hasInterested ? 'fill-current' : ''} />
-                        </button>
-                        <button
-                          onClick={() => handleAction()}
-                          className="flex-1 h-14 bg-[#3182F6] text-white rounded-2xl font-semibold text-[16px] hover:bg-[#2272EB] active:scale-[0.97] transition-all flex items-center justify-center gap-2"
-                        >
-                          <Coffee size={16} />
-                          커피챗 신청하기
-                        </button>
-                      </div>
+                      <button
+                        onClick={() => handleAction()}
+                        className="w-full h-14 bg-[#3182F6] text-white rounded-2xl font-semibold text-[16px] hover:bg-[#2272EB] active:scale-[0.97] transition-all flex items-center justify-center gap-2"
+                      >
+                        <Coffee size={16} />
+                        커피챗 신청하기
+                      </button>
                     )}
                   </div>
 

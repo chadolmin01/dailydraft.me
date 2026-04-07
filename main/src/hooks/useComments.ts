@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useCallback } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/src/lib/supabase/client'
 
 export interface Comment {
@@ -16,29 +17,22 @@ export interface Comment {
   created_at: string
 }
 
+export const commentKeys = {
+  all: ['comments'] as const,
+  list: (opportunityId: string) => [...commentKeys.all, opportunityId] as const,
+}
+
 interface UseCommentsOptions {
   opportunityId: string
+  enabled?: boolean
 }
 
-interface UseCommentsReturn {
-  comments: Comment[]
-  loading: boolean
-  error: string | null
-  addComment: (data: { nickname: string; school?: string; content: string }) => Promise<boolean>
-  voteHelpful: (commentId: string, voterIdentifier: string) => Promise<boolean>
-  reportComment: (commentId: string, reporterIdentifier: string, reason?: string) => Promise<boolean>
-  refetch: () => Promise<void>
-}
+export function useComments({ opportunityId, enabled = true }: UseCommentsOptions) {
+  const queryClient = useQueryClient()
 
-export function useComments({ opportunityId }: UseCommentsOptions): UseCommentsReturn {
-  const [comments, setComments] = useState<Comment[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const fetchComments = useCallback(async () => {
-    try {
-      setLoading(true)
-      setError(null)
-
+  const { data: comments = [], isLoading: loading, error } = useQuery({
+    queryKey: commentKeys.list(opportunityId),
+    queryFn: async () => {
       const { data, error: fetchError } = await supabase
         .from('comments')
         .select('*')
@@ -48,24 +42,14 @@ export function useComments({ opportunityId }: UseCommentsOptions): UseCommentsR
         .order('created_at', { ascending: false })
 
       if (fetchError) throw fetchError
+      return (data as Comment[]) || []
+    },
+    enabled: !!opportunityId && enabled,
+    staleTime: 1000 * 60 * 2,
+  })
 
-      setComments((data as Comment[]) || [])
-    } catch (err) {
-      console.error('Failed to fetch comments:', err)
-      setError(err instanceof Error ? err.message : 'Failed to fetch comments')
-    } finally {
-      setLoading(false)
-    }
-  }, [opportunityId])
-
-  useEffect(() => {
-    if (opportunityId) {
-      fetchComments()
-    }
-  }, [opportunityId, fetchComments])
-
-  const addComment = useCallback(async (data: { nickname: string; school?: string; content: string }): Promise<boolean> => {
-    try {
+  const addCommentMutation = useMutation({
+    mutationFn: async (data: { nickname: string; school?: string; content: string }) => {
       const { data: userData } = await supabase.auth.getUser()
 
       const { error: insertError } = await supabase.from('comments').insert({
@@ -77,74 +61,79 @@ export function useComments({ opportunityId }: UseCommentsOptions): UseCommentsR
       })
 
       if (insertError) throw insertError
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: commentKeys.list(opportunityId) })
+    },
+  })
 
-      await fetchComments()
-      return true
-    } catch (err) {
-      console.error('Failed to add comment:', err)
-      setError(err instanceof Error ? err.message : 'Failed to add comment')
-      return false
-    }
-  }, [opportunityId, fetchComments])
-
-  const voteHelpful = useCallback(async (commentId: string, voterIdentifier: string): Promise<boolean> => {
-    try {
+  const voteHelpfulMutation = useMutation({
+    mutationFn: async ({ commentId, voterIdentifier }: { commentId: string; voterIdentifier: string }) => {
       const { data, error: rpcError } = await supabase.rpc('vote_helpful', {
         p_comment_id: commentId,
         p_voter_identifier: voterIdentifier,
       })
-
       if (rpcError) throw rpcError
-
-      if (data) {
-        // Optimistically update the UI
-        setComments(prev =>
-          prev.map(c =>
-            c.id === commentId ? { ...c, helpful_count: c.helpful_count + 1 } : c
-          )
+      return data as boolean
+    },
+    onSuccess: (voted, { commentId }) => {
+      if (voted) {
+        // Optimistic update
+        queryClient.setQueryData<Comment[]>(commentKeys.list(opportunityId), (old) =>
+          old?.map(c => c.id === commentId ? { ...c, helpful_count: c.helpful_count + 1 } : c)
         )
       }
+    },
+  })
 
-      return data as boolean
-    } catch (err) {
-      console.error('Failed to vote helpful:', err)
-      setError(err instanceof Error ? err.message : 'Failed to vote')
-      return false
-    }
-  }, [])
-
-  const reportComment = useCallback(async (
-    commentId: string,
-    reporterIdentifier: string,
-    reason?: string
-  ): Promise<boolean> => {
-    try {
+  const reportCommentMutation = useMutation({
+    mutationFn: async ({ commentId, reporterIdentifier, reason }: { commentId: string; reporterIdentifier: string; reason?: string }) => {
       const { data, error: rpcError } = await supabase.rpc('report_comment', {
         p_comment_id: commentId,
         p_reporter_identifier: reporterIdentifier,
         p_reason: reason || undefined,
       })
-
       if (rpcError) throw rpcError
-
-      // Refetch to handle auto-hide
-      await fetchComments()
-
       return data as boolean
-    } catch (err) {
-      console.error('Failed to report comment:', err)
-      setError(err instanceof Error ? err.message : 'Failed to report')
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: commentKeys.list(opportunityId) })
+    },
+  })
+
+  // 기존 인터페이스 호환 래퍼
+  const addComment = useCallback(async (data: { nickname: string; school?: string; content: string }) => {
+    try {
+      await addCommentMutation.mutateAsync(data)
+      return true
+    } catch {
       return false
     }
-  }, [fetchComments])
+  }, [addCommentMutation])
+
+  const voteHelpful = useCallback(async (commentId: string, voterIdentifier: string) => {
+    try {
+      return await voteHelpfulMutation.mutateAsync({ commentId, voterIdentifier })
+    } catch {
+      return false
+    }
+  }, [voteHelpfulMutation])
+
+  const reportComment = useCallback(async (commentId: string, reporterIdentifier: string, reason?: string) => {
+    try {
+      return await reportCommentMutation.mutateAsync({ commentId, reporterIdentifier, reason })
+    } catch {
+      return false
+    }
+  }, [reportCommentMutation])
 
   return {
     comments,
     loading,
-    error,
+    error: error?.message ?? null,
     addComment,
     voteHelpful,
     reportComment,
-    refetch: fetchComments,
+    refetch: () => queryClient.invalidateQueries({ queryKey: commentKeys.list(opportunityId) }),
   }
 }
