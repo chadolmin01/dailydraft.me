@@ -189,9 +189,6 @@ export function ProfileHero({ profile, email, strengths, isEditable = false }: P
 
   return (
     <div className="relative bg-surface-card rounded-2xl border border-border shadow-sm overflow-hidden mb-6">
-      {/* ── Top accent line ── */}
-      <div className="h-[3px] bg-gradient-to-r from-brand via-brand/50 to-transparent" />
-
       <div className="p-6 sm:p-8">
         {/* ── Guide restart (top-right) ── */}
         {isEditable && (
@@ -435,41 +432,33 @@ export function ProfileHero({ profile, email, strengths, isEditable = false }: P
           ) : null}
         </div>
 
-        {/* ════════════════════════════════════════════ */}
-        {/* SECTION 3: Info Grid                        */}
-        {/* ════════════════════════════════════════════ */}
+        {/* ── Info Grid ── */}
         <div className="mt-6 pt-6 border-t border-border/60">
-          <p className="text-[10px] font-mono font-medium text-txt-tertiary uppercase tracking-wider mb-4">Information</p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-4">
             {infoItems.map((item) => (
-              <div key={item.field} className="bg-surface-bg rounded-xl px-3.5 py-3 border border-transparent hover:border-border transition-colors">
-                <div className="flex items-center gap-1.5 mb-1.5">
-                  <item.icon size={12} className="text-txt-tertiary" />
-                  <span className="text-[10px] font-medium text-txt-tertiary uppercase tracking-wide">{item.label}</span>
-                </div>
+              <div key={item.field}>
+                <p className="text-xs text-txt-tertiary mb-0.5">{item.label}</p>
                 {isEditable ? (
                   <EditableField variant="inline"
                     value={item.value}
                     displayValue={item.displayValue}
                     draft={drafts[item.field]}
                     placeholder={item.placeholder}
-                    className="text-[13px] font-medium text-txt-primary"
+                    className="text-sm font-medium text-txt-primary"
                     onEdit={editField(item.field)}
                   />
                 ) : (
-                  <p className="text-[13px] font-medium text-txt-primary truncate">{(item.displayValue ?? item.value) || '미설정'}</p>
+                  <p className="text-sm font-medium text-txt-primary truncate">{(item.displayValue ?? item.value) || '미설정'}</p>
                 )}
               </div>
             ))}
           </div>
         </div>
 
-        {/* ════════════════════════════════════════════ */}
-        {/* SECTION 4: Interest Tags                    */}
-        {/* ════════════════════════════════════════════ */}
+        {/* ── Interest Tags ── */}
         {(interestTags.length > 0 || isEditable) && (
           <div className="mt-6 pt-6 border-t border-border/60">
-            <p className="text-[10px] font-mono font-medium text-txt-tertiary uppercase tracking-wider mb-3">Interests</p>
+            <p className="text-xs text-txt-tertiary mb-3">관심 분야</p>
             <div className="flex gap-2 flex-wrap">
               {interestTags.map((tag, idx) => (
                 <span key={idx} className="text-xs px-3 py-1.5 font-medium rounded-full inline-flex items-center gap-1 bg-brand/8 text-brand border border-brand/20 transition-all">
@@ -531,13 +520,11 @@ export function ProfileHero({ profile, email, strengths, isEditable = false }: P
           </div>
         )}
 
-        {/* ════════════════════════════════════════════ */}
-        {/* SECTION 5: Strengths                        */}
-        {/* ════════════════════════════════════════════ */}
+        {/* ── Strengths ── */}
         {strengths.length > 0 && (
           <div className="mt-5">
-            <p className="text-[10px] font-mono font-medium text-txt-tertiary uppercase tracking-wider mb-3 flex items-center gap-1.5">
-              <Sparkles size={10} className="text-indicator-premium" /> Strengths
+            <p className="text-xs text-txt-tertiary mb-3 flex items-center gap-1.5">
+              <Sparkles size={10} /> 강점
             </p>
             <div className="flex gap-2 flex-wrap">
               {strengths.map((s, idx) => (

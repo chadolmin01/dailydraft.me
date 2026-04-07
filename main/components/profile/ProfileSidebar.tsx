@@ -72,7 +72,7 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
       {/* ── Links ── */}
       {showLinksSection && (
         <div className="bg-surface-card rounded-2xl border border-border shadow-sm p-5">
-          <p className="text-[10px] font-mono font-medium text-txt-tertiary uppercase tracking-wider mb-3.5">Links</p>
+          <p className="text-xs font-semibold text-txt-secondary mb-3">링크</p>
           <div className="space-y-1">
             {isEditable ? (
               <>
@@ -117,7 +117,7 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
       {/* ── Tech Stack ── */}
       {(isEditable || (skills && skills.length > 0)) && (
         <div className="bg-surface-card rounded-2xl border border-border shadow-sm p-5">
-          <p className="text-[10px] font-mono font-medium text-txt-tertiary uppercase tracking-wider mb-3.5">Tech Stack</p>
+          <p className="text-xs font-semibold text-txt-secondary mb-3">기술 스택</p>
           <div className="flex flex-wrap gap-1.5">
             {(skills || []).map((skill, idx) => (
               <span key={idx} className="text-xs px-2.5 py-1 font-medium rounded-full inline-flex items-center gap-1 transition-all bg-brand/8 text-brand border border-brand/20">
@@ -189,8 +189,8 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
 
         return (
           <div className="bg-surface-card rounded-2xl border border-border shadow-sm p-5">
-            <p className="text-[10px] font-mono font-medium text-txt-tertiary uppercase tracking-wider mb-4 flex items-center gap-1.5">
-              <Sparkles size={10} className="text-indicator-premium" /> Personality
+            <p className="text-xs font-semibold text-txt-secondary mb-4 flex items-center gap-1.5">
+              <Sparkles size={10} /> 성향 분석
             </p>
             <div className="space-y-3">
               {traits.map(({ key, label, low, high }) => {
@@ -229,7 +229,7 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
 
       {/* ── Completion ── */}
       <div className="bg-surface-card rounded-2xl border border-border shadow-sm p-5">
-        <p className="text-[10px] font-mono font-medium text-txt-tertiary uppercase tracking-wider mb-3.5">Completion</p>
+        <p className="text-xs font-semibold text-txt-secondary mb-3">프로필 완성도</p>
         <div className="flex items-end justify-between mb-2.5">
           <span className="text-2xl font-bold text-txt-primary tracking-tight">{completion.pct}%</span>
           <span className="text-[11px] text-txt-tertiary">{completion.completedCount}/{completion.fields.length}</span>
