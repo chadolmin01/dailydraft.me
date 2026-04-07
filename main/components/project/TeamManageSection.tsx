@@ -59,8 +59,7 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
     queryFn: async () => {
       const res = await fetch(`/api/opportunities/${opportunityId}/team`)
       if (!res.ok) throw new Error('Failed to fetch team')
-      const json = await res.json()
-      return json.data
+      return await res.json()
     },
   })
 

@@ -49,7 +49,7 @@ export function ApplicationManageSection({ opportunityId }: { opportunityId: str
       const res = await fetch(`/api/applications?type=received&opportunityId=${opportunityId}`)
       if (!res.ok) throw new Error('Failed to fetch applications')
       const json = await res.json()
-      return json.data || []
+      return Array.isArray(json) ? json : json.data || []
     },
   })
 
