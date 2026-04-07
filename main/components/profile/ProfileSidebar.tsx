@@ -18,7 +18,7 @@ import { SKILL_SUGGESTIONS } from './edit/constants'
 import type { Profile } from './types'
 import { EditableField } from './EditableField'
 
-/* ── ProfileSidebar ─────────────────────────────────────── */
+/* ── ProfileSidebar (now used as About tab content) ─── */
 
 interface ProfileSidebarProps {
   profile: Profile
@@ -67,12 +67,12 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-10">
 
       {/* ── Links ── */}
       {showLinksSection && (
-        <div className="bg-surface-card rounded-2xl border border-border shadow-sm p-5">
-          <p className="text-xs font-semibold text-txt-secondary mb-3">링크</p>
+        <section>
+          <h3 className="text-sm font-bold text-txt-primary mb-3">링크</h3>
           <div className="space-y-1">
             {isEditable ? (
               <>
@@ -83,18 +83,18 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
             ) : (
               <>
                 {profile?.portfolio_url && (
-                  <a href={profile.portfolio_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 px-3 py-2 text-xs text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary transition-colors rounded-lg">
-                    <Globe size={13} className="text-txt-tertiary" /> Portfolio
+                  <a href={profile.portfolio_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 px-2 py-2 text-sm text-brand hover:underline transition-colors">
+                    <Globe size={14} className="text-txt-tertiary" /> {profile.portfolio_url}
                   </a>
                 )}
                 {profile?.github_url && (
-                  <a href={profile.github_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 px-3 py-2 text-xs text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary transition-colors rounded-lg">
-                    <Github size={13} className="text-txt-tertiary" /> GitHub
+                  <a href={profile.github_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 px-2 py-2 text-sm text-brand hover:underline transition-colors">
+                    <Github size={14} className="text-txt-tertiary" /> {profile.github_url}
                   </a>
                 )}
                 {profile?.linkedin_url && (
-                  <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 px-3 py-2 text-xs text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary transition-colors rounded-lg">
-                    <Linkedin size={13} className="text-txt-tertiary" /> LinkedIn
+                  <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 px-2 py-2 text-sm text-brand hover:underline transition-colors">
+                    <Linkedin size={14} className="text-txt-tertiary" /> {profile.linkedin_url}
                   </a>
                 )}
               </>
@@ -111,20 +111,20 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
               </button>
             </div>
           )}
-        </div>
+        </section>
       )}
 
       {/* ── Tech Stack ── */}
       {(isEditable || (skills && skills.length > 0)) && (
-        <div className="bg-surface-card rounded-2xl border border-border shadow-sm p-5">
-          <p className="text-xs font-semibold text-txt-secondary mb-3">기술 스택</p>
-          <div className="flex flex-wrap gap-1.5">
+        <section>
+          <h3 className="text-sm font-bold text-txt-primary mb-3">기술 스택</h3>
+          <div className="flex flex-wrap gap-2">
             {(skills || []).map((skill, idx) => (
-              <span key={idx} className="text-xs px-2.5 py-1 font-medium rounded-full inline-flex items-center gap-1 transition-all bg-brand/8 text-brand border border-brand/20">
+              <span key={idx} className="text-sm px-3 py-1.5 font-medium rounded-full inline-flex items-center gap-1 bg-surface-sunken text-txt-primary border border-border">
                 {skill.name}
                 {isEditable && showSkillInput && (
                   <button onClick={() => removeSkill(skill.name)} className="hover:text-status-danger-text transition-colors p-0.5 -mr-0.5">
-                    <X size={8} />
+                    <X size={10} />
                   </button>
                 )}
               </span>
@@ -132,21 +132,21 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
             {isEditable && !showSkillInput && (
               <button
                 onClick={() => setShowSkillInput(true)}
-                className="text-xs text-txt-tertiary border border-dashed border-border/80 px-2.5 py-1 font-medium rounded-full hover:border-brand hover:text-brand transition-colors inline-flex items-center gap-0.5"
+                className="text-sm text-txt-tertiary border border-dashed border-border px-3 py-1.5 font-medium rounded-full hover:border-txt-tertiary hover:text-txt-secondary transition-colors inline-flex items-center gap-1"
               >
-                <Plus size={8} /> 추가
+                <Plus size={10} /> 추가
               </button>
             )}
           </div>
           {isEditable && showSkillInput && (
             <div className="mt-3 space-y-2.5">
-              <p className="text-[11px] text-txt-tertiary">탭하여 추가 · 태그의 X로 제거</p>
+              <p className="text-xs text-txt-tertiary">탭하여 추가 · 태그의 X로 제거</p>
               <div className="flex flex-wrap gap-1.5">
                 {SKILL_SUGGESTIONS.filter(s => !(skills || []).some(sk => sk.name === s)).map(s => (
                   <button
                     key={s}
                     onClick={() => addSkill(s)}
-                    className="text-xs px-2.5 py-1 border border-border bg-surface-sunken text-txt-secondary rounded-full hover:border-brand hover:text-brand transition-colors"
+                    className="text-xs px-2.5 py-1 border border-border bg-surface-sunken text-txt-secondary rounded-full hover:border-txt-tertiary hover:text-txt-primary transition-colors"
                   >
                     + {s}
                   </button>
@@ -160,7 +160,7 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
                   onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addSkill(newSkillName) } }}
                   placeholder="직접 입력"
                   maxLength={30}
-                  className="flex-1 px-3 py-1.5 text-xs border border-border bg-surface-card rounded-lg focus:outline-none focus:border-brand transition-colors"
+                  className="flex-1 px-3 py-1.5 text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:border-brand transition-colors"
                 />
                 <button onClick={() => addSkill(newSkillName)} className="px-2.5 py-1.5 text-xs border border-border text-txt-secondary hover:bg-surface-sunken transition-colors rounded-lg">
                   <Plus size={12} />
@@ -174,7 +174,7 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
               </button>
             </div>
           )}
-        </div>
+        </section>
       )}
 
       {/* ── Personality ── */}
@@ -188,27 +188,25 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
         ]
 
         return (
-          <div className="bg-surface-card rounded-2xl border border-border shadow-sm p-5">
-            <p className="text-xs font-semibold text-txt-secondary mb-4 flex items-center gap-1.5">
-              <Sparkles size={10} /> 성향 분석
-            </p>
-            <div className="space-y-3">
+          <section>
+            <h3 className="text-sm font-bold text-txt-primary mb-4 flex items-center gap-1.5">
+              성향 분석
+            </h3>
+            <div className="space-y-4">
               {traits.map(({ key, label, low, high }) => {
                 const raw = p[key]
                 if (raw == null) return null
                 const value = Math.min(raw, 5)
                 return (
                   <div key={key}>
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-[11px] font-medium text-txt-secondary">{label}</span>
-                    </div>
-                    <div className="relative">
+                    <span className="text-xs font-medium text-txt-secondary">{label}</span>
+                    <div className="mt-1.5">
                       <div className="w-full h-1.5 bg-surface-sunken rounded-full overflow-hidden">
-                        <div className="h-full bg-brand rounded-full transition-all duration-500" style={{ width: `${(value / 5) * 100}%` }} />
+                        <div className="h-full bg-txt-primary rounded-full transition-all duration-500" style={{ width: `${(value / 5) * 100}%` }} />
                       </div>
                       <div className="flex justify-between mt-1">
-                        <span className="text-[9px] text-txt-disabled">{low}</span>
-                        <span className="text-[9px] text-txt-disabled">{high}</span>
+                        <span className="text-[10px] text-txt-disabled">{low}</span>
+                        <span className="text-[10px] text-txt-disabled">{high}</span>
                       </div>
                     </div>
                   </div>
@@ -218,46 +216,36 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
             {isEditable && (
               <Link
                 href="/onboarding?mode=redo-chat"
-                className="flex items-center gap-1.5 mt-4 pt-3 border-t border-border/40 text-xs font-semibold text-txt-tertiary hover:text-brand transition-colors"
+                className="flex items-center gap-1.5 mt-4 pt-3 border-t border-border/40 text-xs font-semibold text-txt-tertiary hover:text-txt-primary transition-colors"
               >
                 <Sparkles size={10} /> AI 온보딩 다시하기 →
               </Link>
             )}
-          </div>
+          </section>
         )
       })()}
 
       {/* ── Completion ── */}
-      <div className="bg-surface-card rounded-2xl border border-border shadow-sm p-5">
-        <p className="text-xs font-semibold text-txt-secondary mb-3">프로필 완성도</p>
-        <div className="flex items-end justify-between mb-2.5">
-          <span className="text-2xl font-bold text-txt-primary tracking-tight">{completion.pct}%</span>
-          <span className="text-[11px] text-txt-tertiary">{completion.completedCount}/{completion.fields.length}</span>
-        </div>
-        <div className="w-full h-1.5 bg-surface-sunken rounded-full overflow-hidden mb-4">
-          <div
-            className="h-full rounded-full transition-all duration-500"
-            style={{
-              width: `${completion.pct}%`,
-              background: completion.pct === 100
-                ? 'var(--indicator-online)'
-                : 'var(--brand)',
-            }}
-          />
-        </div>
-        <div className="space-y-1.5">
-          {completion.fields.map((f) => (
-            <div key={f.label} className="flex items-center gap-2.5 text-xs py-0.5">
-              {f.done ? (
-                <span className="w-4 h-4 bg-indicator-online text-white flex items-center justify-center rounded-full shrink-0"><Check size={9} /></span>
-              ) : (
+      {completion.pct < 100 && (
+        <section>
+          <h3 className="text-sm font-bold text-txt-primary mb-3">프로필 완성도</h3>
+          <div className="flex items-end justify-between mb-2">
+            <span className="text-lg font-bold text-txt-primary">{completion.pct}%</span>
+            <span className="text-xs text-txt-tertiary">{completion.completedCount}/{completion.fields.length}</span>
+          </div>
+          <div className="w-full h-1.5 bg-surface-sunken rounded-full overflow-hidden mb-4">
+            <div className="h-full bg-txt-primary rounded-full transition-all duration-500" style={{ width: `${completion.pct}%` }} />
+          </div>
+          <div className="space-y-1.5">
+            {completion.fields.filter(f => !f.done).map((f) => (
+              <div key={f.label} className="flex items-center gap-2.5 text-xs py-0.5">
                 <span className="w-4 h-4 border border-border rounded-full shrink-0" />
-              )}
-              <span className={f.done ? 'text-txt-tertiary line-through' : 'text-txt-secondary'}>{f.label}</span>
-            </div>
-          ))}
-        </div>
-      </div>
+                <span className="text-txt-secondary">{f.label}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   )
 }

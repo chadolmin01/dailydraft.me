@@ -188,8 +188,7 @@ export function ProfileHero({ profile, email, strengths, isEditable = false }: P
   /* ════════════════════════════════════════════════════════ */
 
   return (
-    <div className="relative bg-surface-card rounded-2xl border border-border shadow-sm overflow-hidden mb-6">
-      <div className="p-6 sm:p-8">
+    <div className="relative mb-8">
         {/* ── Guide restart (top-right) ── */}
         {isEditable && (
           <div className="absolute top-4 right-4 sm:top-5 sm:right-6 z-10 group/guide">
@@ -375,7 +374,7 @@ export function ProfileHero({ profile, email, strengths, isEditable = false }: P
                   <span className="font-medium text-txt-secondary">{views}</span>
                 </span>
                 <span className="flex items-center gap-1 text-xs text-txt-tertiary">
-                  <Heart size={12} className={likes > 0 ? 'text-rose-400 fill-rose-400' : ''} />
+                  <Heart size={12} className={likes > 0 ? 'text-status-danger-accent fill-status-danger-accent' : ''} />
                   <span className="font-medium text-txt-secondary">{likes}</span>
                 </span>
               </div>
@@ -558,7 +557,6 @@ export function ProfileHero({ profile, email, strengths, isEditable = false }: P
             </button>
           </div>
         )}
-      </div>
     </div>
   )
 }
