@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/src/lib/supabase/client'
+import { useAuth } from '@/src/context/AuthContext'
 
 export type CoffeeChatOutcome = 'team_formed' | 'pending' | 'no_match'
 
@@ -46,6 +47,7 @@ interface UseCoffeeChatsOptions {
 // ── Query: fetch coffee chats ──
 export function useCoffeeChats(options: UseCoffeeChatsOptions = {}) {
   const { opportunityId, targetUserId, asOwner = false, enabled = true } = options
+  const { user, isLoading: isAuthLoading } = useAuth()
 
   return useQuery({
     queryKey: targetUserId
@@ -56,9 +58,7 @@ export function useCoffeeChats(options: UseCoffeeChatsOptions = {}) {
           ? coffeeChatKeys.owner()
           : coffeeChatKeys.requester(),
     queryFn: async () => {
-      const { data: userData, error: authError } = await supabase.auth.getUser()
-      if (authError) throw authError
-      if (!userData?.user) return []
+      if (!user) return []
 
       let query = supabase.from('coffee_chats').select('*')
 
@@ -66,13 +66,13 @@ export function useCoffeeChats(options: UseCoffeeChatsOptions = {}) {
         // Person mode: 내가 이 사람에게 보낸 커피챗 조회
         query = query
           .eq('target_user_id', targetUserId)
-          .eq('requester_user_id', userData.user.id)
+          .eq('requester_user_id', user.id)
       } else if (opportunityId) {
         query = query.eq('opportunity_id', opportunityId)
       } else if (asOwner) {
-        query = query.eq('owner_user_id', userData.user.id)
+        query = query.eq('owner_user_id', user.id)
       } else {
-        query = query.eq('requester_user_id', userData.user.id)
+        query = query.eq('requester_user_id', user.id)
       }
 
       query = query.order('created_at', { ascending: false })
@@ -82,7 +82,7 @@ export function useCoffeeChats(options: UseCoffeeChatsOptions = {}) {
       return (data as CoffeeChat[]) || []
     },
     staleTime: 1000 * 60 * 2,
-    enabled,
+    enabled: !isAuthLoading && enabled && !!user,
   })
 }
 
