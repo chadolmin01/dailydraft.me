@@ -62,6 +62,7 @@ export function ProfileHero({ profile, email, strengths, isEditable = false }: P
   const avatarInputRef = useRef<HTMLInputElement>(null)
   const bioRef = useRef<HTMLTextAreaElement>(null)
   const [avatarUploading, setAvatarUploading] = useState(false)
+  const [avatarError, setAvatarError] = useState<string | null>(null)
   const [editingBio, setEditingBio] = useState(false)
 
   // Inline interest tags editing
@@ -112,24 +113,28 @@ export function ProfileHero({ profile, email, strengths, isEditable = false }: P
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file || !user?.id) return
-    if (!file.type.startsWith('image/')) return
-    if (file.size > 5 * 1024 * 1024) return
+    if (!file.type.startsWith('image/')) { setAvatarError('이미지 파일만 가능합니다'); return }
+    if (file.size > 5 * 1024 * 1024) { setAvatarError('5MB 이하만 가능합니다'); return }
     setAvatarUploading(true)
+    setAvatarError(null)
     try {
-      const path = `${user.id}/avatar-${Date.now()}.jpg`
+      const ext = file.type.split('/')[1] || 'jpg'
+      const path = `${user.id}/avatar-${Date.now()}.${ext}`
       const { error: uploadError } = await supabase.storage
         .from('profile-images')
         .upload(path, file, { upsert: true, contentType: file.type })
-      if (uploadError) throw uploadError
+      if (uploadError) {
+        console.error('[avatar] storage upload error:', uploadError)
+        throw uploadError
+      }
       const { data: { publicUrl } } = supabase.storage
         .from('profile-images')
         .getPublicUrl(path)
-      updateProfile.mutate({ avatar_url: publicUrl }, {
-        onSuccess: () => toast.success('프로필 사진이 변경되었습니다'),
-        onError: () => toast.error('프로필 사진 변경에 실패했습니다'),
-      })
-    } catch {
-      toast.error('이미지 업로드에 실패했습니다')
+      await updateProfile.mutateAsync({ avatar_url: publicUrl })
+      toast.success('프로필 사진이 변경되었습니다')
+    } catch (err) {
+      console.error('[avatar] upload failed:', err)
+      setAvatarError('업로드 실패 — 콘솔을 확인해주세요')
     } finally {
       setAvatarUploading(false)
       if (avatarInputRef.current) avatarInputRef.current.value = ''
@@ -229,31 +234,36 @@ export function ProfileHero({ profile, email, strengths, isEditable = false }: P
         {/* ════════════════════════════════════════════ */}
         <div className="flex items-start gap-5 sm:gap-6">
           {/* Avatar */}
-          <div
-            className={`relative w-[72px] h-[72px] sm:w-24 sm:h-24 rounded-2xl shrink-0 overflow-hidden bg-brand-bg border-2 border-border shadow-sm flex items-center justify-center ${isEditable ? 'group/avatar cursor-pointer' : ''}`}
-            onClick={isEditable ? () => avatarInputRef.current?.click() : undefined}
-          >
-            {profile?.avatar_url ? (
-              <Image src={profile.avatar_url} alt="" width={96} height={96} className="object-cover w-full h-full" onError={(e) => { e.currentTarget.style.display = 'none' }} />
-            ) : (
-              <span className="text-xl sm:text-2xl font-bold text-brand">
-                {cleanNickname(profile?.nickname || '').slice(0, 2).toUpperCase() || 'U'}
-              </span>
-            )}
-            {isEditable && (
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/avatar:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1">
-                {avatarUploading ? (
-                  <Loader2 size={18} className="text-white animate-spin" />
-                ) : (
-                  <>
-                    <Camera size={16} className="text-white" />
-                    <span className="text-[10px] font-semibold text-white">{profile?.avatar_url ? '변경' : '추가'}</span>
-                  </>
-                )}
-              </div>
-            )}
-            {isEditable && (
-              <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
+          <div className="flex flex-col items-center gap-1 shrink-0">
+            <div
+              className={`relative w-[72px] h-[72px] sm:w-24 sm:h-24 rounded-2xl overflow-hidden bg-brand-bg border-2 border-border shadow-sm flex items-center justify-center ${isEditable ? 'group/avatar cursor-pointer' : ''}`}
+              onClick={isEditable ? () => avatarInputRef.current?.click() : undefined}
+            >
+              {profile?.avatar_url ? (
+                <Image src={profile.avatar_url} alt="" width={96} height={96} className="object-cover w-full h-full" onError={(e) => { e.currentTarget.style.display = 'none' }} />
+              ) : (
+                <span className="text-xl sm:text-2xl font-bold text-brand">
+                  {cleanNickname(profile?.nickname || '').slice(0, 2).toUpperCase() || 'U'}
+                </span>
+              )}
+              {isEditable && (
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/avatar:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1">
+                  {avatarUploading ? (
+                    <Loader2 size={18} className="text-white animate-spin" />
+                  ) : (
+                    <>
+                      <Camera size={16} className="text-white" />
+                      <span className="text-[10px] font-semibold text-white">{profile?.avatar_url ? '변경' : '추가'}</span>
+                    </>
+                  )}
+                </div>
+              )}
+              {isEditable && (
+                <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
+              )}
+            </div>
+            {avatarError && (
+              <p className="text-[11px] text-[#FF3B30] text-center leading-tight max-w-[72px] sm:max-w-24">{avatarError}</p>
             )}
           </div>
 
