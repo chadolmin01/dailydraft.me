@@ -92,17 +92,17 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
             <Eye size={13} />
             조회 {opportunity.views_count ?? 0}
           </span>
-          {!isOwner && handleInterest ? (
+          {handleInterest ? (
             <button
               onClick={handleInterest}
               disabled={interestLoading}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-full border transition-colors active:scale-[0.97] ${
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border text-[14px] font-medium transition-colors active:scale-[0.96] ${
                 hasInterested
-                  ? 'bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/30 text-rose-500'
-                  : 'border-border hover:bg-surface-sunken text-txt-tertiary hover:text-txt-secondary'
+                  ? 'bg-rose-50 dark:bg-rose-500/10 border-rose-300 dark:border-rose-500/30 text-rose-500'
+                  : 'border-border hover:bg-rose-50 dark:hover:bg-rose-500/5 text-txt-tertiary hover:text-rose-500 hover:border-rose-200'
               }`}
             >
-              <Heart size={13} className={hasInterested ? 'fill-rose-400 text-rose-400' : ''} />
+              <Heart size={15} className={hasInterested ? 'fill-rose-400 text-rose-400' : ''} />
               관심 {(opportunity.interest_count ?? 0) + (hasInterested ? 1 : 0)}
             </button>
           ) : (

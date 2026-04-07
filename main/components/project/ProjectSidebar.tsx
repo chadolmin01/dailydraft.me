@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import {
   Coffee, Clock,
   Briefcase, MapPin, Sparkles,
-  Eye, Heart, ExternalLink, Edit3, Code,
+  Eye, ExternalLink, Edit3, Code,
   Palette, Megaphone, PenTool, BarChart3,
   Monitor, Camera, ArrowRight, Check, X as XIcon, Loader2,
   Users, LogOut, Lock, Unlock,
@@ -259,7 +259,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
               <p className="text-[13px] text-txt-disabled py-1">모집 중인 포지션이 없습니다</p>
             )}
 
-            {/* 커피챗 신청하기 — 포지션 바로 아래 */}
+            {/* CTA: 커피챗 */}
             {!hideCta && !isOwner && !existingChat && (
               <button
                 onClick={() => handleAction()}

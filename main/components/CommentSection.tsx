@@ -102,28 +102,17 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
   const hasMore = comments.length > INITIAL_VISIBLE
 
   return (
-    <div className="bg-surface-card rounded-xl border border-border">
-      {/* Header */}
-      <div className="p-4 border-b border-border">
-        <h3 className="text-[10px] font-medium text-txt-tertiary flex items-center gap-2">
-          <MessageCircle size={14} />
-          {COMMENT_LABEL} ({comments.length})
-        </h3>
-      </div>
-
-      {/* Comment Form — login only */}
+    <div>
+      {/* Comment Form */}
       {user && profile ? (
-        <form onSubmit={handleSubmit} className="p-4 bg-surface-sunken border-b border-border">
+        <form onSubmit={handleSubmit} className="bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl p-4 mb-4">
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-7 h-7 bg-surface-inverse text-txt-inverse rounded-full flex items-center justify-center text-xs font-bold shrink-0">
+            <div className="w-7 h-7 bg-surface-inverse text-txt-inverse rounded-full flex items-center justify-center text-[11px] font-bold shrink-0">
               {cleanNickname(profile.nickname).charAt(0)}
             </div>
-            <span className="text-sm font-medium text-txt-primary">{cleanNickname(profile.nickname)}</span>
+            <span className="text-[13px] font-semibold text-txt-primary">{cleanNickname(profile.nickname)}</span>
             {profile.university && (
-              <>
-                <span className="text-border-strong">·</span>
-                <span className="text-xs text-txt-disabled font-mono">{profile.university}</span>
-              </>
+              <span className="text-[12px] text-txt-disabled">{profile.university}</span>
             )}
           </div>
           <div className="flex gap-2">
@@ -132,28 +121,28 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
               placeholder={`${COMMENT_VERB}을 남겨주세요...`}
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="flex-1 px-3 py-1.5 text-base sm:text-sm border border-border focus:outline-none focus:border-border bg-surface-card rounded-xl text-txt-primary placeholder-txt-disabled"
+              className="flex-1 px-3.5 py-2 text-[14px] bg-white dark:bg-[#2C2C2E] rounded-xl text-txt-primary placeholder-txt-disabled border-0 focus:outline-none focus:ring-2 focus:ring-[#3182F6]/30"
               maxLength={500}
             />
             <button
               type="submit"
               disabled={submitting || !content.trim()}
-              className="px-3 py-1.5 bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 transition-colors disabled:bg-surface-sunken disabled:text-txt-disabled disabled:border-border disabled:cursor-not-allowed flex items-center justify-center"
+              className="px-3.5 py-2 bg-[#3182F6] text-white rounded-xl hover:bg-[#2272EB] transition-colors disabled:bg-[#F2F3F5] dark:disabled:bg-[#2C2C2E] disabled:text-txt-disabled disabled:cursor-not-allowed flex items-center justify-center active:scale-[0.97]"
               aria-label="댓글 전송"
             >
               {submitting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
             </button>
           </div>
-          <div className="text-[10px] text-txt-tertiary font-mono text-right mt-1">
-            {content.length}/500
-          </div>
+          {content.length > 0 && (
+            <p className="text-[11px] text-txt-disabled text-right mt-1.5">{content.length}/500</p>
+          )}
         </form>
       ) : (
-        <div className="p-5 bg-surface-sunken border-b border-border text-center">
-          <p className="text-sm text-txt-tertiary mb-3">로그인하고 {COMMENT_VERB}을 남겨보세요</p>
+        <div className="bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl p-5 mb-4 text-center">
+          <p className="text-[13px] text-txt-tertiary mb-3">로그인하고 {COMMENT_VERB}을 남겨보세요</p>
           <button
             onClick={onLoginClick}
-            className="inline-flex items-center gap-2 bg-surface-inverse text-txt-inverse px-5 py-2 rounded-xl text-xs font-bold border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97]"
+            className="inline-flex items-center gap-1.5 bg-[#3182F6] text-white px-5 py-2 rounded-full text-[13px] font-semibold hover:bg-[#2272EB] transition-colors active:scale-[0.97]"
           >
             로그인하기 <ArrowRight size={12} />
           </button>
@@ -161,42 +150,37 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
       )}
 
       {/* Comments List */}
-      <div className="divide-y divide-border">
-        {loading ? (
-          <div className="p-4">
-            <SkeletonFeed count={3} />
+      {loading ? (
+        <SkeletonFeed count={3} />
+      ) : comments.length === 0 ? (
+        <div className="py-8 text-center">
+          <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-[#F2F3F5] dark:bg-[#2C2C2E] empty-float mb-3">
+            <MessageCircle size={18} className="text-txt-disabled" strokeWidth={1.5} />
           </div>
-        ) : comments.length === 0 ? (
-          <div className="p-8 text-center">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-surface-sunken empty-float mb-3">
-              <MessageCircle size={20} className="text-txt-tertiary" strokeWidth={1.5} />
-            </div>
-            <p className="text-sm font-medium text-txt-secondary mb-1">아직 {COMMENT_LABEL}이 없습니다</p>
-            <p className="text-xs text-txt-disabled">첫 번째 {COMMENT_VERB}을 남겨보세요!</p>
-          </div>
-        ) : (
-          <>
-            {visibleComments.map((comment) => (
-              <CommentItem
-                key={comment.id}
-                comment={comment}
-                hasVoted={votedComments.has(comment.id)}
-                hasReported={reportedComments.has(comment.id)}
-                onVote={() => handleVote(comment.id)}
-                onReport={() => handleReport(comment.id)}
-              />
-            ))}
-            {hasMore && !showAll && (
-              <button
-                onClick={() => setShowAll(true)}
-                className="w-full p-3 text-xs font-medium text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken transition-colors"
-              >
-                {COMMENT_LABEL} {comments.length - INITIAL_VISIBLE}개 더 보기
-              </button>
-            )}
-          </>
-        )}
-      </div>
+          <p className="text-[13px] text-txt-tertiary">아직 {COMMENT_LABEL}이 없어요</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {visibleComments.map((comment) => (
+            <CommentItem
+              key={comment.id}
+              comment={comment}
+              hasVoted={votedComments.has(comment.id)}
+              hasReported={reportedComments.has(comment.id)}
+              onVote={() => handleVote(comment.id)}
+              onReport={() => handleReport(comment.id)}
+            />
+          ))}
+          {hasMore && !showAll && (
+            <button
+              onClick={() => setShowAll(true)}
+              className="w-full py-2.5 text-[13px] font-medium text-[#3182F6] hover:text-[#2272EB] transition-colors rounded-xl hover:bg-[#F7F8F9] dark:hover:bg-[#1C1C1E]"
+            >
+              {COMMENT_LABEL} {comments.length - INITIAL_VISIBLE}개 더 보기
+            </button>
+          )}
+        </div>
+      )}
     </div>
   )
 }
@@ -230,48 +214,47 @@ const CommentItem: React.FC<CommentItemProps> = ({
   }
 
   return (
-    <div className="p-4">
+    <div className="bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl p-4">
       {/* Author info */}
       <div className="flex items-center gap-2 mb-2">
-        <div className="w-6 h-6 bg-surface-inverse text-txt-inverse rounded-full flex items-center justify-center text-[10px] font-bold shrink-0">
+        <div className="w-7 h-7 bg-surface-inverse text-txt-inverse rounded-full flex items-center justify-center text-[11px] font-bold shrink-0">
           {cleanNickname(comment.nickname).charAt(0)}
         </div>
-        <span className="font-bold text-sm text-txt-primary">{cleanNickname(comment.nickname)}</span>
+        <span className="font-semibold text-[13px] text-txt-primary">{cleanNickname(comment.nickname)}</span>
         {comment.school && (
-          <>
-            <span className="text-border-strong">·</span>
-            <span className="text-xs text-txt-disabled font-mono">{comment.school}</span>
-          </>
+          <span className="text-[12px] text-txt-disabled">{comment.school}</span>
         )}
-        <span className="text-xs text-txt-disabled ml-auto">{formatDate(comment.created_at)}</span>
+        <span className="text-[12px] text-txt-disabled ml-auto">{formatDate(comment.created_at)}</span>
       </div>
 
       {/* Content */}
-      <p className="text-sm text-txt-secondary leading-relaxed mb-3 break-keep pl-8">{comment.content}</p>
+      <p className="text-[14px] text-txt-primary leading-relaxed mb-3 break-keep pl-9 whitespace-pre-line">{comment.content}</p>
 
       {/* Actions */}
-      <div className="flex items-center gap-4 pl-8">
+      <div className="flex items-center gap-1 pl-9">
         <button
           onClick={onVote}
           disabled={hasVoted}
-          className={`flex items-center gap-1.5 text-xs transition-colors ${
+          className={`flex items-center gap-1.5 text-[12px] font-medium px-2.5 py-1 rounded-full transition-colors ${
             hasVoted
-              ? 'text-brand font-bold cursor-default'
-              : 'text-txt-disabled hover:text-brand'
+              ? 'bg-[#3182F6]/10 text-[#3182F6] cursor-default'
+              : 'text-txt-tertiary hover:bg-white dark:hover:bg-[#2C2C2E] hover:text-[#3182F6]'
           }`}
         >
-          <ThumbsUp size={14} className={hasVoted ? 'icon-bounce' : ''} />
-          <span>도움이 됐어요 {comment.helpful_count > 0 && `(${comment.helpful_count})`}</span>
+          <ThumbsUp size={12} className={hasVoted ? 'icon-bounce' : ''} />
+          <span>도움됨{comment.helpful_count > 0 && ` ${comment.helpful_count}`}</span>
         </button>
 
         <button
           onClick={onReport}
           disabled={hasReported}
-          className={`flex items-center gap-1.5 text-xs transition-colors ${
-            hasReported ? 'text-status-danger-text cursor-default' : 'text-txt-disabled hover:text-status-danger-text'
+          className={`flex items-center gap-1.5 text-[12px] font-medium px-2.5 py-1 rounded-full transition-colors ${
+            hasReported
+              ? 'text-status-danger-text cursor-default'
+              : 'text-txt-disabled hover:bg-white dark:hover:bg-[#2C2C2E] hover:text-status-danger-text'
           }`}
         >
-          <Flag size={12} />
+          <Flag size={11} />
           <span>{hasReported ? '신고됨' : '신고'}</span>
         </button>
       </div>

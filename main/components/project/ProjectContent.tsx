@@ -172,7 +172,7 @@ export const ProjectContent: React.FC<ProjectContentProps> = ({
 
             {/* 댓글 섹션 */}
             <div>
-              <p className="text-[17px] font-bold text-txt-primary mb-4">
+              <p className="text-[15px] font-bold text-txt-primary mb-4">
                 댓글
               </p>
               <CommentSection
