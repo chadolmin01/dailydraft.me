@@ -34,10 +34,10 @@ export async function GET(request: Request) {
       }
     )
 
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
+    const { data: sessionData, error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
-      // Check if user has completed onboarding
-      const { data: { user } } = await supabase.auth.getUser()
+      // exchangeCodeForSession already returns user — no extra getUser() call needed
+      const user = sessionData.user
       if (user) {
         const { data: profile } = await supabase
           .from('profiles')
@@ -60,10 +60,8 @@ export async function GET(request: Request) {
         }
 
         if (profile.onboarding_completed) {
-          // 이메일 도메인 기반 institution 자동 등록 (non-blocking)
-          try {
-            await autoEnrollByEmail(supabase as Parameters<typeof autoEnrollByEmail>[0], user.id, user.email || '')
-          } catch { /* non-blocking */ }
+          // 이메일 도메인 기반 institution 자동 등록 (진짜 non-blocking — await 하지 않음)
+          autoEnrollByEmail(supabase as Parameters<typeof autoEnrollByEmail>[0], user.id, user.email || '').catch(() => {})
           return NextResponse.redirect(`${origin}/explore`)
         } else {
           return NextResponse.redirect(`${origin}/onboarding`)

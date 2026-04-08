@@ -22,7 +22,7 @@ export async function autoEnrollByEmail(
     .select('id')
     .contains('email_domains', [domain])
     .limit(1)
-    .single()
+    .maybeSingle()
 
   if (!institution) return null
 
@@ -33,7 +33,7 @@ export async function autoEnrollByEmail(
     .eq('user_id', userId)
     .eq('institution_id', institution.id)
     .limit(1)
-    .single()
+    .maybeSingle()
 
   if (existing) return institution.id
 
@@ -72,7 +72,7 @@ export async function autoEnrollByUniversity(
     .select('id')
     .eq('university', university)
     .limit(1)
-    .single()
+    .maybeSingle()
 
   if (!institution) return null
 
@@ -83,7 +83,7 @@ export async function autoEnrollByUniversity(
     .eq('user_id', userId)
     .eq('institution_id', institution.id)
     .limit(1)
-    .single()
+    .maybeSingle()
 
   if (existing) return institution.id
 
