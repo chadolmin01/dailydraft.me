@@ -9,6 +9,7 @@ import { ErrorState } from '@/components/ui/ErrorState'
 import { getMatchColorClass } from './constants'
 import { AFFILIATION_LABELS } from '@/components/profile-modal/types'
 import { Badges } from '@/components/ui/Badge'
+import { staggerOnceClass } from '@/src/hooks/useStaggerOnce'
 import type { TalentCard, PeopleSortBy } from './types'
 
 interface ExplorePeopleGridProps {
@@ -63,15 +64,17 @@ export function ExplorePeopleGrid({
         <>
           {/* ── Mobile: compact horizontal list ── */}
           <div className="flex flex-col gap-2 md:hidden">
-            {talentCards.map((t, index) => (
+            {talentCards.map((t, index) => {
+              const stagger = staggerOnceClass(`talent-m:${t.id}`)
+              return (
               <div
                 key={t.id}
                 role="button"
                 tabIndex={0}
                 onClick={() => onSelectProfile(t.id, false)}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectProfile(t.id, false) } }}
-                style={{ animationDelay: `${Math.min(index * 40, 400)}ms` }}
-                className="stagger-item relative bg-surface-card rounded-2xl shadow-sm overflow-hidden flex items-center gap-3 px-4 py-4 cursor-pointer hover:shadow-md hover-spring focus-visible:ring-2 focus-visible:ring-accent outline-none active:scale-[0.985]"
+                style={stagger ? { animationDelay: `${Math.min(index * 40, 400)}ms` } : undefined}
+                className={`${stagger} relative bg-surface-card rounded-2xl shadow-sm overflow-hidden flex items-center gap-3 px-4 py-4 cursor-pointer hover:shadow-md hover-spring focus-visible:ring-2 focus-visible:ring-accent outline-none active:scale-[0.985]`}
               >
                 <div className="relative w-10 h-10 bg-brand-bg border border-brand-border rounded-full flex items-center justify-center text-sm font-bold text-brand shrink-0 overflow-hidden">
                   {t.name.substring(0, 2)}
@@ -118,20 +121,23 @@ export function ExplorePeopleGrid({
                   </span>
                 )}
               </div>
-            ))}
+              )
+            })}
           </div>
 
           {/* ── Desktop: full card grid ── */}
           <div className="hidden md:grid md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {talentCards.map((t, index) => (
+            {talentCards.map((t, index) => {
+              const stagger = staggerOnceClass(`talent-d:${t.id}`)
+              return (
               <div
                 key={t.id}
                 role="button"
                 tabIndex={0}
                 onClick={() => onSelectProfile(t.id, false)}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectProfile(t.id, false) } }}
-                style={{ animationDelay: `${Math.min(index * 60, 600)}ms` }}
-                className="stagger-item relative bg-surface-card rounded-2xl shadow-sm overflow-hidden group hover:shadow-md hover:-translate-y-0.5 hover-spring cursor-pointer h-[13.75rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985] active:shadow-none"
+                style={stagger ? { animationDelay: `${Math.min(index * 60, 600)}ms` } : undefined}
+                className={`${stagger} relative bg-surface-card rounded-2xl shadow-sm overflow-hidden group hover:shadow-md hover:-translate-y-0.5 hover-spring cursor-pointer h-[13.75rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985] active:shadow-none`}
               >
                 <div className="px-5 pt-5 h-[4.75rem] shrink-0">
                   <div className="flex gap-3">
@@ -191,7 +197,8 @@ export function ExplorePeopleGrid({
                   </div>
                 </div>
               </div>
-            ))}
+              )
+            })}
           </div>
         </>
       )}

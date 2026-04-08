@@ -12,6 +12,7 @@ import { getUpdateBadge } from './constants'
 import { trackProjectView } from '@/src/lib/pwa/engagement-tracker'
 import { Badges } from '@/components/ui/Badge'
 import { CATEGORY_SLUGS } from '@/src/constants/categories'
+import { useStaggerOnce } from '@/src/hooks/useStaggerOnce'
 import type { ProjectCard } from './types'
 
 function getCategoryCover(tags: string[]): string {
@@ -178,6 +179,7 @@ function ProjectCardItem({ card: p, index, onSelectProject, onPrefetchProject }:
 }) {
   const updateBadge = getUpdateBadge(p.updatedAt)
   const isUrgent = p.daysLeft > 0 && p.daysLeft <= 3
+  const staggerClass = useStaggerOnce(`project:${p.id}`)
 
   return (
     <div
@@ -186,8 +188,8 @@ function ProjectCardItem({ card: p, index, onSelectProject, onPrefetchProject }:
       onClick={() => { onSelectProject(p.id); trackProjectView() }}
       onMouseEnter={() => onPrefetchProject?.(p.id)}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectProject(p.id) } }}
-      style={{ animationDelay: `${Math.min(index * 60, 600)}ms` }}
-      className="stagger-item relative bg-surface-card rounded-2xl shadow-sm overflow-hidden group hover:shadow-md hover:-translate-y-0.5 hover-spring cursor-pointer min-h-[21.25rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985] active:shadow-none"
+      style={staggerClass ? { animationDelay: `${Math.min(index * 60, 600)}ms` } : undefined}
+      className={`${staggerClass} relative bg-surface-card rounded-2xl shadow-sm overflow-hidden group hover:shadow-md hover:-translate-y-0.5 hover-spring cursor-pointer min-h-[21.25rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985] active:shadow-none`}
     >
       {/* 헤더: 커버 */}
       <div className="relative h-36 shrink-0 bg-surface-inverse flex items-end p-4">
