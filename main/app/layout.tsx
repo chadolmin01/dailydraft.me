@@ -76,12 +76,12 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  // 서버에서 세션을 미리 읽어 클라이언트에 주입 — getSession()은 로컬 JWT 디코드만 하므로 빠름
+  // 서버에서 유저를 미리 읽어 클라이언트에 주입 — getUser()는 서버 검증으로 토큰 조작 방지
   let initialUser = null
   try {
     const supabase = await createServerSupabaseClient()
-    const { data: { session } } = await supabase.auth.getSession()
-    initialUser = session?.user ?? null
+    const { data: { user } } = await supabase.auth.getUser()
+    initialUser = user ?? null
   } catch { /* 세션 없으면 null */ }
 
   return (

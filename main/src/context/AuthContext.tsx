@@ -24,10 +24,10 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children, initialUser }: { children: React.ReactNode; initialUser?: User | null }) {
-  // initialUser: 서버에서 미리 읽어온 유저 (SSR) — 클라이언트 getSession() 타이밍 이슈 방지
+  // initialUser가 주입된 경우 첫 렌더부터 올바른 상태로 시작 → skeleton 고착 방지
   const [user, setUser] = useState<User | null>(initialUser ?? null)
   const [profile, setProfile] = useState<Profile | null>(null)
-  const [isLoading, setIsLoading] = useState(initialUser === undefined ? true : false)
+  const [isLoading, setIsLoading] = useState(initialUser === undefined)
 
   // Fetch user profile from database
   const fetchProfile = useCallback(async (userId: string) => {
@@ -63,19 +63,22 @@ export function AuthProvider({ children, initialUser }: { children: React.ReactN
     let mounted = true
 
     const initializeAuth = async () => {
-      // initialUser가 서버에서 이미 주입된 경우: 프로필만 백그라운드 로드
-      if (initialUser) {
-        posthog.identify(initialUser.id, {
-          email: initialUser.email,
-          name: initialUser.user_metadata?.full_name || initialUser.user_metadata?.name,
-        })
-        fetchProfile(initialUser.id).then(p => {
-          if (mounted) setProfile(p)
-        })
+      // initialUser가 서버에서 주입된 경우 — useState 초기값에서 user/isLoading 이미 설정됨
+      // 여기선 posthog 식별 + profile fetch만 수행
+      if (initialUser !== undefined) {
+        if (initialUser) {
+          posthog.identify(initialUser.id, {
+            email: initialUser.email,
+            name: initialUser.user_metadata?.full_name || initialUser.user_metadata?.name,
+          })
+          fetchProfile(initialUser.id).then(p => {
+            if (mounted) setProfile(p)
+          })
+        }
         return
       }
 
-      // initialUser 없음 → 클라이언트에서 직접 세션 확인 (fallback)
+      // initialUser prop 자체가 없는 경우 → 클라이언트에서 직접 세션 확인 (fallback)
       try {
         const { data: { session } } = await supabase.auth.getSession()
         if (!mounted) return
