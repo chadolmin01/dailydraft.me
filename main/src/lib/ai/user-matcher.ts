@@ -1,5 +1,5 @@
 import type { Profile, Skill, CurrentSituation } from '@/src/types/profile'
-import { positionToRole } from '@/src/constants/roles'
+import { positionToRole, projectRoleLabel } from '@/src/constants/roles'
 
 type RoleGroup = 'tech' | 'creative' | 'biz'
 
@@ -172,7 +172,14 @@ function calculateSituationCompatibility(
 }
 
 /**
- * Generate a concise match reason
+ * Generate a natural, single-sentence match reason
+ *
+ * 설계 원칙:
+ *  - 단어 나열(" · " 조인) 대신 1등 차원 하나만 문장으로
+ *  - 포지션을 명사로 써서 "~한 B예요" 형태 → 태그 느낌 제거
+ *  - 점수 차이가 작으면(±10) 2등 차원을 접속구로 붙여 자연스럽게 결합
+ *  - 구체 정보(스킬명·관심사·지역)는 반드시 문장 안에 녹여 정보량 유지
+ *  - interest_tags는 카드에서 별도 칩으로 렌더되므로 여기선 중복 방지
  */
 function generateUserMatchReason(
   myProfile: Profile,
@@ -184,76 +191,110 @@ function generateUserMatchReason(
     teamFit: number
   }
 ): string {
-  const reasons: { priority: number; text: string }[] = []
+  const positionNoun = positionToNoun(candidate.desired_position)
+  const cop = copula(positionNoun)  // "예요" or "이에요"
 
-  // Team fit reasons
-  if (scores.teamFit >= 80) {
-    const myRole = myProfile.personality?.teamRole
-    const theirRole = candidate.personality?.teamRole
-    if (myRole != null && theirRole != null && Math.abs(myRole - theirRole) >= 3) {
-      reasons.push({ priority: 2, text: '리더-서포터 조합이 잘 맞아요' })
+  // 1등/2등 차원 찾기
+  const dims: Array<{ key: 'skill' | 'interest' | 'situation' | 'teamfit'; score: number }> = [
+    { key: 'skill', score: scores.skillComplementarity },
+    { key: 'teamfit', score: scores.teamFit },
+    { key: 'interest', score: scores.interestOverlap },
+    { key: 'situation', score: scores.situationCompatibility },
+  ].sort((a, b) => b.score - a.score)
+
+  const top = dims[0]
+  const second = dims[1]
+  const closeSecond = second && top.score - second.score <= 10 && second.score >= 60
+
+  // 차원별 1등 문장 (B = positionNoun)
+  const leadByDim = {
+    skill: () => {
+      const mySkillNames = new Set((myProfile.skills || []).map((s) => s.name))
+      const complementary = (candidate.skills || [])
+        .filter((s) => !mySkillNames.has(s.name))
+        .slice(0, 2)
+        .map((s) => s.name)
+      if (complementary.length >= 2) return `${complementary.join('·')}을 다루는 ${positionNoun}${cop}`
+      if (complementary.length === 1) return `${complementary[0]}이 강점인 ${positionNoun}${cop}`
+      return `스킬 조합이 잘 맞는 ${positionNoun}${cop}`
+    },
+    teamfit: () => {
+      const myRole = myProfile.personality?.teamRole
+      const theirRole = candidate.personality?.teamRole
+      if (myRole != null && theirRole != null && Math.abs(myRole - theirRole) >= 3) {
+        return `리더-서포터 조합이 잘 맞는 ${positionNoun}${cop}`
+      }
+      const commDiff = Math.abs(
+        (myProfile.personality?.communication ?? 3) - (candidate.personality?.communication ?? 3)
+      )
+      if (commDiff <= 1) return `소통 스타일이 잘 맞는 ${positionNoun}${cop}`
+      return `작업 방식이 잘 맞는 ${positionNoun}${cop}`
+    },
+    interest: () => {
+      const overlapping = (candidate.interest_tags || []).filter((t) =>
+        (myProfile.interest_tags || []).includes(t)
+      )
+      if (overlapping.length >= 1) {
+        return `${overlapping[0]}에 함께 관심 있는 ${positionNoun}${cop}`
+      }
+      return `관심사가 겹치는 ${positionNoun}${cop}`
+    },
+    situation: () => {
+      if (scores.situationCompatibility >= 90) return `지금 팀원을 찾고 있는 ${positionNoun}${cop}`
+      return `함께 시작하기 좋은 ${positionNoun}${cop}`
+    },
+  }
+
+  // 2등 차원 접속구 (문장에 자연스럽게 붙는 짧은 꼬리)
+  const tailByDim = {
+    skill: () => {
+      const mySkillNames = new Set((myProfile.skills || []).map((s) => s.name))
+      const c = (candidate.skills || []).filter((s) => !mySkillNames.has(s.name))[0]
+      return c ? `, ${c.name}도 다뤄요` : ''
+    },
+    teamfit: () => ', 팀핏도 잘 맞아요',
+    interest: () => {
+      const overlapping = (candidate.interest_tags || []).filter((t) =>
+        (myProfile.interest_tags || []).includes(t)
+      )
+      return overlapping[0] ? `, ${overlapping[0]} 관심사도 겹쳐요` : ''
+    },
+    situation: () => (scores.situationCompatibility >= 90 ? ', 마침 팀원을 찾고 있어요' : ''),
+  }
+
+  const lead = leadByDim[top.key]()
+
+  if (closeSecond) {
+    const tail = tailByDim[second.key]()
+    if (tail) {
+      // 어미를 연결어미로 치환 후 꼬리 연결
+      //   "디자이너예요" → "디자이너고" (받침 없음)
+      //   "팀원이에요" → "팀원이고" (받침 있음)
+      const connector = cop === '예요' ? '고' : '이고'
+      return lead.replace(new RegExp(`${cop}$`), connector) + tail
     }
-    const commDiff = Math.abs((myProfile.personality?.communication ?? 3) - (candidate.personality?.communication ?? 3))
-    if (commDiff <= 1) {
-      reasons.push({ priority: 3, text: '소통 스타일이 비슷해요' })
-    }
-  } else if (scores.teamFit >= 60) {
-    reasons.push({ priority: 5, text: '작업 방식이 잘 맞아요' })
   }
 
-  // Skill complementarity
-  if (scores.skillComplementarity >= 70) {
-    const mySkillNames = new Set((myProfile.skills || []).map((s) => s.name))
-    const complementary = (candidate.skills || [])
-      .filter((s) => !mySkillNames.has(s.name))
-      .slice(0, 2)
-      .map((s) => s.name)
-    if (complementary.length > 0) {
-      reasons.push({ priority: 1, text: `${complementary.join(', ')} 보유` })
-    } else {
-      reasons.push({ priority: 1, text: '보완적 스킬 보유' })
-    }
+  return lead
+}
+
+/** 포지션 slug → 한국어 명사 ("디자이너/개발자/기획자" 등). 매칭 없으면 "팀원" */
+function positionToNoun(desiredPosition: string | null | undefined): string {
+  if (!desiredPosition) return '팀원'
+  const roleGroup = positionToRole(desiredPosition)
+  if (roleGroup === 'other') return '팀원'
+  const label = projectRoleLabel(roleGroup)
+  return label === roleGroup ? '팀원' : label
+}
+
+/** 받침 있으면 "이에요", 없으면 "예요" */
+function copula(noun: string): string {
+  const last = noun.charCodeAt(noun.length - 1)
+  if (last >= 0xAC00 && last <= 0xD7A3) {
+    const hasFinal = (last - 0xAC00) % 28 !== 0
+    return hasFinal ? '이에요' : '예요'
   }
-
-  // Interest overlap
-  const overlapping = (candidate.interest_tags || []).filter((t) =>
-    (myProfile.interest_tags || []).includes(t)
-  )
-  if (overlapping.length >= 2) {
-    reasons.push({
-      priority: 2,
-      text: `${overlapping.slice(0, 2).join(', ')}에 관심`,
-    })
-  } else if (overlapping.length === 1) {
-    reasons.push({ priority: 3, text: `${overlapping[0]} 분야` })
-  }
-
-  // Situation match
-  if (scores.situationCompatibility >= 90) {
-    reasons.push({ priority: 2, text: '팀원을 찾고 있어요' })
-  } else if (scores.situationCompatibility >= 60) {
-    reasons.push({ priority: 4, text: '함께 시작 가능' })
-  }
-
-  // Location
-  if (candidate.location && candidate.location === myProfile.location) {
-    reasons.push({ priority: 5, text: `같은 지역(${candidate.location})` })
-  }
-
-  // Position complementarity
-  if (
-    myProfile.desired_position &&
-    candidate.desired_position &&
-    myProfile.desired_position !== candidate.desired_position
-  ) {
-    reasons.push({ priority: 3, text: `${candidate.desired_position} 포지션` })
-  }
-
-  reasons.sort((a, b) => a.priority - b.priority)
-  const top = reasons.slice(0, 3).map((r) => r.text)
-
-  if (top.length === 0) return '새로운 협업 가능성'
-  return top.join(' · ')
+  return '이에요'
 }
 
 /**
