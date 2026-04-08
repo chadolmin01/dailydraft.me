@@ -2,12 +2,14 @@ import Image from 'next/image'
 import {
   Mail, Coffee, Globe, Github, Linkedin,
   FileText, Rocket, ChevronRight, Copy, Check,
+  Sparkles, Loader2, AlertCircle,
 } from 'lucide-react'
 import { useState } from 'react'
 import { DirectMessageBox } from './DirectMessageBox'
 import { ProfileActions } from './ProfileActions'
+import { useMatchAnalysis } from '@/src/hooks/useMatchAnalysis'
 
-type Tab = 'intro' | 'portfolio'
+type Tab = 'intro' | 'portfolio' | 'ai-analysis'
 
 export function ProfileBodyLeft({
   profile,
@@ -54,9 +56,12 @@ export function ProfileBodyLeft({
 
   const portfolioCount = portfolioItems.length + (profile.portfolio_url ? 1 : 0) + (profile.github_url ? 1 : 0) + (profile.linkedin_url ? 1 : 0)
 
+  const canAnalyze = !!user && user.id !== profile.user_id
+
   const tabs: { id: Tab; label: string; count?: number }[] = [
     { id: 'intro', label: '소개' },
     { id: 'portfolio', label: '포트폴리오·프로젝트', count: portfolioItems.length + userProjects.length || undefined },
+    ...(canAnalyze ? [{ id: 'ai-analysis' as Tab, label: 'AI 분석' }] : []),
   ]
 
   return (
@@ -250,6 +255,11 @@ export function ProfileBodyLeft({
             </section>
           </div>
         )}
+
+        {/* ── AI 심층 분석 탭 ── */}
+        {activeTab === 'ai-analysis' && canAnalyze && (
+          <MatchAnalysisSection targetId={profile.user_id} targetName={profile.nickname} />
+        )}
       </div>
 
       {/* DM / Login CTA - always visible below tabs */}
@@ -280,6 +290,105 @@ export function ProfileBodyLeft({
             로그인하기
           </a>
         </div>
+      )}
+    </div>
+  )
+}
+
+function MatchAnalysisSection({ targetId, targetName }: { targetId: string; targetName: string }) {
+  const { data, isLoading, error, runAnalysis } = useMatchAnalysis(targetId)
+  const analysis = data?.analysis
+
+  if (isLoading) {
+    return (
+      <div className="px-5 py-10 bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl text-center">
+        <Loader2 size={22} className="text-[#3182F6] mx-auto mb-3 animate-spin" />
+        <p className="text-[14px] font-bold text-txt-primary mb-1">AI가 두 분의 시너지를 분석 중이에요</p>
+        <p className="text-[12px] text-txt-tertiary">몇 초만 기다려주세요…</p>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="px-5 py-6 bg-[#FFF5F5] dark:bg-[#3A1C1C] rounded-2xl">
+        <div className="flex items-start gap-2.5 mb-3">
+          <AlertCircle size={16} className="text-[#FF3B30] shrink-0 mt-0.5" />
+          <div>
+            <p className="text-[14px] font-bold text-txt-primary">분석에 실패했어요</p>
+            <p className="text-[12px] text-txt-tertiary mt-0.5">{error.message}</p>
+          </div>
+        </div>
+        <button
+          onClick={runAnalysis}
+          className="px-4 py-2 bg-white dark:bg-[#1C1C1E] text-[13px] font-semibold text-txt-primary rounded-full hover:bg-[#F2F3F5] dark:hover:bg-[#2C2C2E] transition-colors"
+        >
+          다시 시도
+        </button>
+      </div>
+    )
+  }
+
+  if (!analysis) {
+    return (
+      <div className="px-5 py-8 bg-gradient-to-br from-[#EBF4FF] to-[#F7F8F9] dark:from-[#1A2A42] dark:to-[#1C1C1E] rounded-2xl text-center">
+        <div className="inline-flex items-center justify-center w-11 h-11 bg-white dark:bg-[#2C2C2E] rounded-full mb-3 shadow-sm">
+          <Sparkles size={18} className="text-[#3182F6]" />
+        </div>
+        <p className="text-[15px] font-bold text-txt-primary mb-1">{targetName}님과의 시너지 분석</p>
+        <p className="text-[13px] text-txt-tertiary mb-5 leading-relaxed">
+          AI가 두 분의 프로필을 비교해<br />협업 시너지, 강점, 유의점을 알려드려요
+        </p>
+        <button
+          onClick={runAnalysis}
+          className="inline-flex items-center gap-1.5 bg-[#3182F6] text-white px-5 py-2.5 font-semibold text-[13px] rounded-full hover:bg-[#2272EB] transition-colors active:scale-[0.97]"
+        >
+          <Sparkles size={13} />
+          분석 시작하기
+        </button>
+        <p className="text-[11px] text-txt-disabled mt-3">결과는 7일간 저장돼요</p>
+      </div>
+    )
+  }
+
+  const createdAt = data?.created_at ? new Date(data.created_at) : null
+
+  return (
+    <div className="space-y-5">
+      {/* Synergy */}
+      <section className="px-5 py-4 bg-gradient-to-br from-[#EBF4FF] to-transparent dark:from-[#1A2A42] dark:to-transparent rounded-2xl">
+        <div className="flex items-center gap-1.5 mb-2">
+          <Sparkles size={13} className="text-[#3182F6]" />
+          <span className="text-[12px] font-bold text-[#3182F6]">시너지</span>
+        </div>
+        <p className="text-[14px] text-txt-primary leading-relaxed whitespace-pre-line">
+          {analysis.synergy}
+        </p>
+      </section>
+
+      {/* Strengths */}
+      <section>
+        <h4 className="text-[13px] font-bold text-txt-primary mb-2">함께하면 강해지는 점</h4>
+        <ul className="space-y-1.5">
+          {analysis.strengths.map((s, i) => (
+            <li key={i} className="flex items-start gap-2 text-[13px] text-txt-secondary">
+              <Check size={14} className="text-[#34C759] shrink-0 mt-0.5" />
+              <span>{s}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* Caution */}
+      <section className="px-4 py-3 bg-[#FFF9EB] dark:bg-[#2C2416] rounded-2xl">
+        <p className="text-[12px] font-bold text-[#B87600] dark:text-[#E5A33A] mb-1">유의할 점</p>
+        <p className="text-[13px] text-txt-secondary leading-relaxed">{analysis.caution}</p>
+      </section>
+
+      {createdAt && (
+        <p className="text-[11px] text-txt-disabled text-center">
+          {createdAt.toLocaleDateString('ko-KR')} 분석 · 7일간 저장
+        </p>
       )}
     </div>
   )
