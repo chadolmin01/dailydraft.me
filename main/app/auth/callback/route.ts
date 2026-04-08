@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { autoEnrollByEmail } from '@/src/lib/institution/auto-enroll'
+import { captureServerError } from '@/src/lib/posthog/server'
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
@@ -35,6 +36,9 @@ export async function GET(request: Request) {
     )
 
     const { data: sessionData, error } = await supabase.auth.exchangeCodeForSession(code)
+    if (error) {
+      captureServerError(error, { route: 'GET /auth/callback', extra: { step: 'exchangeCodeForSession' } })
+    }
     if (!error) {
       // exchangeCodeForSession already returns user — no extra getUser() call needed
       const user = sessionData.user

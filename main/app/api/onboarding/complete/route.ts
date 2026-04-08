@@ -1,6 +1,7 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { parseNickname } from '@/src/lib/clean-nickname'
+import { captureServerError } from '@/src/lib/posthog/server'
 import { autoEnrollByEmail, autoEnrollByUniversity } from '@/src/lib/institution/auto-enroll'
 import type { TablesInsert } from '@/src/types/database'
 
@@ -110,7 +111,8 @@ export async function POST(request: Request) {
       success: true,
       message: '온보딩이 완료되었습니다',
     })
-  } catch {
+  } catch (error) {
+    captureServerError(error, { route: 'POST /api/onboarding/complete' })
     return ApiResponse.internalError('온보딩 완료 처리 중 오류가 발생했습니다')
   }
 }

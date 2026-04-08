@@ -3,6 +3,7 @@ import { rankOpportunities } from '@/src/lib/ai/opportunity-matcher'
 import type { Opportunity } from '@/src/types/opportunity'
 import type { Profile } from '@/src/types/profile'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { captureServerError } from '@/src/lib/posthog/server'
 
 export async function GET() {
   try {
@@ -55,6 +56,7 @@ export async function GET() {
     return ApiResponse.ok(ranked.slice(0, 20))
   } catch (error) {
     console.error('Opportunity recommend error:', error)
+    captureServerError(error, { route: 'GET /api/opportunities/recommend' })
     return ApiResponse.internalError()
   }
 }
