@@ -195,12 +195,15 @@ function generateUserMatchReason(
   const cop = copula(positionNoun)  // "예요" or "이에요"
 
   // 1등/2등 차원 찾기
-  const dims: Array<{ key: 'skill' | 'interest' | 'situation' | 'teamfit'; score: number }> = [
-    { key: 'skill', score: scores.skillComplementarity },
-    { key: 'teamfit', score: scores.teamFit },
-    { key: 'interest', score: scores.interestOverlap },
-    { key: 'situation', score: scores.situationCompatibility },
-  ].sort((a, b) => b.score - a.score)
+  type DimKey = 'skill' | 'interest' | 'situation' | 'teamfit'
+  const dims: Array<{ key: DimKey; score: number }> = (
+    [
+      { key: 'skill', score: scores.skillComplementarity },
+      { key: 'teamfit', score: scores.teamFit },
+      { key: 'interest', score: scores.interestOverlap },
+      { key: 'situation', score: scores.situationCompatibility },
+    ] as Array<{ key: DimKey; score: number }>
+  ).sort((a, b) => b.score - a.score)
 
   const top = dims[0]
   const second = dims[1]
