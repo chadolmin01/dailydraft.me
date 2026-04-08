@@ -46,6 +46,7 @@ export function useOpportunities(filters?: {
         .select(OPP_WITH_CREATOR_SELECT, { count: 'exact' })
         .eq('status', 'active')
         .order('created_at', { ascending: false })
+        .order('id', { ascending: true })
 
       if (filters?.type) {
         query = query.eq('type', filters.type)
@@ -81,6 +82,7 @@ export function useInfiniteOpportunities(pageSize = 12) {
         .select(OPP_WITH_CREATOR_SELECT, { count: 'exact' })
         .eq('status', 'active')
         .order('created_at', { ascending: false })
+        .order('id', { ascending: true })
         .range(pageParam, pageParam + pageSize - 1)
 
       if (error) throw error
@@ -164,6 +166,7 @@ export function useRecommendedOpportunities(limit = 4) {
         .eq('status', 'active')
         .neq('creator_id', user?.id ?? '')
         .order('created_at', { ascending: false })
+        .order('id', { ascending: true })
         .limit(limit)
 
       if (error) throw error

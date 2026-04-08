@@ -265,14 +265,21 @@ function ExplorePageContent() {
     const popScore = (opp: OpportunityWithCreator) =>
       (opp.views_count || 0) + (opp.applications_count || 0) * 5 + (opp.interest_count || 0) * 3
 
+    // tie 발생 시 id로 안정화 — 동일 점수/시간에서 순서가 흔들리는 것 방지
+    const tieBreak = (a: OpportunityWithCreator, b: OpportunityWithCreator) => a.id.localeCompare(b.id)
+
     return opportunities
       .filter(filterOpp)
       .sort((a, b) => {
-        if (sortBy === 'latest')
-          return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
+        if (sortBy === 'latest') {
+          const diff = new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
+          return diff !== 0 ? diff : tieBreak(a, b)
+        }
 
-        if (sortBy === 'popular')
-          return popScore(b) - popScore(a)
+        if (sortBy === 'popular') {
+          const diff = popScore(b) - popScore(a)
+          return diff !== 0 ? diff : tieBreak(a, b)
+        }
 
         // trending: popularity weighted by recency (HN-style decay)
         const now = Date.now()
@@ -280,7 +287,8 @@ function ExplorePageContent() {
           const ageDays = (now - new Date(opp.created_at || 0).getTime()) / (1000 * 60 * 60 * 24)
           return (popScore(opp) + 1) / Math.pow(ageDays + 2, 1.5)
         }
-        return trendScore(b) - trendScore(a)
+        const diff = trendScore(b) - trendScore(a)
+        return diff !== 0 ? diff : tieBreak(a, b)
       })
       .map((opp: OpportunityWithCreator) => toCard(opp))
   },
@@ -348,13 +356,19 @@ function ExplorePageContent() {
       return true
     })
     .sort((a, b) => {
+      // tie 발생 시 id로 안정화
+      const tieBreak = a.id.localeCompare(b.id)
       if (peopleSortBy === 'ai') {
-        return (b.matchScore ?? 0) - (a.matchScore ?? 0)
+        const diff = (b.matchScore ?? 0) - (a.matchScore ?? 0)
+        return diff !== 0 ? diff : tieBreak
       }
-      if (peopleSortBy === 'popular')
-        return (b.interestCount || 0) - (a.interestCount || 0)
+      if (peopleSortBy === 'popular') {
+        const diff = (b.interestCount || 0) - (a.interestCount || 0)
+        return diff !== 0 ? diff : tieBreak
+      }
       // 'latest': sort by created_at (newest first)
-      return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+      const diff = new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+      return diff !== 0 ? diff : tieBreak
     }),
     [publicProfiles, peopleRoleFilter, query, searchScope, recsMap, peopleSortBy]
   )

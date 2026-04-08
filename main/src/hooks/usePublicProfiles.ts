@@ -33,6 +33,7 @@ export function usePublicProfiles(options?: {
         .select('id, user_id, nickname, desired_position, interest_tags, location, profile_visibility, vision_summary, avatar_url, interest_count, created_at, badges, university, affiliation_type')
         .eq('profile_visibility', 'public')
         .order('updated_at', { ascending: false })
+        .order('id', { ascending: true })
 
       if (options?.interestTags && options.interestTags.length > 0) {
         query = query.overlaps('interest_tags', options.interestTags)
@@ -60,6 +61,7 @@ export function useInfinitePublicProfiles(pageSize = 12) {
         .select('id, user_id, nickname, desired_position, interest_tags, location, profile_visibility, vision_summary, avatar_url, interest_count, created_at, badges, university, affiliation_type', { count: 'exact' })
         .eq('profile_visibility', 'public')
         .order('updated_at', { ascending: false })
+        .order('id', { ascending: true })
         .range(pageParam, pageParam + pageSize - 1)
 
       if (error) throw error

@@ -37,6 +37,7 @@ export async function GET() {
       .eq('status', 'active')
       .neq('creator_id', user.id)
       .order('created_at', { ascending: false })
+      .order('id', { ascending: true })
       .limit(50)
 
     if (oppError) {
