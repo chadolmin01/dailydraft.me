@@ -71,6 +71,7 @@ export function ExplorePeopleGrid({
                 key={t.id}
                 role="button"
                 tabIndex={0}
+                onMouseDown={(e) => e.preventDefault()}
                 onClick={() => onSelectProfile(t.id, false)}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectProfile(t.id, false) } }}
                 style={stagger ? { animationDelay: `${Math.min(index * 40, 400)}ms` } : undefined}
@@ -134,6 +135,7 @@ export function ExplorePeopleGrid({
                 key={t.id}
                 role="button"
                 tabIndex={0}
+                onMouseDown={(e) => e.preventDefault()}
                 onClick={() => onSelectProfile(t.id, false)}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectProfile(t.id, false) } }}
                 style={stagger ? { animationDelay: `${Math.min(index * 60, 600)}ms` } : undefined}
