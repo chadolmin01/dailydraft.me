@@ -1,6 +1,5 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
-import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
 import { parseNickname } from '@/src/lib/clean-nickname'
 import { autoEnrollByEmail, autoEnrollByUniversity } from '@/src/lib/institution/auto-enroll'
 import type { TablesInsert } from '@/src/types/database'
@@ -13,10 +12,6 @@ export async function POST(request: Request) {
     if (!user) {
       return ApiResponse.unauthorized()
     }
-
-    // Rate limit
-    const rateLimitResponse = await checkAIRateLimit(user.id, getClientIp(request))
-    if (rateLimitResponse) return rateLimitResponse
 
     const body = await request.json()
     const {

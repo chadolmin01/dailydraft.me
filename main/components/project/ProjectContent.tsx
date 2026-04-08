@@ -177,6 +177,7 @@ export const ProjectContent: React.FC<ProjectContentProps> = ({
               </p>
               <CommentSection
                 opportunityId={opportunity.id}
+                ownerId={opportunity.creator_id}
                 onLoginClick={handleSignup}
               />
             </div>

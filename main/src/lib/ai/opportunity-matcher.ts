@@ -81,6 +81,7 @@ function calculateSkillMatch(
   neededSkills: Skill[]
 ): number {
   if (neededSkills.length === 0) return 50 // Default if no skills specified
+  if (!userSkills || userSkills.length === 0) return 0
 
   let matchedCount = 0
 
