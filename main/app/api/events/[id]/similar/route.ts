@@ -48,7 +48,9 @@ export async function GET(request: NextRequest, context: RouteContext) {
     }
 
     // Call the find_similar_events function
-    const { data: similarEvents, error: rpcError } = await supabase.rpc(
+    // 타입 캐스팅: find_similar_events RPC가 generated types에 누락됨 (마이그레이션 추적 이슈).
+    // 런타임 동작은 정상이라 any 캐스팅으로 빌드 통과.
+    const { data: similarEventsRaw, error: rpcError } = await (supabase.rpc as any)(
       'find_similar_events',
       {
         p_event_id: eventId,
@@ -56,6 +58,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
         p_min_similarity: minSimilarity,
       }
     )
+    const similarEvents = similarEventsRaw as SimilarEvent[] | null
 
     if (rpcError) {
       // Fallback to manual query if function doesn't exist
