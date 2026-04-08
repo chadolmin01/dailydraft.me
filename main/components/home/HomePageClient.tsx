@@ -6,6 +6,7 @@ import { TrustBar } from '@/components/home/TrustBar'
 import { FeatureShowcase } from '@/components/home/FeatureShowcase'
 import { HowItWorks } from '@/components/home/HowItWorks'
 import { OpportunitySection } from '@/components/home/OpportunitySection'
+import { Cohort1Section } from '@/components/home/Cohort1Section'
 import { FinalCTA } from '@/components/home/FinalCTA'
 import { FAQ } from '@/components/home/FAQ'
 import { Footer } from '@/components/home/Footer'
@@ -22,6 +23,7 @@ export default function HomePageClient() {
         <TrustBar />
         <HowItWorks />
         <OpportunitySection />
+        <Cohort1Section />
         <FeatureShowcase />
         <FinalCTA />
         <FAQ />
