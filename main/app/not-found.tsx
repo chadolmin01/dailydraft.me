@@ -2,33 +2,30 @@ import Link from 'next/link'
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-surface-bg flex items-center justify-center px-4">
+    <div className="min-h-screen bg-surface-bg flex items-center justify-center px-6">
       <div className="max-w-md w-full text-center">
-        <div className="border-2 border-border bg-surface-card p-12 shadow-lg">
-          <div className="text-[8rem] font-mono font-bold leading-none text-txt-primary tracking-tighter">
-            404
-          </div>
-          <div className="w-full h-px bg-border-strong my-6" />
-          <p className="text-[10px] font-medium text-txt-tertiary mb-2">
-            PAGE NOT FOUND
-          </p>
-          <p className="text-sm text-txt-secondary mb-8">
-            요청하신 페이지를 찾을 수 없습니다.
-          </p>
-          <div className="flex gap-3 justify-center">
-            <Link
-              href="/explore"
-              className="px-6 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-bold border border-surface-inverse hover:opacity-90 active:scale-[0.97] transition-all"
-            >
-              탐색하기
-            </Link>
-            <Link
-              href="/"
-              className="px-6 py-2.5 bg-surface-card text-txt-secondary text-sm font-medium border border-border hover:bg-surface-sunken transition-colors"
-            >
-              홈으로
-            </Link>
-          </div>
+        <h1 className="text-6xl sm:text-7xl font-bold text-txt-primary tracking-tight mb-4">
+          404
+        </h1>
+        <p className="text-base text-txt-primary font-semibold mb-2">
+          페이지를 찾을 수 없습니다
+        </p>
+        <p className="text-sm text-txt-secondary mb-8 break-keep">
+          주소가 변경되었거나 더 이상 존재하지 않는 페이지입니다.
+        </p>
+        <div className="flex gap-3 justify-center">
+          <Link
+            href="/"
+            className="px-5 py-3 rounded-full bg-brand text-white text-sm font-bold hover:bg-brand-hover active:scale-[0.97] transition-all shadow-sm"
+          >
+            홈으로
+          </Link>
+          <Link
+            href="/explore"
+            className="px-5 py-3 rounded-full border border-border bg-surface-card text-txt-primary text-sm font-bold hover:bg-surface-sunken transition-colors"
+          >
+            탐색하기
+          </Link>
         </div>
       </div>
     </div>
