@@ -83,11 +83,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           supabase.auth.getUser().then(({ data: { user: serverUser }, error }) => {
             if (!mounted) return
             if (error) {
+              // 명확한 세션 무효화 코드만 로그아웃 처리
+              // 401/403은 트래픽 폭주 시 Supabase가 일시적으로 반환할 수 있으므로
+              // 백그라운드 검증에서는 로컬 세션을 지우지 않음
               const authErrorCodes = ['session_not_found', 'user_not_found', 'bad_jwt']
-              const isAuthError = authErrorCodes.some(code =>
+              const isHardAuthError = authErrorCodes.some(code =>
                 error.message?.includes(code) || (error as any).code === code
-              ) || error.status === 401 || error.status === 403
-              if (isAuthError) {
+              )
+              if (isHardAuthError) {
                 setUser(null)
                 setProfile(null)
               }
