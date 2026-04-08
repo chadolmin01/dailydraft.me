@@ -23,7 +23,10 @@ import { createServerSupabaseClient } from '@/src/lib/supabase/server'
  * 영향을 받지 않는다 — 이 래퍼는 bubble up된 throw만 가로챈다.
  */
 
-type RouteContext = { params?: Promise<Record<string, string | string[]>> }
+// Next.js 15 route validator는 두번째 인자의 params를 Promise<any>로 기대.
+// optional(?:)이나 union(| undefined)이 있으면 "invalid export" 에러 발생.
+// any로 느슨하게 열어두고 각 핸들러에서 실제 params 타입을 좁혀 사용.
+type RouteContext = { params: Promise<any> }
 // Response를 허용하는 이유: 스트리밍 라우트(`new Response(stream)`)가 NextResponse가 아닌 전역 Response를 반환.
 type HandlerReturn = Response | NextResponse | Promise<Response | NextResponse>
 type RouteHandler<C extends RouteContext = RouteContext> = (
