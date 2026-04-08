@@ -65,31 +65,12 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
   }, [])
 
   useEffect(() => {
-    if (!profileId) return
-    setModalView('profile')
-    // body를 fixed로 고정하면서 스크롤 위치 보존
-    //   - 단순 overflow:hidden은 일부 브라우저에서 스크롤 위치를 top으로 리셋시킴
-    //     ("모달 열면 화면이 맨 위로 튀는" 버그 원인)
-    //   - position:fixed + top=-scrollY로 시각적 위치 유지, 닫을 때 scrollTo로 복원
-    const scrollY = window.scrollY
-    const body = document.body
-    const prev = {
-      position: body.style.position,
-      top: body.style.top,
-      width: body.style.width,
-      overflow: body.style.overflow,
-    }
-    body.style.position = 'fixed'
-    body.style.top = `-${scrollY}px`
-    body.style.width = '100%'
-    body.style.overflow = 'hidden'
-    return () => {
-      body.style.position = prev.position
-      body.style.top = prev.top
-      body.style.width = prev.width
-      body.style.overflow = prev.overflow
-      window.scrollTo(0, scrollY)
-    }
+    if (profileId) setModalView('profile')
+    // 의도적으로 body 스크롤 락 제거:
+    //   - body position:fixed/overflow:hidden 둘 다 브라우저별로 스크롤 위치를
+    //     리셋시키는 부작용이 있음 (특히 모바일)
+    //   - 모달 자체가 fixed inset-0로 전체를 덮으므로 배경 스크롤 락 없어도
+    //     시각적 문제 없음. 스크롤 이벤트 bubble은 허용하되 버그보단 낫다
   }, [profileId])
 
   useEffect(() => {
