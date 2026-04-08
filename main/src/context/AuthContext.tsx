@@ -23,11 +23,11 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
-  // Session is managed internally — not exposed to prevent token leakage
+export function AuthProvider({ children, initialUser }: { children: React.ReactNode; initialUser?: User | null }) {
+  // initialUser: 서버에서 미리 읽어온 유저 (SSR) — 클라이언트 getSession() 타이밍 이슈 방지
+  const [user, setUser] = useState<User | null>(initialUser ?? null)
   const [profile, setProfile] = useState<Profile | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(initialUser === undefined ? true : false)
 
   // Fetch user profile from database
   const fetchProfile = useCallback(async (userId: string) => {
@@ -63,36 +63,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     let mounted = true
 
     const initializeAuth = async () => {
-      // Fast path: read local session (instant — JWT decode only)
+      // initialUser가 서버에서 이미 주입된 경우: 프로필만 백그라운드 로드
+      if (initialUser) {
+        posthog.identify(initialUser.id, {
+          email: initialUser.email,
+          name: initialUser.user_metadata?.full_name || initialUser.user_metadata?.name,
+        })
+        fetchProfile(initialUser.id).then(p => {
+          if (mounted) setProfile(p)
+        })
+        return
+      }
+
+      // initialUser 없음 → 클라이언트에서 직접 세션 확인 (fallback)
       try {
         const { data: { session } } = await supabase.auth.getSession()
         if (!mounted) return
         if (session?.user) {
-          // Set user immediately → unblock isLoading FAST
           setUser(session.user)
           setIsLoading(false)
-
-          // PostHog 식별
           posthog.identify(session.user.id, {
             email: session.user.email,
             name: session.user.user_metadata?.full_name || session.user.user_metadata?.name,
           })
-
-          // Fetch profile in background (non-blocking)
           fetchProfile(session.user.id).then(p => {
             if (mounted) setProfile(p)
           })
-
-          // Background: validate session is still valid on server
-          // ⚠️ 명확한 인증 에러만 로그아웃 — 일시적 null / 네트워크 에러는 무시
-          // (!serverUser 케이스를 제거: 에러 없이 null이 오는 건 모바일에서
-          //  transient 상태일 수 있음. 실제 만료는 다음 API 호출에서 401로 잡힘)
-          supabase.auth.getUser().then(({ data: { user: serverUser }, error }) => {
+          // 백그라운드 서버 검증 — 명확한 세션 무효화 코드만 로그아웃
+          supabase.auth.getUser().then(({ error }) => {
             if (!mounted) return
             if (error) {
-              // 명확한 세션 무효화 코드만 로그아웃 처리
-              // 401/403은 트래픽 폭주 시 Supabase가 일시적으로 반환할 수 있으므로
-              // 백그라운드 검증에서는 로컬 세션을 지우지 않음
               const authErrorCodes = ['session_not_found', 'user_not_found', 'bad_jwt']
               const isHardAuthError = authErrorCodes.some(code =>
                 error.message?.includes(code) || (error as any).code === code
@@ -102,16 +102,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 setProfile(null)
               }
             }
-            // serverUser가 null이지만 에러가 없는 경우는 무시
-            // — 멀쩡한 로컬 세션을 덮어쓰면 안 됨
-          }).catch(() => { /* 네트워크 에러 — 로컬 세션 유지 */ })
+          }).catch(() => {})
           return
         }
-      } catch { /* getSession failed — continue to authoritative path */ }
+      } catch { /* getSession failed */ }
 
       if (!mounted) return
 
-      // Fallback: no local session — try server
+      // 최종 fallback: 서버에서 직접 확인
       try {
         const { data: { user: serverUser }, error } = await supabase.auth.getUser()
         if (!mounted) return

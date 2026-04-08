@@ -6,6 +6,7 @@ import { Toaster } from 'sonner'
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import posthog from 'posthog-js'
+import { User } from '@supabase/supabase-js'
 import { AuthProvider } from './AuthContext'
 import { ThemeProvider } from './ThemeContext'
 import { SplashScreen } from '@/components/SplashScreen'
@@ -61,7 +62,7 @@ function PortaledToaster() {
   )
 }
 
-export function Providers({ children }: { children: React.ReactNode }) {
+export function Providers({ children, initialUser }: { children: React.ReactNode; initialUser?: User | null }) {
   // 언핸들드 프로미스 에러 전역 캡처
   useEffect(() => {
     const handler = (event: PromiseRejectionEvent) => {
@@ -96,7 +97,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <PostHogProvider>
         <ThemeProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider initialUser={initialUser}>{children}</AuthProvider>
         </ThemeProvider>
         <SplashScreen />
         <PortaledToaster />
