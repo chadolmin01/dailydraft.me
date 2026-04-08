@@ -4,6 +4,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { User, AuthError } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase/client'
 import type { Tables } from '../types/database'
+import posthog from 'posthog-js'
 
 type Profile = Tables<'profiles'>
 
@@ -70,6 +71,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           // Set user immediately → unblock isLoading FAST
           setUser(session.user)
           setIsLoading(false)
+
+          // PostHog 식별
+          posthog.identify(session.user.id, {
+            email: session.user.email,
+            name: session.user.user_metadata?.full_name || session.user.user_metadata?.name,
+          })
 
           // Fetch profile in background (non-blocking)
           fetchProfile(session.user.id).then(p => {
@@ -148,6 +155,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         if (event === 'SIGNED_OUT') {
+          posthog.reset()
           setUser(null)
           setProfile(null)
           return
