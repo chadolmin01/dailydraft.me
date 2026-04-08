@@ -34,9 +34,8 @@ export function SliderBar({ value: rawValue, low, high, label, colorKey }: { val
           <span className={`w-2 h-2 rounded-full ${colors.dot} transition-transform ${hovering ? 'scale-125' : ''}`} />
           {label}
         </span>
-        <span className={`text-[13px] font-bold tabular-nums ${colors.text} transition-colors`}>
-          {value}<span className="text-txt-tertiary font-normal">/5</span>
-        </span>
+        {/* 숫자(x/5) 제거 — 양극 척도를 점수로 보이게 하는 오해 방지
+           ("5가 더 좋다"는 착시). 위치/방향은 슬라이더 바 자체로 전달 */}
       </div>
 
       <div ref={barRef} className="relative h-2 bg-[#F2F3F5] dark:bg-[#3A3A3C] rounded-full overflow-hidden">
@@ -59,7 +58,7 @@ export function SliderBar({ value: rawValue, low, high, label, colorKey }: { val
       {/* Hover tooltip */}
       {hovering && (
         <div className="absolute -top-8 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-[#1C1C1E] dark:bg-[#F2F3F5] text-white dark:text-[#1C1C1E] text-[11px] font-semibold rounded-xl shadow-lg whitespace-nowrap z-10 animate-[fadeIn_0.15s_ease-out]">
-          {getInterpretation()} ({value}점)
+          {getInterpretation()}
         </div>
       )}
     </div>
