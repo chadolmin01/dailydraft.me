@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next'
+import { withSentryConfig } from '@sentry/nextjs'
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const withPWAInit = require('next-pwa')
 
@@ -125,4 +126,22 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ['puppeteer'],
 }
 
-export default withPWA(nextConfig)
+const configWithPWA = withPWA(nextConfig)
+
+export default withSentryConfig(configWithPWA, {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+
+  // 소스맵 업로드 (에러 스택트레이스에서 원본 코드 보기)
+  silent: true,
+
+  // 소스맵: 업로드 후 번들에서 제거 (보안)
+  sourcemaps: {
+    deleteSourcemapsAfterUpload: true,
+  },
+
+  // 번들 크기 최적화
+  disableLogger: true,
+
+  automaticVercelMonitors: false,
+})
