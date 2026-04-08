@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { X } from 'lucide-react'
 import { useAuth } from '@/src/context/AuthContext'
+import { useProfile, profileKeys } from '@/src/hooks/useProfile'
 import { useQueryClient } from '@tanstack/react-query'
 import { ScriptedInterviewStep } from '@/components/onboarding/steps/ScriptedInterviewStep'
 import { saveProfileFromInterview } from '@/src/lib/onboarding/api'
@@ -20,8 +21,10 @@ interface AIInterviewModalProps {
 }
 
 export function AIInterviewModal({ isOpen, onClose }: AIInterviewModalProps) {
-  const { profile, refreshProfile } = useAuth()
+  const { user } = useAuth()
+  const { data: profile } = useProfile()
   const queryClient = useQueryClient()
+  const refreshProfile = () => queryClient.invalidateQueries({ queryKey: profileKeys.detail(user?.id ?? '') })
   const [isCompleting, setIsCompleting] = useState(false)
   const [svgReady, setSvgReady] = useState(false)
 

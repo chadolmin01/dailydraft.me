@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/src/context/AuthContext'
+import { useProfile, profileKeys } from '@/src/hooks/useProfile'
 import { useProfileCompletion } from '@/src/hooks/useProfileCompletion'
 import { useQueryClient } from '@tanstack/react-query'
 import { GuideCTA } from '@/components/LoadingGuide'
@@ -26,9 +27,14 @@ const INTERVIEW_SVGS = [
 
 export default function OnboardingInterviewPage() {
   const router = useRouter()
-  const { profile, refreshProfile } = useAuth()
-  const completion = useProfileCompletion(profile)
+  const { user } = useAuth()
+  const { data: profile } = useProfile()
+  const completion = useProfileCompletion(profile ?? null)
   const queryClient = useQueryClient()
+  const refreshProfile = useCallback(
+    () => queryClient.invalidateQueries({ queryKey: profileKeys.detail(user?.id ?? '') }),
+    [queryClient, user?.id]
+  )
   const [phase, setPhase] = useState<'loading' | 'interview' | 'guide'>('loading')
   const [profileDraft, setProfileDraft] = useState<ProfileDraft | null>(null)
 
@@ -97,7 +103,7 @@ export default function OnboardingInterviewPage() {
   }
 
   if (phase === 'guide') {
-    return <GuideCTA profile={profile} completion={completion} />
+    return <GuideCTA profile={profile ?? null} completion={completion} />
   }
 
   if (!profileDraft) {

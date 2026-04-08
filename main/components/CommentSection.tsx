@@ -6,6 +6,7 @@ import { SkeletonFeed } from '@/components/ui/Skeleton'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { useComments, Comment } from '@/src/hooks/useComments'
 import { useAuth } from '@/src/context/AuthContext'
+import { useProfile } from '@/src/hooks/useProfile'
 import { COMMENT_LABEL, COMMENT_VERB } from '@/src/constants/labels'
 import { cleanNickname } from '@/src/lib/clean-nickname'
 
@@ -20,7 +21,8 @@ interface CommentSectionProps {
 }
 
 export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, ownerId, onLoginClick }) => {
-  const { user, profile } = useAuth()
+  const { user } = useAuth()
+  const { data: profile } = useProfile()
   const { comments, loading, addComment, voteHelpful, reportComment, deleteComment } = useComments({
     opportunityId,
   })

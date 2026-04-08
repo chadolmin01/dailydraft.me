@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Sparkles, X, ArrowRight } from 'lucide-react'
-import { useAuth } from '@/src/context/AuthContext'
+import { useProfile } from '@/src/hooks/useProfile'
 
 const DISMISS_KEY_PREFIX = 'ai-nudge-dismissed-'
 
@@ -14,7 +14,7 @@ function getDismissKey() {
 
 export function AiMatchingNudgeCard() {
   const router = useRouter()
-  const { profile } = useAuth()
+  const { data: profile } = useProfile()
   const [dismissed, setDismissed] = useState(true) // default hidden to avoid flash
 
   useEffect(() => {

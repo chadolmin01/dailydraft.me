@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Mail, Phone, MessageCircle, Loader2, Send } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
-import { useAuth } from '@/src/context/AuthContext'
+import { useProfile } from '@/src/hooks/useProfile'
 
 interface CoffeeChatAcceptModalProps {
   isOpen: boolean
@@ -30,7 +30,7 @@ export function CoffeeChatAcceptModal({
   requesterName,
   isPersonMode,
 }: CoffeeChatAcceptModalProps) {
-  const { profile } = useAuth()
+  const { data: profile } = useProfile()
 
   const [message, setMessage] = useState(
     isPersonMode

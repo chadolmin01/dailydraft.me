@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation'
 import { User, LogOut, Bell, X, Plus, Settings, Search, ChevronRight, Shield, FolderOpen, Compass, Briefcase, AlertTriangle, Sun, Moon, Building2 } from 'lucide-react'
 import Link from 'next/link'
 import { useAuth } from '@/src/context/AuthContext'
+import { useProfile } from '@/src/hooks/useProfile'
 import { useAdmin } from '@/src/hooks/useAdmin'
 import { useInstitutionAdmin } from '@/src/hooks/useInstitutionAdmin'
 import { NotificationDropdown } from '@/components/NotificationDropdown'
@@ -64,7 +65,8 @@ const DropdownItem = ({ icon: Icon, children, onClick, disabled, danger }: {
 export const TopNavbar: React.FC = () => {
   const router = useRouter()
   const pathname = usePathname()
-  const { signOut, user, isAuthenticated, isLoading: authLoading, profile } = useAuth()
+  const { signOut, user, isAuthenticated, isLoading: authLoading } = useAuth()
+  const { data: profile } = useProfile()
   const { isAdmin } = useAdmin()
   const { isInstitutionAdmin } = useInstitutionAdmin()
   const { theme, toggleTheme } = useTheme()

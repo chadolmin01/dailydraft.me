@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { Coffee, Loader2, Bell, BellOff } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAuth } from '@/src/context/AuthContext'
+import { useProfile } from '@/src/hooks/useProfile'
 import { useRequestCoffeeChat, useRequestPersonCoffeeChat } from '@/src/hooks/useCoffeeChats'
 import { COFFEE_CHAT_TEMPLATES, PERSON_COFFEE_CHAT_TEMPLATES } from '@/src/lib/constants/coffee-chat-templates'
 import { usePushNotification } from '@/src/hooks/usePushNotification'
@@ -23,7 +24,8 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
   selectedRole,
   initialMessage,
 }) => {
-  const { user, profile } = useAuth()
+  const { user } = useAuth()
+  const { data: profile } = useProfile()
   const requestChat = useRequestCoffeeChat()
   const requestPersonChat = useRequestPersonCoffeeChat()
   const isPersonMode = !!targetUserId && !opportunityId

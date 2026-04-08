@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import Link from 'next/link'
 import { MessageSquare, Sun, Moon, LogOut, Shield, Building2, ChevronRight, Plus, Download, Share, Smartphone } from 'lucide-react'
 import { useAuth } from '@/src/context/AuthContext'
+import { useProfile } from '@/src/hooks/useProfile'
 import { useAdmin } from '@/src/hooks/useAdmin'
 import { useInstitutionAdmin } from '@/src/hooks/useInstitutionAdmin'
 import { useTheme } from '@/src/context/ThemeContext'
@@ -53,7 +54,8 @@ function useInstallApp() {
 }
 
 export default function MorePage() {
-  const { signOut, user, profile } = useAuth()
+  const { signOut, user } = useAuth()
+  const { data: profile } = useProfile()
   const { isAdmin } = useAdmin()
   const { isInstitutionAdmin } = useInstitutionAdmin()
   const { theme, toggleTheme } = useTheme()

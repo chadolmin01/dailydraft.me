@@ -1,16 +1,12 @@
 'use client'
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
+import React, { createContext, useContext, useEffect, useState } from 'react'
 import { User, AuthError } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase/client'
-import type { Tables } from '../types/database'
 import posthog from 'posthog-js'
-
-type Profile = Tables<'profiles'>
 
 interface AuthContextType {
   user: User | null
-  profile: Profile | null
   isLoading: boolean
   isAuthenticated: boolean
   signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>
@@ -18,7 +14,6 @@ interface AuthContextType {
   signInWithGoogle: () => Promise<{ error: AuthError | null }>
   signInWithGithub: () => Promise<{ error: AuthError | null }>
   signOut: () => Promise<void>
-  refreshProfile: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -26,37 +21,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children, initialUser }: { children: React.ReactNode; initialUser?: User | null }) {
   // initialUser가 주입된 경우 첫 렌더부터 올바른 상태로 시작 → skeleton 고착 방지
   const [user, setUser] = useState<User | null>(initialUser ?? null)
-  const [profile, setProfile] = useState<Profile | null>(null)
   const [isLoading, setIsLoading] = useState(initialUser === undefined)
-
-  // Fetch user profile from database
-  const fetchProfile = useCallback(async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', userId)
-        .single()
-
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error fetching profile:', error)
-        return null
-      }
-
-      return data
-    } catch (error) {
-      console.error('Error fetching profile:', error)
-      return null
-    }
-  }, [])
-
-  // Refresh profile data
-  const refreshProfile = useCallback(async () => {
-    if (user) {
-      const profileData = await fetchProfile(user.id)
-      setProfile(profileData)
-    }
-  }, [user, fetchProfile])
 
   // Initialize auth state
   useEffect(() => {
@@ -64,15 +29,11 @@ export function AuthProvider({ children, initialUser }: { children: React.ReactN
 
     const initializeAuth = async () => {
       // initialUser가 서버에서 주입된 경우 — useState 초기값에서 user/isLoading 이미 설정됨
-      // 여기선 posthog 식별 + profile fetch만 수행
       if (initialUser !== undefined) {
         if (initialUser) {
           posthog.identify(initialUser.id, {
             email: initialUser.email,
             name: initialUser.user_metadata?.full_name || initialUser.user_metadata?.name,
-          })
-          fetchProfile(initialUser.id).then(p => {
-            if (mounted) setProfile(p)
           })
         }
         return
@@ -89,9 +50,6 @@ export function AuthProvider({ children, initialUser }: { children: React.ReactN
             email: session.user.email,
             name: session.user.user_metadata?.full_name || session.user.user_metadata?.name,
           })
-          fetchProfile(session.user.id).then(p => {
-            if (mounted) setProfile(p)
-          })
           // 백그라운드 서버 검증 — 명확한 세션 무효화 코드만 로그아웃
           supabase.auth.getUser().then(({ error }) => {
             if (!mounted) return
@@ -102,7 +60,6 @@ export function AuthProvider({ children, initialUser }: { children: React.ReactN
               )
               if (isHardAuthError) {
                 setUser(null)
-                setProfile(null)
               }
             }
           }).catch(() => {})
@@ -118,8 +75,6 @@ export function AuthProvider({ children, initialUser }: { children: React.ReactN
         if (!mounted) return
         if (!error && serverUser) {
           setUser(serverUser)
-          const p = await fetchProfile(serverUser.id)
-          if (mounted) setProfile(p)
         }
       } catch { /* getUser failed */ }
 
@@ -128,49 +83,30 @@ export function AuthProvider({ children, initialUser }: { children: React.ReactN
 
     initializeAuth()
 
-    // Listen for auth changes
+    // Listen for auth changes — user 객체만 동기화. profile은 useProfile()이 React Query로 관리.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (!mounted) return
 
-        // INITIAL_SESSION: getSession()이 null을 반환했을 때의 안전망
-        // session이 있으면 복구만 수행, null인 경우는 initializeAuth에 위임
-        // — 과거엔 여기서 setIsLoading(false)를 호출했지만, getSession()보다
-        //   INITIAL_SESSION이 먼저 fire되는 모바일 race condition으로
-        //   isLoading=false, user=null 중간 상태가 생겨 하단바가 숨겨졌음
         if (event === 'INITIAL_SESSION') {
           if (session?.user) {
             setUser(session.user)
             setIsLoading(false)
-            fetchProfile(session.user.id).then(p => {
-              if (mounted) setProfile(p)
-            })
           }
-          return
-        }
-
-        if (event === 'TOKEN_REFRESHED' && !session) {
-          setUser(null)
-          setProfile(null)
           return
         }
 
         if (event === 'SIGNED_OUT') {
           posthog.reset()
           setUser(null)
-          setProfile(null)
           return
         }
 
         if (session?.user) {
-          const profileData = await fetchProfile(session.user.id)
-          if (!mounted) return
-          // Batch: user + profile in same tick → single render
           setUser(session.user)
-          setProfile(profileData)
-        } else {
+        } else if (event === 'TOKEN_REFRESHED') {
+          // 세션 없이 TOKEN_REFRESHED → 만료
           setUser(null)
-          setProfile(null)
         }
       }
     )
@@ -179,7 +115,7 @@ export function AuthProvider({ children, initialUser }: { children: React.ReactN
       mounted = false
       subscription.unsubscribe()
     }
-  }, [fetchProfile])
+  }, [initialUser])
 
   // Sign in with email/password
   const signIn = async (email: string, password: string) => {
@@ -257,12 +193,10 @@ export function AuthProvider({ children, initialUser }: { children: React.ReactN
       console.error('Client signout error:', e)
     }
     setUser(null)
-    setProfile(null)
   }
 
   const value: AuthContextType = {
     user,
-    profile,
     isLoading,
     isAuthenticated: !!user,
     signIn,
@@ -270,7 +204,6 @@ export function AuthProvider({ children, initialUser }: { children: React.ReactN
     signInWithGoogle,
     signInWithGithub,
     signOut,
-    refreshProfile,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

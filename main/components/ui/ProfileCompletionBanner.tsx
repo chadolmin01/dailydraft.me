@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { X, ArrowRight, User } from 'lucide-react'
 import { useAuth } from '@/src/context/AuthContext'
+import { useProfile } from '@/src/hooks/useProfile'
 import { useProfileCompletion } from '@/src/hooks/useProfileCompletion'
 
 const DISMISS_KEY_PREFIX = 'profile-nudge-dismissed-'
@@ -14,8 +15,9 @@ function getDismissKey() {
 }
 
 export function ProfileCompletionBanner() {
-  const { isAuthenticated, profile } = useAuth()
-  const { fields, pct } = useProfileCompletion(profile)
+  const { isAuthenticated } = useAuth()
+  const { data: profile } = useProfile()
+  const { fields, pct } = useProfileCompletion(profile ?? null)
   const [dismissed, setDismissed] = useState(true) // default hidden to avoid flash
 
   useEffect(() => {

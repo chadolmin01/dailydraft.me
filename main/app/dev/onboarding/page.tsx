@@ -3,11 +3,16 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/src/context/AuthContext'
+import { useProfile, profileKeys } from '@/src/hooks/useProfile'
+import { useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/src/lib/supabase/client'
 
 export default function DevOnboardingPage() {
   const router = useRouter()
-  const { user, profile, isLoading, refreshProfile } = useAuth()
+  const { user, isLoading } = useAuth()
+  const { data: profile } = useProfile()
+  const queryClient = useQueryClient()
+  const refreshProfile = () => queryClient.invalidateQueries({ queryKey: profileKeys.detail(user?.id ?? '') })
   const [resetting, setResetting] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
 

@@ -37,6 +37,7 @@ import { positionLabel } from '@/src/constants/roles'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/src/lib/supabase/client'
 import { useAuth } from '@/src/context/AuthContext'
+import { useProfile } from '@/src/hooks/useProfile'
 import { opportunityKeys } from '@/src/hooks/useOpportunities'
 import { CATEGORY_ICONS, PAGE_SIZE, PEOPLE_PAGE_SIZE, TYPE_FILTERS } from './constants'
 import {
@@ -135,7 +136,8 @@ function ExplorePageContent() {
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
 
   const searchQuery = useDebouncedValue(searchInput, 300)
-  const { isAuthenticated, user, profile, isLoading: isAuthLoading } = useAuth()
+  const { isAuthenticated, user, isLoading: isAuthLoading } = useAuth()
+  const { data: profile } = useProfile()
   const queryClient = useQueryClient()
   const guide = useStarterGuide()
 

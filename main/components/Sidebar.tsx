@@ -21,6 +21,7 @@ import {
   Building2,
 } from 'lucide-react'
 import { useAuth } from '@/src/context/AuthContext'
+import { useProfile } from '@/src/hooks/useProfile'
 import { useAdmin } from '@/src/hooks/useAdmin'
 import { useInstitutionAdmin } from '@/src/hooks/useInstitutionAdmin'
 import { usePremium } from '@/src/hooks/usePremium'
@@ -30,7 +31,8 @@ import InviteCodeModal from '@/components/InviteCodeModal'
 export const Sidebar: React.FC = () => {
   const router = useRouter()
   const pathname = usePathname()
-  const { signOut, user, profile } = useAuth()
+  const { signOut, user } = useAuth()
+  const { data: profile } = useProfile()
   const { isAdmin } = useAdmin()
   const { isInstitutionAdmin } = useInstitutionAdmin()
   const { isPremium, refetch: refetchPremium } = usePremium()

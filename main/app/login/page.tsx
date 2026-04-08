@@ -66,7 +66,7 @@ export default function LoginPage() {
 
 function LoginContent() {
   const router = useRouter()
-  const { signIn, signUp, signInWithGoogle, signInWithGithub, isAuthenticated, isLoading: authLoading, profile } = useAuth()
+  const { signIn, signUp, signInWithGoogle, signInWithGithub, isAuthenticated, isLoading: authLoading } = useAuth()
   const searchParams = useSearchParams()
   const rawRedirect = searchParams.get('redirect') || '/explore'
   const redirectTo = rawRedirect.startsWith('/') && !rawRedirect.startsWith('//') ? rawRedirect : '/explore'
@@ -85,7 +85,7 @@ function LoginContent() {
     if (!authLoading && isAuthenticated) {
       router.push(redirectTo)
     }
-  }, [authLoading, isAuthenticated, profile, router])
+  }, [authLoading, isAuthenticated, redirectTo, router])
 
   // Initial System Boot Sequence
   useEffect(() => {

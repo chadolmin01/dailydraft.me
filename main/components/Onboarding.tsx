@@ -4,6 +4,7 @@ import React, { useState, useCallback, useRef, useEffect } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { useAuth } from '@/src/context/AuthContext'
+import { useProfile } from '@/src/hooks/useProfile'
 import { determineResumeStep } from '@/src/lib/onboarding/resume'
 import { saveProfileCheckpoint } from '@/src/lib/onboarding/api'
 import { AFFILIATION_OPTIONS, SITUATION_OPTIONS } from '@/src/lib/onboarding/constants'
@@ -69,7 +70,8 @@ interface OnboardingProps {
 export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const { profile: authProfile, isLoading: authLoading, isAuthenticated } = useAuth()
+  const { isLoading: authLoading, isAuthenticated } = useAuth()
+  const { data: authProfile } = useProfile()
 
   const [step, setStep] = useState<Step>('intro')
   const [profile, setProfile] = useState<ProfileDraft>(INITIAL_PROFILE)

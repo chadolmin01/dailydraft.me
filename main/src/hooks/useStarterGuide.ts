@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useAuth } from '@/src/context/AuthContext'
+import { useProfile } from '@/src/hooks/useProfile'
 import { useProfileCompletion } from '@/src/hooks/useProfileCompletion'
 import { useMyOpportunities } from '@/src/hooks/useOpportunities'
 import { useQuery } from '@tanstack/react-query'
@@ -53,8 +54,9 @@ export interface StarterStep {
 
 // ── Hook ──
 export function useStarterGuide() {
-  const { isAuthenticated, profile, user } = useAuth()
-  const { pct: profilePct } = useProfileCompletion(profile)
+  const { isAuthenticated, user } = useAuth()
+  const { data: profile } = useProfile()
+  const { pct: profilePct } = useProfileCompletion(profile ?? null)
   const { data: myOpportunities } = useMyOpportunities()
 
   // Pending applications count (applications I sent)

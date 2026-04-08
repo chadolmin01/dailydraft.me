@@ -1,11 +1,11 @@
 'use client'
 
-import { useAuth } from '@/src/context/AuthContext'
+import { useProfile } from '@/src/hooks/useProfile'
 import { useProfileCompletion } from '@/src/hooks/useProfileCompletion'
 import { GuideCTA } from '@/components/LoadingGuide'
 
 export default function GuidePage() {
-  const { profile } = useAuth()
-  const completion = useProfileCompletion(profile)
-  return <GuideCTA profile={profile} completion={completion} />
+  const { data: profile } = useProfile()
+  const completion = useProfileCompletion(profile ?? null)
+  return <GuideCTA profile={profile ?? null} completion={completion} />
 }
