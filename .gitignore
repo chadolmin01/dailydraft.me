@@ -47,3 +47,13 @@ nul
 # Vercel
 .vercel/
 .vercel
+
+# Pitch / report artifacts (루트 임시 산출물)
+Draft_Pitch.html
+Draft_Pitch.pdf
+Draft_Presentation.pptx
+PROJECT_REPORT.md
+capture-pitch.js
+capture-screenshots.js
+create-ppt.js
+/p/
