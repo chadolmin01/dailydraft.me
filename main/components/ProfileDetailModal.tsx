@@ -65,13 +65,31 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
   }, [])
 
   useEffect(() => {
-    if (profileId) {
-      document.body.style.overflow = 'hidden'
-      setModalView('profile')
-    } else {
-      document.body.style.overflow = ''
+    if (!profileId) return
+    setModalView('profile')
+    // body를 fixed로 고정하면서 스크롤 위치 보존
+    //   - 단순 overflow:hidden은 일부 브라우저에서 스크롤 위치를 top으로 리셋시킴
+    //     ("모달 열면 화면이 맨 위로 튀는" 버그 원인)
+    //   - position:fixed + top=-scrollY로 시각적 위치 유지, 닫을 때 scrollTo로 복원
+    const scrollY = window.scrollY
+    const body = document.body
+    const prev = {
+      position: body.style.position,
+      top: body.style.top,
+      width: body.style.width,
+      overflow: body.style.overflow,
     }
-    return () => { document.body.style.overflow = '' }
+    body.style.position = 'fixed'
+    body.style.top = `-${scrollY}px`
+    body.style.width = '100%'
+    body.style.overflow = 'hidden'
+    return () => {
+      body.style.position = prev.position
+      body.style.top = prev.top
+      body.style.width = prev.width
+      body.style.overflow = prev.overflow
+      window.scrollTo(0, scrollY)
+    }
   }, [profileId])
 
   useEffect(() => {
