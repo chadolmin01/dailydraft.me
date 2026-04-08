@@ -8,6 +8,7 @@ import { createPortal } from 'react-dom'
 import { AuthProvider } from './AuthContext'
 import { ThemeProvider } from './ThemeContext'
 import { SplashScreen } from '@/components/SplashScreen'
+import { PostHogProvider } from './PostHogProvider'
 
 /**
  * Renders Sonner Toaster inside a dedicated portal container appended to <body>.
@@ -78,14 +79,16 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <AuthProvider>{children}</AuthProvider>
-      </ThemeProvider>
-      <SplashScreen />
-      <PortaledToaster />
-      {process.env.NODE_ENV === 'development' && (
-        <ReactQueryDevtools initialIsOpen={false} />
-      )}
+      <PostHogProvider>
+        <ThemeProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </ThemeProvider>
+        <SplashScreen />
+        <PortaledToaster />
+        {process.env.NODE_ENV === 'development' && (
+          <ReactQueryDevtools initialIsOpen={false} />
+        )}
+      </PostHogProvider>
     </QueryClientProvider>
   )
 }
