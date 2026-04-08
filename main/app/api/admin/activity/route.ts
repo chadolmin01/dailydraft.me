@@ -28,7 +28,8 @@ function getServiceClient() {
   )
 }
 
-export const GET = withErrorCapture(async (request: NextRequest) => {
+export const GET = withErrorCapture(async (request) => {
+  const req = request as NextRequest
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user || user.app_metadata?.is_admin !== true) {

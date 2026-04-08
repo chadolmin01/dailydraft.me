@@ -3,6 +3,7 @@ import { ApiResponse } from '@/src/lib/api-utils'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 export const GET = withErrorCapture(async () => {
+  throw new Error('posthog-test-sentinel-2')
   try {
     const supabase = await createClient()
 
