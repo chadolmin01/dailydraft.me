@@ -5,6 +5,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Toaster } from 'sonner'
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
+import posthog from 'posthog-js'
 import { AuthProvider } from './AuthContext'
 import { ThemeProvider } from './ThemeContext'
 import { SplashScreen } from '@/components/SplashScreen'
@@ -61,6 +62,15 @@ function PortaledToaster() {
 }
 
 export function Providers({ children }: { children: React.ReactNode }) {
+  // 언핸들드 프로미스 에러 전역 캡처
+  useEffect(() => {
+    const handler = (event: PromiseRejectionEvent) => {
+      posthog.captureException(event.reason, { tags: { source: 'unhandledRejection' } })
+    }
+    window.addEventListener('unhandledrejection', handler)
+    return () => window.removeEventListener('unhandledrejection', handler)
+  }, [])
+
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -72,6 +82,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
               return failureCount < 3
             },
             retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
+          },
+          mutations: {
+            onError: (error) => {
+              posthog.captureException(error, { tags: { source: 'reactQueryMutation' } })
+            },
           },
         },
       })
