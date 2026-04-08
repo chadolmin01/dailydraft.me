@@ -72,11 +72,14 @@ export async function createNotification({
     } as never)
 
     if (error) {
+      // 디버깅을 위해 에러 노출 — 그동안 silent fail로 0건 INSERT 원인 추적 불가했음
+      console.error('[createNotification] insert failed', { userId, type, error })
       return false
     }
 
     return true
-  } catch (_error) {
+  } catch (error) {
+    console.error('[createNotification] threw', { userId, type, error })
     return false
   }
 }
