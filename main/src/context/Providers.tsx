@@ -1,6 +1,6 @@
 'use client'
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Toaster } from 'sonner'
 import { useEffect, useState } from 'react'
@@ -63,18 +63,48 @@ function PortaledToaster() {
 }
 
 export function Providers({ children, initialUser }: { children: React.ReactNode; initialUser?: User | null }) {
-  // 언핸들드 프로미스 에러 전역 캡처
+  // 언핸들드 프로미스 에러 + 동기 throw 전역 캡처
   useEffect(() => {
-    const handler = (event: PromiseRejectionEvent) => {
-      posthog.captureException(event.reason, { tags: { source: 'unhandledRejection' } })
+    const rejectionHandler = (event: PromiseRejectionEvent) => {
+      try {
+        posthog.captureException(event.reason, { tags: { source: 'unhandledRejection' } })
+      } catch {}
     }
-    window.addEventListener('unhandledrejection', handler)
-    return () => window.removeEventListener('unhandledrejection', handler)
+    const errorHandler = (event: ErrorEvent) => {
+      try {
+        posthog.captureException(event.error ?? new Error(event.message), {
+          tags: {
+            source: 'windowOnError',
+            filename: event.filename,
+            lineno: String(event.lineno ?? ''),
+            colno: String(event.colno ?? ''),
+          },
+        })
+      } catch {}
+    }
+    window.addEventListener('unhandledrejection', rejectionHandler)
+    window.addEventListener('error', errorHandler)
+    return () => {
+      window.removeEventListener('unhandledrejection', rejectionHandler)
+      window.removeEventListener('error', errorHandler)
+    }
   }, [])
 
   const [queryClient] = useState(
     () =>
       new QueryClient({
+        queryCache: new QueryCache({
+          onError: (error, query) => {
+            try {
+              posthog.captureException(error, {
+                tags: {
+                  source: 'reactQueryQuery',
+                  queryKey: JSON.stringify(query.queryKey).slice(0, 200),
+                },
+              })
+            } catch {}
+          },
+        }),
         defaultOptions: {
           queries: {
             staleTime: 1000 * 60 * 5, // 5 minutes

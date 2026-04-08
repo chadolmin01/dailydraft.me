@@ -10,10 +10,10 @@ import {
   BILLING_CYCLES,
 } from '@/src/lib/subscription/constants'
 import type { PlanType, BoostType, BillingCycle } from '@/src/lib/subscription/constants'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 // POST: Confirm payment and update subscription/boost
-export async function POST(request: Request) {
-  try {
+export const POST = withErrorCapture(async (request) => {
     const supabase = await createClient()
 
     const {
@@ -254,17 +254,10 @@ export async function POST(request: Request) {
     }
 
     return ApiResponse.badRequest('유효하지 않은 결제 유형입니다')
-  } catch (error) {
-    return ApiResponse.internalError(
-      '결제 처리 중 오류가 발생했습니다',
-      error instanceof Error ? error.message : undefined
-    )
-  }
-}
+})
 
 // GET: Get payment history
-export async function GET(request: Request) {
-  try {
+export const GET = withErrorCapture(async (request) => {
     const supabase = await createClient()
 
     const {
@@ -298,10 +291,4 @@ export async function GET(request: Request) {
     }
 
     return ApiResponse.ok(data || [])
-  } catch (error) {
-    return ApiResponse.internalError(
-      '결제 내역 조회 중 오류가 발생했습니다',
-      error instanceof Error ? error.message : undefined
-    )
-  }
-}
+})

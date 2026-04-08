@@ -74,3 +74,16 @@ netstat -ano | grep -E ":(300[0-9]|3010) " | grep LISTENING
 ## 성능 최적화 적용 현황
 - `Dashboard.tsx`: useMemo, useCallback, lazy loading 적용
 - `recommend API`: Promise.all 병렬 fetch
+
+## 바이브코딩 지원 규칙
+
+사용자는 비개발자(스타트업 창업자)임. 코드/디버깅 시 다음 자동 수행:
+
+1. **비자명한 결정에는 의도+트레이드오프 주석 필수**
+   - 예: 락/타임아웃/race 가드/RLS 관련 코드
+   - "왜 이렇게 짰는지 + 안 했을 때 뭐가 문제인지" 2~3줄
+2. **새 전문용어 등장 시 → `~/.claude/projects/C--project-Draft/memory/vibe_glossary.md`에 추가**
+   - 사용자 메타포(앵커, 됬다안됬다 등) ↔ 개발자 정식 용어 매핑
+3. **비자명한 버그 원인 발견 시 → `~/.claude/projects/C--project-Draft/memory/vibe_lessons.md`에 4줄 기록**
+   - 증상 / 원인 / 해결 / 교훈
+   - 다음에 비슷한 증상 보이면 이 파일 먼저 참조

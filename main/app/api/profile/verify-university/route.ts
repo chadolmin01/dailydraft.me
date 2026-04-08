@@ -4,6 +4,7 @@ import { NextRequest } from 'next/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { resend, FROM_EMAIL, isEmailEnabled } from '@/src/lib/email/client'
 import crypto from 'crypto'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 function getAdminClient() {
   return createAdminClient(
@@ -43,8 +44,7 @@ function generateCode(): string {
 }
 
 // POST: 인증 코드 발송 / 검증
-export async function POST(request: NextRequest) {
-  try {
+export const POST = withErrorCapture(async (request) => {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -243,14 +243,10 @@ export async function POST(request: NextRequest) {
     }
 
     return ApiResponse.badRequest('잘못된 요청입니다')
-  } catch {
-    return ApiResponse.internalError()
-  }
-}
+})
 
 // GET: 인증 상태 확인
-export async function GET() {
-  try {
+export const GET = withErrorCapture(async () => {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -270,7 +266,4 @@ export async function GET() {
       is_verified: d?.is_uni_verified || false,
       university: d?.university || null,
     })
-  } catch {
-    return ApiResponse.internalError()
-  }
-}
+})

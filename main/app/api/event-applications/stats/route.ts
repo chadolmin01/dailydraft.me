@@ -1,13 +1,13 @@
 import { createClient } from '@/src/lib/supabase/server';
 import { ApiResponse } from '@/src/lib/api-utils';
 import type { EventApplicationStats, EventApplicationStatus } from '@/src/types/event-application';
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture';
 
 /**
  * GET /api/event-applications/stats
  * Get user's event application statistics
  */
-export async function GET() {
-  try {
+export const GET = withErrorCapture(async () => {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -66,8 +66,4 @@ export async function GET() {
     };
 
     return ApiResponse.ok(stats);
-
-  } catch (_error) {
-    return ApiResponse.internalError();
-  }
-}
+})

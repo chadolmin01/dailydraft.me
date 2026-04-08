@@ -1,11 +1,11 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { generateOpportunityEmbedding } from '@/src/lib/ai/embeddings'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 // POST /api/admin/backfill-embeddings
 // 임베딩 없는 프로젝트 전체에 임베딩 생성 후 저장
-export async function POST(request: Request) {
-  // 간단한 비밀키 인증
+export const POST = withErrorCapture(async (request) => {
   const { searchParams } = new URL(request.url)
   const secret = searchParams.get('secret')
   if (secret !== process.env.ADMIN_SECRET) {
@@ -27,6 +27,7 @@ export async function POST(request: Request) {
   const results = { success: 0, failed: 0, ids: [] as string[] }
 
   for (const opp of opportunities) {
+    // Inner try/catch: per-item failure shouldn't halt batch
     try {
       const embedding = await generateOpportunityEmbedding({
         title: opp.title,
@@ -52,4 +53,4 @@ export async function POST(request: Request) {
     message: `백필 완료: ${results.success}개 성공, ${results.failed}개 실패`,
     ...results,
   })
-}
+})

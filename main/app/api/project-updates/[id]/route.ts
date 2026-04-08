@@ -1,5 +1,6 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse, isValidUUID, parseJsonBody } from '@/src/lib/api-utils'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 async function getUpdateAndVerifyOwner(updateId: string, userId: string) {
   const supabase = await createClient()
@@ -16,10 +17,10 @@ async function getUpdateAndVerifyOwner(updateId: string, userId: string) {
   return { update, supabase }
 }
 
-export async function PATCH(
-  request: Request,
+export const PATCH = withErrorCapture(async (
+  request,
   { params }: { params: Promise<{ id: string }> }
-) {
+) => {
   const { id } = await params
 
   if (!isValidUUID(id)) return ApiResponse.badRequest('유효하지 않은 ID입니다')
@@ -61,12 +62,12 @@ export async function PATCH(
   if (error) return ApiResponse.internalError('업데이트 수정에 실패했습니다')
 
   return ApiResponse.ok(data)
-}
+})
 
-export async function DELETE(
-  _request: Request,
+export const DELETE = withErrorCapture(async (
+  _request,
   { params }: { params: Promise<{ id: string }> }
-) {
+) => {
   const { id } = await params
 
   if (!isValidUUID(id)) return ApiResponse.badRequest('유효하지 않은 ID입니다')
@@ -86,4 +87,4 @@ export async function DELETE(
   if (error) return ApiResponse.internalError('업데이트 삭제에 실패했습니다')
 
   return ApiResponse.ok({ id })
-}
+})

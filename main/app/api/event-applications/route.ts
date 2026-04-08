@@ -6,13 +6,13 @@ import type {
   CreateEventApplicationRequest,
   EventApplicationStatus,
 } from '@/src/types/event-application';
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture';
 
 /**
  * GET /api/event-applications
  * Get user's event applications with optional filters
  */
-export async function GET(request: NextRequest) {
-  try {
+export const GET = withErrorCapture(async (request) => {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -81,18 +81,13 @@ export async function GET(request: NextRequest) {
       limit,
       offset,
     });
-
-  } catch (_error) {
-    return ApiResponse.internalError();
-  }
-}
+})
 
 /**
  * POST /api/event-applications
  * Create a new event application tracking
  */
-export async function POST(request: NextRequest) {
-  try {
+export const POST = withErrorCapture(async (request) => {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -161,8 +156,4 @@ export async function POST(request: NextRequest) {
     }
 
     return ApiResponse.created(application);
-
-  } catch (_error) {
-    return ApiResponse.internalError();
-  }
-}
+})

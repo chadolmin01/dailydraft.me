@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -9,7 +10,7 @@ const supabase = createClient(
 
 export const revalidate = 3600 // ISR: 1시간 캐시
 
-export async function GET() {
+export const GET = withErrorCapture(async () => {
   try {
     const [
       { count: users },
@@ -31,4 +32,4 @@ export async function GET() {
   } catch {
     return NextResponse.json({ users: 0, projects: 0, coffeeChats: 0 })
   }
-}
+})

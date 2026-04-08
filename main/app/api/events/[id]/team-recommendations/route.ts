@@ -1,12 +1,12 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { NextRequest } from 'next/server'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
-export async function GET(
-  request: NextRequest,
+export const GET = withErrorCapture(async (
+  request,
   { params }: { params: Promise<{ id: string }> }
-) {
-  try {
+) => {
     const { id: eventId } = await params
     const supabase = await createClient()
 
@@ -106,7 +106,4 @@ export async function GET(
       event_id: eventId,
       total_found: scoredOpportunities.length,
     })
-  } catch (_error) {
-    return ApiResponse.internalError()
-  }
-}
+})

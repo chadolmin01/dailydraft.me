@@ -1,9 +1,9 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 // GET: Get current user's profile
-export async function GET() {
-  try {
+export const GET = withErrorCapture(async () => {
     const supabase = await createClient()
 
     const {
@@ -25,14 +25,10 @@ export async function GET() {
     }
 
     return ApiResponse.ok(data)
-  } catch {
-    return ApiResponse.internalError('프로필 조회 중 오류가 발생했습니다')
-  }
-}
+})
 
 // PATCH: Update profile
-export async function PATCH(request: Request) {
-  try {
+export const PATCH = withErrorCapture(async (request) => {
     const supabase = await createClient()
 
     const {
@@ -92,7 +88,4 @@ export async function PATCH(request: Request) {
     }
 
     return ApiResponse.ok(data)
-  } catch {
-    return ApiResponse.internalError('프로필 업데이트 중 오류가 발생했습니다')
-  }
-}
+})

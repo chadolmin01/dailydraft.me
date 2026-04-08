@@ -4,6 +4,7 @@ import { NextRequest } from 'next/server'
 import { checkViewRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
 import { ApiResponse, isValidUUID } from '@/src/lib/api-utils'
 import { Redis } from '@upstash/redis'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 const VIEW_COOLDOWN_SEC = 15 * 60 // 15분
 
@@ -17,11 +18,10 @@ function getRedisClient(): Redis | null {
 }
 
 // 프로필 조회수 증가
-export async function POST(
-  request: NextRequest,
+export const POST = withErrorCapture(async (
+  request,
   { params }: { params: Promise<{ id: string }> }
-) {
-  try {
+) => {
     const { id } = await params
     if (!isValidUUID(id)) return ApiResponse.badRequest('Invalid ID')
     const ip = getClientIp(request)
@@ -91,17 +91,13 @@ export async function POST(
     }
 
     return ApiResponse.ok({ success: true, profile_views: newViews })
-  } catch {
-    return ApiResponse.internalError()
-  }
-}
+})
 
 // 프로필 조회수 조회
-export async function GET(
-  _request: NextRequest,
+export const GET = withErrorCapture(async (
+  _request,
   { params }: { params: Promise<{ id: string }> }
-) {
-  try {
+) => {
     const { id } = await params
     if (!isValidUUID(id)) return ApiResponse.badRequest('Invalid ID')
     const supabase = await createClient()
@@ -119,7 +115,4 @@ export async function GET(
     return ApiResponse.ok({
       profile_views: (profile as { profile_views: number | null }).profile_views || 0,
     })
-  } catch {
-    return ApiResponse.internalError()
-  }
-}
+})

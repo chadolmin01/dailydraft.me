@@ -1,13 +1,13 @@
 import { NextRequest } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 // GET: 특정 이벤트의 북마크 상태 확인
-export async function GET(
-  request: NextRequest,
+export const GET = withErrorCapture(async (
+  request,
   { params }: { params: Promise<{ eventId: string }> }
-) {
-  try {
+) => {
     const { eventId } = await params
     const supabase = await createClient()
 
@@ -27,17 +27,13 @@ export async function GET(
       bookmarked: !!bookmark,
       bookmark,
     })
-  } catch (_err) {
-    return ApiResponse.internalError()
-  }
-}
+})
 
 // PATCH: 북마크 알림 설정 수정
-export async function PATCH(
-  request: NextRequest,
+export const PATCH = withErrorCapture(async (
+  request,
   { params }: { params: Promise<{ eventId: string }> }
-) {
-  try {
+) => {
     const { eventId } = await params
     const supabase = await createClient()
 
@@ -65,17 +61,13 @@ export async function PATCH(
     }
 
     return ApiResponse.ok(bookmark)
-  } catch (_err) {
-    return ApiResponse.internalError()
-  }
-}
+})
 
 // DELETE: 북마크 삭제
-export async function DELETE(
-  request: NextRequest,
+export const DELETE = withErrorCapture(async (
+  request,
   { params }: { params: Promise<{ eventId: string }> }
-) {
-  try {
+) => {
     const { eventId } = await params
     const supabase = await createClient()
 
@@ -95,7 +87,4 @@ export async function DELETE(
     }
 
     return ApiResponse.ok({ success: true })
-  } catch (_err) {
-    return ApiResponse.internalError()
-  }
-}
+})

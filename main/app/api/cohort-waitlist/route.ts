@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 // Draft 다음 기수 웨이팅리스트 — 랜딩 방문자가 이메일만 등록
 // 익명 INSERT 허용 (RLS), 동일 이메일은 DB UNIQUE 제약으로 1회만
@@ -11,8 +12,7 @@ const schema = z.object({
   source: z.string().max(50).optional(),
 })
 
-export async function POST(request: Request) {
-  try {
+export const POST = withErrorCapture(async (request) => {
     const body = await request.json()
     const parsed = schema.safeParse(body)
     if (!parsed.success) {
@@ -40,10 +40,4 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ ok: true }, { status: 201 })
-  } catch (error) {
-    return ApiResponse.internalError(
-      '등록 중 오류가 발생했습니다',
-      error instanceof Error ? error.message : undefined
-    )
-  }
-}
+})

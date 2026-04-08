@@ -5,6 +5,7 @@ import { applyRateLimit } from '@/src/lib/rate-limit'
 import { logError } from '@/src/lib/error-logging'
 import { safeGenerate } from '@/src/lib/ai/safe-generate'
 import { PdfStructureSchema } from '@/src/lib/ai/schemas'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 const SYSTEM_PROMPT = `당신은 스타트업 PM입니다. 업로드된 PDF 문서를 분석하여 다음 3가지를 추출하세요.
 문서에 명시되지 않은 내용은 "내용 없음"으로 표기하세요.
@@ -22,7 +23,7 @@ export interface StructuredIdea {
   target: string
 }
 
-export async function POST(request: Request) {
+export const POST = withErrorCapture(async (request) => {
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -93,4 +94,4 @@ export async function POST(request: Request) {
     console.error('pdf-structure error:', err.message)
     return ApiResponse.internalError()
   }
-}
+})

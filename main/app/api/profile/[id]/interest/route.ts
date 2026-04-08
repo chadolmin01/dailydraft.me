@@ -2,13 +2,13 @@ import { createClient } from '@/src/lib/supabase/server'
 import { notifyProfileInterest } from '@/src/lib/notifications/create-notification'
 import { NextRequest } from 'next/server'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 // POST: Toggle profile interest (like/unlike)
-export async function POST(
-  _request: NextRequest,
+export const POST = withErrorCapture(async (
+  _request,
   { params }: { params: Promise<{ id: string }> }
-) {
-  try {
+) => {
     const { id: targetProfileId } = await params
     const supabase = await createClient()
 
@@ -101,17 +101,13 @@ export async function POST(
 
       return ApiResponse.ok({ interested: true, interest_count: currentCount + 1 })
     }
-  } catch {
-    return ApiResponse.internalError()
-  }
-}
+})
 
 // GET: Check if current user has expressed interest
-export async function GET(
-  _request: NextRequest,
+export const GET = withErrorCapture(async (
+  _request,
   { params }: { params: Promise<{ id: string }> }
-) {
-  try {
+) => {
     const { id: targetProfileId } = await params
     const supabase = await createClient()
 
@@ -140,7 +136,4 @@ export async function GET(
     const count = (profile as { interest_count: number | null } | null)?.interest_count || 0
 
     return ApiResponse.ok({ interested: !!existing, interest_count: count })
-  } catch {
-    return ApiResponse.internalError()
-  }
-}
+})

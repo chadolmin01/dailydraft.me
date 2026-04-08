@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import Link from 'next/link'
-import { logError } from '@/src/lib/error-logging'
+import { captureClientError } from '@/src/lib/posthog/client-capture'
 
 export default function GlobalError({
   error,
@@ -13,13 +13,7 @@ export default function GlobalError({
 }) {
   useEffect(() => {
     console.error('Unhandled error:', error)
-    logError({
-      source: 'client',
-      message: error.message,
-      stackTrace: error.stack,
-      endpoint: typeof window !== 'undefined' ? window.location.pathname : undefined,
-      method: 'GET',
-    }).catch(() => {})
+    captureClientError(error, { source: 'route-boundary', digest: error.digest })
   }, [error])
 
   return (

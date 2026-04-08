@@ -1,11 +1,10 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { analyzeProfile } from '@/src/lib/ai/profile-analyzer'
-import { logError } from '@/src/lib/error-logging'
 import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
-export async function POST(request: Request) {
-  try {
+export const POST = withErrorCapture(async (request) => {
     const supabase = await createClient()
 
     const {
@@ -68,18 +67,4 @@ export async function POST(request: Request) {
     }
 
     return ApiResponse.ok({ success: true, analysis })
-  } catch (error: unknown) {
-    const err = error instanceof Error ? error : new Error(String(error))
-    await logError({
-      level: 'error',
-      source: 'api',
-      errorCode: err.name,
-      message: err.message,
-      stackTrace: err.stack,
-      endpoint: '/api/profile/analyze',
-      method: 'POST',
-    })
-    console.error('profile/analyze error:', err.message)
-    return ApiResponse.internalError()
-  }
-}
+})

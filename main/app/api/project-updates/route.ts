@@ -2,8 +2,9 @@ import { createClient } from '@/src/lib/supabase/server'
 import { createAdminClient } from '@/src/lib/supabase/admin'
 import { ApiResponse, isValidUUID, parseJsonBody } from '@/src/lib/api-utils'
 import { notifyProjectUpdate } from '@/src/lib/notifications/create-notification'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
-export async function POST(request: Request) {
+export const POST = withErrorCapture(async (request) => {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return ApiResponse.unauthorized()
@@ -51,7 +52,7 @@ export async function POST(request: Request) {
   sendTeamNotifications(opportunity_id, user.id, title.trim()).catch(() => {})
 
   return ApiResponse.created(update)
-}
+})
 
 async function sendTeamNotifications(
   opportunityId: string,

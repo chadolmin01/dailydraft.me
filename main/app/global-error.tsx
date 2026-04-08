@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import posthog from 'posthog-js'
+import { captureClientError } from '@/src/lib/posthog/client-capture'
 
 export default function GlobalError({
   error,
@@ -11,7 +11,7 @@ export default function GlobalError({
   reset: () => void
 }) {
   useEffect(() => {
-    posthog.captureException(error)
+    captureClientError(error, { source: 'root-boundary', digest: error.digest })
   }, [error])
   return (
     <html lang="ko">

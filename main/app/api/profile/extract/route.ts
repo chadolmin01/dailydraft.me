@@ -1,7 +1,7 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { chatModel } from '@/src/lib/ai/gemini-client'
-import { logError } from '@/src/lib/error-logging'
 import type { ExtractedProfile } from '@/src/types/extracted-profile'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 import type { Json } from '@/src/types/database'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { Ratelimit } from '@upstash/ratelimit'
@@ -41,8 +41,7 @@ const extractionRatelimit = new Ratelimit({
   prefix: 'ratelimit:extraction',
 })
 
-export async function POST(request: Request) {
-  try {
+export const POST = withErrorCapture(async (request) => {
     const supabase = await createClient()
 
     const {
@@ -183,17 +182,4 @@ export async function POST(request: Request) {
       profile: extractedProfile,
       confidence,
     })
-  } catch (error: unknown) {
-    const err = error instanceof Error ? error : new Error(String(error))
-    await logError({
-      level: 'error',
-      source: 'api',
-      errorCode: err.name,
-      message: err.message,
-      stackTrace: err.stack,
-      endpoint: '/api/profile/extract',
-      method: 'POST',
-    })
-    return ApiResponse.internalError()
-  }
-}
+})

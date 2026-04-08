@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { ApiResponse } from '@/src/lib/api-utils';
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture';
 
 export const runtime = 'nodejs';
 
@@ -8,11 +9,10 @@ export const runtime = 'nodejs';
  * GET /api/startup-ideas/[id]
  * Get a single startup idea by ID
  */
-export async function GET(
+export const GET = withErrorCapture(async (
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
-) {
-  try {
+) => {
     const { id } = await params;
 
     if (!id) {
@@ -45,9 +45,4 @@ export async function GET(
       success: true,
       data,
     });
-
-  } catch (error) {
-    console.error('[startup-ideas] GET by ID error:', error);
-    return ApiResponse.internalError('스타트업 아이디어 조회에 실패했습니다');
-  }
-}
+})

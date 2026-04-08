@@ -222,7 +222,7 @@ const SENSITIVE_KEYS = [
   'ssn',
 ]
 
-function sanitizeHeaders(headers: Record<string, string>): Record<string, string> {
+export function sanitizeHeaders(headers: Record<string, string>): Record<string, string> {
   const sanitized: Record<string, string> = {}
   for (const [key, value] of Object.entries(headers)) {
     const lowerKey = key.toLowerCase()
@@ -235,7 +235,7 @@ function sanitizeHeaders(headers: Record<string, string>): Record<string, string
   return sanitized
 }
 
-function sanitizeBody(body: Record<string, unknown>): Record<string, unknown> {
+export function sanitizeBody(body: Record<string, unknown>): Record<string, unknown> {
   const sanitized: Record<string, unknown> = {}
   for (const [key, value] of Object.entries(body)) {
     const lowerKey = key.toLowerCase()

@@ -5,6 +5,7 @@ import { cookies } from 'next/headers'
 import Anthropic from '@anthropic-ai/sdk'
 import { applyRateLimit, getClientIp } from '@/src/lib/rate-limit/api-rate-limiter'
 import { logApiError } from '@/src/lib/error-logging'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -39,7 +40,7 @@ interface GeneratedPost {
   tags: string[]
 }
 
-export async function POST(request: NextRequest) {
+export const POST = withErrorCapture(async (request: NextRequest) => {
   try {
     // Auth check
     const cookieStore = await cookies()
@@ -148,4 +149,4 @@ ${body.painPoint ? `고민 포인트: ${body.painPoint}` : ''}
 
     return ApiResponse.internalError()
   }
-}
+})

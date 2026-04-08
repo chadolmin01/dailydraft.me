@@ -1,8 +1,8 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
-export async function GET() {
-  try {
+export const GET = withErrorCapture(async () => {
     const supabase = await createClient()
 
     const {
@@ -110,7 +110,4 @@ export async function GET() {
       profileStrength,
       averageMatchScore: Math.min(95, averageMatchScore),
     })
-  } catch (_error) {
-    return ApiResponse.internalError()
-  }
-}
+})

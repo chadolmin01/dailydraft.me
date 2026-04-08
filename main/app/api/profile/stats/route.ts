@@ -1,5 +1,6 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 type SupabaseClient = Awaited<ReturnType<typeof createClient>>
 
@@ -22,8 +23,7 @@ interface ConnectionWithApplication {
   applications: { opportunities: { title: string } | { title: string }[] | null } | { opportunities: { title: string } | { title: string }[] | null }[] | null
 }
 
-export async function GET() {
-  try {
+export const GET = withErrorCapture(async () => {
     const supabase = await createClient()
 
     const { data: { user } } = await supabase.auth.getUser()
@@ -103,11 +103,7 @@ export async function GET() {
       connections: connectionsResult.count || 0,
       recentActivity: recentActivityResult,
     })
-
-  } catch (_error) {
-    return ApiResponse.internalError()
-  }
-}
+})
 
 async function getRecentActivity(supabase: SupabaseClient, userId: string) {
   const activities: Array<{

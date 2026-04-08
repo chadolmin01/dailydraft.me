@@ -1,7 +1,8 @@
 import { createServerClient } from '@supabase/ssr'
-import { NextResponse, type NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
-export async function POST(request: NextRequest) {
+export const POST = withErrorCapture(async (request) => {
   const response = NextResponse.json({ success: true })
 
   const supabase = createServerClient(
@@ -24,4 +25,4 @@ export async function POST(request: NextRequest) {
   await supabase.auth.signOut()
 
   return response
-}
+})

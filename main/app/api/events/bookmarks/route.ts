@@ -1,10 +1,10 @@
 import { NextRequest } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 // GET: 내 북마크 목록
-export async function GET() {
-  try {
+export const GET = withErrorCapture(async () => {
     const supabase = await createClient()
 
     const { data: { user } } = await supabase.auth.getUser()
@@ -29,14 +29,10 @@ export async function GET() {
     }
 
     return ApiResponse.ok(bookmarks)
-  } catch (_err) {
-    return ApiResponse.internalError()
-  }
-}
+})
 
 // POST: 북마크 추가
-export async function POST(request: NextRequest) {
-  try {
+export const POST = withErrorCapture(async (request) => {
     const supabase = await createClient()
 
     const { data: { user } } = await supabase.auth.getUser()
@@ -79,7 +75,4 @@ export async function POST(request: NextRequest) {
     }
 
     return ApiResponse.created(bookmark)
-  } catch (_err) {
-    return ApiResponse.internalError()
-  }
-}
+})

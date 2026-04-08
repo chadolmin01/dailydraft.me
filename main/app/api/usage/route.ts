@@ -9,9 +9,9 @@ import { getUserUsageWithLimits } from '@/src/lib/subscription/usage-checker'
 import { getUsageStats, RATE_LIMITS } from '@/src/lib/rate-limit'
 import { PLAN_INFO } from '@/src/lib/subscription/constants'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
-export async function GET() {
-  try {
+export const GET = withErrorCapture(async () => {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -121,8 +121,4 @@ export async function GET() {
         features: usageWithLimits.limits,
       },
     })
-  } catch (error) {
-    console.error('Error fetching usage:', error)
-    return ApiResponse.internalError('사용량 정보를 불러올 수 없습니다')
-  }
-}
+})

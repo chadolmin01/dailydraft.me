@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { sendRecruitNotification } from '@/src/lib/email/send-recruit-notification'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 // Draft 1기 모집 지원서 제출 API
 // 익명 INSERT 허용 (RLS 정책에 의해 anon role insert 가능)
@@ -21,8 +22,7 @@ const submitSchema = z.object({
   agreed: z.literal(true),
 })
 
-export async function POST(request: Request) {
-  try {
+export const POST = withErrorCapture(async (request) => {
     const body = await request.json()
     const parsed = submitSchema.safeParse(body)
 
@@ -72,10 +72,4 @@ export async function POST(request: Request) {
     }).catch((err) => console.error('recruit notification error', err))
 
     return NextResponse.json({ ok: true }, { status: 201 })
-  } catch (error) {
-    return ApiResponse.internalError(
-      '지원서 제출 중 오류가 발생했습니다',
-      error instanceof Error ? error.message : undefined
-    )
-  }
-}
+})

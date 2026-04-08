@@ -10,6 +10,7 @@ import { createClient } from '@supabase/supabase-js'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { sendPushToUser } from '@/src/lib/push-notification'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -18,8 +19,7 @@ const supabaseAdmin = createClient(
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://dailydraft.me'
 
-export async function POST(req: NextRequest) {
-  try {
+export const POST = withErrorCapture(async (req: NextRequest) => {
     // 인증 검증: 로그인한 사용자만 이메일 발송 트리거 가능
     const cookieStore = await cookies()
     const supabaseAuth = createServerClient(
@@ -216,8 +216,4 @@ export async function POST(req: NextRequest) {
     }
 
     return ApiResponse.ok({ success: true })
-  } catch (error) {
-    logApiError(error, req).catch(() => {})
-    return ApiResponse.internalError()
-  }
-}
+})

@@ -3,6 +3,7 @@ import { NextRequest } from 'next/server'
 import { checkViewRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
 import { ApiResponse, isValidUUID } from '@/src/lib/api-utils'
 import { Redis } from '@upstash/redis'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 const VIEW_COOLDOWN_SEC = 15 * 60 // 15분
 
@@ -15,11 +16,10 @@ function getRedisClient(): Redis | null {
   }
 }
 
-export async function POST(
-  request: NextRequest,
+export const POST = withErrorCapture(async (
+  request,
   { params }: { params: Promise<{ id: string }> }
-) {
-  try {
+) => {
     const { id: eventId } = await params
     if (!isValidUUID(eventId)) return ApiResponse.badRequest('Invalid ID')
     const ip = getClientIp(request)
@@ -71,7 +71,4 @@ export async function POST(
     }
 
     return ApiResponse.ok({ success: true, views_count: data })
-  } catch {
-    return ApiResponse.internalError('조회수 업데이트에 실패했습니다')
-  }
-}
+})

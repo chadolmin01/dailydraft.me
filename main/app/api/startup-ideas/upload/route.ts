@@ -7,6 +7,7 @@ import {
   type StartupSource,
 } from '@/src/lib/startups';
 import { ApiResponse } from '@/src/lib/api-utils';
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture';
 
 export const runtime = 'nodejs';
 export const maxDuration = 120;
@@ -41,10 +42,9 @@ const VALID_SOURCES: StartupSource[] = [
  *   ]
  * }
  */
-export async function POST(request: NextRequest) {
+export const POST = withErrorCapture(async (request: NextRequest) => {
   const startTime = Date.now();
 
-  try {
     // 1. Verify admin access (using service role or admin check)
     const authHeader = request.headers.get('authorization');
 
@@ -163,18 +163,13 @@ export async function POST(request: NextRequest) {
       },
       duration_ms: duration,
     });
-
-  } catch (error) {
-    console.error('[startup-ideas/upload] Error:', error);
-    return ApiResponse.internalError('업로드 처리 중 오류가 발생했습니다');
-  }
-}
+})
 
 /**
  * GET /api/startup-ideas/upload
  * Returns upload format documentation
  */
-export async function GET() {
+export const GET = withErrorCapture(async () => {
   return ApiResponse.ok({
     endpoint: 'POST /api/startup-ideas/upload',
     description: 'Manual upload endpoint for startup ideas (Admin only)',
@@ -211,4 +206,4 @@ export async function GET() {
       ],
     },
   });
-}
+})

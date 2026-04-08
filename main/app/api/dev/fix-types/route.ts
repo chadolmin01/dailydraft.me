@@ -1,12 +1,12 @@
 import { createAdminClient } from '@/src/lib/supabase/admin'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
-export async function GET() {
+export const GET = withErrorCapture(async () => {
   if (process.env.NODE_ENV === 'production') {
     return ApiResponse.forbidden('Not available in production')
   }
 
-  try {
     const supabase = createAdminClient()
     const { data, error } = await supabase
       .from('opportunities')
@@ -19,18 +19,13 @@ export async function GET() {
     }
 
     return ApiResponse.ok({ count: data?.length, opportunities: data })
-  } catch (err) {
-    console.error('dev/fix-types GET error:', err)
-    return ApiResponse.internalError()
-  }
-}
+})
 
-export async function POST(request: Request) {
+export const POST = withErrorCapture(async (request) => {
   if (process.env.NODE_ENV === 'production') {
     return ApiResponse.forbidden('Not available in production')
   }
 
-  try {
     const supabase = createAdminClient()
     const body = await request.json()
 
@@ -75,8 +70,4 @@ export async function POST(request: Request) {
     }
 
     return ApiResponse.badRequest('Provide batch or create array')
-  } catch (err) {
-    console.error('dev/fix-types POST error:', err)
-    return ApiResponse.internalError()
-  }
-}
+})

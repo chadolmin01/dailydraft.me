@@ -1,13 +1,13 @@
 import { NextRequest } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 // PATCH: Update a portfolio item
-export async function PATCH(
-  request: NextRequest,
+export const PATCH = withErrorCapture(async (
+  request,
   { params }: { params: Promise<{ id: string }> }
-) {
-  try {
+) => {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -48,17 +48,13 @@ export async function PATCH(
     }
 
     return ApiResponse.ok(data)
-  } catch {
-    return ApiResponse.internalError('포트폴리오 수정 중 오류가 발생했습니다')
-  }
-}
+})
 
 // DELETE: Delete a portfolio item
-export async function DELETE(
-  _request: NextRequest,
+export const DELETE = withErrorCapture(async (
+  _request,
   { params }: { params: Promise<{ id: string }> }
-) {
-  try {
+) => {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -78,7 +74,4 @@ export async function DELETE(
     }
 
     return ApiResponse.ok({ success: true })
-  } catch {
-    return ApiResponse.internalError('포트폴리오 삭제 중 오류가 발생했습니다')
-  }
-}
+})

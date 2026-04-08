@@ -3,6 +3,7 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { createClient } from '@supabase/supabase-js'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -29,7 +30,7 @@ async function getUser() {
   return user
 }
 
-export async function POST(req: NextRequest) {
+export const POST = withErrorCapture(async (req: NextRequest) => {
   const user = await getUser()
   if (!user) return ApiResponse.unauthorized()
 
@@ -41,9 +42,9 @@ export async function POST(req: NextRequest) {
     .upsert({ user_id: user.id, endpoint, p256dh, auth }, { onConflict: 'user_id,endpoint' })
 
   return ApiResponse.ok({ success: true })
-}
+})
 
-export async function DELETE(req: NextRequest) {
+export const DELETE = withErrorCapture(async (req: NextRequest) => {
   const user = await getUser()
   if (!user) return ApiResponse.unauthorized()
 
@@ -57,4 +58,4 @@ export async function DELETE(req: NextRequest) {
     .eq('endpoint', endpoint)
 
   return ApiResponse.ok({ success: true })
-}
+})

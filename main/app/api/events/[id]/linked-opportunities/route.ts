@@ -1,18 +1,13 @@
-import { NextRequest } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
-
-interface RouteContext {
-  params: Promise<{ id: string }>
-}
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 /**
  * GET /api/events/[id]/linked-opportunities
  * Get opportunities linked to a specific event
  */
-export async function GET(request: NextRequest, context: RouteContext) {
-  try {
-    const { id: eventId } = await context.params
+export const GET = withErrorCapture(async (_request, { params }: { params: Promise<{ id: string }> }) => {
+    const { id: eventId } = await params
     const supabase = await createClient()
 
     // Get opportunities linked via event_opportunity_links table
@@ -101,19 +96,14 @@ export async function GET(request: NextRequest, context: RouteContext) {
       opportunities: allOpportunities,
       total: allOpportunities.length,
     })
-
-  } catch (_error) {
-    return ApiResponse.internalError()
-  }
-}
+})
 
 /**
  * POST /api/events/[id]/linked-opportunities
  * Link an existing opportunity to an event
  */
-export async function POST(request: NextRequest, context: RouteContext) {
-  try {
-    const { id: eventId } = await context.params
+export const POST = withErrorCapture(async (request, { params }: { params: Promise<{ id: string }> }) => {
+    const { id: eventId } = await params
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -178,19 +168,14 @@ export async function POST(request: NextRequest, context: RouteContext) {
     }
 
     return ApiResponse.created(link)
-
-  } catch (_error) {
-    return ApiResponse.internalError()
-  }
-}
+})
 
 /**
  * DELETE /api/events/[id]/linked-opportunities
  * Unlink an opportunity from an event
  */
-export async function DELETE(request: NextRequest, context: RouteContext) {
-  try {
-    const { id: eventId } = await context.params
+export const DELETE = withErrorCapture(async (request, { params }: { params: Promise<{ id: string }> }) => {
+    const { id: eventId } = await params
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -218,8 +203,4 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
     }
 
     return ApiResponse.noContent()
-
-  } catch (_error) {
-    return ApiResponse.internalError()
-  }
-}
+})

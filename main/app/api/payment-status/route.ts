@@ -8,9 +8,9 @@ import { createAdminClient } from '@/src/lib/supabase/admin'
 import { getPaymentStatus, GRACE_PERIOD } from '@/src/lib/subscription/payment-failure-handler'
 import { getUserSubscription } from '@/src/lib/subscription/usage-checker'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
-export async function GET() {
-  try {
+export const GET = withErrorCapture(async () => {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -71,8 +71,4 @@ export async function GET() {
                       paymentStatus.status === 'initial_failure' ? 'info' : null,
       },
     })
-  } catch (error) {
-    console.error('Error fetching payment status:', error)
-    return ApiResponse.internalError('결제 정보를 불러올 수 없습니다')
-  }
-}
+})

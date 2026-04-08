@@ -3,9 +3,9 @@ import { createClient } from '@/src/lib/supabase/server'
 import { genAI } from '@/src/lib/ai/gemini-client'
 import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
-export async function POST(request: NextRequest) {
-  try {
+export const POST = withErrorCapture(async (request: NextRequest) => {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
@@ -67,8 +67,4 @@ JSON:
     return new Response(JSON.stringify({ success: true, data: parsed }), {
       headers: { 'Content-Type': 'application/json' },
     })
-  } catch (err) {
-    console.error('Synthesize Error:', err)
-    return ApiResponse.internalError('종합 중 오류가 발생했습니다')
-  }
-}
+})

@@ -5,13 +5,13 @@ import {
   getPayment,
   verifyWebhookSignature,
 } from '@/src/lib/payments/tosspayments-client'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 /**
  * 토스페이먼츠 웹훅 처리
  * 결제 상태 변경 시 호출됨
  */
-export async function POST(request: NextRequest) {
-  try {
+export const POST = withErrorCapture(async (request: NextRequest) => {
     const payload = await request.text()
     const signature = request.headers.get('Toss-Signature') || ''
 
@@ -146,11 +146,7 @@ export async function POST(request: NextRequest) {
     }
 
     return ApiResponse.ok({ received: true })
-  } catch (error) {
-    console.error('[Webhook] Error processing webhook:', error)
-    return ApiResponse.internalError()
-  }
-}
+})
 
 // Disable body parsing for raw payload access
 export const config = {

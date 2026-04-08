@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 interface CalendarEvent {
   id: string
@@ -12,8 +13,7 @@ interface CalendarEvent {
   interest_tags: string[]
 }
 
-export async function GET(request: NextRequest) {
-  try {
+export const GET = withErrorCapture(async (request) => {
     const { searchParams } = new URL(request.url)
     const year = parseInt(searchParams.get('year') || String(new Date().getFullYear()))
     const month = parseInt(searchParams.get('month') || String(new Date().getMonth() + 1))
@@ -82,8 +82,4 @@ export async function GET(request: NextRequest) {
       year,
       month,
     })
-
-  } catch (_error) {
-    return ApiResponse.internalError()
-  }
-}
+})

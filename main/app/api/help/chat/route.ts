@@ -2,6 +2,8 @@ import { genAI } from '@/src/lib/ai/gemini-client'
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
+import { NextResponse, type NextRequest } from 'next/server'
 
 interface Message {
   role: 'user' | 'assistant'
@@ -44,70 +46,65 @@ Draft는 대학생/청년을 위한 프로젝트 팀 매칭 플랫폼입니다.
 - 예시: "[OFF_TOPIC] 죄송해요, 저는 Draft 플랫폼 관련 질문만 도와드릴 수 있어요. 플랫폼 사용에 대해 궁금한 점이 있으시면 편하게 물어보세요!"
 - 욕설, 부적절한 발언에도 [OFF_TOPIC] 태그를 붙이고 부드럽게 안내하세요.`
 
-export async function POST(request: Request) {
-  try {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return ApiResponse.unauthorized()
+export const POST = withErrorCapture(async (request: NextRequest) => {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return ApiResponse.unauthorized()
 
-    const rateLimitResponse = await checkAIRateLimit(user.id, getClientIp(request))
-    if (rateLimitResponse) return rateLimitResponse
+  const rateLimitResponse = await checkAIRateLimit(user.id, getClientIp(request))
+  if (rateLimitResponse) return rateLimitResponse
 
-    const body = await request.json()
-    const { messages } = body as { messages: Message[] }
+  const body = await request.json()
+  const { messages } = body as { messages: Message[] }
 
-    if (!Array.isArray(messages) || messages.length === 0) {
-      return ApiResponse.badRequest('Invalid messages')
-    }
-
-    const historyMessages = messages.slice(0, -1)
-    const chatHistory = historyMessages.map(m => ({
-      role: m.role === 'user' ? 'user' as const : 'model' as const,
-      parts: [{ text: m.content }],
-    }))
-
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-2.0-flash-lite',
-      systemInstruction: SYSTEM_PROMPT,
-    })
-
-    const chat = model.startChat({
-      history: chatHistory.length > 0 ? chatHistory : undefined,
-    })
-
-    const lastMsg = messages[messages.length - 1].content
-
-    // Stream response for faster TTFB
-    const { stream } = await chat.sendMessageStream(lastMsg)
-
-    const encoder = new TextEncoder()
-    const readable = new ReadableStream({
-      async start(controller) {
-        try {
-          for await (const chunk of stream) {
-            const text = chunk.text()
-            if (text) {
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text })}\n\n`))
-            }
-          }
-          controller.enqueue(encoder.encode('data: [DONE]\n\n'))
-          controller.close()
-        } catch (err) {
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: true })}\n\n`))
-          controller.close()
-        }
-      },
-    })
-
-    return new Response(readable, {
-      headers: {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        Connection: 'keep-alive',
-      },
-    })
-  } catch (error) {
-    console.error('Help chat error:', error)
-    return ApiResponse.internalError('도움 채팅 처리 중 오류가 발생했습니다')
+  if (!Array.isArray(messages) || messages.length === 0) {
+    return ApiResponse.badRequest('Invalid messages')
   }
-}
+
+  const historyMessages = messages.slice(0, -1)
+  const chatHistory = historyMessages.map(m => ({
+    role: m.role === 'user' ? 'user' as const : 'model' as const,
+    parts: [{ text: m.content }],
+  }))
+
+  const model = genAI.getGenerativeModel({
+    model: 'gemini-2.0-flash-lite',
+    systemInstruction: SYSTEM_PROMPT,
+  })
+
+  const chat = model.startChat({
+    history: chatHistory.length > 0 ? chatHistory : undefined,
+  })
+
+  const lastMsg = messages[messages.length - 1].content
+
+  // Stream response for faster TTFB
+  const { stream } = await chat.sendMessageStream(lastMsg)
+
+  const encoder = new TextEncoder()
+  const readable = new ReadableStream({
+    async start(controller) {
+      try {
+        for await (const chunk of stream) {
+          const text = chunk.text()
+          if (text) {
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text })}\n\n`))
+          }
+        }
+        controller.enqueue(encoder.encode('data: [DONE]\n\n'))
+        controller.close()
+      } catch (err) {
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: true })}\n\n`))
+        controller.close()
+      }
+    },
+  })
+
+  return new NextResponse(readable, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      Connection: 'keep-alive',
+    },
+  })
+})

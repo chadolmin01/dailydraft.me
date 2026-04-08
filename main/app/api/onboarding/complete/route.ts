@@ -1,12 +1,11 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { parseNickname } from '@/src/lib/clean-nickname'
-import { captureServerError } from '@/src/lib/posthog/server'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 import { autoEnrollByEmail, autoEnrollByUniversity } from '@/src/lib/institution/auto-enroll'
 import type { TablesInsert } from '@/src/types/database'
 
-export async function POST(request: Request) {
-  try {
+export const POST = withErrorCapture(async (request) => {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -111,11 +110,7 @@ export async function POST(request: Request) {
       success: true,
       message: '온보딩이 완료되었습니다',
     })
-  } catch (error) {
-    await captureServerError(error, { route: 'POST /api/onboarding/complete' })
-    return ApiResponse.internalError('온보딩 완료 처리 중 오류가 발생했습니다')
-  }
-}
+})
 
 /** Background: generate AI bio and save to profile */
 async function generateAiBio(

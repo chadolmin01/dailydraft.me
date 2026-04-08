@@ -11,7 +11,7 @@
  */
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
-import { captureServerError } from '@/src/lib/posthog/server'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 import { chatModel } from '@/src/lib/ai/gemini-client'
 import type { Profile } from '@/src/types/profile'
 
@@ -30,11 +30,10 @@ interface MatchAnalysis {
   caution: string          // 유의점 1개
 }
 
-export async function POST(
-  _request: Request,
+export const POST = withErrorCapture(async (
+  _request,
   { params }: { params: Promise<{ targetId: string }> },
-) {
-  try {
+) => {
     const { targetId } = await params
     if (!targetId || typeof targetId !== 'string') {
       return ApiResponse.badRequest('잘못된 targetId')
@@ -105,12 +104,7 @@ export async function POST(
       cached: false,
       created_at: new Date().toISOString(),
     })
-  } catch (error) {
-    console.error('[ai-analysis] error:', error)
-    await captureServerError(error, { route: 'POST /api/users/[targetId]/ai-analysis' })
-    return ApiResponse.internalError('AI 분석에 실패했습니다')
-  }
-}
+})
 
 async function generateAnalysis(viewer: Profile, target: Profile): Promise<MatchAnalysis> {
   const prompt = buildPrompt(viewer, target)

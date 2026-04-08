@@ -6,6 +6,7 @@ import {
 } from '@/src/lib/evaluation-criteria'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { FormTemplateType } from '@/src/types/business-plan'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 // Validation rules based on PSST framework (2025년 공고문 기반)
 interface ValidationRule {
@@ -281,10 +282,9 @@ function checkDisqualifications(text: string): string[] {
   return warnings
 }
 
-export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json()
-    const { sectionData, basicInfo, templateType = 'yebi-chogi' } = body
+export const POST = withErrorCapture(async (req: NextRequest) => {
+  const body = await req.json()
+  const { sectionData, basicInfo, templateType = 'yebi-chogi' } = body
 
     if (!sectionData) {
       return ApiResponse.badRequest('검증할 데이터가 필요합니다.')
@@ -418,9 +418,4 @@ export async function POST(req: NextRequest) {
       // 추가: 실격 경고
       warnings: disqualificationWarnings
     })
-
-  } catch (error) {
-    console.error('Validation error:', error)
-    return ApiResponse.internalError('검증 중 오류가 발생했습니다.')
-  }
-}
+})

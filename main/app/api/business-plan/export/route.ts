@@ -1,64 +1,61 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 // Export business plan as PDF (server-side generation with Puppeteer)
 
-export async function POST(req: NextRequest) {
-  try {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      return ApiResponse.unauthorized()
-    }
-
-    const body = await req.json()
-    const { format, data, sectionData, template } = body
-
-    if (!format || !data) {
-      return ApiResponse.badRequest('필수 파라미터가 누락되었습니다.')
-    }
-
-    if (format !== 'pdf' && format !== 'docx') {
-      return ApiResponse.badRequest('지원하지 않는 형식입니다. (pdf, docx만 지원)')
-    }
-
-    // Generate structured content for export
-    const exportContent = generateExportContent(data, sectionData, template)
-
-    if (format === 'pdf') {
-      const htmlContent = generateHtmlContent(exportContent, template)
-
-      // Server-side PDF generation with Puppeteer
-      const pdfBuffer = await generatePdfFromHtml(htmlContent)
-
-      const fileName = `${data.basicInfo?.itemName || '사업계획서'}_${template?.shortName || ''}.pdf`
-
-      return new NextResponse(new Uint8Array(pdfBuffer), {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/pdf',
-          'Content-Disposition': `attachment; filename*=UTF-8''${encodeURIComponent(fileName)}`,
-          'Content-Length': pdfBuffer.length.toString(),
-        },
-      })
-    }
-
-    if (format === 'docx') {
-      // TODO: Implement DOCX generation
-      return ApiResponse.ok({
-        format: 'docx',
-        content: exportContent,
-        fileName: `${data.basicInfo?.itemName || '사업계획서'}_${template?.shortName || ''}.docx`,
-        message: 'DOCX 생성 기능은 곧 지원 예정입니다.'
-      })
-    }
-
-  } catch (error) {
-    console.error('Export error:', error)
-    return ApiResponse.internalError()
+export const POST = withErrorCapture(async (req: NextRequest) => {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    return ApiResponse.unauthorized()
   }
-}
+
+  const body = await req.json()
+  const { format, data, sectionData, template } = body
+
+  if (!format || !data) {
+    return ApiResponse.badRequest('필수 파라미터가 누락되었습니다.')
+  }
+
+  if (format !== 'pdf' && format !== 'docx') {
+    return ApiResponse.badRequest('지원하지 않는 형식입니다. (pdf, docx만 지원)')
+  }
+
+  // Generate structured content for export
+  const exportContent = generateExportContent(data, sectionData, template)
+
+  if (format === 'pdf') {
+    const htmlContent = generateHtmlContent(exportContent, template)
+
+    // Server-side PDF generation with Puppeteer
+    const pdfBuffer = await generatePdfFromHtml(htmlContent)
+
+    const fileName = `${data.basicInfo?.itemName || '사업계획서'}_${template?.shortName || ''}.pdf`
+
+    return new NextResponse(new Uint8Array(pdfBuffer), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename*=UTF-8''${encodeURIComponent(fileName)}`,
+        'Content-Length': pdfBuffer.length.toString(),
+      },
+    })
+  }
+
+  if (format === 'docx') {
+    // TODO: Implement DOCX generation
+    return ApiResponse.ok({
+      format: 'docx',
+      content: exportContent,
+      fileName: `${data.basicInfo?.itemName || '사업계획서'}_${template?.shortName || ''}.docx`,
+      message: 'DOCX 생성 기능은 곧 지원 예정입니다.'
+    })
+  }
+
+  return ApiResponse.badRequest('지원하지 않는 형식입니다.')
+})
 
 async function generatePdfFromHtml(htmlContent: string): Promise<Buffer> {
   // Dynamic import — puppeteer is not installed on Vercel, runtime-only dependency

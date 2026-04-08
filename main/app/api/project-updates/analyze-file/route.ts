@@ -2,6 +2,7 @@ import { createClient } from '@/src/lib/supabase/server'
 import { chatModel } from '@/src/lib/ai/gemini-client'
 import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 const TEXT_PROMPT = `이 파일 내용을 분석하여 프로젝트 팀 주간 업데이트로 변환해주세요.
 
@@ -25,8 +26,7 @@ const IMAGE_PROMPT = `이 화면/이미지를 보고 프로젝트 팀 주간 업
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
 const MAX_TEXT_LENGTH = 8000
 
-export async function POST(request: Request) {
-  try {
+export const POST = withErrorCapture(async (request) => {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return ApiResponse.unauthorized()
@@ -61,8 +61,4 @@ export async function POST(request: Request) {
 
     const content = result.response.text().trim()
     return ApiResponse.ok({ content })
-  } catch (error) {
-    console.error('[analyze-file] error:', error)
-    return ApiResponse.internalError()
-  }
-}
+})

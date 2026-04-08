@@ -23,6 +23,7 @@ import {
   Building2,
   RotateCcw,
   Wrench,
+  Activity,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -110,6 +111,7 @@ export default function AdminDashboardPage() {
     { href: '/admin/institutions', label: '기관 관리', desc: '기관 생성, 수정, 삭제 및 멤버 배정', icon: Building2 },
     { href: '/admin/invite-codes', label: '초대 코드 관리', desc: '프리미엄 초대 코드 발송', icon: Gift },
     { href: '/admin/error-logs', label: '에러 로그', desc: '시스템 에러 모니터링', icon: AlertCircle },
+    { href: '/admin/activity', label: '활동 로그', desc: '전체 서비스 활동 타임라인 (통합)', icon: Activity },
   ]
 
   return (

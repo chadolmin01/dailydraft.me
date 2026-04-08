@@ -5,6 +5,7 @@ import { ApiResponse } from '@/src/lib/api-utils';
 import { safeGenerate } from '@/src/lib/ai/safe-generate';
 import { PrdAnalysisSchema, PrdGenerationSchema } from '@/src/lib/ai/schemas';
 import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter';
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture';
 
 const ANALYSIS_PROMPT = `당신은 스타트업 아이디어 분석가입니다. 3명의 팀원이 제출한 텍스트에서 핵심 정보를 추출하세요.
 
@@ -71,8 +72,7 @@ JSON 스키마:
   }
 }`;
 
-export async function POST(request: NextRequest) {
-  try {
+export const POST = withErrorCapture(async (request: NextRequest) => {
     if (!process.env.GOOGLE_PROJECT_ID) {
       return ApiResponse.serviceUnavailable('AI 서비스를 사용할 수 없습니다.');
     }
@@ -130,8 +130,4 @@ PM/기획자: ${analysis.pm_intent?.core_idea || '미정'}, BM: ${analysis.pm_in
     });
 
     return ApiResponse.ok({ success: true, data: prd, analysis });
-  } catch (error) {
-    console.error('PRD Generation Error:', error);
-    return ApiResponse.internalError('PRD 생성 중 오류가 발생했습니다.');
-  }
-}
+})

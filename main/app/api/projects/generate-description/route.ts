@@ -1,9 +1,9 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { chatModel } from '@/src/lib/ai/gemini-client'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
-export async function POST(request: Request) {
-  try {
+export const POST = withErrorCapture(async (request) => {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
@@ -77,8 +77,4 @@ ${infoLines.join('\n')}
     const description = result.response.text().trim()
 
     return ApiResponse.ok({ description })
-  } catch (error) {
-    console.error('Generate description error:', error)
-    return ApiResponse.internalError()
-  }
-}
+})

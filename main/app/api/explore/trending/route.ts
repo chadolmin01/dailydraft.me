@@ -1,11 +1,12 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 // 캐시: 10분 유지
 let cache: { tags: { tag: string; count: number }[]; at: number } | null = null
 const CACHE_TTL = 10 * 60 * 1000
 
-export async function GET() {
+export const GET = withErrorCapture(async () => {
   try {
     // 캐시 히트
     if (cache && Date.now() - cache.at < CACHE_TTL) {
@@ -45,4 +46,4 @@ export async function GET() {
   } catch {
     return ApiResponse.ok({ tags: [] })
   }
-}
+})

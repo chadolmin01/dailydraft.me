@@ -2,9 +2,9 @@ import { createClient } from '@/src/lib/supabase/server'
 import { rankUserMatches, type CandidateProfile } from '@/src/lib/ai/user-matcher'
 import type { Profile } from '@/src/types/profile'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
-export async function GET() {
-  try {
+export const GET = withErrorCapture(async () => {
     const supabase = await createClient()
 
     const {
@@ -94,8 +94,4 @@ export async function GET() {
     }))
 
     return ApiResponse.ok(top15)
-  } catch (error) {
-    console.error('User recommendations error:', error)
-    return ApiResponse.internalError()
-  }
-}
+})

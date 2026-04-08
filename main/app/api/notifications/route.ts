@@ -1,10 +1,10 @@
 import { NextRequest } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 // GET: 내 알림 목록
-export async function GET(request: NextRequest) {
-  try {
+export const GET = withErrorCapture(async (request: NextRequest) => {
     const supabase = await createClient()
 
     const { data: { user } } = await supabase.auth.getUser()
@@ -46,14 +46,10 @@ export async function GET(request: NextRequest) {
       notifications,
       unread_count: unreadCount,
     })
-  } catch {
-    return ApiResponse.internalError('알림 조회 중 오류가 발생했습니다')
-  }
-}
+})
 
 // PATCH: 알림 일괄 업데이트 (모두 읽음 처리)
-export async function PATCH(request: NextRequest) {
-  try {
+export const PATCH = withErrorCapture(async (request: NextRequest) => {
     const supabase = await createClient()
 
     const { data: { user } } = await supabase.auth.getUser()
@@ -81,7 +77,4 @@ export async function PATCH(request: NextRequest) {
     }
 
     return ApiResponse.badRequest('올바르지 않은 요청입니다')
-  } catch {
-    return ApiResponse.internalError('알림 업데이트 중 오류가 발생했습니다')
-  }
-}
+})

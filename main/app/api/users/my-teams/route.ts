@@ -1,9 +1,9 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 // GET: Fetch projects where the current user is an active team member (not creator)
-export async function GET() {
-  try {
+export const GET = withErrorCapture(async () => {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return ApiResponse.unauthorized()
@@ -47,8 +47,4 @@ export async function GET() {
     }))
 
     return ApiResponse.ok(result)
-  } catch (error) {
-    console.error('My teams error:', error)
-    return ApiResponse.internalError()
-  }
-}
+})

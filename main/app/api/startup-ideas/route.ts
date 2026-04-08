@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import type { StartupSource } from '@/src/lib/startups';
 import { ApiResponse } from '@/src/lib/api-utils';
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture';
 
 export const runtime = 'nodejs';
 
@@ -25,8 +26,7 @@ export const runtime = 'nodejs';
  * - founderType: filter by target founder type
  * - difficulty: filter by difficulty (easy, medium, hard)
  */
-export async function GET(request: NextRequest) {
-  try {
+export const GET = withErrorCapture(async (request: NextRequest) => {
     // SECURITY: Uses service-role key. Currently blocked by middleware hiddenApiRoutes.
     // TODO: Add per-user auth guard before removing from hiddenApiRoutes.
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -160,9 +160,4 @@ export async function GET(request: NextRequest) {
         order,
       },
     });
-
-  } catch (error) {
-    console.error('[startup-ideas] GET error:', error);
-    return ApiResponse.internalError('스타트업 아이디어 조회에 실패했습니다');
-  }
-}
+})

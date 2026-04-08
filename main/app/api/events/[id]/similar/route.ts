@@ -2,10 +2,7 @@ import { NextRequest } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { getKSTDate } from '@/src/lib/utils'
-
-interface RouteContext {
-  params: Promise<{ id: string }>
-}
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 interface SimilarEvent {
   event_id: string
@@ -19,8 +16,7 @@ interface SimilarEvent {
  * GET /api/events/[id]/similar
  * Get similar events based on embedding similarity
  */
-export async function GET(request: NextRequest, context: RouteContext) {
-  try {
+export const GET = withErrorCapture(async (request, context: { params: Promise<{ id: string }> }) => {
     const { id: eventId } = await context.params
     const supabase = await createClient()
 
@@ -92,11 +88,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     return ApiResponse.ok({
       similar_events: enrichedEvents,
     })
-
-  } catch (_error) {
-    return ApiResponse.internalError()
-  }
-}
+})
 
 /**
  * Fallback implementation if RPC function doesn't exist

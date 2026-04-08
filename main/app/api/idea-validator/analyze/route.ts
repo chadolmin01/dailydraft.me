@@ -3,6 +3,7 @@ import { createClient } from '@/src/lib/supabase/server'
 import { genAI } from '@/src/lib/ai/gemini-client'
 import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 import { z } from 'zod'
 
 // ── Zod Schemas ──
@@ -300,7 +301,7 @@ JSON (DiscussionResponseSchema):
 
 // ── POST Handler ──
 
-export async function POST(request: NextRequest) {
+export const POST = withErrorCapture(async (request: NextRequest) => {
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -510,7 +511,7 @@ export async function POST(request: NextRequest) {
     console.error('Analyze Error:', err)
     return ApiResponse.internalError('분석 중 오류가 발생했습니다')
   }
-}
+})
 
 function sseHeaders(): Record<string, string> {
   return {

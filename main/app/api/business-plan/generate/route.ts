@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { logError } from '@/src/lib/error-logging'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 import {
   getEvaluationCriteria,
   getFormSpecificPrompt,
@@ -202,7 +203,7 @@ const INDUSTRY_KEYWORDS: Record<string, {
   }
 }
 
-export async function POST(req: NextRequest) {
+export const POST = withErrorCapture(async (req: NextRequest) => {
   try {
     const body = await req.json()
     const {
@@ -297,7 +298,7 @@ export async function POST(req: NextRequest) {
     })
     return ApiResponse.internalError('생성 중 오류가 발생했습니다.')
   }
-}
+})
 
 function buildUserPrompt(
   section: string,

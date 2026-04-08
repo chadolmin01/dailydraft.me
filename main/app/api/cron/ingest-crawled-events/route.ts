@@ -8,11 +8,11 @@ import {
   filterPersonalInfo,
   createDataProvenance,
 } from '@/src/lib/events/legal-compliance';
+import { withCronCapture } from '@/src/lib/posthog/with-cron-capture';
 
 export const runtime = 'nodejs';
-export const maxDuration = 300; // 5 minutes for processing
+export const maxDuration = 300;
 
-// Valid crawled sources
 const VALID_CRAWLED_SOURCES = [
   'contestkorea',
   'linkareer',
@@ -53,101 +53,79 @@ interface IngestResult {
 
 /**
  * Ingest crawled events from external crawler service
- * POST /api/cron/ingest-crawled-events
- *
- * Body: {
- *   source: 'contestkorea' | 'linkareer' | 'onoffmix' | 'devpost' | ...
- *   events: CrawledEvent[]
- *   skipAI?: boolean  // Skip AI tagging for faster ingestion
- * }
  */
-export async function POST(request: NextRequest) {
+export const POST = withCronCapture('ingest-crawled-events', async (request: NextRequest) => {
   const startTime = Date.now();
 
-  try {
-    // 1. Verify authorization
-    const authHeader = request.headers.get('authorization');
-    const cronSecret = process.env.CRON_SECRET;
+  const authHeader = request.headers.get('authorization');
+  const cronSecret = process.env.CRON_SECRET;
 
-    if (!cronSecret) {
-      return ApiResponse.internalError('Server configuration error');
-    }
-
-    if (authHeader !== `Bearer ${cronSecret}`) {
-      return ApiResponse.unauthorized();
-    }
-
-    // 2. Parse request body
-    const body = await request.json();
-    const { source, events, skipAI = false } = body as {
-      source: CrawledSource;
-      events: CrawledEvent[];
-      skipAI?: boolean;
-    };
-
-    // Validate source
-    if (!VALID_CRAWLED_SOURCES.includes(source)) {
-      return ApiResponse.badRequest(`Invalid source: ${source}. Valid sources: ${VALID_CRAWLED_SOURCES.join(', ')}`);
-    }
-
-    // Validate events array
-    if (!Array.isArray(events) || events.length === 0) {
-      return ApiResponse.badRequest('Events array is required and must not be empty');
-    }
-
-    // 3. Process events
-    const result = await ingestEvents(source, events, { skipAI });
-
-    // 4. Generate notifications for new events
-    let notificationsCreated = 0;
-    if (result.new_events > 0) {
-      try {
-        const supabase = createClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          process.env.SUPABASE_SERVICE_ROLE_KEY!
-        );
-        const { data: notifResult } = await supabase.rpc('generate_deadline_notifications');
-        notificationsCreated = notifResult || 0;
-      } catch {
-        // Notification generation failed, continue
-      }
-    }
-
-    const duration = Date.now() - startTime;
-
-    return ApiResponse.ok({
-      success: true,
-      timestamp: new Date().toISOString(),
-      result: {
-        ...result,
-        notifications_created: notificationsCreated,
-      },
-      duration_ms: duration,
-    });
-
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-
-    return ApiResponse.internalError('이벤트 수집 처리 중 오류가 발생했습니다.');
+  if (!cronSecret) {
+    return ApiResponse.internalError('Server configuration error');
   }
-}
+
+  if (authHeader !== `Bearer ${cronSecret}`) {
+    return ApiResponse.unauthorized();
+  }
+
+  const body = await request.json();
+  const { source, events, skipAI = false } = body as {
+    source: CrawledSource;
+    events: CrawledEvent[];
+    skipAI?: boolean;
+  };
+
+  if (!VALID_CRAWLED_SOURCES.includes(source)) {
+    return ApiResponse.badRequest(`Invalid source: ${source}. Valid sources: ${VALID_CRAWLED_SOURCES.join(', ')}`);
+  }
+
+  if (!Array.isArray(events) || events.length === 0) {
+    return ApiResponse.badRequest('Events array is required and must not be empty');
+  }
+
+  const result = await ingestEvents(source, events, { skipAI });
+
+  let notificationsCreated = 0;
+  if (result.new_events > 0) {
+    try {
+      const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+      );
+      const { data: notifResult } = await supabase.rpc('generate_deadline_notifications');
+      notificationsCreated = notifResult || 0;
+    } catch {
+      // Notification generation failed, continue
+    }
+  }
+
+  const duration = Date.now() - startTime;
+
+  return ApiResponse.ok({
+    success: true,
+    timestamp: new Date().toISOString(),
+    result: {
+      ...result,
+      notifications_created: notificationsCreated,
+    },
+    duration_ms: duration,
+  });
+});
 
 /**
  * Ingest events from crawler into database
- * 법적 준수: 개인정보 필터링 및 데이터 출처 기록
  */
 async function ingestEvents(
   source: CrawledSource,
   events: CrawledEvent[],
   options: { skipAI: boolean }
 ): Promise<IngestResult> {
-  // 데이터 출처 기록 (법적 방어)
   const provenance = createDataProvenance(
     `crawler:${source}`,
     source,
     {
       dataType: 'public_webpage',
-      robotsAllowed: true, // 외부 크롤러에서 이미 확인됨
+      robotsAllowed: true,
     }
   );
   console.log(`[Ingest] 데이터 출처:`, provenance);
@@ -166,21 +144,18 @@ async function ingestEvents(
     errors: [],
   };
 
-  // Filter out expired events
   const today = new Date().toISOString().split('T')[0];
   const activeEvents = events.filter(e =>
     e.registration_end_date && e.registration_end_date >= today
   );
   result.skipped_events = events.length - activeEvents.length;
 
-  // 개인정보 필터링 적용
   const sanitizedEvents = activeEvents.map(sanitizeCrawledEvent);
 
   if (sanitizedEvents.length === 0) {
     return result;
   }
 
-  // Get existing events
   const externalIds = sanitizedEvents.map(e => e.external_id);
   const { data: existingEvents } = await supabase
     .from('startup_events')
@@ -189,20 +164,16 @@ async function ingestEvents(
 
   const existingIds = new Set(existingEvents?.map(e => e.external_id) || []);
 
-  // Process new events
   const newEvents = sanitizedEvents.filter(e => !existingIds.has(e.external_id));
   const updateEvents = sanitizedEvents.filter(e => existingIds.has(e.external_id));
 
-  // Insert new events
   for (const event of newEvents) {
     try {
       let tags: string[] = [];
       let embedding: number[] | null = null;
 
-      // AI processing (unless skipped)
       if (!options.skipAI) {
         try {
-          // Create TransformedEvent for AI processing
           const transformedEvent = {
             external_id: event.external_id,
             source: event.source,
@@ -234,7 +205,6 @@ async function ingestEvents(
             })
           );
         } catch (aiError) {
-          // AI processing failed, continue without tags/embedding
           console.error(`AI processing failed for ${event.external_id}:`, aiError);
         }
       }
@@ -273,7 +243,6 @@ async function ingestEvents(
     }
   }
 
-  // Update existing events (basic info only, preserve AI data)
   for (const event of updateEvents) {
     try {
       const { error } = await supabase
@@ -307,7 +276,6 @@ async function ingestEvents(
     }
   }
 
-  // Mark old events as expired
   try {
     await supabase
       .from('startup_events')
@@ -324,7 +292,6 @@ async function ingestEvents(
 
 /**
  * Health check and info endpoint
- * GET /api/cron/ingest-crawled-events
  */
 export async function GET() {
   return ApiResponse.ok({
@@ -339,24 +306,16 @@ export async function GET() {
   });
 }
 
-/**
- * 크롤링된 이벤트 데이터 정화 (법적 준수)
- * - 개인정보 필터링
- * - raw_data 최소화 (저작권 보호)
- */
 function sanitizeCrawledEvent(event: CrawledEvent): CrawledEvent {
   return {
     ...event,
-    // 개인정보 필터링 적용
     title: filterPersonalInfo(event.title),
     organizer: filterPersonalInfo(event.organizer),
     description: event.description ? filterPersonalInfo(event.description) : null,
     target_audience: event.target_audience ? filterPersonalInfo(event.target_audience) : null,
-    // raw_data 최소화 (저작권 보호)
     raw_data: event.raw_data ? {
       source_url: (event.raw_data as Record<string, unknown>).source_url,
       crawled_at: (event.raw_data as Record<string, unknown>).crawled_at,
-      // 전체 HTML/원본 데이터는 저장하지 않음
     } : null,
   };
 }

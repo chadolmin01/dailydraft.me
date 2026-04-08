@@ -1,10 +1,10 @@
 import { NextRequest } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 // GET: Fetch portfolio items for a user
-export async function GET(request: NextRequest) {
-  try {
+export const GET = withErrorCapture(async (request) => {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -29,14 +29,10 @@ export async function GET(request: NextRequest) {
     }
 
     return ApiResponse.ok(data || [])
-  } catch {
-    return ApiResponse.internalError('포트폴리오 조회 중 오류가 발생했습니다')
-  }
-}
+})
 
 // POST: Create a new portfolio item
-export async function POST(request: NextRequest) {
-  try {
+export const POST = withErrorCapture(async (request) => {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -68,7 +64,4 @@ export async function POST(request: NextRequest) {
     }
 
     return ApiResponse.created(data)
-  } catch {
-    return ApiResponse.internalError('포트폴리오 생성 중 오류가 발생했습니다')
-  }
-}
+})

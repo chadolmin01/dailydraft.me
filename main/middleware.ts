@@ -1,6 +1,28 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { updateSession } from '@/src/lib/supabase/middleware'
 import { signCookie, verifyCookie } from '@/src/lib/cookie-signature'
+import { captureEdgeError } from '@/src/lib/posthog/edge'
+
+// 미들웨어 내부 try/catch 유틸 — 캡처 후 원래 결과로 진행하되, 치명적 실패 시
+// fail-closed(403)로 빠져야 하는 블록은 별도로 래핑.
+// 여기서는 "실패 시 safe-continue"를 기본으로 하고, 보안 블록에서는 기존 반환값을
+// 그대로 쓰도록 상위에서 try/catch를 얹는다.
+async function safeEdgeCapture(err: unknown, req: NextRequest, extra?: Record<string, unknown>) {
+  try {
+    await captureEdgeError(err, {
+      route: req.nextUrl.pathname,
+      method: req.method,
+      ip:
+        req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+        req.headers.get('x-real-ip') ||
+        undefined,
+      userAgent: req.headers.get('user-agent') ?? undefined,
+      extra,
+    })
+  } catch {
+    // fail-safe
+  }
+}
 
 // Routes that are hidden in MVP mode (code preserved, UI hidden)
 // Remove routes from this array to restore access
@@ -86,7 +108,7 @@ function addSecurityHeaders(response: NextResponse) {
   return response
 }
 
-export async function middleware(request: NextRequest) {
+async function middlewareImpl(request: NextRequest): Promise<NextResponse> {
   const pathname = request.nextUrl.pathname
 
   // CSRF protection: block cross-origin state-changing requests to API routes
@@ -216,6 +238,23 @@ export async function middleware(request: NextRequest) {
   }
 
   return addSecurityHeaders(response)
+}
+
+/**
+ * 전역 try/catch — 미들웨어 내부 예외가 사용자 응답을 500으로 터뜨리지 않도록.
+ * 보안상 민감한 CSRF/hidden/auth 블록은 이미 throw 없이 return으로 처리되므로
+ * 이 catch는 updateSession/DB 호출 등 I/O 실패만 잡는다. 실패 시 캡처 후
+ * 다음 미들웨어(= 응답 통과)로 넘겨 앱이 완전히 멈추는 것을 방지.
+ */
+export async function middleware(request: NextRequest) {
+  try {
+    return await middlewareImpl(request)
+  } catch (err) {
+    await safeEdgeCapture(err, request)
+    // fail-open: 미들웨어 오류가 전체 사이트를 다운시키지 않도록.
+    // 보안 분기는 이미 실행된 후이거나 throw 전에 return 되는 구조.
+    return NextResponse.next({ request })
+  }
 }
 
 export const config = {

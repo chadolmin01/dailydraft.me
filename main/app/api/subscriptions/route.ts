@@ -6,10 +6,10 @@ import {
 } from '@/src/lib/subscription/usage-checker'
 import { PLAN_TYPES, PLAN_PRICES, BILLING_CYCLES } from '@/src/lib/subscription/constants'
 import type { PlanType, BillingCycle } from '@/src/lib/subscription/constants'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 // GET: Get current subscription
-export async function GET() {
-  try {
+export const GET = withErrorCapture(async () => {
     const supabase = await createClient()
 
     const {
@@ -42,17 +42,10 @@ export async function GET() {
       limits: usageWithLimits.limits,
       applications: usageWithLimits.applications,
     })
-  } catch (error) {
-    return ApiResponse.internalError(
-      '구독 정보 조회 중 오류가 발생했습니다',
-      error instanceof Error ? error.message : undefined
-    )
-  }
-}
+})
 
 // POST: Create or update subscription
-export async function POST(request: Request) {
-  try {
+export const POST = withErrorCapture(async (request) => {
     const supabase = await createClient()
 
     const {
@@ -192,17 +185,10 @@ export async function POST(request: Request) {
     })
 
     return ApiResponse.created(subscriptionData)
-  } catch (error) {
-    return ApiResponse.internalError(
-      '구독 처리 중 오류가 발생했습니다',
-      error instanceof Error ? error.message : undefined
-    )
-  }
-}
+})
 
 // PATCH: Update subscription (cancel, resume, etc.)
-export async function PATCH(request: Request) {
-  try {
+export const PATCH = withErrorCapture(async (request) => {
     const supabase = await createClient()
 
     const {
@@ -272,10 +258,4 @@ export async function PATCH(request: Request) {
     }
 
     return ApiResponse.badRequest('유효하지 않은 작업입니다')
-  } catch (error) {
-    return ApiResponse.internalError(
-      '구독 업데이트 중 오류가 발생했습니다',
-      error instanceof Error ? error.message : undefined
-    )
-  }
-}
+})

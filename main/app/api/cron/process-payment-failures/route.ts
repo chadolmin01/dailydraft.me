@@ -9,46 +9,35 @@
 import { NextRequest } from 'next/server'
 import { createAdminClient } from '@/src/lib/supabase/admin'
 import { processExpiredGracePeriods } from '@/src/lib/subscription/payment-failure-handler'
-import { logCronError } from '@/src/lib/error-logging'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { withCronCapture } from '@/src/lib/posthog/with-cron-capture'
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
 
-export async function GET(request: NextRequest) {
+export const GET = withCronCapture('process-payment-failures', async (request: NextRequest) => {
   const startTime = Date.now()
 
-  try {
-    // Verify cron secret (fail-closed: reject if secret is missing or mismatched)
-    const authHeader = request.headers.get('authorization')
-    const cronSecret = process.env.CRON_SECRET
+  const authHeader = request.headers.get('authorization')
+  const cronSecret = process.env.CRON_SECRET
 
-    if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
-      return ApiResponse.unauthorized()
-    }
-
-    const supabase = createAdminClient()
-
-    // 만료된 유예 기간 처리
-    const result = await processExpiredGracePeriods(supabase)
-
-    const duration = Date.now() - startTime
-
-    return ApiResponse.ok({
-      success: true,
-      timestamp: new Date().toISOString(),
-      result,
-      duration_ms: duration,
-    })
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error))
-    await logCronError(err, 'process-payment-failures')
-
-    return ApiResponse.internalError('결제 실패 처리 중 오류가 발생했습니다.')
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+    return ApiResponse.unauthorized()
   }
-}
+
+  const supabase = createAdminClient()
+
+  const result = await processExpiredGracePeriods(supabase)
+
+  const duration = Date.now() - startTime
+
+  return ApiResponse.ok({
+    success: true,
+    timestamp: new Date().toISOString(),
+    result,
+    duration_ms: duration,
+  })
+})
 
 // POST도 지원 (Vercel cron은 POST를 사용할 수도 있음)
-export async function POST(request: NextRequest) {
-  return GET(request)
-}
+export const POST = GET

@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { getKSTDate } from '@/src/lib/utils'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 export const runtime = 'nodejs'
 
@@ -54,8 +55,7 @@ interface MatchReasonInput {
  * - eventId: 현재 이벤트 ID (관련 이벤트 추천 시 사용, 해당 이벤트 제외)
  * - limit: 추천 개수 (default: 10)
  */
-export async function GET(request: NextRequest) {
-  try {
+export const GET = withErrorCapture(async (request) => {
     const { searchParams } = new URL(request.url)
     const userId = searchParams.get('user_id')
     const tagsParam = searchParams.get('tags')
@@ -236,11 +236,7 @@ export async function GET(request: NextRequest) {
       count: recommendations.length,
       recommendations,
     })
-  } catch (error) {
-    console.error('Error getting event recommendations:', error)
-    return ApiResponse.internalError('추천 이벤트를 불러올 수 없습니다')
-  }
-}
+})
 
 /**
  * 매칭 이유 생성

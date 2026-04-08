@@ -5,6 +5,7 @@ import type {
   UpdateEventApplicationRequest,
   ChecklistItem,
 } from '@/src/types/event-application';
+import { withErrorCapture } from '@/src/lib/posthog/with-error-capture';
 
 interface EventApplicationUpdate {
   status?: string;
@@ -27,8 +28,7 @@ interface RouteContext {
  * GET /api/event-applications/[id]
  * Get a specific event application
  */
-export async function GET(request: NextRequest, context: RouteContext) {
-  try {
+export const GET = withErrorCapture(async (request, context: RouteContext) => {
     const { id } = await context.params;
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -71,18 +71,13 @@ export async function GET(request: NextRequest, context: RouteContext) {
       ...(application as Record<string, unknown>),
       history: history || [],
     });
-
-  } catch (_error) {
-    return ApiResponse.internalError();
-  }
-}
+})
 
 /**
  * PATCH /api/event-applications/[id]
  * Update an event application
  */
-export async function PATCH(request: NextRequest, context: RouteContext) {
-  try {
+export const PATCH = withErrorCapture(async (request, context: RouteContext) => {
     const { id } = await context.params;
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -166,18 +161,13 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     }
 
     return ApiResponse.ok(application);
-
-  } catch (_error) {
-    return ApiResponse.internalError();
-  }
-}
+})
 
 /**
  * DELETE /api/event-applications/[id]
  * Delete an event application
  */
-export async function DELETE(request: NextRequest, context: RouteContext) {
-  try {
+export const DELETE = withErrorCapture(async (request, context: RouteContext) => {
     const { id } = await context.params;
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -209,8 +199,4 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
     }
 
     return ApiResponse.noContent();
-
-  } catch (_error) {
-    return ApiResponse.internalError();
-  }
-}
+})

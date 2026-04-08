@@ -222,7 +222,38 @@
       "Bash(gh:*)",
       "Bash(do if:*)",
       "Bash(xargs grep:*)",
-      "Bash(read f:*)"
+      "Bash(read f:*)",
+      "Bash(npm list:*)",
+      "Bash(gcloud auth:*)",
+      "Bash(gcloud config:*)",
+      "Bash(gcloud projects:*)",
+      "mcp__supabase__apply_migration",
+      "Bash(\"main/components/explore/ExplorePageClient.tsx\":*)",
+      "mcp__supabase__execute_sql",
+      "mcp__github__list_commits",
+      "mcp__supabase__list_tables",
+      "Bash(__NEW_LINE_ec0acd6ef1a10268__ bash /tmp/check_unused.sh)",
+      "Bash(__NEW_LINE_f388bd614dc4125e__ bash /tmp/find_unused_rpc.sh)",
+      "Bash(__NEW_LINE_43452361b8f6db50__ bash /tmp/extract_all_columns.sh)",
+      "mcp__supabase__generate_typescript_types",
+      "Bash(npx:*)",
+      "Bash(PYTHONUTF8=1 browser-use state:*)",
+      "Bash(xxd:*)",
+      "Bash(printf true:*)",
+      "mcp__supabase__get_project_url",
+      "WebFetch(domain:github.com)",
+      "Bash(find C:\\\\project\\\\Draft\\\\main\\\\app\\\\\\(dashboard\\)\\\\explore:*)",
+      "mcp__supabase__get_publishable_keys",
+      "Bash(cmd:*)",
+      "mcp__supabase__list_migrations",
+      "mcp__supabase__get_logs",
+      "Bash(sentry-cli:*)",
+      "Bash(./node_modules/.bin/tsc:*)",
+      "Bash(printf:*)"
     ]
-  }
+  },
+  "enabledMcpjsonServers": [
+    "github",
+    "supabase"
+  ]
 }
