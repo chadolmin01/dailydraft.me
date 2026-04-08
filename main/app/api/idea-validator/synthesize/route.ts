@@ -2,13 +2,14 @@ import { NextRequest } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { genAI } from '@/src/lib/ai/gemini-client'
 import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
+import { ApiResponse } from '@/src/lib/api-utils'
 
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      return new Response(JSON.stringify({ error: '로그인이 필요합니다' }), { status: 401 })
+      return ApiResponse.unauthorized('로그인이 필요합니다')
     }
 
     const rateLimitRes = await checkAIRateLimit(user.id, getClientIp(request))
@@ -17,7 +18,7 @@ export async function POST(request: NextRequest) {
     const { originalIdea, conversationHistory, scorecard } = await request.json()
 
     if (!originalIdea) {
-      return new Response(JSON.stringify({ error: '아이디어가 필요합니다' }), { status: 400 })
+      return ApiResponse.badRequest('아이디어가 필요합니다')
     }
 
     const historyText = Array.isArray(conversationHistory)
@@ -68,6 +69,6 @@ JSON:
     })
   } catch (err) {
     console.error('Synthesize Error:', err)
-    return new Response(JSON.stringify({ error: '종합 중 오류가 발생했습니다' }), { status: 500 })
+    return ApiResponse.internalError('종합 중 오류가 발생했습니다')
   }
 }

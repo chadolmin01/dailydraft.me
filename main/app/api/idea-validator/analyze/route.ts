@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { genAI } from '@/src/lib/ai/gemini-client'
 import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
+import { ApiResponse } from '@/src/lib/api-utils'
 import { z } from 'zod'
 
 // ── Zod Schemas ──
@@ -304,7 +305,7 @@ export async function POST(request: NextRequest) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      return new Response(JSON.stringify({ error: '로그인이 필요합니다' }), { status: 401 })
+      return ApiResponse.unauthorized('로그인이 필요합니다')
     }
 
     const rateLimitRes = await checkAIRateLimit(user.id, getClientIp(request))
@@ -314,7 +315,7 @@ export async function POST(request: NextRequest) {
     const { idea, conversationHistory = [], currentScorecard = null, turnNumber = 1 } = body
 
     if (!idea || typeof idea !== 'string' || idea.trim().length === 0) {
-      return new Response(JSON.stringify({ error: '아이디어를 입력해주세요' }), { status: 400 })
+      return ApiResponse.badRequest('아이디어를 입력해주세요')
     }
 
     const sanitizedIdea = idea.slice(0, 5000)
@@ -507,7 +508,7 @@ export async function POST(request: NextRequest) {
     return new Response(stream, { headers: sseHeaders() })
   } catch (err) {
     console.error('Analyze Error:', err)
-    return new Response(JSON.stringify({ error: '분석 중 오류가 발생했습니다' }), { status: 500 })
+    return ApiResponse.internalError('분석 중 오류가 발생했습니다')
   }
 }
 
