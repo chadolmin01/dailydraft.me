@@ -112,7 +112,7 @@ export async function POST(request: Request) {
       message: '온보딩이 완료되었습니다',
     })
   } catch (error) {
-    captureServerError(error, { route: 'POST /api/onboarding/complete' })
+    await captureServerError(error, { route: 'POST /api/onboarding/complete' })
     return ApiResponse.internalError('온보딩 완료 처리 중 오류가 발생했습니다')
   }
 }

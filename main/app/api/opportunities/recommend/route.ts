@@ -57,7 +57,7 @@ export async function GET() {
     return ApiResponse.ok(ranked.slice(0, 20))
   } catch (error) {
     console.error('Opportunity recommend error:', error)
-    captureServerError(error, { route: 'GET /api/opportunities/recommend' })
+    await captureServerError(error, { route: 'GET /api/opportunities/recommend' })
     return ApiResponse.internalError()
   }
 }

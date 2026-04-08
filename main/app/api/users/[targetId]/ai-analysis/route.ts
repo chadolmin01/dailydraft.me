@@ -107,7 +107,7 @@ export async function POST(
     })
   } catch (error) {
     console.error('[ai-analysis] error:', error)
-    captureServerError(error, { route: 'POST /api/users/[targetId]/ai-analysis' })
+    await captureServerError(error, { route: 'POST /api/users/[targetId]/ai-analysis' })
     return ApiResponse.internalError('AI 분석에 실패했습니다')
   }
 }

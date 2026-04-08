@@ -37,7 +37,7 @@ export async function GET(request: Request) {
 
     const { data: sessionData, error } = await supabase.auth.exchangeCodeForSession(code)
     if (error) {
-      captureServerError(error, { route: 'GET /auth/callback', extra: { step: 'exchangeCodeForSession' } })
+      await captureServerError(error, { route: 'GET /auth/callback', extra: { step: 'exchangeCodeForSession' } })
     }
     if (!error) {
       // exchangeCodeForSession already returns user — no extra getUser() call needed
