@@ -3,6 +3,22 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/src/context/AuthContext'
 
+export interface ProjectInvitationOpportunity {
+  id: string
+  title: string
+  type: string | null
+  interest_tags: string[] | null
+  needed_roles: string[] | null
+  status: string | null
+}
+
+export interface ProjectInvitationInviter {
+  user_id: string
+  nickname: string | null
+  desired_position: string | null
+  avatar_url: string | null
+}
+
 export interface ProjectInvitation {
   id: string
   opportunity_id: string
@@ -10,9 +26,16 @@ export interface ProjectInvitation {
   invited_user_id: string
   role: string
   message: string | null
-  status: 'pending' | 'accepted' | 'declined'
+  status: 'pending' | 'accepted' | 'declined' | 'expired'
   created_at: string
   updated_at: string
+  expires_at?: string | null
+  decline_reason?: string | null
+  last_reminder_at?: string | null
+  opportunity?: ProjectInvitationOpportunity | null
+  inviter?: ProjectInvitationInviter | null
+  invitee?: ProjectInvitationInviter | null
+  match?: { score: number; reason: string } | null
 }
 
 export const invitationKeys = {
@@ -74,14 +97,44 @@ export function useRespondToInvitation() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: 'accepted' | 'declined' }) => {
+    mutationFn: async ({ id, status, decline_reason }: { id: string; status: 'accepted' | 'declined'; decline_reason?: string }) => {
       const res = await fetch(`/api/invitations/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status }),
+        body: JSON.stringify({ status, decline_reason }),
       })
       const result = await res.json()
-      if (!res.ok) throw new Error(result.error || '처리에 실패했습니다')
+      if (!res.ok) throw new Error(result.error?.message || result.error || '처리에 실패했습니다')
+      return result
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: invitationKeys.all })
+    },
+  })
+}
+
+export function useCancelInvitation() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/invitations/${id}`, { method: 'DELETE' })
+      const result = await res.json()
+      if (!res.ok) throw new Error(result.error?.message || '취소에 실패했습니다')
+      return result
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: invitationKeys.all })
+    },
+  })
+}
+
+export function useRemindInvitation() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/invitations/${id}`, { method: 'PUT' })
+      const result = await res.json()
+      if (!res.ok) throw new Error(result.error?.message || '리마인더 발송 실패')
       return result
     },
     onSuccess: () => {

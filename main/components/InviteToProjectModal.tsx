@@ -1,11 +1,13 @@
 'use client'
 
 import React, { useState } from 'react'
-import { X, Loader2, Check, FolderOpen } from 'lucide-react'
+import { X, Loader2, Check, FolderOpen, Coffee } from 'lucide-react'
 import { toast } from 'sonner'
 import { useMyOpportunities } from '@/src/hooks/useOpportunities'
 import { useCreateInvitation } from '@/src/hooks/useProjectInvitations'
+import { useCoffeeChats } from '@/src/hooks/useCoffeeChats'
 import { useBackHandler } from '@/src/hooks/useBackHandler'
+import { CoffeeChatRequestForm } from '@/components/CoffeeChatRequestForm'
 
 interface InviteToProjectModalProps {
   targetUserId: string
@@ -22,6 +24,12 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
 
   const { data: myOpportunities = [], isLoading: loadingProjects } = useMyOpportunities()
   const createInvitation = useCreateInvitation()
+
+  // 커피챗 이력 조회 — 처음 보는 사람한테 곧장 "프로젝트 합류"가 무거우므로
+  // 이력 없으면 배너로 부드럽게 가이드 (차단은 안 함)
+  const { data: chatHistory = [], isLoading: loadingChatHistory } = useCoffeeChats({ targetUserId })
+  const hasCoffeeChatHistory = chatHistory.some(c => c.status === 'accepted' || c.status === 'pending')
+  const [showCoffeeForm, setShowCoffeeForm] = useState(false)
 
   const [selectedProject, setSelectedProject] = useState<string | null>(null)
   const [selectedRole, setSelectedRole] = useState<string | null>(null)
@@ -50,6 +58,17 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
       setError(msg && msg !== 'Unknown error' ? msg : '초대 전송에 실패했습니다.')
       toast.error('초대 전송에 실패했습니다')
     }
+  }
+
+  // 커피챗 폼으로 전환된 상태: 모달 안에서 커피챗 보내기
+  if (showCoffeeForm) {
+    return (
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-popover p-4" onClick={(e) => { e.stopPropagation(); onClose() }}>
+        <div className="bg-surface-card dark:bg-[#1C1C1E] rounded-2xl shadow-2xl w-full max-w-md max-h-[85vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+          <CoffeeChatRequestForm targetUserId={targetUserId} onClose={onClose} />
+        </div>
+      </div>
+    )
   }
 
   if (sent) {
@@ -89,6 +108,24 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
 
         {/* Body */}
         <div className="px-5 pb-5 space-y-5 overflow-y-auto flex-1">
+          {/* 커피챗 이력 없음 → 부드러운 가이드 (차단 X). 짧게 얘기 먼저 해보라는 권유 */}
+          {!loadingChatHistory && !hasCoffeeChatHistory && (
+            <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/40 rounded-2xl p-3.5">
+              <p className="text-[13px] text-amber-900 dark:text-amber-200 leading-relaxed mb-3">
+                💡 아직 {targetName}님과 커피챗 이력이 없어요. 먼저 짧게 이야기해보면 더 좋은 매칭이 될 수 있어요.
+              </p>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setShowCoffeeForm(true)}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 bg-amber-500 hover:bg-amber-600 text-white text-[12px] font-semibold rounded-xl transition-colors active:scale-[0.97]"
+                >
+                  <Coffee size={13} /> 커피챗 먼저 보내기
+                </button>
+                <span className="text-[12px] text-amber-900/70 dark:text-amber-200/70">또는 그래도 초대하기 ↓</span>
+              </div>
+            </div>
+          )}
+
           {loadingProjects ? (
             <div className="space-y-2 py-2">
               {[0,1,2].map(i => (

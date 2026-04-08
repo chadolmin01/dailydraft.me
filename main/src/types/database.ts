@@ -12,31 +12,6 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.1"
   }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
       accepted_connections: {
@@ -197,70 +172,9 @@ export type Database = {
           },
         ]
       }
-      business_plans: {
-        Row: {
-          basic_info: Json | null
-          created_at: string | null
-          extra_sections: Json | null
-          id: string
-          problem_data: Json | null
-          scaleup_data: Json | null
-          solution_data: Json | null
-          status: string
-          team_data: Json | null
-          template_type: string
-          title: string | null
-          updated_at: string | null
-          user_id: string
-          validated_idea_id: string | null
-          validation_score: number | null
-        }
-        Insert: {
-          basic_info?: Json | null
-          created_at?: string | null
-          extra_sections?: Json | null
-          id?: string
-          problem_data?: Json | null
-          scaleup_data?: Json | null
-          solution_data?: Json | null
-          status?: string
-          team_data?: Json | null
-          template_type: string
-          title?: string | null
-          updated_at?: string | null
-          user_id: string
-          validated_idea_id?: string | null
-          validation_score?: number | null
-        }
-        Update: {
-          basic_info?: Json | null
-          created_at?: string | null
-          extra_sections?: Json | null
-          id?: string
-          problem_data?: Json | null
-          scaleup_data?: Json | null
-          solution_data?: Json | null
-          status?: string
-          team_data?: Json | null
-          template_type?: string
-          title?: string | null
-          updated_at?: string | null
-          user_id?: string
-          validated_idea_id?: string | null
-          validation_score?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "business_plans_validated_idea_id_fkey"
-            columns: ["validated_idea_id"]
-            isOneToOne: false
-            referencedRelation: "validated_ideas"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       coffee_chats: {
         Row: {
+          application_id: string | null
           contact_info: string | null
           created_at: string | null
           id: string
@@ -276,6 +190,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          application_id?: string | null
           contact_info?: string | null
           created_at?: string | null
           id?: string
@@ -291,6 +206,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          application_id?: string | null
           contact_info?: string | null
           created_at?: string | null
           id?: string
@@ -307,6 +223,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "coffee_chats_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "coffee_chats_opportunity_id_fkey"
             columns: ["opportunity_id"]
             isOneToOne: false
@@ -314,6 +237,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      cohort_waitlist: {
+        Row: {
+          cohort_target: string
+          created_at: string
+          email: string
+          id: string
+          source: string
+          user_agent: string | null
+        }
+        Insert: {
+          cohort_target?: string
+          created_at?: string
+          email: string
+          id?: string
+          source?: string
+          user_agent?: string | null
+        }
+        Update: {
+          cohort_target?: string
+          created_at?: string
+          email?: string
+          id?: string
+          source?: string
+          user_agent?: string | null
+        }
+        Relationships: []
       }
       comment_reports: {
         Row: {
@@ -680,45 +630,33 @@ export type Database = {
           },
         ]
       }
-      fragments: {
+      help_reports: {
         Row: {
-          captured_at: string | null
-          content: string | null
-          created_at: string | null
+          category: string
+          created_at: string
+          description: string
           id: string
-          location: Json | null
-          photo_url: string | null
-          status: string | null
-          thumbnail_url: string | null
-          type: string
-          updated_at: string | null
-          user_id: string
+          page_url: string | null
+          title: string
+          user_id: string | null
         }
         Insert: {
-          captured_at?: string | null
-          content?: string | null
-          created_at?: string | null
+          category: string
+          created_at?: string
+          description: string
           id?: string
-          location?: Json | null
-          photo_url?: string | null
-          status?: string | null
-          thumbnail_url?: string | null
-          type: string
-          updated_at?: string | null
-          user_id: string
+          page_url?: string | null
+          title: string
+          user_id?: string | null
         }
         Update: {
-          captured_at?: string | null
-          content?: string | null
-          created_at?: string | null
+          category?: string
+          created_at?: string
+          description?: string
           id?: string
-          location?: Json | null
-          photo_url?: string | null
-          status?: string | null
-          thumbnail_url?: string | null
-          type?: string
-          updated_at?: string | null
-          user_id?: string
+          page_url?: string | null
+          title?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -842,6 +780,7 @@ export type Database = {
           contact_phone: string | null
           created_at: string
           description: string | null
+          email_domains: string[] | null
           id: string
           logo_url: string | null
           name: string
@@ -855,6 +794,7 @@ export type Database = {
           contact_phone?: string | null
           created_at?: string
           description?: string | null
+          email_domains?: string[] | null
           id?: string
           logo_url?: string | null
           name: string
@@ -868,6 +808,7 @@ export type Database = {
           contact_phone?: string | null
           created_at?: string
           description?: string | null
+          email_domains?: string[] | null
           id?: string
           logo_url?: string | null
           name?: string
@@ -946,63 +887,6 @@ export type Database = {
         }
         Relationships: []
       }
-      korea_startup_references: {
-        Row: {
-          category: string[] | null
-          created_at: string | null
-          description: string | null
-          external_id: string | null
-          id: string
-          name: string
-          raw_data: Json | null
-          source: string
-          updated_at: string | null
-          website_url: string | null
-        }
-        Insert: {
-          category?: string[] | null
-          created_at?: string | null
-          description?: string | null
-          external_id?: string | null
-          id?: string
-          name: string
-          raw_data?: Json | null
-          source: string
-          updated_at?: string | null
-          website_url?: string | null
-        }
-        Update: {
-          category?: string[] | null
-          created_at?: string | null
-          description?: string | null
-          external_id?: string | null
-          id?: string
-          name?: string
-          raw_data?: Json | null
-          source?: string
-          updated_at?: string | null
-          website_url?: string | null
-        }
-        Relationships: []
-      }
-      landing_subscribers: {
-        Row: {
-          created_at: string | null
-          email: string
-          id: string
-        }
-        Insert: {
-          created_at?: string | null
-          email: string
-          id?: string
-        }
-        Update: {
-          created_at?: string | null
-          email?: string
-          id?: string
-        }
-        Relationships: []
-      }
       notification_settings: {
         Row: {
           created_at: string | null
@@ -1078,39 +962,6 @@ export type Database = {
         }
         Relationships: []
       }
-      onboarding_status: {
-        Row: {
-          ai_chat_completed: boolean | null
-          completed_at: string | null
-          step_1_completed: boolean | null
-          step_2_completed: boolean | null
-          step_3_completed: boolean | null
-          step_4_completed: boolean | null
-          step_5_completed: boolean | null
-          user_id: string
-        }
-        Insert: {
-          ai_chat_completed?: boolean | null
-          completed_at?: string | null
-          step_1_completed?: boolean | null
-          step_2_completed?: boolean | null
-          step_3_completed?: boolean | null
-          step_4_completed?: boolean | null
-          step_5_completed?: boolean | null
-          user_id: string
-        }
-        Update: {
-          ai_chat_completed?: boolean | null
-          completed_at?: string | null
-          step_1_completed?: boolean | null
-          step_2_completed?: boolean | null
-          step_3_completed?: boolean | null
-          step_4_completed?: boolean | null
-          step_5_completed?: boolean | null
-          user_id?: string
-        }
-        Relationships: []
-      }
       opportunities: {
         Row: {
           applications_count: number | null
@@ -1121,6 +972,7 @@ export type Database = {
           creator_id: string
           demo_images: string[] | null
           description: string
+          filled_roles: string[] | null
           id: string
           interest_count: number | null
           interest_tags: string[] | null
@@ -1148,6 +1000,7 @@ export type Database = {
           creator_id: string
           demo_images?: string[] | null
           description: string
+          filled_roles?: string[] | null
           id?: string
           interest_count?: number | null
           interest_tags?: string[] | null
@@ -1175,6 +1028,7 @@ export type Database = {
           creator_id?: string
           demo_images?: string[] | null
           description?: string
+          filled_roles?: string[] | null
           id?: string
           interest_count?: number | null
           interest_tags?: string[] | null
@@ -1193,7 +1047,15 @@ export type Database = {
           views_count?: number | null
           vision_embedding?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "opportunities_creator_profile_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       payment_failures: {
         Row: {
@@ -1359,63 +1221,6 @@ export type Database = {
           title?: string
           updated_at?: string | null
           user_id?: string
-        }
-        Relationships: []
-      }
-      prd_usage: {
-        Row: {
-          created_at: string
-          id: string
-          level: string
-          score: number | null
-          user_email: string
-          validation_id: string | null
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          level: string
-          score?: number | null
-          user_email: string
-          validation_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          level?: string
-          score?: number | null
-          user_email?: string
-          validation_id?: string | null
-        }
-        Relationships: []
-      }
-      prd_users: {
-        Row: {
-          created_at: string
-          email: string
-          id: string
-          name: string
-          organization: string
-          privacy_consent: boolean
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          email: string
-          id?: string
-          name: string
-          organization: string
-          privacy_consent?: boolean
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          email?: string
-          id?: string
-          name?: string
-          organization?: string
-          privacy_consent?: boolean
-          updated_at?: string
         }
         Relationships: []
       }
@@ -1595,9 +1400,12 @@ export type Database = {
       project_invitations: {
         Row: {
           created_at: string | null
+          decline_reason: string | null
+          expires_at: string | null
           id: string
           invited_user_id: string
           inviter_user_id: string
+          last_reminder_at: string | null
           message: string | null
           opportunity_id: string
           role: string
@@ -1606,9 +1414,12 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          decline_reason?: string | null
+          expires_at?: string | null
           id?: string
           invited_user_id: string
           inviter_user_id: string
+          last_reminder_at?: string | null
           message?: string | null
           opportunity_id: string
           role: string
@@ -1617,9 +1428,12 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          decline_reason?: string | null
+          expires_at?: string | null
           id?: string
           invited_user_id?: string
           inviter_user_id?: string
+          last_reminder_at?: string | null
           message?: string | null
           opportunity_id?: string
           role?: string
@@ -1679,6 +1493,84 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string | null
+          endpoint: string
+          id: string
+          p256dh: string
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string | null
+          endpoint: string
+          id?: string
+          p256dh: string
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string | null
+          endpoint?: string
+          id?: string
+          p256dh?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      recruit_applications: {
+        Row: {
+          agreed_at: string
+          ai_experience: string
+          available_slots: string[]
+          cohort: string
+          created_at: string
+          id: string
+          learning_goal: string
+          motivation: string
+          name: string
+          offline_available: string
+          team_idea: string
+          team_role: string
+          user_agent: string | null
+          weekly_hours: string
+        }
+        Insert: {
+          agreed_at: string
+          ai_experience: string
+          available_slots?: string[]
+          cohort?: string
+          created_at?: string
+          id?: string
+          learning_goal: string
+          motivation: string
+          name: string
+          offline_available: string
+          team_idea: string
+          team_role: string
+          user_agent?: string | null
+          weekly_hours: string
+        }
+        Update: {
+          agreed_at?: string
+          ai_experience?: string
+          available_slots?: string[]
+          cohort?: string
+          created_at?: string
+          id?: string
+          learning_goal?: string
+          motivation?: string
+          name?: string
+          offline_available?: string
+          team_idea?: string
+          team_role?: string
+          user_agent?: string | null
+          weekly_hours?: string
+        }
+        Relationships: []
       }
       session_analytics: {
         Row: {
@@ -2092,6 +1984,57 @@ export type Database = {
         }
         Relationships: []
       }
+      user_blocks: {
+        Row: {
+          blocked_id: string
+          blocker_id: string
+          created_at: string | null
+          id: string
+          reason: string | null
+        }
+        Insert: {
+          blocked_id: string
+          blocker_id: string
+          created_at?: string | null
+          id?: string
+          reason?: string | null
+        }
+        Update: {
+          blocked_id?: string
+          blocker_id?: string
+          created_at?: string | null
+          id?: string
+          reason?: string | null
+        }
+        Relationships: []
+      }
+      user_match_analyses: {
+        Row: {
+          analysis: Json
+          created_at: string
+          id: string
+          model: string
+          target_id: string
+          viewer_id: string
+        }
+        Insert: {
+          analysis: Json
+          created_at?: string
+          id?: string
+          model?: string
+          target_id: string
+          viewer_id: string
+        }
+        Update: {
+          analysis?: Json
+          created_at?: string
+          id?: string
+          model?: string
+          target_id?: string
+          viewer_id?: string
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           avatar_url: string | null
@@ -2260,57 +2203,6 @@ export type Database = {
         }
         Relationships: []
       }
-      waitlist: {
-        Row: {
-          converted_at: string | null
-          created_at: string | null
-          email: string
-          id: string
-          metadata: Json | null
-          source: string | null
-        }
-        Insert: {
-          converted_at?: string | null
-          created_at?: string | null
-          email: string
-          id?: string
-          metadata?: Json | null
-          source?: string | null
-        }
-        Update: {
-          converted_at?: string | null
-          created_at?: string | null
-          email?: string
-          id?: string
-          metadata?: Json | null
-          source?: string | null
-        }
-        Relationships: []
-      }
-      waitlist_signups: {
-        Row: {
-          created_at: string | null
-          current_situation: string | null
-          email: string
-          id: string
-          opportunity_draft: Json | null
-        }
-        Insert: {
-          created_at?: string | null
-          current_situation?: string | null
-          email: string
-          id?: string
-          opportunity_draft?: Json | null
-        }
-        Update: {
-          created_at?: string | null
-          current_situation?: string | null
-          email?: string
-          id?: string
-          opportunity_draft?: Json | null
-        }
-        Relationships: []
-      }
     }
     Views: {
       [_ in never]: never
@@ -2341,24 +2233,6 @@ export type Database = {
             }
             Returns: number
           }
-      calculate_final_score: {
-        Args: {
-          p_difficulty: string
-          p_korea_exists: boolean
-          p_korea_fit_score: number
-          p_upvotes: number
-        }
-        Returns: number
-      }
-      calculate_startup_priority: {
-        Args: {
-          p_korea_fit_score: number
-          p_tier: number
-          p_total_funding: number
-          p_upvotes: number
-        }
-        Returns: number
-      }
       calculate_tag_score: {
         Args: { event_tags: string[]; user_tags: string[] }
         Returns: number
@@ -2378,20 +2252,6 @@ export type Database = {
           p_user_id?: string
         }
         Returns: boolean
-      }
-      find_similar_events: {
-        Args: {
-          p_event_id: string
-          p_limit?: number
-          p_min_similarity?: number
-        }
-        Returns: {
-          event_id: string
-          event_type: string
-          registration_end_date: string
-          similarity_score: number
-          title: string
-        }[]
       }
       find_similar_opportunities: {
         Args: {
@@ -2445,71 +2305,11 @@ export type Database = {
           level: string
         }[]
       }
-      get_session_analytics_summary: {
-        Args: { p_days?: number }
-        Returns: {
-          avg_final_score: number
-          avg_turns: number
-          completed_sessions: number
-          completion_rate: number
-          top_categories: string[]
-          total_sessions: number
-        }[]
-      }
-      get_top_startup_ideas: {
-        Args: { p_limit?: number; p_sort?: string }
-        Returns: {
-          category: string[]
-          description: string
-          final_score: number
-          id: string
-          korea_deep_analysis: Json
-          korea_fit_score: number
-          logo_url: string
-          name: string
-          source: string
-          source_url: string
-          tagline: string
-          upvotes: number
-          website_url: string
-        }[]
-      }
-      get_unread_notification_count: {
-        Args: { p_user_id: string }
-        Returns: number
-      }
       get_user_admin_institution_ids: {
         Args: { uid: string }
         Returns: string[]
       }
       get_user_institution_ids: { Args: { uid: string }; Returns: string[] }
-      get_user_subscription: {
-        Args: { p_user_id: string }
-        Returns: {
-          billing_cycle: string
-          current_period_end: string
-          plan_type: string
-          status: string
-        }[]
-      }
-      get_waitlist_count: { Args: never; Returns: number }
-      get_weekly_digest_events: {
-        Args: {
-          p_popular_limit?: number
-          p_recommended_limit?: number
-          p_user_id: string
-        }
-        Returns: {
-          category: string
-          event_type: string
-          id: string
-          interest_tags: string[]
-          organizer: string
-          registration_end_date: string
-          registration_url: string
-          title: string
-        }[]
-      }
       has_expressed_interest: {
         Args: { p_opportunity_id: string; p_user_email: string }
         Returns: boolean
@@ -2607,45 +2407,6 @@ export type Database = {
               vision_embedding: string
             }[]
           }
-      match_profiles_for_opportunity:
-        | {
-            Args: {
-              exclude_user_id?: string
-              match_count?: number
-              match_threshold?: number
-              query_embedding: string
-            }
-            Returns: {
-              desired_position: string
-              id: string
-              interest_tags: string[]
-              location: string
-              nickname: string
-              similarity: number
-              skills: Json
-              user_id: string
-              vision_summary: string
-            }[]
-          }
-        | {
-            Args: {
-              exclude_user_id?: string
-              match_count?: number
-              match_threshold?: number
-              query_embedding: string
-            }
-            Returns: {
-              desired_position: string
-              id: string
-              interest_tags: string[]
-              location: string
-              nickname: string
-              similarity: number
-              skills: Json
-              user_id: string
-              vision_summary: string
-            }[]
-          }
       match_users: {
         Args: {
           exclude_user_id?: string
@@ -2703,24 +2464,6 @@ export type Database = {
           vector_score: number
         }[]
       }
-      recommend_events_with_embedding: {
-        Args: { p_limit?: number; p_user_id: string }
-        Returns: {
-          context_boost: number
-          days_until_deadline: number
-          description: string
-          event_type: string
-          id: string
-          interest_tags: string[]
-          organizer: string
-          registration_end_date: string
-          registration_url: string
-          tag_score: number
-          title: string
-          total_score: number
-          vector_score: number
-        }[]
-      }
       report_comment: {
         Args: {
           p_comment_id: string
@@ -2748,12 +2491,6 @@ export type Database = {
           p_target_user_id: string
         }
         Returns: string
-      }
-      update_startup_final_scores: {
-        Args: never
-        Returns: {
-          updated_count: number
-        }[]
       }
       vote_helpful: {
         Args: { p_comment_id: string; p_voter_identifier: string }
@@ -2887,9 +2624,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {},
   },

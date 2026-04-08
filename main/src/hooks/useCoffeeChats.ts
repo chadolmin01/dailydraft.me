@@ -231,8 +231,18 @@ export function useRequestPersonCoffeeChat() {
     }) => {
       const { data: userData } = await supabase.auth.getUser()
 
-      // Duplicate check
+      // Duplicate check + 차단 체크 (양방향)
       if (userData?.user) {
+        const { data: blockRow } = await supabase
+          .from('user_blocks')
+          .select('id')
+          .or(`and(blocker_id.eq.${userData.user.id},blocked_id.eq.${data.targetUserId}),and(blocker_id.eq.${data.targetUserId},blocked_id.eq.${userData.user.id})`)
+          .limit(1)
+          .maybeSingle()
+        if (blockRow) {
+          throw new Error('이 사용자에게는 커피챗을 보낼 수 없습니다')
+        }
+
         const { data: existing } = await supabase
           .from('coffee_chats')
           .select('id')

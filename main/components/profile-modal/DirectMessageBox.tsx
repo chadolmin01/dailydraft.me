@@ -1,13 +1,36 @@
 'use client'
 
 import { useState } from 'react'
-import { Loader2, Send } from 'lucide-react'
+import { Loader2, Send, ShieldOff } from 'lucide-react'
+import { toast } from 'sonner'
+import { useBlockUser, useUserBlocks, useUnblockUser } from '@/src/hooks/useUserBlocks'
 
 export function DirectMessageBox({ receiverId }: { receiverId: string }) {
   const [content, setContent] = useState('')
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
   const [error, setError] = useState('')
+
+  // 차단/해제 — 최소 UI. 현재 차단 상태에 따라 토글.
+  const { data: blocks = [] } = useUserBlocks()
+  const blockUser = useBlockUser()
+  const unblockUser = useUnblockUser()
+  const isBlocked = blocks.some(b => b.blocked_id === receiverId)
+
+  const handleToggleBlock = async () => {
+    try {
+      if (isBlocked) {
+        await unblockUser.mutateAsync(receiverId)
+        toast.success('차단을 해제했습니다')
+      } else {
+        if (!confirm('이 사용자를 차단하시겠어요? 초대·커피챗·쪽지가 양방향으로 차단됩니다.')) return
+        await blockUser.mutateAsync({ blocked_id: receiverId })
+        toast.success('차단했습니다')
+      }
+    } catch {
+      toast.error('처리에 실패했습니다')
+    }
+  }
 
   const handleSend = async () => {
     if (!content.trim()) return
@@ -33,9 +56,19 @@ export function DirectMessageBox({ receiverId }: { receiverId: string }) {
 
   return (
     <div className="bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl p-4">
-      <h4 className="text-[13px] font-semibold text-txt-secondary mb-2.5 flex items-center gap-1.5">
-        <Send size={13} /> 쪽지 보내기
-      </h4>
+      <div className="flex items-center justify-between mb-2.5">
+        <h4 className="text-[13px] font-semibold text-txt-secondary flex items-center gap-1.5">
+          <Send size={13} /> 쪽지 보내기
+        </h4>
+        <button
+          onClick={handleToggleBlock}
+          disabled={blockUser.isPending || unblockUser.isPending}
+          className="flex items-center gap-1 text-[11px] text-txt-tertiary hover:text-[#FF3B30] transition-colors"
+        >
+          <ShieldOff size={11} />
+          {isBlocked ? '차단 해제' : '차단'}
+        </button>
+      </div>
       {sent ? (
         <p className="text-[14px] text-[#34C759] font-semibold py-2">쪽지가 전송되었습니다!</p>
       ) : (

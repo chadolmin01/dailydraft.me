@@ -96,6 +96,17 @@ export async function POST(request: NextRequest) {
       return ApiResponse.badRequest('자신에게 쪽지를 보낼 수 없습니다')
     }
 
+    // 차단 체크: 양방향. 상대가 나를 차단했어도 발송 차단 (스토킹 회피).
+    const { data: blockRow } = await supabase
+      .from('user_blocks')
+      .select('id')
+      .or(`and(blocker_id.eq.${user.id},blocked_id.eq.${receiver_id}),and(blocker_id.eq.${receiver_id},blocked_id.eq.${user.id})`)
+      .limit(1)
+      .maybeSingle()
+    if (blockRow) {
+      return ApiResponse.forbidden('이 사용자에게는 쪽지를 보낼 수 없습니다')
+    }
+
     const trimmed = content.trim()
     if (trimmed.length > 2000) {
       return ApiResponse.badRequest('쪽지는 2000자까지 가능합니다')

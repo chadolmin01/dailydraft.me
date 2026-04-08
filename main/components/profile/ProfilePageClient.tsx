@@ -17,6 +17,7 @@ import {
   ProfileProjects,
   ProfileCoffeeChats,
   ProfileInvitations,
+  ProfileSentInvitations,
   AiOnboardingModal,
 } from '@/components/profile'
 import { Sparkles, Briefcase, FolderOpen, Activity } from 'lucide-react'
@@ -164,6 +165,7 @@ export default function ProfilePageClient() {
             <>
               <ProfileCoffeeChats />
               <ProfileInvitations />
+              <ProfileSentInvitations />
             </>
           )}
         </div>
