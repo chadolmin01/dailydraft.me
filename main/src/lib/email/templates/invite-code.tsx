@@ -29,7 +29,7 @@ export function renderInviteCodeEmail({
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DailyDraft</title>
+  <title>Draft.</title>
 </head>
 <body style="margin:0; padding:0; background-color:#f5f5f5; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f5f5f5;">
@@ -107,7 +107,7 @@ export function renderInviteCodeEmail({
                     <table cellpadding="0" cellspacing="0">
                       <tr>
                         <td width="28" height="28" align="center" style="background-color:#111827; border-radius:50%; color:#ffffff; font-size:13px; font-weight:600;">1</td>
-                        <td style="padding-left:14px; font-size:15px; color:#374151;">DailyDraft에 로그인합니다.</td>
+                        <td style="padding-left:14px; font-size:15px; color:#374151;">Draft에 로그인합니다.</td>
                       </tr>
                     </table>
                   </td>
@@ -149,7 +149,7 @@ export function renderInviteCodeEmail({
           <tr>
             <td align="center" style="padding:28px 40px; background-color:#fafafa; border-radius:0 0 16px 16px;">
               <p style="margin:0; font-size:12px; color:#9ca3af; line-height:1.6;">
-                © 2025 DailyDraft. All rights reserved.
+                © 2026 Draft. 모든 프로젝트는 여기서 시작됩니다.
               </p>
             </td>
           </tr>

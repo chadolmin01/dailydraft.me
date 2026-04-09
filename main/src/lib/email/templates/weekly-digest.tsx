@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { EmailLayout, emailStyles, emailTokens, renderEmail } from './_layout'
 
 interface DigestEvent {
   id: string
@@ -27,185 +28,56 @@ export function WeeklyDigestEmail({
   popularEvents,
 }: WeeklyDigestEmailProps) {
   return (
-    <div
-      style={{
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-        maxWidth: '600px',
-        margin: '0 auto',
-        padding: '20px',
-        backgroundColor: '#ffffff',
-      }}
+    <EmailLayout
+      eyebrow="이번 주 추천"
+      footerNote={`매주 ${userName}님의 관심사에 맞는 행사를 추천해드립니다.`}
     >
-      {/* Header */}
-      <div
-        style={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          padding: '32px 24px',
-          borderRadius: '12px 12px 0 0',
-          textAlign: 'center',
-        }}
-      >
-        <h1
-          style={{
-            fontSize: '28px',
-            fontWeight: 'bold',
-            color: '#ffffff',
-            margin: '0 0 8px 0',
-          }}
-        >
-          DailyDraft
-        </h1>
-        <p
-          style={{
-            fontSize: '14px',
-            color: 'rgba(255, 255, 255, 0.9)',
-            margin: 0,
-          }}
-        >
-          이번 주 추천 행사
-        </p>
-      </div>
+      <h1 style={emailStyles.heading}>{userName}님을 위한 이번 주 행사</h1>
 
-      {/* Summary Section */}
-      <div
-        style={{
-          backgroundColor: '#f3f4f6',
-          padding: '24px',
-          borderRadius: '0 0 12px 12px',
-          marginBottom: '24px',
-        }}
-      >
-        <p
-          style={{
-            fontSize: '16px',
-            color: '#374151',
-            margin: 0,
-            lineHeight: '1.6',
-          }}
-        >
+      <div style={emailStyles.card}>
+        <p style={{ fontSize: '15px', color: '#374151', margin: 0, lineHeight: 1.6 }}>
           {summary}
         </p>
       </div>
 
-      {/* Recommended Events */}
       {recommendedEvents.length > 0 && (
-        <div style={{ marginBottom: '32px' }}>
-          <h2
-            style={{
-              fontSize: '18px',
-              fontWeight: '600',
-              color: '#111827',
-              marginBottom: '16px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-            }}
-          >
-            {userName}님을 위한 추천
+        <div style={{ marginBottom: '24px' }}>
+          <h2 style={{ fontSize: '16px', fontWeight: 700, color: emailTokens.primary, margin: '0 0 12px 0' }}>
+            추천 행사
           </h2>
-
           {recommendedEvents.map((event, index) => (
-            <EventCard key={event.id} event={event} index={index} isLast={index === recommendedEvents.length - 1} />
+            <EventCard key={event.id} event={event} isLast={index === recommendedEvents.length - 1} />
           ))}
         </div>
       )}
 
-      {/* Popular Events */}
       {popularEvents.length > 0 && (
-        <div style={{ marginBottom: '32px' }}>
-          <h2
-            style={{
-              fontSize: '18px',
-              fontWeight: '600',
-              color: '#111827',
-              marginBottom: '16px',
-            }}
-          >
+        <div style={{ marginBottom: '24px' }}>
+          <h2 style={{ fontSize: '16px', fontWeight: 700, color: emailTokens.primary, margin: '0 0 12px 0' }}>
             이번 주 인기 행사
           </h2>
-
           {popularEvents.map((event, index) => (
-            <EventCard key={event.id} event={event} index={index} isLast={index === popularEvents.length - 1} />
+            <EventCard key={event.id} event={event} isLast={index === popularEvents.length - 1} />
           ))}
         </div>
       )}
 
-      {/* CTA */}
-      <div
-        style={{
-          textAlign: 'center',
-          marginBottom: '32px',
-        }}
-      >
-        <a
-          href={`${APP_URL}/events`}
-          style={{
-            display: 'inline-block',
-            padding: '14px 28px',
-            fontSize: '15px',
-            fontWeight: '600',
-            color: '#ffffff',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            borderRadius: '8px',
-            textDecoration: 'none',
-          }}
-        >
+      <div style={emailStyles.ctaWrap}>
+        <a href={`${APP_URL}/events`} style={emailStyles.cta}>
           더 많은 행사 보기
         </a>
       </div>
-
-      {/* Footer */}
-      <div
-        style={{
-          borderTop: '1px solid #e5e7eb',
-          paddingTop: '20px',
-          textAlign: 'center',
-        }}
-      >
-        <p
-          style={{
-            fontSize: '12px',
-            color: '#9ca3af',
-            margin: '0 0 8px 0',
-          }}
-        >
-          매주 {userName}님의 관심사에 맞는 행사를 추천해드려요.
-        </p>
-        <p
-          style={{
-            fontSize: '12px',
-            color: '#9ca3af',
-            margin: 0,
-          }}
-        >
-          알림 설정은{' '}
-          <a
-            href={`${APP_URL}/settings/notifications`}
-            style={{ color: '#6b7280', textDecoration: 'underline' }}
-          >
-            여기
-          </a>
-          에서 변경할 수 있습니다.
-        </p>
-      </div>
-    </div>
+    </EmailLayout>
   )
 }
 
-function EventCard({
-  event,
-  index: _index,
-  isLast,
-}: {
-  event: DigestEvent
-  index: number
-  isLast: boolean
-}) {
-  // Calculate D-day
-  // eslint-disable-next-line react-hooks/purity -- Intentional: Date.now() for D-day calculation in email template
-  const daysLeft = Math.ceil((new Date(event.registration_end_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+function EventCard({ event, isLast }: { event: DigestEvent; isLast: boolean }) {
+  // eslint-disable-next-line react-hooks/purity -- Intentional: Date.now() for D-day calc in email template
+  const daysLeft = Math.ceil(
+    (new Date(event.registration_end_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+  )
 
-  const badgeColor =
+  const badge =
     daysLeft <= 3
       ? { bg: '#fef2f2', text: '#dc2626' }
       : daysLeft <= 7
@@ -218,67 +90,47 @@ function EventCard({
         padding: '16px',
         marginBottom: isLast ? '0' : '12px',
         backgroundColor: '#ffffff',
-        borderRadius: '8px',
-        border: '1px solid #e5e7eb',
+        borderRadius: '12px',
+        border: `1px solid ${emailTokens.border}`,
       }}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-        {/* Event Type Badge */}
+      <div style={{ marginBottom: '8px' }}>
         <span
           style={{
             display: 'inline-block',
             padding: '4px 10px',
+            marginRight: '6px',
             fontSize: '11px',
-            fontWeight: '500',
+            fontWeight: 500,
             borderRadius: '9999px',
             backgroundColor: '#eff6ff',
-            color: '#2563eb',
+            color: emailTokens.accent,
           }}
         >
           {event.event_type}
         </span>
-
-        {/* D-Day Badge */}
         <span
           style={{
             display: 'inline-block',
             padding: '4px 10px',
             fontSize: '11px',
-            fontWeight: 'bold',
+            fontWeight: 700,
             borderRadius: '9999px',
-            backgroundColor: badgeColor.bg,
-            color: badgeColor.text,
+            backgroundColor: badge.bg,
+            color: badge.text,
           }}
         >
           {daysLeft === 0 ? 'D-Day' : daysLeft > 0 ? `D-${daysLeft}` : '마감'}
         </span>
       </div>
 
-      {/* Title */}
-      <h3
-        style={{
-          fontSize: '15px',
-          fontWeight: '600',
-          color: '#111827',
-          margin: '0 0 4px 0',
-          lineHeight: '1.4',
-        }}
-      >
+      <h3 style={{ fontSize: '15px', fontWeight: 600, color: emailTokens.primary, margin: '0 0 4px 0', lineHeight: 1.4 }}>
         {event.title}
       </h3>
-
-      {/* Organizer */}
-      <p
-        style={{
-          fontSize: '13px',
-          color: '#6b7280',
-          margin: '0 0 12px 0',
-        }}
-      >
+      <p style={{ fontSize: '13px', color: '#6b7280', margin: '0 0 12px 0' }}>
         {event.organizer}
       </p>
 
-      {/* Tags */}
       {event.interest_tags.length > 0 && (
         <div style={{ marginBottom: '12px' }}>
           {event.interest_tags.slice(0, 3).map((tag, i) => (
@@ -289,7 +141,7 @@ function EventCard({
                 padding: '3px 8px',
                 marginRight: '6px',
                 fontSize: '11px',
-                backgroundColor: '#f3f4f6',
+                backgroundColor: emailTokens.bgMuted,
                 color: '#4b5563',
                 borderRadius: '4px',
               }}
@@ -300,20 +152,10 @@ function EventCard({
         </div>
       )}
 
-      {/* CTA */}
-      <div style={{ display: 'flex', gap: '8px' }}>
+      <div>
         <a
           href={`${APP_URL}/events/${event.id}`}
-          style={{
-            display: 'inline-block',
-            padding: '8px 14px',
-            fontSize: '13px',
-            fontWeight: '500',
-            color: '#374151',
-            backgroundColor: '#f3f4f6',
-            borderRadius: '6px',
-            textDecoration: 'none',
-          }}
+          style={{ ...emailStyles.ctaSecondary, marginRight: '8px' }}
         >
           상세 보기
         </a>
@@ -324,12 +166,12 @@ function EventCard({
             rel="noopener noreferrer"
             style={{
               display: 'inline-block',
-              padding: '8px 14px',
-              fontSize: '13px',
-              fontWeight: '500',
+              padding: '12px 24px',
+              fontSize: '14px',
+              fontWeight: 600,
               color: '#ffffff',
-              backgroundColor: '#2563eb',
-              borderRadius: '6px',
+              backgroundColor: emailTokens.primary,
+              borderRadius: '8px',
               textDecoration: 'none',
             }}
           >
@@ -341,9 +183,6 @@ function EventCard({
   )
 }
 
-// HTML 문자열로 변환 (Resend에서 사용)
 export function renderWeeklyDigestEmail(props: WeeklyDigestEmailProps): string {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports -- Dynamic import for server-side only
-  const ReactDOMServer = require('react-dom/server')
-  return ReactDOMServer.renderToStaticMarkup(<WeeklyDigestEmail {...props} />)
+  return renderEmail(<WeeklyDigestEmail {...props} />)
 }
