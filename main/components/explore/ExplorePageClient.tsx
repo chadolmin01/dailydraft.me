@@ -283,6 +283,13 @@ function ExplorePageContent() {
           return diff !== 0 ? diff : tieBreak(a, b)
         }
 
+        if (sortBy === 'ai') {
+          // AI 매칭 점수 내림차순. 점수 없는 건(0) 뒤로 밀림.
+          // 왜: 지금까지 이 분기가 누락돼 AI 탭을 눌러도 trending으로 정렬되는 버그가 있었음.
+          const diff = (aiScoreMap.get(b.id) ?? 0) - (aiScoreMap.get(a.id) ?? 0)
+          return diff !== 0 ? diff : tieBreak(a, b)
+        }
+
         // trending: popularity weighted by recency (HN-style decay)
         const now = Date.now()
         const trendScore = (opp: OpportunityWithCreator) => {
@@ -342,7 +349,7 @@ function ExplorePageContent() {
         tags: (profile.interest_tags || []).slice(0, 3),
         status: 'OPEN' as const,
         visionSummary: visionText,
-        location: profile.location,
+        location: profile.locations?.join(', ') ?? null,
         avatarUrl: profile.avatar_url,
         matchScore: rec?.match_score ?? null,
         matchReason: rec?.match_reason ?? null,
