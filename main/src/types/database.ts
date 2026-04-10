@@ -172,6 +172,222 @@ export type Database = {
           },
         ]
       }
+      club_credentials: {
+        Row: {
+          club_id: string
+          created_at: string
+          credential_type: string
+          id: string
+          university_id: string | null
+          verification_method: string
+          verified_at: string
+          verified_by: string | null
+        }
+        Insert: {
+          club_id: string
+          created_at?: string
+          credential_type: string
+          id?: string
+          university_id?: string | null
+          verification_method: string
+          verified_at?: string
+          verified_by?: string | null
+        }
+        Update: {
+          club_id?: string
+          created_at?: string
+          credential_type?: string
+          id?: string
+          university_id?: string | null
+          verification_method?: string
+          verified_at?: string
+          verified_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "club_credentials_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "club_credentials_university_id_fkey"
+            columns: ["university_id"]
+            isOneToOne: false
+            referencedRelation: "universities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      club_invite_codes: {
+        Row: {
+          club_id: string
+          code: string
+          cohort: string | null
+          created_at: string
+          created_by: string
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          max_uses: number | null
+          role: string
+          use_count: number
+        }
+        Insert: {
+          club_id: string
+          code: string
+          cohort?: string | null
+          created_at?: string
+          created_by: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          role?: string
+          use_count?: number
+        }
+        Update: {
+          club_id?: string
+          code?: string
+          cohort?: string | null
+          created_at?: string
+          created_by?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          role?: string
+          use_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "club_invite_codes_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      club_members: {
+        Row: {
+          club_id: string
+          cohort: string | null
+          ghost_metadata: Json
+          ghost_name: string | null
+          id: string
+          joined_at: string
+          role: string
+          user_id: string | null
+        }
+        Insert: {
+          club_id: string
+          cohort?: string | null
+          ghost_metadata?: Json
+          ghost_name?: string | null
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id?: string | null
+        }
+        Update: {
+          club_id?: string
+          cohort?: string | null
+          ghost_metadata?: Json
+          ghost_name?: string | null
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "club_members_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      club_notification_channels: {
+        Row: {
+          channel_type: string
+          club_id: string
+          created_at: string
+          created_by: string
+          enabled: boolean
+          event_types: string[]
+          id: string
+          label: string
+          webhook_url: string
+        }
+        Insert: {
+          channel_type: string
+          club_id: string
+          created_at?: string
+          created_by: string
+          enabled?: boolean
+          event_types?: string[]
+          id?: string
+          label?: string
+          webhook_url: string
+        }
+        Update: {
+          channel_type?: string
+          club_id?: string
+          created_at?: string
+          created_by?: string
+          enabled?: boolean
+          event_types?: string[]
+          id?: string
+          label?: string
+          webhook_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "club_notification_channels_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clubs: {
+        Row: {
+          created_at: string
+          created_by: string
+          description: string | null
+          id: string
+          logo_url: string | null
+          name: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          description?: string | null
+          id?: string
+          logo_url?: string | null
+          name: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          id?: string
+          logo_url?: string | null
+          name?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       coffee_chats: {
         Row: {
           application_id: string | null
@@ -379,6 +595,89 @@ export type Database = {
           sender_id?: string
         }
         Relationships: []
+      }
+      discord_bot_installations: {
+        Row: {
+          club_id: string
+          discord_guild_id: string
+          discord_guild_name: string | null
+          id: string
+          installed_at: string
+          installed_by: string
+        }
+        Insert: {
+          club_id: string
+          discord_guild_id: string
+          discord_guild_name?: string | null
+          id?: string
+          installed_at?: string
+          installed_by: string
+        }
+        Update: {
+          club_id?: string
+          discord_guild_id?: string
+          discord_guild_name?: string | null
+          id?: string
+          installed_at?: string
+          installed_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discord_bot_installations_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      discord_team_channels: {
+        Row: {
+          club_id: string
+          created_at: string
+          created_by: string
+          discord_channel_id: string
+          discord_channel_name: string | null
+          id: string
+          last_fetched_message_id: string | null
+          opportunity_id: string
+        }
+        Insert: {
+          club_id: string
+          created_at?: string
+          created_by: string
+          discord_channel_id: string
+          discord_channel_name?: string | null
+          id?: string
+          last_fetched_message_id?: string | null
+          opportunity_id: string
+        }
+        Update: {
+          club_id?: string
+          created_at?: string
+          created_by?: string
+          discord_channel_id?: string
+          discord_channel_name?: string | null
+          id?: string
+          last_fetched_message_id?: string | null
+          opportunity_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discord_team_channels_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "discord_team_channels_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: true
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       error_logs: {
         Row: {
@@ -887,6 +1186,56 @@ export type Database = {
         }
         Relationships: []
       }
+      member_activity_stats: {
+        Row: {
+          channels_active: number
+          checkin_submitted: boolean
+          club_id: string
+          created_at: string
+          discord_user_id: string
+          discord_username: string | null
+          id: string
+          message_count: number
+          updated_at: string
+          week_number: number
+          year: number
+        }
+        Insert: {
+          channels_active?: number
+          checkin_submitted?: boolean
+          club_id: string
+          created_at?: string
+          discord_user_id: string
+          discord_username?: string | null
+          id?: string
+          message_count?: number
+          updated_at?: string
+          week_number: number
+          year?: number
+        }
+        Update: {
+          channels_active?: number
+          checkin_submitted?: boolean
+          club_id?: string
+          created_at?: string
+          discord_user_id?: string
+          discord_username?: string | null
+          id?: string
+          message_count?: number
+          updated_at?: string
+          week_number?: number
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_activity_stats_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_settings: {
         Row: {
           created_at: string | null
@@ -966,6 +1315,8 @@ export type Database = {
         Row: {
           applications_count: number | null
           badges: string[] | null
+          club_id: string | null
+          cohort: string | null
           compensation_details: string | null
           compensation_type: string | null
           created_at: string | null
@@ -994,6 +1345,8 @@ export type Database = {
         Insert: {
           applications_count?: number | null
           badges?: string[] | null
+          club_id?: string | null
+          cohort?: string | null
           compensation_details?: string | null
           compensation_type?: string | null
           created_at?: string | null
@@ -1022,6 +1375,8 @@ export type Database = {
         Update: {
           applications_count?: number | null
           badges?: string[] | null
+          club_id?: string | null
+          cohort?: string | null
           compensation_details?: string | null
           compensation_type?: string | null
           created_at?: string | null
@@ -1048,6 +1403,13 @@ export type Database = {
           vision_embedding?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "opportunities_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "opportunities_creator_profile_fkey"
             columns: ["creator_id"]
@@ -1270,6 +1632,7 @@ export type Database = {
           data_consent: boolean | null
           data_consent_at: string | null
           desired_position: string | null
+          discord_user_id: string | null
           extracted_profile: Json | null
           extraction_confidence: number | null
           github_url: string | null
@@ -1317,6 +1680,7 @@ export type Database = {
           data_consent?: boolean | null
           data_consent_at?: string | null
           desired_position?: string | null
+          discord_user_id?: string | null
           extracted_profile?: Json | null
           extraction_confidence?: number | null
           github_url?: string | null
@@ -1364,6 +1728,7 @@ export type Database = {
           data_consent?: boolean | null
           data_consent_at?: string | null
           desired_position?: string | null
+          discord_user_id?: string | null
           extracted_profile?: Json | null
           extraction_confidence?: number | null
           github_url?: string | null
@@ -1948,6 +2313,33 @@ export type Database = {
           },
         ]
       }
+      universities: {
+        Row: {
+          created_at: string
+          email_domains: string[]
+          id: string
+          logo_url: string | null
+          name: string
+          short_name: string | null
+        }
+        Insert: {
+          created_at?: string
+          email_domains?: string[]
+          id?: string
+          logo_url?: string | null
+          name: string
+          short_name?: string | null
+        }
+        Update: {
+          created_at?: string
+          email_domains?: string[]
+          id?: string
+          logo_url?: string | null
+          name?: string
+          short_name?: string | null
+        }
+        Relationships: []
+      }
       usage_limits: {
         Row: {
           applications_used: number
@@ -2203,6 +2595,66 @@ export type Database = {
         }
         Relationships: []
       }
+      weekly_update_drafts: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          opportunity_id: string
+          published_update_id: string | null
+          reviewed_at: string | null
+          source_message_count: number
+          status: string
+          target_user_id: string
+          title: string
+          update_type: string
+          week_number: number
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          opportunity_id: string
+          published_update_id?: string | null
+          reviewed_at?: string | null
+          source_message_count?: number
+          status?: string
+          target_user_id: string
+          title: string
+          update_type?: string
+          week_number: number
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          opportunity_id?: string
+          published_update_id?: string | null
+          reviewed_at?: string | null
+          source_message_count?: number
+          status?: string
+          target_user_id?: string
+          title?: string
+          update_type?: string
+          week_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "weekly_update_drafts_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "weekly_update_drafts_published_update_id_fkey"
+            columns: ["published_update_id"]
+            isOneToOne: false
+            referencedRelation: "project_updates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -2342,6 +2794,14 @@ export type Database = {
         Args: { row_id: string; table_name: string }
         Returns: number
       }
+      is_club_admin: {
+        Args: { p_club_id: string; p_user_id: string }
+        Returns: boolean
+      }
+      is_club_owner: {
+        Args: { p_club_id: string; p_user_id: string }
+        Returns: boolean
+      }
       match_opportunities:
         | {
             Args: {
@@ -2431,6 +2891,7 @@ export type Database = {
           vision_summary: string
         }[]
       }
+      preview_invite_code: { Args: { p_code: string }; Returns: Json }
       recommend_events_by_tags: {
         Args: { p_limit?: number; p_tags: string[] }
         Returns: {
@@ -2463,6 +2924,10 @@ export type Database = {
           total_score: number
           vector_score: number
         }[]
+      }
+      redeem_invite_code: {
+        Args: { p_code: string; p_user_id: string }
+        Returns: Json
       }
       report_comment: {
         Args: {
