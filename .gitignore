@@ -57,3 +57,12 @@ capture-pitch.js
 capture-screenshots.js
 create-ppt.js
 /p/
+
+
+# 개인정보 포함 데이터 (학생 이름/학번/학과)
+FLIP/
+main/scripts/flip-seed.csv
+main/scripts/_parse_flip.py
+
+# 와이어프레임 (별도 관리)
+wireframe/
