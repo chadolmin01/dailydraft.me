@@ -14,8 +14,11 @@ import {
   MessageCircle,
   Unlink,
 } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
 import { useProfileDraft } from '@/src/hooks/useProfileDraft'
 import { useUpdateProfile } from '@/src/hooks/useProfile'
+import { useAuth } from '@/src/context/AuthContext'
+import { withRetry } from '@/src/lib/query-utils'
 import { SKILL_SUGGESTIONS } from './edit/constants'
 import type { Profile } from './types'
 import { EditableField } from './EditableField'
@@ -33,9 +36,26 @@ interface ProfileSidebarProps {
   isEditable?: boolean
 }
 
+interface MyClub {
+  slug: string; name: string; logo_url: string | null; category: string | null
+  role: string; display_role: string | null; member_count: number
+}
+
 export function ProfileSidebar({ profile, completion, isEditable = false }: ProfileSidebarProps) {
+  const { user } = useAuth()
   const skills = profile?.skills as Array<{ name: string; level: string }> | null
   const updateProfile = useUpdateProfile()
+
+  const { data: myClubs = [] } = useQuery<MyClub[]>({
+    queryKey: ['my-clubs'],
+    queryFn: () => withRetry(async () => {
+      const res = await fetch('/api/users/my-clubs')
+      if (!res.ok) return []
+      return res.json()
+    }),
+    enabled: isEditable && !!user,
+    staleTime: 1000 * 60 * 2,
+  })
 
   const [showSkillInput, setShowSkillInput] = useState(false)
   const [newSkillName, setNewSkillName] = useState('')
@@ -70,6 +90,35 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
 
   return (
     <div className="space-y-10">
+
+      {/* ── 소속 클럽 ── */}
+      {myClubs.length > 0 && (
+        <section>
+          <h3 className="text-sm font-bold text-txt-primary mb-3">소속 클럽</h3>
+          <div className="space-y-2">
+            {myClubs.map(club => (
+              <Link
+                key={club.slug}
+                href={`/clubs/${club.slug}`}
+                className="flex items-center gap-3 px-2 py-2.5 rounded-xl hover:bg-surface-sunken transition-colors"
+              >
+                <div className="w-9 h-9 rounded-lg bg-bg-sunken flex items-center justify-center text-xs font-extrabold text-txt-secondary shrink-0">
+                  {club.name[0]}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-sm font-semibold text-txt-primary truncate">{club.name}</span>
+                    {club.category && (
+                      <span className="text-[10px] font-medium text-brand bg-brand-bg px-1.5 py-0.5 rounded-full shrink-0">{club.category}</span>
+                    )}
+                  </div>
+                  <span className="text-[11px] text-txt-tertiary">멤버 {club.member_count}명</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ── Links ── */}
       {showLinksSection && (
