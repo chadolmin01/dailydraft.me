@@ -8,7 +8,7 @@
  * 플로우:
  * 1. GUILD_CREATE 감지 → 서버 owner에게 DM
  * 2. 채널 목록 보여주고 → 프로젝트 채널 선택
- * 3. AI 톤 선택 (합쇼체/해요체/English)
+ * 3. AI 톤 선택 (합쇼체/부드러운 합쇼체/English)
  * 4. 세팅 완료 → Draft 웹 링크 안내
  */
 
@@ -155,7 +155,7 @@ export async function sendToneSelectionMessage(
     '주간 업데이트와 봇 메시지의 톤을 설정합니다.',
     '',
     '🏢 = 합쇼체 ("작업을 완료했습니다")',
-    '💬 = 해요체 ("작업을 완료했어요")',
+    '💬 = 부드러운 합쇼체 ("이번 주 작업을 진행했습니다")',
     '🇺🇸 = English ("Completed the task")',
     '',
     '나중에 Draft 웹에서 변경할 수 있습니다.',
@@ -177,7 +177,7 @@ export async function sendSetupCompleteMessage(
 ): Promise<void> {
   const toneLabel = {
     formal: '합쇼체',
-    casual: '해요체',
+    casual: '부드러운 합쇼체',
     english: 'English',
   }[settings.tone] ?? settings.tone;
 

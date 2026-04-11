@@ -245,13 +245,13 @@ function formatPinnedMessages(messages: DiscordMessage[]): string {
 /** AI 톤별 프롬프트 규칙 */
 const TONE_RULES: Record<string, string> = {
   formal: '6. **톤**: 합쇼체("-습니다/-입니다") 사용',
-  casual: '6. **톤**: 해요체("-해요/-에요") 사용. 친근하지만 전문적으로',
+  casual: '6. **톤**: 반말 금지. 부드러운 합쇼체("-습니다/-입니다") 사용. 친근하지만 전문적으로',
   english: '6. **Tone**: Write in English. Professional but approachable',
 }
 
 const TONE_EXAMPLE: Record<string, { summary: string; tone: string }> = {
   formal: { summary: '이번 주 활동 요약 (3~4문장, 합쇼체)', tone: '합쇼체' },
-  casual: { summary: '이번 주 활동 요약 (3~4문장, 해요체)', tone: '해요체' },
+  casual: { summary: '이번 주 ���동 요�� (3~4문장, 부드러운 합쇼체)', tone: '부드러운 합쇼체' },
   english: { summary: 'This week\'s activity summary (3-4 sentences, English)', tone: 'English' },
 }
 
