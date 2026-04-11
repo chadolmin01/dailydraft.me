@@ -156,7 +156,7 @@ async function handleProfileCommand(interaction: {
     })
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://draft.im'
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://dailydraft.me'
 
   return NextResponse.json({
     type: CHANNEL_MESSAGE,
