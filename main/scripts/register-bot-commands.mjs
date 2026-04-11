@@ -78,6 +78,16 @@ const commands = [
       },
     ],
   },
+  {
+    name: '설정',
+    description: 'Draft 웹에서 Discord 연동 설정을 변경합니다',
+    type: 1,
+  },
+  {
+    name: '도움',
+    description: 'Draft 봇 명령어 안내',
+    type: 1,
+  },
 ];
 
 const baseUrl = GUILD_ID

@@ -194,7 +194,7 @@ export async function sendSetupCompleteMessage(
     '• 실시간 — 투표/할일/블로커 감지',
     '',
     '**고급 설정 (선택):**',
-    `🔗 ${APP_URL}/clubs/${clubSlug}/settings`,
+    `🔗 ${APP_URL}/clubs/${clubSlug}/settings/discord`,
     '',
     '• Google Sheets, GitHub, Notion 연동',
     '• 봇 감지 민감도 조절',

@@ -174,6 +174,25 @@ export class BotEngine {
         });
         break;
       }
+
+      case '/설정': {
+        // /설정 → Draft 웹 설정 페이지 링크
+        const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://draft.app';
+        await this.sendResponse({
+          content: `⚙️ **Discord 연동 설정**\n\n아래 링크에서 설정을 변경할 수 있습니다:\n🔗 ${appUrl}/clubs/${msg.guildId}/settings/discord\n\n설정 항목:\n• 채널-프로젝트 매핑\n• AI 톤 (합쇼체/해요체/English)\n• 체크인/초안 생성 스케줄\n• 외부 도구 연동 (GitHub, Notion 등)\n• 승인 권한`,
+          channelId: msg.channelId,
+        });
+        break;
+      }
+
+      case '/도움':
+      case '/help': {
+        await this.sendResponse({
+          content: `📖 **Draft 봇 명령어**\n\n**슬래시 커맨드:**\n• \`/마무리\` — 지금까지 대화 요약\n• \`/투표 주제 옵션1 옵션2\` — 투표 생성\n• \`/일정\` — 요일 투표 + When2Meet 안내\n• \`/설정\` — Draft 웹 설정 페이지 링크\n\n**자동 감지:**\n• 투표/결정 제안 시 → 투표 버튼 제공\n• 블로커/막힘 감지 → 도움 제안\n• 대화 종결 시 → 회의 요약 자동 생성`,
+          channelId: msg.channelId,
+        });
+        break;
+      }
     }
   }
 
