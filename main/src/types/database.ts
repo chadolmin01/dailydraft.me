@@ -12,6 +12,31 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.1"
   }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       accepted_connections: {
@@ -80,40 +105,43 @@ export type Database = {
           applicant_id: string
           created_at: string | null
           id: string
-          intro: string
+          intro: string | null
           match_reason: string | null
           match_score: number | null
           opportunity_id: string
           portfolio_links: Json | null
+          source: string
           status: string | null
           updated_at: string | null
-          why_apply: string
+          why_apply: string | null
         }
         Insert: {
           applicant_id: string
           created_at?: string | null
           id?: string
-          intro: string
+          intro?: string | null
           match_reason?: string | null
           match_score?: number | null
           opportunity_id: string
           portfolio_links?: Json | null
+          source?: string
           status?: string | null
           updated_at?: string | null
-          why_apply: string
+          why_apply?: string | null
         }
         Update: {
           applicant_id?: string
           created_at?: string | null
           id?: string
-          intro?: string
+          intro?: string | null
           match_reason?: string | null
           match_score?: number | null
           opportunity_id?: string
           portfolio_links?: Json | null
+          source?: string
           status?: string | null
           updated_at?: string | null
-          why_apply?: string
+          why_apply?: string | null
         }
         Relationships: [
           {
@@ -172,6 +200,94 @@ export type Database = {
           },
         ]
       }
+      bot_interventions: {
+        Row: {
+          bot_message_id: string | null
+          club_id: string
+          confidence: number
+          created_at: string
+          discord_channel_id: string
+          discord_guild_id: string
+          id: string
+          pattern_type: string
+          trigger_type: string
+          user_response: string | null
+        }
+        Insert: {
+          bot_message_id?: string | null
+          club_id: string
+          confidence: number
+          created_at?: string
+          discord_channel_id: string
+          discord_guild_id: string
+          id?: string
+          pattern_type: string
+          trigger_type?: string
+          user_response?: string | null
+        }
+        Update: {
+          bot_message_id?: string | null
+          club_id?: string
+          confidence?: number
+          created_at?: string
+          discord_channel_id?: string
+          discord_guild_id?: string
+          id?: string
+          pattern_type?: string
+          trigger_type?: string
+          user_response?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bot_interventions_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      club_announcements: {
+        Row: {
+          author_id: string
+          club_id: string
+          content: string
+          created_at: string
+          id: string
+          is_pinned: boolean
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          club_id: string
+          content: string
+          created_at?: string
+          id?: string
+          is_pinned?: boolean
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          club_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          is_pinned?: boolean
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "club_announcements_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       club_credentials: {
         Row: {
           club_id: string
@@ -216,6 +332,110 @@ export type Database = {
             columns: ["university_id"]
             isOneToOne: false
             referencedRelation: "universities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      club_ghostwriter_settings: {
+        Row: {
+          ai_tone: string
+          checkin_day: number
+          checkin_template: string | null
+          club_id: string
+          custom_prompt_hint: string | null
+          generate_day: number
+          id: string
+          min_messages: number
+          timeout_hours: number
+          updated_at: string
+        }
+        Insert: {
+          ai_tone?: string
+          checkin_day?: number
+          checkin_template?: string | null
+          club_id: string
+          custom_prompt_hint?: string | null
+          generate_day?: number
+          id?: string
+          min_messages?: number
+          timeout_hours?: number
+          updated_at?: string
+        }
+        Update: {
+          ai_tone?: string
+          checkin_day?: number
+          checkin_template?: string | null
+          club_id?: string
+          custom_prompt_hint?: string | null
+          generate_day?: number
+          id?: string
+          min_messages?: number
+          timeout_hours?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "club_ghostwriter_settings_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: true
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      club_harness_connectors: {
+        Row: {
+          club_id: string
+          connector_type: string
+          created_at: string
+          credentials: Json
+          display_name: string | null
+          enabled: boolean
+          id: string
+          last_error: string | null
+          last_fetched_at: string | null
+          opportunity_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          club_id: string
+          connector_type: string
+          created_at?: string
+          credentials?: Json
+          display_name?: string | null
+          enabled?: boolean
+          id?: string
+          last_error?: string | null
+          last_fetched_at?: string | null
+          opportunity_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          club_id?: string
+          connector_type?: string
+          created_at?: string
+          credentials?: Json
+          display_name?: string | null
+          enabled?: boolean
+          id?: string
+          last_error?: string | null
+          last_fetched_at?: string | null
+          opportunity_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "club_harness_connectors_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "club_harness_connectors_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
             referencedColumns: ["id"]
           },
         ]
@@ -279,6 +499,7 @@ export type Database = {
           id: string
           joined_at: string
           role: string
+          status: string
           user_id: string | null
         }
         Insert: {
@@ -289,6 +510,7 @@ export type Database = {
           id?: string
           joined_at?: string
           role?: string
+          status?: string
           user_id?: string | null
         }
         Update: {
@@ -299,6 +521,7 @@ export type Database = {
           id?: string
           joined_at?: string
           role?: string
+          status?: string
           user_id?: string | null
         }
         Relationships: [
@@ -359,32 +582,41 @@ export type Database = {
         Row: {
           created_at: string
           created_by: string
+          deleted_at: string | null
           description: string | null
           id: string
           logo_url: string | null
           name: string
+          require_approval: boolean
           slug: string
           updated_at: string
+          visibility: string
         }
         Insert: {
           created_at?: string
           created_by: string
+          deleted_at?: string | null
           description?: string | null
           id?: string
           logo_url?: string | null
           name: string
+          require_approval?: boolean
           slug: string
           updated_at?: string
+          visibility?: string
         }
         Update: {
           created_at?: string
           created_by?: string
+          deleted_at?: string | null
           description?: string | null
           id?: string
           logo_url?: string | null
           name?: string
+          require_approval?: boolean
           slug?: string
           updated_at?: string
+          visibility?: string
         }
         Relationships: []
       }
@@ -624,6 +856,47 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "discord_bot_installations_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      discord_role_mappings: {
+        Row: {
+          club_id: string
+          created_at: string
+          discord_guild_id: string
+          discord_role_id: string
+          discord_role_name: string | null
+          draft_value: string
+          id: string
+          mapping_type: string
+        }
+        Insert: {
+          club_id: string
+          created_at?: string
+          discord_guild_id: string
+          discord_role_id: string
+          discord_role_name?: string | null
+          draft_value: string
+          id?: string
+          mapping_type: string
+        }
+        Update: {
+          club_id?: string
+          created_at?: string
+          discord_guild_id?: string
+          discord_role_id?: string
+          discord_role_name?: string | null
+          draft_value?: string
+          id?: string
+          mapping_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discord_role_mappings_club_id_fkey"
             columns: ["club_id"]
             isOneToOne: false
             referencedRelation: "clubs"
@@ -1633,6 +1906,7 @@ export type Database = {
           data_consent_at: string | null
           desired_position: string | null
           discord_user_id: string | null
+          discord_username: string | null
           extracted_profile: Json | null
           extraction_confidence: number | null
           github_url: string | null
@@ -1646,7 +1920,9 @@ export type Database = {
           is_uni_verified: boolean | null
           last_extraction_at: string | null
           linkedin_url: string | null
+          /** @deprecated locations 배열을 사용하세요. 기존 코드 호환용 alias. */
           location: string | null
+          locations: string[] | null
           major: string | null
           nickname: string
           onboarding_completed: boolean | null
@@ -1681,6 +1957,7 @@ export type Database = {
           data_consent_at?: string | null
           desired_position?: string | null
           discord_user_id?: string | null
+          discord_username?: string | null
           extracted_profile?: Json | null
           extraction_confidence?: number | null
           github_url?: string | null
@@ -1695,6 +1972,7 @@ export type Database = {
           last_extraction_at?: string | null
           linkedin_url?: string | null
           location?: string | null
+          locations?: string[] | null
           major?: string | null
           nickname: string
           onboarding_completed?: boolean | null
@@ -1729,6 +2007,7 @@ export type Database = {
           data_consent_at?: string | null
           desired_position?: string | null
           discord_user_id?: string | null
+          discord_username?: string | null
           extracted_profile?: Json | null
           extraction_confidence?: number | null
           github_url?: string | null
@@ -1743,6 +2022,7 @@ export type Database = {
           last_extraction_at?: string | null
           linkedin_url?: string | null
           location?: string | null
+          locations?: string[] | null
           major?: string | null
           nickname?: string
           onboarding_completed?: boolean | null
@@ -2313,6 +2593,198 @@ export type Database = {
           },
         ]
       }
+      team_decisions: {
+        Row: {
+          club_id: string
+          decided_at: string
+          discord_channel_id: string | null
+          id: string
+          opportunity_id: string | null
+          options: Json | null
+          result: string
+          source_intervention_id: string | null
+          topic: string
+          vote_message_id: string | null
+        }
+        Insert: {
+          club_id: string
+          decided_at?: string
+          discord_channel_id?: string | null
+          id?: string
+          opportunity_id?: string | null
+          options?: Json | null
+          result: string
+          source_intervention_id?: string | null
+          topic: string
+          vote_message_id?: string | null
+        }
+        Update: {
+          club_id?: string
+          decided_at?: string
+          discord_channel_id?: string | null
+          id?: string
+          opportunity_id?: string | null
+          options?: Json | null
+          result?: string
+          source_intervention_id?: string | null
+          topic?: string
+          vote_message_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_decisions_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_decisions_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_decisions_source_intervention_id_fkey"
+            columns: ["source_intervention_id"]
+            isOneToOne: false
+            referencedRelation: "bot_interventions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_resources: {
+        Row: {
+          club_id: string
+          created_at: string
+          discord_channel_id: string | null
+          id: string
+          label: string
+          opportunity_id: string | null
+          resource_type: string | null
+          shared_by_name: string
+          shared_by_user_id: string | null
+          source_intervention_id: string | null
+          url: string
+        }
+        Insert: {
+          club_id: string
+          created_at?: string
+          discord_channel_id?: string | null
+          id?: string
+          label: string
+          opportunity_id?: string | null
+          resource_type?: string | null
+          shared_by_name: string
+          shared_by_user_id?: string | null
+          source_intervention_id?: string | null
+          url: string
+        }
+        Update: {
+          club_id?: string
+          created_at?: string
+          discord_channel_id?: string | null
+          id?: string
+          label?: string
+          opportunity_id?: string | null
+          resource_type?: string | null
+          shared_by_name?: string
+          shared_by_user_id?: string | null
+          source_intervention_id?: string | null
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_resources_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_resources_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_resources_source_intervention_id_fkey"
+            columns: ["source_intervention_id"]
+            isOneToOne: false
+            referencedRelation: "bot_interventions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_tasks: {
+        Row: {
+          assignee_name: string
+          assignee_user_id: string | null
+          club_id: string
+          completed_at: string | null
+          created_at: string
+          deadline: string | null
+          discord_channel_id: string | null
+          id: string
+          opportunity_id: string | null
+          source_intervention_id: string | null
+          status: string
+          task_description: string
+        }
+        Insert: {
+          assignee_name: string
+          assignee_user_id?: string | null
+          club_id: string
+          completed_at?: string | null
+          created_at?: string
+          deadline?: string | null
+          discord_channel_id?: string | null
+          id?: string
+          opportunity_id?: string | null
+          source_intervention_id?: string | null
+          status?: string
+          task_description: string
+        }
+        Update: {
+          assignee_name?: string
+          assignee_user_id?: string | null
+          club_id?: string
+          completed_at?: string | null
+          created_at?: string
+          deadline?: string | null
+          discord_channel_id?: string | null
+          id?: string
+          opportunity_id?: string | null
+          source_intervention_id?: string | null
+          status?: string
+          task_description?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_tasks_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_tasks_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_tasks_source_intervention_id_fkey"
+            columns: ["source_intervention_id"]
+            isOneToOne: false
+            referencedRelation: "bot_interventions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       universities: {
         Row: {
           created_at: string
@@ -2661,94 +3133,6 @@ export type Database = {
           },
         ]
       }
-      club_ghostwriter_settings: {
-        Row: {
-          ai_tone: string
-          checkin_day: number
-          checkin_template: string | null
-          club_id: string
-          custom_prompt_hint: string | null
-          generate_day: number
-          id: string
-          min_messages: number
-          timeout_hours: number
-          updated_at: string
-        }
-        Insert: {
-          ai_tone?: string
-          checkin_day?: number
-          checkin_template?: string | null
-          club_id: string
-          custom_prompt_hint?: string | null
-          generate_day?: number
-          id?: string
-          min_messages?: number
-          timeout_hours?: number
-          updated_at?: string
-        }
-        Update: {
-          ai_tone?: string
-          checkin_day?: number
-          checkin_template?: string | null
-          club_id?: string
-          custom_prompt_hint?: string | null
-          generate_day?: number
-          id?: string
-          min_messages?: number
-          timeout_hours?: number
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "club_ghostwriter_settings_club_id_fkey"
-            columns: ["club_id"]
-            isOneToOne: true
-            referencedRelation: "clubs"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      discord_role_mappings: {
-        Row: {
-          club_id: string
-          created_at: string
-          discord_guild_id: string
-          discord_role_id: string
-          discord_role_name: string | null
-          draft_value: string
-          id: string
-          mapping_type: string
-        }
-        Insert: {
-          club_id: string
-          created_at?: string
-          discord_guild_id: string
-          discord_role_id: string
-          discord_role_name?: string | null
-          draft_value: string
-          id?: string
-          mapping_type: string
-        }
-        Update: {
-          club_id?: string
-          created_at?: string
-          discord_guild_id?: string
-          discord_role_id?: string
-          discord_role_name?: string | null
-          draft_value?: string
-          id?: string
-          mapping_type?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "discord_role_mappings_club_id_fkey"
-            columns: ["club_id"]
-            isOneToOne: false
-            referencedRelation: "clubs"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
     }
     Views: {
       [_ in never]: never
@@ -2775,7 +3159,7 @@ export type Database = {
             Args: {
               event_end_date: string
               event_target: string
-              user_location: string
+              user_locations: string[]
             }
             Returns: number
           }
@@ -2892,6 +3276,10 @@ export type Database = {
         Args: { p_club_id: string; p_user_id: string }
         Returns: boolean
       }
+      is_club_member: {
+        Args: { p_club_id: string; p_user_id: string }
+        Returns: boolean
+      }
       is_club_owner: {
         Args: { p_club_id: string; p_user_id: string }
         Returns: boolean
@@ -2961,6 +3349,25 @@ export type Database = {
               vision_embedding: string
             }[]
           }
+      match_profiles_for_opportunity: {
+        Args: {
+          exclude_user_id?: string
+          match_count?: number
+          match_threshold?: number
+          query_embedding: string
+        }
+        Returns: {
+          desired_position: string
+          id: string
+          interest_tags: string[]
+          locations: string[]
+          nickname: string
+          similarity: number
+          skills: Json
+          user_id: string
+          vision_summary: string
+        }[]
+      }
       match_users: {
         Args: {
           exclude_user_id?: string
@@ -2974,7 +3381,7 @@ export type Database = {
           extracted_profile: Json
           id: string
           interest_tags: string[]
-          location: string
+          locations: string[]
           nickname: string
           personality: Json
           profile_analysis: Json
@@ -3002,6 +3409,24 @@ export type Database = {
         }[]
       }
       recommend_events_for_user: {
+        Args: { p_limit?: number; p_user_id: string }
+        Returns: {
+          context_boost: number
+          days_until_deadline: number
+          description: string
+          event_type: string
+          id: string
+          interest_tags: string[]
+          organizer: string
+          registration_end_date: string
+          registration_url: string
+          tag_score: number
+          title: string
+          total_score: number
+          vector_score: number
+        }[]
+      }
+      recommend_events_with_embedding: {
         Args: { p_limit?: number; p_user_id: string }
         Returns: {
           context_boost: number
@@ -3183,6 +3608,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {},
   },

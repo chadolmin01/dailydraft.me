@@ -3,6 +3,7 @@ import { createAdminClient } from '@/src/lib/supabase/admin'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 import { sendOnboardingDM } from '@/src/lib/discord/onboarding'
+import { syncMemberToDiscord } from '@/src/lib/discord/sync'
 
 // POST /api/invite/redeem — 초대 코드 사용 (인증 유저)
 // 코드를 사용해 클럽에 셀프 가입
@@ -55,16 +56,23 @@ export const POST = withErrorCapture(
 
       if (discordUserId) {
         // inviteCode에서 클럽 정보 추출
-        const result = inviteCode as { club_name?: string; role?: string } | null
+        const result = inviteCode as { club_id?: string; club_name?: string; role?: string } | null
         sendOnboardingDM(
           discordUserId,
           memberName,
           result?.club_name || '동아리',
           result?.role
         ).catch(() => {})
+
+        // Discord 역할/닉네임 자동 동기화 (fire-and-forget)
+        // 초대코드로 클럽 가입 직후 Discord 서버에서도 역할이 부여됨
+        if (result?.club_id) {
+          syncMemberToDiscord(result.club_id, user.id)
+            .catch((err) => console.warn('[invite] Discord 싱크 실패 (가입은 완료)', err))
+        }
       }
     } catch {
-      // 온보딩 DM 실패해도 가입은 성공
+      // 온보딩 DM / Discord 싱크 실패해도 가입은 성공
     }
 
     return ApiResponse.ok(inviteCode)

@@ -11,6 +11,8 @@ import {
   Loader2,
   Plus,
   Sparkles,
+  MessageCircle,
+  Unlink,
 } from 'lucide-react'
 import { useProfileDraft } from '@/src/hooks/useProfileDraft'
 import { useUpdateProfile } from '@/src/hooks/useProfile'
@@ -110,6 +112,39 @@ export function ProfileSidebar({ profile, completion, isEditable = false }: Prof
                 저장
               </button>
             </div>
+          )}
+        </section>
+      )}
+
+      {/* ── Discord 연결 ── */}
+      {isEditable && (
+        <section>
+          <h3 className="text-sm font-bold text-txt-primary mb-3">Discord</h3>
+          {profile?.discord_user_id ? (
+            <div className="flex items-center gap-2.5 px-2 py-2 text-sm text-txt-secondary">
+              <MessageCircle size={14} className="text-[#5865F2]" />
+              <span className="flex-1 truncate">
+                {(profile as any).discord_username || 'Discord 연결됨'}
+              </span>
+              <button
+                onClick={async () => {
+                  if (!confirm('Discord 연결을 해제하시겠습니까?')) return
+                  updateProfile.mutate({ discord_user_id: null, discord_username: null } as any)
+                }}
+                className="text-txt-disabled hover:text-status-danger-text transition-colors"
+                title="연결 해제"
+              >
+                <Unlink size={12} />
+              </button>
+            </div>
+          ) : (
+            <a
+              href="/api/discord/oauth?returnTo=/profile"
+              className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-medium rounded-xl bg-[#5865F2] text-white hover:bg-[#4752C4] transition-colors"
+            >
+              <MessageCircle size={14} />
+              Discord 계정 연결
+            </a>
           )}
         </section>
       )}
