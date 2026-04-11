@@ -12,6 +12,7 @@ import { CooldownGuard } from './cooldown-guard';
 import { detectPatterns, prefilter } from './pattern-detector';
 import {
   buildInstantResponse,
+  buildQuickSuggestion,
   buildSummaryResponse,
   aggregateToSummary,
 } from './response-builder';
@@ -39,6 +40,7 @@ export class BotEngine {
   // 채널별 마무리 타이머 (종결 신호 후 90초 대기)
   private summaryTimers = new Map<string, ReturnType<typeof setTimeout>>();
 
+
   constructor(config: Partial<BotConfig> = {}) {
     this.config = { ...DEFAULT_BOT_CONFIG, ...config };
     this.buffer = new MessageBuffer();
@@ -61,8 +63,7 @@ export class BotEngine {
     const msg = this.buffer.push(raw);
     if (!msg) return;
 
-    // 야간 시간 무시
-    if (this.cooldown.isQuietHour()) return;
+    // 야간 모드 제거 — 대학생/스타트업은 새벽 작업 빈번
 
     // 슬래시 커맨드 처리
     if (msg.content.startsWith('/')) {
@@ -71,7 +72,6 @@ export class BotEngine {
     }
 
     const messages = this.buffer.getMessages(msg.channelId);
-    if (messages.length < 3) return;
 
     // 1단계: pre-filter (동기, 저비용)
     const candidates = prefilter(messages);
@@ -90,30 +90,14 @@ export class BotEngine {
         this.cooldown.canTrigger(msg.channelId, c.type)
     );
 
-    // 즉시 반응 처리
-    if (instantCandidates.length > 0) {
-      const detections = await detectPatterns(messages);
-      const instantDetections = detections.filter(
-        (d) =>
-          INSTANT_PATTERNS.includes(d.type) &&
-          d.confidence >= this.config.minConfidence &&
-          this.cooldown.canTrigger(msg.channelId, d.type)
-      );
-
-      for (const det of instantDetections) {
-        const response = buildInstantResponse(det);
-        if (response) {
-          await this.sendResponse(response);
-          this.cooldown.recordTrigger(msg.channelId, det.type);
-        }
-      }
-
-      // 마무리 요약용으로 비즉시 패턴 축적
-      const summaryDetections = detections.filter((d) =>
-        SUMMARY_PATTERNS.includes(d.type)
-      );
-      if (summaryDetections.length > 0) {
-        this.accumulatePatterns(msg.channelId, summaryDetections);
+    // 즉시 반응: AI 없이 prefilter만으로 빠르게 제안
+    // (AI는 /마무리 요약에서만 사용 — 대화 중 느린 응답은 어색함)
+    for (const candidate of instantCandidates) {
+      const response = buildQuickSuggestion(candidate.type, msg.channelId);
+      if (response) {
+        await this.sendResponse(response);
+        this.cooldown.recordTrigger(msg.channelId, candidate.type);
+        break; // 한 번에 하나만
       }
     }
 
@@ -294,7 +278,8 @@ export class BotEngine {
       const sentMessage = await sendChannelMessage(
         response.channelId,
         response.content,
-        response.replyToMessageId
+        response.replyToMessageId,
+        response.components
       );
 
       // 리액션 달기

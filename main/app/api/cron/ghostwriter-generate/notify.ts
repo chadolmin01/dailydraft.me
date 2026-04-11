@@ -12,6 +12,7 @@
 import { createAdminClient } from '@/src/lib/supabase/admin'
 import { sendDirectMessageWithEmbed, sendChannelMessage, createMessageThread } from '@/src/lib/discord/client'
 import { extractSummary } from '@/src/lib/ghostwriter/parse-content'
+import { APP_URL } from '@/src/constants'
 
 const TYPE_LABELS: Record<string, string> = {
   ideation: '💡 고민',
@@ -53,7 +54,7 @@ interface NotifyParams {
  * 없으면 Draft 앱 내 알림으로 fallback.
  */
 export async function notifyDraftReady(params: NotifyParams): Promise<void> {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://dailydraft.me'
+  const baseUrl = APP_URL
   const approveUrl = `${baseUrl}/drafts/${params.draftId}`
 
   // 호출자가 배치 조회한 Discord ID 사용, 없으면 개별 조회 (fallback)
@@ -65,7 +66,7 @@ export async function notifyDraftReady(params: NotifyParams): Promise<void> {
       .select('discord_user_id')
       .eq('user_id', params.creatorId)
       .single()
-    discordUserId = profile?.discord_user_id ?? undefined
+    discordUserId = profile?.discord_user_id || undefined
   }
 
   // Discord user ID가 없으면 in-app 알림만 (DM 스킵)

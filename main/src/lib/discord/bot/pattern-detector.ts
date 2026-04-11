@@ -28,7 +28,7 @@ const DECISION_KEYWORDS =
 const TASK_KEYWORDS =
   /할게|해놓을게|해줘|해주면|맡을게|담당|이번\s*주\s*까지|내일\s*까지|ㅇㅋ/;
 const SCHEDULE_KEYWORDS =
-  /모이자|만나자|가능|안\s*돼|수업|알바|몇\s*시|몇\s*요일|월요일|화요일|수요일|목요일|금요일|토요일|일요일/;
+  /모이자|만나자|만날|볼까|보자|가능|안\s*돼|수업|알바|몇\s*시|몇\s*요일|언제.*할|언제.*볼|언제.*만|시간\s*되|시간\s*맞|일정.*잡|약속.*잡|미팅|회의.*언제|월요일|화요일|수요일|목요일|금요일|토요일|일요일/;
 const BLOCKER_KEYWORDS =
   /삽질|안\s*됨|안\s*돼|에러|왜\s*이런|계속|시간째|모르겠|막힘|해결.*안/;
 const SCOPE_KEYWORDS =
@@ -45,7 +45,7 @@ const URL_REGEX = /https?:\/\/[^\s<>)"]+/;
 export function prefilter(
   messages: BufferedMessage[]
 ): PrefilterResult[] {
-  if (messages.length < 2) return [];
+  if (messages.length === 0) return [];
 
   const combined = messages.map((m) => m.content).join(' ');
   const results: PrefilterResult[] = [];
@@ -71,9 +71,8 @@ export function prefilter(
     results.push({ type: 'task-assignment', confidence: 0.65 });
   }
 
-  // 일정 조율: 요일 언급 2개 이상
-  const dayMentions = combined.match(SCHEDULE_KEYWORDS);
-  if (dayMentions && messages.length >= 3) {
+  // 일정 조율: 키워드 매칭 시 즉시 감지 (빠른 제안용)
+  if (SCHEDULE_KEYWORDS.test(combined)) {
     results.push({ type: 'schedule-coordination', confidence: 0.7 });
   }
 
@@ -206,7 +205,8 @@ ${conversation}`;
       .map((p: any) => ({
         type: p.type as PatternType,
         confidence: p.confidence,
-        data: p.data as PatternData,
+        // AI가 data.type을 누락할 수 있으므로 pattern.type에서 보충
+        data: { ...p.data, type: p.type } as PatternData,
         sourceMessages: messages,
       }));
   } catch (err) {

@@ -162,6 +162,7 @@ export interface BotResponse {
   channelId: string;
   replyToMessageId?: string;   // 특정 메시지에 답장
   reactions?: string[];         // 자동으로 달 이모지
+  components?: unknown[];       // Discord 버튼 등 메시지 컴포넌트
 }
 
 // ── 마무리 요약 ──

@@ -79,6 +79,51 @@ const commands = [
     ],
   },
   {
+    name: '투두',
+    description: '할 일을 등록합니다',
+    type: 1,
+    options: [
+      {
+        name: '내용',
+        description: '할 일 내용',
+        type: 3, // STRING
+        required: true,
+      },
+      {
+        name: '담당자',
+        description: '담당할 사람',
+        type: 6, // USER
+        required: false,
+      },
+    ],
+  },
+  {
+    name: '회의시작',
+    description: '미완료 할 일 리마인드 + 회의 시작',
+    type: 1,
+    options: [
+      {
+        name: '안건',
+        description: '오늘 회의 안건 (선택)',
+        type: 3,
+        required: false,
+      },
+    ],
+  },
+  {
+    name: '한줄',
+    description: '한줄 근황을 공유합니다',
+    type: 1,
+    options: [
+      {
+        name: '내용',
+        description: '오늘 뭐 했는지, 뭐 할 건지',
+        type: 3,
+        required: true,
+      },
+    ],
+  },
+  {
     name: '설정',
     description: 'Draft 웹에서 Discord 연동 설정을 변경합니다',
     type: 1,

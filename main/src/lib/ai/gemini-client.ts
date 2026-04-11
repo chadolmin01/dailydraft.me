@@ -90,6 +90,9 @@ function createModel(modelName: string, modelConfig?: Record<string, any>) {
         if (input.generationConfig) {
           config = { ...config, ...input.generationConfig }
         }
+        if (input.systemInstruction) {
+          config.systemInstruction = input.systemInstruction
+        }
       }
 
       const response = await ai.models.generateContent({

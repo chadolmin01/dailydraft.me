@@ -19,7 +19,56 @@ import type {
 } from './types';
 
 /**
- * 단일 패턴 → 즉시 반응 메시지 생성
+ * prefilter 결과만으로 빠른 제안 메시지 생성 (AI 호출 없음)
+ * 대화 중 즉각 반응 — 단순한 넛지만 보냄
+ */
+export function buildQuickSuggestion(
+  type: PatternDetection['type'],
+  channelId: string
+): BotResponse | null {
+  // Discord Button: type=2, style: 1=Primary(파랑) 2=Secondary(회색) 3=Success(초록) 4=Danger(빨강)
+  const YES_NO_BUTTONS = (yesId: string, noId: string) => [
+    {
+      type: 1, // ACTION_ROW
+      components: [
+        { type: 2, style: 3, label: '네', custom_id: yesId },
+        { type: 2, style: 4, label: '아니요', custom_id: noId },
+      ],
+    },
+  ];
+
+  switch (type) {
+    case 'schedule-coordination':
+      return {
+        content: '📅 일정을 잡으시겠습니까?',
+        channelId,
+        components: YES_NO_BUTTONS('quick_schedule_yes', 'quick_dismiss'),
+      };
+    case 'decision-deadlock':
+      return {
+        content: '📊 투표로 결정하시겠습니까?',
+        channelId,
+        components: YES_NO_BUTTONS('quick_vote_yes', 'quick_dismiss'),
+      };
+    case 'blocker-frustration':
+      return {
+        content: '🔧 막히는 부분이 있으신 것 같습니다. 팀원에게 도움을 요청하시겠습니까?',
+        channelId,
+        components: YES_NO_BUTTONS('quick_help_yes', 'quick_dismiss'),
+      };
+    case 'unanswered-question':
+      return {
+        content: '❓ 답변이 아직 없는 질문이 있는 것 같습니다. 리마인드를 보내시겠습니까?',
+        channelId,
+        components: YES_NO_BUTTONS('quick_remind_yes', 'quick_dismiss'),
+      };
+    default:
+      return null;
+  }
+}
+
+/**
+ * 단일 패턴 → 즉시 반응 메시지 생성 (AI 분류 후 호출, 현재 미사용)
  */
 export function buildInstantResponse(
   detection: PatternDetection

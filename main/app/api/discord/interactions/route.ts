@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/src/lib/supabase/admin'
+import { APP_URL } from '@/src/constants'
 import nacl from 'tweetnacl'
 
 /**
@@ -20,11 +21,13 @@ import nacl from 'tweetnacl'
 // Discord Interaction Types
 const PING = 1
 const APPLICATION_COMMAND = 2
+const MESSAGE_COMPONENT = 3 // 버튼 클릭
 
 // Discord Interaction Response Types
 const PONG = 1
 const CHANNEL_MESSAGE = 4
 const DEFERRED_CHANNEL_MESSAGE = 5 // "봇이 생각 중..." → 나중에 followup
+const UPDATE_MESSAGE = 7 // 원본 메시지 수정 (버튼 제거 등)
 
 const APP_PUBLIC_KEY = process.env.DISCORD_APP_PUBLIC_KEY ?? ''
 
@@ -76,12 +79,17 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ type: PONG })
   }
 
-  // 3. 슬래시 커맨드 처리
+  // 3. 버튼 클릭 처리
+  if (interaction.type === MESSAGE_COMPONENT) {
+    return handleButtonClick(interaction)
+  }
+
+  // 4. 슬래시 커맨드 처리
   if (interaction.type === APPLICATION_COMMAND) {
     const commandName = interaction.data?.name
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL
+    const baseUrl = process.env.VERCEL_URL
       ? `https://${process.env.VERCEL_URL}`
-      : 'https://dailydraft.me')
+      : APP_URL
 
     if (commandName === 'profile') {
       return handleProfileCommand(interaction)
@@ -97,6 +105,18 @@ export async function POST(request: NextRequest) {
 
     if (commandName === '일정') {
       return handleScheduleCommand(interaction, baseUrl)
+    }
+
+    if (commandName === '투두') {
+      return handleTodoCommand(interaction, baseUrl)
+    }
+
+    if (commandName === '회의시작') {
+      return handleMeetingStartCommand(interaction, baseUrl)
+    }
+
+    if (commandName === '한줄') {
+      return handleOneLineCommand(interaction)
     }
 
     if (commandName === '설정') {
@@ -156,7 +176,7 @@ async function handleProfileCommand(interaction: {
     })
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://dailydraft.me'
+  const baseUrl = APP_URL
 
   return NextResponse.json({
     type: CHANNEL_MESSAGE,
@@ -297,7 +317,7 @@ async function handleSettingsCommand(interaction: {
   guild_id?: string
 }) {
   const guildId = interaction.guild_id
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://dailydraft.me'
+  const appUrl = APP_URL
 
   if (!guildId) {
     return NextResponse.json({
@@ -338,13 +358,184 @@ async function handleSettingsCommand(interaction: {
   })
 }
 
+// ── /투두 — 할 일 등록 (Deferred → 메시지 + ✅ 반응) ──
+
+function handleTodoCommand(interaction: {
+  channel_id?: string
+  token?: string
+  application_id?: string
+  member?: { user?: { id: string } }
+  user?: { id: string }
+  data?: { options?: { name: string; value: string }[] }
+}, baseUrl: string) {
+  const channelId = interaction.channel_id
+  const appId = interaction.application_id ?? process.env.DISCORD_APP_ID
+  const interactionToken = interaction.token
+  const content = interaction.data?.options?.find(o => o.name === '내용')?.value
+  const assigneeId = interaction.data?.options?.find(o => o.name === '담당자')?.value
+
+  if (!channelId || !appId || !interactionToken || !content) {
+    return NextResponse.json({
+      type: CHANNEL_MESSAGE,
+      data: { content: '할 일 내용을 입력해주세요.', flags: 64 },
+    })
+  }
+
+  fetch(`${baseUrl}/api/discord/interactions/todo`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      type: 'create',
+      channelId,
+      appId,
+      interactionToken,
+      content,
+      assigneeId,
+    }),
+  }).catch(err => console.error('[Interactions] 투두 트리거 실패:', err))
+
+  return NextResponse.json({ type: DEFERRED_CHANNEL_MESSAGE })
+}
+
+// ── /회의시작 — 미완료 투두 리마인드 + 회의 시작 ──
+
+function handleMeetingStartCommand(interaction: {
+  channel_id?: string
+  token?: string
+  application_id?: string
+  data?: { options?: { name: string; value: string }[] }
+}, baseUrl: string) {
+  const channelId = interaction.channel_id
+  const appId = interaction.application_id ?? process.env.DISCORD_APP_ID
+  const interactionToken = interaction.token
+  const agenda = interaction.data?.options?.find(o => o.name === '안건')?.value
+
+  if (!channelId || !appId || !interactionToken) {
+    return NextResponse.json({
+      type: CHANNEL_MESSAGE,
+      data: { content: '채널 정보를 찾을 수 없습니다.', flags: 64 },
+    })
+  }
+
+  fetch(`${baseUrl}/api/discord/interactions/todo`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      type: 'meeting-start',
+      channelId,
+      appId,
+      interactionToken,
+      agenda,
+    }),
+  }).catch(err => console.error('[Interactions] 회의시작 트리거 실패:', err))
+
+  return NextResponse.json({ type: DEFERRED_CHANNEL_MESSAGE })
+}
+
+// ── /한줄 — 한줄 근황 체크인 ──
+
+function handleOneLineCommand(interaction: {
+  member?: { user?: { id: string; username: string } }
+  user?: { id: string; username: string }
+  data?: { options?: { name: string; value: string }[] }
+}) {
+  const userId = interaction.member?.user?.id ?? interaction.user?.id
+  const content = interaction.data?.options?.find(o => o.name === '내용')?.value
+
+  if (!content) {
+    return NextResponse.json({
+      type: CHANNEL_MESSAGE,
+      data: { content: '내용을 입력해주세요.', flags: 64 },
+    })
+  }
+
+  const today = new Date().toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' })
+  const mention = userId ? `<@${userId}>` : '(알 수 없음)'
+
+  return NextResponse.json({
+    type: CHANNEL_MESSAGE,
+    data: {
+      content: `💬 **한줄 체크인** — ${mention} · ${today}\n${content}`,
+    },
+  })
+}
+
+// ── 버튼 클릭 처리 ──
+
+function handleButtonClick(interaction: {
+  data?: { custom_id?: string }
+  channel_id?: string
+  message?: { content?: string }
+}) {
+  const customId = interaction.data?.custom_id
+  const channelId = interaction.channel_id
+
+  // "아니요" 버튼 — 메시지를 "취소됨"으로 업데이트
+  if (customId === 'quick_dismiss') {
+    return NextResponse.json({
+      type: UPDATE_MESSAGE,
+      data: { content: '~~취소됨~~', components: [] },
+    })
+  }
+
+  // "네" — 일정 잡기
+  if (customId === 'quick_schedule_yes') {
+    return NextResponse.json({
+      type: UPDATE_MESSAGE,
+      data: {
+        content: '📅 아래에서 가능한 요일에 반응해주세요!\n\n1️⃣ 월  2️⃣ 화  3️⃣ 수  4️⃣ 목  5️⃣ 금\n\n**시간대까지 맞추려면** → https://when2meet.com',
+        components: [],
+      },
+    })
+  }
+
+  // "네" — 투표 만들기
+  if (customId === 'quick_vote_yes') {
+    return NextResponse.json({
+      type: UPDATE_MESSAGE,
+      data: {
+        content: '📊 `/투표 주제 옵션1 옵션2` 명령어로 투표를 만들어주세요!',
+        components: [],
+      },
+    })
+  }
+
+  // "네" — 도움 요청
+  if (customId === 'quick_help_yes') {
+    return NextResponse.json({
+      type: UPDATE_MESSAGE,
+      data: {
+        content: '🆘 팀원들에게 알림을 보냈습니다! 도움을 줄 수 있는 분은 이 스레드에 답변해주세요.',
+        components: [],
+      },
+    })
+  }
+
+  // "네" — 리마인드
+  if (customId === 'quick_remind_yes') {
+    return NextResponse.json({
+      type: UPDATE_MESSAGE,
+      data: {
+        content: '🔔 리마인드를 보냈습니다! 답변 부탁드립니다.',
+        components: [],
+      },
+    })
+  }
+
+  // 알 수 없는 버튼
+  return NextResponse.json({
+    type: UPDATE_MESSAGE,
+    data: { components: [] },
+  })
+}
+
 // ── /도움 — 명령어 안내 ──
 
 function handleHelpCommand() {
   return NextResponse.json({
     type: CHANNEL_MESSAGE,
     data: {
-      content: `📖 **Draft 봇 명령어**\n\n• \`/마무리\` — 대화 요약 (AI가 할 일·결정사항·자료 정리)\n• \`/투표 주제 옵션1 옵션2\` — 투표 생성 (이모지 자동 추가)\n• \`/일정 [목적]\` — 요일별 일정 투표\n• \`/profile [@유저]\` — Draft 프로필 조회\n• \`/설정\` — Draft 웹 설정 페이지\n• \`/도움\` — 이 안내 메시지`,
+      content: `📖 **Draft 봇 명령어**\n\n**회의:**\n• \`/회의시작\` — 미완료 할 일 리마인드 + 회의 시작\n• \`/마무리\` — 대화 요약 (AI가 할 일·결정사항·자료 정리)\n\n**일상:**\n• \`/투두 내용 [담당자]\` — 할 일 등록 (✅로 완료 체크)\n• \`/한줄 내용\` — 한줄 근황 공유\n• \`/투표 주제 옵션1 옵션2\` — 투표 생성\n• \`/일정 [목적]\` — 요일별 일정 투표\n\n**기타:**\n• \`/profile [@유저]\` — Draft 프로필 조회\n• \`/설정\` — Draft 웹 설정 페이지`,
       flags: 64, // EPHEMERAL
     },
   })

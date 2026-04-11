@@ -59,8 +59,9 @@ export class DiscordGateway {
       this.reconnectAttempts = 0;
     });
 
-    this.ws.on('message', (raw: string) => {
-      this.handleMessage(JSON.parse(raw));
+    this.ws.on('message', (raw: Buffer | string) => {
+      const str = typeof raw === 'string' ? raw : raw.toString('utf-8');
+      this.handleMessage(JSON.parse(str));
     });
 
     this.ws.on('close', (code: number) => {

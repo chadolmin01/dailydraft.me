@@ -35,7 +35,8 @@ async function discordFetch<T>(
 export async function sendChannelMessage(
   channelId: string,
   content: string,
-  replyToMessageId?: string
+  replyToMessageId?: string,
+  components?: unknown[]
 ): Promise<{ id: string } | null> {
   const body: Record<string, unknown> = { content };
 
@@ -44,6 +45,10 @@ export async function sendChannelMessage(
       message_id: replyToMessageId,
       fail_if_not_exists: false,
     };
+  }
+
+  if (components) {
+    body.components = components;
   }
 
   return discordFetch<{ id: string }>(`/channels/${channelId}/messages`, {
@@ -66,8 +71,8 @@ export async function addReaction(
     `/channels/${channelId}/messages/${messageId}/reactions/${encoded}/@me`,
     { method: 'PUT' }
   );
-  // Discord rate limit 방지: 리액션 사이 250ms 딜레이
-  await new Promise((r) => setTimeout(r, 250));
+  // Discord rate limit 방지: 리액션 사이 400ms 딜레이
+  await new Promise((r) => setTimeout(r, 400));
 }
 
 /**

@@ -49,7 +49,7 @@ async function handleVotePoll(
   // 2) 채널에 투표 메시지 전송
   const msg = await sendChannelMessage(
     channelId,
-    `📊 **${topic}**\n\n${optionLines}\n\n_반응을 눌러 투표해주세요!_`,
+    `📊 **${topic}**\n\n${optionLines}\n\n_반응을 눌러 투표해주세요! (1은 봇 기본값)_`,
   )
 
   // 3) 옵션 수만큼 이모지 반응 자동 추가
@@ -78,7 +78,7 @@ async function handleSchedulePoll(
   // 2) 채널에 일정 메시지 전송
   const msg = await sendChannelMessage(
     channelId,
-    `${header}\n\n가능한 요일에 반응해주세요!\n1️⃣ 월  2️⃣ 화  3️⃣ 수  4️⃣ 목  5️⃣ 금\n\n복잡한 경우 When2Meet을 사용하세요:\n🔗 https://when2meet.com`,
+    `${header}\n\n가능한 요일에 반응해주세요! (1은 봇 기본값)\n1️⃣ 월  2️⃣ 화  3️⃣ 수  4️⃣ 목  5️⃣ 금\n\n시간대까지 조율하려면 When2Meet에서 이벤트를 만들어 링크를 공유해주세요.\n🔗 https://when2meet.com`,
   )
 
   // 3) 요일 이모지 자동 추가
