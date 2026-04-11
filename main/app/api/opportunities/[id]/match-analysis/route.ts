@@ -140,7 +140,7 @@ export const GET = withErrorCapture(async (
 
   if (
     opportunity.location_type !== 'remote' &&
-    opportunity.location !== profile.location
+    !(profile.locations as string[] | null)?.includes(opportunity.location as string)
   ) {
     recommendations.push('위치가 다르지만 협의 가능할 수 있습니다')
   }

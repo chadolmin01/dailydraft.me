@@ -109,8 +109,8 @@ function calculatePracticalCompatibility(
   if (opportunity.location_type === 'remote') {
     score += 100
     totalChecks++
-  } else if (opportunity.location && profile.location) {
-    if (opportunity.location === profile.location) {
+  } else if (opportunity.location && (profile as any).locations?.length) {
+    if ((profile as any).locations.includes(opportunity.location)) {
       score += 100
     } else {
       score += 30 // Different location but within Korea
@@ -222,8 +222,8 @@ function generateMatchReason(
   // Location advantages
   if (opportunity.location_type === 'remote') {
     reasons.push({ priority: 6, text: '원격 근무 가능' })
-  } else if (opportunity.location === profile.location && profile.location) {
-    reasons.push({ priority: 6, text: `같은 지역(${profile.location})` })
+  } else if (opportunity.location && (profile as any).locations?.includes(opportunity.location)) {
+    reasons.push({ priority: 6, text: `같은 지역(${opportunity.location})` })
   }
 
   // Sort by priority and take top 3

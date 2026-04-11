@@ -23,7 +23,7 @@ export interface TalentCard {
   tags: string[]
   status: 'OPEN' | 'BUSY' | 'ADVISOR' | string
   visionSummary?: string | null
-  location?: string | null
+  locations?: string | null
   avatarUrl?: string | null
   matchScore?: number | null
   matchReason?: string | null

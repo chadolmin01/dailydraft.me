@@ -39,7 +39,7 @@ export function determineResumeStep(
     affiliationType: (p.affiliation_type as string) || 'student',
     university: (p.university as string) || '',
     major: (p.major as string) || '',
-    locations: (p.location as string)?.split(', ').filter(Boolean) || [],
+    locations: (p.locations as string[] | null) ?? [],
     position: (p.desired_position as string) || '',
     situation: (p.current_situation as string) || 'exploring',
     skills,

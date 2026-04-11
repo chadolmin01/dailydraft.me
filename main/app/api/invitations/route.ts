@@ -237,7 +237,7 @@ export const GET = withErrorCapture(async (request: NextRequest) => {
   // 풀 프로필을 별도 fetch (skills/interest_tags/personality 등 필요).
   // 비용: invitations 개수만큼 candidate. 보통 < 10개라 부담 없음.
   if (type === 'received' && otherIds.length > 0) {
-    const PROFILE_COLS = 'id, user_id, nickname, desired_position, skills, interest_tags, personality, current_situation, vision_summary, location'
+    const PROFILE_COLS = 'id, user_id, nickname, desired_position, skills, interest_tags, personality, current_situation, vision_summary, locations'
     const [{ data: myProfile }, { data: candidateProfiles }] = await Promise.all([
       supabase.from('profiles').select(PROFILE_COLS).eq('user_id', user.id).single(),
       supabase.from('profiles').select(PROFILE_COLS).in('user_id', otherIds),

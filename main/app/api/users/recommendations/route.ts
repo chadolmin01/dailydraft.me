@@ -18,7 +18,7 @@ export const GET = withErrorCapture(async () => {
     // Get current user's profile
     const { data: profileData, error: profileError } = await supabase
       .from('profiles')
-      .select('id, user_id, nickname, desired_position, skills, interest_tags, personality, current_situation, vision_summary, location, onboarding_completed')
+      .select('id, user_id, nickname, desired_position, skills, interest_tags, personality, current_situation, vision_summary, locations, onboarding_completed')
       .eq('user_id', user.id)
       .single()
 
@@ -35,7 +35,7 @@ export const GET = withErrorCapture(async () => {
     // Get recent public profiles (pure DB query, no embedding)
     const { data: fallbackUsers, error: fallbackError } = await supabase
       .from('profiles')
-      .select('id, user_id, nickname, desired_position, skills, interest_tags, personality, current_situation, vision_summary, location')
+      .select('id, user_id, nickname, desired_position, skills, interest_tags, personality, current_situation, vision_summary, locations')
       .eq('profile_visibility', 'public')
       .eq('onboarding_completed', true)
       .neq('user_id', user.id)
@@ -85,7 +85,7 @@ export const GET = withErrorCapture(async () => {
       desired_position: r.desired_position,
       skills: (r.skills || []).slice(0, 3),
       interest_tags: (r.interest_tags || []).slice(0, 3),
-      location: r.location,
+      locations: r.locations,
       vision_summary: r.vision_summary,
       current_situation: r.current_situation,
       match_score: r.match_score,

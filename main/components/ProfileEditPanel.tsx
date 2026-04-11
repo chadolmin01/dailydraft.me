@@ -86,7 +86,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
       setPortfolioUrl(profile.portfolio_url || '')
       setLinkedinUrl(profile.linkedin_url || '')
       setGithubUrl(profile.github_url || '')
-      setLocation(profile.location || '')
+      setLocation((profile.locations as string[] | null)?.join(', ') || '')
       setCurrentSituation(profile.current_situation || '')
       setInterestTags(profile.interest_tags || [])
       const profileSkills = profile.skills as Array<{ name: string }> | null
@@ -293,7 +293,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
         portfolio_url: portfolioUrl.trim() || undefined,
         linkedin_url: linkedinUrl.trim() || undefined,
         github_url: githubUrl.trim() || undefined,
-        location: location.trim() || undefined,
+        locations: location.trim() ? location.split(',').map(s => s.trim()).filter(Boolean) : undefined,
         current_situation: currentSituation || undefined,
         interest_tags: interestTags.length > 0 ? interestTags : undefined,
         skills: skills.length > 0 ? skills : undefined,

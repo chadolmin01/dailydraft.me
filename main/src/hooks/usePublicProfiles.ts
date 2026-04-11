@@ -8,7 +8,7 @@ import { withRetry } from '../lib/query-utils'
 type Profile = Tables<'profiles'>
 
 export type PublicProfile = Pick<Profile,
-  'id' | 'user_id' | 'nickname' | 'desired_position' | 'interest_tags' | 'location' | 'profile_visibility' | 'vision_summary' | 'avatar_url' | 'interest_count' | 'created_at' | 'badges' | 'university' | 'affiliation_type'
+  'id' | 'user_id' | 'nickname' | 'desired_position' | 'interest_tags' | 'locations' | 'profile_visibility' | 'vision_summary' | 'avatar_url' | 'interest_count' | 'created_at' | 'badges' | 'university' | 'affiliation_type'
 >
 
 // Query keys
@@ -30,7 +30,7 @@ export function usePublicProfiles(options?: {
     queryFn: () => withRetry(async () => {
       let query = supabase
         .from('profiles')
-        .select('id, user_id, nickname, desired_position, interest_tags, location, profile_visibility, vision_summary, avatar_url, interest_count, created_at, badges, university, affiliation_type')
+        .select('id, user_id, nickname, desired_position, interest_tags, locations, profile_visibility, vision_summary, avatar_url, interest_count, created_at, badges, university, affiliation_type')
         .eq('profile_visibility', 'public')
         .order('updated_at', { ascending: false })
         .order('id', { ascending: true })
@@ -58,7 +58,7 @@ export function useInfinitePublicProfiles(pageSize = 12) {
     queryFn: ({ pageParam = 0 }) => withRetry(async () => {
       const { data, error, count } = await supabase
         .from('profiles')
-        .select('id, user_id, nickname, desired_position, interest_tags, location, profile_visibility, vision_summary, avatar_url, interest_count, created_at, badges, university, affiliation_type', { count: 'exact' })
+        .select('id, user_id, nickname, desired_position, interest_tags, locations, profile_visibility, vision_summary, avatar_url, interest_count, created_at, badges, university, affiliation_type', { count: 'exact' })
         .eq('profile_visibility', 'public')
         .order('updated_at', { ascending: false })
         .order('id', { ascending: true })
@@ -88,7 +88,7 @@ export function usePublicProfileById(profileId: string | undefined) {
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, user_id, nickname, desired_position, interest_tags, location, profile_visibility, vision_summary')
+        .select('id, user_id, nickname, desired_position, interest_tags, locations, profile_visibility, vision_summary')
         .eq('id', profileId)
         .eq('profile_visibility', 'public')
         .maybeSingle()
@@ -102,7 +102,7 @@ export function usePublicProfileById(profileId: string | undefined) {
 
 // Detailed public profile for modal view
 export type DetailedPublicProfile = Pick<Profile,
-  'id' | 'user_id' | 'nickname' | 'desired_position' | 'interest_tags' | 'location' |
+  'id' | 'user_id' | 'nickname' | 'desired_position' | 'interest_tags' | 'locations' |
   'profile_visibility' | 'vision_summary' | 'skills' | 'university' | 'major' |
   'current_situation' | 'personality' | 'contact_email' | 'avatar_url' |
   'portfolio_url' | 'github_url' | 'linkedin_url' | 'affiliation_type' | 'cover_image_url' | 'is_uni_verified' | 'badges' | 'bio'
@@ -123,7 +123,7 @@ export function useDetailedPublicProfile(
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, user_id, nickname, desired_position, interest_tags, location, profile_visibility, vision_summary, skills, university, major, current_situation, personality, contact_email, avatar_url, portfolio_url, github_url, linkedin_url, is_uni_verified, affiliation_type, cover_image_url, badges, bio')
+        .select('id, user_id, nickname, desired_position, interest_tags, locations, profile_visibility, vision_summary, skills, university, major, current_situation, personality, contact_email, avatar_url, portfolio_url, github_url, linkedin_url, is_uni_verified, affiliation_type, cover_image_url, badges, bio')
         .eq(field, identifier)
         .eq('profile_visibility', 'public')
         .maybeSingle()
@@ -137,7 +137,7 @@ export function useDetailedPublicProfile(
 
 // Fetch profile by user_id (for creator info)
 export type CreatorProfile = Pick<Profile,
-  'id' | 'user_id' | 'nickname' | 'desired_position' | 'university' | 'interest_tags' | 'skills' | 'location' | 'contact_email'
+  'id' | 'user_id' | 'nickname' | 'desired_position' | 'university' | 'interest_tags' | 'skills' | 'locations' | 'contact_email'
 >
 
 export function useProfileByUserId(userId: string | undefined) {
@@ -151,7 +151,7 @@ export function useProfileByUserId(userId: string | undefined) {
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, user_id, nickname, desired_position, university, interest_tags, skills, location, contact_email')
+        .select('id, user_id, nickname, desired_position, university, interest_tags, skills, locations, contact_email')
         .eq('user_id', userId)
         .maybeSingle()
 

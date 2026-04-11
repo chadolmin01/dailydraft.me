@@ -349,8 +349,7 @@ function ExplorePageContent() {
         tags: (profile.interest_tags || []).slice(0, 3),
         status: 'OPEN' as const,
         visionSummary: visionText,
-        // TODO: locations(array) 마이그레이션 완료 후 profile.locations?.join(', ') 복구
-        location: profile.location ?? null,
+        locations: (profile.locations as string[] | null)?.join(', ') ?? null,
         avatarUrl: profile.avatar_url,
         matchScore: rec?.match_score ?? null,
         matchReason: rec?.match_reason ?? null,

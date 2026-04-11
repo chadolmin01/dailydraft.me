@@ -16,7 +16,7 @@ export function ProfileHeader({
     current_situation: string | null
     university: string | null
     major: string | null
-    location: string | null
+    locations: string[] | null
     avatar_url: string | null
     interest_tags: string[] | null
   }
@@ -78,10 +78,10 @@ export function ProfileHeader({
                 {profile.university}{profile.major ? ` · ${profile.major}` : ''}
               </span>
             )}
-            {profile.location && (
+            {(profile.locations?.length ?? 0) > 0 && (
               <span className="flex items-center gap-1">
                 <MapPin size={13} />
-                {profile.location}
+                {profile.locations!.join(', ')}
               </span>
             )}
           </div>

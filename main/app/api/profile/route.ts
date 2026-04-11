@@ -49,7 +49,7 @@ export const PATCH = withErrorCapture(async (request) => {
       'university',
       'major',
       'graduation_year',
-      'location',
+      'locations',
       'skills',
       'interest_tags',
       'desired_position',

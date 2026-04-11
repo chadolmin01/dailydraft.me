@@ -18,7 +18,7 @@ export const GET = withErrorCapture(async () => {
 
   const { data: profileData, error: profileError } = await supabase
     .from('profiles')
-    .select('id, user_id, nickname, desired_position, skills, interest_tags, personality, current_situation, vision_summary, location, onboarding_completed')
+    .select('id, user_id, nickname, desired_position, skills, interest_tags, personality, current_situation, vision_summary, locations, onboarding_completed')
     .eq('user_id', user.id)
     .single()
 

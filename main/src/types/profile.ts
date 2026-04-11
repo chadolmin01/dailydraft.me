@@ -24,7 +24,7 @@ export interface Profile {
   university: string | null
   major: string | null
   graduation_year: number | null
-  location: string | null
+  locations: string[] | null
   skills: Skill[]
   interest_tags: string[]
   desired_position: string | null

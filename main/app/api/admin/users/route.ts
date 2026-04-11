@@ -29,7 +29,7 @@ export const GET = withErrorCapture(async (request) => {
 
   let query = admin
     .from('profiles')
-    .select('user_id, nickname, university, contact_email, location, desired_position, skills, interest_tags, onboarding_completed, is_premium, created_at, updated_at', { count: 'exact' })
+    .select('user_id, nickname, university, contact_email, locations, desired_position, skills, interest_tags, onboarding_completed, is_premium, created_at, updated_at', { count: 'exact' })
 
   if (search) {
     const sanitized = search.replace(/[^a-zA-Z0-9가-힣\s@.\-]/g, '').replace(/%/g, '\\%').replace(/_/g, '\\_')

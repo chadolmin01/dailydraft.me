@@ -22,7 +22,7 @@ const CACHE_TTL_DAYS = 7
 const PROMPT_VERSION = 'v3'
 const MODEL_TAG = `gemini-2.5-flash-lite:${PROMPT_VERSION}`
 const PROFILE_FIELDS =
-  'user_id, nickname, desired_position, skills, interest_tags, personality, current_situation, vision_summary, location'
+  'user_id, nickname, desired_position, skills, interest_tags, personality, current_situation, vision_summary, locations'
 
 interface MatchAnalysis {
   synergy: string          // 3~5 문장 시너지 분석
@@ -138,7 +138,7 @@ function buildPrompt(viewer: Profile, target: Profile): string {
     관심사: (p.interest_tags || []).join(', ') || '없음',
     성향: p.personality || {},
     현재상황: p.current_situation || '미지정',
-    지역: p.location || '미지정',
+    지역: (p.locations as string[] | null)?.join(', ') || '미지정',
     비전: p.vision_summary || '없음',
   })
 

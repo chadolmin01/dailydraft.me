@@ -49,7 +49,7 @@ export const POST = withErrorCapture(async (request) => {
       nickname: cleanName,
       university: inferredUniversity,
       major: inferredMajor,
-      location,
+      locations: Array.isArray(location) ? location : location ? [location] : [],
       skills: skills || [],
       interest_tags: interestTags || [],
       desired_position: desiredPosition,
