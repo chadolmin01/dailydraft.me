@@ -108,6 +108,27 @@ export const POST = withCronCapture('ghostwriter-generate', async (request: Next
       sourceMessageCount: number
     }[] = []
 
+    // 주간-체크인 포럼 스레드를 클럽 루프 밖에서 1회만 조회
+    // 같은 클럽의 모든 팀 채널이 동일한 포럼을 공유하므로 반복 호출은 낭비
+    let checkinThreadMessages: Awaited<ReturnType<typeof fetchChannelMessages>> | undefined
+    const checkinForumId = process.env.DISCORD_CHECKIN_FORUM_CHANNEL_ID
+    if (checkinForumId && guildId) {
+      try {
+        const threads = await fetchForumActiveThreads(guildId, checkinForumId)
+        const mondayOfThisWeek = getMondayOfWeek(now)
+        const weekThread = threads.find((t) => {
+          if (t.name.includes(`${weekNumber}주차`)) return true
+          const threadCreatedAt = snowflakeToDate(t.id)
+          return threadCreatedAt >= mondayOfThisWeek
+        })
+        if (weekThread) {
+          checkinThreadMessages = await fetchChannelMessages(weekThread.id, { maxMessages: 100 })
+        }
+      } catch (err) {
+        console.warn('[ghostwriter] 체크인 포럼 수집 실패', err)
+      }
+    }
+
     for (const ch of clubChs) {
       results.processed++
 
@@ -188,28 +209,9 @@ export const POST = withCronCapture('ghostwriter-generate', async (request: Next
           console.warn('[ghostwriter] 핀 메시지 조회 실패 (계속 진행)', err)
         }
 
-        // 2-c. 주간-체크인 포럼에서 이번 주 체크인 메시지 수집
-        // guildId는 클럽별로 DB에서 조회한 값 사용 (멀티 서버 지원)
-        const checkinForumId = process.env.DISCORD_CHECKIN_FORUM_CHANNEL_ID
-        if (checkinForumId && guildId) {
-          try {
-            const threads = await fetchForumActiveThreads(guildId, checkinForumId)
-            // 이번 주 스레드 찾기: 주차 키워드 + Discord snowflake 타임스탬프로 이중 검증
-            const mondayOfThisWeek = getMondayOfWeek(now)
-            const weekThread = threads.find((t) => {
-              // 1차: 주차 키워드 매칭
-              if (t.name.includes(`${weekNumber}주차`)) return true
-              // 2차: snowflake ID에서 생성 시간 추출하여 이번 주 월요일 이후인지 확인
-              const threadCreatedAt = snowflakeToDate(t.id)
-              return threadCreatedAt >= mondayOfThisWeek
-            })
-            if (weekThread) {
-              const checkinMsgs = await fetchChannelMessages(weekThread.id, { maxMessages: 100 })
-              harness.checkinMessages = checkinMsgs
-            }
-          } catch (err) {
-            console.warn('[ghostwriter] 체크인 포럼 수집 실패', err)
-          }
+        // 2-c. 주간-체크인 포럼 메시지 (클럽 루프 밖에서 1회 조회한 캐시 사용)
+        if (checkinThreadMessages) {
+          harness.checkinMessages = checkinThreadMessages
         }
 
         // 3. AI 초안 생성 (하네스 컨텍스트 포함)

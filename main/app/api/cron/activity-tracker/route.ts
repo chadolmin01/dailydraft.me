@@ -81,28 +81,34 @@ export const POST = withCronCapture('activity-tracker', async (request: NextRequ
     }
   }
 
-  // 2. DB에 upsert
-  let tracked = 0
+  // 2. DB에 배치 upsert (개별 upsert → 배열 1회로 변경, O(N)→O(1) DB 라운드트립)
+  const allRows: {
+    club_id: string; discord_user_id: string; discord_username: string;
+    week_number: number; year: number; message_count: number; channels_active: number;
+  }[] = []
 
   for (const [clubId, members] of clubActivity) {
     for (const [discordUserId, data] of members) {
-      const { error } = await admin
-        .from('member_activity_stats')
-        .upsert(
-          {
-            club_id: clubId,
-            discord_user_id: discordUserId,
-            discord_username: data.username,
-            week_number: weekNumber,
-            year,
-            message_count: data.count,
-            channels_active: data.channels.size,
-          },
-          { onConflict: 'club_id,discord_user_id,week_number,year' }
-        )
-
-      if (!error) tracked++
+      allRows.push({
+        club_id: clubId,
+        discord_user_id: discordUserId,
+        discord_username: data.username,
+        week_number: weekNumber,
+        year,
+        message_count: data.count,
+        channels_active: data.channels.size,
+      })
     }
+  }
+
+  let tracked = 0
+  if (allRows.length > 0) {
+    const { error } = await admin
+      .from('member_activity_stats')
+      .upsert(allRows, { onConflict: 'club_id,discord_user_id,week_number,year' })
+
+    tracked = error ? 0 : allRows.length
+    if (error) console.error('[activity-tracker] 배치 upsert 실패', error)
   }
 
   return ApiResponse.ok({

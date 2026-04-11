@@ -15,29 +15,48 @@ function getBotToken(): string {
   return token
 }
 
+/**
+ * Discord REST 요청 래퍼.
+ * 429 (Rate Limit) 응답 시 Retry-After 헤더만큼 대기 후 자동 재시도 (최대 3회).
+ * 재시도 없이 throw하면 크론 전체가 실패하기 때문에 반드시 필요함.
+ */
 async function discordFetch<T>(
   path: string,
   options?: RequestInit
 ): Promise<T> {
-  const res = await fetch(`${DISCORD_API}${path}`, {
-    ...options,
-    headers: {
-      Authorization: `Bot ${getBotToken()}`,
-      'Content-Type': 'application/json',
-      ...options?.headers,
-    },
-    signal: AbortSignal.timeout(TIMEOUT_MS),
-  })
+  const MAX_RETRIES = 3
 
-  if (!res.ok) {
-    const body = await res.text().catch(() => '')
-    throw new Error(`Discord API ${res.status}: ${body}`)
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    const res = await fetch(`${DISCORD_API}${path}`, {
+      ...options,
+      headers: {
+        Authorization: `Bot ${getBotToken()}`,
+        'Content-Type': 'application/json',
+        ...options?.headers,
+      },
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+    })
+
+    // 429 Rate Limit → Retry-After만큼 대기 후 재시도
+    if (res.status === 429) {
+      const retryAfter = parseFloat(res.headers.get('Retry-After') || '1')
+      console.warn(`[discord] 429 Rate Limited on ${path}, retry after ${retryAfter}s (attempt ${attempt + 1}/${MAX_RETRIES})`)
+      await new Promise(r => setTimeout(r, retryAfter * 1000))
+      continue
+    }
+
+    if (!res.ok) {
+      const body = await res.text().catch(() => '')
+      throw new Error(`Discord API ${res.status}: ${body}`)
+    }
+
+    // 204 No Content (역할 부여/제거, 닉네임 변경 등)
+    if (res.status === 204) return undefined as T
+
+    return res.json() as Promise<T>
   }
 
-  // 204 No Content (역할 부여/제거, 닉네임 변경 등)
-  if (res.status === 204) return undefined as T
-
-  return res.json() as Promise<T>
+  throw new Error(`Discord API: ${MAX_RETRIES}회 재시도 초과 (${path})`)
 }
 
 // ── 타입 ──
@@ -61,6 +80,7 @@ export interface DiscordChannel {
   name: string
   type: number // 0 = text
   guild_id: string
+  parent_id: string | null
 }
 
 export interface DiscordGuild {
