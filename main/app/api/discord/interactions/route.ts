@@ -63,16 +63,11 @@ export async function POST(request: NextRequest) {
   const signature = request.headers.get('x-signature-ed25519') ?? ''
   const timestamp = request.headers.get('x-signature-timestamp') ?? ''
 
-  // 디버그: 환경변수 로드 확인
-  console.log(`[Discord Interactions] PUBLIC_KEY loaded: ${APP_PUBLIC_KEY ? APP_PUBLIC_KEY.substring(0, 8) + '...' : 'EMPTY'}, sig: ${signature.substring(0, 8)}..., timestamp: ${timestamp}`)
-
   // 1. 서명 검증 (Discord 필수)
   const isValid = verifyDiscordSignature(body, signature, timestamp)
   if (!isValid) {
-    console.log('[Discord Interactions] Signature verification FAILED')
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
   }
-  console.log('[Discord Interactions] Signature verification OK')
 
   const interaction = JSON.parse(body)
 
@@ -94,11 +89,11 @@ export async function POST(request: NextRequest) {
     }
 
     if (commandName === '투표') {
-      return handleVoteCommand(interaction)
+      return handleVoteCommand(interaction, baseUrl)
     }
 
     if (commandName === '일정') {
-      return handleScheduleCommand(interaction)
+      return handleScheduleCommand(interaction, baseUrl)
     }
 
     if (commandName === '설정') {
@@ -267,16 +262,46 @@ function handleScheduleCommand(interaction: {
 
 // ── /설정 — Draft 웹 설정 링크 ──
 
-function handleSettingsCommand(interaction: {
+async function handleSettingsCommand(interaction: {
   guild_id?: string
 }) {
   const guildId = interaction.guild_id
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://draft.im'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://dailydraft.me'
+
+  if (!guildId) {
+    return NextResponse.json({
+      type: CHANNEL_MESSAGE,
+      data: { content: '서버 정보를 찾을 수 없습니다.', flags: 64 },
+    })
+  }
+
+  // guild_id → club slug 조회 (URL에 숫자 ID가 아닌 slug 사용)
+  const supabase = createAdminClient()
+  const { data: installation } = await supabase
+    .from('discord_bot_installations')
+    .select('club_id')
+    .eq('discord_guild_id', guildId)
+    .maybeSingle()
+
+  if (!installation) {
+    return NextResponse.json({
+      type: CHANNEL_MESSAGE,
+      data: { content: '이 서버는 아직 Draft 클럽에 연결되지 않았습니다.', flags: 64 },
+    })
+  }
+
+  const { data: club } = await supabase
+    .from('clubs')
+    .select('slug')
+    .eq('id', installation.club_id)
+    .single()
+
+  const clubPath = club?.slug ?? installation.club_id
 
   return NextResponse.json({
     type: CHANNEL_MESSAGE,
     data: {
-      content: `⚙️ **Discord 연동 설정**\n\n아래 링크에서 설정을 변경할 수 있습니다:\n🔗 ${appUrl}/clubs/${guildId}/settings/discord\n\n설정 항목:\n• 채널-프로젝트 매핑\n• AI 톤 (합쇼체/해요체/English)\n• 체크인/초안 생성 스케줄\n• 외부 도구 연동 (GitHub, Notion 등)\n• 승인 권한`,
+      content: `⚙️ **Discord 연동 설정**\n\n아래 링크에서 설정을 변경할 수 있습니다:\n🔗 ${appUrl}/clubs/${clubPath}/settings/discord\n\n설정 항목:\n• 채널-프로젝트 매핑\n• AI 톤 (합쇼체/해요체/English)\n• 체크인/초안 생성 스케줄\n• 외부 도구 연동 (GitHub, Notion 등)\n• 승인 권한`,
       flags: 64, // EPHEMERAL
     },
   })
