@@ -15,10 +15,12 @@ import { NextRequest } from 'next/server'
 import { createAdminClient } from '@/src/lib/supabase/admin'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { withCronCapture } from '@/src/lib/posthog/with-cron-capture'
-import { fetchChannelMessages, fetchPinnedMessages } from '@/src/lib/discord/client'
+import { fetchChannelMessages, fetchPinnedMessages, fetchForumActiveThreads, sendDirectMessage, sendChannelMessage } from '@/src/lib/discord/client'
 import { generateWeeklyDraft, type HarnessContext } from '@/src/lib/discord/ghostwriter'
 import { sendClubUpdateRemindWebhook } from '@/src/lib/webhooks/send-club-webhook'
 import { postDashboardSummary } from '@/src/lib/discord/dashboard-summary'
+import { getISOWeekNumber, getMondayOfWeek, snowflakeToDate, dateToSnowflake } from '@/src/lib/ghostwriter/week-utils'
+import { safeParseContent } from '@/src/lib/ghostwriter/parse-content'
 import { notifyDraftReady } from './notify'
 
 export const runtime = 'nodejs'
@@ -74,6 +76,27 @@ export const POST = withCronCapture('ghostwriter-generate', async (request: Next
   }
 
   for (const [clubId, clubChs] of clubChannels) {
+    // 클럽의 Discord Guild ID를 DB에서 동적 조회 (멀티 서버 지원)
+    const { data: botInstall } = await admin
+      .from('discord_bot_installations')
+      .select('discord_guild_id')
+      .eq('club_id', clubId)
+      .maybeSingle()
+    const guildId = botInstall?.discord_guild_id
+
+    // 클럽별 Ghostwriter 설정 조회 (동아리장 커스텀)
+    const { data: clubSettings } = await admin
+      .from('club_ghostwriter_settings')
+      .select('ai_tone, min_messages, custom_prompt_hint, checkin_template')
+      .eq('club_id', clubId)
+      .maybeSingle()
+    const settings = clubSettings as {
+      ai_tone?: string
+      min_messages?: number
+      custom_prompt_hint?: string | null
+      checkin_template?: string | null
+    } | null
+
     const lowActivityTeams: string[] = []
     // 운영-대시보드 요약용 데이터 수집
     const dashboardDrafts: {
@@ -89,13 +112,19 @@ export const POST = withCronCapture('ghostwriter-generate', async (request: Next
       results.processed++
 
       try {
-        // 2. Discord 메시지 fetch
+        // 2. Discord 메시지 fetch (시간 기반 — 항상 최근 7일치)
+        // 커서(last_fetched_message_id) 대신 7일 전 snowflake를 사용.
+        // 이유: 커서 기반은 크론이 2번 실행되면 2번째에 "새 메시지 없음"이 되어
+        //       draftsCreated=0 false negative가 발생했음. 시간 기반은 항상 1주일치를 가져옴.
+        const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+        const afterSnowflake = dateToSnowflake(sevenDaysAgo)
+
         const messages = await fetchChannelMessages(ch.discord_channel_id, {
-          after: ch.last_fetched_message_id || undefined,
+          after: afterSnowflake,
           maxMessages: 500,
         })
 
-        // last_fetched_message_id 갱신
+        // last_fetched_message_id는 여전히 갱신 (activity-tracker와 호환 유지)
         if (messages.length > 0) {
           const lastId = messages[messages.length - 1].id
           await admin
@@ -114,19 +143,74 @@ export const POST = withCronCapture('ghostwriter-generate', async (request: Next
         const projectTitle = opportunity?.title ?? '프로젝트'
         const creatorId = opportunity?.creator_id
 
-        // 2-b. 하네스 데이터 수집: 핀 메시지 (중요 결정사항)
+        // 2-b. 하네스 데이터 수집 (동아리장 설정 포함)
         const harness: HarnessContext = {
           channelName: ch.discord_channel_name ?? undefined,
-        }
-        try {
-          harness.pinnedMessages = await fetchPinnedMessages(ch.discord_channel_id)
-        } catch {
-          // 핀 조회 실패해도 초안 생성은 계속 진행
+          settings: settings ? {
+            ai_tone: settings.ai_tone as 'formal' | 'casual' | 'english' | undefined,
+            min_messages: settings.min_messages,
+            custom_prompt_hint: settings.custom_prompt_hint,
+          } : undefined,
         }
 
-        // 2-c. 같은 클럽의 주간-체크인 포럼 메시지 (있으면)
-        // discord_team_channels에 checkin_channel_id가 있으면 해당 채널에서 체크인 수집
-        // → 현재는 같은 채널에 체크인 양식이 올라온 경우만 파싱 (향후 포럼 스레드 연동)
+        // 이전 초안 피드백 조회 (최근 4주, 피드백이 있는 것만)
+        // → AI가 반복 실수를 피하도록 프롬프트에 주입
+        try {
+          const { data: prevFeedback } = await admin
+            .from('weekly_update_drafts')
+            .select('week_number, feedback_score, feedback_note')
+            .eq('opportunity_id', ch.opportunity_id)
+            .not('feedback_score', 'is', null)
+            .gte('week_number', weekNumber - 4)
+            .lt('week_number', weekNumber)
+            .order('week_number', { ascending: false })
+            .limit(3)
+          const fbRows = prevFeedback
+          if (fbRows && fbRows.length > 0) {
+            harness.previousFeedback = fbRows
+              .filter((f): f is typeof f & { feedback_score: number; feedback_note: string } =>
+                f.feedback_score != null && !!f.feedback_note
+              )
+              .map((f) => ({
+                weekNumber: f.week_number,
+                score: f.feedback_score,
+                note: f.feedback_note,
+              }))
+          }
+        } catch (err) {
+          console.warn('[ghostwriter] 피드백 조회 실패 (계속 진행)', err)
+        }
+
+        // 핀 메시지 (중요 결정사항)
+        try {
+          harness.pinnedMessages = await fetchPinnedMessages(ch.discord_channel_id)
+        } catch (err) {
+          console.warn('[ghostwriter] 핀 메시지 조회 실패 (계속 진행)', err)
+        }
+
+        // 2-c. 주간-체크인 포럼에서 이번 주 체크인 메시지 수집
+        // guildId는 클럽별로 DB에서 조회한 값 사용 (멀티 서버 지원)
+        const checkinForumId = process.env.DISCORD_CHECKIN_FORUM_CHANNEL_ID
+        if (checkinForumId && guildId) {
+          try {
+            const threads = await fetchForumActiveThreads(guildId, checkinForumId)
+            // 이번 주 스레드 찾기: 주차 키워드 + Discord snowflake 타임스탬프로 이중 검증
+            const mondayOfThisWeek = getMondayOfWeek(now)
+            const weekThread = threads.find((t) => {
+              // 1차: 주차 키워드 매칭
+              if (t.name.includes(`${weekNumber}주차`)) return true
+              // 2차: snowflake ID에서 생성 시간 추출하여 이번 주 월요일 이후인지 확인
+              const threadCreatedAt = snowflakeToDate(t.id)
+              return threadCreatedAt >= mondayOfThisWeek
+            })
+            if (weekThread) {
+              const checkinMsgs = await fetchChannelMessages(weekThread.id, { maxMessages: 100 })
+              harness.checkinMessages = checkinMsgs
+            }
+          } catch (err) {
+            console.warn('[ghostwriter] 체크인 포럼 수집 실패', err)
+          }
+        }
 
         // 3. AI 초안 생성 (하네스 컨텍스트 포함)
         const draft = await generateWeeklyDraft(messages, projectTitle, harness)
@@ -134,6 +218,34 @@ export const POST = withCronCapture('ghostwriter-generate', async (request: Next
         if (!draft) {
           // 메시지 부족 → 리마인드 대상
           lowActivityTeams.push(ch.discord_channel_name || projectTitle)
+
+          // 팀장에게 DM으로 알려줌 — "이번 주 초안이 생성되지 않은 이유"
+          if (creatorId) {
+            try {
+              const { data: profile } = await admin
+                .from('profiles')
+                .select('discord_user_id')
+                .eq('user_id', creatorId)
+                .single()
+              const discordUserId = (profile as { discord_user_id?: string } | null)?.discord_user_id
+              if (discordUserId) {
+                sendDirectMessage(
+                  discordUserId,
+                  [
+                    `📭 **${weekNumber}주차 — 초안을 생성하지 못했습니다**`,
+                    '',
+                    `**${projectTitle}** 팀의 Discord 대화가 부족하여 AI가 주간 업데이트를 작성하지 못했습니다.`,
+                    '',
+                    `다음 주에는 **#주간-체크인** 포럼에 상황을 공유하거나, 팀 채널에서 대화를 나눠주세요.`,
+                    `간단한 한 줄이라도 AI에게 큰 도움이 됩니다.`,
+                  ].join('\n')
+                ).catch((e) => console.warn('[ghostwriter] 부족 알림 DM 실패', e))
+              }
+            } catch (err) {
+              console.warn('[ghostwriter] 부족 알림 DM 조회 실패', err)
+            }
+          }
+
           continue
         }
 
@@ -163,39 +275,29 @@ export const POST = withCronCapture('ghostwriter-generate', async (request: Next
 
         results.draftsCreated++
 
-        // 대시보드 요약 데이터 수집
-        try {
-          const parsed = JSON.parse(draft.content) as { teamStatus?: string; teamStatusReason?: string }
-          dashboardDrafts.push({
-            opportunityId: ch.opportunity_id,
-            projectTitle,
-            status: 'pending',
-            teamStatus: parsed.teamStatus || 'normal',
-            teamStatusReason: parsed.teamStatusReason || '',
-            sourceMessageCount: draft.sourceMessageCount,
-          })
-        } catch {
-          dashboardDrafts.push({
-            opportunityId: ch.opportunity_id,
-            projectTitle,
-            status: 'pending',
-            teamStatus: 'normal',
-            teamStatusReason: '',
-            sourceMessageCount: draft.sourceMessageCount,
-          })
-        }
+        // 대시보드 요약 데이터 수집 (safeParseContent로 파싱 실패 방어)
+        const parsed = safeParseContent(draft.content)
+        dashboardDrafts.push({
+          opportunityId: ch.opportunity_id,
+          projectTitle,
+          status: 'pending',
+          teamStatus: parsed.teamStatus || 'normal',
+          teamStatusReason: parsed.teamStatusReason || '',
+          sourceMessageCount: draft.sourceMessageCount,
+        })
 
-        // 5. Discord DM으로 승인 요청 (fire-and-forget)
+        // 5. Discord DM + 팀 채널 알림 (fire-and-forget)
         if (savedDraft) {
           notifyDraftReady({
             draftId: savedDraft.id,
+            opportunityId: ch.opportunity_id,
             projectTitle,
             title: draft.title,
             content: draft.content,
             updateType: draft.updateType,
             weekNumber,
             creatorId,
-          }).catch((err) => console.error('[ghostwriter] DM 발송 실패', err))
+          }).catch((err) => console.error('[ghostwriter] 알림 발송 실패', err))
         }
       } catch (error) {
         console.error('[ghostwriter] 채널 처리 실패', {
@@ -296,6 +398,22 @@ export const POST = withCronCapture('ghostwriter-generate', async (request: Next
     }).catch((err) => console.error('[ghostwriter] 대시보드 요약 게시 실패', err))
   }
 
+  // 크론 결과 이상 감지 → 운영 채널에 알림
+  // "처리한 팀이 있는데 초안이 0개"는 조용한 실패 — 운영진이 즉시 알아야 함
+  const opsChannelId = process.env.DISCORD_OPS_DASHBOARD_CHANNEL_ID
+  if (opsChannelId && results.processed > 0 && results.draftsCreated === 0 && results.errors === 0) {
+    sendChannelMessage(
+      opsChannelId,
+      `⚠️ **Ghostwriter 크론 이상 감지**: ${results.processed}개 팀 처리했지만 초안 0개 생성. 모든 팀의 메시지가 부족하거나, Discord 메시지 fetch에 문제가 있을 수 있습니다.`
+    ).catch(() => {})
+  }
+  if (opsChannelId && results.errors > 0) {
+    sendChannelMessage(
+      opsChannelId,
+      `🚨 **Ghostwriter 크론 에러**: ${results.errors}건의 채널 처리 실패. 서버 로그를 확인하세요.`
+    ).catch(() => {})
+  }
+
   return ApiResponse.ok({
     success: true,
     timestamp: new Date().toISOString(),
@@ -305,13 +423,4 @@ export const POST = withCronCapture('ghostwriter-generate', async (request: Next
 
 export async function GET() {
   return ApiResponse.ok({ status: 'ready', timestamp: new Date().toISOString() })
-}
-
-/** ISO 주차 번호 계산 */
-function getISOWeekNumber(date: Date): number {
-  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
-  const dayNum = d.getUTCDay() || 7
-  d.setUTCDate(d.getUTCDate() + 4 - dayNum)
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
-  return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7)
 }

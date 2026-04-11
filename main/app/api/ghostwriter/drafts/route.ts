@@ -9,14 +9,13 @@ export const GET = withErrorCapture(async () => {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return ApiResponse.unauthorized()
 
-  // weekly_update_drafts는 아직 타입 미생성 → admin client + 수동 권한 체크
   const admin = createAdminClient()
   const { data, error } = await admin
-    .from('weekly_update_drafts' as never)
-    .select('id, opportunity_id, week_number, title, content, update_type, source_message_count, status, created_at' as never)
-    .eq('target_user_id' as never, user.id)
-    .eq('status' as never, 'pending')
-    .order('created_at' as never, { ascending: false })
+    .from('weekly_update_drafts')
+    .select('id, opportunity_id, week_number, title, content, update_type, source_message_count, status, created_at')
+    .eq('target_user_id', user.id)
+    .eq('status', 'pending')
+    .order('created_at', { ascending: false })
 
   if (error) return ApiResponse.internalError('초안 목록을 불러오지 못했습니다')
 

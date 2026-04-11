@@ -34,6 +34,9 @@ async function discordFetch<T>(
     throw new Error(`Discord API ${res.status}: ${body}`)
   }
 
+  // 204 No Content (역할 부여/제거, 닉네임 변경 등)
+  if (res.status === 204) return undefined as T
+
   return res.json() as Promise<T>
 }
 
@@ -49,7 +52,7 @@ export interface DiscordMessage {
     bot?: boolean
   }
   timestamp: string
-  attachments: { url: string; filename: string }[]
+  attachments: { url: string; filename: string; content_type?: string; size?: number }[]
   embeds: unknown[]
 }
 
@@ -190,6 +193,22 @@ export interface DiscordEmbed {
   timestamp?: string
 }
 
+/**
+ * 포럼 채널의 활성 스레드(포스트) 목록 조회
+ * Discord API: GET /channels/{channel_id}/threads/archived/public은 아카이브된 것만 반환하므로
+ * 길드 전체 활성 스레드에서 해당 채널의 것을 필터링한다.
+ */
+export async function fetchForumActiveThreads(
+  guildId: string,
+  forumChannelId: string
+): Promise<{ id: string; name: string; parent_id: string }[]> {
+  const data = await discordFetch<{
+    threads: { id: string; name: string; parent_id: string }[]
+  }>(`/guilds/${guildId}/threads/active`)
+
+  return data.threads.filter((t) => t.parent_id === forumChannelId)
+}
+
 /** 포럼 채널에 스레드(포스트) 생성 */
 export async function createForumThread(
   channelId: string,
@@ -223,6 +242,111 @@ export async function sendDirectMessage(
   await discordFetch(`/channels/${channel.id}/messages`, {
     method: 'POST',
     body: JSON.stringify({ content }),
+  })
+}
+
+// ── 길드 멤버 관리 (온보딩 싱크용) ──
+
+export interface DiscordGuildMember {
+  user?: { id: string; username: string }
+  nick: string | null
+  roles: string[]
+  joined_at: string
+}
+
+export interface DiscordRole {
+  id: string
+  name: string
+  color: number
+  position: number
+  permissions: string
+  managed: boolean  // 봇/연동이 관리하는 역할인지
+}
+
+/** 길드 멤버 정보 조회 (현재 역할, 닉네임 등) */
+export async function fetchGuildMember(
+  guildId: string,
+  userId: string
+): Promise<DiscordGuildMember> {
+  return discordFetch<DiscordGuildMember>(
+    `/guilds/${guildId}/members/${userId}`
+  )
+}
+
+/** 길드의 전체 역할 목록 조회 */
+export async function fetchGuildRoles(guildId: string): Promise<DiscordRole[]> {
+  return discordFetch<DiscordRole[]>(`/guilds/${guildId}/roles`)
+}
+
+/**
+ * 길드에 새 역할 생성 (초기 셋업용)
+ * 봇이 MANAGE_ROLES 권한 필요
+ */
+export async function createGuildRole(
+  guildId: string,
+  name: string,
+  options?: { color?: number }
+): Promise<DiscordRole> {
+  return discordFetch<DiscordRole>(`/guilds/${guildId}/roles`, {
+    method: 'POST',
+    body: JSON.stringify({ name, color: options?.color ?? 0 }),
+  })
+}
+
+/**
+ * 멤버 닉네임 변경
+ * 32자 제한. 봇이 MANAGE_NICKNAMES 권한 필요.
+ * 봇보다 높은 역할의 유저는 변경 불가 (Discord 제한).
+ */
+export async function setGuildMemberNickname(
+  guildId: string,
+  userId: string,
+  nickname: string
+): Promise<void> {
+  await discordFetch<void>(
+    `/guilds/${guildId}/members/${userId}`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify({ nick: nickname.slice(0, 32) }),
+    }
+  )
+}
+
+/** 멤버에게 역할 부여 (204 No Content 응답) */
+export async function addGuildMemberRole(
+  guildId: string,
+  userId: string,
+  roleId: string
+): Promise<void> {
+  await discordFetch<void>(
+    `/guilds/${guildId}/members/${userId}/roles/${roleId}`,
+    { method: 'PUT' }
+  )
+}
+
+/** 멤버에서 역할 제거 (204 No Content 응답) */
+export async function removeGuildMemberRole(
+  guildId: string,
+  userId: string,
+  roleId: string
+): Promise<void> {
+  await discordFetch<void>(
+    `/guilds/${guildId}/members/${userId}/roles/${roleId}`,
+    { method: 'DELETE' }
+  )
+}
+
+/**
+ * 글로벌 슬래시 커맨드 등록 (1회성 셋업)
+ * Discord Application ID + Bot Token 필요
+ */
+export async function registerGlobalCommand(
+  applicationId: string,
+  command: { name: string; description: string; type?: number; options?: unknown[] }
+): Promise<unknown> {
+  return discordFetch(`/applications/${applicationId}/commands`, {
+    method: 'POST',
+    body: JSON.stringify(command),
   })
 }
 

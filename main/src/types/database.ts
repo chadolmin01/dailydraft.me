@@ -2599,6 +2599,8 @@ export type Database = {
         Row: {
           content: string
           created_at: string
+          feedback_note: string | null
+          feedback_score: number | null
           id: string
           opportunity_id: string
           published_update_id: string | null
@@ -2613,6 +2615,8 @@ export type Database = {
         Insert: {
           content: string
           created_at?: string
+          feedback_note?: string | null
+          feedback_score?: number | null
           id?: string
           opportunity_id: string
           published_update_id?: string | null
@@ -2627,6 +2631,8 @@ export type Database = {
         Update: {
           content?: string
           created_at?: string
+          feedback_note?: string | null
+          feedback_score?: number | null
           id?: string
           opportunity_id?: string
           published_update_id?: string | null
@@ -2651,6 +2657,94 @@ export type Database = {
             columns: ["published_update_id"]
             isOneToOne: false
             referencedRelation: "project_updates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      club_ghostwriter_settings: {
+        Row: {
+          ai_tone: string
+          checkin_day: number
+          checkin_template: string | null
+          club_id: string
+          custom_prompt_hint: string | null
+          generate_day: number
+          id: string
+          min_messages: number
+          timeout_hours: number
+          updated_at: string
+        }
+        Insert: {
+          ai_tone?: string
+          checkin_day?: number
+          checkin_template?: string | null
+          club_id: string
+          custom_prompt_hint?: string | null
+          generate_day?: number
+          id?: string
+          min_messages?: number
+          timeout_hours?: number
+          updated_at?: string
+        }
+        Update: {
+          ai_tone?: string
+          checkin_day?: number
+          checkin_template?: string | null
+          club_id?: string
+          custom_prompt_hint?: string | null
+          generate_day?: number
+          id?: string
+          min_messages?: number
+          timeout_hours?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "club_ghostwriter_settings_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: true
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      discord_role_mappings: {
+        Row: {
+          club_id: string
+          created_at: string
+          discord_guild_id: string
+          discord_role_id: string
+          discord_role_name: string | null
+          draft_value: string
+          id: string
+          mapping_type: string
+        }
+        Insert: {
+          club_id: string
+          created_at?: string
+          discord_guild_id: string
+          discord_role_id: string
+          discord_role_name?: string | null
+          draft_value: string
+          id?: string
+          mapping_type: string
+        }
+        Update: {
+          club_id?: string
+          created_at?: string
+          discord_guild_id?: string
+          discord_role_id?: string
+          discord_role_name?: string | null
+          draft_value?: string
+          id?: string
+          mapping_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discord_role_mappings_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
             referencedColumns: ["id"]
           },
         ]

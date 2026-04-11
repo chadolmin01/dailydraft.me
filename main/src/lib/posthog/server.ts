@@ -86,6 +86,36 @@ export async function captureServerError(
 }
 
 /**
+ * 크론 작업 완료 이벤트를 PostHog에 전송한다.
+ * 에러가 아닌 비즈니스 이벤트 — PostHog 대시보드에서 크론 성공률 모니터링 가능.
+ *
+ * draftsCreated=0 && processed>0 같은 "조용한 실패"도 감지할 수 있게 해 줌.
+ */
+export async function captureServerEvent(
+  eventName: string,
+  properties: Record<string, unknown>
+): Promise<void> {
+  const client = getClient()
+  if (!client) return
+
+  const distinctId = properties.jobName
+    ? `cron:${properties.jobName}`
+    : 'server'
+
+  client.capture({
+    distinctId: String(distinctId),
+    event: eventName,
+    properties: sanitizeBody(properties),
+  })
+
+  try {
+    await client.flush()
+  } catch {
+    // flush 실패해도 호출자 흐름은 보호
+  }
+}
+
+/**
  * PostHog + error_logs DB에 동시에 에러 전송.
  * 한 쪽이 실패해도 다른 쪽에는 전달되도록 Promise.allSettled 사용.
  */

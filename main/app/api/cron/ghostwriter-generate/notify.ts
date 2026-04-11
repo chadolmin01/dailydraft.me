@@ -1,5 +1,8 @@
 /**
- * Ghostwriter 초안 생성 후 Discord DM 알림
+ * Ghostwriter 초안 생성 후 Discord 알림 (DM + 팀 채널)
+ *
+ * 1. 프로젝트 리더에게 DM으로 승인 요청
+ * 2. 팀 채널에 간략 메시지 + 스레드로 상세 내용
  *
  * Discord의 Message Components (버튼)를 사용하려면 Bot이 Interaction을 처리해야 함.
  * MVP에서는 Draft 앱으로 연결하는 링크 버튼을 사용한다.
@@ -7,18 +10,8 @@
  */
 
 import { createAdminClient } from '@/src/lib/supabase/admin'
-import { sendDirectMessageWithEmbed } from '@/src/lib/discord/client'
-
-/** content가 JSON이면 summary를 추출, 아니면 앞 200자 잘라서 반환 */
-function extractSummary(content: string): string {
-  try {
-    const parsed = JSON.parse(content)
-    const summary = parsed.summary || ''
-    return summary.slice(0, 200) + (summary.length > 200 ? '...' : '')
-  } catch {
-    return content.slice(0, 200) + (content.length > 200 ? '...' : '')
-  }
-}
+import { sendDirectMessageWithEmbed, sendChannelMessage, createMessageThread } from '@/src/lib/discord/client'
+import { extractSummary } from '@/src/lib/ghostwriter/parse-content'
 
 const TYPE_LABELS: Record<string, string> = {
   ideation: '💡 고민',
@@ -38,6 +31,7 @@ const COLORS: Record<string, number> = {
 
 interface NotifyParams {
   draftId: string
+  opportunityId: string
   projectTitle: string
   title: string
   content: string
@@ -68,7 +62,7 @@ export async function notifyDraftReady(params: NotifyParams): Promise<void> {
     .eq('user_id', params.creatorId)
     .single()
 
-  const discordUserId = (profile as { discord_user_id?: string } | null)?.discord_user_id
+  const discordUserId = profile?.discord_user_id
 
   // Discord user ID가 없으면 in-app 알림만 (DM 스킵)
   if (!discordUserId) {
@@ -114,6 +108,16 @@ export async function notifyDraftReady(params: NotifyParams): Promise<void> {
     console.error('[ghostwriter-notify] DM 발송 실패, in-app으로 fallback', error)
     await sendInAppNotification(params, approveUrl)
   }
+
+  // 팀 채널에도 간략 알림 + 스레드 (fire-and-forget)
+  notifyTeamChannel(params, approveUrl).catch((err) =>
+    console.error('[ghostwriter-notify] 팀 채널 알림 실패', err)
+  )
+
+  // 운영 대시보드 채널에도 알림 (fire-and-forget)
+  notifyOpsChannel('draft_ready', params).catch((err) =>
+    console.error('[ghostwriter-notify] 운영 채널 알림 실패', err)
+  )
 }
 
 /** Discord DM이 안 될 때 Draft 앱 내 알림으로 fallback */
@@ -131,5 +135,128 @@ async function sendInAppNotification(params: NotifyParams, approveUrl: string): 
       draft_id: params.draftId,
       project_title: params.projectTitle,
     },
-  } as never)
+  })
+}
+
+// ── 팀 채널 알림 (스레드 사용) ──
+
+/** opportunity_id로 팀 채널 ID를 조회 */
+async function getTeamChannelId(opportunityId: string): Promise<string | null> {
+  const admin = createAdminClient()
+  const { data } = await admin
+    .from('discord_team_channels')
+    .select('discord_channel_id')
+    .eq('opportunity_id', opportunityId)
+    .maybeSingle()
+  return data?.discord_channel_id ?? null
+}
+
+/**
+ * 팀 채널에 초안 생성 알림을 보낸다.
+ * 메인 메시지는 1줄로 간략하게, 스레드에 상세 내용을 담는다.
+ */
+async function notifyTeamChannel(params: NotifyParams, approveUrl: string): Promise<void> {
+  const channelId = await getTeamChannelId(params.opportunityId)
+  if (!channelId) return
+
+  const typeLabel = TYPE_LABELS[params.updateType] ?? '📝'
+
+  // 메인 메시지: 간략하게 1줄
+  const mainMsg = await sendChannelMessage(
+    channelId,
+    `📝 **${params.weekNumber}주차 주간 업데이트 초안**이 생성됐습니다. 팀장의 승인을 기다리고 있습니다.`
+  )
+
+  // 스레드 생성 후 상세 내용 게시
+  const thread = await createMessageThread(
+    channelId,
+    mainMsg.id,
+    `${params.weekNumber}주차 업데이트 초안`
+  )
+
+  await sendChannelMessage(
+    thread.id,
+    [
+      `**${params.title}**`,
+      `${typeLabel}`,
+      '',
+      extractSummary(params.content),
+      '',
+      `🔗 [Draft에서 확인하고 승인하기](${approveUrl})`,
+    ].join('\n')
+  )
+}
+
+/**
+ * 초안 승인 시 팀 채널 + 운영 채널에 알림을 보낸다.
+ * 메인 메시지 1줄 + 스레드에 승인된 업데이트 요약.
+ */
+export async function notifyDraftApproved(params: {
+  opportunityId: string
+  projectTitle: string
+  title: string
+  content: string
+  updateType: string
+  weekNumber: number
+  authorName: string
+}): Promise<void> {
+  // 팀 채널 알림
+  const channelId = await getTeamChannelId(params.opportunityId)
+  if (channelId) {
+    const typeLabel = TYPE_LABELS[params.updateType] ?? '📝'
+
+    const mainMsg = await sendChannelMessage(
+      channelId,
+      `✅ **${params.weekNumber}주차 주간 업데이트**가 게시됐습니다.`
+    )
+
+    const thread = await createMessageThread(
+      channelId,
+      mainMsg.id,
+      `${params.weekNumber}주차 업데이트 게시 완료`
+    )
+
+    await sendChannelMessage(
+      thread.id,
+      [
+        `**${params.title}**`,
+        `${typeLabel} · 승인: ${params.authorName}`,
+        '',
+        extractSummary(params.content),
+      ].join('\n')
+    )
+  }
+
+  // 운영 대시보드 채널 알림
+  notifyOpsChannel('draft_approved', params).catch((err) =>
+    console.error('[ghostwriter-notify] 운영 채널 승인 알림 실패', err)
+  )
+}
+
+// ── 운영 대시보드 채널 알림 ──
+
+/**
+ * 운영진에게 개별 이벤트 알림을 보낸다.
+ * 주간 보고(dashboard-summary.ts)와 별도로, 실시간 이벤트를 전달.
+ */
+async function notifyOpsChannel(
+  event: 'draft_ready' | 'draft_approved',
+  params: { projectTitle: string; title: string; weekNumber: number; updateType: string; authorName?: string }
+): Promise<void> {
+  const opsChannelId = process.env.DISCORD_OPS_DASHBOARD_CHANNEL_ID
+  if (!opsChannelId) return
+
+  const typeLabel = TYPE_LABELS[params.updateType] ?? '📝'
+
+  if (event === 'draft_ready') {
+    await sendChannelMessage(
+      opsChannelId,
+      `📝 **${params.projectTitle}** — ${params.weekNumber}주차 초안 생성 완료 (${typeLabel}). 팀장 승인 대기 중.`
+    )
+  } else {
+    await sendChannelMessage(
+      opsChannelId,
+      `✅ **${params.projectTitle}** — ${params.weekNumber}주차 업데이트 게시 완료 (${typeLabel}, 승인: ${params.authorName}).`
+    )
+  }
 }

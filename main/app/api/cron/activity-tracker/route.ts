@@ -17,6 +17,7 @@ import { createAdminClient } from '@/src/lib/supabase/admin'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { withCronCapture } from '@/src/lib/posthog/with-cron-capture'
 import { fetchChannelMessages } from '@/src/lib/discord/client'
+import { getISOWeekNumber } from '@/src/lib/ghostwriter/week-utils'
 
 export const runtime = 'nodejs'
 export const maxDuration = 120
@@ -46,7 +47,7 @@ export const POST = withCronCapture('activity-tracker', async (request: NextRequ
   // 클럽별 활동 집계
   const clubActivity = new Map<string, Map<string, { username: string; count: number; channels: Set<string> }>>()
 
-  for (const ch of channels as { club_id: string; discord_channel_id: string; last_fetched_message_id: string | null }[]) {
+  for (const ch of channels) {
     try {
       const messages = await fetchChannelMessages(ch.discord_channel_id, {
         after: ch.last_fetched_message_id || undefined,
@@ -96,7 +97,7 @@ export const POST = withCronCapture('activity-tracker', async (request: NextRequ
             year,
             message_count: data.count,
             channels_active: data.channels.size,
-          } as never,
+          },
           { onConflict: 'club_id,discord_user_id,week_number,year' }
         )
 
@@ -116,10 +117,3 @@ export async function GET() {
   return ApiResponse.ok({ status: 'ready', timestamp: new Date().toISOString() })
 }
 
-function getISOWeekNumber(date: Date): number {
-  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
-  const dayNum = d.getUTCDay() || 7
-  d.setUTCDate(d.getUTCDate() + 4 - dayNum)
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
-  return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7)
-}

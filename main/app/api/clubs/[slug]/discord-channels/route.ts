@@ -15,23 +15,20 @@ export const GET = withErrorCapture(async (_request, { params }: RouteParams) =>
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return ApiResponse.unauthorized()
 
-  // 새 테이블은 아직 타입 미생성 → admin client 사용
   const admin = createAdminClient()
 
   // 이미 매핑된 채널
   const { data: mappings } = await admin
-    .from('discord_team_channels' as never)
-    .select('id, opportunity_id, discord_channel_id, discord_channel_name, created_at' as never)
-    .eq('club_id' as never, clubId)
+    .from('discord_team_channels')
+    .select('id, opportunity_id, discord_channel_id, discord_channel_name, created_at')
+    .eq('club_id', clubId)
 
   // 봇이 설치된 Discord 서버 조회
-  const { data: installation } = await admin
-    .from('discord_bot_installations' as never)
-    .select('discord_guild_id, discord_guild_name' as never)
-    .eq('club_id' as never, clubId)
+  const { data: inst } = await admin
+    .from('discord_bot_installations')
+    .select('discord_guild_id, discord_guild_name')
+    .eq('club_id', clubId)
     .single()
-
-  const inst = installation as { discord_guild_id: string; discord_guild_name?: string } | null
 
   // Discord 서버의 텍스트 채널 목록 (봇이 설치된 경우)
   let availableChannels: { id: string; name: string }[] = []
@@ -79,15 +76,15 @@ export const POST = withErrorCapture(async (request, { params }: RouteParams) =>
   const admin = createAdminClient()
 
   const { data, error } = await admin
-    .from('discord_team_channels' as never)
+    .from('discord_team_channels')
     .insert({
       club_id: clubId,
       opportunity_id: body.opportunity_id,
       discord_channel_id: body.discord_channel_id.trim(),
       discord_channel_name: body.discord_channel_name?.trim() || null,
       created_by: user.id,
-    } as never)
-    .select('*' as never)
+    })
+    .select('*')
     .single()
 
   if (error) {

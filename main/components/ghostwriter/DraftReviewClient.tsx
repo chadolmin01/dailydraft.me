@@ -10,10 +10,12 @@ import {
   MessageSquare,
   Plus,
   X,
-  Upload,
   ChevronRight,
+  Star,
+  ThumbsDown,
 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import { safeParseContent, type ParsedContent } from '@/src/lib/ghostwriter/parse-content'
 
 /* ─── Types ─── */
 interface Draft {
@@ -27,62 +29,9 @@ interface Draft {
   status: 'pending' | 'approved' | 'rejected'
   created_at: string
   reviewed_at?: string
-  // AI 생성 structured content (JSON in content field)
-  // content 필드에 JSON이 들어오면 파싱, 아니면 plain text
 }
 
-interface ParsedContent {
-  summary: string
-  tasks: { text: string; done: boolean; source?: string; member?: string }[]
-  nextPlan: string
-  teamStatus: 'good' | 'normal' | 'hard'
-  teamStatusReason: string
-  confidence: {
-    summary: 'high' | 'mid' | 'low'
-    tasks: 'high' | 'mid' | 'low'
-    nextPlan: 'high' | 'mid' | 'low'
-    teamStatus: 'high' | 'mid' | 'low'
-  }
-}
-
-type ViewState = 'review' | 'edit' | 'submitted' | 'nodata' | 'loading' | 'error'
-
-/* ─── Helpers ─── */
-function tryParseContent(raw: string): ParsedContent {
-  try {
-    const parsed = JSON.parse(raw)
-    return {
-      summary: parsed.summary || '',
-      tasks: Array.isArray(parsed.tasks)
-        ? parsed.tasks.map((t: { text?: string; done?: boolean; source?: string; member?: string }) => ({
-            text: t.text || '',
-            done: !!t.done,
-            source: t.source,
-            member: t.member,
-          }))
-        : [],
-      nextPlan: parsed.nextPlan || parsed.next_plan || '',
-      teamStatus: parsed.teamStatus || parsed.team_status || 'good',
-      teamStatusReason: parsed.teamStatusReason || parsed.team_status_reason || '',
-      confidence: parsed.confidence || {
-        summary: 'mid',
-        tasks: 'mid',
-        nextPlan: 'mid',
-        teamStatus: 'mid',
-      },
-    }
-  } catch {
-    // plain text fallback
-    return {
-      summary: raw,
-      tasks: [],
-      nextPlan: '',
-      teamStatus: 'good',
-      teamStatusReason: '',
-      confidence: { summary: 'mid', tasks: 'mid', nextPlan: 'mid', teamStatus: 'mid' },
-    }
-  }
-}
+type ViewState = 'review' | 'edit' | 'submitted' | 'rejected' | 'nodata' | 'loading' | 'error'
 
 const confidenceLabel = {
   high: { text: '높은 신뢰도', color: 'text-status-success-text', dotBg: 'bg-status-success-text' },
@@ -150,6 +99,11 @@ export function DraftReviewClient({ draftId }: { draftId: string }) {
   const [isPublic, setIsPublic] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
+  // Feedback state (피드백 루프 — 승인/거절 시 AI 품질 평가)
+  const [showFeedback, setShowFeedback] = useState(false)
+  const [feedbackScore, setFeedbackScore] = useState(0) // 1~5, 0=미선택
+  const [feedbackNote, setFeedbackNote] = useState('')
+
   // Edit mode state
   const [editSummary, setEditSummary] = useState('')
   const [editTasks, setEditTasks] = useState<{ text: string; done: boolean }[]>([])
@@ -200,13 +154,17 @@ export function DraftReviewClient({ draftId }: { draftId: string }) {
 
       if (d.status === 'approved') {
         setViewState('submitted')
+      } else if (d.status === 'rejected') {
+        setViewState('rejected')
       } else if (d.status === 'pending') {
         setViewState('review')
+      } else if (d.status === 'expired') {
+        setViewState('submitted') // expired = 자동 게시됨, 완료 화면 표시
       } else {
         setViewState('error')
       }
 
-      const p = tryParseContent(d.content)
+      const p = safeParseContent(d.content)
       setParsed(p)
 
       // 수정 모드 초기값 세팅
@@ -222,14 +180,18 @@ export function DraftReviewClient({ draftId }: { draftId: string }) {
 
   // ── Actions ──
   const handleApprove = useCallback(async () => {
-    if (!draft || !parsed) return
+    if (!draft || !parsed || submitting) return
     setSubmitting(true)
 
     try {
+      const payload: Record<string, unknown> = { action: 'approve' }
+      if (feedbackScore > 0) payload.feedback_score = feedbackScore
+      if (feedbackNote.trim()) payload.feedback_note = feedbackNote.trim()
+
       const res = await fetch(`/api/ghostwriter/drafts/${draftId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'approve' }),
+        body: JSON.stringify(payload),
       })
       if (res.ok) {
         setViewState('submitted')
@@ -237,10 +199,32 @@ export function DraftReviewClient({ draftId }: { draftId: string }) {
     } finally {
       setSubmitting(false)
     }
-  }, [draft, parsed, draftId])
+  }, [draft, parsed, draftId, submitting, feedbackScore, feedbackNote])
+
+  const handleReject = useCallback(async () => {
+    if (!draft || submitting) return
+    setSubmitting(true)
+
+    try {
+      const payload: Record<string, unknown> = { action: 'reject' }
+      if (feedbackScore > 0) payload.feedback_score = feedbackScore
+      if (feedbackNote.trim()) payload.feedback_note = feedbackNote.trim()
+
+      const res = await fetch(`/api/ghostwriter/drafts/${draftId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      if (res.ok) {
+        setViewState('rejected')
+      }
+    } finally {
+      setSubmitting(false)
+    }
+  }, [draft, draftId, submitting, feedbackScore, feedbackNote])
 
   const handleSaveEdit = useCallback(async () => {
-    if (!draft) return
+    if (!draft || submitting) return
     setSubmitting(true)
 
     const updatedContent = JSON.stringify({
@@ -264,7 +248,7 @@ export function DraftReviewClient({ draftId }: { draftId: string }) {
       if (res.ok) {
         const d = await res.json() as Draft
         setDraft(d)
-        const p = tryParseContent(d.content)
+        const p = safeParseContent(d.content)
         setParsed(p)
         setViewState('review')
       }
@@ -275,7 +259,7 @@ export function DraftReviewClient({ draftId }: { draftId: string }) {
 
   const handleSubmitFromEdit = useCallback(async () => {
     // 먼저 수정 사항 저장 → 승인
-    if (!draft) return
+    if (!draft || submitting) return
     setSubmitting(true)
 
     const updatedContent = JSON.stringify({
@@ -344,6 +328,10 @@ export function DraftReviewClient({ draftId }: { draftId: string }) {
 
   if (viewState === 'submitted') {
     return <SubmittedView draft={draft!} parsed={parsed!} onBack={() => router.push('/dashboard')} />
+  }
+
+  if (viewState === 'rejected') {
+    return <RejectedView onBack={() => router.push('/dashboard')} />
   }
 
   if (!draft || !parsed) return null
@@ -442,25 +430,77 @@ export function DraftReviewClient({ draftId }: { draftId: string }) {
         {/* Bottom Actions */}
         <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-border z-50 px-5 pb-[calc(12px+env(safe-area-inset-bottom))] pt-3">
           <div className="max-w-[600px] mx-auto">
-            {/* 공개 토글 */}
-            <button
-              onClick={() => setIsPublic(!isPublic)}
-              className="flex items-center gap-2.5 mb-2 w-full"
-            >
-              <div className={`w-[42px] h-6 rounded-full relative transition-colors ${isPublic ? 'bg-brand' : 'bg-border'}`}>
-                <div
-                  className={`w-5 h-5 rounded-full bg-white absolute top-0.5 shadow-sm transition-transform ${isPublic ? 'translate-x-[18px]' : 'translate-x-0.5'}`}
+            {/* AI 피드백 토글 */}
+            {showFeedback && (
+              <div className="mb-3 p-3 bg-surface-sunken rounded-xl">
+                <p className="text-xs font-semibold text-txt-secondary mb-2">AI 초안 품질 평가</p>
+                <div className="flex gap-1 mb-2">
+                  {[1, 2, 3, 4, 5].map((score) => (
+                    <button
+                      key={score}
+                      type="button"
+                      onClick={() => setFeedbackScore(feedbackScore === score ? 0 : score)}
+                      className="p-1"
+                    >
+                      <Star
+                        size={20}
+                        className={feedbackScore >= score ? 'text-amber-400 fill-amber-400' : 'text-border'}
+                        strokeWidth={1.5}
+                      />
+                    </button>
+                  ))}
+                  <span className="text-xs text-txt-tertiary ml-1 self-center">
+                    {feedbackScore === 0 ? '' : feedbackScore <= 2 ? '개선 필요' : feedbackScore <= 4 ? '괜찮음' : '정확함'}
+                  </span>
+                </div>
+                <input
+                  type="text"
+                  className="w-full px-3 py-2 border border-border rounded-lg text-sm text-txt-primary focus:outline-none focus:border-brand"
+                  placeholder="어떤 점이 아쉬웠나요? (선택)"
+                  value={feedbackNote}
+                  onChange={(e) => setFeedbackNote(e.target.value)}
+                  maxLength={200}
                 />
               </div>
-              <span className={`text-[13px] font-semibold ${isPublic ? 'text-brand' : 'text-txt-secondary'}`}>
-                탐색 피드에 공개
-              </span>
-            </button>
+            )}
+
+            {/* 공개 토글 */}
+            <div className="flex items-center justify-between mb-2">
+              <button
+                onClick={() => setIsPublic(!isPublic)}
+                className="flex items-center gap-2.5"
+              >
+                <div className={`w-[42px] h-6 rounded-full relative transition-colors ${isPublic ? 'bg-brand' : 'bg-border'}`}>
+                  <div
+                    className={`w-5 h-5 rounded-full bg-white absolute top-0.5 shadow-sm transition-transform ${isPublic ? 'translate-x-[18px]' : 'translate-x-0.5'}`}
+                  />
+                </div>
+                <span className={`text-[13px] font-semibold ${isPublic ? 'text-brand' : 'text-txt-secondary'}`}>
+                  탐색 피드에 공개
+                </span>
+              </button>
+              <button
+                onClick={() => setShowFeedback(!showFeedback)}
+                className="text-xs text-txt-tertiary hover:text-txt-secondary transition-colors"
+              >
+                {showFeedback ? '피드백 접기' : 'AI 피드백 남기기'}
+              </button>
+            </div>
 
             <div className="flex gap-2 mb-2">
-              <Button variant="ghost" fullWidth onClick={() => setViewState('edit')}>
+              <Button variant="ghost" onClick={() => setViewState('edit')}>
                 수정할게요
               </Button>
+              {showFeedback && feedbackScore > 0 && feedbackScore <= 2 && (
+                <Button
+                  variant="ghost"
+                  loading={submitting}
+                  onClick={handleReject}
+                  className="!text-status-danger-text"
+                >
+                  거절
+                </Button>
+              )}
               <Button variant="blue" fullWidth loading={submitting} onClick={handleApprove}>
                 이대로 제출
               </Button>
@@ -609,15 +649,6 @@ export function DraftReviewClient({ draftId }: { draftId: string }) {
           )}
         </div>
 
-        {/* 첨부 파일 */}
-        <div className="mb-5">
-          <label className="text-[15px] font-bold text-txt-primary mb-2.5 block">첨부 파일</label>
-          <div className="border-2 border-dashed border-border rounded-xl p-8 text-center hover:border-brand hover:bg-brand/5 transition-colors cursor-pointer">
-            <Upload size={24} className="mx-auto mb-2 text-txt-tertiary" strokeWidth={1.5} />
-            <p className="text-sm text-txt-tertiary mb-1">파일을 드래그하거나 클릭하여 첨부하세요</p>
-            <p className="text-xs text-txt-disabled">발표자료, 스크린샷, 문서 등</p>
-          </div>
-        </div>
       </div>
 
       {/* Bottom Actions */}
@@ -691,6 +722,28 @@ function NodataView({ onManualWrite }: { onManualWrite: () => void }) {
       <Button variant="ghost" fullWidth onClick={onManualWrite}>
         수동으로 작성하기
       </Button>
+    </div>
+  )
+}
+
+/* ─── Rejected View ─── */
+function RejectedView({ onBack }: { onBack: () => void }) {
+  return (
+    <div className="max-w-[600px] mx-auto px-5 pt-12 pb-24 text-center">
+      <div className="w-20 h-20 mx-auto mb-5 bg-surface-sunken rounded-full flex items-center justify-center">
+        <ThumbsDown size={36} className="text-txt-tertiary" strokeWidth={1.5} />
+      </div>
+      <h2 className="text-xl font-bold text-txt-primary mb-2">초안을 거절했습니다</h2>
+      <p className="text-sm text-txt-secondary mb-6 leading-relaxed">
+        피드백이 기록되었습니다. 다음 주 AI가 개선된 초안을 작성합니다.
+        <br />
+        직접 주간 업데이트를 작성하실 수도 있습니다.
+      </p>
+      <div className="space-y-2">
+        <Button variant="blue" fullWidth onClick={onBack}>
+          대시보드로 돌아가기
+        </Button>
+      </div>
     </div>
   )
 }
