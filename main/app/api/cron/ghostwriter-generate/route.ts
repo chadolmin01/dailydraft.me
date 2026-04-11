@@ -75,27 +75,35 @@ export const POST = withCronCapture('ghostwriter-generate', async (request: Next
     clubChannels.set(ch.club_id, list)
   }
 
-  for (const [clubId, clubChs] of clubChannels) {
-    // 클럽의 Discord Guild ID를 DB에서 동적 조회 (멀티 서버 지원)
-    const { data: botInstall } = await admin
+  // 배치로 모든 클럽의 설정을 한 번에 조회 (N+1 방지)
+  const allClubIds = [...clubChannels.keys()]
+  const [{ data: allBotInstalls }, { data: allClubSettings }] = await Promise.all([
+    admin
       .from('discord_bot_installations')
-      .select('discord_guild_id')
-      .eq('club_id', clubId)
-      .maybeSingle()
-    const guildId = botInstall?.discord_guild_id
-
-    // 클럽별 Ghostwriter 설정 조회 (동아리장 커스텀)
-    const { data: clubSettings } = await admin
+      .select('club_id, discord_guild_id')
+      .in('club_id', allClubIds),
+    admin
       .from('club_ghostwriter_settings')
-      .select('ai_tone, min_messages, custom_prompt_hint, checkin_template')
-      .eq('club_id', clubId)
-      .maybeSingle()
-    const settings = clubSettings as {
+      .select('club_id, ai_tone, min_messages, custom_prompt_hint, checkin_template')
+      .in('club_id', allClubIds),
+  ])
+  const guildIdMap = new Map(
+    (allBotInstalls as { club_id: string; discord_guild_id: string }[] | null)
+      ?.map((i) => [i.club_id, i.discord_guild_id]) ?? []
+  )
+  const settingsMap = new Map(
+    (allClubSettings as { club_id: string; ai_tone?: string; min_messages?: number; custom_prompt_hint?: string | null; checkin_template?: string | null }[] | null)
+      ?.map((s) => [s.club_id, s]) ?? []
+  )
+
+  for (const [clubId, clubChs] of clubChannels) {
+    const guildId = guildIdMap.get(clubId)
+    const settings = settingsMap.get(clubId) as {
       ai_tone?: string
       min_messages?: number
       custom_prompt_hint?: string | null
       checkin_template?: string | null
-    } | null
+    } | undefined ?? null
 
     const lowActivityTeams: string[] = []
     // 운영-대시보드 요약용 데이터 수집
@@ -129,6 +137,35 @@ export const POST = withCronCapture('ghostwriter-generate', async (request: Next
       }
     }
 
+    // 배치로 이 클럽의 모든 opportunity 정보를 한 번에 조회 (N+1 방지)
+    const clubOppIds = clubChs.map((ch) => ch.opportunity_id)
+    const { data: clubOpportunities } = await admin
+      .from('opportunities')
+      .select('id, title, creator_id')
+      .in('id', clubOppIds)
+    const oppMap = new Map(
+      (clubOpportunities as { id: string; title: string; creator_id: string }[] | null)
+        ?.map((o) => [o.id, o]) ?? []
+    )
+
+    // 배치로 creator Discord ID 조회 (N+1 방지)
+    const creatorIds = [...new Set(
+      (clubOpportunities as { creator_id: string }[] | null)
+        ?.map((o) => o.creator_id)
+        .filter(Boolean) ?? []
+    )]
+    const { data: creatorProfiles } = creatorIds.length > 0
+      ? await admin
+          .from('profiles')
+          .select('user_id, discord_user_id')
+          .in('user_id', creatorIds)
+      : { data: null }
+    const discordIdMap = new Map(
+      (creatorProfiles as { user_id: string; discord_user_id: string | null }[] | null)
+        ?.filter((p) => p.discord_user_id)
+        .map((p) => [p.user_id, p.discord_user_id!]) ?? []
+    )
+
     for (const ch of clubChs) {
       results.processed++
 
@@ -154,13 +191,8 @@ export const POST = withCronCapture('ghostwriter-generate', async (request: Next
             .eq('id', ch.id)
         }
 
-        // 프로젝트 정보 조회
-        const { data: opportunity } = await admin
-          .from('opportunities')
-          .select('title, creator_id')
-          .eq('id', ch.opportunity_id)
-          .single()
-
+        // 프로젝트 정보 (배치 조회 결과에서 가져옴)
+        const opportunity = oppMap.get(ch.opportunity_id)
         const projectTitle = opportunity?.title ?? '프로젝트'
         const creatorId = opportunity?.creator_id
 
@@ -223,28 +255,19 @@ export const POST = withCronCapture('ghostwriter-generate', async (request: Next
 
           // 팀장에게 DM으로 알려줌 — "이번 주 초안이 생성되지 않은 이유"
           if (creatorId) {
-            try {
-              const { data: profile } = await admin
-                .from('profiles')
-                .select('discord_user_id')
-                .eq('user_id', creatorId)
-                .single()
-              const discordUserId = (profile as { discord_user_id?: string } | null)?.discord_user_id
-              if (discordUserId) {
-                sendDirectMessage(
-                  discordUserId,
-                  [
-                    `📭 **${weekNumber}주차 — 초안을 생성하지 못했습니다**`,
-                    '',
-                    `**${projectTitle}** 팀의 Discord 대화가 부족하여 AI가 주간 업데이트를 작성하지 못했습니다.`,
-                    '',
-                    `다음 주에는 **#주간-체크인** 포럼에 상황을 공유하거나, 팀 채널에서 대화를 나눠주세요.`,
-                    `간단한 한 줄이라도 AI에게 큰 도움이 됩니다.`,
-                  ].join('\n')
-                ).catch((e) => console.warn('[ghostwriter] 부족 알림 DM 실패', e))
-              }
-            } catch (err) {
-              console.warn('[ghostwriter] 부족 알림 DM 조회 실패', err)
+            const discordUserId = discordIdMap.get(creatorId)
+            if (discordUserId) {
+              sendDirectMessage(
+                discordUserId,
+                [
+                  `📭 **${weekNumber}주차 — 초안을 생성하지 못했습니다**`,
+                  '',
+                  `**${projectTitle}** 팀의 Discord 대화가 부족하여 AI가 주간 업데이트를 작성하지 못했습니다.`,
+                  '',
+                  `다음 주에는 **#주간-체크인** 포럼에 상황을 공유하거나, 팀 채널에서 대화를 나눠주세요.`,
+                  `간단한 한 줄이라도 AI에게 큰 도움이 됩니다.`,
+                ].join('\n')
+              ).catch((e) => console.warn('[ghostwriter] 부족 알림 DM 실패', e))
             }
           }
 
@@ -289,6 +312,7 @@ export const POST = withCronCapture('ghostwriter-generate', async (request: Next
         })
 
         // 5. Discord DM + 팀 채널 알림 (fire-and-forget)
+        //    배치 조회된 discordUserId, teamChannelId를 전달하여 N+1 방지
         if (savedDraft) {
           notifyDraftReady({
             draftId: savedDraft.id,
@@ -299,6 +323,8 @@ export const POST = withCronCapture('ghostwriter-generate', async (request: Next
             updateType: draft.updateType,
             weekNumber,
             creatorId,
+            discordUserId: creatorId ? discordIdMap.get(creatorId) : undefined,
+            teamChannelId: ch.discord_channel_id,
           }).catch((err) => console.error('[ghostwriter] 알림 발송 실패', err))
         }
       } catch (error) {

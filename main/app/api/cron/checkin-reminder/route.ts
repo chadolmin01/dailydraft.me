@@ -74,6 +74,22 @@ export const POST = withCronCapture('checkin-reminder', async (request: NextRequ
     ) ?? []
   )
 
+  // 배치로 creator Discord ID 조회 (N+1 방지)
+  const creatorIds = [...new Set(
+    (opportunities as { creator_id: string }[] | null)?.map((o) => o.creator_id) ?? []
+  )]
+  const { data: profiles } = creatorIds.length > 0
+    ? await admin
+        .from('profiles')
+        .select('user_id, discord_user_id')
+        .in('user_id', creatorIds)
+    : { data: null }
+  const discordIdMap = new Map(
+    (profiles as { user_id: string; discord_user_id: string | null }[] | null)
+      ?.filter((p) => p.discord_user_id)
+      .map((p) => [p.user_id, p.discord_user_id!]) ?? []
+  )
+
   let remindersSent = 0
   let dmFailed = 0
   let escalations = 0
@@ -84,14 +100,7 @@ export const POST = withCronCapture('checkin-reminder', async (request: NextRequ
     if (!prevDraftSet.has(`${opp.id}-${weekNumber - 1}`)) consecutiveMissing++
     if (!prevDraftSet.has(`${opp.id}-${weekNumber - 2}`)) consecutiveMissing++
 
-    // creator의 Discord user ID 조회
-    const { data: profile } = await admin
-      .from('profiles')
-      .select('discord_user_id')
-      .eq('user_id', opp.creator_id)
-      .single()
-
-    const discordUserId = (profile as { discord_user_id?: string } | null)?.discord_user_id
+    const discordUserId = discordIdMap.get(opp.creator_id)
     if (!discordUserId) continue
 
     // 에스컬레이션 레벨에 따른 메시지 강도 조절

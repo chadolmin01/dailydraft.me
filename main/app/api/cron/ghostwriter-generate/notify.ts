@@ -38,6 +38,8 @@ interface NotifyParams {
   updateType: string
   weekNumber: number
   creatorId: string // Draft user ID
+  discordUserId?: string // 배치 조회된 Discord user ID (없으면 DB 조회)
+  teamChannelId?: string // 배치 조회된 팀 채널 ID (없으면 DB 조회)
 }
 
 /**
@@ -51,18 +53,20 @@ interface NotifyParams {
  * 없으면 Draft 앱 내 알림으로 fallback.
  */
 export async function notifyDraftReady(params: NotifyParams): Promise<void> {
-  const admin = createAdminClient()
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://draft.is'
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://dailydraft.me'
   const approveUrl = `${baseUrl}/drafts/${params.draftId}`
 
-  // Discord user ID 조회 시도
-  const { data: profile } = await admin
-    .from('profiles')
-    .select('discord_user_id')
-    .eq('user_id', params.creatorId)
-    .single()
-
-  const discordUserId = profile?.discord_user_id
+  // 호출자가 배치 조회한 Discord ID 사용, 없으면 개별 조회 (fallback)
+  let discordUserId = params.discordUserId
+  if (!discordUserId) {
+    const admin = createAdminClient()
+    const { data: profile } = await admin
+      .from('profiles')
+      .select('discord_user_id')
+      .eq('user_id', params.creatorId)
+      .single()
+    discordUserId = profile?.discord_user_id ?? undefined
+  }
 
   // Discord user ID가 없으면 in-app 알림만 (DM 스킵)
   if (!discordUserId) {
@@ -110,7 +114,7 @@ export async function notifyDraftReady(params: NotifyParams): Promise<void> {
   }
 
   // 팀 채널에도 간략 알림 + 스레드 (fire-and-forget)
-  notifyTeamChannel(params, approveUrl).catch((err) =>
+  notifyTeamChannel(params, approveUrl, params.teamChannelId).catch((err) =>
     console.error('[ghostwriter-notify] 팀 채널 알림 실패', err)
   )
 
@@ -155,8 +159,8 @@ async function getTeamChannelId(opportunityId: string): Promise<string | null> {
  * 팀 채널에 초안 생성 알림을 보낸다.
  * 메인 메시지는 1줄로 간략하게, 스레드에 상세 내용을 담는다.
  */
-async function notifyTeamChannel(params: NotifyParams, approveUrl: string): Promise<void> {
-  const channelId = await getTeamChannelId(params.opportunityId)
+async function notifyTeamChannel(params: NotifyParams, approveUrl: string, preloadedChannelId?: string): Promise<void> {
+  const channelId = preloadedChannelId ?? await getTeamChannelId(params.opportunityId)
   if (!channelId) return
 
   const typeLabel = TYPE_LABELS[params.updateType] ?? '📝'
