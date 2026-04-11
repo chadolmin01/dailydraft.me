@@ -22,6 +22,9 @@ export async function POST(request: NextRequest) {
       await handleVotePoll(body, appId, interactionToken)
     } else if (type === 'schedule') {
       await handleSchedulePoll(body, appId, interactionToken)
+    } else if (type === 'schedule-quick') {
+      // 버튼 클릭에서 온 빠른 일정 투표 — followup 없이 바로 메시지 전송
+      await handleScheduleQuick(body)
     }
   } catch (err) {
     console.error('[Poll] 처리 실패:', err)
@@ -82,6 +85,22 @@ async function handleSchedulePoll(
   )
 
   // 3) 요일 이모지 자동 추가
+  if (msg?.id) {
+    for (const emoji of dayEmojis) {
+      await addReaction(channelId, msg.id, emoji)
+    }
+  }
+}
+
+async function handleScheduleQuick(body: { channelId: string }) {
+  const { channelId } = body
+  const dayEmojis = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣']
+
+  const msg = await sendChannelMessage(
+    channelId,
+    '📅 **일정 조율**\n\n가능한 요일에 반응해주세요!\n1️⃣ 월  2️⃣ 화  3️⃣ 수  4️⃣ 목  5️⃣ 금\n\n시간대까지 조율하려면 → https://when2meet.com',
+  )
+
   if (msg?.id) {
     for (const emoji of dayEmojis) {
       await addReaction(channelId, msg.id, emoji)

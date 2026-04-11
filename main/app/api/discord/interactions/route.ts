@@ -465,6 +465,8 @@ function handleOneLineCommand(interaction: {
 function handleButtonClick(interaction: {
   data?: { custom_id?: string }
   channel_id?: string
+  token?: string
+  application_id?: string
   message?: { content?: string }
 }) {
   const customId = interaction.data?.custom_id
@@ -478,14 +480,27 @@ function handleButtonClick(interaction: {
     })
   }
 
-  // "네" — 일정 잡기
-  if (customId === 'quick_schedule_yes') {
+  // "네" — 일정 잡기: 원본 메시지 정리 + 새 메시지로 투표 생성
+  if (customId === 'quick_schedule_yes' && channelId) {
+    const baseUrl = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : APP_URL
+
+    // 백그라운드에서 투표 메시지 + 리액션 추가
+    fetch(`${baseUrl}/api/discord/interactions/poll`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'schedule-quick',
+        channelId,
+        appId: interaction.application_id ?? process.env.DISCORD_APP_ID,
+        interactionToken: interaction.token,
+      }),
+    }).catch(err => console.error('[Button] 일정 트리거 실패:', err))
+
     return NextResponse.json({
       type: UPDATE_MESSAGE,
-      data: {
-        content: '📅 아래에서 가능한 요일에 반응해주세요!\n\n1️⃣ 월  2️⃣ 화  3️⃣ 수  4️⃣ 목  5️⃣ 금\n\n**시간대까지 맞추려면** → https://when2meet.com',
-        components: [],
-      },
+      data: { content: '📅 일정 투표를 만들었습니다!', components: [] },
     })
   }
 
