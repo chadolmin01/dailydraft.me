@@ -147,6 +147,7 @@ function ExplorePageContent() {
   const [recruitingOnly, setRecruitingOnly] = useState(false)
   const [peopleRoleFilter, setPeopleRoleFilter] = useState<PeopleRoleFilter>('all')
   const [peopleUniFilter, setPeopleUniFilter] = useState<string>('all')
+  const [peopleClubFilter, setPeopleClubFilter] = useState<string | null>(null)
   const [projectRoleFilter, setProjectRoleFilter] = useState<ProjectRoleFilter>('all')
   const [peopleSortBy, setPeopleSortBy] = useState<PeopleSortBy>('latest')
   const [searchInput, setSearchInput] = useState(initialQuery)
@@ -952,32 +953,48 @@ function ExplorePageContent() {
                 return (
                   <>
                     {activeUnis.map(uni => {
-                      const isSelected = peopleUniFilter === uni.name
+                      const uniSelected = peopleUniFilter === uni.name && !peopleClubFilter
+                      const uniExpanded = peopleUniFilter === uni.name
                       return (
                         <div key={uni.name}>
                           <button
-                            onClick={() => setPeopleUniFilter(isSelected ? 'all' : uni.name)}
+                            onClick={() => {
+                              if (uniExpanded) {
+                                setPeopleUniFilter('all')
+                                setPeopleClubFilter(null)
+                              } else {
+                                setPeopleUniFilter(uni.name)
+                                setPeopleClubFilter(null)
+                              }
+                            }}
                             className={`w-full text-left px-3 py-2 text-[13px] rounded-xl transition-all mb-1 flex items-center justify-between ${
-                              isSelected
+                              uniSelected
                                 ? 'text-[#0095F6] font-semibold bg-[#E8F4FD]'
-                                : 'text-[#262626] dark:text-white hover:bg-[#F5F5F5] dark:hover:bg-[#252527]'
+                                : uniExpanded
+                                  ? 'text-[#262626] dark:text-white font-semibold bg-[#F5F5F5] dark:bg-[#252527]'
+                                  : 'text-[#262626] dark:text-white hover:bg-[#F5F5F5] dark:hover:bg-[#252527]'
                             }`}
                           >
                             <span className="truncate">{uni.name}</span>
                             <span className={`text-[11px] tabular-nums ${
-                              isSelected ? 'text-[#0095F6]/50' : 'text-[#C7C7C7]'
+                              uniExpanded ? 'text-[#0095F6]/50' : 'text-[#C7C7C7]'
                             }`}>{uni.count || ''}</span>
                           </button>
-                          {/* 동아리 서브 목록 — 선택된 대학만 펼침 */}
-                          {isSelected && uni.clubs.length > 0 && (
-                            <div className="ml-2 mb-1">
+                          {/* 동아리 서브 목록 — 대학 펼쳐졌을 때 표시 */}
+                          {uniExpanded && uni.clubs.length > 0 && (
+                            <div className="ml-3 mb-1 flex flex-col gap-0.5">
                               {uni.clubs.map(club => (
-                                <div
+                                <button
                                   key={club}
-                                  className="py-1.5 px-3 text-[12px] text-[#0095F6]/70 font-medium rounded-lg bg-[#E8F4FD]/50"
+                                  onClick={() => setPeopleClubFilter(peopleClubFilter === club ? null : club)}
+                                  className={`text-left py-1.5 px-3 text-[12px] rounded-lg transition-all ${
+                                    peopleClubFilter === club
+                                      ? 'text-[#0095F6] font-semibold bg-[#E8F4FD]'
+                                      : 'text-[#555] hover:bg-[#F5F5F5] dark:hover:bg-[#252527]'
+                                  }`}
                                 >
                                   {club}
-                                </div>
+                                </button>
                               ))}
                             </div>
                           )}
