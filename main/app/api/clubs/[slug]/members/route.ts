@@ -120,10 +120,10 @@ export const POST = withErrorCapture(
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return ApiResponse.unauthorized()
 
-    // 1. 클럽 확인
+    // 1. 클럽 확인 (require_approval도 함께 조회)
     const { data: club } = await supabase
       .from('clubs')
-      .select('id')
+      .select('id, require_approval')
       .eq('slug', slug)
       .maybeSingle()
 
@@ -188,6 +188,10 @@ export const POST = withErrorCapture(
     }
 
     // 5. 멤버 추가
+    // 관리자가 직접 추가하는 경우에도 승인제 설정을 존중
+    // require_approval=true → pending, 아니면 active
+    const status = club.require_approval ? 'pending' : 'active'
+
     const { data: newMember, error } = await supabase
       .from('club_members')
       .insert({
@@ -195,6 +199,7 @@ export const POST = withErrorCapture(
         user_id: targetUserId,
         role,
         cohort,
+        status,
       })
       .select()
       .single()
