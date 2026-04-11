@@ -161,6 +161,9 @@ function createModel(modelName: string, modelConfig?: Record<string, any>) {
   }
 }
 
+/** Raw @google/genai SDK instance — for direct API access (multimodal, etc.) */
+export { getAI }
+
 /** Drop-in replacement for GoogleGenerativeAI */
 export const genAI = {
   getGenerativeModel: (opts: any) =>
