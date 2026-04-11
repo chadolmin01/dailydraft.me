@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
+import Image from 'next/image'
 import {
   Rocket, Users, MessageSquare, Eye, Bell, FolderOpen,
   ArrowRight, Plus, Coffee, Clock, Heart, Loader2,
@@ -45,6 +46,29 @@ export default function DashboardPage() {
     queryFn: () => withRetry(async () => {
       const res = await fetch('/api/profile/stats')
       if (!res.ok) throw new Error('Failed')
+      return res.json()
+    }),
+    enabled: !isAuthLoading && !!user,
+    staleTime: 1000 * 60 * 2,
+  })
+
+  interface MyClub {
+    slug: string
+    name: string
+    description: string | null
+    logo_url: string | null
+    category: string | null
+    role: string
+    display_role: string | null
+    cohort: string | null
+    member_count: number
+  }
+
+  const { data: myClubs = [], isLoading: clubsLoading } = useQuery<MyClub[]>({
+    queryKey: ['my-clubs'],
+    queryFn: () => withRetry(async () => {
+      const res = await fetch('/api/users/my-clubs')
+      if (!res.ok) return []
       return res.json()
     }),
     enabled: !isAuthLoading && !!user,
@@ -301,6 +325,54 @@ export default function DashboardPage() {
           </div>
         </PageContainer>
       </Section>
+
+      {/* My Clubs */}
+      {!clubsLoading && myClubs.length > 0 && (
+        <Section spacing="sm" bg="transparent">
+          <PageContainer size="wide">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <span className="w-5 h-5 bg-[#7C3AED] text-white flex items-center justify-center text-[0.5rem] font-bold font-mono">C</span>
+                <span className="text-[10px] font-medium text-txt-secondary">My Clubs</span>
+              </div>
+            </div>
+            <div className="space-y-3">
+              {myClubs.map((club, index) => (
+                <Link
+                  key={club.slug}
+                  href={`/clubs/${club.slug}`}
+                  style={{ animationDelay: `${index * 60}ms` }}
+                  className="stagger-item bg-surface-card rounded-xl border border-border p-4 flex items-center gap-4 hover:shadow-md hover:-translate-y-0.5 hover-spring group relative block"
+                >
+                  <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/15" />
+                  {club.logo_url ? (
+                    <Image src={club.logo_url} alt={club.name} width={40} height={40} className="rounded-xl object-cover shrink-0" />
+                  ) : (
+                    <div className="w-10 h-10 bg-bg-sunken rounded-xl flex items-center justify-center text-sm font-extrabold text-txt-secondary shrink-0">
+                      {club.name[0]}
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <h3 className="font-bold text-sm text-txt-primary truncate">{club.name}</h3>
+                      {club.category && (
+                        <span className="text-[10px] font-semibold text-brand bg-brand-bg px-1.5 py-0.5 rounded-full border border-brand-border shrink-0">
+                          {club.category}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3 text-[10px] font-mono text-txt-tertiary">
+                      <span>멤버 {club.member_count}명</span>
+                      {club.cohort && <span>{club.cohort}기</span>}
+                    </div>
+                  </div>
+                  <ArrowRight size={16} className="text-txt-disabled group-hover:text-txt-primary transition-colors shrink-0" />
+                </Link>
+              ))}
+            </div>
+          </PageContainer>
+        </Section>
+      )}
 
       {/* My Projects */}
       <Section spacing="sm" bg="transparent">
