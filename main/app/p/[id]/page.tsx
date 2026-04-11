@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { createClient } from '@supabase/supabase-js'
+import { APP_URL } from '@/src/constants'
 import { ProjectDetailClient } from './client'
 
 interface Props {
@@ -29,7 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     const title = `${opportunity.title} | Draft`
     const description = opportunity.description?.slice(0, 160) || '대학생 프로젝트 공유 플랫폼 Draft'
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://dailydraft.me'
+    const appUrl = APP_URL
 
     return {
       title,

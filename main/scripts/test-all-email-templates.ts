@@ -18,6 +18,7 @@ if (fs.existsSync(envPath)) {
   })
 }
 
+import { APP_URL } from '../src/constants/app'
 import { renderInviteCodeEmail } from '../src/lib/email/templates/invite-code'
 import { renderCoffeeChatRequestEmail } from '../src/lib/email/templates/coffee-chat-request'
 import { renderCoffeeChatReminderEmail } from '../src/lib/email/templates/coffee-chat-reminder'
@@ -28,7 +29,7 @@ import { renderWeeklyDigestEmail } from '../src/lib/email/templates/weekly-diges
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY
 const FROM_EMAIL = process.env.EMAIL_FROM || 'DailyDraft <onboarding@resend.dev>'
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://dailydraft.me'
+// APP_URL은 ../src/constants/app 에서 import
 const TO = 'chadolmin01@gmail.com'
 
 async function main() {

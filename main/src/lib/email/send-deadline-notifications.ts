@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { resend, FROM_EMAIL, isEmailEnabled } from './client'
 import { renderDeadlineNotificationEmail } from './templates/deadline-notification'
+import { APP_URL } from '@/src/constants'
 
 interface UserWithDeadlineEvents {
   userId: string
@@ -42,7 +43,7 @@ export async function sendDeadlineNotificationEmails(): Promise<{
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://dailydraft.me'
+  const appUrl = APP_URL
 
   if (!supabaseUrl || !supabaseKey) {
     return {

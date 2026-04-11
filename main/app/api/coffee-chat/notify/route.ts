@@ -11,13 +11,12 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { sendPushToUser } from '@/src/lib/push-notification'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
+import { APP_URL } from '@/src/constants'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
 )
-
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://dailydraft.me'
 
 export const POST = withErrorCapture(async (req: NextRequest) => {
     // 인증 검증: 로그인한 사용자만 이메일 발송 트리거 가능

@@ -1,7 +1,8 @@
 import type { MetadataRoute } from 'next'
+import { APP_URL } from '@/src/constants'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://dailydraft.me'
+  const baseUrl = APP_URL
 
   return [
     { url: baseUrl, lastModified: new Date(), changeFrequency: 'daily', priority: 1 },

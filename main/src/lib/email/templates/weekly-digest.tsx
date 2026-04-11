@@ -19,7 +19,7 @@ interface WeeklyDigestEmailProps {
   popularEvents: DigestEvent[]
 }
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://dailydraft.me'
+import { APP_URL } from '@/src/constants'
 
 export function WeeklyDigestEmail({
   userName,

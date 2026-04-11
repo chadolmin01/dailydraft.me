@@ -4,8 +4,7 @@ import { resend, FROM_EMAIL, isEmailEnabled } from '@/src/lib/email/client'
 import { renderCoffeeChatReminderEmail } from '@/src/lib/email/templates/coffee-chat-reminder'
 import { createClient } from '@supabase/supabase-js'
 import { withCronCapture } from '@/src/lib/posthog/with-cron-capture'
-
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://dailydraft.me'
+import { APP_URL } from '@/src/constants'
 
 function getAdminClient() {
   return createClient(

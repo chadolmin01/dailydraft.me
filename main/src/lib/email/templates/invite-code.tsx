@@ -1,3 +1,5 @@
+import { APP_URL } from '../../../constants/app'
+
 interface InviteCodeEmailProps {
   recipientName: string
   inviteCode: string
@@ -13,7 +15,7 @@ export function renderInviteCodeEmail({
   recipientName,
   inviteCode,
   expiresAt,
-  appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://dailydraft.me',
+  appUrl = APP_URL,
 }: InviteCodeEmailProps): string {
   const safeName = escapeHtml(recipientName)
   const safeCode = escapeHtml(inviteCode)

@@ -1,4 +1,5 @@
 import { Resend } from 'resend'
+import { APP_URL } from '@/src/constants'
 import { renderInviteCodeEmail } from './templates/invite-code'
 
 // Resend 클라이언트 초기화
@@ -10,9 +11,6 @@ export const resend = resendApiKey ? new Resend(resendApiKey) : null
 
 // 발신자 이메일 (Resend 도메인 설정 후 변경)
 export const FROM_EMAIL = process.env.EMAIL_FROM || 'DailyDraft <onboarding@resend.dev>'
-
-// 앱 URL
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://dailydraft.me'
 
 // 이메일 전송 가능 여부 확인
 export function isEmailEnabled(): boolean {

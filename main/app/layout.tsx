@@ -3,6 +3,7 @@ import { Noto_Sans_KR, JetBrains_Mono } from 'next/font/google'
 import Script from 'next/script'
 import { Providers } from '@/src/context/Providers'
 import { createServerSupabaseClient } from '@/src/lib/supabase/server'
+import { APP_URL } from '@/src/constants'
 import './globals.css'
 
 const notoSansKR = Noto_Sans_KR({
@@ -24,7 +25,7 @@ const jetBrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://dailydraft.me'),
+  metadataBase: new URL(APP_URL),
   title: 'Draft — AI로 찾는 내 프로젝트 팀',
   description: '스킬과 작업 스타일 기반 AI 매칭으로 사이드프로젝트 팀원을 찾아보세요. 개발자, 디자이너, 기획자들의 팀빌딩 플랫폼.',
   keywords: ['팀빌딩', 'AI매칭', '사이드프로젝트', '팀원모집', '개발자', '디자이너', '기획자', '스타트업'],
@@ -42,7 +43,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Draft — AI로 찾는 내 프로젝트 팀',
     description: '스킬과 작업 스타일 기반 AI 매칭으로 사이드프로젝트 팀원을 찾아보세요. 개발자, 디자이너, 기획자들의 팀빌딩 플랫폼.',
-    url: process.env.NEXT_PUBLIC_APP_URL || 'https://dailydraft.me',
+    url: APP_URL,
     siteName: 'Draft',
     type: 'website',
     locale: 'ko_KR',
