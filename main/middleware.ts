@@ -111,8 +111,15 @@ function addSecurityHeaders(response: NextResponse) {
 async function middlewareImpl(request: NextRequest): Promise<NextResponse> {
   const pathname = request.nextUrl.pathname
 
+  // CSRF 예외: 외부 서비스 webhook (Discord, 결제 등)은 cross-origin POST가 정상
+  const csrfExemptPaths = [
+    '/api/discord/interactions',
+    '/api/webhooks/',
+  ]
+  const isCsrfExempt = csrfExemptPaths.some(p => pathname.startsWith(p))
+
   // CSRF protection: block cross-origin state-changing requests to API routes
-  if (pathname.startsWith('/api/') && ['POST', 'PATCH', 'PUT', 'DELETE'].includes(request.method)) {
+  if (!isCsrfExempt && pathname.startsWith('/api/') && ['POST', 'PATCH', 'PUT', 'DELETE'].includes(request.method)) {
     const origin = request.headers.get('origin')
     const host = request.headers.get('host')
 

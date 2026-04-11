@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/src/lib/supabase/admin'
+import nacl from 'tweetnacl'
 
 /**
  * POST /api/discord/interactions
@@ -29,29 +30,21 @@ const APP_PUBLIC_KEY = process.env.DISCORD_APP_PUBLIC_KEY ?? ''
 
 /**
  * Ed25519 서명 검증 (Discord 필수 요구사항)
- * Web Crypto API 사용 — 별도 패키지 불필요
+ * tweetnacl 사용 — Vercel Serverless에서 안정적으로 동작
  */
-async function verifyDiscordSignature(
+function verifyDiscordSignature(
   body: string,
   signature: string,
   timestamp: string
-): Promise<boolean> {
+): boolean {
   if (!APP_PUBLIC_KEY) return false
 
   try {
-    const keyData = hexToUint8Array(APP_PUBLIC_KEY)
-    const key = await crypto.subtle.importKey(
-      'raw',
-      keyData.buffer as ArrayBuffer,
-      { name: 'Ed25519', namedCurve: 'Ed25519' },
-      false,
-      ['verify']
-    )
-
-    const message = new TextEncoder().encode(timestamp + body)
     const sig = hexToUint8Array(signature)
+    const publicKey = hexToUint8Array(APP_PUBLIC_KEY)
+    const message = new TextEncoder().encode(timestamp + body)
 
-    return await crypto.subtle.verify('Ed25519', key, sig.buffer as ArrayBuffer, message.buffer as ArrayBuffer)
+    return nacl.sign.detached.verify(message, sig, publicKey)
   } catch {
     return false
   }
@@ -70,11 +63,16 @@ export async function POST(request: NextRequest) {
   const signature = request.headers.get('x-signature-ed25519') ?? ''
   const timestamp = request.headers.get('x-signature-timestamp') ?? ''
 
+  // 디버그: 환경변수 로드 확인
+  console.log(`[Discord Interactions] PUBLIC_KEY loaded: ${APP_PUBLIC_KEY ? APP_PUBLIC_KEY.substring(0, 8) + '...' : 'EMPTY'}, sig: ${signature.substring(0, 8)}..., timestamp: ${timestamp}`)
+
   // 1. 서명 검증 (Discord 필수)
-  const isValid = await verifyDiscordSignature(body, signature, timestamp)
+  const isValid = verifyDiscordSignature(body, signature, timestamp)
   if (!isValid) {
+    console.log('[Discord Interactions] Signature verification FAILED')
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
   }
+  console.log('[Discord Interactions] Signature verification OK')
 
   const interaction = JSON.parse(body)
 
@@ -190,99 +188,31 @@ async function handleSummaryCommand(interaction: {
   application_id?: string
 }) {
   const channelId = interaction.channel_id
+  const guildId = interaction.guild_id
   const appId = interaction.application_id ?? process.env.DISCORD_APP_ID
+  const interactionToken = interaction.token
 
-  if (!channelId) {
+  if (!channelId || !interactionToken || !appId) {
     return NextResponse.json({
       type: CHANNEL_MESSAGE,
       data: { content: '채널 정보를 찾을 수 없습니다.', flags: 64 },
     })
   }
 
-  // Deferred 응답: Discord에 "봇이 생각 중..." 표시
-  // 3초 이내에 응답해야 하므로, AI 분석은 백그라운드에서 처리
-  const interactionToken = interaction.token
+  // 별도 API 호출로 백그라운드 처리 트리거
+  // Vercel Serverless는 응답 후 fire-and-forget이 동작하지 않으므로,
+  // 별도 serverless 함수를 호출하여 처리
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : 'https://dailydraft.me')
 
-  // 백그라운드에서 실제 요약 수행 (fire-and-forget)
-  if (interactionToken && appId) {
-    processSummaryInBackground(channelId, appId, interactionToken).catch(
-      (err) => console.error('[Interactions] 마무리 백그라운드 실패:', err)
-    )
-  }
-
-  return NextResponse.json({ type: DEFERRED_CHANNEL_MESSAGE })
-}
-
-/**
- * Deferred 응답 후 실제 요약을 처리하고 followup 메시지로 전송
- */
-async function processSummaryInBackground(
-  channelId: string,
-  appId: string,
-  interactionToken: string
-) {
-  const { fetchChannelMessages } = await import('@/src/lib/discord/client')
-
-  // 최근 50개 메시지 가져오기
-  const messages = await fetchChannelMessages(channelId, { maxMessages: 50 })
-
-  if (!messages || messages.length < 3) {
-    await sendFollowup(appId, interactionToken, '📝 정리할 내용이 충분하지 않습니다.')
-    return
-  }
-
-  // 봇 메시지 제외, 실제 대화만 추출
-  const humanMessages = messages
-    .filter((m: { author: { bot?: boolean } }) => !m.author.bot)
-    .reverse() // 시간순
-
-  if (humanMessages.length < 3) {
-    await sendFollowup(appId, interactionToken, '📝 정리할 내용이 충분하지 않습니다.')
-    return
-  }
-
-  // 대화 텍스트 조합
-  const conversationText = humanMessages
-    .map((m: { author: { username: string }; content: string }) => `${m.author.username}: ${m.content}`)
-    .join('\n')
-
-  // Gemini로 요약 생성
-  const { chatModel } = await import('@/src/lib/ai/gemini-client')
-  const summaryPrompt = `다음은 Discord 팀 채널의 최근 대화입니다. 이 대화를 분석하여 아래 형식으로 한국어로 정리해주세요.
-
-## 📋 대화 요약
-(2-3문장으로 핵심 내용 요약)
-
-## ✅ 할 일
-(감지된 할 일 목록. 없으면 "감지된 할 일 없음")
-
-## 🎯 결정사항
-(합의된 결정 목록. 없으면 "결정사항 없음")
-
-## 🔗 공유된 자료
-(공유된 링크나 파일. 없으면 "공유 자료 없음")
-
----
-대화 내용:
-${conversationText}`
-
-  try {
-    const result = await chatModel.generateContent(summaryPrompt)
-    const summary = result.response.text()
-    await sendFollowup(appId, interactionToken, summary)
-  } catch (err) {
-    console.error('[Interactions] 요약 생성 실패:', err)
-    await sendFollowup(appId, interactionToken, '요약 생성 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.')
-  }
-}
-
-async function sendFollowup(appId: string, interactionToken: string, content: string) {
-  const url = `https://discord.com/api/v10/webhooks/${appId}/${interactionToken}`
-  await fetch(url, {
+  fetch(`${baseUrl}/api/discord/interactions/summary`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ content }),
-  })
+    body: JSON.stringify({ channelId, guildId, appId, interactionToken }),
+  }).catch((err) => console.error('[Interactions] 마무리 트리거 실패:', err))
+
+  return NextResponse.json({ type: DEFERRED_CHANNEL_MESSAGE })
 }
 
 // ── /투표 — 투표 생성 ──
