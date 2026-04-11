@@ -96,9 +96,7 @@ export async function syncMemberToDiscord(
       .select('discord_guild_id')
       .eq('club_id', clubId)
       .maybeSingle(),
-    // discord_role_mappings: 마이그레이션 후 supabase gen types 재실행 전까지 타입 미등록
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (supabase as any)
+    supabase
       .from('discord_role_mappings')
       .select('mapping_type, draft_value, discord_role_id, discord_role_name')
       .eq('club_id', clubId),
@@ -107,8 +105,7 @@ export async function syncMemberToDiscord(
   const profile = profileRes.data
   const member = memberRes.data
   const install = installRes.data
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const mappings = ((mappingsRes as any)?.data ?? []) as RoleMapping[]
+  const mappings = (mappingsRes.data ?? []) as RoleMapping[]
 
   // 2. 스킵 조건 확인
   if (!profile?.discord_user_id) {

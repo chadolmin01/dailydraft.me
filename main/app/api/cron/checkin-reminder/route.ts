@@ -12,6 +12,7 @@ import { createAdminClient } from '@/src/lib/supabase/admin'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { withCronCapture } from '@/src/lib/posthog/with-cron-capture'
 import { sendDirectMessage, sendChannelMessage } from '@/src/lib/discord/client'
+import { getISOWeekNumber } from '@/src/lib/ghostwriter/week-utils'
 
 export const runtime = 'nodejs'
 
@@ -210,10 +211,3 @@ export async function GET() {
   return ApiResponse.ok({ status: 'ready', timestamp: new Date().toISOString() })
 }
 
-function getISOWeekNumber(date: Date): number {
-  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
-  const dayNum = d.getUTCDay() || 7
-  d.setUTCDate(d.getUTCDate() + 4 - dayNum)
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
-  return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7)
-}
