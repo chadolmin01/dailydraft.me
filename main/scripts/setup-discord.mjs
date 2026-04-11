@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs'
 const envContent = readFileSync('.env.local', 'utf-8')
 const tokenMatch = envContent.match(/DISCORD_BOT_TOKEN=(.+)/)
-const TOKEN = ;
+const TOKEN = `Bot ${tokenMatch?.[1]?.trim()}`;
 const GUILD = '1492207944530399495';
 const API = 'https://discord.com/api/v10';
 
