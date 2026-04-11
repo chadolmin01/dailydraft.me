@@ -79,13 +79,16 @@ export async function POST(request: NextRequest) {
   // 3. 슬래시 커맨드 처리
   if (interaction.type === APPLICATION_COMMAND) {
     const commandName = interaction.data?.name
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : 'https://dailydraft.me')
 
     if (commandName === 'profile') {
       return handleProfileCommand(interaction)
     }
 
     if (commandName === '마무리') {
-      return handleSummaryCommand(interaction)
+      return handleSummaryCommand(interaction, baseUrl)
     }
 
     if (commandName === '투표') {
@@ -181,7 +184,7 @@ async function handleSummaryCommand(interaction: {
   guild_id?: string
   token?: string
   application_id?: string
-}) {
+}, baseUrl: string) {
   const channelId = interaction.channel_id
   const guildId = interaction.guild_id
   const appId = interaction.application_id ?? process.env.DISCORD_APP_ID
@@ -194,13 +197,7 @@ async function handleSummaryCommand(interaction: {
     })
   }
 
-  // 별도 API 호출로 백그라운드 처리 트리거
-  // Vercel Serverless는 응답 후 fire-and-forget이 동작하지 않으므로,
-  // 별도 serverless 함수를 호출하여 처리
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : 'https://dailydraft.me')
-
+  // Vercel Serverless는 응답 후 fire-and-forget이 동작하지 않으므로 별도 함수 호출
   fetch(`${baseUrl}/api/discord/interactions/summary`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -210,11 +207,14 @@ async function handleSummaryCommand(interaction: {
   return NextResponse.json({ type: DEFERRED_CHANNEL_MESSAGE })
 }
 
-// ── /투표 — 투표 생성 ──
+// ── /투표 — 투표 생성 (Deferred → 메시지 전송 후 자동 이모지 반응) ──
 
 function handleVoteCommand(interaction: {
+  channel_id?: string
+  token?: string
+  application_id?: string
   data?: { options?: { name: string; value: string }[] }
-}) {
+}, baseUrl: string) {
   const options = interaction.data?.options ?? []
   const topic = options.find((o) => o.name === '주제')?.value
   const optionValues = ['옵션1', '옵션2', '옵션3', '옵션4', '옵션5']
@@ -228,36 +228,67 @@ function handleVoteCommand(interaction: {
     })
   }
 
-  const emojis = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣']
-  const optionLines = optionValues
-    .map((opt, i) => `${emojis[i]} ${opt}`)
-    .join('\n')
+  const channelId = interaction.channel_id
+  const appId = interaction.application_id ?? process.env.DISCORD_APP_ID
+  const interactionToken = interaction.token
 
-  return NextResponse.json({
-    type: CHANNEL_MESSAGE,
-    data: {
-      content: `📊 **${topic}**\n\n${optionLines}\n\n_아래 반응을 눌러 투표해주세요!_`,
-    },
-  })
+  if (!channelId || !appId || !interactionToken) {
+    return NextResponse.json({
+      type: CHANNEL_MESSAGE,
+      data: { content: '채널 정보를 찾을 수 없습니다.', flags: 64 },
+    })
+  }
+
+  // 백그라운드에서 메시지 전송 + 이모지 반응 추가
+  fetch(`${baseUrl}/api/discord/interactions/poll`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      type: 'vote',
+      channelId,
+      appId,
+      interactionToken,
+      topic,
+      options: optionValues,
+    }),
+  }).catch((err) => console.error('[Interactions] 투표 트리거 실패:', err))
+
+  return NextResponse.json({ type: DEFERRED_CHANNEL_MESSAGE })
 }
 
-// ── /일정 — 일정 조율 ──
+// ── /일정 — 일정 조율 (Deferred → 메시지 전송 후 자동 요일 반응) ──
 
 function handleScheduleCommand(interaction: {
+  channel_id?: string
+  token?: string
+  application_id?: string
   data?: { options?: { name: string; value: string }[] }
-}) {
+}, baseUrl: string) {
+  const channelId = interaction.channel_id
+  const appId = interaction.application_id ?? process.env.DISCORD_APP_ID
+  const interactionToken = interaction.token
   const purpose = interaction.data?.options?.find((o) => o.name === '목적')?.value
 
-  const header = purpose
-    ? `📅 **일정 조율 — ${purpose}**`
-    : '📅 **일정 조율**'
+  if (!channelId || !appId || !interactionToken) {
+    return NextResponse.json({
+      type: CHANNEL_MESSAGE,
+      data: { content: '채널 정보를 찾을 수 없습니다.', flags: 64 },
+    })
+  }
 
-  return NextResponse.json({
-    type: CHANNEL_MESSAGE,
-    data: {
-      content: `${header}\n\n가능한 요일에 반응해주세요!\n1️⃣ 월  2️⃣ 화  3️⃣ 수  4️⃣ 목  5️⃣ 금\n\n복잡한 경우 When2Meet을 사용하세요:\n🔗 https://when2meet.com`,
-    },
-  })
+  fetch(`${baseUrl}/api/discord/interactions/poll`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      type: 'schedule',
+      channelId,
+      appId,
+      interactionToken,
+      purpose,
+    }),
+  }).catch((err) => console.error('[Interactions] 일정 트리거 실패:', err))
+
+  return NextResponse.json({ type: DEFERRED_CHANNEL_MESSAGE })
 }
 
 // ── /설정 — Draft 웹 설정 링크 ──
@@ -313,7 +344,7 @@ function handleHelpCommand() {
   return NextResponse.json({
     type: CHANNEL_MESSAGE,
     data: {
-      content: `📖 **Draft 봇 명령어**\n\n**슬래시 커맨드:**\n• \`/마무리\` — 지금까지 대화 요약\n• \`/투표\` — 투표 생성 (주제 + 옵션)\n• \`/일정\` — 요일 투표 + When2Meet 안내\n• \`/설정\` — Draft 웹 설정 페이지 링크\n• \`/도움\` — 이 안내 메시지\n\n**자동 감지:**\n• 투표/결정 제안 시 → 투표 버튼 제공\n• 블로커/막힘 감지 → 도움 제안\n• 대화 종결 시 → 회의 요약 자동 생성`,
+      content: `📖 **Draft 봇 명령어**\n\n• \`/마무리\` — 대화 요약 (AI가 할 일·결정사항·자료 정리)\n• \`/투표 주제 옵션1 옵션2\` — 투표 생성 (이모지 자동 추가)\n• \`/일정 [목적]\` — 요일별 일정 투표\n• \`/profile [@유저]\` — Draft 프로필 조회\n• \`/설정\` — Draft 웹 설정 페이지\n• \`/도움\` — 이 안내 메시지`,
       flags: 64, // EPHEMERAL
     },
   })
