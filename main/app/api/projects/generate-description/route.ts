@@ -2,6 +2,7 @@ import { createClient } from '@/src/lib/supabase/server'
 import { chatModel } from '@/src/lib/ai/gemini-client'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
+import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
 
 export const POST = withErrorCapture(async (request) => {
     const supabase = await createClient()
@@ -9,6 +10,10 @@ export const POST = withErrorCapture(async (request) => {
     if (!user) {
       return ApiResponse.unauthorized()
     }
+
+    // Rate limit — AI 설명 생성 비용 보호
+    const rateLimitResponse = await checkAIRateLimit(user.id, getClientIp(request))
+    if (rateLimitResponse) return rateLimitResponse
 
     const { title, type, painPoint, roles, locationType, timeCommitment, compensationType } = await request.json()
 

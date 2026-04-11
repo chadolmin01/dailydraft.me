@@ -4,9 +4,9 @@ import { getInstitutionId } from '@/src/lib/institution/auth'
 import { resend, FROM_EMAIL, isEmailEnabled } from '@/src/lib/email/client'
 import { renderInstitutionAnnounceEmail } from '@/src/lib/email/templates/institution-announce'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
+import { applyRateLimit, getClientIp } from '@/src/lib/rate-limit/api-rate-limiter'
+import { APP_URL } from '@/src/constants'
 import type { NextRequest } from 'next/server'
-
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://dailydraft.me'
 
 export const POST = withErrorCapture(async (request: NextRequest) => {
   if (!isEmailEnabled()) {
@@ -16,6 +16,10 @@ export const POST = withErrorCapture(async (request: NextRequest) => {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return ApiResponse.unauthorized()
+
+  // Rate limit — 기관 이메일 대량 발송 남용 방지 (분당 60회)
+  const rateLimitResponse = applyRateLimit(user.id, getClientIp(request))
+  if (rateLimitResponse) return rateLimitResponse
 
   const institutionId = await getInstitutionId(supabase, user.id)
   if (!institutionId) return ApiResponse.forbidden('기관 관리자 권한이 필요합니다')

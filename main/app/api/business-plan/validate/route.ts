@@ -1,4 +1,6 @@
+// HIDDEN ROUTE — middleware.ts hiddenApiRoutes에서 404 반환. 프로덕션 미노출.
 import { NextRequest } from 'next/server'
+import { createClient } from '@/src/lib/supabase/server'
 import {
   getEvaluationCriteria,
   DISQUALIFICATION_CONDITIONS,
@@ -7,6 +9,7 @@ import {
 import { ApiResponse } from '@/src/lib/api-utils'
 import { FormTemplateType } from '@/src/types/business-plan'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
+import { applyRateLimit, getClientIp } from '@/src/lib/rate-limit/api-rate-limiter'
 
 // Validation rules based on PSST framework (2025년 공고문 기반)
 interface ValidationRule {
@@ -283,6 +286,15 @@ function checkDisqualifications(text: string): string[] {
 }
 
 export const POST = withErrorCapture(async (req: NextRequest) => {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    return ApiResponse.unauthorized()
+  }
+
+  const rateLimitResponse = applyRateLimit(user.id, getClientIp(req))
+  if (rateLimitResponse) return rateLimitResponse
+
   const body = await req.json()
   const { sectionData, basicInfo, templateType = 'yebi-chogi' } = body
 

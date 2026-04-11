@@ -1,8 +1,11 @@
+// HIDDEN ROUTE — middleware.ts hiddenApiRoutes에서 404 반환. 프로덕션 미노출.
 import { NextRequest } from 'next/server'
+import { createClient as createAuthClient } from '@/src/lib/supabase/server'
 import { createClient } from '@supabase/supabase-js'
 import { logError } from '@/src/lib/error-logging'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
+import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
 import {
   getEvaluationCriteria,
   getFormSpecificPrompt,
@@ -204,6 +207,17 @@ const INDUSTRY_KEYWORDS: Record<string, {
 }
 
 export const POST = withErrorCapture(async (req: NextRequest) => {
+  // 인증 체크 — 로그인한 유저만 AI 생성 가능
+  const supabaseAuth = await createAuthClient()
+  const { data: { user } } = await supabaseAuth.auth.getUser()
+  if (!user) {
+    return ApiResponse.unauthorized()
+  }
+
+  // Rate limit — AI API 비용 보호 (30req/60s, 넉넉한 편)
+  const rateLimitResponse = await checkAIRateLimit(user.id, getClientIp(req))
+  if (rateLimitResponse) return rateLimitResponse
+
   try {
     const body = await req.json()
     const {

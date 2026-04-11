@@ -1,3 +1,4 @@
+// HIDDEN ROUTE — middleware.ts hiddenApiRoutes에서 404 반환. 프로덕션 미노출.
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse, validateRequired } from '@/src/lib/api-utils'
 import {
@@ -11,6 +12,7 @@ import {
 } from '@/src/lib/subscription/constants'
 import type { PlanType, BoostType, BillingCycle } from '@/src/lib/subscription/constants'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
+import { applyRateLimit, getClientIp } from '@/src/lib/rate-limit/api-rate-limiter'
 
 // POST: Confirm payment and update subscription/boost
 export const POST = withErrorCapture(async (request) => {
@@ -23,6 +25,10 @@ export const POST = withErrorCapture(async (request) => {
     if (!user) {
       return ApiResponse.unauthorized()
     }
+
+    // Rate limit — 결제 남용 방지 (분당 60회, 넉넉하지만 자동화 공격 차단)
+    const rateLimitResponse = applyRateLimit(user.id, getClientIp(request))
+    if (rateLimitResponse) return rateLimitResponse
 
     const body = await request.json()
     const validation = validateRequired(body, ['paymentKey', 'orderId', 'amount', 'paymentType'])

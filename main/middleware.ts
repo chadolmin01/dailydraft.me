@@ -40,6 +40,9 @@ const hiddenRoutes = [
 ]
 
 // API routes hidden in MVP mode — returns 404
+// 여기 등록된 라우트는 프로덕션에서 접근 불가 (404).
+// 각 route.ts 파일 상단에도 "HIDDEN ROUTE" 주석 표기됨.
+// 활성화하려면 여기서 제거 + route.ts 주석 제거.
 const hiddenApiRoutes = [
   '/api/ai-chat',
   '/api/dev',

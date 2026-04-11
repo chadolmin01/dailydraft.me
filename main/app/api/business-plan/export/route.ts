@@ -1,7 +1,9 @@
+// HIDDEN ROUTE — middleware.ts hiddenApiRoutes에서 404 반환. 프로덕션 미노출.
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
+import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
 
 // Export business plan as PDF (server-side generation with Puppeteer)
 
@@ -11,6 +13,10 @@ export const POST = withErrorCapture(async (req: NextRequest) => {
   if (!user) {
     return ApiResponse.unauthorized()
   }
+
+  // Rate limit — Puppeteer PDF 생성은 서버 리소스 소모가 큼 (30req/60s)
+  const rateLimitResponse = await checkAIRateLimit(user.id, getClientIp(req))
+  if (rateLimitResponse) return rateLimitResponse
 
   const body = await req.json()
   const { format, data, sectionData, template } = body
