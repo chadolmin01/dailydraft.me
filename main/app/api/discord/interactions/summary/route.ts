@@ -27,10 +27,10 @@ export async function POST(request: NextRequest) {
       await sendFollowup(
         appId,
         interactionToken,
-        '📝 **첫 마무리입니다!**\n\n현재 몇 주차인지 알려주세요.\n`/마무리 주차 3` 형태로 입력하면 3주차부터 시작합니다.\n\n설정 없이 바로 요약만 하려면 다시 `/마무리`를 입력해주세요.'
+        '📝 **첫 마무리입니다!**\n\n주차 카운터가 시작되었습니다. 다음 `/마무리`부터 자동으로 주차가 표시됩니다.\n\n주차를 변경하려면 Draft 웹 설정에서 수정할 수 있습니다.'
       )
-      // 첫 호출임을 표시 (week = 0으로 임시 저장하여 다음 호출에서 감지)
-      await setWeekInfo(weekInfo.settingsId, 0)
+      // 첫 호출 — 1주차로 설정, 이후 자동 증가
+      await setWeekInfo(weekInfo.settingsId, 1)
       return NextResponse.json({ ok: true })
     }
 
