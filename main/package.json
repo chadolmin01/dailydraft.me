@@ -6,6 +6,7 @@
     "lint": "next lint",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:crons": "bash scripts/test-crons.sh",
     "bot": "npx tsx src/lib/discord/bot/index.ts",
     "bot:register": "node scripts/register-bot-commands.mjs"
   },
