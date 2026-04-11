@@ -29,7 +29,7 @@ export const GET = withErrorCapture(
     // 멤버 쿼리
     let query = supabase
       .from('club_members')
-      .select('id, user_id, ghost_name, ghost_metadata, role, cohort, joined_at', {
+      .select('id, user_id, ghost_name, ghost_metadata, role, display_role, cohort, joined_at', {
         count: 'exact',
       })
       .eq('club_id', club.id)
@@ -54,15 +54,15 @@ export const GET = withErrorCapture(
       .map(m => m.user_id)
       .filter(Boolean) as string[]
 
-    let profileMap: Record<string, { nickname: string | null; avatar_url: string | null }> = {}
+    let profileMap: Record<string, { nickname: string | null; avatar_url: string | null; university: string | null; skills: Array<{ name: string }> | null }> = {}
     if (realUserIds.length > 0) {
       const { data: profiles } = await supabase
         .from('profiles')
-        .select('user_id, nickname, avatar_url')
+        .select('user_id, nickname, avatar_url, university, skills')
         .in('user_id', realUserIds)
 
       profileMap = Object.fromEntries(
-        (profiles || []).map(p => [p.user_id, { nickname: p.nickname, avatar_url: p.avatar_url }])
+        (profiles || []).map(p => [p.user_id, { nickname: p.nickname, avatar_url: p.avatar_url, university: p.university, skills: p.skills as Array<{ name: string }> | null }])
       )
     }
 
@@ -80,9 +80,11 @@ export const GET = withErrorCapture(
           nickname: profile?.nickname ?? null,
           avatar_url: profile?.avatar_url ?? null,
           role: m.role,
+          display_role: m.display_role ?? null,
           cohort: m.cohort,
           joined_at: m.joined_at,
-          // ghost_metadata의 학과/캠퍼스 등은 real에선 불필요
+          university: profile?.university ?? null,
+          skills: profile?.skills ?? null,
         }
       } else {
         // ghost member — 익명 ID로 표시
@@ -94,9 +96,12 @@ export const GET = withErrorCapture(
           nickname: `멤버 ${String(offset + idx + 1).padStart(3, '0')}`,
           avatar_url: null,
           role: m.role,
+          display_role: m.display_role ?? null,
           cohort: m.cohort,
           joined_at: m.joined_at,
           department: meta.department ?? meta.notes ?? null,
+          university: null,
+          skills: null,
         }
       }
     })

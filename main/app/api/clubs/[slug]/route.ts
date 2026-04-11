@@ -4,7 +4,7 @@ import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 // ── 허용된 PATCH 필드 ──
 const UPDATABLE_FIELDS = new Set([
-  'name', 'description', 'logo_url', 'visibility', 'require_approval',
+  'name', 'description', 'logo_url', 'visibility', 'require_approval', 'category',
 ])
 
 // GET /api/clubs/[slug] — 클럽 상세 조회 (공개)
@@ -16,7 +16,8 @@ export const GET = withErrorCapture(
     const { data: club, error } = await supabase
       .from('clubs')
       .select(`
-        id, slug, name, description, logo_url,
+        id, slug, name, description, logo_url, category,
+        visibility, require_approval,
         created_by, created_at, updated_at
       `)
       .eq('slug', slug)
