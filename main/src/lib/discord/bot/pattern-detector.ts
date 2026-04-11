@@ -40,6 +40,9 @@ const END_KEYWORDS =
 const HANDOFF_KEYWORDS =
   /다\s*했어|완성|끝났|완료|확인.*해줘|봐줘|작업\s*시작/;
 const UNOWNED_KEYWORDS = /누가\s*하|누가\s*할|담당자|맡을\s*사람/;
+// 일정 확정: (요일/시간) + (확정 표현) 이 한 메시지에 같이 올 때
+const SCHEDULE_DAY_TIME = /월요일|화요일|수요일|목요일|금요일|토요일|일요일|내일|모레|다음\s*주|이번\s*주|\d{1,2}시|\d{1,2}:\d{2}|\d{1,2}월\s*\d{1,2}일/;
+const SCHEDULE_CONFIRM = /하자|ㅇㅋ|오케이|좋아|그걸로|그때\s*보자|그때\s*봐|확정|그렇게|ㄱㄱ|고고|그래\s*그럼|으로\s*하자|에\s*보자|에\s*만나|으로\s*정하자/;
 const URL_REGEX = /https?:\/\/[^\s<>)"]+/;
 
 export function prefilter(
@@ -71,8 +74,13 @@ export function prefilter(
     results.push({ type: 'task-assignment', confidence: 0.65 });
   }
 
+  // 일정 확정: 마지막 메시지에 (요일/시간) + (확정 표현) 둘 다 있을 때
+  // schedule-coordination보다 우선 — 확정이면 조율 제안 불필요
+  if (SCHEDULE_DAY_TIME.test(lastMsg) && SCHEDULE_CONFIRM.test(lastMsg)) {
+    results.push({ type: 'schedule-confirmed', confidence: 0.8 });
+  }
   // 일정 조율: 키워드 매칭 시 즉시 감지 (빠른 제안용)
-  if (SCHEDULE_KEYWORDS.test(combined)) {
+  else if (SCHEDULE_KEYWORDS.test(combined)) {
     results.push({ type: 'schedule-coordination', confidence: 0.7 });
   }
 

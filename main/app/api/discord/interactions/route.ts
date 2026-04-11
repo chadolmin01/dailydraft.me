@@ -510,6 +510,69 @@ function handleButtonClick(interaction: {
     })
   }
 
+  // "네" — 이벤트 등록: 원본 메시지 위 대화에서 날짜/시간 추출 → Scheduled Event
+  if (customId === 'quick_event_yes' && channelId) {
+    after(async () => {
+      try {
+        const { fetchChannelMessages, sendChannelMessage } = await import('@/src/lib/discord/client')
+        const { createScheduledEvent } = await import('@/src/lib/discord/bot/discord-actions')
+
+        // 최근 메시지 10개에서 날짜/시간 추출
+        const messages = await fetchChannelMessages(channelId, { maxMessages: 10 })
+        if (!messages || messages.length === 0) return
+
+        const conversation = messages
+          .slice(-10)
+          .map((m: { author: { username?: string }; content: string }) =>
+            `${m.author.username}: ${m.content}`
+          )
+          .join('\n')
+
+        // Gemini로 날짜/시간 추출
+        const { chatModel } = await import('@/src/lib/ai/gemini-client')
+        const result = await chatModel.generateContent({
+          contents: [{ role: 'user', parts: [{ text: `다음 대화에서 확정된 모임 날짜와 시간을 추출하세요.\n\n${conversation}` }] }],
+          systemInstruction: `JSON으로만 응답하세요. 오늘은 ${new Date().toISOString().slice(0, 10)} 입니다.\n{"title":"모임 제목","date":"YYYY-MM-DD","time":"HH:MM","duration_hours":2}\ntime을 모르면 "19:00"으로 기본값을 사용하세요.`,
+          generationConfig: { temperature: 0.1, responseMimeType: 'application/json' },
+        })
+
+        const parsed = JSON.parse(result.response.text())
+        const startTime = new Date(`${parsed.date}T${parsed.time}:00+09:00`) // KST
+
+        // guild_id 조회 (채널에서)
+        const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN ?? ''
+        const channelRes = await fetch(`https://discord.com/api/v10/channels/${channelId}`, {
+          headers: { Authorization: `Bot ${BOT_TOKEN}` },
+        })
+        const channelData = await channelRes.json() as { guild_id?: string }
+        const guildId = channelData.guild_id
+
+        if (!guildId) return
+
+        const event = await createScheduledEvent(
+          guildId,
+          parsed.title || '팀 모임',
+          startTime,
+          new Date(startTime.getTime() + (parsed.duration_hours || 2) * 60 * 60 * 1000),
+        )
+
+        if (event?.id) {
+          await sendChannelMessage(
+            channelId,
+            `✅ **${parsed.title || '팀 모임'}** 이벤트가 등록되었습니다!\n📅 ${parsed.date} ${parsed.time} (KST)`,
+          )
+        }
+      } catch (err) {
+        console.error('[Button] 이벤트 생성 실패:', err)
+      }
+    })
+
+    return NextResponse.json({
+      type: UPDATE_MESSAGE,
+      data: { content: '📅 이벤트를 등록하고 있습니다...', components: [] },
+    })
+  }
+
   // "네" — 투표 만들기
   if (customId === 'quick_vote_yes') {
     return NextResponse.json({

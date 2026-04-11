@@ -38,6 +38,12 @@ export function buildQuickSuggestion(
   ];
 
   switch (type) {
+    case 'schedule-confirmed':
+      return {
+        content: '📅 일정이 확정된 것 같습니다. Discord 이벤트로 등록하시겠습니까?',
+        channelId,
+        components: YES_NO_BUTTONS('quick_event_yes', 'quick_dismiss'),
+      };
     case 'schedule-coordination':
       return {
         content: '📅 일정을 잡으시겠습니까?',

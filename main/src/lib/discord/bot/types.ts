@@ -11,6 +11,7 @@ export type PatternType =
   | 'decision-deadlock'    // 결정 교착 → 투표 제안
   | 'task-assignment'      // 할 일 언급 → 체크리스트
   | 'schedule-coordination'// 일정 조율 → 투표 or When2Meet
+  | 'schedule-confirmed'   // 일정 확정 → Discord Event 생성
   | 'resource-shared'      // 링크 공유 → 자료 정리
   | 'blocker-frustration'  // 막힘 감지 → 도움 요청
   | 'scope-creep'          // 범위 확장 → 백로그 제안
@@ -24,6 +25,7 @@ export type PatternType =
 export const INSTANT_PATTERNS: PatternType[] = [
   'decision-deadlock',
   'schedule-coordination',
+  'schedule-confirmed',
   'blocker-frustration',
   'unanswered-question',
 ];
@@ -203,7 +205,7 @@ export interface BotConfig {
 
 export const DEFAULT_BOT_CONFIG: BotConfig = {
   minConfidence: 0.7,
-  cooldownMs: 30 * 60 * 1000,      // 30분
+  cooldownMs: 2 * 60 * 60 * 1000,   // 2시간
   summaryDelayMs: 90 * 1000,        // 90초
   unansweredDelayMs: 30 * 60 * 1000,// 30분
   quietHourStart: 23,

@@ -97,6 +97,8 @@ export class BotEngine {
       if (response) {
         await this.sendResponse(response);
         this.cooldown.recordTrigger(msg.channelId, candidate.type);
+        // 제안 후 버퍼 초기화 — 같은 메시지로 재감지 방지
+        this.buffer.clear(msg.channelId);
         break; // 한 번에 하나만
       }
     }
