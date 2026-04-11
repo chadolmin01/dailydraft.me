@@ -4,6 +4,30 @@
     {
       "path": "/api/cron/coffee-chat-reminders",
       "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron/weekly-checkin-prompt",
+      "schedule": "0 0 * * 1"
+    },
+    {
+      "path": "/api/cron/checkin-reminder",
+      "schedule": "0 9 * * 5"
+    },
+    {
+      "path": "/api/cron/activity-tracker",
+      "schedule": "0 12 * * 0"
+    },
+    {
+      "path": "/api/cron/ghostwriter-generate",
+      "schedule": "0 13 * * 0"
+    },
+    {
+      "path": "/api/cron/reaction-collector",
+      "schedule": "0 13 * * 0"
+    },
+    {
+      "path": "/api/cron/draft-timeout",
+      "schedule": "0 */6 * * *"
     }
   ]
 }

@@ -88,8 +88,8 @@ function addSecurityHeaders(response: NextResponse) {
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
   const isDev = process.env.NODE_ENV === 'development'
   const scriptSrc = isDev
-    ? "'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com"
-    : "'self' 'unsafe-inline' https://www.googletagmanager.com"
+    ? "'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://us-assets.i.posthog.com"
+    : "'self' 'unsafe-inline' https://www.googletagmanager.com https://us-assets.i.posthog.com"
   response.headers.set(
     'Content-Security-Policy',
     [
@@ -99,7 +99,7 @@ function addSecurityHeaders(response: NextResponse) {
       `img-src 'self' data: blob: https://*.supabase.co https://images.unsplash.com https://source.unsplash.com https://plus.unsplash.com https://picsum.photos https://avatars.githubusercontent.com https://lh3.googleusercontent.com https://k.kakaocdn.net https://phinf.pstatic.net https://ssl.pstatic.net https://www.googletagmanager.com`,
       `worker-src 'self' blob:`,
       `font-src 'self' https://fonts.gstatic.com`,
-      `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com https://www.google-analytics.com https://www.googletagmanager.com`,
+      `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com https://www.google-analytics.com https://www.googletagmanager.com https://*.posthog.com https://us.i.posthog.com https://us-assets.i.posthog.com`,
       `frame-ancestors 'none'`,
       `base-uri 'self'`,
       `form-action 'self'`,

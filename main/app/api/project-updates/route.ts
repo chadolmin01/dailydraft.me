@@ -2,6 +2,7 @@ import { createClient } from '@/src/lib/supabase/server'
 import { createAdminClient } from '@/src/lib/supabase/admin'
 import { ApiResponse, isValidUUID, parseJsonBody } from '@/src/lib/api-utils'
 import { notifyProjectUpdate } from '@/src/lib/notifications/create-notification'
+import { sendClubUpdatePostedWebhook } from '@/src/lib/webhooks/send-club-webhook'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 export const POST = withErrorCapture(async (request) => {
@@ -49,7 +50,7 @@ export const POST = withErrorCapture(async (request) => {
   }
 
   // Send notifications to team members (fire-and-forget, don't block response)
-  sendTeamNotifications(opportunity_id, user.id, title.trim()).catch(() => {})
+  sendTeamNotifications(opportunity_id, user.id, title.trim(), update_type, week_number).catch(() => {})
 
   return ApiResponse.created(update)
 })
@@ -57,7 +58,9 @@ export const POST = withErrorCapture(async (request) => {
 async function sendTeamNotifications(
   opportunityId: string,
   authorId: string,
-  updateTitle: string
+  updateTitle: string,
+  updateType: string,
+  weekNumber: number
 ) {
   const admin = createAdminClient()
 
@@ -122,4 +125,14 @@ async function sendTeamNotifications(
   }
 
   await Promise.allSettled(notifications)
+
+  // Discord/Slack 웹훅 발송 (클럽 소속 프로젝트인 경우)
+  sendClubUpdatePostedWebhook({
+    opportunityId,
+    authorName,
+    projectTitle,
+    updateTitle,
+    updateType,
+    weekNumber,
+  }).catch(() => {})
 }

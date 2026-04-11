@@ -75,6 +75,20 @@ netstat -ano | grep -E ":(300[0-9]|3010) " | grep LISTENING
 - `Dashboard.tsx`: useMemo, useCallback, lazy loading 적용
 - `recommend API`: Promise.all 병렬 fetch
 
+## UI 안티패턴 (절대 금지)
+
+다음 패턴은 AI 생성 코드의 클리셰이며, Draft 디자인 시스템에서 금지:
+
+| 금지 패턴 | 이유 | 대안 |
+|-----------|------|------|
+| `border-left: Npx solid <color>` | 바이브코딩 냄새, 레퍼런스 제품 미사용 | 텍스트 뱃지, 6px dot, 배경색 |
+| `border-top` 컬러 액센트 바 | 동일 | 동일 |
+| 그라디언트 장식 라인 | 장식적 요소 | 텍스트 위계(size/weight/color) |
+| 영문 대문자 모노 라벨 | "INFORMATION" 등 | 한국어 텍스트 라벨 |
+| 불필요한 bg-surface 미니카드 감싸기 | 과도한 중첩 | 플랫 레이아웃 |
+
+레퍼런스: Toss, Linear, Instagram — 텍스트 위계와 여백만으로 구분.
+
 ## 바이브코딩 지원 규칙
 
 사용자는 비개발자(스타트업 창업자)임. 코드/디버깅 시 다음 자동 수행:
