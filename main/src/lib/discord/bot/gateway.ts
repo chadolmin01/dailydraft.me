@@ -26,6 +26,7 @@ const GATEWAY_URL = 'wss://gateway.discord.gg/?v=10&encoding=json';
 interface GatewayCallbacks {
   onMessageCreate: (data: any) => void;
   onReactionAdd: (data: any) => void;
+  onGuildCreate?: (data: any) => void;
   onReady: (data: any) => void;
   onError: (error: Error) => void;
 }
@@ -170,6 +171,10 @@ export class DiscordGateway {
 
       case 'MESSAGE_REACTION_ADD':
         this.callbacks.onReactionAdd(data);
+        break;
+
+      case 'GUILD_CREATE':
+        this.callbacks.onGuildCreate?.(data);
         break;
     }
   }

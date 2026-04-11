@@ -12,6 +12,16 @@
 
 import { DiscordGateway } from './gateway';
 import { BotEngine } from './bot-engine';
+import {
+  handleGuildJoin,
+  getOnboardingState,
+  setOnboardingState,
+  clearOnboardingState,
+  sendChannelSelectionMessage,
+  sendToneSelectionMessage,
+  sendSetupCompleteMessage,
+  autoMapChannels,
+} from './onboarding-flow';
 
 const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
 
@@ -22,14 +32,46 @@ if (!BOT_TOKEN) {
 
 const engine = new BotEngine();
 
+// 봇 자신의 ID (READY 이벤트에서 설정)
+let botUserId: string = '';
+
 const gateway = new DiscordGateway(BOT_TOKEN, {
   onReady: (data) => {
-    const guildNames = data.guilds.map((g: any) => g.id).join(', ');
-    console.log(`[Bot] 준비 완료 — 서버: ${guildNames}`);
+    botUserId = data.user.id;
+    const guildCount = data.guilds.length;
+    console.log(`[Bot] 준비 완료 — ${guildCount}개 서버, ID: ${botUserId}`);
     console.log('[Bot] 3계층 감지 활성:');
     console.log('  - 슬래시 커맨드: /마무리, /투표, /일정');
     console.log('  - 즉시 감지: 투표·블로커·질문·일정');
     console.log('  - 마무리 요약: 종결 신호 or /마무리');
+    console.log('  - 온보딩: 새 서버 → 자동 세팅 DM');
+  },
+
+  onGuildCreate: async (guild) => {
+    // 새 서버에 봇이 추가됨 → 온보딩 시작
+    // READY 시 기존 서버도 GUILD_CREATE로 오므로, 신규만 처리
+    // unavailable=false인 경우가 신규 (READY 시에는 unavailable=true)
+    if (guild.unavailable) return;
+
+    try {
+      await handleGuildJoin({
+        id: guild.id,
+        name: guild.name,
+        owner_id: guild.owner_id,
+      });
+
+      // 온보딩 세션 시작
+      setOnboardingState(guild.owner_id, {
+        guildId: guild.id,
+        guildName: guild.name,
+        ownerId: guild.owner_id,
+        step: 'welcome',
+        selectedChannels: [],
+        selectedTone: 'formal',
+      });
+    } catch (err) {
+      console.error('[Bot] 온보딩 시작 오류:', err);
+    }
   },
 
   onMessageCreate: async (data) => {
@@ -51,14 +93,25 @@ const gateway = new DiscordGateway(BOT_TOKEN, {
     }
   },
 
-  onReactionAdd: (data) => {
+  onReactionAdd: async (data) => {
     // 봇 자신의 리액션은 무시
-    if (data.user_id === data.member?.user?.id) return;
+    if (data.user_id === botUserId) return;
 
     const emoji = data.emoji?.name;
+
+    // 온보딩 리액션 처리
+    const state = getOnboardingState(data.user_id);
+    if (state) {
+      try {
+        await handleOnboardingReaction(data.user_id, emoji, state);
+      } catch (err) {
+        console.error('[Bot] 온보딩 리액션 오류:', err);
+      }
+      return;
+    }
+
+    // 일반 리액션 처리
     if (emoji === '❌') {
-      // dismiss 추적 — 나중에 pattern type 매핑 필요
-      // 현재는 로깅만
       console.log(`[Bot] ❌ dismiss — channel: ${data.channel_id}, msg: ${data.message_id}`);
     }
     if (emoji === '✅') {
@@ -71,6 +124,83 @@ const gateway = new DiscordGateway(BOT_TOKEN, {
     process.exit(1);
   },
 });
+
+/**
+ * 온보딩 리액션 처리 — 단계별 진행
+ */
+async function handleOnboardingReaction(
+  userId: string,
+  emoji: string,
+  state: OnboardingState
+): Promise<void> {
+  const { sendDirectMessage } = await import('../client');
+
+  switch (state.step) {
+    case 'welcome':
+      if (emoji === '🚀') {
+        state.step = 'channel_select';
+        setOnboardingState(userId, state);
+        await sendChannelSelectionMessage(userId, state.guildId);
+      }
+      break;
+
+    case 'channel_select':
+      if (emoji === '1️⃣') {
+        // 카테고리 단위 자동 매핑
+        const mapped = await autoMapChannels(state.guildId);
+        state.selectedChannels = mapped.map((m) => m.channelId);
+        state.step = 'tone_select';
+        setOnboardingState(userId, state);
+
+        await sendDirectMessage(
+          userId,
+          `✅ ${mapped.length}개 채널이 자동 매핑되었습니다!\n${mapped.map((m) => `  #${m.channelName}${m.categoryName ? ` (${m.categoryName})` : ''}`).join('\n')}`
+        );
+        await sendToneSelectionMessage(userId);
+      } else if (emoji === '2️⃣') {
+        // Draft 웹에서 직접 선택
+        state.step = 'tone_select';
+        setOnboardingState(userId, state);
+        await sendDirectMessage(
+          userId,
+          '채널 매핑은 Draft 웹에서 설정할 수 있습니다. 다음 단계로 넘어갑니다!'
+        );
+        await sendToneSelectionMessage(userId);
+      } else if (emoji === '3️⃣') {
+        // 건너뛰기
+        state.step = 'tone_select';
+        setOnboardingState(userId, state);
+        await sendToneSelectionMessage(userId);
+      }
+      break;
+
+    case 'tone_select':
+      const toneMap: Record<string, 'formal' | 'casual' | 'english'> = {
+        '🏢': 'formal',
+        '💬': 'casual',
+        '🇺🇸': 'english',
+      };
+      if (toneMap[emoji]) {
+        state.selectedTone = toneMap[emoji];
+        state.step = 'complete';
+        setOnboardingState(userId, state);
+
+        // TODO: DB에 설정 저장 (club_ghostwriter_settings)
+        // TODO: discord_bot_installations에 기록
+        // TODO: 채널 매핑을 discord_team_channels에 저장
+
+        await sendSetupCompleteMessage(userId, state.guildName, state.clubSlug ?? 'settings', {
+          channelCount: state.selectedChannels.length,
+          tone: state.selectedTone,
+        });
+
+        clearOnboardingState(userId);
+      }
+      break;
+  }
+}
+
+import type { OnboardingState } from './onboarding-flow';
 
 // 시작
 console.log('[Bot] Discord Gateway 연결 중...');
