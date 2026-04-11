@@ -27,7 +27,7 @@ export function ExploreClubGrid({
       {isError ? (
         <ErrorState message="클럽 목록을 불러오는 데 실패했습니다" onRetry={onRetry} />
       ) : isLoading ? (
-        <SkeletonGrid count={6} cols={3} />
+        <SkeletonGrid count={6} cols={2} />
       ) : clubs.length === 0 ? (
         <EmptyState
           icon={Building2}
@@ -35,82 +35,66 @@ export function ExploreClubGrid({
           description="클럽을 만들면 여기에 표시됩니다"
         />
       ) : (
-        <>
-          {/* Mobile: compact list */}
-          <div className="flex flex-col gap-2 md:hidden">
-            {clubs.map((club, index) => {
-              const stagger = staggerOnceClass(`club-m:${club.id}`)
-              return (
-                <Link
-                  key={club.id}
-                  href={`/clubs/${club.slug}`}
-                  style={stagger ? { animationDelay: `${Math.min(index * 40, 400)}ms` } : undefined}
-                  className={`${stagger} flex items-center gap-3 px-4 py-4 bg-surface-card rounded-2xl shadow-sm hover:shadow-md hover-spring active:scale-[0.985] transition-all`}
-                >
-                  <div className="w-10 h-10 rounded-lg bg-bg-sunken flex items-center justify-center text-sm font-extrabold text-txt-secondary shrink-0">
-                    {club.name[0]}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-sm font-semibold text-txt-primary truncate">{club.name}</span>
-                      {club.category && (
-                        <span className="text-[10px] font-medium text-brand bg-brand-bg px-1.5 py-0.5 rounded-full shrink-0">{club.category}</span>
-                      )}
-                    </div>
-                    {club.description && (
-                      <p className="text-xs text-txt-tertiary truncate mt-0.5">{club.description}</p>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-1 text-xs text-txt-tertiary shrink-0">
-                    <Users size={11} />
-                    <span>{club.member_count}</span>
-                  </div>
-                </Link>
-              )
-            })}
-          </div>
-
-          {/* Desktop: card grid */}
-          <div className="hidden md:grid md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {clubs.map((club, index) => {
-              const stagger = staggerOnceClass(`club-d:${club.id}`)
-              return (
-                <Link
-                  key={club.id}
-                  href={`/clubs/${club.slug}`}
-                  style={stagger ? { animationDelay: `${Math.min(index * 60, 600)}ms` } : undefined}
-                  className={`${stagger} bg-surface-card rounded-2xl shadow-sm overflow-hidden group hover:shadow-md hover:-translate-y-0.5 hover-spring h-[11rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985] active:shadow-none`}
-                >
-                  <div className="px-5 pt-5 flex gap-3">
-                    <div className="w-12 h-12 rounded-xl bg-bg-sunken flex items-center justify-center text-base font-extrabold text-txt-secondary shrink-0">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {clubs.map((club, index) => {
+            const stagger = staggerOnceClass(`club:${club.id}`)
+            return (
+              <Link
+                key={club.id}
+                href={`/clubs/${club.slug}`}
+                style={stagger ? { animationDelay: `${Math.min(index * 50, 500)}ms` } : undefined}
+                className={`${stagger} flex items-start gap-3.5 p-4 bg-surface-card border border-border rounded-xl shadow-sm hover:shadow-md hover:-translate-y-[2px] transition-all duration-200 ease-out focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985]`}
+              >
+                {/* Logo: 52x52, rounded-md */}
+                {club.logo_url ? (
+                  <img
+                    src={club.logo_url}
+                    alt={`${club.name} 로고`}
+                    width={52}
+                    height={52}
+                    className="w-[52px] h-[52px] rounded-md object-cover shrink-0"
+                  />
+                ) : (
+                  <div className="w-[52px] h-[52px] rounded-md bg-bg-sunken flex items-center justify-center shrink-0">
+                    <span className="text-lg font-extrabold text-txt-secondary">
                       {club.name[0]}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-0.5">
-                        <h3 className="font-semibold text-base text-txt-primary truncate">{club.name}</h3>
-                        {club.category && (
-                          <span className="text-[10px] font-semibold text-brand bg-brand-bg px-2 py-0.5 rounded-full shrink-0">{club.category}</span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-1 text-xs text-txt-tertiary">
-                        <Users size={11} />
-                        <span>멤버 {club.member_count}명</span>
-                      </div>
-                    </div>
+                    </span>
                   </div>
-                  <div className="px-5 pt-3 flex-1 overflow-hidden">
-                    {club.description && (
-                      <p className="text-sm text-txt-tertiary line-clamp-2">{club.description}</p>
+                )}
+
+                {/* Info section */}
+                <div className="flex-1 min-w-0">
+                  {/* Row 1: name + category badge */}
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-semibold text-txt-primary truncate">
+                      {club.name}
+                    </h3>
+                    {club.category && (
+                      <span className="text-[10px] font-semibold text-brand bg-brand-bg px-2 py-0.5 rounded-full shrink-0">
+                        {club.category}
+                      </span>
                     )}
                   </div>
-                  <div className="px-5 pb-4 flex items-end">
-                    <span className="text-[11px] font-medium text-brand">자세히 보기 →</span>
+
+                  {/* Row 2: description (university/소개) */}
+                  {club.description && (
+                    <p className="text-xs text-txt-secondary truncate mt-1">
+                      {club.description}
+                    </p>
+                  )}
+
+                  {/* Row 3: stats */}
+                  <div className="flex items-center gap-3 mt-1.5">
+                    <span className="flex items-center gap-1 text-xs text-txt-tertiary">
+                      <Users size={12} />
+                      멤버 {club.member_count}명
+                    </span>
                   </div>
-                </Link>
-              )
-            })}
-          </div>
-        </>
+                </div>
+              </Link>
+            )
+          })}
+        </div>
       )}
     </section>
   )

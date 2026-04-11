@@ -1,11 +1,136 @@
 import React, { useState } from 'react'
-import { Clock, AlertTriangle } from 'lucide-react'
+import { Clock, AlertTriangle, CheckCircle2, Circle, ChevronDown } from 'lucide-react'
 import { CommentSection } from '@/components/CommentSection'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { timeAgo } from '@/src/lib/utils'
+import { safeParseContent } from '@/src/lib/ghostwriter/parse-content'
 import { ProjectContentProps, UPDATE_TYPE_CONFIG } from './types'
 
 type Tab = 'intro' | 'activity'
+
+/**
+ * 주간 업데이트 content 상세 (펼쳤을 때).
+ * JSON 구조(ghostwriter 생성)면 summary + tasks + nextPlan,
+ * 일반 텍스트면 그대로.
+ */
+function UpdateDetail({ content }: { content: string }) {
+  let isStructured = false
+  try {
+    const raw = JSON.parse(content)
+    if (typeof raw === 'object' && raw !== null && raw.summary) isStructured = true
+  } catch { /* plain text */ }
+
+  if (!isStructured) {
+    return (
+      <p className="text-[14px] text-txt-secondary leading-relaxed break-keep whitespace-pre-line">
+        {content}
+      </p>
+    )
+  }
+
+  const parsed = safeParseContent(content)
+
+  return (
+    <div className="space-y-3 mt-3">
+      <p className="text-[14px] text-txt-secondary leading-relaxed break-keep">
+        {parsed.summary}
+      </p>
+
+      {parsed.tasks.length > 0 && (
+        <div className="space-y-1.5">
+          {parsed.tasks.map((task, i) => (
+            <div key={i} className="flex items-start gap-2 text-[13px]">
+              {task.done ? (
+                <CheckCircle2 size={15} className="text-[#34C759] shrink-0 mt-0.5" />
+              ) : (
+                <Circle size={15} className="text-txt-disabled shrink-0 mt-0.5" />
+              )}
+              <span className={task.done ? 'text-txt-tertiary line-through' : 'text-txt-secondary'}>
+                {task.text}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {parsed.nextPlan && (
+        <div className="bg-[#EDF5FF] dark:bg-[#1A2A3A] rounded-xl px-3.5 py-2.5">
+          <span className="text-[12px] font-semibold text-[#3182F6] block mb-0.5">다음 주 계획</span>
+          <p className="text-[13px] text-txt-secondary leading-relaxed break-keep">{parsed.nextPlan}</p>
+        </div>
+      )}
+    </div>
+  )
+}
+
+/** 접힘 헤더에서 보여줄 요약 정보 추출 */
+function getUpdateSummaryInfo(content: string) {
+  try {
+    const raw = JSON.parse(content)
+    if (typeof raw === 'object' && raw !== null && Array.isArray(raw.tasks)) {
+      const done = raw.tasks.filter((t: { done?: boolean }) => t.done).length
+      const total = raw.tasks.length
+      return { tasksDone: done, tasksTotal: total }
+    }
+  } catch { /* plain text */ }
+  return { tasksDone: 0, tasksTotal: 0 }
+}
+
+/** 개별 업데이트 카드 — 접힘/펼침 */
+function UpdateCard({ update, defaultOpen }: {
+  update: { id: string; title: string; content: string; update_type: string; week_number: number; created_at: string | null }
+  defaultOpen: boolean
+}) {
+  const [open, setOpen] = useState(defaultOpen)
+  const { tasksDone, tasksTotal } = getUpdateSummaryInfo(update.content)
+
+  return (
+    <div className="bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl overflow-hidden">
+      {/* 헤더 — 항상 표시, 클릭하면 토글 */}
+      <button
+        onClick={() => setOpen(v => !v)}
+        className="w-full flex items-center gap-3 p-4 text-left bg-transparent border-none cursor-pointer hover:bg-[#F0F1F3] dark:hover:bg-[#252527] transition-colors"
+      >
+        <span className={`w-2 h-2 rounded-full shrink-0 ${UPDATE_TYPE_CONFIG[update.update_type]?.dotColor || 'bg-txt-disabled'}`} />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <h4 className="font-bold text-txt-primary text-[14px] truncate">{update.title}</h4>
+            <span className="text-[12px] text-txt-disabled shrink-0">
+              {update.week_number}주차
+            </span>
+          </div>
+          <div className="flex items-center gap-2 mt-0.5">
+            <span className="text-[12px] text-txt-tertiary">
+              {UPDATE_TYPE_CONFIG[update.update_type]?.label || update.update_type}
+            </span>
+            {tasksTotal > 0 && (
+              <>
+                <span className="text-[12px] text-txt-disabled">·</span>
+                <span className="text-[12px] font-semibold text-[#34C759]">
+                  작업 {tasksDone}/{tasksTotal}
+                </span>
+              </>
+            )}
+            {update.created_at && (
+              <>
+                <span className="text-[12px] text-txt-disabled">·</span>
+                <span className="text-[12px] text-txt-disabled">{timeAgo(update.created_at)}</span>
+              </>
+            )}
+          </div>
+        </div>
+        <ChevronDown size={16} className={`text-txt-tertiary shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+      </button>
+
+      {/* 상세 — 열렸을 때만 */}
+      {open && (
+        <div className="px-4 pb-4 pt-0 border-t border-[#EBEBEB] dark:border-[#2C2C2E]">
+          <UpdateDetail content={update.content} />
+        </div>
+      )}
+    </div>
+  )
+}
 
 export const ProjectContent: React.FC<ProjectContentProps> = ({
   opportunity,
@@ -120,34 +245,9 @@ export const ProjectContent: React.FC<ProjectContentProps> = ({
                 </div>
 
                 {updates.length > 0 ? (
-                  <div className="space-y-3">
-                    {updates.map((update) => (
-                      <div key={update.id} className="bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl p-4">
-                        <div className="flex items-center gap-2 mb-1.5">
-                          <span
-                            className={`w-2 h-2 rounded-full ${
-                              UPDATE_TYPE_CONFIG[update.update_type]?.dotColor || 'bg-txt-disabled'
-                            }`}
-                          />
-                          <span className="text-[13px] font-medium text-txt-tertiary">
-                            {UPDATE_TYPE_CONFIG[update.update_type]?.label || update.update_type}
-                          </span>
-                          <span className="text-[12px] text-txt-disabled">
-                            Week {update.week_number}
-                          </span>
-                          {update.created_at && (
-                            <span className="text-[12px] text-txt-disabled">
-                              · {timeAgo(update.created_at)}
-                            </span>
-                          )}
-                        </div>
-                        <h4 className="font-bold text-txt-primary text-[15px] mb-1">
-                          {update.title}
-                        </h4>
-                        <p className="text-[14px] text-txt-secondary leading-relaxed break-keep whitespace-pre-line">
-                          {update.content}
-                        </p>
-                      </div>
+                  <div className="space-y-2">
+                    {updates.map((update, i) => (
+                      <UpdateCard key={update.id} update={update} defaultOpen={false} />
                     ))}
                   </div>
                 ) : (

@@ -3,16 +3,18 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react'
 import dynamic from 'next/dynamic'
 import { AnimatePresence } from 'framer-motion'
-import { LayoutGrid, Users, Sparkles, Filter } from 'lucide-react'
+import { Sparkles } from 'lucide-react'
 import { toast } from 'sonner'
 import Link from 'next/link'
 import { useSearchParams as useNextSearchParams, useRouter, usePathname } from 'next/navigation'
-import { DashboardLayout } from '@/components/ui/DashboardLayout'
-import { SkeletonGrid, SkeletonSidebar } from '@/components/ui/Skeleton'
+import { SkeletonGrid } from '@/components/ui/Skeleton'
 import { ProfileCompletionBanner } from '@/components/ui/ProfileCompletionBanner'
 import { AiMatchingNudgeCard } from '@/components/explore/AiMatchingNudgeCard'
 import { StarterGuideCard } from '@/components/starter-guide/StarterGuideCard'
 import { useStarterGuide } from '@/src/hooks/useStarterGuide'
+import { useDragScroll } from '@/src/hooks/useDragScroll'
+import { CampusMap } from '@/components/explore/CampusMap'
+import { timeAgo } from '@/src/lib/utils'
 
 const ModalLoadingFallback = () => (
   <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-modal-backdrop">
@@ -31,27 +33,44 @@ import { useInfiniteOpportunities, type OpportunityWithCreator, calculateDaysLef
 import { cleanNickname } from '@/src/lib/clean-nickname'
 import { useInfinitePublicProfiles, type PublicProfile } from '@/src/hooks/usePublicProfiles'
 import { useUserRecommendations, type UserRecommendation } from '@/src/hooks/useUserRecommendations'
-import { FALLBACK_CATEGORIES, FALLBACK_TRENDING_TAGS } from '@/src/lib/fallbacks/explore'
-import { PEOPLE_ROLE_FILTERS, PROJECT_ROLE_FILTERS, PEOPLE_CATEGORY_ICONS } from '@/components/explore/constants'
+import { FALLBACK_CATEGORIES } from '@/src/lib/fallbacks/explore'
+import { PEOPLE_ROLE_FILTERS } from '@/components/explore/constants'
 import { positionLabel } from '@/src/constants/roles'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/src/lib/supabase/client'
 import { useAuth } from '@/src/context/AuthContext'
 import { useProfile } from '@/src/hooks/useProfile'
 import { opportunityKeys } from '@/src/hooks/useOpportunities'
-import { CATEGORY_ICONS, PAGE_SIZE, PEOPLE_PAGE_SIZE, CLUBS_PAGE_SIZE, TYPE_FILTERS } from './constants'
+import { CATEGORY_ICONS, PAGE_SIZE, PEOPLE_PAGE_SIZE, CLUBS_PAGE_SIZE } from './constants'
 import {
-  ExploreHeroCarousel,
-  ExploreSearchBar,
-  ExploreSidebar,
-  ExploreTabBar,
-  ExploreProjectGrid,
   ExplorePeopleGrid,
   ExploreClubGrid,
 } from '@/components/explore'
 import { FilterSheet } from '@/components/explore/FilterSheet'
-import { ActiveFilterChips } from '@/components/explore/ActiveFilterChips'
-import type { ActiveTab, SortBy, TypeFilter, SearchScope, PeopleRoleFilter, PeopleSortBy, ProjectRoleFilter, ActiveFilterChip, ClubCard } from '@/components/explore/types'
+import type { ActiveTab, SortBy, TypeFilter, SearchScope, PeopleRoleFilter, PeopleSortBy, ProjectRoleFilter, ClubCard } from '@/components/explore/types'
+
+// ── 캠퍼스 맵 대학 데이터 (사이드 책갈피용) ──
+const CAMPUS_UNIVERSITIES: { name: string; clubs: string[] }[] = [
+  { name: '경희대', clubs: ['FLIP'] },
+]
+
+const normalizeUni = (raw: string) => raw.replace(/대학교$/, '대')
+
+// ── 공개 위클리 업데이트 타입 ──
+interface RecentUpdate {
+  id: string
+  opportunity_id: string
+  week_number: number
+  title: string
+  content: string
+  update_type: string
+  created_at: string
+  project_title: string | null
+  project_tags: string[]
+  club_name: string | null
+  author_nickname: string | null
+  author_avatar_url: string | null
+}
 
 function useDebouncedValue<T>(value: T, delay: number): T {
   const [debounced, setDebounced] = useState(value)
@@ -65,11 +84,8 @@ function useDebouncedValue<T>(value: T, delay: number): T {
 export default function ExplorePageClient() {
   return (
     <Suspense fallback={
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="flex gap-6">
-          <div className="hidden lg:block w-56 shrink-0"><SkeletonSidebar /></div>
-          <div className="flex-1"><SkeletonGrid count={6} cols={3} /></div>
-        </div>
+      <div className="max-w-[1200px] mx-auto px-5 py-6">
+        <SkeletonGrid count={6} cols={3} />
       </div>
     }>
       <ExplorePageContent />
@@ -127,20 +143,25 @@ function ExplorePageContent() {
   const [sortBy, setSortBy] = useState<SortBy>('trending')
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all')
   const [activeTab, setActiveTab] = useState<ActiveTab>('projects')
+  const [updatesBannerDismissed, setUpdatesBannerDismissed] = useState(false)
   const [recruitingOnly, setRecruitingOnly] = useState(false)
   const [peopleRoleFilter, setPeopleRoleFilter] = useState<PeopleRoleFilter>('all')
+  const [peopleUniFilter, setPeopleUniFilter] = useState<string>('all')
   const [projectRoleFilter, setProjectRoleFilter] = useState<ProjectRoleFilter>('all')
   const [peopleSortBy, setPeopleSortBy] = useState<PeopleSortBy>('latest')
   const [searchInput, setSearchInput] = useState(initialQuery)
   const [searchScope, setSearchScope] = useState<SearchScope>(initialScope)
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false)
-  const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
 
   const searchQuery = useDebouncedValue(searchInput, 300)
   const { isAuthenticated, user, isLoading: isAuthLoading } = useAuth()
   const { data: profile } = useProfile()
   const queryClient = useQueryClient()
   const guide = useStarterGuide()
+  const dragRefProjects = useDragScroll()
+  const dragRefUpdates = useDragScroll()
+  const dragRefPeople = useDragScroll()
+  const dragRefClubs = useDragScroll()
 
   // Starter guide: completion toast
   useEffect(() => {
@@ -205,6 +226,11 @@ function ExplorePageContent() {
   const aiScoreMap = useMemo(() => {
     const map = new Map<string, number>()
     for (const p of aiProjects) map.set(p.id, p.match_score)
+    return map
+  }, [aiProjects])
+  const aiReasonMap = useMemo(() => {
+    const map = new Map<string, string>()
+    for (const p of aiProjects) if (p.match_reason) map.set(p.id, p.match_reason)
     return map
   }, [aiProjects])
 
@@ -274,6 +300,8 @@ function ExplorePageContent() {
         updatedAt: opp.updated_at ?? undefined,
         status: opp.status,
         matchLabel,
+        matchScore: aiScore ?? null,
+        matchReason: aiReasonMap.get(opp.id) ?? null,
         badges: (opp as unknown as { badges?: string[] | null }).badges ?? null,
         viewsCount: opp.views_count || 0,
         interestCount: opp.interest_count || 0,
@@ -338,6 +366,10 @@ function ExplorePageContent() {
           if (!(filterDef as { positionSlugs: string[] }).positionSlugs.includes(position)) return false
         }
       }
+      // University filter (정규화된 이름으로 비교)
+      if (peopleUniFilter !== 'all') {
+        if (normalizeUni(profile.university || '') !== peopleUniFilter) return false
+      }
       if (!query) return true
       if (searchScope === 'projects') return false
       const name = (profile.nickname || '').toLowerCase()
@@ -396,75 +428,16 @@ function ExplorePageContent() {
       const diff = new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
       return diff !== 0 ? diff : tieBreak
     }),
-    [publicProfiles, peopleRoleFilter, query, searchScope, recsMap, peopleSortBy]
+    [publicProfiles, peopleRoleFilter, peopleUniFilter, query, searchScope, recsMap, peopleSortBy]
   )
 
-  // ── Derived: project categories ──
+  // FilterSheet에 필요한 최소 데이터
   const projectCategories = useMemo(() => FALLBACK_CATEGORIES.map((cat) => {
-    const count = cat.id === 'all'
-      ? opportunities.length
-      : opportunities.filter((opp) =>
-          (opp.interest_tags || []).some(t => t.toLowerCase().includes(cat.id.toLowerCase()))
-        ).length
-    return { ...cat, count, icon: CATEGORY_ICONS[cat.id] || LayoutGrid }
+    const count = cat.id === 'all' ? opportunities.length : opportunities.filter((opp) =>
+      (opp.interest_tags || []).some(t => t.toLowerCase().includes(cat.id.toLowerCase()))
+    ).length
+    return { ...cat, count, icon: CATEGORY_ICONS[cat.id] || Sparkles }
   }), [opportunities])
-
-  // ── Derived: people categories ──
-  const peopleCategories = useMemo(() =>
-    PEOPLE_ROLE_FILTERS.map((f) => {
-      const count = f.id === 'all'
-        ? publicProfiles.length
-        : publicProfiles.filter(p => {
-            const position = p.desired_position || ''
-            return 'positionSlugs' in f && (f as { positionSlugs: string[] }).positionSlugs.includes(position)
-          }).length
-      return { id: f.id, label: f.label, count, icon: PEOPLE_CATEGORY_ICONS[f.id] || Users }
-    }),
-    [publicProfiles]
-  )
-
-  // ── Derived: people trending tags ──
-  const peopleTrendingTags = useMemo(() => {
-    const tagCounts: Record<string, number> = {}
-    publicProfiles.forEach(p => {
-      (p.interest_tags || []).forEach(tag => {
-        tagCounts[tag] = (tagCounts[tag] || 0) + 1
-      })
-    })
-    return Object.entries(tagCounts)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
-      .map(([tag, count]) => ({ tag, count }))
-  }, [publicProfiles])
-
-  // ── Derived: active filter chips ──
-  const activeFilterChips = useMemo<ActiveFilterChip[]>(() => {
-    const chips: ActiveFilterChip[] = []
-    if (activeTab === 'projects') {
-      if (typeFilter !== 'all') {
-        const tf = TYPE_FILTERS.find(t => t.id === typeFilter)
-        chips.push({ key: `type:${typeFilter}`, label: tf?.label ?? typeFilter, onRemove: () => setTypeFilter('all') })
-      }
-      if (projectRoleFilter !== 'all') {
-        const rf = PROJECT_ROLE_FILTERS.find(r => r.id === projectRoleFilter)
-        chips.push({ key: `role:${projectRoleFilter}`, label: rf?.label ?? projectRoleFilter, onRemove: () => setProjectRoleFilter('all') })
-      }
-      if (selectedCategory !== 'all') {
-        const cat = projectCategories.find(c => c.id === selectedCategory)
-        chips.push({ key: `cat:${selectedCategory}`, label: cat?.label ?? selectedCategory, onRemove: () => setSelectedCategory('all') })
-      }
-      if (recruitingOnly) {
-        chips.push({ key: 'recruiting', label: '모집 중만', onRemove: () => setRecruitingOnly(false) })
-      }
-    } else if (activeTab === 'people') {
-      if (peopleRoleFilter !== 'all') {
-        const rf = PEOPLE_ROLE_FILTERS.find(r => r.id === peopleRoleFilter)
-        chips.push({ key: `prole:${peopleRoleFilter}`, label: rf?.label ?? peopleRoleFilter, onRemove: () => setPeopleRoleFilter('all') })
-      }
-    }
-    // clubs 탭은 필터 칩 없음
-    return chips
-  }, [activeTab, typeFilter, projectRoleFilter, selectedCategory, recruitingOnly, peopleRoleFilter, projectCategories])
 
   const handleResetFilters = useCallback(() => {
     setTypeFilter('all')
@@ -473,58 +446,6 @@ function ExplorePageContent() {
     setRecruitingOnly(false)
     setPeopleRoleFilter('all')
   }, [])
-
-  const { data: liveTrending } = useQuery({
-    queryKey: ['explore', 'trending'],
-    queryFn: async () => {
-      const res = await fetch('/api/explore/trending')
-      if (!res.ok) return null
-      const data = await res.json()
-      return data.tags as { tag: string; count: number }[]
-    },
-    staleTime: 5 * 60_000,
-  })
-  const projectTrendingTags = liveTrending && liveTrending.length > 0 ? liveTrending : FALLBACK_TRENDING_TAGS
-
-  // ── Prop groups ──
-  const filterProps = activeTab === 'projects' ? {
-    activeTab,
-    categories: projectCategories,
-    selectedCategory,
-    onCategoryChange: setSelectedCategory,
-    trendingTags: projectTrendingTags,
-    onTagClick: (tag: string) => { setSearchInput(tag); setSearchScope('skills'); setActiveTab('projects') },
-  } as const : {
-    activeTab,
-    categories: peopleCategories,
-    selectedCategory: peopleRoleFilter,
-    onCategoryChange: (id: string) => setPeopleRoleFilter(id as PeopleRoleFilter),
-    trendingTags: peopleTrendingTags,
-    onTagClick: (tag: string) => { setSearchInput(tag); setSearchScope('skills'); setActiveTab('people') },
-  } as const
-
-  const searchProps = {
-    searchInput,
-    onSearchInputChange: setSearchInput,
-    searchScope,
-    onSearchScopeChange: setSearchScope,
-    onScopeSelectTab: setActiveTab,
-  } as const
-
-  const tabProps = {
-    activeTab,
-    onTabChange: setActiveTab,
-    sortBy,
-    onSortChange: setSortBy,
-    peopleSortBy,
-    onPeopleSortChange: setPeopleSortBy,
-    query,
-    projectCount: projectCards.length,
-    peopleCount: talentCards.length,
-    clubCount: clubCards.length,
-    activeFilterCount: activeFilterChips.length,
-    onFilterButtonClick: () => setIsFilterSheetOpen(true),
-  } as const
 
   const handlePrefetchProject = useCallback((id: string) => {
     queryClient.prefetchQuery({
@@ -549,23 +470,75 @@ function ExplorePageContent() {
     replaceParams({ project: null, profile: id, profileBy: byUserId ? 'userId' : null })
   }, [replaceParams])
 
+  // ── 추천 피드용 데이터 ──
+  // 프로젝트: AI 매칭 점수순 (점수 있는 것 우선, 없으면 기존 순서 유지)
+  const feedProjects = useMemo(() =>
+    [...projectCards]
+      .sort((a, b) => (aiScoreMap.get(b.id) ?? 0) - (aiScoreMap.get(a.id) ?? 0))
+      .slice(0, 8),
+    [projectCards, aiScoreMap]
+  )
+  // 대학별 전체 인원수를 별도 쿼리로 빠르게 집계 (페이지네이션 무관)
+  const { data: uniCountsRaw = [] } = useQuery({
+    queryKey: ['university-counts'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('university')
+        .eq('profile_visibility', 'public')
+        .not('university', 'is', null)
+      if (error || !data) return []
+      // 클라이언트에서 그룹핑 (supabase는 group by 미지원)
+      const map = new Map<string, number>()
+      data.forEach((row: { university: string | null }) => {
+        if (!row.university) return
+        const name = normalizeUni(row.university)
+        map.set(name, (map.get(name) || 0) + 1)
+      })
+      return Array.from(map.entries()).map(([name, count]) => ({ name, count }))
+    },
+    staleTime: 1000 * 60 * 5,
+  })
+
+  const universityList = useMemo(() => {
+    const uniMap = new Map<string, { count: number; clubs: string[] }>()
+    // 캠퍼스 맵 대학 먼저 등록
+    CAMPUS_UNIVERSITIES.forEach(u => {
+      uniMap.set(u.name, { count: 0, clubs: u.clubs })
+    })
+    // DB 집계 결과 병합
+    uniCountsRaw.forEach(({ name, count }) => {
+      const existing = uniMap.get(name)
+      if (existing) {
+        existing.count = count
+      } else {
+        uniMap.set(name, { count, clubs: [] })
+      }
+    })
+    return Array.from(uniMap.entries())
+      .sort((a, b) => b[1].count - a[1].count)
+      .map(([name, data]) => ({ name, count: data.count, clubs: data.clubs }))
+  }, [uniCountsRaw])
+
+  const feedPeople = talentCards.slice(0, 5)
+  const feedClubs = clubCards.slice(0, 4)
+
+  // ── 공개 위클리 업데이트 (실제 데이터) ──
+  const { data: recentUpdates = [], isLoading: updatesLoading } = useQuery<RecentUpdate[]>({
+    queryKey: ['project_updates', 'recent'],
+    queryFn: async () => {
+      const res = await fetch('/api/project-updates/recent?limit=10')
+      if (!res.ok) return []
+      return res.json()
+    },
+    staleTime: 1000 * 60 * 2,
+  })
+
   return (
-    <div className="bg-surface-bg min-h-full">
-      <DashboardLayout
-        size="wide"
-        className="pt-0 md:pt-6"
-        sidebar={
-          <ExploreSidebar
-            {...filterProps}
-            talentCards={talentCards}
-            sidebarRecs={sidebarRecs}
-            recsLoading={recsLoading}
-            onSelectPeople={() => setActiveTab('people')}
-            onSelectProfile={handleSelectProfile}
-          />
-        }
-      >
-        {/* 배너: DashboardLayout 안에서 높이 예산 내 렌더링 */}
+    <div className="bg-white min-h-full">
+      <div className="max-w-[1200px] mx-auto px-5 pt-6 pb-16">
+
+        {/* 배너 */}
         {guide.visible && (
           <StarterGuideCard
             steps={guide.steps}
@@ -581,69 +554,476 @@ function ExplorePageContent() {
           <AiMatchingNudgeCard />
         )}
 
-        {/* 검색바 + 필터: 데스크톱만 */}
-        <div className="hidden md:flex items-start gap-2">
-          <div className="flex-1">
-            <ExploreSearchBar {...searchProps} />
-          </div>
-          <button
-            onClick={() => setIsFilterSheetOpen(true)}
-            className="shrink-0 mt-0.5 flex items-center gap-1.5 px-4 py-3 text-xs font-bold border rounded-xl transition-all bg-surface-card text-txt-secondary border-border hover:border-border hover:shadow-sm"
-          >
-            <Filter size={14} />
-            필터
-            {activeFilterChips.length > 0 && (
-              <span className="ml-0.5 min-w-[16px] h-4 flex items-center justify-center text-[10px] font-bold bg-brand text-white rounded-full px-1">
-                {activeFilterChips.length}
-              </span>
-            )}
-          </button>
+        {/* ── Search bar ── */}
+        <div className="relative mb-5">
+          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8E8E8E] pointer-events-none flex">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+          </span>
+          <input
+            type="text"
+            value={searchInput}
+            onChange={e => setSearchInput(e.target.value)}
+            placeholder="프로젝트, 사람, 클럽을 검색해보세요"
+            className="w-full pl-11 pr-4 py-3 text-[15px] bg-[#F5F5F5] border border-[#E5E5E5] rounded-full text-[#262626] placeholder:text-[#C7C7C7] focus:outline-none focus:border-[#0095F6] focus:bg-white focus:shadow-[0_0_0_3px_rgba(0,149,246,0.1)] transition-all"
+          />
         </div>
 
-        <ExploreTabBar
-          {...tabProps}
-          mobileSearchOpen={mobileSearchOpen}
-          onMobileSearchToggle={() => setMobileSearchOpen(prev => !prev)}
-          searchInput={searchInput}
-          onSearchInputChange={setSearchInput}
-        />
+        {/* ── Tabs ── */}
+        <div className="flex border-b border-[#E5E5E5] mb-4">
+          {([
+            { key: 'projects' as ActiveTab, label: '추천 피드' },
+            { key: 'people' as ActiveTab, label: '사람' },
+            { key: 'clubs' as ActiveTab, label: '클럽' },
+          ]).map(tab => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className={`px-5 py-3 text-[15px] font-semibold border-b-2 -mb-px transition-colors ${
+                activeTab === tab.key
+                  ? 'text-[#262626] border-[#262626]'
+                  : 'text-[#8E8E8E] border-transparent hover:text-[#555555]'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
 
-        <ActiveFilterChips chips={activeFilterChips} onClearAll={handleResetFilters} />
-
-
-        {activeTab === 'projects' && (
-          <ExploreProjectGrid
-            projectCards={projectCards}
-            isLoading={opportunitiesLoading}
-            isError={oppError}
-            onRetry={() => refetchOpp()}
-            hasMore={hasMoreOpp ?? false}
-            isFetchingMore={isFetchingMoreOpp}
-            totalCount={totalCount}
-            searchQuery={searchQuery}
-            selectedCategory={selectedCategory}
-            recruitingOnly={recruitingOnly}
-            onLoadMore={() => fetchNextOpp()}
-            onSelectProject={handleSelectProject}
-            onPrefetchProject={handlePrefetchProject}
-            sortBy={sortBy}
-          />
-        )}
-
+        {/* ── Filter chips ── */}
         {activeTab === 'people' && (
-          <ExplorePeopleGrid
-            talentCards={talentCards}
-            isLoading={profilesLoading}
-            isError={profilesError}
-            onRetry={() => refetchProfiles()}
-            hasMore={hasMoreProfiles ?? false}
-            isFetchingMore={isFetchingMoreProfiles}
-            onLoadMore={() => fetchNextProfiles()}
-            onSelectProfile={handleSelectProfile}
-            peopleSortBy={peopleSortBy}
-          />
+          <div className="flex items-center gap-2 mb-5 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+            {[
+              { id: 'all', label: '전체' },
+              ...PEOPLE_ROLE_FILTERS.filter(r => r.id !== 'all'),
+            ].map(f => (
+              <button
+                key={f.id}
+                onClick={() => setPeopleRoleFilter(f.id as PeopleRoleFilter)}
+                className={`shrink-0 px-3.5 py-1.5 text-[13px] font-medium rounded-[20px] border transition-colors ${
+                  peopleRoleFilter === f.id
+                    ? 'bg-[#262626] text-white border-[#262626]'
+                    : 'text-[#555555] border-[#E5E5E5] bg-white hover:border-[#8E8E8E]'
+                }`}
+              >{f.label}</button>
+            ))}
+          </div>
+        )}
+        {activeTab === 'clubs' && (
+          <div className="flex items-center gap-2 mb-5 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+            {['전체', '사이드프로젝트', '스타트업', '스터디', '학회'].map((label, i) => (
+              <button key={label} className={`shrink-0 px-3.5 py-1.5 text-[13px] font-medium rounded-[20px] border transition-colors ${
+                i === 0
+                  ? 'bg-[#262626] text-white border-[#262626]'
+                  : 'text-[#555555] border-[#E5E5E5] bg-white hover:border-[#8E8E8E]'
+              }`}>{label}</button>
+            ))}
+          </div>
         )}
 
+        {/* ════════════════════════════════════════════ */}
+        {/* FEED TAB                                     */}
+        {/* ════════════════════════════════════════════ */}
+        {activeTab === 'projects' && (
+          <div>
+            {/* New updates banner — 클릭하면 확인 처리 후 사라짐 */}
+            {recentUpdates.length > 0 && !updatesBannerDismissed && (
+              <div
+                onClick={() => {
+                  setUpdatesBannerDismissed(true)
+                  queryClient.invalidateQueries({ queryKey: ['project_updates', 'recent'] })
+                }}
+                className="flex items-center justify-center gap-2 py-2.5 bg-[#E8F4FD] text-[#0095F6] text-[13px] font-semibold rounded-2xl mb-4 cursor-pointer hover:bg-[rgba(0,149,246,0.15)] transition-colors"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 4 23 10 17 10" /><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" /></svg>
+                새 업데이트 {recentUpdates.length}건이 있습니다
+              </div>
+            )}
+
+            {/* Campus map — wireframe 기반 */}
+            <CampusMap />
+
+            {/* Recommendation sections */}
+            <div className="flex flex-col gap-8">
+
+              {/* ── Section 1: 내 스킬에 맞는 프로젝트 ── */}
+              <section>
+                <div className="flex items-baseline justify-between mb-3.5">
+                  <span className="text-[16px] font-bold text-[#262626]">내 스킬에 맞는 프로젝트</span>
+                  <Link href="/explore?scope=projects" className="text-[13px] text-[#8E8E8E] hover:text-[#555555] transition-colors no-underline">더보기 ›</Link>
+                </div>
+                {opportunitiesLoading ? (
+                  <SkeletonGrid count={3} cols={3} />
+                ) : feedProjects.length === 0 ? (
+                  <p className="text-sm text-[#8E8E8E] py-8 text-center">아직 추천할 프로젝트가 없습니다</p>
+                ) : (
+                  <div ref={dragRefProjects} className="flex gap-3 overflow-x-auto pb-2 feed-scroll">
+                    {feedProjects.map(card => (
+                      <div
+                        key={card.id}
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => handleSelectProject(card.id)}
+                        onMouseEnter={() => handlePrefetchProject(card.id)}
+                        onKeyDown={e => { if (e.key === 'Enter') handleSelectProject(card.id) }}
+                        className="shrink-0 w-[280px] bg-white border border-[#E5E5E5] rounded-[20px] overflow-hidden cursor-pointer hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] hover:-translate-y-[2px] transition-all duration-200 flex flex-col"
+                      >
+                        {/* Body */}
+                        <div className="p-5 flex-1 min-h-0">
+                          {/* Title */}
+                          <div className="text-[15px] font-bold text-[#262626] truncate mb-1">{card.title}</div>
+                          {/* Status */}
+                          <div className="text-[13px] text-[#555555] mb-3">
+                            {card.roles.length > 0 ? `${card.roles[0]} 모집 중` : '팀원 모집 중'}
+                          </div>
+                          {/* Tags */}
+                          <div className="flex gap-1.5 flex-wrap">
+                            {card.tags.slice(0, 3).map(tag => (
+                              <span key={tag} className="text-xs text-[#0095F6] bg-[#E8F4FD] px-2 py-0.5 rounded-full font-medium">{tag}</span>
+                            ))}
+                          </div>
+                          {/* Match score + hover tooltip */}
+                          {card.matchScore != null && card.matchScore >= 60 && (
+                            <div className="relative group w-fit mt-2.5">
+                              <div className={`flex items-center gap-1.5 text-[13px] font-semibold px-3 py-1.5 rounded-full cursor-default ${
+                                card.matchScore >= 80
+                                  ? 'bg-[#E8F4FD] text-[#0095F6]'
+                                  : 'bg-[#F5F5F5] text-[#555555]'
+                              }`}>
+                                {card.matchScore}% 매칭
+                              </div>
+                              {card.matchReason && (
+                                <div className="absolute bottom-full left-0 mb-2 w-[220px] px-3 py-2.5 bg-[#262626] text-white text-[12px] leading-relaxed rounded-xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-10 pointer-events-none">
+                                  {card.matchReason}
+                                  <div className="absolute top-full left-4 w-2 h-2 bg-[#262626] rotate-45 -mt-1" />
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                        {/* Footer */}
+                        <div className="flex items-center gap-2 px-5 py-3 border-t border-[#F0F0F0] text-[12px] text-[#8E8E8E]">
+                          {card.daysLeft != null && card.daysLeft > 0 && (
+                            <span className={card.daysLeft <= 7 ? 'text-[#EF4444] font-semibold' : ''}>
+                              D-{card.daysLeft}
+                            </span>
+                          )}
+                          {card.interestCount > 0 && (
+                            <>
+                              <span className="text-[#E5E5E5]">·</span>
+                              <span>관심 {card.interestCount}</span>
+                            </>
+                          )}
+                          {card.updatedAt && (
+                            <>
+                              <span className="text-[#E5E5E5]">·</span>
+                              <span>{timeAgo(card.updatedAt)} 활동</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </section>
+
+              {/* ── Section 2: 공개 위클리 업데이트 ── */}
+              <section>
+                <div className="flex items-baseline justify-between mb-3.5">
+                  <span className="text-[16px] font-bold text-[#262626]">공개 위클리 업데이트</span>
+                </div>
+                {updatesLoading ? (
+                  <SkeletonGrid count={3} cols={3} />
+                ) : recentUpdates.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-10 border border-dashed border-[#E5E5E5] rounded-[20px]">
+                    <div className="w-12 h-12 rounded-full bg-[#F5F5F5] flex items-center justify-center mb-3">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C7C7C7" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /></svg>
+                    </div>
+                    <p className="text-[14px] font-semibold text-[#262626] mb-1">아직 공개된 업데이트가 없습니다</p>
+                    <p className="text-[13px] text-[#8E8E8E]">프로젝트 팀이 주간 업데이트를 작성하면 여기에 표시됩니다</p>
+                  </div>
+                ) : (
+                  <div ref={dragRefUpdates} className="flex gap-3 overflow-x-auto pb-2 feed-scroll">
+                    {recentUpdates.map(wu => {
+                      let tasksDone = 0
+                      let tasksTotal = 0
+                      try {
+                        const parsed = JSON.parse(wu.content)
+                        if (Array.isArray(parsed.tasks)) {
+                          tasksTotal = parsed.tasks.length
+                          tasksDone = parsed.tasks.filter((t: { done?: boolean }) => t.done).length
+                        }
+                      } catch { /* plain text */ }
+
+                      const date = new Date(wu.created_at)
+                      const dateLabel = `${date.getMonth() + 1}월 ${date.getDate()}일`
+
+                      return (
+                        <div
+                          key={wu.id}
+                          role="button"
+                          tabIndex={0}
+                          onClick={() => handleSelectProject(wu.opportunity_id)}
+                          onMouseEnter={() => handlePrefetchProject(wu.opportunity_id)}
+                          onKeyDown={e => { if (e.key === 'Enter') handleSelectProject(wu.opportunity_id) }}
+                          className="shrink-0 w-[280px] bg-white border border-[#E5E5E5] rounded-[20px] overflow-hidden cursor-pointer hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] hover:-translate-y-[2px] transition-all duration-200"
+                        >
+                          <div className="p-5">
+                            {/* Project + club */}
+                            <div className="text-[13px] text-[#555555] mb-2 flex items-center gap-1.5">
+                              <strong className="font-bold text-[#262626] truncate">{wu.project_title || wu.title}</strong>
+                              {wu.club_name && (
+                                <>
+                                  <span className="text-[#C7C7C7]">·</span>
+                                  <span className="shrink-0">{wu.club_name}</span>
+                                </>
+                              )}
+                            </div>
+                            {/* Title */}
+                            <div className="text-[15px] font-bold text-[#262626] mb-2.5">{wu.title}</div>
+                            {/* Progress bar + tasks count */}
+                            {tasksTotal > 0 && (
+                              <div className="flex items-center gap-2.5 mb-2.5">
+                                <div className="flex-1 h-1.5 bg-[#F5F5F5] rounded-full overflow-hidden">
+                                  <div className="h-full bg-[#0095F6] rounded-full transition-all" style={{ width: `${Math.round((tasksDone / tasksTotal) * 100)}%` }} />
+                                </div>
+                                <span className="text-[13px] font-semibold text-[#0095F6] whitespace-nowrap">{tasksDone}/{tasksTotal}</span>
+                              </div>
+                            )}
+                            {/* Meta */}
+                            <div className="flex items-center gap-2 text-[13px] text-[#8E8E8E]">
+                              <span>{wu.week_number}주차</span>
+                              <span className="text-[#C7C7C7]">·</span>
+                              <span>{dateLabel}</span>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </section>
+
+              {/* ── Section 3: 프로젝트에 필요한 사람 ── */}
+              <section>
+                <div className="flex items-baseline justify-between mb-3.5">
+                  <span className="text-[16px] font-bold text-[#262626]">프로젝트에 필요한 사람</span>
+                  <button onClick={() => setActiveTab('people')} className="text-[13px] text-[#8E8E8E] hover:text-[#555555] transition-colors bg-transparent border-none cursor-pointer">더보기 ›</button>
+                </div>
+                <div ref={dragRefPeople} className="flex gap-3 overflow-x-auto pb-2 feed-scroll">
+                  {profilesLoading ? (
+                    <SkeletonGrid count={3} cols={3} />
+                  ) : feedPeople.length > 0 ? feedPeople.map(t => (
+                    <div
+                      key={t.id}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => handleSelectProfile(t.id, false)}
+                      onKeyDown={e => { if (e.key === 'Enter') handleSelectProfile(t.id, false) }}
+                      className="shrink-0 w-[200px] bg-white border border-[#E5E5E5] rounded-[20px] overflow-hidden cursor-pointer hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] hover:-translate-y-[2px] transition-all duration-200"
+                    >
+                      <div className="p-5 pt-5 flex flex-col items-center text-center gap-2">
+                        {/* Avatar */}
+                        <div className="w-14 h-14 rounded-full bg-[#E8F4FD] flex items-center justify-center text-xl font-bold text-[#0095F6] overflow-hidden">
+                          {t.avatarUrl ? (
+                            <img src={t.avatarUrl} alt={t.name} className="w-full h-full object-cover" />
+                          ) : (
+                            t.name.substring(0, 1)
+                          )}
+                        </div>
+                        {/* Name */}
+                        <div className="text-[15px] font-bold text-[#262626]">{t.name}</div>
+                        {/* University */}
+                        <div className="text-[13px] text-[#555555]">{t.university || t.role}</div>
+                        {/* Role + tag */}
+                        <div className="flex gap-1.5 flex-wrap justify-center">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#F5F5F5] text-[#555555]">{t.role}</span>
+                          {t.tags.slice(0, 1).map(tag => (
+                            <span key={tag} className="text-xs text-[#0095F6] bg-[#E8F4FD] px-2 py-0.5 rounded-full font-medium">{tag}</span>
+                          ))}
+                        </div>
+                        {/* Status badge */}
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#E8F4FD] text-[#0095F6]">
+                          팀 찾는 중
+                        </span>
+                        {/* Coffee chat button */}
+                        <button
+                          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#0095F6] text-white border-none cursor-pointer hover:opacity-85 transition-opacity mt-1"
+                          onClick={(e) => { e.stopPropagation(); handleSelectProfile(t.id, false) }}
+                        >
+                          커피챗 요청
+                        </button>
+                      </div>
+                    </div>
+                  )) : (
+                    <div className="w-full flex flex-col items-center justify-center py-10 border border-dashed border-[#E5E5E5] rounded-[20px]">
+                      <div className="w-12 h-12 rounded-full bg-[#F5F5F5] flex items-center justify-center mb-3">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C7C7C7" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+                      </div>
+                      <p className="text-[14px] font-semibold text-[#262626] mb-1">아직 등록된 사람이 없습니다</p>
+                      <p className="text-[13px] text-[#8E8E8E]">프로필을 등록한 사용자가 여기에 표시됩니다</p>
+                    </div>
+                  )}
+                </div>
+              </section>
+
+              {/* ── Section 4: 관심 분야 클럽 ── */}
+              <section>
+                <div className="flex items-baseline justify-between mb-3.5">
+                  <span className="text-[16px] font-bold text-[#262626]">관심 분야 클럽</span>
+                  <button onClick={() => setActiveTab('clubs')} className="text-[13px] text-[#8E8E8E] hover:text-[#555555] transition-colors bg-transparent border-none cursor-pointer">더보기 ›</button>
+                </div>
+                <div ref={dragRefClubs} className="flex gap-3 overflow-x-auto pb-2 feed-scroll">
+                  {clubsLoading ? (
+                    <SkeletonGrid count={3} cols={3} />
+                  ) : feedClubs.length > 0 ? feedClubs.map(club => (
+                    <Link
+                      key={club.id}
+                      href={`/clubs/${club.slug}`}
+                      className="shrink-0 w-[280px] bg-white border border-[#E5E5E5] rounded-[20px] overflow-hidden no-underline text-inherit hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] hover:-translate-y-[2px] transition-all duration-200"
+                    >
+                      <div className="p-5">
+                        {/* Club header: logo + info */}
+                        <div className="flex items-center gap-3.5">
+                          <div className="w-12 h-12 rounded-xl bg-[#F5F5F5] flex items-center justify-center text-[13px] font-extrabold text-[#555555] shrink-0 overflow-hidden">
+                            {club.logo_url ? (
+                              <img src={club.logo_url} alt={club.name} className="w-full h-full object-cover rounded-xl" />
+                            ) : (
+                              club.name.substring(0, 3)
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="text-[15px] font-bold text-[#262626] truncate">{club.name}</span>
+                              {club.category && (
+                                <span className="text-xs font-semibold text-[#0095F6] bg-[#E8F4FD] px-2.5 py-0.5 rounded-full shrink-0">{club.category}</span>
+                              )}
+                            </div>
+                            <div className="text-xs text-[#8E8E8E] mt-1 flex gap-2">
+                              <span>멤버 {club.member_count}명</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  )) : (
+                    <div className="w-full flex flex-col items-center justify-center py-10 border border-dashed border-[#E5E5E5] rounded-[20px]">
+                      <div className="w-12 h-12 rounded-full bg-[#F5F5F5] flex items-center justify-center mb-3">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C7C7C7" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><path d="M9 3v18" /><path d="M3 9h6" /></svg>
+                      </div>
+                      <p className="text-[14px] font-semibold text-[#262626] mb-1">아직 등록된 클럽이 없습니다</p>
+                      <p className="text-[13px] text-[#8E8E8E]">클럽이 등록되면 여기에 표시됩니다</p>
+                    </div>
+                  )}
+                </div>
+              </section>
+
+            </div>
+          </div>
+        )}
+
+        {/* ════════════════════════════════════════════ */}
+        {/* PEOPLE TAB                                   */}
+        {/* ════════════════════════════════════════════ */}
+        {activeTab === 'people' && (
+          <div className="flex gap-5">
+            {/* 사이드 책갈피 — 대학 필터 */}
+            <nav className="hidden md:flex flex-col shrink-0 w-[160px] sticky top-4 self-start">
+              {/* 전체 */}
+              <button
+                onClick={() => setPeopleUniFilter('all')}
+                className={`text-left px-3 py-2 text-[13px] rounded-xl transition-all mb-1 ${
+                  peopleUniFilter === 'all'
+                    ? 'text-[#0095F6] font-semibold bg-[#E8F4FD]'
+                    : 'text-[#555] hover:text-[#262626] hover:bg-[#F5F5F5] dark:hover:bg-[#252527]'
+                }`}
+              >
+                전체
+              </button>
+
+              <div className="w-full h-px bg-[#F0F0F0] dark:bg-[#2C2C2E] my-1.5" />
+
+              {/* 실제 대학 (DB에서 추출) + 수도권 주요대학 coming soon */}
+              {(() => {
+                const MAJOR_UNIS = ['경희대', '서울대', '연세대', '고려대', '한양대', '홍익대', '성균관대', '서강대', '중앙대', '이화여대', '건국대', '숭실대']
+                const activeUniNames = new Set(universityList.map(u => u.name))
+                const activeUnis = universityList
+                const comingSoonUnis = MAJOR_UNIS.filter(n => !activeUniNames.has(n))
+
+                return (
+                  <>
+                    {activeUnis.map(uni => {
+                      const isSelected = peopleUniFilter === uni.name
+                      return (
+                        <div key={uni.name}>
+                          <button
+                            onClick={() => setPeopleUniFilter(isSelected ? 'all' : uni.name)}
+                            className={`w-full text-left px-3 py-2 text-[13px] rounded-xl transition-all mb-1 flex items-center justify-between ${
+                              isSelected
+                                ? 'text-[#0095F6] font-semibold bg-[#E8F4FD]'
+                                : 'text-[#262626] dark:text-white hover:bg-[#F5F5F5] dark:hover:bg-[#252527]'
+                            }`}
+                          >
+                            <span className="truncate">{uni.name}</span>
+                            <span className={`text-[11px] tabular-nums ${
+                              isSelected ? 'text-[#0095F6]/50' : 'text-[#C7C7C7]'
+                            }`}>{uni.count || ''}</span>
+                          </button>
+                          {/* 동아리 서브 목록 — 선택된 대학만 펼침 */}
+                          {isSelected && uni.clubs.length > 0 && (
+                            <div className="ml-2 mb-1">
+                              {uni.clubs.map(club => (
+                                <div
+                                  key={club}
+                                  className="py-1.5 px-3 text-[12px] text-[#0095F6]/70 font-medium rounded-lg bg-[#E8F4FD]/50"
+                                >
+                                  {club}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
+
+                    {comingSoonUnis.length > 0 && (
+                      <>
+                        <div className="w-full h-px bg-[#F0F0F0] dark:bg-[#2C2C2E] my-2" />
+                        {comingSoonUnis.map(name => (
+                          <div
+                            key={name}
+                            className="pl-3 pr-2 py-2 text-[13px] text-[#D1D5DB] dark:text-[#444] mb-0.5 flex items-center justify-between cursor-default"
+                          >
+                            <span className="truncate">{name}</span>
+                            <span className="text-[10px]">??</span>
+                          </div>
+                        ))}
+                      </>
+                    )}
+                  </>
+                )
+              })()}
+            </nav>
+
+            {/* 사람 그리드 */}
+            <div className="flex-1 min-w-0">
+              <ExplorePeopleGrid
+                talentCards={talentCards}
+                isLoading={profilesLoading}
+                isError={profilesError}
+                onRetry={() => refetchProfiles()}
+                hasMore={hasMoreProfiles ?? false}
+                isFetchingMore={isFetchingMoreProfiles}
+                onLoadMore={() => fetchNextProfiles()}
+                onSelectProfile={handleSelectProfile}
+                peopleSortBy={peopleSortBy}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* ════════════════════════════════════════════ */}
+        {/* CLUBS TAB                                    */}
+        {/* ════════════════════════════════════════════ */}
         {activeTab === 'clubs' && (
           <ExploreClubGrid
             clubs={clubCards}
@@ -652,7 +1032,7 @@ function ExplorePageContent() {
             onRetry={() => refetchClubs()}
           />
         )}
-      </DashboardLayout>
+      </div>
 
       <FilterSheet
         isOpen={isFilterSheetOpen}
@@ -671,7 +1051,6 @@ function ExplorePageContent() {
         onPeopleRoleFilterChange={setPeopleRoleFilter}
         onReset={handleResetFilters}
       />
-
 
       <AnimatePresence>
         {selectedProjectId && (

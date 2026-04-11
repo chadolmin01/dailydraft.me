@@ -876,3 +876,16 @@ a[class*="px-"]:active {
   box-shadow: var(--shadow-sm);
   transform: scale(0.985);
 }
+
+/* ── Feed horizontal scroll — 스크롤바 숨김, 드래그 스크롤은 JS로 처리 ── */
+.feed-scroll {
+  scrollbar-width: none;
+  cursor: grab;
+}
+.feed-scroll::-webkit-scrollbar {
+  display: none;
+}
+.feed-scroll.dragging {
+  cursor: grabbing;
+  user-select: none;
+}

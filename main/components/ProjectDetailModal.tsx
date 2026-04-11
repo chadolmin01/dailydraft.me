@@ -538,7 +538,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                     />
 
                     {/* Body: 2-col (desktop) / single col (mobile) */}
-                    <div className="px-5 sm:px-8 py-2 grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-10 items-start">
+                    <div className="px-5 sm:px-8 pt-4 pb-10 grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-10 items-start">
 
                       {/* Left: tabbed content */}
                       <div className="md:col-span-3">
