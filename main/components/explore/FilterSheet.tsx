@@ -92,7 +92,8 @@ export function FilterSheet({
           </section>
         )}
 
-        {/* Role filter */}
+        {/* Role filter — 클럽 탭에서는 불필요 */}
+        {activeTab !== 'clubs' && (
         <section>
           <h3 className="text-[13px] font-semibold text-txt-secondary mb-3">역할</h3>
           <div className="flex flex-wrap gap-2">
@@ -126,6 +127,7 @@ export function FilterSheet({
             }
           </div>
         </section>
+        )}
 
         {/* Recruiting only — projects only */}
         {activeTab === 'projects' && (

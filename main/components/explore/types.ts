@@ -47,7 +47,17 @@ export interface TrendingTag {
 export type SortBy = 'latest' | 'popular' | 'trending' | 'ai'
 export type TypeFilter = 'all' | 'side_project' | 'startup' | 'study'
 export type SearchScope = 'all' | 'projects' | 'people' | 'skills'
-export type ActiveTab = 'projects' | 'people'
+export type ActiveTab = 'projects' | 'people' | 'clubs'
+
+export interface ClubCard {
+  id: string
+  slug: string
+  name: string
+  description: string | null
+  logo_url: string | null
+  category: string | null
+  member_count: number
+}
 export type PeopleRoleFilter = 'all' | 'developer' | 'designer' | 'pm' | 'marketer' | 'data'
 export type ProjectRoleFilter = 'all' | 'developer' | 'designer' | 'pm' | 'marketer' | 'data'
 export type PeopleSortBy = 'latest' | 'ai' | 'popular'

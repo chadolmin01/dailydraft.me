@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { LayoutGrid, Users, Search, X, Filter } from 'lucide-react'
+import { LayoutGrid, Users, Building2, Search, X, Filter } from 'lucide-react'
 import { SORT_OPTIONS, PEOPLE_SORT_OPTIONS } from './constants'
 import type { ActiveTab, SortBy, PeopleSortBy } from './types'
 
@@ -15,6 +15,7 @@ interface ExploreTabBarProps {
   query: string
   projectCount: number
   peopleCount: number
+  clubCount?: number
   mobileSearchOpen?: boolean
   onMobileSearchToggle?: () => void
   searchInput?: string
@@ -33,6 +34,7 @@ export function ExploreTabBar({
   query,
   projectCount,
   peopleCount,
+  clubCount,
   mobileSearchOpen,
   onMobileSearchToggle,
   searchInput,
@@ -65,6 +67,16 @@ export function ExploreTabBar({
               <Users size={14} />
               사람
               {query && <span className="ml-1 text-[10px] font-bold bg-brand-bg text-brand px-1.5 py-0.5 rounded-full">{peopleCount}</span>}
+            </button>
+            <button
+              onClick={() => onTabChange('clubs')}
+              className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-bold border-b-2 -mb-[2px] transition-colors ${
+                activeTab === 'clubs' ? 'border-brand text-brand' : 'border-transparent text-txt-tertiary hover:text-txt-secondary'
+              }`}
+            >
+              <Building2 size={14} />
+              클럽
+              {query && clubCount != null && <span className="ml-1 text-[10px] font-bold bg-brand-bg text-brand px-1.5 py-0.5 rounded-full">{clubCount}</span>}
             </button>
           </div>
           <div className="flex items-center gap-1">
@@ -121,36 +133,38 @@ export function ExploreTabBar({
         </div>
       )}
 
-      {/* Sort options */}
-      <div className="flex items-center gap-1 mb-3 overflow-x-auto scrollbar-hide mask-fade-r">
-        {activeTab === 'projects' ? (
-          SORT_OPTIONS.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => onSortChange(tab.id as SortBy)}
-              className={`shrink-0 flex items-center gap-1 px-3 py-2 text-xs font-medium rounded-xl transition-colors ${
-                sortBy === tab.id ? 'bg-surface-sunken text-txt-primary' : 'text-txt-tertiary hover:text-txt-secondary'
-              }`}
-            >
-              <tab.icon size={12} />
-              {tab.label}
-            </button>
-          ))
-        ) : (
-          PEOPLE_SORT_OPTIONS.map((opt) => (
-            <button
-              key={opt.id}
-              onClick={() => onPeopleSortChange(opt.id as PeopleSortBy)}
-              className={`shrink-0 flex items-center gap-1 px-3 py-2 text-xs font-medium rounded-xl transition-colors ${
-                peopleSortBy === opt.id ? 'bg-surface-sunken text-txt-primary' : 'text-txt-tertiary hover:text-txt-secondary'
-              }`}
-            >
-              <opt.icon size={12} />
-              {opt.label}
-            </button>
-          ))
-        )}
-      </div>
+      {/* Sort options — 클럽 탭에서는 정렬 옵션 불필요 */}
+      {activeTab !== 'clubs' && (
+        <div className="flex items-center gap-1 mb-3 overflow-x-auto scrollbar-hide mask-fade-r">
+          {activeTab === 'projects' ? (
+            SORT_OPTIONS.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => onSortChange(tab.id as SortBy)}
+                className={`shrink-0 flex items-center gap-1 px-3 py-2 text-xs font-medium rounded-xl transition-colors ${
+                  sortBy === tab.id ? 'bg-surface-sunken text-txt-primary' : 'text-txt-tertiary hover:text-txt-secondary'
+                }`}
+              >
+                <tab.icon size={12} />
+                {tab.label}
+              </button>
+            ))
+          ) : (
+            PEOPLE_SORT_OPTIONS.map((opt) => (
+              <button
+                key={opt.id}
+                onClick={() => onPeopleSortChange(opt.id as PeopleSortBy)}
+                className={`shrink-0 flex items-center gap-1 px-3 py-2 text-xs font-medium rounded-xl transition-colors ${
+                  peopleSortBy === opt.id ? 'bg-surface-sunken text-txt-primary' : 'text-txt-tertiary hover:text-txt-secondary'
+                }`}
+              >
+                <opt.icon size={12} />
+                {opt.label}
+              </button>
+            ))
+          )}
+        </div>
+      )}
     </>
   )
 }

@@ -39,7 +39,7 @@ import { supabase } from '@/src/lib/supabase/client'
 import { useAuth } from '@/src/context/AuthContext'
 import { useProfile } from '@/src/hooks/useProfile'
 import { opportunityKeys } from '@/src/hooks/useOpportunities'
-import { CATEGORY_ICONS, PAGE_SIZE, PEOPLE_PAGE_SIZE, TYPE_FILTERS } from './constants'
+import { CATEGORY_ICONS, PAGE_SIZE, PEOPLE_PAGE_SIZE, CLUBS_PAGE_SIZE, TYPE_FILTERS } from './constants'
 import {
   ExploreHeroCarousel,
   ExploreSearchBar,
@@ -47,10 +47,11 @@ import {
   ExploreTabBar,
   ExploreProjectGrid,
   ExplorePeopleGrid,
+  ExploreClubGrid,
 } from '@/components/explore'
 import { FilterSheet } from '@/components/explore/FilterSheet'
 import { ActiveFilterChips } from '@/components/explore/ActiveFilterChips'
-import type { ActiveTab, SortBy, TypeFilter, SearchScope, PeopleRoleFilter, PeopleSortBy, ProjectRoleFilter, ActiveFilterChip } from '@/components/explore/types'
+import type { ActiveTab, SortBy, TypeFilter, SearchScope, PeopleRoleFilter, PeopleSortBy, ProjectRoleFilter, ActiveFilterChip, ClubCard } from '@/components/explore/types'
 
 function useDebouncedValue<T>(value: T, delay: number): T {
   const [debounced, setDebounced] = useState(value)
@@ -206,6 +207,22 @@ function ExplorePageContent() {
     for (const p of aiProjects) map.set(p.id, p.match_score)
     return map
   }, [aiProjects])
+
+  // ── Clubs data ──
+  const { data: clubsData, isLoading: clubsLoading, isError: clubsError, refetch: refetchClubs } = useQuery<{ items: ClubCard[]; total: number }>({
+    queryKey: ['explore', 'clubs', searchQuery],
+    queryFn: async () => {
+      const params = new URLSearchParams()
+      if (searchQuery) params.set('q', searchQuery)
+      params.set('limit', String(CLUBS_PAGE_SIZE))
+      const qs = params.toString()
+      const res = await fetch(`/api/clubs${qs ? `?${qs}` : ''}`)
+      if (!res.ok) return { items: [], total: 0 }
+      return res.json()
+    },
+    staleTime: 1000 * 60 * 2,
+  })
+  const clubCards = clubsData?.items ?? []
 
   const query = searchQuery.toLowerCase().trim()
 
@@ -439,12 +456,13 @@ function ExplorePageContent() {
       if (recruitingOnly) {
         chips.push({ key: 'recruiting', label: '모집 중만', onRemove: () => setRecruitingOnly(false) })
       }
-    } else {
+    } else if (activeTab === 'people') {
       if (peopleRoleFilter !== 'all') {
         const rf = PEOPLE_ROLE_FILTERS.find(r => r.id === peopleRoleFilter)
         chips.push({ key: `prole:${peopleRoleFilter}`, label: rf?.label ?? peopleRoleFilter, onRemove: () => setPeopleRoleFilter('all') })
       }
     }
+    // clubs 탭은 필터 칩 없음
     return chips
   }, [activeTab, typeFilter, projectRoleFilter, selectedCategory, recruitingOnly, peopleRoleFilter, projectCategories])
 
@@ -503,6 +521,7 @@ function ExplorePageContent() {
     query,
     projectCount: projectCards.length,
     peopleCount: talentCards.length,
+    clubCount: clubCards.length,
     activeFilterCount: activeFilterChips.length,
     onFilterButtonClick: () => setIsFilterSheetOpen(true),
   } as const
@@ -622,6 +641,15 @@ function ExplorePageContent() {
             onLoadMore={() => fetchNextProfiles()}
             onSelectProfile={handleSelectProfile}
             peopleSortBy={peopleSortBy}
+          />
+        )}
+
+        {activeTab === 'clubs' && (
+          <ExploreClubGrid
+            clubs={clubCards}
+            isLoading={clubsLoading}
+            isError={clubsError}
+            onRetry={() => refetchClubs()}
           />
         )}
       </DashboardLayout>

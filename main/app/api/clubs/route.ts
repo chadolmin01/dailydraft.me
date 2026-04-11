@@ -2,6 +2,70 @@ import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
+/**
+ * GET /api/clubs — 공개 클럽 목록 (Explore 탭용)
+ *
+ * Query params:
+ *   q        — 이름/설명 검색
+ *   category — 카테고리 필터
+ *   limit    — 페이지 크기 (기본 20, 최대 50)
+ *   offset   — 오프셋 (기본 0)
+ *
+ * 인증 불요 — 공개 브라우징 API.
+ * visibility='public' 클럽만 반환. 멤버 수는 club_members count로 계산.
+ */
+export const GET = withErrorCapture(async (request) => {
+  const supabase = await createClient()
+  const { searchParams } = new URL(request.url)
+
+  const q = searchParams.get('q')?.trim() || ''
+  const category = searchParams.get('category') || ''
+  const limit = Math.min(Number(searchParams.get('limit')) || 20, 50)
+  const offset = Number(searchParams.get('offset')) || 0
+
+  let query = supabase
+    .from('clubs')
+    .select('id, slug, name, description, logo_url, category, created_at')
+    .order('created_at', { ascending: false })
+    .range(offset, offset + limit - 1)
+
+  if (q) {
+    query = query.or(`name.ilike.%${q}%,description.ilike.%${q}%`)
+  }
+  if (category) {
+    query = query.eq('category', category)
+  }
+
+  const { data: clubs, error } = await query
+
+  if (error) return ApiResponse.internalError(error.message)
+  if (!clubs || clubs.length === 0) return ApiResponse.ok({ items: [], total: 0 })
+
+  // 각 클럽의 멤버 수 집계
+  const clubIds = clubs.map(c => c.id)
+  const countPromises = clubIds.map(async (clubId) => {
+    const { count } = await supabase
+      .from('club_members')
+      .select('id', { count: 'exact', head: true })
+      .eq('club_id', clubId)
+    return { clubId, count: count ?? 0 }
+  })
+  const counts = await Promise.all(countPromises)
+  const countMap = Object.fromEntries(counts.map(c => [c.clubId, c.count]))
+
+  const items = clubs.map(club => ({
+    id: club.id,
+    slug: club.slug,
+    name: club.name,
+    description: club.description,
+    logo_url: club.logo_url,
+    category: club.category,
+    member_count: countMap[club.id] ?? 0,
+  }))
+
+  return ApiResponse.ok({ items, total: items.length })
+})
+
 // 슬러그 예약어 (라우팅 충돌 방지)
 const RESERVED_SLUGS = new Set([
   'admin', 'api', 'login', 'logout', 'signup', 'settings',

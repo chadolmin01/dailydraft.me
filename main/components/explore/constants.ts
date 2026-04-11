@@ -2,7 +2,7 @@
  * Explore 페이지 전용 상수.
  * 카테고리/역할/유형 등 공통 상수는 @/src/constants에서 파생.
  */
-import { LayoutGrid, Users, Sparkles, Star, Flame, Clock, FolderOpen, User, Code2, TrendingUp } from 'lucide-react'
+import { LayoutGrid, Users, Sparkles, Star, Flame, Clock, FolderOpen, User, Code2, TrendingUp, Building2 } from 'lucide-react'
 import { PROJECT_CATEGORIES } from '@/src/constants/categories'
 import { PROJECT_ROLES, PEOPLE_CATEGORY_ICONS } from '@/src/constants/roles'
 import { PROJECT_TYPES } from '@/src/constants/project'
@@ -45,7 +45,10 @@ export const PEOPLE_ROLE_FILTERS = [
 export const TABS = [
   { id: 'projects', label: '프로젝트', icon: LayoutGrid },
   { id: 'people', label: '사람', icon: Users },
+  { id: 'clubs', label: '클럽', icon: Building2 },
 ] as const
+
+export const CLUBS_PAGE_SIZE = 20
 
 export const SORT_OPTIONS = [
   { id: 'ai', label: 'AI 추천', icon: Sparkles, beta: false },
