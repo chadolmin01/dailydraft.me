@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { after } from 'next/server'
 import { createAdminClient } from '@/src/lib/supabase/admin'
 import { APP_URL } from '@/src/constants'
 import nacl from 'tweetnacl'
@@ -482,21 +483,26 @@ function handleButtonClick(interaction: {
 
   // "네" — 일정 잡기: 원본 메시지 정리 + 새 메시지로 투표 생성
   if (customId === 'quick_schedule_yes' && channelId) {
-    const baseUrl = process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : APP_URL
+    // after(): Vercel에서 응답 반환 후에도 실행 보장
+    after(async () => {
+      try {
+        const { sendChannelMessage } = await import('@/src/lib/discord/client')
+        const { addReaction } = await import('@/src/lib/discord/bot/discord-actions')
 
-    // 백그라운드에서 투표 메시지 + 리액션 추가
-    fetch(`${baseUrl}/api/discord/interactions/poll`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        type: 'schedule-quick',
-        channelId,
-        appId: interaction.application_id ?? process.env.DISCORD_APP_ID,
-        interactionToken: interaction.token,
-      }),
-    }).catch(err => console.error('[Button] 일정 트리거 실패:', err))
+        const msg = await sendChannelMessage(
+          channelId,
+          '📅 **일정 조율**\n\n가능한 요일에 반응해주세요!\n1️⃣ 월  2️⃣ 화  3️⃣ 수  4️⃣ 목  5️⃣ 금\n\n시간대까지 조율하려면 → https://when2meet.com',
+        )
+
+        if (msg?.id) {
+          for (const emoji of ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣']) {
+            await addReaction(channelId, msg.id, emoji)
+          }
+        }
+      } catch (err) {
+        console.error('[Button] 일정 투표 생성 실패:', err)
+      }
+    })
 
     return NextResponse.json({
       type: UPDATE_MESSAGE,
