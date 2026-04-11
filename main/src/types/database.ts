@@ -12,31 +12,6 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.1"
   }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
       accepted_connections: {
@@ -494,6 +469,7 @@ export type Database = {
         Row: {
           club_id: string
           cohort: string | null
+          display_role: string | null
           ghost_metadata: Json
           ghost_name: string | null
           id: string
@@ -505,6 +481,7 @@ export type Database = {
         Insert: {
           club_id: string
           cohort?: string | null
+          display_role?: string | null
           ghost_metadata?: Json
           ghost_name?: string | null
           id?: string
@@ -516,6 +493,7 @@ export type Database = {
         Update: {
           club_id?: string
           cohort?: string | null
+          display_role?: string | null
           ghost_metadata?: Json
           ghost_name?: string | null
           id?: string
@@ -580,6 +558,7 @@ export type Database = {
       }
       clubs: {
         Row: {
+          category: string | null
           created_at: string
           created_by: string
           deleted_at: string | null
@@ -593,6 +572,7 @@ export type Database = {
           visibility: string
         }
         Insert: {
+          category?: string | null
           created_at?: string
           created_by: string
           deleted_at?: string | null
@@ -606,6 +586,7 @@ export type Database = {
           visibility?: string
         }
         Update: {
+          category?: string | null
           created_at?: string
           created_by?: string
           deleted_at?: string | null
@@ -1920,8 +1901,6 @@ export type Database = {
           is_uni_verified: boolean | null
           last_extraction_at: string | null
           linkedin_url: string | null
-          /** @deprecated locations 배열을 사용하세요. 기존 코드 호환용 alias. */
-          location: string | null
           locations: string[] | null
           major: string | null
           nickname: string
@@ -1971,7 +1950,6 @@ export type Database = {
           is_uni_verified?: boolean | null
           last_extraction_at?: string | null
           linkedin_url?: string | null
-          location?: string | null
           locations?: string[] | null
           major?: string | null
           nickname: string
@@ -2021,7 +1999,6 @@ export type Database = {
           is_uni_verified?: boolean | null
           last_extraction_at?: string | null
           linkedin_url?: string | null
-          location?: string | null
           locations?: string[] | null
           major?: string | null
           nickname?: string
@@ -3608,9 +3585,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {},
   },

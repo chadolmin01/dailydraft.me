@@ -81,7 +81,7 @@ export function ProfileHero({ profile, email, strengths, isEditable = false }: P
     desired_position: profile?.desired_position || '',
     university: profile?.university || '',
     major: profile?.major || '',
-    location: profile?.location || '',
+    location: (profile?.locations as string[] | null)?.join(', ') || '',
     contact_email: profile?.contact_email || email || '',
   }), [profile, bio, email])
 
@@ -184,7 +184,7 @@ export function ProfileHero({ profile, email, strengths, isEditable = false }: P
     { icon: Briefcase, label: '포지션', value: profile?.desired_position || '', displayValue: positionLabel(profile?.desired_position || ''), field: 'desired_position', placeholder: '포지션을 입력하세요' },
     { icon: Building2, label: affConfig.orgLabel, value: profile?.university || '', field: 'university', placeholder: affConfig.orgPlaceholder },
     { icon: GraduationCap, label: affConfig.roleLabel, value: profile?.major || '', field: 'major', placeholder: affConfig.rolePlaceholder },
-    { icon: MapPin, label: '활동 지역', value: profile?.location || '', field: 'location', placeholder: '지역을 입력하세요' },
+    { icon: MapPin, label: '활동 지역', value: (profile?.locations as string[] | null)?.join(', ') || '', field: 'locations', placeholder: '지역을 입력하세요' },
     { icon: Mail, label: '연락처', value: profile?.contact_email || email || '', field: 'contact_email', placeholder: '이메일을 입력하세요' },
   ]
 

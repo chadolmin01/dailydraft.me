@@ -55,7 +55,7 @@ export function AIInterviewModal({ isOpen, onClose }: AIInterviewModalProps) {
     affiliationType: profile.affiliation_type || 'student',
     university: profile.university || '',
     major: profile.major || '',
-    locations: profile.location ? profile.location.split(', ') : [],
+    locations: (profile.locations as string[] | null) ?? [],
     position: profile.desired_position || '',
     situation: profile.current_situation || 'exploring',
     skills: (profile.skills as Array<{ name: string }> | null)?.map(s => s.name) ?? [],
