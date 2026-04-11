@@ -34,11 +34,17 @@ const engine = new BotEngine();
 
 // 봇 자신의 ID (READY 이벤트에서 설정)
 let botUserId: string = '';
+// READY에서 받은 기존 서버 ID 목록 — GUILD_CREATE에서 신규 서버만 온보딩하기 위함
+const knownGuildIds = new Set<string>();
 
 const gateway = new DiscordGateway(BOT_TOKEN, {
   onReady: (data) => {
     botUserId = data.user.id;
     const guildCount = data.guilds.length;
+    // READY 시 받은 길드를 "기존 서버"로 등록
+    for (const g of data.guilds) {
+      knownGuildIds.add(g.id);
+    }
     console.log(`[Bot] 준비 완료 — ${guildCount}개 서버, ID: ${botUserId}`);
     console.log('[Bot] 3계층 감지 활성:');
     console.log('  - 슬래시 커맨드: /마무리, /투표, /일정');
@@ -48,9 +54,13 @@ const gateway = new DiscordGateway(BOT_TOKEN, {
   },
 
   onGuildCreate: async (guild) => {
-    // 새 서버에 봇이 추가됨 → 온보딩 시작
-    // READY 시 기존 서버도 GUILD_CREATE로 오므로, 신규만 처리
-    // unavailable=false인 경우가 신규 (READY 시에는 unavailable=true)
+    // READY 후 기존 서버도 GUILD_CREATE로 오므로, 이미 알려진 서버는 무시
+    if (knownGuildIds.has(guild.id)) {
+      console.log(`[Bot] 기존 서버 로드 완료: ${guild.name} (${guild.id})`);
+      return;
+    }
+    // 진짜 새 서버 — 온보딩 시작
+    knownGuildIds.add(guild.id);
     if (guild.unavailable) return;
 
     try {

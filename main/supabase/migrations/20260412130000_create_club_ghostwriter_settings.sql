@@ -1,3 +1,42 @@
+-- updated_at 자동 갱신 헬퍼 (여러 테이블에서 재사용)
+CREATE OR REPLACE FUNCTION update_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = now();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- is_club_member() / is_club_admin() — 다른 RLS에서 참조하나 정의가 누락되어 여기서 생성
+CREATE OR REPLACE FUNCTION is_club_member(p_club_id uuid, p_user_id uuid)
+RETURNS boolean
+LANGUAGE sql
+SECURITY DEFINER
+STABLE
+SET search_path = public
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM club_members
+    WHERE club_id = p_club_id
+      AND user_id = p_user_id
+  );
+$$;
+
+CREATE OR REPLACE FUNCTION is_club_admin(p_club_id uuid, p_user_id uuid)
+RETURNS boolean
+LANGUAGE sql
+SECURITY DEFINER
+STABLE
+SET search_path = public
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM club_members
+    WHERE club_id = p_club_id
+      AND user_id = p_user_id
+      AND role IN ('admin', 'owner')
+  );
+$$;
+
 -- club_ghostwriter_settings: 동아리장이 커스텀 가능한 Ghostwriter 설정
 -- 체크인 템플릿, 스케줄, AI 톤, 임계값 등
 

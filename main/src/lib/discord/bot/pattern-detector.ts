@@ -196,8 +196,7 @@ ${conversation}`;
       },
     });
 
-    const text =
-      typeof result.text === 'function' ? result.text() : (result as any).response?.text?.() ?? '';
+    const text = result.response.text();
 
     const parsed = JSON.parse(text);
     if (!parsed.patterns || !Array.isArray(parsed.patterns)) return [];
