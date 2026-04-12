@@ -21,6 +21,11 @@ import {
   addReaction,
   createScheduledEvent,
 } from './discord-actions';
+import {
+  saveIntervention,
+  updateInterventionResponse,
+  saveSummaryData,
+} from './db-persist';
 import type {
   BufferedMessage,
   PatternDetection,
@@ -95,8 +100,20 @@ export class BotEngine {
     for (const candidate of instantCandidates) {
       const response = buildQuickSuggestion(candidate.type, msg.channelId);
       if (response) {
-        await this.sendResponse(response);
+        const sentMsg = await this.sendResponse(response);
         this.cooldown.recordTrigger(msg.channelId, candidate.type);
+
+        // DB 기록: 즉시 감지 → bot_interventions
+        const detection: PatternDetection = {
+          type: candidate.type,
+          confidence: candidate.confidence,
+          data: { type: candidate.type } as any,
+          sourceMessages: messages,
+        };
+        saveIntervention(detection, sentMsg?.id, 'auto').catch((e) =>
+          console.error('[BotEngine] intervention 저장 실패:', e)
+        );
+
         // 제안 후 버퍼 초기화 — 같은 메시지로 재감지 방지
         this.buffer.clear(msg.channelId);
         break; // 한 번에 하나만
@@ -252,7 +269,25 @@ export class BotEngine {
       });
     } else {
       const response = buildSummaryResponse(summary, channelId);
-      await this.sendResponse(response);
+      const sentMsg = await this.sendResponse(response);
+
+      // DB 기록: 마무리 요약 → bot_interventions + team_*
+      const guildId = pending[0]?.sourceMessages?.[0]?.guildId;
+      if (guildId) {
+        const summaryDetection: PatternDetection = {
+          type: 'conversation-end',
+          confidence: 1.0,
+          data: { type: 'conversation-end', signal: 'summary' },
+          sourceMessages: pending.flatMap((p) => p.sourceMessages),
+        };
+        const interventionId = await saveIntervention(
+          summaryDetection, sentMsg?.id, 'auto_summary'
+        ).catch(() => null);
+
+        saveSummaryData(summary, channelId, guildId, interventionId).catch((e) =>
+          console.error('[BotEngine] summary 데이터 저장 실패:', e)
+        );
+      }
     }
 
     // 정리
@@ -275,7 +310,7 @@ export class BotEngine {
   /**
    * 봇 응답 전송 (메시지 + 리액션)
    */
-  private async sendResponse(response: BotResponse): Promise<void> {
+  private async sendResponse(response: BotResponse): Promise<{ id: string } | null> {
     try {
       const sentMessage = await sendChannelMessage(
         response.channelId,
@@ -290,8 +325,11 @@ export class BotEngine {
           await addReaction(response.channelId, sentMessage.id, emoji);
         }
       }
+
+      return sentMessage ?? null;
     } catch (err) {
       console.error('[BotEngine] 응답 전송 실패:', err);
+      return null;
     }
   }
 

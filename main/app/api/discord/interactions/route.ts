@@ -468,10 +468,24 @@ function handleButtonClick(interaction: {
   channel_id?: string
   token?: string
   application_id?: string
-  message?: { content?: string }
+  message?: { id?: string; content?: string }
 }) {
   const customId = interaction.data?.custom_id
   const channelId = interaction.channel_id
+  const messageId = interaction.message?.id
+
+  // bot_interventions에 사용자 응답 기록
+  if (messageId) {
+    const isAccept = customId !== 'quick_dismiss'
+    const supabase = createAdminClient()
+    supabase
+      .from('bot_interventions')
+      .update({ user_response: isAccept ? 'accepted' : 'dismissed' })
+      .eq('bot_message_id', messageId)
+      .then(({ error }) => {
+        if (error) console.error('[Button] intervention 응답 저장 실패:', error.message)
+      })
+  }
 
   // "아니요" 버튼 — 메시지를 "취소됨"으로 업데이트
   if (customId === 'quick_dismiss') {

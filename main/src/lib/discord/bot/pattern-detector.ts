@@ -42,7 +42,8 @@ const HANDOFF_KEYWORDS =
 const UNOWNED_KEYWORDS = /누가\s*하|누가\s*할|담당자|맡을\s*사람/;
 // 일정 확정: (요일/시간) + (확정 표현) 이 한 메시지에 같이 올 때
 const SCHEDULE_DAY_TIME = /월요일|화요일|수요일|목요일|금요일|토요일|일요일|내일|모레|다음\s*주|이번\s*주|\d{1,2}시|\d{1,2}:\d{2}|\d{1,2}월\s*\d{1,2}일/;
-const SCHEDULE_CONFIRM = /하자|ㅇㅋ|오케이|좋아|그걸로|그때\s*보자|그때\s*봐|확정|그렇게|ㄱㄱ|고고|그래\s*그럼|으로\s*하자|에\s*보자|에\s*만나|으로\s*정하자/;
+// 확정 표현만 (질문/제안 제외: "어때?", "할까?" 등은 schedule-coordination)
+const SCHEDULE_CONFIRM = /하자|하겠|할게|합시다|합의|ㅇㅋ|오케이|오키|좋아|그걸로|그때\s*보자|그때\s*봐|확정|결정|정하자|그렇게|ㄱㄱ|고고|으로\s*하자|에\s*보자|에\s*만나|으로\s*정|ㅇㅇ|넵|그래/;
 const URL_REGEX = /https?:\/\/[^\s<>)"]+/;
 
 export function prefilter(

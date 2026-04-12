@@ -22,6 +22,7 @@ import {
   sendSetupCompleteMessage,
   autoMapChannels,
 } from './onboarding-flow';
+import { updateInterventionResponse } from './db-persist';
 
 const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
 
@@ -108,6 +109,7 @@ const gateway = new DiscordGateway(BOT_TOKEN, {
     if (data.user_id === botUserId) return;
 
     const emoji = data.emoji?.name;
+    if (!emoji) return;
 
     // 온보딩 리액션 처리
     const state = getOnboardingState(data.user_id);
@@ -120,12 +122,16 @@ const gateway = new DiscordGateway(BOT_TOKEN, {
       return;
     }
 
-    // 일반 리액션 처리
+    // 일반 리액션 처리 → DB에 사용자 응답 기록
+    // 참고: 현재 quick suggestion은 버튼(components) 기반이라 리액션으로 오지 않음
+    // 여기서 처리되는 건 주로 마무리 요약의 ✅/✏️ 리액션
     if (emoji === '❌') {
       console.log(`[Bot] ❌ dismiss — channel: ${data.channel_id}, msg: ${data.message_id}`);
+      updateInterventionResponse(data.message_id, 'dismissed').catch(() => {});
     }
     if (emoji === '✅') {
       console.log(`[Bot] ✅ accept — channel: ${data.channel_id}, msg: ${data.message_id}`);
+      updateInterventionResponse(data.message_id, 'accepted').catch(() => {});
     }
   },
 
