@@ -7,8 +7,7 @@ WORKDIR /app
 
 # 패키지 파일 복사 + 의존성 설치
 COPY package.json package-lock.json ./
-RUN npm ci --omit=dev && \
-    npm install tsx typescript
+RUN npm ci
 
 # 봇에 필요한 소스만 복사
 COPY tsconfig.json ./
