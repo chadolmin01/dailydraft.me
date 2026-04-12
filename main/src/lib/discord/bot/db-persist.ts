@@ -206,6 +206,45 @@ export async function saveSummaryData(
   }
 }
 
+// ── 온보딩 완료 → pending_discord_setups 저장 ──
+
+/**
+ * 봇 온보딩 완료 시 guild 정보 + 설정을 임시 저장
+ * club_id/user_id는 Draft 웹에서 클럽 연결 시 매핑됨
+ */
+export async function savePendingSetup(setup: {
+  guildId: string;
+  guildName: string;
+  ownerId: string;
+  selectedChannels: string[];
+  selectedTone: 'formal' | 'casual' | 'english';
+}): Promise<boolean> {
+  const sb = getSupabase();
+  if (!sb) return false;
+
+  const { error } = await sb
+    .from('pending_discord_setups')
+    .upsert(
+      {
+        discord_guild_id: setup.guildId,
+        discord_guild_name: setup.guildName,
+        discord_owner_id: setup.ownerId,
+        selected_channels: setup.selectedChannels,
+        selected_tone: setup.selectedTone,
+        status: 'pending',
+      },
+      { onConflict: 'discord_guild_id' }
+    );
+
+  if (error) {
+    console.error('[DB] pending_discord_setups 저장 실패:', error.message);
+    return false;
+  }
+
+  console.log(`[DB] 온보딩 설정 저장: ${setup.guildName} (${setup.guildId})`);
+  return true;
+}
+
 // ── 유틸 ──
 
 /**

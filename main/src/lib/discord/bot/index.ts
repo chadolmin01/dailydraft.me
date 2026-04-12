@@ -22,7 +22,7 @@ import {
   sendSetupCompleteMessage,
   autoMapChannels,
 } from './onboarding-flow';
-import { updateInterventionResponse } from './db-persist';
+import { updateInterventionResponse, savePendingSetup } from './db-persist';
 
 const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
 
@@ -201,9 +201,15 @@ async function handleOnboardingReaction(
         state.step = 'complete';
         setOnboardingState(userId, state);
 
-        // TODO: DB에 설정 저장 (club_ghostwriter_settings)
-        // TODO: discord_bot_installations에 기록
-        // TODO: 채널 매핑을 discord_team_channels에 저장
+        // guild 정보 + 설정을 pending 테이블에 임시 저장
+        // club_id/user_id는 Draft 웹에서 클럽 연결 시 매핑됨
+        savePendingSetup({
+          guildId: state.guildId,
+          guildName: state.guildName,
+          ownerId: state.ownerId,
+          selectedChannels: state.selectedChannels,
+          selectedTone: state.selectedTone,
+        }).catch((err) => console.error('[Bot] 온보딩 DB 저장 실패:', err));
 
         await sendSetupCompleteMessage(userId, state.guildName, state.clubSlug ?? 'settings', {
           channelCount: state.selectedChannels.length,
