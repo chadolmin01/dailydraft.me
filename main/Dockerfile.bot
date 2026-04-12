@@ -1,0 +1,23 @@
+# Discord Gateway Bot — Railway 배포용
+# Next.js 빌드 없이 봇만 실행하는 경량 이미지
+
+FROM node:20-slim
+
+WORKDIR /app
+
+# 패키지 파일 복사 + 의존성 설치
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev && \
+    npm install tsx typescript
+
+# 봇에 필요한 소스만 복사
+COPY tsconfig.json ./
+COPY src/lib/discord/ src/lib/discord/
+COPY src/lib/ai/gemini-client.ts src/lib/ai/
+COPY src/constants/ src/constants/
+
+# 헬스체크 — 프로세스가 살아있는지 확인
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
+  CMD pgrep -f "discord/bot" || exit 1
+
+CMD ["npx", "tsx", "src/lib/discord/bot/index.ts"]

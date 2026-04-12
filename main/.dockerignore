@@ -1,0 +1,21 @@
+# Next.js / 프론트엔드 (봇에 불필요)
+.next/
+out/
+public/
+src/app/
+src/components/
+src/hooks/
+src/styles/
+
+# 레거시 / 문서
+archive/
+.claude/
+.agents/
+scripts/
+*.md
+
+# 개발 도구
+.git/
+.env.local
+.env.development
+node_modules/
