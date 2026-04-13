@@ -317,36 +317,42 @@ export type Database = {
           checkin_day: number
           checkin_template: string | null
           club_id: string
+          current_week: number | null
           custom_prompt_hint: string | null
           generate_day: number
           id: string
           min_messages: number
           timeout_hours: number
           updated_at: string
+          week_started_at: string | null
         }
         Insert: {
           ai_tone?: string
           checkin_day?: number
           checkin_template?: string | null
           club_id: string
+          current_week?: number | null
           custom_prompt_hint?: string | null
           generate_day?: number
           id?: string
           min_messages?: number
           timeout_hours?: number
           updated_at?: string
+          week_started_at?: string | null
         }
         Update: {
           ai_tone?: string
           checkin_day?: number
           checkin_template?: string | null
           club_id?: string
+          current_week?: number | null
           custom_prompt_hint?: string | null
           generate_day?: number
           id?: string
           min_messages?: number
           timeout_hours?: number
           updated_at?: string
+          week_started_at?: string | null
         }
         Relationships: [
           {
@@ -1280,53 +1286,6 @@ export type Database = {
           },
         ]
       }
-      institution_programs: {
-        Row: {
-          created_at: string
-          description: string | null
-          end_date: string | null
-          id: string
-          institution_id: string
-          max_participants: number | null
-          name: string
-          start_date: string | null
-          status: string
-          type: string
-        }
-        Insert: {
-          created_at?: string
-          description?: string | null
-          end_date?: string | null
-          id?: string
-          institution_id: string
-          max_participants?: number | null
-          name: string
-          start_date?: string | null
-          status?: string
-          type?: string
-        }
-        Update: {
-          created_at?: string
-          description?: string | null
-          end_date?: string | null
-          id?: string
-          institution_id?: string
-          max_participants?: number | null
-          name?: string
-          start_date?: string | null
-          status?: string
-          type?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "institution_programs_institution_id_fkey"
-            columns: ["institution_id"]
-            isOneToOne: false
-            referencedRelation: "institutions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       institutions: {
         Row: {
           contact_email: string | null
@@ -1371,38 +1330,6 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
-      }
-      interests: {
-        Row: {
-          created_at: string | null
-          id: string
-          opportunity_id: string
-          user_email: string
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          opportunity_id: string
-          user_email: string
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          opportunity_id?: string
-          user_email?: string
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "interests_opportunity_id_fkey"
-            columns: ["opportunity_id"]
-            isOneToOne: false
-            referencedRelation: "opportunities"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       invite_codes: {
         Row: {

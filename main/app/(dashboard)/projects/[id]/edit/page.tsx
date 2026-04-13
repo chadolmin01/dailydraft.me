@@ -597,6 +597,8 @@ function EditProjectContent() {
                     isPending={updateOpportunity.isPending}
                     imageUploading={imageUploading}
                     submitLabel="변경사항 저장"
+                    clubId={(opportunity as any)?.club_id}
+                    opportunityId={id}
                   />
 
                   {/* Delete */}

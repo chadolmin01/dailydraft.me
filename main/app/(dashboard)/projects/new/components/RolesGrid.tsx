@@ -35,6 +35,7 @@ function RoleChip({ label, icon: Icon, selected, themeRoleOn, themeRoleIconOn, o
           : 'bg-[#F7F8F9] dark:bg-[#1C1C1E] text-txt-secondary hover:bg-[#EDF0F3] dark:hover:bg-[#252527]'
       }`}
     >
+      {/* @ts-expect-error lucide icon size prop */}
       <Icon size={14} className={selected ? themeRoleIconOn : 'text-txt-disabled'} />
       <span className="text-[13px] font-medium">{label}</span>
     </button>

@@ -269,6 +269,7 @@ export function ProfileCoffeeChats() {
                                 isActive ? opt.color : 'bg-surface-card text-txt-disabled border-border hover:border-border'
                               }`}
                             >
+                              {/* @ts-expect-error lucide icon size prop */}
                               <Icon size={10} />
                               {opt.label}
                             </button>

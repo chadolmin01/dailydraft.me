@@ -29,6 +29,12 @@ export interface OpportunityWithCreator extends Opportunity {
     university?: string | null
     interest_tags?: string[] | null
   } | null
+  club?: {
+    id: string
+    slug: string
+    name: string
+    logo_url: string | null
+  } | null
 }
 
 // Opportunity with AI match scoring

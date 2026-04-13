@@ -66,3 +66,6 @@ main/scripts/_parse_flip.py
 
 # 와이어프레임 (별도 관리)
 wireframe/
+
+# GitHub recovery codes (보안 — 절대 커밋 금지)
+.github/github-recovery-codes.txt

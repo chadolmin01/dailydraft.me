@@ -242,6 +242,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
                       className="group w-full flex items-center gap-3 h-16 px-4 bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl hover:bg-[#EDF0F3] dark:hover:bg-[#252527] active:scale-[0.98] transition-all cursor-pointer text-left"
                     >
                       <div className="w-9 h-9 bg-[#E5E5EA] dark:bg-[#3A3A3C] rounded-xl flex items-center justify-center shrink-0 group-hover:bg-[#3182F6] transition-colors">
+                        {/* @ts-expect-error lucide icon size prop */}
                         <RoleIcon size={14} className="text-txt-disabled group-hover:text-white transition-colors" />
                       </div>
                       <div className="flex-1 min-w-0">

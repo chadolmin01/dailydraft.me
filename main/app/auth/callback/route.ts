@@ -49,6 +49,13 @@ export async function GET(request: Request) {
           .eq('user_id', user.id)
           .maybeSingle()
 
+        // Discord 로그인 시 discord_user_id를 프로필에 동기화
+        const discordIdentity = user.identities?.find(i => i.provider === 'discord')
+        const discordUserId = discordIdentity?.identity_data?.provider_id
+          || user.user_metadata?.provider_id
+        const discordUsername = user.user_metadata?.full_name
+          || user.user_metadata?.custom_claims?.global_name
+
         // OAuth 유저는 profile 행이 없을 수 있음 → 생성
         if (!profile) {
           const nickname = user.user_metadata?.full_name
@@ -59,8 +66,18 @@ export async function GET(request: Request) {
             user_id: user.id,
             nickname,
             contact_email: user.email || null,
+            ...(discordUserId ? { discord_user_id: discordUserId, discord_username: discordUsername } : {}),
           })
           return NextResponse.redirect(`${origin}/onboarding`)
+        }
+
+        // 기존 프로필에 Discord 정보 동기화 (아직 연결 안 된 경우)
+        if (discordUserId) {
+          supabase.from('profiles')
+            .update({ discord_user_id: discordUserId, discord_username: discordUsername })
+            .eq('user_id', user.id)
+            .is('discord_user_id', null)
+            .then(() => {})
         }
 
         if (profile.onboarding_completed) {

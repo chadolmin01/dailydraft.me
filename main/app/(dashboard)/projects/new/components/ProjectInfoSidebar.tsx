@@ -3,6 +3,7 @@ import { Loader2, Sparkles, MapPin, Clock } from 'lucide-react'
 import { LOCATION_TYPE_OPTIONS, TIME_OPTIONS, COMPENSATION_OPTIONS } from '../constants'
 import type { TypeTheme } from '../constants'
 import { RolesGrid } from './RolesGrid'
+import { DiscordChannelSelect } from './DiscordChannelSelect'
 
 interface ProjectInfoSidebarProps {
   theme: TypeTheme
@@ -21,6 +22,10 @@ interface ProjectInfoSidebarProps {
   submitLabel?: string
   hideRolesOnMobile?: boolean
   rolesError?: string
+  // Discord 채널 매핑용 (선택적)
+  clubId?: string | null
+  opportunityId?: string
+  onDiscordChannelSelect?: (channelId: string, channelName: string) => void
 }
 
 function OptionGroup({ label, icon: Icon, options, value, onSelect, theme }: {
@@ -34,6 +39,7 @@ function OptionGroup({ label, icon: Icon, options, value, onSelect, theme }: {
   return (
     <div>
       <div className="flex items-center gap-2 mb-1.5">
+        {/* @ts-expect-error lucide icon size prop */}
         <Icon size={13} className="text-txt-disabled" />
         <span className="text-xs text-txt-secondary font-medium">{label}</span>
       </div>
@@ -74,6 +80,9 @@ export function ProjectInfoSidebar({
   submitLabel,
   hideRolesOnMobile,
   rolesError,
+  clubId,
+  opportunityId,
+  onDiscordChannelSelect,
 }: ProjectInfoSidebarProps) {
   return (
     <div className="md:col-span-2 space-y-6">
@@ -109,6 +118,12 @@ export function ProjectInfoSidebar({
               className="px-3 py-2 border border-border-subtle rounded-lg text-base sm:text-sm ml-5 w-[calc(100%-1.25rem)] focus:outline-none focus:ring-2 focus:ring-brand/10 focus:border-brand bg-transparent transition-all"
             />
           </div>
+          {/* Discord 채널 — clubId가 있고 봇 설치된 경우만 자동 표시 */}
+          <DiscordChannelSelect
+            clubId={clubId}
+            opportunityId={opportunityId}
+            onSelect={onDiscordChannelSelect}
+          />
         </div>
       </div>
 

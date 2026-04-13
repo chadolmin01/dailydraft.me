@@ -1,5 +1,6 @@
 import React from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import {
   Calendar, MapPin, Eye, Heart,
 } from 'lucide-react'
@@ -71,6 +72,23 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
             </span>
           )}
         </div>
+
+        {/* 소속 클럽 */}
+        {opportunity.club && (
+          <Link
+            href={`/clubs/${opportunity.club.slug}`}
+            className="inline-flex items-center gap-2 w-fit text-[13px] text-txt-secondary hover:text-txt-primary transition-colors"
+          >
+            {opportunity.club.logo_url ? (
+              <img src={opportunity.club.logo_url} alt={opportunity.club.name} className="w-5 h-5 rounded-md object-cover" />
+            ) : (
+              <div className="w-5 h-5 rounded-md bg-[#0095F6] flex items-center justify-center text-[9px] font-bold text-white">
+                {opportunity.club.name[0]}
+              </div>
+            )}
+            <span className="font-medium">{opportunity.club.name}</span>
+          </Link>
+        )}
 
         {/* Tags pills */}
         {opportunity.interest_tags && opportunity.interest_tags.length > 0 && (

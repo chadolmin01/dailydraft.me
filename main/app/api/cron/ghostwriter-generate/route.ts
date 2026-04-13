@@ -15,7 +15,7 @@ import { NextRequest } from 'next/server'
 import { createAdminClient } from '@/src/lib/supabase/admin'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { withCronCapture } from '@/src/lib/posthog/with-cron-capture'
-import { fetchChannelMessages, fetchPinnedMessages, fetchForumActiveThreads, sendDirectMessage, sendChannelMessage } from '@/src/lib/discord/client'
+import { fetchChannelMessages, fetchPinnedMessages, fetchForumActiveThreads, fetchGuildChannels, sendDirectMessage, sendChannelMessage } from '@/src/lib/discord/client'
 import { generateWeeklyDraft, type HarnessContext } from '@/src/lib/discord/ghostwriter'
 import { sendClubUpdateRemindWebhook } from '@/src/lib/webhooks/send-club-webhook'
 import { postDashboardSummary } from '@/src/lib/discord/dashboard-summary'
@@ -105,6 +105,21 @@ export const POST = withCronCapture('ghostwriter-generate', async (request: Next
       checkin_template?: string | null
     } | undefined ?? null
 
+    // 봇이 아직 서버에 있는지 검증. 강퇴당했으면 이 클럽 스킵.
+    // fetchGuildChannels가 403/404를 던지면 봇이 서버에서 제거된 것.
+    if (guildId) {
+      try {
+        await fetchGuildChannels(guildId)
+      } catch (err) {
+        console.warn(`[ghostwriter] 클럽 ${clubId}: 길드 ${guildId} 접근 불가 (봇 강퇴 추정), 스킵`, err)
+        results.errors++
+        continue
+      }
+    } else {
+      // guildId 자체가 없으면 봇이 미설치
+      continue
+    }
+
     const lowActivityTeams: string[] = []
     // 운영-대시보드 요약용 데이터 수집
     const dashboardDrafts: {
@@ -181,6 +196,20 @@ export const POST = withCronCapture('ghostwriter-generate', async (request: Next
           after: afterSnowflake,
           maxMessages: 500,
         })
+
+        // MESSAGE_CONTENT intent 검증: 봇에 이 intent가 없으면
+        // 메시지 content가 빈 문자열로 옴. 충분한 메시지가 있는데 내용이 전부 비면 경고.
+        if (messages.length >= 5) {
+          const nonBotMessages = messages.filter(m => !m.author.bot)
+          const emptyContentCount = nonBotMessages.filter(m => !m.content?.trim()).length
+          if (nonBotMessages.length > 0 && emptyContentCount === nonBotMessages.length) {
+            console.error(
+              `[ghostwriter] 클럽 ${clubId} 채널 ${ch.discord_channel_name}: ` +
+              `${nonBotMessages.length}개 메시지 모두 content가 비어있음. ` +
+              `MESSAGE_CONTENT intent가 비활성화되어 있을 수 있습니다.`
+            )
+          }
+        }
 
         // last_fetched_message_id는 여전히 갱신 (activity-tracker와 호환 유지)
         if (messages.length > 0) {

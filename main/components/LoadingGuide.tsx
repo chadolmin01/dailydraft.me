@@ -199,6 +199,7 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
               href={cta.primary.href}
               className="w-full flex items-center justify-center gap-2 py-4 bg-brand text-white rounded-full text-[15px] font-black hover:opacity-90 active:scale-[0.97] transition-all"
             >
+              {/* @ts-expect-error lucide icon size prop */}
               <PrimaryIcon size={16} />
               {cta.primary.label}
             </Link>
@@ -208,6 +209,7 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
               href={cta.secondary.href}
               className="w-full flex items-center justify-center gap-2 py-4 bg-surface-sunken text-txt-secondary rounded-full text-[14px] font-bold hover:bg-surface-card hover:text-txt-primary active:scale-[0.97] transition-all"
             >
+              {/* @ts-expect-error lucide icon size prop */}
               <SecondaryIcon size={16} />
               {cta.secondary.label}
             </Link>

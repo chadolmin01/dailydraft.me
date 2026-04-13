@@ -269,7 +269,7 @@ export default function InstitutionMembersPage() {
                 <tbody>
                   {data.members.map((member) => {
                     const profile = (member as any).profiles
-                    const RoleIcon = ROLE_ICONS[member.role] || Users
+                    const RoleIcon: React.ElementType = ROLE_ICONS[member.role as string] || Users
                     return (
                       <tr key={member.id} className="border-b border-border hover:bg-surface-sunken transition-colors">
                         <td className="px-5 py-3.5">
@@ -285,6 +285,7 @@ export default function InstitutionMembersPage() {
                         </td>
                         <td className="px-5 py-3.5">
                           <span className="inline-flex items-center gap-1.5 px-2 py-1 text-[10px] font-medium border border-border">
+                            {/* @ts-expect-error RoleIcon은 lucide 아이콘이므로 size prop 지원 */}
                             <RoleIcon size={12} />
                             {ROLE_LABELS[member.role] || member.role}
                           </span>

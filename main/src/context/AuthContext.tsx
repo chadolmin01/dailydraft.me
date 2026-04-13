@@ -13,6 +13,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, nickname: string) => Promise<{ error: AuthError | null }>
   signInWithGoogle: () => Promise<{ error: AuthError | null }>
   signInWithGithub: () => Promise<{ error: AuthError | null }>
+  signInWithDiscord: () => Promise<{ error: AuthError | null }>
   signOut: () => Promise<void>
 }
 
@@ -179,6 +180,18 @@ export function AuthProvider({ children, initialUser }: { children: React.ReactN
     return { error }
   }
 
+  // Sign in with Discord OAuth
+  const signInWithDiscord = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'discord',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+        scopes: 'identify guilds',
+      },
+    })
+    return { error }
+  }
+
   // Sign out
   const signOut = async () => {
     try {
@@ -203,6 +216,7 @@ export function AuthProvider({ children, initialUser }: { children: React.ReactN
     signUp,
     signInWithGoogle,
     signInWithGithub,
+    signInWithDiscord,
     signOut,
   }
 

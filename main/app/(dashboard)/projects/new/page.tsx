@@ -28,6 +28,7 @@ function NewProjectContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const returnTo = searchParams.get('from')
+  const clubIdParam = searchParams.get('club')
   const createOpportunity = useCreateOpportunity()
 
   const [title, setTitle] = useState('')
@@ -46,6 +47,9 @@ function NewProjectContent() {
   const [imageFiles, setImageFiles] = useState<File[]>([])
   const [imagePreviews, setImagePreviews] = useState<string[]>([])
   const [imageUploading, setImageUploading] = useState(false)
+  // Discord 채널 (클럽에서 생성할 때만 사용)
+  const [discordChannelId, setDiscordChannelId] = useState('')
+  const [discordChannelName, setDiscordChannelName] = useState('')
 
   // Inline validation
   const [fieldErrors, setFieldErrors] = useState<{ title?: string; description?: string; roles?: string }>({})
@@ -306,7 +310,22 @@ function NewProjectContent() {
         project_links: Object.keys(projectLinks).length > 0 ? projectLinks : null,
         demo_images: demoImages.length > 0 ? demoImages : null,
         status: 'active',
+        ...(clubIdParam ? { club_id: clubIdParam } : {}),
       })
+
+      // 프로젝트 생성 후 Discord 채널 매핑 (선택한 경우)
+      if (clubIdParam && discordChannelId && result.id) {
+        fetch(`/api/clubs/${clubIdParam}/discord-channels`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            opportunity_id: result.id,
+            discord_channel_id: discordChannelId,
+            discord_channel_name: discordChannelName,
+          }),
+        }).catch(() => {}) // 매핑 실패해도 프로젝트 생성은 성공
+      }
+
       clearDraft()
       toast.success('프로젝트가 등록되었습니다! 프로젝트 페이지로 이동합니다')
       router.push(returnTo || `/p/${result.id}`)
@@ -660,6 +679,11 @@ function NewProjectContent() {
                 imageUploading={imageUploading}
                 hideRolesOnMobile
                 rolesError={fieldErrors.roles}
+                clubId={clubIdParam}
+                onDiscordChannelSelect={(chId, chName) => {
+                  setDiscordChannelId(chId)
+                  setDiscordChannelName(chName)
+                }}
               />
             </div>
           </div>

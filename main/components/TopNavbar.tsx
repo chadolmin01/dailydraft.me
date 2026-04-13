@@ -57,6 +57,7 @@ const DropdownItem = ({ icon: Icon, children, onClick, disabled, danger }: {
         : 'text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary'
     }`}
   >
+    {/* @ts-expect-error lucide icon size prop */}
     <Icon size={14} />
     {children}
   </button>
@@ -200,6 +201,7 @@ export const TopNavbar: React.FC = () => {
           {/* ===== 데스크탑 네비게이션 (pill tabs) ===== */}
           <div className="hidden md:flex items-center bg-surface-sunken/60 p-0.5 rounded-full">
             <NavPill href="/explore" active={pathname === '/explore'}>탐색</NavPill>
+            <NavPill href="/clubs" active={pathname?.startsWith('/clubs') ?? false}>클럽</NavPill>
             <NavPill href="/profile" active={pathname === '/profile'}>프로필</NavPill>
             <NavPill href="/projects" active={pathname?.startsWith('/projects') ?? false}>프로젝트</NavPill>
           </div>
