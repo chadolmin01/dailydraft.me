@@ -331,8 +331,12 @@ export class BotEngine {
         },
       });
 
-      const reply = result.response.text();
+      let reply = result.response.text();
       if (reply) {
+        // 미연결 사용자에게 연결 안내 (1회성 — 캐시에 없는 경우)
+        if (!this.nicknameCache.has(msg.authorId)) {
+          reply += '\n\n-# 💡 `/연결`로 Draft 계정을 연결하면 더 정확한 답변을 받을 수 있습니다';
+        }
         await this.sendResponse({
           content: reply,
           channelId: msg.channelId,

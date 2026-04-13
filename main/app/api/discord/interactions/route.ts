@@ -128,6 +128,10 @@ export async function POST(request: NextRequest) {
       return handleHelpCommand()
     }
 
+    if (commandName === '연결') {
+      return handleConnectCommand(interaction)
+    }
+
     return NextResponse.json({
       type: CHANNEL_MESSAGE,
       data: {
@@ -657,13 +661,56 @@ function handleButtonClick(interaction: {
   })
 }
 
+// ── /연결 — Draft 계정 연결 안내 ──
+
+async function handleConnectCommand(interaction: {
+  member?: { user?: { id: string; username: string } }
+  user?: { id: string; username: string }
+}) {
+  const discordId = interaction.member?.user?.id ?? interaction.user?.id
+  const appUrl = APP_URL
+
+  if (!discordId) {
+    return NextResponse.json({
+      type: CHANNEL_MESSAGE,
+      data: { content: '유저 정보를 찾을 수 없습니다.', flags: 64 },
+    })
+  }
+
+  // 이미 연결됐는지 확인
+  const supabase = createAdminClient()
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('nickname')
+    .eq('discord_user_id', discordId)
+    .maybeSingle()
+
+  if (profile) {
+    return NextResponse.json({
+      type: CHANNEL_MESSAGE,
+      data: {
+        content: `✅ 이미 **${profile.nickname}** 계정으로 연결되어 있습니다!`,
+        flags: 64,
+      },
+    })
+  }
+
+  return NextResponse.json({
+    type: CHANNEL_MESSAGE,
+    data: {
+      content: `🔗 **Draft 계정 연결하기**\n\nDiscord와 Draft를 연결하면:\n• 봇이 내 이름을 정확히 표시합니다\n• 할 일, 알림을 DM으로 받을 수 있습니다\n• 프로필 조회가 가능합니다\n\n**연결 방법:**\n1️⃣ 아래 링크로 Draft에 로그인\n2️⃣ 프로필 설정에서 "Discord 계정 연결" 클릭\n\n🔗 ${appUrl}/profile/edit`,
+      flags: 64, // 본인만 보임
+    },
+  })
+}
+
 // ── /도움 — 명령어 안내 ──
 
 function handleHelpCommand() {
   return NextResponse.json({
     type: CHANNEL_MESSAGE,
     data: {
-      content: `📖 **Draft 봇 명령어**\n\n**회의:**\n• \`/회의시작\` — 미완료 할 일 리마인드 + 회의 시작\n• \`/마무리\` — 대화 요약 (AI가 할 일·결정사항·자료 정리)\n\n**일상:**\n• \`/투두 내용 [담당자]\` — 할 일 등록 (✅로 완료 체크)\n• \`/한줄 내용\` — 한줄 근황 공유\n• \`/투표 주제 옵션1 옵션2\` — 투표 생성\n• \`/일정 [목적]\` — 요일별 일정 투표\n\n**기타:**\n• \`/프로필 [@유저]\` — Draft 프로필 조회\n• \`/설정\` — Draft 웹 설정 페이지\n• \`@Draft 질문\` — AI에게 질문`,
+      content: `📖 **Draft 봇 명령어**\n\n**회의:**\n• \`/회의시작\` — 미완료 할 일 리마인드 + 회의 시작\n• \`/마무리\` — 대화 요약 (AI가 할 일·결정사항·자료 정리)\n\n**일상:**\n• \`/투두 내용 [담당자]\` — 할 일 등록 (✅로 완료 체크)\n• \`/한줄 내용\` — 한줄 근황 공유\n• \`/투표 주제 옵션1 옵션2\` — 투표 생성\n• \`/일정 [목적]\` — 요일별 일정 투표\n\n**기타:**\n• \`/프로필 [@유저]\` — Draft 프로필 조회\n• \`/연결\` — Discord ↔ Draft 계정 연결\n• \`/설정\` — Draft 웹 설정 페이지\n• \`@Draft 질문\` — AI에게 질문`,
       flags: 64, // EPHEMERAL
     },
   })

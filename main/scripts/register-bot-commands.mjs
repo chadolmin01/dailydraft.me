@@ -146,6 +146,11 @@ const commands = [
       },
     ],
   },
+  {
+    name: '연결',
+    description: 'Discord ↔ Draft 계정을 연결합니다',
+    type: 1,
+  },
 ];
 
 const baseUrl = GUILD_ID
