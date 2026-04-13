@@ -58,6 +58,13 @@ export async function sendChannelMessage(
 }
 
 /**
+ * 타이핑 인디케이터 표시 — "Draft(이)가 입력 중..." 이 10초간 표시됨
+ */
+export async function triggerTyping(channelId: string): Promise<void> {
+  await discordFetch(`/channels/${channelId}/typing`, { method: 'POST' });
+}
+
+/**
  * 메시지에 리액션 추가
  * 커스텀 이모지가 아닌 유니코드 이모지는 URL 인코딩 필요
  */

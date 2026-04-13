@@ -20,6 +20,7 @@ import {
   sendChannelMessage,
   addReaction,
   createScheduledEvent,
+  triggerTyping,
 } from './discord-actions';
 import {
   saveIntervention,
@@ -262,11 +263,14 @@ export class BotEngine {
       return;
     }
 
+    // "Draft(이)가 입력 중..." 표시 — AI 응답 대기 중임을 사용자에게 알림
+    triggerTyping(msg.channelId).catch(() => {});
+
     // 최근 대화 컨텍스트 (버퍼에서 가져오기)
     const recentMessages = this.buffer.getMessages(msg.channelId);
     const context = recentMessages
       .filter((m) => m.id !== msg.id) // 현재 메시지 제외
-      .slice(-15) // 최근 15개
+      .slice(-10) // 최근 10개 (속도 최적화)
       .map((m) => `${m.authorName}: ${m.content}`)
       .join('\n');
 
