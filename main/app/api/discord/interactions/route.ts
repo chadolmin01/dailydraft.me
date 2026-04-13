@@ -218,12 +218,18 @@ async function handleSummaryCommand(interaction: {
     })
   }
 
-  // Vercel Serverless는 응답 후 fire-and-forget이 동작하지 않으므로 별도 함수 호출
-  fetch(`${baseUrl}/api/discord/interactions/summary`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ channelId, guildId, appId, interactionToken }),
-  }).catch((err) => console.error('[Interactions] 마무리 트리거 실패:', err))
+  // after(): 응답 반환 후에도 fetch 완료를 보장 (Vercel Serverless 필수)
+  after(async () => {
+    try {
+      await fetch(`${baseUrl}/api/discord/interactions/summary`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ channelId, guildId, appId, interactionToken }),
+      })
+    } catch (err) {
+      console.error('[Interactions] 마무리 트리거 실패:', err)
+    }
+  })
 
   return NextResponse.json({ type: DEFERRED_CHANNEL_MESSAGE })
 }
@@ -260,19 +266,25 @@ function handleVoteCommand(interaction: {
     })
   }
 
-  // 백그라운드에서 메시지 전송 + 이모지 반응 추가
-  fetch(`${baseUrl}/api/discord/interactions/poll`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      type: 'vote',
-      channelId,
-      appId,
-      interactionToken,
-      topic,
-      options: optionValues,
-    }),
-  }).catch((err) => console.error('[Interactions] 투표 트리거 실패:', err))
+  // after(): 응답 반환 후에도 fetch 완료를 보장 (Vercel Serverless 필수)
+  after(async () => {
+    try {
+      await fetch(`${baseUrl}/api/discord/interactions/poll`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'vote',
+          channelId,
+          appId,
+          interactionToken,
+          topic,
+          options: optionValues,
+        }),
+      })
+    } catch (err) {
+      console.error('[Interactions] 투표 트리거 실패:', err)
+    }
+  })
 
   return NextResponse.json({ type: DEFERRED_CHANNEL_MESSAGE })
 }
@@ -297,17 +309,23 @@ function handleScheduleCommand(interaction: {
     })
   }
 
-  fetch(`${baseUrl}/api/discord/interactions/poll`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      type: 'schedule',
-      channelId,
-      appId,
-      interactionToken,
-      purpose,
-    }),
-  }).catch((err) => console.error('[Interactions] 일정 트리거 실패:', err))
+  after(async () => {
+    try {
+      await fetch(`${baseUrl}/api/discord/interactions/poll`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'schedule',
+          channelId,
+          appId,
+          interactionToken,
+          purpose,
+        }),
+      })
+    } catch (err) {
+      console.error('[Interactions] 일정 트리거 실패:', err)
+    }
+  })
 
   return NextResponse.json({ type: DEFERRED_CHANNEL_MESSAGE })
 }
@@ -382,18 +400,24 @@ function handleTodoCommand(interaction: {
     })
   }
 
-  fetch(`${baseUrl}/api/discord/interactions/todo`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      type: 'create',
-      channelId,
-      appId,
-      interactionToken,
-      content,
-      assigneeId,
-    }),
-  }).catch(err => console.error('[Interactions] 투두 트리거 실패:', err))
+  after(async () => {
+    try {
+      await fetch(`${baseUrl}/api/discord/interactions/todo`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'create',
+          channelId,
+          appId,
+          interactionToken,
+          content,
+          assigneeId,
+        }),
+      })
+    } catch (err) {
+      console.error('[Interactions] 투두 트리거 실패:', err)
+    }
+  })
 
   return NextResponse.json({ type: DEFERRED_CHANNEL_MESSAGE })
 }
@@ -418,17 +442,23 @@ function handleMeetingStartCommand(interaction: {
     })
   }
 
-  fetch(`${baseUrl}/api/discord/interactions/todo`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      type: 'meeting-start',
-      channelId,
-      appId,
-      interactionToken,
-      agenda,
-    }),
-  }).catch(err => console.error('[Interactions] 회의시작 트리거 실패:', err))
+  after(async () => {
+    try {
+      await fetch(`${baseUrl}/api/discord/interactions/todo`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'meeting-start',
+          channelId,
+          appId,
+          interactionToken,
+          agenda,
+        }),
+      })
+    } catch (err) {
+      console.error('[Interactions] 회의시작 트리거 실패:', err)
+    }
+  })
 
   return NextResponse.json({ type: DEFERRED_CHANNEL_MESSAGE })
 }
