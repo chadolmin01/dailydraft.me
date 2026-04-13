@@ -25,6 +25,7 @@ export class MessageBuffer {
     timestamp: string;
     channel_id: string;
     guild_id: string;
+    member_nick?: string | null;
   }): BufferedMessage | null {
     if (raw.author.bot) return null;
 
@@ -32,7 +33,8 @@ export class MessageBuffer {
       id: raw.id,
       content: raw.content,
       authorId: raw.author.id,
-      authorName: raw.author.username,
+      // 서버 닉네임(Draft 동기화) 우선, 없으면 Discord username
+      authorName: raw.member_nick || raw.author.username,
       isBot: false,
       timestamp: new Date(raw.timestamp),
       urls: raw.content.match(URL_REGEX) ?? [],

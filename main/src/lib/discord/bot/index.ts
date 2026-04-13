@@ -100,6 +100,8 @@ const gateway = new DiscordGateway(BOT_TOKEN, {
         timestamp: data.timestamp,
         channel_id: data.channel_id,
         guild_id: data.guild_id,
+        // 서버 닉네임 (Draft 프로필 동기화 시 설정됨)
+        member_nick: data.member?.nick ?? null,
       });
     } catch (err) {
       console.error('[Bot] 메시지 처리 오류:', err);

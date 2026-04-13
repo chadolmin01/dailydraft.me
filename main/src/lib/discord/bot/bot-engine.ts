@@ -96,6 +96,7 @@ export class BotEngine {
     timestamp: string;
     channel_id: string;
     guild_id: string;
+    member_nick?: string | null;
   }): Promise<void> {
     // 봇 메시지 무시
     const msg = this.buffer.push(raw);
