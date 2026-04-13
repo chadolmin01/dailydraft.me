@@ -20,8 +20,56 @@ export const GET = withErrorCapture(async (request) => {
 
   const q = searchParams.get('q')?.trim() || ''
   const category = searchParams.get('category') || ''
+  const my = searchParams.get('my') === '1'
   const limit = Math.min(Number(searchParams.get('limit')) || 20, 50)
   const offset = Number(searchParams.get('offset')) || 0
+
+  // ?my=1: 현재 유저가 소속된 클럽만 반환
+  if (my) {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return ApiResponse.ok({ items: [], total: 0 })
+
+    const { data: memberships } = await supabase
+      .from('club_members')
+      .select('club_id')
+      .eq('user_id', user.id)
+      .eq('status', 'active')
+      .limit(limit)
+
+    if (!memberships || memberships.length === 0) {
+      return ApiResponse.ok({ items: [], total: 0 })
+    }
+
+    const myClubIds = memberships.map(m => m.club_id)
+    const { data: myClubs } = await supabase
+      .from('clubs')
+      .select('id, slug, name, description, logo_url, category')
+      .in('id', myClubIds)
+
+    if (!myClubs || myClubs.length === 0) {
+      return ApiResponse.ok({ items: [], total: 0 })
+    }
+
+    // 1회 쿼리로 전체 멤버 수 집계 — N+1 방지
+    const { data: memberRows } = await supabase
+      .from('club_members')
+      .select('club_id')
+      .in('club_id', myClubIds)
+    const countMap: Record<string, number> = {}
+    memberRows?.forEach(m => { countMap[m.club_id] = (countMap[m.club_id] || 0) + 1 })
+
+    const items = myClubs.map(club => ({
+      id: club.id,
+      slug: club.slug,
+      name: club.name,
+      description: club.description,
+      logo_url: club.logo_url,
+      category: club.category,
+      member_count: countMap[club.id] ?? 0,
+    }))
+
+    return ApiResponse.ok({ items, total: items.length })
+  }
 
   let query = supabase
     .from('clubs')
@@ -41,17 +89,14 @@ export const GET = withErrorCapture(async (request) => {
   if (error) return ApiResponse.internalError(error.message)
   if (!clubs || clubs.length === 0) return ApiResponse.ok({ items: [], total: 0 })
 
-  // 각 클럽의 멤버 수 집계
+  // 1회 쿼리로 전체 멤버 수 집계 — N+1 방지
   const clubIds = clubs.map(c => c.id)
-  const countPromises = clubIds.map(async (clubId) => {
-    const { count } = await supabase
-      .from('club_members')
-      .select('id', { count: 'exact', head: true })
-      .eq('club_id', clubId)
-    return { clubId, count: count ?? 0 }
-  })
-  const counts = await Promise.all(countPromises)
-  const countMap = Object.fromEntries(counts.map(c => [c.clubId, c.count]))
+  const { data: memberRows } = await supabase
+    .from('club_members')
+    .select('club_id')
+    .in('club_id', clubIds)
+  const countMap: Record<string, number> = {}
+  memberRows?.forEach(m => { countMap[m.club_id] = (countMap[m.club_id] || 0) + 1 })
 
   const items = clubs.map(club => ({
     id: club.id,

@@ -88,12 +88,29 @@ export const GET = withErrorCapture(
       .eq('user_id', club.created_by)
       .maybeSingle()
 
+    // 현재 로그인 유저의 클럽 내 역할 조회 (비로그인이면 null)
+    // 의도: 멤버 목록은 페이지네이션(limit 50)이라 admin이 누락될 수 있음.
+    // 별도 1건 쿼리로 확실하게 본인 역할을 반환.
+    let myRole: string | null = null
+    const { data: { user: currentUser } } = await supabase.auth.getUser()
+    if (currentUser) {
+      const { data: myMembership } = await supabase
+        .from('club_members')
+        .select('role')
+        .eq('club_id', club.id)
+        .eq('user_id', currentUser.id)
+        .maybeSingle()
+
+      myRole = myMembership?.role ?? null
+    }
+
     return ApiResponse.ok({
       ...club,
       member_count: memberCount ?? 0,
       cohorts: uniqueCohorts,
       badges,
       owner: ownerProfile || { user_id: club.created_by, nickname: null, avatar_url: null },
+      my_role: myRole,
     })
   }
 )
