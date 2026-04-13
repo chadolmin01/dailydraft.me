@@ -84,6 +84,7 @@ export function FilterSheet({
                       : 'bg-[#F2F3F5] dark:bg-[#2C2C2E] text-txt-secondary hover:bg-[#E5E5EA] dark:hover:bg-[#3A3A3C]'
                   }`}
                 >
+                  {/* @ts-expect-error lucide icon size prop */}
                   <cat.icon size={13} />
                   {cat.label}
                 </button>

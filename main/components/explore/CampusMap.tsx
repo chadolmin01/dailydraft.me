@@ -1,6 +1,7 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
+import Link from 'next/link'
 import { useQuery } from '@tanstack/react-query'
 
 /* ──────────────────────────────────────
@@ -16,6 +17,7 @@ type Club = {
   badge?: string
   recruiting: boolean
   clubId?: string // DB clubs.id — 업데이트 수 매칭용
+  slug?: string   // 클럽 페이지 이동용
 }
 
 type University = {
@@ -32,7 +34,7 @@ const UNIVERSITIES: University[] = [
   {
     id: 'kyunghee', name: '경희대', abbr: '경희', region: '서울', color: '#8B1A1A', active: true,
     clubs: [
-      { name: 'FLIP', abbr: 'FL', color: '#0095F6', members: 12, category: '사이드프로젝트', badge: '프론트엔드 모집 중', recruiting: true },
+      { name: 'FLIP', abbr: 'FL', color: '#0095F6', members: 12, category: '사이드프로젝트', badge: '프론트엔드 모집 중', recruiting: true, slug: 'flip' },
     ],
   },
   { id: 'snu', name: '서울대', abbr: '서울', region: '서울', color: '#003876', active: false, clubs: [] },
@@ -159,10 +161,10 @@ function UniDetailHeader({ uni }: { uni: University }) {
   )
 }
 
-/** 클럽 행 */
+/** 클럽 행 — slug가 있으면 클럽 페이지로 이동 */
 function ClubRow({ club }: { club: Club }) {
-  return (
-    <div className="flex items-center gap-3.5 px-5 py-4 border-b border-[#F0F0F0] dark:border-[#2C2C2E] last:border-b-0 hover:bg-[#F5F5F5] dark:hover:bg-[#252527] transition-colors cursor-pointer">
+  const content = (
+    <>
       <div
         className="w-10 h-10 rounded-xl flex items-center justify-center text-[11px] font-extrabold text-white shrink-0"
         style={{ background: club.color }}
@@ -183,8 +185,15 @@ function ClubRow({ club }: { club: Club }) {
       <div className="flex flex-col items-end shrink-0">
         <span className="text-[12px] text-[#8E8E8E]">멤버 {club.members}명</span>
       </div>
-    </div>
+    </>
   )
+
+  const className = "flex items-center gap-3.5 px-5 py-4 border-b border-[#F0F0F0] dark:border-[#2C2C2E] last:border-b-0 hover:bg-[#F5F5F5] dark:hover:bg-[#252527] transition-colors cursor-pointer"
+
+  if (club.slug) {
+    return <Link href={`/clubs/${club.slug}`} className={className}>{content}</Link>
+  }
+  return <div className={className}>{content}</div>
 }
 
 /**
@@ -211,6 +220,17 @@ function toWeeklyCounts(updates: { created_at: string }[]): number[] {
 /* ════════════════════════════════════════ */
 export function CampusMap() {
   const [drillUni, setDrillUni] = useState<University | null>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+  const [lockedHeight, setLockedHeight] = useState<number>()
+
+  const handleDrill = (uni: University) => {
+    if (contentRef.current) setLockedHeight(contentRef.current.offsetHeight)
+    setDrillUni(uni)
+  }
+  const handleBack = () => {
+    setLockedHeight(undefined)
+    setDrillUni(null)
+  }
 
   // 최근 업데이트를 가져와 주간 활동 막대에 사용
   const { data: recentUpdates = [] } = useQuery<{ created_at: string }[]>({
@@ -245,7 +265,7 @@ export function CampusMap() {
         {/* 브레드크럼 */}
         <div className="flex items-center gap-1.5 px-5 py-3.5 text-[13px] font-semibold text-[#555] border-b border-[#F0F0F0] dark:border-[#2C2C2E]">
           <span
-            onClick={() => setDrillUni(null)}
+            onClick={handleBack}
             className={`transition-colors ${drillUni ? 'cursor-pointer hover:text-[#262626] dark:hover:text-white' : 'text-[#262626] dark:text-white cursor-default'}`}
           >
             전체 대학
@@ -258,37 +278,39 @@ export function CampusMap() {
           )}
         </div>
 
-        {/* Level: 전체 대학 그리드 */}
-        {!drillUni && (
-          <div className="grid grid-cols-2 sm:grid-cols-4">
-            {UNIVERSITIES.map(uni => (
-              <UniNode
-                key={uni.id}
-                uni={uni}
-                weeklyCounts={uni.active ? weeklyCounts : emptyCounts}
-                onClick={() => setDrillUni(uni)}
-              />
-            ))}
-          </div>
-        )}
+        <div ref={contentRef} style={lockedHeight ? { minHeight: lockedHeight } : undefined}>
+          {/* Level: 전체 대학 그리드 */}
+          {!drillUni && (
+            <div className="grid grid-cols-2 sm:grid-cols-4">
+              {UNIVERSITIES.map(uni => (
+                <UniNode
+                  key={uni.id}
+                  uni={uni}
+                  weeklyCounts={uni.active ? weeklyCounts : emptyCounts}
+                  onClick={() => handleDrill(uni)}
+                />
+              ))}
+            </div>
+          )}
 
-        {/* Level: 대학 상세 (클럽 목록) */}
-        {drillUni && (
-          <div>
-            <UniDetailHeader uni={drillUni} />
-            {drillUni.clubs.length > 0 ? (
-              <div className="flex flex-col">
-                {drillUni.clubs.map(club => (
-                  <ClubRow key={club.name} club={club} />
-                ))}
-              </div>
-            ) : (
-              <div className="py-12 text-center text-[13px] text-[#8E8E8E]">
-                등록된 클럽이 없습니다
-              </div>
-            )}
-          </div>
-        )}
+          {/* Level: 대학 상세 (클럽 목록) */}
+          {drillUni && (
+            <div>
+              <UniDetailHeader uni={drillUni} />
+              {drillUni.clubs.length > 0 ? (
+                <div className="flex flex-col">
+                  {drillUni.clubs.map(club => (
+                    <ClubRow key={club.name} club={club} />
+                  ))}
+                </div>
+              ) : (
+                <div className="py-12 text-center text-[13px] text-[#8E8E8E]">
+                  등록된 클럽이 없습니다
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

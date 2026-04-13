@@ -88,98 +88,96 @@ function PersonCard({
         }
       }}
       style={stagger ? { animationDelay: `${Math.min(index * 50, 500)}ms` } : undefined}
-      className={`${stagger} bg-surface-card border border-border rounded-2xl shadow-sm cursor-pointer
-        flex flex-col items-center text-center
-        px-5 py-6 gap-2.5
+      className={`${stagger} bg-surface-card rounded-xl cursor-pointer
+        flex flex-col overflow-hidden border border-border
         hover:shadow-md hover:-translate-y-0.5 transition-all duration-200
         focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none
         active:scale-[0.985] active:shadow-none`}
     >
-      {/* Avatar: 48x48 circle */}
-      <div
-        className={`relative w-12 h-12 rounded-full flex items-center justify-center
-          text-base font-bold shrink-0 overflow-hidden border border-border/50
-          ${getAvatarColor(t.name)}`}
-      >
-        {t.name.substring(0, 2)}
-        {t.avatarUrl && (
-          <Image
-            src={t.avatarUrl}
-            alt={t.name}
-            width={48}
-            height={48}
-            className="absolute inset-0 w-full h-full object-cover"
-            quality={85}
-            onError={(e) => { e.currentTarget.style.display = 'none' }}
-          />
-        )}
-      </div>
-
-      {/* Name: 15px bold */}
-      <div className="flex items-center gap-1.5">
-        <h3 className="font-bold text-[15px] leading-tight text-txt-primary truncate max-w-[160px]">
-          {t.name}
-        </h3>
-        <Badges badges={t.badges} />
-        {peopleSortBy === 'ai' && t.matchScore != null && t.matchScore > 0 && (
-          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${getMatchColorClass(t.matchScore)}`}>
-            {t.matchScore}%
-          </span>
-        )}
-      </div>
-
-      {/* University: 13px secondary */}
-      {t.university && (
-        <p className="text-[13px] text-txt-secondary leading-tight truncate max-w-full -mt-1">
-          {t.university}
-          {t.affiliationType && AFFILIATION_LABELS[t.affiliationType]
-            ? ` \u00B7 ${AFFILIATION_LABELS[t.affiliationType]}`
-            : ''}
-        </p>
-      )}
-
-      {/* Role badge: inline pill */}
-      {t.role && (
-        <span className="bg-surface-sunken text-txt-secondary px-2.5 py-0.5 rounded-full font-semibold text-xs">
-          {t.role}
-        </span>
-      )}
-
-      {/* Tags: brand pills, centered wrap */}
-      {t.tags.length > 0 && (
-        <div className="flex items-center justify-center gap-1.5 flex-wrap">
-          {t.tags.slice(0, 4).map(tag => (
-            <span
-              key={tag}
-              className="text-brand bg-brand-bg text-[11px] font-medium px-2 py-0.5 rounded-full"
-            >
-              {tag}
-            </span>
-          ))}
-          {t.tags.length > 4 && (
-            <span className="text-[11px] text-txt-tertiary">+{t.tags.length - 4}</span>
+      {/* ── Header: 아바타 + 이름 + 역할 ── */}
+      <div className="flex items-center gap-3 px-4 pt-4 pb-3">
+        <div
+          className={`relative w-11 h-11 rounded-full flex items-center justify-center
+            text-sm font-bold shrink-0 overflow-hidden
+            ${getAvatarColor(t.name)}`}
+        >
+          {t.name.substring(0, 2)}
+          {t.avatarUrl && (
+            <Image
+              src={t.avatarUrl}
+              alt={t.name}
+              width={44}
+              height={44}
+              className="absolute inset-0 w-full h-full object-cover"
+              quality={85}
+              onError={(e) => { e.currentTarget.style.display = 'none' }}
+            />
           )}
         </div>
-      )}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5">
+            <h3 className="font-bold text-[15px] leading-tight text-txt-primary truncate">
+              {t.name}
+            </h3>
+            <Badges badges={t.badges} />
+            {peopleSortBy === 'ai' && t.matchScore != null && t.matchScore > 0 && (
+              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${getMatchColorClass(t.matchScore)}`}>
+                {t.matchScore}%
+              </span>
+            )}
+          </div>
+          <p className="text-[13px] text-txt-tertiary leading-tight truncate mt-0.5">
+            {t.role}
+            {t.university ? ` · ${t.university}` : ''}
+            {t.affiliationType && AFFILIATION_LABELS[t.affiliationType]
+              ? ` · ${AFFILIATION_LABELS[t.affiliationType]}`
+              : ''}
+          </p>
+        </div>
+      </div>
 
-      {/* Bio: 13px tertiary, 1-line clamp */}
-      {bio && (
-        <p className="text-[13px] text-txt-tertiary leading-snug line-clamp-1 w-full">
-          {bio}
-        </p>
-      )}
+      {/* ── Body: 태그 + 소개 ── */}
+      <div className="px-4 pb-3 flex-1">
+        {t.tags.length > 0 && (
+          <div className="flex items-center gap-1.5 flex-wrap mb-2">
+            {t.tags.slice(0, 3).map(tag => (
+              <span
+                key={tag}
+                className="text-brand bg-brand-bg text-[11px] font-medium px-2 py-0.5 rounded-full"
+              >
+                {tag}
+              </span>
+            ))}
+            {t.tags.length > 3 && (
+              <span className="text-[11px] text-txt-disabled">+{t.tags.length - 3}</span>
+            )}
+          </div>
+        )}
+        {bio && (
+          <p className="text-[13px] text-txt-tertiary leading-relaxed line-clamp-2">
+            {bio}
+          </p>
+        )}
+      </div>
 
-      {/* Bottom row: status badge + club chip */}
-      <div className="flex items-center justify-center gap-1.5 flex-wrap mt-0.5">
+      {/* ── Footer: 상태 + 관심 ── */}
+      <div className="flex items-center gap-2 px-4 py-2.5 border-t border-border text-xs text-txt-tertiary">
         {statusConfig && (
-          <span className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full ${statusConfig.className}`}>
+          <span className={`font-semibold px-2 py-0.5 rounded-full text-[11px] ${statusConfig.className}`}>
             {statusConfig.label}
           </span>
         )}
         {t.status === 'OPEN' && (
-          <span className="text-brand" title="커피챗 가능">
-            <Coffee size={13} />
+          <span className="text-brand flex items-center gap-1" title="커피챗 가능">
+            <Coffee size={12} />
+            <span className="text-[11px]">커피챗</span>
           </span>
+        )}
+        {t.interestCount > 0 && (
+          <>
+            <span className="text-border">·</span>
+            <span>관심 {t.interestCount}</span>
+          </>
         )}
       </div>
     </div>

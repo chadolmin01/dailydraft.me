@@ -28,6 +28,7 @@ export interface TalentCard {
   matchScore?: number | null
   matchReason?: string | null
   badges?: string[] | null
+  interestCount: number
   university?: string | null
   affiliationType?: string | null
 }

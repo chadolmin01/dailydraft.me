@@ -55,7 +55,7 @@ export function ExploreClubGrid({
                     className="w-[52px] h-[52px] rounded-md object-cover shrink-0"
                   />
                 ) : (
-                  <div className="w-[52px] h-[52px] rounded-md bg-bg-sunken flex items-center justify-center shrink-0">
+                  <div className="w-[52px] h-[52px] rounded-md bg-surface-sunken flex items-center justify-center shrink-0">
                     <span className="text-lg font-extrabold text-txt-secondary">
                       {club.name[0]}
                     </span>
