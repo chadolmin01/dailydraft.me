@@ -275,6 +275,36 @@ export const POST = withCronCapture('ghostwriter-generate', async (request: Next
           harness.checkinMessages = checkinThreadMessages
         }
 
+        // 2-d. /마무리 회의록 (team_tasks, team_decisions, team_resources)
+        // 이번 주에 해당 채널에서 생성된 구조화된 회의 기록을 최우선 소스로 사용
+        try {
+          const sevenDaysAgoISO = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString()
+          const [{ data: tasks }, { data: decisions }, { data: resources }] = await Promise.all([
+            admin.from('team_tasks')
+              .select('assignee_name, task_description, deadline, status')
+              .eq('discord_channel_id', ch.discord_channel_id)
+              .gte('created_at', sevenDaysAgoISO),
+            admin.from('team_decisions')
+              .select('topic, result')
+              .eq('discord_channel_id', ch.discord_channel_id)
+              .gte('created_at', sevenDaysAgoISO),
+            admin.from('team_resources')
+              .select('url, label, shared_by_name')
+              .eq('discord_channel_id', ch.discord_channel_id)
+              .gte('created_at', sevenDaysAgoISO),
+          ])
+
+          if ((tasks && tasks.length > 0) || (decisions && decisions.length > 0) || (resources && resources.length > 0)) {
+            harness.meetingRecords = {
+              tasks: (tasks || []) as { assignee_name: string; task_description: string; deadline: string | null; status: string }[],
+              decisions: (decisions || []) as { topic: string; result: string }[],
+              resources: (resources || []) as { url: string; label: string; shared_by_name: string }[],
+            }
+          }
+        } catch (err) {
+          console.warn('[ghostwriter] 회의록 조회 실패 (계속 진행)', err)
+        }
+
         // 3. AI 초안 생성 (하네스 컨텍스트 포함)
         const draft = await generateWeeklyDraft(messages, projectTitle, harness)
 

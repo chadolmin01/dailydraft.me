@@ -47,6 +47,12 @@ export interface HarnessContext {
     score: number  // 1~5
     note: string   // "작업 추출이 부정확함" 등
   }[]
+  /** /마무리 회의록 — tasks, decisions, resources (최우선 소스) */
+  meetingRecords?: {
+    tasks: { assignee_name: string; task_description: string; deadline: string | null; status: string }[]
+    decisions: { topic: string; result: string }[]
+    resources: { url: string; label: string; shared_by_name: string }[]
+  }
   /** 클럽 Ghostwriter 설정 (동아리장 커스텀) */
   settings?: {
     ai_tone?: 'formal' | 'casual' | 'english'
@@ -284,7 +290,8 @@ function buildSystemPrompt(aiTone: string = 'formal', customHint?: string | null
 ${tone}
 7. **잡담/사적 대화는 무시**: 프로젝트 관련 내용만 추출
 8. **과장 금지**: 대화에 없는 내용을 지어내지 말 것. 불확실하면 confidence를 low로 설정
-9. **구조화된 체크인 우선**: "주간 체크인" 섹션이 있으면 tasks 추출의 1순위 소스로 사용. ✅=할 일, 🔧=진행 중(done=false), 🚧=블로커(done=false, 별도 표기)
+9. **회의록 최우선**: "회의록 (/마무리)" 섹션이 있으면 tasks/decisions 추출의 최우선 소스로 사용. 회의록의 할 일은 그대로 tasks에 반영하고, 결정사항은 summary에 반드시 포함. 회의록과 대화 내용이 충돌하면 회의록을 우선
+9-b. **구조화된 체크인**: "주간 체크인" 섹션이 있으면 회의록 다음 우선순위. ✅=할 일, 🔧=진행 중(done=false), 🚧=블로커(done=false, 별도 표기)
 10. **핀 메시지(결정사항)**: "주요 결정사항" 섹션이 있으면 summary에 반드시 반영하고 confidence를 high로 설정
 11. **이전 피드백 반영**: "이전 초안 피드백" 섹션이 있으면 해당 피드백을 반드시 반영하여 같은 실수를 반복하지 않을 것
 12. **디자인 작업 인식**: 이미지/스크린샷 첨부, Figma 링크(figma.com), 디자인 파일(.fig, .sketch, .psd) 공유는 디자인 작업의 증거임. "(첨부파일 공유)"로 표시된 메시지도 무시하지 말 것. 파일명에서 작업 내용을 추론할 것 (예: "main-page-v2.png" → 메인 페이지 시안 v2 작업)
@@ -332,7 +339,10 @@ export async function generateWeeklyDraft(
   // 체크인/핀 메시지도 카운트에 포함하여 최소 기준 판단
   const checkinText = parseCheckins(harness?.checkinMessages ?? [])
   const pinnedText = formatPinnedMessages(harness?.pinnedMessages ?? [])
-  const totalSignals = count + (checkinText ? 1 : 0) + (pinnedText ? 1 : 0)
+  // /마무리 회의록이 있으면 그 자체로 충분한 신호
+  const mr = harness?.meetingRecords
+  const hasMeetingRecords = mr && (mr.tasks.length > 0 || mr.decisions.length > 0 || mr.resources.length > 0)
+  const totalSignals = count + (checkinText ? 1 : 0) + (pinnedText ? 1 : 0) + (hasMeetingRecords ? 3 : 0)
 
   // 동아리장이 설정한 최소 메시지 수 (기본 3, settings.min_messages는 "의미 있는 메시지" 기준)
   const minRequired = Math.max(harness?.settings?.min_messages ?? 3, 1)
@@ -345,8 +355,30 @@ export async function generateWeeklyDraft(
     `## 참여 멤버: ${members.join(', ')}`,
   ]
 
+  // /마무리 회의록 — 가장 정확한 구조화 데이터이므로 최우선 소스로 배치
+  if (hasMeetingRecords) {
+    const mrLines: string[] = []
+    if (mr.tasks.length > 0) {
+      mrLines.push('**할 일:**')
+      mr.tasks.forEach(t => {
+        const deadline = t.deadline ? ` (마감: ${t.deadline})` : ''
+        const status = t.status === 'done' ? '✅' : '⬜'
+        mrLines.push(`${status} ${t.assignee_name} — ${t.task_description}${deadline}`)
+      })
+    }
+    if (mr.decisions.length > 0) {
+      mrLines.push('\n**결정사항:**')
+      mr.decisions.forEach(d => mrLines.push(`• ${d.topic}: ${d.result}`))
+    }
+    if (mr.resources.length > 0) {
+      mrLines.push('\n**공유 자료:**')
+      mr.resources.forEach(r => mrLines.push(`• ${r.label} (${r.shared_by_name}) — ${r.url}`))
+    }
+    sections.push(`## 회의록 (/마무리 — 최우선 소스, 이 내용을 tasks/decisions 추출의 기준으로 사용)\n\n${mrLines.join('\n')}`)
+  }
+
   if (checkinText) {
-    sections.push(`## 주간 체크인 (구조화된 입력 — tasks 추출 1순위)\n\n${checkinText}`)
+    sections.push(`## 주간 체크인 (구조화된 입력 — 회의록 다음 우선순위)\n\n${checkinText}`)
   }
 
   if (pinnedText) {

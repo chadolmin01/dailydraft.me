@@ -186,7 +186,7 @@ export function AuthProvider({ children, initialUser }: { children: React.ReactN
       provider: 'discord',
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
-        scopes: 'identify guilds',
+        scopes: 'identify email guilds',
       },
     })
     return { error }
