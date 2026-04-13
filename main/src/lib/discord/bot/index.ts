@@ -42,6 +42,8 @@ const gateway = new DiscordGateway(BOT_TOKEN, {
   onReady: (data) => {
     botUserId = data.user.id;
     engine.setBotUserId(botUserId);
+    // Discord ID → Draft 닉네임 캐시 로드
+    engine.loadNicknameCache();
     const guildCount = data.guilds.length;
     // READY 시 받은 길드를 "기존 서버"로 등록
     for (const g of data.guilds) {
@@ -234,6 +236,9 @@ gateway.connect();
 
 // 정기 정리 (5분마다)
 setInterval(() => engine.cleanup(), 5 * 60 * 1000);
+
+// 닉네임 캐시 갱신 (30분마다)
+setInterval(() => engine.loadNicknameCache(), 30 * 60 * 1000);
 
 // 안전한 종료
 process.on('SIGINT', () => {

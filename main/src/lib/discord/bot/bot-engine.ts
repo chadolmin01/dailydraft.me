@@ -64,6 +64,9 @@ export class BotEngine {
   // 봇 자신의 Discord User ID — 멘션 감지용
   private botUserId: string = '';
 
+  // Discord User ID → Draft 닉네임 캐시 (시작 시 + 30분마다 갱신)
+  private nicknameCache = new Map<string, string>();
+
   // 채널별 멘션 응답 쿨다운 (스팸 방지, 10초)
   private mentionCooldowns = new Map<string, number>();
 
@@ -86,6 +89,38 @@ export class BotEngine {
   }
 
   /**
+   * Discord ID → Draft 닉네임 캐시 로드
+   * 시작 시 1회 + 30분마다 갱신
+   */
+  async loadNicknameCache(): Promise<void> {
+    try {
+      const { createAdminClient } = await import('../../supabase/admin');
+      const supabase = createAdminClient();
+      const { data } = await supabase
+        .from('profiles')
+        .select('discord_user_id, nickname')
+        .not('discord_user_id', 'is', null);
+
+      if (data) {
+        this.nicknameCache.clear();
+        for (const p of data) {
+          if (p.discord_user_id && p.nickname) {
+            this.nicknameCache.set(p.discord_user_id, p.nickname);
+          }
+        }
+        console.log(`[BotEngine] 닉네임 캐시 로드: ${this.nicknameCache.size}명`);
+      }
+    } catch (err) {
+      console.error('[BotEngine] 닉네임 캐시 로드 실패:', err);
+    }
+  }
+
+  /** Discord User ID로 Draft 닉네임 조회 (캐시) */
+  getDraftNickname(discordUserId: string): string | null {
+    return this.nicknameCache.get(discordUserId) ?? null;
+  }
+
+  /**
    * Discord Gateway MESSAGE_CREATE 이벤트 핸들러
    * 모든 메시지가 여기를 통과
    */
@@ -98,6 +133,12 @@ export class BotEngine {
     guild_id: string;
     member_nick?: string | null;
   }): Promise<void> {
+    // Draft 닉네임 캐시에서 조회 → member_nick에 우선 반영
+    if (!raw.member_nick) {
+      const cached = this.getDraftNickname(raw.author.id);
+      if (cached) raw.member_nick = cached;
+    }
+
     // 봇 메시지 무시
     const msg = this.buffer.push(raw);
     if (!msg) return;
