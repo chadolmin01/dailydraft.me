@@ -1,174 +1,94 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { AnimatedCounter } from './shared'
+import { ArrowRight, Play } from 'lucide-react'
 
-/* ── Floating UI Cards (lg only) ── */
-const FloatingCard: React.FC<{
-  children: React.ReactNode
-  className?: string
-  delay?: number
-}> = ({ children, className = '', delay = 0 }) => (
-  <motion.div
-    className={`absolute hidden lg:block bg-surface-card/95 backdrop-blur-sm rounded-xl border border-border shadow-md p-4 ${className}`}
-    animate={{ y: [0, -8, 0] }}
-    transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay }}
-  >
-    {children}
-  </motion.div>
-)
+const stagger = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.12, delayChildren: 0.1 },
+  },
+}
 
-interface PublicStats {
-  users: number
-  projects: number
-  coffeeChats: number
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] as const },
+  },
 }
 
 export const Hero: React.FC = () => {
-  const [stats, setStats] = useState<PublicStats | null>(null)
-
-  useEffect(() => {
-    fetch('/api/stats/public')
-      .then(r => r.json())
-      .then(d => setStats(d))
-      .catch(() => {})
-  }, [])
-
-  // 최소 표시 기준: 사용자 50명 이상이어야 stats bar 노출 (초기엔 낮은 숫자가 역효과)
-  const showStats = stats && stats.users >= 50
-
   return (
-    <section className="relative w-full pt-16 sm:pt-24 pb-16 sm:pb-24 px-4 sm:px-6 md:px-10 max-w-6xl mx-auto">
+    <section className="relative w-full min-h-[80vh] flex items-center justify-center px-4 sm:px-6 md:px-10">
+      <motion.div
+        className="flex flex-col items-center text-center max-w-2xl mx-auto py-20 sm:py-28"
+        variants={stagger}
+        initial="hidden"
+        animate="visible"
+      >
+        {/* Badge */}
+        <motion.div variants={fadeUp}>
+          <span className="inline-block text-[13px] font-medium text-txt-secondary border border-border rounded-full px-4 py-1.5 mb-7">
+            대학 동아리 · 스터디 · 소그룹 운영 인프라
+          </span>
+        </motion.div>
 
-      {/* Floating UI Cards — desktop only */}
-      <div className="absolute inset-0 pointer-events-none z-0">
-        {/* Card 1: AI 온보딩 스텝 미리보기 */}
-        <FloatingCard className="top-20 -left-6 w-56" delay={0}>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono font-bold text-txt-primary tracking-tight">AI 온보딩</span>
-              <span className="text-[10px] font-mono font-medium bg-brand/10 text-brand px-2 py-0.5 rounded-full">진행 중</span>
-            </div>
-            <div className="space-y-2">
-              <div className="text-xs font-medium text-txt-primary">어떤 분야에서 활동하세요?</div>
-              <div className="flex flex-wrap gap-1.5">
-                <span className="px-2.5 py-1 bg-brand text-white rounded-xl text-[11px] font-medium">프론트엔드</span>
-                <span className="px-2.5 py-1 bg-surface-sunken text-txt-secondary rounded-xl text-[11px]">백엔드</span>
-                <span className="px-2.5 py-1 bg-surface-sunken text-txt-secondary rounded-xl text-[11px]">디자인</span>
-              </div>
-            </div>
-            <div className="flex items-center justify-between pt-2 border-t border-border">
-              <span className="text-[10px] font-mono text-txt-tertiary">STEP 2 / 5</span>
-              <span className="text-[10px] font-mono text-txt-tertiary">40%</span>
-            </div>
-          </div>
-        </FloatingCard>
-
-        {/* Card 2: AI 매칭 결과 미리보기 */}
-        <FloatingCard className="top-28 -right-10 w-56" delay={1.5}>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono font-bold text-txt-primary tracking-tight">AI 매칭</span>
-              <span className="text-[10px] font-mono font-medium bg-status-success-bg text-status-success-text px-2 py-0.5 rounded-full">매칭 완료</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-brand/10 rounded-full flex items-center justify-center text-brand text-xs font-bold shrink-0">JK</div>
-              <div className="min-w-0">
-                <div className="text-sm font-bold text-txt-primary leading-snug">김지현</div>
-                <div className="text-xs text-txt-tertiary mt-0.5">프론트엔드 · React</div>
-              </div>
-            </div>
-            <div className="flex items-center justify-between pt-2 border-t border-border">
-              <span className="text-[10px] font-mono text-txt-tertiary">SKILL MATCH</span>
-              <span className="text-[10px] font-mono text-status-success-text">92%</span>
-            </div>
-          </div>
-        </FloatingCard>
-
-        {/* Card 3: 커피챗 요청 미리보기 */}
-        <FloatingCard className="bottom-12 left-6 w-56" delay={3}>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono font-bold text-txt-primary tracking-tight">커피챗</span>
-              <div className="flex items-center gap-1.5">
-                <div className="w-1.5 h-1.5 bg-indicator-online rounded-full"></div>
-                <span className="text-[10px] font-mono font-medium text-status-success-text">수락됨</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-surface-sunken rounded-full flex items-center justify-center text-xs font-bold text-txt-secondary shrink-0">SJ</div>
-              <div className="min-w-0">
-                <div className="text-sm font-bold text-txt-primary leading-snug">박수진</div>
-                <div className="text-xs text-txt-tertiary mt-0.5">백엔드 · Node.js</div>
-              </div>
-            </div>
-            <div className="flex items-center justify-between pt-2 border-t border-border">
-              <span className="text-[10px] font-mono text-txt-tertiary">COFFEE CHAT</span>
-              <span className="text-[10px] font-mono text-txt-tertiary">오늘 14:00</span>
-            </div>
-          </div>
-        </FloatingCard>
-      </div>
-
-      {/* Main content */}
-      <div className="relative z-10 flex flex-col items-center text-center mt-10 sm:mt-16 md:mt-24 max-w-2xl mx-auto">
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.15] mb-5 text-txt-primary">
-          프로젝트를 공유하고,
+        {/* Title */}
+        <motion.h1
+          variants={fadeUp}
+          className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.15] text-txt-primary mb-6 break-keep"
+        >
+          동아리 운영,
           <br />
-          <span className="text-brand">함께할 사람을 만나세요.</span>
-        </h1>
+          이제 <span className="text-brand">Draft</span> 하나로
+        </motion.h1>
 
-        <p className="text-sm md:text-base text-txt-secondary mb-8 max-w-xl leading-relaxed break-keep">
-          모든 프로젝트는 Draft에서 시작됩니다.
-        </p>
+        {/* Sub copy */}
+        <motion.p
+          variants={fadeUp}
+          className="text-base sm:text-lg text-txt-secondary leading-relaxed max-w-lg mb-10 break-keep"
+        >
+          주간 추적, 기수 인수인계, 성과 보고까지.
+          <br className="hidden sm:block" />
+          카톡 · 시트 · 노션을 오가는 3시간이 0분이 됩니다.
+        </motion.p>
 
         {/* CTAs */}
-        <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto mb-12">
+        <motion.div
+          variants={fadeUp}
+          className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto mb-8"
+        >
           <Link
             href="/login"
-            className="group w-full sm:w-auto flex items-center justify-center gap-2 bg-brand text-white px-6 py-3 rounded-full font-bold text-sm hover:bg-brand-hover transition-all duration-200 active:scale-[0.97] shadow-sm"
+            className="group w-full sm:w-auto flex items-center justify-center gap-2 bg-brand text-white px-7 py-3.5 rounded-full font-semibold text-[15px] hover:bg-brand-hover transition-all duration-200 active:scale-[0.97] shadow-sm"
           >
-            시작하기 — 1분이면 끝
-            <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+            무료로 시작하기
+            <ArrowRight
+              size={16}
+              className="group-hover:translate-x-1 transition-transform"
+            />
           </Link>
           <Link
-            href="/explore"
-            className="group w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-full font-bold text-sm border border-border bg-surface-card text-txt-secondary hover:bg-surface-sunken transition-all duration-200"
+            href="#demo"
+            className="group w-full sm:w-auto flex items-center justify-center gap-2 px-7 py-3.5 rounded-full font-semibold text-[15px] border border-border text-txt-secondary hover:bg-surface-sunken transition-all duration-200"
           >
-            프로젝트 둘러보기
-            <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+            <Play size={14} className="fill-current" />
+            2분 데모 보기
           </Link>
-        </div>
+        </motion.div>
 
-        {/* Real stats from DB — only show when data loaded and non-zero */}
-        {showStats && (
-          <div className="flex items-center gap-6 sm:gap-10 text-center">
-            <div>
-              <div className="text-xl sm:text-2xl font-bold text-txt-primary">
-                <AnimatedCounter target={stats.users} suffix="명" />
-              </div>
-              <div className="text-[10px] font-mono text-txt-tertiary mt-1">가입한 사용자</div>
-            </div>
-            <div className="w-px h-8 bg-border" />
-            <div>
-              <div className="text-xl sm:text-2xl font-bold text-txt-primary">
-                <AnimatedCounter target={stats.projects} suffix="개" />
-              </div>
-              <div className="text-[10px] font-mono text-txt-tertiary mt-1">등록된 프로젝트</div>
-            </div>
-            <div className="w-px h-8 bg-border" />
-            <div>
-              <div className="text-xl sm:text-2xl font-bold text-txt-primary">
-                <AnimatedCounter target={stats.coffeeChats} suffix="회" />
-              </div>
-              <div className="text-[10px] font-mono text-txt-tertiary mt-1">커피챗</div>
-            </div>
-          </div>
-        )}
-      </div>
+        {/* Micro proof */}
+        <motion.p
+          variants={fadeUp}
+          className="text-xs text-txt-tertiary"
+        >
+          가입 후 3분이면 첫 주간 리포트가 생성됩니다 · 카드 등록 불필요
+        </motion.p>
+      </motion.div>
     </section>
   )
 }

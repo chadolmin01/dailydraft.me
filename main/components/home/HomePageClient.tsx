@@ -1,32 +1,31 @@
 import React from 'react'
-import { BackgroundGrid } from '@/components/home/BackgroundGrid'
 import { Navbar } from '@/components/home/Navbar'
 import { Hero } from '@/components/home/Hero'
-import { TrustBar } from '@/components/home/TrustBar'
-import { FeatureShowcase } from '@/components/home/FeatureShowcase'
+import { FeatureBar } from '@/components/home/FeatureBar'
+import { BeforeAfterTabs } from '@/components/home/BeforeAfterTabs'
+import { DemoTabs } from '@/components/home/DemoTabs'
 import { HowItWorks } from '@/components/home/HowItWorks'
-import { OpportunitySection } from '@/components/home/OpportunitySection'
-import { Cohort1Section } from '@/components/home/Cohort1Section'
-import { FinalCTA } from '@/components/home/FinalCTA'
+import { Scenarios } from '@/components/home/Scenarios'
+import { Pricing } from '@/components/home/Pricing'
 import { FAQ } from '@/components/home/FAQ'
+import { FinalCTA } from '@/components/home/FinalCTA'
 import { Footer } from '@/components/home/Footer'
 
 export default function HomePageClient() {
   return (
     <div className="min-h-screen w-full relative overflow-x-hidden text-txt-primary font-sans selection:bg-black selection:text-white bg-surface-card">
-      <BackgroundGrid />
-
       <Navbar />
 
       <main className="relative pt-14">
         <Hero />
-        <TrustBar />
+        <FeatureBar />
+        <BeforeAfterTabs />
+        <DemoTabs />
         <HowItWorks />
-        <OpportunitySection />
-        <Cohort1Section />
-        <FeatureShowcase />
-        <FinalCTA />
+        <Scenarios />
+        <Pricing />
         <FAQ />
+        <FinalCTA />
       </main>
 
       <Footer />

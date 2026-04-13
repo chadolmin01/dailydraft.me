@@ -1,0 +1,369 @@
+'use client'
+
+import React, { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+
+/* ── Tab Data ── */
+
+const tabs = [
+  { id: 'weekly', label: '주간 진행 추적' },
+  { id: 'handoff', label: '기수 인수인계' },
+  { id: 'report', label: '성과 보고' },
+] as const
+
+type TabId = (typeof tabs)[number]['id']
+
+/* ── Tab 1: 주간 진행 추적 ── */
+
+const WeeklyTrackingPanel = () => (
+  <div className="space-y-6">
+    <p className="text-sm sm:text-base text-txt-secondary text-center max-w-2xl mx-auto leading-relaxed break-keep">
+      5개 팀의 진행상황을 파악하기 위해 카톡 3개, 디코 2개, 시트 1개를 여는 월요일 아침.
+    </p>
+
+    <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4 md:gap-6 items-stretch">
+      {/* Before */}
+      <div className="bg-surface-sunken rounded-xl p-5 sm:p-6 flex flex-col">
+        <span className="text-xs font-semibold text-txt-tertiary mb-4">Before</span>
+        <div className="space-y-3 flex-1">
+          {/* Mock chat messages */}
+          <ChatBubble sender="회장" message="팀 A 진행상황 공유해주세요~" time="오전 9:02" />
+          <ChatStatus text="읽음" />
+          <ChatBubble sender="회장" message="팀 B도 부탁드려요" time="오전 9:15" />
+          <ChatStatus text="답장 없음..." muted />
+          <ChatBubble sender="팀A 리더" message="저희 이번 주 API 연동했습니다!" time="오후 2:30" />
+          <ChatBubble sender="회장" message="팀 C는요...?" time="오후 4:12" />
+          <ChatStatus text="답장 없음..." muted />
+        </div>
+        <div className="mt-5 pt-4 border-t border-border">
+          <p className="text-xs text-txt-tertiary">
+            주 3시간 소모 · 수동 취합 · 누락 빈번
+          </p>
+        </div>
+      </div>
+
+      {/* Arrow */}
+      <div className="hidden md:flex items-center justify-center">
+        <span className="text-2xl text-txt-tertiary select-none">&rarr;</span>
+      </div>
+      <div className="flex md:hidden items-center justify-center py-1">
+        <span className="text-xl text-txt-tertiary select-none">&darr;</span>
+      </div>
+
+      {/* After — 실제 봇 출력 형태 */}
+      <div className="bg-surface-card border border-border rounded-xl p-5 sm:p-6 flex flex-col">
+        <span className="text-xs font-semibold text-brand mb-4">After</span>
+        <div className="flex-1">
+          {/* Bot message header */}
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-6 h-6 rounded-full bg-brand flex items-center justify-center shrink-0">
+              <span className="text-[10px] font-bold text-white">D</span>
+            </div>
+            <span className="text-xs font-semibold text-brand">Draft Bot</span>
+            <span className="text-[9px] px-1 py-0.5 bg-brand/10 text-brand rounded font-medium">봇</span>
+          </div>
+
+          {/* Summary embed */}
+          <div className="space-y-3 text-xs">
+            <p className="font-bold text-sm text-txt-primary">
+              팀A — 이번 주 내용 정리했습니다
+            </p>
+
+            <div>
+              <p className="font-semibold text-txt-primary mb-1">할 일</p>
+              <p className="text-txt-secondary leading-relaxed">
+                김민수 — API 연동 테스트 (금요일까지)<br />
+                이서연 — 디자인 시안 리뷰 반영<br />
+                박준혁 — 프론트 로그인 QA
+              </p>
+            </div>
+
+            <div>
+              <p className="font-semibold text-txt-primary mb-1">결정사항</p>
+              <p className="text-txt-secondary">로그인 방식: OAuth 소셜 로그인</p>
+            </div>
+
+            <div>
+              <p className="font-semibold text-txt-primary mb-1">다음 모임</p>
+              <p className="text-txt-secondary">금요일 오후 3시</p>
+            </div>
+
+            <p className="text-[10px] text-txt-tertiary pt-2 border-t border-border">
+              팀 대화에서 자동 생성 · 수동 취합 불필요
+            </p>
+          </div>
+        </div>
+        <div className="mt-5 pt-4 border-t border-border">
+          <p className="text-xs text-brand font-medium">
+            대화 기반 자동 요약 · 회장이 묻지 않아도 정리 완료
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+)
+
+/* ── Tab 2: 기수 인수인계 ── */
+
+const HandoffPanel = () => (
+  <div className="space-y-6">
+    <p className="text-sm sm:text-base text-txt-secondary text-center max-w-2xl mx-auto leading-relaxed break-keep">
+      &ldquo;이 노션이랑 이 시트랑 이 디코 서버랑...&rdquo; &mdash; 매 기수 반복되는 2시간짜리 설명.
+    </p>
+
+    <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4 md:gap-6 items-stretch">
+      {/* Before */}
+      <div className="bg-surface-sunken rounded-xl p-5 sm:p-6 flex flex-col">
+        <span className="text-xs font-semibold text-txt-tertiary mb-4">Before</span>
+        <ul className="space-y-3 flex-1">
+          {[
+            { icon: '📁', text: '2024 노션 워크스페이스 (링크 만료)' },
+            { icon: '📊', text: '구글시트_멤버명단_최종_진짜최종_v3' },
+            { icon: '💬', text: '카톡방 스크롤 올려보면 있어요' },
+            { icon: '🔗', text: '드라이브 폴더 (권한 만료)' },
+            { icon: '📝', text: '나머진 구두로 설명할게요' },
+          ].map((item) => (
+            <li key={item.text} className="flex items-start gap-3">
+              <span className="text-base shrink-0 leading-none mt-0.5">{item.icon}</span>
+              <span className="text-sm text-txt-secondary leading-snug">{item.text}</span>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-5 pt-4 border-t border-border">
+          <p className="text-xs text-txt-tertiary">
+            인수인계 2시간+ · 다음 기수 적응 2주
+          </p>
+        </div>
+      </div>
+
+      {/* Arrow */}
+      <div className="hidden md:flex items-center justify-center">
+        <span className="text-2xl text-txt-tertiary select-none">&rarr;</span>
+      </div>
+      <div className="flex md:hidden items-center justify-center py-1">
+        <span className="text-xl text-txt-tertiary select-none">&darr;</span>
+      </div>
+
+      {/* After */}
+      <div className="bg-surface-card border border-border rounded-xl p-5 sm:p-6 flex flex-col">
+        <span className="text-xs font-semibold text-brand mb-4">After</span>
+        <div className="space-y-3 flex-1">
+          {[
+            { gen: '5기', members: 24, projects: 8, reports: 16, opacity: 'opacity-100' },
+            { gen: '4기', members: 20, projects: 6, reports: 14, opacity: 'opacity-100' },
+            { gen: '3기', members: 18, projects: 5, reports: 12, opacity: 'opacity-70' },
+            { gen: '2기', members: 15, projects: 4, reports: 10, opacity: 'opacity-40' },
+          ].map((g) => (
+            <div
+              key={g.gen}
+              className={`flex items-center gap-4 p-3 rounded-lg bg-surface-sunken ${g.opacity} transition-opacity`}
+            >
+              <span className="text-sm font-bold text-txt-primary w-8 shrink-0">{g.gen}</span>
+              <div className="flex-1 min-w-0">
+                <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-txt-secondary">
+                  <span>{g.members}명</span>
+                  <span>프로젝트 {g.projects}개</span>
+                  <span>주간리포트 {g.reports}회</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="mt-5 pt-4 border-t border-border">
+          <p className="text-xs text-brand font-medium">
+            관리자 권한 이전 · 5분 · 맥락 100% 보존
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+)
+
+/* ── Tab 3: 성과 보고 ── */
+
+const ReportPanel = () => (
+  <div className="space-y-6">
+    <p className="text-sm sm:text-base text-txt-secondary text-center max-w-2xl mx-auto leading-relaxed break-keep">
+      학기말마다 돌아오는 지도교수님의 &ldquo;성과 정리해서 보내줘.&rdquo;
+    </p>
+
+    <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4 md:gap-6 items-stretch">
+      {/* Before */}
+      <div className="bg-surface-sunken rounded-xl p-5 sm:p-6 flex flex-col">
+        <span className="text-xs font-semibold text-txt-tertiary mb-4">Before</span>
+        <div className="space-y-3 flex-1">
+          {/* Document skeleton lines */}
+          <div className="space-y-2.5">
+            <div className="h-4 w-3/4 bg-border/60 rounded" />
+            <div className="h-3 w-full bg-border/40 rounded" />
+            <div className="h-3 w-5/6 bg-border/40 rounded" />
+            <div className="h-3 w-full bg-border/40 rounded" />
+            <div className="h-3 w-2/3 bg-border/40 rounded" />
+          </div>
+          <div className="h-px bg-border/30 my-3" />
+          <div className="space-y-2.5">
+            <div className="h-3.5 w-1/2 bg-border/60 rounded" />
+            <div className="h-3 w-full bg-border/40 rounded" />
+            <div className="h-3 w-4/5 bg-border/40 rounded" />
+            <div className="h-3 w-full bg-border/40 rounded" />
+          </div>
+          <div className="h-px bg-border/30 my-3" />
+          <div className="space-y-2.5">
+            <div className="h-3.5 w-2/5 bg-border/60 rounded" />
+            <div className="h-3 w-3/4 bg-border/40 rounded" />
+            <div className="h-3 w-full bg-border/40 rounded" />
+          </div>
+        </div>
+        <div className="mt-5 pt-4 border-t border-border">
+          <p className="text-xs text-txt-tertiary">
+            수동 작성 3일 · 수치 불정확 · 매번 포맷 새로
+          </p>
+        </div>
+      </div>
+
+      {/* Arrow */}
+      <div className="hidden md:flex items-center justify-center">
+        <span className="text-2xl text-txt-tertiary select-none">&rarr;</span>
+      </div>
+      <div className="flex md:hidden items-center justify-center py-1">
+        <span className="text-xl text-txt-tertiary select-none">&darr;</span>
+      </div>
+
+      {/* After */}
+      <div className="bg-surface-card border border-border rounded-xl p-5 sm:p-6 flex flex-col">
+        <span className="text-xs font-semibold text-brand mb-4">After</span>
+        <div className="space-y-4 flex-1">
+          {/* Report header */}
+          <div className="space-y-1">
+            <p className="text-sm font-bold text-txt-primary">FLIP &mdash; 2026 1학기 성과 리포트</p>
+            <p className="text-xs text-txt-tertiary">자동 생성됨 · 2026.06.20</p>
+          </div>
+
+          {/* Stats row */}
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { label: '활동 멤버', value: '24명' },
+              { label: '프로젝트 완료', value: '8개' },
+              { label: '정기 회의', value: '32회' },
+              { label: '참여율', value: '92%' },
+            ].map((s) => (
+              <div
+                key={s.label}
+                className="bg-surface-sunken rounded-lg p-3 text-center"
+              >
+                <p className="text-lg font-bold text-txt-primary">{s.value}</p>
+                <p className="text-[10px] text-txt-tertiary mt-0.5">{s.label}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex gap-2">
+            <span className="flex-1 text-center py-2 bg-brand text-white text-xs font-semibold rounded-lg">
+              PDF 다운로드
+            </span>
+            <span className="flex-1 text-center py-2 border border-border text-txt-secondary text-xs font-medium rounded-lg">
+              학교 제출용 양식
+            </span>
+          </div>
+        </div>
+        <div className="mt-5 pt-4 border-t border-border">
+          <p className="text-xs text-brand font-medium">
+            원클릭 생성 · 10초 · 활동 기록에서 자동 집계
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+)
+
+/* ── Chat Bubble helpers ── */
+
+function ChatBubble({ sender, message, time }: { sender: string; message: string; time: string }) {
+  return (
+    <div className="flex items-start gap-2.5">
+      <div className="w-7 h-7 rounded-full bg-surface-card border border-border flex items-center justify-center shrink-0">
+        <span className="text-[10px] font-semibold text-txt-secondary">{sender[0]}</span>
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-baseline gap-2">
+          <span className="text-xs font-semibold text-txt-primary">{sender}</span>
+          <span className="text-[10px] text-txt-tertiary">{time}</span>
+        </div>
+        <p className="text-xs text-txt-secondary mt-0.5 leading-relaxed">{message}</p>
+      </div>
+    </div>
+  )
+}
+
+function ChatStatus({ text, muted }: { text: string; muted?: boolean }) {
+  return (
+    <p className={`text-[10px] pl-[38px] ${muted ? 'text-status-danger-text' : 'text-txt-tertiary'}`}>
+      {text}
+    </p>
+  )
+}
+
+/* ── Panel map ── */
+
+const panels: Record<TabId, React.FC> = {
+  weekly: WeeklyTrackingPanel,
+  handoff: HandoffPanel,
+  report: ReportPanel,
+}
+
+/* ── Main Component ── */
+
+export function BeforeAfterTabs() {
+  const [activeTab, setActiveTab] = useState<TabId>('weekly')
+
+  const Panel = panels[activeTab]
+
+  return (
+    <section className="w-full bg-white py-24 sm:py-32 px-6 md:px-10">
+      <div className="max-w-5xl mx-auto">
+        {/* Title */}
+        <h2 className="text-3xl sm:text-4xl font-bold text-txt-primary text-center mb-10">
+          이런 월요일, 바꿀 수 있습니다
+        </h2>
+
+        {/* Tab bar */}
+        <div className="flex justify-center border-b border-border mb-10">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`relative px-5 py-3 text-sm transition-colors duration-200 whitespace-nowrap ${
+                activeTab === tab.id
+                  ? 'font-semibold text-txt-primary'
+                  : 'text-txt-tertiary hover:text-txt-secondary'
+              }`}
+            >
+              {tab.label}
+              {activeTab === tab.id && (
+                <motion.div
+                  layoutId="beforeafter-underline"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-txt-primary"
+                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                />
+              )}
+            </button>
+          ))}
+        </div>
+
+        {/* Panel */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+          >
+            <Panel />
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </section>
+  )
+}

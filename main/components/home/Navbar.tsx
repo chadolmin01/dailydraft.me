@@ -5,6 +5,7 @@ import Link from 'next/link'
 
 export const Navbar: React.FC = () => {
   const [scrolled, setScrolled] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10)
@@ -12,33 +13,118 @@ export const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 bg-surface-card/90 backdrop-blur-sm border-b border-border h-12 flex items-center px-4 sm:px-6 md:px-10 justify-between transition-shadow duration-200 ${scrolled ? 'shadow-sm' : ''}`}>
-      <div className="flex items-center gap-2">
-        <div className="w-6 h-6 bg-black rounded-lg flex items-center justify-center">
-          <span className="text-white font-bold text-sm font-mono">D</span>
-        </div>
-        <span className="font-bold text-base tracking-tight">Draft.</span>
-        <div className="hidden md:flex items-center gap-2 ml-4 px-2 py-1 bg-surface-card rounded-full border border-border">
-          <div className="w-1.5 h-1.5 rounded-full bg-indicator-online"></div>
-          <span className="text-[10px] font-medium text-txt-secondary">OPEN BETA</span>
-        </div>
-      </div>
+  // 모바일 메뉴 열릴 때 body 스크롤 방지
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => { document.body.style.overflow = '' }
+  }, [mobileOpen])
 
-      <div className="flex items-center gap-4">
-        <div className="hidden md:flex items-center gap-5 text-xs font-medium text-txt-tertiary">
-          <Link href="#how-it-works" className="hover:text-black transition-colors">이용 방법</Link>
-          <Link href="#projects" className="hover:text-black transition-colors">프로젝트</Link>
-          <Link href="#faq" className="hover:text-black transition-colors">FAQ</Link>
-          <Link href="/explore" className="hover:text-black transition-colors">둘러보기</Link>
+  const navLinks = [
+    { href: '#features', label: '기능' },
+    { href: '#use-cases', label: '사례' },
+    { href: '#pricing', label: '가격' },
+  ]
+
+  return (
+    <>
+      <nav
+        className={`fixed top-0 left-0 right-0 z-50 h-14 flex items-center px-5 sm:px-8 md:px-12 justify-between transition-all duration-200 border-b ${
+          scrolled
+            ? 'bg-surface-card/80 backdrop-blur-xl border-border shadow-sm'
+            : 'bg-transparent border-transparent'
+        }`}
+      >
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2.5 shrink-0">
+          <div className="w-7 h-7 bg-brand rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-sm">D</span>
+          </div>
+          <span className="font-bold text-base tracking-tight text-txt-primary">
+            Draft
+          </span>
+        </Link>
+
+        {/* Desktop nav links */}
+        <div className="hidden md:flex items-center gap-7 text-[13px] font-medium text-txt-secondary">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="hover:text-txt-primary transition-colors duration-150"
+            >
+              {link.label}
+            </Link>
+          ))}
+          <Link
+            href="/login"
+            className="hover:text-txt-primary transition-colors duration-150"
+          >
+            로그인
+          </Link>
         </div>
+
+        {/* Desktop CTA */}
         <Link
           href="/login"
-          className="text-xs font-medium border border-border bg-surface-card rounded-full hover:bg-surface-sunken px-3 py-1.5 transition-colors duration-200"
+          className="hidden md:flex items-center justify-center bg-brand text-white text-[13px] font-semibold px-5 py-2 rounded-full hover:bg-brand-hover transition-colors duration-150 active:scale-[0.97]"
         >
-          로그인
+          무료로 시작하기
         </Link>
-      </div>
-    </nav>
+
+        {/* Mobile hamburger */}
+        <button
+          onClick={() => setMobileOpen(!mobileOpen)}
+          className="md:hidden flex flex-col items-center justify-center w-8 h-8 gap-1.5"
+          aria-label="메뉴 열기"
+        >
+          <span
+            className={`block w-5 h-[1.5px] bg-txt-primary transition-all duration-200 ${
+              mobileOpen ? 'rotate-45 translate-y-[4.5px]' : ''
+            }`}
+          />
+          <span
+            className={`block w-5 h-[1.5px] bg-txt-primary transition-all duration-200 ${
+              mobileOpen ? '-rotate-45 -translate-y-[1.5px]' : ''
+            }`}
+          />
+        </button>
+      </nav>
+
+      {/* Mobile menu overlay */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-40 bg-surface-card/95 backdrop-blur-xl pt-14 md:hidden">
+          <div className="flex flex-col items-center gap-6 pt-12 text-lg font-medium text-txt-primary">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMobileOpen(false)}
+                className="hover:text-brand transition-colors"
+              >
+                {link.label}
+              </Link>
+            ))}
+            <Link
+              href="/login"
+              onClick={() => setMobileOpen(false)}
+              className="text-txt-secondary hover:text-txt-primary transition-colors"
+            >
+              로그인
+            </Link>
+            <Link
+              href="/login"
+              onClick={() => setMobileOpen(false)}
+              className="mt-4 bg-brand text-white text-base font-semibold px-8 py-3 rounded-full hover:bg-brand-hover transition-colors"
+            >
+              무료로 시작하기
+            </Link>
+          </div>
+        </div>
+      )}
+    </>
   )
 }
