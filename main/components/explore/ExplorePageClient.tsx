@@ -12,6 +12,8 @@ import { ProfileCompletionBanner } from '@/components/ui/ProfileCompletionBanner
 import { AiMatchingNudgeCard } from '@/components/explore/AiMatchingNudgeCard'
 import { StarterGuideCard } from '@/components/starter-guide/StarterGuideCard'
 import { useStarterGuide } from '@/src/hooks/useStarterGuide'
+import { useDiscordCarousel } from '@/src/hooks/useDiscordCarousel'
+import { DiscordFeatureCarousel } from '@/components/discord/DiscordFeatureCarousel'
 import { useDragScroll } from '@/src/hooks/useDragScroll'
 import { CampusMap } from '@/components/explore/CampusMap'
 import { timeAgo } from '@/src/lib/utils'
@@ -162,6 +164,7 @@ function ExplorePageContent() {
   const { data: profile } = useProfile()
   const queryClient = useQueryClient()
   const guide = useStarterGuide()
+  const discordCarousel = useDiscordCarousel()
   const dragRefProjects = useDragScroll()
   const dragRefUpdates = useDragScroll()
   const dragRefPeople = useDragScroll()
@@ -570,6 +573,9 @@ function ExplorePageContent() {
         {isAuthenticated && profile && !profile.ai_chat_completed && (
           <AiMatchingNudgeCard />
         )}
+
+        {/* Discord 기능 소개 캐러셀 — discord_user_id가 없는 유저에게만 표시 */}
+        <DiscordFeatureCarousel isOpen={discordCarousel.visible} onClose={discordCarousel.dismiss} />
 
         {/* ── Search bar ── */}
         <div className="relative mb-5">
