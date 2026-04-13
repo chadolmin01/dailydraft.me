@@ -286,6 +286,7 @@ export function NotificationDropdown() {
                     <div className={`w-8 h-8 flex items-center justify-center shrink-0 mt-0.5 rounded-lg ${
                       isUnread ? config.color : config.readColor
                     }`}>
+                      {/* @ts-expect-error lucide icon size prop */}
                       <Icon size={14} />
                     </div>
                     <div className="flex-1 min-w-0">

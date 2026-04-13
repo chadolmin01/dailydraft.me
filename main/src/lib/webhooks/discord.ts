@@ -34,36 +34,52 @@ const COLORS = {
 
 /**
  * Discord 웹훅으로 메시지를 발송한다.
+ * 서버 에러(5xx) 시 1회 재시도 후 실패 처리.
  * 실패해도 throw하지 않음 — 외부 알림은 best-effort.
  */
 export async function sendDiscordWebhook(
   webhookUrl: string,
   payload: DiscordWebhookPayload
 ): Promise<boolean> {
-  try {
-    const res = await fetch(webhookUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        username: 'Draft',
-        ...payload,
-      }),
-      signal: AbortSignal.timeout(DISCORD_TIMEOUT_MS),
-    })
+  const body = JSON.stringify({ username: 'Draft', ...payload })
+  const MAX_ATTEMPTS = 2
 
-    if (!res.ok) {
+  for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    try {
+      const res = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body,
+        signal: AbortSignal.timeout(DISCORD_TIMEOUT_MS),
+      })
+
+      if (res.ok) return true
+
+      // 5xx 서버 에러 → 재시도 (1초 대기)
+      if (res.status >= 500 && attempt < MAX_ATTEMPTS - 1) {
+        console.warn(`[discord-webhook] ${res.status}, retrying in 1s`)
+        await new Promise(r => setTimeout(r, 1000))
+        continue
+      }
+
       console.error('[discord-webhook] failed', {
         status: res.status,
         statusText: res.statusText,
       })
       return false
+    } catch (error) {
+      // 네트워크/타임아웃 에러 → 재시도
+      if (attempt < MAX_ATTEMPTS - 1) {
+        console.warn('[discord-webhook] network error, retrying in 1s')
+        await new Promise(r => setTimeout(r, 1000))
+        continue
+      }
+      console.error('[discord-webhook] error', error)
+      return false
     }
-
-    return true
-  } catch (error) {
-    console.error('[discord-webhook] error', error)
-    return false
   }
+
+  return false
 }
 
 /** 주간 업데이트 작성 알림 */

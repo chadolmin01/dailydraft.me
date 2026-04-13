@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useClub } from '@/src/hooks/useClub'
 
@@ -17,12 +18,28 @@ interface GhostwriterSettings {
   custom_prompt_hint: string | null
 }
 
-interface DiscordChannel {
+interface AvailableChannel {
   id: string
   name: string
-  type: number
-  parent_id: string | null
-  position: number
+}
+
+interface Opportunity {
+  id: string
+  title: string
+}
+
+interface ExistingMapping {
+  id: string
+  opportunity_id: string
+  discord_channel_id: string
+  discord_channel_name: string | null
+}
+
+interface ChannelDataResponse {
+  mappings: ExistingMapping[]
+  available_channels: AvailableChannel[]
+  opportunities: Opportunity[]
+  guild: { id: string; name: string } | null
 }
 
 type Step = 'welcome' | 'channels' | 'tone' | 'schedule' | 'advanced' | 'complete'
@@ -57,6 +74,7 @@ const TONE_OPTIONS = [
 export function DiscordSettingsWizard({ clubSlug }: { clubSlug: string }) {
   const { data: club, isLoading: clubLoading } = useClub(clubSlug)
   const queryClient = useQueryClient()
+  const router = useRouter()
   const chatEndRef = useRef<HTMLDivElement>(null)
 
   const [currentStep, setCurrentStep] = useState<Step>('welcome')
@@ -64,7 +82,9 @@ export function DiscordSettingsWizard({ clubSlug }: { clubSlug: string }) {
   const [isTyping, setIsTyping] = useState(false)
 
   // ── Settings state ──
-  const [selectedChannels, setSelectedChannels] = useState<string[]>([])
+  // channelMappings: discord_channel_id → opportunity_id
+  const [channelMappings, setChannelMappings] = useState<Record<string, string>>({})
+  const [savingMappings, setSavingMappings] = useState(false)
   const [tone, setTone] = useState<'formal' | 'casual' | 'english'>('formal')
   const [checkinDay, setCheckinDay] = useState(1)
   const [generateDay, setGenerateDay] = useState(0)
@@ -82,6 +102,28 @@ export function DiscordSettingsWizard({ clubSlug }: { clubSlug: string }) {
       return res.json()
     },
   })
+
+  // ── Fetch Discord channels + projects + existing mappings ──
+  const { data: channelData, isLoading: channelsLoading } = useQuery<ChannelDataResponse>({
+    queryKey: ['discord-channels', club?.id],
+    enabled: !!club?.id,
+    queryFn: async () => {
+      const res = await fetch(`/api/clubs/${club!.id}/discord-channels`)
+      if (!res.ok) throw new Error('Failed to fetch channels')
+      return res.json()
+    },
+  })
+
+  // 기존 매핑을 state에 로드
+  useEffect(() => {
+    if (channelData?.mappings) {
+      const initial: Record<string, string> = {}
+      for (const m of channelData.mappings) {
+        initial[m.discord_channel_id] = m.opportunity_id
+      }
+      setChannelMappings(initial)
+    }
+  }, [channelData?.mappings])
 
   // ── Save mutation ──
   const saveMutation = useMutation({
@@ -168,10 +210,60 @@ export function DiscordSettingsWizard({ clubSlug }: { clubSlug: string }) {
     goToStep('channels')
   }
 
-  const handleChannelsNext = () => {
-    const count = selectedChannels.length
-    addUserMessage(`${count}개 채널 선택 완료`)
-    goToStep('tone')
+  const handleChannelsNext = async () => {
+    const mappingCount = Object.values(channelMappings).filter(Boolean).length
+    if (mappingCount === 0) return
+
+    setSavingMappings(true)
+    try {
+      const existing = channelData?.mappings ?? []
+      const existingMap = new Map(existing.map(m => [m.discord_channel_id, m]))
+
+      const toAdd: { discord_channel_id: string; opportunity_id: string; discord_channel_name: string }[] = []
+      const toRemove: string[] = []
+
+      // 새로 추가되거나 변경된 매핑
+      for (const [channelId, oppId] of Object.entries(channelMappings)) {
+        if (!oppId) continue
+        const prev = existingMap.get(channelId)
+        if (!prev) {
+          const ch = channelData?.available_channels.find(c => c.id === channelId)
+          toAdd.push({ discord_channel_id: channelId, opportunity_id: oppId, discord_channel_name: ch?.name ?? '' })
+        } else if (prev.opportunity_id !== oppId) {
+          // 프로젝트 변경 → 기존 삭제 후 새로 생성
+          toRemove.push(prev.id)
+          const ch = channelData?.available_channels.find(c => c.id === channelId)
+          toAdd.push({ discord_channel_id: channelId, opportunity_id: oppId, discord_channel_name: ch?.name ?? '' })
+        }
+      }
+
+      // 삭제된 매핑
+      for (const m of existing) {
+        if (!channelMappings[m.discord_channel_id]) {
+          toRemove.push(m.id)
+        }
+      }
+
+      // API 호출
+      for (const id of toRemove) {
+        await fetch(`/api/clubs/${club!.id}/discord-channels?id=${id}`, { method: 'DELETE' })
+      }
+      for (const item of toAdd) {
+        await fetch(`/api/clubs/${club!.id}/discord-channels`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(item),
+        })
+      }
+
+      queryClient.invalidateQueries({ queryKey: ['discord-channels', club?.id] })
+      addUserMessage(`${mappingCount}개 채널 매핑 완료`)
+      goToStep('tone')
+    } catch {
+      addBotMessage('매핑 저장 중 오류가 발생했습니다. 다시 시도해주세요.')
+    } finally {
+      setSavingMappings(false)
+    }
   }
 
   const handleToneSelect = (selected: typeof tone) => {
@@ -318,35 +410,60 @@ export function DiscordSettingsWizard({ clubSlug }: { clubSlug: string }) {
 
           {currentStep === 'channels' && (
             <div className="space-y-3">
-              <div className="text-xs text-txt-tertiary font-semibold mb-2">채널 선택</div>
-              <div className="max-h-48 overflow-y-auto space-y-1.5">
-                {/* 임시 채널 목록 — 추후 API에서 가져옴 */}
-                {['draft-팀빌딩플랫폼', 'foodfinder-팀채널', '일반', '주간-체크인', '운영-대시보드'].map(ch => (
-                  <label
-                    key={ch}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-bg cursor-pointer transition-colors"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedChannels.includes(ch)}
-                      onChange={e => {
-                        setSelectedChannels(prev =>
-                          e.target.checked ? [...prev, ch] : prev.filter(c => c !== ch)
-                        )
-                      }}
-                      className="w-4 h-4 rounded border-border-default text-brand accent-brand"
-                    />
-                    <span className="text-txt-tertiary font-bold text-sm">#</span>
-                    <span className="text-sm text-txt-primary">{ch}</span>
-                  </label>
-                ))}
-              </div>
+              {channelsLoading ? (
+                <div className="py-6 text-center text-sm text-txt-tertiary">채널 목록을 불러오는 중...</div>
+              ) : !channelData?.available_channels.length ? (
+                <div className="py-6 text-center text-sm text-txt-tertiary">Discord 서버에서 채널을 가져올 수 없습니다</div>
+              ) : (
+                <>
+                  <div className="text-xs text-txt-tertiary font-semibold">
+                    각 Discord 채널에 연결할 프로젝트를 선택하세요
+                  </div>
+                  {!channelData.opportunities.length && (
+                    <div className="text-xs text-status-warning-text bg-status-warning-bg px-3 py-2 rounded-xl">
+                      클럽에 등록된 프로젝트가 없습니다. 프로젝트를 먼저 생성해주세요.
+                    </div>
+                  )}
+                  <div className="max-h-60 overflow-y-auto space-y-2">
+                    {channelData.available_channels.map(ch => {
+                      const selectedOpp = channelMappings[ch.id] || ''
+                      // 다른 채널에서 이미 선택된 프로젝트는 비활성화
+                      const usedOpps = new Set(
+                        Object.entries(channelMappings)
+                          .filter(([cId, oId]) => cId !== ch.id && oId)
+                          .map(([, oId]) => oId)
+                      )
+
+                      return (
+                        <div key={ch.id} className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-surface-bg">
+                          <span className="text-txt-tertiary font-bold text-sm shrink-0">#</span>
+                          <span className="text-sm text-txt-primary font-medium truncate min-w-0 w-28 shrink-0">{ch.name}</span>
+                          <select
+                            value={selectedOpp}
+                            onChange={e => setChannelMappings(prev => ({ ...prev, [ch.id]: e.target.value }))}
+                            className="flex-1 min-w-0 text-sm border border-border rounded-lg px-2 py-1.5 bg-surface-card text-txt-primary focus:outline-none focus:border-brand transition-colors"
+                          >
+                            <option value="">연결 안 함</option>
+                            {channelData.opportunities.map(opp => (
+                              <option key={opp.id} value={opp.id} disabled={usedOpps.has(opp.id)}>
+                                {opp.title}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </>
+              )}
               <button
                 onClick={handleChannelsNext}
-                disabled={selectedChannels.length === 0}
+                disabled={savingMappings || Object.values(channelMappings).filter(Boolean).length === 0}
                 className="w-full py-3 bg-brand text-white rounded-xl font-semibold text-sm hover:bg-brand-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                {selectedChannels.length}개 채널 선택 완료
+                {savingMappings
+                  ? '저장 중...'
+                  : `${Object.values(channelMappings).filter(Boolean).length}개 채널 매핑 완료`}
               </button>
             </div>
           )}
@@ -485,16 +602,22 @@ export function DiscordSettingsWizard({ clubSlug }: { clubSlug: string }) {
           )}
 
           {currentStep === 'complete' && (
-            <div className="text-center py-2">
-              <div className="text-2xl mb-2">✓</div>
+            <div className="text-center py-2 space-y-3">
+              <div className="text-2xl mb-1">✓</div>
               <p className="text-sm text-txt-secondary">설정이 완료되었습니다</p>
+              <button
+                onClick={() => router.push(`/clubs/${clubSlug}`)}
+                className="w-full py-3 bg-brand text-white rounded-xl font-semibold text-sm hover:bg-brand-hover transition-colors"
+              >
+                클럽 관리로 이동
+              </button>
               <button
                 onClick={() => {
                   setCurrentStep('channels')
                   setMessages([])
                   addBotMessage('설정을 수정합니다. 변경할 항목을 선택해주세요.')
                 }}
-                className="mt-3 text-sm text-brand font-semibold hover:underline"
+                className="text-sm text-txt-tertiary hover:text-txt-primary transition-colors"
               >
                 설정 다시 수정하기
               </button>

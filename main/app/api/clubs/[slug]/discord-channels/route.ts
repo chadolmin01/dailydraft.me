@@ -2,7 +2,7 @@ import { createClient } from '@/src/lib/supabase/server'
 import { createAdminClient } from '@/src/lib/supabase/admin'
 import { ApiResponse, isValidUUID, parseJsonBody } from '@/src/lib/api-utils'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
-import { fetchGuildChannels } from '@/src/lib/discord/client'
+import { fetchGuildChannels, fetchChannelMessages } from '@/src/lib/discord/client'
 
 type RouteParams = { params: Promise<{ slug: string }> }
 
@@ -43,9 +43,17 @@ export const GET = withErrorCapture(async (_request, { params }: RouteParams) =>
     }
   }
 
+  // 클럽의 프로젝트 목록 (매핑 UI에서 드롭다운용)
+  const { data: opportunities } = await admin
+    .from('opportunities')
+    .select('id, title')
+    .eq('club_id', clubId)
+    .order('created_at', { ascending: false })
+
   return ApiResponse.ok({
     mappings: mappings ?? [],
     available_channels: availableChannels,
+    opportunities: opportunities ?? [],
     guild: inst ? { id: inst.discord_guild_id, name: inst.discord_guild_name } : null,
   })
 })
@@ -73,6 +81,14 @@ export const POST = withErrorCapture(async (request, { params }: RouteParams) =>
     return ApiResponse.badRequest('Discord 채널 ID는 필수입니다')
   }
 
+  // 봇이 해당 채널에서 메시지를 읽을 수 있는지 검증
+  // 권한 없으면 매핑해도 Ghostwriter가 동작하지 않으므로 사전 차단
+  try {
+    await fetchChannelMessages(body.discord_channel_id.trim(), { maxMessages: 1 })
+  } catch {
+    return ApiResponse.badRequest('봇이 이 채널에 접근할 수 없습니다. 채널 권한을 확인해주세요.')
+  }
+
   const admin = createAdminClient()
 
   const { data, error } = await admin
@@ -95,4 +111,34 @@ export const POST = withErrorCapture(async (request, { params }: RouteParams) =>
   }
 
   return ApiResponse.created(data)
+})
+
+/** DELETE: Discord 채널 ↔ Draft 프로젝트 매핑 삭제 */
+export const DELETE = withErrorCapture(async (request, { params }: RouteParams) => {
+  const { slug: clubId } = await params
+  if (!isValidUUID(clubId)) return ApiResponse.badRequest('유효하지 않은 클럽 ID입니다')
+
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return ApiResponse.unauthorized()
+
+  const { searchParams } = new URL(request.url)
+  const mappingId = searchParams.get('id')
+  if (!mappingId || !isValidUUID(mappingId)) {
+    return ApiResponse.badRequest('유효하지 않은 매핑 ID입니다')
+  }
+
+  const admin = createAdminClient()
+
+  const { error } = await admin
+    .from('discord_team_channels')
+    .delete()
+    .eq('id', mappingId)
+    .eq('club_id', clubId)
+
+  if (error) {
+    return ApiResponse.internalError('매핑 삭제에 실패했습니다')
+  }
+
+  return ApiResponse.ok({ deleted: true })
 })

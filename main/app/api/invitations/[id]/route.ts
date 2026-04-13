@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { createAdminClient } from '@/src/lib/supabase/admin'
 import { notifyInvitationResponse } from '@/src/lib/notifications/create-notification'
+import { dmInvitationResponse } from '@/src/lib/discord/dm-notifications'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
@@ -133,6 +134,14 @@ export const PATCH = withErrorCapture(async (
     status === 'accepted'
   )
 
+  // Discord DM — fire-and-forget
+  dmInvitationResponse(
+    invitation.inviter_user_id,
+    invitedProfile?.nickname || 'User',
+    opportunity?.title || '프로젝트',
+    status === 'accepted'
+  ).catch(() => {})
+
   return ApiResponse.ok({
     success: true,
     status,
@@ -220,6 +229,15 @@ export const PUT = withErrorCapture(async (
     opp?.title || '프로젝트',
     invitation.role,
   )
+
+  // Discord DM 리마인더 — fire-and-forget
+  const { dmProjectInvitation } = await import('@/src/lib/discord/dm-notifications')
+  dmProjectInvitation(
+    invitation.invited_user_id,
+    prof?.nickname || 'User',
+    opp?.title || '프로젝트',
+    invitation.role,
+  ).catch(() => {})
 
   return ApiResponse.ok({ success: true })
 })

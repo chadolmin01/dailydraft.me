@@ -6,6 +6,7 @@ import { resend, FROM_EMAIL, isEmailEnabled } from '@/src/lib/email/client'
 import { renderCoffeeChatRequestEmail } from '@/src/lib/email/templates/coffee-chat-request'
 import { renderCoffeeChatResponseEmail } from '@/src/lib/email/templates/coffee-chat-response'
 import { notifyCoffeeChatRequest, notifyCoffeeChatResponse, notifyPersonCoffeeChatRequest, notifyPersonCoffeeChatResponse } from '@/src/lib/notifications/create-notification'
+import { dmCoffeeChatRequest, dmPersonCoffeeChatRequest, dmCoffeeChatResponse, dmPersonCoffeeChatResponse } from '@/src/lib/discord/dm-notifications'
 import { createClient } from '@supabase/supabase-js'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
@@ -135,6 +136,13 @@ export const POST = withErrorCapture(async (req: NextRequest) => {
         await notifyCoffeeChatRequest(chat.owner_user_id, requesterName, projectTitle)
       }
 
+      // Discord DM — fire-and-forget (실패해도 메인 흐름 보호)
+      if (isPersonMode) {
+        dmPersonCoffeeChatRequest(chat.owner_user_id, requesterName).catch(() => {})
+      } else {
+        dmCoffeeChatRequest(chat.owner_user_id, requesterName, projectTitle).catch(() => {})
+      }
+
       // Web Push — 실패해도 메인 흐름 보호
       await sendPushToUser(chat.owner_user_id, {
         title: '☕ 커피챗 신청이 왔어요',
@@ -177,6 +185,13 @@ export const POST = withErrorCapture(async (req: NextRequest) => {
           projectTitle,
           type === 'accepted'
         )
+      }
+
+      // Discord DM — fire-and-forget
+      if (isPersonMode) {
+        dmPersonCoffeeChatResponse(chat.requester_user_id, ownerName, type === 'accepted').catch(() => {})
+      } else {
+        dmCoffeeChatResponse(chat.requester_user_id, ownerName, projectTitle, type === 'accepted').catch(() => {})
       }
 
       // Web Push — 실패해도 메인 흐름 보호

@@ -1,11 +1,17 @@
 'use client'
 
-import { useParams } from 'next/navigation'
-import { DiscordSettingsWizard } from '@/components/discord/DiscordSettingsWizard'
+import { useParams, useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
-export default function DiscordSettingsPage() {
+/** 기존 /settings/discord URL을 /settings로 리다이렉트 */
+export default function DiscordSettingsRedirect() {
   const params = useParams()
+  const router = useRouter()
   const slug = params.slug as string
 
-  return <DiscordSettingsWizard clubSlug={slug} />
+  useEffect(() => {
+    router.replace(`/clubs/${slug}/settings`)
+  }, [slug, router])
+
+  return null
 }

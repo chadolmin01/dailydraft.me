@@ -45,6 +45,13 @@ async function discordFetch<T>(
       continue
     }
 
+    // 502/503 서버 에러 → 1초 대기 후 재시도 (Discord 일시 장애)
+    if ((res.status === 502 || res.status === 503) && attempt < MAX_RETRIES - 1) {
+      console.warn(`[discord] ${res.status} on ${path}, retrying in 1s (attempt ${attempt + 1}/${MAX_RETRIES})`)
+      await new Promise(r => setTimeout(r, 1000))
+      continue
+    }
+
     if (!res.ok) {
       const body = await res.text().catch(() => '')
       throw new Error(`Discord API ${res.status}: ${body}`)

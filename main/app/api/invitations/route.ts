@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { notifyProjectInvitation } from '@/src/lib/notifications/create-notification'
+import { dmProjectInvitation } from '@/src/lib/discord/dm-notifications'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { applyRateLimit, getClientIp } from '@/src/lib/rate-limit/api-rate-limiter'
 import { createAdminClient } from '@/src/lib/supabase/admin'
@@ -120,6 +121,9 @@ export const POST = withErrorCapture(async (request: NextRequest) => {
         role
       )
 
+      // Discord DM — fire-and-forget
+      dmProjectInvitation(invited_user_id, inviterProfile?.nickname || 'User', opportunity.title, role).catch(() => {})
+
       return ApiResponse.ok({ success: true, id: existing.id })
     }
   }
@@ -154,6 +158,9 @@ export const POST = withErrorCapture(async (request: NextRequest) => {
     opportunity.title,
     role
   )
+
+  // Discord DM — fire-and-forget
+  dmProjectInvitation(invited_user_id, inviterProfile?.nickname || 'User', opportunity.title, role).catch(() => {})
 
   return ApiResponse.ok({ success: true, id: invitation.id })
 })

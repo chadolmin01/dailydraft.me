@@ -72,6 +72,27 @@ export async function GET(req: NextRequest) {
       return NextResponse.redirect(`${APP_URL}/login?returnTo=${encodeURIComponent(returnTo)}`);
     }
 
+    // 이미 다른 계정에 연결된 Discord인지 확인
+    const { data: existingProfile } = await supabase
+      .from('profiles')
+      .select('user_id, nickname')
+      .eq('discord_user_id', discordUser.id)
+      .neq('user_id', user.id)
+      .maybeSingle();
+
+    if (existingProfile) {
+      // 기존 계정의 discord_user_id를 제거하고 새 계정에 연결
+      // (한 Discord 계정은 하나의 Draft 계정에만 연결)
+      await supabase
+        .from('profiles')
+        .update({ discord_user_id: null, discord_username: null })
+        .eq('user_id', existingProfile.user_id);
+
+      console.warn(
+        `[Discord OAuth] Discord ${discordUser.id}가 다른 계정(${existingProfile.user_id})에서 해제 → ${user.id}로 이전`
+      );
+    }
+
     const { error } = await supabase
       .from('profiles')
       .update({
