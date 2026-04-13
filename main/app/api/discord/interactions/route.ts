@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
       ? `https://${process.env.VERCEL_URL}`
       : APP_URL
 
-    if (commandName === 'profile') {
+    if (commandName === 'profile' || commandName === '프로필') {
       return handleProfileCommand(interaction)
     }
 
@@ -663,7 +663,7 @@ function handleHelpCommand() {
   return NextResponse.json({
     type: CHANNEL_MESSAGE,
     data: {
-      content: `📖 **Draft 봇 명령어**\n\n**회의:**\n• \`/회의시작\` — 미완료 할 일 리마인드 + 회의 시작\n• \`/마무리\` — 대화 요약 (AI가 할 일·결정사항·자료 정리)\n\n**일상:**\n• \`/투두 내용 [담당자]\` — 할 일 등록 (✅로 완료 체크)\n• \`/한줄 내용\` — 한줄 근황 공유\n• \`/투표 주제 옵션1 옵션2\` — 투표 생성\n• \`/일정 [목적]\` — 요일별 일정 투표\n\n**기타:**\n• \`/profile [@유저]\` — Draft 프로필 조회\n• \`/설정\` — Draft 웹 설정 페이지`,
+      content: `📖 **Draft 봇 명령어**\n\n**회의:**\n• \`/회의시작\` — 미완료 할 일 리마인드 + 회의 시작\n• \`/마무리\` — 대화 요약 (AI가 할 일·결정사항·자료 정리)\n\n**일상:**\n• \`/투두 내용 [담당자]\` — 할 일 등록 (✅로 완료 체크)\n• \`/한줄 내용\` — 한줄 근황 공유\n• \`/투표 주제 옵션1 옵션2\` — 투표 생성\n• \`/일정 [목적]\` — 요일별 일정 투표\n\n**기타:**\n• \`/프로필 [@유저]\` — Draft 프로필 조회\n• \`/설정\` — Draft 웹 설정 페이지\n• \`@Draft 질문\` — AI에게 질문`,
       flags: 64, // EPHEMERAL
     },
   })

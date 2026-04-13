@@ -133,6 +133,19 @@ const commands = [
     description: 'Draft 봇 명령어 안내',
     type: 1,
   },
+  {
+    name: '프로필',
+    description: 'Draft 프로필 링크를 확인합니다',
+    type: 1,
+    options: [
+      {
+        name: 'user',
+        description: '프로필을 볼 멤버 (미지정 시 본인)',
+        type: 6, // USER
+        required: false,
+      },
+    ],
+  },
 ];
 
 const baseUrl = GUILD_ID
