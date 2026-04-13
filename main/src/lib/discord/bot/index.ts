@@ -41,13 +41,15 @@ const knownGuildIds = new Set<string>();
 const gateway = new DiscordGateway(BOT_TOKEN, {
   onReady: (data) => {
     botUserId = data.user.id;
+    engine.setBotUserId(botUserId);
     const guildCount = data.guilds.length;
     // READY 시 받은 길드를 "기존 서버"로 등록
     for (const g of data.guilds) {
       knownGuildIds.add(g.id);
     }
     console.log(`[Bot] 준비 완료 — ${guildCount}개 서버, ID: ${botUserId}`);
-    console.log('[Bot] 3계층 감지 활성:');
+    console.log('[Bot] 4계층 감지 활성:');
+    console.log('  - @멘션 대화: @Draft 질문하면 AI 응답');
     console.log('  - 슬래시 커맨드: /마무리, /투표, /일정');
     console.log('  - 즉시 감지: 투표·블로커·질문·일정');
     console.log('  - 마무리 요약: 종결 신호 or /마무리');

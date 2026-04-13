@@ -26,6 +26,7 @@ import {
   updateInterventionResponse,
   saveSummaryData,
 } from './db-persist';
+import { chatModel } from '../../ai/gemini-client';
 import type {
   BufferedMessage,
   PatternDetection,
@@ -34,10 +35,36 @@ import type {
 } from './types';
 import { INSTANT_PATTERNS, SUMMARY_PATTERNS, DEFAULT_BOT_CONFIG } from './types';
 
+// @멘션 대화용 시스템 프롬프트
+const MENTION_SYSTEM_PROMPT = `당신은 "Draft"라는 대학교 프로젝트/동아리 관리 봇입니다.
+팀원들이 @멘션으로 질문하면 도움을 줍니다.
+
+## 성격
+- 친근하지만 간결하게 답변
+- 대학생 팀원처럼 자연스러운 한국어 사용
+- 필요하면 이모지 적절히 사용
+
+## 할 수 있는 것
+- 최근 대화 내용 기반으로 질문에 답변
+- 프로젝트 진행 관련 조언
+- 슬래시 커맨드 안내 (/마무리, /투표, /일정, /투두, /회의시작, /한줄, /설정, /도움)
+
+## 규칙
+- 답변은 300자 이내로 간결하게
+- 모르는 건 모른다고 솔직하게
+- 최근 대화 컨텍스트가 있으면 참고하되, 없으면 일반적인 답변
+- Discord 마크다운 사용 가능 (**굵게**, *기울임*, \`코드\`)`;
+
 export class BotEngine {
   private buffer: MessageBuffer;
   private cooldown: CooldownGuard;
   private config: BotConfig;
+
+  // 봇 자신의 Discord User ID — 멘션 감지용
+  private botUserId: string = '';
+
+  // 채널별 멘션 응답 쿨다운 (스팸 방지, 10초)
+  private mentionCooldowns = new Map<string, number>();
 
   // 채널별 마무리 요약용 축적 패턴
   private pendingPatterns = new Map<string, PatternDetection[]>();
@@ -50,6 +77,11 @@ export class BotEngine {
     this.config = { ...DEFAULT_BOT_CONFIG, ...config };
     this.buffer = new MessageBuffer();
     this.cooldown = new CooldownGuard(this.config);
+  }
+
+  /** READY 이벤트에서 봇 ID 설정 — 멘션 감지에 필요 */
+  setBotUserId(id: string): void {
+    this.botUserId = id;
   }
 
   /**
@@ -69,6 +101,12 @@ export class BotEngine {
     if (!msg) return;
 
     // 야간 모드 제거 — 대학생/스타트업은 새벽 작업 빈번
+
+    // @멘션 감지: <@봇ID> 가 메시지에 포함되면 AI 대화 모드
+    if (this.botUserId && msg.content.includes(`<@${this.botUserId}>`)) {
+      await this.handleMention(msg);
+      return;
+    }
 
     // 슬래시 커맨드 처리
     if (msg.content.startsWith('/')) {
@@ -196,6 +234,72 @@ export class BotEngine {
         });
         break;
       }
+    }
+  }
+
+  /**
+   * @멘션 대화 처리
+   * "@Draft 오늘 할 일 뭐야?" → 최근 대화 컨텍스트 포함하여 AI 응답
+   */
+  private async handleMention(msg: BufferedMessage): Promise<void> {
+    // 쿨다운 체크 (채널당 10초)
+    const now = Date.now();
+    const lastMention = this.mentionCooldowns.get(msg.channelId) ?? 0;
+    if (now - lastMention < 10_000) return;
+    this.mentionCooldowns.set(msg.channelId, now);
+
+    // 멘션 제거 후 질문 추출
+    const query = msg.content
+      .replace(new RegExp(`<@!?${this.botUserId}>`, 'g'), '')
+      .trim();
+
+    if (!query) {
+      await this.sendResponse({
+        content: '무엇을 도와드릴까요? 궁금한 점이나 요청을 말씀해주세요!',
+        channelId: msg.channelId,
+        replyToMessageId: msg.id,
+      });
+      return;
+    }
+
+    // 최근 대화 컨텍스트 (버퍼에서 가져오기)
+    const recentMessages = this.buffer.getMessages(msg.channelId);
+    const context = recentMessages
+      .filter((m) => m.id !== msg.id) // 현재 메시지 제외
+      .slice(-15) // 최근 15개
+      .map((m) => `${m.authorName}: ${m.content}`)
+      .join('\n');
+
+    try {
+      const result = await chatModel.generateContent({
+        contents: [
+          {
+            role: 'user',
+            parts: [{ text: `질문: ${query}${context ? `\n\n최근 대화:\n${context}` : ''}` }],
+          },
+        ],
+        systemInstruction: MENTION_SYSTEM_PROMPT,
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 500,
+        },
+      });
+
+      const reply = result.response.text();
+      if (reply) {
+        await this.sendResponse({
+          content: reply,
+          channelId: msg.channelId,
+          replyToMessageId: msg.id,
+        });
+      }
+    } catch (err) {
+      console.error('[BotEngine] 멘션 응답 실패:', err);
+      await this.sendResponse({
+        content: '죄송합니다, 잠시 후 다시 시도해주세요.',
+        channelId: msg.channelId,
+        replyToMessageId: msg.id,
+      });
     }
   }
 
