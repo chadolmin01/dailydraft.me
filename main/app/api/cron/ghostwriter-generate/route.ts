@@ -19,7 +19,7 @@ import { fetchChannelMessages, fetchPinnedMessages, fetchForumActiveThreads, fet
 import { generateWeeklyDraft, type HarnessContext } from '@/src/lib/discord/ghostwriter'
 import { sendClubUpdateRemindWebhook } from '@/src/lib/webhooks/send-club-webhook'
 import { postDashboardSummary } from '@/src/lib/discord/dashboard-summary'
-import { getISOWeekNumber, getMondayOfWeek, snowflakeToDate, dateToSnowflake } from '@/src/lib/ghostwriter/week-utils'
+import { getISOWeekNumber, getProjectWeekNumber, getMondayOfWeek, snowflakeToDate, dateToSnowflake } from '@/src/lib/ghostwriter/week-utils'
 import { safeParseContent } from '@/src/lib/ghostwriter/parse-content'
 import { notifyDraftReady } from './notify'
 
@@ -56,9 +56,9 @@ export const POST = withCronCapture('ghostwriter-generate', async (request: Next
     })
   }
 
-  // 현재 주차 계산 (연도 기반 ISO week)
   const now = new Date()
-  const weekNumber = getISOWeekNumber(now)
+  // ISO 주차는 activity-tracker 조회용으로만 사용
+  const isoWeekNumber = getISOWeekNumber(now)
 
   const results = {
     processed: 0,
@@ -140,7 +140,7 @@ export const POST = withCronCapture('ghostwriter-generate', async (request: Next
         const threads = await fetchForumActiveThreads(guildId, checkinForumId)
         const mondayOfThisWeek = getMondayOfWeek(now)
         const weekThread = threads.find((t) => {
-          if (t.name.includes(`${weekNumber}주차`)) return true
+          if (t.name.includes(`${isoWeekNumber}주차`)) return true
           const threadCreatedAt = snowflakeToDate(t.id)
           return threadCreatedAt >= mondayOfThisWeek
         })
@@ -156,10 +156,10 @@ export const POST = withCronCapture('ghostwriter-generate', async (request: Next
     const clubOppIds = clubChs.map((ch) => ch.opportunity_id)
     const { data: clubOpportunities } = await admin
       .from('opportunities')
-      .select('id, title, creator_id')
+      .select('id, title, creator_id, created_at')
       .in('id', clubOppIds)
     const oppMap = new Map(
-      (clubOpportunities as { id: string; title: string; creator_id: string }[] | null)
+      (clubOpportunities as { id: string; title: string; creator_id: string; created_at: string }[] | null)
         ?.map((o) => [o.id, o]) ?? []
     )
 
@@ -224,6 +224,11 @@ export const POST = withCronCapture('ghostwriter-generate', async (request: Next
         const opportunity = oppMap.get(ch.opportunity_id)
         const projectTitle = opportunity?.title ?? '프로젝트'
         const creatorId = opportunity?.creator_id
+
+        // 프로젝트 상대 주차 (프로젝트 생성일 기준 1주차, 2주차, ...)
+        const weekNumber = opportunity?.created_at
+          ? getProjectWeekNumber(new Date(opportunity.created_at), now)
+          : getISOWeekNumber(now) // fallback
 
         // 2-b. 하네스 데이터 수집 (동아리장 설정 포함)
         const harness: HarnessContext = {
@@ -395,12 +400,12 @@ export const POST = withCronCapture('ghostwriter-generate', async (request: Next
       }
     }
 
-    // 활동 부족 팀 리마인드
+    // 활동 부족 팀 리마인드 (클럽 레벨이므로 ISO 주차 사용)
     if (lowActivityTeams.length > 0) {
       sendClubUpdateRemindWebhook({
         clubId,
         teamNames: lowActivityTeams,
-        weekNumber,
+        weekNumber: isoWeekNumber,
       }).catch(() => {})
       results.remindsSent++
     }
@@ -408,12 +413,12 @@ export const POST = withCronCapture('ghostwriter-generate', async (request: Next
     // 6. 활동 통계 + 연속 미제출 데이터 조회
     const activityByTeam = new Map<string, { totalMessages: number; topMembers: { discordUsername: string; messageCount: number; channelsActive: number }[] }>()
 
-    // 팀별 Discord 활동량 (이번 주차 member_activity_stats 기반)
+    // 팀별 Discord 활동량 (ISO 주차 기반 — activity-tracker가 ISO로 저장)
     const { data: activityStats } = await admin
       .from('member_activity_stats')
       .select('discord_username, message_count, channels_active')
       .eq('club_id', clubId)
-      .eq('week_number', weekNumber)
+      .eq('week_number', isoWeekNumber)
       .eq('year', now.getFullYear())
 
     if (activityStats && activityStats.length > 0) {
@@ -435,33 +440,39 @@ export const POST = withCronCapture('ghostwriter-generate', async (request: Next
       }
     }
 
-    // 연속 미제출 팀 감지 (직전 2주 draft 확인)
-    const prevWeeks = [weekNumber - 1, weekNumber - 2].filter(w => w > 0)
+    // 연속 미제출 팀 감지 (직전 2주 draft 확인 — 프로젝트별 상대 주차)
     const oppIdsInClub = clubChs.map(ch => ch.opportunity_id)
     const consecutiveMissing: { projectTitle: string; weeks: number }[] = []
+    const currentDraftIds = new Set(dashboardDrafts.map(d => d.opportunityId))
 
-    if (prevWeeks.length > 0 && oppIdsInClub.length > 0) {
-      const { data: prevDrafts } = await admin
+    if (oppIdsInClub.length > 0) {
+      // 각 프로젝트의 최근 3주치 draft를 한 번에 조회
+      const { data: recentDrafts } = await admin
         .from('weekly_update_drafts')
         .select('opportunity_id, week_number')
         .in('opportunity_id', oppIdsInClub)
-        .in('week_number', prevWeeks)
+        .order('week_number', { ascending: false })
+        .limit(oppIdsInClub.length * 3)
 
-      const prevDraftSet = new Set(
-        (prevDrafts || []).map(d => `${d.opportunity_id}-${d.week_number}`)
+      const draftSet = new Set(
+        (recentDrafts || []).map(d => `${d.opportunity_id}-${d.week_number}`)
       )
-      const currentDraftIds = new Set(dashboardDrafts.map(d => d.opportunityId))
 
       for (const ch of clubChs) {
-        if (currentDraftIds.has(ch.opportunity_id)) continue // 이번 주 제출 → 스킵
+        if (currentDraftIds.has(ch.opportunity_id)) continue
 
-        let weeks = 1
-        if (!prevDraftSet.has(`${ch.opportunity_id}-${weekNumber - 1}`)) weeks++
-        if (!prevDraftSet.has(`${ch.opportunity_id}-${weekNumber - 2}`)) weeks++
+        const opp = oppMap.get(ch.opportunity_id)
+        const projWeek = opp?.created_at
+          ? getProjectWeekNumber(new Date(opp.created_at), now)
+          : isoWeekNumber
 
-        if (weeks >= 2) {
+        let missed = 1
+        if (!draftSet.has(`${ch.opportunity_id}-${projWeek - 1}`)) missed++
+        if (!draftSet.has(`${ch.opportunity_id}-${projWeek - 2}`)) missed++
+
+        if (missed >= 2) {
           const title = ch.discord_channel_name || '알 수 없는 팀'
-          consecutiveMissing.push({ projectTitle: title, weeks })
+          consecutiveMissing.push({ projectTitle: title, weeks: missed })
         }
       }
     }
@@ -473,8 +484,8 @@ export const POST = withCronCapture('ghostwriter-generate', async (request: Next
       .eq('id', clubId)
       .maybeSingle()
 
-    // 7. 운영-대시보드에 주간 요약 게시 (fire-and-forget)
-    postDashboardSummary(clubId, weekNumber, {
+    // 7. 운영-대시보드에 주간 요약 게시 (클럽 레벨이므로 ISO 주차)
+    postDashboardSummary(clubId, isoWeekNumber, {
       totalTeams: clubChs.length,
       draftsCreated: dashboardDrafts.length,
       lowActivityTeams,

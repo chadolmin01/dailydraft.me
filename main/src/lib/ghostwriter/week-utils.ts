@@ -3,13 +3,25 @@
  * 3개 크론 파일에서 중복 사용되므로 공유 모듈로 추출.
  */
 
-/** ISO 8601 주차 번호 계산 */
+/** ISO 8601 주차 번호 계산 (activity-tracker 등 내부용) */
 export function getISOWeekNumber(date: Date): number {
   const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
   const dayNum = d.getUTCDay() || 7
   d.setUTCDate(d.getUTCDate() + 4 - dayNum)
   const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
   return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7)
+}
+
+/**
+ * 프로젝트 상대 주차 계산.
+ * 앵커 날짜(프로젝트 생성일)로부터 경과한 주 수 + 1.
+ * 예: 생성일 당일~6일 = 1주차, 7~13일 = 2주차, ...
+ */
+export function getProjectWeekNumber(anchorDate: Date, now?: Date): number {
+  const current = now ?? new Date()
+  const diffMs = current.getTime() - anchorDate.getTime()
+  if (diffMs < 0) return 1 // 앵커 이전이면 1주차
+  return Math.floor(diffMs / (7 * 24 * 60 * 60 * 1000)) + 1
 }
 
 /** 주어진 날짜가 속한 주의 월요일 00:00 (로컬 기준) */

@@ -18,6 +18,7 @@ import { createClient } from '@/src/lib/supabase/server'
 import { createAdminClient } from '@/src/lib/supabase/admin'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
+import { getISOWeekNumber } from '@/src/lib/ghostwriter/week-utils'
 
 export const runtime = 'nodejs'
 export const maxDuration = 30
@@ -367,10 +368,4 @@ function escapeHtml(text: string): string {
   return text.replace(/[&<>"']/g, c => escapes[c] || c)
 }
 
-function getISOWeekNumber(date: Date): number {
-  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
-  const dayNum = d.getUTCDay() || 7
-  d.setUTCDate(d.getUTCDate() + 4 - dayNum)
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
-  return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7)
-}
+// getISOWeekNumber은 @/src/lib/ghostwriter/week-utils에서 import
