@@ -19,6 +19,7 @@ import {
   CheckCircle2,
 } from 'lucide-react'
 import { SkeletonGrid } from '@/components/ui/Skeleton'
+import PendingDraftCard from '@/components/dashboard/PendingDraftCard'
 import { useMyOpportunities } from '@/src/hooks/useOpportunities'
 import { supabase } from '@/src/lib/supabase/client'
 import { UPDATE_TYPE_CONFIG } from '@/components/project/types'
@@ -420,6 +421,11 @@ export default function MyProjectsPage() {
             <Plus size={14} strokeWidth={2.5} />
             새 프로젝트
           </Link>
+        </div>
+
+        {/* AI 초안 대기 */}
+        <div className="mb-6">
+          <PendingDraftCard />
         </div>
 
         {/* Content */}
