@@ -17,6 +17,7 @@ import { ApiResponse } from '@/src/lib/api-utils'
 import { withCronCapture } from '@/src/lib/posthog/with-cron-capture'
 import { fetchChannelMessages, fetchPinnedMessages, fetchForumActiveThreads, fetchGuildChannels, sendDirectMessage, sendChannelMessage } from '@/src/lib/discord/client'
 import { generateWeeklyDraft, type HarnessContext } from '@/src/lib/discord/ghostwriter'
+import { fetchGitHubEventsFromDB } from '@/src/lib/harness/connectors/github'
 import { sendClubUpdateRemindWebhook } from '@/src/lib/webhooks/send-club-webhook'
 import { postDashboardSummary } from '@/src/lib/discord/dashboard-summary'
 import { getISOWeekNumber, getProjectWeekNumber, getMondayOfWeek, snowflakeToDate, dateToSnowflake } from '@/src/lib/ghostwriter/week-utils'
@@ -308,6 +309,17 @@ export const POST = withCronCapture('ghostwriter-generate', async (request: Next
           }
         } catch (err) {
           console.warn('[ghostwriter] 회의록 조회 실패 (계속 진행)', err)
+        }
+
+        // 2-e. GitHub 활동 데이터 (github_events 테이블에서 이번 주 webhook 데이터)
+        // webhook으로 실시간 저장된 커밋 정보 + AI 요약을 ghostwriter 컨텍스트에 추가
+        try {
+          const githubActivity = await fetchGitHubEventsFromDB(admin, clubId, ch.opportunity_id)
+          if (githubActivity.commitCount > 0) {
+            harness.githubActivity = githubActivity
+          }
+        } catch (err) {
+          console.warn('[ghostwriter] github_events 조회 실패 (계속 진행)', err)
         }
 
         // 3. AI 초안 생성 (하네스 컨텍스트 포함)

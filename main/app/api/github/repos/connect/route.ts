@@ -23,10 +23,14 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { clubId, repoFullName, opportunityId } = body as {
+    const { clubId, repoFullName, opportunityId, discordChannelId: userChannelId, discordChannelType } = body as {
       clubId?: string
       repoFullName?: string
       opportunityId?: string
+      /** 사용자가 직접 선택한 알림 채널 (없으면 discord_team_channels 자동 조회) */
+      discordChannelId?: string
+      /** 0 = 텍스트 채널, 15 = 포럼 채널 */
+      discordChannelType?: number
     }
 
     if (!clubId || !repoFullName) {
@@ -86,20 +90,26 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // 2. 해당 프로젝트의 Discord 팀 채널 조회
-    // push 알림을 이 채널로 보내기 위해 credentials에 저장
+    // 2. Discord 알림 채널 결정
+    // 우선순위: 사용자 직접 선택 → discord_team_channels 자동 조회 (fallback)
     const admin = createAdminClient()
-    let discordChannelId: string | null = null
+    let discordChannelId: string | null = userChannelId ?? null
+    let isForumChannel = discordChannelType === 15
 
-    const { data: teamChannel } = await admin
-      .from('discord_team_channels')
-      .select('discord_channel_id')
-      .eq('club_id', clubId)
-      .eq('opportunity_id', opportunityId)
-      .maybeSingle()
+    // 사용자가 직접 선택하지 않은 경우 기존 팀 채널 매핑에서 자동 조회
+    if (!discordChannelId) {
+      const { data: teamChannel } = await admin
+        .from('discord_team_channels')
+        .select('discord_channel_id')
+        .eq('club_id', clubId)
+        .eq('opportunity_id', opportunityId)
+        .maybeSingle()
 
-    if (teamChannel) {
-      discordChannelId = teamChannel.discord_channel_id
+      if (teamChannel) {
+        discordChannelId = teamChannel.discord_channel_id
+        // 자동 조회된 채널은 텍스트 채널로 간주 (기존 매핑은 모두 텍스트)
+        isForumChannel = false
+      }
     }
 
     // 3. webhook secret 생성 (레포별 고유)
@@ -176,10 +186,11 @@ export async function POST(req: NextRequest) {
           repo: repoFullName,
           webhookSecret,
           webhookId: String(webhookId),
-          // Discord 팀 채널 ID를 저장하여 webhook 수신 시 빠르게 조회 가능
-          // discord_team_channels가 변경되면 이 값도 갱신해야 할 수 있으나,
-          // webhook handler에서 discord_team_channels를 직접 조회하므로 캐시 역할만 함
+          // Discord 알림 채널 정보
+          // 사용자 직접 선택 or discord_team_channels에서 자동 조회
           discordChannelId,
+          // 포럼 채널이면 true — webhook handler에서 createForumThread 사용
+          isForumChannel,
         },
       })
 

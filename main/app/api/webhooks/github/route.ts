@@ -17,7 +17,7 @@
 
 import { NextRequest, NextResponse, after } from 'next/server'
 import { createAdminClient } from '@/src/lib/supabase/admin'
-import { sendChannelMessage } from '@/src/lib/discord/client'
+import { sendChannelMessage, createForumThread } from '@/src/lib/discord/client'
 import crypto from 'crypto'
 
 export const runtime = 'nodejs'
@@ -176,12 +176,13 @@ async function findWebhookSecretByRepo(
 async function findClubByRepo(
   admin: ReturnType<typeof createAdminClient>,
   repoFullName: string
-): Promise<{ clubId: string; opportunityId: string | null; discordChannelId: string | null } | null> {
+): Promise<{ clubId: string; opportunityId: string | null; discordChannelId: string | null; isForumChannel: boolean } | null> {
   try {
     // harness_connectors에서 github 타입 + repo 매칭
+    // credentials에 사용자가 직접 선택한 discordChannelId, isForumChannel이 저장되어 있을 수 있음
     const { data: connector } = await admin
       .from('club_harness_connectors')
-      .select('club_id, opportunity_id')
+      .select('club_id, opportunity_id, credentials')
       .eq('connector_type', 'github')
       .eq('enabled', true)
       .filter('credentials->>repo', 'eq', repoFullName)
@@ -189,12 +190,14 @@ async function findClubByRepo(
 
     if (!connector) return null
 
-    // 해당 클럽의 Discord 알림 채널 조회
-    // discord_bot_installations → guild_id 확보 후, 환경변수 또는 팀채널에서 채널 찾기
-    let discordChannelId: string | null = null
+    const creds = connector.credentials as Record<string, any> | null
 
-    if (connector.opportunity_id) {
-      // 프로젝트에 연결된 Discord 팀 채널이 있는지 확인
+    // 우선순위: credentials에 저장된 채널 → discord_team_channels fallback
+    let discordChannelId: string | null = creds?.discordChannelId ?? null
+    let isForumChannel: boolean = creds?.isForumChannel === true
+
+    // credentials에 채널이 없으면 discord_team_channels에서 fallback 조회
+    if (!discordChannelId && connector.opportunity_id) {
       const { data: teamChannel } = await admin
         .from('discord_team_channels')
         .select('discord_channel_id')
@@ -203,12 +206,15 @@ async function findClubByRepo(
         .maybeSingle()
 
       discordChannelId = teamChannel?.discord_channel_id ?? null
+      // fallback으로 조회한 채널은 텍스트 채널로 간주
+      isForumChannel = false
     }
 
     return {
       clubId: connector.club_id,
       opportunityId: connector.opportunity_id ?? null,
       discordChannelId,
+      isForumChannel,
     }
   } catch (err) {
     console.error('[github-webhook] club 매핑 조회 실패:', err)
@@ -369,21 +375,36 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // 이유: 서명 검증 + DB 저장까지는 동기로 확실히 하고,
     // AI 호출은 느릴 수 있으므로 GitHub 측에 200을 먼저 반환한다.
     if (discordChannelId) {
+      const isForumChannel = clubMapping?.isForumChannel === true
+
       after(async () => {
         try {
           // AI 요약 생성
           const aiSummary = await generateCommitSummary(commits, repoFullName, branch, pusherName)
 
-          // Discord 메시지 전송
+          // Discord 전송 — 포럼 채널이면 스레드(포스트) 생성, 텍스트 채널이면 일반 메시지
           const message = formatPushMessage(payload, draftMember?.nickname ?? null, aiSummary)
-          const discordMsg = await sendChannelMessage(discordChannelId!, message)
+          let discordMsgId: string | undefined
+
+          if (isForumChannel) {
+            // 포럼 채널: 개별 포스트로 생성
+            // 제목에 팀명, 커밋 수, 브랜치를 포함하여 한눈에 파악 가능
+            const repoName = repoFullName.split('/')[1] || repoFullName
+            const forumTitle = `[${repoName}] ${commits.length}건의 커밋 — ${branch} 브랜치`
+            const forumThread = await createForumThread(discordChannelId!, forumTitle, message)
+            discordMsgId = forumThread?.id
+          } else {
+            // 텍스트 채널: 기존 방식
+            const discordMsg = await sendChannelMessage(discordChannelId!, message)
+            discordMsgId = discordMsg?.id
+          }
 
           // ai_summary + discord_message_id를 한 번의 update로 처리
           // 불필요한 DB 왕복을 줄인다.
           if (eventId) {
             const updatePayload: Record<string, string> = {}
             if (aiSummary) updatePayload.ai_summary = aiSummary
-            if (discordMsg?.id) updatePayload.discord_message_id = discordMsg.id
+            if (discordMsgId) updatePayload.discord_message_id = discordMsgId
 
             if (Object.keys(updatePayload).length > 0) {
               const { error: updateError } = await admin
@@ -423,7 +444,19 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   }
 
   try {
-    await sendChannelMessage(discordChannelId, message)
+    const isForumChannel = clubMapping?.isForumChannel === true
+
+    if (isForumChannel) {
+      // 포럼 채널: PR/Issue도 개별 포스트로 생성
+      const repoName = repoFullName.split('/')[1] || repoFullName
+      const forumTitle = event === 'pull_request'
+        ? `[${repoName}] PR — ${sanitizeForDiscord(payload.pull_request?.title || '').slice(0, 80)}`
+        : `[${repoName}] Issue — ${sanitizeForDiscord(payload.issue?.title || '').slice(0, 80)}`
+      await createForumThread(discordChannelId, forumTitle, message)
+    } else {
+      await sendChannelMessage(discordChannelId, message)
+    }
+
     return NextResponse.json({ ok: true, event, delivered: true })
   } catch (error) {
     console.error('[github-webhook] Discord 전송 실패:', error)

@@ -30,14 +30,15 @@ export const GET = withErrorCapture(async (_request, { params }: RouteParams) =>
     .eq('club_id', clubId)
     .single()
 
-  // Discord 서버의 텍스트 채널 목록 (봇이 설치된 경우)
-  let availableChannels: { id: string; name: string }[] = []
+  // Discord 서버의 텍스트 + 포럼 채널 목록 (봇이 설치된 경우)
+  // type 0 = 텍스트 채널, type 15 = 포럼 채널
+  let availableChannels: { id: string; name: string; type: number }[] = []
   if (inst) {
     try {
       const channels = await fetchGuildChannels(inst.discord_guild_id)
       availableChannels = channels
-        .filter((c) => c.type === 0)
-        .map((c) => ({ id: c.id, name: c.name }))
+        .filter((c) => c.type === 0 || c.type === 15)
+        .map((c) => ({ id: c.id, name: c.name, type: c.type }))
     } catch {
       // 봇 권한 문제 등 — 빈 배열로 진행
     }

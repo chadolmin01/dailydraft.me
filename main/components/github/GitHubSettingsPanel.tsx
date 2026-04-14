@@ -25,6 +25,12 @@ interface GitHubConnectorInfo {
   githubAvatarUrl: string | null
 }
 
+interface DiscordChannelOption {
+  id: string
+  name: string
+  type: number // 0 = 텍스트, 15 = 포럼
+}
+
 interface GitHubSettingsPanelProps {
   clubSlug: string
   /** 팀/프로젝트 단위 연동 시 필수. 없으면 클럽 레벨 OAuth 전용. */
@@ -41,6 +47,7 @@ export function GitHubSettingsPanel({ clubSlug, opportunityId, hideBackLink }: G
   const [connectingRepo, setConnectingRepo] = useState<string | null>(null)
   const [disconnectingRepo, setDisconnectingRepo] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [selectedChannelId, setSelectedChannelId] = useState<string>('')
 
   // queryKey에 opportunityId 포함하여 프로젝트별 캐시 분리
   const connectorQueryKey = ['github-connector', club?.id, opportunityId ?? 'club']
@@ -82,11 +89,28 @@ export function GitHubSettingsPanel({ clubSlug, opportunityId, hideBackLink }: G
     },
   })
 
+  // ── Discord 채널 목록 조회 (알림 채널 선택용) ──
+  const { data: discordChannelsData } = useQuery<{ available_channels: DiscordChannelOption[] }>({
+    queryKey: ['discord-channels', club?.id],
+    enabled: !!club?.id && connectorInfo?.connected === true,
+    queryFn: async () => {
+      const res = await fetch(`/api/clubs/${club!.id}/discord-channels`)
+      if (!res.ok) throw new Error('Discord 채널 목록을 불러올 수 없습니다')
+      return res.json()
+    },
+  })
+
+  const discordChannels = discordChannelsData?.available_channels ?? []
+
   // ── 레포 연결 ──
   const connectMutation = useMutation({
     mutationFn: async (repoFullName: string) => {
       setConnectingRepo(repoFullName)
       setError(null)
+
+      // 선택된 Discord 채널 정보 (알림 전송 대상)
+      const selectedChannel = discordChannels.find(ch => ch.id === selectedChannelId)
+
       const res = await fetch('/api/github/repos/connect', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -94,6 +118,11 @@ export function GitHubSettingsPanel({ clubSlug, opportunityId, hideBackLink }: G
           clubId: club!.id,
           repoFullName,
           opportunityId,
+          // 사용자가 직접 선택한 알림 채널 (없으면 서버에서 discord_team_channels fallback)
+          ...(selectedChannelId ? {
+            discordChannelId: selectedChannelId,
+            discordChannelType: selectedChannel?.type ?? 0,
+          } : {}),
         }),
       })
       if (!res.ok) {
@@ -350,6 +379,30 @@ export function GitHubSettingsPanel({ clubSlug, opportunityId, hideBackLink }: G
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* 알림 채널 선택 */}
+          {discordChannels.length > 0 && (
+            <div>
+              <h2 className="text-sm font-bold text-txt-primary mb-1">
+                알림 채널
+              </h2>
+              <p className="text-xs text-txt-tertiary mb-2">
+                커밋, PR 등 GitHub 알림을 받을 Discord 채널을 선택합니다.
+              </p>
+              <select
+                value={selectedChannelId}
+                onChange={(e) => setSelectedChannelId(e.target.value)}
+                className="w-full px-3 py-2 text-sm bg-surface-card border border-border-default rounded-xl text-txt-primary focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
+              >
+                <option value="">자동 (팀 채널 매핑 사용)</option>
+                {discordChannels.map((ch) => (
+                  <option key={ch.id} value={ch.id}>
+                    #{ch.name}{ch.type === 15 ? ' (포럼)' : ''}
+                  </option>
+                ))}
+              </select>
             </div>
           )}
 

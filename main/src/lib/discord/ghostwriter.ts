@@ -59,6 +59,15 @@ export interface HarnessContext {
     min_messages?: number
     custom_prompt_hint?: string | null
   }
+  /** GitHub 활동 데이터 (github_events 테이블에서 수집) */
+  githubActivity?: {
+    /** webhook으로 저장된 커밋 활동 목록 */
+    activities: { who: string; what: string; when: Date }[]
+    /** AI가 생성한 push별 요약 (있는 경우만) */
+    summaries: string[]
+    /** 이번 주 총 커밋 수 */
+    commitCount: number
+  }
 }
 
 /**
@@ -295,7 +304,8 @@ ${tone}
 10. **핀 메시지(결정사항)**: "주요 결정사항" 섹션이 있으면 summary에 반드시 반영하고 confidence를 high로 설정
 11. **이전 피드백 반영**: "이전 초안 피드백" 섹션이 있으면 해당 피드백을 반드시 반영하여 같은 실수를 반복하지 않을 것
 12. **디자인 작업 인식**: 이미지/스크린샷 첨부, Figma 링크(figma.com), 디자인 파일(.fig, .sketch, .psd) 공유는 디자인 작업의 증거임. "(첨부파일 공유)"로 표시된 메시지도 무시하지 말 것. 파일명에서 작업 내용을 추론할 것 (예: "main-page-v2.png" → 메인 페이지 시안 v2 작업)
-13. **이미지 분석**: 첨부된 이미지가 있으면 시각적 내용을 분석하여 tasks에 반영할 것. 예: UI 시안 이미지 → "메인 페이지 카드 레이아웃 시안 작업", 와이어프레임 → "온보딩 플로우 와이어프레임 작성". 이미지 내용에서 파악 가능한 구체적 디자인 요소(색상, 레이아웃, 컴포넌트 등)를 summary에 언급할 것${customLine}
+13. **이미지 분석**: 첨부된 이미지가 있으면 시각적 내용을 분석하여 tasks에 반영할 것. 예: UI 시안 이미지 → "메인 페이지 카드 레이아웃 시안 작업", 와이어프레임 → "온보딩 플로우 와이어프레임 작성". 이미지 내용에서 파악 가능한 구체적 디자인 요소(색상, 레이아웃, 컴포넌트 등)를 summary에 언급할 것
+14. **GitHub 활동 반영**: "GitHub 활동" 섹션이 있으면 커밋 메시지와 AI 요약을 분석하여 tasks(done=true)와 summary에 반영할 것. 커밋 메시지에서 구체적인 기능/수정 내용을 추출하고, Discord 대화와 교차 검증하여 정확도를 높일 것. GitHub 데이터는 confidence를 high로 설정${customLine}
 
 ## 출력 형식 (JSON)
 
@@ -342,7 +352,9 @@ export async function generateWeeklyDraft(
   // /마무리 회의록이 있으면 그 자체로 충분한 신호
   const mr = harness?.meetingRecords
   const hasMeetingRecords = mr && (mr.tasks.length > 0 || mr.decisions.length > 0 || mr.resources.length > 0)
-  const totalSignals = count + (checkinText ? 1 : 0) + (pinnedText ? 1 : 0) + (hasMeetingRecords ? 3 : 0)
+  // GitHub 커밋도 활동 신호로 카운트 — 코드만 작성하고 대화 안 하는 팀도 초안 생성 가능
+  const hasGitHubActivity = (harness?.githubActivity?.commitCount ?? 0) > 0
+  const totalSignals = count + (checkinText ? 1 : 0) + (pinnedText ? 1 : 0) + (hasMeetingRecords ? 3 : 0) + (hasGitHubActivity ? 2 : 0)
 
   // 동아리장이 설정한 최소 메시지 수 (기본 3, settings.min_messages는 "의미 있는 메시지" 기준)
   const minRequired = Math.max(harness?.settings?.min_messages ?? 3, 1)
@@ -393,6 +405,38 @@ export async function generateWeeklyDraft(
     sections.push(
       `## 이전 초안 피드백 (이 점을 개선해주세요)\n\n${fbLines.join('\n')}`
     )
+  }
+
+  // GitHub 활동 데이터 (github_events 테이블에서 수집된 커밋 정보)
+  const gh = harness?.githubActivity
+  if (gh && (gh.commitCount > 0 || gh.summaries.length > 0)) {
+    const ghLines: string[] = []
+
+    if (gh.commitCount > 0) {
+      ghLines.push(`이번 주 총 ${gh.commitCount}건의 커밋이 push되었습니다.`)
+    }
+
+    // AI 요약이 있으면 브랜치별 변경사항 요약 포함
+    if (gh.summaries.length > 0) {
+      ghLines.push('')
+      ghLines.push('**브랜치별 변경사항 요약:**')
+      gh.summaries.forEach(s => ghLines.push(`- ${s}`))
+    }
+
+    // 주요 커밋 메시지 (최대 15개)
+    if (gh.activities.length > 0) {
+      ghLines.push('')
+      ghLines.push('**주요 커밋:**')
+      gh.activities.slice(0, 15).forEach(a => {
+        const date = a.when.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
+        ghLines.push(`- [${date}] ${a.who}: ${a.what}`)
+      })
+      if (gh.activities.length > 15) {
+        ghLines.push(`- ... 외 ${gh.activities.length - 15}건`)
+      }
+    }
+
+    sections.push(`## GitHub 활동 (webhook 데이터)\n\n${ghLines.join('\n')}`)
   }
 
   sections.push(`## 이번 주 Discord 대화 (${count}개 메시지)\n\n${formatted}`)
