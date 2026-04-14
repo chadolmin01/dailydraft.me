@@ -15,6 +15,7 @@ import nacl from 'tweetnacl'
  * - /마무리 — 대화 요약 (Deferred → 비동기 처리)
  * - /투표 — 투표 생성
  * - /일정 — 일정 조율
+ * - /github — GitHub 레포 연동 관리 (연결/목록/해제/내계정)
  * - /설정 — Draft 웹 설정 링크
  * - /도움 — 명령어 안내
  */
@@ -130,6 +131,10 @@ export async function POST(request: NextRequest) {
 
     if (commandName === '연결') {
       return handleConnectCommand(interaction)
+    }
+
+    if (commandName === 'github') {
+      return handleGitHubCommand(interaction)
     }
 
     return NextResponse.json({
@@ -704,13 +709,389 @@ async function handleConnectCommand(interaction: {
   })
 }
 
+// ── /github — GitHub 레포 연동 관리 ──
+
+async function handleGitHubCommand(interaction: {
+  guild_id?: string
+  member?: { user?: { id: string } }
+  user?: { id: string }
+  data?: {
+    options?: {
+      name: string
+      type: number
+      options?: { name: string; value: string }[]
+    }[]
+  }
+}) {
+  // 서브커맨드 파싱 (Discord SUB_COMMAND 구조: data.options[0] = 서브커맨드)
+  const subCommand = interaction.data?.options?.[0]
+  const subName = subCommand?.name
+
+  if (subName === '연결') {
+    return handleGitHubConnect(interaction)
+  }
+  if (subName === '목록') {
+    return handleGitHubList(interaction)
+  }
+  if (subName === '해제') {
+    return handleGitHubDisconnect(interaction)
+  }
+  if (subName === '내계정') {
+    return handleGitHubAccount(interaction)
+  }
+
+  return NextResponse.json({
+    type: CHANNEL_MESSAGE,
+    data: { content: '알 수 없는 서브커맨드입니다. `/github` 다음에 연결, 목록, 해제, 내계정 중 하나를 입력해주세요.', flags: 64 },
+  })
+}
+
+// ── /github 연결 owner/repo — 레포를 현재 클럽에 연결 + webhook 정보 발급 ──
+
+async function handleGitHubConnect(interaction: {
+  guild_id?: string
+  data?: {
+    options?: {
+      name: string
+      type: number
+      options?: { name: string; value: string }[]
+    }[]
+  }
+}) {
+  const guildId = interaction.guild_id
+  const repo = interaction.data?.options?.[0]?.options?.find(o => o.name === 'repo')?.value
+
+  if (!guildId) {
+    return NextResponse.json({
+      type: CHANNEL_MESSAGE,
+      data: { content: '서버 정보를 찾을 수 없습니다.', flags: 64 },
+    })
+  }
+
+  if (!repo || !repo.includes('/')) {
+    return NextResponse.json({
+      type: CHANNEL_MESSAGE,
+      data: { content: '올바른 레포 형식을 입력해주세요. (예: `owner/repo-name`)', flags: 64 },
+    })
+  }
+
+  const supabase = createAdminClient()
+
+  // guild_id → club_id 조회
+  const { data: installation } = await supabase
+    .from('discord_bot_installations')
+    .select('club_id')
+    .eq('discord_guild_id', guildId)
+    .maybeSingle()
+
+  if (!installation) {
+    return NextResponse.json({
+      type: CHANNEL_MESSAGE,
+      data: { content: '이 서버는 아직 Draft 클럽에 연결되지 않았습니다.', flags: 64 },
+    })
+  }
+
+  // webhook secret 생성
+  const webhookSecret = crypto.randomUUID()
+  const webhookUrl = `${APP_URL}/api/webhooks/github`
+
+  // 같은 레포가 이미 연결되어 있는지 확인 (display_name 기준)
+  // UNIQUE(club_id, connector_type, opportunity_id)는 NULL opportunity_id에서
+  // 여러 행을 허용하므로 display_name으로 중복 체크
+  const { data: existing } = await supabase
+    .from('club_harness_connectors')
+    .select('id')
+    .eq('club_id', installation.club_id)
+    .eq('connector_type', 'github')
+    .eq('display_name', repo)
+    .maybeSingle()
+
+  if (existing) {
+    // 기존 레코드 업데이트 (새 webhook secret 재발급)
+    const { error } = await supabase
+      .from('club_harness_connectors')
+      .update({
+        credentials: { type: 'github', repo, webhookSecret },
+        enabled: true,
+        last_error: null,
+      })
+      .eq('id', existing.id)
+
+    if (error) {
+      console.error('[GitHub] connector 업데이트 실패:', error.message)
+      return NextResponse.json({
+        type: CHANNEL_MESSAGE,
+        data: { content: '연결 저장 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.', flags: 64 },
+      })
+    }
+  } else {
+    // 새 커넥터 삽입
+    const { error } = await supabase
+      .from('club_harness_connectors')
+      .insert({
+        club_id: installation.club_id,
+        connector_type: 'github',
+        credentials: { type: 'github', repo, webhookSecret },
+        display_name: repo,
+        enabled: true,
+      })
+
+    if (error) {
+      console.error('[GitHub] connector 저장 실패:', error.message)
+      return NextResponse.json({
+        type: CHANNEL_MESSAGE,
+        data: { content: '연결 저장 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.', flags: 64 },
+      })
+    }
+  }
+
+  return NextResponse.json({
+    type: CHANNEL_MESSAGE,
+    data: {
+      content: [
+        `**${repo}** → 이 클럽에 연결했습니다`,
+        '',
+        'GitHub 레포 Settings → Webhooks → Add webhook:',
+        `• **Payload URL:** \`${webhookUrl}\``,
+        '• **Content type:** `application/json`',
+        `• **Secret:** \`${webhookSecret}\``,
+        '',
+        '권장 이벤트: Push, Pull requests, Issues',
+      ].join('\n'),
+      flags: 64, // EPHEMERAL — Secret이 포함되므로 본인만 보이게
+    },
+  })
+}
+
+// ── /github 목록 — 연결된 레포 목록 ──
+
+async function handleGitHubList(interaction: {
+  guild_id?: string
+}) {
+  const guildId = interaction.guild_id
+
+  if (!guildId) {
+    return NextResponse.json({
+      type: CHANNEL_MESSAGE,
+      data: { content: '서버 정보를 찾을 수 없습니다.', flags: 64 },
+    })
+  }
+
+  const supabase = createAdminClient()
+
+  const { data: installation } = await supabase
+    .from('discord_bot_installations')
+    .select('club_id')
+    .eq('discord_guild_id', guildId)
+    .maybeSingle()
+
+  if (!installation) {
+    return NextResponse.json({
+      type: CHANNEL_MESSAGE,
+      data: { content: '이 서버는 아직 Draft 클럽에 연결되지 않았습니다.', flags: 64 },
+    })
+  }
+
+  const { data: connectors } = await supabase
+    .from('club_harness_connectors')
+    .select('display_name, enabled, created_at')
+    .eq('club_id', installation.club_id)
+    .eq('connector_type', 'github')
+    .order('created_at', { ascending: true })
+
+  if (!connectors || connectors.length === 0) {
+    return NextResponse.json({
+      type: CHANNEL_MESSAGE,
+      data: { content: '연결된 GitHub 레포가 없습니다.\n`/github 연결 owner/repo`로 레포를 연결해주세요.', flags: 64 },
+    })
+  }
+
+  const list = connectors
+    .map((c, i) => {
+      const status = c.enabled ? '🟢' : '⏸️'
+      return `${i + 1}. ${status} **${c.display_name}**`
+    })
+    .join('\n')
+
+  return NextResponse.json({
+    type: CHANNEL_MESSAGE,
+    data: {
+      content: `**연결된 GitHub 레포 (${connectors.length}개)**\n\n${list}`,
+      flags: 64,
+    },
+  })
+}
+
+// ── /github 해제 owner/repo — 레포 연결 해제 ──
+
+async function handleGitHubDisconnect(interaction: {
+  guild_id?: string
+  data?: {
+    options?: {
+      name: string
+      type: number
+      options?: { name: string; value: string }[]
+    }[]
+  }
+}) {
+  const guildId = interaction.guild_id
+  const repo = interaction.data?.options?.[0]?.options?.find(o => o.name === 'repo')?.value
+
+  if (!guildId) {
+    return NextResponse.json({
+      type: CHANNEL_MESSAGE,
+      data: { content: '서버 정보를 찾을 수 없습니다.', flags: 64 },
+    })
+  }
+
+  if (!repo) {
+    return NextResponse.json({
+      type: CHANNEL_MESSAGE,
+      data: { content: '해제할 레포 이름을 입력해주세요. (예: `owner/repo-name`)', flags: 64 },
+    })
+  }
+
+  const supabase = createAdminClient()
+
+  const { data: installation } = await supabase
+    .from('discord_bot_installations')
+    .select('club_id')
+    .eq('discord_guild_id', guildId)
+    .maybeSingle()
+
+  if (!installation) {
+    return NextResponse.json({
+      type: CHANNEL_MESSAGE,
+      data: { content: '이 서버는 아직 Draft 클럽에 연결되지 않았습니다.', flags: 64 },
+    })
+  }
+
+  const { data: deleted, error } = await supabase
+    .from('club_harness_connectors')
+    .delete()
+    .eq('club_id', installation.club_id)
+    .eq('connector_type', 'github')
+    .eq('display_name', repo)
+    .select('id')
+
+  if (error) {
+    console.error('[GitHub] connector 삭제 실패:', error.message)
+    return NextResponse.json({
+      type: CHANNEL_MESSAGE,
+      data: { content: '삭제 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.', flags: 64 },
+    })
+  }
+
+  if (!deleted || deleted.length === 0) {
+    return NextResponse.json({
+      type: CHANNEL_MESSAGE,
+      data: { content: `**${repo}** 레포를 찾을 수 없습니다.\n\`/github 목록\`으로 연결된 레포를 확인해주세요.`, flags: 64 },
+    })
+  }
+
+  return NextResponse.json({
+    type: CHANNEL_MESSAGE,
+    data: {
+      content: `**${repo}** 연결을 해제했습니다.\nGitHub 레포의 Webhooks에서도 해당 webhook을 삭제해주세요.`,
+      flags: 64,
+    },
+  })
+}
+
+// ── /github 내계정 username — GitHub 계정을 Draft 프로필에 연결 ──
+
+async function handleGitHubAccount(interaction: {
+  member?: { user?: { id: string } }
+  user?: { id: string }
+  data?: {
+    options?: {
+      name: string
+      type: number
+      options?: { name: string; value: string }[]
+    }[]
+  }
+}) {
+  const discordUserId = interaction.member?.user?.id ?? interaction.user?.id
+  const rawUsername = interaction.data?.options?.[0]?.options?.find(o => o.name === 'username')?.value
+
+  if (!discordUserId) {
+    return NextResponse.json({
+      type: CHANNEL_MESSAGE,
+      data: { content: '유저 정보를 찾을 수 없습니다.', flags: 64 },
+    })
+  }
+
+  if (!rawUsername) {
+    return NextResponse.json({
+      type: CHANNEL_MESSAGE,
+      data: { content: 'GitHub 사용자명을 입력해주세요.', flags: 64 },
+    })
+  }
+
+  // 사용자명 정규화: @ 제거, URL에서 추출, 소문자 변환
+  let username = rawUsername.trim().toLowerCase()
+  if (username.startsWith('@')) {
+    username = username.slice(1)
+  }
+  // https://github.com/username 형태에서 username 추출
+  const githubUrlMatch = username.match(/github\.com\/([a-zA-Z0-9_-]+)/i)
+  if (githubUrlMatch) {
+    username = githubUrlMatch[1].toLowerCase()
+  }
+
+  const githubUrl = `https://github.com/${username}`
+
+  const supabase = createAdminClient()
+
+  // discord_user_id로 프로필 조회
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('user_id, nickname')
+    .eq('discord_user_id', discordUserId)
+    .maybeSingle()
+
+  if (!profile) {
+    return NextResponse.json({
+      type: CHANNEL_MESSAGE,
+      data: {
+        content: 'Draft 계정이 연결되어 있지 않습니다.\n먼저 `/연결` 명령으로 Draft 계정을 연결해주세요.',
+        flags: 64,
+      },
+    })
+  }
+
+  // github_url + github_username 동시 업데이트
+  // github_url: 프로필 표시용 (전체 URL)
+  // github_username: webhook pusher 매칭용 (소문자 username만)
+  const { error } = await supabase
+    .from('profiles')
+    .update({ github_url: githubUrl, github_username: username })
+    .eq('user_id', profile.user_id)
+
+  if (error) {
+    console.error('[GitHub] github_url 업데이트 실패:', error.message)
+    return NextResponse.json({
+      type: CHANNEL_MESSAGE,
+      data: { content: '저장 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.', flags: 64 },
+    })
+  }
+
+  return NextResponse.json({
+    type: CHANNEL_MESSAGE,
+    data: {
+      content: `GitHub 계정 **${username}**을(를) Draft 프로필에 연결했습니다.`,
+      flags: 64,
+    },
+  })
+}
+
 // ── /도움 — 명령어 안내 ──
 
 function handleHelpCommand() {
   return NextResponse.json({
     type: CHANNEL_MESSAGE,
     data: {
-      content: `📖 **Draft 봇 명령어**\n\n**회의:**\n• \`/회의시작\` — 미완료 할 일 리마인드 + 회의 시작\n• \`/마무리\` — 대화 요약 (AI가 할 일·결정사항·자료 정리)\n\n**일상:**\n• \`/투두 내용 [담당자]\` — 할 일 등록 (✅로 완료 체크)\n• \`/한줄 내용\` — 한줄 근황 공유\n• \`/투표 주제 옵션1 옵션2\` — 투표 생성\n• \`/일정 [목적]\` — 요일별 일정 투표\n\n**기타:**\n• \`/프로필 [@유저]\` — Draft 프로필 조회\n• \`/연결\` — Discord ↔ Draft 계정 연결\n• \`/설정\` — Draft 웹 설정 페이지\n• \`@Draft 질문\` — AI에게 질문`,
+      content: `📖 **Draft 봇 명령어**\n\n**회의:**\n• \`/회의시작\` — 미완료 할 일 리마인드 + 회의 시작\n• \`/마무리\` — 대화 요약 (AI가 할 일·결정사항·자료 정리)\n\n**일상:**\n• \`/투두 내용 [담당자]\` — 할 일 등록 (✅로 완료 체크)\n• \`/한줄 내용\` — 한줄 근황 공유\n• \`/투표 주제 옵션1 옵션2\` — 투표 생성\n• \`/일정 [목적]\` — 요일별 일정 투표\n\n**GitHub 연동:**\n• \`/github 연결 owner/repo\` — GitHub 레포 연결\n• \`/github 목록\` — 연결된 레포 목록\n• \`/github 해제 owner/repo\` — 레포 연결 해제\n• \`/github 내계정 username\` — GitHub 계정 연결\n\n**기타:**\n• \`/프로필 [@유저]\` — Draft 프로필 조회\n• \`/연결\` — Discord ↔ Draft 계정 연결\n• \`/설정\` — Draft 웹 설정 페이지\n• \`@Draft 질문\` — AI에게 질문`,
       flags: 64, // EPHEMERAL
     },
   })

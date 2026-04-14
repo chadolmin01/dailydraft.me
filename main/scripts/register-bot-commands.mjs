@@ -151,6 +151,57 @@ const commands = [
     description: 'Discord ↔ Draft 계정을 연결합니다',
     type: 1,
   },
+  {
+    name: 'github',
+    description: 'GitHub 레포 연동 관리',
+    type: 1,
+    options: [
+      {
+        type: 1, // SUB_COMMAND
+        name: '연결',
+        description: 'GitHub 레포를 이 클럽에 연결합니다',
+        options: [
+          {
+            type: 3, // STRING
+            name: 'repo',
+            description: '레포 이름 (예: owner/repo-name)',
+            required: true,
+          },
+        ],
+      },
+      {
+        type: 1,
+        name: '목록',
+        description: '연결된 GitHub 레포 목록',
+      },
+      {
+        type: 1,
+        name: '해제',
+        description: 'GitHub 레포 연결을 해제합니다',
+        options: [
+          {
+            type: 3,
+            name: 'repo',
+            description: '해제할 레포 이름 (예: owner/repo-name)',
+            required: true,
+          },
+        ],
+      },
+      {
+        type: 1,
+        name: '내계정',
+        description: 'GitHub 계정을 Draft 프로필에 연결합니다',
+        options: [
+          {
+            type: 3,
+            name: 'username',
+            description: 'GitHub 사용자명',
+            required: true,
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 const baseUrl = GUILD_ID

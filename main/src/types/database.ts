@@ -933,6 +933,70 @@ export type Database = {
           },
         ]
       }
+      github_events: {
+        Row: {
+          ai_summary: string | null
+          branch: string
+          club_id: string
+          commits: Json
+          created_at: string
+          discord_message_id: string | null
+          id: string
+          project_id: string | null
+          pusher_github_username: string
+          pusher_member_id: string | null
+          repo_name: string
+        }
+        Insert: {
+          ai_summary?: string | null
+          branch: string
+          club_id: string
+          commits?: Json
+          created_at?: string
+          discord_message_id?: string | null
+          id?: string
+          project_id?: string | null
+          pusher_github_username: string
+          pusher_member_id?: string | null
+          repo_name: string
+        }
+        Update: {
+          ai_summary?: string | null
+          branch?: string
+          club_id?: string
+          commits?: Json
+          created_at?: string
+          discord_message_id?: string | null
+          id?: string
+          project_id?: string | null
+          pusher_github_username?: string
+          pusher_member_id?: string | null
+          repo_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "github_events_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "github_events_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "github_events_pusher_member_id_fkey"
+            columns: ["pusher_member_id"]
+            isOneToOne: false
+            referencedRelation: "club_members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       error_logs: {
         Row: {
           created_at: string | null
@@ -1891,6 +1955,7 @@ export type Database = {
           extracted_profile: Json | null
           extraction_confidence: number | null
           github_url: string | null
+          github_username: string | null
           graduation_year: number | null
           id: string
           interest_count: number | null
@@ -1940,6 +2005,7 @@ export type Database = {
           extracted_profile?: Json | null
           extraction_confidence?: number | null
           github_url?: string | null
+          github_username?: string | null
           graduation_year?: number | null
           id?: string
           interest_count?: number | null
@@ -1989,6 +2055,7 @@ export type Database = {
           extracted_profile?: Json | null
           extraction_confidence?: number | null
           github_url?: string | null
+          github_username?: string | null
           graduation_year?: number | null
           id?: string
           interest_count?: number | null

@@ -63,6 +63,8 @@ export interface EditSocialLinksProps {
   setPortfolioUrl: (v: string) => void
   githubUrl: string
   setGithubUrl: (v: string) => void
+  githubUsername: string
+  setGithubUsername: (v: string) => void
   linkedinUrl: string
   setLinkedinUrl: (v: string) => void
 }
