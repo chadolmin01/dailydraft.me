@@ -46,11 +46,16 @@ export const PATCH = withErrorCapture(async (
     return ApiResponse.badRequest('유효하지 않은 업데이트 유형입니다')
   }
 
+  // week_number 변경 차단: 주차 변경 시 다른 주차와 충돌 가능
+  // 주차를 바꾸고 싶으면 기존 삭제 후 새로 작성해야 함
+  if (week_number !== undefined) {
+    return ApiResponse.badRequest('주차 번호는 변경할 수 없습니다. 삭제 후 다시 작성해주세요.')
+  }
+
   const updatePayload: Record<string, unknown> = {}
   if (title?.trim()) updatePayload.title = title.trim()
   if (content?.trim()) updatePayload.content = content.trim()
   if (update_type) updatePayload.update_type = update_type
-  if (week_number) updatePayload.week_number = week_number
 
   const { data, error } = await db!
     .from('project_updates')

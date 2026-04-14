@@ -1,10 +1,11 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Modal } from '@/components/ui/Modal'
-import { useCreateProjectUpdate, type ProjectUpdate } from '@/src/hooks/useProjectUpdates'
+import { useCreateProjectUpdate, useProjectUpdates, type ProjectUpdate } from '@/src/hooks/useProjectUpdates'
+import { getProjectWeekNumber } from '@/src/lib/ghostwriter/week-utils'
 
 const UPDATE_TYPES: { value: ProjectUpdate['update_type']; label: string }[] = [
   { value: 'ideation', label: '고민' },
@@ -28,22 +29,22 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
   onClose,
 }) => {
   const createUpdate = useCreateProjectUpdate()
+  const { data: existingUpdates } = useProjectUpdates(opportunityId)
 
-  // Auto-calculate week number from project creation date
-  const autoWeek = createdAt
-    ? Math.max(1, Math.ceil((Date.now() - new Date(createdAt).getTime()) / (7 * 24 * 60 * 60 * 1000)))
+  // 주차 계산을 getProjectWeekNumber()로 통일 (Ghostwriter와 동일 공식)
+  const currentWeek = createdAt
+    ? getProjectWeekNumber(new Date(createdAt))
     : 1
 
-  const [weekNumber, setWeekNumber] = useState(autoWeek)
+  // 이번 주차에 이미 업데이트가 있는지 확인
+  const alreadySubmitted = existingUpdates?.some(
+    (u) => u.week_number === currentWeek
+  ) ?? false
+
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [updateType, setUpdateType] = useState<ProjectUpdate['update_type']>('general')
   const [error, setError] = useState('')
-
-  // Reset week number when modal reopens (autoWeek may change over time)
-  useEffect(() => {
-    if (isOpen) setWeekNumber(autoWeek)
-  }, [isOpen, autoWeek])
 
   const handleSubmit = async () => {
     if (!title.trim()) { setError('제목을 입력해주세요'); return }
@@ -53,7 +54,7 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
     try {
       await createUpdate.mutateAsync({
         opportunity_id: opportunityId,
-        week_number: weekNumber,
+        week_number: currentWeek,
         title: title.trim(),
         content: content.trim(),
         update_type: updateType,
@@ -62,9 +63,9 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
       setContent('')
       setUpdateType('general')
       toast.success(
-        weekNumber === 1
-          ? '첫 번째 업데이트! 좋은 시작이에요'
-          : `Week ${weekNumber} 완료! 꾸준한 기록이 쌓이고 있어요`
+        currentWeek === 1
+          ? '첫 번째 업데이트! 좋은 시작입니다'
+          : `Week ${currentWeek} 완료! 꾸준한 기록이 쌓이고 있습니다`
       )
       onClose()
     } catch {
@@ -76,16 +77,24 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="주간 업데이트 작성" size="md">
       <div className="px-6 py-5 space-y-5">
+        {/* 이미 제출된 주차면 안내 메시지 표시 */}
+        {alreadySubmitted && (
+          <div className="px-4 py-3 bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-xl">
+            <p className="text-sm text-txt-secondary">
+              {currentWeek}주차 업데이트가 이미 제출되었습니다. 기존 업데이트를 편집해주세요.
+            </p>
+          </div>
+        )}
+
         {/* Week + Type */}
         <div className="flex gap-3">
           <div className="w-24">
             <label className="block text-[12px] font-medium text-txt-tertiary mb-1.5">Week</label>
             <input
               type="number"
-              min={1}
-              value={weekNumber}
-              onChange={(e) => setWeekNumber(Number(e.target.value))}
-              className="w-full px-3 py-2.5 bg-[#F7F8F9] dark:bg-[#1C1C1E] text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#3182F6]/30 rounded-xl text-txt-primary"
+              value={currentWeek}
+              readOnly
+              className="w-full px-3 py-2.5 bg-[#F0F1F3] dark:bg-[#1A1A1C] text-base sm:text-sm rounded-xl text-txt-secondary cursor-not-allowed"
             />
           </div>
           <div className="flex-1">
@@ -146,11 +155,13 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
 
         <button
           onClick={handleSubmit}
-          disabled={createUpdate.isPending}
+          disabled={createUpdate.isPending || alreadySubmitted}
           className="w-full py-3.5 bg-[#3182F6] text-white text-[15px] font-semibold rounded-2xl hover:bg-[#2272EB] transition-colors disabled:opacity-50 flex items-center justify-center gap-2 active:scale-[0.97]"
         >
           {createUpdate.isPending ? (
             <><Loader2 size={14} className="animate-spin" /> 저장 중...</>
+          ) : alreadySubmitted ? (
+            `${currentWeek}주차 업데이트 완료`
           ) : (
             '업데이트 등록'
           )}

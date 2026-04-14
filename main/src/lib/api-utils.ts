@@ -70,6 +70,9 @@ export const ApiResponse = {
   rateLimited: (message = '요청이 너무 많습니다. 잠시 후 다시 시도해주세요') =>
     apiError({ code: ErrorCode.RATE_LIMITED, message }, 429),
 
+  conflict: (message: string) =>
+    apiError({ code: ErrorCode.BAD_REQUEST, message }, 409),
+
   serviceUnavailable: (message = '서비스를 일시적으로 사용할 수 없습니다') =>
     apiError({ code: ErrorCode.SERVICE_UNAVAILABLE, message }, 503),
 }

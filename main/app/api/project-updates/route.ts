@@ -31,6 +31,21 @@ export const POST = withErrorCapture(async (request) => {
     return ApiResponse.badRequest('유효하지 않은 업데이트 유형입니다')
   }
 
+  // 주차당 1회 제한: 이미 해당 주차에 업데이트가 있으면 거부
+  // 왜: 주간 업데이트는 주차당 1개만 허용. 수정은 PATCH로.
+  const { data: existing } = await supabase
+    .from('project_updates')
+    .select('id')
+    .eq('opportunity_id', opportunity_id)
+    .eq('week_number', week_number)
+    .maybeSingle()
+
+  if (existing) {
+    return ApiResponse.conflict(
+      `${week_number}주차 업데이트가 이미 존재합니다. 수정하려면 기존 업데이트를 편집해주세요.`
+    )
+  }
+
   // Insert the update
   const { data: update, error } = await supabase
     .from('project_updates')

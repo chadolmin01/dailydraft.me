@@ -113,6 +113,21 @@ export const PATCH = withErrorCapture(async (request, { params }: RouteParams) =
   const finalContent = body.content?.trim() || draft.content
   const finalType = body.update_type || draft.update_type
 
+  // 주차당 1회 제한: 이미 해당 주차에 수동 업데이트가 있으면 승인 거부
+  // 왜: 수동으로 먼저 작성했는데 AI 초안도 승인하면 중복 발생
+  const { data: existingUpdate } = await admin
+    .from('project_updates')
+    .select('id')
+    .eq('opportunity_id', draft.opportunity_id)
+    .eq('week_number', draft.week_number)
+    .maybeSingle()
+
+  if (existingUpdate) {
+    return ApiResponse.conflict(
+      `${draft.week_number}주차 업데이트가 이미 존재합니다. 기존 업데이트를 편집해주세요.`
+    )
+  }
+
   // project_updates에 삽입
   const { data: published, error: publishError } = await admin
     .from('project_updates')
