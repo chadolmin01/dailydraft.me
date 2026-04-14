@@ -6,7 +6,7 @@
  * 2. GitHub API로 유저 정보 조회 (/user)
  * 3. profiles.github_username, github_url 업데이트
  * 4. club_harness_connectors에 access_token 저장 (connector_type='github')
- * 5. 클럽 GitHub 설정 페이지로 리다이렉트
+ * 5. opportunityId가 있으면 프로젝트 수정 페이지로, 없으면 클럽 설정 페이지로 리다이렉트
  *
  * 보안: access_token은 서버에서만 다루며, 절대 클라이언트에 노출하지 않는다.
  */
@@ -22,22 +22,27 @@ export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get('code')
   const state = req.nextUrl.searchParams.get('state')
 
-  // state에서 clubId, clubSlug 추출
+  // state에서 clubId, clubSlug, opportunityId 추출
   let clubId = ''
   let clubSlug = ''
+  let opportunityId = ''
   if (state) {
     try {
       const parsed = JSON.parse(Buffer.from(state, 'base64url').toString())
       clubId = parsed.clubId ?? ''
       clubSlug = parsed.clubSlug ?? ''
+      opportunityId = parsed.opportunityId ?? ''
     } catch {
       // state 파싱 실패 → 에러
     }
   }
 
-  const settingsUrl = clubSlug
-    ? `/clubs/${clubSlug}/settings/github`
-    : '/settings'
+  // opportunityId가 있으면 프로젝트 수정 페이지로, 없으면 클럽 GitHub 설정 페이지로
+  const settingsUrl = opportunityId
+    ? `/projects/${opportunityId}/edit?tab=github`
+    : clubSlug
+      ? `/clubs/${clubSlug}/settings/github`
+      : '/settings'
 
   if (!code) {
     return NextResponse.redirect(`${APP_URL}${settingsUrl}?error=github_auth_failed`)
@@ -130,7 +135,7 @@ export async function GET(req: NextRequest) {
     }
 
     // 5. club_harness_connectors에 GitHub OAuth 커넥터 upsert
-    // 이 레코드는 "이 클럽에 GitHub OAuth가 연결되어 있다"는 상태를 나타냄.
+    // opportunity_id=null 레코드는 "이 클럽에 GitHub OAuth가 연결되어 있다"는 상태를 나타냄.
     // 개별 레포 연결은 /api/github/repos/connect에서 별도 레코드로 생성.
     //
     // credentials에 accessToken을 저장하지만, 레포(repo) 필드는 아직 없음.
@@ -190,7 +195,7 @@ export async function GET(req: NextRequest) {
     }
 
     console.log(
-      `[GitHub OAuth] 연결 완료: user=${user.id}, club=${clubId}, github=${githubUser.login}`
+      `[GitHub OAuth] 연결 완료: user=${user.id}, club=${clubId}, opportunity=${opportunityId || 'none'}, github=${githubUser.login}`
     )
 
     return NextResponse.redirect(

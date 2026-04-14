@@ -1,18 +1,21 @@
 /**
- * GitHub 레포 연결 API — webhook 자동 생성
+ * GitHub 레포 연결 API — webhook 자동 생성 (팀/프로젝트 단위)
  *
  * POST /api/github/repos/connect
- * Body: { clubId, repoFullName } (예: "owner/repo")
+ * Body: { clubId, repoFullName, opportunityId } (예: "owner/repo")
  *
  * 1. 클럽의 GitHub OAuth connector에서 accessToken 가져오기
  * 2. GitHub API로 webhook 생성 (push, pull_request, issues 이벤트)
- * 3. club_harness_connectors에 레포별 레코드 생성 (credentials에 repo, webhookSecret, webhookId 저장)
+ * 3. club_harness_connectors에 레포별 레코드 생성
+ *    - opportunity_id를 포함하여 프로젝트 단위로 레포 연결
+ *    - discord_team_channels에서 해당 프로젝트의 Discord 채널 ID를 조회하여 저장
  *
  * webhook secret은 레포별로 고유 생성 — 각 레포가 독립적으로 서명 검증 가능.
  */
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
+import { createAdminClient } from '@/src/lib/supabase/admin'
 import crypto from 'crypto'
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
@@ -20,11 +23,22 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { clubId, repoFullName } = body as { clubId?: string; repoFullName?: string }
+    const { clubId, repoFullName, opportunityId } = body as {
+      clubId?: string
+      repoFullName?: string
+      opportunityId?: string
+    }
 
     if (!clubId || !repoFullName) {
       return NextResponse.json(
         { error: 'clubId와 repoFullName이 필요합니다.' },
+        { status: 400 }
+      )
+    }
+
+    if (!opportunityId) {
+      return NextResponse.json(
+        { error: 'opportunityId가 필요합니다. 팀 프로젝트 설정에서 레포를 연결해주세요.' },
         { status: 400 }
       )
     }
@@ -72,10 +86,26 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // 2. webhook secret 생성 (레포별 고유)
+    // 2. 해당 프로젝트의 Discord 팀 채널 조회
+    // push 알림을 이 채널로 보내기 위해 credentials에 저장
+    const admin = createAdminClient()
+    let discordChannelId: string | null = null
+
+    const { data: teamChannel } = await admin
+      .from('discord_team_channels')
+      .select('discord_channel_id')
+      .eq('club_id', clubId)
+      .eq('opportunity_id', opportunityId)
+      .maybeSingle()
+
+    if (teamChannel) {
+      discordChannelId = teamChannel.discord_channel_id
+    }
+
+    // 3. webhook secret 생성 (레포별 고유)
     const webhookSecret = crypto.randomBytes(32).toString('hex')
 
-    // 3. GitHub API로 webhook 생성
+    // 4. GitHub API로 webhook 생성
     const webhookRes = await fetch(
       `https://api.github.com/repos/${owner}/${repo}/hooks`,
       {
@@ -130,13 +160,13 @@ export async function POST(req: NextRequest) {
     const webhookData = await webhookRes.json()
     const webhookId = webhookData.id
 
-    // 4. club_harness_connectors에 레포별 레코드 생성
-    // OAuth connector(opportunity_id=null)와 별도로, 레포별 connector를 만든다.
-    // 기존에 동일 레포가 연결되어 있으면 업데이트 (idempotent)
+    // 5. club_harness_connectors에 레포별 레코드 생성
+    // opportunity_id를 포함하여 프로젝트 단위로 레포 연결
     const { error: insertError } = await supabase
       .from('club_harness_connectors')
       .insert({
         club_id: clubId,
+        opportunity_id: opportunityId,
         connector_type: 'github',
         enabled: true,
         credentials: {
@@ -146,6 +176,10 @@ export async function POST(req: NextRequest) {
           repo: repoFullName,
           webhookSecret,
           webhookId: String(webhookId),
+          // Discord 팀 채널 ID를 저장하여 webhook 수신 시 빠르게 조회 가능
+          // discord_team_channels가 변경되면 이 값도 갱신해야 할 수 있으나,
+          // webhook handler에서 discord_team_channels를 직접 조회하므로 캐시 역할만 함
+          discordChannelId,
         },
       })
 
@@ -176,13 +210,14 @@ export async function POST(req: NextRequest) {
     }
 
     console.log(
-      `[GitHub Connect] 레포 연결 완료: club=${clubId}, repo=${repoFullName}, webhookId=${webhookId}`
+      `[GitHub Connect] 레포 연결 완료: club=${clubId}, opportunity=${opportunityId}, repo=${repoFullName}, webhookId=${webhookId}, discordChannel=${discordChannelId || 'none'}`
     )
 
     return NextResponse.json({
       ok: true,
       repo: repoFullName,
       webhookId: String(webhookId),
+      discordChannelId,
     })
   } catch (err: any) {
     console.error('[GitHub Connect] 오류:', err)

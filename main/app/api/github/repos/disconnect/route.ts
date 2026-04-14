@@ -2,9 +2,11 @@
  * GitHub 레포 연결 해제 API — webhook 삭제 + DB 레코드 삭제
  *
  * POST /api/github/repos/disconnect
- * Body: { clubId, repoFullName } (예: "owner/repo")
+ * Body: { clubId, repoFullName, opportunityId? } (예: "owner/repo")
  *
  * 1. club_harness_connectors에서 해당 레포의 connector 조회
+ *    - opportunityId가 있으면 해당 프로젝트의 connector만 삭제
+ *    - 없으면 repoFullName으로 매칭
  * 2. credentials에서 webhookId, accessToken 추출
  * 3. GitHub API로 webhook 삭제
  * 4. DB 레코드 삭제
@@ -18,7 +20,11 @@ import { createClient } from '@/src/lib/supabase/server'
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { clubId, repoFullName } = body as { clubId?: string; repoFullName?: string }
+    const { clubId, repoFullName, opportunityId } = body as {
+      clubId?: string
+      repoFullName?: string
+      opportunityId?: string
+    }
 
     if (!clubId || !repoFullName) {
       return NextResponse.json(
@@ -43,12 +49,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // 1. 해당 레포의 connector 조회 (credentials.repo로 매칭)
-    const { data: connectors } = await supabase
+    // 1. 해당 레포의 connector 조회
+    // opportunityId가 있으면 해당 프로젝트의 connector만, 없으면 전체에서 검색
+    let query = supabase
       .from('club_harness_connectors')
       .select('id, credentials')
       .eq('club_id', clubId)
       .eq('connector_type', 'github')
+
+    if (opportunityId) {
+      query = query.eq('opportunity_id', opportunityId)
+    }
+
+    const { data: connectors } = await query
 
     if (!connectors || connectors.length === 0) {
       return NextResponse.json(
@@ -119,7 +132,7 @@ export async function POST(req: NextRequest) {
     }
 
     console.log(
-      `[GitHub Disconnect] 레포 연결 해제 완료: club=${clubId}, repo=${repoFullName}`
+      `[GitHub Disconnect] 레포 연결 해제 완료: club=${clubId}, opportunity=${opportunityId || 'none'}, repo=${repoFullName}`
     )
 
     return NextResponse.json({ ok: true, repo: repoFullName })

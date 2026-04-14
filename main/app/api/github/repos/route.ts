@@ -4,10 +4,12 @@
  * 클럽의 GitHub OAuth connector에서 accessToken을 가져와서
  * 유저가 admin 권한을 가진 레포 목록을 반환한다.
  *
- * GET /api/github/repos?clubId=xxx
+ * GET /api/github/repos?clubId=xxx[&opportunityId=yyy]
+ *
+ * opportunityId가 있으면 해당 프로젝트에 이미 연결된 레포를 connected=true로 표시.
+ * 없으면 클럽 전체에서 연결된 레포를 표시.
  *
  * 응답: { repos: [{ fullName, name, owner, private, url, connected }] }
- * connected=true인 레포는 이미 이 클럽에 webhook이 연결된 상태.
  */
 
 import { NextRequest, NextResponse } from 'next/server'
@@ -15,6 +17,7 @@ import { createClient } from '@/src/lib/supabase/server'
 
 export async function GET(req: NextRequest) {
   const clubId = req.nextUrl.searchParams.get('clubId')
+  const opportunityId = req.nextUrl.searchParams.get('opportunityId') || null
 
   if (!clubId) {
     return NextResponse.json({ error: 'clubId is required' }, { status: 400 })
@@ -88,37 +91,43 @@ export async function GET(req: NextRequest) {
 
     const ghRepos = await repoRes.json()
 
-    // 3. 이 클럽에 이미 연결된 레포 목록 조회
-    const { data: connectedConnectors } = await supabase
-      .from('club_harness_connectors')
-      .select('credentials')
-      .eq('club_id', clubId)
-      .eq('connector_type', 'github')
-      .not('opportunity_id', 'is', null)
-
+    // 3. 연결된 레포 목록 조회
+    // opportunityId가 있으면 해당 프로젝트에 연결된 레포만 connected=true
+    // 없으면 클럽 전체에서 연결된 레포를 표시
     const connectedRepos = new Set<string>()
-    if (connectedConnectors) {
-      for (const c of connectedConnectors) {
-        const creds = c.credentials as any
-        if (creds?.repo) {
-          connectedRepos.add(creds.repo)
+
+    if (opportunityId) {
+      // 특정 프로젝트에 연결된 레포만 조회
+      const { data: projectConnectors } = await supabase
+        .from('club_harness_connectors')
+        .select('credentials')
+        .eq('club_id', clubId)
+        .eq('connector_type', 'github')
+        .eq('opportunity_id', opportunityId)
+
+      if (projectConnectors) {
+        for (const c of projectConnectors) {
+          const creds = c.credentials as any
+          if (creds?.repo) {
+            connectedRepos.add(creds.repo)
+          }
         }
       }
-    }
+    } else {
+      // 클럽 전체에서 연결된 레포 조회 (opportunity_id가 있는 것들)
+      const { data: connectedConnectors } = await supabase
+        .from('club_harness_connectors')
+        .select('credentials')
+        .eq('club_id', clubId)
+        .eq('connector_type', 'github')
+        .not('opportunity_id', 'is', null)
 
-    // opportunity_id가 null인 connector의 credentials.repo도 확인
-    // (단일 레포 연결 시 opportunity_id 없이 저장할 수도 있으므로)
-    const { data: globalConnectors } = await supabase
-      .from('club_harness_connectors')
-      .select('credentials')
-      .eq('club_id', clubId)
-      .eq('connector_type', 'github')
-
-    if (globalConnectors) {
-      for (const c of globalConnectors) {
-        const creds = c.credentials as any
-        if (creds?.repo && creds.repo !== '') {
-          connectedRepos.add(creds.repo)
+      if (connectedConnectors) {
+        for (const c of connectedConnectors) {
+          const creds = c.credentials as any
+          if (creds?.repo) {
+            connectedRepos.add(creds.repo)
+          }
         }
       }
     }

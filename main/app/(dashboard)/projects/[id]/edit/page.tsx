@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useCallback, Suspense } from 'react'
-import { useRouter, useParams } from 'next/navigation'
+import { useRouter, useParams, useSearchParams } from 'next/navigation'
 import { ArrowLeft, Loader2, Plus, X, Sparkles, AlertCircle, Trash2, Save, Check } from 'lucide-react'
 import type { Area } from 'react-easy-crop'
 import { toast } from 'sonner'
@@ -14,6 +14,7 @@ import { CropModal } from '../../new/components/CropModal'
 import { ProjectInfoSidebar } from '../../new/components/ProjectInfoSidebar'
 import { AnimatedChip } from '../../new/components/AnimatedChip'
 import { TeamManageSection } from '@/components/project/TeamManageSection'
+import { GitHubSettingsPanel } from '@/components/github/GitHubSettingsPanel'
 
 export default function EditProjectPage() {
   return (
@@ -23,17 +24,22 @@ export default function EditProjectPage() {
   )
 }
 
-type Tab = 'info' | 'team'
+type Tab = 'info' | 'team' | 'github'
 
 function EditProjectContent() {
   const router = useRouter()
   const { id } = useParams<{ id: string }>()
+  const searchParams = useSearchParams()
   const { user } = useAuth()
   const { data: opportunity, isLoading } = useOpportunity(id)
   const updateOpportunity = useUpdateOpportunity()
   const deleteOpportunity = useDeleteOpportunity()
 
-  const [tab, setTab] = useState<Tab>('info')
+  // URL의 ?tab=github 등 쿼리 파라미터로 초기 탭 설정 (OAuth 콜백 리다이렉트 대응)
+  const initialTab = (['info', 'team', 'github'] as Tab[]).includes(searchParams.get('tab') as Tab)
+    ? (searchParams.get('tab') as Tab)
+    : 'info'
+  const [tab, setTab] = useState<Tab>(initialTab)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [type, setType] = useState('side_project')
@@ -374,6 +380,17 @@ function EditProjectContent() {
                 >
                   팀
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setTab('github')}
+                  className={`text-[11px] font-medium px-3 py-1.5 rounded-lg transition-all whitespace-nowrap ${
+                    tab === 'github'
+                      ? 'bg-surface-inverse text-txt-inverse'
+                      : 'text-txt-tertiary hover:text-txt-secondary'
+                  }`}
+                >
+                  GitHub
+                </button>
               </div>
             </div>
 
@@ -669,6 +686,27 @@ function EditProjectContent() {
         {tab === 'team' && (
           <div className="bg-surface-card shadow-sm overflow-hidden border border-border-subtle border-t-0 rounded-b-xl">
             <TeamManageSection opportunityId={id} />
+          </div>
+        )}
+
+        {/* ─── Tab: GitHub ─── */}
+        {tab === 'github' && (
+          <div className="bg-surface-card shadow-sm overflow-hidden border border-border-subtle border-t-0 rounded-b-xl">
+            {(opportunity as any)?.club?.slug ? (
+              <GitHubSettingsPanel
+                clubSlug={(opportunity as any).club.slug}
+                opportunityId={id}
+                hideBackLink
+              />
+            ) : (
+              <div className="px-5 py-12 text-center">
+                <p className="text-sm text-txt-tertiary">
+                  이 프로젝트가 클럽에 속해있지 않습니다.
+                  <br />
+                  GitHub 연동은 클럽 프로젝트에서만 사용할 수 있습니다.
+                </p>
+              </div>
+            )}
           </div>
         )}
 

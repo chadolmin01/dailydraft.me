@@ -25,21 +25,35 @@ interface GitHubConnectorInfo {
   githubAvatarUrl: string | null
 }
 
+interface GitHubSettingsPanelProps {
+  clubSlug: string
+  /** 팀/프로젝트 단위 연동 시 필수. 없으면 클럽 레벨 OAuth 전용. */
+  opportunityId?: string
+  /** 프로젝트 수정 페이지에서 사용 시 "클럽으로 돌아가기" 대신 다른 동작 필요 */
+  hideBackLink?: boolean
+}
+
 // ─── Component ───
 
-export function GitHubSettingsPanel({ clubSlug }: { clubSlug: string }) {
+export function GitHubSettingsPanel({ clubSlug, opportunityId, hideBackLink }: GitHubSettingsPanelProps) {
   const { data: club, isLoading: clubLoading } = useClub(clubSlug)
   const queryClient = useQueryClient()
   const [connectingRepo, setConnectingRepo] = useState<string | null>(null)
   const [disconnectingRepo, setDisconnectingRepo] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
+  // queryKey에 opportunityId 포함하여 프로젝트별 캐시 분리
+  const connectorQueryKey = ['github-connector', club?.id, opportunityId ?? 'club']
+  const reposQueryKey = ['github-repos', club?.id, opportunityId ?? 'club']
+
   // ── GitHub 연결 상태 조회 ──
   const { data: connectorInfo, isLoading: connectorLoading } = useQuery<GitHubConnectorInfo>({
-    queryKey: ['github-connector', club?.id],
+    queryKey: connectorQueryKey,
     enabled: !!club?.id,
     queryFn: async () => {
-      const res = await fetch(`/api/github/repos?clubId=${club!.id}`)
+      const params = new URLSearchParams({ clubId: club!.id })
+      if (opportunityId) params.set('opportunityId', opportunityId)
+      const res = await fetch(`/api/github/repos?${params.toString()}`)
       if (res.status === 404) {
         return { connected: false, githubUsername: null, githubAvatarUrl: null }
       }
@@ -54,10 +68,12 @@ export function GitHubSettingsPanel({ clubSlug }: { clubSlug: string }) {
 
   // ── 레포 목록 조회 ──
   const { data: reposData, isLoading: reposLoading } = useQuery<{ repos: GitHubRepo[] }>({
-    queryKey: ['github-repos', club?.id],
+    queryKey: reposQueryKey,
     enabled: !!club?.id && connectorInfo?.connected === true,
     queryFn: async () => {
-      const res = await fetch(`/api/github/repos?clubId=${club!.id}`)
+      const params = new URLSearchParams({ clubId: club!.id })
+      if (opportunityId) params.set('opportunityId', opportunityId)
+      const res = await fetch(`/api/github/repos?${params.toString()}`)
       if (!res.ok) {
         const body = await res.json().catch(() => ({}))
         throw new Error(body?.error || 'Failed to fetch repos')
@@ -74,7 +90,11 @@ export function GitHubSettingsPanel({ clubSlug }: { clubSlug: string }) {
       const res = await fetch('/api/github/repos/connect', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clubId: club!.id, repoFullName }),
+        body: JSON.stringify({
+          clubId: club!.id,
+          repoFullName,
+          opportunityId,
+        }),
       })
       if (!res.ok) {
         const body = await res.json().catch(() => ({}))
@@ -84,7 +104,7 @@ export function GitHubSettingsPanel({ clubSlug }: { clubSlug: string }) {
     },
     onSuccess: () => {
       setConnectingRepo(null)
-      queryClient.invalidateQueries({ queryKey: ['github-repos', club?.id] })
+      queryClient.invalidateQueries({ queryKey: reposQueryKey })
     },
     onError: (err: Error) => {
       setConnectingRepo(null)
@@ -100,7 +120,11 @@ export function GitHubSettingsPanel({ clubSlug }: { clubSlug: string }) {
       const res = await fetch('/api/github/repos/disconnect', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clubId: club!.id, repoFullName }),
+        body: JSON.stringify({
+          clubId: club!.id,
+          repoFullName,
+          opportunityId,
+        }),
       })
       if (!res.ok) {
         const body = await res.json().catch(() => ({}))
@@ -110,7 +134,7 @@ export function GitHubSettingsPanel({ clubSlug }: { clubSlug: string }) {
     },
     onSuccess: () => {
       setDisconnectingRepo(null)
-      queryClient.invalidateQueries({ queryKey: ['github-repos', club?.id] })
+      queryClient.invalidateQueries({ queryKey: reposQueryKey })
     },
     onError: (err: Error) => {
       setDisconnectingRepo(null)
@@ -121,8 +145,13 @@ export function GitHubSettingsPanel({ clubSlug }: { clubSlug: string }) {
   // ── GitHub OAuth 시작 ──
   const handleConnectGitHub = useCallback(() => {
     if (!club) return
-    window.location.href = `/api/github/oauth?clubId=${club.id}&clubSlug=${clubSlug}`
-  }, [club, clubSlug])
+    const params = new URLSearchParams({
+      clubId: club.id,
+      clubSlug,
+    })
+    if (opportunityId) params.set('opportunityId', opportunityId)
+    window.location.href = `/api/github/oauth?${params.toString()}`
+  }, [club, clubSlug, opportunityId])
 
   // ── 전체 GitHub 연결 해제 ──
   const handleDisconnectAll = useCallback(async () => {
@@ -140,7 +169,11 @@ export function GitHubSettingsPanel({ clubSlug }: { clubSlug: string }) {
         await fetch('/api/github/repos/disconnect', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ clubId: club.id, repoFullName: repo.fullName }),
+          body: JSON.stringify({
+            clubId: club.id,
+            repoFullName: repo.fullName,
+            opportunityId,
+          }),
         })
       } catch {
         // 개별 실패 무시, 계속 진행
@@ -151,17 +184,15 @@ export function GitHubSettingsPanel({ clubSlug }: { clubSlug: string }) {
     // 현재는 OAuth connector를 삭제하면 레포 목록 조회가 안 되므로
     // 페이지를 새로고침하면 미연결 상태로 표시됨
     try {
-      // OAuth connector는 별도 삭제 API가 없으므로 repos disconnect 후
-      // connector 상태를 무효화
-      queryClient.invalidateQueries({ queryKey: ['github-connector', club.id] })
-      queryClient.invalidateQueries({ queryKey: ['github-repos', club.id] })
+      queryClient.invalidateQueries({ queryKey: connectorQueryKey })
+      queryClient.invalidateQueries({ queryKey: reposQueryKey })
     } catch {
       // 무시
     }
 
     // 간단하게 페이지 새로고침으로 상태 동기화
     window.location.reload()
-  }, [club, reposData, queryClient])
+  }, [club, reposData, queryClient, opportunityId, connectorQueryKey, reposQueryKey])
 
   // ── Loading ──
   if (clubLoading || connectorLoading) {
@@ -198,8 +229,12 @@ export function GitHubSettingsPanel({ clubSlug }: { clubSlug: string }) {
           </svg>
         </div>
         <div className="flex-1">
-          <h1 className="text-lg font-bold text-txt-primary">{club.name}</h1>
-          <p className="text-xs text-txt-tertiary">GitHub 연동 설정</p>
+          <h1 className="text-lg font-bold text-txt-primary">GitHub 연동</h1>
+          <p className="text-xs text-txt-tertiary">
+            {opportunityId
+              ? '이 프로젝트의 GitHub 레포를 연결합니다'
+              : 'GitHub 계정을 연결합니다'}
+          </p>
         </div>
         {isConnected && (
           <div className="px-3 py-1 rounded-full bg-green-50 text-green-600 text-xs font-semibold border border-green-200">
@@ -209,15 +244,17 @@ export function GitHubSettingsPanel({ clubSlug }: { clubSlug: string }) {
       </div>
 
       {/* 뒤로가기 */}
-      <Link
-        href={`/clubs/${clubSlug}`}
-        className="inline-flex items-center gap-1.5 text-sm text-txt-tertiary hover:text-txt-secondary transition-colors mb-6"
-      >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M19 12H5M12 19l-7-7 7-7" />
-        </svg>
-        클럽으로 돌아가기
-      </Link>
+      {!hideBackLink && (
+        <Link
+          href={`/clubs/${clubSlug}`}
+          className="inline-flex items-center gap-1.5 text-sm text-txt-tertiary hover:text-txt-secondary transition-colors mb-6"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+          클럽으로 돌아가기
+        </Link>
+      )}
 
       {/* 에러 메시지 */}
       {error && (
@@ -248,7 +285,9 @@ export function GitHubSettingsPanel({ clubSlug }: { clubSlug: string }) {
               <p className="text-sm text-txt-tertiary leading-relaxed">
                 GitHub를 연결하면 커밋, PR, 이슈 활동이 자동으로 추적됩니다.
                 <br />
-                주간 업데이트에 개발 진행 상황이 반영됩니다.
+                {opportunityId
+                  ? '이 프로젝트의 Discord 채널에 알림이 전송됩니다.'
+                  : '주간 업데이트에 개발 진행 상황이 반영됩니다.'}
               </p>
             </div>
             <button
