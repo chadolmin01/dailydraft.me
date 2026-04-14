@@ -38,18 +38,23 @@ export async function GET(req: NextRequest) {
   }
 
   // opportunityId가 있으면 프로젝트 수정 페이지로, 없으면 클럽 GitHub 설정 페이지로
-  const settingsUrl = opportunityId
+  const settingsPath = opportunityId
     ? `/projects/${opportunityId}/edit?tab=github`
     : clubSlug
       ? `/clubs/${clubSlug}/settings/github`
       : '/settings'
 
+  // settingsPath에 이미 ?가 포함되어 있으면 &로 추가 파라미터 연결
+  const separator = settingsPath.includes('?') ? '&' : '?'
+  const buildUrl = (params?: string) =>
+    `${APP_URL}${settingsPath}${params ? `${separator}${params}` : ''}`
+
   if (!code) {
-    return NextResponse.redirect(`${APP_URL}${settingsUrl}?error=github_auth_failed`)
+    return NextResponse.redirect(buildUrl('error=github_auth_failed'))
   }
 
   if (!clubId) {
-    return NextResponse.redirect(`${APP_URL}${settingsUrl}?error=github_no_club`)
+    return NextResponse.redirect(buildUrl('error=github_no_club'))
   }
 
   try {
@@ -69,14 +74,14 @@ export async function GET(req: NextRequest) {
 
     if (!tokenRes.ok) {
       console.error('[GitHub OAuth] 토큰 교환 실패:', await tokenRes.text())
-      return NextResponse.redirect(`${APP_URL}${settingsUrl}?error=github_token_failed`)
+      return NextResponse.redirect(buildUrl('error=github_token_failed'))
     }
 
     const tokenData = await tokenRes.json()
 
     if (tokenData.error) {
       console.error('[GitHub OAuth] 토큰 에러:', tokenData.error_description)
-      return NextResponse.redirect(`${APP_URL}${settingsUrl}?error=github_token_failed`)
+      return NextResponse.redirect(buildUrl('error=github_token_failed'))
     }
 
     const accessToken = tokenData.access_token as string
@@ -91,7 +96,7 @@ export async function GET(req: NextRequest) {
 
     if (!userRes.ok) {
       console.error('[GitHub OAuth] 유저 정보 조회 실패:', await userRes.text())
-      return NextResponse.redirect(`${APP_URL}${settingsUrl}?error=github_user_failed`)
+      return NextResponse.redirect(buildUrl('error=github_user_failed'))
     }
 
     const githubUser = await userRes.json()
@@ -102,7 +107,7 @@ export async function GET(req: NextRequest) {
 
     if (!user) {
       return NextResponse.redirect(
-        `${APP_URL}/login?returnTo=${encodeURIComponent(settingsUrl)}`
+        `${APP_URL}/login?returnTo=${encodeURIComponent(settingsPath)}`
       )
     }
 
@@ -140,58 +145,45 @@ export async function GET(req: NextRequest) {
     //
     // credentials에 accessToken을 저장하지만, 레포(repo) 필드는 아직 없음.
     // repo가 없는 connector는 "OAuth만 연결, 레포 미선택" 상태.
-    const { error: connectorError } = await supabase
+    // UNIQUE 제약이 (club_id, connector_type, opportunity_id)이고
+    // opportunity_id가 null인 레코드를 upsert해야 하지만,
+    // PostgreSQL에서 NULL은 UNIQUE 비교에서 distinct로 취급되므로
+    // upsert 대신 select → insert/update 패턴 사용
+    const { data: existingConnector } = await supabase
       .from('club_harness_connectors')
-      .upsert(
-        {
-          club_id: clubId,
-          connector_type: 'github',
-          enabled: true,
-          credentials: {
-            type: 'github',
-            repoUrl: '',
-            accessToken,
-            githubUsername: githubUser.login,
-            githubAvatarUrl: githubUser.avatar_url,
-          },
-        },
-        {
-          // club_id + connector_type로 중복 체크
-          // 기존에 GitHub OAuth 커넥터가 있으면 토큰만 갱신
-          onConflict: 'club_id,connector_type',
-          ignoreDuplicates: false,
-        }
-      )
+      .select('id')
+      .eq('club_id', clubId)
+      .eq('connector_type', 'github')
+      .is('opportunity_id', null)
+      .maybeSingle()
+
+    const connectorPayload = {
+      enabled: true,
+      credentials: {
+        type: 'github',
+        repoUrl: '',
+        accessToken,
+        githubUsername: githubUser.login,
+        githubAvatarUrl: githubUser.avatar_url,
+      },
+    }
+
+    const { error: connectorError } = existingConnector
+      ? await supabase
+          .from('club_harness_connectors')
+          .update(connectorPayload)
+          .eq('id', existingConnector.id)
+      : await supabase
+          .from('club_harness_connectors')
+          .insert({
+            ...connectorPayload,
+            club_id: clubId,
+            connector_type: 'github',
+          })
 
     if (connectorError) {
       console.error('[GitHub OAuth] 커넥터 저장 실패:', connectorError)
-
-      // unique constraint 에러인 경우 직접 update 시도
-      // upsert의 onConflict가 실제 unique constraint와 다를 수 있으므로 fallback
-      if (connectorError.code === '23505' || connectorError.message?.includes('duplicate')) {
-        const { error: updateError } = await supabase
-          .from('club_harness_connectors')
-          .update({
-            enabled: true,
-            credentials: {
-              type: 'github',
-              repoUrl: '',
-              accessToken,
-              githubUsername: githubUser.login,
-              githubAvatarUrl: githubUser.avatar_url,
-            },
-          })
-          .eq('club_id', clubId)
-          .eq('connector_type', 'github')
-          .is('opportunity_id', null)
-
-        if (updateError) {
-          console.error('[GitHub OAuth] 커넥터 fallback 업데이트 실패:', updateError)
-          return NextResponse.redirect(`${APP_URL}${settingsUrl}?error=github_save_failed`)
-        }
-      } else {
-        return NextResponse.redirect(`${APP_URL}${settingsUrl}?error=github_save_failed`)
-      }
+      return NextResponse.redirect(buildUrl('error=github_save_failed'))
     }
 
     console.log(
@@ -199,10 +191,10 @@ export async function GET(req: NextRequest) {
     )
 
     return NextResponse.redirect(
-      `${APP_URL}${settingsUrl}?github=connected&github_username=${encodeURIComponent(githubUser.login)}`
+      buildUrl(`github=connected&github_username=${encodeURIComponent(githubUser.login)}`)
     )
   } catch (err: any) {
     console.error('[GitHub OAuth] 오류:', err)
-    return NextResponse.redirect(`${APP_URL}${settingsUrl}?error=github_error`)
+    return NextResponse.redirect(buildUrl('error=github_error'))
   }
 }
