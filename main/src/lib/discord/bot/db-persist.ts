@@ -245,6 +245,196 @@ export async function savePendingSetup(setup: {
   return true;
 }
 
+// ── FileTrail ──
+
+/**
+ * 파일 업로드 로그 저장 (초기 상태: pending)
+ * ON CONFLICT: Gateway 재연결로 같은 MESSAGE_CREATE가 재전송되면 중복 무시
+ */
+export async function saveFileLog(params: {
+  channelId: string;
+  guildId: string;
+  messageId: string;
+  uploaderDiscordId: string;
+  uploaderName: string;
+  filename: string;
+  fileType: string;
+  fileSize: number;
+  threadId?: string;
+}): Promise<string | null> {
+  const sb = getSupabase();
+  if (!sb) return null;
+
+  const clubId = await resolveClubId(params.guildId);
+  if (!clubId) return null;
+
+  const { data, error } = await sb
+    .from('file_logs')
+    .upsert(
+      {
+        club_id: clubId,
+        discord_channel_id: params.channelId,
+        discord_message_id: params.messageId,
+        uploader_discord_id: params.uploaderDiscordId,
+        uploader_name: params.uploaderName,
+        filename: params.filename,
+        file_type: params.fileType,
+        file_size: params.fileSize,
+        thread_id: params.threadId ?? null,
+        response_status: 'pending',
+      },
+      // UNIQUE(discord_message_id, filename) 기반 중복 방지
+      { onConflict: 'discord_message_id,filename', ignoreDuplicates: true }
+    )
+    .select('id')
+    // ignoreDuplicates=true일 때 중복이면 0행 반환 → single()은 에러
+    // maybeSingle()은 null 반환 (정상)
+    .maybeSingle();
+
+  if (error) {
+    console.error('[DB] file_logs 저장 실패:', error.message);
+    return null;
+  }
+
+  // 중복(Gateway 재전송)이면 data=null
+  if (!data) {
+    console.log(`[FileTrail] 중복 파일 무시: ${params.filename}`);
+    return null;
+  }
+
+  return data.id;
+}
+
+/**
+ * 같은 채널의 최근 파일 로그 조회 (유사 파일 검색용)
+ * 기본 2주 이내 파일만
+ */
+export async function getRecentFileLogs(
+  channelId: string,
+  guildId: string,
+  days: number = 14
+): Promise<Array<{ id: string; filename: string; category: string | null; version: number }>> {
+  const sb = getSupabase();
+  if (!sb) return [];
+
+  const clubId = await resolveClubId(guildId);
+  if (!clubId) return [];
+
+  const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+
+  const { data, error } = await sb
+    .from('file_logs')
+    .select('id, filename, category, version')
+    .eq('club_id', clubId)
+    .eq('discord_channel_id', channelId)
+    .gte('created_at', since)
+    .order('created_at', { ascending: false })
+    .limit(50);
+
+  if (error) {
+    console.error('[DB] file_logs 조회 실패:', error.message);
+    return [];
+  }
+
+  return data ?? [];
+}
+
+/**
+ * 만료/무응답 file_log를 skipped로 마킹
+ * cleanup()에서 24시간 경과 세션 정리 시 호출
+ */
+export async function markFileLogsSkipped(fileLogIds: string[]): Promise<void> {
+  if (fileLogIds.length === 0) return;
+  const sb = getSupabase();
+  if (!sb) return;
+
+  const { error } = await sb
+    .from('file_logs')
+    .update({
+      response_status: 'skipped',
+      responded_at: new Date().toISOString(),
+    })
+    .in('id', fileLogIds)
+    .eq('response_status', 'pending');
+
+  if (error) {
+    console.error('[DB] file_logs skipped 마킹 실패:', error.message);
+  }
+}
+
+/**
+ * 봇 재시작 시 오래된 pending 세션 일괄 skipped 처리
+ * 봇이 꺼져 있는 동안 24시간 넘은 pending은 복구 불가
+ */
+export async function cleanupStalePendingFileLogs(
+  hoursThreshold: number = 24
+): Promise<number> {
+  const sb = getSupabase();
+  if (!sb) return 0;
+
+  const cutoff = new Date(Date.now() - hoursThreshold * 60 * 60 * 1000).toISOString();
+
+  const { data, error } = await sb
+    .from('file_logs')
+    .update({
+      response_status: 'skipped',
+      responded_at: new Date().toISOString(),
+    })
+    .eq('response_status', 'pending')
+    .lt('created_at', cutoff)
+    .select('id');
+
+  if (error) {
+    console.error('[DB] stale file_logs 정리 실패:', error.message);
+    return 0;
+  }
+
+  return data?.length ?? 0;
+}
+
+/**
+ * 유저 답변 후 AI 분류 결과로 file_log 업데이트
+ */
+export async function updateFileLogResponse(
+  fileLogId: string,
+  userResponse: string,
+  aiResult: {
+    category: string;
+    tags: string[];
+    summary: string;
+    parentFileId?: string;
+    version?: number;
+  }
+): Promise<void> {
+  const sb = getSupabase();
+  if (!sb) return;
+
+  // DB CHECK 제약: parent_file_id=null이면 version=1, parent≠null이면 version>1
+  // AI가 잘못된 조합을 반환할 수 있으므로 여기서 강제 보정
+  const hasParent = !!aiResult.parentFileId;
+  const safeVersion = hasParent
+    ? Math.max(aiResult.version ?? 2, 2)   // parent 있으면 최소 v2
+    : 1;                                    // parent 없으면 무조건 v1
+
+  const { error } = await sb
+    .from('file_logs')
+    .update({
+      user_response: userResponse,
+      category: aiResult.category,
+      tags: aiResult.tags,
+      ai_summary: aiResult.summary,
+      parent_file_id: aiResult.parentFileId ?? null,
+      version: safeVersion,
+      response_status: 'answered',
+      responded_at: new Date().toISOString(),
+    })
+    .eq('id', fileLogId);
+
+  if (error) {
+    console.error('[DB] file_log 응답 업데이트 실패:', error.message);
+  }
+}
+
 // ── 유틸 ──
 
 /**

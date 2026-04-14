@@ -113,6 +113,32 @@ export async function createScheduledEvent(
 }
 
 /**
+ * 메시지에서 스레드 생성 (FileTrail 등에서 사용)
+ * 스레드 생성 시 봇이 자동으로 스레드에 참여됨
+ * Discord 스레드 이름 제한: 1~100자 → 자동 truncate
+ */
+export async function createThreadFromMessage(
+  channelId: string,
+  messageId: string,
+  name: string,
+  autoArchiveDuration: number = 1440 // 24시간
+): Promise<{ id: string } | null> {
+  // Discord 스레드 이름 제한: 1~100자
+  const threadName = name.length > 100 ? name.slice(0, 97) + '...' : name;
+
+  return discordFetch<{ id: string }>(
+    `/channels/${channelId}/messages/${messageId}/threads`,
+    {
+      method: 'POST',
+      body: JSON.stringify({
+        name: threadName,
+        auto_archive_duration: autoArchiveDuration,
+      }),
+    }
+  );
+}
+
+/**
  * 메시지 핀
  */
 export async function pinMessage(

@@ -20,12 +20,18 @@ import {
   sendChannelMessage,
   addReaction,
   createScheduledEvent,
+  createThreadFromMessage,
   triggerTyping,
 } from './discord-actions';
 import {
   saveIntervention,
   updateInterventionResponse,
   saveSummaryData,
+  saveFileLog,
+  getRecentFileLogs,
+  updateFileLogResponse,
+  markFileLogsSkipped,
+  cleanupStalePendingFileLogs,
 } from './db-persist';
 import { chatModel } from '../../ai/gemini-client';
 import type {
@@ -33,6 +39,7 @@ import type {
   PatternDetection,
   BotConfig,
   BotResponse,
+  FileTrailSession,
 } from './types';
 import { INSTANT_PATTERNS, SUMMARY_PATTERNS, DEFAULT_BOT_CONFIG } from './types';
 
@@ -76,6 +83,11 @@ export class BotEngine {
   // 채널별 마무리 타이머 (종결 신호 후 90초 대기)
   private summaryTimers = new Map<string, ReturnType<typeof setTimeout>>();
 
+  // FileTrail: threadId → 세션 (유저 답변 대기 중)
+  // 봇 재시작 시 유실됨 → pending 세션은 24시간 후 cleanup에서 skipped 처리
+  private pendingFileTrails = new Map<string, FileTrailSession>();
+  // 중복 감지: messageId → true (Gateway 재전송 대비, 10분 TTL)
+  private processedFileMessages = new Map<string, number>();
 
   constructor(config: Partial<BotConfig> = {}) {
     this.config = { ...DEFAULT_BOT_CONFIG, ...config };
@@ -110,6 +122,13 @@ export class BotEngine {
         }
         console.log(`[BotEngine] 닉네임 캐시 로드: ${this.nicknameCache.size}명`);
       }
+
+      // 봇 재시작 시: DB에 남아있는 stale pending file_logs 정리
+      // (봇이 꺼져 있는 동안 24시간 넘은 세션)
+      const cleaned = await cleanupStalePendingFileLogs(24);
+      if (cleaned > 0) {
+        console.log(`[FileTrail] 봇 재시작: stale pending ${cleaned}건 → skipped`);
+      }
     } catch (err) {
       console.error('[BotEngine] 닉네임 캐시 로드 실패:', err);
     }
@@ -132,6 +151,12 @@ export class BotEngine {
     channel_id: string;
     guild_id: string;
     member_nick?: string | null;
+    attachments?: Array<{
+      id: string;
+      filename: string;
+      content_type?: string;
+      size: number;
+    }>;
   }): Promise<void> {
     // Draft 닉네임 캐시에서 조회 → member_nick에 우선 반영
     if (!raw.member_nick) {
@@ -154,6 +179,23 @@ export class BotEngine {
     // 슬래시 커맨드 처리
     if (msg.content.startsWith('/')) {
       await this.handleSlashCommand(msg);
+      return;
+    }
+
+    // FileTrail: 스레드에서 유저 답변 수집
+    const fileTrailSession = this.pendingFileTrails.get(msg.channelId);
+    if (fileTrailSession) {
+      // 업로더 본인만 답변 수집 (다른 팀원의 메시지는 무시)
+      if (msg.authorId === fileTrailSession.uploaderId) {
+        await this.handleFileTrailResponse(msg, fileTrailSession);
+      }
+      return; // FileTrail 스레드 내 메시지는 패턴 감지 불필요
+    }
+
+    // FileTrail: 파일 업로드 감지
+    // DM은 guild_id 없음 → 무시, 빈 attachments 체크
+    if (msg.guildId && msg.attachments.length > 0) {
+      await this.handleFileUpload(msg);
       return;
     }
 
@@ -501,10 +543,301 @@ export class BotEngine {
     this.cooldown.recordAccept(channelId, patternType);
   }
 
+  // ── FileTrail ──
+
+  /**
+   * 파일 업로드 감지 → 스레드 생성 + 질문 + DB 저장
+   *
+   * 엣지 케이스 처리:
+   * - Gateway 재전송: processedFileMessages Map으로 중복 차단
+   * - FileTrail 스레드 내 파일 업로드: pendingFileTrails에 있으면 무시
+   * - 스레드 생성 실패(권한 부족 등): DB는 저장하되 thread_id=null
+   * - 파일명 500자 초과: DB CHECK 위반 → saveFileLog에서 에러 처리
+   */
+  private async handleFileUpload(msg: BufferedMessage): Promise<void> {
+    // Gateway 재전송으로 같은 메시지 재처리 방지
+    if (this.processedFileMessages.has(msg.id)) return;
+    this.processedFileMessages.set(msg.id, Date.now());
+
+    // 이미 FileTrail 스레드 안에서의 파일 업로드면 무시 (중첩 방지)
+    if (this.pendingFileTrails.has(msg.channelId)) return;
+
+    const files = msg.attachments;
+    if (files.length === 0) return;
+
+    // 0바이트 파일 필터링
+    const validFiles = files.filter((f) => f.size > 0);
+    if (validFiles.length === 0) return;
+
+    // 최근 같은 채널 파일 조회 (유사 파일 검색용)
+    const recentFiles = await getRecentFileLogs(msg.channelId, msg.guildId);
+
+    // 첫 번째 파일 기준으로 유사 파일 검색
+    const parentCandidate = this.findSimilarFile(validFiles[0].filename, recentFiles);
+
+    // 스레드 생성 (실패해도 DB 저장은 진행)
+    const threadName = validFiles.length === 1
+      ? `📎 ${validFiles[0].filename}`
+      : `📎 파일 ${validFiles.length}개`;
+
+    const thread = await createThreadFromMessage(
+      msg.channelId,
+      msg.id,
+      threadName,
+    );
+
+    // DB에 파일 로그 저장 (각 첨부파일마다, ON CONFLICT 중복 무시)
+    const fileLogIds: string[] = [];
+    for (const file of validFiles) {
+      const id = await saveFileLog({
+        channelId: msg.channelId,
+        guildId: msg.guildId,
+        messageId: msg.id,
+        uploaderDiscordId: msg.authorId,
+        uploaderName: msg.authorName,
+        filename: file.filename.slice(0, 500), // DB CHECK 대비 truncate
+        fileType: file.contentType,
+        fileSize: file.size,
+        threadId: thread?.id,
+      });
+      if (id) fileLogIds.push(id);
+    }
+
+    // 스레드 생성 실패 시 DB만 기록하고 종료 (질문 불가)
+    if (!thread) {
+      console.warn('[FileTrail] 스레드 생성 실패 — DB 기록만 완료');
+      return;
+    }
+
+    // DB 저장 실패 시 (모든 파일 실패) 스레드는 만들었지만 추적 불가
+    if (fileLogIds.length === 0) {
+      console.warn('[FileTrail] file_logs 저장 실패 — 스레드만 생성됨');
+      return;
+    }
+
+    // 질문 메시지 작성
+    let question: string;
+    const fileList = validFiles.map((f) => `**${f.filename}**`).join(', ');
+
+    if (parentCandidate) {
+      question = `🗂 ${fileList}\n↳ **${parentCandidate.filename}**의 수정본인가요?\n맞으면 뭐 바꿨는지, 아니면 어떤 파일인지 한 줄로 알려주세요!`;
+    } else {
+      question = `🗂 ${fileList}\n한 줄로 어떤 파일인지 알려주세요!`;
+    }
+
+    await sendChannelMessage(thread.id, question);
+
+    // 세션 등록 (유저 답변 대기)
+    this.pendingFileTrails.set(thread.id, {
+      threadId: thread.id,
+      channelId: msg.channelId,
+      guildId: msg.guildId,
+      messageId: msg.id,
+      fileLogIds,
+      filenames: validFiles.map((f) => f.filename),
+      uploaderId: msg.authorId,
+      parentCandidate: parentCandidate ?? undefined,
+      createdAt: Date.now(),
+    });
+
+    console.log(`[FileTrail] 파일 ${validFiles.length}개 감지, 스레드 ${thread.id} 생성`);
+  }
+
+  /**
+   * FileTrail 스레드에서 유저 답변 처리 → AI 분류 → DB 업데이트
+   */
+  private async handleFileTrailResponse(
+    msg: BufferedMessage,
+    session: FileTrailSession
+  ): Promise<void> {
+    const userResponse = msg.content.trim();
+    if (!userResponse) return;
+
+    // 세션 제거 (1회성 — 추가 메시지는 무시됨)
+    this.pendingFileTrails.delete(session.threadId);
+
+    // AI 분류
+    const aiResult = await this.classifyFileWithAI(
+      session.filenames,
+      userResponse,
+      session.parentCandidate,
+      session.guildId,
+      session.channelId,
+    );
+
+    // 각 file_log 업데이트
+    for (const fileLogId of session.fileLogIds) {
+      await updateFileLogResponse(fileLogId, userResponse, aiResult).catch((e) =>
+        console.error('[FileTrail] file_log 업데이트 실패:', e)
+      );
+    }
+
+    // 확인 메시지
+    const tagStr = aiResult.tags.length > 0 ? ` · ${aiResult.tags.join(', ')}` : '';
+    const versionStr = aiResult.parentFileId ? ` (v${aiResult.version})` : '';
+    await sendChannelMessage(
+      session.threadId,
+      `✅ 기록 완료${versionStr}\n📁 ${aiResult.category}${tagStr}\n> ${aiResult.summary}`,
+    );
+
+    console.log(`[FileTrail] 분류 완료: ${aiResult.category} — ${aiResult.summary}`);
+  }
+
+  /**
+   * AI로 파일 분류 (Gemini Flash-Lite)
+   * 파일명 + 유저 답변 + 유사 파일 컨텍스트 → 카테고리/태그/요약/버전체인
+   * AI 실패 시 fallback: 카테고리="기타", 요약=유저답변 그대로
+   */
+  private async classifyFileWithAI(
+    filenames: string[],
+    userResponse: string,
+    parentCandidate: FileTrailSession['parentCandidate'],
+    guildId: string,
+    channelId: string,
+  ): Promise<{
+    category: string;
+    tags: string[];
+    summary: string;
+    parentFileId?: string;
+    version?: number;
+  }> {
+    const recentFiles = await getRecentFileLogs(channelId, guildId);
+    const recentList = recentFiles.length > 0
+      ? recentFiles.map((f) => `- ${f.filename} (${f.category ?? '미분류'}, v${f.version})`).join('\n')
+      : '(없음)';
+
+    const prompt = `파일 업로드 정보를 분석하세요.
+
+파일명: ${filenames.join(', ')}
+업로더 답변: "${userResponse}"
+${parentCandidate ? `유사 파일 후보: ${parentCandidate.filename}` : ''}
+
+같은 채널 최근 파일들:
+${recentList}
+
+JSON으로만 응답하세요:
+{
+  "category": "카테고리 (사업계획서/회의록/디자인/기획서/발표자료/보고서/코드/기타 중 택1)",
+  "tags": ["태그1", "태그2"],
+  "summary": "한 줄 요약 (30자 이내)",
+  "isRevision": true/false,
+  "parentFilename": "부모 파일명 (수정본인 경우, 최근 파일 목록에서 선택)"
+}
+
+규칙:
+- tags는 조직명, 제출처, 용도 등 핵심 키워드만 (최대 3개)
+- summary는 업로더 답변을 기반으로 간결하게
+- isRevision이 true면 parentFilename 필수 (최근 파일 목록에서 가장 가까운 것 선택)
+- 잘 모르겠으면 isRevision: false`;
+
+    try {
+      const result = await chatModel.generateContent({
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        systemInstruction: '파일 분류 AI입니다. JSON으로만 응답하세요.',
+        generationConfig: {
+          temperature: 0.2,
+          responseMimeType: 'application/json',
+        },
+      });
+
+      const text = result.response.text();
+      const parsed = JSON.parse(text);
+
+      // 필수 필드 검증
+      if (typeof parsed.category !== 'string') throw new Error('category 누락');
+
+      // parentFilename → parentFileId 매핑
+      let parentFileId: string | undefined;
+      let version = 1;
+      if (parsed.isRevision && parsed.parentFilename) {
+        const parent = recentFiles.find((f) => f.filename === parsed.parentFilename);
+        if (parent) {
+          parentFileId = parent.id;
+          version = parent.version + 1;
+        }
+      }
+      // parentCandidate fallback: AI가 못 찾았지만 유사 파일이 있고 유저가 수정본이라고 한 경우
+      if (!parentFileId && parentCandidate && parsed.isRevision) {
+        const parent = recentFiles.find((f) => f.id === parentCandidate.id);
+        if (parent) {
+          parentFileId = parent.id;
+          version = parent.version + 1;
+        }
+      }
+
+      return {
+        category: parsed.category,
+        tags: Array.isArray(parsed.tags) ? parsed.tags.slice(0, 3) : [],
+        summary: typeof parsed.summary === 'string' ? parsed.summary : userResponse,
+        parentFileId,
+        version,
+      };
+    } catch (err) {
+      console.error('[FileTrail] AI 분류 실패:', err);
+      return {
+        category: '기타',
+        tags: [],
+        summary: userResponse,
+      };
+    }
+  }
+
+  /**
+   * 파일명 유사도 검색 — 버전 접미사 제거 후 비교
+   * "사업계획서최종최종.pdf" vs "사업계획서최종.pdf" → 매치
+   *
+   * 엣지 케이스: "최종.pdf" 같은 너무 일반적인 이름은
+   * normalize 후 빈 문자열 → null 반환 (false positive 방지)
+   */
+  private findSimilarFile(
+    newFilename: string,
+    existing: Array<{ id: string; filename: string }>
+  ): { id: string; filename: string } | null {
+    const normalize = (s: string) =>
+      s.replace(/\.[^.]+$/, '')                                       // 확장자 제거
+       .replace(/[_\-\s]*(최종|final|완성|수정|v?\d+|_\d+)/gi, '')   // 버전 접미사 제거
+       .toLowerCase()
+       .trim();
+
+    const newNorm = normalize(newFilename);
+    // 정규화 후 2자 미만이면 너무 일반적 → 검색 불가
+    if (newNorm.length < 2) return null;
+
+    for (const file of existing) {
+      const norm = normalize(file.filename);
+      if (norm.length < 2) continue;
+      if (newNorm === norm || newNorm.includes(norm) || norm.includes(newNorm)) {
+        return file;
+      }
+    }
+    return null;
+  }
+
   /**
    * 정기 정리 (5분마다 호출 권장)
    */
   cleanup(): void {
     this.buffer.cleanup();
+
+    // FileTrail 만료 세션 정리 (24시간 경과 → 유저 무응답)
+    const sessionExpiry = Date.now() - 24 * 60 * 60 * 1000;
+    for (const [threadId, session] of this.pendingFileTrails) {
+      if (session.createdAt < sessionExpiry) {
+        this.pendingFileTrails.delete(threadId);
+        // DB에서도 skipped로 마킹 (인메모리만 지우면 DB는 영원히 pending)
+        markFileLogsSkipped(session.fileLogIds).catch((e) =>
+          console.error('[FileTrail] skipped 마킹 실패:', e)
+        );
+        console.log(`[FileTrail] 만료 세션 정리: ${threadId}`);
+      }
+    }
+
+    // 중복 감지 캐시 정리 (10분 경과)
+    const msgExpiry = Date.now() - 10 * 60 * 1000;
+    for (const [msgId, ts] of this.processedFileMessages) {
+      if (ts < msgExpiry) {
+        this.processedFileMessages.delete(msgId);
+      }
+    }
   }
 }

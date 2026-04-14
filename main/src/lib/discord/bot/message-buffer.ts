@@ -26,6 +26,12 @@ export class MessageBuffer {
     channel_id: string;
     guild_id: string;
     member_nick?: string | null;
+    attachments?: Array<{
+      id: string;
+      filename: string;
+      content_type?: string;
+      size: number;
+    }>;
   }): BufferedMessage | null {
     if (raw.author.bot) return null;
 
@@ -40,6 +46,12 @@ export class MessageBuffer {
       urls: raw.content.match(URL_REGEX) ?? [],
       channelId: raw.channel_id,
       guildId: raw.guild_id,
+      attachments: (raw.attachments ?? []).map((a) => ({
+        id: a.id,
+        filename: a.filename,
+        contentType: a.content_type ?? 'application/octet-stream',
+        size: a.size,
+      })),
     };
 
     const buf = this.buffers.get(raw.channel_id) ?? [];

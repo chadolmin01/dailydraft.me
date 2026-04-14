@@ -148,6 +148,31 @@ export interface BufferedMessage {
   urls: string[];
   channelId: string;
   guildId: string;
+  /** Discord 첨부파일 메타데이터 (FileTrail용) */
+  attachments: Array<{
+    id: string;
+    filename: string;
+    contentType: string;
+    size: number;
+  }>;
+}
+
+// ── FileTrail ──
+
+/** 파일 업로드 후 스레드에서 유저 답변 대기 중인 세션 */
+export interface FileTrailSession {
+  threadId: string;
+  channelId: string;        // 원래 채널 (스레드의 부모)
+  guildId: string;
+  messageId: string;        // 원본 파일 업로드 메시지 ID (중복 감지용)
+  fileLogIds: string[];     // DB file_logs ID 목록
+  filenames: string[];
+  uploaderId: string;
+  parentCandidate?: {       // 유사 파일 발견 시
+    id: string;
+    filename: string;
+  };
+  createdAt: number;
 }
 
 // ── 쿨다운 ──

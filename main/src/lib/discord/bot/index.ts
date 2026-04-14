@@ -104,6 +104,8 @@ const gateway = new DiscordGateway(BOT_TOKEN, {
         guild_id: data.guild_id,
         // 서버 닉네임 (Draft 프로필 동기화 시 설정됨)
         member_nick: data.member?.nick ?? null,
+        // FileTrail: 첨부파일 메타데이터 전달
+        attachments: data.attachments ?? [],
       });
     } catch (err) {
       console.error('[Bot] 메시지 처리 오류:', err);
