@@ -14,8 +14,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 
-const GITHUB_CLIENT_ID = process.env.GITHUB_OAUTH_CLIENT_ID ?? ''
-const GITHUB_CLIENT_SECRET = process.env.GITHUB_OAUTH_CLIENT_SECRET ?? ''
+const GITHUB_CLIENT_ID = (process.env.GITHUB_OAUTH_CLIENT_ID ?? '').trim()
+const GITHUB_CLIENT_SECRET = (process.env.GITHUB_OAUTH_CLIENT_SECRET ?? '').trim()
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
 
 export async function GET(req: NextRequest) {

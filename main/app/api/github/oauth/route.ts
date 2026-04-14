@@ -16,7 +16,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 
-const GITHUB_CLIENT_ID = process.env.GITHUB_OAUTH_CLIENT_ID ?? ''
+const GITHUB_CLIENT_ID = (process.env.GITHUB_OAUTH_CLIENT_ID ?? '').trim()
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
 const REDIRECT_URI = `${APP_URL}/api/github/oauth/callback`
 
