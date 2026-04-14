@@ -165,3 +165,37 @@ export async function getReactions(
   );
   return result ?? [];
 }
+
+/**
+ * 채널 정보 조회 (타입, 부모 ID, 포럼 태그 등)
+ * FileTrail에서 채널이 텍스트(0)인지 포럼(15)인지 판별용
+ */
+export async function fetchChannel(channelId: string): Promise<{
+  id: string;
+  type: number;
+  parent_id: string | null;
+  name: string;
+  guild_id: string;
+  available_tags?: Array<{ id: string; name: string }>;
+} | null> {
+  return discordFetch(`/channels/${channelId}`);
+}
+
+/**
+ * 채널의 메시지 목록 조회
+ * 포럼 포스트 첫 메시지(본문) 가져오기 등에 사용
+ */
+export async function getChannelMessages(
+  channelId: string,
+  limit: number = 1
+): Promise<Array<{
+  id: string;
+  content: string;
+  author: { id: string; username: string };
+  attachments: Array<{ id: string; filename: string; content_type?: string; size: number }>;
+}>> {
+  const result = await discordFetch<any[]>(
+    `/channels/${channelId}/messages?limit=${limit}`
+  );
+  return result ?? [];
+}

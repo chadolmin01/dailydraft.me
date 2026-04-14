@@ -27,6 +27,7 @@ interface GatewayCallbacks {
   onMessageCreate: (data: any) => void;
   onReactionAdd: (data: any) => void;
   onGuildCreate?: (data: any) => void;
+  onThreadCreate?: (data: any) => void;
   onReady: (data: any) => void;
   onError: (error: Error) => void;
 }
@@ -176,6 +177,10 @@ export class DiscordGateway {
 
       case 'GUILD_CREATE':
         this.callbacks.onGuildCreate?.(data);
+        break;
+
+      case 'THREAD_CREATE':
+        this.callbacks.onThreadCreate?.(data);
         break;
     }
   }

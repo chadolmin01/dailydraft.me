@@ -245,6 +245,37 @@ export async function savePendingSetup(setup: {
   return true;
 }
 
+// ── FileTrail: 채널 추적 확인 ──
+
+/**
+ * 채널이 file_tracking_enabled인지 확인 + 채널 타입 반환
+ * 캐시는 bot-engine에서 관리 (여기서는 DB 직접 조회)
+ */
+export async function getTrackedChannelInfo(
+  channelId: string,
+  guildId: string
+): Promise<{ tracked: boolean; channelType: number } | null> {
+  const sb = getSupabase();
+  if (!sb) return null;
+
+  const clubId = await resolveClubId(guildId);
+  if (!clubId) return null;
+
+  const { data, error } = await sb
+    .from('discord_team_channels')
+    .select('channel_type, file_tracking_enabled')
+    .eq('discord_channel_id', channelId)
+    .eq('club_id', clubId)
+    .maybeSingle();
+
+  if (error || !data) return null;
+
+  return {
+    tracked: data.file_tracking_enabled === true,
+    channelType: data.channel_type ?? 0,
+  };
+}
+
 // ── FileTrail ──
 
 /**
@@ -306,7 +337,8 @@ export async function saveFileLog(params: {
 }
 
 /**
- * 같은 채널의 최근 파일 로그 조회 (유사 파일 검색용)
+ * 클럽 전체의 최근 파일 로그 조회 (유사 파일 검색용)
+ * 포럼 + 텍스트 채널 크로스 검색 → 포럼에서 수집된 데이터도 참조 가능
  * 기본 2주 이내 파일만
  */
 export async function getRecentFileLogs(
@@ -322,14 +354,15 @@ export async function getRecentFileLogs(
 
   const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
 
+  // 클럽 전체에서 검색 (포럼 수집 데이터 포함)
+  // channelId 필터 없이 club_id만으로 검색
   const { data, error } = await sb
     .from('file_logs')
     .select('id, filename, category, version')
     .eq('club_id', clubId)
-    .eq('discord_channel_id', channelId)
     .gte('created_at', since)
     .order('created_at', { ascending: false })
-    .limit(50);
+    .limit(100);
 
   if (error) {
     console.error('[DB] file_logs 조회 실패:', error.message);
@@ -337,6 +370,76 @@ export async function getRecentFileLogs(
   }
 
   return data ?? [];
+}
+
+/**
+ * 포럼 포스트 → file_logs 저장 (조용한 수집)
+ * 질문 없이 바로 answered 상태로 저장
+ * 포스트 제목 + 태그가 이미 맥락을 제공하므로 유저 응답 불필요
+ */
+export async function saveForumFileLog(params: {
+  channelId: string;        // 포럼 채널 ID (parent)
+  guildId: string;
+  messageId: string;
+  uploaderDiscordId: string;
+  uploaderName: string;
+  filename: string;
+  fileType: string;
+  fileSize: number;
+  threadId: string;         // 포럼 포스트(스레드) ID
+  forumPostTitle: string;
+  forumPostTags: string[];
+  // AI 분류 결과 (호출 시점에 이미 분류 완료)
+  category: string;
+  tags: string[];
+  aiSummary: string;
+}): Promise<string | null> {
+  const sb = getSupabase();
+  if (!sb) return null;
+
+  const clubId = await resolveClubId(params.guildId);
+  if (!clubId) return null;
+
+  const now = new Date().toISOString();
+
+  const { data, error } = await sb
+    .from('file_logs')
+    .upsert(
+      {
+        club_id: clubId,
+        discord_channel_id: params.channelId,
+        discord_message_id: params.messageId,
+        uploader_discord_id: params.uploaderDiscordId,
+        uploader_name: params.uploaderName,
+        filename: params.filename,
+        file_type: params.fileType,
+        file_size: params.fileSize,
+        thread_id: params.threadId,
+        source_channel_type: 15,
+        forum_post_title: params.forumPostTitle,
+        forum_post_tags: params.forumPostTags,
+        category: params.category,
+        tags: params.tags,
+        ai_summary: params.aiSummary,
+        response_status: 'answered',
+        responded_at: now,
+      },
+      { onConflict: 'discord_message_id,filename', ignoreDuplicates: true }
+    )
+    .select('id')
+    .maybeSingle();
+
+  if (error) {
+    console.error('[DB] forum file_logs 저장 실패:', error.message);
+    return null;
+  }
+
+  if (!data) {
+    console.log(`[FileTrail:Forum] 중복 파일 무시: ${params.filename}`);
+    return null;
+  }
+
+  return data.id;
 }
 
 /**

@@ -22,13 +22,17 @@ import {
   createScheduledEvent,
   createThreadFromMessage,
   triggerTyping,
+  fetchChannel,
+  getChannelMessages,
 } from './discord-actions';
 import {
   saveIntervention,
   updateInterventionResponse,
   saveSummaryData,
   saveFileLog,
+  saveForumFileLog,
   getRecentFileLogs,
+  getTrackedChannelInfo,
   updateFileLogResponse,
   markFileLogsSkipped,
   cleanupStalePendingFileLogs,
@@ -88,6 +92,17 @@ export class BotEngine {
   private pendingFileTrails = new Map<string, FileTrailSession>();
   // 중복 감지: messageId → true (Gateway 재전송 대비, 10분 TTL)
   private processedFileMessages = new Map<string, number>();
+
+  // 채널 추적 캐시: channelId → { tracked, channelType, cachedAt }
+  // DB 매 조회 방지용 (30분 TTL)
+  private channelTrackingCache = new Map<string, {
+    tracked: boolean;
+    channelType: number;
+    cachedAt: number;
+  }>();
+
+  // 포럼 태그 캐시: forumChannelId → { tagId → tagName }
+  private forumTagCache = new Map<string, Map<string, string>>();
 
   constructor(config: Partial<BotConfig> = {}) {
     this.config = { ...DEFAULT_BOT_CONFIG, ...config };
@@ -569,7 +584,11 @@ export class BotEngine {
     const validFiles = files.filter((f) => f.size > 0);
     if (validFiles.length === 0) return;
 
-    // 최근 같은 채널 파일 조회 (유사 파일 검색용)
+    // 채널 추적 확인: discord_team_channels에 등록 + file_tracking_enabled
+    const trackInfo = await this.getChannelTracking(msg.channelId, msg.guildId);
+    if (!trackInfo?.tracked) return; // 잡담 채널 등 미등록 채널은 무시
+
+    // 최근 클럽 전체 파일 조회 (포럼 데이터 포함, 유사 파일 검색용)
     const recentFiles = await getRecentFileLogs(msg.channelId, msg.guildId);
 
     // 첫 번째 파일 기준으로 유사 파일 검색
@@ -712,7 +731,7 @@ export class BotEngine {
 업로더 답변: "${userResponse}"
 ${parentCandidate ? `유사 파일 후보: ${parentCandidate.filename}` : ''}
 
-같은 채널 최근 파일들:
+같은 클럽 최근 파일들 (포럼 채널 포함):
 ${recentList}
 
 JSON으로만 응답하세요:
@@ -839,5 +858,202 @@ JSON으로만 응답하세요:
         this.processedFileMessages.delete(msgId);
       }
     }
+
+    // 채널 추적 캐시 정리 (30분 경과)
+    const channelExpiry = Date.now() - 30 * 60 * 1000;
+    for (const [chId, info] of this.channelTrackingCache) {
+      if (info.cachedAt < channelExpiry) {
+        this.channelTrackingCache.delete(chId);
+      }
+    }
+  }
+
+  // ── 채널 추적 캐시 ──
+
+  /**
+   * 채널이 FileTrail 대상인지 캐시 조회 (30분 TTL)
+   * DB 매 조회 방지: discord_team_channels.file_tracking_enabled 결과를 캐시
+   */
+  private async getChannelTracking(
+    channelId: string,
+    guildId: string
+  ): Promise<{ tracked: boolean; channelType: number } | null> {
+    const cached = this.channelTrackingCache.get(channelId);
+    if (cached && Date.now() - cached.cachedAt < 30 * 60 * 1000) {
+      return cached;
+    }
+
+    const info = await getTrackedChannelInfo(channelId, guildId);
+    if (info) {
+      this.channelTrackingCache.set(channelId, { ...info, cachedAt: Date.now() });
+    }
+    return info;
+  }
+
+  // ── 포럼 포스트 처리 ──
+
+  /**
+   * THREAD_CREATE에서 포럼 포스트 감지 → 조용히 DB 수집
+   * 스레드 생성 안 함, 질문 안 함 — 포스트 제목+태그+첨부파일로 자동 분류
+   */
+  async onForumPostCreate(data: {
+    threadId: string;
+    parentChannelId: string;
+    guildId: string;
+    name: string;           // 포스트 제목
+    appliedTags: string[];  // 태그 ID 배열
+    creatorId: string;
+    creatorName: string;
+  }): Promise<void> {
+    // 포럼 채널이 추적 대상인지 확인
+    const trackInfo = await this.getChannelTracking(data.parentChannelId, data.guildId);
+    if (!trackInfo?.tracked || trackInfo.channelType !== 15) return;
+
+    // 포럼 태그 ID → 이름 변환
+    const tagNames = await this.resolveForumTags(data.parentChannelId, data.appliedTags);
+
+    // 포스트 첫 메시지(본문 + 첨부파일) 가져오기
+    // THREAD_CREATE 직후라 메시지가 아직 없을 수 있음 → 짧은 대기
+    await new Promise((r) => setTimeout(r, 1500));
+
+    const messages = await getChannelMessages(data.threadId, 1);
+    const firstMsg = messages[0];
+    if (!firstMsg) {
+      console.warn(`[FileTrail:Forum] 포스트 첫 메시지 없음: ${data.threadId}`);
+      return;
+    }
+
+    const validFiles = (firstMsg.attachments ?? []).filter((f) => f.size > 0);
+
+    // 첨부파일이 없어도 포스트 자체를 기록할 가치가 있음
+    // 하지만 FileTrail은 파일 추적이 목적이므로 파일 없으면 스킵
+    if (validFiles.length === 0) return;
+
+    // AI 분류 — 포스트 제목+태그+본문이 충분한 컨텍스트 제공
+    const aiResult = await this.classifyForumPostWithAI(
+      validFiles.map((f) => f.filename),
+      data.name,
+      tagNames,
+      firstMsg.content,
+      data.guildId,
+      data.parentChannelId,
+    );
+
+    // DB 저장
+    for (const file of validFiles) {
+      await saveForumFileLog({
+        channelId: data.parentChannelId,
+        guildId: data.guildId,
+        messageId: firstMsg.id,
+        uploaderDiscordId: data.creatorId,
+        uploaderName: data.creatorName,
+        filename: file.filename.slice(0, 500),
+        fileType: file.content_type ?? 'application/octet-stream',
+        fileSize: file.size,
+        threadId: data.threadId,
+        forumPostTitle: data.name,
+        forumPostTags: tagNames,
+        category: aiResult.category,
+        tags: aiResult.tags,
+        aiSummary: aiResult.summary,
+      }).catch((e) => console.error('[FileTrail:Forum] 저장 실패:', e));
+    }
+
+    console.log(
+      `[FileTrail:Forum] 포스트 "${data.name}" — ${validFiles.length}개 파일, ${aiResult.category}`
+    );
+  }
+
+  /**
+   * 포럼 포스트 AI 분류
+   * 텍스트 채널과 달리 유저 답변 없이, 포스트 제목+태그+본문으로 분류
+   */
+  private async classifyForumPostWithAI(
+    filenames: string[],
+    postTitle: string,
+    postTags: string[],
+    postContent: string,
+    guildId: string,
+    channelId: string,
+  ): Promise<{ category: string; tags: string[]; summary: string }> {
+    const recentFiles = await getRecentFileLogs(channelId, guildId);
+    const recentList = recentFiles.length > 0
+      ? recentFiles.slice(0, 20).map((f) => `- ${f.filename} (${f.category ?? '미분류'})`).join('\n')
+      : '(없음)';
+
+    // 본문이 너무 길면 잘라냄
+    const truncatedContent = postContent.length > 500
+      ? postContent.slice(0, 500) + '...'
+      : postContent;
+
+    const prompt = `포럼 포스트의 파일을 분류하세요.
+
+포스트 제목: "${postTitle}"
+포스트 태그: [${postTags.join(', ')}]
+본문: "${truncatedContent}"
+첨부 파일명: ${filenames.join(', ')}
+
+같은 클럽 최근 파일들:
+${recentList}
+
+JSON으로만 응답하세요:
+{
+  "category": "카테고리 (사업계획서/회의록/디자인/기획서/발표자료/보고서/코드/기타 중 택1)",
+  "tags": ["태그1", "태그2"],
+  "summary": "한 줄 요약 (30자 이내)"
+}`;
+
+    try {
+      const result = await chatModel.generateContent({
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        systemInstruction: '파일 분류 AI입니다. JSON으로만 응답하세요.',
+        generationConfig: {
+          temperature: 0.2,
+          responseMimeType: 'application/json',
+        },
+      });
+
+      const parsed = JSON.parse(result.response.text());
+
+      return {
+        category: typeof parsed.category === 'string' ? parsed.category : '기타',
+        tags: Array.isArray(parsed.tags) ? parsed.tags.slice(0, 3) : [],
+        summary: typeof parsed.summary === 'string' ? parsed.summary : postTitle,
+      };
+    } catch (err) {
+      console.error('[FileTrail:Forum] AI 분류 실패:', err);
+      // fallback: 포스트 제목을 요약으로, 태그를 그대로 사용
+      return {
+        category: '기타',
+        tags: postTags.slice(0, 3),
+        summary: postTitle,
+      };
+    }
+  }
+
+  /**
+   * 포럼 채널의 태그 ID → 이름 변환
+   * Discord 포럼 태그는 ID로 전달되므로 채널 정보에서 available_tags를 조회
+   */
+  private async resolveForumTags(
+    forumChannelId: string,
+    tagIds: string[]
+  ): Promise<string[]> {
+    if (tagIds.length === 0) return [];
+
+    // 캐시 확인
+    let tagMap = this.forumTagCache.get(forumChannelId);
+    if (!tagMap) {
+      // Discord REST API로 채널의 available_tags 조회
+      const channel = await fetchChannel(forumChannelId);
+      if (channel?.available_tags) {
+        tagMap = new Map(channel.available_tags.map((t) => [t.id, t.name]));
+        this.forumTagCache.set(forumChannelId, tagMap);
+      } else {
+        return [];
+      }
+    }
+
+    return tagIds.map((id) => tagMap!.get(id) ?? id).filter(Boolean);
   }
 }

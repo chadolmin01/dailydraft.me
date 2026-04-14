@@ -143,6 +143,29 @@ const gateway = new DiscordGateway(BOT_TOKEN, {
     }
   },
 
+  onThreadCreate: async (data) => {
+    // 포럼 포스트 생성 감지 (type 11 = PUBLIC_THREAD from forum)
+    // parent_id가 포럼 채널이면 포스트로 간주
+    if (!data.guild_id || !data.parent_id) return;
+
+    // thread type 11 = public thread (포럼 포스트 포함)
+    // 일반 텍스트 채널에서 만든 스레드도 type 11이지만,
+    // parent가 포럼(type 15)인지는 engine에서 채널 캐시로 판별
+    try {
+      await engine.onForumPostCreate({
+        threadId: data.id,
+        parentChannelId: data.parent_id,
+        guildId: data.guild_id,
+        name: data.name ?? '',
+        appliedTags: data.applied_tags ?? [],
+        creatorId: data.owner_id ?? '',
+        creatorName: data.owner_id ?? 'unknown',
+      });
+    } catch (err) {
+      console.error('[Bot] 포럼 포스트 처리 오류:', err);
+    }
+  },
+
   onError: (error) => {
     console.error('[Bot] 치명적 오류:', error.message);
     process.exit(1);
