@@ -18,6 +18,7 @@ import {
   EditInterests,
   EditAIProfile,
   CropModal,
+  normalizeGithubUsername,
 } from './profile/edit'
 
 interface ProfileEditPanelProps {
@@ -65,6 +66,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
   const [portfolioUrl, setPortfolioUrl] = useState('')
   const [linkedinUrl, setLinkedinUrl] = useState('')
   const [githubUrl, setGithubUrl] = useState('')
+  const [githubUsername, setGithubUsername] = useState('')
   const [uniVerified, setUniVerified] = useState(false)
   const [verifyEmail, setVerifyEmail] = useState('')
   const [verifyCode, setVerifyCode] = useState('')
@@ -86,6 +88,7 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
       setPortfolioUrl(profile.portfolio_url || '')
       setLinkedinUrl(profile.linkedin_url || '')
       setGithubUrl(profile.github_url || '')
+      setGithubUsername(profile.github_username || '')
       setLocation((profile.locations as string[] | null)?.join(', ') || '')
       setCurrentSituation(profile.current_situation || '')
       setInterestTags(profile.interest_tags || [])
@@ -281,6 +284,9 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
         },
       })
 
+      // github_username 정규화: trim, @제거, URL→username 추출, 소문자
+      const normalizedGithubUsername = normalizeGithubUsername(githubUsername)
+
       await updateProfile.mutateAsync({
         nickname: nickname.trim() || undefined,
         desired_position: position.trim() || undefined,
@@ -293,6 +299,8 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
         portfolio_url: portfolioUrl.trim() || undefined,
         linkedin_url: linkedinUrl.trim() || undefined,
         github_url: githubUrl.trim() || undefined,
+        // 빈 문자열이면 null 전달 (DB에서 해당 필드를 비울 수 있도록)
+        github_username: normalizedGithubUsername || null,
         locations: location.trim() ? location.split(',').map(s => s.trim()).filter(Boolean) : undefined,
         current_situation: currentSituation || undefined,
         interest_tags: interestTags.length > 0 ? interestTags : undefined,
@@ -408,6 +416,8 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
           setPortfolioUrl={setPortfolioUrl}
           githubUrl={githubUrl}
           setGithubUrl={setGithubUrl}
+          githubUsername={githubUsername}
+          setGithubUsername={setGithubUsername}
           linkedinUrl={linkedinUrl}
           setLinkedinUrl={setLinkedinUrl}
         />
