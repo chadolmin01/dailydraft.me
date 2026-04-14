@@ -46,6 +46,8 @@ export function GitHubSettingsPanel({ clubSlug, opportunityId, hideBackLink }: G
   const queryClient = useQueryClient()
   const [connectingRepo, setConnectingRepo] = useState<string | null>(null)
   const [disconnectingRepo, setDisconnectingRepo] = useState<string | null>(null)
+  const [testingRepo, setTestingRepo] = useState<string | null>(null)
+  const [testResult, setTestResult] = useState<{ repo: string; success: boolean; message: string } | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [selectedChannelId, setSelectedChannelId] = useState<string>('')
 
@@ -168,6 +170,35 @@ export function GitHubSettingsPanel({ clubSlug, opportunityId, hideBackLink }: G
     onError: (err: Error) => {
       setDisconnectingRepo(null)
       setError(err.message)
+    },
+  })
+
+  // ── 테스트 알림 ──
+  const testMutation = useMutation({
+    mutationFn: async (repoFullName: string) => {
+      setTestingRepo(repoFullName)
+      setTestResult(null)
+      const res = await fetch('/api/github/test-notification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clubId: club!.id, opportunityId, repoFullName }),
+      })
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        throw new Error(body?.error || '테스트 알림 전송에 실패했습니다.')
+      }
+      return res.json()
+    },
+    onSuccess: (data, repoFullName) => {
+      setTestingRepo(null)
+      const channelType = data.channel === 'forum' ? '포럼' : '채널'
+      setTestResult({ repo: repoFullName, success: true, message: `Discord ${channelType}에 테스트 알림을 전송했습니다.` })
+      setTimeout(() => setTestResult(null), 5000)
+    },
+    onError: (err: Error, repoFullName) => {
+      setTestingRepo(null)
+      setTestResult({ repo: repoFullName, success: false, message: err.message })
+      setTimeout(() => setTestResult(null), 5000)
     },
   })
 
@@ -369,16 +400,35 @@ export function GitHubSettingsPanel({ clubSlug, opportunityId, hideBackLink }: G
                         </p>
                       )}
                     </div>
-                    <button
-                      onClick={() => disconnectMutation.mutate(repo.fullName)}
-                      disabled={disconnectingRepo === repo.fullName}
-                      className="px-3 py-1.5 text-xs font-semibold text-red-500 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 shrink-0"
-                    >
-                      {disconnectingRepo === repo.fullName ? '해제 중...' : '연결 해제'}
-                    </button>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        onClick={() => testMutation.mutate(repo.fullName)}
+                        disabled={testingRepo === repo.fullName}
+                        className="px-3 py-1.5 text-xs font-semibold text-brand hover:bg-brand-bg rounded-lg transition-colors disabled:opacity-50"
+                      >
+                        {testingRepo === repo.fullName ? '전송 중...' : '테스트'}
+                      </button>
+                      <button
+                        onClick={() => disconnectMutation.mutate(repo.fullName)}
+                        disabled={disconnectingRepo === repo.fullName}
+                        className="px-3 py-1.5 text-xs font-semibold text-red-500 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+                      >
+                        {disconnectingRepo === repo.fullName ? '해제 중...' : '해제'}
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
+              {/* 테스트 결과 */}
+              {testResult && connectedRepos.some(r => r.fullName === testResult.repo) && (
+                <div className={`mt-2 px-4 py-2.5 rounded-xl text-sm ${
+                  testResult.success
+                    ? 'bg-green-50 border border-green-200 text-green-700'
+                    : 'bg-red-50 border border-red-200 text-red-700'
+                }`}>
+                  {testResult.message}
+                </div>
+              )}
             </div>
           )}
 
