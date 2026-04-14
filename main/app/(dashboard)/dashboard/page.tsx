@@ -15,6 +15,7 @@ import { useRecommendedOpportunities } from '@/src/hooks/useOpportunities'
 import { useUnreadCount } from '@/src/hooks/useMessages'
 import { useProjectInvitations } from '@/src/hooks/useProjectInvitations'
 import { PageContainer } from '@/components/ui/PageContainer'
+import PendingDraftCard from '@/components/dashboard/PendingDraftCard'
 import { Section } from '@/components/ui/Section'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { ScrollReveal } from '@/components/ui/ScrollReveal'
@@ -157,6 +158,12 @@ export default function DashboardPage() {
       </Section>
 
       {/* Action Items */}
+      <Section spacing="sm" bg="transparent">
+        <PageContainer size="wide">
+          <PendingDraftCard />
+        </PageContainer>
+      </Section>
+
       {(pendingInvitations.length > 0 || pendingCount > 0) && (
         <Section spacing="sm" bg="transparent">
           <PageContainer size="wide">

@@ -377,6 +377,80 @@ export async function registerGlobalCommand(
   })
 }
 
+// ── 채널/카테고리 프로비저닝 ──
+
+export interface DiscordPermissionOverwrite {
+  id: string       // role_id 또는 user_id
+  type: 0 | 1      // 0 = role, 1 = member
+  allow: string     // 허용 권한 비트마스크 (문자열)
+  deny: string      // 거부 권한 비트마스크 (문자열)
+}
+
+/**
+ * 길드에 채널 또는 카테고리 생성
+ * type: 0 = 텍스트 채널, 4 = 카테고리
+ * parent_id: 카테고리 ID (채널을 카테고리 안에 넣을 때)
+ *
+ * 봇이 MANAGE_CHANNELS 권한 필요
+ */
+export async function createGuildChannel(
+  guildId: string,
+  name: string,
+  options: {
+    type: 0 | 4
+    parent_id?: string
+    topic?: string
+    permission_overwrites?: DiscordPermissionOverwrite[]
+  }
+): Promise<DiscordChannel> {
+  return discordFetch<DiscordChannel>(`/guilds/${guildId}/channels`, {
+    method: 'POST',
+    body: JSON.stringify({
+      name,
+      type: options.type,
+      ...(options.parent_id ? { parent_id: options.parent_id } : {}),
+      ...(options.topic ? { topic: options.topic } : {}),
+      ...(options.permission_overwrites ? { permission_overwrites: options.permission_overwrites } : {}),
+    }),
+  })
+}
+
+/**
+ * 채널의 권한 오버라이드 설정
+ * role/member별로 개별 권한을 허용/거부
+ *
+ * Discord 권한 비트:
+ * VIEW_CHANNEL = 0x0000000000000400 (1024)
+ * SEND_MESSAGES = 0x0000000000000800 (2048)
+ * READ_MESSAGE_HISTORY = 0x0000000000010000 (65536)
+ * CONNECT = 0x0000000000100000 (1048576)
+ */
+export async function editChannelPermissions(
+  channelId: string,
+  overwriteId: string,   // role_id 또는 user_id
+  type: 0 | 1,           // 0 = role, 1 = member
+  allow: string,
+  deny: string
+): Promise<void> {
+  await discordFetch<void>(
+    `/channels/${channelId}/permissions/${overwriteId}`,
+    {
+      method: 'PUT',
+      body: JSON.stringify({ type, allow, deny }),
+    }
+  )
+}
+
+/** 채널 삭제 (cleanup용) */
+export async function deleteChannel(channelId: string): Promise<void> {
+  await discordFetch<void>(`/channels/${channelId}`, { method: 'DELETE' })
+}
+
+/** 역할 삭제 (cleanup용) */
+export async function deleteGuildRole(guildId: string, roleId: string): Promise<void> {
+  await discordFetch<void>(`/guilds/${guildId}/roles/${roleId}`, { method: 'DELETE' })
+}
+
 /** 유저에게 임베드 + 버튼이 포함된 DM 발송 */
 export async function sendDirectMessageWithEmbed(
   userId: string,

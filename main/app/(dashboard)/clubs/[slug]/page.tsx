@@ -12,6 +12,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { SkeletonGrid } from '@/components/ui/Skeleton'
 import { useStaggerOnce } from '@/src/hooks/useStaggerOnce'
 import ClubBotActivity from '@/components/club/ClubBotActivity'
+import ClubTeamBoard from '@/components/club/ClubTeamBoard'
 
 function StaggerCard({ children, staggerKey, index }: { children: React.ReactNode; staggerKey: string; index: number }) {
   const cls = useStaggerOnce(staggerKey)
@@ -29,7 +30,7 @@ const ROLE_LABELS: Record<string, string> = {
   alumni: '졸업',
 }
 
-type Tab = 'intro' | 'projects' | 'members' | 'archive' | 'activity'
+type Tab = 'intro' | 'teams' | 'projects' | 'members' | 'archive' | 'activity'
 
 export default function ClubPage() {
   const params = useParams()
@@ -82,6 +83,7 @@ export default function ClubPage() {
 
   const TABS = [
     { key: 'intro' as const, label: '소개' },
+    { key: 'teams' as const, label: '팀 구성' },
     { key: 'projects' as const, label: '프로젝트' },
     { key: 'members' as const, label: '멤버' },
     { key: 'archive' as const, label: '아카이브' },
@@ -258,6 +260,11 @@ export default function ClubPage() {
               </Link>
             )}
           </div>
+        )}
+
+        {/* 팀 구성 */}
+        {activeTab === 'teams' && (
+          <ClubTeamBoard slug={slug} />
         )}
 
         {/* 프로젝트 */}

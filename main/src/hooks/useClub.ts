@@ -133,6 +133,45 @@ export interface ClubProject {
   creator_nickname: string | null
 }
 
+// --- Team Types ---
+
+export interface TeamMember {
+  user_id: string
+  nickname: string | null
+  avatar_url: string | null
+  role: string
+  position: string | null
+}
+
+export interface ClubTeam {
+  id: string
+  title: string
+  status: string | null
+  cohort: string | null
+  created_at: string
+  members: TeamMember[]
+  member_count: number
+  current_week: number
+  update_count: number
+  update_status: 'complete' | 'missing' | 'overdue'
+  latest_update: {
+    week_number: number
+    title: string
+    update_type: string
+    created_at: string
+  } | null
+}
+
+export interface ClubTeamsResponse {
+  teams: ClubTeam[]
+  summary: {
+    total_teams: number
+    updated_this_week: number
+    missing_updates: number
+    latest_week: number
+  }
+}
+
 // --- Query Keys ---
 
 export const clubKeys = {
@@ -143,6 +182,7 @@ export const clubKeys = {
   stats: (slug: string) => [...clubKeys.all, 'stats', slug] as const,
   projects: (slug: string) => [...clubKeys.all, 'projects', slug] as const,
   botActivity: (slug: string) => [...clubKeys.all, 'bot-activity', slug] as const,
+  teams: (slug: string) => [...clubKeys.all, 'teams', slug] as const,
 }
 
 // --- Hooks ---
@@ -237,6 +277,25 @@ export function useClubProjects(clubId: string | undefined) {
           ...p,
           creator_nickname: (p.creator as unknown as { nickname: string } | null)?.nickname ?? null,
         })) as ClubProject[]
+      }),
+  })
+}
+
+export function useClubTeams(slug: string | undefined) {
+  return useQuery({
+    queryKey: clubKeys.teams(slug ?? ''),
+    enabled: !!slug,
+    staleTime: 1000 * 60 * 2,
+    retry: (failureCount) => failureCount < 3,
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
+    queryFn: () =>
+      withRetry(async () => {
+        const res = await fetch(`/api/clubs/${slug}/teams`)
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}))
+          throw new Error(body?.error?.message || `Teams fetch failed: ${res.status}`)
+        }
+        return res.json() as Promise<ClubTeamsResponse>
       }),
   })
 }
