@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useClub } from '@/src/hooks/useClub'
 import { toast } from 'sonner'
-import Link from 'next/link'
+import { DiscordConnectionWizard } from './DiscordConnectionWizard'
 
 interface GhostwriterSettings {
   club_id: string
@@ -152,24 +152,14 @@ export function ClubDiscordSettings({ clubSlug }: { clubSlug: string }) {
           </div>
         </div>
         {isConnected ? (
-          <span className="px-2.5 py-1 rounded-full bg-green-50 text-green-600 text-[11px] font-semibold border border-green-200">
+          <span className="px-2.5 py-1 rounded-full bg-status-success-bg text-status-success-text text-[11px] font-semibold border border-status-success-text/20">
             연결됨
           </span>
-        ) : (
-          <Link
-            href="/connect/discord"
-            className="px-3 py-1.5 text-xs font-semibold text-white rounded-lg hover:opacity-90 transition-opacity"
-            style={{ backgroundColor: '#5865F2' }}
-          >
-            연결하기
-          </Link>
-        )}
+        ) : null}
       </div>
 
       {!isConnected && (
-        <p className="text-xs text-txt-disabled">
-          Discord 서버를 연결하면 주간 업데이트가 자동으로 생성됩니다.
-        </p>
+        <DiscordConnectionWizard clubId={club.id} clubSlug={clubSlug} />
       )}
 
       {isConnected && (
