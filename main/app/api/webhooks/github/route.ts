@@ -399,6 +399,17 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
             discordMsgId = discordMsg?.id
           }
 
+          // #개발-피드 채널에도 동시 전송 (전체 개발 활동 모아보기)
+          // 팀 채널과 개발 피드가 같은 채널이면 중복 전송 방지
+          const devFeedChannelId = process.env.DISCORD_DEV_FEED_CHANNEL_ID
+          if (devFeedChannelId && devFeedChannelId !== discordChannelId) {
+            try {
+              await sendChannelMessage(devFeedChannelId, message)
+            } catch (feedErr) {
+              console.warn('[github-webhook] 개발 피드 전송 실패 (무시):', feedErr)
+            }
+          }
+
           // ai_summary + discord_message_id를 한 번의 update로 처리
           // 불필요한 DB 왕복을 줄인다.
           if (eventId) {
@@ -455,6 +466,16 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       await createForumThread(discordChannelId, forumTitle, message)
     } else {
       await sendChannelMessage(discordChannelId, message)
+    }
+
+    // #개발-피드에도 PR/Issue 알림 전송
+    const devFeedChannelId = process.env.DISCORD_DEV_FEED_CHANNEL_ID
+    if (devFeedChannelId && devFeedChannelId !== discordChannelId) {
+      try {
+        await sendChannelMessage(devFeedChannelId, message)
+      } catch {
+        // 개발 피드 전송 실패는 무시
+      }
     }
 
     return NextResponse.json({ ok: true, event, delivered: true })
