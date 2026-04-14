@@ -10,6 +10,7 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { createAdminClient } from '@/src/lib/supabase/admin'
 import { ApiResponse, parseJsonBody, isValidUUID } from '@/src/lib/api-utils'
+import { provisionClubServer } from '@/src/lib/discord/provision-club'
 
 export async function POST(request: Request) {
   const supabase = await createClient()
@@ -88,11 +89,31 @@ export async function POST(request: Request) {
     .update({ status: 'claimed', claimed_at: new Date().toISOString() })
     .eq('id', pending.id)
 
+  // 6. 서버 표준 템플릿 프로비저닝
+  // 이미 존재하는 채널은 건너뛰고, FileTrail 대상 채널을 DB에 자동 등록
+  // 실패해도 연결 자체는 성공으로 처리 (프로비저닝은 나중에 재시도 가능)
+  let provisionResult = null
+  try {
+    provisionResult = await provisionClubServer(body.guild_id, body.club_id)
+    console.log(
+      `[Discord Connect] 프로비저닝 완료: ${provisionResult.created.length}개 생성, ${provisionResult.registered}개 FileTrail 등록`
+    )
+  } catch (err) {
+    console.error('[Discord Connect] 프로비저닝 실패 (연결은 유지):', err)
+  }
+
   return ApiResponse.ok({
     success: true,
     message: 'Discord 서버가 클럽에 연결되었습니다',
     guild_name: pending.discord_guild_name,
     club_id: body.club_id,
+    provision: provisionResult
+      ? {
+          created: provisionResult.created.length,
+          skipped: provisionResult.skipped.length,
+          fileTrailChannels: provisionResult.registered,
+        }
+      : null,
   })
 }
 
