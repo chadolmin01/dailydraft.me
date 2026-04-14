@@ -5,6 +5,7 @@ import { ChevronLeft } from 'lucide-react'
 import { useClub } from '@/src/hooks/useClub'
 import { ClubDiscordSettings } from '@/components/discord/ClubDiscordSettings'
 import { ClubDiscordRoleMappings } from '@/components/discord/ClubDiscordRoleMappings'
+import { GitHubSettingsPanel } from '@/components/github/GitHubSettingsPanel'
 
 export default function ClubSettingsPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -54,6 +55,13 @@ export default function ClubSettingsPage() {
 
         {/* 역할 매핑 — Discord 연결 시에만 표시 (내부에서 guild 없으면 null) */}
         <ClubDiscordRoleMappings clubSlug={slug} />
+      </section>
+
+      {/* GitHub 연동 */}
+      <section className="mt-6">
+        <div className="bg-surface-card border border-border rounded-2xl p-5">
+          <GitHubSettingsPanel clubSlug={slug} />
+        </div>
       </section>
     </div>
   )
