@@ -397,21 +397,25 @@ export async function createGuildChannel(
   guildId: string,
   name: string,
   options: {
-    type: 0 | 4
+    type: number  // 0=text, 2=voice, 4=category, 15=forum
     parent_id?: string
     topic?: string
     permission_overwrites?: DiscordPermissionOverwrite[]
+    available_tags?: Array<{ name: string; moderated: boolean }>
   }
 ): Promise<DiscordChannel> {
+  const body: Record<string, unknown> = {
+    name,
+    type: options.type,
+  };
+  if (options.parent_id) body.parent_id = options.parent_id;
+  if (options.topic) body.topic = options.topic;
+  if (options.permission_overwrites) body.permission_overwrites = options.permission_overwrites;
+  if (options.available_tags) body.available_tags = options.available_tags;
+
   return discordFetch<DiscordChannel>(`/guilds/${guildId}/channels`, {
     method: 'POST',
-    body: JSON.stringify({
-      name,
-      type: options.type,
-      ...(options.parent_id ? { parent_id: options.parent_id } : {}),
-      ...(options.topic ? { topic: options.topic } : {}),
-      ...(options.permission_overwrites ? { permission_overwrites: options.permission_overwrites } : {}),
-    }),
+    body: JSON.stringify(body),
   })
 }
 

@@ -116,20 +116,35 @@ export async function provisionTeamChannels(
     channels.push({ id: resourceChannel.id, name: '자료공유' })
     cleanupChannelIds.push(resourceChannel.id)
 
-    // 4. DB에 매핑 저장 (일반 채널을 주 채널로 매핑)
+    // 4. DB에 매핑 저장 (팀 채널 모두 등록, FileTrail 자동 활성)
     // 마이그레이션으로 추가한 컬럼이 Supabase 타입에 아직 반영 안 되었으므로 any 캐스트
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error: insertError } = await (admin as any)
       .from('discord_team_channels')
-      .insert({
-        club_id: clubId,
-        opportunity_id: opportunityId,
-        discord_channel_id: generalChannel.id,
-        discord_channel_name: '일반',
-        discord_category_id: categoryId,
-        discord_role_id: roleId,
-        created_by: createdBy,
-      })
+      .insert([
+        {
+          club_id: clubId,
+          opportunity_id: opportunityId,
+          discord_channel_id: generalChannel.id,
+          discord_channel_name: '일반',
+          discord_category_id: categoryId,
+          discord_role_id: roleId,
+          channel_type: 0,
+          file_tracking_enabled: true,
+          created_by: createdBy,
+        },
+        {
+          club_id: clubId,
+          opportunity_id: opportunityId,
+          discord_channel_id: resourceChannel.id,
+          discord_channel_name: '자료공유',
+          discord_category_id: categoryId,
+          discord_role_id: roleId,
+          channel_type: 0,
+          file_tracking_enabled: true,
+          created_by: createdBy,
+        },
+      ])
 
     if (insertError) {
       console.error('[provision] DB insert failed:', insertError.message)
