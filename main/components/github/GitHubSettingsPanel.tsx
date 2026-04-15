@@ -259,8 +259,8 @@ export function GitHubSettingsPanel({ clubSlug, opportunityId, hideBackLink }: G
     return (
       <div className="max-w-2xl mx-auto px-5 py-12">
         <div className="animate-pulse space-y-4">
-          <div className="h-6 bg-border-default/30 rounded w-48" />
-          <div className="h-48 bg-border-default/30 rounded-2xl" />
+          <div className="h-6 bg-surface-sunken rounded w-48" />
+          <div className="h-48 bg-surface-sunken rounded-2xl" />
         </div>
       </div>
     )
@@ -297,7 +297,7 @@ export function GitHubSettingsPanel({ clubSlug, opportunityId, hideBackLink }: G
           </p>
         </div>
         {isConnected && (
-          <div className="px-3 py-1 rounded-full bg-green-50 text-green-600 text-xs font-semibold border border-green-200">
+          <div className="px-3 py-1 rounded-full bg-status-success-bg text-status-success-text text-xs font-semibold border border-status-success-text/20">
             연결됨
           </div>
         )}
@@ -318,7 +318,7 @@ export function GitHubSettingsPanel({ clubSlug, opportunityId, hideBackLink }: G
 
       {/* 에러 메시지 */}
       {error && (
-        <div className="mb-4 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700">
+        <div className="mb-4 px-4 py-3 rounded-xl bg-status-danger-bg border border-status-danger-text/20 text-sm text-status-danger-text">
           {error}
           <button
             onClick={() => setError(null)}
@@ -331,7 +331,7 @@ export function GitHubSettingsPanel({ clubSlug, opportunityId, hideBackLink }: G
 
       {/* 미연결 상태 */}
       {!isConnected && (
-        <div className="bg-surface-card border border-border-default rounded-2xl p-6">
+        <div className="bg-surface-card border border-border rounded-2xl p-6">
           <div className="text-center space-y-4">
             <div className="w-16 h-16 mx-auto rounded-2xl bg-surface-bg flex items-center justify-center">
               <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" className="text-txt-tertiary">
@@ -376,10 +376,10 @@ export function GitHubSettingsPanel({ clubSlug, opportunityId, hideBackLink }: G
                 {connectedRepos.map((repo) => (
                   <div
                     key={repo.fullName}
-                    className="flex items-center gap-3 px-4 py-3 bg-surface-card border border-border-default rounded-xl"
+                    className="flex items-center gap-3 px-4 py-3 bg-surface-card border border-border rounded-xl"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center shrink-0">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-green-600">
+                    <div className="w-8 h-8 rounded-lg bg-status-success-bg flex items-center justify-center shrink-0">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-status-success-text">
                         <polyline points="20 6 9 17 4 12" />
                       </svg>
                     </div>
@@ -411,7 +411,7 @@ export function GitHubSettingsPanel({ clubSlug, opportunityId, hideBackLink }: G
                       <button
                         onClick={() => disconnectMutation.mutate(repo.fullName)}
                         disabled={disconnectingRepo === repo.fullName}
-                        className="px-3 py-1.5 text-xs font-semibold text-red-500 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+                        className="px-3 py-1.5 text-xs font-semibold text-status-danger-text hover:bg-status-danger-bg rounded-lg transition-colors disabled:opacity-50"
                       >
                         {disconnectingRepo === repo.fullName ? '해제 중...' : '해제'}
                       </button>
@@ -423,8 +423,8 @@ export function GitHubSettingsPanel({ clubSlug, opportunityId, hideBackLink }: G
               {testResult && connectedRepos.some(r => r.fullName === testResult.repo) && (
                 <div className={`mt-2 px-4 py-2.5 rounded-xl text-sm ${
                   testResult.success
-                    ? 'bg-green-50 border border-green-200 text-green-700'
-                    : 'bg-red-50 border border-red-200 text-red-700'
+                    ? 'bg-status-success-bg border border-status-success-text/20 text-status-success-text'
+                    : 'bg-status-danger-bg border border-status-danger-text/20 text-status-danger-text'
                 }`}>
                   {testResult.message}
                 </div>
@@ -444,7 +444,7 @@ export function GitHubSettingsPanel({ clubSlug, opportunityId, hideBackLink }: G
               <select
                 value={selectedChannelId}
                 onChange={(e) => setSelectedChannelId(e.target.value)}
-                className="w-full px-3 py-2 text-sm bg-surface-card border border-border-default rounded-xl text-txt-primary focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
+                className="w-full px-3 py-2 text-sm bg-surface-card border border-border rounded-xl text-txt-primary focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
               >
                 <option value="">자동 (팀 채널 매핑 사용)</option>
                 {discordChannels.map((ch) => (
@@ -468,11 +468,11 @@ export function GitHubSettingsPanel({ clubSlug, opportunityId, hideBackLink }: G
             {reposLoading ? (
               <div className="space-y-2">
                 {[1, 2, 3].map(i => (
-                  <div key={i} className="animate-pulse h-16 bg-border-default/30 rounded-xl" />
+                  <div key={i} className="animate-pulse h-16 bg-surface-sunken rounded-xl" />
                 ))}
               </div>
             ) : availableRepos.length === 0 && connectedRepos.length === 0 ? (
-              <div className="px-4 py-8 text-center text-sm text-txt-tertiary bg-surface-card border border-border-default rounded-xl">
+              <div className="px-4 py-8 text-center text-sm text-txt-tertiary bg-surface-card border border-border rounded-xl">
                 연결 가능한 레포지토리가 없습니다.
                 <br />
                 Admin 권한이 있는 레포가 필요합니다.
@@ -482,7 +482,7 @@ export function GitHubSettingsPanel({ clubSlug, opportunityId, hideBackLink }: G
                 {availableRepos.map((repo) => (
                   <div
                     key={repo.fullName}
-                    className="flex items-center gap-3 px-4 py-3 bg-surface-card border border-border-default rounded-xl hover:border-txt-disabled transition-colors"
+                    className="flex items-center gap-3 px-4 py-3 bg-surface-card border border-border rounded-xl hover:border-txt-disabled transition-colors"
                   >
                     <div className="w-8 h-8 rounded-lg bg-surface-bg flex items-center justify-center shrink-0">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="text-txt-tertiary">
@@ -525,7 +525,7 @@ export function GitHubSettingsPanel({ clubSlug, opportunityId, hideBackLink }: G
           </div>
 
           {/* 전체 연결 해제 */}
-          <div className="pt-4 border-t border-border-default">
+          <div className="pt-4 border-t border-border">
             <button
               onClick={handleDisconnectAll}
               className="text-sm text-txt-tertiary hover:text-red-500 transition-colors"

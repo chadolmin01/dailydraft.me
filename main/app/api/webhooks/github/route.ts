@@ -17,7 +17,7 @@
 
 import { NextRequest, NextResponse, after } from 'next/server'
 import { createAdminClient } from '@/src/lib/supabase/admin'
-import { sendChannelMessage, createForumThread } from '@/src/lib/discord/client'
+import { sendChannelMessage } from '@/src/lib/discord/client'
 import crypto from 'crypto'
 
 export const runtime = 'nodejs'
@@ -234,21 +234,25 @@ function formatPushMessage(
   const pusher = draftNickname || payload.pusher?.name || 'unknown'
   const repoName = payload.repository?.name || 'unknown'
 
-  const commitLines = commits
-    .slice(0, 5)
-    .map((c: { message: string; id: string }) =>
-      `  \`${c.id.slice(0, 7)}\` ${sanitizeForDiscord(c.message.split('\n')[0])}`
-    )
-    .join('\n')
-  const moreText = commits.length > 5 ? `\n  ... +${commits.length - 5}개 커밋` : ''
-
-  let message = `**${sanitizeForDiscord(repoName)}** / \`${branch}\` — ${sanitizeForDiscord(pusher)}님이 ${commits.length}개 커밋을 push했습니다\n${commitLines}${moreText}`
-
+  // AI 요약이 있으면 요약 중심, 없으면 커밋 목록 fallback
   if (aiSummary) {
-    message += `\n\n> ${aiSummary}`
+    const detail = commits.length === 1
+      ? `\`${commits[0].id.slice(0, 7)}\` ${sanitizeForDiscord(commits[0].message.split('\n')[0])}`
+      : `${commits.length}건의 변경`
+
+    return `**${sanitizeForDiscord(pusher)}**님이 **${sanitizeForDiscord(repoName)}**을 업데이트했습니다\n${aiSummary}\n-# ${detail} · \`${branch}\``
   }
 
-  return message
+  // AI 요약 실패 시 fallback: 커밋 목록 표시
+  const commitLines = commits
+    .slice(0, 3)
+    .map((c: { message: string; id: string }) =>
+      `  ${sanitizeForDiscord(c.message.split('\n')[0])}`
+    )
+    .join('\n')
+  const moreText = commits.length > 3 ? `\n  외 ${commits.length - 3}건` : ''
+
+  return `**${sanitizeForDiscord(pusher)}**님이 **${sanitizeForDiscord(repoName)}**을 업데이트했습니다\n${commitLines}${moreText}\n-# ${commits.length}건 · \`${branch}\``
 }
 
 function formatPRMessage(payload: Record<string, any>): string | null {
@@ -256,13 +260,19 @@ function formatPRMessage(payload: Record<string, any>): string | null {
   const action = payload.action
   if (!pr) return null
 
-  // merged는 action='closed' + pr.merged=true
   const isMerged = action === 'closed' && pr.merged
   if (!['opened', 'closed'].includes(action) && !isMerged) return null
 
-  const emoji = isMerged ? '🟣' : action === 'opened' ? '🟢' : '🔴'
-  const status = isMerged ? 'Merged' : action === 'opened' ? 'Opened' : 'Closed'
-  return `**${emoji} PR ${status}** — #${pr.number} ${sanitizeForDiscord(pr.title)}\nby ${sanitizeForDiscord(pr.user?.login || 'unknown')}\n${pr.html_url}`
+  const author = sanitizeForDiscord(pr.user?.login || 'unknown')
+  const title = sanitizeForDiscord(pr.title)
+
+  if (isMerged) {
+    return `**${author}**님의 작업이 반영되었습니다\n${title}\n-# PR #${pr.number} merged · ${pr.html_url}`
+  } else if (action === 'opened') {
+    return `**${author}**님이 코드 리뷰를 요청했습니다\n${title}\n-# PR #${pr.number} · ${pr.html_url}`
+  } else {
+    return `**${author}**님의 PR이 닫혔습니다\n${title}\n-# PR #${pr.number} · ${pr.html_url}`
+  }
 }
 
 function formatIssueMessage(payload: Record<string, any>): string | null {
@@ -270,8 +280,14 @@ function formatIssueMessage(payload: Record<string, any>): string | null {
   const action = payload.action
   if (!issue || !['opened', 'closed'].includes(action)) return null
 
-  const emoji = action === 'opened' ? '🟡' : '✅'
-  return `**${emoji} Issue ${action}** — #${issue.number} ${sanitizeForDiscord(issue.title)}\n${issue.html_url}`
+  const author = sanitizeForDiscord(issue.user?.login || 'unknown')
+  const title = sanitizeForDiscord(issue.title)
+
+  if (action === 'opened') {
+    return `**${author}**님이 이슈를 등록했습니다\n${title}\n-# Issue #${issue.number} · ${issue.html_url}`
+  } else {
+    return `이슈가 해결되었습니다\n${title}\n-# Issue #${issue.number} · ${issue.html_url}`
+  }
 }
 
 // ── 메인 핸들러 ──
@@ -282,6 +298,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   // 레포별 secret은 /api/github/repos/connect에서 자동 생성된 webhook용,
   // 환경변수 secret은 수동으로 설정한 기존 webhook 호환용.
   const signature = request.headers.get('x-hub-signature-256')
+  const deliveryId = request.headers.get('x-github-delivery')
   const body = await request.text()
 
   const event = request.headers.get('x-github-event')
@@ -323,10 +340,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   // 2. repo → club 매핑
   const clubMapping = await findClubByRepo(admin, repoFullName)
 
-  // fallback 채널: 매핑이 없어도 환경변수로 최소한 Discord에는 전송
-  const discordChannelId = clubMapping?.discordChannelId
-    || process.env.DISCORD_DEV_FEED_CHANNEL_ID
-
   // 3. 이벤트별 처리
   if (event === 'push') {
     const commits = payload.commits || []
@@ -349,8 +362,22 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     // github_events에 raw 저장 (클럽 매핑이 있는 경우만)
+    // delivery_id로 중복 방어: GitHub가 동일 webhook을 재전송하면 스킵
     let eventId: string | null = null
     if (clubMapping) {
+      // 중복 체크: 같은 delivery_id가 이미 있으면 스킵
+      if (deliveryId) {
+        const { data: existing } = await admin
+          .from('github_events')
+          .select('id')
+          .eq('delivery_id', deliveryId)
+          .maybeSingle()
+
+        if (existing) {
+          return NextResponse.json({ ok: true, skipped: 'duplicate delivery', deliveryId })
+        }
+      }
+
       const { data: inserted, error: insertError } = await admin
         .from('github_events')
         .insert({
@@ -361,6 +388,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           repo_name: repoFullName,
           branch,
           commits: commits satisfies unknown[],
+          delivery_id: deliveryId,
         })
         .select('id')
         .single()
@@ -374,58 +402,37 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // AI 요약 + Discord 전송은 after()로 비동기 처리
     // 이유: 서명 검증 + DB 저장까지는 동기로 확실히 하고,
     // AI 호출은 느릴 수 있으므로 GitHub 측에 200을 먼저 반환한다.
-    if (discordChannelId) {
-      const isForumChannel = clubMapping?.isForumChannel === true
+    //
+    // 실시간 알림은 #개발-피드 채널에만 전송한다.
+    // 팀 메인 챗방에는 보내지 않음 — 비개발자에게 노이즈이므로.
+    // 대신 daily-dev-digest cron이 매일 저녁 하루 요약을 포스팅한다.
+    const devFeedChannelId = process.env.DISCORD_DEV_FEED_CHANNEL_ID
 
+    if (devFeedChannelId) {
       after(async () => {
         try {
           // AI 요약 생성
           const aiSummary = await generateCommitSummary(commits, repoFullName, branch, pusherName)
 
-          // Discord 전송 — 포럼 채널이면 스레드(포스트) 생성, 텍스트 채널이면 일반 메시지
+          // Discord 메시지 포맷
           const message = formatPushMessage(payload, draftMember?.nickname ?? null, aiSummary)
-          let discordMsgId: string | undefined
 
-          if (isForumChannel) {
-            // 포럼 채널: 개별 포스트로 생성
-            // 제목에 팀명, 커밋 수, 브랜치를 포함하여 한눈에 파악 가능
-            const repoName = repoFullName.split('/')[1] || repoFullName
-            const forumTitle = `[${repoName}] ${commits.length}건의 커밋 — ${branch} 브랜치`
-            const forumThread = await createForumThread(discordChannelId!, forumTitle, message)
-            discordMsgId = forumThread?.id
-          } else {
-            // 텍스트 채널: 기존 방식
-            const discordMsg = await sendChannelMessage(discordChannelId!, message)
-            discordMsgId = discordMsg?.id
+          // #개발-피드 채널에만 전송
+          try {
+            await sendChannelMessage(devFeedChannelId, message)
+          } catch (feedErr) {
+            console.error('[github-webhook] 개발 피드 전송 실패:', feedErr)
           }
 
-          // #개발-피드 채널에도 동시 전송 (전체 개발 활동 모아보기)
-          // 팀 채널과 개발 피드가 같은 채널이면 중복 전송 방지
-          const devFeedChannelId = process.env.DISCORD_DEV_FEED_CHANNEL_ID
-          if (devFeedChannelId && devFeedChannelId !== discordChannelId) {
-            try {
-              await sendChannelMessage(devFeedChannelId, message)
-            } catch (feedErr) {
-              console.warn('[github-webhook] 개발 피드 전송 실패 (무시):', feedErr)
-            }
-          }
+          // ai_summary를 DB에 업데이트 (Ghostwriter 주간 초안용)
+          if (eventId && aiSummary) {
+            const { error: updateError } = await admin
+              .from('github_events')
+              .update({ ai_summary: aiSummary })
+              .eq('id', eventId)
 
-          // ai_summary + discord_message_id를 한 번의 update로 처리
-          // 불필요한 DB 왕복을 줄인다.
-          if (eventId) {
-            const updatePayload: Record<string, string> = {}
-            if (aiSummary) updatePayload.ai_summary = aiSummary
-            if (discordMsgId) updatePayload.discord_message_id = discordMsgId
-
-            if (Object.keys(updatePayload).length > 0) {
-              const { error: updateError } = await admin
-                .from('github_events')
-                .update(updatePayload)
-                .eq('id', eventId)
-
-              if (updateError) {
-                console.error('[github-webhook] github_events UPDATE 실패:', updateError)
-              }
+            if (updateError) {
+              console.error('[github-webhook] github_events UPDATE 실패:', updateError)
             }
           }
         } catch (err) {
@@ -450,37 +457,17 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ ok: true, skipped: `event: ${event}` })
   }
 
-  if (!discordChannelId) {
-    return NextResponse.json({ ok: true, skipped: 'no channel mapping' })
+  // PR/Issue도 #개발-피드에만 전송 (팀 메인 챗방에는 보내지 않음)
+  const prDevFeedChannelId = process.env.DISCORD_DEV_FEED_CHANNEL_ID
+  if (!prDevFeedChannelId) {
+    return NextResponse.json({ ok: true, skipped: 'no dev feed channel' })
   }
 
   try {
-    const isForumChannel = clubMapping?.isForumChannel === true
-
-    if (isForumChannel) {
-      // 포럼 채널: PR/Issue도 개별 포스트로 생성
-      const repoName = repoFullName.split('/')[1] || repoFullName
-      const forumTitle = event === 'pull_request'
-        ? `[${repoName}] PR — ${sanitizeForDiscord(payload.pull_request?.title || '').slice(0, 80)}`
-        : `[${repoName}] Issue — ${sanitizeForDiscord(payload.issue?.title || '').slice(0, 80)}`
-      await createForumThread(discordChannelId, forumTitle, message)
-    } else {
-      await sendChannelMessage(discordChannelId, message)
-    }
-
-    // #개발-피드에도 PR/Issue 알림 전송
-    const devFeedChannelId = process.env.DISCORD_DEV_FEED_CHANNEL_ID
-    if (devFeedChannelId && devFeedChannelId !== discordChannelId) {
-      try {
-        await sendChannelMessage(devFeedChannelId, message)
-      } catch {
-        // 개발 피드 전송 실패는 무시
-      }
-    }
-
+    await sendChannelMessage(prDevFeedChannelId, message)
     return NextResponse.json({ ok: true, event, delivered: true })
   } catch (error) {
-    console.error('[github-webhook] Discord 전송 실패:', error)
+    console.error('[github-webhook] 개발 피드 전송 실패:', error)
     return NextResponse.json({ ok: true, event, delivered: false })
   }
 }

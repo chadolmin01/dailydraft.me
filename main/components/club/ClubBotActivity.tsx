@@ -66,7 +66,7 @@ export default function ClubBotActivity({ slug }: { slug: string }) {
     return (
       <div className="space-y-4">
         {[1, 2, 3].map(i => (
-          <div key={i} className="h-24 bg-border-default/20 rounded-xl animate-pulse" />
+          <div key={i} className="h-24 bg-surface-sunken rounded-xl animate-pulse" />
         ))}
       </div>
     )
@@ -130,10 +130,10 @@ export default function ClubBotActivity({ slug }: { slug: string }) {
             {tasks.map(task => (
               <div
                 key={task.id}
-                className="flex items-start gap-3 py-2.5 px-3 rounded-lg hover:bg-bg-sunken/50 transition-colors"
+                className="flex items-start gap-3 py-2.5 px-3 rounded-lg hover:bg-surface-sunken/50 transition-colors"
               >
                 {task.status === 'completed' ? (
-                  <CheckCircle2 size={16} className="text-success mt-0.5 shrink-0" aria-label="완료됨" />
+                  <CheckCircle2 size={16} className="text-status-success-text mt-0.5 shrink-0" aria-label="완료됨" />
                 ) : (
                   <Circle size={16} className="text-txt-disabled mt-0.5 shrink-0" aria-label="미완료" />
                 )}
@@ -166,7 +166,7 @@ export default function ClubBotActivity({ slug }: { slug: string }) {
         <Section title="결정 사항" icon={<FileText size={15} />} count={decisions.length}>
           <div className="space-y-1">
             {decisions.map(d => (
-              <div key={d.id} className="py-2.5 px-3 rounded-lg hover:bg-bg-sunken/50 transition-colors">
+              <div key={d.id} className="py-2.5 px-3 rounded-lg hover:bg-surface-sunken/50 transition-colors">
                 <p className="text-sm font-semibold text-txt-primary">{d.topic}</p>
                 <p className="text-sm text-txt-secondary mt-0.5">{d.result}</p>
                 <span className="text-xs text-txt-disabled">{formatRelativeDate(d.decided_at)}</span>
@@ -189,7 +189,7 @@ export default function ClubBotActivity({ slug }: { slug: string }) {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`${r.label} 링크 열기`}
-                  className="flex items-center gap-3 py-2.5 px-3 rounded-lg hover:bg-bg-sunken/50 transition-colors group"
+                  className="flex items-center gap-3 py-2.5 px-3 rounded-lg hover:bg-surface-sunken/50 transition-colors group"
                 >
                   <ResourceContent r={r} />
                   <ExternalLink size={14} className="text-txt-disabled group-hover:text-brand shrink-0 transition-colors" />
@@ -214,7 +214,7 @@ export default function ClubBotActivity({ slug }: { slug: string }) {
             {interventions.map(iv => (
               <div
                 key={iv.id}
-                className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-bg-sunken/50 transition-colors"
+                className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-surface-sunken/50 transition-colors"
               >
                 <ResponseIcon response={iv.user_response} />
                 <span className="text-sm text-txt-primary flex-1">
@@ -236,8 +236,8 @@ export default function ClubBotActivity({ slug }: { slug: string }) {
 
 function StatCard({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="bg-surface-card border border-border-default rounded-xl p-4 text-center">
-      <div className="text-xl font-extrabold text-txt-primary">{value}</div>
+    <div className="bg-surface-card border border-border rounded-xl p-4 text-center">
+      <div className="text-xl font-bold text-txt-primary">{value}</div>
       <div className="text-xs text-txt-tertiary mt-1">{label}</div>
     </div>
   )
@@ -267,8 +267,8 @@ function Section({
 }
 
 function ResponseIcon({ response }: { response: string | null }) {
-  if (response === 'accepted') return <CheckCircle2 size={14} className="text-success shrink-0" aria-label="수락됨" />
-  if (response === 'dismissed') return <XCircle size={14} className="text-danger shrink-0" aria-label="무시됨" />
+  if (response === 'accepted') return <CheckCircle2 size={14} className="text-status-success-text shrink-0" aria-label="수락됨" />
+  if (response === 'dismissed') return <XCircle size={14} className="text-status-danger-text shrink-0" aria-label="무시됨" />
   return <Circle size={14} className="text-txt-disabled shrink-0" aria-label="대기 중" />
 }
 

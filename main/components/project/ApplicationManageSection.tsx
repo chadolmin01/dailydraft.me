@@ -249,7 +249,7 @@ function ApplicationCard({
     <div className={`border border-border bg-surface-card rounded-xl ${variant === 'rejected' ? 'opacity-50' : ''}`}>
       <div className="flex items-start gap-3 px-4 py-3">
         {/* Avatar */}
-        <div className={`w-10 h-10 flex items-center justify-center font-bold text-sm shrink-0 ${
+        <div className={`w-10 h-10 flex items-center justify-center font-bold text-sm shrink-0 rounded-full ${
           variant === 'accepted'
             ? 'bg-status-success-text text-white'
             : variant === 'interviewing'
@@ -264,7 +264,7 @@ function ApplicationCard({
           <div className="flex items-center gap-2 mb-0.5">
             <p className="font-semibold text-sm text-txt-primary">{nickname}</p>
             {application.match_score != null && (
-              <span className="text-[10px] font-mono font-bold text-brand bg-brand-bg px-1.5 py-0.5 border border-brand-border">
+              <span className="text-[10px] font-bold text-brand bg-brand-bg px-1.5 py-0.5 border border-brand-border rounded-full">
                 {application.match_score}% 매치
               </span>
             )}
@@ -279,7 +279,7 @@ function ApplicationCard({
           {profile?.skills && profile.skills.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-2">
               {profile.skills.slice(0, 5).map((skill, i) => (
-                <span key={i} className="text-[10px] font-mono bg-surface-sunken text-txt-secondary px-1.5 py-0.5 border border-border">
+                <span key={i} className="text-[10px] bg-surface-sunken text-txt-secondary px-1.5 py-0.5 border border-border rounded-lg">
                   {skill.name}
                 </span>
               ))}
@@ -300,7 +300,7 @@ function ApplicationCard({
                 type="button"
                 onClick={() => onAction(application, 'interviewing')}
                 disabled={isPending}
-                className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold border border-border hover:border-brand hover:text-brand transition-colors disabled:opacity-50"
+                className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold border border-border hover:border-brand hover:text-brand transition-colors disabled:opacity-50 rounded-xl"
               >
                 {isPending ? <Loader2 size={12} className="animate-spin" /> : <Calendar size={12} />}
                 약속잡기
@@ -309,7 +309,7 @@ function ApplicationCard({
                 type="button"
                 onClick={() => onAction(application, 'accepted')}
                 disabled={isPending}
-                className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold bg-surface-inverse text-white hover:opacity-90 transition-opacity disabled:opacity-50"
+                className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold bg-surface-inverse text-white hover:opacity-90 transition-opacity disabled:opacity-50 rounded-xl"
               >
                 {isPending ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
                 바로 수락
@@ -332,7 +332,7 @@ function ApplicationCard({
                 type="button"
                 onClick={() => onAction(application, 'accepted')}
                 disabled={isPending}
-                className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold bg-surface-inverse text-white hover:opacity-90 transition-opacity disabled:opacity-50"
+                className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold bg-surface-inverse text-white hover:opacity-90 transition-opacity disabled:opacity-50 rounded-xl"
               >
                 {isPending ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
                 합류 확정
@@ -350,7 +350,7 @@ function ApplicationCard({
           )}
 
           {variant === 'accepted' && (
-            <span className="text-[10px] font-mono text-status-success-text font-bold px-2 py-0.5 bg-status-success-bg border border-status-success-text/30">
+            <span className="text-[10px] text-status-success-text font-bold px-2 py-0.5 bg-status-success-bg border border-status-success-text/30 rounded-full">
               합류됨
             </span>
           )}

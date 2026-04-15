@@ -119,10 +119,7 @@ export default function DashboardPage() {
       <Section spacing="sm" bg="transparent">
         <PageContainer size="wide">
           <ScrollReveal>
-          <div className="flex items-center gap-2 mb-4">
-            <span className="w-5 h-5 bg-surface-inverse text-txt-inverse flex items-center justify-center text-[0.5rem] font-bold font-mono">S</span>
-            <span className="text-[10px] font-medium text-txt-secondary">Stats Overview</span>
-          </div>
+          <h2 className="text-xs font-bold text-txt-secondary mb-4">통계</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <StatCard
               index={1}
@@ -167,10 +164,7 @@ export default function DashboardPage() {
       {(pendingInvitations.length > 0 || pendingCount > 0) && (
         <Section spacing="sm" bg="transparent">
           <PageContainer size="wide">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="w-5 h-5 bg-status-danger-text text-white flex items-center justify-center text-[0.5rem] font-bold font-mono">!</span>
-              <span className="text-[10px] font-medium text-txt-secondary">Action Required</span>
-            </div>
+            <h2 className="text-xs font-bold text-status-danger-text mb-4">확인 필요</h2>
             <div className="space-y-2">
               {pendingCount > 0 && (
                 <Link href="/projects" className="flex items-center justify-between bg-surface-card rounded-xl border border-border p-4 hover:shadow-md hover-spring group">
@@ -212,10 +206,7 @@ export default function DashboardPage() {
             {/* Recommended Projects */}
             <div className="lg:col-span-2">
               <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <span className="w-5 h-5 bg-brand text-white flex items-center justify-center text-[0.5rem] font-bold font-mono">R</span>
-                  <span className="text-[10px] font-medium text-txt-secondary">Recommended</span>
-                </div>
+                <h2 className="text-xs font-bold text-txt-secondary">추천 프로젝트</h2>
                 <Link href="/explore" className="text-[10px] font-mono text-txt-tertiary hover:text-txt-primary transition-colors flex items-center gap-1">
                   전체보기 <ArrowRight size={10} />
                 </Link>
@@ -248,7 +239,7 @@ export default function DashboardPage() {
                       style={{ animationDelay: `${index * 80}ms` }}
                       className="stagger-item bg-surface-card rounded-xl border border-border p-5 cursor-pointer hover:shadow-md hover:-translate-y-0.5 hover-spring group relative"
                     >
-                      <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/15" />
+
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
@@ -280,12 +271,8 @@ export default function DashboardPage() {
 
             {/* Recent Activity */}
             <div>
-              <div className="flex items-center gap-2 mb-4">
-                <span className="w-5 h-5 bg-surface-inverse text-txt-inverse flex items-center justify-center text-[0.5rem] font-bold font-mono">A</span>
-                <span className="text-[10px] font-medium text-txt-secondary">Activity</span>
-              </div>
+              <h2 className="text-xs font-bold text-txt-secondary mb-4">최근 활동</h2>
               <div className="bg-surface-card rounded-xl border border-border p-5 relative">
-                <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/15" />
                 {statsLoading ? (
                   <div className="space-y-4">
                     {[1, 2, 3].map(i => (
@@ -338,10 +325,7 @@ export default function DashboardPage() {
         <Section spacing="sm" bg="transparent">
           <PageContainer size="wide">
             <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <span className="w-5 h-5 bg-[#7C3AED] text-white flex items-center justify-center text-[0.5rem] font-bold font-mono">C</span>
-                <span className="text-[10px] font-medium text-txt-secondary">My Clubs</span>
-              </div>
+              <h2 className="text-xs font-bold text-txt-secondary">내 클럽</h2>
             </div>
             <div className="space-y-3">
               {myClubs.map((club, index) => (
@@ -351,11 +335,10 @@ export default function DashboardPage() {
                   style={{ animationDelay: `${index * 60}ms` }}
                   className="stagger-item bg-surface-card rounded-xl border border-border p-4 flex items-center gap-4 hover:shadow-md hover:-translate-y-0.5 hover-spring group relative block"
                 >
-                  <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/15" />
-                  {club.logo_url ? (
+                    {club.logo_url ? (
                     <Image src={club.logo_url} alt={club.name} width={40} height={40} className="rounded-xl object-cover shrink-0" />
                   ) : (
-                    <div className="w-10 h-10 bg-bg-sunken rounded-xl flex items-center justify-center text-sm font-extrabold text-txt-secondary shrink-0">
+                    <div className="w-10 h-10 bg-surface-sunken rounded-xl flex items-center justify-center text-sm font-extrabold text-txt-secondary shrink-0">
                       {club.name[0]}
                     </div>
                   )}
@@ -386,8 +369,7 @@ export default function DashboardPage() {
         <PageContainer size="wide">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <span className="w-5 h-5 bg-[#059669] text-white flex items-center justify-center text-[0.5rem] font-bold font-mono">P</span>
-              <span className="text-[10px] font-medium text-txt-secondary">My Projects</span>
+              <h2 className="text-xs font-bold text-txt-secondary">내 프로젝트</h2>
             </div>
             {myProjects.length > 0 && (
               <Link href="/projects" className="text-[10px] font-mono text-txt-tertiary hover:text-txt-primary transition-colors flex items-center gap-1">
@@ -431,8 +413,7 @@ export default function DashboardPage() {
                   style={{ animationDelay: `${index * 60}ms` }}
                   className="stagger-item bg-surface-card rounded-xl border border-border p-4 flex items-center gap-4 hover:shadow-md hover:-translate-y-0.5 hover-spring group relative block"
                 >
-                  <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/15" />
-                  <div className="w-10 h-10 bg-surface-inverse flex items-center justify-center shrink-0">
+                    <div className="w-10 h-10 bg-surface-inverse flex items-center justify-center shrink-0">
                     <Rocket size={16} className="text-txt-inverse" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -477,7 +458,6 @@ function StatCard({ index, label, value, icon, href, alert }: {
 }) {
   const content = (
     <div className={`bg-surface-card rounded-xl border border-border shadow-md p-5 relative ${href ? 'cursor-pointer hover:shadow-md hover:-translate-y-0.5 hover-spring group' : ''}`}>
-      <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-surface-inverse/20" />
       <div className="flex items-center justify-between mb-3">
         <span className="text-[10px] font-mono text-txt-disabled">{String(index).padStart(2, '0')}</span>
         <div className={`w-6 h-6 flex items-center justify-center ${alert ? 'text-status-danger-text' : 'text-txt-tertiary'}`}>
@@ -503,8 +483,8 @@ function StatCard({ index, label, value, icon, href, alert }: {
 
 function getGreeting(): string {
   const h = new Date().getHours()
-  if (h < 6) return 'GOOD NIGHT'
-  if (h < 12) return 'GOOD MORNING'
-  if (h < 18) return 'GOOD AFTERNOON'
-  return 'GOOD EVENING'
+  if (h < 6) return '늦은 밤이네요'
+  if (h < 12) return '좋은 아침입니다'
+  if (h < 18) return '좋은 오후입니다'
+  return '좋은 저녁입니다'
 }

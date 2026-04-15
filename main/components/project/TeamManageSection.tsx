@@ -208,8 +208,8 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
           </h4>
           <div className="space-y-2">
             {acceptedChats.map(chat => (
-              <div key={chat.id} className="flex items-center gap-3 px-4 py-3 bg-status-success-bg/30 border border-status-success-text/20">
-                <div className="w-9 h-9 bg-status-success-text text-white flex items-center justify-center font-bold text-xs shrink-0">
+              <div key={chat.id} className="flex items-center gap-3 px-4 py-3 bg-status-success-bg/30 border border-status-success-text/20 rounded-xl">
+                <div className="w-9 h-9 bg-status-success-text text-white flex items-center justify-center font-bold text-xs shrink-0 rounded-full">
                   {(chat.profile?.nickname || chat.requester_name || '?').charAt(0)}
                 </div>
                 <div className="min-w-0 flex-1">
@@ -226,7 +226,7 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
                   type="button"
                   onClick={() => addToTeam.mutate(chat)}
                   disabled={addToTeam.isPending}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-surface-inverse text-white text-xs font-bold hover:opacity-90 transition-opacity disabled:opacity-50 shrink-0"
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-surface-inverse text-white text-xs font-bold hover:opacity-90 transition-opacity disabled:opacity-50 shrink-0 rounded-xl"
                   aria-label="팀에 추가"
                 >
                   {addToTeam.isPending ? (
@@ -244,8 +244,8 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
 
       {/* No accepted chats, no members */}
       {acceptedChats.length === 0 && members.length === 0 && !chatsLoading && (
-        <div className="border border-border py-12 flex flex-col items-center justify-center">
-          <div className="w-12 h-12 bg-surface-sunken flex items-center justify-center mb-3">
+        <div className="border border-border py-12 flex flex-col items-center justify-center rounded-xl">
+          <div className="w-12 h-12 bg-surface-sunken flex items-center justify-center mb-3 rounded-full">
             <Users size={20} className="text-txt-disabled" />
           </div>
           <p className="text-sm text-txt-tertiary font-medium mb-1">아직 팀원이 없습니다</p>
@@ -328,7 +328,7 @@ function MemberCard({
     <div className="border border-border bg-surface-card rounded-xl">
       <div className="flex items-start gap-3 px-4 py-3">
         {/* Avatar */}
-        <div className="w-10 h-10 bg-surface-inverse text-txt-inverse flex items-center justify-center font-bold text-sm shrink-0">
+        <div className="w-10 h-10 bg-surface-inverse text-txt-inverse flex items-center justify-center font-bold text-sm shrink-0 rounded-full">
           {member.profile?.nickname?.charAt(0) || '?'}
         </div>
 
@@ -337,7 +337,7 @@ function MemberCard({
           <div className="flex items-center gap-2 mb-0.5">
             <p className="font-semibold text-sm text-txt-primary">{member.profile?.nickname || '알 수 없음'}</p>
             {member.application?.match_score != null && (
-              <span className="text-[10px] font-mono font-bold text-brand bg-brand-bg px-1.5 py-0.5 border border-brand-border">
+              <span className="text-[10px] font-bold text-brand bg-brand-bg px-1.5 py-0.5 border border-brand-border rounded-full">
                 {member.application.match_score}% 매치
               </span>
             )}
@@ -352,7 +352,7 @@ function MemberCard({
           {member.profile?.skills && member.profile.skills.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-2">
               {member.profile.skills.slice(0, 5).map((skill, i) => (
-                <span key={i} className="text-[10px] font-mono bg-surface-sunken text-txt-secondary px-1.5 py-0.5 border border-border">
+                <span key={i} className="text-[10px] bg-surface-sunken text-txt-secondary px-1.5 py-0.5 border border-border rounded-lg">
                   {skill.name}
                 </span>
               ))}

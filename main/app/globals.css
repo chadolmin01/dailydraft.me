@@ -4,7 +4,7 @@
 
 /* ============================================================
    DRAFT DESIGN SYSTEM — CSS Custom Properties
-   Clean Modern · Instagram/Meta inspired · Content-first
+   Soft Minimalism · Toss/Apple inspired · Content-first
    ============================================================ */
 
 :root {
@@ -12,70 +12,70 @@
   --surface-bg: #FFFFFF;
   --surface-card: #FFFFFF;
   --surface-elevated: #FFFFFF;
-  --surface-sunken: #EEEEEE;
-  --surface-inverse: #262626;
+  --surface-sunken: #F7F8F9;
+  --surface-inverse: #1C1C1E;
   --surface-overlay: rgba(0, 0, 0, 0.4);
 
   /* ── Text ── */
-  --text-primary: #262626;
-  --text-secondary: #555555;
-  --text-tertiary: #8E8E8E;
-  --text-disabled: #C7C7C7;
+  --text-primary: #1C1C1E;
+  --text-secondary: #3A3A3C;
+  --text-tertiary: #8E8E93;
+  --text-disabled: #C7C7CC;
   --text-inverse: #FFFFFF;
-  --text-link: #00376B;
+  --text-link: #3182F6;
 
   /* ── Border ── */
-  --border-default: #E0E0E0;
-  --border-strong: #D0D0D0;
-  --border-subtle: #EEEEEE;
+  --border-default: #E5E5EA;
+  --border-strong: #D1D1D6;
+  --border-subtle: #F2F3F5;
 
   /* ── Accent ── */
-  --accent-primary: #0095F6;
-  --accent-primary-hover: #1877F2;
-  --accent-secondary: #F5F5F5;
-  --accent-secondary-hover: #EFEFEF;
+  --accent-primary: #3182F6;
+  --accent-primary-hover: #2272EB;
+  --accent-secondary: #F2F3F5;
+  --accent-secondary-hover: #E5E5EA;
 
-  /* ── Status ── */
+  /* ── Status (Apple HIG colors) ── */
   --status-success-bg: #F0FDF4;
-  --status-success-text: #16A34A;
+  --status-success-text: #34C759;
   --status-warning-bg: #FFFBEB;
-  --status-warning-text: #D97706;
+  --status-warning-text: #FF9F0A;
   --status-danger-bg: #FEF2F2;
-  --status-danger-text: #DC2626;
+  --status-danger-text: #FF3B30;
   --status-info-bg: #EFF6FF;
-  --status-info-text: #2563EB;
-  --status-neutral-bg: #F5F5F5;
-  --status-neutral-text: #737373;
-  --status-danger-accent: #EF4444;
+  --status-info-text: #3182F6;
+  --status-neutral-bg: #F2F3F5;
+  --status-neutral-text: #8E8E93;
+  --status-danger-accent: #FF3B30;
 
   /* ── Tag ── */
-  --tag-default-bg: #F5F5F5;
-  --tag-default-text: #555555;
-  --tag-strong-bg: #262626;
+  --tag-default-bg: #F2F3F5;
+  --tag-default-text: #3A3A3C;
+  --tag-strong-bg: #1C1C1E;
   --tag-strong-text: #FFFFFF;
-  --tag-outline-border: #DBDBDB;
-  --tag-outline-text: #555555;
+  --tag-outline-border: #E5E5EA;
+  --tag-outline-text: #3A3A3C;
 
-  /* ── Brand (Meta Blue) ── */
-  --brand: #0095F6;
-  --brand-hover: #1877F2;
-  --brand-bg: rgba(0, 149, 246, 0.06);
-  --brand-border: rgba(0, 149, 246, 0.2);
-  --brand-shadow: rgba(0, 149, 246, 0.2);
+  /* ── Brand (Toss Blue) ── */
+  --brand: #3182F6;
+  --brand-hover: #2272EB;
+  --brand-bg: rgba(49, 130, 246, 0.06);
+  --brand-border: rgba(49, 130, 246, 0.2);
+  --brand-shadow: rgba(49, 130, 246, 0.2);
 
   /* ── Indicator ── */
-  --indicator-online: #22C55E;
-  --indicator-premium: #F59E0B;
-  --indicator-premium-border: #D97706;
-  --indicator-alert: #EF4444;
-  --indicator-trending: #F97316;
+  --indicator-online: #34C759;
+  --indicator-premium: #FF9F0A;
+  --indicator-premium-border: #FF9500;
+  --indicator-alert: #FF3B30;
+  --indicator-trending: #FF9500;
 
   /* ── Bottom Tab Bar ── */
   --bottom-tab-height: 3.5rem;
 
   /* ── Misc ── */
   --grid-color: rgba(0, 0, 0, 0.03);
-  --focus-ring: rgba(0, 149, 246, 0.4);
+  --focus-ring: rgba(49, 130, 246, 0.4);
 
   /* ── Radius (Soft & Rounded) ── */
   --radius-xs: 6px;
@@ -101,64 +101,64 @@
   }
 }
 
-/* ── Dark mode ── */
+/* ── Dark mode (Apple HIG Dark) ── */
 .dark {
   --surface-bg: #000000;
-  --surface-card: #121212;
-  --surface-elevated: #1A1A1A;
-  --surface-sunken: #0A0A0A;
-  --surface-inverse: #FAFAFA;
+  --surface-card: #1C1C1E;
+  --surface-elevated: #2C2C2E;
+  --surface-sunken: #121212;
+  --surface-inverse: #F5F5F5;
   --surface-overlay: rgba(0, 0, 0, 0.7);
 
   --text-primary: #F5F5F5;
-  --text-secondary: #A8A8A8;
-  --text-tertiary: #737373;
-  --text-disabled: #525252;
-  --text-inverse: #262626;
-  --text-link: #E0F1FF;
+  --text-secondary: #AEAEB2;
+  --text-tertiary: #636366;
+  --text-disabled: #48484A;
+  --text-inverse: #1C1C1E;
+  --text-link: #5AC8FA;
 
-  --border-default: #3A3A3A;
-  --border-strong: #555555;
-  --border-subtle: #2A2A2A;
+  --border-default: #3A3A3C;
+  --border-strong: #48484A;
+  --border-subtle: #2C2C2E;
 
-  --accent-primary: #0095F6;
-  --accent-primary-hover: #1877F2;
-  --accent-secondary: #262626;
-  --accent-secondary-hover: #363636;
+  --accent-primary: #3182F6;
+  --accent-primary-hover: #5A9DF8;
+  --accent-secondary: #2C2C2E;
+  --accent-secondary-hover: #3A3A3C;
 
-  --status-success-bg: rgba(34, 197, 94, 0.12);
-  --status-success-text: #4ADE80;
-  --status-warning-bg: rgba(245, 158, 11, 0.12);
-  --status-warning-text: #FBBF24;
-  --status-danger-bg: rgba(239, 68, 68, 0.12);
-  --status-danger-text: #F87171;
-  --status-info-bg: rgba(37, 99, 235, 0.12);
-  --status-info-text: #60A5FA;
-  --status-neutral-bg: #262626;
-  --status-neutral-text: #737373;
-  --status-danger-accent: #F87171;
+  --status-success-bg: rgba(52, 199, 89, 0.12);
+  --status-success-text: #30D158;
+  --status-warning-bg: rgba(255, 159, 10, 0.12);
+  --status-warning-text: #FFD60A;
+  --status-danger-bg: rgba(255, 59, 48, 0.12);
+  --status-danger-text: #FF453A;
+  --status-info-bg: rgba(49, 130, 246, 0.12);
+  --status-info-text: #5AC8FA;
+  --status-neutral-bg: #2C2C2E;
+  --status-neutral-text: #636366;
+  --status-danger-accent: #FF453A;
 
-  --tag-default-bg: #262626;
-  --tag-default-text: #A8A8A8;
-  --tag-strong-bg: #FAFAFA;
-  --tag-strong-text: #262626;
-  --tag-outline-border: #363636;
-  --tag-outline-text: #A8A8A8;
+  --tag-default-bg: #2C2C2E;
+  --tag-default-text: #AEAEB2;
+  --tag-strong-bg: #F5F5F5;
+  --tag-strong-text: #1C1C1E;
+  --tag-outline-border: #3A3A3C;
+  --tag-outline-text: #AEAEB2;
 
-  --brand: #0095F6;
-  --brand-hover: #4CB5F9;
-  --brand-bg: rgba(0, 149, 246, 0.12);
-  --brand-border: rgba(0, 149, 246, 0.25);
-  --brand-shadow: rgba(0, 149, 246, 0.2);
+  --brand: #3182F6;
+  --brand-hover: #5A9DF8;
+  --brand-bg: rgba(49, 130, 246, 0.12);
+  --brand-border: rgba(49, 130, 246, 0.25);
+  --brand-shadow: rgba(49, 130, 246, 0.2);
 
-  --indicator-online: #4ADE80;
-  --indicator-premium: #FBBF24;
-  --indicator-premium-border: #F59E0B;
-  --indicator-alert: #F87171;
-  --indicator-trending: #FB923C;
+  --indicator-online: #30D158;
+  --indicator-premium: #FFD60A;
+  --indicator-premium-border: #FF9F0A;
+  --indicator-alert: #FF453A;
+  --indicator-trending: #FF9F0A;
 
   --grid-color: rgba(255, 255, 255, 0.03);
-  --focus-ring: rgba(0, 149, 246, 0.5);
+  --focus-ring: rgba(49, 130, 246, 0.5);
 
   --shadow-sm: 0 0 2px rgba(0, 0, 0, 0.4), 0 0 1px rgba(0, 0, 0, 0.5);
   --shadow-md: 0 0 6px rgba(0, 0, 0, 0.35), 0 0 1px rgba(0, 0, 0, 0.5);

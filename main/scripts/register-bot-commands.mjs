@@ -152,6 +152,11 @@ const commands = [
     type: 1,
   },
   {
+    name: '개발현황',
+    description: '오늘의 개발 활동 로그를 확인합니다',
+    type: 1,
+  },
+  {
     name: 'github',
     description: 'GitHub 레포 연동 관리',
     type: 1,

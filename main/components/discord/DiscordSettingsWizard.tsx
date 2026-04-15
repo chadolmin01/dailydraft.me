@@ -303,8 +303,8 @@ export function DiscordSettingsWizard({ clubSlug }: { clubSlug: string }) {
     return (
       <div className="max-w-2xl mx-auto px-5 py-12">
         <div className="animate-pulse space-y-4">
-          <div className="h-6 bg-border-default/30 rounded w-48" />
-          <div className="h-96 bg-border-default/30 rounded-2xl" />
+          <div className="h-6 bg-surface-sunken rounded w-48" />
+          <div className="h-96 bg-surface-sunken rounded-2xl" />
         </div>
       </div>
     )
@@ -329,7 +329,7 @@ export function DiscordSettingsWizard({ clubSlug }: { clubSlug: string }) {
           <h1 className="text-lg font-bold text-txt-primary">{club.name}</h1>
           <p className="text-xs text-txt-tertiary">Discord 연동 설정</p>
         </div>
-        <div className="ml-auto px-3 py-1 rounded-full bg-green-50 text-green-600 text-xs font-semibold border border-green-200">
+        <div className="ml-auto px-3 py-1 rounded-full bg-status-success-bg text-status-success-text text-xs font-semibold border border-status-success-text/20">
           연결됨
         </div>
       </div>
@@ -354,7 +354,7 @@ export function DiscordSettingsWizard({ clubSlug }: { clubSlug: string }) {
             </button>
           ))}
         </div>
-        <div className="h-1 bg-border-default/30 rounded-full overflow-hidden">
+        <div className="h-1 bg-surface-sunken rounded-full overflow-hidden">
           <div
             className="h-full bg-brand rounded-full transition-all duration-500 ease-out"
             style={{ width: `${progress}%` }}
@@ -363,7 +363,7 @@ export function DiscordSettingsWizard({ clubSlug }: { clubSlug: string }) {
       </div>
 
       {/* Chat Area */}
-      <div className="bg-surface-card border border-border-default rounded-2xl overflow-hidden">
+      <div className="bg-surface-card border border-border rounded-2xl overflow-hidden">
         <div className="max-h-[60vh] overflow-y-auto p-5 space-y-4">
           {messages.map(msg => (
             <div
@@ -398,7 +398,7 @@ export function DiscordSettingsWizard({ clubSlug }: { clubSlug: string }) {
         </div>
 
         {/* Step-specific Input Area */}
-        <div className="border-t border-border-default p-5">
+        <div className="border-t border-border p-5">
           {currentStep === 'welcome' && (
             <button
               onClick={handleStart}
@@ -477,7 +477,7 @@ export function DiscordSettingsWizard({ clubSlug }: { clubSlug: string }) {
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl border transition-all text-left ${
                     tone === opt.value
                       ? 'border-brand bg-brand-bg/50'
-                      : 'border-border-default hover:border-txt-tertiary'
+                      : 'border-border hover:border-txt-tertiary'
                   }`}
                 >
                   <span className="text-xl">{opt.emoji}</span>
@@ -502,7 +502,7 @@ export function DiscordSettingsWizard({ clubSlug }: { clubSlug: string }) {
                       className={`w-9 h-9 rounded-full text-sm font-semibold transition-all ${
                         checkinDay === i
                           ? 'bg-brand text-white'
-                          : 'bg-surface-bg text-txt-secondary hover:bg-border-default/50'
+                          : 'bg-surface-bg text-txt-secondary hover:bg-surface-sunken'
                       }`}
                     >
                       {day}
@@ -520,7 +520,7 @@ export function DiscordSettingsWizard({ clubSlug }: { clubSlug: string }) {
                       className={`w-9 h-9 rounded-full text-sm font-semibold transition-all ${
                         generateDay === i
                           ? 'bg-brand text-white'
-                          : 'bg-surface-bg text-txt-secondary hover:bg-border-default/50'
+                          : 'bg-surface-bg text-txt-secondary hover:bg-surface-sunken'
                       }`}
                     >
                       {day}
@@ -545,14 +545,14 @@ export function DiscordSettingsWizard({ clubSlug }: { clubSlug: string }) {
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => setMinMessages(m => Math.max(1, m - 1))}
-                    className="w-8 h-8 rounded-full border border-border-default text-txt-secondary hover:bg-surface-bg transition-colors flex items-center justify-center"
+                    className="w-8 h-8 rounded-full border border-border text-txt-secondary hover:bg-surface-bg transition-colors flex items-center justify-center"
                   >
                     −
                   </button>
                   <span className="text-lg font-bold text-txt-primary w-8 text-center">{minMessages}</span>
                   <button
                     onClick={() => setMinMessages(m => Math.min(50, m + 1))}
-                    className="w-8 h-8 rounded-full border border-border-default text-txt-secondary hover:bg-surface-bg transition-colors flex items-center justify-center"
+                    className="w-8 h-8 rounded-full border border-border text-txt-secondary hover:bg-surface-bg transition-colors flex items-center justify-center"
                   >
                     +
                   </button>
@@ -570,7 +570,7 @@ export function DiscordSettingsWizard({ clubSlug }: { clubSlug: string }) {
                       className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
                         timeoutHours === h
                           ? 'bg-brand text-white'
-                          : 'bg-surface-bg text-txt-secondary hover:bg-border-default/50'
+                          : 'bg-surface-bg text-txt-secondary hover:bg-surface-sunken'
                       }`}
                     >
                       {h}시간
@@ -586,7 +586,7 @@ export function DiscordSettingsWizard({ clubSlug }: { clubSlug: string }) {
                   onChange={e => setCustomPrompt(e.target.value)}
                   placeholder="예: 기술 스택 언급 금지"
                   maxLength={200}
-                  className="w-full px-3 py-2.5 border border-border-default rounded-xl text-sm text-txt-primary bg-surface-card resize-none h-20 focus:outline-none focus:border-brand transition-colors placeholder:text-txt-disabled"
+                  className="w-full px-3 py-2.5 border border-border rounded-xl text-sm text-txt-primary bg-surface-card resize-none h-20 focus:outline-none focus:border-brand transition-colors placeholder:text-txt-disabled"
                 />
                 <div className="text-right text-[11px] text-txt-disabled mt-1">{customPrompt.length}/200</div>
               </div>
