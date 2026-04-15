@@ -23,6 +23,7 @@ export interface ClubDetail {
   category: string | null
   visibility: string
   require_approval: boolean
+  team_channel_visibility: 'isolated' | 'open'
   created_by: string
   created_at: string
   updated_at: string

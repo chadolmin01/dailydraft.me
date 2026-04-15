@@ -5,6 +5,7 @@ import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 // ── 허용된 PATCH 필드 ──
 const UPDATABLE_FIELDS = new Set([
   'name', 'description', 'logo_url', 'visibility', 'require_approval', 'category',
+  'team_channel_visibility',
 ])
 
 // GET /api/clubs/[slug] — 클럽 상세 조회 (공개)
@@ -13,11 +14,13 @@ export const GET = withErrorCapture(
     const { slug } = await context.params
     const supabase = await createClient()
 
-    const { data: club, error } = await supabase
+    // team_channel_visibility: 마이그레이션 적용 후 타입 재생성하면 any 캐스트 제거 가능
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: club, error } = await (supabase as any)
       .from('clubs')
       .select(`
         id, slug, name, description, logo_url, category,
-        visibility, require_approval,
+        visibility, require_approval, team_channel_visibility,
         created_by, created_at, updated_at
       `)
       .eq('slug', slug)
@@ -163,6 +166,11 @@ export const PATCH = withErrorCapture(
     // visibility 값 검증
     if (updates.visibility && !['public', 'school_only', 'private'].includes(updates.visibility as string)) {
       return ApiResponse.badRequest('visibility는 public, school_only, private 중 하나여야 합니다')
+    }
+
+    // team_channel_visibility 값 검증
+    if (updates.team_channel_visibility && !['isolated', 'open'].includes(updates.team_channel_visibility as string)) {
+      return ApiResponse.badRequest('team_channel_visibility는 isolated, open 중 하나여야 합니다')
     }
 
     const { data: updated, error } = await supabase

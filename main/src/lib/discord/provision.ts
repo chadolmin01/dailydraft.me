@@ -69,6 +69,31 @@ export async function provisionTeamChannels(
   const cleanupRoleId: string | null = null
   const cleanupChannelIds: string[] = []
 
+  // 클럽의 팀 채널 공개 범위 설정 조회
+  // isolated: @everyone 숨김 + Team Role만 접근 (창업동아리 등)
+  // open: 제한 없음, 동아리 전체가 볼 수 있음 (스터디 등)
+  // team_channel_visibility: 마이그레이션 적용 후 타입 재생성하면 any 캐스트 제거 가능
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: clubSettings } = await (admin as any)
+    .from('clubs')
+    .select('team_channel_visibility')
+    .eq('id', clubId)
+    .single()
+  const isIsolated = (clubSettings?.team_channel_visibility ?? 'isolated') === 'isolated'
+
+  // 운영진 Role ID 조회 (격리 모드에서 운영진이 전체 팀 열람 가능하도록)
+  let adminRoleId: string | null = null
+  if (isIsolated) {
+    const { data: adminMapping } = await admin
+      .from('discord_role_mappings')
+      .select('discord_role_id')
+      .eq('club_id', clubId)
+      .eq('mapping_type', 'club_role')
+      .eq('draft_value', 'admin')
+      .maybeSingle()
+    adminRoleId = adminMapping?.discord_role_id ?? null
+  }
+
   // 랜덤 색상 (파스텔 계열 — 팀 구분용)
   const teamColor = Math.floor(Math.random() * 0xFFFFFF)
 
@@ -80,16 +105,23 @@ export async function provisionTeamChannels(
     const role = await createGuildRole(guildId, teamName, { color: teamColor })
     roleId = role.id
 
-    // 2. 카테고리 생성 + @everyone 숨김 + Team Role 접근 허용
+    // 2. 카테고리 생성 + 권한 설정
     const everyoneRoleId = guildId // @everyone role ID = guild ID (Discord 규칙)
-    const categoryOverwrites: DiscordPermissionOverwrite[] = [
-      { id: everyoneRoleId, type: 0, allow: '0', deny: PERMS.EVERYONE_DENY },
-      { id: roleId, type: 0, allow: PERMS.TEAM_MEMBER_ALLOW, deny: '0' },
-    ]
+
+    // 격리 모드: @everyone 숨김 + Team Role만 접근 + 운영진도 접근
+    // 공개 모드: 권한 제한 없음 (Team Role은 색상 구분용으로만 사용)
+    const categoryOverwrites: DiscordPermissionOverwrite[] = isIsolated
+      ? [
+          { id: everyoneRoleId, type: 0, allow: '0', deny: PERMS.EVERYONE_DENY },
+          { id: roleId, type: 0, allow: PERMS.TEAM_MEMBER_ALLOW, deny: '0' },
+          // 운영진 Role이 있으면 전체 팀 카테고리 열람 가능
+          ...(adminRoleId ? [{ id: adminRoleId, type: 0 as const, allow: PERMS.TEAM_MEMBER_ALLOW, deny: '0' }] : []),
+        ]
+      : []
 
     const category = await createGuildChannel(guildId, `🏷️ ${teamName}`, {
       type: 4,
-      permission_overwrites: categoryOverwrites,
+      ...(categoryOverwrites.length > 0 ? { permission_overwrites: categoryOverwrites } : {}),
     })
     categoryId = category.id
     cleanupChannelIds.push(categoryId)

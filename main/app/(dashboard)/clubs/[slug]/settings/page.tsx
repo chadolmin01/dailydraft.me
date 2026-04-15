@@ -1,7 +1,9 @@
 'use client'
 
 import { useParams, useRouter } from 'next/navigation'
-import { ChevronLeft } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { ChevronLeft, Lock, Users } from 'lucide-react'
+import { toast } from 'sonner'
 import { useClub } from '@/src/hooks/useClub'
 import { ClubDiscordSettings } from '@/components/discord/ClubDiscordSettings'
 import { ClubDiscordRoleMappings } from '@/components/discord/ClubDiscordRoleMappings'
@@ -56,6 +58,9 @@ export default function ClubSettingsPage() {
         <ClubDiscordRoleMappings clubSlug={slug} />
       </section>
 
+      {/* 팀 채널 공개 범위 */}
+      <TeamChannelVisibilityToggle clubSlug={slug} club={club} />
+
       {/* GitHub 연동 안내 */}
       <section className="mt-6">
         <div className="bg-surface-card border border-border rounded-2xl p-5">
@@ -78,5 +83,101 @@ export default function ClubSettingsPage() {
         </div>
       </section>
     </div>
+  )
+}
+
+/** 팀 채널 공개 범위 토글 */
+function TeamChannelVisibilityToggle({
+  clubSlug,
+  club,
+}: {
+  clubSlug: string
+  club: { team_channel_visibility: 'isolated' | 'open' }
+}) {
+  const [value, setValue] = useState(club.team_channel_visibility)
+  const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    setValue(club.team_channel_visibility)
+  }, [club.team_channel_visibility])
+
+  const handleChange = async (newValue: 'isolated' | 'open') => {
+    if (newValue === value || saving) return
+    setValue(newValue)
+    setSaving(true)
+    try {
+      const res = await fetch(`/api/clubs/${clubSlug}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ team_channel_visibility: newValue }),
+      })
+      if (!res.ok) throw new Error()
+      toast.success(
+        newValue === 'isolated'
+          ? '팀 채널이 팀원 전용으로 설정되었습니다'
+          : '팀 채널이 전체 공개로 설정되었습니다'
+      )
+    } catch {
+      setValue(value === 'isolated' ? 'isolated' : 'open') // rollback
+      toast.error('설정 변경에 실패했습니다')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const options = [
+    {
+      key: 'isolated' as const,
+      icon: Lock,
+      label: '팀원만 볼 수 있음',
+      desc: '다른 팀의 채널은 보이지 않습니다. 창업동아리 등 아이디어 보안이 중요한 경우 권장합니다.',
+    },
+    {
+      key: 'open' as const,
+      icon: Users,
+      label: '동아리 전체 공개',
+      desc: '모든 팀 채널을 동아리 부원 전체가 볼 수 있습니다. 스터디, 해커톤 등 공유가 목적인 경우 적합합니다.',
+    },
+  ]
+
+  return (
+    <section className="mt-6">
+      <div className="bg-surface-card border border-border rounded-2xl p-5">
+        <h2 className="text-base font-bold text-txt-primary mb-1">팀 채널 공개 범위</h2>
+        <p className="text-xs text-txt-tertiary mb-4">
+          새로 생성되는 팀 채널의 Discord 권한에 적용됩니다
+        </p>
+        <div className="space-y-2">
+          {options.map((opt) => {
+            const isSelected = value === opt.key
+            return (
+              <button
+                key={opt.key}
+                onClick={() => handleChange(opt.key)}
+                disabled={saving}
+                className={`w-full text-left px-4 py-3.5 rounded-xl border transition-colors ${
+                  isSelected
+                    ? 'border-[#3182F6] bg-[#3182F6]/5'
+                    : 'border-border hover:bg-surface-bg'
+                } disabled:opacity-60`}
+              >
+                <div className="flex items-center gap-3">
+                  <opt.icon
+                    size={18}
+                    className={isSelected ? 'text-[#3182F6]' : 'text-txt-tertiary'}
+                  />
+                  <div>
+                    <p className={`text-sm font-semibold ${isSelected ? 'text-[#3182F6]' : 'text-txt-primary'}`}>
+                      {opt.label}
+                    </p>
+                    <p className="text-xs text-txt-tertiary mt-0.5">{opt.desc}</p>
+                  </div>
+                </div>
+              </button>
+            )
+          })}
+        </div>
+      </div>
+    </section>
   )
 }
