@@ -1,8 +1,9 @@
 'use client'
 
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { ChevronLeft, Lock, Users } from 'lucide-react'
+import { ChevronLeft, Lock, Sparkles, Users } from 'lucide-react'
+import Link from 'next/link'
 import { toast } from 'sonner'
 import { useClub } from '@/src/hooks/useClub'
 import { ClubDiscordSettings } from '@/components/discord/ClubDiscordSettings'
@@ -10,7 +11,6 @@ import { ClubDiscordRoleMappings } from '@/components/discord/ClubDiscordRoleMap
 
 export default function ClubSettingsPage() {
   const { slug } = useParams<{ slug: string }>()
-  const router = useRouter()
   const { data: club, isLoading } = useClub(slug)
 
   if (isLoading) {
@@ -36,12 +36,13 @@ export default function ClubSettingsPage() {
     <div className="max-w-xl mx-auto px-5 py-6">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
-        <button
-          onClick={() => router.push(`/clubs/${slug}`)}
+        <Link
+          href={`/clubs/${slug}`}
           className="text-txt-tertiary hover:text-txt-primary transition-colors"
+          aria-label="뒤로"
         >
           <ChevronLeft size={20} />
-        </button>
+        </Link>
         <div>
           <h1 className="text-lg font-bold text-txt-primary">{club.name} 설정</h1>
           <p className="text-xs text-txt-tertiary">클럽 운영 설정을 관리합니다</p>
@@ -56,6 +57,27 @@ export default function ClubSettingsPage() {
 
         {/* 역할 매핑 — Discord 연결 시에만 표시 (내부에서 guild 없으면 null) */}
         <ClubDiscordRoleMappings clubSlug={slug} />
+      </section>
+
+      {/* 브랜드 페르소나 진입점 */}
+      <section className="mt-6">
+        <Link
+          href={`/clubs/${slug}/settings/persona`}
+          className="block bg-surface-card border border-border rounded-2xl p-5 hover:border-[#3182F6]/40 hover:bg-surface-bg transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <div className="shrink-0 w-10 h-10 rounded-xl bg-surface-bg flex items-center justify-center">
+              <Sparkles size={18} className="text-txt-secondary" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h2 className="text-base font-bold text-txt-primary">브랜드 페르소나</h2>
+              <p className="text-xs text-txt-tertiary mt-0.5">
+                동아리의 정체성·독자·톤을 정의해 외부 발행 콘텐츠의 일관성을 만듭니다
+              </p>
+            </div>
+            <ChevronLeft size={16} className="rotate-180 text-txt-tertiary shrink-0" />
+          </div>
+        </Link>
       </section>
 
       {/* 팀 채널 공개 범위 */}

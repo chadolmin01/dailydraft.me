@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 import { useInstitutionAdmin } from '@/src/hooks/useInstitutionAdmin'
@@ -83,13 +84,13 @@ export default function InstitutionBusinessPlansPage() {
       <div className="max-w-[87.5rem] mx-auto p-8 lg:p-12 space-y-6">
         {/* Header */}
         <div className="border-b border-border pb-6">
-          <button
-            onClick={() => router.push('/institution')}
+          <Link
+            href="/institution"
             className="text-[10px] font-medium text-txt-tertiary mb-2 flex items-center gap-1 hover:text-txt-primary transition-colors"
           >
             <ChevronLeft size={12} />
             Institution Dashboard
-          </button>
+          </Link>
           <h1 className="text-3xl font-bold text-txt-primary tracking-tight">사업계획서 현황</h1>
           <p className="text-txt-tertiary text-sm mt-1">
             {institution?.institutionName} · 예비창업패키지 등 사업계획서 작성 진행률

@@ -3,7 +3,6 @@
 import React, { useState } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { AnimatePresence } from 'framer-motion'
 import { Zap, ArrowRight, MessageCircle, Heart } from 'lucide-react'
 import { SkeletonGrid } from '@/components/ui/Skeleton'
@@ -43,7 +42,6 @@ function seededNumber(id: string, min: number, max: number): number {
 }
 
 export const OpportunitySection: React.FC = () => {
-  const router = useRouter()
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
 
   const { data: oppData, isLoading: loading } = useOpportunities({ limit: 3 })
@@ -92,12 +90,12 @@ export const OpportunitySection: React.FC = () => {
             <SectionLabel>LIVE PROJECTS</SectionLabel>
             <SectionTitle>지금 올라온 프로젝트</SectionTitle>
           </div>
-          <button
-            onClick={() => router.push('/explore')}
+          <Link
+            href="/explore"
             className="text-sm font-bold text-txt-secondary hover:text-brand transition-colors flex items-center gap-1"
           >
             전체 보기 <ArrowRight size={14} />
-          </button>
+          </Link>
         </div>
 
         {loading ? (
@@ -107,8 +105,20 @@ export const OpportunitySection: React.FC = () => {
             {displayProjects.map((project, i) => (
               <ScrollReveal key={project.id} delay={i * 0.1}>
                 <div
+                  role="button"
+                  tabIndex={0}
                   className="group bg-surface-card rounded-xl border border-border p-5 hover:shadow-md hover-spring cursor-pointer flex flex-col h-full transition-shadow"
-                  onClick={() => project.isReal ? setSelectedProjectId(project.id) : router.push('/explore')}
+                  onClick={() => {
+                    if (project.isReal) setSelectedProjectId(project.id)
+                    else window.location.href = '/explore'
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      if (project.isReal) setSelectedProjectId(project.id)
+                      else window.location.href = '/explore'
+                    }
+                  }}
                 >
                   {/* Header */}
                   <div className="flex justify-between items-start mb-4">

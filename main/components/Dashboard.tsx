@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 import { Card } from './ui/Card'
 import { DetailModal } from './ui/DetailModal'
@@ -24,7 +24,6 @@ import { ErrorState } from './ui/ErrorState'
 
 
 export const Dashboard: React.FC = () => {
-  const router = useRouter()
   const [selectedOpportunity, setSelectedOpportunity] = useState<Opportunity | null>(null)
 
   const { user } = useAuth()
@@ -149,12 +148,12 @@ export const Dashboard: React.FC = () => {
             </div>
             <h1 className="text-3xl font-bold text-txt-primary tracking-tight">Dashboard</h1>
           </div>
-          <button
-            onClick={() => router.push('/projects')}
+          <Link
+            href="/projects"
             className="bg-brand text-white border border-brand px-4 py-2 text-sm font-medium hover:bg-brand-hover transition-colors flex items-center gap-2 shadow-sm rounded-xl"
           >
              <Plus size={16} /> New Draft
-          </button>
+          </Link>
         </div>
 
         {/* Content Wrapper */}
@@ -167,12 +166,12 @@ export const Dashboard: React.FC = () => {
                   <span className="w-5 h-5 bg-brand text-white flex items-center justify-center text-[0.5rem] font-bold font-mono">R</span>
                   <h3 className="text-[10px] font-medium text-txt-primary">Recommended Opportunities</h3>
                 </div>
-                <button
-                   onClick={() => router.push('/explore')}
+                <Link
+                   href="/explore"
                    className="text-[10px] text-txt-tertiary hover:text-txt-primary font-mono font-medium border border-border px-2 py-0.5 hover:border-border transition-colors"
                 >
                    View All
-                </button>
+                </Link>
              </div>
 
              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">

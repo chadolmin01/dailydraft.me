@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/src/context/AuthContext'
@@ -321,12 +322,13 @@ export function NotificationDropdown() {
           {/* Footer */}
           {allNotifications.length > 0 && (
             <div className="border-t border-border/40 px-4 py-2.5">
-              <button
-                onClick={() => { router.push('/notifications'); setIsOpen(false) }}
-                className="w-full text-center text-[11px] font-bold text-txt-tertiary hover:text-brand transition-colors py-1"
+              <Link
+                href="/notifications"
+                onClick={() => setIsOpen(false)}
+                className="block w-full text-center text-[11px] font-bold text-txt-tertiary hover:text-brand transition-colors py-1"
               >
                 전체 알림 페이지 →
-              </button>
+              </Link>
             </div>
           )}
         </div>

@@ -111,6 +111,12 @@ export function DraftReviewClient({ draftId }: { draftId: string }) {
   const [editTeamStatus, setEditTeamStatus] = useState<'good' | 'normal' | 'hard'>('good')
   const [editHelpText, setEditHelpText] = useState('')
 
+  // submitted/rejected 결과 화면에서 "대시보드로" 버튼이 즉시 반응하도록 미리 JS 청크를 예열.
+  // 왜 useEffect: onBack는 콜백이라 Link화가 어려워 router.push를 유지하되 prefetch로 체감만 개선.
+  useEffect(() => {
+    router.prefetch('/dashboard')
+  }, [router])
+
   // ── Fetch draft ──
   // AbortController로 StrictMode 이중 렌더링 race condition 방지
   useEffect(() => {

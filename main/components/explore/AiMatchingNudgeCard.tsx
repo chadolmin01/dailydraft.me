@@ -19,7 +19,10 @@ export function AiMatchingNudgeCard() {
 
   useEffect(() => {
     setDismissed(localStorage.getItem(getDismissKey()) === '1')
-  }, [])
+    // "시작하기" 버튼이 sessionStorage 저장 후 이동하는 구조라 Link화가 어려움 →
+    // 컴포넌트 보이는 순간 대상 라우트 JS를 미리 예열해 클릭 체감을 개선.
+    router.prefetch('/onboarding/interview')
+  }, [router])
 
   if (dismissed) return null
 

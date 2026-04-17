@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useClub } from '@/src/hooks/useClub'
@@ -605,12 +606,12 @@ export function DiscordSettingsWizard({ clubSlug }: { clubSlug: string }) {
             <div className="text-center py-2 space-y-3">
               <div className="text-2xl mb-1">✓</div>
               <p className="text-sm text-txt-secondary">설정이 완료되었습니다</p>
-              <button
-                onClick={() => router.push(`/clubs/${clubSlug}`)}
-                className="w-full py-3 bg-brand text-white rounded-xl font-semibold text-sm hover:bg-brand-hover transition-colors"
+              <Link
+                href={`/clubs/${clubSlug}`}
+                className="block w-full py-3 bg-brand text-white rounded-xl font-semibold text-sm hover:bg-brand-hover transition-colors text-center"
               >
                 클럽 관리로 이동
-              </button>
+              </Link>
               <button
                 onClick={() => {
                   setCurrentStep('channels')

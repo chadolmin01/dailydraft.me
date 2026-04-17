@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useCallback } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAdmin } from '@/src/hooks/useAdmin'
@@ -243,13 +244,13 @@ export default function AdminInstitutionsPage() {
       <div className="max-w-[87.5rem] mx-auto p-8 lg:p-12 space-y-6">
         {/* Header */}
         <div className="border-b border-border pb-6">
-          <button
-            onClick={() => router.push('/admin')}
+          <Link
+            href="/admin"
             className="text-[10px] font-medium text-txt-tertiary mb-2 flex items-center gap-1 hover:text-txt-primary transition-colors"
           >
             <ArrowLeft size={12} />
             Admin Dashboard
-          </button>
+          </Link>
           <h1 className="text-3xl font-bold text-txt-primary tracking-tight">기관 관리</h1>
           <p className="text-txt-tertiary text-sm mt-1">기관 생성, 수정, 삭제 및 멤버 배정</p>
         </div>

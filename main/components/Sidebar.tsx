@@ -1,7 +1,8 @@
 'use client'
 
 import React, { useState, useRef, useEffect } from 'react'
-import { useRouter, usePathname } from 'next/navigation'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import {
   Compass,
   MessageSquare,
@@ -29,7 +30,6 @@ import { useUnreadCount } from '@/src/hooks/useMessages'
 import InviteCodeModal from '@/components/InviteCodeModal'
 
 export const Sidebar: React.FC = () => {
-  const router = useRouter()
   const pathname = usePathname()
   const { signOut, user } = useAuth()
   const { data: profile } = useProfile()
@@ -70,14 +70,8 @@ export const Sidebar: React.FC = () => {
     }
   }, [isMenuOpen])
 
+  // 순수 액션(비네비게이션)만 처리 — 네비게이션은 <Link>가 담당 (prefetch 활성화)
   const handleMenuAction = async (action: string) => {
-    if (action === 'profile') router.push('/profile')
-    if (action === 'settings') router.push('/profile')
-    if (action === 'usage') router.push('/usage')
-    if (action === 'institution') router.push('/institution')
-    if (action === 'error-logs') router.push('/admin/error-logs')
-    if (action === 'invite-codes-admin') router.push('/admin/invite-codes')
-    if (action === 'notifications') router.push('/notifications')
     if (action === 'invite-code') {
       setIsInviteModalOpen(true)
     }
@@ -93,6 +87,8 @@ export const Sidebar: React.FC = () => {
     setIsMenuOpen(false)
   }
 
+  const closeMenu = () => setIsMenuOpen(false)
+
   const handleInviteSuccess = () => {
     refetchPremium()
   }
@@ -104,10 +100,10 @@ export const Sidebar: React.FC = () => {
 
   return (
     <div className="w-16 flex-shrink-0 bg-surface-card border-r border-border flex flex-col items-center py-6 h-screen sticky top-0 z-50">
-      {/* Home / Logo Button - Now goes to Dashboard */}
-      <div
+      {/* Home / Logo — Link로 구현해 Next.js 기본 prefetch 활성화 (호버·viewport 진입 시) */}
+      <Link
+        href="/explore"
         className="mb-8 cursor-pointer group relative"
-        onClick={() => router.push('/explore')}
       >
         <div
           className={`w-10 h-10 flex items-center justify-center rounded-lg transition-colors
@@ -123,14 +119,14 @@ export const Sidebar: React.FC = () => {
         <div className="absolute left-14 top-1/2 -translate-y-1/2 bg-surface-inverse text-txt-inverse text-[10px] font-medium px-2 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-sm">
           MAIN
         </div>
-      </div>
+      </Link>
 
-      {/* Navigation */}
+      {/* Navigation — 각 탭을 Link로 렌더해 prefetch 활성화 */}
       <nav className="flex-1 flex flex-col gap-3 w-full px-3">
         {navItems.map((item) => (
-          <button
+          <Link
             key={item.id}
-            onClick={() => router.push(item.path)}
+            href={item.path}
             className={`w-10 h-10 flex items-center justify-center transition-all duration-200 mx-auto rounded-lg relative group
               ${
                 getActiveTab() === item.id
@@ -149,7 +145,7 @@ export const Sidebar: React.FC = () => {
             <div className="absolute left-14 top-1/2 -translate-y-1/2 bg-surface-inverse text-txt-inverse text-[10px] font-medium px-2 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-sm">
               {item.label}
             </div>
-          </button>
+          </Link>
         ))}
       </nav>
 
@@ -172,29 +168,33 @@ export const Sidebar: React.FC = () => {
               <div className="text-[10px] text-txt-tertiary font-mono mt-0.5">{user?.email || ''}</div>
             </div>
 
-            {/* Menu Items */}
-            <button
-              onClick={() => handleMenuAction('profile')}
+            {/* Menu Items — Link 기반으로 prefetch 활성화, 클릭 시 메뉴만 닫음 */}
+            <Link
+              href="/profile"
+              onClick={closeMenu}
               className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary rounded-lg transition-colors text-left w-full"
             >
               <User size={14} /> My Profile
-            </button>
+            </Link>
             {/* Community Mode: Usage hidden
-            <button
-              onClick={() => handleMenuAction('usage')}
+            <Link
+              href="/usage"
+              onClick={closeMenu}
               className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary rounded-lg transition-colors text-left w-full"
             >
               <BarChart3 size={14} /> Usage & Billing
-            </button>
+            </Link>
             */}
-            <button
-              onClick={() => handleMenuAction('settings')}
+            <Link
+              href="/profile"
+              onClick={closeMenu}
               className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary rounded-lg transition-colors text-left w-full"
             >
               <Settings size={14} /> Settings
-            </button>
-            <button
-              onClick={() => handleMenuAction('notifications')}
+            </Link>
+            <Link
+              href="/notifications"
+              onClick={closeMenu}
               className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary rounded-lg transition-colors text-left w-full"
             >
               <Bell size={14} /> Notifications{' '}
@@ -203,7 +203,7 @@ export const Sidebar: React.FC = () => {
                   {unreadMessages > 9 ? '9+' : unreadMessages}
                 </span>
               )}
-            </button>
+            </Link>
 
             {/* Invite Code - Only show for non-premium users */}
             {!isPremium && (
@@ -222,12 +222,13 @@ export const Sidebar: React.FC = () => {
                 <div className="px-3 py-1.5">
                   <div className="text-[10px] font-medium text-txt-tertiary">Institution</div>
                 </div>
-                <button
-                  onClick={() => handleMenuAction('institution')}
+                <Link
+                  href="/institution"
+                  onClick={closeMenu}
                   className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary rounded-lg transition-colors text-left w-full"
                 >
                   <Building2 size={14} /> 기관 대시보드
-                </button>
+                </Link>
               </>
             )}
 
@@ -239,18 +240,20 @@ export const Sidebar: React.FC = () => {
                 <div className="px-3 py-1.5">
                   <div className="text-[10px] font-medium text-txt-tertiary">Admin</div>
                 </div>
-                <button
-                  onClick={() => handleMenuAction('invite-codes-admin')}
+                <Link
+                  href="/admin/invite-codes"
+                  onClick={closeMenu}
                   className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary rounded-lg transition-colors text-left w-full"
                 >
                   <Gift size={14} /> 초대 코드 관리
-                </button>
-                <button
-                  onClick={() => handleMenuAction('error-logs')}
+                </Link>
+                <Link
+                  href="/admin/error-logs"
+                  onClick={closeMenu}
                   className="flex items-center gap-3 px-3 py-2 text-xs font-medium text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary rounded-lg transition-colors text-left w-full"
                 >
                   <AlertCircle size={14} /> Error Logs
-                </button>
+                </Link>
                 <div className="h-px border-t border-border my-1"></div>
               </>
             )}

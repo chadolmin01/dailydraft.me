@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/src/context/AuthContext'
@@ -26,6 +26,13 @@ import { SkeletonProfile, SkeletonGrid } from '@/components/ui/Skeleton'
 export default function ProfilePageClient() {
   const router = useRouter()
   const { user, isLoading: isAuthLoading } = useAuth()
+
+  // AiOnboardingModal confirm → sessionStorage 저장 후 /onboarding/interview로 이동.
+  // Link화 불가(side effect + nav)라 라우트 JS만 프리패치해 체감 개선.
+  useEffect(() => {
+    router.prefetch('/onboarding/interview')
+  }, [router])
+
   const { data: profile, isPending: isProfilePending } = useProfile()
   const { data: myOpportunities = [] } = useMyOpportunities()
   const { data: portfolioItems = [] } = usePortfolioItems()

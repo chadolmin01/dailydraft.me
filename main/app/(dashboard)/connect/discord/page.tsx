@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useRef } from 'react'
+import Link from 'next/link'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/src/context/AuthContext'
 import { CheckCircle2, Loader2, AlertCircle, ArrowRight } from 'lucide-react'
@@ -278,12 +279,12 @@ export default function ConnectDiscordPage() {
               {clubs.length === 0 ? (
                 <div className="text-center py-4">
                   <p className="text-sm text-txt-secondary mb-3">관리 중인 클럽이 없습니다.</p>
-                  <button
-                    onClick={() => router.push('/clubs')}
-                    className="px-4 py-2 bg-brand text-white rounded-xl text-sm font-semibold hover:bg-brand-hover transition-colors"
+                  <Link
+                    href="/clubs"
+                    className="inline-block px-4 py-2 bg-brand text-white rounded-xl text-sm font-semibold hover:bg-brand-hover transition-colors"
                   >
                     클럽 만들기
-                  </button>
+                  </Link>
                 </div>
               ) : (
                 <div className="space-y-2">

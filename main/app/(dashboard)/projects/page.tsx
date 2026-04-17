@@ -1,9 +1,10 @@
 'use client'
 
-import React, { useMemo } from 'react'
+import React, { useMemo, useCallback } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { opportunityKeys, OPP_WITH_CREATOR_SELECT, type OpportunityWithCreator } from '@/src/hooks/useOpportunities'
 import {
   Plus,
   FolderOpen,
@@ -223,6 +224,7 @@ function ProjectDashboardCard({
   index: number
 }) {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const week = latestUpdate?.week_number ?? calcWeek(project.created_at)
   const stage = latestUpdate ? UPDATE_TYPE_CONFIG[latestUpdate.update_type] : null
   const stageProgress = latestUpdate ? (STAGE_PROGRESS[latestUpdate.update_type] ?? 0) : 0
@@ -230,14 +232,37 @@ function ProjectDashboardCard({
   const isActive = (project.status ?? 'active') === 'active'
   const filledRoles = (project as Record<string, unknown>).filled_roles as string[] | null
   const neededRoles = project.needed_roles || []
+  const href = `/projects/${project.id}`
 
-  const goManage = () => router.push(`/projects/${project.id}`)
+  const goManage = () => router.push(href)
+
+  // 왜 onMouseEnter에서 양쪽을 다 prefetch: Next.js Link가 아니라 div role=button이라
+  // 라우트 JS 청크와 React Query 데이터 둘 다 수동으로 예열해야 클릭 후 매끄럽게 열림.
+  // 안 하면 관리 페이지 진입 시 스켈레톤이 꼭 깜빡임.
+  const handleHoverPrefetch = useCallback(() => {
+    router.prefetch(href)
+    queryClient.prefetchQuery({
+      queryKey: opportunityKeys.detail(project.id),
+      queryFn: async () => {
+        const { data, error } = await supabase
+          .from('opportunities')
+          .select(OPP_WITH_CREATOR_SELECT)
+          .eq('id', project.id)
+          .single()
+        if (error) throw error
+        return data as unknown as OpportunityWithCreator
+      },
+      staleTime: 1000 * 60 * 2,
+    })
+  }, [router, queryClient, project.id, href])
 
   return (
     <div
       role="button"
       tabIndex={0}
       onClick={goManage}
+      onMouseEnter={handleHoverPrefetch}
+      onFocus={handleHoverPrefetch}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()

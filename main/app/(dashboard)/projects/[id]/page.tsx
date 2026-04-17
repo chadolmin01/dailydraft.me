@@ -84,13 +84,13 @@ function ProjectManageContent() {
       {/* Header */}
       <div className="bg-surface-card border-b border-border sticky top-0 z-30">
         <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
-          <button
-            onClick={() => router.push('/profile')}
+          <Link
+            href="/profile"
             className="flex items-center gap-2 text-sm text-txt-secondary hover:text-txt-primary transition-colors"
           >
             <ArrowLeft size={16} />
             내 프로젝트
-          </button>
+          </Link>
           <div className="flex items-center gap-2">
             <Link
               href={`/p/${id}`}

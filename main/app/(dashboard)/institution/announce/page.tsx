@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useInstitutionAdmin } from '@/src/hooks/useInstitutionAdmin'
 import { Card } from '@/components/ui/Card'
@@ -91,13 +92,13 @@ export default function InstitutionAnnouncePage() {
       <div className="max-w-2xl mx-auto p-8 lg:p-12 space-y-6">
         {/* Header */}
         <div className="border-b border-border pb-6">
-          <button
-            onClick={() => router.push('/institution')}
+          <Link
+            href="/institution"
             className="text-[10px] font-medium text-txt-tertiary mb-2 flex items-center gap-1 hover:text-txt-primary transition-colors"
           >
             <ChevronLeft size={12} />
             Institution Dashboard
-          </button>
+          </Link>
           <h1 className="text-3xl font-bold text-txt-primary tracking-tight">전체 공지 발송</h1>
           <p className="text-txt-tertiary text-sm mt-1">
             {institution?.institutionName} · 소속 전체 멤버에게 이메일 공지

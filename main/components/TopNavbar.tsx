@@ -44,24 +44,32 @@ const GnbIconBtn = ({ label, onClick, children, className }: {
   </div>
 )
 
-// 드롭다운 메뉴 아이템
-const DropdownItem = ({ icon: Icon, children, onClick, disabled, danger }: {
-  icon: React.ElementType; children: React.ReactNode; onClick?: () => void; disabled?: boolean; danger?: boolean
-}) => (
-  <button
-    onClick={onClick}
-    disabled={disabled}
-    className={`w-full flex items-center gap-2.5 px-2.5 py-2 text-xs rounded-lg transition-colors text-left ${
-      disabled ? 'text-txt-disabled cursor-not-allowed'
-        : danger ? 'text-status-danger-text hover:bg-status-danger-bg'
-        : 'text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary'
-    }`}
-  >
-    {/* @ts-expect-error lucide icon size prop */}
-    <Icon size={14} />
-    {children}
-  </button>
-)
+// 드롭다운 메뉴 아이템 — href 주면 Link로 렌더해 prefetch 활성화, onClick만 주면 button
+const DropdownItem = ({ icon: Icon, children, href, onClick, disabled, danger }: {
+  icon: React.ElementType; children: React.ReactNode; href?: string; onClick?: () => void; disabled?: boolean; danger?: boolean
+}) => {
+  const className = `w-full flex items-center gap-2.5 px-2.5 py-2 text-xs rounded-lg transition-colors text-left ${
+    disabled ? 'text-txt-disabled cursor-not-allowed'
+      : danger ? 'text-status-danger-text hover:bg-status-danger-bg'
+      : 'text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary'
+  }`
+  if (href && !disabled) {
+    return (
+      <Link href={href} onClick={onClick} className={className}>
+        {/* @ts-expect-error lucide icon size prop */}
+        <Icon size={14} />
+        {children}
+      </Link>
+    )
+  }
+  return (
+    <button onClick={onClick} disabled={disabled} className={className}>
+      {/* @ts-expect-error lucide icon size prop */}
+      <Icon size={14} />
+      {children}
+    </button>
+  )
+}
 
 export const TopNavbar: React.FC = () => {
   const router = useRouter()
@@ -150,8 +158,8 @@ export const TopNavbar: React.FC = () => {
     setSearchQuery('')
   }
 
-  const handleNavClick = (href: string) => {
-    router.push(href)
+  // 검색 드롭다운 닫기 — Link 네비게이션 후 호출되어 prefetch는 유지됨
+  const closeSearchPanel = () => {
     setIsSearchOpen(false)
     setSearchQuery('')
   }
@@ -253,9 +261,10 @@ export const TopNavbar: React.FC = () => {
                     </p>
                     {filteredNav.length > 0 ? (
                       filteredNav.map((item) => (
-                        <button
+                        <Link
                           key={item.href || item.label}
-                          onClick={() => handleNavClick(item.href)}
+                          href={item.href}
+                          onClick={closeSearchPanel}
                           className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm transition-colors text-left text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary"
                         >
                           <div className="w-7 h-7 rounded-lg bg-surface-sunken flex items-center justify-center shrink-0">
@@ -263,7 +272,7 @@ export const TopNavbar: React.FC = () => {
                           </div>
                           <span>{item.label}</span>
                           <ChevronRight size={12} className="ml-auto text-txt-disabled" />
-                        </button>
+                        </Link>
                       ))
                     ) : (
                       <p className="px-2.5 py-2 text-xs text-txt-disabled">일치하는 페이지가 없습니다</p>
@@ -368,7 +377,7 @@ export const TopNavbar: React.FC = () => {
                       </div>
                       <div className="mx-3 border-t border-border-subtle" />
                       <div className="py-1.5 px-1.5">
-                        <DropdownItem icon={User} onClick={() => router.push('/profile')}>내 프로필</DropdownItem>
+                        <DropdownItem icon={User} href="/profile">내 프로필</DropdownItem>
                         <DropdownItem icon={Settings} disabled>설정</DropdownItem>
                       </div>
                       {isInstitutionAdmin && (
@@ -376,7 +385,7 @@ export const TopNavbar: React.FC = () => {
                           <div className="mx-3 border-t border-border-subtle" />
                           <div className="py-1.5 px-1.5">
                             <p className="px-2.5 py-1 text-[10px] text-txt-disabled">Institution</p>
-                            <DropdownItem icon={Building2} onClick={() => router.push('/institution')}>기관 대시보드</DropdownItem>
+                            <DropdownItem icon={Building2} href="/institution">기관 대시보드</DropdownItem>
                           </div>
                         </>
                       )}
@@ -385,11 +394,11 @@ export const TopNavbar: React.FC = () => {
                           <div className="mx-3 border-t border-border-subtle" />
                           <div className="py-1.5 px-1.5">
                             <p className="px-2.5 py-1 text-[10px] text-txt-disabled">Admin</p>
-                            <DropdownItem icon={Shield} onClick={() => router.push('/admin')}>관리자 대시보드</DropdownItem>
-                            <DropdownItem icon={User} onClick={() => router.push('/admin/users')}>사용자 관리</DropdownItem>
-                            <DropdownItem icon={Briefcase} onClick={() => router.push('/admin/opportunities')}>기회 관리</DropdownItem>
-                            <DropdownItem icon={Settings} onClick={() => router.push('/admin/invite-codes')}>초대 코드 관리</DropdownItem>
-                            <DropdownItem icon={AlertTriangle} onClick={() => router.push('/admin/error-logs')}>에러 로그</DropdownItem>
+                            <DropdownItem icon={Shield} href="/admin">관리자 대시보드</DropdownItem>
+                            <DropdownItem icon={User} href="/admin/users">사용자 관리</DropdownItem>
+                            <DropdownItem icon={Briefcase} href="/admin/opportunities">기회 관리</DropdownItem>
+                            <DropdownItem icon={Settings} href="/admin/invite-codes">초대 코드 관리</DropdownItem>
+                            <DropdownItem icon={AlertTriangle} href="/admin/error-logs">에러 로그</DropdownItem>
                           </div>
                         </>
                       )}
