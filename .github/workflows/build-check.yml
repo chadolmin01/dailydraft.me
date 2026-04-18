@@ -20,7 +20,8 @@ on:
 
 jobs:
   build:
-    name: TypeCheck + Next Build
+    # Ruleset 'TypeCheck+Next Build' (공백 없음) 와 매칭해야 required status check 통과.
+    name: TypeCheck+Next Build
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
