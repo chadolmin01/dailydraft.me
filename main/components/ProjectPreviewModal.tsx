@@ -1,15 +1,23 @@
 'use client'
 
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { X, ArrowRight, Calendar, Users, Eye, Heart } from 'lucide-react'
+import { X, ArrowRight, Calendar, Users, Eye, Heart, CheckCircle2 } from 'lucide-react'
 import { useOpportunity } from '@/src/hooks/useOpportunities'
 import { useBackHandler } from '@/src/hooks/useBackHandler'
 import { projectRoleLabel } from '@/src/constants/roles'
+import { CATEGORY_SLUGS } from '@/src/constants/categories'
 
 interface Props {
   projectId: string | null
   onClose: () => void
+}
+
+// category fallback cover — ProjectHeader/ExploreProjectGrid 와 동일 패턴
+function getCategoryCover(tags: string[]): string {
+  const match = tags.find(t => CATEGORY_SLUGS.includes(t))
+  return `/categories/${match ?? 'portfolio'}.svg`
 }
 
 /**
@@ -59,7 +67,7 @@ export function ProjectPreviewModal({ projectId, onClose }: Props) {
         >
           {/* 닫기 */}
           <div className="flex items-center justify-between px-5 pt-4 pb-2 shrink-0">
-            <span className="text-[11px] font-semibold text-txt-tertiary uppercase tracking-wider">미리보기</span>
+            <span className="text-[12px] font-semibold text-txt-tertiary">미리보기</span>
             <button
               onClick={onClose}
               className="p-1.5 -mr-1 text-txt-tertiary hover:text-txt-primary rounded-full hover:bg-surface-sunken transition-colors"
@@ -72,6 +80,7 @@ export function ProjectPreviewModal({ projectId, onClose }: Props) {
           {isLoading || !opportunity ? (
             <div className="px-5 pb-6">
               <div className="animate-pulse space-y-3">
+                <div className="h-32 bg-surface-sunken rounded-xl w-full" />
                 <div className="h-6 bg-surface-sunken rounded w-3/4" />
                 <div className="h-4 bg-surface-sunken rounded w-full" />
                 <div className="h-4 bg-surface-sunken rounded w-5/6" />
@@ -82,6 +91,31 @@ export function ProjectPreviewModal({ projectId, onClose }: Props) {
             <>
               {/* 본문 — 스크롤 가능 */}
               <div className="px-5 py-2 overflow-y-auto flex-1">
+                {/* 헤더 이미지 — demo_images[0] 우선, 없으면 카테고리 커버 폴백 (ProjectHeader 와 동일) */}
+                <div className="bg-surface-sunken rounded-xl overflow-hidden h-[140px] mb-4 relative">
+                  {Array.isArray(opportunity.demo_images) && opportunity.demo_images.length > 0 ? (
+                    <Image
+                      src={opportunity.demo_images[0]}
+                      alt={opportunity.title}
+                      fill
+                      sizes="480px"
+                      className="object-cover"
+                      quality={85}
+                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+                    />
+                  ) : (
+                    <div className="h-full flex items-center justify-center">
+                      <Image
+                        src={getCategoryCover(opportunity.interest_tags || [])}
+                        alt="카테고리"
+                        width={48}
+                        height={48}
+                        className="opacity-30"
+                      />
+                    </div>
+                  )}
+                </div>
+
                 {/* 제목 */}
                 <h2 className="text-xl font-bold text-txt-primary leading-tight mb-2 break-keep">
                   {opportunity.title}
@@ -89,7 +123,14 @@ export function ProjectPreviewModal({ projectId, onClose }: Props) {
 
                 {/* 크리에이터 + 메타 */}
                 <div className="flex items-center gap-2 text-[13px] text-txt-tertiary mb-4">
-                  {creator?.nickname && <span>{creator.nickname}</span>}
+                  {creator?.nickname && (
+                    <span className="flex items-center gap-1.5">
+                      <div className="w-5 h-5 rounded-full bg-brand text-white flex items-center justify-center text-[10px] font-bold">
+                        {creator.nickname.charAt(0)}
+                      </div>
+                      <span className="text-txt-secondary font-medium">{creator.nickname}</span>
+                    </span>
+                  )}
                   {creator?.desired_position && (
                     <>
                       <span className="text-txt-disabled">·</span>
@@ -105,24 +146,35 @@ export function ProjectPreviewModal({ projectId, onClose }: Props) {
                   </p>
                 )}
 
-                {/* 필요 역할 */}
-                {Array.isArray(opportunity.needed_roles) && opportunity.needed_roles.length > 0 && (
-                  <div className="mb-3">
-                    <span className="text-[11px] font-semibold text-txt-tertiary uppercase tracking-wider mr-2">
-                      찾는 역할
-                    </span>
-                    <div className="flex flex-wrap gap-1.5 mt-1.5">
-                      {opportunity.needed_roles.map((role: string) => (
-                        <span
-                          key={role}
-                          className="px-2.5 py-1 bg-brand-bg text-brand text-[12px] font-medium rounded-full"
-                        >
-                          {projectRoleLabel(role) || role}
-                        </span>
-                      ))}
+                {/* 필요 역할 — filled_roles 는 line-through + check 로 표시 */}
+                {Array.isArray(opportunity.needed_roles) && opportunity.needed_roles.length > 0 && (() => {
+                  const filledRoles = ((opportunity as unknown as { filled_roles?: string[] | null }).filled_roles || []) as string[]
+                  return (
+                    <div className="mb-3">
+                      <span className="text-[12px] font-semibold text-txt-secondary mr-2">
+                        찾는 역할
+                      </span>
+                      <div className="flex flex-wrap gap-1.5 mt-1.5">
+                        {opportunity.needed_roles.map((role: string) => {
+                          const isFilled = filledRoles.includes(role)
+                          return (
+                            <span
+                              key={role}
+                              className={`inline-flex items-center gap-1 px-2.5 py-1 text-[12px] font-medium rounded-full border ${
+                                isFilled
+                                  ? 'bg-status-success-bg text-status-success-text border-status-success-text/20 line-through opacity-60'
+                                  : 'bg-brand-bg text-brand border-brand-border'
+                              }`}
+                            >
+                              {isFilled && <CheckCircle2 size={11} />}
+                              {projectRoleLabel(role) || role}
+                            </span>
+                          )
+                        })}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )
+                })()}
 
                 {/* 태그 */}
                 {Array.isArray(opportunity.interest_tags) && opportunity.interest_tags.length > 0 && (

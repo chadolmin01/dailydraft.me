@@ -37,9 +37,9 @@ function SimilarProjectsSection({ opportunityId }: { opportunityId: string | und
   return (
     <div className="border-t border-border bg-surface-bg">
       <div className="max-w-6xl mx-auto px-6 py-10">
-        <div className="flex items-center gap-2 mb-6">
+        <div className="flex items-center gap-1.5 mb-6">
           <Sparkles size={14} className="text-brand" />
-          <span className="text-[10px] font-mono font-bold text-txt-tertiary uppercase tracking-widest">
+          <span className="text-[13px] font-semibold text-txt-secondary">
             비슷한 프로젝트
           </span>
         </div>
@@ -48,13 +48,13 @@ function SimilarProjectsSection({ opportunityId }: { opportunityId: string | und
             <Link
               key={proj.id}
               href={`/p/${proj.id}`}
-              className="group block bg-surface-card border border-border p-5 hover:border-brand/40 transition-colors"
+              className="group block bg-surface-card rounded-2xl border border-border p-5 hover:border-brand/40 hover:shadow-md transition-all"
             >
               <div className="flex items-center justify-between mb-3">
-                <span className="text-[9px] font-mono font-bold text-txt-tertiary tracking-widest">
-                  {TYPE_LABEL[proj.type] || proj.type.toUpperCase()}
+                <span className="text-[12px] font-medium text-txt-tertiary">
+                  {TYPE_LABEL[proj.type] || '프로젝트'}
                 </span>
-                <span className="text-[9px] font-mono text-brand bg-brand/10 px-1.5 py-0.5 rounded-full">
+                <span className="text-[11px] font-semibold text-brand bg-brand-bg px-2 py-0.5 rounded-full">
                   {Math.round(proj.similarity * 100)}% 유사
                 </span>
               </div>
@@ -65,9 +65,9 @@ function SimilarProjectsSection({ opportunityId }: { opportunityId: string | und
                 {proj.description}
               </p>
               {proj.interest_tags.length > 0 && (
-                <div className="flex flex-wrap gap-1">
+                <div className="flex flex-wrap gap-1.5">
                   {proj.interest_tags.slice(0, 3).map((tag) => (
-                    <span key={tag} className="text-[9px] font-mono bg-surface-sunken text-txt-secondary px-1.5 py-0.5 rounded-full">
+                    <span key={tag} className="text-[11px] bg-surface-sunken text-txt-secondary px-2 py-0.5 rounded-full">
                       {tag}
                     </span>
                   ))}
@@ -89,10 +89,10 @@ const SignupCTA: React.FC<{ onClose: () => void; onSignup: () => void }> = ({ on
   >
     <div
       onClick={(e) => e.stopPropagation()}
-      className="bg-surface-card w-full max-w-sm p-8 text-center shadow-lg border border-border animate-modal-in"
+      className="bg-surface-card w-full max-w-sm p-8 text-center rounded-2xl shadow-xl border border-border animate-modal-in"
     >
-      <div className="w-16 h-16 bg-black flex items-center justify-center mx-auto mb-6">
-        <span className="text-white font-black text-2xl font-mono">D</span>
+      <div className="w-14 h-14 rounded-2xl bg-brand-bg flex items-center justify-center mx-auto mb-5">
+        <Sparkles size={22} className="text-brand" />
       </div>
       <h3 className="text-xl font-bold text-txt-primary mb-2">
         이 프로젝트에 관심이 있으신가요?
@@ -103,12 +103,12 @@ const SignupCTA: React.FC<{ onClose: () => void; onSignup: () => void }> = ({ on
       </p>
       <button
         onClick={onSignup}
-        className="w-full bg-black hover:bg-surface-inverse/90 text-white px-8 py-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-colors border border-surface-inverse hover:opacity-90 active:scale-[0.97] mb-3"
+        className="w-full bg-brand hover:bg-brand-hover text-white px-8 py-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-colors active:scale-[0.97] mb-3"
       >
         무료로 시작하기
         <ArrowRight size={16} />
       </button>
-      <p className="text-[10px] text-txt-disabled mb-4">
+      <p className="text-[11px] text-txt-disabled mb-4">
         가입 30초 · 무료 · 바로 사용 가능
       </p>
       <button
@@ -276,18 +276,18 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
             <div className="flex-1">
               {/* Type Badge */}
               <div className="flex items-center gap-2 mb-4">
-                <span className="text-[10px] font-medium px-2 py-1 border border-border text-black">
+                <span className="text-[12px] font-medium px-2.5 py-1 rounded-full bg-surface-sunken text-txt-secondary">
                   {opportunity.type === 'side_project' ? '함께 만들기' :
                    opportunity.type === 'startup' ? '창업 준비' :
-                   opportunity.type === 'study' ? '함께 배우기' : opportunity.type?.toUpperCase() || 'PROJECT'}
+                   opportunity.type === 'study' ? '함께 배우기' : '프로젝트'}
                 </span>
                 {opportunity.status === 'active' ? (
-                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-status-success-bg border border-status-success-text/30 text-status-success-text text-[10px] font-bold">
-                    <span className="w-1.5 h-1.5 bg-indicator-online animate-pulse" />
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-status-success-bg text-status-success-text text-[12px] font-semibold">
+                    <span className="w-1.5 h-1.5 rounded-full bg-indicator-online animate-pulse" />
                     모집 중
                   </span>
                 ) : (
-                  <span className="px-2 py-1 bg-surface-sunken text-txt-tertiary text-[10px] font-bold border border-border">
+                  <span className="px-2.5 py-1 rounded-full bg-surface-sunken text-txt-tertiary text-[12px] font-semibold">
                     마감
                   </span>
                 )}
@@ -302,10 +302,10 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
               <div className="flex flex-wrap items-center gap-4 text-sm text-txt-tertiary">
                 {creator && (
                   <span className="flex items-center gap-1.5">
-                    <div className="w-5 h-5 bg-surface-sunken flex items-center justify-center text-[10px] font-bold text-txt-secondary border border-border">
+                    <div className="w-6 h-6 rounded-full bg-brand text-white flex items-center justify-center text-[11px] font-bold">
                       {creator.nickname.charAt(0)}
                     </div>
-                    {creator.nickname}
+                    <span className="text-txt-secondary font-medium">{creator.nickname}</span>
                   </span>
                 )}
                 {opportunity.created_at && (
@@ -339,11 +339,11 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
           {/* Tags */}
           {opportunity.interest_tags && opportunity.interest_tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-6">
+            <div className="flex flex-wrap gap-1.5 mt-6">
               {opportunity.interest_tags.map((tag) => (
                 <span
                   key={tag}
-                  className="px-3 py-1 bg-white border border-border text-txt-secondary text-xs font-medium"
+                  className="px-3 py-1 rounded-full bg-surface-sunken text-txt-secondary text-xs font-medium"
                 >
                   {tag}
                 </span>
@@ -376,7 +376,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
           <div className="lg:col-span-2 space-y-10">
             {/* Project Description */}
             <section>
-              <h2 className="text-[10px] font-medium text-txt-tertiary mb-4">
+              <h2 className="text-[13px] font-semibold text-txt-primary mb-4">
                 프로젝트 소개
               </h2>
               <div className="prose prose-gray max-w-none">
@@ -388,8 +388,8 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
             {/* Pain Point (if exists) */}
             {opportunity.pain_point && (
-              <section className="bg-surface-sunken rounded-xl border border-border p-6">
-                <h2 className="text-[10px] font-medium text-txt-tertiary mb-3">
+              <section className="bg-surface-sunken rounded-2xl border border-border p-6">
+                <h2 className="text-[13px] font-semibold text-txt-primary mb-3">
                   해결하려는 문제
                 </h2>
                 <p className="text-txt-secondary leading-relaxed break-keep text-[0.9375rem]">
@@ -401,13 +401,13 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
             {/* Weekly Updates Timeline — owner always sees, others only when show_updates */}
             {(isOwner || opportunity.show_updates) && (
             <section>
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between mb-6 flex-wrap gap-2">
                 <div className="flex items-center gap-2">
-                  <h2 className="text-[10px] font-medium text-txt-tertiary">
+                  <h2 className="text-[13px] font-semibold text-txt-primary">
                     주간 업데이트
                   </h2>
                   {!opportunity.show_updates && isOwner && (
-                    <span className="text-[0.5rem] font-mono text-txt-disabled px-1.5 py-0.5 border border-border">
+                    <span className="text-[10px] font-medium text-txt-disabled px-1.5 py-0.5 rounded-full bg-surface-sunken">
                       비공개
                     </span>
                   )}
@@ -421,22 +421,22 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                           updates: { show_updates: !opportunity.show_updates },
                         })
                       }}
-                      className={`text-[10px] font-mono px-2 py-0.5 border transition-colors ${
+                      className={`text-[11px] font-semibold px-2.5 py-1 rounded-full transition-colors ${
                         opportunity.show_updates
-                          ? 'bg-status-success-bg text-status-success-text border-status-success-text/30'
-                          : 'bg-surface-sunken text-txt-disabled border-border hover:border-border'
+                          ? 'bg-status-success-bg text-status-success-text'
+                          : 'bg-surface-sunken text-txt-disabled hover:bg-border'
                       }`}
                     >
                       {opportunity.show_updates ? '공개 중' : '비공개'}
                     </button>
                   )}
-                  <span className="text-[10px] font-mono text-txt-disabled">
+                  <span className="text-[11px] text-txt-disabled">
                     {realUpdates.length}개의 업데이트
                   </span>
                   {isOwner && (
                     <button
                       onClick={() => setShowWriteUpdate(true)}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold bg-surface-inverse text-txt-inverse border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97]"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 text-[12px] font-semibold bg-surface-inverse text-txt-inverse rounded-full hover:opacity-90 active:scale-[0.97] transition-all"
                     >
                       + 작성하기
                     </button>
@@ -455,23 +455,23 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                       return (
                         <div key={update.id} className="relative pl-10">
                           {/* Timeline Dot */}
-                          <div className={`absolute left-[0.6875rem] top-1.5 w-[0.5625rem] h-[0.5625rem] border bg-surface-card ${
-                            index === 0 ? 'border-border' : 'border-border'
+                          <div className={`absolute left-[0.6875rem] top-2 w-2.5 h-2.5 rounded-full border-2 bg-surface-card ${
+                            index === 0 ? 'border-brand' : 'border-border'
                           }`} />
 
-                          <div className="bg-surface-card rounded-xl border border-border p-5 hover:shadow-md hover-spring">
-                            <div className="flex items-center gap-2 mb-2">
-                              <span className={`text-[10px] font-bold px-2 py-0.5 border ${config.badgeColor}`}>
+                          <div className="bg-surface-card rounded-xl border border-border p-5 hover:shadow-md transition-shadow">
+                            <div className="flex items-center gap-2 mb-2 flex-wrap">
+                              <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full border ${config.badgeColor}`}>
                                 {config.label}
                               </span>
-                              <span className="text-[10px] font-mono text-txt-disabled">
-                                Week {update.week_number}
+                              <span className="text-[11px] text-txt-disabled">
+                                {update.week_number}주차
                               </span>
                               {update.created_at && (
-                                <span className="text-[10px] font-mono text-txt-disabled">· {timeAgo(update.created_at)}</span>
+                                <span className="text-[11px] text-txt-disabled">· {timeAgo(update.created_at)}</span>
                               )}
                             </div>
-                            <h3 className="font-bold text-txt-primary mb-1.5">{update.title}</h3>
+                            <h3 className="font-semibold text-txt-primary mb-1.5">{update.title}</h3>
                             <p className="text-sm text-txt-secondary leading-relaxed break-keep whitespace-pre-line">
                               {update.content}
                             </p>
@@ -505,18 +505,18 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
             {/* Feedback Section */}
             <section>
-              <h2 className="text-[10px] font-medium text-txt-tertiary mb-4">
+              <h2 className="text-[13px] font-semibold text-txt-primary mb-4">
                 커뮤니티 피드백
               </h2>
-              <div className="bg-surface-sunken rounded-xl border border-border p-8 text-center">
+              <div className="bg-surface-sunken rounded-2xl border border-border p-8 text-center">
                 <MessageCircle size={32} className="text-txt-disabled mx-auto mb-3" />
-                <p className="font-bold text-txt-primary mb-1">피드백을 남겨보세요</p>
+                <p className="font-semibold text-txt-primary mb-1">피드백을 남겨보세요</p>
                 <p className="text-sm text-txt-tertiary mb-4 break-keep">
                   아이디어에 대한 솔직한 의견이 프로젝트를 성장시킵니다
                 </p>
                 <button
                   onClick={handleCoffeeChatAction}
-                  className="inline-flex items-center gap-2 bg-surface-inverse text-txt-inverse px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-surface-inverse/90 transition-colors border border-surface-inverse hover:opacity-90 active:scale-[0.97]"
+                  className="inline-flex items-center gap-2 bg-surface-inverse text-txt-inverse px-5 py-2.5 rounded-full font-semibold text-sm hover:opacity-90 transition-all active:scale-[0.97]"
                 >
                   피드백 작성하기
                   <ChevronRight size={14} />
@@ -528,18 +528,18 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
           {/* Right: Sidebar (1/3) */}
           <aside className="space-y-6">
             {/* Team Section */}
-            <div className="border border-border p-6">
-              <h3 className="text-[10px] font-medium text-txt-tertiary mb-4">
+            <div className="bg-surface-card rounded-2xl border border-border p-6">
+              <h3 className="text-[13px] font-semibold text-txt-primary mb-4">
                 팀 정보
               </h3>
               {creator ? (
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-surface-inverse text-txt-inverse flex items-center justify-center font-bold text-sm">
+                    <div className="w-10 h-10 rounded-full bg-brand text-white flex items-center justify-center font-bold text-sm">
                       {creator.nickname.charAt(0)}
                     </div>
                     <div>
-                      <p className="font-bold text-txt-primary text-sm">{creator.nickname}</p>
+                      <p className="font-semibold text-txt-primary text-sm">{creator.nickname}</p>
                       <p className="text-xs text-txt-tertiary">
                         {positionLabel(creator.desired_position || '') || '메이커'}
                         {creator.university && ` · ${creator.university}`}
@@ -552,7 +552,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                       {(Array.isArray(creator.skills) ? creator.skills : []).slice(0, 5).map((skill, i) => {
                         const label = typeof skill === 'string' ? skill : (skill as any)?.name || ''
                         return (
-                          <span key={label || i} className="text-[10px] bg-surface-sunken text-txt-secondary px-2 py-0.5 font-medium border border-border">
+                          <span key={label || i} className="text-[11px] bg-surface-sunken text-txt-secondary px-2 py-0.5 rounded-full font-medium">
                             {label}
                           </span>
                         )
@@ -562,11 +562,11 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                 </div>
               ) : (
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-surface-sunken flex items-center justify-center font-bold text-sm text-txt-tertiary border border-border">
+                  <div className="w-10 h-10 rounded-full bg-surface-sunken flex items-center justify-center font-bold text-sm text-txt-tertiary">
                     ?
                   </div>
                   <div>
-                    <p className="font-bold text-txt-primary text-sm">익명 메이커</p>
+                    <p className="font-semibold text-txt-primary text-sm">익명 메이커</p>
                     <p className="text-xs text-txt-tertiary">프로필 비공개</p>
                   </div>
                 </div>
@@ -575,8 +575,8 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
             {/* Needed Roles */}
             {opportunity.needed_roles && opportunity.needed_roles.length > 0 && (
-              <div className="border border-border p-6">
-                <h3 className="text-[10px] font-medium text-txt-tertiary mb-4">
+              <div className="bg-surface-card rounded-2xl border border-border p-6">
+                <h3 className="text-[13px] font-semibold text-txt-primary mb-4">
                   모집 중인 포지션
                 </h3>
                 <div className="space-y-3">
@@ -606,7 +606,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                               }
                             )
                           }}
-                          className={`group w-full flex items-center justify-between p-3 border transition-all ${
+                          className={`group w-full flex items-center justify-between p-3 rounded-xl border transition-all ${
                             isFilled
                               ? 'bg-surface-sunken border-border hover:border-brand/40 hover:bg-brand-bg/50'
                               : 'bg-brand-bg border-brand-border hover:bg-status-success-bg hover:border-status-success-text/30'
@@ -622,7 +622,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                               {role}
                             </span>
                           </div>
-                          <span className="text-[10px] font-bold">
+                          <span className="text-[11px] font-semibold">
                             <span className={`group-hover:hidden ${isFilled ? 'text-status-success-text' : 'text-brand'}`}>
                               {isFilled ? '모집완료' : '모집중'}
                             </span>
@@ -638,13 +638,13 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                       return (
                         <div
                           key={role}
-                          className="flex items-center justify-between p-3 bg-surface-sunken border border-border opacity-60"
+                          className="flex items-center justify-between p-3 rounded-xl bg-surface-sunken border border-border opacity-60"
                         >
                           <div className="flex items-center gap-2">
                             <Check size={14} className="text-status-success-text" />
                             <span className="font-medium text-sm text-txt-tertiary">{role}</span>
                           </div>
-                          <span className="text-[10px] font-bold text-txt-disabled">
+                          <span className="text-[11px] font-semibold text-txt-disabled">
                             모집완료
                           </span>
                         </div>
@@ -654,7 +654,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                     return (
                       <div
                         key={role}
-                        className="flex items-center justify-between p-3 bg-brand-bg border border-brand-border"
+                        className="flex items-center justify-between p-3 rounded-xl bg-brand-bg border border-brand-border"
                       >
                         <div className="flex items-center gap-2">
                           <Briefcase size={14} className="text-brand" />
@@ -662,7 +662,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                         </div>
                         <button
                           onClick={handleCoffeeChatAction}
-                          className="text-[10px] font-bold text-brand hover:text-brand-hover transition-colors"
+                          className="text-[11px] font-semibold text-brand hover:text-brand-hover transition-colors"
                         >
                           커피챗 신청 &rarr;
                         </button>
@@ -674,8 +674,8 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
             )}
 
             {/* Project Info */}
-            <div className="border border-border p-6">
-              <h3 className="text-[10px] font-medium text-txt-tertiary mb-4">
+            <div className="bg-surface-card rounded-2xl border border-border p-6">
+              <h3 className="text-[13px] font-semibold text-txt-primary mb-4">
                 프로젝트 정보
               </h3>
               <div className="space-y-3 text-sm">
@@ -724,18 +724,18 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
             {/* Project Links */}
             {projectLinks && Object.keys(projectLinks).length > 0 && (
-              <div className="border border-border p-6">
-                <h3 className="text-[10px] font-medium text-txt-tertiary mb-4">
+              <div className="bg-surface-card rounded-2xl border border-border p-6">
+                <h3 className="text-[13px] font-semibold text-txt-primary mb-4">
                   링크
                 </h3>
-                <div className="space-y-2">
+                <div className="space-y-1">
                   {Object.entries(projectLinks).map(([key, url]) => (
                     <a
                       key={key}
                       href={url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm text-txt-secondary hover:text-txt-primary transition-colors p-2 hover:bg-surface-sunken border border-transparent hover:border-border"
+                      className="flex items-center gap-2 text-sm text-txt-secondary hover:text-txt-primary transition-colors px-3 py-2.5 rounded-xl hover:bg-surface-sunken"
                     >
                       <ExternalLink size={14} />
                       {key}
@@ -746,14 +746,14 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
             )}
 
             {/* CTA Card */}
-            <div className="bg-surface-inverse text-txt-inverse p-6 border border-surface-inverse shadow-md">
+            <div className="bg-surface-inverse text-txt-inverse p-6 rounded-2xl shadow-md">
               <h3 className="font-bold mb-2">프로젝트에 참여하고 싶나요?</h3>
-              <p className="text-txt-inverse/50 text-sm mb-4 break-keep">
+              <p className="text-txt-inverse/60 text-sm mb-4 break-keep">
                 커피챗으로 메이커와 직접 이야기해보세요.
               </p>
               <button
                 onClick={handleCoffeeChatAction}
-                className="w-full bg-white text-black py-3 font-bold text-sm hover:bg-surface-sunken transition-colors flex items-center justify-center gap-2 border border-white"
+                className="w-full bg-white text-black py-3 rounded-xl font-bold text-sm hover:bg-surface-sunken transition-colors flex items-center justify-center gap-2 active:scale-[0.97]"
               >
                 <Coffee size={14} />
                 커피챗 신청하기
