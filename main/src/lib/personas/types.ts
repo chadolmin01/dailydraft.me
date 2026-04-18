@@ -79,6 +79,9 @@ export const EVENT_TYPES = [
   'final_showcase',
   'semester_report',
   'vacation_harvest',
+  // ★ 2026-04-19 추가: 범용 공지. 서브카테고리는 event_metadata.category로 구분.
+  //   일반공지 · 모임안내 · 이벤트공지 · 스터디모집 · 후기 등 자유 확장.
+  'announcement',
 ] as const
 export type EventType = (typeof EVENT_TYPES)[number]
 
@@ -256,6 +259,9 @@ export interface PersonaOutputRow {
   channel_format: ChannelFormat | null
   format_constraints: Record<string, unknown> | null
   is_copy_only: boolean
+  // Phase 2 추가 (예약 발행)
+  scheduled_at: string | null
+  scheduled_by: string | null
 }
 
 // ============================================================

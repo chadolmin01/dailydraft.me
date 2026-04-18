@@ -183,6 +183,29 @@ export const EVENT_CONFIG: Record<EventType, EventConfig> = {
     metadata_schema: z.object({}),
     manual_trigger_enabled: false,
   },
+
+  announcement: {
+    label: '공지·안내',
+    description:
+      '범용 공지글. 모임 안내·이벤트 공지·스터디 모집·후기 등 다양한 용도. 서브카테고리를 category로 지정.',
+    channels: [
+      'discord_forum_markdown',
+      'instagram_caption',
+      'everytime_post',
+      'linkedin_post',
+      'email_newsletter',
+    ],
+    metadata_schema: z.object({
+      category: z.string().min(1).describe('일반공지 / 모임안내 / 이벤트공지 / 스터디모집 / 후기 등'),
+      title: z.string().min(1).max(80),
+      body_hint: z.string().optional(),
+      call_to_action: z.string().optional(),
+      date: z.string().optional(),
+      location: z.string().optional(),
+      link: z.string().url().optional(),
+    }),
+    manual_trigger_enabled: true,
+  },
 }
 
 /** 해당 이벤트가 R3.1에서 활성화됐는지 (채널이 정의돼 있는지). */

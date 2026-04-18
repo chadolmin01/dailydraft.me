@@ -1,8 +1,10 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { Check, Copy, Send, X as XIcon } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Check, Clock, Copy, Send, Trash2, X as XIcon } from 'lucide-react'
 import { toast } from 'sonner'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { EVENT_CONFIG } from '@/src/lib/personas/event-catalog'
 import type {
   ChannelFormat,
@@ -11,15 +13,19 @@ import type {
 } from '@/src/lib/personas/types'
 import {
   useApproveBundle,
+  useArchiveBundle,
   useBundleDetail,
   useRejectBundle,
+  useScheduleOutput,
 } from '@/src/hooks/useBundles'
+import { usePersonaChannels } from '@/src/hooks/usePersonaChannels'
 import { ChannelFrame } from './ChannelFrames'
 import { CHANNEL_BRANDS } from './channel-brand'
 
 interface Props {
   bundleId: string
   canApprove: boolean
+  slug: string
 }
 
 // 채널 라벨은 CHANNEL_BRANDS에서 조회 (중앙화)
@@ -32,14 +38,17 @@ const CHANNEL_LABELS: Record<ChannelFormat, string> = {
   email_newsletter: CHANNEL_BRANDS.email_newsletter.label,
 }
 
-export function BundleDetailClient({ bundleId, canApprove }: Props) {
+export function BundleDetailClient({ bundleId, canApprove, slug }: Props) {
+  const router = useRouter()
   const { data, isLoading, error } = useBundleDetail(bundleId)
   const approve = useApproveBundle(bundleId)
   const reject = useRejectBundle(bundleId)
+  const archive = useArchiveBundle(bundleId)
 
   const [activeTab, setActiveTab] = useState<ChannelFormat | null>(null)
   const [rejectOpen, setRejectOpen] = useState(false)
   const [rejectReason, setRejectReason] = useState('')
+  const [deleteOpen, setDeleteOpen] = useState(false)
 
   const outputsByFormat = useMemo(() => {
     const map = new Map<ChannelFormat, PersonaOutputRow>()
@@ -127,7 +136,10 @@ export function BundleDetailClient({ bundleId, canApprove }: Props) {
               </div>
 
               {current && outputsByFormat.get(current) && (
-                <OutputPanel output={outputsByFormat.get(current)!} />
+                <OutputPanel
+                  output={outputsByFormat.get(current)!}
+                  bundleId={bundleId}
+                />
               )}
             </>
           ) : (
@@ -163,9 +175,10 @@ export function BundleDetailClient({ bundleId, canApprove }: Props) {
               <h3 className="text-sm font-bold text-txt-primary mb-1">
                 이대로 괜찮으신가요?
               </h3>
-              <p className="text-xs text-txt-tertiary mb-3 leading-relaxed">
-                승인하시면 <strong className="text-txt-secondary">Discord 포럼</strong>에는 바로 올라가고, 인스타·링크드인·에타 같은 채널은 탭에서 복사하셔서 올리시면 됩니다.
-              </p>
+              <ApprovalGuidance
+                outputs={data.outputs ?? []}
+                personaId={bundle.persona_id}
+              />
               <div className="flex flex-col gap-2">
                 <button
                   onClick={() => approve.mutate()}
@@ -203,8 +216,44 @@ export function BundleDetailClient({ bundleId, canApprove }: Props) {
               </p>
             </section>
           )}
+
+          {/* 덱 삭제 — 편집자만 */}
+          {canApprove && (
+            <section className="bg-surface-card border border-border rounded-2xl p-4">
+              <h3 className="text-xs font-bold text-txt-primary mb-1">
+                이 덱 삭제
+              </h3>
+              <p className="text-[11px] text-txt-tertiary mb-3 leading-relaxed">
+                더 이상 필요 없으시면 내 덱 모음에서 내립니다. 이미 발행된 글은 외부 플랫폼에서 자동으로 내려가지 않습니다.
+              </p>
+              <button
+                onClick={() => setDeleteOpen(true)}
+                disabled={archive.isPending}
+                className="inline-flex items-center justify-center gap-1.5 h-9 px-3 rounded-lg border border-border text-xs font-semibold text-status-danger-text hover:bg-status-danger-text/5 transition-colors disabled:opacity-60"
+              >
+                <Trash2 size={12} />
+                덱 삭제
+              </button>
+            </section>
+          )}
         </aside>
       </div>
+
+      {/* 덱 삭제 확인 */}
+      <ConfirmModal
+        isOpen={deleteOpen}
+        onClose={() => setDeleteOpen(false)}
+        onConfirm={async () => {
+          await archive.mutateAsync()
+          setDeleteOpen(false)
+          router.push(`/clubs/${slug}/contents?tab=decks`)
+        }}
+        title="이 덱을 삭제하시겠습니까?"
+        message={`"${eventLabel}" 덱이 내 덱 모음에서 사라집니다. 이미 발행된 채널(Discord·LinkedIn 등)의 글은 자동으로 내려가지 않습니다. 필요하면 각 플랫폼에서 직접 삭제해 주십시오.`}
+        confirmText="삭제합니다"
+        cancelText="돌아가기"
+        variant="danger"
+      />
 
       {/* 거절(다시 쓰기) 모달 */}
       {rejectOpen && (
@@ -259,12 +308,115 @@ export function BundleDetailClient({ bundleId, canApprove }: Props) {
   )
 }
 
-function OutputPanel({ output }: { output: PersonaOutputRow }) {
+/**
+ * 승인 후 어떻게 처리되는지 "지금 연결된 자격증명" 기준으로 안내.
+ * - 디스코드는 봇이 항상 붙어있으므로 자동 발행
+ * - LinkedIn은 credential 있고 만료 전이면 자동 발행 (approveBundle가 직접 API 호출)
+ * - Instagram/Threads는 Meta 심사 통과 전까지 복사 전용 (자격증명 있어도 발행 API 호출 불가)
+ * - Everytime은 공식 API 없음 → 영구 복사 전용
+ * - Email은 수신자 리스트 구독 UI 미구현 → 복사 전용
+ *
+ * 왜 output.is_copy_only를 안 믿고 다시 조회하는가:
+ *   is_copy_only는 덱 생성 시점 스냅샷. 그 사이 사용자가 LinkedIn을 연결했을 수 있으므로
+ *   승인 버튼을 눌렀을 때 어떻게 될지는 "지금의 credentials"가 정답.
+ */
+function ApprovalGuidance({
+  outputs,
+  personaId,
+}: {
+  outputs: PersonaOutputRow[]
+  personaId: string
+}) {
+  const { data: chData } = usePersonaChannels(personaId)
+  const channelMap = new Map(
+    (chData?.channels ?? []).map((c) => [c.channel_type, c]),
+  )
+
+  const labelOf = (f: ChannelFormat) => CHANNEL_BRANDS[f]?.label ?? f
+
+  // 각 output을 실제 발행 가능 여부로 재분류
+  const auto: ChannelFormat[] = []
+  const copy: ChannelFormat[] = []
+  const pending: ChannelFormat[] = [] // 기술적 제약으로 당분간 복사 (Instagram 심사 대기 등)
+
+  for (const o of outputs) {
+    const fmt = o.channel_format as ChannelFormat | null
+    if (!fmt) continue
+
+    if (fmt === 'discord_forum_markdown') {
+      auto.push(fmt)
+      continue
+    }
+    if (fmt === 'linkedin_post') {
+      const cred = channelMap.get('linkedin')
+      if (cred && cred.connected && !cred.expired) auto.push(fmt)
+      else copy.push(fmt)
+      continue
+    }
+    if (fmt === 'instagram_caption') {
+      // Meta Graph API 심사 통과 후 활성화 예정
+      pending.push(fmt)
+      continue
+    }
+    // everytime_post, email_newsletter — 자동화 경로 없음/미구현
+    copy.push(fmt)
+  }
+
+  if (auto.length === 0 && copy.length === 0 && pending.length === 0) {
+    return (
+      <p className="text-xs text-txt-tertiary mb-3 leading-relaxed">
+        승인하시면 상태가 &quot;승인됨&quot;으로 기록됩니다.
+      </p>
+    )
+  }
+
+  return (
+    <div className="text-xs text-txt-tertiary mb-3 leading-relaxed space-y-1.5">
+      {auto.length > 0 && (
+        <p>
+          <span className="inline-block w-1.5 h-1.5 rounded-full bg-status-success-text mr-1.5 align-middle" />
+          <strong className="text-txt-secondary font-semibold">
+            {auto.map(labelOf).join(' · ')}
+          </strong>
+          은 바로 올라갑니다
+        </p>
+      )}
+      {pending.length > 0 && (
+        <p>
+          <span className="inline-block w-1.5 h-1.5 rounded-full bg-brand mr-1.5 align-middle" />
+          <strong className="text-txt-secondary font-semibold">
+            {pending.map(labelOf).join(' · ')}
+          </strong>
+          은 플랫폼 심사 통과 후 자동화 예정 (당분간 복사)
+        </p>
+      )}
+      {copy.length > 0 && (
+        <p>
+          <span className="inline-block w-1.5 h-1.5 rounded-full bg-txt-tertiary mr-1.5 align-middle" />
+          <strong className="text-txt-secondary font-semibold">
+            {copy.map(labelOf).join(' · ')}
+          </strong>
+          은 탭에서 복사해서 직접 올리시면 됩니다
+        </p>
+      )}
+    </div>
+  )
+}
+
+function OutputPanel({
+  output,
+  bundleId,
+}: {
+  output: PersonaOutputRow
+  bundleId: string
+}) {
   const isCopyOnly = output.is_copy_only
   const destination = output.destination
   const constraints = output.format_constraints as Record<string, unknown> | null
   const fmt = output.channel_format as ChannelFormat | null
   const brand = fmt ? CHANNEL_BRANDS[fmt] : null
+  const [schedulerOpen, setSchedulerOpen] = useState(false)
+  const scheduleMut = useScheduleOutput(bundleId)
 
   const handleCopy = async () => {
     try {
@@ -290,6 +442,27 @@ function OutputPanel({ output }: { output: PersonaOutputRow }) {
         </div>
       )}
 
+      {/* 예약 상태 배너 */}
+      {output.scheduled_at && output.status !== 'published' && (
+        <div className="bg-brand-bg border border-brand-border rounded-xl px-4 py-2.5 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 min-w-0">
+            <Clock size={14} className="text-brand shrink-0" />
+            <p className="text-xs text-txt-primary">
+              <strong>{formatScheduleTime(output.scheduled_at)}</strong>에 발행 예정입니다
+            </p>
+          </div>
+          <button
+            onClick={() =>
+              scheduleMut.mutate({ output_id: output.id, scheduled_at: null })
+            }
+            disabled={scheduleMut.isPending}
+            className="shrink-0 text-[11px] font-semibold text-txt-tertiary hover:text-status-danger-text transition-colors"
+          >
+            예약 취소
+          </button>
+        </div>
+      )}
+
       {/* 플랫폼 프레임 */}
       {fmt ? (
         <ChannelFrame format={fmt} output={output} />
@@ -310,26 +483,138 @@ function OutputPanel({ output }: { output: PersonaOutputRow }) {
           )}
           {constraints && renderConstraints(constraints)}
         </div>
-        {isCopyOnly && brand ? (
-          <button
-            onClick={handleCopy}
-            className={`inline-flex items-center gap-1.5 h-9 px-3 rounded-lg text-xs font-semibold text-white transition-opacity hover:opacity-90 shrink-0 ${brand.accent}`}
-          >
-            <Copy size={12} />
-            {brand.action_verb}
-          </button>
-        ) : (
-          <button
-            onClick={handleCopy}
-            className="inline-flex items-center gap-1 h-9 px-3 rounded-lg border border-border text-xs font-semibold text-txt-primary hover:bg-surface-bg transition-colors shrink-0"
-          >
-            <Copy size={12} />
-            복사
-          </button>
-        )}
+
+        <div className="flex items-center gap-1.5 shrink-0">
+          {/* 예약 버튼 — 자동 발행 가능 채널만 */}
+          {!isCopyOnly && output.status !== 'published' && (
+            <button
+              onClick={() => setSchedulerOpen((v) => !v)}
+              className="inline-flex items-center gap-1 h-9 px-3 rounded-lg border border-border text-xs font-semibold text-txt-secondary hover:bg-surface-bg transition-colors"
+            >
+              <Clock size={12} />
+              {output.scheduled_at ? '시간 변경' : '나중에 올리기'}
+            </button>
+          )}
+
+          {isCopyOnly && brand ? (
+            <button
+              onClick={handleCopy}
+              className={`inline-flex items-center gap-1.5 h-9 px-3 rounded-lg text-xs font-semibold text-white transition-opacity hover:opacity-90 ${brand.accent}`}
+            >
+              <Copy size={12} />
+              {brand.action_verb}
+            </button>
+          ) : (
+            <button
+              onClick={handleCopy}
+              className="inline-flex items-center gap-1 h-9 px-3 rounded-lg border border-border text-xs font-semibold text-txt-primary hover:bg-surface-bg transition-colors"
+            >
+              <Copy size={12} />
+              복사
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* 스케줄러 인라인 — 간단한 datetime-local */}
+      {schedulerOpen && !isCopyOnly && output.status !== 'published' && (
+        <SchedulerInline
+          currentValue={output.scheduled_at}
+          isSaving={scheduleMut.isPending}
+          onSave={(iso) => {
+            scheduleMut.mutate(
+              { output_id: output.id, scheduled_at: iso },
+              { onSuccess: () => setSchedulerOpen(false) },
+            )
+          }}
+          onCancel={() => setSchedulerOpen(false)}
+        />
+      )}
+    </div>
+  )
+}
+
+function SchedulerInline({
+  currentValue,
+  isSaving,
+  onSave,
+  onCancel,
+}: {
+  currentValue: string | null
+  isSaving: boolean
+  onSave: (iso: string) => void
+  onCancel: () => void
+}) {
+  const [value, setValue] = useState(() => {
+    if (currentValue) return toLocalInputValue(new Date(currentValue))
+    // 기본값: 내일 오전 9시
+    const d = new Date()
+    d.setDate(d.getDate() + 1)
+    d.setHours(9, 0, 0, 0)
+    return toLocalInputValue(d)
+  })
+
+  return (
+    <div className="bg-surface-card border border-border rounded-xl p-4 space-y-3">
+      <div>
+        <label className="block text-xs font-semibold text-txt-primary mb-1.5">
+          언제 발행할까요?
+        </label>
+        <p className="text-[11px] text-txt-tertiary mb-2 leading-relaxed">
+          💡 한국 SNS는 오전 9시·오후 7시 참여율이 제일 높습니다. 약속 날짜 직전 권장.
+        </p>
+        <input
+          type="datetime-local"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          className="w-full h-10 text-sm text-txt-primary bg-surface-bg border border-border rounded-lg px-3 focus:outline-none focus:border-brand"
+        />
+      </div>
+      <div className="flex justify-end gap-2">
+        <button
+          onClick={onCancel}
+          disabled={isSaving}
+          className="h-9 px-3 rounded-lg text-xs font-semibold text-txt-secondary hover:bg-surface-bg transition-colors disabled:opacity-60"
+        >
+          취소
+        </button>
+        <button
+          onClick={() => {
+            if (!value) {
+              toast.error('날짜와 시간을 선택해주세요')
+              return
+            }
+            const iso = new Date(value).toISOString()
+            onSave(iso)
+          }}
+          disabled={isSaving}
+          className="h-9 px-4 rounded-lg bg-brand text-white text-xs font-semibold hover:bg-brand-hover transition-colors disabled:opacity-60"
+        >
+          {isSaving ? '저장 중...' : '이 시간에 발행'}
+        </button>
       </div>
     </div>
   )
+}
+
+function toLocalInputValue(d: Date): string {
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
+
+function formatScheduleTime(iso: string): string {
+  const d = new Date(iso)
+  const now = new Date()
+  const same = d.toDateString() === now.toDateString()
+  const tomorrow = new Date(now)
+  tomorrow.setDate(now.getDate() + 1)
+  const isTomorrow = d.toDateString() === tomorrow.toDateString()
+
+  const hh = String(d.getHours()).padStart(2, '0')
+  const mm = String(d.getMinutes()).padStart(2, '0')
+  if (same) return `오늘 ${hh}:${mm}`
+  if (isTomorrow) return `내일 ${hh}:${mm}`
+  return `${d.getMonth() + 1}월 ${d.getDate()}일 ${hh}:${mm}`
 }
 
 function renderConstraints(c: Record<string, unknown>) {

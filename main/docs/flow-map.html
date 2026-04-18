@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Draft 제품 플로우 맵</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #FAFAFA; color: #262626; }
+  header { padding: 24px 32px; border-bottom: 1px solid #E5E5E5; background: #fff; }
+  header h1 { font-size: 20px; font-weight: 700; }
+  header p { font-size: 13px; color: #8E8E8E; margin-top: 4px; }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; padding: 16px 32px; border-bottom: 1px solid #E5E5E5; background: #fff; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #555; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 4px; border: 1.5px solid; }
+  #diagram { width: 100%; overflow: hidden; padding: 24px; background: #fff; min-height: 80vh; position: relative; cursor: grab; }
+  #diagram:active { cursor: grabbing; }
+  .zoom-controls { position: fixed; bottom: 24px; right: 24px; display: flex; gap: 8px; z-index: 100; }
+  .zoom-controls button { width: 40px; height: 40px; border-radius: 10px; border: 1px solid #E5E5E5; background: #fff; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+  .zoom-controls button:hover { background: #F5F5F5; }
+  .issues { padding: 24px 32px; background: #FEF2F2; border-bottom: 1px solid #FECACA; }
+  .issues h2 { font-size: 16px; font-weight: 700; color: #991B1B; margin-bottom: 12px; }
+  .issues ul { list-style: none; padding: 0; }
+  .issues li { font-size: 13px; color: #991B1B; padding: 6px 0; border-bottom: 1px solid #FEE2E2; display: flex; gap: 8px; }
+  .issues li:last-child { border-bottom: none; }
+  .issues .tag { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: #FEE2E2; color: #DC2626; white-space: nowrap; }
+  .issues .tag.warn { background: #FEF3C7; color: #D97706; }
+  .info { padding: 24px 32px; }
+  .info h2 { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
+  .info table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .info th, .info td { text-align: left; padding: 8px 12px; border-bottom: 1px solid #F0F0F0; }
+  .info th { font-weight: 600; color: #555; background: #FAFAFA; }
+  .info td code { background: #F3F4F6; padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Draft 제품 플로우 맵</h1>
+  <p>자동 생성: 2026-04-13 | dev 브랜치 기준 | 코드베이스 전체 라우트/링크 분석</p>
+</header>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#DBEAFE;border-color:#2563EB;"></div>공개 페이지</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#FEF3C7;border-color:#D97706;"></div>인증 플로우</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#D1FAE5;border-color:#059669;"></div>대시보드 (인증 필요)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#EDE9FE;border-color:#7C3AED;"></div>관리자</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#FEE2E2;border-color:#DC2626;"></div>API 리디렉트</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#F3F4F6;border-color:#9CA3AF;border-style:dashed;"></div>HIDDEN / 레거시</div>
+</div>
+
+<div class="issues">
+  <h2>발견된 문제점</h2>
+  <ul>
+    <li><span class="tag warn">HIGH</span>HIDDEN 라우트 9개 + 레거시 3개 = 죽은 코드 12개 라우트 잔존</li>
+    <li><span class="tag warn">HIGH</span>고아 라우트 4개: /guide, /landing, /offline, /dev/onboarding — 진입 경로 없음</li>
+    <li><span class="tag warn">HIGH</span>데스크탑 GNB 검색 바로가기에 /clubs 없음 (탐색/프로필/새 프로젝트/내 프로젝트만)</li>
+    <li><span class="tag warn">HIGH</span>ProfileSidebar에서 /onboarding?mode=redo-chat 링크 — 프로필 수정이 온보딩 플로우 재진입</li>
+    <li><span class="tag warn">HIGH</span>데스크탑 프로필 드롭다운의 "설정" 버튼이 disabled 상태 — 클릭 불가</li>
+  </ul>
+</div>
+
+<div id="diagram">
+  <pre class="mermaid">
+flowchart TD
+  classDef auth fill:#FEF3C7,stroke:#D97706,color:#92400E
+  classDef public fill:#DBEAFE,stroke:#2563EB,color:#1E40AF
+  classDef dashboard fill:#D1FAE5,stroke:#059669,color:#065F46
+  classDef admin fill:#EDE9FE,stroke:#7C3AED,color:#5B21B6
+  classDef hidden fill:#F3F4F6,stroke:#9CA3AF,color:#6B7280,stroke-dasharray: 5 5
+  classDef api fill:#FEE2E2,stroke:#DC2626,color:#991B1B
+  classDef broken fill:#FEE2E2,stroke:#DC2626,color:#991B1B,stroke-dasharray: 3 3
+
+  %% ── 인증 플로우 ──
+  subgraph AUTH["인증 플로우"]
+    ROOT["/ 랜딩"]:::public
+    LOGIN["/login 로그인"]:::auth
+    CALLBACK["/auth/callback OAuth"]:::auth
+    ONBOARD["/onboarding 1단계"]:::auth
+    INTERVIEW["/onboarding/interview 2단계"]:::auth
+  end
+
+  ROOT -- "인증됨 middleware" --> EXPLORE
+  ROOT -- "미인증" --> LOGIN
+  LOGIN -- "이메일/OAuth 성공" --> EXPLORE
+  LOGIN -- "Google/GitHub/Discord" --> CALLBACK
+  CALLBACK -- "신규유저" --> ONBOARD
+  CALLBACK -- "온보딩 완료" --> EXPLORE
+  CALLBACK -- "온보딩 미완" --> ONBOARD
+  CALLBACK -- "에러" --> LOGIN
+  ONBOARD -- "3.2초 자동" --> INTERVIEW
+  INTERVIEW -- "완료" --> EXPLORE
+  INTERVIEW -- "인증 에러" --> ONBOARD
+
+  %% ── 데스크탑 GNB (pill tabs) ──
+  subgraph DESKTOP_NAV["데스크탑 GNB (md 이상)"]
+    direction LR
+    DN_EXPLORE["탐색"]:::public
+    DN_CLUBS["클럽"]:::dashboard
+    DN_PROFILE["프로필"]:::dashboard
+    DN_PROJECTS["프로젝트"]:::dashboard
+  end
+
+  DN_EXPLORE --> EXPLORE
+  DN_CLUBS --> CLUBS_LIST
+  DN_PROFILE --> PROFILE
+  DN_PROJECTS --> PROJECTS
+
+  %% ── 모바일 BottomTabBar ──
+  subgraph MOBILE_NAV["모바일 BottomTabBar (md 미만) !! /clubs 없음"]
+    direction LR
+    MB_PROJECTS["프로젝트"]:::dashboard
+    MB_PROFILE["프로필"]:::dashboard
+    MB_EXPLORE["탐색 center"]:::public
+    MB_NOTIF["알림"]:::dashboard
+    MB_MORE["더보기"]:::dashboard
+  end
+
+  MB_EXPLORE --> EXPLORE
+  MB_PROJECTS --> PROJECTS
+  MB_PROFILE --> PROFILE
+  MB_NOTIF --> NOTIF
+  MB_MORE --> MORE
+
+  %% ── 모바일 GNB 상단 ──
+  subgraph MOBILE_TOP["모바일 상단 GNB"]
+    direction LR
+    MT_NEW["+ 새 프로젝트"]:::dashboard
+    MT_LOGO["Draft 로고"]:::public
+    MT_BELL["알림 벨"]:::dashboard
+  end
+
+  MT_NEW --> PROJECT_NEW
+  MT_LOGO --> EXPLORE
+  MT_BELL --> NOTIF
+
+  %% ── 데스크탑 GNB 우측 ──
+  subgraph DESKTOP_RIGHT["데스크탑 GNB 우측 액션"]
+    DR_NEW["새 프로젝트 CTA"]:::dashboard
+    DR_NOTIF["알림 드롭다운"]:::dashboard
+    DR_MENU["프로필 드롭다운"]:::dashboard
+  end
+
+  DR_NEW --> PROJECT_NEW
+  DR_MENU -- "내 프로필" --> PROFILE
+  DR_MENU -- "설정 DISABLED" -.-> PROFILE
+  DR_MENU -- "기관 대시보드" --> INSTITUTION
+  DR_MENU -- "관리자" --> ADMIN
+  DR_MENU -- "사용자 관리" --> ADMIN_USERS
+  DR_MENU -- "기회 관리" --> ADMIN_OPP
+  DR_MENU -- "초대 코드" --> ADMIN_INVITE
+  DR_MENU -- "에러 로그" --> ADMIN_ERRORS
+  DR_MENU -- "로그아웃" --> ROOT
+
+  %% ── 주요 페이지 ──
+  EXPLORE["/explore 피드/탐색"]:::public
+  PROJECTS["/projects 내 프로젝트"]:::dashboard
+  PROFILE["/profile 프로필"]:::dashboard
+  NOTIF["/notifications 알림"]:::dashboard
+  MORE["/more 더보기"]:::dashboard
+  MESSAGES["/messages 메시지"]:::dashboard
+
+  MORE --> PROFILE
+  MORE --> MESSAGES
+  MORE --> PROJECT_NEW
+  MORE -- "기관 관리자" --> INSTITUTION
+  MORE -- "앱 관리자" --> ADMIN
+  MORE -- "로그아웃" --> ROOT
+
+  NOTIF -- "알림 클릭" --> EXPLORE
+
+  %% ── Explore 상세 ──
+  subgraph EXPLORE_DETAIL["Explore 상세"]
+    EXPLORE_PROJECT["/explore?project=id 모달"]:::public
+    EXPLORE_SEARCH["/explore?q=... 검색"]:::public
+    EXPLORE_COFFEE["/explore?coffeeChat=... 커피챗"]:::public
+    PROJECT_PUBLIC["/p/id 공개뷰"]:::public
+  end
+
+  EXPLORE --> EXPLORE_PROJECT
+  EXPLORE --> EXPLORE_SEARCH
+  EXPLORE --> EXPLORE_COFFEE
+  EXPLORE --> PROJECT_PUBLIC
+  EXPLORE_PROJECT -- "미인증 지원 클릭" --> LOGIN
+  EXPLORE_PROJECT -- "본인 프로젝트" --> PROJECT_EDIT
+
+  %% ── 프로젝트 관리 ──
+  subgraph PROJ["프로젝트 관리"]
+    PROJECT_NEW["/projects/new 생성"]:::dashboard
+    PROJECT_DETAIL["/projects/id 상세"]:::dashboard
+    PROJECT_EDIT["/projects/id/edit 수정"]:::dashboard
+  end
+
+  PROJECTS --> PROJECT_NEW
+  PROJECT_NEW -- "생성 완료" --> PROJECT_PUBLIC
+  PROJECT_DETAIL -- "미소유자" --> PROFILE
+  PROJECT_DETAIL -- "리디렉트" --> PROJECT_PUBLIC
+  PROJECT_EDIT -- "저장 완료" --> PROJECT_PUBLIC
+  PROJECT_EDIT -- "나가기" --> PROFILE
+  PROFILE --> PROJECT_NEW
+
+  %% ── Profile ──
+  PROFILE -- "미인증" --> LOGIN
+  PROFILE -- "프로필 수정" --> INTERVIEW
+  PROFILE -- "기회 보기" --> EXPLORE
+  PROFILE -- "Discord 연결" --> API_DISCORD_OAUTH_PROFILE
+  API_DISCORD_OAUTH_PROFILE["/api/discord/oauth?returnTo=/profile"]:::api
+  PROFILE -- "온보딩 재진입" --> ONBOARD_REDO
+  ONBOARD_REDO["/onboarding?mode=redo-chat"]:::auth
+
+  PROFILE_EDIT["/profile/edit 즉시 리디렉트"]:::hidden
+  PROFILE_EDIT -- "즉시" --> PROFILE
+
+  %% ── ProfileSidebar ──
+  PROFILE -- "내 클럽 클릭" --> CLUB_DETAIL
+
+  %% ── 클럽 관리 ──
+  subgraph CLUBS["클럽 관리"]
+    CLUBS_LIST["/clubs 목록"]:::dashboard
+    CLUB_DETAIL["/clubs/slug 상세"]:::dashboard
+    CLUB_SETTINGS["/clubs/slug/settings"]:::dashboard
+    CLUB_DISCORD["/clubs/slug/settings/discord"]:::dashboard
+  end
+
+  CLUBS_LIST --> CLUB_DETAIL
+  CLUB_DETAIL -- "관리자" --> CLUB_SETTINGS
+  CLUB_DETAIL -- "관리자" --> CLUB_DISCORD
+  CLUB_SETTINGS --> CLUB_DETAIL
+  CLUB_DISCORD -- "완료" --> CLUB_SETTINGS
+  EXPLORE -- "캠퍼스맵 클럽" --> CLUB_DETAIL
+
+  %% ── Discord 연동 ──
+  subgraph DISCORD["Discord 연동"]
+    CONNECT_DISCORD["/connect/discord"]:::dashboard
+    API_DISCORD_OAUTH["/api/discord/oauth"]:::api
+    API_DISCORD_CB["/api/discord/oauth/callback"]:::api
+    API_DISCORD_INSTALL["/api/discord/install"]:::api
+  end
+
+  CONNECT_DISCORD -- "미인증" --> LOGIN
+  CONNECT_DISCORD -- "연결 시작" --> API_DISCORD_OAUTH
+  API_DISCORD_OAUTH -- "Discord 외부" --> API_DISCORD_CB
+  API_DISCORD_CB -- "성공" --> CONNECT_DISCORD
+  API_DISCORD_CB -- "인증 에러" --> MORE
+  API_DISCORD_CB -- "토큰 에러" --> LOGIN
+  CONNECT_DISCORD -- "연결 완료" --> CLUBS_LIST
+  EXPLORE -- "Discord 로그인" --> API_DISCORD_OAUTH
+
+  %% ── Dashboard HIDDEN ──
+  subgraph DASH_HIDDEN["Dashboard HIDDEN"]
+    DASHBOARD["/dashboard"]:::hidden
+  end
+  DASHBOARD --> PROJECT_NEW
+  DASHBOARD --> PROJECTS
+  DASHBOARD --> EXPLORE_PROJECT
+  DASHBOARD --> MESSAGES
+  DASHBOARD --> NOTIF
+  DASHBOARD --> EXPLORE
+  DASHBOARD --> PROFILE
+  DASHBOARD --> CLUB_DETAIL
+
+  %% ── Institution ──
+  subgraph INST["기관 관리"]
+    INSTITUTION["/institution"]:::admin
+    INST_ANNOUNCE["/institution/announce"]:::admin
+    INST_MEMBERS["/institution/members"]:::admin
+    INST_REPORTS["/institution/reports"]:::admin
+    INST_TEAMS["/institution/teams"]:::admin
+    INST_BP["/institution/business-plans"]:::admin
+  end
+
+  INSTITUTION --> INST_ANNOUNCE
+  INSTITUTION --> INST_MEMBERS
+  INSTITUTION --> INST_REPORTS
+  INSTITUTION --> INST_TEAMS
+  INSTITUTION --> INST_BP
+  INST_ANNOUNCE --> INSTITUTION
+  INST_MEMBERS --> INSTITUTION
+  INST_REPORTS --> INSTITUTION
+  INST_TEAMS --> INSTITUTION
+  INST_BP --> INSTITUTION
+  INSTITUTION -- "미인증" --> LOGIN
+  INSTITUTION -- "권한 없음" --> EXPLORE
+
+  %% ── Admin ──
+  subgraph ADM["앱 관리"]
+    ADMIN["/admin"]:::admin
+    ADMIN_ACTIVITY["/admin/activity"]:::admin
+    ADMIN_ERRORS["/admin/error-logs"]:::admin
+    ADMIN_INST["/admin/institutions"]:::admin
+    ADMIN_INVITE["/admin/invite-codes"]:::admin
+    ADMIN_OPP["/admin/opportunities"]:::admin
+    ADMIN_USERS["/admin/users"]:::admin
+  end
+
+  ADMIN --> ADMIN_ACTIVITY
+  ADMIN --> ADMIN_ERRORS
+  ADMIN --> ADMIN_INST
+  ADMIN --> ADMIN_INVITE
+  ADMIN --> ADMIN_OPP
+  ADMIN --> ADMIN_USERS
+  ADMIN -- "권한 없음" --> EXPLORE
+  ADMIN --> ONBOARD
+
+  %% ── HIDDEN 라우트 ──
+  subgraph BLOCKED["HIDDEN 라우트 → /explore"]
+    H_CALENDAR["/calendar"]:::hidden
+    H_DOCUMENTS["/documents"]:::hidden
+    H_NETWORK["/network"]:::hidden
+    H_USAGE["/usage"]:::hidden
+    H_WORKFLOW["/workflow"]:::hidden
+    H_BP["/business-plan"]:::hidden
+    H_IDEAS["/validated-ideas"]:::hidden
+    H_VALIDATOR["/idea-validator"]:::hidden
+    H_DESIGN["/design"]:::hidden
+  end
+
+  H_CALENDAR --> EXPLORE
+  H_DOCUMENTS --> EXPLORE
+  H_NETWORK --> EXPLORE
+  H_USAGE --> EXPLORE
+  H_WORKFLOW --> EXPLORE
+  H_BP --> EXPLORE
+  H_IDEAS --> EXPLORE
+  H_VALIDATOR --> EXPLORE
+  H_DESIGN --> EXPLORE
+
+  %% ── 레거시 ──
+  subgraph LEGACY["레거시 라우트"]
+    L_PROJECT["/project/* ideate/create/build/plan"]:::hidden
+    L_RECRUIT["/recruit"]:::hidden
+    L_SETTINGS["/settings"]:::hidden
+  end
+
+  L_PROJECT --> EXPLORE
+  L_RECRUIT --> EXPLORE
+  L_SETTINGS --> PROFILE
+
+  %% ── 고아 라우트 ──
+  GUIDE["/guide 진입경로없음"]:::hidden
+  OFFLINE["/offline PWA전용"]:::hidden
+  DEV_ONBOARD["/dev/onboarding 개발용"]:::hidden
+  LANDING["/landing 진입경로없음"]:::hidden
+  </pre>
+</div>
+
+<div class="info">
+  <h2>네비게이션 비교: 데스크탑 vs 모바일</h2>
+  <table>
+    <tr><th>경로</th><th>데스크탑 GNB</th><th>모바일 상단</th><th>모바일 하단 탭바</th><th>문제</th></tr>
+    <tr><td><code>/explore</code></td><td>pill tab</td><td>Draft 로고</td><td>중앙 탭</td><td>-</td></tr>
+    <tr><td><code>/clubs</code></td><td>pill tab</td><td>-</td><td style="color:#DC2626;font-weight:700">없음</td><td style="color:#DC2626;font-weight:700">모바일 진입 불가</td></tr>
+    <tr><td><code>/profile</code></td><td>pill tab + 드롭다운</td><td>-</td><td>탭</td><td>-</td></tr>
+    <tr><td><code>/projects</code></td><td>pill tab</td><td>-</td><td>탭</td><td>-</td></tr>
+    <tr><td><code>/projects/new</code></td><td>CTA 버튼</td><td>+ 버튼</td><td>-</td><td>-</td></tr>
+    <tr><td><code>/notifications</code></td><td>드롭다운</td><td>벨 아이콘</td><td>탭</td><td>-</td></tr>
+    <tr><td><code>/messages</code></td><td>-</td><td>-</td><td>/more 경유</td><td>직접 접근 없음</td></tr>
+    <tr><td><code>/more</code></td><td>-</td><td>-</td><td>탭</td><td>데스크탑에서 접근 불가</td></tr>
+    <tr><td>검색</td><td>유니버설 검색바</td><td style="color:#DC2626;font-weight:700">없음</td><td>-</td><td style="color:#DC2626;font-weight:700">모바일 검색 불가</td></tr>
+  </table>
+
+  <h2 style="margin-top:24px;">고아 라우트 (진입 경로 없음)</h2>
+  <table>
+    <tr><th>라우트</th><th>상태</th><th>비고</th></tr>
+    <tr><td><code>/guide</code></td><td>공개</td><td>어디서도 링크 없음</td></tr>
+    <tr><td><code>/landing</code></td><td>공개</td><td>/과 별도 존재, 어디서도 링크 없음</td></tr>
+    <tr><td><code>/offline</code></td><td>공개</td><td>PWA 오프라인 폴백 전용</td></tr>
+    <tr><td><code>/dev/onboarding</code></td><td>개발용</td><td>프로덕션 불필요</td></tr>
+    <tr><td><code>/dashboard</code></td><td>HIDDEN</td><td>내부 링크 8개 있으나 middleware 차단</td></tr>
+    <tr><td><code>/profile/edit</code></td><td>리디렉트</td><td>즉시 /profile로 리디렉트</td></tr>
+  </table>
+
+  <h2 style="margin-top:24px;">주요 플로우</h2>
+  <table>
+    <tr><th>플로우</th><th>경로</th></tr>
+    <tr><td>신규 유저</td><td><code>/ &rarr; /login &rarr; OAuth &rarr; /auth/callback &rarr; /onboarding &rarr; /onboarding/interview &rarr; /explore</code></td></tr>
+    <tr><td>기존 유저</td><td><code>/ &rarr; (middleware) &rarr; /explore</code></td></tr>
+    <tr><td>프로젝트 생성</td><td><code>/projects &rarr; /projects/new &rarr; /p/{id}</code></td></tr>
+    <tr><td>클럽 진입 (데스크탑)</td><td><code>GNB 클럽 탭 &rarr; /clubs &rarr; /clubs/{slug}</code></td></tr>
+    <tr><td>클럽 진입 (모바일)</td><td style="color:#DC2626"><code>/explore 캠퍼스맵 &rarr; /clubs/{slug} (목록 페이지 우회)</code></td></tr>
+    <tr><td>Discord 연동</td><td><code>/connect/discord &rarr; /api/discord/oauth &rarr; Discord &rarr; callback &rarr; /clubs</code></td></tr>
+    <tr><td>프로필 수정</td><td><code>/profile &rarr; /onboarding?mode=redo-chat (온보딩 재진입)</code></td></tr>
+  </table>
+</div>
+
+<div class="zoom-controls">
+  <button onclick="zoomIn()" title="확대">+</button>
+  <button onclick="zoomOut()" title="축소">-</button>
+  <button onclick="resetView()" title="초기화">R</button>
+</div>
+
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'default',
+    flowchart: {
+      useMaxWidth: false,
+      htmlLabels: true,
+      curve: 'basis',
+      rankSpacing: 50,
+      nodeSpacing: 30,
+    },
+    securityLevel: 'loose',
+  });
+
+  let scale = 1, panX = 0, panY = 0, dragging = false, startX = 0, startY = 0;
+  const container = document.getElementById('diagram');
+
+  function applyTransform() {
+    const svg = container.querySelector('svg');
+    if (svg) svg.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+  }
+
+  const observer = new MutationObserver(() => {
+    const svg = container.querySelector('svg');
+    if (svg) {
+      svg.style.transformOrigin = '0 0';
+      svg.style.transition = 'transform 0.1s ease-out';
+      observer.disconnect();
+    }
+  });
+  observer.observe(container, { childList: true, subtree: true });
+
+  container.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? 0.9 : 1.1;
+    scale = Math.min(Math.max(scale * delta, 0.2), 5);
+    applyTransform();
+  }, { passive: false });
+
+  container.addEventListener('mousedown', (e) => {
+    dragging = true; startX = e.clientX - panX; startY = e.clientY - panY;
+  });
+  window.addEventListener('mousemove', (e) => {
+    if (!dragging) return;
+    panX = e.clientX - startX; panY = e.clientY - startY;
+    applyTransform();
+  });
+  window.addEventListener('mouseup', () => { dragging = false; });
+
+  window.zoomIn = () => { scale = Math.min(scale * 1.3, 5); applyTransform(); };
+  window.zoomOut = () => { scale = Math.max(scale * 0.7, 0.2); applyTransform(); };
+  window.resetView = () => { scale = 1; panX = 0; panY = 0; applyTransform(); };
+</script>
+
+</body>
+</html>

@@ -19,6 +19,7 @@ import { fetchPersonaChain } from './fetch'
 import { resolvePersonaChain } from './inherit'
 import { runAdapter, type AdapterOutput } from './channel-adapters'
 import { getChannelsForEvent, EVENT_CONFIG } from './event-catalog'
+import { publishToLinkedIn } from './publishers/linkedin'
 import type {
   ChannelFormat,
   EventType,
@@ -153,6 +154,35 @@ export async function createBundle(
     }
   }
 
+  // 8-a) 이 페르소나에 연결된 채널 credentials 조회 — is_copy_only 오버라이드용
+  // credential 있는 채널은 어댑터의 기본값과 무관하게 자동 발행 가능 (복사 버튼 대신 승인 시 자동 발행)
+  const { data: credRows } = await supabase
+    .from('persona_channel_credentials')
+    .select('channel_type')
+    .eq('persona_id', persona.id)
+    .eq('active', true)
+  const connectedChannels = new Set(
+    ((credRows ?? []) as Array<{ channel_type: string }>).map(
+      (r) => r.channel_type,
+    ),
+  )
+  // DB channel_type → adapter channel_format 매핑
+  // linkedin → linkedin_post, instagram → instagram_caption, threads → threads(미구현)
+  const CHANNEL_TO_FORMAT: Record<string, ChannelFormat[]> = {
+    linkedin: ['linkedin_post'],
+    instagram: ['instagram_caption'],
+    // threads: ['threads_post'], // R3.4+
+  }
+  const autoPublishFormats = new Set<ChannelFormat>()
+  for (const ch of connectedChannels) {
+    for (const fmt of CHANNEL_TO_FORMAT[ch] ?? []) {
+      autoPublishFormats.add(fmt)
+    }
+  }
+  // Discord·이메일은 연결 개념이 다름 — 항상 자동 가능 (Discord bot·Resend 설치됨)
+  autoPublishFormats.add('discord_forum_markdown')
+  autoPublishFormats.add('email_newsletter')
+
   if (outputsToInsert.length > 0) {
     const rows = outputsToInsert.map(({ adapterOutput }) => ({
       persona_id: persona.id,
@@ -161,7 +191,11 @@ export async function createBundle(
       channel_format: adapterOutput.channel_format,
       generated_content: adapterOutput.generated_content,
       format_constraints: adapterOutput.format_constraints,
-      is_copy_only: adapterOutput.is_copy_only,
+      // 연결된 채널이면 자동 발행 가능 → is_copy_only=false로 덮어쓰기
+      is_copy_only:
+        autoPublishFormats.has(adapterOutput.channel_format)
+          ? false
+          : adapterOutput.is_copy_only,
       input_context: {
         event_type: eventType,
         event_metadata: eventMetadata,
@@ -245,7 +279,10 @@ export async function approveBundle(
     .select('*')
     .eq('bundle_id', bundleId)
 
-  // 2) 자동 발행 — R3.1은 discord_forum_markdown만
+  // 2) 자동 발행
+  // R3.1: discord_forum_markdown (Discord)
+  // R3.4: linkedin_post (credential 있을 때만)
+  const typedBundle = bundle as unknown as PersonaOutputBundleRow
   let publishedCount = 0
   for (const output of (outputs ?? []) as Array<{
     id: string
@@ -254,12 +291,12 @@ export async function approveBundle(
     is_copy_only: boolean
     input_context: Record<string, unknown>
   }>) {
-    if (output.is_copy_only) continue
+    // Discord 포럼
     if (output.channel_format === 'discord_forum_markdown') {
       const channelId = await resolveDiscordTargetChannel(
         supabase,
-        (bundle as unknown as PersonaOutputBundleRow).persona_id,
-        (bundle as unknown as PersonaOutputBundleRow).event_metadata,
+        typedBundle.persona_id,
+        typedBundle.event_metadata,
       )
       if (!channelId) {
         console.warn('[bundles] Discord 대상 채널 찾지 못함 — skip')
@@ -275,8 +312,38 @@ export async function approveBundle(
       } catch (err) {
         console.warn('[bundles] Discord 발행 실패:', (err as Error).message)
       }
+      continue
     }
-    // email_newsletter도 is_copy_only=false지만 구독자 리스트 UI는 R3.4. 지금은 published 전환 안 함.
+
+    // LinkedIn — credential 있을 때만 자동 발행. 없으면 is_copy_only 유지(수동 복사)
+    if (output.channel_format === 'linkedin_post') {
+      const result = await publishToLinkedIn(supabase, {
+        personaId: typedBundle.persona_id,
+        content: output.generated_content,
+      })
+      if (result.success) {
+        await supabase
+          .from('persona_outputs')
+          .update({
+            status: 'published',
+            published_at: now,
+            destination: 'linkedin',
+            external_ref: result.post_urn ?? null,
+            is_copy_only: false,
+          })
+          .eq('id', output.id)
+        publishedCount++
+      } else {
+        // 자동 발행 실패 — 복사 전용으로 남김 (UI가 복사 버튼 보여줌)
+        console.warn(
+          `[bundles] LinkedIn 발행 실패 (복사 전용으로 유지): ${result.error}`,
+        )
+      }
+      continue
+    }
+
+    // 그 외: email_newsletter는 R3.4 구독자 리스트 UI 필요 → 지금은 skip
+    // is_copy_only 채널(instagram/everytime)은 자동 발행 불가 → skip
   }
 
   // 3) 번들 상태 업데이트
@@ -294,6 +361,25 @@ export async function approveBundle(
 
   if (uErr) throw new Error(`번들 승인 실패: ${uErr.message}`)
   return updated as unknown as PersonaOutputBundleRow
+}
+
+/**
+ * 번들 보관(소프트 삭제).
+ * - status='archived'로 전환. 리스트에서 사라지지만 DB에는 남음.
+ * - 이미 발행된 번들(published)은 외부 플랫폼에 올라간 것까지 철회하지 않음 — 상태만 archived.
+ */
+export async function archiveBundle(
+  supabase: Client,
+  bundleId: string,
+): Promise<PersonaOutputBundleRow> {
+  const { data, error } = await supabase
+    .from('persona_output_bundles')
+    .update({ status: 'archived' })
+    .eq('id', bundleId)
+    .select('*')
+    .single()
+  if (error) throw new Error(`번들 보관 실패: ${error.message}`)
+  return data as unknown as PersonaOutputBundleRow
 }
 
 /**
