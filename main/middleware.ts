@@ -2,6 +2,9 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { updateSession } from '@/src/lib/supabase/middleware'
 import { signCookie, verifyCookie } from '@/src/lib/cookie-signature'
 import { captureEdgeError } from '@/src/lib/posthog/edge'
+// NOTE: src/lib/access/manifest.ts 가 단일 진실 소스.
+// Phase 2 에서 아래 hiddenRoutes/publicRoutes/protectedPaths 를 manifest 로 교체 예정.
+// 지금은 docs/ACCESS_POLICY.md 와 매니페스트가 의도 문서, middleware 는 실제 작동.
 
 // 미들웨어 내부 try/catch 유틸 — 캡처 후 원래 결과로 진행하되, 치명적 실패 시
 // fail-closed(403)로 빠져야 하는 블록은 별도로 래핑.

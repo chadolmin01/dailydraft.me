@@ -20,7 +20,8 @@ on:
 
 jobs:
   build:
-    name: TypeCheck + Next Build
+    # Ruleset 'TypeCheck+Next Build' (공백 없음) 와 매칭해야 required status check 통과.
+    name: TypeCheck+Next Build
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -35,21 +36,42 @@ jobs:
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://dummy.supabase.co' }}
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'dummy-anon-key-for-ci' }}
       NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL || 'https://dailydraft.me' }}
-      # PostHog 등 다른 public env가 있으면 여기 추가
+      # Server-only. Next build 의 page data collection 이 module-level Supabase client
+      # 초기화를 거치는 route (예: /api/coffee-chat/notify) 때문에 dummy 필요.
+      # 실제 서버 호출은 Vercel 런타임 secret 으로 대체됨.
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || 'dummy-service-role-key-for-build' }}
+      # 외부 API 키들도 build collect 중 참조될 수 있어 dummy.
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY || 'dummy' }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || 'dummy' }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY || 'dummy' }}
+      CRON_SECRET: ${{ secrets.CRON_SECRET || 'dummy' }}
+      COOKIE_SECRET: ${{ secrets.COOKIE_SECRET || 'dummy-cookie-secret-for-build-only' }}
+      UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL || '' }}
+      UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN || '' }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Node.js
+        # 왜 22: 로컬 개발이 Node 24 이고 lock 파일도 그 기준으로 생성됨.
+        # Node 20 에선 npm 10 이 lock 해석 불일치(typescript peer dep mismatch) 발생.
+        # camera-controls@3.1.2 등 일부 패키지도 node>=22 요구.
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
           cache-dependency-path: main/package-lock.json
 
       - name: Install dependencies
-        run: npm ci
+        # npm install (lock 자동 보정) — CI 환경 차이로 인한 peer dep 이슈 회피.
+        # lock 변동은 npm diff 로 사후 검출 가능.
+        run: npm install --no-audit --no-fund
+
+      - name: Access manifest coverage
+        # app/**/page.tsx 전수 scan → manifest 등록 여부 확인.
+        # 새 페이지 추가 시 ACCESS_MANIFEST 업데이트 누락 방지.
+        run: npm run check:access
 
       - name: TypeScript type check
         # 왜 database.ts pre-existing 에러 필터: 이 파일은 Supabase CLI 출력인데 프로젝트 세션 중

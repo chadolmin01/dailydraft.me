@@ -9,6 +9,7 @@ import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 import { useQueryClient } from '@tanstack/react-query'
 import { useClub, useClubMembers, useClubStats, useClubProjects, clubKeys } from '@/src/hooks/useClub'
+import { useAuth } from '@/src/context/AuthContext'
 import { timeAgo } from '@/src/lib/utils'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { SkeletonGrid } from '@/components/ui/Skeleton'
@@ -43,6 +44,9 @@ export default function ClubPageClient() {
   const [activeTab, setActiveTab] = useState<Tab>('intro')
   const [memberCohort, setMemberCohort] = useState<string>()
 
+  const { user, isLoading: isAuthLoading } = useAuth()
+  const isAuthed = !isAuthLoading && !!user
+
   const { data: club, isLoading } = useClub(slug)
   const { data: stats } = useClubStats(slug)
   const { data: membersData } = useClubMembers(slug, { cohort: memberCohort, limit: 50 })
@@ -50,7 +54,9 @@ export default function ClubPageClient() {
 
   // 탭 호버 시 해당 탭에서 쓰는 API를 미리 fetch. 왜: intro 탭 외에는 탭 누른 순간 스켈레톤이
   // 꼭 보이는 구조였음. 호버 50~150ms에 미리 요청하면 클릭 시점엔 캐시에서 즉시 표시.
+  // 비로그인에선 prefetch 자체를 skip — 401 에러 로그 방지.
   const prefetchTab = useCallback((tab: Tab) => {
+    if (!isAuthed) return
     if (tab === 'teams') {
       queryClient.prefetchQuery({
         queryKey: clubKeys.teams(slug),
@@ -73,7 +79,7 @@ export default function ClubPageClient() {
       })
     }
     // intro/projects/members/archive는 이미 page 로드 시 훅이 실행돼 캐시에 있음
-  }, [queryClient, slug])
+  }, [queryClient, slug, isAuthed])
 
   // club.my_role은 서버에서 직접 조회한 값 — 멤버 페이지네이션(limit 50)에 의존하지 않음
   const isAdmin = club?.my_role === 'owner' || club?.my_role === 'admin'
