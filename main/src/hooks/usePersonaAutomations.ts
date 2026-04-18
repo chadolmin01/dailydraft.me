@@ -28,6 +28,8 @@ export function usePersonaAutomations(personaId: string | undefined) {
   return useQuery({
     queryKey: ['persona-automations', personaId],
     enabled: !!personaId,
+    staleTime: 1000 * 60,
+    placeholderData: (prev) => prev,
     queryFn: async (): Promise<{ automations: PersonaAutomationRow[] }> => {
       const res = await fetch(`/api/personas/${personaId}/automations`)
       if (!res.ok) {

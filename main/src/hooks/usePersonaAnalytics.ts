@@ -28,6 +28,8 @@ export function usePersonaAnalytics(
   return useQuery({
     queryKey: ['persona-analytics', personaId, days],
     enabled: !!personaId,
+    staleTime: 1000 * 60,
+    placeholderData: (prev) => prev,
     queryFn: async (): Promise<AnalyticsResponse> => {
       const res = await fetch(
         `/api/personas/${personaId}/analytics?days=${days}`,

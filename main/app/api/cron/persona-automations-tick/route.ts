@@ -58,7 +58,7 @@ export const POST = withCronCapture(
     const nowIso = now.toISOString()
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: rows, error } = await (admin.from('persona_automations') as any)
+    const { data: rows, error } = await (admin.from('persona_automations' as never) as any)
       .select(
         'id, persona_id, event_type, frequency, run_hour, run_minute, run_weekday, run_day_of_month, daily_count, auto_publish, default_metadata, active, created_by',
       )
@@ -89,7 +89,7 @@ export const POST = withCronCapture(
         now,
       )
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (admin.from('persona_automations') as any)
+      await (admin.from('persona_automations' as never) as any)
         .update({ next_run_at: nextRunAt, last_run_at: nowIso })
         .eq('id', row.id)
 
@@ -136,7 +136,7 @@ export const POST = withCronCapture(
 
       // 4) 결과 기록
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (admin.from('persona_automations') as any)
+      await (admin.from('persona_automations' as never) as any)
         .update({
           last_run_status: fail === 0 ? 'ok' : ok > 0 ? 'partial' : 'failed',
         })

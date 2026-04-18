@@ -16,7 +16,7 @@ import {
 
 async function loadAutomation(admin: ReturnType<typeof createAdminClient>, id: string) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (admin.from('persona_automations') as any)
+  const { data, error } = await (admin.from('persona_automations' as never) as any)
     .select('*')
     .eq('id', id)
     .maybeSingle()
@@ -111,7 +111,7 @@ export const PATCH = withErrorCapture(async (request, context) => {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (admin.from('persona_automations') as any)
+  const { data, error } = await (admin.from('persona_automations' as never) as any)
     .update(patch)
     .eq('id', automationId)
     .select('*')
@@ -137,7 +137,7 @@ export const DELETE = withErrorCapture(async (_request, context) => {
   if (!editable) return ApiResponse.forbidden('권한이 없습니다')
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { error } = await (admin.from('persona_automations') as any)
+  const { error } = await (admin.from('persona_automations' as never) as any)
     .delete()
     .eq('id', automationId)
 

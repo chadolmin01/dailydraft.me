@@ -30,6 +30,8 @@ export function useCalendarOutputs(
   return useQuery({
     queryKey: ['calendar-outputs', personaId, range?.start, range?.end],
     enabled: !!personaId && !!range,
+    staleTime: 1000 * 30,
+    placeholderData: (prev) => prev,
     queryFn: async (): Promise<{ outputs: CalendarOutputRow[] }> => {
       const qs = new URLSearchParams({
         start: range!.start,

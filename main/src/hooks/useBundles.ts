@@ -16,6 +16,8 @@ export function useBundleDetail(bundleId: string | undefined) {
   return useQuery({
     queryKey: ['bundle', bundleId],
     enabled: !!bundleId,
+    staleTime: 1000 * 30,
+    placeholderData: (prev) => prev,
     queryFn: async (): Promise<BundleDetailResponse> => {
       const res = await fetch(`/api/bundles/${bundleId}`)
       if (!res.ok) {

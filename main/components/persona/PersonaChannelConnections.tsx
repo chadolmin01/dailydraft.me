@@ -54,9 +54,13 @@ const CHANNEL_DEFS: ChannelDef[] = [
     channel_type: 'threads',
     brand_key: 'instagram_caption', // 임시: Threads 전용 브랜드는 추후. Meta 패밀리라 인스타 그라디언트 차용
     label: 'Threads',
+    // Threads는 개인 계정 그대로 OAuth 가능 (Instagram과 달리 비즈 전환 불필요).
+    // Meta App Review 통과 전까지 comingSoon 유지. 통과 후 comingSoon: false로 플립.
     description:
-      'Instagram 비즈니스 계정이 필요합니다. 연결 후 자동 발행 지원 예정.',
+      '본인 Threads 계정에 자동 발행됩니다. Meta 앱 리뷰 승인 대기 중.',
     comingSoon: true,
+    startUrl: (pid, ret) =>
+      `/api/oauth/threads/start?persona_id=${pid}&return_to=${encodeURIComponent(ret)}`,
   },
   {
     channel_type: 'instagram',
@@ -77,12 +81,20 @@ export function PersonaChannelConnections({ personaId, clubSlug, canEdit }: Prop
 
   // OAuth 콜백 후 결과 토스트
   useEffect(() => {
-    const status = searchParams.get('linkedin')
-    if (status === 'ok') {
+    const linkedin = searchParams.get('linkedin')
+    if (linkedin === 'ok') {
       toast.success('LinkedIn 연결이 완료되었습니다. 이제 자동 발행이 가능합니다.')
-    } else if (status === 'error') {
+    } else if (linkedin === 'error') {
       const msg = searchParams.get('msg') || '알 수 없는 오류'
       toast.error(`LinkedIn 연결 실패: ${msg}`)
+    }
+
+    const threads = searchParams.get('threads')
+    if (threads === 'ok') {
+      toast.success('Threads 연결이 완료되었습니다. 이제 자동 발행이 가능합니다.')
+    } else if (threads === 'error') {
+      const msg = searchParams.get('msg') || '알 수 없는 오류'
+      toast.error(`Threads 연결 실패: ${msg}`)
     }
   }, [searchParams])
 

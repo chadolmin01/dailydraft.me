@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Sparkles, ArrowRight, FolderOpen, Clock } from 'lucide-react'
+import { Sparkles, ArrowRight, LayoutGrid } from 'lucide-react'
 import { usePersonaByOwner, useCreatePersona } from '@/src/hooks/usePersona'
 import { PersonaEmptyState } from './PersonaEmptyState'
 import { PersonaActionCardsSection } from './PersonaActionCardsSection'
@@ -63,7 +63,7 @@ export function PersonaDashboardClient({ clubId, clubName, clubSlug, isAdmin }: 
 
   return (
     <div className="space-y-6">
-      {/* 상단 CTA — AI에게 글 부탁 + 내 덱 모음 보기 */}
+      {/* 상단 CTA — 새 덱 제작 + 콘텐츠 스튜디오(캘린더/내덱/자동화/성과 한 곳에) */}
       {isAdmin && (
         <div className="grid md:grid-cols-[2fr_1fr] gap-3">
           <Link
@@ -87,18 +87,19 @@ export function PersonaDashboardClient({ clubId, clubName, clubSlug, isAdmin }: 
             />
           </Link>
           <Link
-            href={`/clubs/${clubSlug}/decks`}
+            href={`/clubs/${clubSlug}/contents`}
+            prefetch
             className="group flex items-center gap-3 bg-surface-card border border-border rounded-2xl p-5 hover:border-brand-border hover:shadow-sm transition-all"
           >
             <div className="w-11 h-11 rounded-xl bg-brand-bg flex items-center justify-center shrink-0">
-              <FolderOpen size={20} className="text-brand" />
+              <LayoutGrid size={20} className="text-brand" />
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="text-sm font-bold text-txt-primary mb-0.5">
-                내 덱 모음
+                콘텐츠 스튜디오
               </h3>
               <p className="text-[11px] text-txt-tertiary leading-relaxed">
-                지금까지 만든 글들을 승인·발행 상태별로 관리합니다.
+                캘린더·내 덱·기획·자동화·성과를 한 곳에서 관리합니다.
               </p>
             </div>
             <ArrowRight
@@ -107,30 +108,6 @@ export function PersonaDashboardClient({ clubId, clubName, clubSlug, isAdmin }: 
             />
           </Link>
         </div>
-      )}
-
-      {/* 자동화 진입 — 예약된 발행 관리 */}
-      {isAdmin && (
-        <Link
-          href={`/clubs/${clubSlug}/automations`}
-          className="group flex items-center gap-3 bg-surface-card border border-border rounded-2xl p-4 hover:border-brand-border hover:shadow-sm transition-all"
-        >
-          <div className="w-10 h-10 rounded-xl bg-brand-bg flex items-center justify-center shrink-0">
-            <Clock size={18} className="text-brand" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <h3 className="text-sm font-bold text-txt-primary mb-0.5">
-              자동 발행 예약
-            </h3>
-            <p className="text-[11px] text-txt-tertiary leading-relaxed">
-              &quot;내일 9시에 공지 올리기&quot;처럼 AI가 글을 쓰고 원하는 시간에 자동 발행합니다.
-            </p>
-          </div>
-          <span className="shrink-0 inline-flex items-center gap-1 text-[11px] font-semibold text-brand">
-            열기
-            <ArrowRight size={11} className="group-hover:translate-x-0.5 transition-transform" />
-          </span>
-        </Link>
       )}
 
       <PersonaActionCardsSection personaId={data.persona.id} disabled={!isAdmin} />

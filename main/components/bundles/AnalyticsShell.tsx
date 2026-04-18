@@ -19,6 +19,7 @@ import type { ChannelFormat } from '@/src/lib/personas/types'
 
 interface Props {
   slug: string
+  embedded?: boolean
 }
 
 const PERIOD_OPTIONS = [
@@ -36,7 +37,7 @@ const WEEKDAY_LABELS = ['월', '화', '수', '목', '금', '토', '일']
  * "노출·좋아요" 실측 지표는 비어 있음. 대신 DB에서 뽑을 수 있는
  * "발행 활동" 지표를 노출해, 회장이 본인들 운영 리듬을 파악할 수 있게 함.
  */
-export function AnalyticsShell({ slug }: Props) {
+export function AnalyticsShell({ slug, embedded = false }: Props) {
   const { data: club } = useClub(slug)
   const { data: personaData } = usePersonaByOwner('club', club?.id)
   const persona = personaData?.persona
@@ -61,22 +62,26 @@ export function AnalyticsShell({ slug }: Props) {
 
   return (
     <>
-      <div className="flex items-start justify-between gap-3 mb-4">
-        <div className="flex items-center gap-3 min-w-0">
-          <Link
-            href={`/clubs/${slug}`}
-            className="text-txt-tertiary hover:text-txt-primary transition-colors shrink-0"
-            aria-label="뒤로"
-          >
-            <ChevronLeft size={20} />
-          </Link>
-          <div className="min-w-0">
-            <h1 className="text-lg font-bold text-txt-primary">성과 대시보드</h1>
-            <p className="text-xs text-txt-tertiary leading-relaxed">
-              {club?.name ?? '우리 동아리'}에서 발행한 콘텐츠의 리듬을 분석합니다.
-            </p>
+      <div
+        className={`flex items-start gap-3 mb-4 ${embedded ? 'justify-end' : 'justify-between'}`}
+      >
+        {!embedded && (
+          <div className="flex items-center gap-3 min-w-0">
+            <Link
+              href={`/clubs/${slug}`}
+              className="text-txt-tertiary hover:text-txt-primary transition-colors shrink-0"
+              aria-label="뒤로"
+            >
+              <ChevronLeft size={20} />
+            </Link>
+            <div className="min-w-0">
+              <h1 className="text-lg font-bold text-txt-primary">성과 대시보드</h1>
+              <p className="text-xs text-txt-tertiary leading-relaxed">
+                {club?.name ?? '우리 동아리'}에서 발행한 콘텐츠의 리듬을 분석합니다.
+              </p>
+            </div>
           </div>
-        </div>
+        )}
         <div className="inline-flex items-center gap-1 bg-surface-card border border-border rounded-full p-1 shrink-0">
           {PERIOD_OPTIONS.map((p) => (
             <button

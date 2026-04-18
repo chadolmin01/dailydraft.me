@@ -21,6 +21,7 @@ import { ApiResponse } from '@/src/lib/api-utils'
 import { withCronCapture } from '@/src/lib/posthog/with-cron-capture'
 import { sendChannelMessage } from '@/src/lib/discord/client'
 import { publishToLinkedIn } from '@/src/lib/personas/publishers/linkedin'
+import { publishToThreads } from '@/src/lib/personas/publishers/threads'
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
@@ -103,6 +104,14 @@ export const POST = withCronCapture('publish-scheduled', async (request: NextReq
         publishSuccess = res.success
         destination = 'linkedin'
         externalRef = res.post_urn ?? null
+      } else if (output.channel_format === 'threads_post') {
+        const res = await publishToThreads(admin, {
+          personaId: output.persona_id,
+          content: output.generated_content,
+        })
+        publishSuccess = res.success
+        destination = 'threads'
+        externalRef = res.thread_id ?? null
       }
       // email_newsletter는 구독자 리스트 UI(R3.4+) 필요 — 지금은 skip
 

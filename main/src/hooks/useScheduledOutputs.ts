@@ -22,6 +22,8 @@ export function useScheduledOutputs(personaId: string | undefined) {
   return useQuery({
     queryKey: ['scheduled-outputs', personaId],
     enabled: !!personaId,
+    staleTime: 1000 * 30,
+    placeholderData: (prev) => prev,
     queryFn: async (): Promise<{ outputs: ScheduledOutputRow[] }> => {
       const res = await fetch(`/api/personas/${personaId}/scheduled-outputs`)
       if (!res.ok) {

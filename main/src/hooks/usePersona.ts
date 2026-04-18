@@ -27,6 +27,9 @@ export function usePersonaByOwner(
   return useQuery({
     queryKey: ['persona', type, ownerId],
     enabled: !!ownerId,
+    // 페르소나는 자주 바뀌지 않음 — 2분간 신선한 걸로 간주해 탭 전환 시 로딩 스피너 숨김
+    staleTime: 1000 * 60 * 2,
+    placeholderData: (prev) => prev,
     queryFn: async (): Promise<PersonaWithFieldsResponse> => {
       const res = await fetch(
         `/api/personas?type=${type}&owner_id=${ownerId}`,

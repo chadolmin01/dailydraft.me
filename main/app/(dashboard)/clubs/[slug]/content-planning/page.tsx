@@ -1,10 +1,10 @@
 import { redirect } from 'next/navigation'
 
-export default async function AutomationsRedirect({
+export default async function ContentPlanningRedirect({
   params,
 }: {
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  redirect(`/clubs/${slug}/contents?tab=calendar`)
+  redirect(`/clubs/${slug}/contents?tab=planning`)
 }

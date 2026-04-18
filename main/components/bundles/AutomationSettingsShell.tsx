@@ -30,6 +30,7 @@ import { EVENT_TYPES, type EventType } from '@/src/lib/personas/types'
 
 interface Props {
   slug: string
+  embedded?: boolean
 }
 
 const FREQUENCY_OPTIONS: Array<{
@@ -53,7 +54,7 @@ const WEEKDAYS = ['월', '화', '수', '목', '금', '토', '일']
  *   - 매일 아침 9시 → 공지 1개 자동 생성 (자동 발행 OFF)
  *   - ...
  */
-export function AutomationSettingsShell({ slug }: Props) {
+export function AutomationSettingsShell({ slug, embedded = false }: Props) {
   const { data: club } = useClub(slug)
   const { data: personaData } = usePersonaByOwner('club', club?.id)
   const persona = personaData?.persona
@@ -70,22 +71,26 @@ export function AutomationSettingsShell({ slug }: Props) {
 
   return (
     <>
-      <div className="flex items-start justify-between gap-3 mb-4">
-        <div className="flex items-center gap-3 min-w-0">
-          <Link
-            href={`/clubs/${slug}/automations`}
-            className="text-txt-tertiary hover:text-txt-primary transition-colors shrink-0"
-            aria-label="뒤로"
-          >
-            <ChevronLeft size={20} />
-          </Link>
-          <div className="min-w-0">
-            <h1 className="text-lg font-bold text-txt-primary">자동화 설정</h1>
-            <p className="text-xs text-txt-tertiary leading-relaxed">
-              AI가 정해진 시간마다 자동으로 덱을 생성(또는 발행)하게 설정합니다.
-            </p>
+      <div
+        className={`flex items-start gap-3 mb-4 ${embedded ? 'justify-end' : 'justify-between'}`}
+      >
+        {!embedded && (
+          <div className="flex items-center gap-3 min-w-0">
+            <Link
+              href={`/clubs/${slug}/contents?tab=calendar`}
+              className="text-txt-tertiary hover:text-txt-primary transition-colors shrink-0"
+              aria-label="뒤로"
+            >
+              <ChevronLeft size={20} />
+            </Link>
+            <div className="min-w-0">
+              <h1 className="text-lg font-bold text-txt-primary">자동화 설정</h1>
+              <p className="text-xs text-txt-tertiary leading-relaxed">
+                AI가 정해진 시간마다 자동으로 덱을 생성(또는 발행)하게 설정합니다.
+              </p>
+            </div>
           </div>
-        </div>
+        )}
         {isAdmin && persona && !showForm && (
           <button
             onClick={() => setShowForm(true)}

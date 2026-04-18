@@ -32,7 +32,7 @@ export const GET = withErrorCapture(async (_request, context) => {
   if (!canView) return ApiResponse.forbidden('권한이 없습니다')
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (admin.from('persona_automations') as any)
+  const { data, error } = await (admin.from('persona_automations' as never) as any)
     .select('*')
     .eq('persona_id', personaId)
     .order('created_at', { ascending: false })
@@ -100,7 +100,7 @@ export const POST = withErrorCapture(async (request, context) => {
   const nextRunAt = computeNextRunAt(cfg)
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (admin.from('persona_automations') as any)
+  const { data, error } = await (admin.from('persona_automations' as never) as any)
     .insert({
       persona_id: personaId,
       event_type,

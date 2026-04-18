@@ -154,7 +154,7 @@ export function NewBundleShell({ slug }: { slug: string }) {
       { scheduled_at: scheduledIso },
       {
         onSuccess: () => {
-          router.push(`/clubs/${slug}/automations`)
+          router.push(`/clubs/${slug}/contents?tab=calendar`)
         },
       },
     )
@@ -173,7 +173,7 @@ export function NewBundleShell({ slug }: { slug: string }) {
     if (!createdBundleId) return
     // 덱은 이미 pending_approval 상태로 DB에 있음 — 상세로 이동만
     toast.success('덱이 내 덱 모음에 저장되었습니다')
-    router.push(`/clubs/${slug}/decks`)
+    router.push(`/clubs/${slug}/contents?tab=decks`)
   }
 
   // 페르소나가 없으면 먼저 만들라고 안내

@@ -246,7 +246,7 @@ export function BundleDetailClient({ bundleId, canApprove, slug }: Props) {
         onConfirm={async () => {
           await archive.mutateAsync()
           setDeleteOpen(false)
-          router.push(`/clubs/${slug}/decks`)
+          router.push(`/clubs/${slug}/contents?tab=decks`)
         }}
         title="이 덱을 삭제하시겠습니까?"
         message={`"${eventLabel}" 덱이 내 덱 모음에서 사라집니다. 이미 발행된 채널(Discord·LinkedIn 등)의 글은 자동으로 내려가지 않습니다. 필요하면 각 플랫폼에서 직접 삭제해 주십시오.`}

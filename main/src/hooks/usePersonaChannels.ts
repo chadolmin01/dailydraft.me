@@ -18,6 +18,8 @@ export function usePersonaChannels(personaId: string | undefined) {
   return useQuery({
     queryKey: ['persona-channels', personaId],
     enabled: !!personaId,
+    staleTime: 1000 * 60 * 2,
+    placeholderData: (prev) => prev,
     queryFn: async (): Promise<{ channels: ConnectedChannel[] }> => {
       const res = await fetch(`/api/personas/${personaId}/channels`)
       if (!res.ok) {

@@ -25,6 +25,7 @@ import { CHANNEL_BRANDS } from './channel-brand'
 
 interface Props {
   slug: string
+  embedded?: boolean
 }
 
 type StatusFilter = 'all' | 'pending' | 'approved' | 'published' | 'rejected'
@@ -37,7 +38,7 @@ const STATUS_FILTERS: Array<{ key: StatusFilter; label: string }> = [
   { key: 'rejected', label: '거절됨' },
 ]
 
-export function DeckListShell({ slug }: Props) {
+export function DeckListShell({ slug, embedded = false }: Props) {
   const { data: club } = useClub(slug)
   const { data: personaData } = usePersonaByOwner('club', club?.id)
   const persona = personaData?.persona
@@ -45,6 +46,8 @@ export function DeckListShell({ slug }: Props) {
   const { data: bundlesData, isLoading } = useQuery({
     queryKey: ['persona-bundles', persona?.id],
     enabled: !!persona?.id,
+    staleTime: 1000 * 30,
+    placeholderData: (prev) => prev,
     queryFn: async (): Promise<{ bundles: PersonaOutputBundleRow[] }> => {
       const res = await fetch(
         `/api/personas/${persona!.id}/bundles?limit=50`,
@@ -79,29 +82,31 @@ export function DeckListShell({ slug }: Props) {
 
   return (
     <>
-      <div className="flex items-start justify-between gap-3 mb-2">
-        <div className="flex items-center gap-3 min-w-0">
-          <Link
-            href={`/clubs/${slug}`}
-            className="text-txt-tertiary hover:text-txt-primary transition-colors shrink-0"
-            aria-label="뒤로"
-          >
-            <ChevronLeft size={20} />
-          </Link>
-          <div className="min-w-0">
-            <h1 className="text-lg font-bold text-txt-primary">내 덱 모음</h1>
-            <p className="text-xs text-txt-tertiary leading-relaxed">
-              {club?.name ?? '우리 동아리'}에서 AI가 만든 글들. 승인·발행 상태로 한눈에 관리하십시오.
-            </p>
+      {!embedded && (
+        <div className="flex items-start justify-between gap-3 mb-2">
+          <div className="flex items-center gap-3 min-w-0">
+            <Link
+              href={`/clubs/${slug}`}
+              className="text-txt-tertiary hover:text-txt-primary transition-colors shrink-0"
+              aria-label="뒤로"
+            >
+              <ChevronLeft size={20} />
+            </Link>
+            <div className="min-w-0">
+              <h1 className="text-lg font-bold text-txt-primary">내 덱 모음</h1>
+              <p className="text-xs text-txt-tertiary leading-relaxed">
+                {club?.name ?? '우리 동아리'}에서 AI가 만든 글들. 승인·발행 상태로 한눈에 관리하십시오.
+              </p>
+            </div>
           </div>
+          <Link
+            href={`/clubs/${slug}/bundles/new`}
+            className="inline-flex items-center gap-1.5 h-10 px-4 rounded-xl bg-brand text-white text-sm font-semibold hover:bg-brand-hover transition-colors shrink-0"
+          >
+            <Plus size={14} />새 덱
+          </Link>
         </div>
-        <Link
-          href={`/clubs/${slug}/bundles/new`}
-          className="inline-flex items-center gap-1.5 h-10 px-4 rounded-xl bg-brand text-white text-sm font-semibold hover:bg-brand-hover transition-colors shrink-0"
-        >
-          <Plus size={14} />새 덱
-        </Link>
-      </div>
+      )}
 
       {/* 필터 스트립 */}
       <div className="flex gap-1.5 overflow-x-auto pb-2 mt-4 mb-4">
