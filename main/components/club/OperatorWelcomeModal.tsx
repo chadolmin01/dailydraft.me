@@ -3,12 +3,29 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
+import posthog from 'posthog-js'
 import { Sparkles, X, Users, UserPlus, MessageCircle, ArrowRight, PartyPopper } from 'lucide-react'
 
 interface Props {
   clubSlug: string
   clubName: string
   clubId: string
+}
+
+// PostHog 대시보드에서 'operator-welcome-variant' flag 를 만들어
+// 'control' | 'experiment' 등으로 rollout 시 variant 분기 가능.
+// flag 미설정이면 undefined → 기본 디자인 렌더.
+function useOperatorWelcomeVariant(): string | undefined {
+  const [variant, setVariant] = useState<string | undefined>(undefined)
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    // onFeatureFlags: flag 값이 로드되면 한 번 호출. 캐시 있으면 즉시.
+    posthog.onFeatureFlags(() => {
+      const v = posthog.getFeatureFlag('operator-welcome-variant')
+      if (typeof v === 'string') setVariant(v)
+    })
+  }, [])
+  return variant
 }
 
 /**
@@ -23,20 +40,48 @@ interface Props {
 export function OperatorWelcomeModal({ clubSlug, clubName, clubId }: Props) {
   const [open, setOpen] = useState(false)
   const storageKey = `operator-welcome-${clubSlug}`
+  const variant = useOperatorWelcomeVariant()
 
   useEffect(() => {
     if (typeof window === 'undefined') return
     const seen = localStorage.getItem(storageKey)
     if (!seen) {
       // 진입 후 약간 딜레이 — 페이지 hydrate 끝난 뒤 부드럽게 등장
-      const t = setTimeout(() => setOpen(true), 400)
+      const t = setTimeout(() => {
+        setOpen(true)
+        // 노출 이벤트 — PostHog 퍼널: shown → action_clicked | dismissed
+        try {
+          posthog.capture('operator_welcome_shown', {
+            club_slug: clubSlug,
+            variant: variant ?? 'default',
+          })
+        } catch {}
+      }, 400)
       return () => clearTimeout(t)
     }
-  }, [storageKey])
+  }, [storageKey, clubSlug, variant])
 
-  const dismiss = () => {
+  const dismiss = (reason: 'close_button' | 'backdrop' | 'later_button') => {
     localStorage.setItem(storageKey, '1')
     setOpen(false)
+    try {
+      posthog.capture('operator_welcome_dismissed', {
+        club_slug: clubSlug,
+        variant: variant ?? 'default',
+        reason,
+      })
+    } catch {}
+  }
+
+  const trackAction = (actionId: string) => {
+    localStorage.setItem(storageKey, '1')
+    try {
+      posthog.capture('operator_welcome_action', {
+        club_slug: clubSlug,
+        variant: variant ?? 'default',
+        action: actionId,
+      })
+    } catch {}
   }
 
   const quickStarts = [
@@ -77,7 +122,7 @@ export function OperatorWelcomeModal({ clubSlug, clubName, clubId }: Props) {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             className="fixed inset-0 bg-black/40 backdrop-blur-sm z-modal-backdrop"
-            onClick={dismiss}
+            onClick={() => dismiss('backdrop')}
           />
 
           {/* Modal — 왜 wrapper 분리: framer-motion의 y/scale transform이
@@ -118,7 +163,7 @@ export function OperatorWelcomeModal({ clubSlug, clubName, clubId }: Props) {
                 </div>
               </motion.div>
               <button
-                onClick={dismiss}
+                onClick={() => dismiss('close_button')}
                 className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/30 transition-colors"
                 aria-label="닫기"
               >
@@ -158,7 +203,7 @@ export function OperatorWelcomeModal({ clubSlug, clubName, clubId }: Props) {
                   >
                     <Link
                       href={item.href}
-                      onClick={() => localStorage.setItem(storageKey, '1')}
+                      onClick={() => trackAction(item.id)}
                       className="flex items-center gap-3 p-3 bg-surface-bg border border-border rounded-2xl hover:border-brand hover:bg-brand-bg/30 transition-all group"
                     >
                       <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${item.accent}`}>
@@ -178,7 +223,7 @@ export function OperatorWelcomeModal({ clubSlug, clubName, clubId }: Props) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.6 }}
-                onClick={dismiss}
+                onClick={() => dismiss('later_button')}
                 className="w-full mt-5 text-center text-[12px] text-txt-tertiary hover:text-txt-primary transition-colors py-2"
               >
                 나중에 둘러보기
