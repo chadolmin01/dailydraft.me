@@ -26,8 +26,10 @@ const ModalLoadingFallback = () => (
   </div>
 )
 
-const ProjectDetailModal = dynamic(
-  () => import('@/components/ProjectDetailModal').then(m => ({ default: m.ProjectDetailModal })),
+// 빠른 미리보기 전용. 풀 상세는 /p/[id] 페이지로 이동.
+// 기존 ProjectDetailModal (탭/커피챗/지원폼 전부) 대비 가볍게 카드만 렌더.
+const ProjectPreviewModal = dynamic(
+  () => import('@/components/ProjectPreviewModal').then(m => ({ default: m.ProjectPreviewModal })),
   { ssr: false, loading: ModalLoadingFallback }
 )
 import { ProfileDetailModal } from '@/components/ProfileDetailModal'
@@ -1113,8 +1115,8 @@ function ExplorePageContent() {
 
       <AnimatePresence>
         {selectedProjectId && (
-          <ProjectDetailModal
-            key="project-modal"
+          <ProjectPreviewModal
+            key="project-preview"
             projectId={selectedProjectId}
             onClose={() => replaceParams({ project: null })}
           />
