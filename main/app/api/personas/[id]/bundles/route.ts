@@ -18,7 +18,7 @@ export const GET = withErrorCapture(async (request, context) => {
   const supabase = await createClient()
 
   let q = supabase
-    .from('persona_output_bundles')
+    .from('persona_output_bundles' as never)
     .select('*')
     .eq('persona_id', personaId)
     .order('created_at', { ascending: false })

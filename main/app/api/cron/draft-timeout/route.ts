@@ -49,6 +49,9 @@ export const POST = withCronCapture('draft-timeout', async (request: NextRequest
 
   const oppToClub = new Map<string, string>()
   for (const tc of (teamChannels || [])) {
+    // opportunity_id가 null인 레코드(커뮤니티 채널 등)는 스킵 — 주간 업데이트 드래프트는
+    // opportunity 단위라 null이면 매핑 불가.
+    if (!tc.opportunity_id) continue
     oppToClub.set(tc.opportunity_id, tc.club_id)
   }
 

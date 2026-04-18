@@ -154,7 +154,8 @@ export const POST = withCronCapture('ghostwriter-generate', async (request: Next
     }
 
     // 배치로 이 클럽의 모든 opportunity 정보를 한 번에 조회 (N+1 방지)
-    const clubOppIds = clubChs.map((ch) => ch.opportunity_id)
+    // null opportunity_id(커뮤니티 채널 등)는 제외 — 팀 주간 업데이트 대상 아님
+    const clubOppIds = clubChs.map((ch) => ch.opportunity_id).filter((id): id is string => !!id)
     const { data: clubOpportunities } = await admin
       .from('opportunities')
       .select('id, title, creator_id, created_at')
@@ -222,6 +223,8 @@ export const POST = withCronCapture('ghostwriter-generate', async (request: Next
         }
 
         // 프로젝트 정보 (배치 조회 결과에서 가져옴)
+        // opportunity_id가 null이면 위 루프에서 이미 skip됐어야 하지만 방어적으로 가드
+        if (!ch.opportunity_id) continue
         const opportunity = oppMap.get(ch.opportunity_id)
         const projectTitle = opportunity?.title ?? '프로젝트'
         const creatorId = opportunity?.creator_id
@@ -453,7 +456,8 @@ export const POST = withCronCapture('ghostwriter-generate', async (request: Next
     }
 
     // 연속 미제출 팀 감지 (직전 2주 draft 확인 — 프로젝트별 상대 주차)
-    const oppIdsInClub = clubChs.map(ch => ch.opportunity_id)
+    // null 제외 — 팀 채널만. 위 clubChs 필터에서도 null인 경우는 처리 안 함.
+    const oppIdsInClub = clubChs.map(ch => ch.opportunity_id).filter((id): id is string => !!id)
     const consecutiveMissing: { projectTitle: string; weeks: number }[] = []
     const currentDraftIds = new Set(dashboardDrafts.map(d => d.opportunityId))
 
@@ -471,6 +475,7 @@ export const POST = withCronCapture('ghostwriter-generate', async (request: Next
       )
 
       for (const ch of clubChs) {
+        if (!ch.opportunity_id) continue // 팀 채널이 아닌 경우(null) skip
         if (currentDraftIds.has(ch.opportunity_id)) continue
 
         const opp = oppMap.get(ch.opportunity_id)

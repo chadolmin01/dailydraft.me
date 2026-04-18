@@ -90,7 +90,7 @@ export default function DashboardClient() {
   })
 
   // 마지막 활동 — My opportunities에서 최근 업데이트 있는 프로젝트 3개
-  const { data: recentUpdates = [] } = useQuery<Array<{ opportunity_id: string; title: string; created_at: string }>>({
+  const { data: recentUpdates = [] } = useQuery<Array<{ opportunity_id: string; title: string; created_at: string | null }>>({
     queryKey: ['dashboard-recent-updates', user?.id],
     queryFn: async () => {
       if (!myProjects.length) return []

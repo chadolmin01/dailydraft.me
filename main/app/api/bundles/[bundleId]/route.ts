@@ -13,7 +13,7 @@ export const GET = withErrorCapture(async (_request, context) => {
   const { bundleId } = (await context.params) as { bundleId: string }
   const supabase = await createClient()
 
-  const { data: bundle, error: bErr } = await supabase
+  const { data: bundle, error: bErr } = await (supabase as any)
     .from('persona_output_bundles')
     .select('*')
     .eq('id', bundleId)
@@ -22,7 +22,7 @@ export const GET = withErrorCapture(async (_request, context) => {
   if (bErr) return ApiResponse.internalError('번들 조회 실패', bErr)
   if (!bundle) return ApiResponse.notFound('번들을 찾을 수 없습니다')
 
-  const { data: outputs } = await supabase
+  const { data: outputs } = await (supabase as any)
     .from('persona_outputs')
     .select('*')
     .eq('bundle_id', bundleId)

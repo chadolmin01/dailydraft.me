@@ -46,11 +46,11 @@ export const POST = withErrorCapture(async (request, context) => {
     : undefined
 
   // 페르소나 로드 + 편집 권한 검증 (RLS가 한 번 더 막지만 조기 실패가 UX상 낫다)
-  const { data: persona, error: pErr } = await supabase
+  const { data: persona, error: pErr } = await (supabase as any)
     .from('personas')
     .select('*')
     .eq('id', personaId)
-    .maybeSingle<PersonaRow>()
+    .maybeSingle()
 
   if (pErr) return ApiResponse.internalError('페르소나 조회 실패', pErr)
   if (!persona) return ApiResponse.notFound('페르소나를 찾을 수 없습니다')
@@ -70,13 +70,13 @@ export const POST = withErrorCapture(async (request, context) => {
       .from('clubs')
       .select('name')
       .eq('id', persona.owner_id)
-      .maybeSingle<{ name: string }>()
+      .maybeSingle()
     if (club?.name) orgName = club.name
   }
 
   // Corpus source 목록 — DB에 등록된 것 + 요청으로 온 channel_ids(임시)
   let sources: PersonaCorpusSourceRow[] = []
-  const { data: dbSources } = await supabase
+  const { data: dbSources } = await (supabase as any)
     .from('persona_corpus_sources')
     .select('*')
     .eq('persona_id', personaId)
@@ -113,7 +113,7 @@ export const POST = withErrorCapture(async (request, context) => {
   }
 
   // training_runs: running 상태로 먼저 기록 (크래시 추적용)
-  const runInsert = await supabase
+  const runInsert = await (supabase as any)
     .from('persona_training_runs')
     .insert({
       persona_id: personaId,
@@ -148,14 +148,16 @@ export const POST = withErrorCapture(async (request, context) => {
 
     // 이전 값 스냅샷 (롤백용)
     const prevKeys = result.slots.map((s) => s.field_key)
-    const { data: prevFields } = await supabase
+    const { data: prevFields } = await (supabase as any)
       .from('persona_fields')
       .select('field_key, value, source, confidence')
       .eq('persona_id', personaId)
       .in('field_key', prevKeys)
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    type PrevField = { field_key: string; value: any }
     const prevMap = new Map(
-      (prevFields ?? []).map((f) => [f.field_key as FieldKey, f]),
+      ((prevFields ?? []) as PrevField[]).map((f) => [f.field_key as FieldKey, f]),
     )
 
     // upsert — 실패한 슬롯(error 있는 것)은 skip
@@ -188,7 +190,7 @@ export const POST = withErrorCapture(async (request, context) => {
       })
 
     if (upserts.length > 0) {
-      const { error: upErr } = await supabase
+      const { error: upErr } = await (supabase as any)
         .from('persona_fields')
         .upsert(upserts, { onConflict: 'persona_id,field_key' })
       if (upErr) {
@@ -236,7 +238,7 @@ async function updateTrainingRun(
   patch: Record<string, unknown>,
 ) {
   if (!runId) return
-  await supabase
+  await (supabase as any)
     .from('persona_training_runs')
     .update({ ...patch, completed_at: new Date().toISOString() })
     .eq('id', runId)

@@ -897,11 +897,13 @@ async function handleBundleApproveButton(interaction: any, customId: string) {
       const supabase = createAdminClient()
 
       // 번들 조회
-      const { data: bundle } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const bundleRes: any = await (supabase as any)
         .from('persona_output_bundles')
         .select('id, persona_id, status')
         .eq('id', bundleId)
-        .maybeSingle<{ id: string; persona_id: string; status: string }>()
+        .maybeSingle()
+      const bundle = bundleRes.data as { id: string; persona_id: string; status: string } | null
 
       if (!bundle) {
         await editOriginalInteractionMessage(
@@ -927,7 +929,7 @@ async function handleBundleApproveButton(interaction: any, customId: string) {
           .from('profiles')
           .select('user_id')
           .eq('discord_user_id', discordUserId)
-          .maybeSingle<{ user_id: string }>()
+          .maybeSingle()
         draftUserId = profile?.user_id ?? null
       }
 
@@ -1480,7 +1482,7 @@ async function handleGitHubList(interaction: {
   // channel_id → 프로젝트 매핑 조회
   const project = await findProjectByChannel(supabase, channelId)
 
-  if (!project) {
+  if (!project || !project.opportunity_id) {
     return NextResponse.json({
       type: CHANNEL_MESSAGE,
       data: {
@@ -1564,7 +1566,7 @@ async function handleGitHubDisconnect(interaction: {
   // channel_id → 프로젝트 매핑 조회
   const project = await findProjectByChannel(supabase, channelId)
 
-  if (!project) {
+  if (!project || !project.opportunity_id) {
     return NextResponse.json({
       type: CHANNEL_MESSAGE,
       data: {

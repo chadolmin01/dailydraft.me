@@ -155,8 +155,9 @@ function parseLinkedInContent(content: string): {
   body: string
   hashtags: string[]
 } {
-  // parseInstagramContent와 동일한 형태
-  return parseInstagramContent(content)
+  // parseInstagramContent는 { caption, hashtags } 반환하므로 body 필드로 alias
+  const { caption, hashtags } = parseInstagramContent(content)
+  return { body: caption, hashtags }
 }
 
 // ============================================================

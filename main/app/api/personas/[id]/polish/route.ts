@@ -43,14 +43,14 @@ export const POST = withErrorCapture(async (request, context) => {
   if (!canEdit) return ApiResponse.forbidden('이 페르소나를 편집할 권한이 없습니다')
 
   // 페르소나 + 기존 슬롯 + 조직명
-  const { data: persona } = await admin
+  const { data: persona } = await (admin as any)
     .from('personas')
     .select('*')
     .eq('id', personaId)
-    .maybeSingle<PersonaRow>()
+    .maybeSingle()
   if (!persona) return ApiResponse.notFound('페르소나를 찾을 수 없습니다')
 
-  const { data: currentFields } = await admin
+  const { data: currentFields } = await (admin as any)
     .from('persona_fields')
     .select('*')
     .eq('persona_id', personaId)
@@ -68,7 +68,7 @@ export const POST = withErrorCapture(async (request, context) => {
       .from('clubs')
       .select('name')
       .eq('id', persona.owner_id)
-      .maybeSingle<{ name: string }>()
+      .maybeSingle()
     if (club?.name) orgName = club.name
   }
 
@@ -99,7 +99,7 @@ export const POST = withErrorCapture(async (request, context) => {
   })
 
   if (upserts.length > 0) {
-    const { error: upErr } = await admin
+    const { error: upErr } = await (admin as any)
       .from('persona_fields')
       .upsert(upserts, { onConflict: 'persona_id,field_key' })
     if (upErr) {
@@ -109,7 +109,7 @@ export const POST = withErrorCapture(async (request, context) => {
   }
 
   // 이력 기록 (롤백 가능)
-  await admin.from('persona_training_runs').insert({
+  await (admin as any).from('persona_training_runs').insert({
     persona_id: personaId,
     trigger: 'manual',
     status: 'completed',

@@ -94,7 +94,7 @@ export async function createBundle(
   }
 
   // 4) 번들 insert
-  const { data: bundleData, error: bundleErr } = await supabase
+  const { data: bundleData, error: bundleErr } = await (supabase as any)
     .from('persona_output_bundles')
     .insert({
       persona_id: persona.id,
@@ -170,7 +170,7 @@ export async function createBundle(
       status: 'draft' as const,
     }))
 
-    const { data: insertedOutputs, error: outErr } = await supabase
+    const { data: insertedOutputs, error: outErr } = await (supabase as any)
       .from('persona_outputs')
       .insert(rows)
       .select('id, channel_format')
@@ -192,7 +192,7 @@ export async function createBundle(
   }
 
   // 9) 번들 상태 → pending_approval
-  await supabase
+  await (supabase as any)
     .from('persona_output_bundles')
     .update({ status: 'pending_approval' })
     .eq('id', bundle.id)
@@ -230,7 +230,7 @@ export async function approveBundle(
   const now = new Date().toISOString()
 
   // 1) 번들 + 하위 outputs 로드
-  const { data: bundle, error: bErr } = await supabase
+  const { data: bundle, error: bErr } = await (supabase as any)
     .from('persona_output_bundles')
     .select('*')
     .eq('id', bundleId)
@@ -238,7 +238,7 @@ export async function approveBundle(
   if (bErr) throw new Error(`번들 조회 실패: ${bErr.message}`)
   if (!bundle) throw new Error('번들을 찾을 수 없습니다')
 
-  const { data: outputs } = await supabase
+  const { data: outputs } = await (supabase as any)
     .from('persona_outputs')
     .select('*')
     .eq('bundle_id', bundleId)
@@ -265,7 +265,7 @@ export async function approveBundle(
       }
       try {
         await sendChannelMessage(channelId, output.generated_content)
-        await supabase
+        await (supabase as any)
           .from('persona_outputs')
           .update({ status: 'published', published_at: now, destination: `discord:${channelId}` })
           .eq('id', output.id)
@@ -278,7 +278,7 @@ export async function approveBundle(
   }
 
   // 3) 번들 상태 업데이트
-  const { data: updated, error: uErr } = await supabase
+  const { data: updated, error: uErr } = await (supabase as any)
     .from('persona_output_bundles')
     .update({
       status: publishedCount > 0 ? 'published' : 'approved',
@@ -303,7 +303,7 @@ export async function rejectBundle(
   userId: string,
   reason: string,
 ): Promise<PersonaOutputBundleRow> {
-  const { data: bundle, error } = await supabase
+  const { data: bundle, error } = await (supabase as any)
     .from('persona_output_bundles')
     .update({
       status: 'rejected',
@@ -336,7 +336,7 @@ async function findTargetPersona(
   input: CreateBundleInput,
 ): Promise<PersonaRow | null> {
   if (input.personaId) {
-    const { data } = await supabase
+    const { data } = await (supabase as any)
       .from('personas')
       .select('*')
       .eq('id', input.personaId)
@@ -344,7 +344,7 @@ async function findTargetPersona(
     return (data ?? null) as PersonaRow | null
   }
   if (!input.clubId) return null
-  const { data } = await supabase
+  const { data } = await (supabase as any)
     .from('personas')
     .select('*')
     .eq('type', 'club')
@@ -362,7 +362,7 @@ async function resolveOrgName(supabase: Client, persona: PersonaRow): Promise<st
     .from('clubs')
     .select('name')
     .eq('id', persona.owner_id)
-    .maybeSingle<{ name: string }>()
+    .maybeSingle()
   return data?.name ?? persona.name
 }
 
@@ -380,11 +380,11 @@ async function resolveDiscordTargetChannel(
   const explicit = eventMetadata.discord_target_channel_id
   if (typeof explicit === 'string') return explicit
 
-  const { data: persona } = await supabase
+  const { data: persona } = await (supabase as any)
     .from('personas')
     .select('type, owner_id')
     .eq('id', personaId)
-    .maybeSingle<{ type: string; owner_id: string }>()
+    .maybeSingle()
   if (!persona || persona.type !== 'club') return null
 
   const teamId = eventMetadata.team_id
@@ -393,7 +393,7 @@ async function resolveDiscordTargetChannel(
       .from('discord_team_channels')
       .select('discord_channel_id')
       .eq('opportunity_id', teamId)
-      .maybeSingle<{ discord_channel_id: string }>()
+      .maybeSingle()
     if (data?.discord_channel_id) return data.discord_channel_id
   }
 
@@ -401,7 +401,7 @@ async function resolveDiscordTargetChannel(
     .from('clubs')
     .select('operator_channel_id')
     .eq('id', persona.owner_id)
-    .maybeSingle<{ operator_channel_id: string | null }>()
+    .maybeSingle()
   return club?.operator_channel_id ?? null
 }
 
@@ -421,7 +421,7 @@ async function notifyOperatorOfBundle(
     .from('clubs')
     .select('slug, operator_channel_id, name')
     .eq('id', persona.owner_id)
-    .maybeSingle<{ slug: string; operator_channel_id: string | null; name: string }>()
+    .maybeSingle()
   if (!club?.operator_channel_id) return
 
   const eventLabel = EVENT_CONFIG[bundle.event_type].label
@@ -471,19 +471,20 @@ async function appendToTaboos(
   userId: string,
 ): Promise<void> {
   const fieldKey: FieldKey = 'taboos'
-  const { data: existing } = await supabase
+  const { data: existing } = await (supabase as any)
     .from('persona_fields')
     .select('value')
     .eq('persona_id', personaId)
     .eq('field_key', fieldKey)
-    .maybeSingle<{ value: Record<string, unknown> }>()
+    .maybeSingle()
 
   const prevItems = Array.isArray(existing?.value?.items)
     ? (existing!.value.items as unknown[]).filter((x): x is string => typeof x === 'string')
     : []
   const newItems = Array.from(new Set([...prevItems, newItem]))
 
-  await supabase.from('persona_fields').upsert(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (supabase as any).from('persona_fields').upsert(
     {
       persona_id: personaId,
       field_key: fieldKey,

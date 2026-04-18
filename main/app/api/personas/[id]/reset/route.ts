@@ -20,7 +20,7 @@ export const POST = withErrorCapture(async (_request, context) => {
   } = await supabase.auth.getUser()
   if (!user) return ApiResponse.unauthorized()
 
-  const { error } = await supabase
+  const { error } = await (supabase as any)
     .from('persona_fields')
     .delete()
     .eq('persona_id', personaId)

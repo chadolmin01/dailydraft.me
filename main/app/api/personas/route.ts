@@ -30,7 +30,7 @@ export const GET = withErrorCapture(async (request) => {
 
   const supabase = await createClient()
 
-  const { data: personas, error: pErr } = await supabase
+  const { data: personas, error: pErr } = await (supabase as any)
     .from('personas')
     .select('*')
     .eq('type', type)
@@ -50,7 +50,7 @@ export const GET = withErrorCapture(async (request) => {
     return ApiResponse.ok({ persona: null, fields: [], resolvedFields: null })
   }
 
-  const { data: fields, error: fErr } = await supabase
+  const { data: fields, error: fErr } = await (supabase as any)
     .from('persona_fields')
     .select('*')
     .eq('persona_id', persona.id)
@@ -116,7 +116,7 @@ export const POST = withErrorCapture(async (request) => {
     }
   }
 
-  const { data, error } = await admin
+  const { data, error } = await (admin as any)
     .from('personas')
     .insert({
       type,

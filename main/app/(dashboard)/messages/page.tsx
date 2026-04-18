@@ -21,13 +21,17 @@ export default async function MessagesPage() {
   await queryClient.prefetchQuery({
     queryKey: CONVERSATIONS_KEY,
     queryFn: async () => {
-      // 최근 메시지 200건에서 상대별 최신 1건만 추출 (unread는 별도 집계)
+      // 최근 메시지 200건에서 상대별 최신 1건만 추출 (unread는 별도 집계).
+      // 왜 명시 타입: Supabase가 .or() 의 동적 필터 문자열을 정적으로 검증 못 해
+      // Row를 never로 추론하는 이슈 회피.
+      type MsgRow = { id: string; sender_id: string; receiver_id: string; content: string; created_at: string | null }
       const { data: messages } = await supabase
         .from('direct_messages')
         .select('id, sender_id, receiver_id, content, created_at')
         .or(`and(sender_id.eq.${user.id},deleted_by_sender.eq.false),and(receiver_id.eq.${user.id},deleted_by_receiver.eq.false)`)
         .order('created_at', { ascending: false })
         .limit(200)
+        .returns<MsgRow[]>()
 
       const conversationMap = new Map<string, {
         partnerId: string
@@ -48,7 +52,7 @@ export default async function MessagesPage() {
         }
       }
 
-      // unread 집계 (limit과 무관하게 정확한 값)
+      // unread 집계 (limit과 무관하게 정확한 값). .returns<>()로 명시 타입.
       const { data: unreadRows } = await supabase
         .from('direct_messages')
         .select('sender_id')
@@ -56,6 +60,7 @@ export default async function MessagesPage() {
         .eq('is_read', false)
         .eq('deleted_by_receiver', false)
         .limit(2000)
+        .returns<{ sender_id: string }[]>()
 
       for (const row of unreadRows || []) {
         const partner = conversationMap.get(row.sender_id)
@@ -69,10 +74,12 @@ export default async function MessagesPage() {
       const partnerIds = conversations.map(c => c.partnerId)
       const profilesMap: Record<string, { nickname: string; desired_position: string | null; avatar_url: string | null }> = {}
       if (partnerIds.length > 0) {
+        type ProfileRow = { user_id: string; nickname: string | null; desired_position: string | null; avatar_url: string | null }
         const { data: profiles } = await supabase
           .from('profiles')
           .select('user_id, nickname, desired_position, avatar_url')
           .in('user_id', partnerIds)
+          .returns<ProfileRow[]>()
         for (const p of profiles || []) {
           profilesMap[p.user_id] = {
             nickname: p.nickname ?? '익명',
