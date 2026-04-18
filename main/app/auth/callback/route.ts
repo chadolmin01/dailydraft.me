@@ -2,7 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { autoEnrollByEmail } from '@/src/lib/institution/auto-enroll'
-import { captureServerError } from '@/src/lib/posthog/server'
+import { captureServerError, captureServerEvent } from '@/src/lib/posthog/server'
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
@@ -68,6 +68,12 @@ export async function GET(request: Request) {
             contact_email: user.email || null,
             ...(discordUserId ? { discord_user_id: discordUserId, discord_username: discordUsername } : {}),
           })
+          // Funnel Stage 1: signup (프로필 row 최초 생성 시점)
+          captureServerEvent('signup_initiated', {
+            userId: user.id,
+            provider: user.app_metadata?.provider ?? 'unknown',
+            has_discord: !!discordUserId,
+          }).catch(() => {})
           return NextResponse.redirect(`${origin}/onboarding`)
         }
 

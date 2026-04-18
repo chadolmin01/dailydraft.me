@@ -93,17 +93,21 @@ export async function captureServerError(
  */
 export async function captureServerEvent(
   eventName: string,
-  properties: Record<string, unknown>
+  properties: Record<string, unknown> & { userId?: string; jobName?: string }
 ): Promise<void> {
   const client = getClient()
   if (!client) return
 
-  const distinctId = properties.jobName
+  // distinctId 우선순위: userId (유저 퍼널) → cron:<job> → 'server'
+  // 온보딩·가입 funnel 이벤트는 반드시 userId 를 넘겨서 유저별 집계 가능하게 해야 함.
+  const distinctId = properties.userId
+    ? String(properties.userId)
+    : properties.jobName
     ? `cron:${properties.jobName}`
     : 'server'
 
   client.capture({
-    distinctId: String(distinctId),
+    distinctId,
     event: eventName,
     properties: sanitizeBody(properties),
   })

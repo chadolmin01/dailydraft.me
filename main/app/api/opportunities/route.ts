@@ -6,6 +6,7 @@ import {
   incrementOpportunityUsage,
 } from '@/src/lib/subscription/usage-checker'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
+import { captureServerEvent } from '@/src/lib/posthog/server'
 
 // Boost type priority for sorting
 const BOOST_PRIORITY: Record<string, number> = {
@@ -157,6 +158,14 @@ export const POST = withErrorCapture(async (request) => {
   }
 
   await incrementOpportunityUsage(supabase, user.id)
+
+  // Funnel Stage 3b: 프로젝트 생성 = 자기주도 기회 발행
+  captureServerEvent('opportunity_created', {
+    userId: user.id,
+    opportunityId: data.id,
+    type: data.type,
+    has_embedding: !!embedding,
+  }).catch(() => {})
 
   return ApiResponse.created(data)
 })

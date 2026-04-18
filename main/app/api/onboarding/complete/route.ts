@@ -3,6 +3,7 @@ import { ApiResponse } from '@/src/lib/api-utils'
 import { parseNickname } from '@/src/lib/clean-nickname'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 import { autoEnrollByEmail, autoEnrollByUniversity } from '@/src/lib/institution/auto-enroll'
+import { captureServerEvent } from '@/src/lib/posthog/server'
 import type { TablesInsert } from '@/src/types/database'
 
 export const POST = withErrorCapture(async (request) => {
@@ -87,6 +88,19 @@ export const POST = withErrorCapture(async (request) => {
       console.error('[onboarding/complete] Supabase error:', JSON.stringify(result.error))
       return ApiResponse.internalError('프로필 저장에 실패했습니다', result.error.message)
     }
+
+    // Funnel Stage 2: 온보딩 완료
+    // - has_interview: AI 인터뷰까지 돌았는지 → 인게이지먼트 지표
+    // - has_vision/skills/interests: 프로필 완성도 → 이후 매칭 품질 예측
+    captureServerEvent('onboarding_completed', {
+      userId: user.id,
+      has_interview: !!aiChatCompleted,
+      has_vision: !!visionSummary,
+      skill_count: Array.isArray(skills) ? skills.length : 0,
+      interest_count: Array.isArray(interestTags) ? interestTags.length : 0,
+      affiliation_type: affiliationType || 'student',
+      has_university: !!university,
+    }).catch(() => {})
 
     // ── Background tasks (non-blocking) ──
 

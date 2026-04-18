@@ -1,6 +1,7 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
+import { captureServerEvent } from '@/src/lib/posthog/server'
 
 /**
  * GET /api/clubs — 공개 클럽 목록 (Explore 탭용)
@@ -197,6 +198,14 @@ export const POST = withErrorCapture(async (request) => {
   if (error) {
     return ApiResponse.internalError('클럽 생성에 실패했습니다', error.message)
   }
+
+  // Funnel Stage 3a: 클럽 생성 = 운영자 전환 모먼트
+  // 대시보드/사이드바가 운영자 모드로 진입하는 핵심 활성화 이벤트.
+  captureServerEvent('club_created', {
+    userId: user.id,
+    clubId: club.id,
+    slug: club.slug,
+  }).catch(() => {})
 
   return ApiResponse.created(club)
 })
