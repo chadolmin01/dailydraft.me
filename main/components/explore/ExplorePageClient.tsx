@@ -26,8 +26,10 @@ const ModalLoadingFallback = () => (
   </div>
 )
 
-const ProjectDetailModal = dynamic(
-  () => import('@/components/ProjectDetailModal').then(m => ({ default: m.ProjectDetailModal })),
+// 빠른 미리보기 전용. 풀 상세는 /p/[id] 페이지로 이동.
+// 기존 ProjectDetailModal (탭/커피챗/지원폼 전부) 대비 가볍게 카드만 렌더.
+const ProjectPreviewModal = dynamic(
+  () => import('@/components/ProjectPreviewModal').then(m => ({ default: m.ProjectPreviewModal })),
   { ssr: false, loading: ModalLoadingFallback }
 )
 import { ProfileDetailModal } from '@/components/ProfileDetailModal'
@@ -486,9 +488,17 @@ function ExplorePageContent() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [guide.markExploreVisited, handlePrefetchProject, replaceParams])
 
+  // 모달 → 페이지 마이그레이션: /u/[id] 로 라우트 이동.
+  // byUserId 옵션은 user_id 로 프로필 찾아야 하는 케이스 (메시지 탭 진입 등) —
+  // 먼저 publicProfiles 에서 매칭 찾고, 없으면 user_id 를 그대로 id 로 넘김 (fallback).
   const handleSelectProfile = useCallback((id: string, byUserId: boolean) => {
-    replaceParams({ project: null, profile: id, profileBy: byUserId ? 'userId' : null })
-  }, [replaceParams])
+    let targetId = id
+    if (byUserId) {
+      const found = publicProfiles.find((p: PublicProfile) => p.user_id === id)
+      targetId = found?.id ?? id
+    }
+    router.push(`/u/${targetId}`)
+  }, [publicProfiles, router])
 
   // ── 추천 피드용 데이터 ──
   // 프로젝트: AI 매칭 점수순 (점수 있는 것 우선, 없으면 기존 순서 유지)
@@ -1105,8 +1115,8 @@ function ExplorePageContent() {
 
       <AnimatePresence>
         {selectedProjectId && (
-          <ProjectDetailModal
-            key="project-modal"
+          <ProjectPreviewModal
+            key="project-preview"
             projectId={selectedProjectId}
             onClose={() => replaceParams({ project: null })}
           />
