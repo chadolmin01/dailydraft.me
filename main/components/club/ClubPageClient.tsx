@@ -232,14 +232,14 @@ export default function ClubPageClient() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 border-b border-border mb-8">
+        <div className="flex gap-1 border-b border-border mb-8 overflow-x-auto scrollbar-none -mx-4 px-4 md:mx-0 md:px-0">
           {TABS.map(tab => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
               onMouseEnter={() => prefetchTab(tab.key)}
               onFocus={() => prefetchTab(tab.key)}
-              className={`relative px-5 py-3 text-[14px] font-semibold transition-colors ${
+              className={`relative shrink-0 px-3 py-2.5 text-[13px] md:px-5 md:py-3 md:text-[14px] font-semibold transition-colors min-h-[44px] ${
                 activeTab === tab.key
                   ? 'text-txt-primary'
                   : 'text-txt-tertiary hover:text-txt-secondary'
