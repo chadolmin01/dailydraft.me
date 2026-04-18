@@ -19,6 +19,19 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
+// Supabase 네트워크 hang 방어용 timeout. getSession/getUser가 응답 안 돌아오면
+// catch 블록도 안 타서 isLoading=true 고착 → UI 영구 스켈레톤. 아래 withTimeout로 감싸
+// 5초 후 reject → catch → setIsLoading(false) 보장.
+const AUTH_INIT_TIMEOUT_MS = 5000
+function withTimeout<T>(p: Promise<T>, ms: number, label: string): Promise<T> {
+  return Promise.race([
+    p,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error(`${label} timeout after ${ms}ms`)), ms)
+    ),
+  ])
+}
+
 export function AuthProvider({ children, initialUser }: { children: React.ReactNode; initialUser?: User | null }) {
   // initialUser가 주입된 경우 첫 렌더부터 올바른 상태로 시작 → skeleton 고착 방지
   const [user, setUser] = useState<User | null>(initialUser ?? null)
@@ -42,7 +55,11 @@ export function AuthProvider({ children, initialUser }: { children: React.ReactN
 
       // initialUser prop 자체가 없는 경우 → 클라이언트에서 직접 세션 확인 (fallback)
       try {
-        const { data: { session } } = await supabase.auth.getSession()
+        const { data: { session } } = await withTimeout(
+          supabase.auth.getSession(),
+          AUTH_INIT_TIMEOUT_MS,
+          'getSession',
+        )
         if (!mounted) return
         if (session?.user) {
           setUser(session.user)
@@ -57,7 +74,7 @@ export function AuthProvider({ children, initialUser }: { children: React.ReactN
             if (error) {
               const authErrorCodes = ['session_not_found', 'user_not_found', 'bad_jwt']
               const isHardAuthError = authErrorCodes.some(code =>
-                error.message?.includes(code) || (error as any).code === code
+                error.message?.includes(code) || (error as unknown as { code?: string }).code === code
               )
               if (isHardAuthError) {
                 setUser(null)
@@ -66,18 +83,27 @@ export function AuthProvider({ children, initialUser }: { children: React.ReactN
           }).catch(() => {})
           return
         }
-      } catch { /* getSession failed */ }
+      } catch (err) {
+        // getSession 실패 (네트워크 / timeout) — fallback으로 계속
+        console.warn('[AuthContext] getSession failed:', (err as Error).message)
+      }
 
       if (!mounted) return
 
       // 최종 fallback: 서버에서 직접 확인
       try {
-        const { data: { user: serverUser }, error } = await supabase.auth.getUser()
+        const { data: { user: serverUser }, error } = await withTimeout(
+          supabase.auth.getUser(),
+          AUTH_INIT_TIMEOUT_MS,
+          'getUser',
+        )
         if (!mounted) return
         if (!error && serverUser) {
           setUser(serverUser)
         }
-      } catch { /* getUser failed */ }
+      } catch (err) {
+        console.warn('[AuthContext] getUser failed:', (err as Error).message)
+      }
 
       if (mounted) setIsLoading(false)
     }
