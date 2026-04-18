@@ -167,6 +167,20 @@ export async function postDashboardSummary(
   }
 }
 
-async function getOpsDashboardChannelId(_clubId: string): Promise<string | null> {
+async function getOpsDashboardChannelId(clubId: string): Promise<string | null> {
+  // 2026-04-18: clubs.operator_channel_id 우선, 없으면 env fallback.
+  // 멀티클럽 환경에서 각 클럽이 자기 운영진 채널을 지정 가능.
+  try {
+    const { createAdminClient } = await import('@/src/lib/supabase/admin')
+    const admin = createAdminClient()
+    const { data } = await admin
+      .from('clubs')
+      .select('operator_channel_id')
+      .eq('id', clubId)
+      .maybeSingle()
+    if (data?.operator_channel_id) return data.operator_channel_id
+  } catch (err) {
+    console.warn('[dashboard-summary] operator_channel_id 조회 실패, env fallback 사용:', err)
+  }
   return process.env.DISCORD_OPS_DASHBOARD_CHANNEL_ID || null
 }
