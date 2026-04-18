@@ -40,10 +40,6 @@
     {
       "path": "/api/cron/publish-scheduled",
       "schedule": "*/5 * * * *"
-    },
-    {
-      "path": "/api/cron/persona-automations-tick",
-      "schedule": "*/10 * * * *"
     }
   ]
 }

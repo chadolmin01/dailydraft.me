@@ -21,6 +21,7 @@ import { ApiResponse } from '@/src/lib/api-utils'
 import { withCronCapture } from '@/src/lib/posthog/with-cron-capture'
 import { sendChannelMessage } from '@/src/lib/discord/client'
 import { publishToLinkedIn } from '@/src/lib/personas/publishers/linkedin'
+import { runAutomationTick } from '@/src/lib/personas/automation-tick'
 import { publishToThreads } from '@/src/lib/personas/publishers/threads'
 
 export const runtime = 'nodejs'
@@ -140,7 +141,16 @@ export const POST = withCronCapture('publish-scheduled', async (request: NextReq
     }
   }
 
-  return ApiResponse.ok(results)
+  // Vercel cron 개수 한도 때문에 persona_automations tick 로직을 체이닝 실행.
+  // 실패해도 publish-scheduled 결과는 반환.
+  let automationResults: Awaited<ReturnType<typeof runAutomationTick>> | null = null
+  try {
+    automationResults = await runAutomationTick(admin)
+  } catch (err) {
+    console.error('[publish-scheduled] automation-tick 실패:', err)
+  }
+
+  return ApiResponse.ok({ ...results, automation: automationResults })
 })
 
 /**
