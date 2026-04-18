@@ -1,10 +1,41 @@
+import type { Metadata } from 'next'
 import { QueryClient, dehydrate, HydrationBoundary } from '@tanstack/react-query'
+import { createClient as createAnonClient } from '@supabase/supabase-js'
 import { createServerSupabaseClient } from '@/src/lib/supabase/server'
 import { fetchClubDetail, clubDetailKey } from '@/src/lib/queries/club-queries'
 import ClubPageClient from '@/components/club/ClubPageClient'
 
 // 유저별 my_role 포함이라 ISR 불가 — auth 쿠키 기반 SSR
 export const dynamic = 'force-dynamic'
+
+// generateMetadata 는 auth 없이 anon 으로 조회 — 공유 링크 미리보기 크롤러 대응.
+// RLS 로 public 클럽만 보이므로 private 클럽은 fallback.
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}): Promise<Metadata> {
+  const { slug } = await params
+  const supabase = createAnonClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  )
+  const { data: club } = await supabase
+    .from('clubs')
+    .select('name, description')
+    .eq('slug', slug)
+    .maybeSingle()
+
+  const title = club?.name ? `${club.name} · Draft` : 'Draft 클럽'
+  const description = club?.description?.slice(0, 160) ?? '함께 만드는 프로젝트 팀'
+
+  return {
+    title,
+    description,
+    openGraph: { title, description, type: 'website' },
+    twitter: { card: 'summary_large_image', title, description },
+  }
+}
 
 export default async function ClubPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
