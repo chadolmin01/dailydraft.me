@@ -12,6 +12,7 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
+import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
 import { chatModel } from '@/src/lib/ai/gemini-client'
 import type { Profile } from '@/src/types/profile'
 
@@ -31,7 +32,7 @@ interface MatchAnalysis {
 }
 
 export const POST = withErrorCapture(async (
-  _request,
+  request,
   { params }: { params: Promise<{ targetId: string }> },
 ) => {
     const { targetId } = await params
@@ -46,6 +47,11 @@ export const POST = withErrorCapture(async (
     if (user.id === targetId) {
       return ApiResponse.badRequest('본인 프로필은 분석할 수 없습니다')
     }
+
+    // Rate limit — 주석상 "분당 5회/유저" 였는데 미구현 상태. 공용 checkAIRateLimit 로
+    // 30req/60s 적용(캐시 hit은 아래서 먼저 처리되므로 실제 AI 호출엔 제한 더 타이트하게 작동).
+    const rateLimitRes = await checkAIRateLimit(user.id, getClientIp(request))
+    if (rateLimitRes) return rateLimitRes
 
     // 1) 캐시 조회
     const { data: cached } = await supabase

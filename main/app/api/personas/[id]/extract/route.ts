@@ -1,6 +1,7 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
+import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
 import { collectCorpus } from '@/src/lib/personas/corpus'
 import { extractSlotsFromCorpus } from '@/src/lib/personas/extract'
 import { FIELD_CATALOG } from '@/src/lib/personas/field-catalog'
@@ -32,6 +33,11 @@ export const POST = withErrorCapture(async (request, context) => {
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) return ApiResponse.unauthorized()
+
+  // Rate limit — Gemini Flash Lite + self-refinement 2회로 호출당 비용 큼.
+  // 30req/60s (redis-rate-limiter 기본) 초과 시 429.
+  const rateLimitRes = await checkAIRateLimit(user.id, getClientIp(request))
+  if (rateLimitRes) return rateLimitRes
 
   const body = await request.json().catch(() => ({}))
   const trigger = (body.trigger ?? 'manual') as

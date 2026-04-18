@@ -2,6 +2,7 @@ import { createClient } from '@/src/lib/supabase/server'
 import { createAdminClient } from '@/src/lib/supabase/admin'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
+import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
 import { polishSlots } from '@/src/lib/personas/slot-polisher'
 import type { PersonaFieldRow, PersonaRow } from '@/src/lib/personas/types'
 
@@ -22,6 +23,10 @@ export const POST = withErrorCapture(async (request, context) => {
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) return ApiResponse.unauthorized()
+
+  // Rate limit — Gemini 호출. 초당 여러 번 polish 누르는 남용 방지.
+  const rateLimitRes = await checkAIRateLimit(user.id, getClientIp(request))
+  if (rateLimitRes) return rateLimitRes
 
   const body = await request.json().catch(() => ({}))
   const instruction = String(body.instruction ?? '').trim()
