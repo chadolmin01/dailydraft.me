@@ -2,8 +2,12 @@
 
 import { useEffect } from 'react'
 import Link from 'next/link'
+import { AlertCircle, Home, RotateCw } from 'lucide-react'
 import { captureClientError } from '@/src/lib/posthog/client-capture'
 
+// Next.js App Router 의 글로벌 에러 바운더리.
+// 이전: 브루탈리즘 잔재(검은 사각형 + ! 기호 + font-mono 영문 라벨)를 Toss 스타일로 리프레시.
+// 사용자 관점 — "오류"보다 "잠깐 문제가 생겼어요" 느낌으로 이탈 감소.
 export default function GlobalError({
   error,
   reset,
@@ -17,43 +21,43 @@ export default function GlobalError({
   }, [error])
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-surface-bg px-4">
+    <div className="min-h-screen bg-surface-bg flex items-center justify-center px-6 py-12">
       <div className="max-w-md w-full">
-        <div className="border-2 border-border bg-surface-card p-10 shadow-lg text-center">
-          <div className="w-16 h-16 bg-black flex items-center justify-center mx-auto mb-6">
-            <span className="text-white font-black text-2xl font-mono">!</span>
+        <div className="bg-surface-card border border-border rounded-2xl p-8 sm:p-10 text-center shadow-sm">
+          {/* 소프트 경고 아이콘 */}
+          <div className="w-16 h-16 rounded-2xl bg-status-danger-bg flex items-center justify-center mx-auto mb-5">
+            <AlertCircle size={28} className="text-status-danger-text" strokeWidth={1.5} />
           </div>
 
-          <p className="text-[10px] font-medium text-txt-tertiary mb-2">
-            SOMETHING WENT WRONG
-          </p>
-
-          <h2 className="text-xl font-bold text-txt-primary mb-3">
-            문제가 발생했습니다
+          <h2 className="text-[20px] font-bold text-txt-primary mb-2">
+            잠깐 문제가 생겼어요
           </h2>
-
-          <p className="text-sm text-txt-tertiary mb-2">
-            일시적인 오류가 발생했습니다. 다시 시도해주세요.
+          <p className="text-[14px] text-txt-secondary leading-relaxed mb-1">
+            일시적인 오류입니다. 다시 시도하면 대부분 해결됩니다.
           </p>
-
           {error.digest && (
-            <p className="text-[10px] font-mono text-txt-disabled mb-6">
-              Error ID: {error.digest}
+            <p className="text-[11px] text-txt-disabled mt-3">
+              문제가 계속되면 이 번호를 알려주세요:{' '}
+              <code className="px-1.5 py-0.5 bg-surface-sunken rounded text-txt-tertiary font-mono">
+                {error.digest}
+              </code>
             </p>
           )}
 
-          <div className="flex gap-3 justify-center mt-6">
+          <div className="flex flex-col sm:flex-row gap-2.5 justify-center mt-7">
             <button
               onClick={reset}
-              className="px-6 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-bold border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97]"
+              className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-brand text-white text-[14px] font-bold hover:bg-brand-hover active:scale-[0.97] transition-all shadow-sm"
             >
+              <RotateCw size={14} />
               다시 시도
             </button>
             <Link
-              href="/explore"
-              className="px-6 py-2.5 bg-surface-card text-txt-secondary text-sm font-medium border border-border hover:bg-surface-sunken transition-colors"
+              href="/dashboard"
+              className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border border-border bg-surface-card text-txt-secondary text-[14px] font-bold hover:bg-surface-sunken hover:text-txt-primary transition-colors"
             >
-              탐색으로
+              <Home size={14} />
+              홈으로
             </Link>
           </div>
         </div>
