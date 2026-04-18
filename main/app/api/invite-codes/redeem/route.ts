@@ -73,8 +73,10 @@ export const POST = withErrorCapture(async (request: NextRequest) => {
 
   const now = new Date().toISOString()
 
-  // Update invite code as used
-  const { error: updateCodeError } = await supabase
+  // 원자적 업데이트 — used_by IS NULL 조건을 함께 체크해 race condition 방어.
+  // 이전엔 read에서 used_by 체크하고 update 사이에 gap이 있어 동시 redeem 시 두 유저 모두
+  // premium 되는 취약점 존재. .is('used_by', null) 추가로 DB 레벨에서 first-wins 보장.
+  const { data: updatedRows, error: updateCodeError } = await supabase
     .from('invite_codes')
     .update({
       used_by: user.id,
@@ -82,9 +84,16 @@ export const POST = withErrorCapture(async (request: NextRequest) => {
       is_active: false,
     })
     .eq('id', inviteCode.id)
+    .is('used_by', null)
+    .select('id')
 
   if (updateCodeError) {
     return ApiResponse.internalError('초대 코드 사용 처리 중 오류가 발생했습니다', updateCodeError.message)
+  }
+
+  // Race — 다른 유저가 먼저 선점. 사용자에게 알림 후 종료.
+  if (!updatedRows || updatedRows.length === 0) {
+    return ApiResponse.badRequest('이미 사용된 초대 코드입니다')
   }
 
   // Update user profile to premium

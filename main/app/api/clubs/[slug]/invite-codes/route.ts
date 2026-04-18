@@ -1,5 +1,5 @@
 import { createClient } from '@/src/lib/supabase/server'
-import { ApiResponse, validateRequired } from '@/src/lib/api-utils'
+import { ApiResponse } from '@/src/lib/api-utils'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 import { randomBytes } from 'crypto'
 
@@ -12,22 +12,53 @@ function generateCode(): string {
     .join('')
 }
 
+// 공통: 호출자가 이 클럽의 owner/admin 인지 검증.
+// 2026-04-18 P1-12 감사: 기존 GET/POST가 로그인만 체크하고 멤버십 role을 확인 안 해서
+// 임의 유저가 어떤 클럽이든 초대 코드를 조회·생성 가능한 P0 보안 이슈였음. 이 헬퍼로 일원화.
+type AuthCheckError = { error: Response }
+type AuthCheckOk = {
+  supabase: Awaited<ReturnType<typeof createClient>>
+  user: NonNullable<Awaited<ReturnType<Awaited<ReturnType<typeof createClient>>['auth']['getUser']>>['data']['user']>
+  club: { id: string }
+}
+
+async function requireClubAdmin(slug: string): Promise<AuthCheckError | AuthCheckOk> {
+  const supabase = await createClient()
+
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: ApiResponse.unauthorized() }
+
+  const { data: club } = await supabase
+    .from('clubs')
+    .select('id')
+    .eq('slug', slug)
+    .maybeSingle()
+
+  if (!club) return { error: ApiResponse.notFound('클럽을 찾을 수 없습니다') }
+
+  const { data: membership } = await supabase
+    .from('club_members')
+    .select('role')
+    .eq('club_id', club.id)
+    .eq('user_id', user.id)
+    .in('role', ['owner', 'admin'])
+    .maybeSingle()
+
+  if (!membership) {
+    return { error: ApiResponse.forbidden('운영진만 초대 코드를 관리할 수 있습니다') }
+  }
+
+  return { supabase, user, club }
+}
+
 // GET /api/clubs/[slug]/invite-codes — 코드 목록 (owner/admin)
 export const GET = withErrorCapture(
   async (_request, context) => {
     const { slug } = await context.params
-    const supabase = await createClient()
 
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return ApiResponse.unauthorized()
-
-    const { data: club } = await supabase
-      .from('clubs')
-      .select('id')
-      .eq('slug', slug)
-      .maybeSingle()
-
-    if (!club) return ApiResponse.notFound('클럽을 찾을 수 없습니다')
+    const check = await requireClubAdmin(slug)
+    if ('error' in check) return check.error
+    const { supabase, club } = check
 
     const { data: codes, error } = await supabase
       .from('club_invite_codes')
@@ -45,18 +76,10 @@ export const GET = withErrorCapture(
 export const POST = withErrorCapture(
   async (request, context) => {
     const { slug } = await context.params
-    const supabase = await createClient()
 
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return ApiResponse.unauthorized()
-
-    const { data: club } = await supabase
-      .from('clubs')
-      .select('id')
-      .eq('slug', slug)
-      .maybeSingle()
-
-    if (!club) return ApiResponse.notFound('클럽을 찾을 수 없습니다')
+    const check = await requireClubAdmin(slug)
+    if ('error' in check) return check.error
+    const { supabase, user, club } = check
 
     const body = await request.json()
     const customCode = body.code?.trim()
