@@ -227,9 +227,14 @@ ${conversation}`;
 /**
  * 전체 파이프라인: pre-filter → AI 분류
  * 메시지 배열을 받아 감지된 패턴 목록 반환
+ *
+ * @param ruleOnlyTypes — AI 분류를 건너뛸 패턴 타입 (prefilter 결과만으로 반환).
+ *   2026-04-18: blocker-frustration 등 단순 넛지용 패턴은 AI 분류 비용 낭비라서
+ *   룰 기반 confidence만으로 충분하다는 연구 결론에 따라 도입.
  */
 export async function detectPatterns(
-  messages: BufferedMessage[]
+  messages: BufferedMessage[],
+  ruleOnlyTypes: PatternType[] = []
 ): Promise<PatternDetection[]> {
   if (messages.length < 2) return [];
 
@@ -237,13 +242,29 @@ export async function detectPatterns(
   const candidates = prefilter(messages);
   if (candidates.length === 0) return [];
 
-  // pre-filter confidence 0.5 이상만 AI로 보냄
+  // pre-filter confidence 0.5 이상만 유지
   const worthChecking = candidates.filter((c) => c.confidence >= 0.5);
   if (worthChecking.length === 0) return [];
 
-  // 2단계: AI 분류
-  const candidateTypes = worthChecking.map((c) => c.type);
-  const detections = await classifyWithAI(messages, candidateTypes);
+  // ruleOnly: AI 생략, prefilter 결과를 그대로 PatternDetection으로 변환
+  const ruleOnlySet = new Set(ruleOnlyTypes);
+  const ruleOnlyDetections: PatternDetection[] = worthChecking
+    .filter((c) => ruleOnlySet.has(c.type))
+    .map((c) => ({
+      type: c.type,
+      confidence: c.confidence,
+      // AI 없이는 구조화된 데이터 추출 불가 → 최소 payload
+      data: { type: c.type } as PatternData,
+      sourceMessages: messages,
+    }));
 
-  return detections;
+  // 나머지만 AI 분류
+  const aiTypes = worthChecking
+    .filter((c) => !ruleOnlySet.has(c.type))
+    .map((c) => c.type);
+
+  const aiDetections =
+    aiTypes.length > 0 ? await classifyWithAI(messages, aiTypes) : [];
+
+  return [...ruleOnlyDetections, ...aiDetections];
 }

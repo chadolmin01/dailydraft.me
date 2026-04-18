@@ -226,6 +226,30 @@ export interface BotConfig {
   quietHourEnd: number;
   /** dismiss 연속 횟수 → 패턴 억제 (기본 3) */
   dismissThreshold: number;
+
+  // ── 2026-04-18: 연구 권장 안전장치 ──
+  /**
+   * 즉시 Push로 개입할 패턴. 이 목록에 없는 패턴은 감지만 하고 요약에만 반영.
+   * 기본: schedule-confirmed(이벤트 자동 등록), conversation-end(요약 트리거).
+   * BJET 2025: 실시간 Push는 2개 이하로 억제 시 협업 품질 손상 없음.
+   */
+  pushEnabledPatterns: PatternType[];
+  /** 요약 파이프라인으로만 축적할 패턴 (실시간 개입 X) */
+  summaryOnlyPatterns: PatternType[];
+  /** prefilter 룰만 쓰고 AI 분류 skip (비용·지연 절감) */
+  ruleOnlyPatterns: PatternType[];
+  /**
+   * 채널당 하루 Push 개입 상한 (KST 기준).
+   * Haiilo 2026 디지털 피로 지표 + Discord 커뮤니티 가이드 교차검증: 3.
+   */
+  channelDailyPushLimit: number;
+  /**
+   * 수락률 임계값. 이 값 미만이면 해당 (채널, 패턴)을 자동 억제.
+   * 연구 기본선: 0.4.
+   */
+  acceptanceRateThreshold: number;
+  /** 수락률 계산에 필요한 최소 샘플 수 (cold-start 오판 방지) */
+  acceptanceRateMinSample: number;
 }
 
 export const DEFAULT_BOT_CONFIG: BotConfig = {
@@ -236,4 +260,21 @@ export const DEFAULT_BOT_CONFIG: BotConfig = {
   quietHourStart: 23,
   quietHourEnd: 7,
   dismissThreshold: 3,
+
+  pushEnabledPatterns: ['schedule-confirmed', 'conversation-end'],
+  summaryOnlyPatterns: [
+    'task-assignment',
+    'resource-shared',
+    'retrospective',
+    'unowned-task',
+    'decision-deadlock',
+  ],
+  ruleOnlyPatterns: [
+    'blocker-frustration',
+    'unanswered-question',
+    'schedule-coordination',
+  ],
+  channelDailyPushLimit: 3,
+  acceptanceRateThreshold: 0.4,
+  acceptanceRateMinSample: 5,
 };

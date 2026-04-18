@@ -65,6 +65,19 @@ export async function triggerTyping(channelId: string): Promise<void> {
 }
 
 /**
+ * 채널의 메시지 삭제
+ * 멘션 런처 메뉴 60초 후 자동 삭제 등에 사용
+ */
+export async function deleteChannelMessage(
+  channelId: string,
+  messageId: string,
+): Promise<void> {
+  await discordFetch(`/channels/${channelId}/messages/${messageId}`, {
+    method: 'DELETE',
+  });
+}
+
+/**
  * 메시지에 리액션 추가
  * 커스텀 이모지가 아닌 유니코드 이모지는 URL 인코딩 필요
  */
