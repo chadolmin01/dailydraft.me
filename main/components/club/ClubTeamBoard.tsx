@@ -22,6 +22,9 @@ const POSITION_SHORT: Record<string, string> = {
 
 export default function ClubTeamBoard({ slug }: { slug: string }) {
   const { data, isLoading } = useClubTeams(slug)
+  // 뒤로가기 컨텍스트: 팀 구성 탭에서 진입했다는 정보를 쿼리에 실어 넘김.
+  // projects/[id]는 ?from=을 읽어 헤더 뒤로가기 링크를 이 값으로 설정.
+  const fromHref = `/clubs/${slug}?tab=teams`
 
   if (isLoading) {
     return <SkeletonGrid count={3} cols={1} />
@@ -59,7 +62,7 @@ export default function ClubTeamBoard({ slug }: { slug: string }) {
       {/* 팀 목록 */}
       <div className="space-y-3">
         {teams.map(team => (
-          <TeamCard key={team.id} team={team} />
+          <TeamCard key={team.id} team={team} fromHref={fromHref} />
         ))}
       </div>
     </div>
@@ -86,12 +89,16 @@ function SummaryCard({ value, label, highlight, alert }: {
   )
 }
 
-function TeamCard({ team }: { team: ClubTeam }) {
+function TeamCard({ team, fromHref }: { team: ClubTeam; fromHref: string }) {
   const statusConfig = STATUS_CONFIG[team.update_status]
+
+  // 모달(/explore?project=) 대신 풀스크린 관리 페이지로. 운영진이 주간 추적할 때는
+  // URL/뒤로가기/새 탭이 필요한데 모달은 이걸 다 잃어버림.
+  const href = `/projects/${team.id}?from=${encodeURIComponent(fromHref)}`
 
   return (
     <Link
-      href={`/explore?project=${team.id}`}
+      href={href}
       className="block bg-surface-card border border-border rounded-xl p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group"
     >
       {/* 헤더: 팀명 + 상태 */}

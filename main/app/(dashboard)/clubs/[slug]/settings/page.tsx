@@ -15,7 +15,7 @@ export default function ClubSettingsPage() {
 
   if (isLoading) {
     return (
-      <div className="max-w-xl mx-auto px-5 py-8">
+      <div className="max-w-[1200px] mx-auto px-5 py-8">
         <div className="animate-pulse space-y-4">
           <div className="h-6 bg-surface-sunken rounded w-32" />
           <div className="h-48 bg-surface-sunken rounded-xl" />
@@ -26,14 +26,14 @@ export default function ClubSettingsPage() {
 
   if (!club) {
     return (
-      <div className="max-w-xl mx-auto px-5 py-12 text-center">
+      <div className="max-w-[1200px] mx-auto px-5 py-12 text-center">
         <p className="text-txt-tertiary">클럽을 찾을 수 없습니다.</p>
       </div>
     )
   }
 
   return (
-    <div className="max-w-xl mx-auto px-5 py-6">
+    <div className="max-w-[1200px] mx-auto px-5 py-6">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <Link

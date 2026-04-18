@@ -67,7 +67,7 @@ export default function ProfilePageClient() {
   }
 
   if (isAuthLoading || isProfilePending || !profile) return (
-    <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
+    <div className="max-w-[1200px] mx-auto px-5 py-8 space-y-6">
       <SkeletonProfile />
       <SkeletonGrid count={2} cols={2} />
     </div>
@@ -87,7 +87,7 @@ export default function ProfilePageClient() {
         <>
           <div
             onClick={() => setShowAiConfirm(true)}
-            className="group block max-w-3xl mx-auto px-4 sm:px-6 pt-4 cursor-pointer"
+            className="group block max-w-[1200px] mx-auto px-5 sm:px-6 pt-4 cursor-pointer"
           >
             <div className="flex items-center gap-4 px-5 py-4 bg-surface-card rounded-xl border border-border hover:shadow-sm transition-all">
               <div className="w-10 h-10 bg-surface-inverse rounded-xl flex items-center justify-center shrink-0">
@@ -127,7 +127,7 @@ export default function ProfilePageClient() {
       )}
 
       {/* Single-column layout */}
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6">
+      <div className="max-w-[1200px] mx-auto px-5 sm:px-6 py-6">
         {/* Hero: avatar + name + meta */}
         <ProfileHero
           profile={profile!}
