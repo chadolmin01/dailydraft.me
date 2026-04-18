@@ -140,12 +140,14 @@ export const Pricing: React.FC = () => {
               ))}
             </ul>
 
-            <button
-              disabled
-              className="w-full flex items-center justify-center border border-border text-txt-secondary rounded-full px-6 py-3 text-sm font-bold hover:bg-surface-sunken transition-colors cursor-default"
+            {/* 얼리버드 대기자 = Free 가입 → PostHog signup_initiated 이벤트로 수요 측정.
+                Pro 결제 붙기 전까지는 별도 페이지 대신 동일 진입으로 모아본다. */}
+            <Link
+              href="/login?next=/dashboard&plan=pro"
+              className="w-full flex items-center justify-center border border-txt-primary text-txt-primary rounded-full px-6 py-3 text-sm font-bold hover:bg-surface-sunken transition-colors active:scale-[0.97]"
             >
-              얼리버드 등록
-            </button>
+              얼리버드 대기 등록
+            </Link>
           </motion.div>
         </motion.div>
       </div>
