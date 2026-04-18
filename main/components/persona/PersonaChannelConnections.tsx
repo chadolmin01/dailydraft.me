@@ -54,11 +54,11 @@ const CHANNEL_DEFS: ChannelDef[] = [
     channel_type: 'threads',
     brand_key: 'instagram_caption', // 임시: Threads 전용 브랜드는 추후. Meta 패밀리라 인스타 그라디언트 차용
     label: 'Threads',
-    // Threads는 개인 계정 그대로 OAuth 가능 (Instagram과 달리 비즈 전환 불필요).
-    // Meta App Review 통과 전까지 comingSoon 유지. 통과 후 comingSoon: false로 플립.
+    // Meta App Development 모드 — Threads Testers로 등록된 계정만 OAuth 성공.
+    // 리뷰 통과 + Live 모드 전환 후 일반 사용자에게도 공개됨. 테스트 후 true로 원복.
     description:
-      '본인 Threads 계정에 자동 발행됩니다. Meta 앱 리뷰 승인 대기 중.',
-    comingSoon: true,
+      '본인 Threads 계정에 자동 발행됩니다. (테스트 모드: Meta 앱 Tester 등록 필요)',
+    comingSoon: false,
     startUrl: (pid, ret) =>
       `/api/oauth/threads/start?persona_id=${pid}&return_to=${encodeURIComponent(ret)}`,
   },
