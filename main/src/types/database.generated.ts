@@ -2292,6 +2292,50 @@ export type Database = {
           },
         ]
       }
+      persona_templates: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          fields_snapshot: Json
+          id: string
+          name: string
+          owner_id: string
+          source_persona_id: string | null
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          fields_snapshot?: Json
+          id?: string
+          name: string
+          owner_id: string
+          source_persona_id?: string | null
+          type: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          fields_snapshot?: Json
+          id?: string
+          name?: string
+          owner_id?: string
+          source_persona_id?: string | null
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "persona_templates_source_persona_id_fkey"
+            columns: ["source_persona_id"]
+            isOneToOne: false
+            referencedRelation: "personas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       persona_training_runs: {
         Row: {
           completed_at: string | null
@@ -3734,6 +3778,10 @@ export type Database = {
       }
       can_edit_persona: {
         Args: { p_persona_id: string; p_user_id: string }
+        Returns: boolean
+      }
+      can_edit_persona_owner: {
+        Args: { p_owner_id: string; p_type: string; p_user_id: string }
         Returns: boolean
       }
       can_view_persona: {

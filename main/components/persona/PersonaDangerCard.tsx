@@ -47,7 +47,11 @@ export function PersonaDangerCard({ personaId }: Props) {
           </h3>
           <p className="text-xs text-txt-secondary leading-relaxed mb-4">
             모든 슬롯의 내용이 지워집니다. 발행 이력과 학습 이력은 유지되지만,
-            상속된 필드를 제외한 본인 필드는 되돌릴 수 없습니다.
+            상속된 필드를 제외한 본인 필드는 되돌릴 수 없습니다.{' '}
+            <span className="text-txt-tertiary">
+              초기화 전에 현재 상태를 <strong className="font-semibold text-txt-secondary">"내 템플릿"</strong>에
+              저장해두면 언제든 복원할 수 있습니다.
+            </span>
           </p>
           <button
             onClick={() => setConfirming(true)}
@@ -63,7 +67,7 @@ export function PersonaDangerCard({ personaId }: Props) {
         onClose={() => setConfirming(false)}
         onConfirm={handleReset}
         title="이 페르소나를 초기화합니다"
-        message="모든 슬롯이 빈 상태로 돌아갑니다. 이 작업은 되돌릴 수 없습니다."
+        message="모든 슬롯이 빈 상태로 돌아갑니다. 이 작업은 되돌릴 수 없으니, 현재 상태를 '내 템플릿'에 먼저 저장하셨는지 확인해주세요."
         confirmText={resetting ? '초기화 중...' : '초기화'}
         variant="danger"
       />

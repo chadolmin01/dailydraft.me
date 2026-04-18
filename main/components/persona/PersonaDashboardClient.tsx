@@ -4,6 +4,7 @@ import { usePersonaByOwner, useCreatePersona } from '@/src/hooks/usePersona'
 import { PersonaEmptyState } from './PersonaEmptyState'
 import { PersonaActionCardsSection } from './PersonaActionCardsSection'
 import { PersonaSlotList } from './PersonaSlotList'
+import { PersonaTemplateLibrary } from './PersonaTemplateLibrary'
 import { PersonaDangerCard } from './PersonaDangerCard'
 
 interface Props {
@@ -65,6 +66,8 @@ export function PersonaDashboardClient({ clubId, clubName, isAdmin }: Props) {
         fields={data.fields}
         canEdit={isAdmin}
       />
+
+      <PersonaTemplateLibrary personaId={data.persona.id} canEdit={isAdmin} />
 
       {isAdmin && <PersonaDangerCard personaId={data.persona.id} />}
     </div>

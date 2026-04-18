@@ -131,6 +131,36 @@ export interface ClubSemesterCycleRow {
   created_at: string
 }
 
+// ============================================================
+// Persona Templates (스냅샷 저장·복원)
+// ============================================================
+
+/**
+ * 템플릿에 저장되는 필드 스냅샷 항목.
+ * persona_fields 컬럼 중 복원에 필요한 것만 보관:
+ *   - 포함: value / source / locked / merge_strategy
+ *   - 제외: confidence(추출 시점 가치 변함), updated_by/updated_at(새로 생성됨)
+ */
+export interface PersonaTemplateFieldSnapshot {
+  field_key: FieldKey
+  value: Record<string, unknown>
+  source: FieldSource
+  locked: boolean
+  merge_strategy: MergeStrategy
+}
+
+export interface PersonaTemplateRow {
+  id: string
+  type: PersonaType
+  owner_id: string
+  name: string
+  description: string | null
+  fields_snapshot: PersonaTemplateFieldSnapshot[]
+  source_persona_id: string | null
+  created_by: string | null
+  created_at: string
+}
+
 export interface PersonaChannelCredentialRow {
   id: string
   persona_id: string
