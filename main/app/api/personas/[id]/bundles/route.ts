@@ -24,7 +24,12 @@ export const GET = withErrorCapture(async (request, context) => {
     .order('created_at', { ascending: false })
     .limit(limit)
 
-  if (status) q = q.eq('status', status)
+  if (status) {
+    q = q.eq('status', status)
+  } else {
+    // archived(사용자가 삭제한 덱)는 기본적으로 제외
+    q = q.neq('status', 'archived')
+  }
 
   const { data, error } = await q
   if (error) return ApiResponse.internalError('번들 조회 실패', error)

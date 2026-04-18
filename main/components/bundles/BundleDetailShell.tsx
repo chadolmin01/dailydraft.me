@@ -50,7 +50,11 @@ export function BundleDetailShell({
         </div>
       </div>
 
-      <BundleDetailClient bundleId={bundleId} canApprove={!!isAdmin} />
+      <BundleDetailClient
+        bundleId={bundleId}
+        canApprove={!!isAdmin}
+        slug={slug}
+      />
     </>
   )
 }

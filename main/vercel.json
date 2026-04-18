@@ -36,6 +36,14 @@
     {
       "path": "/api/cron/daily-dev-digest",
       "schedule": "0 13 * * *"
+    },
+    {
+      "path": "/api/cron/publish-scheduled",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/persona-automations-tick",
+      "schedule": "*/10 * * * *"
     }
   ]
 }

@@ -1,7 +1,12 @@
 import { createClient } from '@/src/lib/supabase/server'
+import { createAdminClient } from '@/src/lib/supabase/admin'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
-import { approveBundle, rejectBundle } from '@/src/lib/personas/bundles'
+import {
+  approveBundle,
+  archiveBundle,
+  rejectBundle,
+} from '@/src/lib/personas/bundles'
 
 /**
  * GET /api/bundles/:bundleId
@@ -64,5 +69,49 @@ export const PATCH = withErrorCapture(async (request, context) => {
     const msg = err instanceof Error ? err.message : String(err)
     if (msg.includes('찾을 수 없')) return ApiResponse.notFound(msg)
     return ApiResponse.internalError(msg)
+  }
+})
+
+/**
+ * DELETE /api/bundles/:bundleId
+ *
+ * 덱 소프트 삭제(status='archived'). 발행된 덱은 외부 플랫폼 글까지 철회하진 않음.
+ * 권한: 이 번들의 페르소나를 편집할 수 있는 사용자만 (can_edit_persona RPC).
+ *
+ * SSR auth.uid()가 RLS에 안 잡히는 이슈 때문에 admin 클라이언트 + RPC 선검증 패턴 사용.
+ */
+export const DELETE = withErrorCapture(async (_request, context) => {
+  const { bundleId } = (await context.params) as { bundleId: string }
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return ApiResponse.unauthorized()
+
+  const admin = createAdminClient()
+
+  // 1) 번들 → persona_id
+  const { data: bundle, error: bErr } = await admin
+    .from('persona_output_bundles')
+    .select('persona_id')
+    .eq('id', bundleId)
+    .maybeSingle()
+  if (bErr) return ApiResponse.internalError('번들 조회 실패', bErr)
+  if (!bundle) return ApiResponse.notFound('번들을 찾을 수 없습니다')
+
+  // 2) 편집 권한 확인
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: canEdit } = await (admin as any).rpc('can_edit_persona', {
+    p_persona_id: (bundle as { persona_id: string }).persona_id,
+    p_user_id: user.id,
+  })
+  if (!canEdit) return ApiResponse.forbidden('권한이 없습니다')
+
+  // 3) archived 처리
+  try {
+    await archiveBundle(admin, bundleId)
+    return ApiResponse.noContent()
+  } catch (err) {
+    return ApiResponse.internalError(err instanceof Error ? err.message : String(err))
   }
 })

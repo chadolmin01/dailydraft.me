@@ -52,6 +52,7 @@ export function ClubPersonaSettingsShell({ slug }: { slug: string }) {
         <PersonaDashboardClient
           clubId={club.id}
           clubName={club.name}
+          clubSlug={slug}
           isAdmin={!!isAdmin}
         />
       ) : (
