@@ -26,8 +26,11 @@ async function safeEdgeCapture(err: unknown, req: NextRequest, extra?: Record<st
 
 // Routes that are hidden in MVP mode (code preserved, UI hidden)
 // Remove routes from this array to restore access
+//
+// 2026-04-18: /dashboard 제거 — IA 리디자인으로 Triage Home이 됐고,
+// 로그인 후 기본 랜딩 라우트로 사용. 숨김 유지 시 middleware가 /explore로
+// 강제 리다이렉트해서 홈이 죽은 상태가 됨.
 const hiddenRoutes = [
-  '/dashboard',
   '/calendar',
   '/documents',
   '/network',
@@ -175,11 +178,12 @@ async function middlewareImpl(request: NextRequest): Promise<NextResponse> {
     return NextResponse.redirect(new URL('/explore', request.url))
   }
 
-  // 랜딩페이지(`/`): 로그인 상태면 /explore로 리다이렉트
+  // 랜딩페이지(`/`): 로그인 상태면 /dashboard(Triage Home)로 리다이렉트.
+  // 2026-04-18: 이전엔 /explore로 갔으나 IA 리디자인으로 /dashboard 가 진짜 홈이 됨.
   if (pathname === '/') {
     const { user } = await updateSession(request)
     if (user) {
-      return NextResponse.redirect(new URL('/explore', request.url))
+      return NextResponse.redirect(new URL('/dashboard', request.url))
     }
     return addSecurityHeaders(NextResponse.next({ request }))
   }
@@ -205,10 +209,10 @@ async function middlewareImpl(request: NextRequest): Promise<NextResponse> {
     return NextResponse.redirect(url)
   }
 
-  // If logged in and trying to access login page, redirect to explore
+  // If logged in and trying to access login page, redirect to dashboard (home)
   if (user && pathname === '/login') {
     const url = request.nextUrl.clone()
-    url.pathname = '/explore'
+    url.pathname = '/dashboard'
     return NextResponse.redirect(url)
   }
 
