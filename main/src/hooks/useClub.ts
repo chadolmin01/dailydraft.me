@@ -2,6 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase/client'
+import { useAuth } from '../context/AuthContext'
 import { withRetry } from '../lib/query-utils'
 
 // --- Types ---
@@ -212,10 +213,13 @@ export function useClubMembers(
   options?: { cohort?: string; role?: string; limit?: number; offset?: number }
 ) {
   const filters = options ?? {}
+  const { user, isLoading: isAuthLoading } = useAuth()
 
   return useQuery({
     queryKey: clubKeys.members(slug ?? '', filters),
-    enabled: !!slug,
+    // RLS: 멤버 목록은 클럽 멤버만 조회 가능 → 비로그인은 401 또는 빈 배열.
+    // 호출 skip 으로 콘솔 에러 제거.
+    enabled: !!slug && !isAuthLoading && !!user,
     staleTime: 1000 * 60 * 2,
     retry: (failureCount) => failureCount < 3,
     retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
@@ -239,9 +243,12 @@ export function useClubMembers(
 }
 
 export function useClubStats(slug: string | undefined) {
+  const { user, isLoading: isAuthLoading } = useAuth()
   return useQuery({
     queryKey: clubKeys.stats(slug ?? ''),
-    enabled: !!slug,
+    // 비로그인 시 stats API 는 401 을 돌려주므로 호출 자체 skip.
+    // 클럽 상세(Intro 탭)는 fetchClubDetail 에 포함된 기본 정보로 렌더 가능.
+    enabled: !!slug && !isAuthLoading && !!user,
     staleTime: 1000 * 60 * 2,
     retry: (failureCount) => failureCount < 3,
     retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
@@ -283,9 +290,11 @@ export function useClubProjects(clubId: string | undefined) {
 }
 
 export function useClubTeams(slug: string | undefined) {
+  const { user, isLoading: isAuthLoading } = useAuth()
   return useQuery({
     queryKey: clubKeys.teams(slug ?? ''),
-    enabled: !!slug,
+    // 팀/주간 현황은 멤버 전용 뷰. 비로그인 skip.
+    enabled: !!slug && !isAuthLoading && !!user,
     staleTime: 1000 * 60 * 2,
     retry: (failureCount) => failureCount < 3,
     retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
@@ -302,9 +311,11 @@ export function useClubTeams(slug: string | undefined) {
 }
 
 export function useClubBotActivity(slug: string | undefined) {
+  const { user, isLoading: isAuthLoading } = useAuth()
   return useQuery({
     queryKey: clubKeys.botActivity(slug ?? ''),
-    enabled: !!slug,
+    // Activity 대시보드는 관리자 전용. 비로그인 skip.
+    enabled: !!slug && !isAuthLoading && !!user,
     staleTime: 1000 * 60 * 5,
     retry: (failureCount) => failureCount < 2,
     retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
