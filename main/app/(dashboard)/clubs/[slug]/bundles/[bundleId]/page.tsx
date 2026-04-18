@@ -1,17 +1,16 @@
 import { QueryClient, dehydrate, HydrationBoundary } from '@tanstack/react-query'
 import { createServerSupabaseClient } from '@/src/lib/supabase/server'
 import { clubDetailKey, fetchClubDetail } from '@/src/lib/queries/club-queries'
-import { ClubSettingsClient } from '@/components/club/ClubSettingsClient'
+import { BundleDetailShell } from '@/components/bundles/BundleDetailShell'
 
-// my_role 포함 → user 쿠키 기반 SSR. ISR 불가.
 export const dynamic = 'force-dynamic'
 
-export default async function ClubSettingsPage({
+export default async function BundleDetailPage({
   params,
 }: {
-  params: Promise<{ slug: string }>
+  params: Promise<{ slug: string; bundleId: string }>
 }) {
-  const { slug } = await params
+  const { slug, bundleId } = await params
   const supabase = await createServerSupabaseClient()
   const {
     data: { user },
@@ -26,7 +25,7 @@ export default async function ClubSettingsPage({
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <div className="max-w-[1200px] mx-auto px-5 py-6">
-        <ClubSettingsClient slug={slug} />
+        <BundleDetailShell slug={slug} bundleId={bundleId} />
       </div>
     </HydrationBoundary>
   )

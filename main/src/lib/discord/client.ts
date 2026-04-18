@@ -196,6 +196,34 @@ export async function sendChannelEmbed(
   })
 }
 
+/**
+ * 컴포넌트(버튼 등)가 포함된 메시지 발송.
+ * Discord Action Row 최대 5개, 각 Row에 버튼 최대 5개.
+ * button style: 1=primary(blue) 2=secondary(grey) 3=success(green) 4=danger(red) 5=link
+ */
+export async function sendChannelMessageWithComponents(
+  channelId: string,
+  payload: {
+    content: string
+    components: Array<{
+      type: 1 // Action Row
+      components: Array<{
+        type: 2 // Button
+        style: 1 | 2 | 3 | 4 | 5
+        label: string
+        custom_id?: string  // non-link 버튼 필수
+        url?: string        // style=5 (link) 필수
+        emoji?: { name?: string; id?: string }
+      }>
+    }>
+  }
+): Promise<DiscordMessage> {
+  return discordFetch<DiscordMessage>(`/channels/${channelId}/messages`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
 /** 기존 메시지에 스레드 생성 */
 export async function createMessageThread(
   channelId: string,

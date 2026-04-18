@@ -3,6 +3,20 @@ import { after } from 'next/server'
 import { createAdminClient } from '@/src/lib/supabase/admin'
 import { APP_URL } from '@/src/constants'
 import nacl from 'tweetnacl'
+import {
+  buildTodoModal,
+  buildVoteModal,
+  buildOneLineModal,
+  buildScheduleModal,
+  buildMeetingStartModal,
+  buildTodoAssigneeSelect,
+} from '@/src/lib/discord/bot/modals'
+import {
+  generateStateKey,
+  setTodoDraft,
+  getTodoDraft,
+  clearTodoDraft,
+} from '@/src/lib/discord/bot/modal-state'
 
 /**
  * POST /api/discord/interactions
@@ -23,13 +37,15 @@ import nacl from 'tweetnacl'
 // Discord Interaction Types
 const PING = 1
 const APPLICATION_COMMAND = 2
-const MESSAGE_COMPONENT = 3 // 버튼 클릭
+const MESSAGE_COMPONENT = 3 // 버튼/Select 클릭
+const MODAL_SUBMIT = 5 // Modal 제출
 
 // Discord Interaction Response Types
 const PONG = 1
 const CHANNEL_MESSAGE = 4
 const DEFERRED_CHANNEL_MESSAGE = 5 // "봇이 생각 중..." → 나중에 followup
 const UPDATE_MESSAGE = 7 // 원본 메시지 수정 (버튼 제거 등)
+// 9 = MODAL (modals.ts의 build*Modal 함수가 직접 반환)
 
 const APP_PUBLIC_KEY = process.env.DISCORD_APP_PUBLIC_KEY ?? ''
 
@@ -81,9 +97,17 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ type: PONG })
   }
 
-  // 3. 버튼 클릭 처리
+  // 3. 버튼 클릭 + Select 처리
   if (interaction.type === MESSAGE_COMPONENT) {
     return handleButtonClick(interaction)
+  }
+
+  // 3-1. Modal 제출 처리
+  if (interaction.type === MODAL_SUBMIT) {
+    const baseUrl = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : APP_URL
+    return handleModalSubmit(interaction, baseUrl)
   }
 
   // 4. 슬래시 커맨드 처리
@@ -518,7 +542,9 @@ function handleButtonClick(interaction: {
   const messageId = interaction.message?.id
 
   // bot_interventions에 사용자 응답 기록
-  if (messageId) {
+  // launcher_* / todo_* 같은 UI 액션은 intervention 수락/거절과 무관하므로 스킵
+  const isIntervention = customId?.startsWith('quick_') ?? false
+  if (messageId && isIntervention) {
     const isAccept = customId !== 'quick_dismiss'
     const supabase = createAdminClient()
     supabase
@@ -528,6 +554,24 @@ function handleButtonClick(interaction: {
       .then(({ error }) => {
         if (error) console.error('[Button] intervention 응답 저장 실패:', error.message)
       })
+  }
+
+  // ── 번들 승인 버튼 ──
+  // custom_id: `bundle_approve:<bundleId>` (R3.1)
+  // 원클릭 승인 → approveBundle(). 거절은 웹에서만 (모바일 Discord 모달 부적합).
+  if (customId?.startsWith('bundle_approve:')) {
+    return handleBundleApproveButton(interaction, customId)
+  }
+
+  // ── 멘션 런처 버튼 처리 ──
+  // @Draft 멘션 메뉴에서 버튼 클릭 → Modal 열기 또는 기존 슬래시 핸들러 위임
+  if (customId?.startsWith('launcher_')) {
+    return handleLauncherButton(interaction, customId)
+  }
+
+  // 투두 2단계: Modal 제출 후 담당자 Select / "담당자 없이 등록" 버튼
+  if (customId?.startsWith('todo_assignee:') || customId?.startsWith('todo_no_assignee:')) {
+    return handleTodoAssigneeSelection(interaction, customId)
   }
 
   // "전체 커밋 보기" 버튼 — 커밋 단위 상세 로그 followup
@@ -670,33 +714,43 @@ function handleButtonClick(interaction: {
   }
 
   // "네" — 이벤트 등록: 원본 메시지 위 대화에서 날짜/시간 추출 → Scheduled Event
+  // 2026-04-18: Gemini 호출 제거. chrono-node 룰 기반으로 전환.
+  //   이유: 지연 3초→50ms, 호출 비용 0, 장애 의존도 제거. 해석 실패 시 대화에 안내 메시지.
+  //   환경변수 DISABLE_AI_DATE_PARSE=false 로 설정하면 Gemini fallback 재활성화 가능.
   if (customId === 'quick_event_yes' && channelId) {
     after(async () => {
       try {
         const { fetchChannelMessages, sendChannelMessage } = await import('@/src/lib/discord/client')
         const { createScheduledEvent } = await import('@/src/lib/discord/bot/discord-actions')
+        const { parseKoreanDate } = await import('@/src/lib/discord/bot/date-parser')
 
         // 최근 메시지 10개에서 날짜/시간 추출
         const messages = await fetchChannelMessages(channelId, { maxMessages: 10 })
         if (!messages || messages.length === 0) return
 
-        const conversation = messages
-          .slice(-10)
-          .map((m: { author: { username?: string }; content: string }) =>
-            `${m.author.username}: ${m.content}`
+        // 마지막 메시지부터 역순으로 parse 시도 — 가장 최근 확정 표현이 정답
+        let startTime: Date | null = null
+        let title: string | undefined
+        for (const m of [...messages].reverse()) {
+          const text = m.content ?? ''
+          if (!text) continue
+          const parsed = parseKoreanDate(text)
+          if (parsed) {
+            startTime = parsed
+            // 제목 추정: 이 메시지에서 날짜/시간 표현을 제거한 앞부분 40자
+            title = text.replace(/내일|모레|오늘|오후|오전|\d+\s*[:시]\s*\d*\s*분?|\d+월\s*\d+일|[월화수목금토일]요일|이번\s*주|다음\s*주/g, '').trim().slice(0, 40)
+            break
+          }
+        }
+
+        if (!startTime) {
+          // 파싱 실패 — 사용자에게 수동 지정 유도
+          await sendChannelMessage(
+            channelId,
+            '📅 일정을 자동으로 인식하지 못했습니다. `@Draft` → [일정] 버튼으로 직접 만들어주세요.',
           )
-          .join('\n')
-
-        // Gemini로 날짜/시간 추출
-        const { chatModel } = await import('@/src/lib/ai/gemini-client')
-        const result = await chatModel.generateContent({
-          contents: [{ role: 'user', parts: [{ text: `다음 대화에서 확정된 모임 날짜와 시간을 추출하세요.\n\n${conversation}` }] }],
-          systemInstruction: `JSON으로만 응답하세요. 오늘은 ${new Date().toISOString().slice(0, 10)} 입니다.\n{"title":"모임 제목","date":"YYYY-MM-DD","time":"HH:MM","duration_hours":2}\ntime을 모르면 "19:00"으로 기본값을 사용하세요.`,
-          generationConfig: { temperature: 0.1, responseMimeType: 'application/json' },
-        })
-
-        const parsed = JSON.parse(result.response.text())
-        const startTime = new Date(`${parsed.date}T${parsed.time}:00+09:00`) // KST
+          return
+        }
 
         // guild_id 조회 (채널에서)
         const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN ?? ''
@@ -708,17 +762,26 @@ function handleButtonClick(interaction: {
 
         if (!guildId) return
 
+        const eventTitle = title && title.length > 0 ? title : '팀 모임'
         const event = await createScheduledEvent(
           guildId,
-          parsed.title || '팀 모임',
+          eventTitle,
           startTime,
-          new Date(startTime.getTime() + (parsed.duration_hours || 2) * 60 * 60 * 1000),
+          new Date(startTime.getTime() + 2 * 60 * 60 * 1000), // 기본 2시간
         )
 
         if (event?.id) {
+          const kstDate = startTime.toLocaleString('ko-KR', {
+            timeZone: 'Asia/Seoul',
+            month: 'long',
+            day: 'numeric',
+            weekday: 'short',
+            hour: '2-digit',
+            minute: '2-digit',
+          })
           await sendChannelMessage(
             channelId,
-            `✅ **${parsed.title || '팀 모임'}** 이벤트가 등록되었습니다!\n📅 ${parsed.date} ${parsed.time} (KST)`,
+            `✅ **${eventTitle}** 이벤트가 등록되었습니다!\n📅 ${kstDate} (KST)`,
           )
         }
       } catch (err) {
@@ -732,12 +795,12 @@ function handleButtonClick(interaction: {
     })
   }
 
-  // "네" — 투표 만들기
+  // "네" — 투표 만들기 (런처 Modal 안내)
   if (customId === 'quick_vote_yes') {
     return NextResponse.json({
       type: UPDATE_MESSAGE,
       data: {
-        content: '📊 `/투표 주제 옵션1 옵션2` 명령어로 투표를 만들어주세요!',
+        content: '📊 `@Draft` 멘션 → [투표] 버튼을 눌러서 만들어주세요!',
         components: [],
       },
     })
@@ -770,6 +833,461 @@ function handleButtonClick(interaction: {
     type: UPDATE_MESSAGE,
     data: { components: [] },
   })
+}
+
+// ── 멘션 런처 버튼 → Modal 열기 or 기존 핸들러 위임 ──
+// 이유 주석:
+//   Modal을 열려면 interaction 응답이 3초 안에 type 9 JSON으로 와야 합니다.
+//   DB 조회가 필요한 핸들러(summary/devstatus)는 이미 DEFERRED 패턴을 사용하므로 그대로 위임.
+
+function handleLauncherButton(interaction: any, customId: string) {
+  const baseUrl = process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : APP_URL
+
+  switch (customId) {
+    case 'launcher_todo':
+      return NextResponse.json(buildTodoModal())
+    case 'launcher_vote':
+      return NextResponse.json(buildVoteModal())
+    case 'launcher_oneline':
+      return NextResponse.json(buildOneLineModal())
+    case 'launcher_schedule':
+      return NextResponse.json(buildScheduleModal())
+    case 'launcher_meeting':
+      return NextResponse.json(buildMeetingStartModal())
+    case 'launcher_summary':
+      return handleSummaryCommand(interaction, baseUrl)
+    case 'launcher_devstatus':
+      return handleDevStatusCommand(interaction)
+    case 'launcher_settings':
+      return handleSettingsCommand(interaction)
+    default:
+      return NextResponse.json({
+        type: CHANNEL_MESSAGE,
+        data: { content: '알 수 없는 메뉴입니다.', flags: 64 },
+      })
+  }
+}
+
+/**
+ * 번들 승인 버튼 핸들러 (R3.1)
+ *
+ * custom_id: `bundle_approve:<bundleId>`
+ * 흐름:
+ *   1) DEFERRED_UPDATE_MESSAGE로 즉시 응답 (3초 제한 회피)
+ *   2) Discord user_id → profile.user_id 매핑
+ *   3) can_edit_persona RPC로 권한 체크
+ *   4) approveBundle() 실행
+ *   5) 원본 메시지를 "✅ 승인 완료"로 업데이트
+ *
+ * 거절은 웹 UI에서 처리 (모바일 Discord 모달에 긴 사유 입력은 UX 열악).
+ */
+async function handleBundleApproveButton(interaction: any, customId: string) {
+  const bundleId = customId.slice('bundle_approve:'.length)
+  const discordUserId: string | undefined =
+    interaction.member?.user?.id ?? interaction.user?.id
+  const appId = interaction.application_id ?? process.env.DISCORD_APP_ID
+  const interactionToken = interaction.token
+
+  after(async () => {
+    if (!appId || !interactionToken) return
+
+    try {
+      const supabase = createAdminClient()
+
+      // 번들 조회
+      const { data: bundle } = await supabase
+        .from('persona_output_bundles')
+        .select('id, persona_id, status')
+        .eq('id', bundleId)
+        .maybeSingle<{ id: string; persona_id: string; status: string }>()
+
+      if (!bundle) {
+        await editOriginalInteractionMessage(
+          appId,
+          interactionToken,
+          '❌ 번들을 찾을 수 없습니다.',
+        )
+        return
+      }
+      if (bundle.status === 'approved' || bundle.status === 'published') {
+        await editOriginalInteractionMessage(
+          appId,
+          interactionToken,
+          '✅ 이미 승인된 번들입니다.',
+        )
+        return
+      }
+
+      // Discord user → Draft profile 매핑
+      let draftUserId: string | null = null
+      if (discordUserId) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('user_id')
+          .eq('discord_user_id', discordUserId)
+          .maybeSingle<{ user_id: string }>()
+        draftUserId = profile?.user_id ?? null
+      }
+
+      if (!draftUserId) {
+        await editOriginalInteractionMessage(
+          appId,
+          interactionToken,
+          '❌ Discord 계정이 Draft 프로필과 연결되어 있지 않습니다. /프로필 연결 후 다시 시도하세요.',
+        )
+        return
+      }
+
+      // 권한 체크 (RLS 정책과 동일 로직)
+      const { data: canEdit } = await supabase.rpc('can_edit_persona', {
+        p_persona_id: bundle.persona_id,
+        p_user_id: draftUserId,
+      })
+      if (!canEdit) {
+        await editOriginalInteractionMessage(
+          appId,
+          interactionToken,
+          '❌ 이 번들을 승인할 권한이 없습니다. (동아리 대표/운영진만 가능)',
+        )
+        return
+      }
+
+      // 승인 실행
+      const { approveBundle } = await import('@/src/lib/personas/bundles')
+      await approveBundle(supabase, bundleId, draftUserId)
+
+      await editOriginalInteractionMessage(
+        appId,
+        interactionToken,
+        '✅ **번들 승인 완료**\n자동 발행 가능 채널은 발행되었습니다.',
+      )
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err)
+      console.error('[bundle_approve] 실패:', msg)
+      if (appId && interactionToken) {
+        await editOriginalInteractionMessage(
+          appId,
+          interactionToken,
+          `❌ 승인 실패: ${msg}`,
+        ).catch(() => {})
+      }
+    }
+  })
+
+  // DEFERRED_UPDATE_MESSAGE (type=6) — 3초 내 즉시 응답
+  return NextResponse.json({ type: 6 })
+}
+
+/**
+ * interaction 원본 메시지를 Discord Webhook API로 수정.
+ * after() 블록에서 호출됨.
+ */
+async function editOriginalInteractionMessage(
+  appId: string,
+  token: string,
+  content: string,
+): Promise<void> {
+  await fetch(
+    `https://discord.com/api/v10/webhooks/${appId}/${token}/messages/@original`,
+    {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content, components: [] }),
+    },
+  )
+}
+
+// ── 투두 2단계: USER_SELECT 또는 "담당자 없이 등록" 버튼 처리 ──
+
+function handleTodoAssigneeSelection(interaction: any, customId: string) {
+  const [prefix, stateKey] = customId.split(':')
+  const draft = getTodoDraft(stateKey)
+
+  if (!draft) {
+    return NextResponse.json({
+      type: UPDATE_MESSAGE,
+      data: {
+        content: '⚠️ 세션이 만료되었습니다. `@Draft`에서 다시 시도해주세요.',
+        components: [],
+      },
+    })
+  }
+
+  // USER_SELECT: interaction.data.values = ['<userId>']
+  const assigneeId: string | undefined =
+    prefix === 'todo_assignee' ? interaction.data?.values?.[0] : undefined
+
+  clearTodoDraft(stateKey)
+
+  const appId = interaction.application_id ?? process.env.DISCORD_APP_ID
+  const interactionToken = interaction.token
+  const baseUrl = process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : APP_URL
+
+  // 백그라운드에서 투두 메시지 생성 (기존 /api/discord/interactions/todo 재활용)
+  after(async () => {
+    try {
+      await fetch(`${baseUrl}/api/discord/interactions/todo`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'create',
+          channelId: draft.channelId,
+          appId,
+          interactionToken,
+          content: draft.deadline
+            ? `${draft.content} (마감: ${draft.deadline})`
+            : draft.content,
+          assigneeId,
+        }),
+      })
+    } catch (err) {
+      console.error('[Launcher] 투두 생성 실패:', err)
+    }
+  })
+
+  return NextResponse.json({
+    type: UPDATE_MESSAGE,
+    data: {
+      content: assigneeId
+        ? `📌 할 일을 등록하고 있습니다... (담당: <@${assigneeId}>)`
+        : '📌 할 일을 등록하고 있습니다...',
+      components: [],
+    },
+  })
+}
+
+// ── Modal 제출 핸들러 ──
+
+function handleModalSubmit(interaction: any, baseUrl: string) {
+  const customId: string = interaction.data?.custom_id ?? ''
+
+  switch (customId) {
+    case 'modal_todo_submit':
+      return handleTodoModalSubmit(interaction)
+    case 'modal_vote_submit':
+      return handleVoteModalSubmit(interaction, baseUrl)
+    case 'modal_oneline_submit':
+      return handleOneLineModalSubmit(interaction)
+    case 'modal_schedule_submit':
+      return handleScheduleModalSubmit(interaction, baseUrl)
+    case 'modal_meeting_submit':
+      return handleMeetingModalSubmit(interaction, baseUrl)
+    default:
+      return NextResponse.json({
+        type: CHANNEL_MESSAGE,
+        data: { content: '알 수 없는 Modal입니다.', flags: 64 },
+      })
+  }
+}
+
+/** Modal 제출 데이터에서 특정 필드 값 추출 */
+function getModalField(interaction: any, fieldId: string): string {
+  const rows: any[] = interaction.data?.components ?? []
+  for (const row of rows) {
+    for (const comp of row.components ?? []) {
+      if (comp.custom_id === fieldId) return String(comp.value ?? '').trim()
+    }
+  }
+  return ''
+}
+
+// ── Modal 제출: 투두 (담당자 Select로 이어짐) ──
+
+function handleTodoModalSubmit(interaction: any) {
+  const content = getModalField(interaction, 'content')
+  const deadline = getModalField(interaction, 'deadline') || null
+
+  if (!content) {
+    return NextResponse.json({
+      type: CHANNEL_MESSAGE,
+      data: { content: '내용을 입력해주세요.', flags: 64 },
+    })
+  }
+
+  const channelId = interaction.channel_id
+  const guildId = interaction.guild_id
+  const requesterId = interaction.member?.user?.id ?? interaction.user?.id
+
+  if (!channelId || !requesterId) {
+    return NextResponse.json({
+      type: CHANNEL_MESSAGE,
+      data: { content: '요청을 처리할 수 없습니다.', flags: 64 },
+    })
+  }
+
+  const stateKey = generateStateKey()
+  setTodoDraft(stateKey, {
+    content,
+    deadline,
+    requesterId,
+    channelId,
+    guildId: guildId ?? '',
+    createdAt: Date.now(),
+  })
+
+  const select = buildTodoAssigneeSelect(stateKey)
+
+  return NextResponse.json({
+    type: CHANNEL_MESSAGE,
+    data: {
+      content: select.content,
+      components: select.components,
+      flags: 64, // EPHEMERAL — 본인만 보임
+    },
+  })
+}
+
+// ── Modal 제출: 투표 (기존 /api/discord/interactions/poll 재활용) ──
+
+function handleVoteModalSubmit(interaction: any, baseUrl: string) {
+  const topic = getModalField(interaction, 'topic')
+  const options = [
+    getModalField(interaction, 'opt1'),
+    getModalField(interaction, 'opt2'),
+    getModalField(interaction, 'opt3'),
+    getModalField(interaction, 'opt4'),
+  ].filter((v) => v.length > 0)
+
+  if (!topic || options.length < 2) {
+    return NextResponse.json({
+      type: CHANNEL_MESSAGE,
+      data: { content: '주제와 최소 2개의 옵션을 입력해주세요.', flags: 64 },
+    })
+  }
+
+  const channelId = interaction.channel_id
+  const appId = interaction.application_id ?? process.env.DISCORD_APP_ID
+  const interactionToken = interaction.token
+
+  if (!channelId || !appId || !interactionToken) {
+    return NextResponse.json({
+      type: CHANNEL_MESSAGE,
+      data: { content: '채널 정보를 찾을 수 없습니다.', flags: 64 },
+    })
+  }
+
+  after(async () => {
+    try {
+      await fetch(`${baseUrl}/api/discord/interactions/poll`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'vote',
+          channelId,
+          appId,
+          interactionToken,
+          topic,
+          options,
+        }),
+      })
+    } catch (err) {
+      console.error('[Modal] 투표 생성 실패:', err)
+    }
+  })
+
+  return NextResponse.json({ type: DEFERRED_CHANNEL_MESSAGE })
+}
+
+// ── Modal 제출: 한줄 체크인 ──
+
+function handleOneLineModalSubmit(interaction: any) {
+  const content = getModalField(interaction, 'content')
+  const userId = interaction.member?.user?.id ?? interaction.user?.id
+
+  if (!content) {
+    return NextResponse.json({
+      type: CHANNEL_MESSAGE,
+      data: { content: '내용을 입력해주세요.', flags: 64 },
+    })
+  }
+
+  const today = new Date().toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' })
+  const mention = userId ? `<@${userId}>` : '(알 수 없음)'
+
+  return NextResponse.json({
+    type: CHANNEL_MESSAGE,
+    data: {
+      content: `💬 **한줄 체크인** — ${mention} · ${today}\n${content}`,
+    },
+  })
+}
+
+// ── Modal 제출: 일정 조율 (기존 /api/discord/interactions/poll 재활용) ──
+
+function handleScheduleModalSubmit(interaction: any, baseUrl: string) {
+  const purpose = getModalField(interaction, 'purpose') || undefined
+
+  const channelId = interaction.channel_id
+  const appId = interaction.application_id ?? process.env.DISCORD_APP_ID
+  const interactionToken = interaction.token
+
+  if (!channelId || !appId || !interactionToken) {
+    return NextResponse.json({
+      type: CHANNEL_MESSAGE,
+      data: { content: '채널 정보를 찾을 수 없습니다.', flags: 64 },
+    })
+  }
+
+  after(async () => {
+    try {
+      await fetch(`${baseUrl}/api/discord/interactions/poll`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'schedule',
+          channelId,
+          appId,
+          interactionToken,
+          purpose,
+        }),
+      })
+    } catch (err) {
+      console.error('[Modal] 일정 생성 실패:', err)
+    }
+  })
+
+  return NextResponse.json({ type: DEFERRED_CHANNEL_MESSAGE })
+}
+
+// ── Modal 제출: 회의시작 (기존 /api/discord/interactions/todo의 meeting-start 재활용) ──
+
+function handleMeetingModalSubmit(interaction: any, baseUrl: string) {
+  const agenda = getModalField(interaction, 'agenda') || undefined
+
+  const channelId = interaction.channel_id
+  const appId = interaction.application_id ?? process.env.DISCORD_APP_ID
+  const interactionToken = interaction.token
+
+  if (!channelId || !appId || !interactionToken) {
+    return NextResponse.json({
+      type: CHANNEL_MESSAGE,
+      data: { content: '채널 정보를 찾을 수 없습니다.', flags: 64 },
+    })
+  }
+
+  after(async () => {
+    try {
+      await fetch(`${baseUrl}/api/discord/interactions/todo`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'meeting-start',
+          channelId,
+          appId,
+          interactionToken,
+          agenda,
+        }),
+      })
+    } catch (err) {
+      console.error('[Modal] 회의시작 실패:', err)
+    }
+  })
+
+  return NextResponse.json({ type: DEFERRED_CHANNEL_MESSAGE })
 }
 
 // ── /연결 — Draft 계정 연결 안내 ──

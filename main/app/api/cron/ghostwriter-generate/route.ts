@@ -496,7 +496,61 @@ export const POST = withCronCapture('ghostwriter-generate', async (request: Next
       .eq('id', clubId)
       .maybeSingle()
 
-    // 7. 운영-대시보드에 주간 요약 게시 (클럽 레벨이므로 ISO 주차)
+    // 7-a. R3.1: 클럽 페르소나 기반 weekly_update 번들 생성
+    // 기존 weekly_update_drafts(팀별)는 그대로 유지. 번들은 클럽 단위로 1건만 생성되며
+    // 각 팀의 요약을 corpus_hint로 묶어 인스타·이메일·Discord 마크다운 3채널 동시 생성.
+    // 실패해도 기존 플로우는 영향 없음 (warning만).
+    if (dashboardDrafts.length > 0) {
+      try {
+        const { createBundle } = await import('@/src/lib/personas/bundles')
+        const { data: ownerMember } = await admin
+          .from('club_members')
+          .select('user_id')
+          .eq('club_id', clubId)
+          .eq('role', 'owner')
+          .limit(1)
+          .maybeSingle<{ user_id: string | null }>()
+
+        const teamSummaryLines = dashboardDrafts
+          .map((d) => {
+            const status =
+              d.teamStatus === 'good'
+                ? '🟢 순항'
+                : d.teamStatus === 'hard'
+                  ? '🔴 고전'
+                  : '🟡 보통'
+            const reason = d.teamStatusReason ? ` — ${d.teamStatusReason}` : ''
+            return `- **${d.projectTitle}** ${status}${reason}`
+          })
+          .join('\n')
+
+        await createBundle(admin, {
+          clubId,
+          eventType: 'weekly_update',
+          eventMetadata: {
+            week_number: isoWeekNumber,
+            cohort: '현재 기수',
+            team_count: dashboardDrafts.length,
+            teams: dashboardDrafts.map((d) => ({
+              team_id: d.opportunityId,
+              title: d.projectTitle,
+              status: d.teamStatus,
+            })),
+          },
+          userId: ownerMember?.user_id ?? null,
+          corpusHint: teamSummaryLines,
+          weekNumber: isoWeekNumber,
+          notifyOperator: true,
+        })
+      } catch (err) {
+        console.warn(
+          '[ghostwriter] weekly_update 번들 생성 실패 (기존 플로우는 성공, R3.1 번들만 스킵)',
+          err instanceof Error ? err.message : err,
+        )
+      }
+    }
+
+    // 7-b. 운영-대시보드에 주간 요약 게시 (클럽 레벨이므로 ISO 주차)
     postDashboardSummary(clubId, isoWeekNumber, {
       totalTeams: clubChs.length,
       draftsCreated: dashboardDrafts.length,
