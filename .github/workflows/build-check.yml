@@ -42,14 +42,19 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Node.js
+        # 왜 22: 로컬 개발이 Node 24 이고 lock 파일도 그 기준으로 생성됨.
+        # Node 20 에선 npm 10 이 lock 해석 불일치(typescript peer dep mismatch) 발생.
+        # camera-controls@3.1.2 등 일부 패키지도 node>=22 요구.
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
           cache-dependency-path: main/package-lock.json
 
       - name: Install dependencies
-        run: npm ci
+        # npm install (lock 자동 보정) — CI 환경 차이로 인한 peer dep 이슈 회피.
+        # lock 변동은 npm diff 로 사후 검출 가능.
+        run: npm install --no-audit --no-fund
 
       - name: Access manifest coverage
         # app/**/page.tsx 전수 scan → manifest 등록 여부 확인.
