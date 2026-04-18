@@ -394,7 +394,7 @@ export type Database = {
           club_id: string
           connector_type: string
           created_at: string
-          credentials: unknown
+          credentials: Json
           display_name: string | null
           enabled: boolean
           id: string
@@ -407,7 +407,7 @@ export type Database = {
           club_id: string
           connector_type: string
           created_at?: string
-          credentials?: unknown
+          credentials?: Json
           display_name?: string | null
           enabled?: boolean
           id?: string
@@ -420,7 +420,7 @@ export type Database = {
           club_id?: string
           connector_type?: string
           created_at?: string
-          credentials?: unknown
+          credentials?: Json
           display_name?: string | null
           enabled?: boolean
           id?: string
@@ -580,6 +580,47 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "club_notification_channels_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      club_semester_cycles: {
+        Row: {
+          club_id: string
+          cohort_number: string | null
+          created_at: string
+          end_date: string
+          id: string
+          is_active: boolean
+          semester_ref: string
+          start_date: string
+        }
+        Insert: {
+          club_id: string
+          cohort_number?: string | null
+          created_at?: string
+          end_date: string
+          id?: string
+          is_active?: boolean
+          semester_ref: string
+          start_date: string
+        }
+        Update: {
+          club_id?: string
+          cohort_number?: string | null
+          created_at?: string
+          end_date?: string
+          id?: string
+          is_active?: boolean
+          semester_ref?: string
+          start_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "club_semester_cycles_club_id_fkey"
             columns: ["club_id"]
             isOneToOne: false
             referencedRelation: "clubs"
@@ -1967,6 +2008,59 @@ export type Database = {
         }
         Relationships: []
       }
+      persona_channel_credentials: {
+        Row: {
+          account_ref: string
+          active: boolean
+          channel_type: string
+          created_at: string
+          encrypted_token: string | null
+          expires_at: string | null
+          id: string
+          installed_by: string | null
+          persona_id: string
+          refresh_token_ref: string | null
+          scope: string[]
+          updated_at: string
+        }
+        Insert: {
+          account_ref: string
+          active?: boolean
+          channel_type: string
+          created_at?: string
+          encrypted_token?: string | null
+          expires_at?: string | null
+          id?: string
+          installed_by?: string | null
+          persona_id: string
+          refresh_token_ref?: string | null
+          scope?: string[]
+          updated_at?: string
+        }
+        Update: {
+          account_ref?: string
+          active?: boolean
+          channel_type?: string
+          created_at?: string
+          encrypted_token?: string | null
+          expires_at?: string | null
+          id?: string
+          installed_by?: string | null
+          persona_id?: string
+          refresh_token_ref?: string | null
+          scope?: string[]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "persona_channel_credentials_persona_id_fkey"
+            columns: ["persona_id"]
+            isOneToOne: false
+            referencedRelation: "personas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       persona_corpus_sources: {
         Row: {
           active: boolean
@@ -1974,7 +2068,7 @@ export type Database = {
           id: string
           last_synced_at: string | null
           persona_id: string
-          role_weight_rules: unknown
+          role_weight_rules: Json
           source_ref: string
           source_type: string
           weight: number
@@ -1985,7 +2079,7 @@ export type Database = {
           id?: string
           last_synced_at?: string | null
           persona_id: string
-          role_weight_rules?: unknown
+          role_weight_rules?: Json
           source_ref: string
           source_type: string
           weight?: number
@@ -1996,7 +2090,7 @@ export type Database = {
           id?: string
           last_synced_at?: string | null
           persona_id?: string
-          role_weight_rules?: unknown
+          role_weight_rules?: Json
           source_ref?: string
           source_type?: string
           weight?: number
@@ -2034,7 +2128,7 @@ export type Database = {
           source?: string
           updated_at?: string
           updated_by?: string | null
-          value?: unknown
+          value?: Json
         }
         Update: {
           confidence?: number
@@ -2046,7 +2140,7 @@ export type Database = {
           source?: string
           updated_at?: string
           updated_by?: string | null
-          value?: unknown
+          value?: Json
         }
         Relationships: [
           {
@@ -2058,16 +2152,79 @@ export type Database = {
           },
         ]
       }
-      persona_outputs: {
+      persona_output_bundles: {
         Row: {
           approved_at: string | null
           approved_by: string | null
           created_at: string
+          created_by: string | null
+          event_metadata: Json
+          event_type: string
+          id: string
+          persona_id: string
+          published_at: string | null
+          rejected_reason: string | null
+          semester_ref: string | null
+          status: string
+          updated_at: string
+          week_number: number | null
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          event_metadata?: Json
+          event_type: string
+          id?: string
+          persona_id: string
+          published_at?: string | null
+          rejected_reason?: string | null
+          semester_ref?: string | null
+          status?: string
+          updated_at?: string
+          week_number?: number | null
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          event_metadata?: Json
+          event_type?: string
+          id?: string
+          persona_id?: string
+          published_at?: string | null
+          rejected_reason?: string | null
+          semester_ref?: string | null
+          status?: string
+          updated_at?: string
+          week_number?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "persona_output_bundles_persona_id_fkey"
+            columns: ["persona_id"]
+            isOneToOne: false
+            referencedRelation: "personas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      persona_outputs: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          bundle_id: string | null
+          channel_format: string | null
+          created_at: string
           destination: string | null
           external_ref: string | null
+          format_constraints: Json | null
           generated_content: string
           id: string
           input_context: Json
+          is_copy_only: boolean
           output_type: string
           persona_id: string
           prompt_template_id: string | null
@@ -2079,12 +2236,16 @@ export type Database = {
         Insert: {
           approved_at?: string | null
           approved_by?: string | null
+          bundle_id?: string | null
+          channel_format?: string | null
           created_at?: string
           destination?: string | null
           external_ref?: string | null
+          format_constraints?: Json | null
           generated_content: string
           id?: string
           input_context?: Json
+          is_copy_only?: boolean
           output_type: string
           persona_id: string
           prompt_template_id?: string | null
@@ -2096,12 +2257,16 @@ export type Database = {
         Update: {
           approved_at?: string | null
           approved_by?: string | null
+          bundle_id?: string | null
+          channel_format?: string | null
           created_at?: string
           destination?: string | null
           external_ref?: string | null
+          format_constraints?: Json | null
           generated_content?: string
           id?: string
           input_context?: Json
+          is_copy_only?: boolean
           output_type?: string
           persona_id?: string
           prompt_template_id?: string | null
@@ -2111,6 +2276,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "persona_outputs_bundle_id_fkey"
+            columns: ["bundle_id"]
+            isOneToOne: false
+            referencedRelation: "persona_output_bundles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "persona_outputs_persona_id_fkey"
             columns: ["persona_id"]
@@ -2125,7 +2297,7 @@ export type Database = {
           completed_at: string | null
           corpus_snapshot_hash: string | null
           error_message: string | null
-          extracted_diff: unknown
+          extracted_diff: Json
           id: string
           model_version: string | null
           persona_id: string
@@ -2137,7 +2309,7 @@ export type Database = {
           completed_at?: string | null
           corpus_snapshot_hash?: string | null
           error_message?: string | null
-          extracted_diff?: unknown
+          extracted_diff?: Json
           id?: string
           model_version?: string | null
           persona_id: string
@@ -2149,7 +2321,7 @@ export type Database = {
           completed_at?: string | null
           corpus_snapshot_hash?: string | null
           error_message?: string | null
-          extracted_diff?: unknown
+          extracted_diff?: Json
           id?: string
           model_version?: string | null
           persona_id?: string
@@ -4016,4 +4188,3 @@ export const Constants = {
     Enums: {},
   },
 } as const
-

@@ -48,14 +48,14 @@ export const POST = withErrorCapture(async (request, context) => {
   if (!canEdit) return ApiResponse.forbidden('이 페르소나를 편집할 권한이 없습니다')
 
   // 페르소나 + 기존 슬롯 + 조직명
-  const { data: persona } = await (admin as any)
+  const { data: persona } = await admin
     .from('personas')
     .select('*')
     .eq('id', personaId)
     .maybeSingle()
   if (!persona) return ApiResponse.notFound('페르소나를 찾을 수 없습니다')
 
-  const { data: currentFields } = await (admin as any)
+  const { data: currentFields } = await admin
     .from('persona_fields')
     .select('*')
     .eq('persona_id', personaId)
@@ -104,9 +104,10 @@ export const POST = withErrorCapture(async (request, context) => {
   })
 
   if (upserts.length > 0) {
-    const { error: upErr } = await (admin as any)
+    const { error: upErr } = await admin
       .from('persona_fields')
-      .upsert(upserts, { onConflict: 'persona_id,field_key' })
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .upsert(upserts as any, { onConflict: 'persona_id,field_key' })
     if (upErr) {
       console.error('[persona_polish] upsert 실패:', upErr)
       return ApiResponse.internalError(`슬롯 저장 실패: ${upErr.message}`)
@@ -114,7 +115,8 @@ export const POST = withErrorCapture(async (request, context) => {
   }
 
   // 이력 기록 (롤백 가능)
-  await (admin as any).from('persona_training_runs').insert({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (admin.from('persona_training_runs') as any).insert({
     persona_id: personaId,
     trigger: 'manual',
     status: 'completed',

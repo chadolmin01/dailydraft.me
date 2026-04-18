@@ -52,7 +52,7 @@ export const POST = withErrorCapture(async (request, context) => {
     : undefined
 
   // 페르소나 로드 + 편집 권한 검증 (RLS가 한 번 더 막지만 조기 실패가 UX상 낫다)
-  const { data: persona, error: pErr } = await (supabase as any)
+  const { data: persona, error: pErr } = await supabase
     .from('personas')
     .select('*')
     .eq('id', personaId)
@@ -82,7 +82,7 @@ export const POST = withErrorCapture(async (request, context) => {
 
   // Corpus source 목록 — DB에 등록된 것 + 요청으로 온 channel_ids(임시)
   let sources: PersonaCorpusSourceRow[] = []
-  const { data: dbSources } = await (supabase as any)
+  const { data: dbSources } = await supabase
     .from('persona_corpus_sources')
     .select('*')
     .eq('persona_id', personaId)
@@ -119,7 +119,7 @@ export const POST = withErrorCapture(async (request, context) => {
   }
 
   // training_runs: running 상태로 먼저 기록 (크래시 추적용)
-  const runInsert = await (supabase as any)
+  const runInsert = await supabase
     .from('persona_training_runs')
     .insert({
       persona_id: personaId,
@@ -154,7 +154,7 @@ export const POST = withErrorCapture(async (request, context) => {
 
     // 이전 값 스냅샷 (롤백용)
     const prevKeys = result.slots.map((s) => s.field_key)
-    const { data: prevFields } = await (supabase as any)
+    const { data: prevFields } = await supabase
       .from('persona_fields')
       .select('field_key, value, source, confidence')
       .eq('persona_id', personaId)
@@ -196,9 +196,10 @@ export const POST = withErrorCapture(async (request, context) => {
       })
 
     if (upserts.length > 0) {
-      const { error: upErr } = await (supabase as any)
+      const { error: upErr } = await supabase
         .from('persona_fields')
-        .upsert(upserts, { onConflict: 'persona_id,field_key' })
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .upsert(upserts as any, { onConflict: 'persona_id,field_key' })
       if (upErr) {
         await updateTrainingRun(supabase, runId, {
           status: 'failed',
@@ -244,7 +245,7 @@ async function updateTrainingRun(
   patch: Record<string, unknown>,
 ) {
   if (!runId) return
-  await (supabase as any)
+  await supabase
     .from('persona_training_runs')
     .update({ ...patch, completed_at: new Date().toISOString() })
     .eq('id', runId)

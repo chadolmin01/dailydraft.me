@@ -55,7 +55,7 @@ export const PATCH = withErrorCapture(async (request, context) => {
   }
 
   // upsert — DB 유니크 제약 (persona_id, field_key)이 보장.
-  const { data, error } = await (admin as any)
+  const { data, error } = await admin
     .from('persona_fields')
     .upsert(
       {

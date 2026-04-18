@@ -898,7 +898,7 @@ async function handleBundleApproveButton(interaction: any, customId: string) {
 
       // 번들 조회
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const bundleRes: any = await (supabase as any)
+      const bundleRes: any = await supabase
         .from('persona_output_bundles')
         .select('id, persona_id, status')
         .eq('id', bundleId)

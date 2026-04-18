@@ -94,8 +94,9 @@ export async function createBundle(
   }
 
   // 4) 번들 insert
-  const { data: bundleData, error: bundleErr } = await (supabase as any)
+  const { data: bundleData, error: bundleErr } = await supabase
     .from('persona_output_bundles')
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     .insert({
       persona_id: persona.id,
       event_type: eventType,
@@ -104,7 +105,7 @@ export async function createBundle(
       semester_ref: input.semesterRef ?? null,
       week_number: input.weekNumber ?? null,
       created_by: userId,
-    })
+    } as any)
     .select('*')
     .single()
 
@@ -170,9 +171,10 @@ export async function createBundle(
       status: 'draft' as const,
     }))
 
-    const { data: insertedOutputs, error: outErr } = await (supabase as any)
+    const { data: insertedOutputs, error: outErr } = await supabase
       .from('persona_outputs')
-      .insert(rows)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .insert(rows as any)
       .select('id, channel_format')
 
     if (outErr) {
@@ -192,7 +194,7 @@ export async function createBundle(
   }
 
   // 9) 번들 상태 → pending_approval
-  await (supabase as any)
+  await supabase
     .from('persona_output_bundles')
     .update({ status: 'pending_approval' })
     .eq('id', bundle.id)
@@ -230,7 +232,7 @@ export async function approveBundle(
   const now = new Date().toISOString()
 
   // 1) 번들 + 하위 outputs 로드
-  const { data: bundle, error: bErr } = await (supabase as any)
+  const { data: bundle, error: bErr } = await supabase
     .from('persona_output_bundles')
     .select('*')
     .eq('id', bundleId)
@@ -238,7 +240,7 @@ export async function approveBundle(
   if (bErr) throw new Error(`번들 조회 실패: ${bErr.message}`)
   if (!bundle) throw new Error('번들을 찾을 수 없습니다')
 
-  const { data: outputs } = await (supabase as any)
+  const { data: outputs } = await supabase
     .from('persona_outputs')
     .select('*')
     .eq('bundle_id', bundleId)
@@ -265,7 +267,7 @@ export async function approveBundle(
       }
       try {
         await sendChannelMessage(channelId, output.generated_content)
-        await (supabase as any)
+        await supabase
           .from('persona_outputs')
           .update({ status: 'published', published_at: now, destination: `discord:${channelId}` })
           .eq('id', output.id)
@@ -278,7 +280,7 @@ export async function approveBundle(
   }
 
   // 3) 번들 상태 업데이트
-  const { data: updated, error: uErr } = await (supabase as any)
+  const { data: updated, error: uErr } = await supabase
     .from('persona_output_bundles')
     .update({
       status: publishedCount > 0 ? 'published' : 'approved',
@@ -303,7 +305,7 @@ export async function rejectBundle(
   userId: string,
   reason: string,
 ): Promise<PersonaOutputBundleRow> {
-  const { data: bundle, error } = await (supabase as any)
+  const { data: bundle, error } = await supabase
     .from('persona_output_bundles')
     .update({
       status: 'rejected',
@@ -336,7 +338,7 @@ async function findTargetPersona(
   input: CreateBundleInput,
 ): Promise<PersonaRow | null> {
   if (input.personaId) {
-    const { data } = await (supabase as any)
+    const { data } = await supabase
       .from('personas')
       .select('*')
       .eq('id', input.personaId)
@@ -344,7 +346,7 @@ async function findTargetPersona(
     return (data ?? null) as PersonaRow | null
   }
   if (!input.clubId) return null
-  const { data } = await (supabase as any)
+  const { data } = await supabase
     .from('personas')
     .select('*')
     .eq('type', 'club')
@@ -380,7 +382,7 @@ async function resolveDiscordTargetChannel(
   const explicit = eventMetadata.discord_target_channel_id
   if (typeof explicit === 'string') return explicit
 
-  const { data: persona } = await (supabase as any)
+  const { data: persona } = await supabase
     .from('personas')
     .select('type, owner_id')
     .eq('id', personaId)
@@ -471,20 +473,22 @@ async function appendToTaboos(
   userId: string,
 ): Promise<void> {
   const fieldKey: FieldKey = 'taboos'
-  const { data: existing } = await (supabase as any)
+  const { data: existing } = await supabase
     .from('persona_fields')
     .select('value')
     .eq('persona_id', personaId)
     .eq('field_key', fieldKey)
     .maybeSingle()
 
-  const prevItems = Array.isArray(existing?.value?.items)
-    ? (existing!.value.items as unknown[]).filter((x): x is string => typeof x === 'string')
+  // value는 Json 타입이라 .items 직접 접근 불가 — 먼저 object로 캐스트
+  const existingValue = (existing?.value ?? {}) as { items?: unknown }
+  const prevItems = Array.isArray(existingValue.items)
+    ? (existingValue.items as unknown[]).filter((x): x is string => typeof x === 'string')
     : []
   const newItems = Array.from(new Set([...prevItems, newItem]))
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await (supabase as any).from('persona_fields').upsert(
+  await supabase.from('persona_fields').upsert(
     {
       persona_id: personaId,
       field_key: fieldKey,

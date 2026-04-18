@@ -24,7 +24,7 @@ export const GET = withErrorCapture(async (_request, context) => {
   } = await supabase.auth.getUser()
   if (!user) return ApiResponse.unauthorized()
 
-  const { data: persona, error: pErr } = await (supabase as any)
+  const { data: persona, error: pErr } = await supabase
     .from('personas')
     .select('*')
     .eq('id', personaId)
@@ -33,7 +33,7 @@ export const GET = withErrorCapture(async (_request, context) => {
   if (!persona) return ApiResponse.notFound('페르소나를 찾을 수 없습니다')
 
   // RLS(persona_corpus_sources_select)가 편집자만 조회 허용하므로 추가 체크 불요
-  const { data: sources } = await (supabase as any)
+  const { data: sources } = await supabase
     .from('persona_corpus_sources')
     .select('*')
     .eq('persona_id', personaId)
@@ -107,7 +107,7 @@ export const PUT = withErrorCapture(async (request, context) => {
   const roleRules = (body.role_weight_rules ?? {}) as Record<string, unknown>
 
   // 기존 discord_channel 소스 전체 삭제 (replace 시맨틱)
-  const { error: delErr } = await (supabase as any)
+  const { error: delErr } = await supabase
     .from('persona_corpus_sources')
     .delete()
     .eq('persona_id', personaId)
@@ -129,7 +129,7 @@ export const PUT = withErrorCapture(async (request, context) => {
     active: true,
   }))
 
-  const { data, error } = await (supabase as any)
+  const { data, error } = await supabase
     .from('persona_corpus_sources')
     // 왜 as any: Supabase types의 Json 타입이 Record<string, unknown>을 허용하지 않아
     // role_weight_rules 같은 jsonb 컬럼에 일반 객체 주입 시 TS가 reject.
