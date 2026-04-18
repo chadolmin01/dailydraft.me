@@ -16,7 +16,7 @@ export default function HomePageClient() {
     <div className="min-h-screen w-full relative overflow-x-hidden text-txt-primary font-sans selection:bg-black selection:text-white bg-surface-card">
       <Navbar />
 
-      <main className="relative pt-14">
+      <main id="main-content" className="relative pt-14">
         <Hero />
         <FeatureBar />
         <BeforeAfterTabs />

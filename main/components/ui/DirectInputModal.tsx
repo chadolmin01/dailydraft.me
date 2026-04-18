@@ -254,11 +254,12 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
 
             {/* Problem Field */}
             <div>
-              <label className="block text-[10px] font-medium text-txt-tertiary mb-2">
+              <label htmlFor="direct-input-problem" className="block text-[10px] font-medium text-txt-tertiary mb-2">
                 Problem
                 <span className="text-txt-disabled font-normal ml-1 normal-case tracking-normal">해결하려는 문제</span>
               </label>
               <textarea
+                id="direct-input-problem"
                 value={structuredData.problem}
                 onChange={(e) => setStructuredData(prev => ({ ...prev, problem: e.target.value }))}
                 className="w-full h-24 px-4 py-3 bg-surface-sunken rounded-xl border border-border focus:border-border resize-none focus:outline-none focus:ring-2 focus:ring-brand text-base sm:text-sm placeholder:text-txt-disabled transition-shadow"
@@ -268,11 +269,12 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
 
             {/* Solution Field */}
             <div>
-              <label className="block text-[10px] font-medium text-txt-tertiary mb-2">
+              <label htmlFor="direct-input-solution" className="block text-[10px] font-medium text-txt-tertiary mb-2">
                 Solution
                 <span className="text-txt-disabled font-normal ml-1 normal-case tracking-normal">핵심 솔루션</span>
               </label>
               <textarea
+                id="direct-input-solution"
                 value={structuredData.solution}
                 onChange={(e) => setStructuredData(prev => ({ ...prev, solution: e.target.value }))}
                 className="w-full h-24 px-4 py-3 bg-surface-sunken rounded-xl border border-border focus:border-border resize-none focus:outline-none focus:ring-2 focus:ring-brand text-base sm:text-sm placeholder:text-txt-disabled transition-shadow"
@@ -282,11 +284,12 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
 
             {/* Target Field */}
             <div>
-              <label className="block text-[10px] font-medium text-txt-tertiary mb-2">
+              <label htmlFor="direct-input-target" className="block text-[10px] font-medium text-txt-tertiary mb-2">
                 Target
                 <span className="text-txt-disabled font-normal ml-1 normal-case tracking-normal">타겟 고객</span>
               </label>
               <textarea
+                id="direct-input-target"
                 value={structuredData.target}
                 onChange={(e) => setStructuredData(prev => ({ ...prev, target: e.target.value }))}
                 className="w-full h-24 px-4 py-3 bg-surface-sunken rounded-xl border border-border focus:border-border resize-none focus:outline-none focus:ring-2 focus:ring-brand text-base sm:text-sm placeholder:text-txt-disabled transition-shadow"

@@ -13,14 +13,20 @@ export const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // 모바일 메뉴 열릴 때 body 스크롤 방지
+  // 모바일 메뉴 열릴 때 body 스크롤 방지 + Escape 키로 닫기 (키보드 접근성)
   useEffect(() => {
     if (mobileOpen) {
       document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = ''
+      const handleKey = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') setMobileOpen(false)
+      }
+      window.addEventListener('keydown', handleKey)
+      return () => {
+        document.body.style.overflow = ''
+        window.removeEventListener('keydown', handleKey)
+      }
     }
-    return () => { document.body.style.overflow = '' }
+    document.body.style.overflow = ''
   }, [mobileOpen])
 
   const navLinks = [
@@ -79,7 +85,9 @@ export const Navbar: React.FC = () => {
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
           className="md:hidden flex flex-col items-center justify-center w-8 h-8 gap-1.5"
-          aria-label="메뉴 열기"
+          aria-label={mobileOpen ? '메뉴 닫기' : '메뉴 열기'}
+          aria-expanded={mobileOpen}
+          aria-controls="mobile-nav-menu"
         >
           <span
             className={`block w-5 h-[1.5px] bg-txt-primary transition-all duration-200 ${
@@ -96,7 +104,13 @@ export const Navbar: React.FC = () => {
 
       {/* Mobile menu overlay */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-40 bg-surface-card/95 backdrop-blur-xl pt-14 md:hidden">
+        <div
+          id="mobile-nav-menu"
+          role="dialog"
+          aria-modal="true"
+          aria-label="모바일 메뉴"
+          className="fixed inset-0 z-40 bg-surface-card/95 backdrop-blur-xl pt-14 md:hidden"
+        >
           <div className="flex flex-col items-center gap-6 pt-12 text-lg font-medium text-txt-primary">
             {navLinks.map((link) => (
               <Link

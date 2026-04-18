@@ -88,6 +88,14 @@ export default async function RootLayout({
   return (
     <html lang="ko" className={`${notoSansKR.variable} ${jetBrainsMono.variable}`}>
       <body>
+        {/* 키보드 사용자용 skip link — Tab 으로 포커스되면 화면 좌상단에 노출.
+            WCAG 2.4.1 Bypass Blocks 충족. 페이지별 #main-content anchor 는 기본 layout 에 포함. */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:px-4 focus:py-2 focus:bg-brand focus:text-white focus:rounded-full focus:shadow-lg focus:text-sm focus:font-semibold"
+        >
+          메인 콘텐츠로 이동
+        </a>
         <Providers initialUser={initialUser}>{children}</Providers>
         {/* Google Analytics */}
         {process.env.NEXT_PUBLIC_GA_ID && (
