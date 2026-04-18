@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Settings, Users, FolderOpen, Archive, Share2, ChevronRight, ChevronLeft, Plus } from 'lucide-react'
+import { Settings, Users, FolderOpen, Archive, Share2, ChevronRight, ChevronLeft, Plus, Sparkles, UserPlus, FileText } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 import { useQueryClient } from '@tanstack/react-query'
@@ -15,6 +15,7 @@ import { SkeletonGrid } from '@/components/ui/Skeleton'
 import { useStaggerOnce } from '@/src/hooks/useStaggerOnce'
 import ClubBotActivity from '@/components/club/ClubBotActivity'
 import ClubTeamBoard from '@/components/club/ClubTeamBoard'
+import { OperatorWelcomeModal } from '@/components/club/OperatorWelcomeModal'
 
 function StaggerCard({ children, staggerKey, index }: { children: React.ReactNode; staggerKey: string; index: number }) {
   const cls = useStaggerOnce(staggerKey)
@@ -120,8 +121,22 @@ export default function ClubPageClient() {
     ...(isAdmin ? [{ key: 'activity' as const, label: '봇 활동' }] : []),
   ]
 
+  // 운영자 바로가기 — 클럽 내부 도구 모음. 상단 띠에 노출해 설정 페이지 들어가지 않고도
+  // 자주 쓰는 운영 액션에 1클릭으로 접근.
+  const operatorQuickLinks = isAdmin ? [
+    { href: `/clubs/${slug}/settings`, icon: Settings, label: '설정' },
+    { href: `/clubs/${slug}/settings/persona`, icon: Sparkles, label: '페르소나' },
+    { href: `/projects/new?club=${club.id}&from=/clubs/${slug}`, icon: FolderOpen, label: '팀 추가' },
+    { href: `/clubs/${slug}/settings#invite`, icon: UserPlus, label: '초대' },
+    { href: `/clubs/${slug}?tab=teams`, icon: FileText, label: '주간 현황' },
+  ] : []
+
   return (
     <div className="bg-surface-bg min-h-full">
+      {/* 운영자 첫 진입 시 축하 모달 — owner/admin만 보고, localStorage로 1회 표시 */}
+      {isAdmin && (
+        <OperatorWelcomeModal clubSlug={slug} clubName={club.name} clubId={club.id} />
+      )}
       <div className="max-w-[1200px] mx-auto px-5 pt-6 pb-16">
 
         {/* Back + Actions */}
@@ -152,6 +167,24 @@ export default function ClubPageClient() {
             )}
           </div>
         </div>
+
+        {/* 운영자 전용 툴바 — owner/admin 일 때만. Progressive disclosure:
+            멤버는 못 봄 → 일반 클럽 탐색자 UI 유지. 운영자는 여기서 자주 쓰는 액션 1클릭. */}
+        {isAdmin && (
+          <div className="mb-6 flex items-center gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
+            <span className="shrink-0 text-[11px] font-semibold text-txt-tertiary uppercase tracking-wider mr-1">운영</span>
+            {operatorQuickLinks.map(link => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium text-txt-secondary bg-surface-card border border-border rounded-full hover:border-brand hover:text-brand hover:bg-brand-bg transition-colors"
+              >
+                <link.icon size={12} />
+                {link.label}
+              </Link>
+            ))}
+          </div>
+        )}
 
         {/* Club Header */}
         <div className="flex items-start gap-5 mb-8">

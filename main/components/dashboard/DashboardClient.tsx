@@ -1,27 +1,45 @@
 'use client'
 
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import Image from 'next/image'
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import {
-  Rocket, Users, MessageSquare, Eye, Bell, FolderOpen,
-  ArrowRight, Plus, Coffee, Clock, Heart,
+  Rocket, Users, MessageSquare, Bell, FolderOpen, ArrowRight,
+  Plus, Coffee, Clock, Sparkles, AlertCircle, Inbox, CheckCircle2,
+  TrendingUp, FileText,
 } from 'lucide-react'
 import { useAuth } from '@/src/context/AuthContext'
 import { useProfile } from '@/src/hooks/useProfile'
 import { useMyOpportunities } from '@/src/hooks/useOpportunities'
 import { useRecommendedOpportunities, opportunityKeys, OPP_WITH_CREATOR_SELECT, type OpportunityWithCreator } from '@/src/hooks/useOpportunities'
+import { useMyOperatorClubs } from '@/src/hooks/useMyOperatorClubs'
 import { supabase } from '@/src/lib/supabase/client'
 import { useUnreadCount } from '@/src/hooks/useMessages'
 import { useProjectInvitations } from '@/src/hooks/useProjectInvitations'
 import { PageContainer } from '@/components/ui/PageContainer'
 import PendingDraftCard from '@/components/dashboard/PendingDraftCard'
-import { Section } from '@/components/ui/Section'
 import { Skeleton } from '@/components/ui/Skeleton'
-import { ScrollReveal } from '@/components/ui/ScrollReveal'
 import { withRetry } from '@/src/lib/query-utils'
+
+/**
+ * Triage Home — index가 아니라 "오늘 당장 처리할 것" 중심의 워크스페이스.
+ *
+ * 철학:
+ * - 통계 스트립·긴 목록을 홈에서 제거 → 사이드바·/my/*로 이관(MECE)
+ * - 홈은 "action required" 를 모아 보여주는 Inbox 성격
+ * - 운영자는 운영 지표 먼저, 비운영자는 Stage 1→3 nudge 먼저
+ *
+ * 레퍼런스: Notion Home 2024 (Recently Visited + @-mentions), Linear Inbox+Triage.
+ */
+
+function greeting(): string {
+  const h = new Date().getHours()
+  if (h < 6) return '늦은 밤이네요'
+  if (h < 12) return '좋은 아침입니다'
+  if (h < 18) return '좋은 오후입니다'
+  return '좋은 저녁입니다'
+}
 
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime()
@@ -35,68 +53,139 @@ function timeAgo(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
 }
 
+// 주차 계산 — created_at 부터 몇 주째인지
+function weekOf(createdAt: string | null | undefined): number {
+  if (!createdAt) return 1
+  return Math.max(1, Math.ceil((Date.now() - new Date(createdAt).getTime()) / (7 * 86_400_000)))
+}
+
+// 업데이트 마감까지 며칠 — 지난 업데이트 기준 7일이 마감선이라 가정
+function daysTillDeadline(lastUpdateAt: string | null | undefined): number {
+  if (!lastUpdateAt) return 0
+  const daysSince = Math.floor((Date.now() - new Date(lastUpdateAt).getTime()) / 86_400_000)
+  return 7 - daysSince
+}
+
 export default function DashboardClient() {
-  const router = useRouter()
   const queryClient = useQueryClient()
   const { user, isLoading: isAuthLoading } = useAuth()
   const { data: profile } = useProfile()
-  const { data: myProjects = [], isLoading: projectsLoading } = useMyOpportunities()
-  const { data: recommended = [], isLoading: recLoading } = useRecommendedOpportunities(4)
+  const { data: myProjects = [] } = useMyOpportunities()
+  const { data: recommended = [] } = useRecommendedOpportunities(6)
   const { data: unreadCount = 0 } = useUnreadCount()
   const { data: invitations = [] } = useProjectInvitations({ enabled: !!user })
+  const { clubs: operatorClubs, isOperator } = useMyOperatorClubs()
 
-  const { data: stats, isLoading: statsLoading } = useQuery({
-    queryKey: ['dashboard-stats'],
-    queryFn: () => withRetry(async () => {
-      const res = await fetch('/api/profile/stats')
-      if (!res.ok) throw new Error('Failed')
-      return res.json()
-    }),
-    enabled: !isAuthLoading && !!user,
-    staleTime: 1000 * 60 * 2,
-  })
-
-  interface MyClub {
-    slug: string
-    name: string
-    description: string | null
-    logo_url: string | null
-    category: string | null
-    role: string
-    display_role: string | null
-    cohort: string | null
-    member_count: number
-  }
-
-  const { data: myClubs = [], isLoading: clubsLoading } = useQuery<MyClub[]>({
-    queryKey: ['my-clubs'],
-    queryFn: () => withRetry(async () => {
-      const res = await fetch('/api/users/my-clubs')
-      if (!res.ok) return []
-      return res.json()
-    }),
-    enabled: !isAuthLoading && !!user,
-    staleTime: 1000 * 60 * 2,
-  })
-
-  const { data: pendingCount = 0 } = useQuery({
-    queryKey: ['pending-applications-count'],
+  // 운영자 운영 지표 집계
+  const { data: operatorMetrics } = useQuery<{ pendingApps: number; missingTeams: number }>({
+    queryKey: ['operator-metrics', user?.id],
     queryFn: () => withRetry(async () => {
       const res = await fetch('/api/applications/pending-count')
-      if (!res.ok) return 0
-      const json = await res.json()
-      return json.count ?? 0
+      const { count } = res.ok ? await res.json() : { count: 0 }
+      // 미제출 팀 수 — my projects 중 lastUpdate가 7일 넘은 것
+      return { pendingApps: count ?? 0, missingTeams: 0 }
     }),
-    enabled: !isAuthLoading && !!user,
+    enabled: !isAuthLoading && !!user && isOperator,
+    staleTime: 1000 * 60 * 2,
+  })
+
+  // 마지막 활동 — My opportunities에서 최근 업데이트 있는 프로젝트 3개
+  const { data: recentUpdates = [] } = useQuery<Array<{ opportunity_id: string; title: string; created_at: string }>>({
+    queryKey: ['dashboard-recent-updates', user?.id],
+    queryFn: async () => {
+      if (!myProjects.length) return []
+      const { data } = await supabase
+        .from('project_updates')
+        .select('opportunity_id, title, created_at')
+        .in('opportunity_id', myProjects.map(p => p.id))
+        .order('created_at', { ascending: false })
+        .limit(5)
+      return data ?? []
+    },
+    enabled: !isAuthLoading && !!user && myProjects.length > 0,
     staleTime: 1000 * 60 * 2,
   })
 
   const pendingInvitations = invitations.filter(i => i.status === 'pending')
-  const greeting = getGreeting()
-  const statsData = stats?.data ?? stats
 
-  // 추천 카드: /explore?project={id}로 이동. 라우트는 같으므로 router.prefetch보단
-  // React Query에 detail 데이터를 예열해 모달이 즉시 열리도록 함.
+  // Today's triage — 오늘 반드시 처리할 것들
+  const triageItems = useMemo(() => {
+    const items: Array<{
+      id: string
+      priority: 'high' | 'mid' | 'low'
+      icon: React.ReactNode
+      title: string
+      desc: string
+      href: string
+      cta: string
+    }> = []
+
+    // 운영자: 미제출 업데이트
+    if (isOperator) {
+      myProjects.forEach(proj => {
+        const lastUpdate = recentUpdates.find(u => u.opportunity_id === proj.id)
+        const daysLeft = daysTillDeadline(lastUpdate?.created_at ?? proj.created_at)
+        if (daysLeft <= 2 && daysLeft >= -30) {
+          items.push({
+            id: `update-${proj.id}`,
+            priority: daysLeft < 0 ? 'high' : 'mid',
+            icon: <FileText size={14} />,
+            title: daysLeft < 0
+              ? `"${proj.title}" 업데이트 ${Math.abs(daysLeft)}일 지연`
+              : `"${proj.title}" 업데이트 D-${daysLeft}`,
+            desc: `${weekOf(proj.created_at)}주차 · 팀 회고를 남겨주세요`,
+            href: `/projects/${proj.id}`,
+            cta: '작성',
+          })
+        }
+      })
+    }
+
+    // 운영자: 대기 지원서
+    if (operatorMetrics && operatorMetrics.pendingApps > 0) {
+      items.push({
+        id: 'pending-apps',
+        priority: 'high',
+        icon: <Coffee size={14} />,
+        title: `대기 중인 지원서 ${operatorMetrics.pendingApps}건`,
+        desc: '응답을 기다리고 있습니다',
+        href: '/projects',
+        cta: '검토',
+      })
+    }
+
+    // 팀 초대 응답 대기
+    pendingInvitations.forEach(inv => {
+      items.push({
+        id: `inv-${inv.id}`,
+        priority: 'mid',
+        icon: <Users size={14} />,
+        title: `팀 초대 도착 · ${inv.role}`,
+        desc: `${timeAgo(inv.created_at)} · 수락 또는 거절`,
+        href: '/notifications',
+        cta: '확인',
+      })
+    })
+
+    // 읽지 않은 메시지
+    if (unreadCount > 0) {
+      items.push({
+        id: 'unread-msg',
+        priority: 'mid',
+        icon: <MessageSquare size={14} />,
+        title: `읽지 않은 메시지 ${unreadCount}건`,
+        desc: '새 대화가 도착했습니다',
+        href: '/messages',
+        cta: '열기',
+      })
+    }
+
+    return items.sort((a, b) => {
+      const prio = { high: 0, mid: 1, low: 2 }
+      return prio[a.priority] - prio[b.priority]
+    })
+  }, [isOperator, myProjects, recentUpdates, operatorMetrics, pendingInvitations, unreadCount])
+
   const prefetchOpportunityDetail = useCallback((id: string) => {
     queryClient.prefetchQuery({
       queryKey: opportunityKeys.detail(id),
@@ -115,399 +204,225 @@ export default function DashboardClient() {
 
   return (
     <div className="bg-surface-bg min-h-full">
-      {/* Welcome */}
-      <Section spacing="sm" bg="transparent">
-        <PageContainer size="wide">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-border pb-6">
-            <div>
-              <p className="text-[10px] text-txt-tertiary mb-1">{greeting}</p>
-              <h1 className="text-xl font-bold text-txt-primary">
-                {profile?.nickname ?? user?.email?.split('@')[0] ?? '...'}
-              </h1>
-            </div>
-            <Link
-              href="/projects/new"
-              className="flex items-center gap-1.5 px-4 py-2 bg-surface-inverse text-txt-inverse text-sm font-bold border border-surface-inverse hover:opacity-90 active:scale-[0.97] transition-all"
-            >
-              <Plus size={16} />
-              새 프로젝트
-            </Link>
-          </div>
-        </PageContainer>
-      </Section>
+      <PageContainer size="wide" className="pt-6 pb-16">
 
-      {/* Stats */}
-      <Section spacing="sm" bg="transparent">
-        <PageContainer size="wide">
-          <ScrollReveal>
-          <h2 className="text-xs font-bold text-txt-secondary mb-4">통계</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <StatCard
-              index={1}
-              label="내 프로젝트"
-              value={projectsLoading ? null : myProjects.length}
-              icon={<FolderOpen size={14} />}
-              href="/projects"
-            />
-            <StatCard
-              index={2}
-              label="대기 중 지원"
-              value={statsLoading ? null : pendingCount}
-              icon={<Coffee size={14} />}
-              alert={pendingCount > 0}
-            />
-            <StatCard
-              index={3}
-              label="읽지 않은 메시지"
-              value={unreadCount}
-              icon={<MessageSquare size={14} />}
-              href="/messages"
-              alert={unreadCount > 0}
-            />
-            <StatCard
-              index={4}
-              label="팀 연결"
-              value={statsLoading ? null : (statsData?.connections ?? 0)}
-              icon={<Users size={14} />}
-            />
-          </div>
-          </ScrollReveal>
-        </PageContainer>
-      </Section>
+        {/* Hero 인사 */}
+        <div className="mb-8">
+          <p className="text-[13px] text-txt-tertiary mb-1">{greeting()}</p>
+          <h1 className="text-[28px] sm:text-[32px] font-bold text-txt-primary tracking-tight">
+            {profile?.nickname ?? user?.email?.split('@')[0] ?? '...'}
+          </h1>
+          {isOperator && (
+            <p className="text-[14px] text-txt-secondary mt-1.5">
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-brand-bg text-brand rounded-full text-[11px] font-semibold">
+                <Sparkles size={10} /> 운영자
+              </span>
+              <span className="ml-2">{operatorClubs.length}개 클럽 · {myProjects.length}개 프로젝트 운영 중</span>
+            </p>
+          )}
+        </div>
 
-      {/* Action Items */}
-      <Section spacing="sm" bg="transparent">
-        <PageContainer size="wide">
-          <PendingDraftCard />
-        </PageContainer>
-      </Section>
-
-      {(pendingInvitations.length > 0 || pendingCount > 0) && (
-        <Section spacing="sm" bg="transparent">
-          <PageContainer size="wide">
-            <h2 className="text-xs font-bold text-status-danger-text mb-4">확인 필요</h2>
-            <div className="space-y-2">
-              {pendingCount > 0 && (
-                <Link href="/projects" className="flex items-center justify-between bg-surface-card rounded-xl border border-border p-4 hover:shadow-md hover-spring group">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-status-warning-bg border border-indicator-trending/20 flex items-center justify-center">
-                      <Coffee size={14} className="text-indicator-trending" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold text-txt-primary">대기 중인 지원서 {pendingCount}건</p>
-                      <p className="text-[10px] font-mono text-txt-tertiary">응답을 기다리고 있어요</p>
-                    </div>
-                  </div>
-                  <ArrowRight size={16} className="text-txt-disabled group-hover:text-txt-primary transition-colors" />
-                </Link>
-              )}
-              {pendingInvitations.map((inv) => (
-                <Link key={inv.id} href="/notifications" className="flex items-center justify-between bg-surface-card rounded-xl border border-border p-4 hover:shadow-md hover-spring group">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-brand-bg border border-brand-border flex items-center justify-center">
-                      <Users size={14} className="text-brand" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold text-txt-primary">팀 초대가 도착했어요</p>
-                      <p className="text-[10px] font-mono text-txt-tertiary">{inv.role} 역할 · {timeAgo(inv.created_at)}</p>
-                    </div>
-                  </div>
-                  <ArrowRight size={16} className="text-txt-disabled group-hover:text-txt-primary transition-colors" />
-                </Link>
-              ))}
-            </div>
-          </PageContainer>
-        </Section>
-      )}
-
-      {/* Recommended + Recent Activity */}
-      <Section spacing="sm" bg="transparent">
-        <PageContainer size="wide">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Recommended Projects */}
-            <div className="lg:col-span-2">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xs font-bold text-txt-secondary">추천 프로젝트</h2>
-                <Link href="/explore" className="text-[10px] font-mono text-txt-tertiary hover:text-txt-primary transition-colors flex items-center gap-1">
-                  전체보기 <ArrowRight size={10} />
-                </Link>
-              </div>
-              {recLoading ? (
-                <div className="space-y-3">
-                  {[1, 2].map(i => (
-                    <div key={i} className="bg-surface-card rounded-xl border border-border p-5">
-                      <Skeleton className="h-4 w-2/3 mb-3" />
-                      <Skeleton className="h-3 w-full mb-2" />
-                      <Skeleton className="h-3 w-1/2" />
-                    </div>
-                  ))}
-                </div>
-              ) : recommended.length === 0 ? (
-                <div className="bg-surface-card rounded-xl border border-border p-8 text-center">
-                  <Rocket size={24} className="text-txt-disabled mx-auto mb-2" />
-                  <p className="text-sm text-txt-tertiary">프로필을 완성하면 맞춤 추천을 받을 수 있어요</p>
-                  <Link href="/profile" className="text-xs text-brand font-bold mt-2 inline-block hover:underline">프로필 완성하기</Link>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {recommended.map((opp, index) => (
-                    <div
-                      key={opp.id}
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => router.push(`/explore?project=${opp.id}`)}
-                      onMouseEnter={() => prefetchOpportunityDetail(opp.id)}
-                      onFocus={() => prefetchOpportunityDetail(opp.id)}
-                      onKeyDown={(e) => { if (e.key === 'Enter') router.push(`/explore?project=${opp.id}`) }}
-                      style={{ animationDelay: `${index * 80}ms` }}
-                      className="stagger-item bg-surface-card rounded-xl border border-border p-5 cursor-pointer hover:shadow-md hover:-translate-y-0.5 hover-spring group relative"
-                    >
-
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-bold text-txt-primary truncate">{opp.title}</h3>
-                            {opp.status === 'active' && (
-                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-status-success-bg text-status-success-text text-[0.5rem] font-bold border border-indicator-online/20 shrink-0">
-                                <span className="w-1 h-1 bg-indicator-online animate-pulse" />
-                                모집중
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-sm text-txt-secondary line-clamp-1 mb-2">{opp.description}</p>
-                          {opp.needed_roles && opp.needed_roles.length > 0 && (
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-[10px] font-mono font-bold text-brand bg-brand-bg px-1.5 py-0.5 border border-brand-border">NEED</span>
-                              {opp.needed_roles.slice(0, 3).map((role: string) => (
-                                <span key={role} className="text-[10px] bg-surface-sunken text-txt-secondary px-1.5 py-0.5 border border-border">{role}</span>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                        <ArrowRight size={16} className="text-txt-disabled group-hover:text-txt-primary transition-colors shrink-0 mt-1" />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Recent Activity */}
-            <div>
-              <h2 className="text-xs font-bold text-txt-secondary mb-4">최근 활동</h2>
-              <div className="bg-surface-card rounded-xl border border-border p-5 relative">
-                {statsLoading ? (
-                  <div className="space-y-4">
-                    {[1, 2, 3].map(i => (
-                      <div key={i} className="flex gap-3">
-                        <Skeleton className="w-8 h-8 shrink-0" />
-                        <div className="flex-1">
-                          <Skeleton className="h-3 w-24 mb-2" />
-                          <Skeleton className="h-3 w-full" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (statsData?.recentActivity ?? []).length === 0 ? (
-                  <div className="text-center py-6">
-                    <Clock size={20} className="text-txt-disabled mx-auto mb-2" />
-                    <p className="text-xs text-txt-tertiary">아직 활동 내역이 없어요</p>
-                    <Link href="/explore" className="text-xs text-brand font-bold mt-1 inline-block hover:underline">둘러보기</Link>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {(statsData.recentActivity as Array<{ type: string; title: string; description: string; created_at: string }>).slice(0, 5).map((activity, i) => (
-                      <div key={i} className="flex gap-3">
-                        <div className={`w-8 h-8 shrink-0 flex items-center justify-center border ${
-                          activity.type === 'application_accepted' ? 'bg-status-success-bg border-indicator-online/20' :
-                          activity.type === 'connection' ? 'bg-brand-bg border-brand-border' :
-                          'bg-surface-sunken border-border'
-                        }`}>
-                          {activity.type === 'application_accepted' ? <Heart size={12} className="text-status-success-text" /> :
-                           activity.type === 'connection' ? <Users size={12} className="text-brand" /> :
-                           activity.type === 'bookmark' ? <Eye size={12} className="text-txt-tertiary" /> :
-                           <Bell size={12} className="text-txt-tertiary" />}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs font-bold text-txt-primary">{activity.title}</p>
-                          <p className="text-[10px] text-txt-tertiary truncate">{activity.description}</p>
-                          <p className="text-[10px] font-mono text-txt-disabled mt-0.5">{timeAgo(activity.created_at)}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </PageContainer>
-      </Section>
-
-      {/* My Clubs */}
-      {!clubsLoading && myClubs.length > 0 && (
-        <Section spacing="sm" bg="transparent">
-          <PageContainer size="wide">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xs font-bold text-txt-secondary">내 클럽</h2>
-            </div>
-            <div className="space-y-3">
-              {myClubs.map((club, index) => (
-                <Link
-                  key={club.slug}
-                  href={`/clubs/${club.slug}`}
-                  style={{ animationDelay: `${index * 60}ms` }}
-                  className="stagger-item bg-surface-card rounded-xl border border-border p-4 flex items-center gap-4 hover:shadow-md hover:-translate-y-0.5 hover-spring group relative block"
-                >
-                    {club.logo_url ? (
-                    <Image src={club.logo_url} alt={club.name} width={40} height={40} className="rounded-xl object-cover shrink-0" />
-                  ) : (
-                    <div className="w-10 h-10 bg-surface-sunken rounded-xl flex items-center justify-center text-sm font-extrabold text-txt-secondary shrink-0">
-                      {club.name[0]}
-                    </div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <h3 className="font-bold text-sm text-txt-primary truncate">{club.name}</h3>
-                      {club.category && (
-                        <span className="text-[10px] font-semibold text-brand bg-brand-bg px-1.5 py-0.5 rounded-full border border-brand-border shrink-0">
-                          {club.category}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-3 text-[10px] font-mono text-txt-tertiary">
-                      <span>멤버 {club.member_count}명</span>
-                      {club.cohort && <span>{club.cohort}기</span>}
-                    </div>
-                  </div>
-                  <ArrowRight size={16} className="text-txt-disabled group-hover:text-txt-primary transition-colors shrink-0" />
-                </Link>
-              ))}
-            </div>
-          </PageContainer>
-        </Section>
-      )}
-
-      {/* My Projects */}
-      <Section spacing="sm" bg="transparent">
-        <PageContainer size="wide">
+        {/* ═══════════════════════════════════ */}
+        {/* TRIAGE — 오늘 할 일                 */}
+        {/* ═══════════════════════════════════ */}
+        <section className="mb-10">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <h2 className="text-xs font-bold text-txt-secondary">내 프로젝트</h2>
+              <Inbox size={16} className="text-txt-primary" />
+              <h2 className="text-[17px] font-bold text-txt-primary">오늘 할 일</h2>
+              {triageItems.length > 0 && (
+                <span className="text-[11px] font-bold text-brand bg-brand-bg px-2 py-0.5 rounded-full">
+                  {triageItems.length}
+                </span>
+              )}
             </div>
-            {myProjects.length > 0 && (
-              <Link href="/projects" className="text-[10px] font-mono text-txt-tertiary hover:text-txt-primary transition-colors flex items-center gap-1">
-                전체보기 <ArrowRight size={10} />
-              </Link>
-            )}
           </div>
-          {projectsLoading ? (
-            <div className="space-y-3">
-              {[1, 2].map(i => (
-                <div key={i} className="bg-surface-card rounded-xl border border-border p-5 flex items-center gap-4">
-                  <Skeleton className="w-10 h-10 shrink-0" />
-                  <div className="flex-1">
-                    <Skeleton className="h-4 w-48 mb-2" />
-                    <Skeleton className="h-3 w-72" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : myProjects.length === 0 ? (
-            <div className="border border-border bg-surface-card rounded-xl p-8 text-center">
-              <div className="w-12 h-12 bg-surface-sunken rounded-xl border border-border flex items-center justify-center mx-auto mb-3">
-                <FolderOpen size={20} className="text-txt-disabled" />
-              </div>
-              <p className="text-sm font-bold text-txt-primary mb-1">아직 프로젝트가 없습니다</p>
-              <p className="text-xs text-txt-tertiary mb-4">아이디어를 등록하고 함께할 팀원을 찾아보세요</p>
-              <Link
-                href="/projects/new"
-                className="inline-flex items-center gap-1.5 px-5 py-2 bg-surface-inverse text-txt-inverse text-sm font-bold border border-surface-inverse hover:opacity-90 active:scale-[0.97] transition-all"
-              >
-                <Rocket size={14} />
-                첫 프로젝트 만들기
-              </Link>
+
+          {triageItems.length === 0 ? (
+            <div className="bg-surface-card border border-border rounded-2xl p-8 text-center">
+              <CheckCircle2 size={28} className="text-status-success-text mx-auto mb-3" />
+              <p className="text-[15px] font-semibold text-txt-primary mb-1">다 비어있어요 👏</p>
+              <p className="text-[13px] text-txt-tertiary">당장 처리할 항목이 없습니다. 잠시 쉬어가세요</p>
             </div>
           ) : (
-            <div className="space-y-3">
-              {myProjects.slice(0, 3).map((opp, index) => (
+            <div className="space-y-2">
+              {triageItems.map(item => (
                 <Link
-                  key={opp.id}
-                  href={`/projects`}
-                  style={{ animationDelay: `${index * 60}ms` }}
-                  className="stagger-item bg-surface-card rounded-xl border border-border p-4 flex items-center gap-4 hover:shadow-md hover:-translate-y-0.5 hover-spring group relative block"
+                  key={item.id}
+                  href={item.href}
+                  className={`flex items-center gap-3 p-4 rounded-xl border transition-all hover:shadow-md hover:-translate-y-0.5 hover-spring group ${
+                    item.priority === 'high'
+                      ? 'bg-status-danger-bg/30 border-status-danger-text/20'
+                      : item.priority === 'mid'
+                      ? 'bg-surface-card border-border'
+                      : 'bg-surface-card border-border opacity-80'
+                  }`}
                 >
-                    <div className="w-10 h-10 bg-surface-inverse flex items-center justify-center shrink-0">
-                    <Rocket size={16} className="text-txt-inverse" />
+                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                    item.priority === 'high' ? 'bg-status-danger-text text-white'
+                    : item.priority === 'mid' ? 'bg-brand-bg text-brand'
+                    : 'bg-surface-sunken text-txt-tertiary'
+                  }`}>
+                    {item.icon}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <h3 className="font-bold text-sm text-txt-primary truncate">{opp.title}</h3>
-                      {opp.status === 'active' ? (
-                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-status-success-bg text-status-success-text text-[0.5rem] font-bold border border-indicator-online/20 shrink-0">모집중</span>
-                      ) : (
-                        <span className="px-1.5 py-0.5 bg-surface-sunken text-txt-tertiary text-[0.5rem] font-bold border border-border shrink-0">마감</span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-3 text-[10px] font-mono text-txt-tertiary">
-                      {opp.views_count != null && opp.views_count > 0 && (
-                        <span className="flex items-center gap-1"><Eye size={10} />{opp.views_count}</span>
-                      )}
-                      {opp.applications_count != null && opp.applications_count > 0 && (
-                        <span className="flex items-center gap-1"><Users size={10} />{opp.applications_count}</span>
-                      )}
-                      {opp.interest_count != null && opp.interest_count > 0 && (
-                        <span className="flex items-center gap-1"><Heart size={10} />{opp.interest_count}</span>
-                      )}
-                    </div>
+                    <p className="text-[14px] font-semibold text-txt-primary truncate">{item.title}</p>
+                    <p className="text-[12px] text-txt-tertiary">{item.desc}</p>
                   </div>
-                  <ArrowRight size={16} className="text-txt-disabled group-hover:text-txt-primary transition-colors shrink-0" />
+                  <div className="shrink-0 flex items-center gap-1 text-[12px] font-semibold text-txt-secondary group-hover:text-brand transition-colors">
+                    {item.cta}
+                    <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
+                  </div>
                 </Link>
               ))}
             </div>
           )}
-        </PageContainer>
-      </Section>
+        </section>
+
+        {/* ═══════════════════════════════════ */}
+        {/* OPERATOR METRICS — 운영자만          */}
+        {/* ═══════════════════════════════════ */}
+        {isOperator && operatorClubs.length > 0 && (
+          <section className="mb-10">
+            <div className="flex items-center gap-2 mb-4">
+              <TrendingUp size={16} className="text-txt-primary" />
+              <h2 className="text-[17px] font-bold text-txt-primary">운영 중인 클럽</h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {operatorClubs.map(club => (
+                <Link
+                  key={club.slug}
+                  href={`/clubs/${club.slug}`}
+                  className="bg-surface-card rounded-2xl border border-border p-5 hover:shadow-md hover:-translate-y-0.5 hover-spring group"
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    {club.logo_url ? (
+                      <Image src={club.logo_url} alt={club.name} width={40} height={40} className="rounded-xl object-cover shrink-0" />
+                    ) : (
+                      <div className="w-10 h-10 rounded-xl bg-brand-bg flex items-center justify-center text-sm font-extrabold text-brand shrink-0">
+                        {club.name[0]}
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <h3 className="font-bold text-[15px] text-txt-primary truncate">{club.name}</h3>
+                      </div>
+                      <span className="text-[11px] font-semibold text-brand">
+                        {club.role === 'owner' ? '대표' : '운영진'}
+                      </span>
+                    </div>
+                    <ArrowRight size={14} className="text-txt-disabled group-hover:text-txt-primary group-hover:translate-x-0.5 transition-all shrink-0" />
+                  </div>
+                  <div className="flex items-center gap-3 pt-3 border-t border-border text-[12px]">
+                    <div>
+                      <span className="text-txt-tertiary">멤버</span>
+                      <span className="ml-1 font-bold text-txt-primary tabular-nums">{club.member_count}</span>
+                    </div>
+                    {club.cohort && (
+                      <>
+                        <span className="text-border">·</span>
+                        <div>
+                          <span className="text-txt-tertiary">기수</span>
+                          <span className="ml-1 font-bold text-txt-primary">{club.cohort}</span>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </Link>
+              ))}
+              {/* 새 클럽 만들기 카드 — 운영자도 추가 가능 */}
+              <Link
+                href="/clubs/new"
+                className="bg-surface-card rounded-2xl border border-dashed border-border p-5 flex items-center justify-center gap-2 text-[13px] font-semibold text-txt-tertiary hover:text-brand hover:border-brand hover:bg-brand-bg transition-colors"
+              >
+                <Plus size={16} />
+                새 클럽 만들기
+              </Link>
+            </div>
+          </section>
+        )}
+
+        {/* ═══════════════════════════════════ */}
+        {/* NON-OPERATOR NUDGE — Stage 1→3 유도 */}
+        {/* ═══════════════════════════════════ */}
+        {!isOperator && (
+          <section className="mb-10">
+            <Link
+              href="/clubs/new"
+              className="block bg-gradient-to-br from-brand to-brand/80 text-white rounded-2xl p-6 hover:shadow-lg hover:-translate-y-0.5 hover-spring group"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center shrink-0">
+                  <Rocket size={24} className="text-white" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-[17px] font-bold mb-1">나만의 클럽 만들어보기</h3>
+                  <p className="text-[13px] opacity-90 leading-relaxed">
+                    운영 도구·주간 추적·AI 페르소나를 활용해 동아리를 운영하세요
+                  </p>
+                </div>
+                <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform shrink-0" />
+              </div>
+            </Link>
+          </section>
+        )}
+
+        {/* ═══════════════════════════════════ */}
+        {/* PENDING DRAFTS                      */}
+        {/* ═══════════════════════════════════ */}
+        <section className="mb-10">
+          <PendingDraftCard />
+        </section>
+
+        {/* ═══════════════════════════════════ */}
+        {/* DISCOVER — 추천 / 오늘 2줄만        */}
+        {/* ═══════════════════════════════════ */}
+        <section className="mb-10">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[17px] font-bold text-txt-primary">발견</h2>
+            <Link href="/explore" className="text-[12px] text-txt-tertiary hover:text-brand transition-colors flex items-center gap-1">
+              전체 탐색 <ArrowRight size={11} />
+            </Link>
+          </div>
+          {recommended.length === 0 ? (
+            <div className="bg-surface-card border border-border rounded-2xl p-6 text-center">
+              <Sparkles size={24} className="text-txt-disabled mx-auto mb-2" />
+              <p className="text-[13px] text-txt-tertiary mb-2">프로필을 완성하면 맞춤 추천이 제공됩니다</p>
+              <Link href="/profile" className="text-[12px] text-brand font-semibold hover:underline">프로필 완성하기 →</Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {recommended.slice(0, 6).map(opp => (
+                <div
+                  key={opp.id}
+                  role="button"
+                  tabIndex={0}
+                  onMouseEnter={() => prefetchOpportunityDetail(opp.id)}
+                  onClick={() => window.location.href = `/explore?project=${opp.id}`}
+                  onKeyDown={(e) => { if (e.key === 'Enter') window.location.href = `/explore?project=${opp.id}` }}
+                  className="bg-surface-card rounded-xl border border-border p-4 cursor-pointer hover:shadow-md hover:-translate-y-0.5 hover-spring"
+                >
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <h3 className="text-[14px] font-semibold text-txt-primary truncate">{opp.title}</h3>
+                    {opp.status === 'active' && (
+                      <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-status-success-text animate-pulse" />
+                    )}
+                  </div>
+                  <p className="text-[12px] text-txt-secondary line-clamp-2 mb-2.5">{opp.description}</p>
+                  {opp.needed_roles && opp.needed_roles.length > 0 && (
+                    <div className="flex gap-1 flex-wrap">
+                      {opp.needed_roles.slice(0, 2).map(role => (
+                        <span key={role} className="text-[11px] font-medium text-brand bg-brand-bg px-2 py-0.5 rounded-full">{role}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+      </PageContainer>
     </div>
   )
-}
-
-function StatCard({ index, label, value, icon, href, alert }: {
-  index: number
-  label: string
-  value: number | null
-  icon: React.ReactNode
-  href?: string
-  alert?: boolean
-}) {
-  const content = (
-    <div className={`bg-surface-card rounded-xl border border-border shadow-md p-5 relative ${href ? 'cursor-pointer hover:shadow-md hover:-translate-y-0.5 hover-spring group' : ''}`}>
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-[10px] font-mono text-txt-disabled">{String(index).padStart(2, '0')}</span>
-        <div className={`w-6 h-6 flex items-center justify-center ${alert ? 'text-status-danger-text' : 'text-txt-tertiary'}`}>
-          {icon}
-        </div>
-      </div>
-      <p className="text-[10px] text-txt-tertiary mb-1">{label}</p>
-      {value === null ? (
-        <Skeleton className="h-7 w-12" />
-      ) : (
-        <p className={`text-2xl font-bold tabular-nums ${alert ? 'text-status-danger-text' : 'text-txt-primary'}`}>
-          {value}
-        </p>
-      )}
-    </div>
-  )
-
-  if (href) {
-    return <Link href={href}>{content}</Link>
-  }
-  return content
-}
-
-function getGreeting(): string {
-  const h = new Date().getHours()
-  if (h < 6) return '늦은 밤이네요'
-  if (h < 12) return '좋은 아침입니다'
-  if (h < 18) return '좋은 오후입니다'
-  return '좋은 저녁입니다'
 }

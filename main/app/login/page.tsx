@@ -7,10 +7,10 @@ export const dynamic = 'force-dynamic'
 
 // /login?redirect= 파라미터 sanitize — 서버에서도 1차 검증 (client에서 2차).
 function sanitizeRedirect(raw: string | undefined): string {
-  if (!raw) return '/explore'
-  if (!raw.startsWith('/')) return '/explore'
-  if (raw.startsWith('//') || raw.startsWith('/\\')) return '/explore'
-  if (/^\/(login|signup|oauth|api\/)/i.test(raw)) return '/explore'
+  if (!raw) return '/dashboard'
+  if (!raw.startsWith('/')) return '/dashboard'
+  if (raw.startsWith('//') || raw.startsWith('/\\')) return '/dashboard'
+  if (/^\/(login|signup|oauth|api\/)/i.test(raw)) return '/dashboard'
   return raw
 }
 

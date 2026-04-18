@@ -34,10 +34,10 @@ interface LoginClientProps {
 
 // redirect 파라미터 allowlist 검증 — `/`로 시작 + `//`·`/\\` 로 시작하지 않는 내부 경로만.
 function sanitizeRedirect(raw: string | null): string {
-  if (!raw) return '/explore'
-  if (!raw.startsWith('/')) return '/explore'
-  if (raw.startsWith('//') || raw.startsWith('/\\')) return '/explore'
-  if (/^\/(login|signup|oauth|api\/)/i.test(raw)) return '/explore'
+  if (!raw) return '/dashboard'
+  if (!raw.startsWith('/')) return '/dashboard'
+  if (raw.startsWith('//') || raw.startsWith('/\\')) return '/dashboard'
+  if (/^\/(login|signup|oauth|api\/)/i.test(raw)) return '/dashboard'
   return raw
 }
 

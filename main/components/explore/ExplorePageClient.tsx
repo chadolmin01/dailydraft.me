@@ -251,18 +251,8 @@ function ExplorePageContent() {
     return map
   }, [aiProjects])
 
-  // ── 내 클럽 (로그인 유저가 소속된 클럽) ──
-  const { data: myClubs = [] } = useQuery<ClubCard[]>({
-    queryKey: ['explore', 'my-clubs', user?.id],
-    queryFn: async () => {
-      const res = await fetch('/api/clubs?my=1&limit=10')
-      if (!res.ok) return []
-      const data = await res.json()
-      return data.items ?? []
-    },
-    enabled: isAuthenticated,
-    staleTime: 1000 * 60 * 5,
-  })
+  // 왜 myClubs 훅 제거: Explore는 "discover" 전용으로 정리.
+  // 내 클럽은 Dashboard와 Sidebar에서 관리하도록 이관 (MECE 원칙 — 한 정보는 한 곳에).
 
   // ── Clubs data ──
   const { data: clubsData, isLoading: clubsLoading, isError: clubsError, refetch: refetchClubs } = useQuery<{ items: ClubCard[]; total: number }>({
@@ -1082,24 +1072,8 @@ function ExplorePageContent() {
         {/* ════════════════════════════════════════════ */}
         {activeTab === 'clubs' && (
           <div className="space-y-8">
-            {/* 내 클럽 — 로그인 + 소속 클럽 있을 때만 */}
-            {myClubs.length > 0 && !searchQuery && (
-              <div>
-                <h3 className="text-[15px] font-bold text-txt-primary mb-3">내 클럽</h3>
-                <ExploreClubGrid
-                  clubs={myClubs}
-                  isLoading={false}
-                  isError={false}
-                  onRetry={() => {}}
-                />
-              </div>
-            )}
-
-            {/* 전체 클럽 */}
+            {/* 전체 공개 클럽 — "내 클럽" 섹션은 제거 (Dashboard/Sidebar로 이관) */}
             <div>
-              {myClubs.length > 0 && !searchQuery && (
-                <h3 className="text-[15px] font-bold text-txt-primary mb-3">전체 클럽</h3>
-              )}
               <ExploreClubGrid
                 clubs={clubCards}
                 isLoading={clubsLoading}

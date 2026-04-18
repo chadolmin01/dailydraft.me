@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { User, LogOut, Bell, X, Plus, Settings, Search, ChevronRight, Shield, FolderOpen, Compass, Briefcase, AlertTriangle, Sun, Moon, Building2 } from 'lucide-react'
+import { User, LogOut, Bell, X, Plus, Settings, Search, ChevronRight, Shield, FolderOpen, Compass, Briefcase, AlertTriangle, Sun, Moon, Building2, Home } from 'lucide-react'
 import Link from 'next/link'
 import { useAuth } from '@/src/context/AuthContext'
 import { useProfile } from '@/src/hooks/useProfile'
@@ -137,6 +137,7 @@ export const TopNavbar: React.FC = () => {
 
   // 페이지 바로가기 목록
   const NAV_ITEMS = [
+    { label: '홈', href: '/dashboard', icon: Home, keywords: ['홈', 'home', 'dashboard', '대시보드'] },
     { label: '탐색', href: '/explore', icon: Compass, keywords: ['탐색', 'explore', '검색'] },
     { label: '프로필', href: '/profile', icon: User, keywords: ['프로필', 'profile', '마이페이지', '내정보'] },
     { label: '새 프로젝트', href: '/projects/new', icon: Plus, keywords: ['새 프로젝트', 'new', '만들기', '생성'] },
@@ -180,7 +181,7 @@ export const TopNavbar: React.FC = () => {
           <Link href="/projects/new" aria-label="새 프로젝트" className="w-9 h-9 flex items-center justify-center text-txt-primary active:scale-90 transition-transform">
             <Plus size={24} strokeWidth={1.8} />
           </Link>
-          <Link href="/explore" className="font-bold text-[20px] tracking-tight text-txt-primary">
+          <Link href="/dashboard" className="font-bold text-[20px] tracking-tight text-txt-primary">
             Draft
           </Link>
           <Link href="/notifications" aria-label="알림" className="w-9 h-9 flex items-center justify-center text-txt-primary active:scale-90 transition-transform">
@@ -199,15 +200,16 @@ export const TopNavbar: React.FC = () => {
         <div className="relative w-full px-2.5 sm:px-10 lg:px-16 xl:px-24 h-full flex items-center gap-2 sm:gap-3">
 
           {/* ===== 좌측: 로고 ===== */}
-          <Link href="/explore" className="flex items-center gap-2.5 shrink-0 group mr-1">
+          <Link href="/dashboard" className="flex items-center gap-2.5 shrink-0 group mr-1">
             <div className="w-8 h-8 bg-surface-inverse rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform">
               <span className="text-txt-inverse font-black text-sm leading-none">D</span>
             </div>
             <span className="font-bold text-lg tracking-tight hidden sm:block">Draft</span>
           </Link>
 
-          {/* ===== 데스크탑 네비게이션 (pill tabs) ===== */}
+          {/* ===== 데스크탑 네비게이션 (pill tabs) — 홈을 최상단에 ===== */}
           <div className="hidden md:flex items-center bg-surface-sunken/60 p-0.5 rounded-full">
+            <NavPill href="/dashboard" active={pathname === '/dashboard'}>홈</NavPill>
             <NavPill href="/explore" active={pathname === '/explore'}>탐색</NavPill>
             <NavPill href="/clubs" active={pathname?.startsWith('/clubs') ?? false}>클럽</NavPill>
             <NavPill href="/profile" active={pathname === '/profile'}>프로필</NavPill>

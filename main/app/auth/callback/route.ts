@@ -7,8 +7,8 @@ import { captureServerError } from '@/src/lib/posthog/server'
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
-  const rawNext = searchParams.get('next') ?? '/explore'
-  const next = rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : '/explore'
+  const rawNext = searchParams.get('next') ?? '/dashboard'
+  const next = rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : '/dashboard'
 
   if (code) {
     const cookieStore = await cookies()
@@ -83,7 +83,8 @@ export async function GET(request: Request) {
         if (profile.onboarding_completed) {
           // 이메일 도메인 기반 institution 자동 등록 (진짜 non-blocking — await 하지 않음)
           autoEnrollByEmail(supabase as Parameters<typeof autoEnrollByEmail>[0], user.id, user.email || '').catch(() => {})
-          return NextResponse.redirect(`${origin}/explore`)
+          // OAuth 로그인도 홈(/dashboard)으로 — 앱의 시작점 정합성
+          return NextResponse.redirect(`${origin}/dashboard`)
         } else {
           return NextResponse.redirect(`${origin}/onboarding`)
         }
