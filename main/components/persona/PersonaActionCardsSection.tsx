@@ -132,29 +132,46 @@ function ActionCardButton({
   onClick: () => void
 }) {
   const isDisabled = disabled || action.comingSoon || loading
+  const isComingSoon = action.comingSoon
   const Icon = action.icon
+
   return (
     <button
       type="button"
       disabled={isDisabled}
       onClick={onClick}
-      className="group relative text-left bg-surface-card border border-border rounded-2xl p-4 hover:border-brand-border hover:bg-surface-bg transition-colors disabled:cursor-not-allowed disabled:hover:border-border disabled:hover:bg-surface-card"
+      className={`group relative text-left rounded-2xl border p-4 transition-colors ${
+        isComingSoon
+          ? 'bg-surface-sunken border-border opacity-60 cursor-not-allowed'
+          : 'bg-surface-card border-border hover:border-brand-border hover:bg-surface-bg disabled:cursor-not-allowed disabled:hover:border-border disabled:hover:bg-surface-card'
+      }`}
     >
       <div className="flex items-start gap-3">
-        <div className="shrink-0 w-9 h-9 rounded-xl bg-surface-bg flex items-center justify-center">
+        <div
+          className={`shrink-0 w-9 h-9 rounded-xl flex items-center justify-center ${
+            isComingSoon ? 'bg-surface-bg/60' : 'bg-surface-bg'
+          }`}
+        >
           {loading ? (
             <Loader2 size={16} className="text-brand animate-spin" />
           ) : (
-            <Icon size={16} className="text-txt-secondary" />
+            <Icon
+              size={16}
+              className={isComingSoon ? 'text-txt-tertiary' : 'text-txt-secondary'}
+            />
           )}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <h3 className="text-sm font-semibold text-txt-primary">
+            <h3
+              className={`text-sm font-semibold ${
+                isComingSoon ? 'text-txt-tertiary' : 'text-txt-primary'
+              }`}
+            >
               {action.title}
             </h3>
-            {action.comingSoon && (
-              <span className="shrink-0 text-[10px] text-txt-tertiary px-1.5 py-0.5 rounded bg-surface-bg">
+            {isComingSoon && (
+              <span className="shrink-0 text-[10px] text-txt-tertiary px-1.5 py-0.5 rounded bg-surface-bg border border-border">
                 준비 중
               </span>
             )}
@@ -164,7 +181,11 @@ function ActionCardButton({
               </span>
             )}
           </div>
-          <p className="text-xs text-txt-tertiary leading-relaxed">
+          <p
+            className={`text-xs leading-relaxed ${
+              isComingSoon ? 'text-txt-tertiary/80' : 'text-txt-tertiary'
+            }`}
+          >
             {loading
               ? '빈 슬롯을 채우는 중입니다. 10~40초 정도 소요됩니다.'
               : action.description}
