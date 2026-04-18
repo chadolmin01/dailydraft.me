@@ -69,3 +69,9 @@ wireframe/
 
 # GitHub recovery codes (보안 — 절대 커밋 금지)
 .github/github-recovery-codes.txt
+
+# Playwright E2E
+/main/test-results/
+/main/playwright-report/
+/main/blob-report/
+/main/playwright/.cache/
