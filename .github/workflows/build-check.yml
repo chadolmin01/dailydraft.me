@@ -35,7 +35,18 @@ jobs:
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://dummy.supabase.co' }}
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'dummy-anon-key-for-ci' }}
       NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL || 'https://dailydraft.me' }}
-      # PostHog 등 다른 public env가 있으면 여기 추가
+      # Server-only. Next build 의 page data collection 이 module-level Supabase client
+      # 초기화를 거치는 route (예: /api/coffee-chat/notify) 때문에 dummy 필요.
+      # 실제 서버 호출은 Vercel 런타임 secret 으로 대체됨.
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || 'dummy-service-role-key-for-build' }}
+      # 외부 API 키들도 build collect 중 참조될 수 있어 dummy.
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY || 'dummy' }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || 'dummy' }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY || 'dummy' }}
+      CRON_SECRET: ${{ secrets.CRON_SECRET || 'dummy' }}
+      COOKIE_SECRET: ${{ secrets.COOKIE_SECRET || 'dummy-cookie-secret-for-build-only' }}
+      UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL || '' }}
+      UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN || '' }}
 
     steps:
       - name: Checkout
