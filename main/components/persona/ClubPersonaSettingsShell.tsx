@@ -36,10 +36,10 @@ export function ClubPersonaSettingsShell({ slug }: { slug: string }) {
         </Link>
         <div className="min-w-0">
           <h1 className="text-lg font-bold text-txt-primary">브랜드 페르소나</h1>
-          <p className="text-xs text-txt-tertiary">
+          <p className="text-xs text-txt-tertiary leading-relaxed">
             {club ? (
               <>
-                {club.name}의 글결을 정의하고, 이 글결로 외부에 발행되는 모든 콘텐츠의 일관성을 만듭니다
+                {club.name}의 "말투·독자·금기"를 한 곳에 정해두면, AI가 인스타·뉴스레터·모집공고를 모두 같은 목소리로 써드립니다.
               </>
             ) : (
               <span className="inline-block h-3.5 w-72 rounded skeleton-shimmer align-middle" />

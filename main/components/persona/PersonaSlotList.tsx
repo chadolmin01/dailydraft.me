@@ -18,18 +18,21 @@ const SECTIONS: Array<{
   keys: FieldKey[]
 }> = [
   {
-    title: '컨셉',
-    description: '이 동아리·프로젝트가 누구이고 무엇을 말하는가',
+    title: '우리 동아리는 누구인가요?',
+    description:
+      'AI가 글을 쓸 때 "우리 조직이 뭐 하는 곳인지"를 알아야 합니다. 이 두 슬롯이 그 기준이 됩니다.',
     keys: ['identity', 'content_patterns'],
   },
   {
-    title: '독자',
-    description: '누구에게 말하고 어떤 거리감을 유지하는가',
+    title: '누구에게 말 걸고 싶으세요?',
+    description:
+      '타깃 독자가 분명할수록 AI가 어조를 맞춥니다. "신입생" vs "스폰서 기업"은 완전히 다른 글이 되죠.',
     keys: ['audience', 'emotional_distance'],
   },
   {
-    title: '콘텐츠 스타일',
-    description: '실제 문장을 어떻게 쓰는가',
+    title: '어떻게 쓸까요?',
+    description:
+      '문장 길이·어미·즐겨쓰는 단어까지 디테일하게 정해두면, AI가 회장님이 쓰신 것처럼 글을 만듭니다.',
     keys: [
       'hooking_style',
       'sentence_style',

@@ -47,13 +47,13 @@ export function PersonaTemplateLibrary({ personaId, canEdit }: Props) {
       <div className="flex items-center justify-between gap-3 mb-3">
         <div className="min-w-0">
           <h2 className="text-sm font-bold text-txt-primary">
-            내 템플릿{' '}
+            지금까지 저장해둔 버전{' '}
             <span className="text-txt-tertiary font-normal">
               {isLoading ? '' : templates.length}
             </span>
           </h2>
-          <p className="text-xs text-txt-tertiary mt-0.5">
-            현재 설정을 스냅샷으로 저장하고 언제든 되돌릴 수 있습니다
+          <p className="text-xs text-txt-tertiary mt-0.5 leading-relaxed">
+            "이번 모집 시즌 톤"처럼 이름 붙여 저장해두면, 나중에 한 번 클릭으로 되돌릴 수 있어요.
           </p>
         </div>
         {canEdit && (
@@ -203,10 +203,13 @@ function TemplateCard({
 function EmptyHint() {
   return (
     <div className="bg-surface-card border border-dashed border-border rounded-xl p-6 text-center">
-      <p className="text-xs text-txt-tertiary leading-relaxed">
-        아직 저장된 템플릿이 없습니다.
+      <p className="text-xs text-txt-secondary leading-relaxed">
+        아직 저장된 버전이 없어요.
+      </p>
+      <p className="text-[11px] text-txt-tertiary leading-relaxed mt-1.5">
+        💾 페르소나를 조금 다듬으시면 오른쪽 위 <strong className="text-txt-secondary">"템플릿으로 저장"</strong> 버튼을 눌러보세요.
         <br />
-        페르소나를 다듬을 때마다 "템플릿으로 저장"을 눌러두면 언제든 이전 상태로 돌아갈 수 있습니다.
+        "모집용 격식체", "내부 캐주얼" 같이 이름 붙여두면 나중에 언제든 그 상태로 되돌릴 수 있습니다.
       </p>
     </div>
   )

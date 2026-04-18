@@ -15,18 +15,21 @@ import {
   useRejectBundle,
 } from '@/src/hooks/useBundles'
 import { ChannelFrame } from './ChannelFrames'
+import { CHANNEL_BRANDS } from './channel-brand'
 
 interface Props {
   bundleId: string
   canApprove: boolean
 }
 
+// 채널 라벨은 CHANNEL_BRANDS에서 조회 (중앙화)
+// 하위 호환 위해 로컬 alias만 유지
 const CHANNEL_LABELS: Record<ChannelFormat, string> = {
-  discord_forum_markdown: 'Discord 포럼',
-  instagram_caption: '인스타그램',
-  linkedin_post: 'LinkedIn',
-  everytime_post: '에브리타임',
-  email_newsletter: '이메일 뉴스레터',
+  discord_forum_markdown: CHANNEL_BRANDS.discord_forum_markdown.label,
+  instagram_caption: CHANNEL_BRANDS.instagram_caption.label,
+  linkedin_post: CHANNEL_BRANDS.linkedin_post.label,
+  everytime_post: CHANNEL_BRANDS.everytime_post.label,
+  email_newsletter: CHANNEL_BRANDS.email_newsletter.label,
 }
 
 export function BundleDetailClient({ bundleId, canApprove }: Props) {
@@ -79,7 +82,7 @@ export function BundleDetailClient({ bundleId, canApprove }: Props) {
   return (
     <>
       {/* 한 줄 상태 스트립 */}
-      <div className="flex flex-wrap items-center gap-2 mb-4">
+      <div className="flex flex-wrap items-center gap-2 mb-2">
         <h2 className="text-base font-bold text-txt-primary">{eventLabel}</h2>
         <span className={`text-[10px] px-1.5 py-0.5 rounded ${statusInfo.className}`}>
           {statusInfo.label}
@@ -91,6 +94,9 @@ export function BundleDetailClient({ bundleId, canApprove }: Props) {
           </span>
         )}
       </div>
+      <p className="text-xs text-txt-tertiary mb-5 leading-relaxed">
+        AI가 페르소나를 참고해 <strong className="text-txt-secondary font-semibold">{channels.length}개 채널</strong>용 초안을 준비했습니다. 아래 탭을 눌러 각 채널의 미리보기를 확인하시고, 괜찮으면 우측에서 승인해 주십시오.
+      </p>
 
       {/* 2-column grid: 메인(출력) + 사이드바(메타·액션) */}
       <div className="grid lg:grid-cols-3 gap-6">
@@ -98,20 +104,26 @@ export function BundleDetailClient({ bundleId, canApprove }: Props) {
         <div className="lg:col-span-2 space-y-3">
           {channels.length > 0 ? (
             <>
-              <div className="flex gap-1 overflow-x-auto pb-1">
-                {channels.map((fmt) => (
-                  <button
-                    key={fmt}
-                    onClick={() => setActiveTab(fmt)}
-                    className={`shrink-0 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                      current === fmt
-                        ? 'bg-brand text-white'
-                        : 'bg-surface-bg text-txt-secondary hover:bg-surface-sunken'
-                    }`}
-                  >
-                    {CHANNEL_LABELS[fmt]}
-                  </button>
-                ))}
+              <div className="flex gap-1.5 overflow-x-auto pb-1">
+                {channels.map((fmt) => {
+                  const brand = CHANNEL_BRANDS[fmt]
+                  const Icon = brand?.icon
+                  const isActive = current === fmt
+                  return (
+                    <button
+                      key={fmt}
+                      onClick={() => setActiveTab(fmt)}
+                      className={`shrink-0 inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
+                        isActive
+                          ? `${brand?.activeClass ?? 'bg-brand text-white'} shadow-sm`
+                          : `bg-surface-card text-txt-secondary border border-border ${brand?.inactiveHoverClass ?? 'hover:text-txt-primary'} hover:bg-surface-bg`
+                      }`}
+                    >
+                      {Icon && <Icon size={14} />}
+                      {brand?.label ?? CHANNEL_LABELS[fmt]}
+                    </button>
+                  )
+                })}
               </div>
 
               {current && outputsByFormat.get(current) && (
@@ -120,8 +132,13 @@ export function BundleDetailClient({ bundleId, canApprove }: Props) {
             </>
           ) : (
             <section className="bg-surface-card border border-border rounded-2xl p-8 text-center">
-              <p className="text-sm text-txt-tertiary">
-                생성된 채널 출력이 없습니다. 어댑터 실행이 모두 실패했을 수 있습니다.
+              <p className="text-sm text-txt-primary font-semibold mb-1">
+                준비된 초안이 아직 없습니다
+              </p>
+              <p className="text-xs text-txt-tertiary leading-relaxed">
+                AI가 채널별 초안을 만드는 데 실패했을 수 있습니다.
+                <br />
+                잠시 후 다시 시도하시거나, 페르소나 슬롯이 충분히 채워졌는지 확인해 주십시오.
               </p>
             </section>
           )}
@@ -131,16 +148,23 @@ export function BundleDetailClient({ bundleId, canApprove }: Props) {
         <aside className="space-y-3">
           {/* 메타데이터 */}
           <section className="bg-surface-card border border-border rounded-2xl p-4">
-            <h3 className="text-xs font-bold text-txt-primary mb-2">이벤트 정보</h3>
+            <h3 className="text-xs font-bold text-txt-primary mb-0.5">
+              이번 발행은 어떤 상황인가요?
+            </h3>
+            <p className="text-[10px] text-txt-tertiary mb-3">
+              AI가 글을 쓸 때 참고한 정보입니다
+            </p>
             <MetadataSummary metadata={bundle.event_metadata} />
           </section>
 
           {/* 승인/거절 */}
           {canApprove && bundle.status === 'pending_approval' && (
             <section className="bg-surface-card border border-border rounded-2xl p-4">
-              <h3 className="text-sm font-bold text-txt-primary mb-1">최종 검토</h3>
+              <h3 className="text-sm font-bold text-txt-primary mb-1">
+                이대로 괜찮으신가요?
+              </h3>
               <p className="text-xs text-txt-tertiary mb-3 leading-relaxed">
-                승인 시 자동 발행 가능 채널은 즉시 발행됩니다.
+                승인하시면 <strong className="text-txt-secondary">Discord 포럼</strong>에는 바로 올라가고, 인스타·링크드인·에타 같은 채널은 탭에서 복사하셔서 올리시면 됩니다.
               </p>
               <div className="flex flex-col gap-2">
                 <button
@@ -149,7 +173,7 @@ export function BundleDetailClient({ bundleId, canApprove }: Props) {
                   className="inline-flex items-center justify-center gap-1.5 h-10 px-4 rounded-xl bg-brand text-white text-sm font-semibold hover:bg-brand-hover transition-colors disabled:opacity-60"
                 >
                   <Check size={14} />
-                  {approve.isPending ? '승인 중...' : '승인하고 발행'}
+                  {approve.isPending ? '승인 중...' : '네, 이대로 올릴게요'}
                 </button>
                 <button
                   onClick={() => setRejectOpen(true)}
@@ -157,39 +181,46 @@ export function BundleDetailClient({ bundleId, canApprove }: Props) {
                   className="inline-flex items-center justify-center gap-1.5 h-10 px-4 rounded-xl border border-border text-sm font-semibold text-txt-secondary hover:bg-surface-bg transition-colors"
                 >
                   <XIcon size={14} />
-                  거절
+                  다시 쓸게요
                 </button>
               </div>
+              <p className="text-[10px] text-txt-tertiary mt-3 leading-relaxed">
+                💡 "다시 쓸게요"를 누르시면 어떤 점이 아쉬웠는지 적으실 수 있어요. AI가 그걸 기억해서 다음부터 안 만들도록 학습합니다.
+              </p>
             </section>
           )}
 
           {bundle.status === 'rejected' && bundle.rejected_reason && (
             <section className="bg-surface-card border border-border rounded-2xl p-4">
-              <h3 className="text-sm font-bold text-txt-primary mb-1">거절 사유</h3>
+              <h3 className="text-sm font-bold text-txt-primary mb-1">
+                어떤 점이 아쉬우셨나요
+              </h3>
               <p className="text-sm text-txt-secondary leading-relaxed whitespace-pre-wrap">
                 {bundle.rejected_reason}
               </p>
-              <p className="text-xs text-txt-tertiary mt-2">
-                사유는 절대 금기 슬롯에 자동 반영됩니다
+              <p className="text-xs text-txt-tertiary mt-2 leading-relaxed">
+                이 내용은 페르소나의 "절대 금기" 항목에 자동으로 추가되어, 다음 AI 글쓰기에 반영됩니다.
               </p>
             </section>
           )}
         </aside>
       </div>
 
-      {/* 거절 모달 (인라인 폼) */}
+      {/* 거절(다시 쓰기) 모달 */}
       {rejectOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40">
           <div className="w-full max-w-md bg-surface-card rounded-2xl p-5 shadow-lg">
-            <h3 className="text-base font-bold text-txt-primary mb-1">번들 거절</h3>
-            <p className="text-xs text-txt-tertiary mb-4">
-              거절 사유를 구체적으로 적어주십시오. AI가 다음부터 이 패턴을 피하도록 학습합니다.
+            <h3 className="text-base font-bold text-txt-primary mb-1">
+              어떤 점이 아쉬우셨나요?
+            </h3>
+            <p className="text-xs text-txt-tertiary mb-4 leading-relaxed">
+              구체적으로 적어주시면 AI가 <strong className="text-txt-secondary">다음부터 같은 실수</strong>를 하지 않도록 학습합니다. 한 줄이어도 괜찮습니다.
             </p>
             <textarea
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
               rows={5}
-              placeholder="예: 너무 홍보성 멘트가 많음. '우리만의 특별한' 같은 표현 자제."
+              placeholder={`예1) 너무 홍보 느낌이 강합니다. "우리만의 특별한" 같은 표현 자제해 주세요.\n예2) 이번 주 MVP 성과는 언급하지 않았습니다. 수치 포함해서 다시 써주세요.`}
               className="w-full text-sm text-txt-primary bg-surface-bg border border-border rounded-xl px-3 py-2.5 focus:outline-none focus:border-brand leading-relaxed resize-none"
             />
             <div className="flex justify-end gap-2 mt-4">
@@ -200,12 +231,12 @@ export function BundleDetailClient({ bundleId, canApprove }: Props) {
                 }}
                 className="h-9 px-4 rounded-lg text-sm font-semibold text-txt-secondary hover:bg-surface-bg transition-colors"
               >
-                취소
+                닫기
               </button>
               <button
                 onClick={() => {
                   if (!rejectReason.trim()) {
-                    toast.error('사유를 입력해주세요')
+                    toast.error('어떤 점이 아쉬웠는지 한 줄이라도 적어주세요')
                     return
                   }
                   reject.mutate(rejectReason.trim(), {
@@ -218,7 +249,7 @@ export function BundleDetailClient({ bundleId, canApprove }: Props) {
                 disabled={reject.isPending}
                 className="h-9 px-4 rounded-lg bg-status-danger-text text-white text-sm font-semibold hover:bg-status-danger-text/90 transition-colors disabled:opacity-60"
               >
-                {reject.isPending ? '거절 중...' : '거절'}
+                {reject.isPending ? '보내는 중...' : 'AI에게 알려주기'}
               </button>
             </div>
           </div>
@@ -233,18 +264,32 @@ function OutputPanel({ output }: { output: PersonaOutputRow }) {
   const destination = output.destination
   const constraints = output.format_constraints as Record<string, unknown> | null
   const fmt = output.channel_format as ChannelFormat | null
+  const brand = fmt ? CHANNEL_BRANDS[fmt] : null
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(output.generated_content)
-      toast.success('클립보드에 복사됐습니다')
+      toast.success(
+        brand
+          ? `${brand.label}에 붙여넣으세요. 클립보드에 복사됐습니다`
+          : '클립보드에 복사됐습니다',
+      )
     } catch {
-      toast.error('복사에 실패했습니다')
+      toast.error('복사에 실패했습니다. 브라우저 권한을 확인해 주세요')
     }
   }
 
   return (
     <div className="space-y-3">
+      {/* 채널 안내 — 이 탭이 뭐고 뭘 해야 하는지 */}
+      {brand && (
+        <div className="bg-surface-bg border border-border rounded-xl px-4 py-2.5">
+          <p className="text-xs text-txt-secondary leading-relaxed">
+            {brand.description}
+          </p>
+        </div>
+      )}
+
       {/* 플랫폼 프레임 */}
       {fmt ? (
         <ChannelFrame format={fmt} output={output} />
@@ -258,20 +303,30 @@ function OutputPanel({ output }: { output: PersonaOutputRow }) {
       <div className="flex items-center justify-between gap-3 px-1">
         <div className="flex flex-wrap items-center gap-1.5">
           {!isCopyOnly && output.status === 'published' && destination && (
-            <span className="inline-flex items-center gap-1 text-[11px] text-txt-secondary">
+            <span className="inline-flex items-center gap-1 text-[11px] text-status-success-text">
               <Send size={11} />
-              발행됨
+              이미 올라갔어요
             </span>
           )}
           {constraints && renderConstraints(constraints)}
         </div>
-        <button
-          onClick={handleCopy}
-          className="inline-flex items-center gap-1 h-8 px-3 rounded-lg border border-border text-xs font-semibold text-txt-primary hover:bg-surface-bg transition-colors shrink-0"
-        >
-          <Copy size={12} />
-          복사
-        </button>
+        {isCopyOnly && brand ? (
+          <button
+            onClick={handleCopy}
+            className={`inline-flex items-center gap-1.5 h-9 px-3 rounded-lg text-xs font-semibold text-white transition-opacity hover:opacity-90 shrink-0 ${brand.accent}`}
+          >
+            <Copy size={12} />
+            {brand.action_verb}
+          </button>
+        ) : (
+          <button
+            onClick={handleCopy}
+            className="inline-flex items-center gap-1 h-9 px-3 rounded-lg border border-border text-xs font-semibold text-txt-primary hover:bg-surface-bg transition-colors shrink-0"
+          >
+            <Copy size={12} />
+            복사
+          </button>
+        )}
       </div>
     </div>
   )

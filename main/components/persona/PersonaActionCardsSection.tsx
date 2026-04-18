@@ -28,30 +28,33 @@ const ACTIONS: ActionCard[] = [
   {
     key: 'discord_learn',
     icon: Sparkles,
-    title: 'Discord 대화에서 자동 학습',
-    description: '동아리 서버의 공지·대화를 분석해 톤과 독자를 자동으로 추출합니다',
+    title: 'Discord 대화로 시작하기',
+    description:
+      '동아리 Discord에 이미 쌓인 공지·대화를 AI가 읽고 "이 동아리다운 톤"을 자동으로 뽑아드립니다. 아무것도 안 쓰셔도 됩니다.',
     comingSoon: false,
   },
   {
     key: 'benchmark',
     icon: Target,
-    title: '다른 동아리 페르소나 참고',
-    description: '공개된 페르소나를 불러와 우리 동아리 버전으로 각색합니다',
+    title: '다른 동아리 참고하기',
+    description:
+      '공개된 다른 동아리 페르소나를 참고 자료로 가져와, 우리 동아리 스타일로 각색합니다.',
     comingSoon: true,
   },
   {
     key: 'ai_generate',
     icon: Wand2,
-    title: 'AI에게 초안 받기',
+    title: 'AI에게 초안 부탁하기',
     description:
-      '아래 슬롯 중 직접 채운 내용은 그대로 두고, 빈 슬롯만 AI가 자동으로 채워드립니다',
+      '회장님이 지금까지 적어둔 슬롯은 그대로 두고, 빈 칸만 AI가 알아서 채워줍니다. 가장 빠른 시작 방법입니다.',
     comingSoon: false,
   },
   {
     key: 'ai_polish',
     icon: PenLine,
-    title: 'AI에게 다듬기 맡기기',
-    description: '"더 딱딱하게", "GenZ 톤으로" 같은 자연어 지시로 일괄 수정합니다',
+    title: 'AI에게 다시 쓰라고 부탁하기',
+    description:
+      '"더 딱딱하게", "GenZ 톤으로", "스폰서 대상으로 다시" 같이 말하면 AI가 전체 슬롯을 그 방향으로 손봐줍니다.',
     comingSoon: false,
   },
 ]
@@ -84,9 +87,11 @@ export function PersonaActionCardsSection({ personaId, disabled = false }: Props
     <>
       <section>
         <div className="mb-3">
-          <h2 className="text-sm font-bold text-txt-primary">쉽게 채우기</h2>
-          <p className="text-xs text-txt-tertiary mt-0.5">
-            슬롯을 하나씩 직접 쓰지 않고 한 번에 초안을 만드는 방법입니다
+          <h2 className="text-sm font-bold text-txt-primary">
+            어떻게 시작할까요?
+          </h2>
+          <p className="text-xs text-txt-tertiary mt-0.5 leading-relaxed">
+            13개 슬롯을 한 번에 AI가 채워드립니다. 회장님은 아래 카드 중 하나를 누르기만 하시면 됩니다. 마음에 안 드는 슬롯은 개별로 다시 쓰실 수 있습니다.
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
