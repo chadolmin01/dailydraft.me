@@ -51,6 +51,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Access manifest coverage
+        # app/**/page.tsx 전수 scan → manifest 등록 여부 확인.
+        # 새 페이지 추가 시 ACCESS_MANIFEST 업데이트 누락 방지.
+        run: npm run check:access
+
       - name: TypeScript type check
         # 왜 database.ts pre-existing 에러 필터: 이 파일은 Supabase CLI 출력인데 프로젝트 세션 중
         # 상단/하단 손상된 적 있음. 현재 복구됐지만 CLI 재생성 시 다시 깨질 수 있어 grep 제외 유지.
