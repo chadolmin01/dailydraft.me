@@ -18,6 +18,7 @@ import { ApplicationManageSection } from '@/components/project/ApplicationManage
 import { TeamManageSection } from '@/components/project/TeamManageSection'
 import { timeAgo } from '@/src/lib/utils'
 import Link from 'next/link'
+import { motion } from 'framer-motion'
 
 export default function ProjectManagePage() {
   return (
@@ -139,16 +140,23 @@ function ProjectManageContent() {
             <button
               key={t.key}
               onClick={() => setTab(t.key)}
-              className={`flex items-center gap-1.5 px-4 py-3 text-xs font-bold border-b-2 transition-colors -mb-px ${
+              className={`relative flex items-center gap-1.5 px-4 py-3 text-xs font-bold transition-colors ${
                 tab === t.key
-                  ? 'border-surface-inverse text-txt-primary'
-                  : 'border-transparent text-txt-tertiary hover:text-txt-secondary'
+                  ? 'text-txt-primary'
+                  : 'text-txt-tertiary hover:text-txt-secondary'
               }`}
             >
               {t.icon}
               {t.label}
               {t.key === 'updates' && updates.length > 0 && (
                 <span className="text-[0.5rem] bg-surface-sunken px-1.5 py-0.5 text-txt-disabled rounded-full">{updates.length}</span>
+              )}
+              {tab === t.key && (
+                <motion.div
+                  layoutId="project-tab-underline"
+                  className="absolute -bottom-[1px] left-0 right-0 h-[2px] bg-surface-inverse"
+                  transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                />
               )}
             </button>
           ))}

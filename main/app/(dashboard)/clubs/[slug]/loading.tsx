@@ -4,30 +4,30 @@ export default function ClubDetailLoading() {
   return (
     <div className="bg-surface-bg min-h-full">
       <div className="max-w-[1200px] mx-auto px-5 py-8">
-        <div className="animate-pulse space-y-5">
+        <div className="space-y-5">
           {/* 뒤로가기 + 공유 */}
           <div className="flex justify-between">
-            <div className="h-5 w-24 bg-surface-sunken rounded-full" />
-            <div className="h-5 w-16 bg-surface-sunken rounded-full" />
+            <div className="h-5 w-24 skeleton-shimmer rounded-full" />
+            <div className="h-5 w-16 skeleton-shimmer rounded-full" />
           </div>
           {/* 헤더: 로고 + 이름 + 설명 */}
           <div className="flex gap-5 pt-2">
-            <div className="w-[72px] h-[72px] bg-surface-sunken rounded-2xl shrink-0" />
+            <div className="w-[72px] h-[72px] skeleton-shimmer rounded-2xl shrink-0" />
             <div className="flex-1 space-y-2.5 pt-1">
-              <div className="h-6 bg-surface-sunken rounded-full w-48" />
-              <div className="h-4 bg-surface-sunken rounded-full w-full max-w-md" />
-              <div className="h-3.5 bg-surface-sunken rounded-full w-64" />
+              <div className="h-6 skeleton-shimmer rounded-full w-48" />
+              <div className="h-4 skeleton-shimmer rounded-full w-full max-w-md" />
+              <div className="h-3.5 skeleton-shimmer rounded-full w-64" />
             </div>
           </div>
           {/* 탭바 */}
           <div className="flex gap-1 border-b border-border pb-0">
             {[0, 1, 2, 3, 4].map(i => (
-              <div key={i} className="h-10 w-20 bg-surface-sunken rounded-t-xl" />
+              <div key={i} className="h-10 w-20 skeleton-shimmer rounded-t-xl" />
             ))}
           </div>
           {/* 섹션 */}
           <div className="grid grid-cols-3 gap-3 pt-4">
-            {[0, 1, 2].map(i => <div key={i} className="h-24 bg-surface-sunken rounded-xl" />)}
+            {[0, 1, 2].map(i => <div key={i} className="h-24 skeleton-shimmer rounded-xl" />)}
           </div>
         </div>
       </div>

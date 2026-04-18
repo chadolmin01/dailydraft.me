@@ -1,12 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Settings, Users, FolderOpen, Archive, Share2, ChevronRight, ChevronLeft, Plus } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { toast } from 'sonner'
-import { useClub, useClubMembers, useClubStats, useClubProjects } from '@/src/hooks/useClub'
+import { useQueryClient } from '@tanstack/react-query'
+import { useClub, useClubMembers, useClubStats, useClubProjects, clubKeys } from '@/src/hooks/useClub'
 import { timeAgo } from '@/src/lib/utils'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { SkeletonGrid } from '@/components/ui/Skeleton'
@@ -35,6 +37,7 @@ type Tab = 'intro' | 'teams' | 'projects' | 'members' | 'archive' | 'activity'
 export default function ClubPageClient() {
   const params = useParams()
   const router = useRouter()
+  const queryClient = useQueryClient()
   const slug = params.slug as string
   const [activeTab, setActiveTab] = useState<Tab>('intro')
   const [memberCohort, setMemberCohort] = useState<string>()
@@ -43,6 +46,33 @@ export default function ClubPageClient() {
   const { data: stats } = useClubStats(slug)
   const { data: membersData } = useClubMembers(slug, { cohort: memberCohort, limit: 50 })
   const { data: clubProjects = [], isLoading: projectsLoading } = useClubProjects(club?.id)
+
+  // 탭 호버 시 해당 탭에서 쓰는 API를 미리 fetch. 왜: intro 탭 외에는 탭 누른 순간 스켈레톤이
+  // 꼭 보이는 구조였음. 호버 50~150ms에 미리 요청하면 클릭 시점엔 캐시에서 즉시 표시.
+  const prefetchTab = useCallback((tab: Tab) => {
+    if (tab === 'teams') {
+      queryClient.prefetchQuery({
+        queryKey: clubKeys.teams(slug),
+        queryFn: async () => {
+          const res = await fetch(`/api/clubs/${slug}/teams`)
+          if (!res.ok) throw new Error('Teams fetch failed')
+          return res.json()
+        },
+        staleTime: 1000 * 60 * 2,
+      })
+    } else if (tab === 'activity') {
+      queryClient.prefetchQuery({
+        queryKey: clubKeys.botActivity(slug),
+        queryFn: async () => {
+          const res = await fetch(`/api/clubs/${slug}/bot-activity`)
+          if (!res.ok) throw new Error('Bot activity fetch failed')
+          return res.json()
+        },
+        staleTime: 1000 * 60 * 5,
+      })
+    }
+    // intro/projects/members/archive는 이미 page 로드 시 훅이 실행돼 캐시에 있음
+  }, [queryClient, slug])
 
   // club.my_role은 서버에서 직접 조회한 값 — 멤버 페이지네이션(limit 50)에 의존하지 않음
   const isAdmin = club?.my_role === 'owner' || club?.my_role === 'admin'
@@ -174,13 +204,22 @@ export default function ClubPageClient() {
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`px-5 py-3 text-[14px] font-semibold border-b-2 -mb-px transition-all duration-200 ${
+              onMouseEnter={() => prefetchTab(tab.key)}
+              onFocus={() => prefetchTab(tab.key)}
+              className={`relative px-5 py-3 text-[14px] font-semibold transition-colors ${
                 activeTab === tab.key
-                  ? 'text-txt-primary border-txt-primary'
-                  : 'text-txt-tertiary border-transparent hover:text-txt-secondary'
+                  ? 'text-txt-primary'
+                  : 'text-txt-tertiary hover:text-txt-secondary'
               }`}
             >
               {tab.label}
+              {activeTab === tab.key && (
+                <motion.div
+                  layoutId="club-tab-underline"
+                  className="absolute -bottom-[1px] left-0 right-0 h-[2px] bg-txt-primary"
+                  transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                />
+              )}
             </button>
           ))}
         </div>

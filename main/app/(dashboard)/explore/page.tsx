@@ -1,12 +1,14 @@
 import { QueryClient, dehydrate, HydrationBoundary } from '@tanstack/react-query'
 import { createClient } from '@supabase/supabase-js'
 import ExplorePageClient from '@/components/explore/ExplorePageClient'
+import { fetchClubsList } from '@/src/lib/queries/club-queries'
 
 // ISR: revalidate every 60 seconds (no cookies() → truly static/ISR)
 export const revalidate = 60
 
 const PAGE_SIZE = 12
 const PEOPLE_PAGE_SIZE = 12
+const CLUBS_PAGE_SIZE = 12
 
 // Lightweight anon client for server prefetch — no cookies, enables ISR caching
 const supabase = createClient(
@@ -63,6 +65,14 @@ export default async function ExplorePage() {
         return { items: data ?? [], totalCount: count ?? 0, nextOffset: pageParam + PEOPLE_PAGE_SIZE }
       },
       initialPageParam: 0,
+    }),
+
+    // Prefetch clubs — key must match ExplorePageClient useQuery(['explore', 'clubs', searchQuery])
+    // 빈 검색어로 초기 렌더 시 클럽 탭 클릭해도 추가 fetch 없이 즉시 표시.
+    // 반환 shape은 { items, total } — 클라이언트 훅도 같은 shape 유지.
+    queryClient.prefetchQuery({
+      queryKey: ['explore', 'clubs', ''],
+      queryFn: () => fetchClubsList(supabase, { limit: CLUBS_PAGE_SIZE }),
     }),
   ])
 

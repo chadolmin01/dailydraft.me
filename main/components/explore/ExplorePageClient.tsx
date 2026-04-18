@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react'
 import dynamic from 'next/dynamic'
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Sparkles } from 'lucide-react'
 import { toast } from 'sonner'
 import Link from 'next/link'
@@ -145,9 +145,19 @@ function ExplorePageContent() {
   const [sortBy, setSortBy] = useState<SortBy>('trending')
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all')
   const initialTab = (searchParams.get('tab') as ActiveTab) || 'projects'
-  const [activeTab, setActiveTab] = useState<ActiveTab>(
+  const [activeTab, setActiveTabState] = useState<ActiveTab>(
     ['projects', 'people', 'clubs'].includes(initialTab) ? initialTab : 'projects'
   )
+  // 탭 변경 시 URL `?tab=...` 동기화. 'projects'는 기본값이라 쿼리 생략해서 URL 깔끔하게 유지.
+  // 이유: 새로고침/공유 링크/뒤로가기로도 같은 탭 보존돼야 딥링크가 의미를 가짐.
+  const setActiveTab = React.useCallback((tab: ActiveTab) => {
+    setActiveTabState(tab)
+    const params = new URLSearchParams(searchParamsRef.current.toString())
+    if (tab === 'projects') params.delete('tab')
+    else params.set('tab', tab)
+    const qs = params.toString()
+    router.replace(`${pathname}${qs ? `?${qs}` : ''}`, { scroll: false })
+  }, [pathname, router])
   const [updatesBannerDismissed, setUpdatesBannerDismissed] = useState(false)
   const [recruitingOnly, setRecruitingOnly] = useState(false)
   const [peopleRoleFilter, setPeopleRoleFilter] = useState<PeopleRoleFilter>('all')
@@ -591,7 +601,7 @@ function ExplorePageContent() {
           />
         </div>
 
-        {/* ── Tabs ── */}
+        {/* ── Tabs ── underline에 motion layoutId 써서 탭 전환 시 bar가 슬라이드 */}
         <div className="flex border-b border-border mb-4">
           {([
             { key: 'projects' as ActiveTab, label: '추천 피드' },
@@ -601,13 +611,20 @@ function ExplorePageContent() {
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`px-5 py-3 text-[15px] font-semibold border-b-2 -mb-px transition-colors ${
+              className={`relative px-5 py-3 text-[15px] font-semibold transition-colors ${
                 activeTab === tab.key
-                  ? 'text-txt-primary border-txt-primary'
-                  : 'text-txt-tertiary border-transparent hover:text-txt-secondary'
+                  ? 'text-txt-primary'
+                  : 'text-txt-tertiary hover:text-txt-secondary'
               }`}
             >
               {tab.label}
+              {activeTab === tab.key && (
+                <motion.div
+                  layoutId="explore-tab-underline"
+                  className="absolute -bottom-[1px] left-0 right-0 h-[2px] bg-txt-primary"
+                  transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                />
+              )}
             </button>
           ))}
         </div>

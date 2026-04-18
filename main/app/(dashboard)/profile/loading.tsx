@@ -1,10 +1,6 @@
-import { SkeletonProfile, SkeletonGrid } from '@/components/ui/Skeleton'
+// 실제 ProfilePageClient 레이아웃(좌 sidebar + 우 메인) 맞춤. 기존 SkeletonGrid는 레이아웃 shift 발생.
+import { ProfileLoadingSkeleton } from '@/components/profile/ProfileLoadingSkeleton'
 
 export default function ProfileLoading() {
-  return (
-    <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
-      <SkeletonProfile />
-      <SkeletonGrid count={2} cols={2} />
-    </div>
-  )
+  return <ProfileLoadingSkeleton />
 }
