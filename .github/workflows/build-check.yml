@@ -1,0 +1,69 @@
+name: Build Check
+
+# 왜: persona 커밋이 타입 미반영 상태로 merge돼 프로덕션 빌드를 파괴한 사고(2026-04-18) 재발 방지.
+# main 브랜치로의 PR·push 에서 tsc + next build를 모두 통과해야만 merge 가능하도록 게이트.
+#
+# branch protection rule과 조합: Settings → Branches → main → Require status checks to pass
+# → "Build Check / build" 체크 → main push/PR merge 전 필수 통과.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'main/**'
+      - '.github/workflows/build-check.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'main/**'
+      - '.github/workflows/build-check.yml'
+
+jobs:
+  build:
+    name: TypeCheck + Next Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    # Vercel 빌드 환경 최대한 흉내 — 동일한 Node/npm 버전으로 로컬 성공 = CI 성공 보장
+    defaults:
+      run:
+        working-directory: main
+
+    env:
+      # 빌드 타임에만 사용되는 public env — 미설정 시 일부 코드가 undefined 참조해 깨질 수 있어
+      # 더미 값으로 채움. 실제 Supabase 호출은 런타임이라 build 통과에 영향 없음.
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://dummy.supabase.co' }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'dummy-anon-key-for-ci' }}
+      NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL || 'https://dailydraft.me' }}
+      # PostHog 등 다른 public env가 있으면 여기 추가
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: main/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: TypeScript type check
+        # 왜 database.ts pre-existing 에러 필터: 이 파일은 Supabase CLI 출력인데 프로젝트 세션 중
+        # 상단/하단 손상된 적 있음. 현재 복구됐지만 CLI 재생성 시 다시 깨질 수 있어 grep 제외 유지.
+        # 해당 파일 의존 에러가 있으면 다른 파일에서도 잡히므로 이중 안전.
+        run: |
+          npx tsc --noEmit 2>&1 | tee tsc-output.log
+          ERRORS=$(grep -v "src/types/database.ts" tsc-output.log | grep -c "error TS" || true)
+          if [ "$ERRORS" -gt 0 ]; then
+            echo "❌ TypeScript errors found (excluding database.ts pre-existing):"
+            grep -v "src/types/database.ts" tsc-output.log | grep "error TS" || true
+            exit 1
+          fi
+          echo "✅ TypeScript check passed"
+
+      - name: Next.js production build
+        run: npm run build

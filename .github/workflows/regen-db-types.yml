@@ -1,0 +1,90 @@
+name: Regenerate DB Types
+
+# 왜: 2026-04-18 persona 커밋이 DB 마이그레이션은 넣었는데 src/types/database.ts를 재생성
+# 안 해서 프로덕션 빌드 실패. 앞으로 마이그레이션 파일이 바뀌면 자동으로 CLI 돌려
+# database.generated.ts를 업데이트하는 PR을 연다.
+#
+# 필요한 secrets (repo Settings → Secrets and variables → Actions):
+#   SUPABASE_ACCESS_TOKEN — `supabase login` 후 ~/.supabase/access-token 의 값
+#   SUPABASE_PROJECT_REF  — draft 프로젝트는 'prxqjiuibfrmuwwmkhqb'
+#   SUPABASE_DB_PASSWORD  — DB 비밀번호 (link 시 필요)
+#
+# 수동 실행도 가능 (workflow_dispatch) — 스키마가 다른 경로로 바뀐 경우 등.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'main/supabase/migrations/**.sql'
+  workflow_dispatch:
+
+jobs:
+  regen:
+    name: Regenerate database.generated.ts
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    defaults:
+      run:
+        working-directory: main
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # 나중에 PR 열 때 내가 밀어넣는 커밋이 같은 워크플로우를 재귀 트리거하지 않도록.
+          # PR을 만들어두고 사람이 확인 후 merge하는 방식이라 실제로 재귀 위험은 낮지만 안전장치.
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Link to Supabase project
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        run: |
+          supabase link --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
+
+      - name: Generate types from remote schema
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          # 왜 --linked: 마이그레이션이 이미 prod DB에 적용됐다는 전제.
+          # db push 직후라 remote == local 상태일 때가 타입 생성 타이밍.
+          supabase gen types typescript --linked > src/types/database.generated.ts
+
+      - name: Check diff
+        id: diff
+        run: |
+          if git diff --quiet src/types/database.generated.ts; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "✅ database.generated.ts 변경사항 없음 — PR 생략"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "🔄 database.generated.ts 변경 감지 — PR 생성"
+          fi
+
+      - name: Create Pull Request
+        if: steps.diff.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore(types): auto-regenerate database.generated.ts'
+          title: '🤖 DB 타입 재생성 (자동)'
+          body: |
+            마이그레이션 변경 감지 → `supabase gen types typescript --linked` 로 DB 타입 재생성.
+
+            ## 체크리스트
+            - [ ] 새 테이블/컬럼이 의도한 대로 반영됐는지 확인
+            - [ ] `src/types/database.ts` 의 persona override 블록에서 자동 생성된 테이블 항목 제거 가능한지 확인
+            - [ ] `(supabase as any)` 캐스트 중 제거 가능한 곳 있는지 검토
+            - [ ] Build Check 워크플로우 통과 확인
+          branch: auto/regen-db-types
+          base: main
+          labels: |
+            automation
+            db-types
+          delete-branch: true
