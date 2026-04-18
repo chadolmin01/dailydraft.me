@@ -79,6 +79,13 @@ export const ACCESS_MANIFEST: RouteRule[] = [
   { pattern: '/clubs/:slug/settings/persona', tier: 'club-admin' },
   { pattern: '/clubs/:slug/bundles/new', tier: 'club-admin' },
   { pattern: '/clubs/:slug/bundles/:bundleId', tier: 'auth', note: '번들 열람은 멤버 가능' },
+  { pattern: '/clubs/:slug/bundles', tier: 'club-admin', note: '콘텐츠 허브로 redirect' },
+  { pattern: '/clubs/:slug/contents', tier: 'club-admin', note: '콘텐츠 스튜디오 허브 (탭: 캘린더·내 덱·기획·자동화·성과)' },
+  { pattern: '/clubs/:slug/decks', tier: 'club-admin', note: '콘텐츠 허브로 redirect' },
+  { pattern: '/clubs/:slug/automations', tier: 'club-admin', note: '콘텐츠 허브로 redirect' },
+  { pattern: '/clubs/:slug/automations/settings', tier: 'club-admin', note: '콘텐츠 허브로 redirect' },
+  { pattern: '/clubs/:slug/content-planning', tier: 'club-admin', note: '콘텐츠 허브로 redirect' },
+  { pattern: '/clubs/:slug/analytics', tier: 'club-admin', note: '콘텐츠 허브로 redirect' },
 
   // ── platform-admin ────────────────────────────────────────
   { pattern: '/admin', tier: 'platform-admin' },
