@@ -48,6 +48,7 @@ export const ACCESS_MANIFEST: RouteRule[] = [
   { pattern: '/offline', tier: 'public', note: 'PWA offline fallback' },
   { pattern: '/explore', tier: 'public', note: '공개 프로필/프로젝트/클럽 탐색' },
   { pattern: '/p/:id', tier: 'public', note: '공개 프로젝트 상세 (공유 링크용)' },
+  { pattern: '/u/:id', tier: 'public', note: '공개 프로필. profile.id 기반. ProfileDetailModal 대체' },
   { pattern: '/clubs/:slug', tier: 'public', note: '공개 클럽 상세. 현재 멤버카운트는 denorm 미구현 → anon 에겐 0 으로 보임 (TODO)' },
   { pattern: '/recruit', tier: 'public' },
   { pattern: '/idea-validator', tier: 'hidden', note: 'MVP 모드 숨김' },
