@@ -1,0 +1,94 @@
+name: Weekly DB Backup
+
+# Supabase Free 플랜에는 자동 백업이 없어서, GitHub Actions 로 주간 pg_dump 를
+# 찍어 artifact 로 보관. 90일 retention (GitHub Free 기본).
+#
+# 필요 secrets:
+#   SUPABASE_DB_PASSWORD — 이미 regen-db-types.yml 에서 쓰는 것 재사용
+#   SUPABASE_PROJECT_REF — 동일
+#
+# 복원 절차 (사고 발생 시):
+# 1. Actions → Weekly DB Backup → 최근 성공 run 의 Artifacts 다운로드
+# 2. gunzip backup-YYYY-MM-DD.sql.gz
+# 3. psql "postgres://..." < backup-YYYY-MM-DD.sql
+#    또는 Supabase Dashboard → SQL Editor 에서 partial restore
+#
+# 수동 트리거도 가능 (workflow_dispatch) — 큰 변경 전에 찍어두기.
+
+on:
+  schedule:
+    # 매주 일요일 02:00 KST = 토요일 17:00 UTC.
+    # 한국 트래픽 가장 적은 시간대.
+    - cron: '0 17 * * 6'
+  workflow_dispatch:
+
+jobs:
+  backup:
+    name: pg_dump snapshot
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Install PostgreSQL 15 client
+        # Ubuntu 기본 psql(16) + Supabase DB(15) 버전 mismatch 로 pg_dump 실패 방지.
+        # PostgreSQL 공식 APT 저장소에서 15 버전 client 만 설치.
+        run: |
+          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client-15
+
+      - name: Run pg_dump
+        env:
+          PGPASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+        run: |
+          # Supabase direct connection (pooler 는 pg_dump 제약 있음).
+          # host: db.<ref>.supabase.co
+          DATE=$(date -u +%Y-%m-%d)
+          FILENAME="backup-${DATE}.sql.gz"
+
+          # --no-owner / --no-acl: 복원 시 역할/소유권 이슈 방지
+          # --if-exists --clean: 복원 시 기존 객체 안전하게 덮어씀
+          # --exclude-schema=graphql* supabase_*: Supabase 내부 스키마 제외 (관리 영역)
+          pg_dump \
+            --host="db.${PROJECT_REF}.supabase.co" \
+            --port=5432 \
+            --username=postgres \
+            --dbname=postgres \
+            --no-owner \
+            --no-acl \
+            --clean \
+            --if-exists \
+            --exclude-schema='graphql*' \
+            --exclude-schema='supabase_functions' \
+            --exclude-schema='pgsodium*' \
+            --exclude-schema='vault' \
+            --exclude-schema='realtime' \
+            --exclude-schema='_realtime' \
+            --exclude-schema='storage' \
+            --exclude-schema='_analytics' \
+            --exclude-schema='net' \
+            --exclude-schema='pgbouncer' \
+            --exclude-schema='extensions' \
+            | gzip > "${FILENAME}"
+
+          ls -lh "${FILENAME}"
+          echo "BACKUP_FILE=${FILENAME}" >> "$GITHUB_ENV"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.BACKUP_FILE }}
+          path: ${{ env.BACKUP_FILE }}
+          retention-days: 90
+          compression-level: 0  # 이미 gzip 적용됨
+
+      - name: Summary
+        run: |
+          SIZE=$(du -h "${BACKUP_FILE}" | cut -f1)
+          echo "## Backup Summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "- File: \`${BACKUP_FILE}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Size: ${SIZE}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Retention: 90 days" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Restore guide: .github/workflows/weekly-db-backup.yml 상단 주석 참조" >> "$GITHUB_STEP_SUMMARY"
