@@ -1,5 +1,15 @@
 'use client'
 
+import { useEffect } from 'react'
+
+/**
+ * Global Error Boundary — 루트 layout 자체가 실패할 때만 발동.
+ * `app/error.tsx` 와 달리 <html>·<body> 가 없는 상태에서 렌더되므로
+ * 자체적으로 DOM 루트를 구성. 스타일링은 인라인으로.
+ *
+ * 이전 브루탈리즘 스타일(모노스페이스·검은 박스·CRITICAL ERROR 영문 라벨) 리프레시.
+ * Electric Indigo + Toss 톤으로 통일.
+ */
 export default function GlobalError({
   error,
   reset,
@@ -7,34 +17,149 @@ export default function GlobalError({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  useEffect(() => {
+    // PostHog 는 root layout 밖이라 import 불가 — console 만 기록
+    console.error('[global] Unhandled error:', error)
+  }, [error])
+
   return (
     <html lang="ko">
-      <body>
-        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#FAFAFA', fontFamily: 'monospace' }}>
-          <div style={{ maxWidth: 400, width: '100%', border: '2px solid #3F3F46', background: '#fff', padding: 40, textAlign: 'center', boxShadow: '4px 4px 0px 0px rgba(0,0,0,0.15)' }}>
-            <div style={{ width: 64, height: 64, background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
-              <span style={{ color: '#fff', fontWeight: 900, fontSize: 24 }}>!</span>
+      <body
+        style={{
+          margin: 0,
+          fontFamily:
+            '"Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+          background: '#F8F9FB',
+          color: '#1C1C1E',
+        }}
+      >
+        <div
+          style={{
+            minHeight: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '24px',
+          }}
+        >
+          <div
+            style={{
+              maxWidth: 420,
+              width: '100%',
+              background: '#FFFFFF',
+              border: '1px solid #E5E8EB',
+              borderRadius: 20,
+              padding: '40px 32px',
+              textAlign: 'center',
+              boxShadow: '0 4px 24px rgba(0, 0, 0, 0.06)',
+            }}
+          >
+            <div
+              style={{
+                width: 64,
+                height: 64,
+                borderRadius: 20,
+                background: 'rgba(255, 59, 48, 0.1)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 20px',
+              }}
+            >
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FF3B30" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
             </div>
-            <p style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#71717A', marginBottom: 8 }}>
-              CRITICAL ERROR
-            </p>
-            <h2 style={{ fontSize: 20, fontWeight: 700, color: '#18181B', marginBottom: 12 }}>
-              문제가 발생했습니다
+
+            <h2
+              style={{
+                fontSize: 20,
+                fontWeight: 800,
+                color: '#1C1C1E',
+                margin: '0 0 8px',
+                letterSpacing: '-0.01em',
+              }}
+            >
+              잠깐 문제가 생겼어요
             </h2>
-            <p style={{ fontSize: 14, color: '#71717A', marginBottom: 8 }}>
-              페이지를 불러올 수 없습니다. 다시 시도해주세요.
+            <p
+              style={{
+                fontSize: 14,
+                color: '#3A3A3C',
+                lineHeight: 1.5,
+                margin: '0 0 4px',
+              }}
+            >
+              앱을 불러오지 못했습니다. 새로고침으로 대부분 해결됩니다.
             </p>
             {error.digest && (
-              <p style={{ fontSize: 10, color: '#D4D4D8', marginBottom: 24 }}>
-                Error ID: {error.digest}
+              <p
+                style={{
+                  fontSize: 11,
+                  color: '#8E8E93',
+                  marginTop: 12,
+                  marginBottom: 0,
+                }}
+              >
+                문의 시:{' '}
+                <code
+                  style={{
+                    padding: '2px 6px',
+                    background: '#EEF0F3',
+                    borderRadius: 4,
+                    fontFamily:
+                      '"JetBrains Mono", Consolas, Menlo, monospace',
+                    fontSize: 10,
+                  }}
+                >
+                  {error.digest}
+                </code>
               </p>
             )}
-            <button
-              onClick={reset}
-              style={{ padding: '10px 24px', background: '#000', color: '#fff', border: '1px solid #000', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}
+
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 8,
+                marginTop: 28,
+              }}
             >
-              다시 시도
-            </button>
+              <button
+                onClick={reset}
+                style={{
+                  padding: '12px 20px',
+                  borderRadius: 12,
+                  border: 'none',
+                  background: '#5E6AD2',
+                  color: 'white',
+                  fontSize: 14,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px rgba(94, 106, 210, 0.2)',
+                }}
+              >
+                다시 시도
+              </button>
+              <a
+                href="/"
+                style={{
+                  padding: '12px 20px',
+                  borderRadius: 12,
+                  border: '1px solid #E5E8EB',
+                  background: '#FFFFFF',
+                  color: '#3A3A3C',
+                  fontSize: 14,
+                  fontWeight: 700,
+                  textDecoration: 'none',
+                  display: 'block',
+                }}
+              >
+                홈으로
+              </a>
+            </div>
           </div>
         </div>
       </body>
