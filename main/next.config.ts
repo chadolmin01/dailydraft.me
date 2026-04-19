@@ -123,6 +123,38 @@ const nextConfig: NextConfig = {
 
   // Exclude puppeteer from webpack bundling (not available on Vercel serverless)
   serverExternalPackages: ['puppeteer'],
+
+  // 보안 헤더 — 기본적인 방어선. CSP 는 복잡해서 나중에 (인라인 스타일·eval 정밀 튜닝 필요).
+  // 현재: clickjacking·MIME sniffing·referrer leak·기본 권한 제한.
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          // Clickjacking 방지 — iframe 임베드는 우리가 만든 /embed/* 만 허용
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+          // MIME type sniffing 방지
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          // Referrer 에 full URL 대신 origin 만 전송 (개인정보 누출 감소)
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          // 사용 안 하는 브라우저 기능 명시적 차단 (카메라·마이크·지오로케이션 등)
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
+          },
+          // XSS 보조 — 최신 브라우저는 대부분 무시하지만 구형 지원
+          { key: 'X-XSS-Protection', value: '1; mode=block' },
+        ],
+      },
+      {
+        // 임베드 페이지는 외부 사이트에서 iframe 으로 불러야 하므로 X-Frame-Options 덮어쓰기
+        source: '/embed/:path*',
+        headers: [
+          { key: 'X-Frame-Options', value: 'ALLOWALL' },
+        ],
+      },
+    ]
+  },
 }
 
 export default withPWA(nextConfig)
