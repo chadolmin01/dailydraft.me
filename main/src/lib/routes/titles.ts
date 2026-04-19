@@ -50,6 +50,11 @@ export const ROUTE_TITLES: Record<string, string> = {
   '/projects/new': '새 프로젝트',
   '/clubs/new': '새 클럽',
 
+  // 클럽 운영 서브 (클럽 slug 이후 경로 — longest-prefix 매칭이 파싱해서 해당 텍스트를 반환)
+  // 예: /clubs/abc/settings → '/clubs/:slug/settings' 대신 전체 경로 매칭이 안 되므로
+  // /clubs/ prefix 는 '클럽' 이 기본값. 아래는 /:slug 뒤 공통 경로별 오버라이드는
+  // 기술적으로 불가능하므로, 대신 /:slug 페이지는 각자의 server metadata 가 책임진다.
+
   // 기타 앱 내부
   '/drafts': '초안',
   '/business-plan': '사업계획서',
