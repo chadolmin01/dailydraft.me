@@ -27,7 +27,20 @@ export const ROUTE_TITLES: Record<string, string> = {
 
   // 관리자
   '/admin': '관리자',
+  '/admin/activity': '활동 로그 · 관리자',
+  '/admin/error-logs': '에러 로그 · 관리자',
+  '/admin/institutions': '기관 관리 · 관리자',
+  '/admin/invite-codes': '초대 코드 · 관리자',
+  '/admin/opportunities': '프로젝트 관리 · 관리자',
+  '/admin/users': '유저 관리 · 관리자',
+
+  // 기관 관리자
   '/institution': '기관 관리',
+  '/institution/announce': '공지 · 기관',
+  '/institution/business-plans': '사업계획서 · 기관',
+  '/institution/members': '멤버 · 기관',
+  '/institution/reports': '보고서 · 기관',
+  '/institution/teams': '팀 · 기관',
 
   // 온보딩
   '/onboarding': '시작하기',
@@ -36,6 +49,11 @@ export const ROUTE_TITLES: Record<string, string> = {
   // 생성 플로우
   '/projects/new': '새 프로젝트',
   '/clubs/new': '새 클럽',
+
+  // 클럽 운영 서브 (클럽 slug 이후 경로 — longest-prefix 매칭이 파싱해서 해당 텍스트를 반환)
+  // 예: /clubs/abc/settings → '/clubs/:slug/settings' 대신 전체 경로 매칭이 안 되므로
+  // /clubs/ prefix 는 '클럽' 이 기본값. 아래는 /:slug 뒤 공통 경로별 오버라이드는
+  // 기술적으로 불가능하므로, 대신 /:slug 페이지는 각자의 server metadata 가 책임진다.
 
   // 기타 앱 내부
   '/drafts': '초안',
