@@ -1,3 +1,8 @@
+/**
+ * @deprecated MVP 모드 숨김 (access manifest: tier='hidden', middleware 가 /explore 리다이렉트).
+ * 사업계획서 에디터는 초기 기능으로 구현되었으나 현재 클로즈드 베타에서는 핵심 경로 외.
+ * Phase C 에서 정부 지원사업 연계 재활성화 예정.
+ */
 'use client'
 
 import { useEffect, useState, Suspense } from 'react'

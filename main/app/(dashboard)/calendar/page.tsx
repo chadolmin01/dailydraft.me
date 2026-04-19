@@ -3,6 +3,11 @@
 import { PageContainer } from '@/components/ui/PageContainer'
 import { Section } from '@/components/ui/Section'
 
+/**
+ * @deprecated MVP 모드 숨김 (access manifest: tier='hidden', middleware 가 /explore 리다이렉트).
+ * 코드 보존용 — 추후 재활용 여부 판단 후 활성화 or 삭제 결정.
+ * 미사용 ≠ 불필요 원칙 (memory: feedback_no_delete_planned.md) 에 따라 유지.
+ */
 export default function CalendarPage() {
   return (
     <div className="bg-surface-bg min-h-full">
