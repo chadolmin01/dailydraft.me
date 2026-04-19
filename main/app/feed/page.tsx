@@ -126,6 +126,41 @@ function timeAgo(dateStr: string | null): string {
   return new Date(dateStr).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
 }
 
+/**
+ * 업데이트를 시간 버킷별로 그룹핑. 주단위 경계 기준.
+ * 버킷: 이번 주(7일 이내), 지난 주(7~14일), 이달(14~30일), 더 이전(30일+).
+ */
+type TimeBucket = 'this-week' | 'last-week' | 'this-month' | 'older'
+
+function bucketOf(dateStr: string | null): TimeBucket {
+  if (!dateStr) return 'older'
+  const days = (Date.now() - new Date(dateStr).getTime()) / 86_400_000
+  if (days <= 7) return 'this-week'
+  if (days <= 14) return 'last-week'
+  if (days <= 30) return 'this-month'
+  return 'older'
+}
+
+const BUCKET_LABEL: Record<TimeBucket, string> = {
+  'this-week': '이번 주',
+  'last-week': '지난 주',
+  'this-month': '이번 달',
+  'older': '더 이전',
+}
+
+const BUCKET_ORDER: TimeBucket[] = ['this-week', 'last-week', 'this-month', 'older']
+
+function groupByBucket(items: FeedItem[]): Array<{ bucket: TimeBucket; items: FeedItem[] }> {
+  const map = new Map<TimeBucket, FeedItem[]>()
+  for (const b of BUCKET_ORDER) map.set(b, [])
+  for (const item of items) {
+    map.get(bucketOf(item.created_at))!.push(item)
+  }
+  return BUCKET_ORDER
+    .map(b => ({ bucket: b, items: map.get(b)! }))
+    .filter(g => g.items.length > 0)
+}
+
 export async function generateMetadata({
   searchParams,
 }: {
@@ -163,6 +198,13 @@ export default async function FeedPage({
   const activeCategory = params.category?.trim() || undefined
   const { items, categories } = await fetchFeedItems({ category: activeCategory })
 
+  // 상단 stats — SEO·첫인상·정보 밀도. 중복 제거로 실 숫자.
+  const uniqueClubs = new Set(items.map(i => i.club?.slug).filter(Boolean)).size
+  const uniqueProjects = new Set(items.map(i => i.opportunity.id)).size
+  const thisWeekCount = items.filter(i => bucketOf(i.created_at) === 'this-week').length
+
+  const groups = groupByBucket(items)
+
   return (
     <div className="min-h-screen bg-surface-bg">
       <div className="max-w-[780px] mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-16">
@@ -172,12 +214,35 @@ export default async function FeedPage({
             <p className="text-[12px] font-semibold text-brand">공개 활동 피드</p>
           </div>
           <h1 className="text-[28px] sm:text-[32px] font-bold text-txt-primary tracking-tight">
-            클럽들의 이번 주
+            {activeCategory ? `${activeCategory} 클럽들의 기록` : '클럽들의 이번 주'}
           </h1>
           <p className="text-[14px] text-txt-secondary mt-1.5">
             공개된 창업동아리·학회·프로젝트 그룹의 최신 주간 기록입니다
           </p>
         </header>
+
+        {/* Stats strip — 정보 밀도 + SEO 시그널 */}
+        {items.length > 0 && (
+          <div className="flex items-center gap-4 mb-6 px-4 py-3 bg-surface-card border border-border rounded-2xl text-[13px]">
+            <div>
+              <span className="text-txt-tertiary">이번 주 </span>
+              <span className="font-bold text-txt-primary tabular-nums">{thisWeekCount}</span>
+              <span className="text-txt-tertiary">건</span>
+            </div>
+            <span className="text-border">·</span>
+            <div>
+              <span className="text-txt-tertiary">클럽 </span>
+              <span className="font-bold text-txt-primary tabular-nums">{uniqueClubs}</span>
+              <span className="text-txt-tertiary">개</span>
+            </div>
+            <span className="text-border">·</span>
+            <div>
+              <span className="text-txt-tertiary">프로젝트 </span>
+              <span className="font-bold text-txt-primary tabular-nums">{uniqueProjects}</span>
+              <span className="text-txt-tertiary">개</span>
+            </div>
+          </div>
+        )}
 
         {categories.length > 0 && (
           <div className="flex gap-2 overflow-x-auto mb-6 pb-1" style={{ scrollbarWidth: 'none' }}>
@@ -210,12 +275,38 @@ export default async function FeedPage({
         {items.length === 0 ? (
           <div className="bg-surface-card border border-border rounded-2xl p-12 text-center">
             <FileText size={28} className="text-txt-disabled mx-auto mb-3" />
-            <p className="text-[15px] font-semibold text-txt-primary mb-1">아직 공개된 기록이 없습니다</p>
-            <p className="text-[13px] text-txt-tertiary">곧 새로운 클럽들이 활동을 공유할 예정입니다</p>
+            {activeCategory ? (
+              <>
+                <p className="text-[15px] font-semibold text-txt-primary mb-1">
+                  <span className="text-brand">{activeCategory}</span> 카테고리에 아직 공개된 기록이 없습니다
+                </p>
+                <p className="text-[13px] text-txt-tertiary mb-4">다른 카테고리를 둘러보세요</p>
+                <Link
+                  href="/feed"
+                  className="inline-flex items-center gap-1 px-4 py-2 text-[13px] font-semibold bg-surface-inverse text-txt-inverse rounded-full hover:opacity-90 transition-opacity"
+                >
+                  전체 피드 보기
+                </Link>
+              </>
+            ) : (
+              <>
+                <p className="text-[15px] font-semibold text-txt-primary mb-1">아직 공개된 기록이 없습니다</p>
+                <p className="text-[13px] text-txt-tertiary">곧 새로운 클럽들이 활동을 공유할 예정입니다</p>
+              </>
+            )}
           </div>
         ) : (
+          <div className="space-y-8">
+          {groups.map(group => (
+          <section key={group.bucket}>
+            <h2 className="text-[11px] font-bold text-txt-tertiary uppercase tracking-wider mb-3 sticky top-0 bg-surface-bg/80 backdrop-blur-sm py-1 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 z-[1]">
+              {BUCKET_LABEL[group.bucket]}
+              <span className="ml-2 text-txt-disabled normal-case tracking-normal font-medium">
+                {group.items.length}건
+              </span>
+            </h2>
           <ul className="space-y-3">
-            {items.map(item => {
+            {group.items.map(item => {
               const cfg = UPDATE_TYPE_CONFIG[item.update_type] ?? UPDATE_TYPE_CONFIG.general
               const [firstLine, ...rest] = item.content.split('\n')
               return (
@@ -273,6 +364,9 @@ export default async function FeedPage({
               )
             })}
           </ul>
+          </section>
+          ))}
+          </div>
         )}
 
         <div className="mt-10 bg-gradient-to-br from-brand to-brand/80 text-white rounded-2xl p-6 flex items-center gap-4">
