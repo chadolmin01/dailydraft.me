@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 import { logError } from '@/src/lib/error-logging'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { applyRateLimit, getClientIp } from '@/src/lib/rate-limit'
 
 /**
  * 브라우저 에러를 받아 `error_logs` DB에 기록.
@@ -9,8 +10,14 @@ import { ApiResponse } from '@/src/lib/api-utils'
  *
  * - `withErrorCapture`로 감싸 라우트 자체 오류도 추적됨.
  * - 유효하지 않은 페이로드는 조용히 무시하고 200 반환 (클라이언트 루프 방지).
+ * - 익명 IP 기반 rate limit: 프론트 무한 루프·악의적 flood 방어 (anon 분당 20건).
+ *   한도 초과 시 429지만 본 엔드포인트는 "로그 삭제"가 아니라 일시 유실이라 안전.
  */
 export const POST = withErrorCapture(async (req: NextRequest) => {
+  // Rate limit 먼저 — 로그 insert 전에 차단해야 DB/로그 폭주 방지.
+  const rateLimitResponse = applyRateLimit(null, getClientIp(req))
+  if (rateLimitResponse) return rateLimitResponse
+
   let body: Record<string, unknown> | null = null
   try {
     body = await req.json()

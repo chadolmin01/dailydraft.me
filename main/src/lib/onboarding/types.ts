@@ -122,4 +122,10 @@ export interface ProfileDraft {
   situation: string
   skills: string[]
   interests: string[]
+  // Phase 1-a: 학생 신원 (이메일 도메인으로 감지 + 학번 수기).
+  // 재학생 경로에서만 채워지며, 비-학생/졸업생은 비움.
+  studentId?: string
+  department?: string
+  universityId?: string
+  entranceYear?: number
 }

@@ -4,6 +4,11 @@ import { parseNickname } from '@/src/lib/clean-nickname'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 import { autoEnrollByEmail, autoEnrollByUniversity } from '@/src/lib/institution/auto-enroll'
 import { captureServerEvent } from '@/src/lib/posthog/server'
+import {
+  findUniversityByEmail,
+  parseEntranceYearFromStudentId,
+  isValidStudentIdFormat,
+} from '@/src/lib/universities'
 import type { TablesInsert } from '@/src/types/database'
 
 export const POST = withErrorCapture(async (request) => {
@@ -30,23 +35,52 @@ export const POST = withErrorCapture(async (request) => {
       personality,
       visionSummary,
       aiChatCompleted,
+      // Phase 1-a: 학생 신원 필드
+      studentId,
+      department,
+      universityId,
+      entranceYear,
     } = body
 
-    // Validate required fields
-    if (!nickname || !location || !currentSituation) {
-      return ApiResponse.badRequest('닉네임, 지역, 현재 상황은 필수 입력 항목입니다')
+    // 최소 필수: 닉네임만. location/currentSituation은 슬림 플로우에서 옵셔널.
+    // 기존 풀 온보딩도 이 API를 쓰므로 필수는 닉네임으로만 축소.
+    if (!nickname) {
+      return ApiResponse.badRequest('닉네임은 필수 입력 항목입니다')
     }
 
     // Sanitize nickname: extract name if it contains [affiliation](department)
     const parsed = parseNickname(nickname)
     const cleanName = parsed.name
     const inferredUniversity = university || parsed.department || null
-    const inferredMajor = major || null
+    const inferredMajor = major || department || null
+
+    // ── Phase 1-a: 이메일 도메인 기반 학생 신원 검증 ──
+    // 의도: @ac.kr 이메일이고 universities DB 매칭되면 자동으로 university_id + student_verified_at 세팅.
+    // 이게 없으면 학번 입력해도 "인증된 학생" 아님 → B2B 리포트에서 빠짐.
+    // 매칭 없어도 학번 자체는 저장 (나중에 학교 추가되면 retroactive 인증 가능).
+    let resolvedUniversityId: string | null = universityId || null
+    let studentVerifiedAt: string | null = null
+    let verificationMethod: string | null = null
+
+    if (user.email && !resolvedUniversityId) {
+      const matched = await findUniversityByEmail(supabase, user.email)
+      if (matched) {
+        resolvedUniversityId = matched.id
+      }
+    }
+
+    if (resolvedUniversityId && studentId && isValidStudentIdFormat(studentId)) {
+      // 이메일 도메인으로 대학 특정 + 학번 형식 OK → 1차 검증 완료
+      studentVerifiedAt = new Date().toISOString()
+      verificationMethod = 'email_domain'
+    }
+
+    const parsedEntranceYear =
+      entranceYear ?? (studentId ? parseEntranceYearFromStudentId(studentId) : null)
 
     // 기본 프로필 데이터
     const profileData: Record<string, unknown> = {
       user_id: user.id,
-      current_situation: currentSituation,
       nickname: cleanName,
       university: inferredUniversity,
       major: inferredMajor,
@@ -55,6 +89,7 @@ export const POST = withErrorCapture(async (request) => {
       interest_tags: interestTags || [],
       desired_position: desiredPosition,
       personality: personality || { risk: 3, time: 3, communication: 3, planning: 3, quality: 3, teamRole: 3 },
+      ...(currentSituation && { current_situation: currentSituation }),
       ...(visionSummary && { vision_summary: visionSummary }),
       onboarding_completed: true,
       ...(aiChatCompleted && { ai_chat_completed: true }),
@@ -65,6 +100,13 @@ export const POST = withErrorCapture(async (request) => {
       age_range: ageRange || null,
       affiliation_type: affiliationType || 'student',
       graduation_year: graduationYear ? parseInt(graduationYear) : null,
+      // Phase 1-a 학적 필드 (마이그레이션 적용 전엔 schema cache 에러로 재시도 경로 진입)
+      ...(resolvedUniversityId && { university_id: resolvedUniversityId }),
+      ...(studentId && { student_id: studentId }),
+      ...(department && { department }),
+      ...(parsedEntranceYear && { entrance_year: parsedEntranceYear }),
+      ...(studentVerifiedAt && { student_verified_at: studentVerifiedAt }),
+      ...(verificationMethod && { student_verification_method: verificationMethod }),
     }
 
     const fullData = { ...profileData, ...optionalFields }
@@ -100,6 +142,9 @@ export const POST = withErrorCapture(async (request) => {
       interest_count: Array.isArray(interestTags) ? interestTags.length : 0,
       affiliation_type: affiliationType || 'student',
       has_university: !!university,
+      has_student_id: !!studentId,
+      student_verified: !!studentVerifiedAt,
+      verification_method: verificationMethod,
     }).catch(() => {})
 
     // ── Background tasks (non-blocking) ──

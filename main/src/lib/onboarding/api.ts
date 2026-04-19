@@ -11,11 +11,16 @@ export async function saveProfileCheckpoint(profile: ProfileDraft): Promise<void
       affiliationType: profile.affiliationType || 'student',
       university: profile.university || undefined,
       major: profile.major || undefined,
-      location: profile.locations.length > 0 ? profile.locations.join(', ') : '미설정',
-      currentSituation: profile.situation || 'exploring',
+      location: profile.locations.length > 0 ? profile.locations.join(', ') : undefined,
+      currentSituation: profile.situation || undefined,
       skills: profile.skills.map(s => ({ name: s })),
       interestTags: profile.interests,
       personality: { risk: 3, time: 3, communication: 3, planning: 3, quality: 3, teamRole: 3 },
+      // Phase 1-a
+      studentId: profile.studentId,
+      department: profile.department,
+      universityId: profile.universityId,
+      entranceYear: profile.entranceYear,
     }),
   })
   if (!res.ok) {
@@ -65,13 +70,18 @@ export async function saveProfileFromInterview(
       affiliationType: profile.affiliationType || 'student',
       university: profile.university || undefined,
       major: profile.major || undefined,
-      location: profile.locations.length > 0 ? profile.locations.join(', ') : '미설정',
+      location: profile.locations.length > 0 ? profile.locations.join(', ') : undefined,
       currentSituation: profile.situation || 'exploring',
       skills: profile.skills.map(s => ({ name: s })),
       interestTags: profile.interests,
       personality: { risk, time, communication, planning, quality, teamRole },
       visionSummary: JSON.stringify(visionSummary),
       aiChatCompleted: true,
+      // Phase 1-a
+      studentId: profile.studentId,
+      department: profile.department,
+      universityId: profile.universityId,
+      entranceYear: profile.entranceYear,
     }),
   })
 
