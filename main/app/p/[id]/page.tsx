@@ -75,5 +75,51 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProjectDetailPage({ params }: Props) {
   const { id } = await params
-  return <ProjectDetailClient id={id} />
+
+  // JSON-LD 구조화 데이터 — Rich Result 후보. 서버에서 prefetch 후 <script> 주입.
+  // 실패해도 페이지 자체는 렌더되므로 try/catch 로 감쌈.
+  let jsonLd: Record<string, unknown> | null = null
+  try {
+    const supabase = createClient(supabaseUrl, supabaseAnonKey)
+    const { data: opp } = await supabase
+      .from('opportunities')
+      .select('title, description, interest_tags, type, created_at, updated_at')
+      .eq('id', id)
+      .single()
+
+    if (opp) {
+      jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'CreativeWork',
+        name: opp.title,
+        description: opp.description?.slice(0, 500) ?? undefined,
+        url: `${APP_URL}/p/${id}`,
+        image: `${APP_URL}/api/og/project/${id}`,
+        dateCreated: opp.created_at,
+        dateModified: opp.updated_at ?? opp.created_at,
+        keywords: Array.isArray(opp.interest_tags) ? opp.interest_tags.join(', ') : undefined,
+        isAccessibleForFree: true,
+        publisher: {
+          '@type': 'Organization',
+          name: 'Draft',
+          url: APP_URL,
+        },
+      }
+    }
+  } catch {
+    // JSON-LD 생성 실패는 조용히 스킵 — 페이지 렌더는 진행
+  }
+
+  return (
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+      <ProjectDetailClient id={id} />
+    </>
+  )
 }
