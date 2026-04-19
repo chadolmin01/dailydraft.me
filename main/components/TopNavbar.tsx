@@ -210,12 +210,13 @@ export const TopNavbar: React.FC = () => {
             <span className="font-bold text-lg tracking-tight hidden sm:block">Draft</span>
           </Link>
 
-          {/* ===== 데스크탑 네비게이션 (pill tabs) — 홈을 최상단에 ===== */}
+          {/* ===== 데스크탑 네비게이션 (pill tabs) — 홈을 최상단에 =====
+              사람은 독립 탐색 니즈가 약해(매칭·팀·클럽 맥락 속에서 발견됨) GNB 에서 제거.
+              /network 라우트는 유지 — /explore 의 "사람 →" 보조 링크와 /more 에서 접근 가능. */}
           <div className="hidden md:flex items-center bg-surface-sunken/60 p-0.5 rounded-full">
             <NavPill href="/dashboard" active={pathname === '/dashboard'}>홈</NavPill>
             <NavPill href="/explore" active={pathname === '/explore'}>발견</NavPill>
             <NavPill href="/projects" active={pathname?.startsWith('/projects') ?? false}>프로젝트</NavPill>
-            <NavPill href="/network" active={pathname === '/network'}>사람</NavPill>
             <NavPill href="/clubs" active={pathname?.startsWith('/clubs') ?? false}>클럽</NavPill>
           </div>
 
