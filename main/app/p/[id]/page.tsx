@@ -40,6 +40,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
       title,
       description,
+      // SEO: 쿼리 파라미터 있는 공유 링크도 canonical 로 통합 → 중복 색인 방지
+      alternates: {
+        canonical: `${appUrl}/p/${id}`,
+      },
       openGraph: {
         title: opportunity.title,
         description,
