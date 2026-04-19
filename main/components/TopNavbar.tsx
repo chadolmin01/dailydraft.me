@@ -200,7 +200,9 @@ export const TopNavbar: React.FC = () => {
             ? 'bg-surface-card/80 backdrop-blur-xl shadow-md'
             : 'bg-surface-card/60 backdrop-blur-md'
         }`} />
-        <div className="relative w-full px-2.5 sm:px-10 lg:px-16 xl:px-24 h-full flex items-center gap-2 sm:gap-3">
+        {/* GNB 내부 컨텐츠도 페이지 컨테이너(max-w-[1400px] + px-4 sm:px-6 lg:px-8) 와 정합 —
+            이전 px-24 는 콘텐츠 영역 대비 3배 커서 좌우 여백 과다 */}
+        <div className="relative max-w-[1400px] mx-auto w-full px-4 sm:px-6 lg:px-8 h-full flex items-center gap-2 sm:gap-3">
 
           {/* ===== 좌측: 로고 ===== */}
           <Link href="/dashboard" className="flex items-center gap-2.5 shrink-0 group mr-1">
