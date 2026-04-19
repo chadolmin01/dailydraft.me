@@ -1,6 +1,5 @@
 import * as React from 'react'
-import { renderToStaticMarkup } from 'react-dom/server'
-import { emailTokens, emailStyles } from './_layout'
+import { emailTokens, emailStyles, renderEmail } from './_layout'
 
 const t = emailTokens
 
@@ -176,5 +175,5 @@ function DigestEmail({
 }
 
 export function renderOperatorDigestEmail(props: OperatorDigestProps): string {
-  return '<!DOCTYPE html>' + renderToStaticMarkup(<DigestEmail {...props} />)
+  return '<!DOCTYPE html>' + renderEmail(<DigestEmail {...props} />)
 }
