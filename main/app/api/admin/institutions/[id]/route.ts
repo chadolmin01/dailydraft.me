@@ -34,7 +34,8 @@ export const PATCH = withErrorCapture(async (
     return ApiResponse.badRequest('수정할 항목이 없습니다')
   }
 
-  const { data, error } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase as any)
     .from('institutions')
     .update(updates)
     .eq('id', id)
