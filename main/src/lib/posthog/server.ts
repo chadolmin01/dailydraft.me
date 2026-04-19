@@ -1,5 +1,6 @@
 import { PostHog } from 'posthog-node'
 import { logError, sanitizeBody, type LogErrorOptions } from '@/src/lib/error-logging'
+import { sendAlert, getReleaseTag } from '@/src/lib/alerts/discord-alert'
 
 let _client: PostHog | null = null
 
@@ -55,6 +56,9 @@ export async function captureServerError(
   const safeQuery = context.query ? sanitizeBody(context.query) : undefined
   const safeExtra = context.extra ? sanitizeBody(context.extra) : undefined
 
+  // release 태그 (git SHA) — PostHog 이벤트에 자동 포함. Sentry-style release tracking.
+  const release = getReleaseTag()
+
   client.capture({
     distinctId,
     event: '$exception',
@@ -62,6 +66,7 @@ export async function captureServerError(
       $exception_type: err.name,
       $exception_message: err.message,
       $exception_stack: err.stack,
+      $release: release,
       route: context.route,
       method: context.method,
       statusCode: context.statusCode,
@@ -73,6 +78,7 @@ export async function captureServerError(
       digest: context.digest,
       source: context.source ?? 'api',
       jobName: context.jobName,
+      release,
       ...safeExtra,
     },
   })
@@ -153,5 +159,24 @@ export async function captureAndLog(
   await Promise.allSettled([
     captureServerError(error, context).catch(() => {}),
     logError(dbPayload).catch(() => {}),
+    // Discord 웹훅 알림 — 프로덕션 + 5xx 에러만 (4xx 는 클라이언트 오작동으로 간주, 알림 노이즈 방지)
+    // fingerprint 기반 1분 쿨다운은 sendAlert 내부에서 처리.
+    (context.statusCode === undefined || context.statusCode >= 500)
+      ? sendAlert({
+          severity: 'error',
+          title: `${err.name} in ${context.route}`,
+          message: err.message.slice(0, 500),
+          url: context.route,
+          userId: context.userId,
+          release: getReleaseTag(),
+          context: {
+            method: context.method,
+            statusCode: context.statusCode,
+            digest: context.digest,
+            jobName: context.jobName,
+            source: context.source,
+          },
+        }).catch(() => {})
+      : Promise.resolve(),
   ])
 }
