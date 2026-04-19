@@ -51,6 +51,11 @@ const nextConfig: NextConfig = {
   images: {
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
+    // AVIF 우선(가장 작음), fallback WebP. 최신 브라우저 대부분 지원.
+    // 대용량 이미지(업로드 avatar·club logo) 네트워크 비용 30~50% 감소.
+    formats: ['image/avif', 'image/webp'],
+    // 사용자 업로드 이미지 최대 크기 — 모바일 기준 과도 큰 원본 방지
+    minimumCacheTTL: 60 * 60 * 24, // 24h
     remotePatterns: [
       // Supabase Storage
       {
