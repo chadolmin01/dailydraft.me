@@ -135,20 +135,6 @@ export const CHANNEL_BRANDS: Record<ChannelFormat, ChannelBrand> = {
     inactiveHoverClass: 'hover:text-[#5865F2]',
     is_copy_only: false,
   },
-
-  threads_post: {
-    label: 'Threads',
-    description:
-      'Meta Threads 에 공유할 포스트입니다. 500자 제한·체인 형식에 맞춰 다듬었습니다.',
-    action_verb: '복사해서 올리기',
-    icon: Hash,
-    accent: 'bg-[#000000]',
-    bg: 'bg-[#000000]/8',
-    text: 'text-[#000000]',
-    activeClass: 'bg-[#000000] text-white',
-    inactiveHoverClass: 'hover:text-[#000000]',
-    is_copy_only: true,
-  },
 }
 
 /** 유틸: 아이콘만 필요할 때 */
