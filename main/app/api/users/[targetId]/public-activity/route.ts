@@ -12,6 +12,7 @@
  * 왜 anon client: 비로그인도 포트폴리오 링크를 볼 수 있어야 함. RLS 가 알아서 막음.
  */
 
+import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
@@ -134,20 +135,29 @@ export const GET = withErrorCapture(async (_request, context) => {
     })
   }
 
-  return ApiResponse.ok({
-    clubs: (clubRes.data ?? []).map(m => ({
-      role: m.role,
-      cohort: m.cohort,
-      joined_at: m.joined_at,
-      status: m.status,
-      club: m.club as unknown as { id: string; slug: string; name: string; logo_url: string | null; category: string | null } | null,
-    })),
-    projects: Array.from(projectMap.values()).sort((a, b) =>
-      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    ),
-    contributions: {
-      updates: (updates ?? []).length,
-      latest_update_at: latestUpdate?.created_at ?? null,
+  // CDN 캐시: 공개 활동 이력은 자주 변하지 않음 (새 업데이트·프로젝트 가입 시에만).
+  // 60s fresh + 600s stale-while-revalidate → /u/[id] 공유 링크 크롤러·재방문 성능 개선.
+  return NextResponse.json(
+    {
+      clubs: (clubRes.data ?? []).map(m => ({
+        role: m.role,
+        cohort: m.cohort,
+        joined_at: m.joined_at,
+        status: m.status,
+        club: m.club as unknown as { id: string; slug: string; name: string; logo_url: string | null; category: string | null } | null,
+      })),
+      projects: Array.from(projectMap.values()).sort((a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      ),
+      contributions: {
+        updates: (updates ?? []).length,
+        latest_update_at: latestUpdate?.created_at ?? null,
+      },
     },
-  })
+    {
+      headers: {
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=600',
+      },
+    },
+  )
 })
