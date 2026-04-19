@@ -21,6 +21,7 @@ import {
   MessageCircle,
   AtSign,
   Megaphone,
+  Hash,
   type LucideIcon,
 } from 'lucide-react'
 import type { ChannelFormat } from '@/src/lib/personas/types'
@@ -76,6 +77,20 @@ export const CHANNEL_BRANDS: Record<ChannelFormat, ChannelBrand> = {
     text: 'text-[#0A66C2]',
     activeClass: 'bg-[#0A66C2] text-white',
     inactiveHoverClass: 'hover:text-[#0A66C2]',
+    is_copy_only: true,
+  },
+
+  threads_post: {
+    label: 'Threads',
+    description:
+      '짧고 가벼운 Threads용 포스트입니다. 내용이 길면 체인(여러 포스트)으로 자동 분할됩니다.',
+    action_verb: '복사해서 올리기',
+    icon: Hash,
+    accent: 'bg-[#1C1C1E]',
+    bg: 'bg-[#1C1C1E]/6',
+    text: 'text-[#1C1C1E]',
+    activeClass: 'bg-[#1C1C1E] text-white',
+    inactiveHoverClass: 'hover:text-[#1C1C1E]',
     is_copy_only: true,
   },
 

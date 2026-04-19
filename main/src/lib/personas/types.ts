@@ -95,6 +95,7 @@ export const CHANNEL_FORMATS = [
   'linkedin_post',            // 링크드인 장문 (R3.1 복사, R3.4 자동)
   'everytime_post',           // 에브리타임 복사 전용 (영구 수동)
   'email_newsletter',         // 이메일 뉴스레터 (R3.4 자동 발송)
+  'threads_post',             // Threads 포스트 (R3.1 복사, R3.4 자동)
 ] as const
 export type ChannelFormat = (typeof CHANNEL_FORMATS)[number]
 

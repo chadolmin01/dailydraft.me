@@ -36,6 +36,7 @@ const CHANNEL_LABELS: Record<ChannelFormat, string> = {
   linkedin_post: CHANNEL_BRANDS.linkedin_post.label,
   everytime_post: CHANNEL_BRANDS.everytime_post.label,
   email_newsletter: CHANNEL_BRANDS.email_newsletter.label,
+  threads_post: CHANNEL_BRANDS.threads_post.label,
 }
 
 export function BundleDetailClient({ bundleId, canApprove, slug }: Props) {

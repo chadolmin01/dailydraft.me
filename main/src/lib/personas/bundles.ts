@@ -167,11 +167,12 @@ export async function createBundle(
     ),
   )
   // DB channel_type → adapter channel_format 매핑
-  // linkedin → linkedin_post, instagram → instagram_caption, threads → threads(미구현)
+  // linkedin → linkedin_post, instagram → instagram_caption, threads → threads_post
+  // (R3.1: threads 콘텐츠 생성까지. R3.4에서 Graph API 체인 자동 발행 연결)
   const CHANNEL_TO_FORMAT: Record<string, ChannelFormat[]> = {
     linkedin: ['linkedin_post'],
     instagram: ['instagram_caption'],
-    // threads: ['threads_post'], // R3.4+
+    threads: ['threads_post'],
   }
   const autoPublishFormats = new Set<ChannelFormat>()
   for (const ch of connectedChannels) {

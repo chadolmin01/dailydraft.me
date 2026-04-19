@@ -7,6 +7,7 @@ import type { AdapterInput, AdapterOutput, ChannelAdapter } from './types'
 import { discordForumMarkdownAdapter } from './discord-forum-markdown'
 import { instagramCaptionAdapter } from './instagram-caption'
 import { linkedinPostAdapter } from './linkedin-post'
+import { threadsPostAdapter } from './threads-post'
 import { everytimePostAdapter } from './everytime-post'
 import { emailNewsletterAdapter } from './email-newsletter'
 
@@ -14,6 +15,7 @@ export const ADAPTERS_BY_FORMAT: Record<ChannelFormat, ChannelAdapter> = {
   discord_forum_markdown: discordForumMarkdownAdapter,
   instagram_caption: instagramCaptionAdapter,
   linkedin_post: linkedinPostAdapter,
+  threads_post: threadsPostAdapter,
   everytime_post: everytimePostAdapter,
   email_newsletter: emailNewsletterAdapter,
 }
