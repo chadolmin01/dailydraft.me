@@ -16,6 +16,11 @@ import {
   notifyDiscordUpdateRemind,
   notifyDiscordAnnouncement,
 } from './discord'
+import {
+  notifySlackUpdatePosted,
+  notifySlackUpdateRemind,
+  notifySlackAnnouncement,
+} from './slack'
 
 type WebhookEventType = 'update_posted' | 'update_remind' | 'announcement'
 
@@ -92,7 +97,11 @@ export async function sendClubUpdatePostedWebhook(params: {
             ...params,
             projectUrl: `${baseUrl}/p/${params.opportunityId}`,
           })
-        // 향후 slack_webhook 추가 시 여기에 case 추가
+        case 'slack_webhook':
+          return notifySlackUpdatePosted(ch.webhook_url, {
+            ...params,
+            projectUrl: `${baseUrl}/p/${params.opportunityId}`,
+          })
         default:
           return Promise.resolve(false)
       }
@@ -119,6 +128,11 @@ export async function sendClubUpdateRemindWebhook(params: {
             ...params,
             draftUrl: baseUrl,
           })
+        case 'slack_webhook':
+          return notifySlackUpdateRemind(ch.webhook_url, {
+            ...params,
+            draftUrl: baseUrl,
+          })
         default:
           return Promise.resolve(false)
       }
@@ -141,6 +155,8 @@ export async function sendClubAnnouncementWebhook(params: {
       switch (ch.channel_type) {
         case 'discord_webhook':
           return notifyDiscordAnnouncement(ch.webhook_url, params)
+        case 'slack_webhook':
+          return notifySlackAnnouncement(ch.webhook_url, params)
         default:
           return Promise.resolve(false)
       }

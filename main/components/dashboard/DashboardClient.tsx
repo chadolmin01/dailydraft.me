@@ -19,6 +19,7 @@ import { useUnreadCount } from '@/src/hooks/useMessages'
 import { useProjectInvitations } from '@/src/hooks/useProjectInvitations'
 import { PageContainer } from '@/components/ui/PageContainer'
 import PendingDraftCard from '@/components/dashboard/PendingDraftCard'
+import { ProfileCompletionCard } from '@/components/dashboard/ProfileCompletionCard'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { withRetry } from '@/src/lib/query-utils'
 
@@ -84,6 +85,25 @@ export default function DashboardClient() {
       const { count } = res.ok ? await res.json() : { count: 0 }
       // 미제출 팀 수 — my projects 중 lastUpdate가 7일 넘은 것
       return { pendingApps: count ?? 0, missingTeams: 0 }
+    }),
+    enabled: !isAuthLoading && !!user && isOperator,
+    staleTime: 1000 * 60 * 2,
+  })
+
+  // 다중 클럽 미제출 집계 — 운영 중인 클럽별 이번주 pending 팀 수
+  const { data: operatorPending = [] } = useQuery<Array<{
+    id: string
+    slug: string
+    name: string
+    total_teams: number
+    pending_count: number
+  }>>({
+    queryKey: ['operator-pending', user?.id],
+    queryFn: () => withRetry(async () => {
+      const res = await fetch('/api/users/operator-pending')
+      if (!res.ok) return []
+      const body = await res.json()
+      return body.data ?? body ?? []
     }),
     enabled: !isAuthLoading && !!user && isOperator,
     staleTime: 1000 * 60 * 2,
@@ -289,47 +309,64 @@ export default function DashboardClient() {
               <h2 className="text-[17px] font-bold text-txt-primary">운영 중인 클럽</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {operatorClubs.map(club => (
-                <Link
-                  key={club.slug}
-                  href={`/clubs/${club.slug}`}
-                  className="bg-surface-card rounded-2xl border border-border p-5 hover:shadow-md hover:-translate-y-0.5 hover-spring group"
-                >
-                  <div className="flex items-center gap-3 mb-3">
-                    {club.logo_url ? (
-                      <Image src={club.logo_url} alt={club.name} width={40} height={40} className="rounded-xl object-cover shrink-0" />
-                    ) : (
-                      <div className="w-10 h-10 rounded-xl bg-brand-bg flex items-center justify-center text-sm font-extrabold text-brand shrink-0">
-                        {club.name[0]}
-                      </div>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <h3 className="font-bold text-[15px] text-txt-primary truncate">{club.name}</h3>
-                      </div>
-                      <span className="text-[11px] font-semibold text-brand">
-                        {club.role === 'owner' ? '대표' : '운영진'}
-                      </span>
-                    </div>
-                    <ArrowRight size={14} className="text-txt-disabled group-hover:text-txt-primary group-hover:translate-x-0.5 transition-all shrink-0" />
-                  </div>
-                  <div className="flex items-center gap-3 pt-3 border-t border-border text-[12px]">
-                    <div>
-                      <span className="text-txt-tertiary">멤버</span>
-                      <span className="ml-1 font-bold text-txt-primary tabular-nums">{club.member_count}</span>
-                    </div>
-                    {club.cohort && (
-                      <>
-                        <span className="text-border">·</span>
-                        <div>
-                          <span className="text-txt-tertiary">기수</span>
-                          <span className="ml-1 font-bold text-txt-primary">{club.cohort}</span>
+              {operatorClubs.map(club => {
+                const pending = operatorPending.find(p => p.slug === club.slug)
+                return (
+                  <Link
+                    key={club.slug}
+                    href={pending && pending.pending_count > 0 ? `/clubs/${club.slug}/operator` : `/clubs/${club.slug}`}
+                    className="bg-surface-card rounded-2xl border border-border p-5 hover:shadow-md hover:-translate-y-0.5 hover-spring group"
+                  >
+                    <div className="flex items-center gap-3 mb-3">
+                      {club.logo_url ? (
+                        <Image src={club.logo_url} alt={club.name} width={40} height={40} className="rounded-xl object-cover shrink-0" />
+                      ) : (
+                        <div className="w-10 h-10 rounded-xl bg-brand-bg flex items-center justify-center text-sm font-extrabold text-brand shrink-0">
+                          {club.name[0]}
                         </div>
-                      </>
-                    )}
-                  </div>
-                </Link>
-              ))}
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <h3 className="font-bold text-[15px] text-txt-primary truncate">{club.name}</h3>
+                          {pending && pending.pending_count > 0 && (
+                            <span className="shrink-0 text-[10px] font-bold text-status-danger-text bg-status-danger-bg px-1.5 py-0.5 rounded-full">
+                              미제출 {pending.pending_count}
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-[11px] font-semibold text-brand">
+                          {club.role === 'owner' ? '대표' : '운영진'}
+                        </span>
+                      </div>
+                      <ArrowRight size={14} className="text-txt-disabled group-hover:text-txt-primary group-hover:translate-x-0.5 transition-all shrink-0" />
+                    </div>
+                    <div className="flex items-center gap-3 pt-3 border-t border-border text-[12px]">
+                      <div>
+                        <span className="text-txt-tertiary">멤버</span>
+                        <span className="ml-1 font-bold text-txt-primary tabular-nums">{club.member_count}</span>
+                      </div>
+                      {pending && pending.total_teams > 0 && (
+                        <>
+                          <span className="text-border">·</span>
+                          <div>
+                            <span className="text-txt-tertiary">팀</span>
+                            <span className="ml-1 font-bold text-txt-primary tabular-nums">{pending.total_teams}</span>
+                          </div>
+                        </>
+                      )}
+                      {club.cohort && (
+                        <>
+                          <span className="text-border">·</span>
+                          <div>
+                            <span className="text-txt-tertiary">기수</span>
+                            <span className="ml-1 font-bold text-txt-primary">{club.cohort}</span>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </Link>
+                )
+              })}
               {/* 새 클럽 만들기 카드 — 운영자도 추가 가능 */}
               <Link
                 href="/clubs/new"
@@ -347,25 +384,56 @@ export default function DashboardClient() {
         {/* ═══════════════════════════════════ */}
         {!isOperator && (
           <section className="mb-10">
-            <Link
-              href="/clubs/new"
-              className="block bg-gradient-to-br from-brand to-brand/80 text-white rounded-2xl p-6 hover:shadow-lg hover:-translate-y-0.5 hover-spring group"
-            >
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center shrink-0">
-                  <Rocket size={24} className="text-white" />
+            <div className="bg-surface-card border border-border rounded-2xl p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-brand-bg flex items-center justify-center shrink-0">
+                  <Rocket size={18} className="text-brand" />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-[17px] font-bold mb-1">나만의 클럽 만들어보기</h3>
-                  <p className="text-[13px] opacity-90 leading-relaxed">
-                    운영 도구·주간 추적·AI 페르소나를 활용해 동아리를 운영하세요
-                  </p>
+                <div>
+                  <p className="text-[12px] font-semibold text-brand">Draft 시작하기</p>
+                  <h3 className="text-[17px] font-bold text-txt-primary">3단계면 운영 준비 끝</h3>
                 </div>
-                <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform shrink-0" />
               </div>
-            </Link>
+
+              <ol className="space-y-2 mb-4">
+                {[
+                  { step: 1, label: '클럽 만들기', href: '/clubs/new', desc: 'Discord 연결·페르소나 1회 세팅' },
+                  { step: 2, label: '프로젝트 추가', href: '/projects/new', desc: '모집 공고 템플릿으로 공고 작성' },
+                  { step: 3, label: '팀원 초대', href: '/clubs', desc: 'QR·초대 코드·카톡 템플릿 공유' },
+                ].map(item => (
+                  <Link
+                    key={item.step}
+                    href={item.href}
+                    className="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-sunken transition-colors group"
+                  >
+                    <div className="w-7 h-7 rounded-full bg-brand-bg flex items-center justify-center text-[12px] font-bold text-brand shrink-0">
+                      {item.step}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[14px] font-semibold text-txt-primary">{item.label}</p>
+                      <p className="text-[12px] text-txt-tertiary">{item.desc}</p>
+                    </div>
+                    <ArrowRight size={14} className="text-txt-disabled group-hover:text-brand group-hover:translate-x-0.5 transition-all shrink-0" />
+                  </Link>
+                ))}
+              </ol>
+
+              <div className="pt-3 border-t border-border flex items-center justify-between text-[12px]">
+                <span className="text-txt-tertiary">둘러보고 싶다면</span>
+                <Link href="/explore" className="text-brand font-semibold hover:underline">
+                  기존 프로젝트 탐색 →
+                </Link>
+              </div>
+            </div>
           </section>
         )}
+
+        {/* ═══════════════════════════════════ */}
+        {/* PROFILE COMPLETION                  */}
+        {/* ═══════════════════════════════════ */}
+        <section className="mb-6">
+          <ProfileCompletionCard />
+        </section>
 
         {/* ═══════════════════════════════════ */}
         {/* PENDING DRAFTS                      */}

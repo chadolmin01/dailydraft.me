@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { createClient as createAnonClient } from '@supabase/supabase-js'
 import { QueryClient, dehydrate, HydrationBoundary } from '@tanstack/react-query'
+import { APP_URL } from '@/src/constants'
 import { UserProfilePageClient } from './UserProfilePageClient'
 
 // 공개 프로필 페이지 — profile.id 기반.
@@ -42,11 +43,24 @@ export async function generateMetadata({
     ? profile.bio.slice(0, 160)
     : `${name}의 Draft 프로필`
 
+  const ogImageUrl = `${APP_URL}/api/og/profile/${id}`
+
   return {
     title,
     description,
-    openGraph: { title, description, type: 'profile' },
-    twitter: { card: 'summary_large_image', title, description },
+    openGraph: {
+      title,
+      description,
+      type: 'profile',
+      url: `${APP_URL}/u/${id}`,
+      images: [{ url: ogImageUrl, width: 1200, height: 630, alt: name }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogImageUrl],
+    },
   }
 }
 

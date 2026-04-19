@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useRef } from 'react'
-import { Loader2, Maximize2, Paperclip } from 'lucide-react'
+import { Loader2, Maximize2, Paperclip, Sparkles } from 'lucide-react'
 import { toast } from 'sonner'
 import { useCreateProjectUpdate, type ProjectUpdate } from '@/src/hooks/useProjectUpdates'
 
@@ -17,6 +17,29 @@ function detectUpdateType(content: string): ProjectUpdate['update_type'] {
 const PLACEHOLDERS = [
   '이번 주에는 어떤 진전이 있었나요?',
   '팀원들에게 이번 주 성과를 공유해보세요.',
+]
+
+const TEMPLATES: Array<{ key: string; label: string; body: string }> = [
+  {
+    key: '주간회고',
+    label: '3분할 회고',
+    body: `이번 주 이룬 것\n- \n\n블로커·아쉬웠던 점\n- \n\n다음 주 계획\n- `,
+  },
+  {
+    key: '의사결정',
+    label: '결정 기록',
+    body: `결정 사항\n- \n\n배경·고민했던 옵션\n- \n\n다음 액션\n- `,
+  },
+  {
+    key: '블로커',
+    label: '블로커 공유',
+    body: `막힌 지점\n- \n\n시도한 것\n- \n\n도움 요청할 부분\n- `,
+  },
+  {
+    key: '런칭',
+    label: '런칭/배포',
+    body: `배포한 것\n- \n\n릴리즈 노트\n- \n\n모니터링할 지표\n- `,
+  },
 ]
 
 const ACCEPTED_FILES = [
@@ -47,8 +70,24 @@ export const InlineUpdateEditor: React.FC<InlineUpdateEditorProps> = ({
   const [isDragging, setIsDragging] = useState(false)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [content, setContent] = useState('')
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const placeholder = PLACEHOLDERS[nextWeekNumber % PLACEHOLDERS.length]
+
+  const handleInsertTemplate = (body: string) => {
+    setIsExpanded(true)
+    setContent(body)
+    // 다음 tick 에 포커스 + 첫 "- " 뒤로 커서 이동
+    setTimeout(() => {
+      const ta = textareaRef.current
+      if (!ta) return
+      ta.focus()
+      const firstDashIdx = body.indexOf('- ') + 2
+      if (firstDashIdx >= 2) {
+        ta.setSelectionRange(firstDashIdx, firstDashIdx)
+      }
+    }, 50)
+  }
 
   const analyzeFile = async (file: File) => {
     setIsExpanded(true)
@@ -145,16 +184,38 @@ export const InlineUpdateEditor: React.FC<InlineUpdateEditorProps> = ({
             AI가 파일을 분석 중입니다...
           </div>
         ) : (
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            onFocus={() => setIsExpanded(true)}
-            onKeyDown={handleKeyDown}
-            placeholder={placeholder}
-            rows={isExpanded ? 4 : 2}
-            maxLength={2000}
-            className={`w-full px-4 py-3 text-base sm:text-sm resize-none bg-transparent focus:outline-none text-txt-primary placeholder-txt-disabled transition-opacity ${isDragging ? 'opacity-0' : 'opacity-100'}`}
-          />
+          <>
+            <textarea
+              ref={textareaRef}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              onFocus={() => setIsExpanded(true)}
+              onKeyDown={handleKeyDown}
+              placeholder={placeholder}
+              rows={isExpanded ? 8 : 2}
+              maxLength={2000}
+              className={`w-full px-4 py-3 text-base sm:text-sm resize-none bg-transparent focus:outline-none text-txt-primary placeholder-txt-disabled transition-opacity ${isDragging ? 'opacity-0' : 'opacity-100'}`}
+            />
+            {/* 템플릿 칩 — 비어있을 때 노출해 작성 시작 유도 */}
+            {!content && (
+              <div className="px-4 pb-3 flex items-center gap-1.5 flex-wrap">
+                <span className="inline-flex items-center gap-1 text-[11px] text-txt-tertiary mr-1">
+                  <Sparkles size={10} />
+                  템플릿:
+                </span>
+                {TEMPLATES.map(t => (
+                  <button
+                    key={t.key}
+                    type="button"
+                    onClick={() => handleInsertTemplate(t.body)}
+                    className="text-[11px] font-medium text-txt-secondary bg-surface-sunken hover:bg-brand-bg hover:text-brand px-2 py-1 rounded-full transition-colors"
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </>
         )}
 
         {/* Action bar */}

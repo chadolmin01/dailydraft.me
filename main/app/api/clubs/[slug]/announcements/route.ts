@@ -93,11 +93,21 @@ export const POST = withErrorCapture(
     }
 
     const body = await request.json()
-    const { title, content, is_pinned } = body
+    const { title, content, is_pinned, scheduled_at } = body
 
     if (!title?.trim() || !content?.trim()) {
       return ApiResponse.badRequest('제목과 내용은 필수입니다')
     }
+
+    // 예약 시각 파싱 (미래 시점만 예약으로 처리)
+    let scheduledAt: string | null = null
+    if (scheduled_at && typeof scheduled_at === 'string') {
+      const dt = new Date(scheduled_at)
+      if (!isNaN(dt.getTime()) && dt.getTime() > Date.now()) {
+        scheduledAt = dt.toISOString()
+      }
+    }
+    const publishedAt = scheduledAt ? null : new Date().toISOString()
 
     // RLS가 admin 체크를 처리함
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -109,16 +119,19 @@ export const POST = withErrorCapture(
         title: title.trim(),
         content: content.trim(),
         is_pinned: is_pinned === true,
+        scheduled_at: scheduledAt,
+        published_at: publishedAt,
       })
       .select()
       .single()
 
     if (error) return ApiResponse.internalError(error.message)
 
-    // 웹훅 전달 (fire-and-forget)
-    // club_notification_channels에서 announcement 이벤트가 활성화된 채널에 발송
-    deliverAnnouncementWebhooks(supabase, club.id, title.trim(), content.trim())
-      .catch(e => console.warn('[announcement] Webhook delivery failed:', e))
+    // 즉시 발행일 때만 웹훅 전파. 예약 건은 크론이 처리.
+    if (!scheduledAt) {
+      deliverAnnouncementWebhooks(supabase, club.id, title.trim(), content.trim())
+        .catch(e => console.warn('[announcement] Webhook delivery failed:', e))
+    }
 
     return ApiResponse.created(announcement)
   }

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Users, Loader2, Calendar, Check, X, Coffee, User } from 'lucide-react'
+import { Users, Loader2, Calendar, Check, X, Coffee, User, CheckSquare, Square } from 'lucide-react'
 import { toast } from 'sonner'
 import { SkeletonFeed } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -41,6 +41,19 @@ type ActionType = 'interviewing' | 'accepted' | 'rejected'
 export function ApplicationManageSection({ opportunityId }: { opportunityId: string }) {
   const queryClient = useQueryClient()
   const [confirmAction, setConfirmAction] = useState<{ app: Application; action: ActionType } | null>(null)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [bulkMode, setBulkMode] = useState(false)
+  const [bulkConfirm, setBulkConfirm] = useState<ActionType | null>(null)
+  const [bulkRunning, setBulkRunning] = useState(false)
+
+  const toggleId = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
 
   // Fetch applications for this opportunity
   const { data: applications = [], isLoading } = useQuery<Application[]>({
@@ -125,8 +138,89 @@ export function ApplicationManageSection({ opportunityId }: { opportunityId: str
     )
   }
 
+  const pendingIds = pending.map(p => p.id)
+  const allPendingSelected = bulkMode && pendingIds.length > 0 && pendingIds.every(id => selectedIds.has(id))
+
+  const runBulkAction = async (action: ActionType) => {
+    if (selectedIds.size === 0) return
+    setBulkRunning(true)
+    const messages: Record<ActionType, string> = {
+      interviewing: '약속이 잡혔습니다',
+      accepted: '합류를 환영합니다!',
+      rejected: '',
+    }
+    let ok = 0
+    for (const id of selectedIds) {
+      try {
+        const res = await fetch(`/api/applications/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: action, message: messages[action] }),
+        })
+        if (res.ok) ok += 1
+      } catch {}
+    }
+    setBulkRunning(false)
+    setBulkConfirm(null)
+    setSelectedIds(new Set())
+    setBulkMode(false)
+    queryClient.invalidateQueries({ queryKey: ['applications', opportunityId] })
+    queryClient.invalidateQueries({ queryKey: ['pending-count'] })
+    queryClient.invalidateQueries({ queryKey: ['team', opportunityId] })
+    if (ok > 0) toast.success(`${ok}건을 처리했습니다`)
+    else toast.error('처리에 실패했습니다')
+  }
+
   return (
     <div className="px-4 sm:px-8 py-6 space-y-6">
+      {/* Bulk Actions Bar — pending >= 3 */}
+      {pending.length >= 3 && (
+        <div className="bg-surface-card border border-border rounded-2xl p-4 flex items-center gap-3 flex-wrap">
+          <button
+            onClick={() => {
+              const next = !bulkMode
+              setBulkMode(next)
+              if (!next) setSelectedIds(new Set())
+            }}
+            className="flex items-center gap-1.5 text-[13px] font-semibold text-txt-primary"
+          >
+            {bulkMode ? <CheckSquare size={14} className="text-brand" /> : <Square size={14} className="text-txt-tertiary" />}
+            일괄 선택 모드
+          </button>
+          {bulkMode && (
+            <>
+              <button
+                onClick={() => {
+                  setSelectedIds(allPendingSelected ? new Set() : new Set(pendingIds))
+                }}
+                className="text-[12px] text-txt-tertiary hover:text-txt-primary transition-colors"
+              >
+                {allPendingSelected ? '전체 해제' : '전체 선택'}
+              </button>
+              <span className="text-[12px] text-txt-tertiary ml-auto">
+                {selectedIds.size}건 선택
+              </span>
+              <button
+                disabled={selectedIds.size === 0 || bulkRunning}
+                onClick={() => setBulkConfirm('interviewing')}
+                className="flex items-center gap-1 px-3 py-1.5 text-[12px] font-semibold text-brand bg-brand-bg rounded-full hover:opacity-90 disabled:opacity-50 transition-opacity"
+              >
+                <Coffee size={11} />
+                면담 제안
+              </button>
+              <button
+                disabled={selectedIds.size === 0 || bulkRunning}
+                onClick={() => setBulkConfirm('rejected')}
+                className="flex items-center gap-1 px-3 py-1.5 text-[12px] font-semibold text-status-danger-text bg-status-danger-bg rounded-full hover:opacity-90 disabled:opacity-50 transition-opacity"
+              >
+                <X size={11} />
+                거절
+              </button>
+            </>
+          )}
+        </div>
+      )}
+
       {/* Pending */}
       {pending.length > 0 && (
         <ApplicationGroup
@@ -136,6 +230,9 @@ export function ApplicationManageSection({ opportunityId }: { opportunityId: str
           onAction={handleAction}
           isPending={updateApplication.isPending}
           variant="pending"
+          bulkMode={bulkMode}
+          selectedIds={selectedIds}
+          onToggleSelect={toggleId}
         />
       )}
 
@@ -188,6 +285,28 @@ export function ApplicationManageSection({ opportunityId }: { opportunityId: str
         cancelText="취소"
         variant="danger"
       />
+
+      {/* Bulk Confirm Modal */}
+      <ConfirmModal
+        isOpen={!!bulkConfirm}
+        onClose={() => setBulkConfirm(null)}
+        onConfirm={() => {
+          if (bulkConfirm) void runBulkAction(bulkConfirm)
+        }}
+        title={
+          bulkConfirm === 'rejected'
+            ? `${selectedIds.size}건의 지원을 거절할까요?`
+            : `${selectedIds.size}건에 면담을 제안할까요?`
+        }
+        message={
+          bulkConfirm === 'rejected'
+            ? '선택한 지원자들에게 거절 처리됩니다. 이 작업은 되돌릴 수 없습니다.'
+            : '선택한 지원자들에게 커피챗이 생성됩니다.'
+        }
+        confirmText={bulkConfirm === 'rejected' ? '거절하기' : '면담 제안'}
+        cancelText="취소"
+        variant={bulkConfirm === 'rejected' ? 'danger' : 'info'}
+      />
     </div>
   )
 }
@@ -199,6 +318,9 @@ function ApplicationGroup({
   onAction,
   isPending,
   variant,
+  bulkMode,
+  selectedIds,
+  onToggleSelect,
 }: {
   title: string
   count: number
@@ -206,6 +328,9 @@ function ApplicationGroup({
   onAction: (app: Application, action: ActionType) => void
   isPending: boolean
   variant: 'pending' | 'interviewing' | 'accepted' | 'rejected'
+  bulkMode?: boolean
+  selectedIds?: Set<string>
+  onToggleSelect?: (id: string) => void
 }) {
   return (
     <div>
@@ -218,13 +343,29 @@ function ApplicationGroup({
       </h4>
       <div className="space-y-2">
         {applications.map(app => (
-          <ApplicationCard
-            key={app.id}
-            application={app}
-            onAction={onAction}
-            isPending={isPending}
-            variant={variant}
-          />
+          <div key={app.id} className="flex items-start gap-2">
+            {bulkMode && variant === 'pending' && onToggleSelect && (
+              <button
+                onClick={() => onToggleSelect(app.id)}
+                className="pt-5 shrink-0"
+                aria-label={selectedIds?.has(app.id) ? '선택 해제' : '선택'}
+              >
+                {selectedIds?.has(app.id) ? (
+                  <CheckSquare size={16} className="text-brand" />
+                ) : (
+                  <Square size={16} className="text-txt-tertiary" />
+                )}
+              </button>
+            )}
+            <div className="flex-1 min-w-0">
+              <ApplicationCard
+                application={app}
+                onAction={onAction}
+                isPending={isPending}
+                variant={variant}
+              />
+            </div>
+          </div>
         ))}
       </div>
     </div>

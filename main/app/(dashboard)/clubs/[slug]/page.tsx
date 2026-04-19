@@ -4,6 +4,7 @@ import { createClient as createAnonClient } from '@supabase/supabase-js'
 import { createServerSupabaseClient } from '@/src/lib/supabase/server'
 import { fetchClubDetail, clubDetailKey } from '@/src/lib/queries/club-queries'
 import ClubPageClient from '@/components/club/ClubPageClient'
+import { APP_URL } from '@/src/constants'
 
 // 유저별 my_role 포함이라 ISR 불가 — auth 쿠키 기반 SSR
 export const dynamic = 'force-dynamic'
@@ -28,12 +29,24 @@ export async function generateMetadata({
 
   const title = club?.name ? `${club.name} · Draft` : 'Draft 클럽'
   const description = club?.description?.slice(0, 160) ?? '함께 만드는 프로젝트 팀'
+  const ogImageUrl = `${APP_URL}/api/og/club/${slug}`
 
   return {
     title,
     description,
-    openGraph: { title, description, type: 'website' },
-    twitter: { card: 'summary_large_image', title, description },
+    openGraph: {
+      title,
+      description,
+      type: 'website',
+      url: `${APP_URL}/clubs/${slug}`,
+      images: [{ url: ogImageUrl, width: 1200, height: 630, alt: title }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogImageUrl],
+    },
   }
 }
 

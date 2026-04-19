@@ -7,6 +7,10 @@ import { toast } from 'sonner'
 import { useClub } from '@/src/hooks/useClub'
 import { ClubDiscordSettings } from '@/components/discord/ClubDiscordSettings'
 import { ClubDiscordRoleMappings } from '@/components/discord/ClubDiscordRoleMappings'
+import { ClubInviteSection } from '@/components/club/ClubInviteSection'
+import { ClubEmbedSnippet } from '@/components/club/ClubEmbedSnippet'
+import { NotificationChannelsSection } from '@/components/club/NotificationChannelsSection'
+import { ClubDataExport } from '@/components/club/ClubDataExport'
 
 /**
  * 클럽 설정 페이지 클라이언트 셸.
@@ -87,15 +91,39 @@ export function ClubSettingsClient({ slug }: { slug: string }) {
         </Link>
       </div>
 
+      {/* MID — 초대 섹션 (가입 경로) */}
+      {club && (
+        <div className="mb-6">
+          <ClubInviteSection
+            slug={slug}
+            clubName={club.name}
+            viewerRole={(club.my_role === 'owner' || club.my_role === 'admin') ? club.my_role : null}
+          />
+        </div>
+      )}
+
       {/* MID — 역할 매핑 (Discord 연결 시에만 렌더) */}
       <div className="mb-6">
         <ClubDiscordRoleMappings clubSlug={slug} />
       </div>
 
       {/* BOTTOM — 보조 설정 */}
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid md:grid-cols-2 gap-4 mb-6">
         <TeamChannelVisibilityToggle clubSlug={slug} club={club} />
         <GitHubInfoCard />
+      </div>
+
+      {/* 알림 채널 (Discord/Slack 웹훅) */}
+      {club && (
+        <div className="mb-6">
+          <NotificationChannelsSection clubId={club.id} />
+        </div>
+      )}
+
+      {/* 외부 공유 */}
+      <div className="grid md:grid-cols-2 gap-4 mb-6">
+        <ClubEmbedSnippet slug={slug} />
+        <ClubDataExport slug={slug} />
       </div>
     </>
   )

@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import {
   Check,
@@ -15,6 +16,8 @@ import {
   UserPen,
   Sparkles,
   Pencil,
+  Ticket,
+  Loader2,
 } from 'lucide-react'
 import type { Tables } from '@/src/types/database'
 import { supabase } from '@/src/lib/supabase/client'
@@ -84,8 +87,47 @@ const CTA_CONFIG: Record<string, CTAItem> = {
 /* ─── Component ─── */
 
 export function GuideCTA({ profile, completion }: GuideCTAProps) {
+  const router = useRouter()
   const [showWelcome, setShowWelcome] = useState(true)
   const [showCta, setShowCta] = useState(false)
+  const [inviteCode, setInviteCode] = useState('')
+  const [inviteExpanded, setInviteExpanded] = useState(false)
+  const [inviteSubmitting, setInviteSubmitting] = useState(false)
+
+  const handleRedeemCode = useCallback(async () => {
+    const code = inviteCode.trim()
+    if (!code) return
+    setInviteSubmitting(true)
+    try {
+      const res = await fetch('/api/clubs/join-by-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+      })
+      const body = await res.json().catch(() => ({})) as {
+        data?: { club_slug?: string; club_name?: string; already_member?: boolean; role?: string }
+        error?: { message?: string }
+      }
+      if (!res.ok) {
+        toast.error(body.error?.message ?? '가입에 실패했습니다')
+        return
+      }
+      const slug = body.data?.club_slug
+      const name = body.data?.club_name ?? '클럽'
+      if (body.data?.already_member) {
+        toast.info(`이미 ${name} 멤버입니다`)
+      } else if (body.data?.role === 'admin') {
+        toast.success(`${name} 운영진으로 가입되었습니다`)
+      } else {
+        toast.success(`${name}에 가입되었습니다`)
+      }
+      if (slug) router.push(`/clubs/${slug}`)
+    } catch {
+      toast.error('네트워크 오류가 발생했습니다')
+    } finally {
+      setInviteSubmitting(false)
+    }
+  }, [inviteCode, router])
 
   useEffect(() => {
     // welcome 표시 후 fade-out → cta fade-in (cross-fade)
@@ -213,6 +255,49 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
               <SecondaryIcon size={16} />
               {cta.secondary.label}
             </Link>
+          </div>
+
+          {/* 초대 코드 입력 — 동아리/학회에서 코드 받아온 경우 */}
+          <div className="w-full mt-6">
+            {!inviteExpanded ? (
+              <button
+                onClick={() => setInviteExpanded(true)}
+                className="w-full flex items-center justify-center gap-1.5 text-[12px] text-txt-tertiary hover:text-txt-primary transition-colors"
+              >
+                <Ticket size={12} />
+                초대 코드가 있어요
+              </button>
+            ) : (
+              <div className="bg-surface-card border border-border rounded-xl p-4">
+                <p className="text-[12px] font-semibold text-txt-primary mb-2 flex items-center gap-1.5">
+                  <Ticket size={12} className="text-brand" />
+                  운영진에게 받은 초대 코드를 입력하세요
+                </p>
+                <div className="flex gap-2">
+                  <input
+                    value={inviteCode}
+                    onChange={e => setInviteCode(e.target.value.toUpperCase().slice(0, 30))}
+                    placeholder="XXXXXXXX"
+                    autoFocus
+                    className="flex-1 px-3 py-2 text-[14px] tracking-wider tabular-nums font-bold bg-surface-bg border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/40"
+                  />
+                  <button
+                    onClick={handleRedeemCode}
+                    disabled={inviteSubmitting || !inviteCode.trim()}
+                    className="shrink-0 flex items-center gap-1 px-4 py-2 text-[13px] font-semibold bg-brand text-white rounded-lg hover:bg-brand-hover disabled:opacity-50 transition-colors"
+                  >
+                    {inviteSubmitting ? <Loader2 size={13} className="animate-spin" /> : null}
+                    가입
+                  </button>
+                </div>
+                <button
+                  onClick={() => { setInviteExpanded(false); setInviteCode('') }}
+                  className="mt-2 text-[11px] text-txt-tertiary hover:text-txt-primary transition-colors"
+                >
+                  닫기
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Profile Nudge */}

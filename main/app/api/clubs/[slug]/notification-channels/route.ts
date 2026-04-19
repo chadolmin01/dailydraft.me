@@ -3,6 +3,7 @@ import { createAdminClient } from '@/src/lib/supabase/admin'
 import { ApiResponse, isValidUUID, parseJsonBody } from '@/src/lib/api-utils'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 import { testDiscordWebhook } from '@/src/lib/webhooks/discord'
+import { testSlackWebhook } from '@/src/lib/webhooks/slack'
 
 /** GET: 클럽의 알림 채널 목록 조회 */
 export const GET = withErrorCapture(
@@ -55,13 +56,21 @@ export const POST = withErrorCapture(
       return ApiResponse.badRequest('웹훅 URL은 필수입니다')
     }
 
-    // Discord 웹훅 URL 형식 검증
+    // URL 형식 검증 — 각 채널 타입별
     if (
       channel_type === 'discord_webhook' &&
       !webhook_url.startsWith('https://discord.com/api/webhooks/')
     ) {
       return ApiResponse.badRequest(
         '올바른 Discord 웹훅 URL이 아닙니다. https://discord.com/api/webhooks/... 형식이어야 합니다'
+      )
+    }
+    if (
+      channel_type === 'slack_webhook' &&
+      !webhook_url.startsWith('https://hooks.slack.com/')
+    ) {
+      return ApiResponse.badRequest(
+        '올바른 Slack 웹훅 URL이 아닙니다. https://hooks.slack.com/... 형식이어야 합니다'
       )
     }
 
@@ -71,6 +80,14 @@ export const POST = withErrorCapture(
       if (!testOk) {
         return ApiResponse.badRequest(
           '웹훅 URL로 테스트 메시지를 보내지 못했습니다. URL을 확인해주세요'
+        )
+      }
+    }
+    if (channel_type === 'slack_webhook') {
+      const testOk = await testSlackWebhook(webhook_url)
+      if (!testOk) {
+        return ApiResponse.badRequest(
+          'Slack 웹훅 URL로 테스트 메시지를 보내지 못했습니다. URL을 확인해주세요'
         )
       }
     }

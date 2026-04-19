@@ -4,6 +4,7 @@ import { ApiResponse, isValidUUID, parseJsonBody } from '@/src/lib/api-utils'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 import { sendClubUpdatePostedWebhook } from '@/src/lib/webhooks/send-club-webhook'
 import { notifyDraftApproved } from '@/app/api/cron/ghostwriter-generate/notify'
+import { toReadableContent } from '@/src/lib/ghostwriter/format-content'
 
 type RouteParams = { params: Promise<{ draftId: string }> }
 
@@ -110,7 +111,10 @@ export const PATCH = withErrorCapture(async (request, { params }: RouteParams) =
 
   // ── approve: 승인 → project_updates에 발행 ──
   const finalTitle = body.title?.trim() || draft.title
-  const finalContent = body.content?.trim() || draft.content
+  // JSON 형식인 Ghostwriter 초안을 사람이 읽을 수 있는 마크다운으로 변환.
+  // 사용자가 직접 편집한 body.content 도 혹시 JSON 이면 동일하게 처리.
+  const rawContent = body.content?.trim() || draft.content
+  const finalContent = toReadableContent(rawContent)
   const finalType = body.update_type || draft.update_type
 
   // 주차당 1회 제한: 이미 해당 주차에 수동 업데이트가 있으면 승인 거부

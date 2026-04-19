@@ -19,6 +19,9 @@ import { CoffeeChatRequestForm } from '@/components/CoffeeChatRequestForm'
 import { Modal } from '@/components/ui/Modal'
 import type { Opportunity } from '@/src/types/opportunity'
 import { UPDATE_TYPE_CONFIG } from '@/components/project/types'
+import { PublicProjectJourney } from '@/components/project/PublicProjectJourney'
+import { ProjectShareMenu } from '@/components/project/ProjectShareMenu'
+import { toReadableContent } from '@/src/lib/ghostwriter/format-content'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { positionLabel } from '@/src/constants/roles'
 import { timeAgo } from '@/src/lib/utils'
@@ -259,13 +262,12 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
           <Link href="/" className="font-black text-lg tracking-tight">
             Draft
           </Link>
-          <button
-            onClick={handleShare}
-            className="flex items-center gap-2 text-sm text-txt-secondary hover:text-txt-primary transition-colors"
-          >
-            <Share2 size={16} />
-            {copied ? '복사됨!' : '공유'}
-          </button>
+          <ProjectShareMenu
+            projectTitle={opportunity.title}
+            projectType={opportunity.type}
+            neededRoles={(opportunity.needed_roles || []) as string[]}
+            url={typeof window !== 'undefined' ? window.location.href : ''}
+          />
         </div>
       </nav>
 
@@ -401,6 +403,9 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
             {/* Weekly Updates Timeline — owner always sees, others only when show_updates */}
             {(isOwner || opportunity.show_updates) && (
             <section>
+              {realUpdates.length > 0 && (
+                <PublicProjectJourney updates={realUpdates} createdAt={opportunity.created_at} />
+              )}
               <div className="flex items-center justify-between mb-6 flex-wrap gap-2">
                 <div className="flex items-center gap-2">
                   <h2 className="text-[13px] font-semibold text-txt-primary">
@@ -473,7 +478,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                             </div>
                             <h3 className="font-semibold text-txt-primary mb-1.5">{update.title}</h3>
                             <p className="text-sm text-txt-secondary leading-relaxed break-keep whitespace-pre-line">
-                              {update.content}
+                              {toReadableContent(update.content)}
                             </p>
                           </div>
                         </div>

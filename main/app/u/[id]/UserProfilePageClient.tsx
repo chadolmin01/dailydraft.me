@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ChevronLeft, Heart, Share2, Check, Mail, Globe, Github, Linkedin, MapPin, Building2, Sparkles } from 'lucide-react'
+import { ChevronLeft, Heart, Share2, Check, Mail, Globe, Github, Linkedin, MapPin, Building2, Sparkles, Printer } from 'lucide-react'
 import { toast } from 'sonner'
 import { useDetailedPublicProfile } from '@/src/hooks/usePublicProfiles'
 import { useProfileInterest } from '@/src/hooks/useProfileInterest'
@@ -12,6 +12,7 @@ import { useAuth } from '@/src/context/AuthContext'
 import { cleanNickname } from '@/src/lib/clean-nickname'
 import { positionLabel } from '@/src/constants/roles'
 import { AFFILIATION_LABELS, SITUATION_LABELS } from '@/components/profile-modal/types'
+import { PublicActivity } from '@/components/profile/PublicActivity'
 
 /**
  * 공개 프로필 페이지 — 모달의 풀스크린 대체.
@@ -23,6 +24,7 @@ import { AFFILIATION_LABELS, SITUATION_LABELS } from '@/components/profile-modal
 export function UserProfilePageClient({ profileId }: { profileId: string }) {
   const { user } = useAuth()
   const [shareCopied, setShareCopied] = useState(false)
+  const [showShareMenu, setShowShareMenu] = useState(false)
 
   const { data: profile, isLoading } = useDetailedPublicProfile(profileId)
   const profileUserId = profile?.user_id ?? undefined
@@ -41,6 +43,22 @@ export function UserProfilePageClient({ profileId }: { profileId: string }) {
       toast.success('링크가 복사되었습니다')
     } catch {
       toast.error('링크 복사에 실패했습니다')
+    }
+  }
+
+  const handleShareFormatted = async (kind: 'kakao' | 'linkedin') => {
+    const url = typeof window !== 'undefined' ? window.location.href : ''
+    const name = profile?.nickname ?? '프로필'
+    const position = profile?.desired_position ?? ''
+    const text = kind === 'kakao'
+      ? `${name}의 Draft 포트폴리오입니다.\n${position ? position + ' · ' : ''}지금까지의 활동 이력과 참여 프로젝트를 확인해보세요.\n${url}`
+      : `${name}${position ? ` (${position})` : ''} · Draft 포트폴리오\n\n대학 동아리·프로젝트 활동 이력과 주간 기록 링크입니다.\n${url}`
+    try {
+      await navigator.clipboard.writeText(text)
+      toast.success(kind === 'kakao' ? '카톡용 메시지를 복사했어요' : 'LinkedIn용 메시지를 복사했어요')
+      setShowShareMenu(false)
+    } catch {
+      toast.error('복사에 실패했습니다')
     }
   }
 
@@ -99,10 +117,14 @@ export function UserProfilePageClient({ profileId }: { profileId: string }) {
   const skills = (profile.skills as Array<{ name: string; level?: string }> | null) ?? []
   const isOwn = user?.id === profile.user_id
 
+  const handlePrint = () => {
+    if (typeof window !== 'undefined') window.print()
+  }
+
   return (
-    <div className="max-w-[900px] mx-auto px-5 py-6">
-      {/* 상단 바 */}
-      <div className="flex items-center justify-between mb-6">
+    <div className="max-w-[900px] mx-auto px-5 py-6 print:py-0 print:max-w-none print:bg-white">
+      {/* 상단 바 — 인쇄 시 숨김 */}
+      <div className="flex items-center justify-between mb-6 print:hidden">
         <Link
           href="/explore"
           className="flex items-center gap-1.5 text-[13px] text-txt-tertiary hover:text-txt-primary transition-colors"
@@ -112,13 +134,45 @@ export function UserProfilePageClient({ profileId }: { profileId: string }) {
         </Link>
         <div className="flex items-center gap-2">
           <button
-            onClick={handleShare}
+            onClick={handlePrint}
             className="flex items-center gap-1.5 px-3 py-1.5 text-[13px] text-txt-secondary hover:text-txt-primary border border-border rounded-full hover:border-txt-tertiary transition-colors"
-            aria-label="공유"
+            aria-label="포트폴리오 PDF 저장"
           >
-            {shareCopied ? <Check size={14} /> : <Share2 size={14} />}
-            {shareCopied ? '복사됨' : '공유'}
+            <Printer size={14} />
+            PDF 저장
           </button>
+          <div className="relative">
+            <button
+              onClick={() => setShowShareMenu(v => !v)}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-[13px] text-txt-secondary hover:text-txt-primary border border-border rounded-full hover:border-txt-tertiary transition-colors"
+              aria-label="공유"
+            >
+              {shareCopied ? <Check size={14} /> : <Share2 size={14} />}
+              {shareCopied ? '복사됨' : '공유'}
+            </button>
+            {showShareMenu && (
+              <div className="absolute right-0 top-full mt-2 w-56 bg-surface-card border border-border rounded-xl shadow-lg p-1.5 z-20">
+                <button
+                  onClick={handleShare}
+                  className="w-full text-left px-3 py-2 text-[13px] text-txt-primary hover:bg-surface-sunken rounded-lg transition-colors"
+                >
+                  🔗 링크 복사
+                </button>
+                <button
+                  onClick={() => handleShareFormatted('kakao')}
+                  className="w-full text-left px-3 py-2 text-[13px] text-txt-primary hover:bg-surface-sunken rounded-lg transition-colors"
+                >
+                  💬 카톡·문자용 메시지
+                </button>
+                <button
+                  onClick={() => handleShareFormatted('linkedin')}
+                  className="w-full text-left px-3 py-2 text-[13px] text-txt-primary hover:bg-surface-sunken rounded-lg transition-colors"
+                >
+                  💼 LinkedIn용 메시지
+                </button>
+              </div>
+            )}
+          </div>
           {!isOwn && user && (
             <button
               onClick={handleInterest}
@@ -294,6 +348,13 @@ export function UserProfilePageClient({ profileId }: { profileId: string }) {
         </section>
       )}
 
+      {/* Draft 내부 활동 이력 (소속·프로젝트·기여) */}
+      {profile.user_id && (
+        <div className="mb-8">
+          <PublicActivity userId={profile.user_id} />
+        </div>
+      )}
+
       {/* 포트폴리오 아이템 */}
       {portfolioItems.length > 0 && (
         <section className="mb-8">
@@ -324,9 +385,9 @@ export function UserProfilePageClient({ profileId }: { profileId: string }) {
         </section>
       )}
 
-      {/* 비로그인 CTA */}
+      {/* 비로그인 CTA — 인쇄 시 숨김 */}
       {!user && (
-        <section className="mt-12 p-6 bg-brand-bg rounded-2xl text-center">
+        <section className="mt-12 p-6 bg-brand-bg rounded-2xl text-center print:hidden">
           <p className="text-[14px] text-txt-primary mb-3">
             Draft 에서 더 많은 프로필과 프로젝트를 탐색해보세요
           </p>

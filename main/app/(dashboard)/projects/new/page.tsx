@@ -15,6 +15,7 @@ import { ProjectInfoSidebar } from './components/ProjectInfoSidebar'
 import { RolesGrid } from './components/RolesGrid'
 import { AnimatedChip } from './components/AnimatedChip'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
+import { DescriptionTemplates } from './components/DescriptionTemplates'
 
 export default function NewProjectPage() {
   return (
@@ -568,6 +569,19 @@ function NewProjectContent() {
                   <h3 className="text-[10px] font-medium text-txt-tertiary mb-2">
                     프로젝트 소개 <span className="text-status-danger-text">*</span>
                   </h3>
+                  <DescriptionTemplates
+                    hasContent={description.trim().length > 0}
+                    onInsert={(body) => {
+                      setDescription(body)
+                      setTimeout(() => {
+                        const ta = descriptionRef.current
+                        if (!ta) return
+                        ta.focus()
+                        const idx = body.indexOf('- ') + 2
+                        if (idx >= 2) ta.setSelectionRange(idx, idx)
+                      }, 30)
+                    }}
+                  />
                   <textarea
                     ref={descriptionRef}
                     value={description}

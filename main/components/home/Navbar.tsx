@@ -32,6 +32,7 @@ export const Navbar: React.FC = () => {
   const navLinks = [
     { href: '#features', label: '기능' },
     { href: '#use-cases', label: '사례' },
+    { href: '/feed', label: '활동 피드' },
     { href: '#pricing', label: '가격' },
   ]
 

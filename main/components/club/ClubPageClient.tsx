@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Settings, Users, FolderOpen, Archive, Share2, ChevronRight, ChevronLeft, Plus, Sparkles, UserPlus, FileText } from 'lucide-react'
+import { Settings, Users, FolderOpen, Archive, ChevronRight, ChevronLeft, Plus, Sparkles, UserPlus, FileText, Activity, BarChart3 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 import { useQueryClient } from '@tanstack/react-query'
@@ -17,6 +17,10 @@ import { useStaggerOnce } from '@/src/hooks/useStaggerOnce'
 import ClubBotActivity from '@/components/club/ClubBotActivity'
 import ClubTeamBoard from '@/components/club/ClubTeamBoard'
 import { OperatorWelcomeModal } from '@/components/club/OperatorWelcomeModal'
+import { ClubShareMenu } from '@/components/club/ClubShareMenu'
+import { MemberRoleMenu } from '@/components/club/MemberRoleMenu'
+import { ClubAnnouncementsSection } from '@/components/club/ClubAnnouncementsSection'
+import { ClubEventsSection } from '@/components/club/ClubEventsSection'
 
 function StaggerCard({ children, staggerKey, index }: { children: React.ReactNode; staggerKey: string; index: number }) {
   const cls = useStaggerOnce(staggerKey)
@@ -34,7 +38,7 @@ const ROLE_LABELS: Record<string, string> = {
   alumni: '졸업',
 }
 
-type Tab = 'intro' | 'teams' | 'projects' | 'members' | 'archive' | 'activity'
+type Tab = 'intro' | 'announcements' | 'events' | 'teams' | 'projects' | 'members' | 'archive' | 'activity'
 
 export default function ClubPageClient() {
   const params = useParams()
@@ -120,6 +124,8 @@ export default function ClubPageClient() {
 
   const TABS = [
     { key: 'intro' as const, label: '소개' },
+    { key: 'announcements' as const, label: '공지' },
+    { key: 'events' as const, label: '일정' },
     { key: 'teams' as const, label: '팀 구성' },
     { key: 'projects' as const, label: '프로젝트' },
     { key: 'members' as const, label: '멤버' },
@@ -130,11 +136,13 @@ export default function ClubPageClient() {
   // 운영자 바로가기 — 클럽 내부 도구 모음. 상단 띠에 노출해 설정 페이지 들어가지 않고도
   // 자주 쓰는 운영 액션에 1클릭으로 접근.
   const operatorQuickLinks = isAdmin ? [
+    { href: `/clubs/${slug}/operator`, icon: Activity, label: '운영 대시보드' },
+    { href: `/clubs/${slug}/reports`, icon: BarChart3, label: 'KPI 보고서' },
+    { href: `/clubs/${slug}/certificate`, icon: FileText, label: '활동 증명서' },
     { href: `/clubs/${slug}/settings`, icon: Settings, label: '설정' },
     { href: `/clubs/${slug}/settings/persona`, icon: Sparkles, label: '페르소나' },
     { href: `/projects/new?club=${club.id}&from=/clubs/${slug}`, icon: FolderOpen, label: '팀 추가' },
     { href: `/clubs/${slug}/settings#invite`, icon: UserPlus, label: '초대' },
-    { href: `/clubs/${slug}?tab=teams`, icon: FileText, label: '주간 현황' },
   ] : []
 
   return (
@@ -155,13 +163,12 @@ export default function ClubPageClient() {
             클럽 목록
           </button>
           <div className="flex items-center gap-3">
-            <button
-              onClick={() => { navigator.clipboard.writeText(window.location.href); toast.success('링크가 복사되었습니다') }}
-              className="flex items-center gap-1.5 text-[13px] text-txt-tertiary hover:text-txt-primary transition-colors"
-            >
-              <Share2 size={14} />
-              공유
-            </button>
+            <ClubShareMenu
+              clubName={club.name}
+              cohort={club.cohorts.length > 0 ? club.cohorts[club.cohorts.length - 1] : null}
+              memberCount={club.member_count}
+              url={typeof window !== 'undefined' ? window.location.href : ''}
+            />
             {isAdmin && (
               <Link
                 href={`/clubs/${slug}/settings`}
@@ -268,6 +275,31 @@ export default function ClubPageClient() {
         {/* 소개 */}
         {activeTab === 'intro' && (
           <div className="space-y-8">
+            {/* 비로그인 방문자 CTA — 외부 공유된 초대 링크를 통해 들어온 케이스 */}
+            {!isAuthed && (
+              <div className="bg-gradient-to-br from-brand to-brand/80 text-white rounded-2xl p-6">
+                <p className="text-[12px] font-semibold opacity-80 mb-1">가입 초대</p>
+                <h3 className="text-[18px] font-bold mb-1.5">{club.name}에 참여하시나요?</h3>
+                <p className="text-[13px] opacity-90 mb-4 leading-relaxed">
+                  운영진에게 받은 초대 코드로 바로 가입할 수 있습니다. Draft에서 기수별 프로젝트 · 주간 기록 · 알럼나이 연결이 이어집니다
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <Link
+                    href={`/clubs/${slug}/join`}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold bg-white text-brand rounded-full hover:opacity-90 transition-opacity"
+                  >
+                    초대 코드로 가입
+                  </Link>
+                  <Link
+                    href={`/login?redirect=/clubs/${slug}`}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold bg-white/20 backdrop-blur-sm text-white rounded-full hover:bg-white/30 transition-colors"
+                  >
+                    로그인
+                  </Link>
+                </div>
+              </div>
+            )}
+
             {/* 멤버 아바타 */}
             {membersData && membersData.members.length > 0 && (
               <div className="flex items-center gap-3">
@@ -305,6 +337,50 @@ export default function ClubPageClient() {
               </div>
             )}
 
+            {/* 공개 프로젝트 하이라이트 — intro 탭에 2~3개 preview */}
+            {clubProjects.length > 0 && (
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-[15px] font-semibold text-txt-primary">진행 중인 프로젝트</h3>
+                  <button
+                    onClick={() => setActiveTab('projects')}
+                    className="text-[12px] text-txt-tertiary hover:text-brand transition-colors"
+                  >
+                    전체 보기 →
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {clubProjects.slice(0, 3).map(p => (
+                    <Link
+                      key={p.id}
+                      href={`/p/${p.id}`}
+                      className="bg-surface-card border border-border rounded-xl p-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group block no-underline"
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        <h4 className="text-[14px] font-bold text-txt-primary truncate flex-1">{p.title}</h4>
+                        {p.status === 'active' && (
+                          <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-status-success-text animate-pulse" />
+                        )}
+                      </div>
+                      {p.interest_tags && p.interest_tags.length > 0 && (
+                        <div className="flex gap-1 flex-wrap mt-2">
+                          {p.interest_tags.slice(0, 3).map(tag => (
+                            <span key={tag} className="text-[10px] font-medium text-brand bg-brand-bg px-1.5 py-0.5 rounded-full">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      <p className="text-[11px] text-txt-tertiary mt-2.5">
+                        {p.creator_nickname ?? '—'}
+                        {p.interest_count > 0 && ` · 관심 ${p.interest_count}`}
+                      </p>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* 활동 통계 */}
             {stats && (
               <div>
@@ -338,6 +414,16 @@ export default function ClubPageClient() {
               </Link>
             )}
           </div>
+        )}
+
+        {/* 공지 */}
+        {activeTab === 'announcements' && (
+          <ClubAnnouncementsSection slug={slug} isAdmin={isAdmin} />
+        )}
+
+        {/* 일정 */}
+        {activeTab === 'events' && (
+          <ClubEventsSection slug={slug} isAdmin={isAdmin} />
         )}
 
         {/* 팀 구성 */}
@@ -454,7 +540,20 @@ export default function ClubPageClient() {
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
               {(membersData?.members || []).map((m, i) => (
                 <StaggerCard key={m.id} staggerKey={`member:${m.id}`} index={i}>
-                  <div className="bg-surface-card border border-border rounded-xl p-5 flex flex-col items-center text-center gap-2 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+                  <div className="relative bg-surface-card border border-border rounded-xl p-5 flex flex-col items-center text-center gap-2 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+                    {/* 운영진 관리 메뉴 — owner/admin 만 */}
+                    {isAdmin && (club.my_role === 'owner' || club.my_role === 'admin') && (
+                      <div className="absolute top-2 right-2">
+                        <MemberRoleMenu
+                          slug={slug}
+                          clubId={club.id}
+                          memberId={m.id}
+                          memberRole={m.role}
+                          memberName={m.nickname}
+                          viewerRole={club.my_role as 'owner' | 'admin'}
+                        />
+                      </div>
+                    )}
                     {m.avatar_url ? (
                       <Image src={m.avatar_url} alt={m.nickname || ''} width={48} height={48} className="rounded-full object-cover" />
                     ) : (
@@ -462,7 +561,18 @@ export default function ClubPageClient() {
                         {m.nickname?.[0] || '?'}
                       </div>
                     )}
-                    <div className="text-[15px] font-bold text-txt-primary">{m.nickname || '익명'}</div>
+                    <div className="text-[15px] font-bold text-txt-primary flex items-center gap-1.5 flex-wrap justify-center">
+                      {m.nickname || '익명'}
+                      {(m.role === 'owner' || m.role === 'admin') && (
+                        <span className={`inline-flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${
+                          m.role === 'owner'
+                            ? 'bg-brand text-white'
+                            : 'bg-brand-bg text-brand'
+                        }`}>
+                          {m.role === 'owner' ? '대표' : '운영진'}
+                        </span>
+                      )}
+                    </div>
                     <div className="text-[13px] text-txt-tertiary">
                       {m.display_role || ROLE_LABELS[m.role] || m.role}
                       {m.cohort && ` · ${m.cohort}기`}
@@ -505,7 +615,10 @@ export default function ClubPageClient() {
                   const cohortCount = stats?.members.by_cohort[cohort] ?? 0
                   return (
                     <StaggerCard key={cohort} staggerKey={`cohort:${cohort}`} index={idx}>
-                      <div className="bg-surface-card border border-border rounded-xl p-5 flex items-center justify-between hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+                      <Link
+                        href={`/clubs/${slug}/cohorts/${encodeURIComponent(cohort)}/archive`}
+                        className="bg-surface-card border border-border rounded-xl p-5 flex items-center justify-between hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group"
+                      >
                         <div className="flex items-center gap-3">
                           <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${isLatest ? 'bg-status-success-text' : 'bg-border'}`} />
                           <span className="text-[15px] font-bold text-txt-primary">{cohort}기</span>
@@ -515,8 +628,11 @@ export default function ClubPageClient() {
                             </span>
                           )}
                         </div>
-                        <span className="text-[13px] text-txt-tertiary">멤버 {cohortCount}명</span>
-                      </div>
+                        <div className="flex items-center gap-2 text-[13px] text-txt-tertiary">
+                          <span>멤버 {cohortCount}명</span>
+                          <ChevronRight size={14} className="text-txt-disabled group-hover:text-brand group-hover:translate-x-0.5 transition-all" />
+                        </div>
+                      </Link>
                     </StaggerCard>
                   )
                 })}

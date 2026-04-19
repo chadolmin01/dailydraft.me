@@ -6,8 +6,13 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import {
   ChevronLeft, Settings, ExternalLink, Clock, Users, MessageCircle,
-  Pencil, Trash2, Rocket, FileText, Eye, Heart, UserCheck,
+  Pencil, Trash2, Rocket, FileText, Eye, Heart, UserCheck, Activity,
 } from 'lucide-react'
+import { ProjectTimeline } from '@/components/project/ProjectTimeline'
+import { KickoffChecklist } from '@/components/project/KickoffChecklist'
+import { RecruitCompletionBanner } from '@/components/project/RecruitCompletionBanner'
+import { QuickUpdateActions } from '@/components/project/QuickUpdateActions'
+import { toReadableContent } from '@/src/lib/ghostwriter/format-content'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { toast } from 'sonner'
 import { useAuth } from '@/src/context/AuthContext'
@@ -30,7 +35,7 @@ export default function ProjectManagePage() {
   )
 }
 
-type Tab = 'updates' | 'team' | 'applications'
+type Tab = 'updates' | 'timeline' | 'team' | 'applications'
 
 // 뒤로가기 링크 sanitize — `/` 시작만 허용. 오픈 redirect 방어.
 function sanitizeFrom(raw: string | null): { href: string; label: string } {
@@ -116,6 +121,7 @@ function ProjectManageContent() {
 
   const TABS: { key: Tab; label: string; icon: React.ReactNode; ownerOnly?: boolean }[] = [
     { key: 'updates', label: '주간 업데이트', icon: <Clock size={14} /> },
+    { key: 'timeline', label: '타임라인', icon: <Activity size={14} /> },
     { key: 'team', label: '팀원', icon: <Users size={14} /> },
     // 지원 관리는 운영자 전용 — 비운영자에게는 탭 자체 숨김
     { key: 'applications', label: '지원 관리', icon: <MessageCircle size={14} />, ownerOnly: true },
@@ -195,6 +201,30 @@ function ProjectManageContent() {
           </div>
         </div>
 
+        {/* 킥오프 체크리스트 — 최근 생성된 프로젝트 + 운영자 한정 */}
+        {isOwner && (
+          <KickoffChecklist
+            projectId={id}
+            isOwner={isOwner}
+            createdAt={opportunity.created_at}
+            description={opportunity.description}
+            memberCount={1 + filled.length}
+            updates={updates}
+          />
+        )}
+
+        {/* 빠른 기록 액션 — 운영자/팀원 */}
+        {isOwner && <QuickUpdateActions opportunityId={id} currentWeek={week} />}
+
+        {/* 모집 자동 마감 제안 */}
+        <RecruitCompletionBanner
+          opportunityId={id}
+          isOwner={isOwner}
+          status={opportunity.status}
+          neededRoles={needed}
+          filledRoles={filled}
+        />
+
         {/* Stats Strip */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
           <StatCard icon={<UserCheck size={14} />} label="팀원" value={filled.length} />
@@ -255,7 +285,8 @@ function ProjectManageContent() {
                     <div className="space-y-3">
                       {updates.map(update => {
                         const config = UPDATE_TYPE_CONFIG[update.update_type] || UPDATE_TYPE_CONFIG.general
-                        const [firstLine, ...restLines] = update.content.split('\n')
+                        const readable = toReadableContent(update.content)
+                        const [firstLine, ...restLines] = readable.split('\n')
                         const restContent = restLines.join('\n').trim()
                         return (
                           <div key={update.id} className="bg-surface-card rounded-xl border border-border p-5 hover:shadow-md transition-shadow">
@@ -309,6 +340,14 @@ function ProjectManageContent() {
                 </div>
               )
             })()}
+
+            {tab === 'timeline' && (
+              <ProjectTimeline
+                updates={updates}
+                createdAt={opportunity.created_at}
+                isOwner={isOwner}
+              />
+            )}
 
             {tab === 'team' && <TeamManageSection opportunityId={id} />}
 
@@ -401,6 +440,23 @@ function ProjectManageContent() {
                   <dt className="text-txt-tertiary">지원자</dt>
                   <dd className="text-txt-secondary">{opportunity.applications_count ?? 0}건</dd>
                 </div>
+                {/* 전환율 — owner 만 */}
+                {isOwner && (opportunity.views_count ?? 0) > 0 && (
+                  <div className="flex justify-between">
+                    <dt className="text-txt-tertiary">관심 → 지원 전환율</dt>
+                    <dd className="text-txt-secondary tabular-nums">
+                      {Math.round(((opportunity.applications_count ?? 0) / (opportunity.views_count ?? 1)) * 100)}%
+                    </dd>
+                  </div>
+                )}
+                {isOwner && (opportunity.interest_count ?? 0) > 0 && (
+                  <div className="flex justify-between">
+                    <dt className="text-txt-tertiary">관심/조회</dt>
+                    <dd className="text-txt-secondary tabular-nums">
+                      {opportunity.interest_count ?? 0} / {opportunity.views_count ?? 0}
+                    </dd>
+                  </div>
+                )}
               </dl>
             </div>
 

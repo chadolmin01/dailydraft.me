@@ -88,11 +88,17 @@ const publicRoutes = [
   '/guide',
   '/auth/',
   '/p/',
+  '/embed/',
+  '/feed',
 ]
 
-function addSecurityHeaders(response: NextResponse) {
+function addSecurityHeaders(response: NextResponse, allowEmbed = false) {
   response.headers.set('X-Content-Type-Options', 'nosniff')
-  response.headers.set('X-Frame-Options', 'DENY')
+  // /embed/* 는 외부 iframe 에 의도적 노출되므로 X-Frame-Options 를 설정하지 않음.
+  // 나머지 경로는 DENY 유지 (clickjacking 방어).
+  if (!allowEmbed) {
+    response.headers.set('X-Frame-Options', 'DENY')
+  }
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
   const isDev = process.env.NODE_ENV === 'development'
@@ -196,7 +202,8 @@ async function middlewareImpl(request: NextRequest): Promise<NextResponse> {
     pathname === route || pathname.startsWith(route)
   )
   if (isPublicRoute) {
-    return addSecurityHeaders(NextResponse.next({ request }))
+    const isEmbed = pathname.startsWith('/embed/')
+    return addSecurityHeaders(NextResponse.next({ request }), isEmbed)
   }
 
   // 비-퍼블릭 라우트만 auth 플로우 실행

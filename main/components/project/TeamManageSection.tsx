@@ -9,6 +9,7 @@ import { supabase } from '@/src/lib/supabase/client'
 import { positionLabel } from '@/src/constants/roles'
 import { useAuth } from '@/src/context/AuthContext'
 import { ROLE_OPTIONS } from '@/app/(dashboard)/projects/new/constants'
+import { TeamContributions } from '@/components/project/TeamContributions'
 
 interface TeamMember {
   id: string
@@ -251,6 +252,17 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
           <p className="text-sm text-txt-tertiary font-medium mb-1">아직 팀원이 없습니다</p>
           <p className="text-xs text-txt-disabled">커피챗이 수락되면 여기서 팀에 추가할 수 있습니다</p>
         </div>
+      )}
+
+      {/* 기여 요약 — 팀원 간 투명성 */}
+      {members.length > 0 && (
+        <TeamContributions
+          opportunityId={opportunityId}
+          members={members.map(m => ({
+            user_id: m.applicant_id,
+            nickname: m.profile?.nickname ?? null,
+          }))}
+        />
       )}
 
       {/* Active Members */}
