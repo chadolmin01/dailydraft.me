@@ -71,7 +71,7 @@ export default function DashboardClient() {
   const { data: myProjects = [] } = useMyOpportunities()
   const { data: unreadCount = 0 } = useUnreadCount()
   const { data: invitations = [] } = useProjectInvitations({ enabled: !!user })
-  const { clubs: operatorClubs, isOperator } = useMyOperatorClubs()
+  const { clubs: operatorClubs, isOperator, isLoading: isOperatorLoading } = useMyOperatorClubs()
 
   // 운영자 운영 지표 집계
   const { data: operatorMetrics } = useQuery<{ pendingApps: number; missingTeams: number }>({
@@ -361,8 +361,10 @@ export default function DashboardClient() {
 
         {/* ═══════════════════════════════════ */}
         {/* NON-OPERATOR NUDGE — Stage 1→3 유도 */}
+        {/* 잔상 방지: isOperator는 async 로딩되므로 초기값 false → 운영자도 잠깐 깜빡임.
+            isOperatorLoading=true 인 동안엔 렌더 보류 (안정화 후 확정 렌더). */}
         {/* ═══════════════════════════════════ */}
-        {!isOperator && (
+        {!isOperatorLoading && !isOperator && (
           <section className="mb-10">
             <div className="bg-surface-card border border-border rounded-2xl p-6">
               <div className="flex items-center gap-3 mb-4">
