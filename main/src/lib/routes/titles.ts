@@ -27,7 +27,20 @@ export const ROUTE_TITLES: Record<string, string> = {
 
   // 관리자
   '/admin': '관리자',
+  '/admin/activity': '활동 로그 · 관리자',
+  '/admin/error-logs': '에러 로그 · 관리자',
+  '/admin/institutions': '기관 관리 · 관리자',
+  '/admin/invite-codes': '초대 코드 · 관리자',
+  '/admin/opportunities': '프로젝트 관리 · 관리자',
+  '/admin/users': '유저 관리 · 관리자',
+
+  // 기관 관리자
   '/institution': '기관 관리',
+  '/institution/announce': '공지 · 기관',
+  '/institution/business-plans': '사업계획서 · 기관',
+  '/institution/members': '멤버 · 기관',
+  '/institution/reports': '보고서 · 기관',
+  '/institution/teams': '팀 · 기관',
 
   // 온보딩
   '/onboarding': '시작하기',
