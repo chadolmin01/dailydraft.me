@@ -257,7 +257,7 @@ export function GitHubSettingsPanel({ clubSlug, opportunityId, hideBackLink }: G
   // ── Loading ──
   if (clubLoading || connectorLoading) {
     return (
-      <div className="max-w-[1200px] mx-auto px-5 py-12">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="animate-pulse space-y-4">
           <div className="h-6 bg-surface-sunken rounded w-48" />
           <div className="h-48 bg-surface-sunken rounded-2xl" />
@@ -268,7 +268,7 @@ export function GitHubSettingsPanel({ clubSlug, opportunityId, hideBackLink }: G
 
   if (!club) {
     return (
-      <div className="max-w-[1200px] mx-auto px-5 py-12 text-center">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
         <p className="text-txt-tertiary">클럽을 찾을 수 없습니다.</p>
       </div>
     )
@@ -280,7 +280,7 @@ export function GitHubSettingsPanel({ clubSlug, opportunityId, hideBackLink }: G
   const availableRepos = repos.filter(r => !r.connected)
 
   return (
-    <div className="max-w-[1200px] mx-auto px-5 py-6">
+    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <div className="w-10 h-10 rounded-xl bg-surface-bg flex items-center justify-center shrink-0">

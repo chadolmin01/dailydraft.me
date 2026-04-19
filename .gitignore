@@ -17,6 +17,11 @@ dist/
 .env.test.local
 .env.production.local
 .env*.local
+.env*.audit
+
+# Claude runtime (agent에서 쓰는 임시 파일)
+.claude/scheduled_tasks.lock
+.claude/worktrees/
 
 # Debug
 npm-debug.log*

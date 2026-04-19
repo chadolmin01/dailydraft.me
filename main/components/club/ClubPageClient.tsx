@@ -91,7 +91,7 @@ export default function ClubPageClient() {
   if (isLoading) {
     return (
       <div className="bg-surface-bg min-h-full">
-        <div className="max-w-[1200px] mx-auto px-5 py-8">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse space-y-5">
             <div className="flex gap-4">
               <div className="w-16 h-16 bg-surface-sunken rounded-2xl" />
@@ -113,7 +113,7 @@ export default function ClubPageClient() {
   if (!club) {
     return (
       <div className="bg-surface-bg min-h-full">
-        <div className="max-w-[1200px] mx-auto px-5 py-16 text-center">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
           <p className="text-sm text-txt-tertiary">클럽을 찾을 수 없습니다.</p>
         </div>
       </div>
@@ -151,7 +151,7 @@ export default function ClubPageClient() {
       {isAdmin && (
         <OperatorWelcomeModal clubSlug={slug} clubName={club.name} clubId={club.id} />
       )}
-      <div className="max-w-[1200px] mx-auto px-5 pt-6 pb-16">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-16">
 
         {/* Back + Actions */}
         <div className="flex items-center justify-between mb-6">

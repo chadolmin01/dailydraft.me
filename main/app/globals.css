@@ -8,11 +8,11 @@
    ============================================================ */
 
 :root {
-  /* ── Surface ── */
-  --surface-bg: #FFFFFF;
-  --surface-card: #FFFFFF;
-  --surface-elevated: #FFFFFF;
-  --surface-sunken: #F7F8F9;
+  /* ── Surface (3-tier depth: canvas < card = elevated, sunken for inputs) ── */
+  --surface-bg: #F8F9FB;         /* 캔버스 — 카드가 뜨는 배경 */
+  --surface-card: #FFFFFF;       /* 기본 카드 (캔버스에서 lift) */
+  --surface-elevated: #FFFFFF;   /* 모달/팝오버 (shadow로 elevation) */
+  --surface-sunken: #EEF0F3;     /* 인풋/스켈레톤 (눌린 느낌) */
   --surface-inverse: #1C1C1E;
   --surface-overlay: rgba(0, 0, 0, 0.4);
 
@@ -22,16 +22,16 @@
   --text-tertiary: #8E8E93;
   --text-disabled: #C7C7CC;
   --text-inverse: #FFFFFF;
-  --text-link: #3182F6;
+  --text-link: #5E6AD2;
 
   /* ── Border ── */
-  --border-default: #E5E5EA;
-  --border-strong: #D1D1D6;
-  --border-subtle: #F2F3F5;
+  --border-default: #E5E8EB;
+  --border-strong: #D1D6DB;
+  --border-subtle: #EEF0F3;
 
-  /* ── Accent ── */
-  --accent-primary: #3182F6;
-  --accent-primary-hover: #2272EB;
+  /* ── Accent (Electric Indigo — Linear 톤) ── */
+  --accent-primary: #5E6AD2;
+  --accent-primary-hover: #4B4FB8;
   --accent-secondary: #F2F3F5;
   --accent-secondary-hover: #E5E5EA;
 
@@ -56,12 +56,12 @@
   --tag-outline-border: #E5E5EA;
   --tag-outline-text: #3A3A3C;
 
-  /* ── Brand (Toss Blue) ── */
-  --brand: #3182F6;
-  --brand-hover: #2272EB;
-  --brand-bg: rgba(49, 130, 246, 0.06);
-  --brand-border: rgba(49, 130, 246, 0.2);
-  --brand-shadow: rgba(49, 130, 246, 0.2);
+  /* ── Brand (Electric Indigo — Linear/Vercel 톤, RGB 94,106,210) ── */
+  --brand: #5E6AD2;
+  --brand-hover: #4B4FB8;
+  --brand-bg: rgba(94, 106, 210, 0.07);
+  --brand-border: rgba(94, 106, 210, 0.22);
+  --brand-shadow: rgba(94, 106, 210, 0.22);
 
   /* ── Indicator ── */
   --indicator-online: #34C759;
@@ -75,7 +75,7 @@
 
   /* ── Misc ── */
   --grid-color: rgba(0, 0, 0, 0.03);
-  --focus-ring: rgba(49, 130, 246, 0.4);
+  --focus-ring: rgba(94, 106, 210, 0.4);
 
   /* ── Radius (Soft & Rounded) ── */
   --radius-xs: 6px;
@@ -121,8 +121,8 @@
   --border-strong: #48484A;
   --border-subtle: #2C2C2E;
 
-  --accent-primary: #3182F6;
-  --accent-primary-hover: #5A9DF8;
+  --accent-primary: #8289E6;
+  --accent-primary-hover: #9EA4EC;
   --accent-secondary: #2C2C2E;
   --accent-secondary-hover: #3A3A3C;
 
@@ -145,11 +145,11 @@
   --tag-outline-border: #3A3A3C;
   --tag-outline-text: #AEAEB2;
 
-  --brand: #3182F6;
-  --brand-hover: #5A9DF8;
-  --brand-bg: rgba(49, 130, 246, 0.12);
-  --brand-border: rgba(49, 130, 246, 0.25);
-  --brand-shadow: rgba(49, 130, 246, 0.2);
+  --brand: #8289E6;
+  --brand-hover: #9EA4EC;
+  --brand-bg: rgba(130, 137, 230, 0.14);
+  --brand-border: rgba(130, 137, 230, 0.3);
+  --brand-shadow: rgba(130, 137, 230, 0.22);
 
   --indicator-online: #30D158;
   --indicator-premium: #FFD60A;
@@ -158,7 +158,7 @@
   --indicator-trending: #FF9F0A;
 
   --grid-color: rgba(255, 255, 255, 0.03);
-  --focus-ring: rgba(49, 130, 246, 0.5);
+  --focus-ring: rgba(130, 137, 230, 0.5);
 
   --shadow-sm: 0 0 2px rgba(0, 0, 0, 0.4), 0 0 1px rgba(0, 0, 0, 0.5);
   --shadow-md: 0 0 6px rgba(0, 0, 0, 0.35), 0 0 1px rgba(0, 0, 0, 0.5);

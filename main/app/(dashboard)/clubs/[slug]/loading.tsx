@@ -3,7 +3,7 @@
 export default function ClubDetailLoading() {
   return (
     <div className="bg-surface-bg min-h-full">
-      <div className="max-w-[1200px] mx-auto px-5 py-8">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-5">
           {/* 뒤로가기 + 공유 */}
           <div className="flex justify-between">

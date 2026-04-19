@@ -80,7 +80,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
           >
             {tab.label}
             {activeTab === tab.id && (
-              <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#3182F6] rounded-full" />
+              <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#5E6AD2] rounded-full" />
             )}
           </button>
         ))}
@@ -98,7 +98,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
                 onClick={() => creator.user_id && onCreatorClick?.(creator.user_id)}
                 className="w-full flex items-center gap-3 p-4 bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl hover:bg-[#EDF0F3] dark:hover:bg-[#252527] transition-colors cursor-pointer text-left"
               >
-                <div className="w-12 h-12 bg-[#3182F6] text-white rounded-full flex items-center justify-center font-bold text-base shrink-0">
+                <div className="w-12 h-12 bg-[#5E6AD2] text-white rounded-full flex items-center justify-center font-bold text-base shrink-0">
                   {creator.nickname.charAt(0)}
                 </div>
                 <div className="min-w-0 flex-1">
@@ -134,7 +134,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
                     onClick={() => onMemberClick?.(member.user_id)}
                     className="w-full flex items-center gap-3 p-3 bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl hover:bg-[#EDF0F3] dark:hover:bg-[#252527] transition-colors cursor-pointer text-left"
                   >
-                    <div className="w-9 h-9 bg-[#3182F6] text-white rounded-full flex items-center justify-center font-bold text-xs shrink-0">
+                    <div className="w-9 h-9 bg-[#5E6AD2] text-white rounded-full flex items-center justify-center font-bold text-xs shrink-0">
                       {member.nickname.charAt(0)}
                     </div>
                     <div className="min-w-0">
@@ -241,17 +241,17 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
                       onClick={() => handleAction(role)}
                       className="group w-full flex items-center gap-3 h-16 px-4 bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl hover:bg-[#EDF0F3] dark:hover:bg-[#252527] active:scale-[0.98] transition-all cursor-pointer text-left"
                     >
-                      <div className="w-9 h-9 bg-[#E5E5EA] dark:bg-[#3A3A3C] rounded-xl flex items-center justify-center shrink-0 group-hover:bg-[#3182F6] transition-colors">
+                      <div className="w-9 h-9 bg-[#E5E5EA] dark:bg-[#3A3A3C] rounded-xl flex items-center justify-center shrink-0 group-hover:bg-[#5E6AD2] transition-colors">
                         {/* @ts-expect-error lucide icon size prop */}
                         <RoleIcon size={14} className="text-txt-disabled group-hover:text-white transition-colors" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <span className="text-[15px] font-medium text-txt-secondary group-hover:text-[#3182F6] transition-colors">{label}</span>
-                        <p className="text-[12px] text-txt-disabled group-hover:text-[#3182F6]/60 transition-colors flex items-center gap-1">
+                        <span className="text-[15px] font-medium text-txt-secondary group-hover:text-[#5E6AD2] transition-colors">{label}</span>
+                        <p className="text-[12px] text-txt-disabled group-hover:text-[#5E6AD2]/60 transition-colors flex items-center gap-1">
                           <Coffee size={10} /> 커피챗 신청하기
                         </p>
                       </div>
-                      <ArrowRight size={14} className="text-txt-disabled group-hover:text-[#3182F6] group-hover:translate-x-0.5 transition-all shrink-0" />
+                      <ArrowRight size={14} className="text-txt-disabled group-hover:text-[#5E6AD2] group-hover:translate-x-0.5 transition-all shrink-0" />
                     </button>
                   )
                 })}
@@ -264,7 +264,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
             {!hideCta && !isOwner && !existingChat && (
               <button
                 onClick={() => handleAction()}
-                className="w-full h-14 bg-[#3182F6] text-white rounded-2xl font-semibold text-[16px] hover:bg-[#2272EB] active:scale-[0.97] transition-all flex items-center justify-center gap-2"
+                className="w-full h-14 bg-[#5E6AD2] text-white rounded-2xl font-semibold text-[16px] hover:bg-[#4B4FB8] active:scale-[0.97] transition-all flex items-center justify-center gap-2"
               >
                 <Coffee size={16} />
                 커피챗 신청하기
@@ -315,7 +315,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
             <div className="grid grid-cols-2 gap-2">
               {opportunity.time_commitment && (
                 <div className="bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl p-4 flex flex-col gap-1">
-                  <Clock size={16} className="text-[#3182F6]" />
+                  <Clock size={16} className="text-[#5E6AD2]" />
                   <span className="text-[12px] text-txt-tertiary mt-0.5">시간 투자</span>
                   <span className="text-[15px] font-bold text-txt-primary">
                     {opportunity.time_commitment === 'part_time' ? '파트타임' : '풀타임'}
@@ -324,7 +324,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
               )}
               {opportunity.location_type && (
                 <div className="bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl p-4 flex flex-col gap-1">
-                  <MapPin size={16} className="text-[#3182F6]" />
+                  <MapPin size={16} className="text-[#5E6AD2]" />
                   <span className="text-[12px] text-txt-tertiary mt-0.5">활동 방식</span>
                   <span className="text-[15px] font-bold text-txt-primary">
                     {opportunity.location_type === 'remote' ? '원격' :
@@ -334,7 +334,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
               )}
               {opportunity.compensation_type && (
                 <div className="bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl p-4 flex flex-col gap-1">
-                  <Sparkles size={16} className="text-[#3182F6]" />
+                  <Sparkles size={16} className="text-[#5E6AD2]" />
                   <span className="text-[12px] text-txt-tertiary mt-0.5">보상</span>
                   <span className="text-[15px] font-bold text-txt-primary">
                     {opportunity.compensation_type === 'equity' ? '지분' :
@@ -344,7 +344,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
                 </div>
               )}
               <div className="bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl p-4 flex flex-col gap-1">
-                <Eye size={16} className="text-[#3182F6]" />
+                <Eye size={16} className="text-[#5E6AD2]" />
                 <span className="text-[12px] text-txt-tertiary mt-0.5">조회 · 관심</span>
                 <span className="text-[15px] font-bold text-txt-primary">
                   {opportunity.views_count ?? 0}

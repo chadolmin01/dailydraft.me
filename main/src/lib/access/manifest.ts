@@ -47,9 +47,12 @@ export const ACCESS_MANIFEST: RouteRule[] = [
   { pattern: '/guide', tier: 'public' },
   { pattern: '/offline', tier: 'public', note: 'PWA offline fallback' },
   { pattern: '/explore', tier: 'public', note: '공개 프로필/프로젝트/클럽 탐색' },
+  { pattern: '/feed', tier: 'public', note: '공개 클럽 활동 피드 (SEO/바이럴 진입점)' },
   { pattern: '/p/:id', tier: 'public', note: '공개 프로젝트 상세 (공유 링크용)' },
   { pattern: '/u/:id', tier: 'public', note: '공개 프로필. profile.id 기반. ProfileDetailModal 대체' },
   { pattern: '/clubs/:slug', tier: 'public', note: '공개 클럽 상세. 현재 멤버카운트는 denorm 미구현 → anon 에겐 0 으로 보임 (TODO)' },
+  { pattern: '/clubs/:slug/join', tier: 'public', note: '초대 코드로 가입. middleware 는 pass, page 에서 로그인 유도' },
+  { pattern: '/embed/clubs/:slug', tier: 'public', note: '외부 사이트 임베드 위젯 (iframe)' },
   { pattern: '/recruit', tier: 'public' },
   { pattern: '/idea-validator', tier: 'hidden', note: 'MVP 모드 숨김' },
 
@@ -61,6 +64,7 @@ export const ACCESS_MANIFEST: RouteRule[] = [
   { pattern: '/profile/edit', tier: 'auth' },
   { pattern: '/messages', tier: 'auth' },
   { pattern: '/notifications', tier: 'auth' },
+  { pattern: '/drafts', tier: 'auth', note: '초안 목록 (주간 업데이트 등)' },
   { pattern: '/drafts/:draftId', tier: 'auth' },
   { pattern: '/more', tier: 'auth' },
   { pattern: '/design', tier: 'auth', note: '디자인 토큰 참조 페이지' },
@@ -87,6 +91,10 @@ export const ACCESS_MANIFEST: RouteRule[] = [
   { pattern: '/clubs/:slug/automations/settings', tier: 'club-admin', note: '콘텐츠 허브로 redirect' },
   { pattern: '/clubs/:slug/content-planning', tier: 'club-admin', note: '콘텐츠 허브로 redirect' },
   { pattern: '/clubs/:slug/analytics', tier: 'club-admin', note: '콘텐츠 허브로 redirect' },
+  { pattern: '/clubs/:slug/operator', tier: 'club-admin', note: '운영자 대시보드 (팀·제출 현황)' },
+  { pattern: '/clubs/:slug/reports', tier: 'club-admin', note: '클럽 리포트/통계' },
+  { pattern: '/clubs/:slug/certificate', tier: 'club-admin', note: '활동 증명서 발급' },
+  { pattern: '/clubs/:slug/cohorts/:cohort/archive', tier: 'auth', note: '기수별 아카이브 — 멤버 열람' },
 
   // ── platform-admin ────────────────────────────────────────
   { pattern: '/admin', tier: 'platform-admin' },

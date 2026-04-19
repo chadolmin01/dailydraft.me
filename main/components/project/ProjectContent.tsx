@@ -55,7 +55,7 @@ function UpdateDetail({ content }: { content: string }) {
 
       {parsed.nextPlan && (
         <div className="bg-[#EDF5FF] dark:bg-[#1A2A3A] rounded-xl px-3.5 py-2.5">
-          <span className="text-[12px] font-semibold text-[#3182F6] block mb-0.5">다음 주 계획</span>
+          <span className="text-[12px] font-semibold text-[#5E6AD2] block mb-0.5">다음 주 계획</span>
           <p className="text-[13px] text-txt-secondary leading-relaxed break-keep">{parsed.nextPlan}</p>
         </div>
       )}
@@ -168,10 +168,10 @@ export const ProjectContent: React.FC<ProjectContentProps> = ({
           >
             {tab.label}
             {tab.count != null && tab.count > 0 && (
-              <span className="ml-1 text-[12px] text-[#3182F6] font-semibold">{tab.count}</span>
+              <span className="ml-1 text-[12px] text-[#5E6AD2] font-semibold">{tab.count}</span>
             )}
             {activeTab === tab.id && (
-              <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#3182F6] rounded-full" />
+              <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#5E6AD2] rounded-full" />
             )}
           </button>
         ))}
@@ -212,7 +212,7 @@ export const ProjectContent: React.FC<ProjectContentProps> = ({
                   <p className="text-[15px] font-bold text-txt-primary">
                     업데이트
                     {activityCount > 0 && (
-                      <span className="ml-1.5 text-[#3182F6] font-semibold">{activityCount}</span>
+                      <span className="ml-1.5 text-[#5E6AD2] font-semibold">{activityCount}</span>
                     )}
                   </p>
                   <div className="flex items-center gap-2">
@@ -236,7 +236,7 @@ export const ProjectContent: React.FC<ProjectContentProps> = ({
                     {isOwner && (
                       <button
                         onClick={() => setShowWriteUpdate(true)}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 text-[13px] font-semibold bg-[#3182F6] text-white rounded-full hover:bg-[#2272EB] active:scale-[0.97] transition-all"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 text-[13px] font-semibold bg-[#5E6AD2] text-white rounded-full hover:bg-[#4B4FB8] active:scale-[0.97] transition-all"
                       >
                         + 작성
                       </button>

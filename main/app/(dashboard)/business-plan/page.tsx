@@ -119,8 +119,8 @@ function BusinessPlanPageContent() {
 
   // Template selection screen
   return (
-    <div className="min-h-screen bg-surface-bg p-6">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-surface-bg">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
         {/* Header */}
         <div className="mb-8">
           <button

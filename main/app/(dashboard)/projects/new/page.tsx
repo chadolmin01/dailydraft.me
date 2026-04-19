@@ -358,7 +358,7 @@ function NewProjectContent() {
         />
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 py-2 md:py-4">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-2 md:py-4">
 
         <form onSubmit={handlePreSubmit} className="bg-surface-card shadow-sm overflow-hidden border border-border-subtle rounded-xl">
 
@@ -511,8 +511,8 @@ function NewProjectContent() {
                     return (
                       <div className="mb-3 bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl p-4 space-y-3">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 bg-[#3182F6]/10 dark:bg-[#3182F6]/20 rounded-xl flex items-center justify-center shrink-0">
-                            <Sparkles size={18} className="text-[#3182F6]" />
+                          <div className="w-9 h-9 bg-[#5E6AD2]/10 dark:bg-[#5E6AD2]/20 rounded-xl flex items-center justify-center shrink-0">
+                            <Sparkles size={18} className="text-[#5E6AD2]" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-[13px] font-semibold text-txt-primary">AI로 소개글 작성</p>
@@ -523,12 +523,12 @@ function NewProjectContent() {
                             </p>
                           </div>
                           <div className="flex items-center gap-2 shrink-0">
-                            <span className="text-[12px] font-bold text-[#3182F6]">{filledCount}/{totalCount}</span>
+                            <span className="text-[12px] font-bold text-[#5E6AD2]">{filledCount}/{totalCount}</span>
                             <button
                               type="button"
                               onClick={generateDescription}
                               disabled={aiLoading || !canGenerate}
-                              className="h-9 px-4 text-[12px] font-semibold bg-[#3182F6] text-white rounded-xl disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95 flex items-center gap-1.5"
+                              className="h-9 px-4 text-[12px] font-semibold bg-[#5E6AD2] text-white rounded-xl disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95 flex items-center gap-1.5"
                             >
                               {aiLoading ? (
                                 <><Loader2 size={13} className="animate-spin" /> 생성 중</>
@@ -542,7 +542,7 @@ function NewProjectContent() {
                         {/* Progress bar */}
                         <div className="h-1.5 bg-[#E5E5EA] dark:bg-[#3A3A3C] rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-[#3182F6] rounded-full transition-all duration-500"
+                            className="h-full bg-[#5E6AD2] rounded-full transition-all duration-500"
                             style={{ width: `${pct}%` }}
                           />
                         </div>
@@ -554,7 +554,7 @@ function NewProjectContent() {
                               key={f.label}
                               className={`px-2.5 py-1 text-[11px] rounded-full transition-all ${
                                 f.filled
-                                  ? 'bg-[#3182F6]/10 text-[#3182F6] font-medium'
+                                  ? 'bg-[#5E6AD2]/10 text-[#5E6AD2] font-medium'
                                   : 'bg-[#E5E5EA] dark:bg-[#3A3A3C] text-txt-disabled'
                               }`}
                             >

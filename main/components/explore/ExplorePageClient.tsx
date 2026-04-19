@@ -2,15 +2,11 @@
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react'
 import dynamic from 'next/dynamic'
-import { AnimatePresence, motion } from 'framer-motion'
-import { Sparkles } from 'lucide-react'
+import { AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
 import Link from 'next/link'
 import { useSearchParams as useNextSearchParams, useRouter, usePathname } from 'next/navigation'
 import { SkeletonGrid } from '@/components/ui/Skeleton'
-import { ProfileCompletionBanner } from '@/components/ui/ProfileCompletionBanner'
-import { AiMatchingNudgeCard } from '@/components/explore/AiMatchingNudgeCard'
-import { StarterGuideCard } from '@/components/starter-guide/StarterGuideCard'
 import { useStarterGuide } from '@/src/hooks/useStarterGuide'
 import { useDiscordCarousel } from '@/src/hooks/useDiscordCarousel'
 import { DiscordFeatureCarousel } from '@/components/discord/DiscordFeatureCarousel'
@@ -37,20 +33,19 @@ import { useInfiniteOpportunities, type OpportunityWithCreator, calculateDaysLef
 import { cleanNickname } from '@/src/lib/clean-nickname'
 import { useInfinitePublicProfiles, type PublicProfile } from '@/src/hooks/usePublicProfiles'
 import { useUserRecommendations, type UserRecommendation } from '@/src/hooks/useUserRecommendations'
-import { FALLBACK_CATEGORIES } from '@/src/lib/fallbacks/explore'
-import { PEOPLE_ROLE_FILTERS } from '@/components/explore/constants'
+import { PEOPLE_ROLE_FILTERS, PROJECT_ROLE_FILTERS } from '@/components/explore/constants'
+import { SortPill } from '@/components/explore/SortPill'
 import { positionLabel } from '@/src/constants/roles'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/src/lib/supabase/client'
 import { useAuth } from '@/src/context/AuthContext'
 import { useProfile } from '@/src/hooks/useProfile'
 import { opportunityKeys } from '@/src/hooks/useOpportunities'
-import { CATEGORY_ICONS, PAGE_SIZE, PEOPLE_PAGE_SIZE, CLUBS_PAGE_SIZE } from './constants'
+import { PAGE_SIZE, PEOPLE_PAGE_SIZE, CLUBS_PAGE_SIZE } from './constants'
 import {
   ExplorePeopleGrid,
   ExploreClubGrid,
 } from '@/components/explore'
-import { FilterSheet } from '@/components/explore/FilterSheet'
 import type { ActiveTab, SortBy, TypeFilter, SearchScope, PeopleRoleFilter, PeopleSortBy, ProjectRoleFilter, ClubCard } from '@/components/explore/types'
 
 // ── 캠퍼스 맵 대학 데이터 (사이드 책갈피용) ──
@@ -88,7 +83,7 @@ function useDebouncedValue<T>(value: T, delay: number): T {
 export default function ExplorePageClient() {
   return (
     <Suspense fallback={
-      <div className="max-w-[1200px] mx-auto px-5 py-6">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <SkeletonGrid count={6} cols={3} />
       </div>
     }>
@@ -150,6 +145,16 @@ function ExplorePageContent() {
   const [activeTab, setActiveTabState] = useState<ActiveTab>(
     ['projects', 'people', 'clubs'].includes(initialTab) ? initialTab : 'projects'
   )
+
+  // MECE: people → /network, clubs → /clubs로 이관 (2026-04-20).
+  // 기존 북마크/공유링크 보호를 위해 리디렉트 유지.
+  useEffect(() => {
+    if (initialTab === 'people') router.replace('/network')
+    else if (initialTab === 'clubs') router.replace('/clubs')
+  }, [initialTab, router])
+
+  // 리디렉트 대기 중에는 렌더 스킵 (플래시 방지)
+  const isRedirecting = initialTab === 'people' || initialTab === 'clubs'
   // 탭 변경 시 URL `?tab=...` 동기화. 'projects'는 기본값이라 쿼리 생략해서 URL 깔끔하게 유지.
   // 이유: 새로고침/공유 링크/뒤로가기로도 같은 탭 보존돼야 딥링크가 의미를 가짐.
   const setActiveTab = React.useCallback((tab: ActiveTab) => {
@@ -169,7 +174,6 @@ function ExplorePageContent() {
   const [peopleSortBy, setPeopleSortBy] = useState<PeopleSortBy>('latest')
   const [searchInput, setSearchInput] = useState(initialQuery)
   const [searchScope, setSearchScope] = useState<SearchScope>(initialScope)
-  const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false)
 
   const searchQuery = useDebouncedValue(searchInput, 300)
   const { isAuthenticated, user, isLoading: isAuthLoading } = useAuth()
@@ -453,21 +457,6 @@ function ExplorePageContent() {
     [publicProfiles, peopleRoleFilter, peopleUniFilter, query, searchScope, recsMap, peopleSortBy]
   )
 
-  // FilterSheet에 필요한 최소 데이터
-  const projectCategories = useMemo(() => FALLBACK_CATEGORIES.map((cat) => {
-    const count = cat.id === 'all' ? opportunities.length : opportunities.filter((opp) =>
-      (opp.interest_tags || []).some(t => t.toLowerCase().includes(cat.id.toLowerCase()))
-    ).length
-    return { ...cat, count, icon: CATEGORY_ICONS[cat.id] || Sparkles }
-  }), [opportunities])
-
-  const handleResetFilters = useCallback(() => {
-    setTypeFilter('all')
-    setProjectRoleFilter('all')
-    setSelectedCategory('all')
-    setRecruitingOnly(false)
-    setPeopleRoleFilter('all')
-  }, [])
 
   const handlePrefetchProject = useCallback((id: string) => {
     queryClient.prefetchQuery({
@@ -564,27 +553,20 @@ function ExplorePageContent() {
     staleTime: 1000 * 60 * 2,
   })
 
+  if (isRedirecting) {
+    return (
+      <div className="bg-surface-bg min-h-full flex items-center justify-center py-20">
+        <span className="text-sm text-txt-tertiary">이동 중...</span>
+      </div>
+    )
+  }
+
   return (
     <div className="bg-surface-bg min-h-full">
-      <div className="max-w-[1200px] mx-auto px-5 pt-6 pb-16">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-16">
 
-        {/* 배너 */}
-        {guide.visible && (
-          <StarterGuideCard
-            steps={guide.steps}
-            completedCount={guide.completedCount}
-            total={guide.total}
-            showLinkHint={guide.showLinkHint}
-            onSoftDismiss={guide.softDismiss}
-            onPermanentDismiss={guide.permanentDismiss}
-          />
-        )}
-        {!guide.visible && <ProfileCompletionBanner />}
-        {isAuthenticated && profile && !profile.ai_chat_completed && (
-          <AiMatchingNudgeCard />
-        )}
-
-        {/* Discord 기능 소개 캐러셀 — discord_user_id가 없는 유저에게만 표시 */}
+        {/* Explore = 외부 발견. 본인 상태 배너(StarterGuide/ProfileCompletion/AiMatchingNudge)는
+            Dashboard로 이관 — 여기선 탐색에만 집중한다. Discord 캐러셀은 미연결 유저 교육이라 유지. */}
         <DiscordFeatureCarousel isOpen={discordCarousel.visible} onClose={discordCarousel.dismiss} />
 
         {/* ── Search bar ── */}
@@ -596,60 +578,82 @@ function ExplorePageContent() {
             type="text"
             value={searchInput}
             onChange={e => setSearchInput(e.target.value)}
-            placeholder="프로젝트, 사람, 클럽을 검색해보세요"
-            className="w-full pl-11 pr-4 py-3 text-[15px] bg-surface-sunken border border-border rounded-full text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-brand focus:bg-surface-card focus:shadow-[0_0_0_3px_rgba(0,149,246,0.1)] transition-all"
+            placeholder={
+              activeTab === 'projects' ? '프로젝트 검색 — 제목·태그·역할로'
+              : activeTab === 'people' ? '사람 검색 — 이름·대학·역할로'
+              : '클럽 검색 — 이름·카테고리로'
+            }
+            className="w-full pl-11 pr-4 py-3 text-[15px] bg-surface-sunken border border-border rounded-full text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-brand focus:bg-surface-card focus:shadow-[0_0_0_3px_rgba(94,106,210,0.15)] transition-all"
           />
         </div>
 
-        {/* ── Tabs ── underline에 motion layoutId 써서 탭 전환 시 bar가 슬라이드 */}
-        <div className="flex border-b border-border mb-4">
-          {([
-            { key: 'projects' as ActiveTab, label: '추천 피드' },
-            { key: 'people' as ActiveTab, label: '사람' },
-            { key: 'clubs' as ActiveTab, label: '클럽' },
-          ]).map(tab => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`relative px-5 py-3 text-[15px] font-semibold transition-colors ${
-                activeTab === tab.key
-                  ? 'text-txt-primary'
-                  : 'text-txt-tertiary hover:text-txt-secondary'
-              }`}
-            >
-              {tab.label}
-              {activeTab === tab.key && (
-                <motion.div
-                  layoutId="explore-tab-underline"
-                  className="absolute -bottom-[1px] left-0 right-0 h-[2px] bg-txt-primary"
-                  transition={{ type: 'spring', stiffness: 500, damping: 35 }}
-                />
-              )}
-            </button>
-          ))}
+        {/* 탭 제거됨 (2026-04-20) — people/clubs는 각각 /network·/clubs로 이관.
+            Explore = 프로젝트 발견 전용. 세 엔티티 타입으로 나누는 피드 구조는
+            MECE 원칙에 어긋나 혼란만 가중 (검토 결과).
+
+            교차 진입점은 헤더 아래 보조 링크로 제공. */}
+        <div className="flex items-center gap-4 mb-5 text-[13px]">
+          <span className="text-txt-tertiary">다른 탐색:</span>
+          <Link href="/network" className="font-semibold text-brand hover:underline">사람 →</Link>
+          <Link href="/clubs" className="font-semibold text-brand hover:underline">클럽 →</Link>
         </div>
 
-        {/* ── Filter chips ── */}
+        {/* ── Filter + Sort row (탭별 인라인 컨트롤) ── */}
+        {activeTab === 'projects' && (
+          <div className="flex items-center justify-between gap-3 mb-5">
+            <div className="flex items-center gap-2 overflow-x-auto flex-1" style={{ scrollbarWidth: 'none' }}>
+              {[{ id: 'all', label: '전체' }, ...PROJECT_ROLE_FILTERS.filter(r => r.id !== 'all')].map(f => (
+                <button
+                  key={f.id}
+                  onClick={() => setProjectRoleFilter(f.id as ProjectRoleFilter)}
+                  className={`shrink-0 px-3.5 py-1.5 text-[13px] font-medium rounded-full border transition-colors ${
+                    projectRoleFilter === f.id
+                      ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
+                      : 'text-txt-secondary border-border bg-surface-card hover:border-txt-tertiary'
+                  }`}
+                >{f.label}</button>
+              ))}
+            </div>
+            <SortPill
+              value={sortBy}
+              onChange={setSortBy}
+              options={[
+                { id: 'trending', label: '추천' },
+                { id: 'latest', label: '최신' },
+                { id: 'popular', label: '인기' },
+              ]}
+            />
+          </div>
+        )}
         {activeTab === 'people' && (
-          <div className="flex items-center gap-2 mb-5 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
-            {[
-              { id: 'all', label: '전체' },
-              ...PEOPLE_ROLE_FILTERS.filter(r => r.id !== 'all'),
-            ].map(f => (
-              <button
-                key={f.id}
-                onClick={() => setPeopleRoleFilter(f.id as PeopleRoleFilter)}
-                className={`shrink-0 px-3.5 py-1.5 text-[13px] font-medium rounded-full border transition-colors ${
-                  peopleRoleFilter === f.id
-                    ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
-                    : 'text-txt-secondary border-border bg-surface-card hover:border-txt-tertiary'
-                }`}
-              >{f.label}</button>
-            ))}
+          <div className="flex items-center justify-between gap-3 mb-5">
+            <div className="flex items-center gap-2 overflow-x-auto flex-1" style={{ scrollbarWidth: 'none' }}>
+              {[{ id: 'all', label: '전체' }, ...PEOPLE_ROLE_FILTERS.filter(r => r.id !== 'all')].map(f => (
+                <button
+                  key={f.id}
+                  onClick={() => setPeopleRoleFilter(f.id as PeopleRoleFilter)}
+                  className={`shrink-0 px-3.5 py-1.5 text-[13px] font-medium rounded-full border transition-colors ${
+                    peopleRoleFilter === f.id
+                      ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
+                      : 'text-txt-secondary border-border bg-surface-card hover:border-txt-tertiary'
+                  }`}
+                >{f.label}</button>
+              ))}
+            </div>
+            <SortPill
+              value={peopleSortBy}
+              onChange={setPeopleSortBy}
+              options={[
+                { id: 'ai', label: '추천' },
+                { id: 'latest', label: '최신' },
+                { id: 'popular', label: '인기' },
+              ]}
+            />
           </div>
         )}
         {activeTab === 'clubs' && (
           <div className="flex items-center gap-2 mb-5 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+            {/* TODO: 클럽 카테고리 실 필터링은 백엔드 지원 후 동작하도록. 지금은 시각 placeholder. */}
             {['전체', '사이드프로젝트', '스타트업', '스터디', '학회'].map((label, i) => (
               <button key={label} className={`shrink-0 px-3.5 py-1.5 text-[13px] font-medium rounded-full border transition-colors ${
                 i === 0
@@ -847,7 +851,7 @@ function ExplorePageContent() {
               <section>
                 <div className="flex items-baseline justify-between mb-3.5">
                   <span className="text-[16px] font-bold text-txt-primary">프로젝트에 필요한 사람</span>
-                  <button onClick={() => setActiveTab('people')} className="text-[13px] text-txt-tertiary hover:text-txt-secondary transition-colors bg-transparent border-none cursor-pointer">더보기 ›</button>
+                  <Link href="/network" className="text-[13px] text-txt-tertiary hover:text-txt-secondary transition-colors no-underline">더보기 ›</Link>
                 </div>
                 <div ref={dragRefPeople} className="flex gap-3 overflow-x-auto pb-2 feed-scroll">
                   {profilesLoading ? (
@@ -910,7 +914,7 @@ function ExplorePageContent() {
               <section>
                 <div className="flex items-baseline justify-between mb-3.5">
                   <span className="text-[16px] font-bold text-txt-primary">관심 분야 클럽</span>
-                  <button onClick={() => setActiveTab('clubs')} className="text-[13px] text-txt-tertiary hover:text-txt-secondary transition-colors bg-transparent border-none cursor-pointer">더보기 ›</button>
+                  <Link href="/clubs" className="text-[13px] text-txt-tertiary hover:text-txt-secondary transition-colors no-underline">더보기 ›</Link>
                 </div>
                 <div ref={dragRefClubs} className="flex gap-3 overflow-x-auto pb-2 feed-scroll">
                   {clubsLoading ? (
@@ -1095,23 +1099,8 @@ function ExplorePageContent() {
         )}
       </div>
 
-      <FilterSheet
-        isOpen={isFilterSheetOpen}
-        onClose={() => setIsFilterSheetOpen(false)}
-        activeTab={activeTab}
-        typeFilter={typeFilter}
-        onTypeFilterChange={setTypeFilter}
-        projectRoleFilter={projectRoleFilter}
-        onProjectRoleFilterChange={setProjectRoleFilter}
-        categories={projectCategories}
-        selectedCategory={selectedCategory}
-        onCategoryChange={setSelectedCategory}
-        recruitingOnly={recruitingOnly}
-        onRecruitingOnlyChange={setRecruitingOnly}
-        peopleRoleFilter={peopleRoleFilter}
-        onPeopleRoleFilterChange={setPeopleRoleFilter}
-        onReset={handleResetFilters}
-      />
+      {/* FilterSheet 제거 (2026-04-20) — 데드코드였고 실제 트리거 없었음.
+          인라인 칩이 탭별로 있으니 모달 필요 없음. 추후 복잡한 필터 추가되면 그때 재도입. */}
 
       <AnimatePresence>
         {selectedProjectId && (

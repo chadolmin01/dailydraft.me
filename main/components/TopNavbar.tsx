@@ -8,6 +8,7 @@ import { useAuth } from '@/src/context/AuthContext'
 import { useProfile } from '@/src/hooks/useProfile'
 import { useAdmin } from '@/src/hooks/useAdmin'
 import { useInstitutionAdmin } from '@/src/hooks/useInstitutionAdmin'
+import { useMyOperatorClubs } from '@/src/hooks/useMyOperatorClubs'
 import { NotificationDropdown } from '@/components/NotificationDropdown'
 import { useTheme } from '@/src/context/ThemeContext'
 import { useBackHandler } from '@/src/hooks/useBackHandler'
@@ -78,6 +79,8 @@ export const TopNavbar: React.FC = () => {
   const { data: profile } = useProfile()
   const { isAdmin } = useAdmin()
   const { isInstitutionAdmin } = useInstitutionAdmin()
+  const { isOperator } = useMyOperatorClubs()
+  const hasAnyAdminAccess = isAdmin || isInstitutionAdmin || isOperator
   const { theme, toggleTheme } = useTheme()
 
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -210,10 +213,10 @@ export const TopNavbar: React.FC = () => {
           {/* ===== 데스크탑 네비게이션 (pill tabs) — 홈을 최상단에 ===== */}
           <div className="hidden md:flex items-center bg-surface-sunken/60 p-0.5 rounded-full">
             <NavPill href="/dashboard" active={pathname === '/dashboard'}>홈</NavPill>
-            <NavPill href="/explore" active={pathname === '/explore'}>탐색</NavPill>
-            <NavPill href="/clubs" active={pathname?.startsWith('/clubs') ?? false}>클럽</NavPill>
-            <NavPill href="/profile" active={pathname === '/profile'}>프로필</NavPill>
+            <NavPill href="/explore" active={pathname === '/explore'}>발견</NavPill>
             <NavPill href="/projects" active={pathname?.startsWith('/projects') ?? false}>프로젝트</NavPill>
+            <NavPill href="/network" active={pathname === '/network'}>사람</NavPill>
+            <NavPill href="/clubs" active={pathname?.startsWith('/clubs') ?? false}>클럽</NavPill>
           </div>
 
           {/* ===== 중앙: 유니버설 검색 ===== */}
@@ -382,25 +385,22 @@ export const TopNavbar: React.FC = () => {
                         <DropdownItem icon={User} href="/profile">내 프로필</DropdownItem>
                         <DropdownItem icon={Settings} disabled>설정</DropdownItem>
                       </div>
-                      {isInstitutionAdmin && (
+                      {hasAnyAdminAccess && (
                         <>
                           <div className="mx-3 border-t border-border-subtle" />
                           <div className="py-1.5 px-1.5">
-                            <p className="px-2.5 py-1 text-[10px] text-txt-disabled">Institution</p>
-                            <DropdownItem icon={Building2} href="/institution">기관 대시보드</DropdownItem>
-                          </div>
-                        </>
-                      )}
-                      {isAdmin && (
-                        <>
-                          <div className="mx-3 border-t border-border-subtle" />
-                          <div className="py-1.5 px-1.5">
-                            <p className="px-2.5 py-1 text-[10px] text-txt-disabled">Admin</p>
-                            <DropdownItem icon={Shield} href="/admin">관리자 대시보드</DropdownItem>
-                            <DropdownItem icon={User} href="/admin/users">사용자 관리</DropdownItem>
-                            <DropdownItem icon={Briefcase} href="/admin/opportunities">기회 관리</DropdownItem>
-                            <DropdownItem icon={Settings} href="/admin/invite-codes">초대 코드 관리</DropdownItem>
-                            <DropdownItem icon={AlertTriangle} href="/admin/error-logs">에러 로그</DropdownItem>
+                            <p className="px-2.5 py-1 text-[10px] text-txt-disabled">관리자</p>
+                            <DropdownItem icon={Shield} href="/admin">통합 관리자 허브</DropdownItem>
+                            {isInstitutionAdmin && (
+                              <DropdownItem icon={Building2} href="/institution">기관 대시보드</DropdownItem>
+                            )}
+                            {isAdmin && (
+                              <>
+                                <DropdownItem icon={User} href="/admin/users">사용자 관리</DropdownItem>
+                                <DropdownItem icon={Briefcase} href="/admin/opportunities">프로젝트 관리</DropdownItem>
+                                <DropdownItem icon={AlertTriangle} href="/admin/error-logs">에러 로그</DropdownItem>
+                              </>
+                            )}
                           </div>
                         </>
                       )}

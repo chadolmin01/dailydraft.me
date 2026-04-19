@@ -101,7 +101,7 @@ export default function InstitutionTeamsPage() {
 
   return (
     <div className="flex-1 overflow-y-auto h-screen bg-surface-bg">
-      <div className="max-w-[87.5rem] mx-auto p-8 lg:p-12 space-y-6">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12 space-y-6">
         {/* Header */}
         <div className="border-b border-border pb-6">
           <Link

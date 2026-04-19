@@ -64,7 +64,7 @@ export function UserProfilePageClient({ profileId }: { profileId: string }) {
 
   if (isLoading) {
     return (
-      <div className="max-w-[900px] mx-auto px-5 py-8">
+      <div className="max-w-[900px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="animate-pulse space-y-5">
           <div className="h-8 bg-surface-sunken rounded w-32" />
           <div className="flex gap-4">
@@ -83,7 +83,7 @@ export function UserProfilePageClient({ profileId }: { profileId: string }) {
 
   if (!profile) {
     return (
-      <div className="max-w-[900px] mx-auto px-5 py-16 text-center">
+      <div className="max-w-[900px] mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
         <p className="text-sm text-txt-tertiary">프로필을 찾을 수 없습니다.</p>
         <Link href="/explore" className="inline-block mt-4 text-[13px] text-brand hover:underline">
           탐색으로 돌아가기
@@ -122,7 +122,7 @@ export function UserProfilePageClient({ profileId }: { profileId: string }) {
   }
 
   return (
-    <div className="max-w-[900px] mx-auto px-5 py-6 print:py-0 print:max-w-none print:bg-white">
+    <div className="max-w-[900px] mx-auto px-4 sm:px-6 lg:px-8 py-6 print:py-0 print:max-w-none print:bg-white">
       {/* 상단 바 — 인쇄 시 숨김 */}
       <div className="flex items-center justify-between mb-6 print:hidden">
         <Link

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import Link from 'next/link'
-import { MessageSquare, Sun, Moon, LogOut, Shield, Building2, ChevronRight, Plus, Download, Share, Smartphone } from 'lucide-react'
+import { MessageSquare, Sun, Moon, LogOut, Shield, Building2, ChevronRight, Plus, Download, Share, Smartphone, Users, GraduationCap } from 'lucide-react'
 import { useAuth } from '@/src/context/AuthContext'
 import { useProfile } from '@/src/hooks/useProfile'
 import { useAdmin } from '@/src/hooks/useAdmin'
@@ -70,7 +70,7 @@ export default function MorePage() {
   }
 
   return (
-    <div className="max-w-lg mx-auto px-5 pt-6 pb-24">
+    <div className="max-w-lg mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-24">
       {/* 헤더 */}
       <h1 className="text-[22px] font-bold text-txt-primary mb-6">더보기</h1>
 
@@ -79,7 +79,7 @@ export default function MorePage() {
         href="/profile"
         className="flex items-center gap-4 bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl p-4 mb-4 active:opacity-80 transition-opacity"
       >
-        <div className="w-12 h-12 bg-[#3182F6] rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0">
+        <div className="w-12 h-12 bg-[#5E6AD2] rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0">
           {displayName.substring(0, 2).toUpperCase()}
         </div>
         <div className="flex-1 min-w-0">
@@ -89,13 +89,35 @@ export default function MorePage() {
         <ChevronRight size={18} className="text-txt-disabled shrink-0" />
       </Link>
 
+      {/* 탐색 — 사람·클럽 */}
+      <div className="bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl overflow-hidden mb-4">
+        <p className="px-4 pt-3 pb-1 text-[11px] font-medium text-txt-disabled uppercase tracking-wider">탐색</p>
+        <Link
+          href="/network"
+          className="flex items-center gap-4 px-4 py-3.5 active:bg-[#E5E5EA] dark:active:bg-[#2C2C2E] transition-colors"
+        >
+          <Users size={20} className="text-[#5E6AD2] shrink-0" />
+          <span className="flex-1 text-[15px] text-txt-primary">사람 찾기</span>
+          <ChevronRight size={16} className="text-txt-disabled shrink-0" />
+        </Link>
+        <div className="mx-4 border-t border-border/30" />
+        <Link
+          href="/clubs"
+          className="flex items-center gap-4 px-4 py-3.5 active:bg-[#E5E5EA] dark:active:bg-[#2C2C2E] transition-colors"
+        >
+          <GraduationCap size={20} className="text-[#5E6AD2] shrink-0" />
+          <span className="flex-1 text-[15px] text-txt-primary">클럽 찾기</span>
+          <ChevronRight size={16} className="text-txt-disabled shrink-0" />
+        </Link>
+      </div>
+
       {/* 메뉴 그룹 1: 주요 기능 */}
       <div className="bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl overflow-hidden mb-4">
         <Link
           href="/messages"
           className="flex items-center gap-4 px-4 py-3.5 active:bg-[#E5E5EA] dark:active:bg-[#2C2C2E] transition-colors"
         >
-          <MessageSquare size={20} className="text-[#3182F6] shrink-0" />
+          <MessageSquare size={20} className="text-[#5E6AD2] shrink-0" />
           <span className="flex-1 text-[15px] text-txt-primary">메시지</span>
           {msgUnread > 0 && (
             <span className="min-w-[1.25rem] h-5 flex items-center justify-center px-1.5 bg-indicator-alert text-white text-[11px] font-bold rounded-full">
@@ -111,7 +133,7 @@ export default function MorePage() {
           href="/projects/new"
           className="flex items-center gap-4 px-4 py-3.5 active:bg-[#E5E5EA] dark:active:bg-[#2C2C2E] transition-colors"
         >
-          <Plus size={20} className="text-[#3182F6] shrink-0" />
+          <Plus size={20} className="text-[#5E6AD2] shrink-0" />
           <span className="flex-1 text-[15px] text-txt-primary">새 프로젝트</span>
           <ChevronRight size={16} className="text-txt-disabled shrink-0" />
         </Link>
@@ -139,13 +161,13 @@ export default function MorePage() {
               <div className="flex items-center gap-3">
                 <span className="w-5 h-5 bg-[#E5E5EA] dark:bg-[#3A3A3C] rounded-md flex items-center justify-center text-[11px] font-bold text-txt-secondary shrink-0">1</span>
                 <p className="text-[13px] text-txt-secondary flex items-center gap-1">
-                  하단의 <Share size={13} className="text-[#3182F6]" /> 공유 버튼 탭
+                  하단의 <Share size={13} className="text-[#5E6AD2]" /> 공유 버튼 탭
                 </p>
               </div>
               <div className="flex items-center gap-3">
                 <span className="w-5 h-5 bg-[#E5E5EA] dark:bg-[#3A3A3C] rounded-md flex items-center justify-center text-[11px] font-bold text-txt-secondary shrink-0">2</span>
                 <p className="text-[13px] text-txt-secondary flex items-center gap-1">
-                  <Plus size={13} className="text-[#3182F6]" /> &quot;홈 화면에 추가&quot; 탭
+                  <Plus size={13} className="text-[#5E6AD2]" /> &quot;홈 화면에 추가&quot; 탭
                 </p>
               </div>
               <div className="flex items-center gap-3">
@@ -186,7 +208,7 @@ export default function MorePage() {
               href="/institution"
               className="flex items-center gap-4 px-4 py-3.5 active:bg-[#E5E5EA] dark:active:bg-[#2C2C2E] transition-colors"
             >
-              <Building2 size={20} className="text-[#3182F6] shrink-0" />
+              <Building2 size={20} className="text-[#5E6AD2] shrink-0" />
               <span className="flex-1 text-[15px] text-txt-primary">기관 대시보드</span>
               <ChevronRight size={16} className="text-txt-disabled shrink-0" />
             </Link>
@@ -198,7 +220,7 @@ export default function MorePage() {
                 href="/admin"
                 className="flex items-center gap-4 px-4 py-3.5 active:bg-[#E5E5EA] dark:active:bg-[#2C2C2E] transition-colors"
               >
-                <Shield size={20} className="text-[#3182F6] shrink-0" />
+                <Shield size={20} className="text-[#5E6AD2] shrink-0" />
                 <span className="flex-1 text-[15px] text-txt-primary">관리자 대시보드</span>
                 <ChevronRight size={16} className="text-txt-disabled shrink-0" />
               </Link>

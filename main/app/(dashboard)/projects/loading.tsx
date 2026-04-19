@@ -2,7 +2,7 @@
 export default function ProjectsLoading() {
   return (
     <div className="bg-surface-bg min-h-full">
-      <div className="max-w-[1200px] mx-auto px-5 py-6 sm:py-8">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <div className="space-y-6">
           {/* Header */}
           <div className="flex items-center justify-between">

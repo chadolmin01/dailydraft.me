@@ -435,7 +435,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                                   }}
                                   className={`w-full text-left px-3 py-2.5 text-[13px] font-medium transition-colors ${
                                     opportunity.type === opt.value
-                                      ? 'bg-[#3182F6] text-white'
+                                      ? 'bg-[#5E6AD2] text-white'
                                       : 'text-txt-secondary hover:bg-[#F2F3F5] dark:hover:bg-[#2C2C2E]'
                                   }`}
                                 >
@@ -617,7 +617,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                     ) : (
                       <button
                         onClick={() => handleAction()}
-                        className="w-full h-14 bg-[#3182F6] text-white rounded-2xl font-semibold text-[16px] hover:bg-[#2272EB] active:scale-[0.97] transition-all flex items-center justify-center gap-2"
+                        className="w-full h-14 bg-[#5E6AD2] text-white rounded-2xl font-semibold text-[16px] hover:bg-[#4B4FB8] active:scale-[0.97] transition-all flex items-center justify-center gap-2"
                       >
                         <Coffee size={16} />
                         커피챗 신청하기
