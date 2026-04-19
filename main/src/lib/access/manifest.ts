@@ -54,6 +54,9 @@ export const ACCESS_MANIFEST: RouteRule[] = [
   { pattern: '/clubs/:slug/join', tier: 'public', note: '초대 코드로 가입. middleware 는 pass, page 에서 로그인 유도' },
   { pattern: '/embed/clubs/:slug', tier: 'public', note: '외부 사이트 임베드 위젯 (iframe)' },
   { pattern: '/recruit', tier: 'public' },
+  { pattern: '/privacy', tier: 'public', note: 'PIPA 준수 개인정보처리방침' },
+  { pattern: '/terms', tier: 'public', note: '서비스 이용약관' },
+  { pattern: '/status', tier: 'public', note: '공개 시스템 상태 페이지 (health polling)' },
   { pattern: '/idea-validator', tier: 'hidden', note: 'MVP 모드 숨김' },
 
   // ── auth ──────────────────────────────────────────────────
@@ -62,6 +65,7 @@ export const ACCESS_MANIFEST: RouteRule[] = [
   { pattern: '/onboarding/interview', tier: 'auth' },
   { pattern: '/profile', tier: 'auth' },
   { pattern: '/profile/edit', tier: 'auth' },
+  { pattern: '/me/data', tier: 'auth', note: '정보주체 권리 관리 (PIPA 35/36조 — 열람·내려받기·삭제)' },
   { pattern: '/messages', tier: 'auth' },
   { pattern: '/notifications', tier: 'auth' },
   { pattern: '/drafts', tier: 'auth', note: '초안 목록 (주간 업데이트 등)' },
