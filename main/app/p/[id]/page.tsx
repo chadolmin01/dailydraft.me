@@ -3,6 +3,11 @@ import { createClient } from '@supabase/supabase-js'
 import { APP_URL } from '@/src/constants'
 import { ProjectDetailClient } from './client'
 
+// ISR: 공개 프로젝트 상세 페이지는 5분 캐시.
+// 왜 5분: OG 크롤러·공유 링크 대상이라 SEO 중요. 프로젝트 정보 변경 빈도 고려 시 5분이 적절.
+// `/u/[id]` 의 60s 보다 길게 — 프로젝트는 프로필보다 변화 덜 잦음.
+export const revalidate = 300
+
 interface Props {
   params: Promise<{ id: string }>
 }
