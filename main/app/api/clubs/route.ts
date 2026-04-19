@@ -1,3 +1,4 @@
+import { NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
@@ -109,7 +110,16 @@ export const GET = withErrorCapture(async (request) => {
     member_count: countMap[club.id] ?? 0,
   }))
 
-  return ApiResponse.ok({ items, total: items.length })
+  // CDN 캐시: 공개 클럽 목록은 자주 변하지 않음. 60s fresh + 300s stale-while-revalidate.
+  // 검색어·카테고리 필터는 URL 쿼리 다르므로 캐시 키가 분리됨.
+  return NextResponse.json(
+    { items, total: items.length },
+    {
+      headers: {
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+      },
+    },
+  )
 })
 
 // 슬러그 예약어 (라우팅 충돌 방지)
