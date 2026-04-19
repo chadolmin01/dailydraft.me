@@ -1,0 +1,57 @@
+name: Lighthouse Audit
+
+# 왜: 핵심 공개 페이지(/, /feed, /explore, /recruit) 성능·접근성·SEO·Best Practices
+# 회귀 감지. PR 에 점수 코멘트로 달림.
+#
+# 동작:
+# 1. Vercel preview 배포 완료 대기 (vercel deployment status API)
+# 2. lighthouse-ci action 으로 4개 URL 감사
+# 3. 점수를 PR comment 로 업로드
+#
+# 실패 조건: 점수 threshold 미만. 초기엔 경고만 (continue-on-error: true).
+# 안정화 후 threshold 강제로 변경 예정.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'main/app/**'
+      - 'main/components/**'
+      - 'main/src/**'
+      - 'main/public/**'
+      - 'main/next.config.ts'
+      - 'main/package.json'
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    # Vercel 배포 완료까지 최대 5분 대기
+    timeout-minutes: 15
+    # 초기 도입 — threshold 미달이어도 CI 차단 X (경고만)
+    continue-on-error: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Wait for Vercel Preview
+        id: wait-vercel
+        uses: patrickedqvist/wait-for-vercel-preview@v1.3.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          max_timeout: 300
+          check_interval: 10
+
+      - name: Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            ${{ steps.wait-vercel.outputs.url }}
+            ${{ steps.wait-vercel.outputs.url }}/feed
+            ${{ steps.wait-vercel.outputs.url }}/explore
+            ${{ steps.wait-vercel.outputs.url }}/recruit
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+          # 초기 도입 — threshold 설정 없음. 단순 측정·리포팅.
+          # 안정화 후 .lighthouserc.js 에서 assert 기준 추가 예정.
+          runs: 1
