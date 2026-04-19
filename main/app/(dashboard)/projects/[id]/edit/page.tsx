@@ -342,7 +342,7 @@ function EditProjectContent() {
 
   return (
     <div className="flex-1 overflow-y-auto bg-surface-bg">
-      <div className="max-w-4xl mx-auto px-4 py-2 md:py-4">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-2 md:py-4">
 
         {/* ─── Tab Bar ─── */}
         <div className="bg-surface-card rounded-t-xl border border-border-subtle border-b-0 shadow-sm">

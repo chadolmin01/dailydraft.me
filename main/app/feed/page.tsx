@@ -165,7 +165,7 @@ export default async function FeedPage({
 
   return (
     <div className="min-h-screen bg-surface-bg">
-      <div className="max-w-[780px] mx-auto px-5 pt-10 pb-16">
+      <div className="max-w-[780px] mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-16">
         <header className="mb-6">
           <div className="flex items-center gap-2 mb-1">
             <Sparkles size={16} className="text-brand" />

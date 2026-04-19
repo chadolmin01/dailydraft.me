@@ -247,6 +247,32 @@ export type Database = {
           },
         ]
       }
+      club_announcement_reads: {
+        Row: {
+          announcement_id: string
+          read_at: string
+          user_id: string
+        }
+        Insert: {
+          announcement_id: string
+          read_at?: string
+          user_id: string
+        }
+        Update: {
+          announcement_id?: string
+          read_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "club_announcement_reads_announcement_id_fkey"
+            columns: ["announcement_id"]
+            isOneToOne: false
+            referencedRelation: "club_announcements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       club_announcements: {
         Row: {
           author_id: string
@@ -255,6 +281,8 @@ export type Database = {
           created_at: string
           id: string
           is_pinned: boolean
+          published_at: string | null
+          scheduled_at: string | null
           title: string
           updated_at: string
         }
@@ -265,6 +293,8 @@ export type Database = {
           created_at?: string
           id?: string
           is_pinned?: boolean
+          published_at?: string | null
+          scheduled_at?: string | null
           title: string
           updated_at?: string
         }
@@ -275,6 +305,8 @@ export type Database = {
           created_at?: string
           id?: string
           is_pinned?: boolean
+          published_at?: string | null
+          scheduled_at?: string | null
           title?: string
           updated_at?: string
         }
@@ -332,6 +364,62 @@ export type Database = {
             columns: ["university_id"]
             isOneToOne: false
             referencedRelation: "universities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      club_events: {
+        Row: {
+          all_day: boolean
+          club_id: string
+          cohort: string | null
+          created_at: string
+          created_by: string
+          description: string | null
+          end_at: string | null
+          event_type: string
+          id: string
+          location: string | null
+          start_at: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          all_day?: boolean
+          club_id: string
+          cohort?: string | null
+          created_at?: string
+          created_by: string
+          description?: string | null
+          end_at?: string | null
+          event_type?: string
+          id?: string
+          location?: string | null
+          start_at: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          all_day?: boolean
+          club_id?: string
+          cohort?: string | null
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          end_at?: string | null
+          event_type?: string
+          id?: string
+          location?: string | null
+          start_at?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "club_events_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
             referencedColumns: ["id"]
           },
         ]
@@ -1658,6 +1746,60 @@ export type Database = {
           },
         ]
       }
+      micro_prompts_cooldown: {
+        Row: {
+          consecutive_skips: number
+          last_shown_at: string | null
+          next_available_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          consecutive_skips?: number
+          last_shown_at?: string | null
+          next_available_at?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          consecutive_skips?: number
+          last_shown_at?: string | null
+          next_available_at?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      micro_prompts_log: {
+        Row: {
+          action: string
+          context: string | null
+          created_at: string
+          id: string
+          question_id: string
+          response: Json | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          context?: string | null
+          created_at?: string
+          id?: string
+          question_id: string
+          response?: Json | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          context?: string | null
+          created_at?: string
+          id?: string
+          question_id?: string
+          response?: Json | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       notification_settings: {
         Row: {
           created_at: string | null
@@ -2008,6 +2150,77 @@ export type Database = {
         }
         Relationships: []
       }
+      persona_automations: {
+        Row: {
+          active: boolean
+          auto_publish: boolean
+          created_at: string
+          created_by: string | null
+          daily_count: number
+          default_metadata: Json
+          event_type: string
+          frequency: string
+          id: string
+          last_run_at: string | null
+          last_run_status: string | null
+          next_run_at: string | null
+          persona_id: string
+          run_day_of_month: number | null
+          run_hour: number
+          run_minute: number
+          run_weekday: number | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          auto_publish?: boolean
+          created_at?: string
+          created_by?: string | null
+          daily_count?: number
+          default_metadata?: Json
+          event_type: string
+          frequency: string
+          id?: string
+          last_run_at?: string | null
+          last_run_status?: string | null
+          next_run_at?: string | null
+          persona_id: string
+          run_day_of_month?: number | null
+          run_hour?: number
+          run_minute?: number
+          run_weekday?: number | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          auto_publish?: boolean
+          created_at?: string
+          created_by?: string | null
+          daily_count?: number
+          default_metadata?: Json
+          event_type?: string
+          frequency?: string
+          id?: string
+          last_run_at?: string | null
+          last_run_status?: string | null
+          next_run_at?: string | null
+          persona_id?: string
+          run_day_of_month?: number | null
+          run_hour?: number
+          run_minute?: number
+          run_weekday?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "persona_automations_persona_id_fkey"
+            columns: ["persona_id"]
+            isOneToOne: false
+            referencedRelation: "personas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       persona_channel_credentials: {
         Row: {
           account_ref: string
@@ -2152,6 +2365,63 @@ export type Database = {
           },
         ]
       }
+      persona_idea_cards: {
+        Row: {
+          bundle_id: string | null
+          created_at: string
+          created_by: string | null
+          description: string
+          event_type_hint: string
+          id: string
+          persona_id: string
+          source: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          bundle_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description: string
+          event_type_hint?: string
+          id?: string
+          persona_id: string
+          source: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          bundle_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          event_type_hint?: string
+          id?: string
+          persona_id?: string
+          source?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "persona_idea_cards_bundle_id_fkey"
+            columns: ["bundle_id"]
+            isOneToOne: false
+            referencedRelation: "persona_output_bundles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "persona_idea_cards_persona_id_fkey"
+            columns: ["persona_id"]
+            isOneToOne: false
+            referencedRelation: "personas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       persona_output_bundles: {
         Row: {
           approved_at: string | null
@@ -2230,6 +2500,8 @@ export type Database = {
           prompt_template_id: string | null
           published_at: string | null
           rejected_reason: string | null
+          scheduled_at: string | null
+          scheduled_by: string | null
           status: string
           updated_at: string
         }
@@ -2251,6 +2523,8 @@ export type Database = {
           prompt_template_id?: string | null
           published_at?: string | null
           rejected_reason?: string | null
+          scheduled_at?: string | null
+          scheduled_by?: string | null
           status?: string
           updated_at?: string
         }
@@ -2272,6 +2546,8 @@ export type Database = {
           prompt_template_id?: string | null
           published_at?: string | null
           rejected_reason?: string | null
+          scheduled_at?: string | null
+          scheduled_by?: string | null
           status?: string
           updated_at?: string
         }
@@ -2514,9 +2790,11 @@ export type Database = {
           current_situation: string | null
           data_consent: boolean | null
           data_consent_at: string | null
+          department: string | null
           desired_position: string | null
           discord_user_id: string | null
           discord_username: string | null
+          entrance_year: number | null
           extracted_profile: Json | null
           extraction_confidence: number | null
           github_url: string | null
@@ -2543,7 +2821,11 @@ export type Database = {
           profile_views: number | null
           profile_visibility: string | null
           skills: Json | null
+          student_id: string | null
+          student_verification_method: string | null
+          student_verified_at: string | null
           university: string | null
+          university_id: string | null
           updated_at: string | null
           user_id: string
           vision_embedding: string | null
@@ -2564,9 +2846,11 @@ export type Database = {
           current_situation?: string | null
           data_consent?: boolean | null
           data_consent_at?: string | null
+          department?: string | null
           desired_position?: string | null
           discord_user_id?: string | null
           discord_username?: string | null
+          entrance_year?: number | null
           extracted_profile?: Json | null
           extraction_confidence?: number | null
           github_url?: string | null
@@ -2593,7 +2877,11 @@ export type Database = {
           profile_views?: number | null
           profile_visibility?: string | null
           skills?: Json | null
+          student_id?: string | null
+          student_verification_method?: string | null
+          student_verified_at?: string | null
           university?: string | null
+          university_id?: string | null
           updated_at?: string | null
           user_id: string
           vision_embedding?: string | null
@@ -2614,9 +2902,11 @@ export type Database = {
           current_situation?: string | null
           data_consent?: boolean | null
           data_consent_at?: string | null
+          department?: string | null
           desired_position?: string | null
           discord_user_id?: string | null
           discord_username?: string | null
+          entrance_year?: number | null
           extracted_profile?: Json | null
           extraction_confidence?: number | null
           github_url?: string | null
@@ -2643,13 +2933,25 @@ export type Database = {
           profile_views?: number | null
           profile_visibility?: string | null
           skills?: Json | null
+          student_id?: string | null
+          student_verification_method?: string | null
+          student_verified_at?: string | null
           university?: string | null
+          university_id?: string | null
           updated_at?: string | null
           user_id?: string
           vision_embedding?: string | null
           vision_summary?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_university_id_fkey"
+            columns: ["university_id"]
+            isOneToOne: false
+            referencedRelation: "universities"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       project_invitations: {
         Row: {
@@ -3775,6 +4077,10 @@ export type Database = {
       calculate_tag_score: {
         Args: { event_tags: string[]; user_tags: string[] }
         Returns: number
+      }
+      can_create_persona: {
+        Args: { p_owner_id: string; p_type: string; p_user_id: string }
+        Returns: boolean
       }
       can_edit_persona: {
         Args: { p_persona_id: string; p_user_id: string }

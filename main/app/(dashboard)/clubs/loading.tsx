@@ -2,7 +2,7 @@
 export default function ClubsLoading() {
   return (
     <div className="bg-surface-bg min-h-full">
-      <div className="max-w-[1200px] mx-auto px-5 pt-6 pb-16">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-16">
         <div className="space-y-5">
           {/* Header */}
           <div className="flex items-center justify-between">

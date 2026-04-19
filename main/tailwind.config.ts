@@ -19,9 +19,9 @@ const config: Config = {
         tooltip: '600',
       },
       maxWidth: {
-        'container-narrow': '48rem',
-        'container-standard': '72rem',
-        'container-wide': '90rem',
+        'container-narrow': '48rem',   // 768px — 읽기 집중 (feed, certificate, join)
+        'container-standard': '56.25rem', // 900px — 공개 프로필 등 중간 밀도
+        'container-wide': '87.5rem',   // 1400px — 대시보드/관리 화면 표준 (dashboard, admin, institution, explore 통일)
       },
       fontFamily: {
         sans: ['var(--font-noto-sans-kr)', '"Noto Sans KR"', 'sans-serif'],

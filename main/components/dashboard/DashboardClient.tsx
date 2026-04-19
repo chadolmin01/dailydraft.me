@@ -1,18 +1,17 @@
 'use client'
 
 import Link from 'next/link'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import Image from 'next/image'
-import { useCallback, useMemo } from 'react'
+import { useMemo } from 'react'
 import {
-  Rocket, Users, MessageSquare, Bell, FolderOpen, ArrowRight,
-  Plus, Coffee, Clock, Sparkles, AlertCircle, Inbox, CheckCircle2,
+  Rocket, Users, MessageSquare, ArrowRight,
+  Plus, Coffee, Sparkles, Inbox, CheckCircle2,
   TrendingUp, FileText,
 } from 'lucide-react'
 import { useAuth } from '@/src/context/AuthContext'
 import { useProfile } from '@/src/hooks/useProfile'
 import { useMyOpportunities } from '@/src/hooks/useOpportunities'
-import { useRecommendedOpportunities, opportunityKeys, OPP_WITH_CREATOR_SELECT, type OpportunityWithCreator } from '@/src/hooks/useOpportunities'
 import { useMyOperatorClubs } from '@/src/hooks/useMyOperatorClubs'
 import { supabase } from '@/src/lib/supabase/client'
 import { useUnreadCount } from '@/src/hooks/useMessages'
@@ -20,7 +19,6 @@ import { useProjectInvitations } from '@/src/hooks/useProjectInvitations'
 import { PageContainer } from '@/components/ui/PageContainer'
 import PendingDraftCard from '@/components/dashboard/PendingDraftCard'
 import { ProfileCompletionCard } from '@/components/dashboard/ProfileCompletionCard'
-import { Skeleton } from '@/components/ui/Skeleton'
 import { withRetry } from '@/src/lib/query-utils'
 
 /**
@@ -68,11 +66,9 @@ function daysTillDeadline(lastUpdateAt: string | null | undefined): number {
 }
 
 export default function DashboardClient() {
-  const queryClient = useQueryClient()
   const { user, isLoading: isAuthLoading } = useAuth()
   const { data: profile } = useProfile()
   const { data: myProjects = [] } = useMyOpportunities()
-  const { data: recommended = [] } = useRecommendedOpportunities(6)
   const { data: unreadCount = 0 } = useUnreadCount()
   const { data: invitations = [] } = useProjectInvitations({ enabled: !!user })
   const { clubs: operatorClubs, isOperator } = useMyOperatorClubs()
@@ -205,22 +201,6 @@ export default function DashboardClient() {
       return prio[a.priority] - prio[b.priority]
     })
   }, [isOperator, myProjects, recentUpdates, operatorMetrics, pendingInvitations, unreadCount])
-
-  const prefetchOpportunityDetail = useCallback((id: string) => {
-    queryClient.prefetchQuery({
-      queryKey: opportunityKeys.detail(id),
-      queryFn: async () => {
-        const { data, error } = await supabase
-          .from('opportunities')
-          .select(OPP_WITH_CREATOR_SELECT)
-          .eq('id', id)
-          .single()
-        if (error) throw error
-        return data as unknown as OpportunityWithCreator
-      },
-      staleTime: 1000 * 60 * 2,
-    })
-  }, [queryClient])
 
   return (
     <div className="bg-surface-bg min-h-full">
@@ -442,53 +422,8 @@ export default function DashboardClient() {
           <PendingDraftCard />
         </section>
 
-        {/* ═══════════════════════════════════ */}
-        {/* DISCOVER — 추천 / 오늘 2줄만        */}
-        {/* ═══════════════════════════════════ */}
-        <section className="mb-10">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[17px] font-bold text-txt-primary">발견</h2>
-            <Link href="/explore" className="text-[12px] text-txt-tertiary hover:text-brand transition-colors flex items-center gap-1">
-              전체 탐색 <ArrowRight size={11} />
-            </Link>
-          </div>
-          {recommended.length === 0 ? (
-            <div className="bg-surface-card border border-border rounded-2xl p-6 text-center">
-              <Sparkles size={24} className="text-txt-disabled mx-auto mb-2" />
-              <p className="text-[13px] text-txt-tertiary mb-2">프로필을 완성하면 맞춤 추천이 제공됩니다</p>
-              <Link href="/profile" className="text-[12px] text-brand font-semibold hover:underline">프로필 완성하기 →</Link>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {recommended.slice(0, 6).map(opp => (
-                <div
-                  key={opp.id}
-                  role="button"
-                  tabIndex={0}
-                  onMouseEnter={() => prefetchOpportunityDetail(opp.id)}
-                  onClick={() => window.location.href = `/explore?project=${opp.id}`}
-                  onKeyDown={(e) => { if (e.key === 'Enter') window.location.href = `/explore?project=${opp.id}` }}
-                  className="bg-surface-card rounded-xl border border-border p-4 cursor-pointer hover:shadow-md hover:-translate-y-0.5 hover-spring"
-                >
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <h3 className="text-[14px] font-semibold text-txt-primary truncate">{opp.title}</h3>
-                    {opp.status === 'active' && (
-                      <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-status-success-text animate-pulse" />
-                    )}
-                  </div>
-                  <p className="text-[12px] text-txt-secondary line-clamp-2 mb-2.5">{opp.description}</p>
-                  {opp.needed_roles && opp.needed_roles.length > 0 && (
-                    <div className="flex gap-1 flex-wrap">
-                      {opp.needed_roles.slice(0, 2).map(role => (
-                        <span key={role} className="text-[11px] font-medium text-brand bg-brand-bg px-2 py-0.5 rounded-full">{role}</span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
+        {/* 발견/추천은 /explore의 역할. Dashboard는 "내 활동"에만 집중.
+            탐색 입구는 비운영자 Nudge 하단의 "기존 프로젝트 탐색 →" 링크와 TopNavbar로 제공. */}
 
       </PageContainer>
     </div>

@@ -1,0 +1,70 @@
+name: Verify DB Types Fresh
+
+# 왜: migration 포함 PR 이 `src/types/database.generated.ts` 를 동기화하지 않은 채 merge 되는 상황 방지.
+# post-merge 에서 `regen-db-types.yml` 이 보완 PR 을 열긴 하지만, 그 사이에 다른 PR 이 새 컬럼을 쓰는
+# 코드를 merge 하면 build-check 실패. 앞선 PR 단계에서 drift 를 잡아두면 이 race condition 차단.
+#
+# 동작:
+# 1. PR 에 migration 또는 generated.ts 변경 포함 시 실행
+# 2. `supabase gen types --linked` 로 remote schema 기준 타입 재생성
+# 3. PR 브랜치의 committed 파일과 diff → 다르면 fail
+# 4. 실패 시 PR 작성자가 로컬에서 `npm run db:types` 후 push 하면 해결
+#
+# 필요 secrets:
+#   SUPABASE_ACCESS_TOKEN — `supabase login` 토큰
+#   SUPABASE_PROJECT_REF  — 'prxqjiuibfrmuwwmkhqb'
+#   SUPABASE_DB_PASSWORD  — link 시 필요할 수 있음
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'main/supabase/migrations/**.sql'
+      - 'main/src/types/database.generated.ts'
+      - 'main/scripts/gen-db-types.mjs'
+      - '.github/workflows/verify-db-types.yml'
+
+jobs:
+  verify:
+    name: DB types match migrations
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    defaults:
+      run:
+        working-directory: main
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Link to Supabase project
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        run: |
+          supabase link --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
+
+      - name: Check types are fresh
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          # 왜 별도 스크립트: 로컬에서 `npm run db:types:check` 로 동일 로직 재현 가능.
+          # CI 전용 로직을 yaml 에 박으면 로컬 재현이 어려워짐.
+          node scripts/gen-db-types.mjs --check
+
+      - name: Failure hint
+        if: failure()
+        run: |
+          echo "::error::database.generated.ts 가 remote schema 와 다릅니다."
+          echo "::error::로컬에서 해결: cd main && npm run db:types && git add src/types/database.generated.ts && git commit --amend --no-edit && git push -f"

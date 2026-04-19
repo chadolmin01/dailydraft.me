@@ -178,13 +178,13 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
               placeholder={`${COMMENT_VERB}을 남겨주세요...`}
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="flex-1 px-3.5 py-2 text-[14px] bg-white dark:bg-[#2C2C2E] rounded-xl text-txt-primary placeholder-txt-disabled border-0 focus:outline-none focus:ring-2 focus:ring-[#3182F6]/30"
+              className="flex-1 px-3.5 py-2 text-[14px] bg-white dark:bg-[#2C2C2E] rounded-xl text-txt-primary placeholder-txt-disabled border-0 focus:outline-none focus:ring-2 focus:ring-[#5E6AD2]/30"
               maxLength={200}
             />
             <button
               type="submit"
               disabled={submitting || !content.trim()}
-              className="px-3.5 py-2 bg-[#3182F6] text-white rounded-xl hover:bg-[#2272EB] transition-colors disabled:bg-[#F2F3F5] dark:disabled:bg-[#2C2C2E] disabled:text-txt-disabled disabled:cursor-not-allowed flex items-center justify-center active:scale-[0.97]"
+              className="px-3.5 py-2 bg-[#5E6AD2] text-white rounded-xl hover:bg-[#4B4FB8] transition-colors disabled:bg-[#F2F3F5] dark:disabled:bg-[#2C2C2E] disabled:text-txt-disabled disabled:cursor-not-allowed flex items-center justify-center active:scale-[0.97]"
               aria-label="댓글 전송"
             >
               {submitting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
@@ -197,7 +197,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
           <p className="text-[13px] text-txt-tertiary mb-3">로그인하고 {COMMENT_VERB}을 남겨보세요</p>
           <button
             onClick={onLoginClick}
-            className="inline-flex items-center gap-1.5 bg-[#3182F6] text-white px-5 py-2 rounded-full text-[13px] font-semibold hover:bg-[#2272EB] transition-colors active:scale-[0.97]"
+            className="inline-flex items-center gap-1.5 bg-[#5E6AD2] text-white px-5 py-2 rounded-full text-[13px] font-semibold hover:bg-[#4B4FB8] transition-colors active:scale-[0.97]"
           >
             로그인하기 <ArrowRight size={12} />
           </button>
@@ -234,7 +234,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
           {hasMore && !showAll && (
             <button
               onClick={() => setShowAll(true)}
-              className="w-full py-2.5 text-[13px] font-medium text-[#3182F6] hover:text-[#2272EB] transition-colors rounded-xl hover:bg-[#F7F8F9] dark:hover:bg-[#1C1C1E]"
+              className="w-full py-2.5 text-[13px] font-medium text-[#5E6AD2] hover:text-[#4B4FB8] transition-colors rounded-xl hover:bg-[#F7F8F9] dark:hover:bg-[#1C1C1E]"
             >
               {COMMENT_LABEL} {comments.length - INITIAL_VISIBLE}개 더 보기
             </button>
@@ -312,8 +312,8 @@ const CommentItem: React.FC<CommentItemProps> = ({
           disabled={hasVoted}
           className={`flex items-center gap-1.5 text-[12px] font-medium px-2.5 py-1 rounded-full transition-colors ${
             hasVoted
-              ? 'bg-[#3182F6]/10 text-[#3182F6] cursor-default'
-              : 'text-txt-tertiary hover:bg-white dark:hover:bg-[#2C2C2E] hover:text-[#3182F6]'
+              ? 'bg-[#5E6AD2]/10 text-[#5E6AD2] cursor-default'
+              : 'text-txt-tertiary hover:bg-white dark:hover:bg-[#2C2C2E] hover:text-[#5E6AD2]'
           }`}
         >
           <ThumbsUp size={12} className={hasVoted ? 'icon-bounce' : ''} />

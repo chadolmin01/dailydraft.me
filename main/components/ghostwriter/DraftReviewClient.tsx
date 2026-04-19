@@ -301,7 +301,7 @@ export function DraftReviewClient({ draftId }: { draftId: string }) {
   // ── Loading / Error ──
   if (viewState === 'loading') {
     return (
-      <div className="max-w-[600px] mx-auto px-5 py-24">
+      <div className="max-w-[600px] mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="space-y-4 animate-pulse">
           <div className="h-4 bg-surface-sunken rounded w-24" />
           <div className="h-6 bg-surface-sunken rounded w-48" />
@@ -315,7 +315,7 @@ export function DraftReviewClient({ draftId }: { draftId: string }) {
 
   if (viewState === 'error') {
     return (
-      <div className="max-w-[600px] mx-auto px-5 py-24 text-center">
+      <div className="max-w-[600px] mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
         <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-surface-sunken flex items-center justify-center">
           <AlertCircle size={28} className="text-txt-tertiary" strokeWidth={1.5} />
         </div>
@@ -346,7 +346,7 @@ export function DraftReviewClient({ draftId }: { draftId: string }) {
   if (viewState === 'review') {
     return (
       <>
-        <div className="max-w-[600px] mx-auto px-5 pt-6 pb-36">
+        <div className="max-w-[600px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-36">
           {/* Header */}
           <div className="mb-6">
             <p className="text-[13px] text-txt-tertiary mb-1">{draft.title}</p>
@@ -521,7 +521,7 @@ export function DraftReviewClient({ draftId }: { draftId: string }) {
   // ── Edit State ──
   return (
     <>
-      <div className="max-w-[600px] mx-auto px-5 pt-6 pb-36">
+      <div className="max-w-[600px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-36">
         {/* Header */}
         <div className="mb-6">
           <p className="text-[13px] text-txt-tertiary mb-1">{draft.title}</p>
@@ -692,7 +692,7 @@ export function DraftReviewClient({ draftId }: { draftId: string }) {
 /* ─── Nodata View ─── */
 function NodataView({ onManualWrite }: { onManualWrite: () => void }) {
   return (
-    <div className="max-w-[600px] mx-auto px-5 pt-10 pb-24 text-center">
+    <div className="max-w-[600px] mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-24 text-center">
       <div className="w-[120px] h-[120px] mx-auto mb-5 bg-surface-sunken rounded-full flex items-center justify-center">
         <MessageSquare size={48} className="text-txt-disabled" strokeWidth={1.5} />
       </div>
@@ -735,7 +735,7 @@ function NodataView({ onManualWrite }: { onManualWrite: () => void }) {
 /* ─── Rejected View ─── */
 function RejectedView({ onBack }: { onBack: () => void }) {
   return (
-    <div className="max-w-[600px] mx-auto px-5 pt-12 pb-24 text-center">
+    <div className="max-w-[600px] mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-24 text-center">
       <div className="w-20 h-20 mx-auto mb-5 bg-surface-sunken rounded-full flex items-center justify-center">
         <ThumbsDown size={36} className="text-txt-tertiary" strokeWidth={1.5} />
       </div>
@@ -765,7 +765,7 @@ function SubmittedView({
   onBack: () => void
 }) {
   return (
-    <div className="max-w-[600px] mx-auto px-5 pt-12 pb-24 text-center">
+    <div className="max-w-[600px] mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-24 text-center">
       <div className="w-20 h-20 mx-auto mb-5 bg-status-success-bg rounded-full flex items-center justify-center">
         <Check size={40} className="text-status-success-text" strokeWidth={2} />
       </div>

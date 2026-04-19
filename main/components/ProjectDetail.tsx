@@ -39,7 +39,7 @@ function SimilarProjectsSection({ opportunityId }: { opportunityId: string | und
 
   return (
     <div className="border-t border-border bg-surface-bg">
-      <div className="max-w-6xl mx-auto px-6 py-10">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="flex items-center gap-1.5 mb-6">
           <Sparkles size={14} className="text-brand" />
           <span className="text-[13px] font-semibold text-txt-secondary">
@@ -193,7 +193,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
   if (loading) {
     return (
       <div className="min-h-screen bg-surface-bg">
-        <div className="max-w-4xl mx-auto px-4 py-6">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {/* Hero skeleton */}
           <div className="h-56 bg-surface-sunken rounded-xl border border-border skeleton-shimmer mb-6" />
           {/* Title */}
@@ -251,7 +251,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
     <div className="min-h-screen bg-surface-bg">
       {/* Top Navigation Bar */}
       <nav className="sticky top-0 z-40 bg-surface-card/95 backdrop-blur-sm border-b border-border">
-        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
           <button
             onClick={() => router.back()}
             className="hidden sm:flex items-center gap-2 text-sm text-txt-secondary hover:text-txt-primary transition-colors"
@@ -273,7 +273,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
 
       {/* Hero Header */}
       <header className="border-b border-border">
-        <div className="max-w-6xl mx-auto px-6 py-10">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
             <div className="flex-1">
               {/* Type Badge */}
@@ -372,7 +372,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
       </header>
 
       {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-6 py-10">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           {/* Left: Content (2/3) */}
           <div className="lg:col-span-2 space-y-10">

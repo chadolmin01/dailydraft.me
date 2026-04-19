@@ -58,7 +58,7 @@ export function FilterSheet({
                   onClick={() => onTypeFilterChange(typeFilter === t.id ? 'all' : t.id as TypeFilter)}
                   className={`shrink-0 px-3.5 py-2 text-[13px] font-semibold rounded-full transition-all ${
                     typeFilter === t.id
-                      ? 'bg-[#3182F6] text-white'
+                      ? 'bg-[#5E6AD2] text-white'
                       : 'bg-[#F2F3F5] dark:bg-[#2C2C2E] text-txt-secondary hover:bg-[#E5E5EA] dark:hover:bg-[#3A3A3C]'
                   }`}
                 >
@@ -80,7 +80,7 @@ export function FilterSheet({
                   onClick={() => onCategoryChange(selectedCategory === cat.id ? 'all' : cat.id)}
                   className={`shrink-0 flex items-center gap-1.5 px-3.5 py-2 text-[13px] font-semibold rounded-full transition-all ${
                     selectedCategory === cat.id
-                      ? 'bg-[#3182F6] text-white'
+                      ? 'bg-[#5E6AD2] text-white'
                       : 'bg-[#F2F3F5] dark:bg-[#2C2C2E] text-txt-secondary hover:bg-[#E5E5EA] dark:hover:bg-[#3A3A3C]'
                   }`}
                 >
@@ -105,7 +105,7 @@ export function FilterSheet({
                     onClick={() => onProjectRoleFilterChange(projectRoleFilter === r.id ? 'all' : r.id as ProjectRoleFilter)}
                     className={`shrink-0 px-3.5 py-2 text-[13px] font-semibold rounded-full transition-all ${
                       projectRoleFilter === r.id
-                        ? 'bg-[#3182F6] text-white'
+                        ? 'bg-[#5E6AD2] text-white'
                         : 'bg-[#F2F3F5] dark:bg-[#2C2C2E] text-txt-secondary hover:bg-[#E5E5EA] dark:hover:bg-[#3A3A3C]'
                     }`}
                   >
@@ -118,7 +118,7 @@ export function FilterSheet({
                     onClick={() => onPeopleRoleFilterChange(peopleRoleFilter === r.id ? 'all' : r.id as PeopleRoleFilter)}
                     className={`shrink-0 px-3.5 py-2 text-[13px] font-semibold rounded-full transition-all ${
                       peopleRoleFilter === r.id
-                        ? 'bg-[#3182F6] text-white'
+                        ? 'bg-[#5E6AD2] text-white'
                         : 'bg-[#F2F3F5] dark:bg-[#2C2C2E] text-txt-secondary hover:bg-[#E5E5EA] dark:hover:bg-[#3A3A3C]'
                     }`}
                   >
@@ -135,7 +135,7 @@ export function FilterSheet({
           <section>
             <label className="flex items-center gap-3 text-[14px] text-txt-primary cursor-pointer min-h-[44px] bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl px-4 py-3">
               <div className={`w-5 h-5 rounded-md flex items-center justify-center transition-all ${
-                recruitingOnly ? 'bg-[#3182F6]' : 'bg-[#E5E5EA] dark:bg-[#3A3A3C]'
+                recruitingOnly ? 'bg-[#5E6AD2]' : 'bg-[#E5E5EA] dark:bg-[#3A3A3C]'
               }`}>
                 {recruitingOnly && <Check size={12} className="text-white" strokeWidth={3} />}
               </div>
@@ -161,7 +161,7 @@ export function FilterSheet({
         </button>
         <button
           onClick={onClose}
-          className="flex-1 py-3 bg-[#3182F6] text-white text-[15px] font-bold rounded-xl hover:bg-[#2272EB] transition-colors active:scale-[0.98]"
+          className="flex-1 py-3 bg-[#5E6AD2] text-white text-[15px] font-bold rounded-xl hover:bg-[#4B4FB8] transition-colors active:scale-[0.98]"
         >
           적용하기
         </button>

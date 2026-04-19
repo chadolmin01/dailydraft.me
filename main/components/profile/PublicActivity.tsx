@@ -86,13 +86,13 @@ export function PublicActivity({ userId }: { userId: string }) {
                   {m.club.logo_url ? (
                     <Image src={m.club.logo_url} alt={m.club.name} width={40} height={40} className="rounded-xl object-cover shrink-0" />
                   ) : (
-                    <div className="w-10 h-10 rounded-xl bg-brand-bg flex items-center justify-center text-[14px] font-extrabold text-brand shrink-0">
+                    <div className="w-10 h-10 rounded-xl bg-brand-bg flex items-center justify-center text-sm font-extrabold text-brand shrink-0">
                       {m.club.name[0]}
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-[14px] font-bold text-txt-primary truncate">{m.club.name}</p>
-                    <p className="text-[12px] text-txt-tertiary mt-0.5">
+                    <p className="text-sm font-bold text-txt-primary truncate">{m.club.name}</p>
+                    <p className="text-xs text-txt-tertiary mt-0.5">
                       {roleLabel}
                       {m.cohort && <> · {m.cohort}기</>}
                       {year && <> · {year}년 합류</>}
@@ -122,7 +122,7 @@ export function PublicActivity({ userId }: { userId: string }) {
                 className="block bg-surface-card border border-border rounded-xl p-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group"
               >
                 <div className="flex items-start justify-between gap-2 mb-1">
-                  <p className="text-[14px] font-bold text-txt-primary line-clamp-1 flex-1">{p.title}</p>
+                  <p className="text-sm font-bold text-txt-primary line-clamp-1 flex-1">{p.title}</p>
                   {p.status === 'active' ? (
                     <span className="shrink-0 text-[10px] font-semibold text-status-success-text bg-status-success-bg px-1.5 py-0.5 rounded-full">
                       진행
@@ -161,10 +161,10 @@ export function PublicActivity({ userId }: { userId: string }) {
               <FileText size={16} className="text-brand" />
             </div>
             <div>
-              <p className="text-[14px] font-bold text-txt-primary">
+              <p className="text-sm font-bold text-txt-primary">
                 주간 회고 <span className="tabular-nums">{data.contributions.updates}</span>건 작성
               </p>
-              <p className="text-[12px] text-txt-tertiary">
+              <p className="text-xs text-txt-tertiary">
                 프로젝트 진행 과정을 꾸준히 기록한 크리에이터입니다
               </p>
             </div>

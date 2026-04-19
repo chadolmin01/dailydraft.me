@@ -45,7 +45,7 @@ export const ProjectOverlays: React.FC<ProjectOverlaysProps> = ({
       {showCta && (
         <div className="absolute inset-0 bg-black/60 z-20 flex flex-col items-center justify-center p-4 sm:p-8 text-center overflow-y-auto animate-backdrop-in">
           <div className="w-full max-w-sm sm:max-w-md bg-surface-card dark:bg-[#1C1C1E] rounded-[20px] p-6 sm:p-8 shadow-2xl animate-modal-in">
-            <div className="w-14 h-14 bg-[#3182F6] rounded-2xl flex items-center justify-center mb-6 mx-auto">
+            <div className="w-14 h-14 bg-[#5E6AD2] rounded-2xl flex items-center justify-center mb-6 mx-auto">
               <span className="text-white font-bold text-xl">D</span>
             </div>
             <h3 className="text-[22px] font-bold text-txt-primary mb-2">
@@ -57,7 +57,7 @@ export const ProjectOverlays: React.FC<ProjectOverlaysProps> = ({
             </p>
             <button
               onClick={handleSignup}
-              className="w-full h-14 bg-[#3182F6] hover:bg-[#2272EB] text-white rounded-2xl font-semibold text-[16px] flex items-center justify-center gap-2 transition-colors mb-3 active:scale-[0.97]"
+              className="w-full h-14 bg-[#5E6AD2] hover:bg-[#4B4FB8] text-white rounded-2xl font-semibold text-[16px] flex items-center justify-center gap-2 transition-colors mb-3 active:scale-[0.97]"
             >
               무료로 시작하기
               <ArrowRight size={16} />

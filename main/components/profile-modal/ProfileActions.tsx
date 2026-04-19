@@ -32,19 +32,19 @@ export function ProfileActions({
       <div className="flex gap-2.5 mt-4">
         {/* Coffee Chat Button */}
         {pendingChat ? (
-          <div className="flex-1 flex items-center justify-center gap-2 px-4 h-12 bg-[#FFF8E1] dark:bg-[#3A2E1C] text-[#FF9500] text-[14px] font-semibold rounded-2xl">
+          <div className="flex-1 flex items-center justify-center gap-2 px-4 h-12 bg-status-warning-bg text-status-warning-text text-sm font-semibold rounded-2xl">
             <Coffee size={16} />
             커피챗 대기 중
           </div>
         ) : latestChat?.status === 'accepted' ? (
-          <div className="flex-1 flex items-center justify-center gap-2 px-4 h-12 bg-[#E8F5E9] dark:bg-[#1B3A2D] text-[#34C759] text-[14px] font-semibold rounded-2xl">
+          <div className="flex-1 flex items-center justify-center gap-2 px-4 h-12 bg-status-success-bg text-status-success-text text-sm font-semibold rounded-2xl">
             <Coffee size={16} />
             커피챗 수락됨
           </div>
         ) : (
           <button
             onClick={() => setShowCoffeeChatForm(true)}
-            className="flex-1 flex items-center justify-center gap-2 px-4 h-12 bg-[#3182F6] text-white text-[14px] font-semibold rounded-2xl hover:bg-[#2272EB] active:scale-[0.97] transition-all"
+            className="flex-1 flex items-center justify-center gap-2 px-4 h-12 bg-brand text-white text-sm font-semibold rounded-2xl hover:bg-brand-hover active:scale-[0.97] transition-all"
           >
             <Coffee size={16} />
             커피챗 신청
@@ -54,7 +54,7 @@ export function ProfileActions({
         {/* Invite to Project Button */}
         <button
           onClick={() => setShowInviteModal(true)}
-          className="flex-1 flex items-center justify-center gap-2 px-4 h-12 bg-[#F2F3F5] dark:bg-[#2C2C2E] text-txt-primary text-[14px] font-semibold rounded-2xl hover:bg-[#E5E5EA] dark:hover:bg-[#3A3A3C] active:scale-[0.97] transition-all"
+          className="flex-1 flex items-center justify-center gap-2 px-4 h-12 bg-border-subtle text-txt-primary text-sm font-semibold rounded-2xl hover:bg-border active:scale-[0.97] transition-all"
         >
           <UserPlus size={16} />
           프로젝트에 초대
@@ -64,7 +64,7 @@ export function ProfileActions({
       {/* Coffee Chat Form Overlay */}
       {showCoffeeChatForm && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-popover p-4" onClick={(e) => { e.stopPropagation(); setShowCoffeeChatForm(false) }}>
-          <div className="bg-surface-card dark:bg-[#1C1C1E] rounded-2xl shadow-2xl w-full max-w-md p-6" onClick={e => e.stopPropagation()}>
+          <div className="bg-surface-card rounded-2xl shadow-2xl w-full max-w-md p-6" onClick={e => e.stopPropagation()}>
             <CoffeeChatRequestForm
               targetUserId={targetUserId}
               onClose={() => setShowCoffeeChatForm(false)}
