@@ -21,6 +21,7 @@ import {
   MessageCircle,
   AtSign,
   Megaphone,
+  Hash,
   type LucideIcon,
 } from 'lucide-react'
 import type { ChannelFormat } from '@/src/lib/personas/types'
@@ -79,6 +80,20 @@ export const CHANNEL_BRANDS: Record<ChannelFormat, ChannelBrand> = {
     is_copy_only: true,
   },
 
+  threads_post: {
+    label: 'Threads',
+    description:
+      '짧고 가벼운 Threads용 포스트입니다. 내용이 길면 체인(여러 포스트)으로 자동 분할됩니다.',
+    action_verb: '복사해서 올리기',
+    icon: Hash,
+    accent: 'bg-[#1C1C1E]',
+    bg: 'bg-[#1C1C1E]/6',
+    text: 'text-[#1C1C1E]',
+    activeClass: 'bg-[#1C1C1E] text-white',
+    inactiveHoverClass: 'hover:text-[#1C1C1E]',
+    is_copy_only: true,
+  },
+
   everytime_post: {
     label: '에브리타임',
     description:
@@ -119,6 +134,20 @@ export const CHANNEL_BRANDS: Record<ChannelFormat, ChannelBrand> = {
     activeClass: 'bg-[#5865F2] text-white',
     inactiveHoverClass: 'hover:text-[#5865F2]',
     is_copy_only: false,
+  },
+
+  threads_post: {
+    label: 'Threads',
+    description:
+      'Meta Threads 에 공유할 포스트입니다. 500자 제한·체인 형식에 맞춰 다듬었습니다.',
+    action_verb: '복사해서 올리기',
+    icon: Hash,
+    accent: 'bg-[#000000]',
+    bg: 'bg-[#000000]/8',
+    text: 'text-[#000000]',
+    activeClass: 'bg-[#000000] text-white',
+    inactiveHoverClass: 'hover:text-[#000000]',
+    is_copy_only: true,
   },
 }
 
