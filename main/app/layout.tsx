@@ -54,11 +54,14 @@ export const metadata: Metadata = {
     siteName: 'Draft',
     type: 'website',
     locale: 'ko_KR',
+    // 기본 OG 이미지. 페이지별 generateMetadata 가 있으면 거기서 override.
+    images: [{ url: `${APP_URL}/api/og/default`, width: 1200, height: 630, alt: 'Draft — 동아리의 세대를 잇는 인프라' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Draft — AI로 찾는 내 프로젝트 팀',
     description: '스킬과 작업 스타일 기반 AI 매칭으로 사이드프로젝트 팀원을 찾아보세요. 개발자, 디자이너, 기획자들의 팀빌딩 플랫폼.',
+    images: [`${APP_URL}/api/og/default`],
   },
   robots: {
     index: true,
