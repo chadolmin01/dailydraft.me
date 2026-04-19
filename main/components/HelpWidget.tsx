@@ -57,7 +57,7 @@ const FAQ_ITEMS = [
 const REPORT_CATEGORIES = [
   { value: 'bug', label: '버그 신고', icon: Bug, color: 'text-[#FF3B30]' },
   { value: 'feature', label: '기능 제안', icon: Lightbulb, color: 'text-[#FF9F0A]' },
-  { value: 'question', label: '질문', icon: HelpCircle, color: 'text-[#3182F6]' },
+  { value: 'question', label: '질문', icon: HelpCircle, color: 'text-[#5E6AD2]' },
   { value: 'other', label: '기타', icon: MessageCircle, color: 'text-txt-tertiary' },
 ]
 
@@ -81,7 +81,7 @@ export function HelpWidget() {
         className={`fixed right-3 sm:right-6 z-fixed w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg ${
           isOpen
             ? 'bg-[#1C1C1E] dark:bg-white text-white dark:text-[#1C1C1E] rotate-90 shadow-none'
-            : 'bg-[#3182F6] text-white active:scale-90'
+            : 'bg-[#5E6AD2] text-white active:scale-90'
         }`}
         aria-label="도움말"
       >
@@ -102,7 +102,7 @@ export function HelpWidget() {
           {/* Header */}
           <div className="px-5 pt-5 pb-3 shrink-0">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-9 h-9 bg-[#3182F6] rounded-2xl flex items-center justify-center shrink-0">
+              <div className="w-9 h-9 bg-[#5E6AD2] rounded-2xl flex items-center justify-center shrink-0">
                 <span className="text-white text-[12px] font-black">D</span>
               </div>
               <div>
@@ -185,7 +185,7 @@ function FaqTab({ onClose }: { onClose: () => void }) {
         onClick={() => resetStarterGuide(onClose)}
         className="w-full flex items-center gap-3 px-4 py-3 text-left bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-2xl active:opacity-80 transition-opacity group"
       >
-        <RotateCcw size={15} className="text-[#3182F6] shrink-0" />
+        <RotateCcw size={15} className="text-[#5E6AD2] shrink-0" />
         <span className="text-[13px] font-medium text-txt-primary">시작 가이드 다시 보기</span>
       </button>
 
@@ -347,7 +347,7 @@ function ChatTab() {
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center py-10 gap-3">
             <div className="w-12 h-12 bg-[#F2F3F5] dark:bg-[#2C2C2E] rounded-full flex items-center justify-center">
-              <Sparkles size={22} className="text-[#3182F6]" />
+              <Sparkles size={22} className="text-[#5E6AD2]" />
             </div>
             <p className="text-[13px] text-txt-tertiary text-center">Draft에 대해 궁금한 점을<br />자유롭게 물어보세요!</p>
             <div className="flex flex-wrap gap-1.5 mt-1 justify-center">
@@ -368,7 +368,7 @@ function ChatTab() {
           <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-[fadeSlideIn_0.2s_ease-out]`}>
             <div className={`max-w-[85%] px-3.5 py-2.5 text-[13px] leading-relaxed ${
               msg.role === 'user'
-                ? 'bg-[#3182F6] text-white rounded-[18px] rounded-br-md'
+                ? 'bg-[#5E6AD2] text-white rounded-[18px] rounded-br-md'
                 : 'bg-[#F7F8F9] dark:bg-[#2C2C2E] text-txt-primary rounded-[18px] rounded-bl-md'
             }`}>
               {msg.content}
@@ -380,7 +380,7 @@ function ChatTab() {
           <div className="flex justify-start">
             <div className="px-3.5 py-2.5 bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-[18px] rounded-bl-md">
               <div className="flex items-center gap-2">
-                <Loader2 size={13} className="animate-spin text-[#3182F6]" />
+                <Loader2 size={13} className="animate-spin text-[#5E6AD2]" />
                 <span className="text-[12px] text-txt-tertiary">답변 생성 중...</span>
               </div>
             </div>
@@ -405,7 +405,7 @@ function ChatTab() {
           <button
             onClick={() => send()}
             disabled={isLoading || !input.trim()}
-            className="w-8 h-8 flex items-center justify-center bg-[#3182F6] text-white rounded-full disabled:opacity-30 transition-opacity active:scale-90 shrink-0"
+            className="w-8 h-8 flex items-center justify-center bg-[#5E6AD2] text-white rounded-full disabled:opacity-30 transition-opacity active:scale-90 shrink-0"
           >
             <Send size={14} />
           </button>
@@ -477,7 +477,7 @@ function ReportTab() {
               onClick={() => setCategory(cat.value)}
               className={`flex items-center gap-2.5 px-4 py-3 text-[13px] font-medium rounded-2xl transition-all active:scale-[0.97] ${
                 category === cat.value
-                  ? 'bg-[#3182F6] text-white shadow-sm'
+                  ? 'bg-[#5E6AD2] text-white shadow-sm'
                   : 'bg-[#F7F8F9] dark:bg-[#2C2C2E] text-txt-secondary active:opacity-70'
               }`}
             >
@@ -497,7 +497,7 @@ function ReportTab() {
           onChange={e => setTitle(e.target.value)}
           placeholder="간단히 요약해주세요"
           maxLength={200}
-          className="w-full px-4 py-3 text-[13px] bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#3182F6]/20 transition-all placeholder:text-txt-disabled"
+          className="w-full px-4 py-3 text-[13px] bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#5E6AD2]/20 transition-all placeholder:text-txt-disabled"
         />
       </div>
 
@@ -510,7 +510,7 @@ function ReportTab() {
           placeholder="어떤 상황에서 발생했는지, 기대했던 동작은 무엇인지 알려주세요"
           rows={4}
           maxLength={5000}
-          className="w-full px-4 py-3 text-[13px] bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#3182F6]/20 transition-all resize-none placeholder:text-txt-disabled"
+          className="w-full px-4 py-3 text-[13px] bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#5E6AD2]/20 transition-all resize-none placeholder:text-txt-disabled"
         />
       </div>
 
@@ -518,7 +518,7 @@ function ReportTab() {
       <button
         onClick={handleSubmit}
         disabled={!category || !title.trim() || !description.trim() || isSubmitting}
-        className="w-full h-12 text-[14px] font-semibold bg-[#3182F6] text-white rounded-2xl disabled:opacity-30 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 active:scale-[0.97]"
+        className="w-full h-12 text-[14px] font-semibold bg-[#5E6AD2] text-white rounded-2xl disabled:opacity-30 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 active:scale-[0.97]"
       >
         {isSubmitting ? <Loader2 size={15} className="animate-spin" /> : <Send size={15} />}
         {isSubmitting ? '전송 중...' : '리포트 제출'}

@@ -47,7 +47,7 @@ export default async function ClubOgImage({
             style={{
               width: 44,
               height: 44,
-              backgroundColor: '#3182F6',
+              backgroundColor: '#5E6AD2',
               borderRadius: 10,
               display: 'flex',
               alignItems: 'center',
@@ -106,7 +106,7 @@ export default async function ClubOgImage({
           }}
         >
           <span>dailydraft.me</span>
-          <span style={{ color: '#3182F6', fontWeight: 600 }}>
+          <span style={{ color: '#5E6AD2', fontWeight: 600 }}>
             /clubs/{params.slug}
           </span>
         </div>

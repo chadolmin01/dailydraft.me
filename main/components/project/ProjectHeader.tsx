@@ -47,7 +47,7 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
         <div className="flex items-center gap-3">
           {creator ? (
             <span className="flex items-center gap-2">
-              <div className="w-7 h-7 bg-[#3182F6] rounded-full flex items-center justify-center text-[12px] font-bold text-white">
+              <div className="w-7 h-7 bg-[#5E6AD2] rounded-full flex items-center justify-center text-[12px] font-bold text-white">
                 {creator.nickname.charAt(0)}
               </div>
               <span className="text-[15px] font-medium text-txt-primary">{creator.nickname}</span>

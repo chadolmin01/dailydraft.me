@@ -24,7 +24,7 @@ export default async function ContentsHubPage({
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <div className="max-w-[1400px] mx-auto px-5 py-6">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <ContentsHubShell slug={slug} />
       </div>
     </HydrationBoundary>

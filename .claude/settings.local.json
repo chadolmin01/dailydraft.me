@@ -249,7 +249,10 @@
       "mcp__supabase__get_logs",
       "Bash(sentry-cli:*)",
       "Bash(./node_modules/.bin/tsc:*)",
-      "Bash(printf:*)"
+      "Bash(printf:*)",
+      "Bash(GITHUB_TOKEN= gh api repos/chadolmin01/dailydraft.me/rulesets/15238673)",
+      "Bash(GITHUB_TOKEN= gh api -X DELETE repos/chadolmin01/dailydraft.me/rulesets/15238673)",
+      "Bash(GITHUB_TOKEN= gh api repos/chadolmin01/dailydraft.me/rulesets)"
     ]
   },
   "enabledMcpjsonServers": [

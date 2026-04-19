@@ -82,7 +82,7 @@ export default function NewClubPage() {
 
   if (authLoading) {
     return (
-      <div className="max-w-xl mx-auto px-5 py-12 text-center">
+      <div className="max-w-xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
         <Loader2 size={20} className="animate-spin mx-auto text-txt-disabled" />
       </div>
     )
@@ -90,7 +90,7 @@ export default function NewClubPage() {
 
   if (!user) {
     return (
-      <div className="max-w-xl mx-auto px-5 py-16 text-center space-y-3">
+      <div className="max-w-xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center space-y-3">
         <p className="text-sm text-txt-tertiary">클럽을 만들려면 로그인이 필요합니다.</p>
         <Link href="/login?redirect=/clubs/new" className="inline-block text-sm text-brand hover:underline">
           로그인 →
@@ -101,7 +101,7 @@ export default function NewClubPage() {
 
   return (
     <div className="bg-surface-bg min-h-full">
-      <div className="max-w-xl mx-auto px-5 pt-6 pb-16">
+      <div className="max-w-xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-16">
 
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">

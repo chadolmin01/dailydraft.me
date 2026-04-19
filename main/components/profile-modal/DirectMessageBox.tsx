@@ -55,7 +55,7 @@ export function DirectMessageBox({ receiverId }: { receiverId: string }) {
   }
 
   return (
-    <div className="bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl p-4">
+    <div className="bg-surface-sunken rounded-2xl p-4">
       <div className="flex items-center justify-between mb-2.5">
         <h4 className="text-[13px] font-semibold text-txt-secondary flex items-center gap-1.5">
           <Send size={13} /> 쪽지 보내기
@@ -63,14 +63,14 @@ export function DirectMessageBox({ receiverId }: { receiverId: string }) {
         <button
           onClick={handleToggleBlock}
           disabled={blockUser.isPending || unblockUser.isPending}
-          className="flex items-center gap-1 text-[11px] text-txt-tertiary hover:text-[#FF3B30] transition-colors"
+          className="flex items-center gap-1 text-[11px] text-txt-tertiary hover:text-status-danger-text transition-colors"
         >
           <ShieldOff size={11} />
           {isBlocked ? '차단 해제' : '차단'}
         </button>
       </div>
       {sent ? (
-        <p className="text-[14px] text-[#34C759] font-semibold py-2">쪽지가 전송되었습니다!</p>
+        <p className="text-sm text-status-success-text font-semibold py-2">쪽지가 전송되었습니다!</p>
       ) : (
         <>
           <textarea
@@ -79,20 +79,20 @@ export function DirectMessageBox({ receiverId }: { receiverId: string }) {
             placeholder="간단한 쪽지를 보내보세요..."
             rows={2}
             maxLength={2000}
-            className="w-full px-4 py-3 text-[14px] bg-white dark:bg-[#2C2C2E] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3182F6]/20 resize-none transition-all mb-2.5"
+            className="w-full px-4 py-3 text-sm bg-surface-card rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/20 resize-none transition-all mb-2.5"
           />
           <div className="flex items-center justify-between">
-            <span className="text-[12px] text-txt-tertiary">{content.length}/2000</span>
+            <span className="text-xs text-txt-tertiary">{content.length}/2000</span>
             <button
               onClick={handleSend}
               disabled={!content.trim() || sending}
-              className="flex items-center gap-1.5 px-5 py-2.5 bg-[#3182F6] text-white text-[13px] font-semibold rounded-xl hover:bg-[#2272EB] disabled:opacity-40 transition-colors active:scale-[0.97]"
+              className="flex items-center gap-1.5 px-5 py-2.5 bg-brand text-white text-[13px] font-semibold rounded-xl hover:bg-brand-hover disabled:opacity-40 transition-colors active:scale-[0.97]"
             >
               {sending ? <Loader2 size={13} className="animate-spin" /> : <Send size={13} />}
               보내기
             </button>
           </div>
-          {error && <p className="text-[12px] text-[#FF3B30] mt-1.5">{error}</p>}
+          {error && <p className="text-xs text-status-danger-text mt-1.5">{error}</p>}
         </>
       )}
     </div>

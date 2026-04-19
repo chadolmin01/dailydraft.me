@@ -107,7 +107,7 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
                   onClick={() => setUpdateType(t.value)}
                   className={`px-3.5 py-2 text-[13px] font-medium rounded-xl transition-colors ${
                     updateType === t.value
-                      ? 'bg-[#3182F6] text-white'
+                      ? 'bg-[#5E6AD2] text-white'
                       : 'bg-[#F7F8F9] dark:bg-[#1C1C1E] text-txt-secondary hover:bg-[#EDF0F3] dark:hover:bg-[#252527]'
                   }`}
                 >
@@ -127,7 +127,7 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
             onChange={(e) => setTitle(e.target.value)}
             placeholder="이번 주의 가장 큰 진전은?"
             maxLength={100}
-            className="w-full px-4 py-3 bg-[#F7F8F9] dark:bg-[#1C1C1E] text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#3182F6]/30 rounded-xl text-txt-primary placeholder-txt-disabled"
+            className="w-full px-4 py-3 bg-[#F7F8F9] dark:bg-[#1C1C1E] text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#5E6AD2]/30 rounded-xl text-txt-primary placeholder-txt-disabled"
           />
           <div className="text-[11px] text-txt-disabled text-right mt-1">
             {title.length}/100
@@ -144,7 +144,7 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
             placeholder={"이번 주 성과:\n\n다음 주 계획:\n\n배운 점 또는 고민 (선택):"}
             rows={6}
             maxLength={2000}
-            className="w-full px-4 py-3 bg-[#F7F8F9] dark:bg-[#1C1C1E] text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#3182F6]/30 resize-none rounded-xl text-txt-primary placeholder-txt-disabled"
+            className="w-full px-4 py-3 bg-[#F7F8F9] dark:bg-[#1C1C1E] text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#5E6AD2]/30 resize-none rounded-xl text-txt-primary placeholder-txt-disabled"
           />
           <div className="text-[11px] text-txt-disabled text-right mt-1">
             {content.length}/2000
@@ -156,7 +156,7 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
         <button
           onClick={handleSubmit}
           disabled={createUpdate.isPending || alreadySubmitted}
-          className="w-full py-3.5 bg-[#3182F6] text-white text-[15px] font-semibold rounded-2xl hover:bg-[#2272EB] transition-colors disabled:opacity-50 flex items-center justify-center gap-2 active:scale-[0.97]"
+          className="w-full py-3.5 bg-[#5E6AD2] text-white text-[15px] font-semibold rounded-2xl hover:bg-[#4B4FB8] transition-colors disabled:opacity-50 flex items-center justify-center gap-2 active:scale-[0.97]"
         >
           {createUpdate.isPending ? (
             <><Loader2 size={14} className="animate-spin" /> 저장 중...</>

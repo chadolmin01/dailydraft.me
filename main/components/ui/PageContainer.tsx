@@ -14,9 +14,9 @@ interface PageContainerProps {
 }
 
 const sizeMap = {
-  narrow: 'max-w-container-narrow',
-  standard: 'max-w-container-standard',
-  wide: 'max-w-container-wide',
+  narrow: 'max-w-[768px]',
+  standard: 'max-w-[900px]',
+  wide: 'max-w-[1400px]',
 } as const
 
 /**

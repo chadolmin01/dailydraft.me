@@ -139,7 +139,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
               <p className="text-[13px] text-txt-tertiary mb-4">프로젝트를 먼저 만들어주세요</p>
               <a
                 href="/projects/new"
-                className="inline-flex items-center gap-1.5 px-5 py-3 bg-[#3182F6] text-white text-[14px] font-semibold rounded-2xl hover:bg-[#2272EB] active:scale-[0.97] transition-all"
+                className="inline-flex items-center gap-1.5 px-5 py-3 bg-[#5E6AD2] text-white text-[14px] font-semibold rounded-2xl hover:bg-[#4B4FB8] active:scale-[0.97] transition-all"
               >
                 프로젝트 만들기
               </a>
@@ -158,7 +158,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
                       onClick={() => { setSelectedProject(opp.id); setSelectedRole(null) }}
                       className={`w-full flex items-center justify-between px-4 py-3 text-left text-[14px] rounded-2xl transition-all ${
                         selectedProject === opp.id
-                          ? 'bg-[#EBF4FF] dark:bg-[#1A2A42] text-[#3182F6] font-bold'
+                          ? 'bg-[#EBF4FF] dark:bg-[#1A2A42] text-[#5E6AD2] font-bold'
                           : 'bg-[#F7F8F9] dark:bg-[#1C1C1E] text-txt-secondary hover:bg-[#EDF0F3] dark:hover:bg-[#252527]'
                       }`}
                     >
@@ -185,7 +185,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
                           onClick={() => setSelectedRole(role)}
                           className={`px-3.5 py-2 text-[13px] font-semibold rounded-full transition-all ${
                             selectedRole === role
-                              ? 'bg-[#3182F6] text-white'
+                              ? 'bg-[#5E6AD2] text-white'
                               : 'bg-[#F2F3F5] dark:bg-[#2C2C2E] text-txt-secondary hover:bg-[#E5E5EA] dark:hover:bg-[#3A3A3C]'
                           }`}
                         >
@@ -199,7 +199,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
                       placeholder="역할을 입력하세요 (예: Frontend Developer)"
                       value={selectedRole || ''}
                       onChange={e => setSelectedRole(e.target.value || null)}
-                      className="w-full px-4 py-3 text-[14px] bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3182F6]/20"
+                      className="w-full px-4 py-3 text-[14px] bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5E6AD2]/20"
                     />
                   )}
                 </div>
@@ -217,7 +217,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
                     placeholder="함께 하고 싶어서 연락드립니다..."
                     rows={3}
                     maxLength={500}
-                    className="w-full px-4 py-3 text-[14px] bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3182F6]/20 resize-none"
+                    className="w-full px-4 py-3 text-[14px] bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5E6AD2]/20 resize-none"
                   />
                 </div>
               )}
@@ -235,7 +235,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
             <button
               onClick={handleSubmit}
               disabled={!selectedProject || !selectedRole || createInvitation.isPending}
-              className="w-full flex items-center justify-center gap-2 h-14 bg-[#3182F6] text-white text-[15px] font-semibold rounded-2xl hover:bg-[#2272EB] active:scale-[0.97] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 h-14 bg-[#5E6AD2] text-white text-[15px] font-semibold rounded-2xl hover:bg-[#4B4FB8] active:scale-[0.97] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {createInvitation.isPending ? (
                 <><Loader2 size={16} className="animate-spin" /> 전송 중...</>

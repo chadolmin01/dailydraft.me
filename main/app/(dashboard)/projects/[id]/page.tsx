@@ -87,7 +87,7 @@ function ProjectManageContent() {
   if (isLoading) {
     return (
       <div className="bg-surface-bg min-h-full">
-        <div className="max-w-[1200px] mx-auto px-5 py-8">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="space-y-5">
             <div className="h-5 w-24 skeleton-shimmer rounded-full" />
             <div className="flex gap-5 pt-2">
@@ -109,7 +109,7 @@ function ProjectManageContent() {
   if (!opportunity) {
     return (
       <div className="bg-surface-bg min-h-full">
-        <div className="max-w-[1200px] mx-auto px-5 py-16 text-center">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
           <p className="text-sm text-txt-tertiary">프로젝트를 찾을 수 없습니다.</p>
           <Link href={back.href} className="inline-block mt-4 text-sm text-brand hover:underline">
             {back.label}으로 돌아가기
@@ -135,7 +135,7 @@ function ProjectManageContent() {
 
   return (
     <div className="bg-surface-bg min-h-full">
-      <div className="max-w-[1200px] mx-auto px-5 pt-6 pb-16">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-16">
 
         {/* Back + Actions */}
         <div className="flex items-center justify-between mb-6">

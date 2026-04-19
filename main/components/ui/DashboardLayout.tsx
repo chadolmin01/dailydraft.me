@@ -16,8 +16,8 @@ interface DashboardLayoutProps {
 }
 
 const sizeMap = {
-  standard: 'max-w-container-standard',
-  wide: 'max-w-container-wide',
+  standard: 'max-w-[900px]',
+  wide: 'max-w-[1400px]',
 } as const
 
 /**

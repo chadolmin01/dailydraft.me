@@ -143,7 +143,7 @@ export default function ErrorLogsPage() {
 
   return (
     <div className="flex-1 overflow-y-auto h-screen bg-surface-bg">
-      <div className="max-w-[100rem] mx-auto p-8 lg:p-12 space-y-6">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12 space-y-6">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-border pb-6">
           <div>

@@ -25,7 +25,7 @@ export function SliderBar({ value: rawValue, low, high, label, colorKey }: { val
 
   return (
     <div
-      className="group relative rounded-2xl px-3.5 py-3 hover:bg-[#F2F3F5] dark:hover:bg-[#2C2C2E] transition-all cursor-default"
+      className="group relative rounded-2xl px-3.5 py-3 hover:bg-border-subtle transition-all cursor-default"
       onMouseEnter={() => setHovering(true)}
       onMouseLeave={() => setHovering(false)}
     >
@@ -38,14 +38,14 @@ export function SliderBar({ value: rawValue, low, high, label, colorKey }: { val
            ("5가 더 좋다"는 착시). 위치/방향은 슬라이더 바 자체로 전달 */}
       </div>
 
-      <div ref={barRef} className="relative h-2 bg-[#F2F3F5] dark:bg-[#3A3A3C] rounded-full overflow-hidden">
+      <div ref={barRef} className="relative h-2 bg-border-subtle rounded-full overflow-hidden">
         <div
           className={`h-full ${colors.bar} rounded-full transition-all duration-700 ease-out`}
           style={{ width: animated ? `${pct}%` : '0%' }}
         />
         {/* Thumb indicator */}
         <div
-          className={`absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 ${colors.bar} rounded-full border-2 border-white dark:border-[#1C1C1E] shadow-md transition-all duration-700 ease-out ${hovering ? 'scale-125 shadow-lg' : ''}`}
+          className={`absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 ${colors.bar} rounded-full border-2 border-surface-card shadow-md transition-all duration-700 ease-out ${hovering ? 'scale-125 shadow-lg' : ''}`}
           style={{ left: animated ? `calc(${pct}% - 7px)` : '-7px' }}
         />
       </div>
@@ -57,7 +57,7 @@ export function SliderBar({ value: rawValue, low, high, label, colorKey }: { val
 
       {/* Hover tooltip */}
       {hovering && (
-        <div className="absolute -top-8 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-[#1C1C1E] dark:bg-[#F2F3F5] text-white dark:text-[#1C1C1E] text-[11px] font-semibold rounded-xl shadow-lg whitespace-nowrap z-10 animate-[fadeIn_0.15s_ease-out]">
+        <div className="absolute -top-8 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-surface-inverse text-txt-inverse text-[11px] font-semibold rounded-xl shadow-lg whitespace-nowrap z-10 animate-[fadeIn_0.15s_ease-out]">
           {getInterpretation()}
         </div>
       )}
