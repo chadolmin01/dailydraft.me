@@ -370,6 +370,23 @@ select:focus-visible,
 }
 
 /* ============================================================
+   REDUCED MOTION — WCAG 2.3.3 (vestibular disorders)
+   ============================================================
+   OS 에서 "동작 줄이기" 설정한 유저는 애니메이션·전환 제거.
+   Framer Motion 도 useReducedMotion() 훅을 통해 자동 감지.
+   순수 CSS 애니메이션은 아래 매체 쿼리로 강제 제거. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
    INTERACTIVE FEEDBACK — 클릭 반응성
    ============================================================ */
 
