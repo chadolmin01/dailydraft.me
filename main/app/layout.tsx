@@ -4,6 +4,7 @@ import Script from 'next/script'
 import { Providers } from '@/src/context/Providers'
 import { createServerSupabaseClient } from '@/src/lib/supabase/server'
 import { APP_URL } from '@/src/constants'
+import { TitleSync } from '@/components/TitleSync'
 import './globals.css'
 
 const notoSansKR = Noto_Sans_KR({
@@ -26,7 +27,13 @@ const jetBrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
-  title: 'Draft — AI로 찾는 내 프로젝트 팀',
+  // title: default 는 비로그인/SEO 크롤러·초기 로드용. 로그인 후 라우트 전환 시 탭 타이틀은
+  // <TitleSync /> 가 pathname 기반으로 즉시 동기화 (src/lib/routes/titles.ts 참조).
+  // template 은 SEO 동적 페이지에서 `{page} | Draft` 형태로 자동 조립.
+  title: {
+    default: 'Draft — AI로 찾는 내 프로젝트 팀',
+    template: '%s | Draft',
+  },
   description: '스킬과 작업 스타일 기반 AI 매칭으로 사이드프로젝트 팀원을 찾아보세요. 개발자, 디자이너, 기획자들의 팀빌딩 플랫폼.',
   keywords: ['팀빌딩', 'AI매칭', '사이드프로젝트', '팀원모집', '개발자', '디자이너', '기획자', '스타트업'],
   icons: {
@@ -96,7 +103,10 @@ export default async function RootLayout({
         >
           메인 콘텐츠로 이동
         </a>
-        <Providers initialUser={initialUser}>{children}</Providers>
+        <Providers initialUser={initialUser}>
+          <TitleSync />
+          {children}
+        </Providers>
         {/* Google Analytics */}
         {process.env.NEXT_PUBLIC_GA_ID && (
           <>
