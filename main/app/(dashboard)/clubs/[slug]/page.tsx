@@ -34,6 +34,10 @@ export async function generateMetadata({
   return {
     title,
     description,
+    // SEO: utm_*·ref 같은 쿼리 파라미터 공유 링크도 canonical 로 통합 → 중복 색인 방지
+    alternates: {
+      canonical: `${APP_URL}/clubs/${slug}`,
+    },
     openGraph: {
       title,
       description,

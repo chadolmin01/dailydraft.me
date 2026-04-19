@@ -85,9 +85,31 @@ export default async function PublicProfilePage({
     queryFn: () => profile,
   })
 
+  // JSON-LD Person 스키마 — 프로필 검색 Rich Result.
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: profile.nickname ?? '프로필',
+    url: `${APP_URL}/u/${id}`,
+    image: profile.avatar_url ?? `${APP_URL}/api/og/profile/${id}`,
+    jobTitle: profile.desired_position ?? undefined,
+    affiliation: profile.university ? {
+      '@type': 'EducationalOrganization',
+      name: profile.university,
+    } : undefined,
+    description: profile.bio?.slice(0, 500) ?? undefined,
+  }
+
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <UserProfilePageClient profileId={id} />
-    </HydrationBoundary>
+    <>
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <UserProfilePageClient profileId={id} />
+      </HydrationBoundary>
+    </>
   )
 }
