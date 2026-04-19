@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/src/context/AuthContext'
 import { Users, Plus, Search, Building2, GraduationCap, Sparkles } from 'lucide-react'
@@ -250,7 +251,7 @@ function ClubCardItem({ club }: { club: ClubCard }) {
       className="flex items-start gap-3.5 p-4 bg-surface-card border border-border rounded-xl shadow-sm hover:shadow-md hover:-translate-y-[2px] transition-all duration-200 ease-out no-underline focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985]"
     >
       {club.logo_url ? (
-        <img src={club.logo_url} alt={club.name} className="w-[52px] h-[52px] rounded-md object-cover shrink-0" />
+        <Image src={club.logo_url} alt={club.name} width={52} height={52} className="w-[52px] h-[52px] rounded-md object-cover shrink-0" />
       ) : (
         <div className="w-[52px] h-[52px] rounded-md bg-surface-sunken flex items-center justify-center shrink-0">
           <span className="text-lg font-extrabold text-txt-secondary">{club.name[0]}</span>

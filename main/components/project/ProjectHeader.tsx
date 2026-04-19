@@ -80,7 +80,7 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
             className="inline-flex items-center gap-2 w-fit text-[13px] text-txt-secondary hover:text-txt-primary transition-colors"
           >
             {opportunity.club.logo_url ? (
-              <img src={opportunity.club.logo_url} alt={opportunity.club.name} className="w-5 h-5 rounded-md object-cover" />
+              <Image src={opportunity.club.logo_url} alt={opportunity.club.name} width={20} height={20} className="w-5 h-5 rounded-md object-cover" />
             ) : (
               <div className="w-5 h-5 rounded-md bg-[#0095F6] flex items-center justify-center text-[9px] font-bold text-white">
                 {opportunity.club.name[0]}
