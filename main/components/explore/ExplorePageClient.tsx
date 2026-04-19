@@ -165,7 +165,6 @@ function ExplorePageContent() {
     const qs = params.toString()
     router.replace(`${pathname}${qs ? `?${qs}` : ''}`, { scroll: false })
   }, [pathname, router])
-  const [updatesBannerDismissed, setUpdatesBannerDismissed] = useState(false)
   const [recruitingOnly, setRecruitingOnly] = useState(false)
   const [peopleRoleFilter, setPeopleRoleFilter] = useState<PeopleRoleFilter>('all')
   const [peopleUniFilter, setPeopleUniFilter] = useState<string>('all')
@@ -588,15 +587,8 @@ function ExplorePageContent() {
         </div>
 
         {/* 탭 제거됨 (2026-04-20) — people/clubs는 각각 /network·/clubs로 이관.
-            Explore = 프로젝트 발견 전용. 세 엔티티 타입으로 나누는 피드 구조는
-            MECE 원칙에 어긋나 혼란만 가중 (검토 결과).
-
-            교차 진입점은 헤더 아래 보조 링크로 제공. */}
-        <div className="flex items-center gap-4 mb-5 text-[13px]">
-          <span className="text-txt-tertiary">다른 탐색:</span>
-          <Link href="/network" className="font-semibold text-brand hover:underline">사람 →</Link>
-          <Link href="/clubs" className="font-semibold text-brand hover:underline">클럽 →</Link>
-        </div>
+            Explore = 프로젝트 발견 전용. GNB 에서 사람 탭도 제거됐으므로 (2026-04-20)
+            보조 링크 자체도 제거 — 필요한 접근은 하단 섹션의 "더보기 →" 로 이미 제공됨. */}
 
         {/* ── Filter + Sort row (탭별 인라인 컨트롤) ── */}
         {activeTab === 'projects' && (
@@ -669,19 +661,8 @@ function ExplorePageContent() {
         {/* ════════════════════════════════════════════ */}
         {activeTab === 'projects' && (
           <div>
-            {/* New updates banner — 클릭하면 확인 처리 후 사라짐 */}
-            {recentUpdates.length > 0 && !updatesBannerDismissed && (
-              <div
-                onClick={() => {
-                  setUpdatesBannerDismissed(true)
-                  queryClient.invalidateQueries({ queryKey: ['project_updates', 'recent'] })
-                }}
-                className="flex items-center justify-center gap-2 py-2.5 bg-brand-bg text-brand text-[13px] font-semibold rounded-2xl mb-4 cursor-pointer hover:bg-brand/15 transition-colors"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 4 23 10 17 10" /><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" /></svg>
-                새 업데이트 {recentUpdates.length}건이 있습니다
-              </div>
-            )}
+            {/* "새 업데이트 N건" 배너 제거 (2026-04-20) — 하단 "공개 위클리 업데이트" 섹션에서
+                이미 실제 업데이트 카드 노출하므로 배너는 중복 신호·노이즈. */}
 
             {/* Campus map — wireframe 기반 */}
             <CampusMap />
