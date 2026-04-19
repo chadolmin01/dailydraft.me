@@ -1,6 +1,7 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
+import { applyRateLimit, getClientIp } from '@/src/lib/rate-limit'
 import { pickNextPrompt, getQuestionConfig } from '@/src/lib/micro-prompts/questions'
 
 /**
@@ -14,7 +15,7 @@ import { pickNextPrompt, getQuestionConfig } from '@/src/lib/micro-prompts/quest
  * 2. 이미 answered한 질문 제외
  * 3. priority 순으로 다음 픽
  */
-export const GET = withErrorCapture(async () => {
+export const GET = withErrorCapture(async (request) => {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -22,6 +23,11 @@ export const GET = withErrorCapture(async () => {
     // 비인증 유저: ambient 슬롯 안 띄움
     return ApiResponse.ok({ prompt: null, reason: 'unauthenticated' })
   }
+
+  // 인증 유저 기준 rate limit (loading.tsx 재트리거 + 반복 호출 방어).
+  // 정상 동작은 페이지 전환당 1회라 분당 60 여유 충분.
+  const rateLimitResponse = applyRateLimit(user.id, getClientIp(request))
+  if (rateLimitResponse) return rateLimitResponse
 
   // cooldown 조회
   const { data: cooldown } = await supabase

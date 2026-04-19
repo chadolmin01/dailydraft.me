@@ -3,9 +3,11 @@ import { z } from 'zod'
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
+import { applyRateLimit, getClientIp } from '@/src/lib/rate-limit'
 
 // Draft 다음 기수 웨이팅리스트 — 랜딩 방문자가 이메일만 등록
 // 익명 INSERT 허용 (RLS), 동일 이메일은 DB UNIQUE 제약으로 1회만
+// Rate limit: anon 스팸 리스트 주입 방어 (H5 감사 항목). 분당 20건 기본.
 
 const schema = z.object({
   email: z.string().email('올바른 이메일을 입력해주세요').max(200),
@@ -13,6 +15,10 @@ const schema = z.object({
 })
 
 export const POST = withErrorCapture(async (request) => {
+    // IP 기반 rate limit — 이메일 validation 전에 차단해야 DB 탐색 비용 절약.
+    const rateLimitResponse = applyRateLimit(null, getClientIp(request))
+    if (rateLimitResponse) return rateLimitResponse
+
     const body = await request.json()
     const parsed = schema.safeParse(body)
     if (!parsed.success) {

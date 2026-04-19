@@ -2,6 +2,7 @@ import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 import { captureServerEvent } from '@/src/lib/posthog/server'
+import { applyRateLimit, getClientIp } from '@/src/lib/rate-limit'
 import {
   MICRO_PROMPTS,
   computeCooldown,
@@ -25,6 +26,11 @@ export const POST = withErrorCapture(async (request) => {
   if (!user) {
     return ApiResponse.unauthorized()
   }
+
+  // 쓰기 경로 — user 기반 rate limit (personality patch + log insert).
+  // 정상 흐름은 세션당 1~2회. 자동화 남용 방어.
+  const rateLimitResponse = applyRateLimit(user.id, getClientIp(request))
+  if (rateLimitResponse) return rateLimitResponse
 
   const body = await request.json()
   const { questionId, action, response, context } = body
