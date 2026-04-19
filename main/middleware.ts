@@ -90,6 +90,9 @@ const publicRoutes = [
   '/p/',
   '/embed/',
   '/feed',
+  '/privacy',
+  '/terms',
+  '/status',
 ]
 
 function addSecurityHeaders(response: NextResponse, allowEmbed = false) {

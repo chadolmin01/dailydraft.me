@@ -54,6 +54,12 @@ export const ROUTE_TITLES: Record<string, string> = {
   '/guide': '가이드',
   '/recruit': 'Draft 1기 모집',
   '/idea-validator': '아이디어 검증',
+
+  // 법적 고지 (PIPA 준수)
+  '/privacy': '개인정보처리방침',
+  '/terms': '이용약관',
+  '/me/data': '내 데이터 관리',
+  '/status': '시스템 상태',
 }
 
 const SORTED_ROUTES = Object.keys(ROUTE_TITLES).sort((a, b) => b.length - a.length)

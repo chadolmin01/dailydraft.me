@@ -153,6 +153,39 @@ export type Database = {
           },
         ]
       }
+      audit_logs: {
+        Row: {
+          action: string
+          actor_user_id: string | null
+          context: Json | null
+          created_at: string
+          diff: Json | null
+          id: string
+          target_id: string | null
+          target_type: string
+        }
+        Insert: {
+          action: string
+          actor_user_id?: string | null
+          context?: Json | null
+          created_at?: string
+          diff?: Json | null
+          id?: string
+          target_id?: string | null
+          target_type: string
+        }
+        Update: {
+          action?: string
+          actor_user_id?: string | null
+          context?: Json | null
+          created_at?: string
+          diff?: Json | null
+          id?: string
+          target_id?: string | null
+          target_type?: string
+        }
+        Relationships: []
+      }
       boosts: {
         Row: {
           amount_paid: number
@@ -2790,6 +2823,7 @@ export type Database = {
           current_situation: string | null
           data_consent: boolean | null
           data_consent_at: string | null
+          deleted_at: string | null
           department: string | null
           desired_position: string | null
           discord_user_id: string | null
@@ -2846,6 +2880,7 @@ export type Database = {
           current_situation?: string | null
           data_consent?: boolean | null
           data_consent_at?: string | null
+          deleted_at?: string | null
           department?: string | null
           desired_position?: string | null
           discord_user_id?: string | null
@@ -2902,6 +2937,7 @@ export type Database = {
           current_situation?: string | null
           data_consent?: boolean | null
           data_consent_at?: string | null
+          deleted_at?: string | null
           department?: string | null
           desired_position?: string | null
           discord_user_id?: string | null

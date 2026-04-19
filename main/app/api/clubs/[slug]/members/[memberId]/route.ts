@@ -1,6 +1,7 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
+import { writeAuditLog, extractAuditContext } from '@/src/lib/audit'
 
 /**
  * PATCH /api/clubs/[slug]/members/[memberId] — 멤버 역할 변경/제거
@@ -66,6 +67,17 @@ export const PATCH = withErrorCapture(
         .eq('id', memberId)
 
       if (error) return ApiResponse.internalError(error.message)
+
+      // P0-2 감사 로그
+      writeAuditLog(supabase, {
+        actorUserId: user.id,
+        action: 'club_member.remove',
+        targetType: 'club_member',
+        targetId: memberId,
+        diff: { before: { role: target.role, user_id: target.user_id } },
+        context: extractAuditContext(request, { club_id: club.id, slug }),
+      })
+
       return ApiResponse.ok({ message: '멤버가 제거되었습니다' })
     }
 
@@ -113,6 +125,19 @@ export const PATCH = withErrorCapture(
       .single()
 
     if (error) return ApiResponse.internalError(error.message)
+
+    // P0-2 감사 로그 (role 변경 or cohort 변경)
+    writeAuditLog(supabase, {
+      actorUserId: user.id,
+      action: body.role ? 'club_member.role_change' : 'club_member.cohort_change',
+      targetType: 'club_member',
+      targetId: memberId,
+      diff: {
+        before: { role: target.role, cohort: target.cohort },
+        after: { role: updated.role, cohort: updated.cohort },
+      },
+      context: extractAuditContext(request, { club_id: club.id, slug }),
+    })
 
     return ApiResponse.ok(updated)
   }

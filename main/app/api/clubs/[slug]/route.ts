@@ -1,6 +1,7 @@
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
+import { writeAuditLog, extractAuditContext } from '@/src/lib/audit'
 
 // ── 허용된 PATCH 필드 ──
 const UPDATABLE_FIELDS = new Set([
@@ -235,6 +236,15 @@ export const DELETE = withErrorCapture(
     if (error) {
       return ApiResponse.internalError('클럽 삭제에 실패했습니다', error.message)
     }
+
+    // P0-2 감사 로그
+    writeAuditLog(supabase, {
+      actorUserId: user.id,
+      action: 'clubs.soft_delete',
+      targetType: 'clubs',
+      targetId: club.id,
+      context: extractAuditContext(request, { slug }),
+    })
 
     return ApiResponse.ok({ message: '클럽이 삭제되었습니다', slug })
   }

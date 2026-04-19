@@ -21,6 +21,9 @@ export async function saveProfileCheckpoint(profile: ProfileDraft): Promise<void
       department: profile.department,
       universityId: profile.universityId,
       entranceYear: profile.entranceYear,
+      // P0-1c: PIPA 동의 기록. IntroScreen 에서 필수 3종 체크 없이는 시작 자체가 불가.
+      // 여기까지 흐름이 도달한 것은 동의 성립 시점.
+      dataConsent: true,
     }),
   })
   if (!res.ok) {
@@ -82,6 +85,9 @@ export async function saveProfileFromInterview(
       department: profile.department,
       universityId: profile.universityId,
       entranceYear: profile.entranceYear,
+      // P0-1c: PIPA 동의 기록. IntroScreen 에서 필수 3종 체크 없이는 시작 자체가 불가.
+      // 여기까지 흐름이 도달한 것은 동의 성립 시점.
+      dataConsent: true,
     }),
   })
 

@@ -40,6 +40,8 @@ export const POST = withErrorCapture(async (request) => {
       department,
       universityId,
       entranceYear,
+      // P0-1c: PIPA 동의 (온보딩 intro 에서 필수 3종 체크시 true)
+      dataConsent,
     } = body
 
     // 최소 필수: 닉네임만. location/currentSituation은 슬림 플로우에서 옵셔널.
@@ -93,6 +95,12 @@ export const POST = withErrorCapture(async (request) => {
       ...(visionSummary && { vision_summary: visionSummary }),
       onboarding_completed: true,
       ...(aiChatCompleted && { ai_chat_completed: true }),
+      // P0-1c: PIPA 동의 기록. 이미 true 인 경우(기존 온보딩 완료 유저 재진입) 덮어쓰지 않고
+      // 새로 true 로 올라온 경우에만 도장 찍음.
+      ...(dataConsent === true && {
+        data_consent: true,
+        data_consent_at: new Date().toISOString(),
+      }),
     }
 
     // DB 컬럼이 있을 수도 없을 수도 있는 필드

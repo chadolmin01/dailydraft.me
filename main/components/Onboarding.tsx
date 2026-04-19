@@ -1,8 +1,9 @@
 'use client'
 
 import React, { useState, useCallback, useRef, useEffect } from 'react'
+import Link from 'next/link'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { ArrowLeft, ArrowRight, CheckCircle2 } from 'lucide-react'
+import { ArrowLeft, ArrowRight, CheckCircle2, Check } from 'lucide-react'
 import { useAuth } from '@/src/context/AuthContext'
 import { useProfile } from '@/src/hooks/useProfile'
 import { determineResumeStep } from '@/src/lib/onboarding/resume'
@@ -232,47 +233,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
   /* ── Intro screen ── */
   if (step === 'intro') {
-    return (
-      <div className="fixed inset-0 bg-surface-bg flex flex-col items-center justify-center p-6">
-        <div className="max-w-lg w-full flex flex-col items-center">
-          <img
-            src="/onboarding/1.svg"
-            alt="환영"
-            className="w-full max-w-[280px] object-contain mb-10"
-            style={{ animation: 'ob-bubble-in 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) both' }}
-          />
-          <h2
-            className="text-2xl sm:text-[28px] font-black text-txt-primary leading-tight mb-3 text-center"
-            style={{ animation: 'ob-bubble-in 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) 0.1s both' }}
-          >
-            프로필을 만들어볼까요?
-          </h2>
-          <p
-            className="text-[15px] text-txt-secondary leading-relaxed mb-10 text-center"
-            style={{ animation: 'ob-bubble-in 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) 0.2s both' }}
-          >
-            간단한 정보와 선호도만 알려주면
-            <br />
-            딱 맞는 팀원을 찾아드릴게요
-          </p>
-          <div
-            className="w-full"
-            style={{ animation: 'ob-chip-in 0.35s cubic-bezier(0.34, 1.4, 0.64, 1) 0.35s both' }}
-          >
-            <button
-              onClick={() => goTo('info')}
-              className="w-full flex items-center justify-center gap-2 py-4 bg-brand text-white rounded-full text-[15px] font-black hover:opacity-90 active:scale-[0.97] transition-all"
-            >
-              시작하기
-              <ArrowRight size={16} />
-            </button>
-            <p className="text-[12px] text-txt-tertiary text-center mt-3 font-mono">
-              약 2분 · 간단한 선택
-            </p>
-          </div>
-        </div>
-      </div>
-    )
+    return <IntroScreen onStart={() => goTo('info')} />
   }
 
   /* ── Pre-interview steps ── */
@@ -703,6 +664,202 @@ function InfoContent({
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+/* ─── Intro Screen with Consent Gate ─── */
+
+/**
+ * 온보딩 첫 화면 — 약관·개인정보 동의 체크박스 UI.
+ * PIPA 상 "명시적 동의" 요구 → 필수 3종 체크해야 "시작하기" 활성화.
+ * 선택 2종은 체크 안 해도 진행 가능 (마케팅/통계 제공).
+ *
+ * 동의 상태는 saveProfileCheckpoint 시점에 data_consent=true + data_consent_at=now() 로 기록.
+ * 선택 동의(marketing, institution_share)는 저장 안 함 — 현재 스키마에 별도 컬럼 없음.
+ * 필요 시 후속 마이그레이션에서 consent_marketing / consent_institution_share 추가.
+ */
+interface ConsentState {
+  terms: boolean
+  privacy: boolean
+  ageOver14: boolean
+  marketing: boolean
+  institutionShare: boolean
+}
+
+const INITIAL_CONSENT: ConsentState = {
+  terms: false,
+  privacy: false,
+  ageOver14: false,
+  marketing: false,
+  institutionShare: false,
+}
+
+function IntroScreen({ onStart }: { onStart: () => void }) {
+  const [consent, setConsent] = useState<ConsentState>(INITIAL_CONSENT)
+  const allRequired = consent.terms && consent.privacy && consent.ageOver14
+  const allChecked = Object.values(consent).every(Boolean)
+
+  const toggle = useCallback((key: keyof ConsentState) => {
+    setConsent(prev => ({ ...prev, [key]: !prev[key] }))
+  }, [])
+
+  const toggleAll = useCallback(() => {
+    const next = !allChecked
+    setConsent({
+      terms: next,
+      privacy: next,
+      ageOver14: next,
+      marketing: next,
+      institutionShare: next,
+    })
+  }, [allChecked])
+
+  return (
+    <div className="fixed inset-0 bg-surface-bg flex flex-col items-center justify-center p-6 overflow-y-auto">
+      <div className="max-w-lg w-full flex flex-col items-center py-8">
+        <img
+          src="/onboarding/1.svg"
+          alt="환영"
+          className="w-full max-w-[220px] object-contain mb-6"
+          style={{ animation: 'ob-bubble-in 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) both' }}
+        />
+        <h2
+          className="text-2xl sm:text-[26px] font-black text-txt-primary leading-tight mb-2 text-center"
+          style={{ animation: 'ob-bubble-in 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) 0.1s both' }}
+        >
+          Draft 시작하기
+        </h2>
+        <p
+          className="text-[14px] text-txt-secondary leading-relaxed mb-6 text-center"
+          style={{ animation: 'ob-bubble-in 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) 0.2s both' }}
+        >
+          약관을 확인하고 동의해주세요
+        </p>
+
+        {/* 전체 동의 */}
+        <div
+          className="w-full mb-3"
+          style={{ animation: 'ob-chip-in 0.35s cubic-bezier(0.34, 1.4, 0.64, 1) 0.3s both' }}
+        >
+          <ConsentRow
+            checked={allChecked}
+            onToggle={toggleAll}
+            label="전체 동의"
+            emphasis
+          />
+        </div>
+
+        {/* 개별 동의 */}
+        <div
+          className="w-full space-y-2 mb-6 border-t border-border pt-3"
+          style={{ animation: 'ob-chip-in 0.35s cubic-bezier(0.34, 1.4, 0.64, 1) 0.4s both' }}
+        >
+          <ConsentRow
+            checked={consent.ageOver14}
+            onToggle={() => toggle('ageOver14')}
+            label="만 14세 이상입니다"
+            required
+          />
+          <ConsentRow
+            checked={consent.terms}
+            onToggle={() => toggle('terms')}
+            label="서비스 이용약관에 동의합니다"
+            required
+            link={{ href: '/terms', label: '전문 보기' }}
+          />
+          <ConsentRow
+            checked={consent.privacy}
+            onToggle={() => toggle('privacy')}
+            label="개인정보 수집·이용에 동의합니다"
+            required
+            link={{ href: '/privacy', label: '전문 보기' }}
+          />
+          <ConsentRow
+            checked={consent.institutionShare}
+            onToggle={() => toggle('institutionShare')}
+            label="소속 기관(대학/동아리)에 참여 현황 공유"
+            hint="선택 · 운영진 리포트 생성에 사용됩니다"
+          />
+          <ConsentRow
+            checked={consent.marketing}
+            onToggle={() => toggle('marketing')}
+            label="마케팅 정보 수신"
+            hint="선택 · 새 기능·이벤트 뉴스레터"
+          />
+        </div>
+
+        <div
+          className="w-full"
+          style={{ animation: 'ob-chip-in 0.35s cubic-bezier(0.34, 1.4, 0.64, 1) 0.5s both' }}
+        >
+          <button
+            onClick={onStart}
+            disabled={!allRequired}
+            className={`w-full flex items-center justify-center gap-2 py-4 rounded-full text-[15px] font-black transition-all ${
+              allRequired
+                ? 'bg-brand text-white hover:opacity-90 active:scale-[0.97]'
+                : 'bg-surface-sunken text-txt-disabled cursor-not-allowed'
+            }`}
+          >
+            시작하기
+            <ArrowRight size={16} />
+          </button>
+          <p className="text-[11px] text-txt-tertiary text-center mt-3">
+            필수 항목 3개에 동의하시면 진행할 수 있습니다
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+interface ConsentRowProps {
+  checked: boolean
+  onToggle: () => void
+  label: string
+  required?: boolean
+  emphasis?: boolean
+  hint?: string
+  link?: { href: string; label: string }
+}
+
+function ConsentRow({ checked, onToggle, label, required, emphasis, hint, link }: ConsentRowProps) {
+  return (
+    <div className="flex items-start gap-3 py-1.5">
+      <button
+        type="button"
+        onClick={onToggle}
+        className={`w-5 h-5 rounded-md flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
+          checked
+            ? 'bg-brand text-white'
+            : 'bg-surface-card border border-border hover:border-brand/50'
+        }`}
+        aria-label={label}
+        aria-checked={checked}
+        role="checkbox"
+      >
+        {checked && <Check size={12} strokeWidth={3} />}
+      </button>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <span className={`text-[13px] ${emphasis ? 'font-bold text-txt-primary' : 'text-txt-primary'}`}>
+            {required && <span className="text-status-danger-text mr-1">*</span>}
+            {label}
+          </span>
+          {link && (
+            <Link
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[11px] text-brand underline underline-offset-2 hover:opacity-80"
+            >
+              {link.label}
+            </Link>
+          )}
+        </div>
+        {hint && <p className="text-[11px] text-txt-tertiary mt-0.5">{hint}</p>}
+      </div>
     </div>
   )
 }
