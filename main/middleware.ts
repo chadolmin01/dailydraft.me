@@ -36,7 +36,8 @@ async function safeEdgeCapture(err: unknown, req: NextRequest, extra?: Record<st
 const hiddenRoutes = [
   '/calendar',
   '/documents',
-  '/network',
+  // '/network' 제거 (2026-04-20): IA 재정비 이후 /network 는 사람 탐색 라우트로 활성화.
+  //                             GNB 에서는 빠졌지만 라우트 자체는 살아있음.
   '/usage',
   '/workflow',
   '/business-plan',

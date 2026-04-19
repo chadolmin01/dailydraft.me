@@ -1,3 +1,8 @@
+/**
+ * @deprecated MVP 모드 숨김 (access manifest: tier='hidden', middleware 가 /explore 리다이렉트).
+ * Workflow / Validated Ideas 기능은 초기 B2C 아이디어 검증 플로우였으나 B2B2C 피봇 이후
+ * 핵심 경로에서 빠짐. 코드 보존 — 추후 Phase C 에서 재활용 검토 예정.
+ */
 'use client';
 
 import React, { useState, useEffect, useCallback, Suspense } from 'react';

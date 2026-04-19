@@ -5,6 +5,10 @@ import { PageContainer } from '@/components/ui/PageContainer'
 import { Section } from '@/components/ui/Section'
 import { EmptyState } from '@/components/ui/EmptyState'
 
+/**
+ * @deprecated MVP 모드 숨김 (access manifest: tier='hidden', middleware 가 /explore 리다이렉트).
+ * 코드 보존용 — 추후 재활용 여부 판단 후 활성화 or 삭제 결정.
+ */
 export default function DocumentsPage() {
   return (
     <div className="bg-surface-bg min-h-full">

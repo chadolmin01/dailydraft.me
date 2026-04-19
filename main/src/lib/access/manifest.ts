@@ -71,6 +71,7 @@ export const ACCESS_MANIFEST: RouteRule[] = [
   { pattern: '/drafts', tier: 'auth', note: '초안 목록 (주간 업데이트 등)' },
   { pattern: '/drafts/:draftId', tier: 'auth' },
   { pattern: '/more', tier: 'auth' },
+  { pattern: '/network', tier: 'auth', note: '사람 탐색 (GNB 에선 제거, 라우트는 활성)' },
   { pattern: '/design', tier: 'auth', note: '디자인 토큰 참조 페이지' },
   { pattern: '/connect/discord', tier: 'auth' },
   { pattern: '/clubs', tier: 'auth', note: '내 클럽 목록' },
