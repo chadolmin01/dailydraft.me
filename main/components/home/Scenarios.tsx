@@ -62,7 +62,10 @@ const scenarios: Scenario[] = [
 
 export const Scenarios: React.FC = () => {
   return (
-    <section className="w-full py-24 sm:py-32 px-6 md:px-10">
+    <section
+      id="use-cases"
+      className="w-full py-24 sm:py-32 px-6 md:px-10"
+    >
       <div className="max-w-5xl mx-auto">
         <motion.div
           className="text-center mb-14"

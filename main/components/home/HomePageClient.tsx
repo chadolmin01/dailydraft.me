@@ -7,6 +7,7 @@ import { DemoTabs } from '@/components/home/DemoTabs'
 import { HowItWorks } from '@/components/home/HowItWorks'
 import { Scenarios } from '@/components/home/Scenarios'
 import { Pricing } from '@/components/home/Pricing'
+import { SecuritySection } from '@/components/home/SecuritySection'
 import { FAQ } from '@/components/home/FAQ'
 import { FinalCTA } from '@/components/home/FinalCTA'
 import { Footer } from '@/components/home/Footer'
@@ -24,6 +25,7 @@ export default function HomePageClient() {
         <HowItWorks />
         <Scenarios />
         <Pricing />
+        <SecuritySection />
         <FAQ />
         <FinalCTA />
       </main>

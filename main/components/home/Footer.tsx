@@ -1,21 +1,22 @@
 import React from 'react'
 import Link from 'next/link'
 
+// 존재하는 페이지만 링크. "준비 중" 라벨도 지양 — 혼란만 야기.
+// 추후 로드맵/도움말/블로그 생길 때마다 여기 추가.
 const footerLinks = {
   제품: [
     { label: '기능', href: '#features' },
     { label: '가격', href: '#pricing' },
-    { label: '로드맵', href: '#' },
+    { label: '공개 피드', href: '/feed' },
   ],
-  리소스: [
-    { label: '도움말', href: '#' },
-    { label: 'API 문서', href: '#' },
-    { label: '블로그', href: '#' },
+  '신뢰·투명성': [
+    { label: '시스템 상태', href: '/status' },
+    { label: '개인정보처리방침', href: '/privacy' },
+    { label: '이용약관', href: '/terms' },
   ],
   회사: [
-    { label: '이용약관', href: '/terms' },
-    { label: '개인정보처리방침', href: '/privacy' },
-    { label: '문의하기', href: 'mailto:contact@dailydraft.me' },
+    { label: '기관 문의', href: 'mailto:institution@dailydraft.me' },
+    { label: '일반 문의', href: 'mailto:contact@dailydraft.me' },
   ],
 }
 

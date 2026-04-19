@@ -36,7 +36,10 @@ const features = [
 
 export const FeatureBar: React.FC = () => {
   return (
-    <section className="py-16 px-6 md:px-10 border-y border-border">
+    <section
+      id="features"
+      className="py-16 px-6 md:px-10 border-y border-border"
+    >
       <motion.div
         className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-4"
         variants={stagger}

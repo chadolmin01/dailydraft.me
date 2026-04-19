@@ -118,7 +118,7 @@ export const Pricing: React.FC = () => {
           {/* Pro Plan */}
           <motion.div
             variants={fadeUp}
-            className="border-2 border-txt-primary rounded-xl p-8 flex flex-col"
+            className="border-2 border-brand rounded-xl p-8 flex flex-col relative"
           >
             <h3 className="text-lg font-bold text-txt-primary mb-2">
               {proPlan.name}
@@ -144,11 +144,41 @@ export const Pricing: React.FC = () => {
                 Pro 결제 붙기 전까지는 별도 페이지 대신 동일 진입으로 모아본다. */}
             <Link
               href="/login?next=/dashboard&plan=pro"
-              className="w-full flex items-center justify-center border border-txt-primary text-txt-primary rounded-full px-6 py-3 text-sm font-bold hover:bg-surface-sunken transition-colors active:scale-[0.97]"
+              className="w-full flex items-center justify-center bg-brand text-white rounded-full px-6 py-3 text-sm font-bold hover:bg-brand-hover transition-colors active:scale-[0.97]"
             >
               얼리버드 대기 등록
             </Link>
           </motion.div>
+        </motion.div>
+
+        {/* 기관 문의 CTA — 대학·산학협력단·창업지원단 대상 별도 계약 경로 */}
+        <motion.div
+          className="mt-16 max-w-3xl mx-auto"
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-80px' }}
+        >
+          <div className="bg-surface-bg border border-border rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center gap-5">
+            <div className="flex-1 min-w-0">
+              <p className="text-[13px] font-semibold text-brand mb-1">
+                대학·기관 담당자
+              </p>
+              <h3 className="text-[18px] font-bold text-txt-primary mb-2 break-keep">
+                캠퍼스 전체 동아리 운영을 한 번에
+              </h3>
+              <p className="text-[13px] text-txt-secondary leading-relaxed break-keep">
+                학교 이메일(@*.ac.kr) 자동 인증, 감사 로그, 기관별 리포트,
+                개인정보 처리 위탁 계약까지 준비됐습니다.
+              </p>
+            </div>
+            <Link
+              href="mailto:institution@dailydraft.me?subject=%5B%EA%B8%B0%EA%B4%80%5D%20Draft%20%EB%8F%84%EC%9E%85%20%EB%AC%B8%EC%9D%98"
+              className="shrink-0 w-full sm:w-auto inline-flex items-center justify-center gap-1.5 bg-surface-inverse text-txt-inverse rounded-full px-6 py-3 text-sm font-bold hover:opacity-90 transition-opacity active:scale-[0.97]"
+            >
+              기관 문의
+            </Link>
+          </div>
         </motion.div>
       </div>
     </section>

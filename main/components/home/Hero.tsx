@@ -52,9 +52,9 @@ export const Hero: React.FC = () => {
           variants={fadeUp}
           className="text-base sm:text-lg text-txt-secondary leading-relaxed max-w-lg mb-10 break-keep"
         >
-          주간 추적, 기수 인수인계, 성과 보고까지.
+          주간 추적, 기수 인수인계, 성과 보고를 한 곳에서.
           <br className="hidden sm:block" />
-          카톡 · 시트 · 노션을 오가는 3시간이 0분이 됩니다.
+          카톡·시트·노션을 오가던 반복 업무가 사라집니다.
         </motion.p>
 
         {/* CTAs */}
@@ -86,7 +86,7 @@ export const Hero: React.FC = () => {
           variants={fadeUp}
           className="text-xs text-txt-tertiary"
         >
-          가입 후 3분이면 첫 주간 리포트가 생성됩니다 · 카드 등록 불필요
+          대학 이메일(@*.ac.kr)로 가입 · 카드 등록 불필요 · PIPA 준수
         </motion.p>
       </motion.div>
     </section>
