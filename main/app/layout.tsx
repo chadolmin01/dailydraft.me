@@ -80,6 +80,12 @@ export const viewport: Viewport = {
   maximumScale: 5,
   userScalable: true,
   viewportFit: 'cover',
+  // 브라우저 chrome(모바일 주소창 영역) 색상. PWA manifest theme_color 와 동일.
+  // 라이트: Electric Indigo, 다크: surface-card 검정
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#5E6AD2' },
+    { media: '(prefers-color-scheme: dark)', color: '#1C1C1E' },
+  ],
 }
 
 export default async function RootLayout({

@@ -27,7 +27,7 @@ export function AiOnboardingModal({ isOpen, onClose, onConfirm }: AiOnboardingMo
               <p className="text-sm font-bold text-txt-primary">AI 매칭 분석 시작</p>
               <p className="text-[11px] text-txt-tertiary">온보딩 화면으로 이동합니다</p>
             </div>
-            <button onClick={onClose} className="ml-auto p-1.5 text-txt-disabled hover:text-txt-secondary transition-colors rounded-lg hover:bg-surface-sunken">
+            <button onClick={onClose} className="ml-auto p-1.5 text-txt-disabled hover:text-txt-secondary transition-colors rounded-lg hover:bg-surface-sunken" aria-label="닫기">
               <X size={16} />
             </button>
           </div>

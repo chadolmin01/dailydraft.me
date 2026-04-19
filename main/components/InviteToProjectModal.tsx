@@ -101,7 +101,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 shrink-0">
           <h3 className="text-[17px] font-bold text-txt-primary">프로젝트에 초대</h3>
-          <button onClick={onClose} className="p-1.5 bg-[#F2F3F5] dark:bg-[#2C2C2E] hover:bg-[#E5E5EA] dark:hover:bg-[#3A3A3C] rounded-full transition-colors">
+          <button onClick={onClose} className="p-1.5 bg-[#F2F3F5] dark:bg-[#2C2C2E] hover:bg-[#E5E5EA] dark:hover:bg-[#3A3A3C] rounded-full transition-colors" aria-label="닫기">
             <X size={16} className="text-txt-tertiary" />
           </button>
         </div>

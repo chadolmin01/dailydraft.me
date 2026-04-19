@@ -179,6 +179,10 @@ export async function generateMetadata({
   return {
     title,
     description,
+    // SEO: 카테고리 필터된 URL 도 각자 canonical 로 → 각 카테고리 페이지가 독립 색인
+    alternates: {
+      canonical: url,
+    },
     openGraph: {
       title,
       description,

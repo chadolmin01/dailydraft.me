@@ -635,7 +635,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
                   <p className="text-[10px] text-txt-tertiary font-mono">{template.pages}p</p>
                 </div>
               </div>
-              <button onClick={() => setShowMobileSidebar(false)} className="p-1.5 text-txt-disabled hover:text-txt-primary transition-colors">
+              <button onClick={() => setShowMobileSidebar(false)} className="p-1.5 text-txt-disabled hover:text-txt-primary transition-colors" aria-label="사이드바 닫기">
                 <X size={18} />
               </button>
             </div>

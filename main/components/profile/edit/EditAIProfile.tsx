@@ -17,7 +17,7 @@ function TagEditor({ label, tags, onChange, suggestions }: { label: string; tags
           {tags.map(tag => (
             <span key={tag} className="flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-brand text-white">
               {tag}
-              <button onClick={() => remove(tag)} className="hover:opacity-70 p-2 sm:p-0 -m-1 sm:m-0"><X size={10} /></button>
+              <button onClick={() => remove(tag)} className="hover:opacity-70 p-2 sm:p-0 -m-1 sm:m-0" aria-label={`${tag} 제거`}><X size={10} /></button>
             </span>
           ))}
         </div>
