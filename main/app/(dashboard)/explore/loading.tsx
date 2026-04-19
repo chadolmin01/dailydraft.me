@@ -1,11 +1,16 @@
-import { SkeletonGrid } from '@/components/ui/Skeleton'
-import { MicroPromptSlot } from '@/components/micro-prompts/MicroPromptSlot'
+import { SkeletonGrid, SkeletonSidebar } from '@/components/ui/Skeleton'
 
 export default function ExploreLoading() {
   return (
-    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-5">
-      <MicroPromptSlot context="explore_loading" />
-      <SkeletonGrid count={6} cols={3} />
+    <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="flex gap-6">
+        <div className="hidden lg:block w-56 shrink-0">
+          <SkeletonSidebar />
+        </div>
+        <div className="flex-1">
+          <SkeletonGrid count={6} cols={3} />
+        </div>
+      </div>
     </div>
   )
 }
