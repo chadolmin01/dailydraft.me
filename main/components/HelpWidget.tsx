@@ -512,6 +512,13 @@ function ReportTab() {
           maxLength={5000}
           className="w-full px-4 py-3 text-[13px] bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#5E6AD2]/20 transition-all resize-none placeholder:text-txt-disabled"
         />
+        <p className={`text-[10px] text-right mt-1 tabular-nums ${
+          description.length >= 5000 ? 'text-status-danger-text font-semibold' :
+          description.length >= 4500 ? 'text-status-warning-text' :
+          'text-txt-disabled'
+        }`}>
+          {description.length.toLocaleString()}/5,000
+        </p>
       </div>
 
       {/* Submit */}

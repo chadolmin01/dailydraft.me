@@ -190,7 +190,11 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
               {submitting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
             </button>
           </div>
-          <p className="text-[11px] text-txt-disabled text-right mt-1.5">{content.length}/200</p>
+          <p className={`text-[11px] text-right mt-1.5 tabular-nums ${
+            content.length >= 200 ? 'text-status-danger-text font-semibold' :
+            content.length >= 180 ? 'text-status-warning-text' :
+            'text-txt-disabled'
+          }`}>{content.length}/200</p>
         </form>
       ) : (
         <div className="bg-[#F7F8F9] dark:bg-[#1C1C1E] rounded-2xl p-5 mb-4 text-center">
