@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Webhook, Plus, Trash2, Loader2, Check } from 'lucide-react'
 import { toast } from 'sonner'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 
 interface Channel {
   id: string
@@ -39,6 +40,7 @@ export function NotificationChannelsSection({ clubId }: { clubId: string }) {
   const [webhookUrl, setWebhookUrl] = useState('')
   const [label, setLabel] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState<Channel | null>(null)
 
   const fetchChannels = useCallback(async () => {
     try {
@@ -91,7 +93,6 @@ export function NotificationChannelsSection({ clubId }: { clubId: string }) {
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm('이 알림 채널을 삭제할까요?')) return
     const res = await fetch(`/api/clubs/${clubId}/notification-channels/${id}`, { method: 'DELETE' })
     if (res.ok) {
       toast.success('삭제되었습니다')
@@ -138,7 +139,7 @@ export function NotificationChannelsSection({ clubId }: { clubId: string }) {
                   </p>
                 </div>
                 <button
-                  onClick={() => handleDelete(ch.id)}
+                  onClick={() => setDeleteTarget(ch)}
                   className="text-txt-disabled hover:text-status-danger-text transition-colors"
                   aria-label="삭제"
                 >
@@ -214,6 +215,20 @@ export function NotificationChannelsSection({ clubId }: { clubId: string }) {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={async () => {
+          if (!deleteTarget) return
+          await handleDelete(deleteTarget.id)
+          setDeleteTarget(null)
+        }}
+        title="알림 채널 삭제"
+        message={deleteTarget ? `"${deleteTarget.label || deleteTarget.channel_type}" 알림 채널을 삭제합니다. 이 채널로 더 이상 알림이 전송되지 않습니다.` : ''}
+        confirmText="삭제"
+        variant="danger"
+      />
     </section>
   )
 }
