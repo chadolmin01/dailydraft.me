@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useInstitutionAdmin } from '@/src/hooks/useInstitutionAdmin'
 import { Card } from '@/components/ui/Card'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import {
   ShieldX,
   ChevronLeft,
@@ -23,6 +24,7 @@ export default function InstitutionAnnouncePage() {
   const [sending, setSending] = useState(false)
   const [result, setResult] = useState<{ sent: number; failed: number; total: number } | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [showSendConfirm, setShowSendConfirm] = useState(false)
 
   useEffect(() => {
     if (!isAdminLoading && !isInstitutionAdmin) {
@@ -30,13 +32,13 @@ export default function InstitutionAnnouncePage() {
     }
   }, [isInstitutionAdmin, isAdminLoading, router])
 
-  const handleSend = async () => {
+  const handleSend = () => {
     if (!subject.trim() || !body.trim()) return
+    setShowSendConfirm(true)
+  }
 
-    const confirmed = window.confirm(
-      `전체 소속 멤버에게 이메일을 발송합니다.\n\n제목: ${subject}\n\n계속하시겠습니까?`
-    )
-    if (!confirmed) return
+  const doSend = async () => {
+    setShowSendConfirm(false)
 
     setSending(true)
     setResult(null)
@@ -188,6 +190,16 @@ export default function InstitutionAnnouncePage() {
           </Card>
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={showSendConfirm}
+        onClose={() => setShowSendConfirm(false)}
+        onConfirm={doSend}
+        title="전체 발송"
+        message={`"${subject}" 제목으로 전체 소속 멤버에게 이메일을 발송합니다. 발송 후에는 회수할 수 없습니다.`}
+        confirmText="발송"
+        variant="warning"
+      />
     </div>
   )
 }

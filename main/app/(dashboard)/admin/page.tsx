@@ -33,6 +33,7 @@ import {
   LayoutDashboard,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 
 interface AdminStats {
   totalUsers: number
@@ -76,8 +77,8 @@ export default function AdminHubPage() {
   })
 
   const [resetting, setResetting] = useState(false)
-  const handleResetOnboarding = async () => {
-    if (!confirm('온보딩을 리셋하고 테스트하시겠습니까?\n(personality, vision_summary 초기화됨)')) return
+  const [showResetConfirm, setShowResetConfirm] = useState(false)
+  const doResetOnboarding = async () => {
     setResetting(true)
     try {
       const res = await fetch('/api/admin/reset-onboarding', { method: 'POST' })
@@ -85,8 +86,10 @@ export default function AdminHubPage() {
       else toast.error('리셋 실패')
     } finally {
       setResetting(false)
+      setShowResetConfirm(false)
     }
   }
+  const handleResetOnboarding = () => setShowResetConfirm(true)
 
   if (anyLoading) {
     return (
@@ -412,6 +415,16 @@ export default function AdminHubPage() {
           </section>
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={showResetConfirm}
+        onClose={() => setShowResetConfirm(false)}
+        onConfirm={doResetOnboarding}
+        title="온보딩 리셋 (테스트)"
+        message="본인 계정의 온보딩 상태를 초기화합니다. personality·vision_summary 가 삭제되고 /onboarding 으로 이동합니다. 개발용 · 되돌릴 수 없습니다."
+        confirmText={resetting ? '처리 중...' : '리셋하고 이동'}
+        variant="warning"
+      />
     </div>
   )
 }
