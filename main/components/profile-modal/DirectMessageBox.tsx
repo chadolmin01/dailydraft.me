@@ -4,12 +4,14 @@ import { useState } from 'react'
 import { Loader2, Send, ShieldOff } from 'lucide-react'
 import { toast } from 'sonner'
 import { useBlockUser, useUserBlocks, useUnblockUser } from '@/src/hooks/useUserBlocks'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 
 export function DirectMessageBox({ receiverId }: { receiverId: string }) {
   const [content, setContent] = useState('')
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
   const [error, setError] = useState('')
+  const [showBlockConfirm, setShowBlockConfirm] = useState(false)
 
   // 차단/해제 — 최소 UI. 현재 차단 상태에 따라 토글.
   const { data: blocks = [] } = useUserBlocks()
@@ -18,15 +20,23 @@ export function DirectMessageBox({ receiverId }: { receiverId: string }) {
   const isBlocked = blocks.some(b => b.blocked_id === receiverId)
 
   const handleToggleBlock = async () => {
-    try {
-      if (isBlocked) {
+    if (isBlocked) {
+      try {
         await unblockUser.mutateAsync(receiverId)
         toast.success('차단을 해제했습니다')
-      } else {
-        if (!confirm('이 사용자를 차단하시겠어요? 초대·커피챗·쪽지가 양방향으로 차단됩니다.')) return
-        await blockUser.mutateAsync({ blocked_id: receiverId })
-        toast.success('차단했습니다')
+      } catch {
+        toast.error('처리에 실패했습니다')
       }
+    } else {
+      setShowBlockConfirm(true)
+    }
+  }
+
+  const confirmBlock = async () => {
+    try {
+      await blockUser.mutateAsync({ blocked_id: receiverId })
+      toast.success('차단했습니다')
+      setShowBlockConfirm(false)
     } catch {
       toast.error('처리에 실패했습니다')
     }
@@ -95,6 +105,16 @@ export function DirectMessageBox({ receiverId }: { receiverId: string }) {
           {error && <p className="text-xs text-status-danger-text mt-1.5">{error}</p>}
         </>
       )}
+
+      <ConfirmModal
+        isOpen={showBlockConfirm}
+        onClose={() => setShowBlockConfirm(false)}
+        onConfirm={confirmBlock}
+        title="사용자 차단"
+        message="이 사용자를 차단합니다. 초대·커피챗·쪽지가 양방향으로 차단되며, 프로필에서 해제할 수 있습니다."
+        confirmText="차단하기"
+        variant="danger"
+      />
     </div>
   )
 }
