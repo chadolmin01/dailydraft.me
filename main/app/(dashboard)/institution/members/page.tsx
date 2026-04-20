@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useInstitutionAdmin } from '@/src/hooks/useInstitutionAdmin'
 import { Card } from '@/components/ui/Card'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import type { InstitutionMember, MemberRole } from '@/src/types/institution'
 import {
   Users,
@@ -50,6 +51,7 @@ export default function InstitutionMembersPage() {
   const [addRole, setAddRole] = useState<MemberRole>('student')
   const [addNotes, setAddNotes] = useState('')
   const [addError, setAddError] = useState('')
+  const [removeTarget, setRemoveTarget] = useState<{ id: string; name: string } | null>(null)
 
   // Debounce search
   useEffect(() => {
@@ -337,11 +339,7 @@ export default function InstitutionMembersPage() {
                                 <option value="admin">관리자 (승격)</option>
                               </select>
                               <button
-                                onClick={() => {
-                                  if (confirm(`"${profile?.nickname || '이름 없음'}" 멤버를 제거하시겠습니까?`)) {
-                                    removeMember.mutate(member.id)
-                                  }
-                                }}
+                                onClick={() => setRemoveTarget({ id: member.id, name: profile?.nickname || '이름 없음' })}
                                 disabled={removeMember.isPending}
                                 title="멤버 제거"
                                 className="p-1.5 text-txt-tertiary hover:text-status-danger-text hover:bg-status-danger-bg transition-colors"
@@ -461,6 +459,20 @@ export default function InstitutionMembersPage() {
           </Card>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={!!removeTarget}
+        onClose={() => setRemoveTarget(null)}
+        onConfirm={async () => {
+          if (!removeTarget) return
+          removeMember.mutate(removeTarget.id)
+          setRemoveTarget(null)
+        }}
+        title="멤버 제거"
+        message={removeTarget ? `"${removeTarget.name}" 을(를) 기관에서 제거합니다. 재가입은 수동으로 다시 배정해야 합니다.` : ''}
+        confirmText="제거"
+        variant="danger"
+      />
     </div>
   )
 }
