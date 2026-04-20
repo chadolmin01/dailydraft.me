@@ -2,6 +2,7 @@
 
 import React, { useState, useCallback, useRef, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { ArrowLeft, ArrowRight, CheckCircle2, Check } from 'lucide-react'
 import { useAuth } from '@/src/context/AuthContext'
@@ -134,8 +135,10 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       '/onboarding/add_project.svg',
     ]
     svgs.forEach(src => {
-      const img = new Image()
-      img.src = src
+      // next/image 가 ./onboarding/* 를 자체 최적화하지만, 다음 스텝 전환 시의
+      // 즉시 렌더를 위해 브라우저 캐시에 미리 적재. window.Image 로 next/image 와 이름 충돌 회피.
+      const preload = new window.Image()
+      preload.src = src
     })
   }, [])
 
@@ -718,10 +721,13 @@ function IntroScreen({ onStart }: { onStart: () => void }) {
   return (
     <div className="fixed inset-0 bg-surface-bg flex flex-col items-center justify-center p-6 overflow-y-auto">
       <div className="max-w-lg w-full flex flex-col items-center py-8">
-        <img
+        <Image
           src="/onboarding/1.svg"
           alt="환영"
-          className="w-full max-w-[220px] object-contain mb-6"
+          width={220}
+          height={220}
+          priority
+          className="w-full max-w-[220px] h-auto object-contain mb-6"
           style={{ animation: 'ob-bubble-in 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) both' }}
         />
         <h2

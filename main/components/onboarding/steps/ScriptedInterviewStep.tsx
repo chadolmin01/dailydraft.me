@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useCallback, useRef } from 'react'
+import Image from 'next/image'
 import { ArrowRight, ArrowLeft, Sparkles, Loader2, CheckCircle2 } from 'lucide-react'
 import type {
   ProfileDraft, StructuredResponse,
@@ -268,7 +269,7 @@ export function ScriptedInterviewStep({ profile, introMessage, onAnswer, onCompl
 
           {/* Visual */}
           <div className="flex justify-center mb-10">
-            <img src="/onboarding/almost.svg" alt="거의 다 왔어요" className="w-full max-w-[260px] object-contain ob-avatar ob-img-fade" onLoad={e => e.currentTarget.classList.add('loaded')} />
+            <Image src="/onboarding/almost.svg" alt="거의 다 왔어요" width={260} height={260} className="w-full max-w-[260px] h-auto object-contain ob-avatar ob-img-fade loaded" />
           </div>
 
           {/* Value proposition */}
@@ -400,11 +401,12 @@ export function ScriptedInterviewStep({ profile, introMessage, onAnswer, onCompl
               style={{ animationDelay: '30ms' }}
             >
               {visual?.illustration ? (
-                <img
+                <Image
                   src={visual.illustration}
                   alt={visual.label}
-                  className="w-full h-full object-contain max-h-[200px] sm:max-h-[280px] md:max-h-[360px] ob-img-fade"
-                  onLoad={e => e.currentTarget.classList.add('loaded')}
+                  width={360}
+                  height={360}
+                  className="w-full h-auto object-contain max-h-[200px] sm:max-h-[280px] md:max-h-[360px] ob-img-fade loaded"
                   onError={(e) => {
                     const target = e.currentTarget
                     target.style.display = 'none'

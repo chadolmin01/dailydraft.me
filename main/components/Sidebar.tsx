@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import {
   Compass,
@@ -225,8 +226,8 @@ export const Sidebar: React.FC = () => {
                       }`}
                   >
                     {club.logo_url ? (
-                      <div className={`${expanded ? 'w-6 h-6 rounded-md' : 'w-full h-full'} overflow-hidden shrink-0`}>
-                        <img src={club.logo_url} alt={club.name} className="w-full h-full object-cover" />
+                      <div className={`${expanded ? 'w-6 h-6 rounded-md' : 'w-full h-full'} relative overflow-hidden shrink-0`}>
+                        <Image src={club.logo_url} alt={club.name} fill sizes="40px" className="object-cover" />
                       </div>
                     ) : (
                       <div className={`${expanded ? 'w-6 h-6 rounded-md bg-brand-bg text-brand text-[11px]' : 'w-full h-full text-[11px]'} flex items-center justify-center font-extrabold shrink-0`}>
