@@ -221,7 +221,9 @@ export default function ClubsListClient() {
             <EmptyState
               icon={Building2}
               title={search ? '검색 결과가 없습니다' : '등록된 클럽이 없습니다'}
-              description={search ? '다른 키워드로 검색해보세요' : '클럽을 만들면 여기에 표시됩니다'}
+              description={search ? '다른 키워드로 검색해보세요' : user ? '첫 번째 클럽을 만들어보세요' : '로그인하면 클럽을 만들 수 있어요'}
+              actionLabel={search ? undefined : user ? '클럽 만들기' : '로그인하기'}
+              actionHref={search ? undefined : user ? '/clubs/new' : '/login?redirect=/clubs'}
             />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
