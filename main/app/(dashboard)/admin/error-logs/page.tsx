@@ -85,6 +85,7 @@ export default function ErrorLogsPage() {
       return data as ErrorLog[]
     },
     enabled: isAdmin && !isAdminLoading,
+    staleTime: 1000 * 30,
   })
 
   // Redirect non-admins

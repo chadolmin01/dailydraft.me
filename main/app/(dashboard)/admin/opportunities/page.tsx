@@ -94,6 +94,7 @@ export default function AdminOpportunitiesPage() {
       return res.json()
     },
     enabled: isAdmin,
+    staleTime: 1000 * 30,
   })
 
   const deleteMutation = useMutation({

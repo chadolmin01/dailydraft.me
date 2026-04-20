@@ -74,6 +74,7 @@ export default function InstitutionTeamsPage() {
       return res.json()
     },
     enabled: isInstitutionAdmin,
+    staleTime: 1000 * 60,
     select: (data) => ({ teams: data.teams || [] }),
   })
 

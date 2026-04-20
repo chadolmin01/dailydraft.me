@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { ChevronLeft } from 'lucide-react'
@@ -20,6 +20,7 @@ interface Props {
  */
 export function PersonalPersonaTeaser({ userEmail }: Props) {
   const [email, setEmail] = useState(userEmail)
+  const emailInputRef = useRef<HTMLInputElement>(null)
 
   // 기존 등록 여부 확인
   const { data: waitlistStatus } = useQuery<{ registered: boolean }>({
@@ -68,7 +69,12 @@ export function PersonalPersonaTeaser({ userEmail }: Props) {
           <ChevronLeft size={20} />
         </Link>
         <div>
-          <h1 className="text-lg font-bold text-txt-primary">개인 페르소나</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-lg font-bold text-txt-primary">개인 페르소나</h1>
+            <span className="text-[10px] font-semibold text-txt-tertiary bg-surface-sunken px-1.5 py-0.5 rounded">
+              개인 계층
+            </span>
+          </div>
           <p className="text-xs text-txt-tertiary">프로필 · 페르소나</p>
         </div>
       </div>
@@ -124,9 +130,15 @@ export function PersonalPersonaTeaser({ userEmail }: Props) {
             <p className="text-[11px] text-txt-tertiary mb-2">출시 알림 받기</p>
             <div className="flex items-center gap-2">
               <input
+                ref={emailInputRef}
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && email.includes('@') && !subscribeMut.isPending) {
+                    subscribeMut.mutate()
+                  }
+                }}
                 placeholder="your@email.com"
                 className="flex-1 min-w-0 text-sm px-3 py-2 rounded-lg bg-surface-bg border border-border focus:outline-none focus:border-brand transition-colors"
               />

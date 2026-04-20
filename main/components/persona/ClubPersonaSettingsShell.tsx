@@ -35,7 +35,12 @@ export function ClubPersonaSettingsShell({ slug }: { slug: string }) {
           <ChevronLeft size={20} />
         </Link>
         <div className="min-w-0">
-          <h1 className="text-lg font-bold text-txt-primary">브랜드 페르소나</h1>
+          <div className="flex items-center gap-2 mb-0.5">
+            <h1 className="text-lg font-bold text-txt-primary">브랜드 페르소나</h1>
+            <span className="text-[10px] font-semibold text-brand bg-brand-bg px-1.5 py-0.5 rounded">
+              클럽 계층
+            </span>
+          </div>
           <p className="text-xs text-txt-tertiary leading-relaxed">
             {club ? (
               <>

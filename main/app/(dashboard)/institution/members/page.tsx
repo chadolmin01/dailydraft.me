@@ -85,6 +85,7 @@ export default function InstitutionMembersPage() {
       return res.json()
     },
     enabled: isInstitutionAdmin,
+    staleTime: 1000 * 30,
   })
 
   const addMember = useMutation({
