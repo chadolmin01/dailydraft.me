@@ -7,6 +7,7 @@ import { useMyOpportunities } from '@/src/hooks/useOpportunities'
 import { useCreateInvitation } from '@/src/hooks/useProjectInvitations'
 import { useCoffeeChats } from '@/src/hooks/useCoffeeChats'
 import { useBackHandler } from '@/src/hooks/useBackHandler'
+import { useScrollLock } from '@/src/hooks/useScrollLock'
 import { CoffeeChatRequestForm } from '@/components/CoffeeChatRequestForm'
 
 interface InviteToProjectModalProps {
@@ -21,6 +22,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
   onClose,
 }) => {
   useBackHandler(true, onClose, 'invite-project')
+  useScrollLock(true)
 
   const { data: myOpportunities = [], isLoading: loadingProjects } = useMyOpportunities()
   const createInvitation = useCreateInvitation()
@@ -63,7 +65,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
   // 커피챗 폼으로 전환된 상태: 모달 안에서 커피챗 보내기
   if (showCoffeeForm) {
     return (
-      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-popover p-4" onClick={(e) => { e.stopPropagation(); onClose() }}>
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-popover p-4" onClick={(e) => { e.stopPropagation(); onClose() }} role="dialog" aria-modal="true" aria-label="커피챗 신청">
         <div className="bg-surface-card dark:bg-[#1C1C1E] rounded-2xl shadow-2xl w-full max-w-md max-h-[85vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
           <CoffeeChatRequestForm targetUserId={targetUserId} onClose={onClose} />
         </div>
@@ -73,7 +75,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
 
   if (sent) {
     return (
-      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-popover p-4" onClick={(e) => { e.stopPropagation(); onClose() }}>
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-popover p-4" onClick={(e) => { e.stopPropagation(); onClose() }} role="dialog" aria-modal="true" aria-label="초대 완료">
         <div className="bg-surface-card dark:bg-[#1C1C1E] rounded-2xl shadow-2xl w-full max-w-md" onClick={e => e.stopPropagation()}>
           <div className="p-8 text-center">
             <div className="w-14 h-14 bg-[#E8F5E9] dark:bg-[#1B3A2D] rounded-2xl flex items-center justify-center mb-4 mx-auto">
@@ -96,11 +98,11 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-popover p-4" onClick={(e) => { e.stopPropagation(); onClose() }}>
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-popover p-4" onClick={(e) => { e.stopPropagation(); onClose() }} role="dialog" aria-modal="true" aria-labelledby="invite-modal-title">
       <div className="bg-surface-card dark:bg-[#1C1C1E] rounded-2xl shadow-2xl w-full max-w-md max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 shrink-0">
-          <h3 className="text-[17px] font-bold text-txt-primary">프로젝트에 초대</h3>
+          <h3 id="invite-modal-title" className="text-[17px] font-bold text-txt-primary">프로젝트에 초대</h3>
           <button onClick={onClose} className="p-1.5 bg-[#F2F3F5] dark:bg-[#2C2C2E] hover:bg-[#E5E5EA] dark:hover:bg-[#3A3A3C] rounded-full transition-colors" aria-label="닫기">
             <X size={16} className="text-txt-tertiary" />
           </button>

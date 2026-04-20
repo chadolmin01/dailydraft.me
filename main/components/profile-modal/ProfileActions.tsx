@@ -1,5 +1,7 @@
 import { Coffee, UserPlus } from 'lucide-react'
 import { useCoffeeChats } from '@/src/hooks/useCoffeeChats'
+import { useScrollLock } from '@/src/hooks/useScrollLock'
+import { useBackHandler } from '@/src/hooks/useBackHandler'
 import { CoffeeChatRequestForm } from '../CoffeeChatRequestForm'
 import { InviteToProjectModal } from '../InviteToProjectModal'
 
@@ -26,6 +28,9 @@ export function ProfileActions({
   })
   const pendingChat = existingChats.find(c => c.status === 'pending')
   const latestChat = existingChats[0]
+
+  useScrollLock(showCoffeeChatForm)
+  useBackHandler(showCoffeeChatForm, () => setShowCoffeeChatForm(false), 'profile-coffee-chat')
 
   return (
     <>
@@ -63,7 +68,7 @@ export function ProfileActions({
 
       {/* Coffee Chat Form Overlay */}
       {showCoffeeChatForm && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-popover p-4" onClick={(e) => { e.stopPropagation(); setShowCoffeeChatForm(false) }}>
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-popover p-4" onClick={(e) => { e.stopPropagation(); setShowCoffeeChatForm(false) }} role="dialog" aria-modal="true" aria-label="커피챗 신청">
           <div className="bg-surface-card rounded-2xl shadow-2xl w-full max-w-md p-6" onClick={e => e.stopPropagation()}>
             <CoffeeChatRequestForm
               targetUserId={targetUserId}
