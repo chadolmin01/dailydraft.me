@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import type { PersonaRow, PersonaFieldRow } from '@/src/lib/personas/types'
@@ -144,6 +144,15 @@ function InheritanceDiffPanel({
   parentLabel,
   onClose,
 }: DiffProps) {
+  // ESC 키로 닫기 — modal UX 표준
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
+
   const { data: parentData } = useQuery<PersonaFetchResponse>({
     queryKey: ['persona-by-id', parentPersonaId],
     queryFn: () =>
