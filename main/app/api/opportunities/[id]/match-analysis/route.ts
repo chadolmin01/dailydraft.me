@@ -57,27 +57,21 @@ export const GET = withErrorCapture(async (
     return ApiResponse.unauthorized()
   }
 
-  const { data: profileData } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('user_id', user.id)
-    .single()
+  // profile + opportunity 병렬 (서로 독립)
+  const [profileResult, opportunityResult] = await Promise.all([
+    supabase.from('profiles').select('*').eq('user_id', user.id).single(),
+    supabase.from('opportunities').select('*').eq('id', id).single(),
+  ])
 
-  if (!profileData) {
+  if (!profileResult.data) {
     return ApiResponse.notFound('Profile not found')
   }
-
-  const profile = profileData as unknown as Profile
-
-  const { data: opportunityData } = await supabase
-    .from('opportunities')
-    .select('*')
-    .eq('id', id)
-    .single()
-
-  if (!opportunityData) {
+  if (!opportunityResult.data) {
     return ApiResponse.notFound('Opportunity not found')
   }
+
+  const profile = profileResult.data as unknown as Profile
+  const opportunityData = opportunityResult.data
 
   const opportunity = opportunityData as unknown as Opportunity
 
