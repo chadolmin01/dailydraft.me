@@ -219,6 +219,7 @@ export const Sidebar: React.FC = () => {
                   <Link
                     key={club.slug}
                     href={`/clubs/${club.slug}`}
+                    prefetch
                     className={`${expanded ? 'flex items-center gap-3 px-3 py-2 w-full' : 'w-10 h-10 flex items-center justify-center mx-auto overflow-hidden'} rounded-lg relative group transition-colors
                       ${isActive
                         ? 'bg-brand-bg text-brand'
