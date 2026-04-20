@@ -175,7 +175,11 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
         maxLength={500}
         className="w-full px-4 py-3 text-[14px] text-left bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5E6AD2]/20 resize-none"
       />
-      <div className="text-[12px] text-txt-tertiary text-right mt-1.5 mb-4">
+      <div className={`text-[12px] text-right mt-1.5 mb-4 tabular-nums ${
+        message.length >= 500 ? 'text-status-danger-text font-semibold' :
+        message.length >= 450 ? 'text-status-warning-text' :
+        'text-txt-tertiary'
+      }`}>
         {message.length}/500
       </div>
 

@@ -219,6 +219,13 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
                     maxLength={500}
                     className="w-full px-4 py-3 text-[14px] bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5E6AD2]/20 resize-none"
                   />
+                  <p className={`text-[11px] text-right mt-1 tabular-nums ${
+                    message.length >= 500 ? 'text-status-danger-text font-semibold' :
+                    message.length >= 450 ? 'text-status-warning-text' :
+                    'text-txt-disabled'
+                  }`}>
+                    {message.length}/500
+                  </p>
                 </div>
               )}
 
