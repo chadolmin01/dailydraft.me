@@ -122,7 +122,11 @@ export default function DashboardClient() {
     staleTime: 1000 * 60 * 2,
   })
 
-  const pendingInvitations = invitations.filter(i => i.status === 'pending')
+  // invitations 배열 참조가 매 렌더 바뀌면 triageItems useMemo 가 무효화 — 한 번만 필터.
+  const pendingInvitations = useMemo(
+    () => invitations.filter(i => i.status === 'pending'),
+    [invitations],
+  )
 
   // Today's triage — 오늘 반드시 처리할 것들
   const triageItems = useMemo(() => {
