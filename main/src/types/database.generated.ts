@@ -2601,6 +2601,33 @@ export type Database = {
           },
         ]
       }
+      persona_personal_waitlist: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          notified_at: string | null
+          source: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          notified_at?: string | null
+          source?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          notified_at?: string | null
+          source?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       persona_templates: {
         Row: {
           created_at: string
@@ -2694,40 +2721,49 @@ export type Database = {
       }
       personas: {
         Row: {
+          archived_at: string | null
           created_at: string
           created_by: string | null
           id: string
+          inherit_from_parent: boolean
           name: string
           owner_id: string
           owner_last_edited_at: string | null
           parent_persona_id: string | null
           status: string
+          term_end_at: string | null
           type: string
           updated_at: string
           version: number
         }
         Insert: {
+          archived_at?: string | null
           created_at?: string
           created_by?: string | null
           id?: string
+          inherit_from_parent?: boolean
           name: string
           owner_id: string
           owner_last_edited_at?: string | null
           parent_persona_id?: string | null
           status?: string
+          term_end_at?: string | null
           type: string
           updated_at?: string
           version?: number
         }
         Update: {
+          archived_at?: string | null
           created_at?: string
           created_by?: string | null
           id?: string
+          inherit_from_parent?: boolean
           name?: string
           owner_id?: string
           owner_last_edited_at?: string | null
           parent_persona_id?: string | null
           status?: string
+          term_end_at?: string | null
           type?: string
           updated_at?: string
           version?: number
