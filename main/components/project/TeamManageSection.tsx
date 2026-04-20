@@ -436,6 +436,7 @@ function MemberCard({
             onClick={onRemoveClick}
             className="p-1.5 text-txt-disabled hover:text-status-danger-text transition-colors"
             title="팀원 추방"
+            aria-label="팀원 추방"
           >
             <UserMinus size={14} />
           </button>
