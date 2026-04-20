@@ -15,6 +15,7 @@ import { ProjectInfoSidebar } from '../../new/components/ProjectInfoSidebar'
 import { AnimatedChip } from '../../new/components/AnimatedChip'
 import { TeamManageSection } from '@/components/project/TeamManageSection'
 import { GitHubSettingsPanel } from '@/components/github/GitHubSettingsPanel'
+import { useUnsavedChangesWarning } from '@/src/hooks/useUnsavedChangesWarning'
 
 export default function EditProjectPage() {
   return (
@@ -60,6 +61,20 @@ function EditProjectContent() {
   const [initialized, setInitialized] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null)
+  // 편집 중 변경사항 있을 때 창 닫기·새로고침 경고.
+  // 초기화 이후 주요 필드가 원본과 다르면 dirty.
+  const isDirty =
+    initialized &&
+    !!opportunity &&
+    (
+      title !== (opportunity.title || '') ||
+      description !== (opportunity.description || '') ||
+      type !== (opportunity.type || 'side_project') ||
+      selectedRoles.join(',') !== (opportunity.needed_roles || []).join(',') ||
+      selectedTags.join(',') !== (opportunity.interest_tags || []).join(',') ||
+      imageFiles.length > 0
+    )
+  useUnsavedChangesWarning(isDirty)
 
   // Crop state
   const [cropSrc, setCropSrc] = useState<string | null>(null)
