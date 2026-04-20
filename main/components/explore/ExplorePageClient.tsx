@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic'
 import { AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useSearchParams as useNextSearchParams, useRouter, usePathname } from 'next/navigation'
 import { SkeletonGrid } from '@/components/ui/Skeleton'
 import { useStarterGuide } from '@/src/hooks/useStarterGuide'
@@ -848,9 +849,9 @@ function ExplorePageContent() {
                     >
                       <div className="p-5 pt-5 flex flex-col items-center text-center gap-2">
                         {/* Avatar */}
-                        <div className="w-14 h-14 rounded-full bg-brand-bg flex items-center justify-center text-xl font-bold text-brand overflow-hidden">
+                        <div className="relative w-14 h-14 rounded-full bg-brand-bg flex items-center justify-center text-xl font-bold text-brand overflow-hidden">
                           {t.avatarUrl ? (
-                            <img src={t.avatarUrl} alt={t.name} className="w-full h-full object-cover" />
+                            <Image src={t.avatarUrl} alt={t.name} fill sizes="56px" className="object-cover" />
                           ) : (
                             t.name.substring(0, 1)
                           )}
@@ -909,9 +910,9 @@ function ExplorePageContent() {
                       <div className="p-5">
                         {/* Club header: logo + info */}
                         <div className="flex items-center gap-3.5">
-                          <div className="w-12 h-12 rounded-md bg-surface-sunken flex items-center justify-center text-[13px] font-extrabold text-txt-secondary shrink-0 overflow-hidden">
+                          <div className="relative w-12 h-12 rounded-md bg-surface-sunken flex items-center justify-center text-[13px] font-extrabold text-txt-secondary shrink-0 overflow-hidden">
                             {club.logo_url ? (
-                              <img src={club.logo_url} alt={club.name} className="w-full h-full object-cover rounded-md" />
+                              <Image src={club.logo_url} alt={club.name} fill sizes="48px" className="object-cover rounded-md" />
                             ) : (
                               club.name.substring(0, 3)
                             )}

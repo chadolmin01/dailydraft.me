@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import {
@@ -176,11 +177,7 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
     setGeneratedBio(null)
   }, [])
 
-  // Preload CTA illustration to prevent layout shift
-  useEffect(() => {
-    const img = new Image()
-    img.src = '/onboarding/add_project.svg'
-  }, [])
+  // next/image priority 로 동일 효과 — 별도 프리로드 불필요
 
   const situation = profile?.current_situation ?? 'exploring'
   const cta = CTA_CONFIG[situation] ?? CTA_CONFIG.exploring
@@ -195,10 +192,13 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
       <div className="w-full max-w-md relative">
         {/* ── Welcome Phase (cross-fade out) ── */}
         <div className={`absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-300 ${showWelcome ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-          <img
+          <Image
             src="/onboarding/1.svg"
             alt="준비 완료"
-            className="w-full max-w-[200px] object-contain mb-8"
+            width={200}
+            height={200}
+            priority
+            className="w-full max-w-[200px] h-auto object-contain mb-8"
             style={{ animation: 'dcto-step 0.5s cubic-bezier(0.16, 1, 0.3, 1) both' }}
           />
 
@@ -219,10 +219,12 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
 
           {/* Illustration — preloaded via link[rel=preload] avoids layout shift */}
           <div className="flex justify-center mb-10">
-            <img
+            <Image
               src="/onboarding/add_project.svg"
               alt="시작하기"
-              className="w-full max-w-[260px] object-contain"
+              width={260}
+              height={260}
+              className="w-full max-w-[260px] h-auto object-contain"
             />
           </div>
 

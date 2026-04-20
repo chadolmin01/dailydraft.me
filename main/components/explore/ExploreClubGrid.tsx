@@ -2,6 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Building2, Users } from 'lucide-react'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { SkeletonGrid } from '@/components/ui/Skeleton'
@@ -47,7 +48,7 @@ export function ExploreClubGrid({
               >
                 {/* Logo: 52x52, rounded-md */}
                 {club.logo_url ? (
-                  <img
+                  <Image
                     src={club.logo_url}
                     alt={`${club.name} 로고`}
                     width={52}
