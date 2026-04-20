@@ -10,58 +10,76 @@ const UPDATABLE_FIELDS = new Set([
 ])
 
 // GET /api/clubs/[slug] — 클럽 상세 조회 (공개)
+// 이전: 7개 쿼리 순차 (club → count → cohorts → credentials → universities → owner → membership).
+// 개선: Phase 1 (club+auth 병렬) → Phase 2 (5개 쿼리 병렬) → Phase 3 (universities 의존성만 직렬).
+// 결과: 2~3 라운드트립으로 축소.
 export const GET = withErrorCapture(
   async (_request, context) => {
     const { slug } = await context.params
     const supabase = await createClient()
 
-    // team_channel_visibility: 마이그레이션 적용 후 타입 재생성하면 any 캐스트 제거 가능
+    // Phase 1: club + 현재 유저 (서로 독립)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: club, error } = await (supabase as any)
-      .from('clubs')
-      .select(`
-        id, slug, name, description, logo_url, category,
-        visibility, require_approval, team_channel_visibility,
-        created_by, created_at, updated_at
-      `)
-      .eq('slug', slug)
-      .maybeSingle()
+    const [clubResult, authResult] = await Promise.all([
+      (supabase as any)
+        .from('clubs')
+        .select(`
+          id, slug, name, description, logo_url, category,
+          visibility, require_approval, team_channel_visibility,
+          created_by, created_at, updated_at
+        `)
+        .eq('slug', slug)
+        .maybeSingle(),
+      supabase.auth.getUser(),
+    ])
 
-    if (error) {
-      return ApiResponse.internalError(error.message)
+    if (clubResult.error) {
+      return ApiResponse.internalError(clubResult.error.message)
     }
-    if (!club) {
+    if (!clubResult.data) {
       return ApiResponse.notFound('클럽을 찾을 수 없습니다')
     }
 
-    // 멤버 수 (real + ghost)
-    const { count: memberCount } = await supabase
-      .from('club_members')
-      .select('id', { count: 'exact', head: true })
-      .eq('club_id', club.id)
+    const club = clubResult.data
+    const currentUser = authResult.data.user
 
-    // 기수 목록
-    const { data: cohorts } = await supabase
-      .from('club_members')
-      .select('cohort')
-      .eq('club_id', club.id)
-      .not('cohort', 'is', null)
+    // Phase 2: club.id 에 의존하는 5개 쿼리 병렬
+    const [memberCountResult, cohortsResult, credentialsResult, ownerResult, membershipResult] = await Promise.all([
+      supabase
+        .from('club_members')
+        .select('id', { count: 'exact', head: true })
+        .eq('club_id', club.id),
+      supabase
+        .from('club_members')
+        .select('cohort')
+        .eq('club_id', club.id)
+        .not('cohort', 'is', null),
+      supabase
+        .from('club_credentials')
+        .select('id, credential_type, verification_method, verified_at, university_id')
+        .eq('club_id', club.id),
+      supabase
+        .from('profiles')
+        .select('user_id, nickname, avatar_url')
+        .eq('user_id', club.created_by)
+        .maybeSingle(),
+      currentUser
+        ? supabase
+            .from('club_members')
+            .select('role')
+            .eq('club_id', club.id)
+            .eq('user_id', currentUser.id)
+            .maybeSingle()
+        : Promise.resolve({ data: null }),
+    ])
 
-    const uniqueCohorts = [...new Set((cohorts || []).map(c => c.cohort))]
+    const uniqueCohorts = [...new Set((cohortsResult.data || []).map(c => c.cohort))]
       .filter(Boolean)
       .sort()
 
-    // 뱃지 (credentials)
-    const { data: credentials } = await supabase
-      .from('club_credentials')
-      .select(`
-        id, credential_type, verification_method, verified_at,
-        university_id
-      `)
-      .eq('club_id', club.id)
-
-    // university 이름 조회 (credentials에 university_id가 있는 경우)
-    const universityIds = (credentials || [])
+    // Phase 3: credentials 결과로 university 조회 (의존성)
+    const credentials = credentialsResult.data || []
+    const universityIds = credentials
       .map(c => c.university_id)
       .filter(Boolean) as string[]
 
@@ -77,7 +95,7 @@ export const GET = withErrorCapture(
       )
     }
 
-    const badges = (credentials || []).map(c => ({
+    const badges = credentials.map(c => ({
       id: c.id,
       type: c.credential_type,
       method: c.verification_method,
@@ -85,35 +103,14 @@ export const GET = withErrorCapture(
       university: c.university_id ? universities[c.university_id] : null,
     }))
 
-    // owner 프로필
-    const { data: ownerProfile } = await supabase
-      .from('profiles')
-      .select('user_id, nickname, avatar_url')
-      .eq('user_id', club.created_by)
-      .maybeSingle()
-
-    // 현재 로그인 유저의 클럽 내 역할 조회 (비로그인이면 null)
-    // 의도: 멤버 목록은 페이지네이션(limit 50)이라 admin이 누락될 수 있음.
-    // 별도 1건 쿼리로 확실하게 본인 역할을 반환.
-    let myRole: string | null = null
-    const { data: { user: currentUser } } = await supabase.auth.getUser()
-    if (currentUser) {
-      const { data: myMembership } = await supabase
-        .from('club_members')
-        .select('role')
-        .eq('club_id', club.id)
-        .eq('user_id', currentUser.id)
-        .maybeSingle()
-
-      myRole = myMembership?.role ?? null
-    }
+    const myRole = (membershipResult.data as { role?: string } | null)?.role ?? null
 
     return ApiResponse.ok({
       ...club,
-      member_count: memberCount ?? 0,
+      member_count: memberCountResult.count ?? 0,
       cohorts: uniqueCohorts,
       badges,
-      owner: ownerProfile || { user_id: club.created_by, nickname: null, avatar_url: null },
+      owner: ownerResult.data || { user_id: club.created_by, nickname: null, avatar_url: null },
       my_role: myRole,
     })
   }
