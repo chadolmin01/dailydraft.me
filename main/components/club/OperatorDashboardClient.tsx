@@ -13,6 +13,7 @@ import { SkeletonGrid } from '@/components/ui/Skeleton'
 import { toast } from 'sonner'
 import { useQuery } from '@tanstack/react-query'
 import { withRetry } from '@/src/lib/query-utils'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { WeeklyRhythmCard } from '@/components/club/WeeklyRhythmCard'
 
 type SortKey = 'status' | 'week' | 'updates' | 'name'
@@ -41,6 +42,7 @@ export default function OperatorDashboardClient({ slug, clubName }: { slug: stri
   const [sortKey, setSortKey] = useState<SortKey>('status')
   const [isReminding, setIsReminding] = useState(false)
   const [isDigesting, setIsDigesting] = useState(false)
+  const [showRemindConfirm, setShowRemindConfirm] = useState(false)
 
   // 리마인드 마지막 발송 시각 — localStorage 로 로컬 추적 (서버도 24h dedup 하지만 UI 즉시 피드백 목적)
   const reminderKey = `remind_teams_last_sent:${slug}`
@@ -95,9 +97,13 @@ export default function OperatorDashboardClient({ slug, clubName }: { slug: stri
     }
   }
 
-  const handleRemindAll = async () => {
+  const handleRemindAll = () => {
     if (pendingTeamIds.length === 0) return
-    if (!confirm(`미제출 팀 ${pendingTeamIds.length}팀의 팀장에게 DM을 보낼까요? (24시간 내 중복 발송 방지)`)) return
+    setShowRemindConfirm(true)
+  }
+
+  const doRemindAll = async () => {
+    setShowRemindConfirm(false)
     setIsReminding(true)
     try {
       const res = await fetch(`/api/clubs/${slug}/remind-teams`, {
@@ -375,6 +381,16 @@ export default function OperatorDashboardClient({ slug, clubName }: { slug: stri
         </div>
 
       </PageContainer>
+
+      <ConfirmModal
+        isOpen={showRemindConfirm}
+        onClose={() => setShowRemindConfirm(false)}
+        onConfirm={doRemindAll}
+        title="일괄 리마인드 발송"
+        message={`미제출 팀 ${pendingTeamIds.length}팀의 팀장에게 Discord DM 을 보냅니다. 24시간 내 이미 보낸 팀은 자동으로 제외됩니다.`}
+        confirmText={`${pendingTeamIds.length}팀에 발송`}
+        variant="info"
+      />
     </div>
   )
 }
