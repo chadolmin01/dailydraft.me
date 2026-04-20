@@ -18,8 +18,26 @@ export default function GlobalError({
   reset: () => void
 }) {
   useEffect(() => {
-    // PostHog 는 root layout 밖이라 import 불가 — console 만 기록
     console.error('[global] Unhandled error:', error)
+    // 루트 레이아웃이 터졌으므로 PostHog Provider·React Query 등 모든 컨텍스트가 죽은 상태.
+    // 안전한 최소 경로로만 전송 — fetch + keepalive 는 unload 중에도 살아남는다.
+    try {
+      fetch('/api/client-error-log', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: error.message,
+          name: error.name,
+          stack: error.stack,
+          source: 'global-error',
+          digest: error.digest,
+          path: typeof window !== 'undefined' ? window.location.pathname : undefined,
+        }),
+        keepalive: true,
+      }).catch(() => {})
+    } catch {
+      // silent — 절대 사용자 UI 를 덮을 수 없음
+    }
   }, [error])
 
   return (

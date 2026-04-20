@@ -16,7 +16,6 @@
  * - fire-and-forget: 실패해도 원 플로우 영향 없음
  */
 
-import crypto from 'node:crypto'
 import { sendChannelEmbed } from '@/src/lib/discord/client'
 
 type AlertSeverity = 'critical' | 'error' | 'warning'
@@ -46,12 +45,15 @@ function lazyCleanup() {
   }
 }
 
+// djb2 해시 — sha1 대체. 알림 dedup 에만 쓰이므로 충돌 저항성 불필요, Edge 호환 필수.
 function fingerprint(title: string, message: string): string {
-  return crypto
-    .createHash('sha1')
-    .update(title + '::' + message)
-    .digest('hex')
-    .slice(0, 16)
+  const src = title + '::' + message
+  let h = 5381
+  for (let i = 0; i < src.length; i++) {
+    h = (h * 33) ^ src.charCodeAt(i)
+  }
+  // unsigned 32bit 로 정규화 후 hex
+  return (h >>> 0).toString(16).padStart(8, '0')
 }
 
 const SEVERITY_COLOR: Record<AlertSeverity, number> = {
