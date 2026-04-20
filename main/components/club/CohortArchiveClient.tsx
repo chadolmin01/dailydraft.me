@@ -7,6 +7,7 @@ import { ChevronLeft, Printer, Archive, Users, FolderOpen, FileText, Calendar, S
 import { toast } from 'sonner'
 import { PageContainer } from '@/components/ui/PageContainer'
 import { Skeleton } from '@/components/ui/Skeleton'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { withRetry } from '@/src/lib/query-utils'
 import { UPDATE_TYPE_CONFIG } from '@/components/project/types'
 import { useClub } from '@/src/hooks/useClub'
@@ -76,6 +77,7 @@ export default function CohortArchiveClient({ slug, cohort, clubName }: {
   const { data: club } = useClub(slug)
   const isAdmin = club?.my_role === 'owner' || club?.my_role === 'admin'
   const [isGraduating, setIsGraduating] = useState(false)
+  const [showGraduateModal, setShowGraduateModal] = useState(false)
 
   const { data, isLoading } = useQuery<SnapshotData>({
     queryKey: ['cohort-snapshot', slug, cohort],
@@ -96,7 +98,6 @@ export default function CohortArchiveClient({ slug, cohort, clubName }: {
 
   const handleGraduate = async () => {
     if (!isAdmin) return
-    if (!confirm(`${cohort}기 멤버들을 일괄 졸업 처리할까요? 이 작업은 되돌리기 어렵습니다. (활성 멤버 ${activeMembers}명, 오너는 제외)`)) return
     setIsGraduating(true)
     try {
       const res = await fetch(`/api/clubs/${slug}/cohorts/${encodeURIComponent(cohort)}/graduate`, {
@@ -138,7 +139,7 @@ export default function CohortArchiveClient({ slug, cohort, clubName }: {
           <div className="flex items-center gap-2">
             {isAdmin && activeMembers > 0 && (
               <button
-                onClick={handleGraduate}
+                onClick={() => setShowGraduateModal(true)}
                 disabled={isGraduating}
                 className="flex items-center gap-1.5 px-3.5 py-1.5 text-[13px] font-medium text-txt-secondary border border-border rounded-full hover:border-status-danger-text hover:text-status-danger-text transition-colors disabled:opacity-50"
               >
@@ -331,6 +332,16 @@ export default function CohortArchiveClient({ slug, cohort, clubName }: {
           </div>
         )}
       </PageContainer>
+
+      <ConfirmModal
+        isOpen={showGraduateModal}
+        onClose={() => setShowGraduateModal(false)}
+        onConfirm={handleGraduate}
+        title={`${cohort}기 일괄 졸업 처리`}
+        message={`활성 멤버 ${activeMembers}명 (오너 제외) 을 알럼나이로 전환합니다. 이 작업은 되돌리기 어려우니 신중하게 확인해주세요.`}
+        confirmText={isGraduating ? '처리 중...' : `${activeMembers}명 졸업`}
+        variant="warning"
+      />
     </div>
   )
 }
