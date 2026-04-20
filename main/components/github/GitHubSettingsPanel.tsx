@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useClub } from '@/src/hooks/useClub'
 import Link from 'next/link'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 
 // ─── Types ───
 
@@ -50,6 +51,7 @@ export function GitHubSettingsPanel({ clubSlug, opportunityId, hideBackLink }: G
   const [testResult, setTestResult] = useState<{ repo: string; success: boolean; message: string } | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [selectedChannelId, setSelectedChannelId] = useState<string>('')
+  const [showDisconnectAll, setShowDisconnectAll] = useState(false)
 
   // queryKey에 opportunityId 포함하여 프로젝트별 캐시 분리
   const connectorQueryKey = ['github-connector', club?.id, opportunityId ?? 'club']
@@ -213,13 +215,9 @@ export function GitHubSettingsPanel({ clubSlug, opportunityId, hideBackLink }: G
     window.location.href = `/api/github/oauth?${params.toString()}`
   }, [club, clubSlug, opportunityId])
 
-  // ── 전체 GitHub 연결 해제 ──
+  // ── 전체 GitHub 연결 해제 — ConfirmModal trigger ──
   const handleDisconnectAll = useCallback(async () => {
     if (!club) return
-    if (!confirm('GitHub 연결을 해제하면 모든 레포의 webhook도 삭제됩니다. 계속하시겠습니까?')) {
-      return
-    }
-
     setError(null)
 
     // 연결된 모든 레포 해제
@@ -527,7 +525,7 @@ export function GitHubSettingsPanel({ clubSlug, opportunityId, hideBackLink }: G
           {/* 전체 연결 해제 */}
           <div className="pt-4 border-t border-border">
             <button
-              onClick={handleDisconnectAll}
+              onClick={() => setShowDisconnectAll(true)}
               className="text-sm text-txt-tertiary hover:text-red-500 transition-colors"
             >
               GitHub 연결 해제
@@ -535,6 +533,19 @@ export function GitHubSettingsPanel({ clubSlug, opportunityId, hideBackLink }: G
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={showDisconnectAll}
+        onClose={() => setShowDisconnectAll(false)}
+        onConfirm={async () => {
+          await handleDisconnectAll()
+          setShowDisconnectAll(false)
+        }}
+        title="GitHub 연결 해제"
+        message="모든 레포의 webhook 이 삭제되고 향후 이벤트가 수신되지 않습니다. 재연결 시 webhook 재생성 필요."
+        confirmText="연결 해제"
+        variant="danger"
+      />
     </div>
   )
 }
