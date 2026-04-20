@@ -41,37 +41,38 @@ export const GET = withErrorCapture(async (request: NextRequest) => {
   const { data: messages, error } = await query
   if (error) throw error
 
-  // 상대방 프로필 정보 가져오기
   const otherIds = [...new Set((messages || []).map(m =>
     m.sender_id === user.id ? m.receiver_id : m.sender_id
   ))]
 
-  let profiles: Record<string, { nickname: string; desired_position: string | null; avatar_url: string | null }> = {}
-  if (otherIds.length > 0) {
-    const { data: profileData } = await supabase
-      .from('profiles')
-      .select('user_id, nickname, desired_position, avatar_url')
-      .in('user_id', otherIds)
+  // profiles + unread count 병렬 — 서로 의존성 없어 직렬할 이유 없음
+  const [profilesResult, unreadResult] = await Promise.all([
+    otherIds.length > 0
+      ? supabase
+          .from('profiles')
+          .select('user_id, nickname, desired_position, avatar_url')
+          .in('user_id', otherIds)
+      : Promise.resolve({ data: [] as Array<{ user_id: string; nickname: string | null; desired_position: string | null; avatar_url: string | null }> }),
+    supabase
+      .from('direct_messages')
+      .select('*', { count: 'exact', head: true })
+      .eq('receiver_id', user.id)
+      .eq('is_read', false)
+      .eq('deleted_by_receiver', false),
+  ])
 
-    if (profileData) {
-      profiles = Object.fromEntries(
-        profileData.map(p => [p.user_id, { nickname: p.nickname, desired_position: p.desired_position, avatar_url: p.avatar_url }])
-      )
-    }
-  }
-
-  // 읽지 않은 수
-  const { count: unreadCount } = await supabase
-    .from('direct_messages')
-    .select('*', { count: 'exact', head: true })
-    .eq('receiver_id', user.id)
-    .eq('is_read', false)
-    .eq('deleted_by_receiver', false)
+  const profiles: Record<string, { nickname: string | null; desired_position: string | null; avatar_url: string | null }> =
+    Object.fromEntries(
+      (profilesResult.data ?? []).map(p => [
+        p.user_id,
+        { nickname: p.nickname, desired_position: p.desired_position, avatar_url: p.avatar_url },
+      ]),
+    )
 
   return ApiResponse.ok({
     messages: messages || [],
     profiles,
-    unread_count: unreadCount || 0,
+    unread_count: unreadResult.count || 0,
   })
 })
 
