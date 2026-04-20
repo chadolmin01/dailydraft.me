@@ -159,7 +159,9 @@ export function ProfileSentInvitations() {
         <EmptyState
           icon={Send}
           title="아직 보낸 초대가 없습니다"
-          description="프로젝트 멤버에게 초대를 보내보세요"
+          description="관심 있는 사람을 찾아 프로젝트로 초대해보세요"
+          actionLabel="사람 둘러보기"
+          actionHref="/explore?scope=people"
           size="compact"
         />
       )}
