@@ -6,6 +6,7 @@ import {
   ExternalLink, Image as ImageIcon, Plus, X, Loader2, Upload, Trash2,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { toastErrorWithRetry } from '@/src/lib/toast-helpers'
 import { useAuth } from '@/src/context/AuthContext'
 import { supabase } from '@/src/lib/supabase/client'
 import {
@@ -46,11 +47,8 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
     setShowForm(false)
   }
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file || !user?.id) return
-    if (!file.type.startsWith('image/')) { toast.error('이미지 파일만 가능합니다'); return }
-    if (file.size > 5 * 1024 * 1024) { toast.error('5MB 이하만 가능합니다'); return }
+  const uploadFile = async (file: File) => {
+    if (!user?.id) return
     setUploading(true)
     try {
       const path = `${user.id}/portfolio-${Date.now()}.jpg`
@@ -61,11 +59,20 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
       const { data: { publicUrl } } = supabase.storage.from('profile-images').getPublicUrl(path)
       setImageUrl(publicUrl)
     } catch {
-      toast.error('이미지 업로드에 실패했습니다')
+      // 재시도 버튼 — 같은 파일로 재업로드
+      toastErrorWithRetry('이미지 업로드에 실패했습니다', () => uploadFile(file))
     } finally {
       setUploading(false)
       if (fileRef.current) fileRef.current.value = ''
     }
+  }
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !user?.id) return
+    if (!file.type.startsWith('image/')) { toast.error('이미지 파일만 가능합니다'); return }
+    if (file.size > 5 * 1024 * 1024) { toast.error('5MB 이하만 가능합니다'); return }
+    await uploadFile(file)
   }
 
   const handleCreate = () => {

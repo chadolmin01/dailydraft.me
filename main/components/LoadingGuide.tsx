@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import { toastErrorWithRetry } from '@/src/lib/toast-helpers'
 import {
   Check,
   Circle,
@@ -124,7 +125,7 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
       }
       if (slug) router.push(`/clubs/${slug}`)
     } catch {
-      toast.error('네트워크 오류가 발생했습니다')
+      toastErrorWithRetry('네트워크 오류가 발생했습니다', () => handleRedeemCode())
     } finally {
       setInviteSubmitting(false)
     }

@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { ArrowRight, Users, CheckCircle2, Loader2 } from 'lucide-react'
 import { PageContainer } from '@/components/ui/PageContainer'
 import { toast } from 'sonner'
+import { toastErrorWithRetry } from '@/src/lib/toast-helpers'
 
 interface ClubMeta {
   name: string
@@ -52,7 +53,9 @@ export default function JoinClubClient({ slug, initialCode, club }: {
       }
       router.push(`/clubs/${slug}`)
     } catch {
-      toast.error('네트워크 오류가 발생했습니다')
+      toastErrorWithRetry('네트워크 오류가 발생했습니다', () => {
+        handleJoin(new Event('submit') as unknown as React.FormEvent)
+      })
     } finally {
       setIsSubmitting(false)
     }
