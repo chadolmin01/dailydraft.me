@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import type { FieldKey, PersonaFieldRow, PersonaRow } from '@/src/lib/personas/types'
+import { FIELD_KEYS, type FieldKey, type PersonaFieldRow, type PersonaRow } from '@/src/lib/personas/types'
 import { PersonaSlotRow } from './PersonaSlotRow'
 import { PersonaSlotEditor } from './PersonaSlotEditor'
 
@@ -73,8 +73,31 @@ export function PersonaSlotList({ persona, fields, canEdit }: Props) {
   const [editingKey, setEditingKey] = useState<FieldKey | null>(null)
   const sections = sectionsFor(persona.type)
 
+  // 완성도 계산 — value 가 실제로 채워진 (빈 object/null 제외) 슬롯 수
+  const totalSlots = FIELD_KEYS.length
+  const filledSlots = fields.filter(f => {
+    const v = f.value as Record<string, unknown> | null
+    if (!v) return false
+    // value 가 빈 object ({}) 면 미채워진 것으로 간주
+    return Object.keys(v).length > 0
+  }).length
+  const completionPct = Math.round((filledSlots / totalSlots) * 100)
+
   return (
     <>
+      {/* 완성도 프로그레스 — 한 줄로 컴팩트 */}
+      <div className="flex items-center gap-3">
+        <div className="flex-1 h-1.5 bg-surface-sunken rounded-full overflow-hidden">
+          <div
+            className="h-full bg-brand transition-all duration-500"
+            style={{ width: `${completionPct}%` }}
+          />
+        </div>
+        <span className="text-[11px] font-mono text-txt-tertiary tabular-nums shrink-0">
+          {filledSlots} / {totalSlots}
+        </span>
+      </div>
+
       <div className="space-y-6">
         {sections.map((section) => (
           <section key={section.title}>
