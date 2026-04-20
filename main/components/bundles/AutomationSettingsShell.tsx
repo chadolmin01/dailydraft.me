@@ -12,6 +12,7 @@ import {
   ShieldCheck,
   AlertCircle,
   Info,
+  Loader2,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useClub } from '@/src/hooks/useClub'
@@ -526,7 +527,8 @@ function CreateAutomationForm({
           disabled={create.isPending}
           className="inline-flex items-center gap-1.5 h-10 px-4 rounded-lg bg-brand text-white text-sm font-semibold hover:bg-brand-hover transition-colors disabled:opacity-60"
         >
-          {create.isPending ? '저장 중...' : '자동화 저장'}
+          {create.isPending && <Loader2 size={14} className="animate-spin" />}
+          {create.isPending ? '저장 중' : '자동화 저장'}
         </button>
       </div>
     </section>

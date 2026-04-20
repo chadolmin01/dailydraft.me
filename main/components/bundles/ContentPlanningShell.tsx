@@ -11,6 +11,7 @@ import {
   Trash2,
   ArrowRight,
   Lightbulb,
+  Loader2,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useClub } from '@/src/hooks/useClub'
@@ -197,8 +198,8 @@ export function ContentPlanningShell({ slug, embedded = false }: Props) {
                   disabled={generate.isPending}
                   className="ml-auto inline-flex items-center gap-1.5 h-9 px-4 rounded-lg bg-brand text-white text-xs font-semibold hover:bg-brand-hover transition-colors disabled:opacity-60"
                 >
-                  <Sparkles size={12} />
-                  {generate.isPending ? '기획 중...' : `${count}개 받기`}
+                  {generate.isPending ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
+                  {generate.isPending ? '기획 중' : `${count}개 받기`}
                 </button>
               </div>
             </section>

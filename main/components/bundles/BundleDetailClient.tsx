@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Check, Clock, Copy, Send, Trash2, X as XIcon } from 'lucide-react'
+import { Check, Clock, Copy, Send, Trash2, X as XIcon, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { EVENT_CONFIG } from '@/src/lib/personas/event-catalog'
@@ -186,8 +186,8 @@ export function BundleDetailClient({ bundleId, canApprove, slug }: Props) {
                   disabled={approve.isPending}
                   className="inline-flex items-center justify-center gap-1.5 h-10 px-4 rounded-xl bg-brand text-white text-sm font-semibold hover:bg-brand-hover transition-colors disabled:opacity-60"
                 >
-                  <Check size={14} />
-                  {approve.isPending ? '승인 중...' : '네, 이대로 올릴게요'}
+                  {approve.isPending ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
+                  {approve.isPending ? '승인 중' : '네, 이대로 올릴게요'}
                 </button>
                 <button
                   onClick={() => setRejectOpen(true)}
@@ -297,9 +297,10 @@ export function BundleDetailClient({ bundleId, canApprove, slug }: Props) {
                   })
                 }}
                 disabled={reject.isPending}
-                className="h-9 px-4 rounded-lg bg-status-danger-text text-white text-sm font-semibold hover:bg-status-danger-text/90 transition-colors disabled:opacity-60"
+                className="h-9 px-4 rounded-lg bg-status-danger-text text-white text-sm font-semibold hover:bg-status-danger-text/90 transition-colors disabled:opacity-60 inline-flex items-center justify-center gap-1.5"
               >
-                {reject.isPending ? '보내는 중...' : 'AI에게 알려주기'}
+                {reject.isPending && <Loader2 size={12} className="animate-spin" />}
+                {reject.isPending ? '보내는 중' : 'AI에게 알려주기'}
               </button>
             </div>
           </div>

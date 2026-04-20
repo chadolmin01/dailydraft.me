@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Lock } from 'lucide-react'
+import { Lock, Loader2 } from 'lucide-react'
 import { SlidePanel } from '@/components/ui/SlidePanel'
 import { FIELD_CATALOG } from '@/src/lib/personas/field-catalog'
 import type { FieldKey, PersonaFieldRow } from '@/src/lib/personas/types'
@@ -95,9 +95,10 @@ export function PersonaSlotEditor({
               <button
                 onClick={save}
                 disabled={update.isPending || draft.trim().length === 0}
-                className="h-9 px-4 rounded-lg bg-brand text-white text-sm font-semibold hover:bg-brand-hover transition-colors disabled:opacity-60"
+                className="h-9 px-4 rounded-lg bg-brand text-white text-sm font-semibold hover:bg-brand-hover transition-colors disabled:opacity-60 inline-flex items-center gap-1.5"
               >
-                {update.isPending ? '저장 중...' : '저장'}
+                {update.isPending && <Loader2 size={12} className="animate-spin" />}
+                {update.isPending ? '저장 중' : '저장'}
               </button>
             )}
           </div>
