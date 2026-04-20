@@ -33,9 +33,12 @@ export async function onRequestError(
   request: RequestInfo,
   context: RequestErrorContext,
 ): Promise<void> {
+  // Edge 런타임에서는 스킵 — captureAndLog 체인이 discord-alert(node:crypto) 를 끌어들여
+  // Edge 번들에서 UnhandledSchemeError 발생. middleware 에러는 별도 경로로 커버.
+  if (process.env.NEXT_RUNTIME !== 'nodejs') return
+
   try {
-    // 동적 import — instrumentation 은 edge/node 양쪽에서 로드되므로
-    // 서버 모듈 import 를 top-level 에 두면 edge 번들이 부풀어 터진다.
+    // 동적 import — top-level 에 두면 Edge 번들이 node:crypto 를 번들링하려다 깨진다.
     const { captureAndLog } = await import('@/src/lib/posthog/server')
 
     const headers = request.headers ?? {}
