@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { AnimatePresence } from 'framer-motion'
@@ -45,14 +45,19 @@ export const OpportunitySection: React.FC = () => {
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
 
   const { data: oppData, isLoading: loading } = useOpportunities({ limit: 3 })
-  const projects: DisplayProject[] = (oppData?.items ?? []).map((opp) => ({
-    id: opp.id,
-    title: opp.title || '',
-    description: opp.description || '',
-    needed_roles: opp.needed_roles || [],
-    interest_tags: opp.interest_tags || [],
-    isReal: true,
-  }))
+  // oppData.items 참조가 바뀔 때만 재매핑 — 매 렌더 새 배열 생성 방지
+  const projects = useMemo<DisplayProject[]>(
+    () =>
+      (oppData?.items ?? []).map((opp) => ({
+        id: opp.id,
+        title: opp.title || '',
+        description: opp.description || '',
+        needed_roles: opp.needed_roles || [],
+        interest_tags: opp.interest_tags || [],
+        isReal: true,
+      })),
+    [oppData?.items],
+  )
 
   const mockProjects: DisplayProject[] = [
     {
