@@ -133,7 +133,9 @@ export function ApplicationManageSection({ opportunityId }: { opportunityId: str
       <EmptyState
         icon={Users}
         title="아직 지원자가 없습니다"
-        description="프로젝트에 지원자가 생기면 여기에서 관리할 수 있습니다"
+        description="프로젝트 링크를 공유해 후보를 모아보세요"
+        actionLabel="맞는 사람 찾기"
+        actionHref="/explore?scope=people"
       />
     )
   }
