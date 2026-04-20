@@ -109,6 +109,7 @@ export const ACCESS_MANIFEST: RouteRule[] = [
   { pattern: '/admin/invite-codes', tier: 'platform-admin' },
   { pattern: '/admin/opportunities', tier: 'platform-admin' },
   { pattern: '/admin/users', tier: 'platform-admin' },
+  { pattern: '/admin/audit', tier: 'platform-admin', note: '감사 로그 뷰어 (audit_logs 테이블)' },
 
   // ── institution-admin ─────────────────────────────────────
   { pattern: '/institution', tier: 'institution-admin' },
