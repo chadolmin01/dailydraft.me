@@ -184,6 +184,7 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
         <button
           onClick={handleClose}
           className="p-2 hover:bg-surface-sunken transition-colors border border-transparent hover:border-border"
+          aria-label="닫기"
         >
           <X size={18} className="text-txt-tertiary" />
         </button>

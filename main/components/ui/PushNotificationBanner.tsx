@@ -48,7 +48,7 @@ export function PushNotificationBanner() {
           {isLoading ? <Loader2 size={12} className="animate-spin" /> : <Bell size={12} />}
           허용
         </button>
-        <button onClick={handleDismiss} className="text-txt-disabled hover:text-txt-secondary transition-colors p-1">
+        <button onClick={handleDismiss} className="text-txt-disabled hover:text-txt-secondary transition-colors p-1" aria-label="알림 배너 닫기">
           <X size={14} />
         </button>
       </div>

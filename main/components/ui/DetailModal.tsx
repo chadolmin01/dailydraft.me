@@ -65,6 +65,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
             <button
               onClick={onClose}
               className="p-2 hover:bg-surface-sunken transition-colors text-txt-tertiary hover:text-txt-primary border border-transparent hover:border-border"
+              aria-label="닫기"
             >
               <X size={24} />
             </button>
