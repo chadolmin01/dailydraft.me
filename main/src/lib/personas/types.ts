@@ -196,6 +196,12 @@ export interface PersonaRow {
   created_at: string
   updated_at: string
   owner_last_edited_at: string | null
+  /** AI 생성 시 parent 필드 참고 여부. project/personal 에서만 의미. default true. */
+  inherit_from_parent: boolean | null
+  /** term_end_at 도래 또는 수동 아카이브 시각. */
+  archived_at: string | null
+  /** 프로젝트 기수 종료 예정일. NULL 이면 자동 아카이브 없음. */
+  term_end_at: string | null
 }
 
 export interface PersonaFieldRow {

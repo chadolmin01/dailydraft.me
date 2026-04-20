@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { Sparkles, ArrowRight } from 'lucide-react'
 import { useAuth } from '@/src/context/AuthContext'
 import { useProfile } from '@/src/hooks/useProfile'
@@ -154,6 +155,30 @@ export default function ProfilePageClient() {
           strengths={strengths}
           isEditable
         />
+
+        {/* 개인 페르소나 출시 예고 */}
+        <Link
+          href="/profile/persona"
+          className="block bg-surface-card border border-border border-dashed rounded-2xl p-4 hover:border-brand/40 hover:bg-brand-bg/30 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-surface-sunken flex items-center justify-center shrink-0">
+              <Sparkles size={16} className="text-txt-tertiary" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-baseline gap-2">
+                <p className="text-sm font-bold text-txt-primary">개인 페르소나</p>
+                <span className="text-[10px] font-semibold text-txt-tertiary bg-surface-sunken px-1.5 py-0.5 rounded">
+                  2026 여름 출시 예정
+                </span>
+              </div>
+              <p className="text-[11px] text-txt-tertiary mt-0.5">
+                포트폴리오·LinkedIn·이력서 초안을 본인 톤으로 자동 생성합니다
+              </p>
+            </div>
+            <ArrowRight size={14} className="shrink-0 text-txt-tertiary" />
+          </div>
+        </Link>
 
         {/* 탭 바 */}
         <div className="flex items-center gap-1 border-b border-border overflow-x-auto" style={{ scrollbarWidth: 'none' }}>

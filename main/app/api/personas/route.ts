@@ -114,6 +114,32 @@ export const POST = withErrorCapture(async (request) => {
     if (!adminCheck) {
       return ApiResponse.forbidden('동아리 대표 또는 운영진만 페르소나를 만들 수 있습니다')
     }
+  } else if (type === 'project') {
+    // 프로젝트 리드(opportunity creator) 또는 소속 클럽 admin 만 생성 가능
+    const { data: opp, error: oppErr } = await admin
+      .from('opportunities')
+      .select('creator_id, club_id')
+      .eq('id', owner_id)
+      .maybeSingle()
+
+    if (oppErr || !opp) {
+      return ApiResponse.badRequest('프로젝트를 찾을 수 없습니다')
+    }
+
+    let canCreate = opp.creator_id === user.id
+    if (!canCreate && opp.club_id) {
+      const { data: clubAdminCheck } = await admin.rpc('is_club_admin', {
+        p_club_id: opp.club_id,
+        p_user_id: user.id,
+      })
+      canCreate = !!clubAdminCheck
+    }
+    if (!canCreate) {
+      return ApiResponse.forbidden('프로젝트 리드만 페르소나를 만들 수 있습니다')
+    }
+  } else if (type === 'personal') {
+    // 개인 페르소나는 2026 여름 출시 예정 — 현재 생성 차단
+    return ApiResponse.forbidden('개인 페르소나는 2026 여름 출시 예정입니다')
   }
 
   const { data, error } = await admin

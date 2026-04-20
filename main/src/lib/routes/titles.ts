@@ -46,6 +46,10 @@ export const ROUTE_TITLES: Record<string, string> = {
   '/onboarding': '시작하기',
   '/onboarding/interview': 'AI 인터뷰',
 
+  // 페르소나
+  '/profile/persona': '개인 페르소나 · 출시 예고',
+  '/admin/audit': '감사 로그 · 관리자',
+
   // 생성 플로우
   '/projects/new': '새 프로젝트',
   '/clubs/new': '새 클럽',
