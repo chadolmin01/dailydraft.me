@@ -18,22 +18,20 @@ export const GET = withErrorCapture(async (_request, context) => {
   const { bundleId } = (await context.params) as { bundleId: string }
   const supabase = await createClient()
 
-  const { data: bundle, error: bErr } = await supabase
-    .from('persona_output_bundles')
-    .select('*')
-    .eq('id', bundleId)
-    .maybeSingle()
+  // bundle + outputs 병렬 — outputs 는 bundleId 만 필요해 bundle 존재 여부 확인 기다릴 이유 없음
+  const [bundleResult, outputsResult] = await Promise.all([
+    supabase.from('persona_output_bundles').select('*').eq('id', bundleId).maybeSingle(),
+    supabase
+      .from('persona_outputs')
+      .select('*')
+      .eq('bundle_id', bundleId)
+      .order('created_at', { ascending: true }),
+  ])
 
-  if (bErr) return ApiResponse.internalError('번들 조회 실패', bErr)
-  if (!bundle) return ApiResponse.notFound('번들을 찾을 수 없습니다')
+  if (bundleResult.error) return ApiResponse.internalError('번들 조회 실패', bundleResult.error)
+  if (!bundleResult.data) return ApiResponse.notFound('번들을 찾을 수 없습니다')
 
-  const { data: outputs } = await supabase
-    .from('persona_outputs')
-    .select('*')
-    .eq('bundle_id', bundleId)
-    .order('created_at', { ascending: true })
-
-  return ApiResponse.ok({ bundle, outputs: outputs ?? [] })
+  return ApiResponse.ok({ bundle: bundleResult.data, outputs: outputsResult.data ?? [] })
 })
 
 /**
