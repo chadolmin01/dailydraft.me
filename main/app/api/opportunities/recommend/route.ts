@@ -16,26 +16,30 @@ export const GET = withErrorCapture(async () => {
     return ApiResponse.unauthorized()
   }
 
-  const { data: profileData, error: profileError } = await supabase
-    .from('profiles')
-    .select('id, user_id, nickname, desired_position, skills, interest_tags, personality, current_situation, vision_summary, locations, onboarding_completed')
-    .eq('user_id', user.id)
-    .single()
+  // profile 과 opportunities 는 서로 독립 → 병렬
+  const [profileResult, oppResult] = await Promise.all([
+    supabase
+      .from('profiles')
+      .select('id, user_id, nickname, desired_position, skills, interest_tags, personality, current_situation, vision_summary, locations, onboarding_completed')
+      .eq('user_id', user.id)
+      .single(),
+    supabase
+      .from('opportunities')
+      .select('id, type, title, description, status, creator_id, needed_roles, needed_skills, interest_tags, location_type, location, time_commitment, compensation_type, compensation_details, applications_count, views_count, created_at, updated_at')
+      .eq('status', 'active')
+      .neq('creator_id', user.id)
+      .order('created_at', { ascending: false })
+      .order('id', { ascending: true })
+      .limit(50),
+  ])
 
-  if (profileError || !profileData) {
+  if (profileResult.error || !profileResult.data) {
     return ApiResponse.notFound('Profile not found')
   }
 
-  const profile = profileData as unknown as Profile
-
-  const { data: opps, error: oppError } = await supabase
-    .from('opportunities')
-    .select('id, type, title, description, status, creator_id, needed_roles, needed_skills, interest_tags, location_type, location, time_commitment, compensation_type, compensation_details, applications_count, views_count, created_at, updated_at')
-    .eq('status', 'active')
-    .neq('creator_id', user.id)
-    .order('created_at', { ascending: false })
-    .order('id', { ascending: true })
-    .limit(50)
+  const profile = profileResult.data as unknown as Profile
+  const opps = oppResult.data
+  const oppError = oppResult.error
 
   if (oppError) {
     return ApiResponse.internalError()
