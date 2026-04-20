@@ -299,16 +299,33 @@ export default function InviteCodesAdminPage() {
                       {formatDate(code.created_at)}
                     </td>
                     <td className="px-4 py-3">
-                      {!code.used_by && code.is_active && (
-                        <button
-                          onClick={() => deleteMutation.mutate(code.id)}
-                          disabled={deleteMutation.isPending}
-                          className="p-1 hover:bg-status-danger-bg text-status-danger-text transition-colors"
-                          title="비활성화"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      )}
+                      <div className="flex items-center gap-1">
+                        {/* 재발송: 만료됐거나 비활성화된 미사용 코드에만 노출 */}
+                        {!code.used_by && code.recipient_email && (!code.is_active || isExpired(code.expires_at)) && (
+                          <button
+                            onClick={() => {
+                              if (!code.recipient_email) return
+                              setSelectedEmail(code.recipient_email)
+                              sendMutation.mutate(code.recipient_email)
+                            }}
+                            disabled={sendMutation.isPending}
+                            className="p-1 hover:bg-surface-sunken text-txt-tertiary hover:text-brand transition-colors"
+                            title="재발송 (새 코드 생성)"
+                          >
+                            <Send className="w-4 h-4" />
+                          </button>
+                        )}
+                        {!code.used_by && code.is_active && (
+                          <button
+                            onClick={() => deleteMutation.mutate(code.id)}
+                            disabled={deleteMutation.isPending}
+                            className="p-1 hover:bg-status-danger-bg text-status-danger-text transition-colors"
+                            title="비활성화"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
