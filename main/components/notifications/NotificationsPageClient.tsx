@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import { useAuth } from '@/src/context/AuthContext'
 import { PageContainer } from '@/components/ui/PageContainer'
 import {
@@ -117,6 +118,7 @@ export default function NotificationsPageClient() {
           if (prev) queryClient.setQueryData(key.split('.'), prev)
         }
       }
+      toast.error('알림 읽음 처리에 실패했습니다')
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] })
@@ -159,6 +161,7 @@ export default function NotificationsPageClient() {
           if (prev) queryClient.setQueryData(key.split('.'), prev)
         }
       }
+      toast.error('모두 읽음 처리에 실패했습니다')
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] })
