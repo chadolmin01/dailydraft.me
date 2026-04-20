@@ -146,8 +146,12 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
             maxLength={2000}
             className="w-full px-4 py-3 bg-[#F7F8F9] dark:bg-[#1C1C1E] text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#5E6AD2]/30 resize-none rounded-xl text-txt-primary placeholder-txt-disabled"
           />
-          <div className="text-[11px] text-txt-disabled text-right mt-1">
-            {content.length}/2000
+          <div className={`text-[11px] text-right mt-1 tabular-nums ${
+            content.length >= 2000 ? 'text-status-danger-text font-semibold' :
+            content.length >= 1800 ? 'text-status-warning-text' :
+            'text-txt-disabled'
+          }`}>
+            {content.length.toLocaleString()}/2,000
           </div>
         </div>
 
