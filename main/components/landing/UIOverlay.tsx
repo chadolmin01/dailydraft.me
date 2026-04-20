@@ -1,6 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 import type { ViewLevel } from './CameraController';
 import type { University, ClubData } from './data/universities';
 
@@ -43,18 +44,18 @@ export default function UIOverlay({
           transition={{ delay: 0.5 }}
           className="flex items-center gap-4 pointer-events-auto"
         >
-          <a
+          <Link
             href="/login"
             className="text-gray-500 hover:text-gray-800 text-sm transition-colors"
           >
             로그인
-          </a>
-          <a
+          </Link>
+          <Link
             href="/login"
             className="bg-[#0095F6] hover:bg-[#0080d9] text-white text-sm px-4 py-2 rounded-lg transition-colors shadow-sm"
           >
             시작하기
-          </a>
+          </Link>
         </motion.div>
       </div>
 
@@ -191,13 +192,13 @@ export default function UIOverlay({
               </div>
 
               {/* CTA */}
-              <a
+              <Link
                 href="/login"
                 className="block w-full text-center mt-6 py-3 rounded-xl text-white font-medium text-sm transition-all hover:brightness-110 shadow-sm"
                 style={{ background: selectedClub.color }}
               >
                 Draft에서 보기
-              </a>
+              </Link>
             </div>
           </motion.div>
         )}

@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import Link from 'next/link'
 import { X, Loader2, Check, FolderOpen, Coffee } from 'lucide-react'
 import { toast } from 'sonner'
 import { useMyOpportunities } from '@/src/hooks/useOpportunities'
@@ -139,12 +140,13 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
               <FolderOpen size={32} className="text-txt-disabled mx-auto mb-3" />
               <p className="text-[15px] font-bold text-txt-primary mb-1">모집 중인 프로젝트가 없습니다</p>
               <p className="text-[13px] text-txt-tertiary mb-4">프로젝트를 먼저 만들어주세요</p>
-              <a
+              <Link
                 href="/projects/new"
+                onClick={onClose}
                 className="inline-flex items-center gap-1.5 px-5 py-3 bg-[#5E6AD2] text-white text-[14px] font-semibold rounded-2xl hover:bg-[#4B4FB8] active:scale-[0.97] transition-all"
               >
                 프로젝트 만들기
-              </a>
+              </Link>
             </div>
           ) : (
             <>
