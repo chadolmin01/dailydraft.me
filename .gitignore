@@ -80,3 +80,7 @@ wireframe/
 /main/playwright-report/
 /main/blob-report/
 /main/playwright/.cache/
+
+# 지원서·사업 기밀 (public repo 라 절대 커밋 금지)
+asan-doers-essays.txt
+asan-doers-evidence/
