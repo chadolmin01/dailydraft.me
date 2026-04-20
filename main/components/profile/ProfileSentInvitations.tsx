@@ -1,9 +1,11 @@
 'use client'
 
+import { useState } from 'react'
 import { Send, Bell, X, RotateCw } from 'lucide-react'
 import { toast } from 'sonner'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { SkeletonFeed } from '@/components/ui/Skeleton'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import {
   useProjectInvitations,
   useCancelInvitation,
@@ -16,9 +18,9 @@ export function ProfileSentInvitations() {
   const cancelInvitation = useCancelInvitation()
   const remindInvitation = useRemindInvitation()
   const createInvitation = useCreateInvitation()
+  const [cancelTarget, setCancelTarget] = useState<string | null>(null)
 
   const handleCancel = async (id: string) => {
-    if (!confirm('이 초대를 취소하시겠어요?')) return
     try {
       await cancelInvitation.mutateAsync(id)
       toast.success('초대를 취소했습니다')
@@ -131,7 +133,7 @@ export function ProfileSentInvitations() {
                     )}
                     {inv.status === 'pending' && (
                       <button
-                        onClick={() => handleCancel(inv.id)}
+                        onClick={() => setCancelTarget(inv.id)}
                         disabled={cancelInvitation.isPending}
                         className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-bold border border-border text-txt-secondary hover:bg-surface-sunken active:scale-[0.97] transition-all rounded"
                       >
@@ -161,6 +163,21 @@ export function ProfileSentInvitations() {
           size="compact"
         />
       )}
+
+      <ConfirmModal
+        isOpen={!!cancelTarget}
+        onClose={() => setCancelTarget(null)}
+        onConfirm={async () => {
+          if (!cancelTarget) return
+          await handleCancel(cancelTarget)
+          setCancelTarget(null)
+        }}
+        title="초대 취소"
+        message="이 초대를 취소합니다. 받는 사람에게는 알리지 않습니다."
+        confirmText="취소하기"
+        cancelText="닫기"
+        variant="warning"
+      />
     </section>
   )
 }
