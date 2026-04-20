@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
-import { ArrowRight, Check } from 'lucide-react'
+import { ArrowRight, Check, Loader2 } from 'lucide-react'
 import { SectionLabel, SectionTitle } from './shared'
 
 export const Cohort1Section: React.FC = () => {
@@ -126,9 +126,10 @@ export const Cohort1Section: React.FC = () => {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="px-5 py-3 rounded-full font-bold text-sm border border-border bg-surface-card text-txt-primary hover:bg-surface-sunken transition-colors disabled:opacity-50 whitespace-nowrap"
+                    className="px-5 py-3 rounded-full font-bold text-sm border border-border bg-surface-card text-txt-primary hover:bg-surface-sunken transition-colors disabled:opacity-50 whitespace-nowrap flex items-center gap-1.5"
                   >
-                    {submitting ? '...' : '알림 받기'}
+                    {submitting && <Loader2 size={14} className="animate-spin" />}
+                    {submitting ? '등록 중' : '알림 받기'}
                   </button>
                 </div>
                 {error && <p className="text-xs text-status-error-text">{error}</p>}
