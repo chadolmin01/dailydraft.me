@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAdmin } from '@/src/hooks/useAdmin'
 import { Card } from '@/components/ui/Card'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import type { InstitutionType } from '@/src/types/institution'
 import {
   Building2,
@@ -62,6 +63,7 @@ export default function AdminInstitutionsPage() {
   // Assign form state
   const [assignEmail, setAssignEmail] = useState('')
   const [assignRole, setAssignRole] = useState<'student' | 'mentor' | 'admin'>('student')
+  const [deleteTarget, setDeleteTarget] = useState<InstitutionItem | null>(null)
 
   useEffect(() => {
     if (!isAdminLoading && !isAdmin) {
@@ -337,11 +339,7 @@ export default function AdminInstitutionsPage() {
                     <UserPlus size={12} /> 멤버 배정
                   </button>
                   <button
-                    onClick={() => {
-                      if (confirm(`"${inst.name}" 기관을 삭제하시겠습니까? 소속 멤버도 모두 해제됩니다.`)) {
-                        deleteMutation.mutate(inst.id)
-                      }
-                    }}
+                    onClick={() => setDeleteTarget(inst)}
                     className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-medium border border-status-danger-accent text-status-danger-text hover:bg-status-danger-bg transition-colors ml-auto"
                   >
                     <Trash2 size={12} /> 삭제
@@ -519,6 +517,20 @@ export default function AdminInstitutionsPage() {
           </Card>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={async () => {
+          if (!deleteTarget) return
+          deleteMutation.mutate(deleteTarget.id)
+          setDeleteTarget(null)
+        }}
+        title="기관 삭제"
+        message={deleteTarget ? `"${deleteTarget.name}" 기관을 삭제합니다. 소속 멤버 권한도 모두 해제됩니다.` : ''}
+        confirmText={deleteMutation.isPending ? '삭제 중...' : '삭제'}
+        variant="danger"
+      />
     </div>
   )
 }
