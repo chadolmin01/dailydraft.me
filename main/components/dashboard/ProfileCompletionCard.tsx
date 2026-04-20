@@ -54,17 +54,24 @@ export function ProfileCompletionCard() {
       </div>
 
       {missing.length > 0 && (
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="text-[11px] text-txt-tertiary">남은 항목:</span>
-          {missing.map(f => (
-            <span
-              key={f.label}
-              className="text-[11px] font-medium text-txt-secondary bg-surface-sunken px-2 py-0.5 rounded-full"
-            >
-              {f.label}
-            </span>
-          ))}
-        </div>
+        <>
+          <div className="flex items-center gap-1.5 flex-wrap mb-2">
+            <span className="text-[11px] text-txt-tertiary">남은 항목:</span>
+            {missing.map(f => (
+              <span
+                key={f.label}
+                className="text-[11px] font-medium text-txt-secondary bg-surface-sunken px-2 py-0.5 rounded-full"
+              >
+                {f.label}
+              </span>
+            ))}
+          </div>
+          {missing[0]?.hint && (
+            <p className="text-[11px] text-txt-tertiary leading-relaxed">
+              💡 <strong className="text-txt-secondary font-semibold">{missing[0].label}</strong> — {missing[0].hint}
+            </p>
+          )}
+        </>
       )}
     </Link>
   )
