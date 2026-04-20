@@ -189,9 +189,17 @@ function TeamChannelVisibilityToggle({
 
   return (
     <section className="bg-surface-card border border-border rounded-2xl p-5">
-      <h2 className="text-base font-bold text-txt-primary mb-1">
-        팀 채널 공개 범위
-      </h2>
+      <div className="flex items-center justify-between mb-1">
+        <h2 className="text-base font-bold text-txt-primary">
+          팀 채널 공개 범위
+        </h2>
+        {saving && (
+          <span className="inline-flex items-center gap-1.5 text-[11px] text-txt-tertiary">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse" />
+            저장 중...
+          </span>
+        )}
+      </div>
       <p className="text-xs text-txt-tertiary mb-4">
         새로 생성되는 팀 채널의 Discord 권한에 적용됩니다
       </p>

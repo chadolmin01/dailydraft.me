@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import {
   ChevronLeft, Activity, Users, FileText, CheckCircle2,
@@ -42,6 +42,20 @@ export default function OperatorDashboardClient({ slug, clubName }: { slug: stri
   const [isReminding, setIsReminding] = useState(false)
   const [isDigesting, setIsDigesting] = useState(false)
 
+  // 리마인드 마지막 발송 시각 — localStorage 로 로컬 추적 (서버도 24h dedup 하지만 UI 즉시 피드백 목적)
+  const reminderKey = `remind_teams_last_sent:${slug}`
+  const digestKey = `digest_last_sent:${slug}`
+  const [lastReminderAt, setLastReminderAt] = useState<number | null>(null)
+  const [lastDigestAt, setLastDigestAt] = useState<number | null>(null)
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const r = localStorage.getItem(reminderKey)
+    const d = localStorage.getItem(digestKey)
+    if (r) setLastReminderAt(parseInt(r, 10))
+    if (d) setLastDigestAt(parseInt(d, 10))
+  }, [reminderKey, digestKey])
+
   const pendingTeamIds = useMemo(() => {
     if (!teamsData) return [] as string[]
     return teamsData.teams
@@ -68,6 +82,12 @@ export default function OperatorDashboardClient({ slug, clubName }: { slug: stri
       } else {
         toast.info(data.data?.message ?? '발송된 메일이 없습니다')
       }
+      // 실 발송일 때만 타임스탬프 기록 (test_only 는 제외)
+      if (!testOnly) {
+        const now = Date.now()
+        localStorage.setItem(digestKey, String(now))
+        setLastDigestAt(now)
+      }
     } catch {
       toast.error('네트워크 오류')
     } finally {
@@ -92,6 +112,10 @@ export default function OperatorDashboardClient({ slug, clubName }: { slug: stri
       } else {
         toast.info('발송된 리마인드가 없습니다. 최근 24시간 내 이미 보냈을 수 있습니다')
       }
+      // 로컬 타임스탬프 갱신 — 발송 시도 자체를 기록 (skipped 포함)
+      const now = Date.now()
+      localStorage.setItem(reminderKey, String(now))
+      setLastReminderAt(now)
     } catch {
       toast.error('리마인드 발송에 실패했습니다')
     } finally {
@@ -230,6 +254,12 @@ export default function OperatorDashboardClient({ slug, clubName }: { slug: stri
                 <p className="text-[12px] text-txt-secondary">
                   팀장에게 원클릭으로 리마인드 DM을 보낼 수 있습니다
                 </p>
+                {lastReminderAt && (
+                  <p className="text-[11px] text-txt-tertiary mt-1 flex items-center gap-1">
+                    <CheckCircle2 size={10} className="text-status-success-text" />
+                    마지막 발송 {formatRelativeShort(lastReminderAt)}
+                  </p>
+                )}
               </div>
             </div>
             <button
@@ -347,6 +377,17 @@ export default function OperatorDashboardClient({ slug, clubName }: { slug: stri
       </PageContainer>
     </div>
   )
+}
+
+function formatRelativeShort(ts: number): string {
+  const diff = Date.now() - ts
+  const mins = Math.floor(diff / 60000)
+  if (mins < 1) return '방금'
+  if (mins < 60) return `${mins}분 전`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `${hours}시간 전`
+  const days = Math.floor(hours / 24)
+  return `${days}일 전`
 }
 
 function KpiCard({ icon, label, value, hint, tone = 'neutral' }: {

@@ -50,6 +50,9 @@ export default function AdminUsersPage() {
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [page, setPage] = useState(1)
   const [deleteTarget, setDeleteTarget] = useState<UserProfile | null>(null)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [bulkDeleteConfirm, setBulkDeleteConfirm] = useState(false)
+  const [bulkProgress, setBulkProgress] = useState<{ total: number; done: number } | null>(null)
 
   useEffect(() => {
     if (!isAdminLoading && !isAdmin) {
@@ -91,6 +94,60 @@ export default function AdminUsersPage() {
       setDeleteTarget(null)
     },
   })
+
+  // Bulk 삭제 — 개별 DELETE 를 순차로 실행 (admin API 가 단일 건만 받음).
+  // 중도 실패 시 완료된 건은 유지, 실패 건은 토스트.
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (ids: string[]) => {
+      setBulkProgress({ total: ids.length, done: 0 })
+      let ok = 0
+      let failed = 0
+      for (const id of ids) {
+        try {
+          const res = await fetch(`/api/admin/users/${id}`, { method: 'DELETE' })
+          if (res.ok) ok++
+          else failed++
+        } catch {
+          failed++
+        }
+        setBulkProgress(prev => (prev ? { total: prev.total, done: prev.done + 1 } : null))
+      }
+      return { ok, failed }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-stats'] })
+      setSelectedIds(new Set())
+      setBulkDeleteConfirm(false)
+      setBulkProgress(null)
+    },
+  })
+
+  // 체크박스 헬퍼
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+  const toggleSelectAll = () => {
+    if (!data?.users) return
+    const currentPageIds = new Set(data.users.map(u => u.user_id))
+    const allSelected = data.users.every(u => selectedIds.has(u.user_id))
+    setSelectedIds(prev => {
+      const next = new Set(prev)
+      if (allSelected) {
+        currentPageIds.forEach(id => next.delete(id))
+      } else {
+        currentPageIds.forEach(id => next.add(id))
+      }
+      return next
+    })
+  }
+  const allCurrentPageSelected = !!(data?.users?.length && data.users.every(u => selectedIds.has(u.user_id)))
+  const someSelected = selectedIds.size > 0
 
   if (isAdminLoading) {
     return (
@@ -164,6 +221,30 @@ export default function AdminUsersPage() {
           </div>
         </div>
 
+        {/* Bulk 액션 바 — 선택 있을 때만 노출 */}
+        {someSelected && (
+          <div className="flex items-center justify-between gap-3 bg-brand-bg border border-brand/20 rounded-xl px-4 py-3">
+            <span className="text-[13px] text-txt-primary font-semibold">
+              {selectedIds.size}명 선택됨
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setSelectedIds(new Set())}
+                className="text-[12px] text-txt-tertiary hover:text-txt-secondary transition-colors px-2"
+              >
+                선택 해제
+              </button>
+              <button
+                onClick={() => setBulkDeleteConfirm(true)}
+                className="h-8 px-3 rounded-lg bg-status-danger-text text-white text-[12px] font-semibold hover:bg-status-danger-text/90 transition-colors flex items-center gap-1.5"
+              >
+                <Trash2 size={12} />
+                일괄 삭제
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Table */}
         <Card padding="p-0">
           {isLoading ? (
@@ -182,6 +263,15 @@ export default function AdminUsersPage() {
               <table className="w-full text-sm">
                 <thead className="bg-surface-sunken border-b border-border">
                   <tr>
+                    <th className="px-4 py-3 w-10">
+                      <input
+                        type="checkbox"
+                        checked={allCurrentPageSelected}
+                        onChange={toggleSelectAll}
+                        className="w-4 h-4 rounded border-border text-brand focus:ring-brand cursor-pointer"
+                        aria-label="현재 페이지 전체 선택"
+                      />
+                    </th>
                     <th className="text-left px-4 py-3 text-[10px] font-medium text-txt-tertiary">닉네임</th>
                     <th className="text-left px-4 py-3 text-[10px] font-medium text-txt-tertiary hidden md:table-cell">대학</th>
                     <th className="text-left px-4 py-3 text-[10px] font-medium text-txt-tertiary hidden lg:table-cell">이메일</th>
@@ -192,8 +282,19 @@ export default function AdminUsersPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-dashed divide-border">
-                  {data.users.map((u) => (
-                    <tr key={u.user_id} className="hover:bg-surface-sunken transition-colors">
+                  {data.users.map((u) => {
+                    const isSelected = selectedIds.has(u.user_id)
+                    return (
+                    <tr key={u.user_id} className={`${isSelected ? 'bg-brand-bg/30' : 'hover:bg-surface-sunken'} transition-colors`}>
+                      <td className="px-4 py-3 w-10">
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => toggleSelect(u.user_id)}
+                          className="w-4 h-4 rounded border-border text-brand focus:ring-brand cursor-pointer"
+                          aria-label={`${u.nickname || u.user_id} 선택`}
+                        />
+                      </td>
                       <td className="px-4 py-3">
                         <span className="font-medium text-txt-primary">{u.nickname || '-'}</span>
                       </td>
@@ -225,7 +326,8 @@ export default function AdminUsersPage() {
                         </button>
                       </td>
                     </tr>
-                  ))}
+                    )
+                  })}
                 </tbody>
               </table>
             </div>
@@ -286,6 +388,60 @@ export default function AdminUsersPage() {
             </div>
             {deleteMutation.isError && (
               <p className="text-xs text-status-danger-text mt-3">삭제에 실패했습니다. 다시 시도해주세요.</p>
+            )}
+          </Card>
+        </div>
+      )}
+
+      {/* Bulk Delete Confirmation Modal */}
+      {bulkDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <Card padding="p-6" className="w-full max-w-md bg-surface-card">
+            <h3 className="text-lg font-bold text-txt-primary mb-2">
+              {selectedIds.size}명 일괄 삭제
+            </h3>
+            <p className="text-sm text-txt-secondary mb-1">
+              선택한 <span className="font-semibold">{selectedIds.size}명</span>의 사용자를 삭제합니다.
+            </p>
+            <p className="text-xs text-status-danger-text mb-4">이 작업은 되돌릴 수 없습니다.</p>
+
+            {/* Progress bar */}
+            {bulkProgress && (
+              <div className="mb-4 space-y-2">
+                <div className="flex items-center justify-between text-[11px] text-txt-tertiary">
+                  <span>처리 중...</span>
+                  <span className="font-mono">{bulkProgress.done} / {bulkProgress.total}</span>
+                </div>
+                <div className="h-1.5 bg-surface-sunken rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-status-danger-text transition-all duration-200"
+                    style={{ width: `${(bulkProgress.done / bulkProgress.total) * 100}%` }}
+                  />
+                </div>
+              </div>
+            )}
+
+            <div className="flex items-center justify-end gap-3">
+              <button
+                onClick={() => setBulkDeleteConfirm(false)}
+                disabled={bulkDeleteMutation.isPending}
+                className="px-4 py-2 text-sm text-txt-secondary border border-border hover:bg-surface-inverse hover:text-txt-inverse transition-colors"
+              >
+                취소
+              </button>
+              <button
+                onClick={() => bulkDeleteMutation.mutate(Array.from(selectedIds))}
+                disabled={bulkDeleteMutation.isPending}
+                className="px-4 py-2 text-sm bg-status-danger-text text-white border border-status-danger-text hover:bg-status-danger-text/90 disabled:opacity-50 transition-colors flex items-center gap-2"
+              >
+                {bulkDeleteMutation.isPending && <Loader2 size={14} className="animate-spin" />}
+                {selectedIds.size}명 삭제
+              </button>
+            </div>
+            {bulkDeleteMutation.data && (
+              <p className="text-xs text-txt-tertiary mt-3">
+                완료: {bulkDeleteMutation.data.ok}명 성공 · {bulkDeleteMutation.data.failed}명 실패
+              </p>
             )}
           </Card>
         </div>

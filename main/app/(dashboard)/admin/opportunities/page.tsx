@@ -67,6 +67,9 @@ export default function AdminOpportunitiesPage() {
   const [statusFilter, setStatusFilter] = useState('')
   const [sort, setSort] = useState('recent')
   const [deleteTarget, setDeleteTarget] = useState<AdminOpportunityRow | null>(null)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [bulkDeleteConfirm, setBulkDeleteConfirm] = useState(false)
+  const [bulkProgress, setBulkProgress] = useState<{ total: number; done: number } | null>(null)
 
   useEffect(() => {
     if (!isAdminLoading && !isAdmin) {
@@ -109,6 +112,58 @@ export default function AdminOpportunitiesPage() {
       setDeleteTarget(null)
     },
   })
+
+  // Bulk 삭제 — 순차 실행, 진행률 표시
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (ids: string[]) => {
+      setBulkProgress({ total: ids.length, done: 0 })
+      let ok = 0
+      let failed = 0
+      for (const id of ids) {
+        try {
+          const res = await fetch(`/api/admin/opportunities/${id}`, { method: 'DELETE' })
+          if (res.ok) ok++
+          else failed++
+        } catch {
+          failed++
+        }
+        setBulkProgress(prev => (prev ? { total: prev.total, done: prev.done + 1 } : null))
+      }
+      return { ok, failed }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-opportunities'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-stats'] })
+      setSelectedIds(new Set())
+      setBulkDeleteConfirm(false)
+      setBulkProgress(null)
+    },
+  })
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+  const toggleSelectAll = () => {
+    if (!data?.opportunities) return
+    const currentPageIds = new Set(data.opportunities.map(o => o.id))
+    const allSelected = data.opportunities.every(o => selectedIds.has(o.id))
+    setSelectedIds(prev => {
+      const next = new Set(prev)
+      if (allSelected) {
+        currentPageIds.forEach(id => next.delete(id))
+      } else {
+        currentPageIds.forEach(id => next.add(id))
+      }
+      return next
+    })
+  }
+  const allCurrentPageSelected = !!(data?.opportunities?.length && data.opportunities.every(o => selectedIds.has(o.id)))
+  const someSelected = selectedIds.size > 0
 
   if (isAdminLoading) {
     return (
@@ -206,6 +261,30 @@ export default function AdminOpportunitiesPage() {
           </div>
         </div>
 
+        {/* Bulk 액션 바 */}
+        {someSelected && (
+          <div className="flex items-center justify-between gap-3 bg-brand-bg border border-brand/20 rounded-xl px-4 py-3">
+            <span className="text-[13px] text-txt-primary font-semibold">
+              {selectedIds.size}개 선택됨
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setSelectedIds(new Set())}
+                className="text-[12px] text-txt-tertiary hover:text-txt-secondary transition-colors px-2"
+              >
+                선택 해제
+              </button>
+              <button
+                onClick={() => setBulkDeleteConfirm(true)}
+                className="h-8 px-3 rounded-lg bg-status-danger-text text-white text-[12px] font-semibold hover:bg-status-danger-text/90 transition-colors flex items-center gap-1.5"
+              >
+                <Trash2 size={12} />
+                일괄 삭제
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Table */}
         <Card padding="p-0">
           {isLoading ? (
@@ -224,6 +303,15 @@ export default function AdminOpportunitiesPage() {
               <table className="w-full text-sm">
                 <thead className="bg-surface-sunken border-b border-border">
                   <tr>
+                    <th className="px-4 py-3 w-10">
+                      <input
+                        type="checkbox"
+                        checked={allCurrentPageSelected}
+                        onChange={toggleSelectAll}
+                        className="w-4 h-4 rounded border-border text-brand focus:ring-brand cursor-pointer"
+                        aria-label="현재 페이지 전체 선택"
+                      />
+                    </th>
                     <th className="text-left px-4 py-3 text-[10px] font-medium text-txt-tertiary">제목</th>
                     <th className="text-left px-4 py-3 text-[10px] font-medium text-txt-tertiary hidden md:table-cell">유형</th>
                     <th className="text-left px-4 py-3 text-[10px] font-medium text-txt-tertiary">상태</th>
@@ -237,8 +325,18 @@ export default function AdminOpportunitiesPage() {
                 <tbody className="divide-y divide-dashed divide-border">
                   {data.opportunities.map((opp) => {
                     const statusInfo = statusLabels[opp.status] || { label: opp.status, cls: 'border border-border text-txt-tertiary' }
+                    const isSelected = selectedIds.has(opp.id)
                     return (
-                      <tr key={opp.id} className="hover:bg-surface-sunken transition-colors">
+                      <tr key={opp.id} className={`${isSelected ? 'bg-brand-bg/30' : 'hover:bg-surface-sunken'} transition-colors`}>
+                        <td className="px-4 py-3 w-10">
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => toggleSelect(opp.id)}
+                            className="w-4 h-4 rounded border-border text-brand focus:ring-brand cursor-pointer"
+                            aria-label={`${opp.title} 선택`}
+                          />
+                        </td>
                         <td className="px-4 py-3">
                           <span className="font-medium text-txt-primary line-clamp-1">{opp.title}</span>
                         </td>
@@ -338,6 +436,59 @@ export default function AdminOpportunitiesPage() {
             </div>
             {deleteMutation.isError && (
               <p className="text-xs text-status-danger-text mt-3">삭제에 실패했습니다. 다시 시도해주세요.</p>
+            )}
+          </Card>
+        </div>
+      )}
+
+      {/* Bulk Delete Confirmation Modal */}
+      {bulkDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <Card padding="p-6" className="w-full max-w-md bg-surface-card">
+            <h3 className="text-lg font-bold text-txt-primary mb-2">
+              {selectedIds.size}개 일괄 삭제
+            </h3>
+            <p className="text-sm text-txt-secondary mb-1">
+              선택한 <span className="font-semibold">{selectedIds.size}개</span>의 Opportunity 를 삭제합니다.
+            </p>
+            <p className="text-xs text-status-danger-text mb-4">이 작업은 되돌릴 수 없습니다.</p>
+
+            {bulkProgress && (
+              <div className="mb-4 space-y-2">
+                <div className="flex items-center justify-between text-[11px] text-txt-tertiary">
+                  <span>처리 중...</span>
+                  <span className="font-mono">{bulkProgress.done} / {bulkProgress.total}</span>
+                </div>
+                <div className="h-1.5 bg-surface-sunken rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-status-danger-text transition-all duration-200"
+                    style={{ width: `${(bulkProgress.done / bulkProgress.total) * 100}%` }}
+                  />
+                </div>
+              </div>
+            )}
+
+            <div className="flex items-center justify-end gap-3">
+              <button
+                onClick={() => setBulkDeleteConfirm(false)}
+                disabled={bulkDeleteMutation.isPending}
+                className="px-4 py-2 text-sm text-txt-secondary border border-border hover:bg-surface-inverse hover:text-txt-inverse transition-colors"
+              >
+                취소
+              </button>
+              <button
+                onClick={() => bulkDeleteMutation.mutate(Array.from(selectedIds))}
+                disabled={bulkDeleteMutation.isPending}
+                className="px-4 py-2 text-sm bg-status-danger-text text-white border border-status-danger-text hover:bg-status-danger-text/90 disabled:opacity-50 transition-colors flex items-center gap-2"
+              >
+                {bulkDeleteMutation.isPending && <Loader2 size={14} className="animate-spin" />}
+                {selectedIds.size}개 삭제
+              </button>
+            </div>
+            {bulkDeleteMutation.data && (
+              <p className="text-xs text-txt-tertiary mt-3">
+                완료: {bulkDeleteMutation.data.ok}개 성공 · {bulkDeleteMutation.data.failed}개 실패
+              </p>
             )}
           </Card>
         </div>
