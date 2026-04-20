@@ -318,17 +318,24 @@ export default function InstitutionMembersPage() {
                         <td className="px-5 py-3.5">
                           {member.role !== 'admin' && (
                             <div className="flex items-center justify-end gap-1">
-                              <button
-                                onClick={() => changeRole.mutate({
-                                  memberId: member.id,
-                                  role: member.role === 'student' ? 'mentor' : 'student',
-                                })}
+                              <select
+                                value={member.role}
+                                onChange={(e) => {
+                                  const newRole = e.target.value
+                                  if (newRole === member.role) return
+                                  if (newRole === 'admin') {
+                                    if (!confirm(`"${profile?.nickname || '이름 없음'}" 을(를) 관리자로 승격합니다.\n관리자는 기관 설정·멤버 관리 권한을 가집니다. 계속하시겠습니까?`)) return
+                                  }
+                                  changeRole.mutate({ memberId: member.id, role: newRole })
+                                }}
                                 disabled={changeRole.isPending}
-                                title={member.role === 'student' ? '멘토로 변경' : '학생으로 변경'}
-                                className="p-1.5 text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken transition-colors"
+                                className="px-2 py-1 text-[11px] bg-surface-card border border-border rounded focus:outline-none focus:border-brand cursor-pointer disabled:opacity-50"
+                                aria-label="역할 변경"
                               >
-                                <RefreshCw size={13} />
-                              </button>
+                                <option value="student">학생</option>
+                                <option value="mentor">멘토</option>
+                                <option value="admin">관리자 (승격)</option>
+                              </select>
                               <button
                                 onClick={() => {
                                   if (confirm(`"${profile?.nickname || '이름 없음'}" 멤버를 제거하시겠습니까?`)) {
