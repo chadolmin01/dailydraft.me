@@ -5,6 +5,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Calendar, Plus, MapPin, Clock, Trash2, Loader2, X, Users, Mic, Briefcase, AlertTriangle, PartyPopper, Hash } from 'lucide-react'
 import { toast } from 'sonner'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 
 interface ClubEvent {
   id: string
@@ -54,6 +55,7 @@ export function ClubEventsSection({ slug, isAdmin }: { slug: string; isAdmin: bo
   const queryClient = useQueryClient()
   const [writing, setWriting] = useState(false)
   const [filter, setFilter] = useState<'upcoming' | 'all' | 'past'>('upcoming')
+  const [deleteTarget, setDeleteTarget] = useState<ClubEvent | null>(null)
 
   const { data, isLoading } = useQuery<{ events: ClubEvent[] }>({
     queryKey: ['club-events', slug],
@@ -79,7 +81,6 @@ export function ClubEventsSection({ slug, isAdmin }: { slug: string; isAdmin: bo
   }, [data, filter])
 
   const handleDelete = async (e: ClubEvent) => {
-    if (!confirm(`"${e.title}" 일정을 삭제할까요?`)) return
     const res = await fetch(`/api/clubs/${slug}/events/${e.id}`, { method: 'DELETE' })
     if (res.ok) {
       toast.success('일정을 삭제했습니다')
@@ -182,7 +183,7 @@ export function ClubEventsSection({ slug, isAdmin }: { slug: string; isAdmin: bo
                   </div>
                   {isAdmin && (
                     <button
-                      onClick={() => handleDelete(e)}
+                      onClick={() => setDeleteTarget(e)}
                       className="p-1.5 text-txt-disabled hover:text-status-danger-text transition-colors rounded-lg hover:bg-status-danger-bg"
                       aria-label="삭제"
                     >
@@ -195,6 +196,19 @@ export function ClubEventsSection({ slug, isAdmin }: { slug: string; isAdmin: bo
           })}
         </ul>
       )}
+
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={async () => {
+          if (!deleteTarget) return
+          await handleDelete(deleteTarget)
+        }}
+        title="일정 삭제"
+        message={deleteTarget ? `"${deleteTarget.title}" 일정을 삭제합니다.` : ''}
+        confirmText="삭제"
+        variant="danger"
+      />
     </div>
   )
 }
