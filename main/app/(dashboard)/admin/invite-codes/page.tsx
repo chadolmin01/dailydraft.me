@@ -181,7 +181,7 @@ export default function InviteCodesAdminPage() {
                 setSelectedEmail(e.target.value)
                 setSendError(null)
               }}
-              className="w-full px-3 py-2 border border-border focus:outline-none focus:border-brand"
+              className="w-full px-3 py-2 bg-surface-card rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
               disabled={eligibleLoading}
             >
               <option value="">이메일 선택...</option>
