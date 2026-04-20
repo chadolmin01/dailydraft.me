@@ -77,6 +77,7 @@ export default function AdminInstitutionsPage() {
       return res.json()
     },
     enabled: isAdmin,
+    staleTime: 1000 * 60, // 1분 — 기관 목록은 자주 바뀌지 않음
   })
 
   const createMutation = useMutation({

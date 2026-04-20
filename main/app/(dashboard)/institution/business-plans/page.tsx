@@ -46,6 +46,7 @@ export default function InstitutionBusinessPlansPage() {
       return res.json()
     },
     enabled: isInstitutionAdmin,
+    staleTime: 1000 * 60,
     select: (data) => ({
       members: data.members || [],
       stats: data.stats || { businessPlans: 0, teamsFormed: 0 },

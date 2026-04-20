@@ -15,7 +15,7 @@ interface ErrorStateProps {
 
 export const ErrorState: React.FC<ErrorStateProps> = ({
   title,
-  message = '일시적인 오류가 발생했습니다. 잠시 �� 다시 시도해주세요.',
+  message = '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
   onRetry,
   className = '',
   size = 'default',
@@ -34,7 +34,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
             onClick={onRetry}
             className="text-sm font-medium underline hover:no-underline"
           >
-            다시 ���도
+            다시 시도
           </button>
         )}
       </div>

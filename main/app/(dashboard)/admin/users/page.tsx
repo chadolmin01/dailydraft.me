@@ -76,6 +76,7 @@ export default function AdminUsersPage() {
       return res.json()
     },
     enabled: isAdmin,
+    staleTime: 1000 * 30, // 탭 전환 시 재조회 생략
   })
 
   const deleteMutation = useMutation({

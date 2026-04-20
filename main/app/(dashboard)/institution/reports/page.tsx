@@ -36,6 +36,7 @@ export default function InstitutionReportsPage() {
       return res.json()
     },
     enabled: isInstitutionAdmin,
+    staleTime: 1000 * 60,
   })
 
   // CSV cell escaping: prevent formula injection + escape double quotes

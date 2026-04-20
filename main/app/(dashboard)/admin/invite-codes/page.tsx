@@ -62,6 +62,7 @@ export default function InviteCodesAdminPage() {
       return res.json()
     },
     enabled: isAdmin,
+    staleTime: 1000 * 30,
   })
 
   // Fetch eligible users
@@ -78,6 +79,7 @@ export default function InviteCodesAdminPage() {
       return res.json()
     },
     enabled: isAdmin,
+    staleTime: 1000 * 60, // 1분 — eligible 목록은 초대 발송 후에만 변함
   })
 
   // Send invite code mutation
