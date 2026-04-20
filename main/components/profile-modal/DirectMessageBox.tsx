@@ -92,7 +92,19 @@ export function DirectMessageBox({ receiverId }: { receiverId: string }) {
             className="w-full px-4 py-3 text-sm bg-surface-card rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/20 resize-none transition-all mb-2.5"
           />
           <div className="flex items-center justify-between">
-            <span className="text-xs text-txt-tertiary">{content.length}/2000</span>
+            <span className={`text-xs tabular-nums ${
+              content.length >= 2000 ? 'text-status-danger-text font-semibold' :
+              content.length >= 1800 ? 'text-status-warning-text' :
+              'text-txt-tertiary'
+            }`}>
+              {content.length.toLocaleString()}/2,000
+              {content.length >= 1800 && content.length < 2000 && (
+                <span className="ml-1.5">· 곧 제한 도달</span>
+              )}
+              {content.length >= 2000 && (
+                <span className="ml-1.5">· 제한 초과</span>
+              )}
+            </span>
             <button
               onClick={handleSend}
               disabled={!content.trim() || sending}
