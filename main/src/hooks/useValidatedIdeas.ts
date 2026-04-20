@@ -78,6 +78,7 @@ export function useValidatedIdeas(limit = 10) {
       return data as ValidatedIdea[]
     },
     enabled: !isAuthLoading && !!user?.id,
+    staleTime: 1000 * 60 * 2,
   })
 }
 
