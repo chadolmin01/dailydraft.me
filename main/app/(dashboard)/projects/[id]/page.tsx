@@ -156,13 +156,22 @@ function ProjectManageContent() {
               공개 페이지
             </Link>
             {isOwner && (
-              <Link
-                href={`/projects/${id}/edit`}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 text-[13px] font-medium text-txt-secondary border border-border rounded-full hover:border-txt-tertiary transition-colors"
-              >
-                <Settings size={14} />
-                수정
-              </Link>
+              <>
+                <Link
+                  href={`/projects/${id}/settings/persona`}
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 text-[13px] font-medium text-txt-secondary border border-border rounded-full hover:border-txt-tertiary transition-colors"
+                >
+                  <Rocket size={14} />
+                  페르소나
+                </Link>
+                <Link
+                  href={`/projects/${id}/edit`}
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 text-[13px] font-medium text-txt-secondary border border-border rounded-full hover:border-txt-tertiary transition-colors"
+                >
+                  <Settings size={14} />
+                  수정
+                </Link>
+              </>
             )}
           </div>
         </div>

@@ -65,6 +65,7 @@ export const ACCESS_MANIFEST: RouteRule[] = [
   { pattern: '/onboarding/interview', tier: 'auth' },
   { pattern: '/profile', tier: 'auth' },
   { pattern: '/profile/edit', tier: 'auth' },
+  { pattern: '/profile/persona', tier: 'auth', note: '개인 페르소나 출시 예고 페이지 (2026 여름 출시)' },
   { pattern: '/me/data', tier: 'auth', note: '정보주체 권리 관리 (PIPA 35/36조 — 열람·내려받기·삭제)' },
   { pattern: '/messages', tier: 'auth' },
   { pattern: '/notifications', tier: 'auth' },
@@ -80,6 +81,7 @@ export const ACCESS_MANIFEST: RouteRule[] = [
   { pattern: '/projects/new', tier: 'auth' },
   { pattern: '/projects/:id', tier: 'auth' },
   { pattern: '/projects/:id/edit', tier: 'auth' },
+  { pattern: '/projects/:id/settings/persona', tier: 'auth', note: '프로젝트 페르소나 (리드만 편집·클럽 ops 열람)' },
 
   // ── club-admin ────────────────────────────────────────────
   // middleware 는 '로그인 필요' 수준까지만 체크. club 소속/역할 체크는 page 에서.

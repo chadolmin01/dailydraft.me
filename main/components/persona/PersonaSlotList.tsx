@@ -12,15 +12,27 @@ import { PersonaSlotEditor } from './PersonaSlotEditor'
  *   - 편집 영역이 항상 넓음 (드로어 w-xl)
  *   - 한 번에 한 슬롯만 편집 (컨텍스트 혼동 방지)
  */
-const SECTIONS: Array<{
+type PersonaKind = 'club' | 'project' | 'personal'
+
+function sectionsFor(kind: PersonaKind): Array<{
   title: string
   description: string
   keys: FieldKey[]
-}> = [
+}> {
+  const subject =
+    kind === 'club'
+      ? '우리 동아리'
+      : kind === 'project'
+        ? '이 프로젝트'
+        : '나'
+  const author =
+    kind === 'club' ? '회장님' : kind === 'project' ? '프로젝트 리드' : '본인'
+
+  return [
   {
-    title: '우리 동아리는 누구인가요?',
+    title: `${subject}는 누구인가요?`,
     description:
-      'AI가 글을 쓸 때 "우리 조직이 뭐 하는 곳인지"를 알아야 합니다. 이 두 슬롯이 그 기준이 됩니다.',
+      `AI가 글을 쓸 때 "${subject}가 뭐 하는 곳인지"를 알아야 합니다. 이 두 슬롯이 그 기준이 됩니다.`,
     keys: ['identity', 'content_patterns'],
   },
   {
@@ -32,7 +44,7 @@ const SECTIONS: Array<{
   {
     title: '어떻게 쓸까요?',
     description:
-      '문장 길이·어미·즐겨쓰는 단어까지 디테일하게 정해두면, AI가 회장님이 쓰신 것처럼 글을 만듭니다.',
+      `문장 길이·어미·즐겨쓰는 단어까지 디테일하게 정해두면, AI가 ${author}이 쓰신 것처럼 글을 만듭니다.`,
     keys: [
       'hooking_style',
       'sentence_style',
@@ -45,7 +57,8 @@ const SECTIONS: Array<{
       'reproduction_checklist',
     ],
   },
-]
+  ]
+}
 
 interface Props {
   persona: PersonaRow
@@ -58,11 +71,12 @@ export function PersonaSlotList({ persona, fields, canEdit }: Props) {
   for (const f of fields) fieldMap.set(f.field_key, f)
 
   const [editingKey, setEditingKey] = useState<FieldKey | null>(null)
+  const sections = sectionsFor(persona.type)
 
   return (
     <>
       <div className="space-y-6">
-        {SECTIONS.map((section) => (
+        {sections.map((section) => (
           <section key={section.title}>
             <div className="mb-3">
               <h2 className="text-sm font-bold text-txt-primary">
