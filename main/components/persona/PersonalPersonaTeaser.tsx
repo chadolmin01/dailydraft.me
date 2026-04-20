@@ -68,7 +68,12 @@ export function PersonalPersonaTeaser({ userEmail }: Props) {
           <ChevronLeft size={20} />
         </Link>
         <div>
-          <h1 className="text-lg font-bold text-txt-primary">개인 페르소나</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-lg font-bold text-txt-primary">개인 페르소나</h1>
+            <span className="text-[10px] font-semibold text-txt-tertiary bg-surface-sunken px-1.5 py-0.5 rounded">
+              개인 계층
+            </span>
+          </div>
           <p className="text-xs text-txt-tertiary">프로필 · 페르소나</p>
         </div>
       </div>

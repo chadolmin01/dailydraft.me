@@ -9,6 +9,7 @@ import { PersonaSlotList } from './PersonaSlotList'
 import { PersonaTemplateLibrary } from './PersonaTemplateLibrary'
 import { PersonaChannelConnections } from './PersonaChannelConnections'
 import { PersonaDangerCard } from './PersonaDangerCard'
+import { ClubProjectPersonasSection } from './ClubProjectPersonasSection'
 
 interface Props {
   clubId: string
@@ -123,6 +124,9 @@ export function PersonaDashboardClient({ clubId, clubName, clubSlug, isAdmin }: 
         clubSlug={clubSlug}
         canEdit={isAdmin}
       />
+
+      {/* 3계층 가시성 — 하위 프로젝트 페르소나 목록 */}
+      <ClubProjectPersonasSection clubId={clubId} clubSlug={clubSlug} />
 
       <PersonaTemplateLibrary personaId={data.persona.id} canEdit={isAdmin} />
 

@@ -91,7 +91,12 @@ export function ProjectPersonaSettingsShell({ projectId, currentUserId }: Props)
               </Link>
             </p>
           )}
-          <h1 className="text-lg font-bold text-txt-primary">프로젝트 페르소나</h1>
+          <div className="flex items-center gap-2 mb-0.5">
+            <h1 className="text-lg font-bold text-txt-primary">프로젝트 페르소나</h1>
+            <span className="text-[10px] font-semibold text-status-success-text bg-status-success-bg px-1.5 py-0.5 rounded">
+              프로젝트 계층
+            </span>
+          </div>
           <p className="text-xs text-txt-tertiary leading-relaxed">
             {project
               ? `${project.title}의 말투·독자·금기를 정의합니다. 주간 업데이트·외부 SNS·팀 공지에 사용됩니다.`
