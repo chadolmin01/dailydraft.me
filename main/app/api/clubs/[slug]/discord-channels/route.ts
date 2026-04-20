@@ -17,21 +17,29 @@ export const GET = withErrorCapture(async (_request, { params }: RouteParams) =>
 
   const admin = createAdminClient()
 
-  // 이미 매핑된 채널
-  const { data: mappings } = await admin
-    .from('discord_team_channels')
-    .select('id, opportunity_id, discord_channel_id, discord_channel_name, created_at')
-    .eq('club_id', clubId)
+  // Phase 1: clubId 만 의존하는 3개 쿼리 병렬
+  const [mappingsResult, instResult, oppResult] = await Promise.all([
+    admin
+      .from('discord_team_channels')
+      .select('id, opportunity_id, discord_channel_id, discord_channel_name, created_at')
+      .eq('club_id', clubId),
+    admin
+      .from('discord_bot_installations')
+      .select('discord_guild_id, discord_guild_name')
+      .eq('club_id', clubId)
+      .single(),
+    admin
+      .from('opportunities')
+      .select('id, title')
+      .eq('club_id', clubId)
+      .order('created_at', { ascending: false }),
+  ])
 
-  // 봇이 설치된 Discord 서버 조회
-  const { data: inst } = await admin
-    .from('discord_bot_installations')
-    .select('discord_guild_id, discord_guild_name')
-    .eq('club_id', clubId)
-    .single()
+  const mappings = mappingsResult.data
+  const inst = instResult.data
+  const opportunities = oppResult.data
 
-  // Discord 서버의 텍스트 + 포럼 채널 목록 (봇이 설치된 경우)
-  // type 0 = 텍스트 채널, type 15 = 포럼 채널
+  // Phase 2: Discord 서버 채널 (inst 필요, 없으면 skip)
   let availableChannels: { id: string; name: string; type: number }[] = []
   if (inst) {
     try {
@@ -43,13 +51,6 @@ export const GET = withErrorCapture(async (_request, { params }: RouteParams) =>
       // 봇 권한 문제 등 — 빈 배열로 진행
     }
   }
-
-  // 클럽의 프로젝트 목록 (매핑 UI에서 드롭다운용)
-  const { data: opportunities } = await admin
-    .from('opportunities')
-    .select('id, title')
-    .eq('club_id', clubId)
-    .order('created_at', { ascending: false })
 
   return ApiResponse.ok({
     mappings: mappings ?? [],
