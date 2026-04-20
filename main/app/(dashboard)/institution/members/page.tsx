@@ -52,6 +52,7 @@ export default function InstitutionMembersPage() {
   const [addNotes, setAddNotes] = useState('')
   const [addError, setAddError] = useState('')
   const [removeTarget, setRemoveTarget] = useState<{ id: string; name: string } | null>(null)
+  const [promoteTarget, setPromoteTarget] = useState<{ id: string; name: string } | null>(null)
 
   // Debounce search
   useEffect(() => {
@@ -326,7 +327,10 @@ export default function InstitutionMembersPage() {
                                   const newRole = e.target.value
                                   if (newRole === member.role) return
                                   if (newRole === 'admin') {
-                                    if (!confirm(`"${profile?.nickname || '이름 없음'}" 을(를) 관리자로 승격합니다.\n관리자는 기관 설정·멤버 관리 권한을 가집니다. 계속하시겠습니까?`)) return
+                                    setPromoteTarget({ id: member.id, name: profile?.nickname || '이름 없음' })
+                                    // 드롭다운 값 원복 — modal 승인 시에만 실제 변경
+                                    e.target.value = member.role
+                                    return
                                   }
                                   changeRole.mutate({ memberId: member.id, role: newRole })
                                 }}
@@ -472,6 +476,20 @@ export default function InstitutionMembersPage() {
         message={removeTarget ? `"${removeTarget.name}" 을(를) 기관에서 제거합니다. 재가입은 수동으로 다시 배정해야 합니다.` : ''}
         confirmText="제거"
         variant="danger"
+      />
+
+      <ConfirmModal
+        isOpen={!!promoteTarget}
+        onClose={() => setPromoteTarget(null)}
+        onConfirm={async () => {
+          if (!promoteTarget) return
+          changeRole.mutate({ memberId: promoteTarget.id, role: 'admin' })
+          setPromoteTarget(null)
+        }}
+        title="관리자 승격"
+        message={promoteTarget ? `"${promoteTarget.name}" 을(를) 관리자로 승격합니다. 관리자는 기관 설정·멤버 관리 권한을 가집니다.` : ''}
+        confirmText="승격"
+        variant="warning"
       />
     </div>
   )
