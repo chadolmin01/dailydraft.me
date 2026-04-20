@@ -65,6 +65,7 @@ export const EditInterests: React.FC<EditInterestsProps> = ({
         <button
           type="button"
           onClick={addCustomTag}
+          aria-label="관심사 태그 추가"
           className="px-3 py-2 text-sm border border-border text-txt-secondary hover:bg-surface-sunken transition-colors"
         >
           <Plus size={14} />

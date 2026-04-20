@@ -64,6 +64,7 @@ export const EditSkills: React.FC<EditSkillsProps> = ({
         <button
           type="button"
           onClick={() => addSkill()}
+          aria-label="스킬 추가"
           className="px-3 py-2 text-sm border border-border text-txt-secondary hover:bg-surface-sunken transition-colors"
         >
           <Plus size={14} />

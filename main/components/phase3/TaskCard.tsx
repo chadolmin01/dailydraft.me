@@ -46,7 +46,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onDragStart, onClick }
             </div>
           )}
         </div>
-        <button className="text-txt-disabled hover:text-txt-secondary sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+        <button aria-label="더보기" className="text-txt-disabled hover:text-txt-secondary sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
           <MoreHorizontal size={14} />
         </button>
       </div>
