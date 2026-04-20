@@ -201,7 +201,7 @@ export function MyDataClient({ email, nickname, deletedAt, dataConsent, dataCons
                   onChange={e => setDeleteReason(e.target.value.slice(0, 500))}
                   rows={3}
                   placeholder="서비스 개선에 참고하겠습니다"
-                  className="w-full px-3 py-2 bg-surface-bg border border-border rounded-lg text-[13px] text-txt-primary focus:outline-none focus:border-brand resize-none"
+                  className="w-full px-3 py-2 bg-surface-bg border border-border rounded-lg text-[13px] text-txt-primary focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors resize-none"
                 />
               </div>
               <div className="flex gap-2">
