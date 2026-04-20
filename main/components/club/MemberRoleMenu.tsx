@@ -5,6 +5,7 @@ import { MoreVertical, Shield, ShieldOff, UserMinus, GraduationCap, Loader2 } fr
 import { toast } from 'sonner'
 import { useQueryClient } from '@tanstack/react-query'
 import { clubKeys } from '@/src/hooks/useClub'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 
 interface Props {
   slug: string
@@ -33,6 +34,7 @@ export function MemberRoleMenu({
 }: Props) {
   const [open, setOpen] = useState(false)
   const [pending, setPending] = useState(false)
+  const [showRemoveConfirm, setShowRemoveConfirm] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   const queryClient = useQueryClient()
 
@@ -84,8 +86,12 @@ export function MemberRoleMenu({
   const handleDemote = () => mutate({ role: 'member' }, `${memberName ?? '운영진'}님을 일반 멤버로 변경했습니다`)
   const handleGraduate = () => mutate({ role: 'alumni' }, `${memberName ?? '멤버'}님을 알럼나이로 전환했습니다`)
   const handleRemove = () => {
-    if (!confirm(`${memberName ?? '멤버'}님을 클럽에서 제거할까요? 되돌릴 수 없습니다`)) return
+    setShowRemoveConfirm(true)
+  }
+
+  const confirmRemove = () => {
     mutate({ action: 'remove' }, '멤버를 제거했습니다')
+    setShowRemoveConfirm(false)
   }
 
   if (!canPromote && !canDemote && !canRemove && !canGraduate) return null
@@ -144,6 +150,16 @@ export function MemberRoleMenu({
           )}
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={showRemoveConfirm}
+        onClose={() => setShowRemoveConfirm(false)}
+        onConfirm={async () => confirmRemove()}
+        title="멤버 제거"
+        message={`${memberName ?? '멤버'} 님을 클럽에서 제거합니다. 이 작업은 되돌릴 수 없으며, 재가입은 초대 코드가 필요합니다.`}
+        confirmText="제거"
+        variant="danger"
+      />
     </div>
   )
 }
