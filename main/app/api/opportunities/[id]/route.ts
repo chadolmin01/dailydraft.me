@@ -12,39 +12,33 @@ export const GET = withErrorCapture(async (_request, { params }: { params: Promi
     data: { user },
   } = await supabase.auth.getUser()
 
-  const { data: oppData, error } = await supabase
-    .from('opportunities')
-    .select('*')
-    .eq('id', id)
-    .single()
+  // opportunity + userApplication 은 서로 독립 → 병렬.
+  // creatorProfile 은 opportunity.creator_id 필요해 직렬 유지.
+  const [oppResult, applicationResult] = await Promise.all([
+    supabase.from('opportunities').select('*').eq('id', id).single(),
+    user
+      ? supabase
+          .from('applications')
+          .select('id, status, created_at')
+          .eq('opportunity_id', id)
+          .eq('applicant_id', user.id)
+          .single()
+      : Promise.resolve({ data: null }),
+  ])
 
-  if (error) {
+  if (oppResult.error) {
     return ApiResponse.notFound('Opportunity not found')
   }
 
-  const data = oppData as Opportunity
+  const data = oppResult.data as Opportunity
+  const userApplication = applicationResult.data
+  const isOwner = !!user && data.creator_id === user.id
 
   const { data: creatorProfile } = await supabase
     .from('profiles')
     .select('nickname, desired_position, skills, interest_tags')
     .eq('user_id', data.creator_id)
     .single()
-
-  let userApplication = null
-  let isOwner = false
-
-  if (user) {
-    isOwner = data.creator_id === user.id
-
-    const { data: application } = await supabase
-      .from('applications')
-      .select('id, status, created_at')
-      .eq('opportunity_id', id)
-      .eq('applicant_id', user.id)
-      .single()
-
-    userApplication = application
-  }
 
   return ApiResponse.ok({
     ...data,

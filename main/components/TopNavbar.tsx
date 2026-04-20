@@ -86,6 +86,7 @@ export const TopNavbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [searchActiveIdx, setSearchActiveIdx] = useState(0)
 
   useBackHandler(isSearchOpen, () => setIsSearchOpen(false), 'search')
   useBackHandler(isMenuOpen, () => setIsMenuOpen(false), 'profile-menu')
@@ -100,6 +101,24 @@ export const TopNavbar: React.FC = () => {
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  // Cmd+K / Ctrl+K 로 검색 열기 — 전역 단축키
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        setIsSearchOpen(true)
+        setTimeout(() => searchInputRef.current?.focus(), 50)
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
+  // 검색 필터 결과가 바뀌면 선택 인덱스 초기화
+  useEffect(() => {
+    setSearchActiveIdx(0)
+  }, [searchQuery])
 
   // 검색 패널 외부 클릭 감지
   useEffect(() => {
@@ -235,7 +254,12 @@ export const TopNavbar: React.FC = () => {
             >
               <Search size={15} className={`ml-3.5 shrink-0 transition-colors ${isSearchOpen ? 'text-txt-secondary' : 'text-txt-disabled'}`} />
               {!isSearchOpen ? (
-                <span className="flex-1 pl-2 pr-3.5 py-2 text-sm text-txt-disabled">페이지, 프로젝트, 사람 검색...</span>
+                <span className="flex-1 pl-2 pr-3 py-2 text-sm text-txt-disabled flex items-center justify-between">
+                  <span>페이지, 프로젝트, 사람 검색...</span>
+                  <kbd className="shrink-0 hidden lg:inline-flex items-center px-1.5 py-0.5 bg-surface-sunken rounded text-[10px] font-mono text-txt-disabled">
+                    ⌘K
+                  </kbd>
+                </span>
               ) : (
                 <input
                   ref={searchInputRef}
@@ -243,8 +267,30 @@ export const TopNavbar: React.FC = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Escape') { setIsSearchOpen(false) }
-                    if (e.key === 'Enter') handleSearch()
+                    if (e.key === 'Escape') {
+                      setIsSearchOpen(false)
+                      return
+                    }
+                    if (e.key === 'ArrowDown') {
+                      e.preventDefault()
+                      setSearchActiveIdx(i => Math.min(i + 1, filteredNav.length - 1))
+                      return
+                    }
+                    if (e.key === 'ArrowUp') {
+                      e.preventDefault()
+                      setSearchActiveIdx(i => Math.max(i - 1, 0))
+                      return
+                    }
+                    if (e.key === 'Enter') {
+                      // 필터 결과 중 활성 항목이 있으면 그쪽 우선, 아니면 검색 실행
+                      const target = filteredNav[searchActiveIdx]
+                      if (target) {
+                        router.push(target.href)
+                        closeSearchPanel()
+                      } else {
+                        handleSearch()
+                      }
+                    }
                   }}
                   className="flex-1 pl-2 pr-3 py-2 bg-transparent text-base sm:text-sm focus:outline-none"
                   placeholder="페이지, 프로젝트, 사람 검색..."
@@ -268,20 +314,28 @@ export const TopNavbar: React.FC = () => {
                       {searchQuery.trim() ? '바로가기' : '빠른 이동'}
                     </p>
                     {filteredNav.length > 0 ? (
-                      filteredNav.map((item) => (
-                        <Link
-                          key={item.href || item.label}
-                          href={item.href}
-                          onClick={closeSearchPanel}
-                          className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm transition-colors text-left text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary"
-                        >
-                          <div className="w-7 h-7 rounded-lg bg-surface-sunken flex items-center justify-center shrink-0">
-                            <item.icon size={14} />
-                          </div>
-                          <span>{item.label}</span>
-                          <ChevronRight size={12} className="ml-auto text-txt-disabled" />
-                        </Link>
-                      ))
+                      filteredNav.map((item, idx) => {
+                        const isActive = idx === searchActiveIdx
+                        return (
+                          <Link
+                            key={item.href || item.label}
+                            href={item.href}
+                            onClick={closeSearchPanel}
+                            onMouseEnter={() => setSearchActiveIdx(idx)}
+                            className={`w-full flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm transition-colors text-left ${
+                              isActive
+                                ? 'bg-surface-sunken text-txt-primary'
+                                : 'text-txt-secondary hover:bg-surface-sunken hover:text-txt-primary'
+                            }`}
+                          >
+                            <div className="w-7 h-7 rounded-lg bg-surface-sunken flex items-center justify-center shrink-0">
+                              <item.icon size={14} />
+                            </div>
+                            <span>{item.label}</span>
+                            <ChevronRight size={12} className="ml-auto text-txt-disabled" />
+                          </Link>
+                        )
+                      })
                     ) : (
                       <p className="px-2.5 py-2 text-xs text-txt-disabled">일치하는 페이지가 없습니다</p>
                     )}
