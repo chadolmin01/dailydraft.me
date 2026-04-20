@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { toastErrorWithRetry } from '@/src/lib/toast-helpers'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { useAuth } from '@/src/context/AuthContext'
 import { supabase } from '@/src/lib/supabase/client'
 import {
@@ -37,6 +38,7 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<PortfolioItem | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
   const resetForm = () => {
@@ -92,11 +94,13 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
     )
   }
 
-  const handleDelete = (id: string) => {
-    if (!confirm('이 포트폴리오를 삭제할까요?')) return
+  const doDelete = (id: string) => {
     setDeletingId(id)
     deleteItem.mutate(id, {
-      onSuccess: () => toast.success('삭제되었습니다'),
+      onSuccess: () => {
+        toast.success('삭제되었습니다')
+        setDeleteTarget(null)
+      },
       onError: () => toast.error('삭제에 실패했습니다'),
       onSettled: () => setDeletingId(null),
     })
@@ -228,7 +232,7 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
             >
               {isEditable && (
                 <button
-                  onClick={() => handleDelete(item.id)}
+                  onClick={() => setDeleteTarget(item)}
                   disabled={deletingId === item.id}
                   className="absolute top-2 right-2 z-20 w-7 h-7 rounded-full bg-surface-card border border-border flex items-center justify-center text-txt-disabled hover:text-status-danger-text hover:bg-status-danger-bg hover:border-status-danger-text/30 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
                   aria-label="삭제"
@@ -269,6 +273,19 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
           ))}
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={async () => {
+          if (!deleteTarget) return
+          doDelete(deleteTarget.id)
+        }}
+        title="포트폴리오 삭제"
+        message={deleteTarget ? `"${deleteTarget.title}" 을(를) 삭제합니다. 이미지도 함께 사라집니다.` : ''}
+        confirmText="삭제"
+        variant="danger"
+      />
     </section>
   )
 }
