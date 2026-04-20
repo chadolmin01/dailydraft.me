@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { UserPlus, Copy, Check, Loader2, Plus, Link2, MessageSquare, FileText, Power, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { APP_URL } from '@/src/constants'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 
 interface InviteCode {
   id: string
@@ -48,6 +49,7 @@ export function ClubInviteSection({ slug, clubName, viewerRole }: {
   const [copied, setCopied] = useState<string | null>(null)
   const [activeTemplate, setActiveTemplate] = useState<TemplateKind>('kakao')
   const [mutating, setMutating] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState<InviteCode | null>(null)
 
   const toggleActive = async (code: InviteCode) => {
     setMutating(true)
@@ -68,7 +70,6 @@ export function ClubInviteSection({ slug, clubName, viewerRole }: {
   }
 
   const deleteCode = async (code: InviteCode) => {
-    if (!confirm('이 초대 코드를 삭제할까요? 삭제하면 복구할 수 없습니다')) return
     setMutating(true)
     try {
       const res = await fetch(`/api/clubs/${slug}/invite-codes/${code.id}`, { method: 'DELETE' })
@@ -321,7 +322,7 @@ export function ClubInviteSection({ slug, clubName, viewerRole }: {
                     {active.is_active ? '비활성화' : '다시 활성화'}
                   </button>
                   <button
-                    onClick={() => deleteCode(active)}
+                    onClick={() => setDeleteTarget(active)}
                     disabled={mutating}
                     className="flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium text-txt-tertiary border border-border rounded-full hover:border-status-danger-text hover:text-status-danger-text transition-colors disabled:opacity-50"
                   >
@@ -376,6 +377,19 @@ export function ClubInviteSection({ slug, clubName, viewerRole }: {
           )}
         </>
       )}
+
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={async () => {
+          if (!deleteTarget) return
+          await deleteCode(deleteTarget)
+        }}
+        title="초대 코드 삭제"
+        message={deleteTarget ? `초대 코드 "${deleteTarget.code}" 를 삭제합니다. 이미 공유한 링크는 작동하지 않게 됩니다.` : ''}
+        confirmText="삭제"
+        variant="danger"
+      />
     </section>
   )
 }

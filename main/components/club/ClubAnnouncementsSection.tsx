@@ -6,6 +6,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Megaphone, Plus, Pin, PinOff, Trash2, Loader2, Send, X, Sparkles, Clock, Eye } from 'lucide-react'
 import { toast } from 'sonner'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { timeAgo } from '@/src/lib/utils'
 
 interface Announcement {
@@ -108,6 +109,7 @@ export function ClubAnnouncementsSection({ slug, isAdmin }: Props) {
   const [content, setContent] = useState('')
   const [pinNew, setPinNew] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState<Announcement | null>(null)
   const [scheduleDate, setScheduleDate] = useState('')
   const [scheduleTime, setScheduleTime] = useState('')
   const seenRef = useRef<Set<string>>(new Set())
@@ -206,7 +208,6 @@ export function ClubAnnouncementsSection({ slug, isAdmin }: Props) {
   }
 
   const handleDelete = async (a: Announcement) => {
-    if (!confirm('이 공지를 삭제할까요?')) return
     const res = await fetch(`/api/clubs/${slug}/announcements/${a.id}`, { method: 'DELETE' })
     if (res.ok) {
       toast.success('공지를 삭제했습니다')
@@ -360,11 +361,24 @@ export function ClubAnnouncementsSection({ slug, isAdmin }: Props) {
               slug={slug}
               isAdmin={isAdmin}
               onTogglePin={handleTogglePin}
-              onDelete={handleDelete}
+              onDelete={(x) => setDeleteTarget(x)}
             />
           ))}
         </ul>
       )}
+
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={async () => {
+          if (!deleteTarget) return
+          await handleDelete(deleteTarget)
+        }}
+        title="공지 삭제"
+        message={deleteTarget ? `"${deleteTarget.title}" 공지를 삭제합니다.` : ''}
+        confirmText="삭제"
+        variant="danger"
+      />
     </div>
   )
 }
