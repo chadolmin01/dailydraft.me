@@ -1,6 +1,7 @@
 import React from 'react'
 import { Navbar } from '@/components/home/Navbar'
 import { Hero } from '@/components/home/Hero'
+import { LiveMetrics } from '@/components/home/LiveMetrics'
 import { FeatureBar } from '@/components/home/FeatureBar'
 import { CognitiveSystem } from '@/components/home/CognitiveSystem'
 import { BeforeAfterTabs } from '@/components/home/BeforeAfterTabs'
