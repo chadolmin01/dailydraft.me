@@ -5,6 +5,7 @@ import { Providers } from '@/src/context/Providers'
 import { createServerSupabaseClient } from '@/src/lib/supabase/server'
 import { APP_URL } from '@/src/constants'
 import { TitleSync } from '@/components/TitleSync'
+import { WebVitalsReporter } from '@/components/WebVitalsReporter'
 import './globals.css'
 
 const notoSansKR = Noto_Sans_KR({
@@ -175,6 +176,7 @@ export default async function RootLayout({
         </a>
         <Providers initialUser={initialUser}>
           <TitleSync />
+          <WebVitalsReporter />
           {children}
         </Providers>
         {/* Google Analytics */}
