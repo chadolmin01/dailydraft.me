@@ -126,10 +126,11 @@ export default function AdminAuditPage() {
 
         {/* CSV 내보내기 — 현재 필터 유지. 최대 5,000 행, Excel 한글 BOM 포함 */}
         <a
-          href={`/api/admin/audit?format=csv${actionFilter ? `&action=${encodeURIComponent(actionFilter)}` : ''}`}
+          href={`/api/admin/audit/export${actionFilter ? `?action=${encodeURIComponent(actionFilter)}` : ''}`}
           className="ml-auto inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full border border-border bg-surface-card text-txt-secondary hover:border-txt-tertiary hover:text-txt-primary transition-colors"
           download
           aria-label="감사 로그 CSV 내보내기"
+          title="최대 10,000 행, 내보내기 자체도 역감사 기록"
         >
           <Download size={12} aria-hidden="true" />
           CSV 내보내기
