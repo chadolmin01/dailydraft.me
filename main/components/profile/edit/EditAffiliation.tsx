@@ -214,6 +214,8 @@ export const EditAffiliation: React.FC<EditAffiliationProps> = ({
                     onChange={e => { setVerifyCode(e.target.value.replace(/\D/g, '').slice(0, 6)); setVerifyError('') }}
                     placeholder="000000"
                     maxLength={6}
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
                     className="w-24 sm:w-32 px-3 py-2 text-base sm:text-sm font-mono text-center tracking-widest border border-border bg-surface-card rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
                   />
                   <button

@@ -101,6 +101,9 @@ export default function JoinClubClient({ slug, initialCode, club }: {
               onChange={e => setCode(e.target.value.toUpperCase().slice(0, 30))}
               placeholder="XXXXXXXX"
               autoFocus
+              autoComplete="off"
+              autoCapitalize="characters"
+              spellCheck={false}
               className="w-full mt-2 px-4 py-3 text-[18px] tracking-wider tabular-nums font-bold bg-surface-bg border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/40"
             />
             <p className="text-[11px] text-txt-tertiary mt-2">

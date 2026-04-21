@@ -30,6 +30,7 @@ export const EditBasicInfo: React.FC<EditBasicInfoProps> = ({
                 onChange={(e) => setNickname(e.target.value.slice(0, 7))}
                 maxLength={7}
                 placeholder="어떻게 불러드릴까요?"
+                autoComplete="nickname"
                 className={`w-full px-3 py-2.5 text-base sm:text-sm border bg-surface-card rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all ${!nickname.trim() ? 'border-status-danger-text/30' : 'border-border'}`}
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono text-txt-disabled">{nickname.length}/7</span>

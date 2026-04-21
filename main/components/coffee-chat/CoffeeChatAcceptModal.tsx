@@ -108,6 +108,8 @@ export function CoffeeChatAcceptModal({
                 value={contactPhone}
                 onChange={e => setContactPhone(e.target.value)}
                 placeholder="전화번호"
+                inputMode="tel"
+                autoComplete="tel"
                 className="flex-1 px-3 py-2 text-base sm:text-sm border border-border bg-surface-card rounded-xl text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
               />
             </div>
