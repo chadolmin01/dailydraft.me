@@ -61,7 +61,7 @@ export const Footer: React.FC = () => {
   return (
     <footer className="border-t border-border bg-surface-card relative z-10">
       <div className="max-w-5xl mx-auto px-6 md:px-10 py-12">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-10 mb-10">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 md:gap-6 lg:gap-10 mb-10">
           {/* Logo & tagline */}
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-2 mb-4">

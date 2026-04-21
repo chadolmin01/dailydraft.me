@@ -96,6 +96,54 @@ export default function TrustCenterPage() {
         </p>
       </Section>
 
+      {/* 3.5 보안 헤더 */}
+      <Section
+        id="security-headers"
+        icon={Lock}
+        title="HTTP 보안 헤더"
+      >
+        <p>
+          모든 HTML 응답에 공통 보안 헤더를 적용합니다. 외부 검증 도구(securityheaders.com)에서 A+
+          수준을 목표로 운영합니다.
+        </p>
+        <div className="rounded-xl border border-border overflow-hidden mt-3">
+          <table className="w-full text-[12px]">
+            <thead className="bg-surface-sunken text-txt-secondary">
+              <tr>
+                <th className="text-left px-3 py-2 font-semibold">헤더</th>
+                <th className="text-left px-3 py-2 font-semibold">값·목적</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border text-txt-secondary">
+              <tr>
+                <td className="px-3 py-2 font-mono text-[11px] text-txt-primary">Strict-Transport-Security</td>
+                <td className="px-3 py-2">max-age=31536000; includeSubDomains; preload — HTTPS 강제 1년</td>
+              </tr>
+              <tr>
+                <td className="px-3 py-2 font-mono text-[11px] text-txt-primary">X-Content-Type-Options</td>
+                <td className="px-3 py-2">nosniff — MIME 스니핑 차단</td>
+              </tr>
+              <tr>
+                <td className="px-3 py-2 font-mono text-[11px] text-txt-primary">X-Frame-Options</td>
+                <td className="px-3 py-2">DENY — clickjacking 방어 (/embed/* 제외)</td>
+              </tr>
+              <tr>
+                <td className="px-3 py-2 font-mono text-[11px] text-txt-primary">Referrer-Policy</td>
+                <td className="px-3 py-2">strict-origin-when-cross-origin — 리퍼러 누출 제한</td>
+              </tr>
+              <tr>
+                <td className="px-3 py-2 font-mono text-[11px] text-txt-primary">Permissions-Policy</td>
+                <td className="px-3 py-2">camera=() microphone=() geolocation=() — 민감 API 차단</td>
+              </tr>
+              <tr>
+                <td className="px-3 py-2 font-mono text-[11px] text-txt-primary">Content-Security-Policy</td>
+                <td className="px-3 py-2">script/style/img/connect 허용 출처 명시 + report-uri /api/csp-report</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Section>
+
       {/* 4. 약관 */}
       <Section
         id="terms"
