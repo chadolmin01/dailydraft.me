@@ -104,6 +104,13 @@ export default function ApiDocsPage() {
           desc="공개 로드맵 Atom 1.0 피드. 분기별 entry + 상태 이모지 (✅🛠️⏸️📌)."
           cache="1시간 edge + stale 24시간"
         />
+
+        <EndpointCard
+          method="GET"
+          path="/status/feed.xml"
+          desc="공개 인시던트 Atom 1.0 피드. 최근 90일 SEV-0~SEV-3. 엔터프라이즈 모니터링 대시보드 구독용."
+          cache="5분 edge + stale 15분"
+        />
       </Section>
 
       {/* 검색 */}
