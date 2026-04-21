@@ -2,10 +2,20 @@
 
 import React from 'react'
 
-function Skeleton({ className = '', ...props }: React.HTMLAttributes<HTMLDivElement>) {
+/**
+ * Skeleton primitive — `skeleton-delayed` 을 default on 으로.
+ * 400ms 안에 로딩이 끝나면 skeleton 자체가 눈에 띄지 않음 → 와이어프레임 깜빡임 제거.
+ * 긴 로딩만 실제로 보이게. `immediate` prop 으로 이 기본값을 끌 수 있음
+ * (테스트/스토리북 등).
+ */
+interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
+  immediate?: boolean
+}
+
+function Skeleton({ className = '', immediate = false, ...props }: SkeletonProps) {
   return (
     <div
-      className={`skeleton-shimmer rounded-xl ${className}`}
+      className={`skeleton-shimmer ${immediate ? '' : 'skeleton-delayed'} ${className}`}
       {...props}
     />
   )
@@ -14,7 +24,7 @@ function Skeleton({ className = '', ...props }: React.HTMLAttributes<HTMLDivElem
 /** Card-shaped skeleton with realistic layout */
 function SkeletonCard({ rows = 3 }: { rows?: number }) {
   return (
-    <div className="bg-surface-card rounded-xl border border-border p-4 space-y-3">
+    <div className="bg-surface-card rounded-xl border border-border p-4 space-y-3 skeleton-delayed">
       {/* Header: avatar + title */}
       <div className="flex items-center gap-3">
         <Skeleton className="w-9 h-9 rounded-full shrink-0" />
@@ -39,7 +49,7 @@ function SkeletonCard({ rows = 3 }: { rows?: number }) {
 /** Grid of card skeletons */
 function SkeletonGrid({ count = 4, cols = 2 }: { count?: number; cols?: number }) {
   return (
-    <div className={`grid gap-4 ${cols === 1 ? 'grid-cols-1' : cols === 3 ? 'grid-cols-1 md:grid-cols-3' : 'grid-cols-1 md:grid-cols-2'}`}>
+    <div className={`grid gap-4 skeleton-delayed ${cols === 1 ? 'grid-cols-1' : cols === 3 ? 'grid-cols-1 md:grid-cols-3' : 'grid-cols-1 md:grid-cols-2'}`}>
       {Array.from({ length: count }).map((_, i) => (
         <SkeletonCard key={i} />
       ))}
@@ -50,7 +60,7 @@ function SkeletonGrid({ count = 4, cols = 2 }: { count?: number; cols?: number }
 /** Sidebar-shaped skeleton */
 function SkeletonSidebar() {
   return (
-    <div className="bg-surface-card rounded-xl border border-border p-4 space-y-4">
+    <div className="bg-surface-card rounded-xl border border-border p-4 space-y-4 skeleton-delayed">
       <Skeleton className="h-3 w-20 rounded" />
       {Array.from({ length: 5 }).map((_, i) => (
         <div key={i} className="flex items-center gap-3">
@@ -65,7 +75,7 @@ function SkeletonSidebar() {
 /** Profile skeleton */
 function SkeletonProfile() {
   return (
-    <div className="bg-surface-card rounded-xl border border-border p-6 space-y-4">
+    <div className="bg-surface-card rounded-xl border border-border p-6 space-y-4 skeleton-delayed">
       <div className="flex items-center gap-4">
         <Skeleton className="w-16 h-16 rounded-full shrink-0" />
         <div className="flex-1 space-y-2">
@@ -85,7 +95,7 @@ function SkeletonProfile() {
 /** Feed-style skeleton — for explore/project lists */
 function SkeletonFeed({ count = 3 }: { count?: number }) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 skeleton-delayed">
       {Array.from({ length: count }).map((_, i) => (
         <div key={i} className="bg-surface-card rounded-xl border border-border p-4">
           <div className="flex items-center gap-3 mb-3">

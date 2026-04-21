@@ -406,12 +406,18 @@ a[class*="px-"]:active {
 
 /* ============================================================
    ROUTE PROGRESS BAR
-   ============================================================ */
+   ── 페이지 전환 중 상단 얇은 라인. 스켈레톤이 등장하기 전에 이미 "로딩 중"을
+      신호로 주어 유저가 인지적으로 안정됨. NProgress 패턴. */
 
 @keyframes progressIndeterminate {
   0% { transform: translateX(-100%); }
   50% { transform: translateX(0%); }
   100% { transform: translateX(200%); }
+}
+
+@keyframes progressBarFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .route-progress-bar {
@@ -423,15 +429,21 @@ a[class*="px-"]:active {
   z-index: 9999;
   overflow: hidden;
   pointer-events: none;
+  animation: progressBarFadeIn 160ms ease-out;
 }
 
 .route-progress-bar::after {
   content: '';
   display: block;
-  width: 50%;
+  width: 40%;
   height: 100%;
-  background: var(--accent-primary);
-  animation: progressIndeterminate 1s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--brand) 50%,
+    transparent 100%
+  );
+  animation: progressIndeterminate 1.1s cubic-bezier(0.65, 0, 0.35, 1) infinite;
 }
 
 /* ============================================================
@@ -638,15 +650,86 @@ a[class*="px-"]:active {
    MLP MICRO-INTERACTIONS
    ============================================================ */
 
-/* ── Skeleton Shimmer ── */
+/* ── Skeleton Shimmer ──
+   Softer gradient (덜 와이어프레임처럼), 느린 루프로 덜 산만 */
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
+/* skeleton-shimmer 는 shimmer 애니와 "딜레이드 페이드인" 을 합쳐서 기본으로
+   적용. 0~360ms 는 opacity 0 이므로 짧은 로딩은 와이어프레임이 아예 안 보임 →
+   빠른 페이지 전환에서 "스켈레톤 깜빡임" 이 사라짐. */
 .skeleton-shimmer {
-  background: linear-gradient(90deg, var(--surface-sunken) 25%, var(--border-subtle) 50%, var(--surface-sunken) 75%);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--surface-sunken) 95%, transparent) 25%,
+    color-mix(in srgb, var(--border-subtle) 60%, transparent) 50%,
+    color-mix(in srgb, var(--surface-sunken) 95%, transparent) 75%
+  );
   background-size: 200% 100%;
-  animation: shimmer 1.5s ease-in-out infinite;
+  animation:
+    skeletonAppear 900ms ease-out both,
+    shimmer 2.2s ease-in-out infinite;
+  border-radius: 10px;
+}
+
+/* ── Delayed Skeleton (wrapper) ──
+   카드/섹션 래퍼에 붙여 통째로 딜레이드 페이드인. 개별 shimmer 엘리먼트는
+   위에서 이미 같은 페이드를 갖지만, 래퍼 border·background 도 함께 숨기고
+   싶을 때 사용. */
+@keyframes skeletonAppear {
+  0%, 40% { opacity: 0; }
+  100% { opacity: 1; }
+}
+.skeleton-delayed {
+  animation: skeletonAppear 900ms ease-out;
+  animation-fill-mode: both;
+}
+
+/* ── Page Enter (route change crossfade) ──
+   PageTransition 컴포넌트에서 key 를 증가시키면 이 애니메이션이 매번 재생됨.
+   기존에는 animate-page-enter 클래스 자체가 정의되지 않아 아무 효과도 없었음.
+   이제 260ms 부드러운 crossfade + 미세 slide 로 페이지 바뀌는 게 인지되도록 함. */
+@keyframes pageEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-page-enter {
+  animation: pageEnter 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+/* ── View Transitions API (modern browsers) ──
+   Chrome/Edge 는 MPA navigation 에서 자동 크로스페이드. Next.js 는 SPA 라서
+   document.startViewTransition() 수동 호출이 필요하지만, 일단 CSS 스펙을 미리
+   두면 미래 Next 버전에서 자동 활성화되면 바로 적용됨. */
+@supports (view-transition-name: root) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 240ms;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+/* ── Reduced Motion ──
+   WCAG 2.3.3. 시스템에서 "모션 줄이기" 켠 유저는 페이지 전환·스켈레톤 애니
+   전부 끄기. 시각 피로·멀미 방지. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-page-enter,
+  .skeleton-shimmer,
+  .skeleton-delayed,
+  .route-progress-bar::after {
+    animation: none !important;
+  }
+  .skeleton-shimmer {
+    background: var(--surface-sunken);
+  }
 }
 
 /* ── Grid Stagger Entrance ── */
