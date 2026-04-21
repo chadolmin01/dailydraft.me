@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { Command } from 'cmdk'
-import { Search, Compass, FolderKanban, Users, HelpCircle, Shield, Sparkles, FileText, BookOpen } from 'lucide-react'
+import { Search, Compass, FolderKanban, Users, HelpCircle, Shield, Sparkles, FileText, BookOpen, Building2, Mail, Activity } from 'lucide-react'
 
 /**
  * 전역 커맨드 팔레트 — Cmd/Ctrl+K 로 어디서든 호출.
@@ -117,6 +117,9 @@ export function CommandPalette() {
                 <PaletteItem icon={Sparkles}   label="릴리스 노트"     onSelect={() => go('/changelog')} />
                 <PaletteItem icon={FileText}   label="로드맵"         onSelect={() => go('/roadmap')} />
                 <PaletteItem icon={Shield}     label="신뢰 센터"       onSelect={() => go('/trust')} />
+                <PaletteItem icon={Building2}  label="기관·기업 도입"   onSelect={() => go('/enterprise')} />
+                <PaletteItem icon={Activity}   label="시스템 상태"      onSelect={() => go('/status')} />
+                <PaletteItem icon={Mail}       label="연락처"          onSelect={() => go('/contact')} />
               </Command.Group>
             </>
           )}
