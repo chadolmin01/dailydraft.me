@@ -92,7 +92,7 @@ export default function TrustCenterPage() {
           부가로 Dependabot 주간 스캔, gitleaks·trufflehog secret-scan CI, 분기별 시크릿 로테이션 런북을 운영합니다.
         </p>
         <p>
-          보안 연구자용 공식 제보 경로는 <LinkInline external href="/.well-known/security.txt">RFC 9116 security.txt</LinkInline>. 초기 응답 24시간, 초기 평가 72시간, 수정 배포 최대 30일의 대응 SLA 를 공개 <LinkInline href="https://github.com/chadolmin01/dailydraft.me/blob/main/main/SECURITY.md" external>SECURITY.md</LinkInline> 에 두고 있습니다.
+          보안 연구자용 공식 제보 경로는 <LinkInline href="/security">취약점 제보 가이드</LinkInline> 와 <LinkInline external href="/.well-known/security.txt">RFC 9116 security.txt</LinkInline>. 초기 응답 24시간, 초기 평가 72시간, 수정 배포 최대 30일의 대응 SLA + Safe Harbor 조항을 공개 정책으로 운영합니다.
         </p>
       </Section>
 

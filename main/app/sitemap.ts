@@ -70,6 +70,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/login`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.3 },
     // 법적 고지 (Meta App Review 제출 URL — 공개 접근 필수, 검색 노출 허용)
     { url: `${baseUrl}/legal`, lastModified: new Date('2026-04-22'), changeFrequency: 'monthly', priority: 0.4 },
+    { url: `${baseUrl}/security`, lastModified: new Date('2026-04-22'), changeFrequency: 'monthly', priority: 0.5 },
     { url: `${baseUrl}/legal/privacy`, lastModified: new Date('2026-04-21'), changeFrequency: 'monthly', priority: 0.4 },
     { url: `${baseUrl}/legal/terms`, lastModified: new Date('2026-04-21'), changeFrequency: 'monthly', priority: 0.4 },
     { url: `${baseUrl}/legal/data-deletion`, lastModified: new Date('2026-04-21'), changeFrequency: 'monthly', priority: 0.3 },

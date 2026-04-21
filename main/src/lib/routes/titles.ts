@@ -90,6 +90,7 @@ export const ROUTE_TITLES: Record<string, string> = {
 
   // Meta App Review 제출 URL (공개, 로그인 없이 접근)
   '/legal': '법적 고지 모음',
+  '/security': '보안 취약점 제보',
   '/legal/privacy': '개인정보처리방침',
   '/legal/terms': '서비스 이용약관',
   '/legal/data-deletion': '데이터 삭제 요청',

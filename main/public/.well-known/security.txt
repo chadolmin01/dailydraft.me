@@ -10,5 +10,5 @@ Contact: mailto:team@dailydraft.me
 Expires: 2027-04-21T00:00:00.000Z
 Preferred-Languages: ko, en
 Canonical: https://dailydraft.me/.well-known/security.txt
-Policy: https://github.com/chadolmin01/dailydraft.me/blob/main/main/SECURITY.md
+Policy: https://dailydraft.me/security
 Acknowledgments: https://github.com/chadolmin01/dailydraft.me/blob/main/main/SECURITY.md#acknowledgements
