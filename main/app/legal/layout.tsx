@@ -30,7 +30,7 @@ export default function LegalLayout({ children }: { children: React.ReactNode })
             <ArrowLeft size={14} aria-hidden="true" />
             Draft 홈
           </Link>
-          <nav aria-label="법적 페이지" className="flex items-center gap-4 text-[12px] text-txt-tertiary">
+          <nav aria-label="법적 페이지" className="flex items-center gap-3 flex-wrap text-[12px] text-txt-tertiary">
             <Link
               href="/legal/privacy"
               className="hover:text-txt-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded"
@@ -48,6 +48,24 @@ export default function LegalLayout({ children }: { children: React.ReactNode })
               className="hover:text-txt-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded"
             >
               데이터 삭제
+            </Link>
+            <Link
+              href="/legal/retention"
+              className="hover:text-txt-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded"
+            >
+              보관·파기
+            </Link>
+            <Link
+              href="/legal/subprocessors"
+              className="hover:text-txt-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded"
+            >
+              수탁업체
+            </Link>
+            <Link
+              href="/legal/cookies"
+              className="hover:text-txt-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded"
+            >
+              쿠키
             </Link>
           </nav>
         </div>

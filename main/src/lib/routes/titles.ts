@@ -89,6 +89,7 @@ export const ROUTE_TITLES: Record<string, string> = {
   '/status': '시스템 상태',
 
   // Meta App Review 제출 URL (공개, 로그인 없이 접근)
+  '/legal': '법적 고지 모음',
   '/legal/privacy': '개인정보처리방침',
   '/legal/terms': '서비스 이용약관',
   '/legal/data-deletion': '데이터 삭제 요청',
