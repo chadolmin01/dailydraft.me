@@ -47,6 +47,13 @@ const nextConfig: NextConfig = {
     position: 'bottom-right',
   },
 
+  // 번들 사이즈 축소 — tree-shaking 이 약한 라이브러리를 named import 기반으로 최적화.
+  // lucide-react 는 alias import 구조라 미최적화 시 500+ 아이콘이 전부 번들에 포함됨.
+  // date-fns 도 전체 네임스페이스 import 시 수백 KB 증가. 실측 50%+ 번들 감소 패턴.
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'date-fns'],
+  },
+
   // Image optimization with allowed remote patterns
   images: {
     dangerouslyAllowSVG: true,
@@ -54,6 +61,11 @@ const nextConfig: NextConfig = {
     // AVIF 우선(가장 작음), fallback WebP. 최신 브라우저 대부분 지원.
     // 대용량 이미지(업로드 avatar·club logo) 네트워크 비용 30~50% 감소.
     formats: ['image/avif', 'image/webp'],
+    // 모바일 우선이므로 기본 deviceSizes 중 2048/3840(초대형 레티나) 제거.
+    // 상한 1920 이면 4K 레티나 빼고 전부 커버. 변환 비용/CDN 저장 비용 감소.
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    // 아바타·아이콘·썸네일용 — 16~256px 범위면 대부분 케이스 커버
+    imageSizes: [16, 32, 48, 64, 96, 128, 256],
     // 사용자 업로드 이미지 최대 크기 — 모바일 기준 과도 큰 원본 방지
     minimumCacheTTL: 60 * 60 * 24, // 24h
     remotePatterns: [

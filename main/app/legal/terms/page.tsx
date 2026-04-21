@@ -12,15 +12,35 @@ import Link from 'next/link'
  * 운영 주체 플레이스홀더 — 사업자 등록 완료 시 `이성민 (사업자 등록 예정)` 을 실제 상호로 교체.
  */
 
+const LAST_UPDATED = '2026년 4월 21일'
+const EFFECTIVE_DATE = '2026년 4월 27일'
+const PUBLISHED_ISO = '2026-04-21T00:00:00+09:00'
+const MODIFIED_ISO = '2026-04-21T00:00:00+09:00'
+
 export const metadata: Metadata = {
   title: '서비스 이용약관 · Draft',
   description:
     'Draft 서비스 이용약관 — 이용계약, 회원 의무, 자동 발행 특약, 지적재산권, 준거법.',
   robots: { index: true, follow: true },
+  alternates: {
+    canonical: '/legal/terms',
+    languages: {
+      'ko-KR': '/legal/terms',
+      'x-default': '/legal/terms',
+    },
+  },
+  openGraph: {
+    type: 'article',
+    title: '서비스 이용약관 · Draft',
+    description:
+      'Draft 서비스 이용약관 — 이용계약, 회원 의무, 자동 발행 특약, 지적재산권, 준거법.',
+    url: '/legal/terms',
+    siteName: 'Draft',
+    locale: 'ko_KR',
+    publishedTime: PUBLISHED_ISO,
+    modifiedTime: MODIFIED_ISO,
+  },
 }
-
-const LAST_UPDATED = '2026년 4월 21일'
-const EFFECTIVE_DATE = '2026년 4월 27일'
 
 export default function TermsOfServicePage() {
   return (

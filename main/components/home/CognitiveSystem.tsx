@@ -78,11 +78,12 @@ export const CognitiveSystem: React.FC = () => {
   return (
     <section
       id="cognitive-system"
+      aria-labelledby="cognitive-system-title"
       className="relative w-full py-28 sm:py-36 px-4 sm:px-6 lg:px-8 border-y border-border bg-surface-card"
     >
       {/* 미묘한 글로우 — 섹션 의미 강화 */}
       <div
-        aria-hidden
+        aria-hidden="true"
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
@@ -106,6 +107,7 @@ export const CognitiveSystem: React.FC = () => {
             How Draft works
           </motion.p>
           <motion.h2
+            id="cognitive-system-title"
             variants={fadeUp}
             className="text-[30px] sm:text-[40px] md:text-[46px] font-bold tracking-[-0.025em] leading-[1.1] text-txt-primary mb-5 break-keep"
           >
@@ -121,17 +123,17 @@ export const CognitiveSystem: React.FC = () => {
           </motion.p>
         </motion.div>
 
-        {/* 3-Layer Flow */}
-        <motion.div
+        {/* 3-Layer Flow — 의미상 순서가 있으므로 ol. 리스트 스타일은 제거. */}
+        <motion.ol
           variants={stagger}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-60px' }}
-          className="relative grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-4"
+          className="relative grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-4 list-none p-0 m-0"
         >
-          {/* Connecting line — desktop only, subtle gradient */}
+          {/* Connecting line — desktop only, subtle gradient (장식용) */}
           <div
-            aria-hidden
+            aria-hidden="true"
             className="hidden md:block absolute top-[58px] left-[8%] right-[8%] h-px"
             style={{
               background:
@@ -142,17 +144,18 @@ export const CognitiveSystem: React.FC = () => {
           {LAYERS.map((layer) => {
             const Icon = layer.icon
             return (
-              <motion.div
+              <motion.li
                 key={layer.index}
                 variants={fadeUp}
                 className="relative flex flex-col items-center text-center px-5 sm:px-6"
               >
-                {/* Icon circle with index */}
+                {/* Icon circle with index — 아이콘은 장식, 인덱스 숫자가 스크린리더 노출 */}
                 <div className="relative z-10 mb-8">
                   <div
+                    aria-hidden="true"
                     className={`w-[72px] h-[72px] rounded-2xl flex items-center justify-center ${layer.accent}`}
                   >
-                    <Icon size={26} strokeWidth={1.8} />
+                    <Icon size={26} strokeWidth={1.8} aria-hidden="true" />
                   </div>
                   <span className="absolute -top-2 -right-2 text-[10px] font-mono font-bold text-txt-tertiary bg-surface-bg border border-border rounded-full px-1.5 py-0.5">
                     {layer.index}
@@ -174,21 +177,24 @@ export const CognitiveSystem: React.FC = () => {
                   {layer.desc}
                 </p>
 
-                {/* Example chips */}
-                <div className="flex flex-wrap items-center justify-center gap-1.5">
+                {/* Example chips — 실제 리스트이므로 ul/li */}
+                <ul
+                  aria-label={`${layer.role} 예시`}
+                  className="flex flex-wrap items-center justify-center gap-1.5 list-none p-0 m-0"
+                >
                   {layer.examples.map((ex) => (
-                    <span
+                    <li
                       key={ex}
                       className="text-[11px] font-medium text-txt-tertiary bg-surface-bg rounded-md px-2 py-1"
                     >
                       {ex}
-                    </span>
+                    </li>
                   ))}
-                </div>
-              </motion.div>
+                </ul>
+              </motion.li>
             )
           })}
-        </motion.div>
+        </motion.ol>
 
         {/* Footnote — "학생 부하 0" 원칙 */}
         <motion.p

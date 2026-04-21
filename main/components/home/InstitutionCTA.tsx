@@ -60,6 +60,7 @@ export const InstitutionCTA: React.FC = () => {
   return (
     <section
       id="institutions"
+      aria-labelledby="institutions-title"
       className="w-full px-4 sm:px-6 lg:px-8 py-20 sm:py-24"
     >
       <div className="max-w-[1200px] mx-auto">
@@ -72,12 +73,14 @@ export const InstitutionCTA: React.FC = () => {
         >
           <motion.span
             variants={fadeUp}
+            lang="en"
             className="text-[10px] font-mono uppercase tracking-wider text-txt-tertiary block mb-3"
           >
             For Institutions
           </motion.span>
 
           <motion.h2
+            id="institutions-title"
             variants={fadeUp}
             className="text-2xl md:text-3xl lg:text-4xl font-bold text-txt-primary tracking-tight mb-6 max-w-2xl break-keep"
           >
@@ -112,11 +115,12 @@ export const InstitutionCTA: React.FC = () => {
                 <Link
                   key={cta.label}
                   href={cta.href}
-                  className="group inline-flex items-center justify-center gap-1.5 bg-surface-inverse text-txt-inverse px-6 py-3 rounded-full font-semibold text-[14px] hover:opacity-90 active:scale-[0.98] transition-all duration-200"
+                  className="group inline-flex items-center justify-center gap-1.5 bg-surface-inverse text-txt-inverse px-6 py-3 rounded-full font-semibold text-[14px] hover:opacity-90 active:scale-[0.98] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
                 >
                   {cta.label}
                   <ArrowRight
                     size={14}
+                    aria-hidden="true"
                     className="group-hover:translate-x-0.5 transition-transform"
                   />
                 </Link>
@@ -124,7 +128,7 @@ export const InstitutionCTA: React.FC = () => {
                 <Link
                   key={cta.label}
                   href={cta.href}
-                  className="inline-flex items-center justify-center px-6 py-3 rounded-full font-semibold text-[14px] text-txt-secondary bg-surface-card border border-border hover:bg-surface-card hover:text-txt-primary transition-colors duration-200"
+                  className="inline-flex items-center justify-center px-6 py-3 rounded-full font-semibold text-[14px] text-txt-secondary bg-surface-card border border-border hover:bg-surface-card hover:text-txt-primary transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
                 >
                   {cta.label}
                 </Link>

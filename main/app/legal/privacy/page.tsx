@@ -15,15 +15,37 @@ import Link from 'next/link'
  * 이 페이지는 `/legal/layout.tsx` 가 navbar 없는 공개 레이아웃을 제공하므로 추가 chrome 불필요.
  */
 
+const LAST_UPDATED = '2026년 4월 21일'
+const EFFECTIVE_DATE = '2026년 4월 27일'
+// ISO8601 for OG article times — 크롤러가 최종 수정일을 인식해 last-crawled 기준 결정.
+const PUBLISHED_ISO = '2026-04-21T00:00:00+09:00'
+const MODIFIED_ISO = '2026-04-21T00:00:00+09:00'
+
 export const metadata: Metadata = {
   title: '개인정보처리방침 · Draft',
   description:
     'Draft 개인정보처리방침 — 수집 항목, 목적, 보관 기간, 이용자 권리, Meta 플랫폼 데이터에 관한 고지.',
+  // 공개 정책 문서는 반드시 색인되어야 함 (Meta App Review · 기관 계약 실사 검증용).
   robots: { index: true, follow: true },
+  alternates: {
+    canonical: '/legal/privacy',
+    languages: {
+      'ko-KR': '/legal/privacy',
+      'x-default': '/legal/privacy',
+    },
+  },
+  openGraph: {
+    type: 'article',
+    title: '개인정보처리방침 · Draft',
+    description:
+      'Draft 개인정보처리방침 — 수집 항목, 목적, 보관 기간, 이용자 권리, Meta 플랫폼 데이터에 관한 고지.',
+    url: '/legal/privacy',
+    siteName: 'Draft',
+    locale: 'ko_KR',
+    publishedTime: PUBLISHED_ISO,
+    modifiedTime: MODIFIED_ISO,
+  },
 }
-
-const LAST_UPDATED = '2026년 4월 21일'
-const EFFECTIVE_DATE = '2026년 4월 27일'
 
 export default function PrivacyPolicyPage() {
   return (

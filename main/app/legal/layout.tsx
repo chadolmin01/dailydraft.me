@@ -12,6 +12,11 @@ import { ArrowLeft } from 'lucide-react'
  * - Meta 제출 URL 은 `/legal/privacy`, `/legal/terms`, `/legal/data-deletion` 으로 별도 분리
  *   (`docs/meta-app-review/privacy-policy-checklist.md` 참조). 이 경로가 Meta app settings
  *   URL 필드에 들어가는 최종 공개 링크.
+ *
+ * 접근성:
+ * - 상위 `app/layout.tsx` 에 `<html lang="ko">` 선언되어 있어 여기서 중복 금지.
+ * - skip-link 는 상위 layout 의 전역 링크가 `#main-content` 를 가리키므로, 본 layout 의 `<main>`
+ *   id 도 반드시 `main-content` 로 맞춰야 키보드 사용자가 건너뛸 수 있음.
  */
 export default function LegalLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -20,25 +25,36 @@ export default function LegalLayout({ children }: { children: React.ReactNode })
         <div className="max-w-3xl mx-auto px-6 h-14 flex items-center justify-between">
           <Link
             href="/"
-            className="flex items-center gap-2 text-[13px] text-txt-secondary hover:text-txt-primary transition-colors"
+            className="flex items-center gap-2 text-[13px] text-txt-secondary hover:text-txt-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded"
           >
-            <ArrowLeft size={14} />
+            <ArrowLeft size={14} aria-hidden="true" />
             Draft 홈
           </Link>
-          <nav className="flex items-center gap-4 text-[12px] text-txt-tertiary">
-            <Link href="/legal/privacy" className="hover:text-txt-primary transition-colors">
+          <nav aria-label="법적 페이지" className="flex items-center gap-4 text-[12px] text-txt-tertiary">
+            <Link
+              href="/legal/privacy"
+              className="hover:text-txt-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded"
+            >
               개인정보
             </Link>
-            <Link href="/legal/terms" className="hover:text-txt-primary transition-colors">
+            <Link
+              href="/legal/terms"
+              className="hover:text-txt-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded"
+            >
               약관
             </Link>
-            <Link href="/legal/data-deletion" className="hover:text-txt-primary transition-colors">
+            <Link
+              href="/legal/data-deletion"
+              className="hover:text-txt-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded"
+            >
               데이터 삭제
             </Link>
           </nav>
         </div>
       </header>
-      <main className="max-w-3xl mx-auto px-6 py-16 print:py-0">{children}</main>
+      <main id="main-content" tabIndex={-1} className="max-w-3xl mx-auto px-6 py-16 print:py-0 focus:outline-none">
+        {children}
+      </main>
     </div>
   )
 }

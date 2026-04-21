@@ -15,14 +15,34 @@ import Link from 'next/link'
  * 반환해야 하며, 이 페이지에서 status URL 포맷을 안내.
  */
 
+const LAST_UPDATED = '2026년 4월 21일'
+const PUBLISHED_ISO = '2026-04-21T00:00:00+09:00'
+const MODIFIED_ISO = '2026-04-21T00:00:00+09:00'
+
 export const metadata: Metadata = {
   title: '데이터 삭제 요청 · Draft',
   description:
     'Draft 계정 및 외부 채널 연동 데이터 삭제 요청 방법 — 앱 내 설정, Meta 자동 웹훅, 이메일.',
   robots: { index: true, follow: true },
+  alternates: {
+    canonical: '/legal/data-deletion',
+    languages: {
+      'ko-KR': '/legal/data-deletion',
+      'x-default': '/legal/data-deletion',
+    },
+  },
+  openGraph: {
+    type: 'article',
+    title: '데이터 삭제 요청 · Draft',
+    description:
+      'Draft 계정 및 외부 채널 연동 데이터 삭제 요청 방법 — 앱 내 설정, Meta 자동 웹훅, 이메일.',
+    url: '/legal/data-deletion',
+    siteName: 'Draft',
+    locale: 'ko_KR',
+    publishedTime: PUBLISHED_ISO,
+    modifiedTime: MODIFIED_ISO,
+  },
 }
-
-const LAST_UPDATED = '2026년 4월 21일'
 
 export default function DataDeletionPage() {
   return (

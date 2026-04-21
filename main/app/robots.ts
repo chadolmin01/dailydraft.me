@@ -17,7 +17,9 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: '*',
-        allow: '/',
+        // Allow 는 Disallow 보다 구체적이어야 우선한다. /api/og/ 를 명시적으로 허용해서
+        // OG 이미지 크롤(트위터·링크드인·슬랙 unfurl) 이 가능하게 하고, 나머지 /api/ 는 차단.
+        allow: ['/', '/api/og/'],
         disallow: [
           '/api/',
           // 관리자 영역

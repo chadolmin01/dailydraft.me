@@ -43,11 +43,11 @@ const WeeklyTrackingPanel = () => (
         </div>
       </div>
 
-      {/* Arrow */}
-      <div className="hidden md:flex items-center justify-center">
+      {/* Arrow — 장식용, before→after 흐름은 시각 전용. 보조기기엔 before/after 라벨로 전달됨 */}
+      <div aria-hidden="true" className="hidden md:flex items-center justify-center">
         <span className="text-2xl text-txt-tertiary select-none">&rarr;</span>
       </div>
-      <div className="flex md:hidden items-center justify-center py-1">
+      <div aria-hidden="true" className="flex md:hidden items-center justify-center py-1">
         <span className="text-xl text-txt-tertiary select-none">&darr;</span>
       </div>
 
@@ -97,7 +97,9 @@ const HandoffPanel = () => (
             { icon: '📝', text: '나머진 구두로 설명할게요' },
           ].map((item) => (
             <li key={item.text} className="flex items-start gap-3">
-              <span className="text-base shrink-0 leading-none mt-0.5">{item.icon}</span>
+              <span aria-hidden="true" className="text-base shrink-0 leading-none mt-0.5">
+                {item.icon}
+              </span>
               <span className="text-sm text-txt-secondary leading-snug">{item.text}</span>
             </li>
           ))}
@@ -109,11 +111,11 @@ const HandoffPanel = () => (
         </div>
       </div>
 
-      {/* Arrow */}
-      <div className="hidden md:flex items-center justify-center">
+      {/* Arrow — 장식용, before→after 흐름은 시각 전용. 보조기기엔 before/after 라벨로 전달됨 */}
+      <div aria-hidden="true" className="hidden md:flex items-center justify-center">
         <span className="text-2xl text-txt-tertiary select-none">&rarr;</span>
       </div>
-      <div className="flex md:hidden items-center justify-center py-1">
+      <div aria-hidden="true" className="flex md:hidden items-center justify-center py-1">
         <span className="text-xl text-txt-tertiary select-none">&darr;</span>
       </div>
 
@@ -185,11 +187,11 @@ const ReportPanel = () => (
         </div>
       </div>
 
-      {/* Arrow */}
-      <div className="hidden md:flex items-center justify-center">
+      {/* Arrow — 장식용, before→after 흐름은 시각 전용. 보조기기엔 before/after 라벨로 전달됨 */}
+      <div aria-hidden="true" className="hidden md:flex items-center justify-center">
         <span className="text-2xl text-txt-tertiary select-none">&rarr;</span>
       </div>
-      <div className="flex md:hidden items-center justify-center py-1">
+      <div aria-hidden="true" className="flex md:hidden items-center justify-center py-1">
         <span className="text-xl text-txt-tertiary select-none">&darr;</span>
       </div>
 
@@ -262,45 +264,71 @@ export function BeforeAfterTabs() {
   const Panel = panels[activeTab]
 
   return (
-    <section className="w-full bg-white py-24 sm:py-32 px-6 md:px-10">
+    <section
+      id="before-after"
+      aria-labelledby="before-after-title"
+      className="w-full bg-white py-24 sm:py-32 px-6 md:px-10"
+    >
       <div className="max-w-5xl mx-auto">
         {/* Title */}
-        <h2 className="text-3xl sm:text-4xl font-bold text-txt-primary text-center mb-10">
+        <h2
+          id="before-after-title"
+          className="text-3xl sm:text-4xl font-bold text-txt-primary text-center mb-10"
+        >
           이런 월요일, 바꿀 수 있습니다
         </h2>
 
-        {/* Tab bar */}
-        <div className="flex justify-center border-b border-border mb-10">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`relative px-5 py-3 text-sm transition-colors duration-200 whitespace-nowrap ${
-                activeTab === tab.id
-                  ? 'font-semibold text-txt-primary'
-                  : 'text-txt-tertiary hover:text-txt-secondary'
-              }`}
-            >
-              {tab.label}
-              {activeTab === tab.id && (
-                <motion.div
-                  layoutId="beforeafter-underline"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-txt-primary"
-                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                />
-              )}
-            </button>
-          ))}
+        {/* Tab bar — ARIA Authoring Practices tabs pattern */}
+        <div
+          role="tablist"
+          aria-label="Before/After 시나리오"
+          className="flex justify-center border-b border-border mb-10"
+        >
+          {tabs.map((tab) => {
+            const selected = activeTab === tab.id
+            return (
+              <button
+                key={tab.id}
+                id={`beforeafter-tab-${tab.id}`}
+                role="tab"
+                type="button"
+                aria-selected={selected}
+                aria-controls={`beforeafter-panel-${tab.id}`}
+                tabIndex={selected ? 0 : -1}
+                onClick={() => setActiveTab(tab.id)}
+                className={`relative px-5 py-3 text-sm transition-colors duration-200 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded-sm ${
+                  selected
+                    ? 'font-semibold text-txt-primary'
+                    : 'text-txt-tertiary hover:text-txt-secondary'
+                }`}
+              >
+                {tab.label}
+                {selected && (
+                  <motion.div
+                    layoutId="beforeafter-underline"
+                    aria-hidden="true"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-txt-primary"
+                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                  />
+                )}
+              </button>
+            )
+          })}
         </div>
 
-        {/* Panel */}
+        {/* Panel — aria-live 로 탭 변경 내용이 보조기기에도 전달됨 */}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
+            role="tabpanel"
+            id={`beforeafter-panel-${activeTab}`}
+            aria-labelledby={`beforeafter-tab-${activeTab}`}
+            tabIndex={0}
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
+            className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded-md"
           >
             <Panel />
           </motion.div>

@@ -38,12 +38,13 @@ export const PersonaEngine: React.FC = () => {
   return (
     <section
       id="persona-engine"
+      aria-labelledby="persona-engine-title"
       className="relative w-full py-28 sm:py-36 px-4 sm:px-6 lg:px-8 overflow-hidden"
       style={{ background: 'var(--color-surface-bg)' }}
     >
       {/* Soft aurora — 섹션 포커스 */}
       <div
-        aria-hidden
+        aria-hidden="true"
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
@@ -65,10 +66,11 @@ export const PersonaEngine: React.FC = () => {
             variants={fadeUp}
             className="text-[11px] font-mono uppercase tracking-[0.18em] text-brand mb-4 flex items-center justify-center gap-2"
           >
-            <Sparkles size={13} />
-            Persona Engine
+            <Sparkles size={13} aria-hidden="true" />
+            <span lang="en">Persona Engine</span>
           </motion.p>
           <motion.h2
+            id="persona-engine-title"
             variants={fadeUp}
             className="text-[30px] sm:text-[40px] md:text-[46px] font-bold tracking-[-0.025em] leading-[1.1] text-txt-primary mb-5 break-keep"
           >
@@ -150,11 +152,12 @@ export const PersonaEngine: React.FC = () => {
         >
           <Link
             href="#pricing"
-            className="group inline-flex items-center gap-1.5 bg-surface-inverse text-txt-inverse rounded-full px-6 py-3 text-[14px] font-semibold hover:opacity-90 active:scale-[0.98] transition-all"
+            className="group inline-flex items-center gap-1.5 bg-surface-inverse text-txt-inverse rounded-full px-6 py-3 text-[14px] font-semibold hover:opacity-90 active:scale-[0.98] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
           >
             Pro로 열기
             <ArrowRight
               size={14}
+              aria-hidden="true"
               className="group-hover:translate-x-0.5 transition-transform"
             />
           </Link>
