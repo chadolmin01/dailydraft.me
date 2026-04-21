@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Download, Trash2, AlertTriangle, CheckCircle2, Shield, Clock } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { NotificationPreferences } from './NotificationPreferences'
 
 /**
  * /me/data — 정보주체 권리 UI.
@@ -85,6 +86,9 @@ export function MyDataClient({ email, nickname, deletedAt, dataConsent, dataCons
           개인정보보호법에 따라 본인 데이터 열람·내려받기·삭제를 요청할 수 있습니다.
         </p>
       </header>
+
+      {/* 알림·이메일 수신 설정 — 상단에 노출해 DSR 맥락과 일관 */}
+      <NotificationPreferences />
 
       {/* 계정 정보 요약 */}
       <section className="bg-surface-card border border-border rounded-2xl p-5">
