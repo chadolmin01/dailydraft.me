@@ -94,6 +94,7 @@ export const ROUTE_TITLES: Record<string, string> = {
   '/legal/data-deletion': '데이터 삭제 요청',
   '/legal/subprocessors': '수탁업체 목록',
   '/legal/cookies': '쿠키 사용 방침',
+  '/legal/retention': '데이터 보관·파기 정책',
 
   // 추가 관리자 라우트
   '/admin/metrics': '플랫폼 KPI · 관리자',

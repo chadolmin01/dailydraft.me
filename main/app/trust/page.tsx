@@ -72,6 +72,13 @@ export default function TrustCenterPage() {
           OAuth 액세스 토큰은 AES-256-GCM 으로 암호화 저장되고, 연결 해제 시 즉시 완전 삭제됩니다. 모든 수탁업체(Supabase·Vercel·Anthropic·Google·Discord·Resend 등 12곳)의 처리 범위·리전·이전 근거·보안 증빙은{' '}
           <LinkInline href="/legal/subprocessors">수탁업체 목록</LinkInline> 에서 전수 확인 가능합니다.
         </p>
+        <p>
+          데이터 유형별 보관 기간·파기 절차·법정 보존 예외는{' '}
+          <LinkInline href="/legal/retention">데이터 보관·파기 정책</LinkInline>{' '}
+          에, 쿠키·로컬 스토리지 전수는{' '}
+          <LinkInline href="/legal/cookies">쿠키 사용 방침</LinkInline>{' '}
+          에 정리되어 있습니다.
+        </p>
       </Section>
 
       {/* 3. 보안 */}
