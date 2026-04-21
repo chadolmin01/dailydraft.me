@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 import { useAdmin } from '@/src/hooks/useAdmin'
-import { ShieldCheck, Filter, Loader2, User, Clock } from 'lucide-react'
+import { ShieldCheck, Filter, Loader2, User, Clock, Download } from 'lucide-react'
 
 /**
  * 관리자 감사 로그 뷰 — audit_logs 테이블.
@@ -107,9 +107,9 @@ export default function AdminAuditPage() {
         </p>
       </div>
 
-      {/* Filter chips */}
+      {/* Filter chips + CSV export */}
       <div className="flex items-center gap-2 flex-wrap">
-        <Filter size={14} className="text-txt-tertiary" />
+        <Filter size={14} className="text-txt-tertiary" aria-hidden="true" />
         {ACTION_PRESETS.map(p => (
           <button
             key={p.value}
@@ -123,6 +123,17 @@ export default function AdminAuditPage() {
             {p.label}
           </button>
         ))}
+
+        {/* CSV 내보내기 — 현재 필터 유지. 최대 5,000 행, Excel 한글 BOM 포함 */}
+        <a
+          href={`/api/admin/audit?format=csv${actionFilter ? `&action=${encodeURIComponent(actionFilter)}` : ''}`}
+          className="ml-auto inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full border border-border bg-surface-card text-txt-secondary hover:border-txt-tertiary hover:text-txt-primary transition-colors"
+          download
+          aria-label="감사 로그 CSV 내보내기"
+        >
+          <Download size={12} aria-hidden="true" />
+          CSV 내보내기
+        </a>
       </div>
 
       {/* Table */}

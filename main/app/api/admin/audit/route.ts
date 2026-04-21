@@ -51,7 +51,11 @@ export const GET = withErrorCapture(async (request: NextRequest) => {
   const target = searchParams.get('target')?.trim() || null
   const from = searchParams.get('from')?.trim() || null
   const to = searchParams.get('to')?.trim() || null
-  const limit = Math.min(parseInt(searchParams.get('limit') || '100'), 500)
+  const format = searchParams.get('format')?.trim() || 'json'
+  // CSV export 는 최대 5,000 건까지 허용 — 기관 실사 전구간 다운로드 대응.
+  const defaultLimit = format === 'csv' ? '5000' : '100'
+  const maxLimit = format === 'csv' ? 5000 : 500
+  const limit = Math.min(parseInt(searchParams.get('limit') || defaultLimit), maxLimit)
 
   const service = getServiceClient()
 
@@ -101,9 +105,65 @@ export const GET = withErrorCapture(async (request: NextRequest) => {
     }
   }
 
+  // CSV 형식 요청 시 브라우저 다운로드 유도 (Content-Disposition: attachment).
+  // 열 순서: 기관 감사자/법무팀이 엑셀에서 바로 읽을 수 있게 사람 가독형 시간 먼저.
+  if (format === 'csv') {
+    const rows: string[] = []
+    rows.push(
+      [
+        'created_at',
+        'actor_user_id',
+        'actor_nickname',
+        'action',
+        'target_type',
+        'target_id',
+        'diff',
+        'context',
+      ]
+        .map(csvCell)
+        .join(','),
+    )
+    for (const it of items) {
+      const actorInfo = it.actor_user_id ? actors[it.actor_user_id] : null
+      rows.push(
+        [
+          it.created_at,
+          it.actor_user_id ?? '',
+          actorInfo?.nickname ?? '',
+          it.action,
+          it.target_type,
+          it.target_id ?? '',
+          it.diff ? JSON.stringify(it.diff) : '',
+          it.context ? JSON.stringify(it.context) : '',
+        ]
+          .map(csvCell)
+          .join(','),
+      )
+    }
+    const stamp = new Date().toISOString().replace(/[:T]/g, '-').slice(0, 19)
+    return new Response('\ufeff' + rows.join('\n'), {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/csv; charset=utf-8',
+        'Content-Disposition': `attachment; filename="audit-logs-${stamp}.csv"`,
+        'Cache-Control': 'no-store',
+      },
+    })
+  }
+
   return ApiResponse.ok({
     items,
     actors,
     total: items.length,
   })
 })
+
+// CSV 이스케이프 — 값에 ,·"·개행 있으면 쌍따옴표로 감싸고 내부 쌍따옴표는 두 번 escape.
+// Excel 한글 BOM 을 위해 출력 시작에 '\ufeff' 프리픽스 추가됨.
+function csvCell(raw: unknown): string {
+  const s = String(raw ?? '')
+  if (/[",\n\r]/.test(s)) {
+    return `"${s.replace(/"/g, '""')}"`
+  }
+  return s
+}
