@@ -15,6 +15,7 @@ const footerLinks: Record<string, FooterLink[]> = {
     { label: '가격', href: '#pricing' },
     { label: '학교·기관', href: '#institutions' },
     { label: '자주 묻는 질문', href: '/help' },
+    { label: '릴리스 노트', href: '/changelog' },
   ],
   '신뢰·투명성': [
     // SLO target 은 실측이 아니라 목표치이므로 "target" 명시 — oversell 방지

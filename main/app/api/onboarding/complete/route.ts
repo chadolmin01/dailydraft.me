@@ -4,6 +4,7 @@ import { parseNickname } from '@/src/lib/clean-nickname'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 import { autoEnrollByEmail, autoEnrollByUniversity } from '@/src/lib/institution/auto-enroll'
 import { captureServerEvent } from '@/src/lib/posthog/server'
+import { sendWelcomeEmail } from '@/src/lib/email/send-welcome'
 import {
   findUniversityByEmail,
   parseEntranceYearFromStudentId,
@@ -49,6 +50,15 @@ export const POST = withErrorCapture(async (request) => {
     if (!nickname) {
       return ApiResponse.badRequest('닉네임은 필수 입력 항목입니다')
     }
+
+    // Welcome email 중복 발송 방지 — upsert 이전에 기존 onboarding_completed 값 체크.
+    // 처음 true 로 전환되는 경우만 welcome 발송.
+    const { data: prevProfile } = await supabase
+      .from('profiles')
+      .select('onboarding_completed')
+      .eq('user_id', user.id)
+      .maybeSingle()
+    const wasOnboarded = prevProfile?.onboarding_completed === true
 
     // Sanitize nickname: extract name if it contains [affiliation](department)
     const parsed = parseNickname(nickname)
@@ -171,6 +181,16 @@ export const POST = withErrorCapture(async (request) => {
       generateAiBio(supabase, user.id, skills, interestTags, desiredPosition).catch(e =>
         console.warn('[onboarding/complete] AI bio failed:', e)
       )
+    }
+
+    // Welcome email — 온보딩 최초 완료 시 1회. Resend 미설정이면 조용히 skip.
+    if (!wasOnboarded && user.email) {
+      sendWelcomeEmail({
+        recipientEmail: user.email,
+        recipientName: cleanName,
+        universityName: inferredUniversity,
+        isVerifiedStudent: !!studentVerifiedAt,
+      }).catch(e => console.warn('[onboarding/complete] welcome email failed:', e))
     }
 
     return ApiResponse.ok({
