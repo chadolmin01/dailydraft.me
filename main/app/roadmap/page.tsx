@@ -84,6 +84,9 @@ export default function RoadmapPage() {
         <p>
           로드맵은 분기 시작 시 갱신되고, 배포 완료된 항목은 <a href="/changelog" className="text-brand underline">릴리스 노트</a> 로 이관됩니다. 특정 기능의 우선순위나 포함 요청은 <a href="mailto:team@dailydraft.me?subject=Roadmap%20Request" className="text-brand underline">team@dailydraft.me</a>.
         </p>
+        <p>
+          Atom(RSS) 피드: <a href="/roadmap/feed.xml" className="text-brand underline">/roadmap/feed.xml</a>.
+        </p>
       </footer>
     </main>
   )
