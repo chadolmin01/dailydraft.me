@@ -12,6 +12,7 @@ import { Scenarios } from '@/components/home/Scenarios'
 import { InstitutionCTA } from '@/components/home/InstitutionCTA'
 import { Pricing } from '@/components/home/Pricing'
 import { SecuritySection } from '@/components/home/SecuritySection'
+import { TransparencySection } from '@/components/home/TransparencySection'
 import { FAQ } from '@/components/home/FAQ'
 import { FinalCTA } from '@/components/home/FinalCTA'
 import { Footer } from '@/components/home/Footer'
@@ -51,6 +52,7 @@ export default function HomePageClient() {
         <InstitutionCTA />
         <Pricing />
         <SecuritySection />
+        <TransparencySection />
         <FAQ />
         <FinalCTA />
       </main>
