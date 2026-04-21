@@ -130,10 +130,15 @@ function addSecurityHeaders(response: NextResponse, allowEmbed = false) {
 async function middlewareImpl(request: NextRequest): Promise<NextResponse> {
   const pathname = request.nextUrl.pathname
 
-  // CSRF 예외: 외부 서비스 webhook (Discord, 결제 등)은 cross-origin POST가 정상
+  // CSRF 예외: 외부 서비스 webhook (Discord, Meta, 결제 등)은 cross-origin POST가 정상.
+  // Meta App Review 통과를 위해 Threads deauthorize / data-deletion 콜백을 여기 추가 필수 —
+  // 없으면 Meta 심사 서버의 Origin-less POST 가 403 으로 거부되어 "webhook unreachable" 반려.
+  // 대신 해당 엔드포인트는 route.ts 에서 signed_request HMAC-SHA256 서명 검증으로 보호.
   const csrfExemptPaths = [
     '/api/discord/interactions',
     '/api/webhooks/',
+    '/api/oauth/threads/deauthorize',
+    '/api/oauth/threads/data-deletion',
   ]
   const isCsrfExempt = csrfExemptPaths.some(p => pathname.startsWith(p))
 
