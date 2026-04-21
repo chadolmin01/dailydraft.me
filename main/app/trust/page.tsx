@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Shield, Lock, FileCheck2, AlertCircle, Database, Mail, Server, Sparkles, Code } from 'lucide-react'
+import { PublicMetricsStrip } from '@/components/trust/PublicMetricsStrip'
 
 export const metadata: Metadata = {
   title: '신뢰 센터 · Draft',
@@ -38,6 +39,7 @@ export default function TrustCenterPage() {
         <p className="text-[14px] text-txt-secondary mt-2 leading-relaxed">
           학교·기관과의 파트너십 또는 법무·보안 실사 단계에서 필요한 내용을 한 화면에 모았습니다. 각 항목은 더 상세한 공개 페이지로 연결됩니다. 별도 요청이 필요한 실사 자료는 <a href="mailto:team@dailydraft.me?subject=Due%20Diligence%20Docs" className="text-brand underline">team@dailydraft.me</a> 로 요청 주시면 개별 공유드립니다.
         </p>
+        <PublicMetricsStrip />
       </header>
 
       {/* 1. 서비스 상태 */}
