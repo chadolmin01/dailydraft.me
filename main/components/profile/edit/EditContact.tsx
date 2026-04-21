@@ -74,6 +74,7 @@ export const EditContact: React.FC<EditContactProps & EditSocialLinksProps> = ({
               onChange={(e) => setPortfolioUrl(e.target.value)}
               placeholder="https://myportfolio.com"
               inputMode="url"
+              autoComplete="url"
               className="w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
             />
           </div>
@@ -87,6 +88,7 @@ export const EditContact: React.FC<EditContactProps & EditSocialLinksProps> = ({
               onChange={(e) => setGithubUrl(e.target.value)}
               placeholder="https://github.com/username"
               inputMode="url"
+              autoComplete="url"
               className="w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
             />
           </div>
@@ -121,6 +123,7 @@ export const EditContact: React.FC<EditContactProps & EditSocialLinksProps> = ({
               onChange={(e) => setLinkedinUrl(e.target.value)}
               placeholder="https://linkedin.com/in/username"
               inputMode="url"
+              autoComplete="url"
               className="w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
             />
           </div>

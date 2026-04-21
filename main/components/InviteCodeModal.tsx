@@ -141,6 +141,9 @@ export const InviteCodeModal: React.FC<InviteCodeModalProps> = ({
                     value={code}
                     onChange={handleCodeChange}
                     placeholder="예: ABC12DEF"
+                    autoComplete="off"
+                    autoCapitalize="characters"
+                    spellCheck={false}
                     className={`w-full px-4 py-3 text-center text-xl font-mono tracking-wider border focus:outline-none focus:border-border bg-surface-card text-txt-primary ${
                       error ? 'border-status-danger-text' : 'border-border'
                     }`}
