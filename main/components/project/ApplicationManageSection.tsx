@@ -461,6 +461,7 @@ function ApplicationCard({
                 disabled={isPending}
                 className="p-1.5 text-txt-disabled hover:text-status-danger-text transition-colors disabled:opacity-50"
                 title="거절"
+                aria-label="지원 거절"
               >
                 <X size={14} />
               </button>
@@ -484,6 +485,7 @@ function ApplicationCard({
                 disabled={isPending}
                 className="p-1.5 text-txt-disabled hover:text-status-danger-text transition-colors disabled:opacity-50"
                 title="거절"
+                aria-label="지원 거절"
               >
                 <X size={14} />
               </button>

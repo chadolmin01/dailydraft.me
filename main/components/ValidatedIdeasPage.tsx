@@ -258,7 +258,7 @@ export const ValidatedIdeasPage: React.FC = () => {
                     {hasArtifacts(idea) && (<span className="flex items-center gap-1 text-status-info-text"><FileText size={12} />문서</span>)}
                   </div>
                 </div>
-                <button type="button" onClick={e => { e.stopPropagation(); setDeleteTarget(idea.id) }} disabled={deleteIdea.isPending} className="p-2 sm:opacity-0 sm:group-hover:opacity-100 hover:bg-status-danger-bg transition-all disabled:opacity-50 border border-transparent hover:border-status-danger-text/20 rounded-lg" title="삭제"><Trash2 size={16} className="text-status-danger-text/70 hover:text-status-danger-text" /></button>
+                <button type="button" onClick={e => { e.stopPropagation(); setDeleteTarget(idea.id) }} disabled={deleteIdea.isPending} className="p-2 sm:opacity-0 sm:group-hover:opacity-100 hover:bg-status-danger-bg transition-all disabled:opacity-50 border border-transparent hover:border-status-danger-text/20 rounded-lg" title="삭제" aria-label="아이디어 삭제"><Trash2 size={16} className="text-status-danger-text/70 hover:text-status-danger-text" /></button>
               </div>
               {adviceList.length > 0 && (<div className="mt-3 pt-3 border-t border-border"><p className="text-xs text-txt-tertiary line-clamp-2">{adviceList[0]}</p></div>)}
             </div>

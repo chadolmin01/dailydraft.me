@@ -227,6 +227,7 @@ export const InlineUpdateEditor: React.FC<InlineUpdateEditorProps> = ({
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
+                aria-label="파일 분석"
                 title="파일 분석"
                 className="p-1.5 text-txt-disabled hover:text-txt-secondary transition-colors"
               >
@@ -235,6 +236,7 @@ export const InlineUpdateEditor: React.FC<InlineUpdateEditorProps> = ({
               <button
                 type="button"
                 onClick={onOpenDetail}
+                aria-label="상세 작성"
                 title="상세 작성"
                 className="p-1.5 text-txt-disabled hover:text-txt-secondary transition-colors"
               >

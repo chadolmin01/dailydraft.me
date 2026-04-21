@@ -460,6 +460,7 @@ function MessagesPageInner() {
                                   onClick={() => deleteMessage.mutate(msg.id)}
                                   className="opacity-0 group-hover:opacity-100 p-1 rounded-md text-txt-disabled hover:text-status-danger-text hover:bg-surface-sunken transition-all"
                                   title="삭제"
+                                  aria-label="메시지 삭제"
                                 >
                                   <Trash2 size={10} />
                                 </button>

@@ -190,6 +190,7 @@ function TemplateCard({
               onClick={onDelete}
               className="inline-flex items-center gap-1 h-7 px-2 rounded-md text-[11px] font-semibold text-txt-tertiary hover:bg-status-danger-text/5 hover:text-status-danger-text transition-colors"
               title="삭제"
+              aria-label="템플릿 삭제"
             >
               <Trash2 size={11} />
             </button>

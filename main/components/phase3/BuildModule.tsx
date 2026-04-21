@@ -153,6 +153,8 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
                 onClick={() => setShowAnalysisPanel(!showAnalysisPanel)}
                 className={`p-1.5 hover:bg-surface-sunken transition-colors ${showAnalysisPanel ? 'text-indigo-600 bg-indigo-50' : 'text-txt-disabled'}`}
                 title="AI 분석 패널 토글"
+                aria-label="AI 분석 패널 토글"
+                aria-pressed={showAnalysisPanel}
               >
                 <PanelLeft size={16} />
               </button>
