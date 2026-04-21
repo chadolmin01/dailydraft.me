@@ -189,6 +189,16 @@ function FaqTab({ onClose }: { onClose: () => void }) {
         <span className="text-[13px] font-medium text-txt-primary">시작 가이드 다시 보기</span>
       </button>
 
+      {/* 전체 FAQ 페이지 링크 — 위젯엔 요약만, 전체는 /help 에서 검색·카테고리 이동 가능 */}
+      <a
+        href="/help"
+        className="w-full flex items-center gap-3 px-4 py-3 text-left bg-surface-sunken rounded-2xl active:opacity-80 transition-opacity group"
+      >
+        <HelpCircle size={15} className="text-brand shrink-0" aria-hidden="true" />
+        <span className="flex-1 text-[13px] font-medium text-txt-primary">자주 묻는 질문 전체 보기</span>
+        <ChevronRight size={14} className="text-txt-disabled shrink-0" aria-hidden="true" />
+      </a>
+
       {FAQ_ITEMS.map((cat) => (
         <div key={cat.category}>
           <h4 className="text-[12px] font-semibold text-txt-tertiary mb-2 px-1">{cat.category}</h4>
