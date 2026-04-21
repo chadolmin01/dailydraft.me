@@ -15,6 +15,7 @@ import {
   FileText,
   FileSpreadsheet,
   Check,
+  Printer,
 } from 'lucide-react'
 
 export default function InstitutionReportsPage() {
@@ -79,6 +80,16 @@ export default function InstitutionReportsPage() {
     setTimeout(() => setDownloading(null), 1500)
   }
 
+  // PDF 저장 — @media print CSS 로 페이지 chrome 숨기고 브라우저 인쇄 다이얼로그.
+  const printAsPdf = () => {
+    if (!report) return
+    setDownloading('pdf')
+    setTimeout(() => {
+      window.print()
+      setDownloading(null)
+    }, 120)
+  }
+
   const downloadJSON = () => {
     if (!report) return
     setDownloading('json')
@@ -115,7 +126,19 @@ export default function InstitutionReportsPage() {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto h-screen bg-surface-bg">
+    <div className="flex-1 overflow-y-auto h-screen bg-surface-bg institution-report-print-root">
+      <style jsx global>{`
+        @media print {
+          @page { size: A4; margin: 18mm 14mm 18mm 14mm; }
+          body, .institution-report-print-root { background: #fff !important; overflow: visible !important; height: auto !important; }
+          nav, aside, footer, [data-print-hide="true"], .route-progress-bar { display: none !important; }
+          .institution-report-print-root h1 { font-size: 18pt; }
+          .institution-report-print-root h2 { font-size: 14pt; }
+          .institution-report-print-root table { page-break-inside: avoid; }
+          .institution-report-print-root .skeleton-shimmer { display: none !important; }
+          * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        }
+      `}</style>
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12 space-y-6">
         {/* Header */}
         <div className="border-b border-border pb-6">
@@ -208,11 +231,11 @@ export default function InstitutionReportsPage() {
             </Card>
 
             {/* Download Options */}
-            <div>
+            <div data-print-hide="true">
               <div className="text-[10px] font-medium text-txt-tertiary mb-4">
                 내보내기
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Card
                   padding="p-5"
                   className="group cursor-pointer hover:border-border"
@@ -229,6 +252,29 @@ export default function InstitutionReportsPage() {
                       </div>
                     </div>
                     {downloading === 'csv' ? (
+                      <Check size={16} className="text-status-success-text" />
+                    ) : (
+                      <Download size={16} className="text-txt-disabled group-hover:text-black transition-colors" />
+                    )}
+                  </div>
+                </Card>
+
+                <Card
+                  padding="p-5"
+                  className="group cursor-pointer hover:border-border"
+                  onClick={printAsPdf}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 bg-surface-sunken flex items-center justify-center group-hover:bg-black transition-colors">
+                        <Printer size={18} className="text-txt-secondary group-hover:text-white transition-colors" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-txt-primary text-sm">PDF 인쇄·저장</h3>
+                        <p className="text-xs text-txt-tertiary mt-0.5">브라우저 인쇄 대화상자에서 "PDF로 저장" 선택</p>
+                      </div>
+                    </div>
+                    {downloading === 'pdf' ? (
                       <Check size={16} className="text-status-success-text" />
                     ) : (
                       <Download size={16} className="text-txt-disabled group-hover:text-black transition-colors" />
