@@ -123,22 +123,8 @@ export function StatusPageClient() {
           </section>
 
           {/* 인시던트 이력 — 공개 투명성 */}
-          <section className="space-y-3">
-            <h2 className="text-[13px] font-semibold text-txt-tertiary uppercase tracking-wider">
-              최근 30일 인시던트
-            </h2>
-            <div className="bg-surface-card border border-border rounded-xl p-5 flex items-center gap-3">
-              <CheckCircle2 size={18} className="text-brand shrink-0" />
-              <div className="flex-1">
-                <p className="text-[13px] font-semibold text-txt-primary">
-                  공개된 인시던트 없음
-                </p>
-                <p className="text-[11px] text-txt-tertiary mt-0.5">
-                  SEV-0·SEV-1 등급 장애가 발생하면 이 섹션에서 타임라인·원인·후속 조치를 공개합니다.
-                </p>
-              </div>
-            </div>
-          </section>
+          <IncidentHistory />
+
 
           {/* 메타 */}
           <footer className="text-[11px] text-txt-tertiary font-mono flex flex-wrap items-center gap-x-4 gap-y-1 pt-4 border-t border-border">
@@ -162,6 +148,124 @@ export function StatusPageClient() {
         </p>
       </section>
     </article>
+  )
+}
+
+// 공개 인시던트 이력 — /api/status/incidents 를 polling 하여 최근 30일 표시.
+// 비어있으면 "공개된 인시던트 없음" placeholder, 있으면 타임라인 카드 리스트.
+interface IncidentRow {
+  id: string
+  title: string
+  severity: 'sev0' | 'sev1' | 'sev2' | 'sev3'
+  status: 'investigating' | 'identified' | 'monitoring' | 'resolved'
+  started_at: string
+  resolved_at: string | null
+  affected_components: string[] | null
+  summary: string
+}
+
+const SEVERITY_STYLE: Record<IncidentRow['severity'], { label: string; color: string }> = {
+  sev0: { label: 'SEV-0', color: 'bg-status-danger-text text-white' },
+  sev1: { label: 'SEV-1', color: 'bg-status-danger-text/80 text-white' },
+  sev2: { label: 'SEV-2', color: 'bg-status-warn-text text-white' },
+  sev3: { label: 'SEV-3', color: 'bg-txt-tertiary text-white' },
+}
+
+const STATUS_LABEL: Record<IncidentRow['status'], string> = {
+  investigating: '조사 중',
+  identified: '원인 파악',
+  monitoring: '모니터링',
+  resolved: '해결됨',
+}
+
+function IncidentHistory() {
+  const [incidents, setIncidents] = useState<IncidentRow[] | null>(null)
+  const [loaded, setLoaded] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/status/incidents', { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : { incidents: [] }))
+      .then((d: { incidents?: IncidentRow[] }) => {
+        if (!cancelled) {
+          setIncidents(d.incidents ?? [])
+          setLoaded(true)
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setLoaded(true)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  if (!loaded) {
+    return (
+      <section className="space-y-3">
+        <h2 className="text-[13px] font-semibold text-txt-tertiary uppercase tracking-wider">
+          최근 30일 인시던트
+        </h2>
+        <div className="h-20 bg-surface-card border border-border rounded-xl skeleton-shimmer" />
+      </section>
+    )
+  }
+
+  const isEmpty = !incidents || incidents.length === 0
+
+  return (
+    <section className="space-y-3">
+      <h2 className="text-[13px] font-semibold text-txt-tertiary uppercase tracking-wider">
+        최근 30일 인시던트
+      </h2>
+      {isEmpty ? (
+        <div className="bg-surface-card border border-border rounded-xl p-5 flex items-center gap-3">
+          <CheckCircle2 size={18} className="text-brand shrink-0" aria-hidden="true" />
+          <div className="flex-1">
+            <p className="text-[13px] font-semibold text-txt-primary">공개된 인시던트 없음</p>
+            <p className="text-[11px] text-txt-tertiary mt-0.5">
+              SEV-0·SEV-1 등급 장애가 발생하면 이 섹션에서 타임라인·원인·후속 조치를 공개합니다.
+            </p>
+          </div>
+        </div>
+      ) : (
+        <ul className="space-y-2">
+          {(incidents ?? []).map((i) => {
+            const sev = SEVERITY_STYLE[i.severity]
+            return (
+              <li key={i.id} className="bg-surface-card border border-border rounded-xl p-4">
+                <div className="flex items-start gap-3">
+                  <span className={`shrink-0 inline-flex items-center justify-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${sev.color}`}>
+                    {sev.label}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[14px] font-semibold text-txt-primary">{i.title}</p>
+                    <p className="text-[12px] text-txt-secondary mt-1 leading-relaxed">{i.summary}</p>
+                    <div className="flex items-center gap-2 flex-wrap mt-2 text-[11px] text-txt-tertiary">
+                      <span>{STATUS_LABEL[i.status]}</span>
+                      <span>·</span>
+                      <span>시작 {new Date(i.started_at).toLocaleString('ko-KR', { dateStyle: 'short', timeStyle: 'short' })}</span>
+                      {i.resolved_at && (
+                        <>
+                          <span>·</span>
+                          <span>해결 {new Date(i.resolved_at).toLocaleString('ko-KR', { dateStyle: 'short', timeStyle: 'short' })}</span>
+                        </>
+                      )}
+                      {i.affected_components && i.affected_components.length > 0 && (
+                        <>
+                          <span>·</span>
+                          <span>영향: {i.affected_components.join(', ')}</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </li>
+            )
+          })}
+        </ul>
+      )}
+    </section>
   )
 }
 
