@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useRef, useState } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { ChevronLeft } from 'lucide-react'
+import { ChevronLeft, Loader2 } from 'lucide-react'
 
 interface Props {
   userEmail: string
@@ -145,9 +145,10 @@ export function PersonalPersonaTeaser({ userEmail }: Props) {
               <button
                 onClick={() => subscribeMut.mutate()}
                 disabled={subscribeMut.isPending || !email.includes('@')}
-                className="h-10 px-4 rounded-lg bg-brand text-white text-xs font-semibold hover:bg-brand-hover transition-colors disabled:opacity-60 shrink-0"
+                className="h-10 px-4 rounded-lg bg-brand text-white text-xs font-semibold hover:bg-brand-hover transition-colors disabled:opacity-60 shrink-0 inline-flex items-center gap-1.5"
               >
-                {subscribeMut.isPending ? '등록 중...' : '알림 받기'}
+                {subscribeMut.isPending && <Loader2 size={12} className="animate-spin" />}
+                {subscribeMut.isPending ? '등록 중' : '알림 받기'}
               </button>
             </div>
             <p className="text-[11px] text-txt-tertiary mt-2">

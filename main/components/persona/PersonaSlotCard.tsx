@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronDown, Lock, Pencil } from 'lucide-react'
+import { ChevronDown, Lock, Pencil, Loader2 } from 'lucide-react'
 import { FIELD_CATALOG } from '@/src/lib/personas/field-catalog'
 import type { FieldKey, PersonaFieldRow } from '@/src/lib/personas/types'
 import { useUpdatePersonaField } from '@/src/hooks/usePersona'
@@ -151,9 +151,10 @@ export function PersonaSlotCard({ personaId, fieldKey, field, canEdit }: Props) 
                 <button
                   onClick={saveEdit}
                   disabled={update.isPending}
-                  className="h-9 px-4 rounded-lg bg-brand text-white text-sm font-semibold hover:bg-brand-hover transition-colors disabled:opacity-60"
+                  className="h-9 px-4 rounded-lg bg-brand text-white text-sm font-semibold hover:bg-brand-hover transition-colors disabled:opacity-60 inline-flex items-center gap-1.5"
                 >
-                  {update.isPending ? '저장 중...' : '저장'}
+                  {update.isPending && <Loader2 size={12} className="animate-spin" />}
+                  {update.isPending ? '저장 중' : '저장'}
                 </button>
               </div>
             </div>
