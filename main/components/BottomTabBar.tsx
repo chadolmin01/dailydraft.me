@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import { ViewTransitionLink as Link } from '@/components/ui/ViewTransitionLink'
 import { usePathname } from 'next/navigation'
 import { Compass, FolderKanban, User, Bell, Menu } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
