@@ -1,7 +1,7 @@
 // 클럽 목록: 검색 + 카테고리 칩 + 3컬럼 카드 그리드. 공용 loading.tsx는 2컬럼이라 레이아웃 shift 발생.
 export default function ClubsLoading() {
   return (
-    <div className="bg-surface-bg min-h-full">
+    <div className="skeleton-delayed bg-surface-bg min-h-full">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-16">
         <div className="space-y-5">
           {/* Header */}

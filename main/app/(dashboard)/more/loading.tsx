@@ -4,7 +4,7 @@
  */
 export default function MoreLoading() {
   return (
-    <div className="max-w-lg mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-24 space-y-4">
+    <div className="skeleton-delayed max-w-lg mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-24 space-y-4">
       {/* Header */}
       <div className="h-7 w-20 skeleton-shimmer rounded-xl mb-6" />
 

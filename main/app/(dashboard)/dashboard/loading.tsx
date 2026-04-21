@@ -7,7 +7,7 @@
  */
 export default function DashboardLoading() {
   return (
-    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12 space-y-6">
+    <div className="skeleton-delayed max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12 space-y-6">
       {/* Greeting — 이름 + 한줄 요약 */}
       <div className="space-y-2">
         <div className="h-7 w-64 skeleton-shimmer rounded" />

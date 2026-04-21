@@ -3,7 +3,7 @@
 // UserProfilePageClient 레이아웃: max-w-[900px], 상단바 + 헤더 + 바이오 + 섹션.
 export default function UserProfileLoading() {
   return (
-    <div className="max-w-[900px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div className="skeleton-delayed max-w-[900px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
       {/* 상단바: 뒤로가기 + 공유/PDF 버튼 */}
       <div className="flex items-center justify-between mb-6">
         <div className="h-5 w-20 skeleton-shimmer rounded-full" />

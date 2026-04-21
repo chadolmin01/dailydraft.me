@@ -2,7 +2,7 @@
 // 공용 loading.tsx보다 레이아웃이 훨씬 달라서 전환 시 깜빡임이 큼.
 export default function ClubDetailLoading() {
   return (
-    <div className="bg-surface-bg min-h-full">
+    <div className="skeleton-delayed bg-surface-bg min-h-full">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-5">
           {/* 뒤로가기 + 공유 */}

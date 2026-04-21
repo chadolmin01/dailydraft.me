@@ -4,7 +4,7 @@
  */
 export default function ClubSettingsLoading() {
   return (
-    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div className="skeleton-delayed max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <div className="flex items-center gap-3 mb-6">
         <div className="h-5 w-5 skeleton-shimmer rounded" />
         <div className="space-y-1.5">

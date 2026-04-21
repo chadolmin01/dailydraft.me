@@ -1,7 +1,7 @@
 // 메시지: 리스트 패널 + 상세 영역의 2컬럼 스플릿. 공용 스켈레톤은 카드 그리드라 안 맞음.
 export default function MessagesLoading() {
   return (
-    <div className="bg-surface-bg min-h-full">
+    <div className="skeleton-delayed bg-surface-bg min-h-full">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-6">
         <div className="flex gap-6">
           {/* 왼쪽 리스트 */}

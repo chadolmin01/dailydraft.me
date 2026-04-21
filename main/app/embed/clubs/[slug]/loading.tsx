@@ -4,7 +4,7 @@
  */
 export default function EmbedClubLoading() {
   return (
-    <div className="bg-surface-bg min-h-screen p-4">
+    <div className="skeleton-delayed bg-surface-bg min-h-screen p-4">
       <div className="bg-surface-card border border-border rounded-xl p-4 space-y-3 max-w-md mx-auto">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg skeleton-shimmer shrink-0" />

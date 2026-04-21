@@ -2,7 +2,7 @@
 // 사람 카드 특화 스켈레톤이 실제 그리드 shape 과 더 가까워 layout shift 감소.
 export default function NetworkLoading() {
   return (
-    <div className="bg-surface-bg min-h-full">
+    <div className="skeleton-delayed bg-surface-bg min-h-full">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-16">
         {/* Header */}
         <div className="mb-5 space-y-2">
