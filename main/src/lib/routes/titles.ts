@@ -82,6 +82,11 @@ export const ROUTE_TITLES: Record<string, string> = {
   '/terms': '이용약관',
   '/me/data': '내 데이터 관리',
   '/status': '시스템 상태',
+
+  // Meta App Review 제출 URL (공개, 로그인 없이 접근)
+  '/legal/privacy': '개인정보처리방침',
+  '/legal/terms': '서비스 이용약관',
+  '/legal/data-deletion': '데이터 삭제 요청',
 }
 
 const SORTED_ROUTES = Object.keys(ROUTE_TITLES).sort((a, b) => b.length - a.length)

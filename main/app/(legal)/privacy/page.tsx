@@ -162,7 +162,7 @@ export default function PrivacyPolicyPage() {
           <p>개인정보 처리에 관한 업무를 총괄하여 책임지며 정보주체 불만 처리 및 피해 구제 등에 관한 사항을 처리합니다.</p>
           <ul className="list-disc pl-5 space-y-1">
             <li><b>책임자</b>: Draft 운영팀</li>
-            <li><b>이메일</b>: <a href="mailto:privacy@dailydraft.me" className="text-brand underline">privacy@dailydraft.me</a></li>
+            <li><b>이메일</b>: <a href="mailto:team@dailydraft.me" className="text-brand underline">team@dailydraft.me</a></li>
           </ul>
         </Section>
 

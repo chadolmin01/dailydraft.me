@@ -60,3 +60,13 @@ main/
 # Vercel
 .vercel/
 .vercel
+
+# Meta App Review 데모 산출물 — 용량 크고 개인정보 포함 가능
+scripts/demo/tmp/
+scripts/demo/out/*.mp4
+scripts/demo/.env.demo
+# 디렉토리 구조는 유지 (.gitkeep 으로 커밋)
+!scripts/demo/tmp/.gitkeep
+!scripts/demo/out/.gitkeep
+docs/meta-app-review/dist/
+chrome/
