@@ -37,6 +37,26 @@ function OrganizationLd() {
       '@type': 'PostalAddress',
       addressCountry: 'KR',
     },
+    contactPoint: [
+      {
+        '@type': 'ContactPoint',
+        contactType: 'customer support',
+        email: ORG_EMAIL,
+        availableLanguage: ['ko', 'en'],
+      },
+      {
+        '@type': 'ContactPoint',
+        contactType: 'technical support',
+        email: ORG_EMAIL,
+        availableLanguage: ['ko', 'en'],
+      },
+      {
+        '@type': 'ContactPoint',
+        contactType: 'security',
+        email: ORG_EMAIL,
+        availableLanguage: ['ko', 'en'],
+      },
+    ],
     sameAs: [
       // 실제 공식 채널이 확정되면 여기 추가. 현재는 비워둠 (placeholder 링크를 넣으면 SEO 악영향).
     ],
