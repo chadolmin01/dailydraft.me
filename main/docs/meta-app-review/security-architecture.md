@@ -394,18 +394,18 @@ Listed in rough order of reviewer-visibility. Fix targets are sincere estimates;
 
 | # | Gap | CWE / risk | Compensating control today | Target fix |
 |---|---|---|---|---|
-| G1 | **Deauthorize & Data Deletion webhooks not yet implemented** (§4) | N/A — required by Meta Platform Policy 5.a | Users can revoke via Meta's own app settings; Draft will observe revocation on next publish attempt (token 190 error) and mark credential `active=false`. | **2026-05-15** (before resubmission) |
-| G2 | **No HSTS header** (§6) | CWE-319 | TLS enforced at Vercel edge; `Secure` cookie flag | 2026-05-31 |
-| G3 | **Threads OAuth routes not rate-limited** | CWE-799 | Session required for `/start`; callback state nonce limits replay | 2026-05-10 (wrap with `withRateLimit`) |
+| ~~G1~~ | **Deauthorize & Data Deletion webhooks** — **RESOLVED 2026-04-21** | — | Implemented at `app/api/oauth/threads/{deauthorize,data-deletion}/route.ts` with HMAC-SHA256 signed_request verification | Done |
+| ~~G2~~ | **HSTS header** — **RESOLVED 2026-04-21** | — | `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload` applied in `next.config.ts` | Done |
+| ~~G3~~ | **Threads OAuth rate-limit** — **RESOLVED 2026-04-21** | — | `applyRateLimit` IP-based guard at `/api/oauth/threads/{start,callback}/route.ts` entry | Done |
 | G4 | **`TOKEN_ENCRYPTION_KEY` rotation not implemented** (§3, §7) | CWE-320 | Key stored in Vercel env (encrypted at provider), no git exposure | 2026-Q3 (dual-key rolling scheme) |
-| G5 | **Dependabot not configured** (§10) | CWE-1104 | Manual `pnpm audit` during releases | 2026-05-15 |
+| ~~G5~~ | **Dependabot** — **RESOLVED 2026-04-21** | — | `.github/dependabot.yml` — weekly npm, monthly GitHub Actions, grouped by scope | Done |
 | G6 | **Secret-scanning CI step missing** (§10) | CWE-798 | `.gitignore` enforced; backup file `.env.local.audit` gitignored (verified) | 2026-05-15 |
-| G7 | **4 MEDIUM RLS findings open** (§5) | CWE-284 | None of the MEDIUM items affect Meta token data; tracked in internal memo | 2026-Q2 |
+| G7 | **3 MEDIUM RLS findings open** (§5) — M4, M5 partially closed 2026-04-21 | CWE-284 | None of the MEDIUM items affect Meta token data; H7 persona learning-artifact exposure closed via `persona_fields_select_editor_only` + corpus/training SELECT scoped to editor | 2026-Q2 |
 | G8 | **Rate limiter is in-memory, not distributed** (§6) | CWE-770 | Per-instance limits still apply; Vercel's own Edge throttles catastrophic abuse | 2026-Q2 (Upstash Redis) |
 | G9 | **No third-party penetration test on record** | — | Internal security reviews 2026-03-25, 2026-04-18, 2026-04-21 (this doc) | 2026-Q4 after institutional contract revenue |
 | G10 | **`script-src 'unsafe-inline'` in CSP** (§6) | CWE-79 | X-Frame-Options DENY; HttpOnly cookies; React output escaping | 2026-Q3 (nonce-based CSP) |
 
-Top 5 by reviewer relevance: **G1, G2, G3, G4, G5.**
+Top remaining by reviewer relevance as of 2026-04-21: **G4 (key rotation)**, **G6 (secret-scan CI)**, **G9 (pen test)**. G1, G2, G3, G5 resolved in Bundle A. H7 RLS exposure resolved in Bundle B (migration `20260421010000_rls_hardening_h7_m4_m5.sql`).
 
 ---
 
