@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useClub } from '@/src/hooks/useClub'
+import { Loader2 } from 'lucide-react'
 
 // ─── Types ───
 
@@ -595,9 +596,10 @@ export function DiscordSettingsWizard({ clubSlug }: { clubSlug: string }) {
               <button
                 onClick={handleSave}
                 disabled={saveMutation.isPending}
-                className="w-full py-3 bg-brand text-white rounded-xl font-semibold text-sm hover:bg-brand-hover transition-colors disabled:opacity-60"
+                className="w-full py-3 bg-brand text-white rounded-xl font-semibold text-sm hover:bg-brand-hover transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
               >
-                {saveMutation.isPending ? '저장 중...' : '설정 저장'}
+                {saveMutation.isPending && <Loader2 size={14} className="animate-spin" />}
+                {saveMutation.isPending ? '저장 중' : '설정 저장'}
               </button>
             </div>
           )}

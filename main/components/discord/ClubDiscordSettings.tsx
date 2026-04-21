@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useClub } from '@/src/hooks/useClub'
 import { toast } from 'sonner'
+import { Loader2 } from 'lucide-react'
 import { DiscordConnectionWizard } from './DiscordConnectionWizard'
 
 interface GhostwriterSettings {
@@ -287,9 +288,10 @@ export function ClubDiscordSettings({ clubSlug }: { clubSlug: string }) {
             type="button"
             onClick={() => saveMutation.mutate()}
             disabled={!hasChanges || saveMutation.isPending}
-            className="w-full py-2.5 bg-brand text-white rounded-xl text-sm font-semibold hover:bg-brand-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-full py-2.5 bg-brand text-white rounded-xl text-sm font-semibold hover:bg-brand-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            {saveMutation.isPending ? '저장 중...' : '설정 저장'}
+            {saveMutation.isPending && <Loader2 size={14} className="animate-spin" />}
+            {saveMutation.isPending ? '저장 중' : '설정 저장'}
           </button>
 
           {/* 채널 안내 */}
@@ -317,9 +319,10 @@ export function ClubDiscordSettings({ clubSlug }: { clubSlug: string }) {
                     type="button"
                     onClick={() => disconnectMutation.mutate()}
                     disabled={disconnectMutation.isPending}
-                    className="px-3 py-1.5 text-xs font-semibold text-white bg-status-danger-text rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+                    className="px-3 py-1.5 text-xs font-semibold text-white bg-status-danger-text rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 inline-flex items-center gap-1.5"
                   >
-                    {disconnectMutation.isPending ? '해제 중...' : '연결 해제'}
+                    {disconnectMutation.isPending && <Loader2 size={11} className="animate-spin" />}
+                    {disconnectMutation.isPending ? '해제 중' : '연결 해제'}
                   </button>
                   <button
                     type="button"

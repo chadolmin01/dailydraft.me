@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
-import { ArrowRight, Check, X, Circle, ChevronDown } from 'lucide-react'
+import { ArrowRight, Check, X, Circle, ChevronDown, Loader2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 // 스크롤 리빌 공통 props — 섹션이 뷰포트에 들어오면 한 번만 fade-up
@@ -642,8 +642,9 @@ export function RecruitPageClient() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full bg-brand text-white px-6 py-4 rounded-full font-bold text-base hover:bg-brand-hover transition-all duration-200 active:scale-[0.99] shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-brand text-white px-6 py-4 rounded-full font-bold text-base hover:bg-brand-hover transition-all duration-200 active:scale-[0.99] shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
+              {submitting && <Loader2 size={16} className="animate-spin" />}
               {submitting ? '제출 중...' : '신청 제출하기'}
             </button>
 

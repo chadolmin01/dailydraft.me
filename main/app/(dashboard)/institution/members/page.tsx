@@ -455,9 +455,10 @@ export default function InstitutionMembersPage() {
               <button
                 type="submit"
                 disabled={addMember.isPending}
-                className="w-full py-2.5 bg-surface-inverse text-txt-inverse text-xs font-medium hover:bg-surface-inverse disabled:opacity-50 transition-colors"
+                className="w-full py-2.5 bg-surface-inverse text-txt-inverse text-xs font-medium hover:bg-surface-inverse disabled:opacity-50 transition-colors flex items-center justify-center gap-1.5"
               >
-                {addMember.isPending ? '추가 중...' : '멤버 추가'}
+                {addMember.isPending && <Loader2 size={12} className="animate-spin" />}
+                {addMember.isPending ? '추가 중' : '멤버 추가'}
               </button>
             </form>
           </Card>
