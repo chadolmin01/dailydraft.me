@@ -540,7 +540,7 @@ export default function ClubPageClient() {
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
               {(membersData?.members || []).map((m, i) => (
                 <StaggerCard key={m.id} staggerKey={`member:${m.id}`} index={i}>
-                  <div className="relative bg-surface-card border border-border rounded-xl p-5 flex flex-col items-center text-center gap-2 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+                  <div className="relative h-[180px] bg-surface-card border border-border rounded-xl p-5 flex flex-col items-center text-center gap-2 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
                     {/* 운영진 관리 메뉴 — owner/admin 만 */}
                     {isAdmin && (club.my_role === 'owner' || club.my_role === 'admin') && (
                       <div className="absolute top-2 right-2">
