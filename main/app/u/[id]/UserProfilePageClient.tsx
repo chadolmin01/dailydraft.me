@@ -13,6 +13,7 @@ import { cleanNickname } from '@/src/lib/clean-nickname'
 import { positionLabel } from '@/src/constants/roles'
 import { AFFILIATION_LABELS, SITUATION_LABELS } from '@/components/profile-modal/types'
 import { PublicActivity } from '@/components/profile/PublicActivity'
+import { QrCard } from '@/components/ui/QrCard'
 
 /**
  * 공개 프로필 페이지 — 모달의 풀스크린 대체.
@@ -25,6 +26,7 @@ export function UserProfilePageClient({ profileId }: { profileId: string }) {
   const { user } = useAuth()
   const [shareCopied, setShareCopied] = useState(false)
   const [showShareMenu, setShowShareMenu] = useState(false)
+  const [showQrCard, setShowQrCard] = useState(false)
 
   const { data: profile, isLoading } = useDetailedPublicProfile(profileId)
   const profileUserId = profile?.user_id ?? undefined
@@ -170,6 +172,12 @@ export function UserProfilePageClient({ profileId }: { profileId: string }) {
                 >
                   💼 LinkedIn용 메시지
                 </button>
+                <button
+                  onClick={() => { setShowQrCard(v => !v); setShowShareMenu(false) }}
+                  className="w-full text-left px-3 py-2 text-[13px] text-txt-primary hover:bg-surface-sunken rounded-lg transition-colors"
+                >
+                  📇 명함 QR 보기
+                </button>
               </div>
             )}
           </div>
@@ -190,6 +198,18 @@ export function UserProfilePageClient({ profileId }: { profileId: string }) {
           )}
         </div>
       </div>
+
+      {/* QR 명함 패널 — 공유 메뉴에서 토글 */}
+      {showQrCard && (
+        <div className="mb-6 print:hidden flex justify-center">
+          <QrCard
+            url={typeof window !== 'undefined' ? window.location.href : ''}
+            title={`${cleanNickname(profile.nickname || '') || '프로필'} · Draft 명함`}
+            subtitle={profile.desired_position ? positionLabel(profile.desired_position) : '이력·활동·프로젝트를 한 URL 에서 확인'}
+            size={240}
+          />
+        </div>
+      )}
 
       {/* 프로필 헤더 */}
       <header className="flex items-start gap-4 mb-8">

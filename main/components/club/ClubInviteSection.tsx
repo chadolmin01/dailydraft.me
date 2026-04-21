@@ -150,8 +150,10 @@ export function ClubInviteSection({ slug, clubName, viewerRole }: {
     await handleCopy(template, `template-${activeTemplate}`)
   }
 
+  // 자체 QR 엔드포인트로 교체 — 외부 서비스(api.qrserver.com) 의존성 제거.
+  // 같은 URL 은 1시간 edge cache 되어 재방문 시 즉시 반환. SVG 기반이라 고해상도 인쇄 대응.
   const qrSrc = inviteUrl
-    ? `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(inviteUrl)}&margin=10`
+    ? `/api/qr?value=${encodeURIComponent(inviteUrl)}&size=400`
     : null
 
   return (
