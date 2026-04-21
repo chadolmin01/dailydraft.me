@@ -46,10 +46,20 @@ function SkeletonCard({ rows = 3 }: { rows?: number }) {
   )
 }
 
-/** Grid of card skeletons — 카드마다 60ms stagger 로 계단식 등장 */
+/** Grid of card skeletons — 카드마다 60ms stagger 로 계단식 등장.
+ *
+ * Responsive breakpoint 을 실제 프로젝트 grid(grid-cols-1 sm:grid-cols-2 lg:grid-cols-3) 와
+ * 일치시켜 sm~lg 구간에서 layout shift 방지. cols 는 최종(데스크톱) 값 기준.
+ */
 function SkeletonGrid({ count = 4, cols = 2 }: { count?: number; cols?: number }) {
+  const gridClass =
+    cols === 1
+      ? 'grid-cols-1'
+      : cols === 3
+      ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' // 실제 ClubsList·ExploreProjectGrid 와 일치
+      : 'grid-cols-1 sm:grid-cols-2' // 2-col 도 sm 부터 2컬럼 — 태블릿 shift 제거
   return (
-    <div className={`grid gap-4 skeleton-delayed ${cols === 1 ? 'grid-cols-1' : cols === 3 ? 'grid-cols-1 md:grid-cols-3' : 'grid-cols-1 md:grid-cols-2'}`}>
+    <div className={`grid gap-4 skeleton-delayed ${gridClass}`}>
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
