@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import Link from 'next/link'
+import { PrefetchLink as Link } from '@/components/ui/PrefetchLink'
 import Image from 'next/image'
 import { Building2, Users } from 'lucide-react'
 import { EmptyState } from '@/components/ui/EmptyState'
