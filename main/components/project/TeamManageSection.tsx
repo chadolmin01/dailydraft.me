@@ -55,12 +55,24 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
   const [removingId, setRemovingId] = useState<string | null>(null)
 
   // Fetch team members
-  const { data, isLoading } = useQuery<TeamData>({
+  // 권한 없음(403) 응답은 재시도 무의미 — 빈 데이터로 처리해 skeleton 무한 고착 방지
+  const { data, isLoading, isError, error } = useQuery<TeamData>({
     queryKey: ['team', opportunityId],
     queryFn: async () => {
       const res = await fetch(`/api/opportunities/${opportunityId}/team`)
+      if (res.status === 403) {
+        // 권한 없음 — 조용히 빈 팀으로 처리
+        const err = new Error('Forbidden') as Error & { status?: number }
+        err.status = 403
+        throw err
+      }
       if (!res.ok) throw new Error('Failed to fetch team')
       return await res.json()
+    },
+    retry: (failureCount, err) => {
+      // 403 은 재시도해도 같은 결과 — 바로 포기
+      if ((err as Error & { status?: number })?.status === 403) return false
+      return failureCount < 2
     },
   })
 
@@ -243,14 +255,25 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
         </div>
       )}
 
-      {/* No accepted chats, no members */}
-      {acceptedChats.length === 0 && members.length === 0 && !chatsLoading && (
+      {/* No accepted chats, no members
+          chatsLoading 은 coffee_chats fetch 로딩 상태 — 로딩 중이어도 팀 API 가 비어있다고
+          답했으면 empty state 는 바로 보여 준다 (chatsLoading 기다리느라 skeleton 고착 금지).
+          chatsLoading 동안 "수락된 커피챗" 섹션이 나중에 추가될 수 있지만, 그때 아래서 stack 됨. */}
+      {acceptedChats.length === 0 && members.length === 0 && (
         <div className="border border-border py-12 flex flex-col items-center justify-center rounded-xl">
           <div className="w-12 h-12 bg-surface-sunken flex items-center justify-center mb-3 rounded-full">
             <Users size={20} className="text-txt-disabled" />
           </div>
-          <p className="text-sm text-txt-tertiary font-medium mb-1">아직 팀원이 없습니다</p>
-          <p className="text-xs text-txt-disabled">커피챗이 수락되면 여기서 팀에 추가할 수 있습니다</p>
+          <p className="text-sm text-txt-tertiary font-medium mb-1">
+            {isError && (error as Error & { status?: number })?.status === 403
+              ? '이 팀을 열람할 권한이 없습니다'
+              : '아직 팀원이 없습니다'}
+          </p>
+          <p className="text-xs text-txt-disabled">
+            {isError && (error as Error & { status?: number })?.status === 403
+              ? '프로젝트 오너·팀원·소속 클럽 운영자만 볼 수 있습니다'
+              : '커피챗이 수락되면 여기서 팀에 추가할 수 있습니다'}
+          </p>
         </div>
       )}
 
