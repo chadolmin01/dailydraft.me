@@ -15,11 +15,20 @@ export default function robots(): MetadataRoute.Robots {
 
   return {
     rules: [
+      // 일반 크롤러 — 검색·unfurl 필요 경로 허용
       {
         userAgent: '*',
         // Allow 는 Disallow 보다 구체적이어야 우선한다. /api/og/ 를 명시적으로 허용해서
-        // OG 이미지 크롤(트위터·링크드인·슬랙 unfurl) 이 가능하게 하고, 나머지 /api/ 는 차단.
-        allow: ['/', '/api/og/'],
+        // OG 이미지 크롤(트위터·링크드인·슬랙 unfurl) 이 가능하게 하고,
+        // feed 엔드포인트(/changelog/feed.xml, /roadmap/feed.xml, /status/feed.xml)도 허용.
+        allow: [
+          '/',
+          '/api/og/',
+          '/changelog/feed.xml',
+          '/roadmap/feed.xml',
+          '/status/feed.xml',
+          '/.well-known/',
+        ],
         disallow: [
           '/api/',
           // 관리자 영역
@@ -57,7 +66,15 @@ export default function robots(): MetadataRoute.Robots {
           '/network', // 내부 사람 탐색 — 공개 프로필은 /u/[id]
         ],
       },
+      // AI 크롤러 — 기본 차단. 콘텐츠 학습 반대.
+      // 유저가 명시적으로 공개한 프로필·프로젝트·클럽만 크롤링 허용할 수 있지만,
+      // 현 시점에선 보수적으로 전면 차단. 파트너십 요청 시 개별 해제.
+      {
+        userAgent: ['GPTBot', 'ChatGPT-User', 'CCBot', 'anthropic-ai', 'Claude-Web', 'Google-Extended', 'PerplexityBot', 'Bytespider'],
+        disallow: '/',
+      },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
+    host: baseUrl,
   }
 }
