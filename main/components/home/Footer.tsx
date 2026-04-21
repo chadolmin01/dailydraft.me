@@ -27,6 +27,7 @@ const footerLinks: Record<string, FooterLink[]> = {
     { label: '개인정보처리방침', href: '/legal/privacy' },
     { label: '이용약관', href: '/legal/terms' },
     { label: '데이터 삭제', href: '/legal/data-deletion' },
+    { label: '공개 API', href: '/api-docs' },
   ],
   회사: [
     {
