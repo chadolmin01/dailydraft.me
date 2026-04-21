@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/src/lib/supabase/server'
 import { createAdminClient } from '@/src/lib/supabase/admin'
 import { encryptToken } from '@/src/lib/personas/token-crypto'
+import { applyRateLimit, getClientIp } from '@/src/lib/rate-limit'
 
 /**
  * GET /api/oauth/threads/callback?code=...&state=...
@@ -18,6 +19,11 @@ import { encryptToken } from '@/src/lib/personas/token-crypto'
  *   6. return_to?threads=ok 리다이렉트
  */
 export async function GET(request: NextRequest) {
+  // Rate limit: 콜백 경로는 인증 코드(exchange) 가 있으므로 악용 가능성 낮지만,
+  // 실패한 code 교환을 반복해 서버 리소스를 소모시키는 시나리오 방어 차원에서 IP 기반 제한.
+  const rlRes = applyRateLimit(null, getClientIp(request))
+  if (rlRes) return rlRes
+
   const { searchParams } = new URL(request.url)
   const code = searchParams.get('code')
   const stateNonce = searchParams.get('state')

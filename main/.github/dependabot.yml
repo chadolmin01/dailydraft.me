@@ -1,0 +1,81 @@
+# Dependabot 구성 — SCA (Software Composition Analysis) 자동화.
+# Meta App Review / 대학 실사 단계에서 "의존성 취약점 자동 스캔 여부" 확인 항목 대응.
+#
+# 정책:
+# - 주 1회 (월요일 오전 9시 KST = 00:00 UTC) 취약점 스캔
+# - minor/patch 업데이트는 PR 자동 생성
+# - major 업데이트는 수동 검토 (자동 PR 제외)
+# - security 취약점은 심각도 관계없이 즉시 PR
+version: 2
+
+updates:
+  # Next.js / React / Supabase / TypeScript 등 런타임 의존성
+  - package-ecosystem: "npm"
+    directory: "/main"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "00:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "chadolmin01"
+    labels:
+      - "deps"
+      - "automated"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    # major 는 자동 PR 제외 (breaking change 수동 판단 필요)
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    groups:
+      # 관련 의존성 묶어서 PR 수 최소화
+      next:
+        patterns:
+          - "next"
+          - "@next/*"
+          - "eslint-config-next"
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+      supabase:
+        patterns:
+          - "@supabase/*"
+      tailwind:
+        patterns:
+          - "tailwindcss"
+          - "@tailwindcss/*"
+          - "postcss"
+          - "autoprefixer"
+      typescript:
+        patterns:
+          - "typescript"
+          - "@typescript-eslint/*"
+          - "eslint"
+          - "eslint-*"
+      testing:
+        patterns:
+          - "vitest"
+          - "@vitest/*"
+          - "@playwright/*"
+          - "playwright"
+
+  # GitHub Actions 워크플로우
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+      day: "monday"
+      time: "00:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 3
+    labels:
+      - "ci"
+      - "automated"
+    commit-message:
+      prefix: "chore(ci)"

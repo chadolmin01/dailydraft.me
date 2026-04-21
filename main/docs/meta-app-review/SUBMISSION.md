@@ -84,13 +84,13 @@ Every row references the document of record and the actual implementation state 
 | Audit logging | **Implemented (main)** | `audit_logs` table + `writeAuditLog` | 8 call sites verified |
 | Rate limiting (API) | **Implemented (main, in-process)** | `src/lib/rate-limit/api-rate-limiter.ts` | Distributed (Redis) variant on roadmap |
 | PostHog analytics + `error_logs` + `instrumentation.ts` | **Implemented (main)** | `instrumentation.ts`, `src/lib/posthog/server.ts` | Sentry itself not yet installed |
-| HSTS header | **Planned (2026-05)** | Vercel/Next.js config | Not currently set |
-| Dependabot / SCA | **Planned (2026-05)** | `.github/dependabot.yml` | Not yet created |
-| OAuth callback rate limit wrap | **Planned (2026-05)** | `withRateLimit` wrapper extension | Current OAuth routes bypass rate limit |
+| HSTS header | **Implemented (main)** | `next.config.ts` `headers()` | `max-age=31536000; includeSubDomains; preload` |
+| Dependabot / SCA | **Implemented (main)** | `.github/dependabot.yml` | Weekly npm + monthly Actions, grouped by scope |
+| OAuth callback rate limit | **Implemented (main)** | `app/api/oauth/threads/{start,callback}/route.ts` | `applyRateLimit` IP-based guard at entry |
 | Secret rotation schedule | **Planned (Q2 2026)** | Internal runbook | First formal rotation Q2 2026 |
 | Penetration test | **Planned (Q3 2026)** | External engagement | Pre-scale-up target |
 
-**Summary**: of the 21 controls tracked for this submission, **16 are implemented** (9 on `main`, 7 on a branch pending merge within 24 hours), and **5 are on a dated roadmap**. The 5 roadmap items are defense-in-depth rather than Threads-specific blockers.
+**Summary**: of the 21 controls tracked for this submission, **19 are implemented on `main`**, and **2 remain on a dated roadmap** (token encryption key rotation cadence; third-party penetration test). Both roadmap items are defense-in-depth rather than Threads-specific blockers.
 
 ---
 
@@ -134,9 +134,6 @@ We name the gaps here so the reviewer does not have to find them.
 
 | Gap | Impact on reviewer | Mitigation in place | Dated fix |
 |---|---|---|---|
-| HSTS header not yet sent | Cosmetic browser hardening; TLS 1.3 already enforced by Vercel | N/A (no downgrade risk within Vercel edge) | 2026-05 |
-| Dependabot not enabled | No automated dependency alerts | Manual `pnpm audit` pre-release; lockfile enforced | 2026-05 |
-| OAuth callback not rate-limited | Theoretical replay amplification | Replay blocked by state nonce + 10-minute cookie expiry | 2026-05 |
 | Token encryption key rotation manual | Compromised key requires manual replacement of all tokens | Key held in Vercel env only; git-history scanned | Quarterly review, first formal rotation Q2 2026 |
 | No third-party penetration test yet | Reviewer cannot reference external attestation | Internal RLS audit 2026-04-18, all CRITICAL remediated | Q3 2026 (external engagement) |
 | Legal entity registration in progress | Attestation carries sole proprietor placeholder | Personal liability of founder until registered | On registration completion (1–3 weeks) |

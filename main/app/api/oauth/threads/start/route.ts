@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { randomBytes } from 'node:crypto'
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
+import { applyRateLimit, getClientIp } from '@/src/lib/rate-limit'
 
 /**
  * GET /api/oauth/threads/start?persona_id=<uuid>&return_to=<path>
@@ -22,6 +23,11 @@ import { ApiResponse } from '@/src/lib/api-utils'
  *   - HTTPS 필수 (localhost는 개발용 테스트 유저에 한해 허용)
  */
 export async function GET(request: NextRequest) {
+  // Rate limit: OAuth 시작은 악의적 반복 호출(브루트 포스 state 생성, 리다이렉트 루프 유발)을
+  // 방어하기 위해 IP 기반 제한 적용. 정상 플로우는 분당 1회 미만이라 사용자 영향 없음.
+  const rlRes = applyRateLimit(null, getClientIp(request))
+  if (rlRes) return rlRes
+
   const { searchParams } = new URL(request.url)
   const personaId = searchParams.get('persona_id')
   const returnTo = searchParams.get('return_to') || '/'

@@ -55,7 +55,7 @@ export default function DataDeletionPage() {
             프로필, 콘텐츠, 외부 채널 연동(OAuth 토큰 포함)이 30일 유예 후 완전 삭제됩니다.
           </p>
           <Link
-            href="/settings/account/delete"
+            href="/me/data"
             className="inline-flex items-center text-sm font-semibold text-brand hover:underline"
           >
             계정 삭제 페이지로 이동 →

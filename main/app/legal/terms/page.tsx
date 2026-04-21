@@ -181,7 +181,7 @@ export default function TermsOfServicePage() {
       </h2>
       <ol className="list-decimal pl-5 space-y-2 text-txt-secondary leading-relaxed">
         <li>
-          회원은 언제든지 앱 내 계정 삭제 메뉴(<code className="text-sm">/settings/account/delete</code>)
+          회원은 언제든지 앱 내 계정 삭제 메뉴(<code className="text-sm">/me/data</code>)
           또는{' '}
           <Link href="/legal/data-deletion" className="text-brand underline">
             데이터 삭제 안내

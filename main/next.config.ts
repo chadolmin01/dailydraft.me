@@ -136,6 +136,10 @@ const nextConfig: NextConfig = {
       {
         source: '/:path*',
         headers: [
+          // HSTS — HTTPS 강제. preload 등록 전까진 includeSubDomains + 1년 (31536000s).
+          // 프로덕션 도메인 dailydraft.me 는 Vercel Edge 에서 이미 TLS 1.3 강제 중이므로 안전.
+          // Meta/기관 실사 시 체크하는 항목. preload 는 https://hstspreload.org 에 별도 등록.
+          { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains; preload' },
           // Clickjacking 방지 — iframe 임베드는 우리가 만든 /embed/* 만 허용
           { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
           // MIME type sniffing 방지

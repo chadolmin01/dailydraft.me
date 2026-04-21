@@ -203,7 +203,7 @@ export default function PrivacyPolicyPage() {
       </p>
       <ul className="list-disc pl-5 space-y-1 text-txt-secondary leading-relaxed">
         <li>
-          앱 내: 로그인 후 <code className="text-sm">/settings/account/delete</code> 에서 계정 삭제
+          앱 내: 로그인 후 <code className="text-sm">/me/data</code> 에서 계정 삭제
         </li>
         <li>
           Meta 자동 삭제 웹훅: Threads 앱에서 연결 해제 시 <code className="text-sm">POST /api/oauth/threads/data-deletion</code>{' '}
