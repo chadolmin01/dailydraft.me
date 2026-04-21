@@ -13,7 +13,7 @@ const footerLinks: Record<string, FooterLink[]> = {
   제품: [
     { label: '기능', href: '#features' },
     { label: '가격', href: '#pricing' },
-    { label: '학교·기관', href: '#institutions' },
+    { label: '기관·기업 도입', href: '/enterprise' },
     { label: '자주 묻는 질문', href: '/help' },
     { label: '릴리스 노트', href: '/changelog' },
     { label: '로드맵', href: '/roadmap' },
@@ -22,27 +22,35 @@ const footerLinks: Record<string, FooterLink[]> = {
     // SLO target 은 실측이 아니라 목표치이므로 "target" 명시 — oversell 방지
     { label: '신뢰 센터', href: '/trust' },
     { label: '시스템 상태', href: '/status', badge: '99.9% target' },
-    // Meta App Review 제출 URL 과 일치시킴 (/legal/ 경로). 기존 /privacy·/terms 는 별도 라우트 그룹에
-    // 남아있고 호환용으로 유지되나, 공식 공개 링크는 /legal/* 로 통일해서 리뷰 시 혼선 방지.
-    { label: '개인정보처리방침', href: '/legal/privacy' },
-    { label: '이용약관', href: '/legal/terms' },
-    { label: '데이터 삭제', href: '/legal/data-deletion' },
+    { label: '보안 제보', href: '/security' },
+    { label: '접근성 선언', href: '/accessibility' },
     { label: '공개 API', href: '/api-docs' },
   ],
-  회사: [
+  법적: [
+    // Meta App Review 제출 URL 과 일치 (/legal/ 경로)
+    { label: '법적 고지 모음', href: '/legal' },
+    { label: '개인정보처리방침', href: '/legal/privacy' },
+    { label: '이용약관', href: '/legal/terms' },
+    { label: '데이터 보관·파기', href: '/legal/retention' },
+    { label: '수탁업체 목록', href: '/legal/subprocessors' },
+    { label: '쿠키 사용 방침', href: '/legal/cookies' },
+    { label: '데이터 삭제 요청', href: '/legal/data-deletion' },
+  ],
+  연락: [
+    { label: '연락처 (유형별)', href: '/contact' },
     {
-      label: '기관 문의',
-      href: 'mailto:team@dailydraft.me?subject=Institution%20Inquiry',
+      label: '기관 도입 상담',
+      href: 'mailto:team@dailydraft.me?subject=Partnership',
       external: true,
     },
     {
-      label: '일반 문의',
-      href: 'mailto:team@dailydraft.me?subject=General%20Inquiry',
-      external: true,
-    },
-    {
-      label: '엔터프라이즈 실사 문서',
+      label: '실사 문서 요청',
       href: 'mailto:team@dailydraft.me?subject=Due%20Diligence%20Docs',
+      external: true,
+    },
+    {
+      label: '보안 제보',
+      href: 'mailto:team@dailydraft.me?subject=%5BSecurity%5D',
       external: true,
     },
   ],
@@ -52,7 +60,7 @@ export const Footer: React.FC = () => {
   return (
     <footer className="border-t border-border bg-surface-card relative z-10">
       <div className="max-w-5xl mx-auto px-6 md:px-10 py-12">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-10">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-10 mb-10">
           {/* Logo & tagline */}
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-2 mb-4">
