@@ -123,6 +123,14 @@ export default function LegalIndexPage() {
             신뢰 센터
           </Link>{' '}
           ·{' '}
+          <Link href="/security" className="text-brand underline">
+            보안 제보
+          </Link>{' '}
+          ·{' '}
+          <Link href="/accessibility" className="text-brand underline">
+            접근성 선언
+          </Link>{' '}
+          ·{' '}
           <Link href="/status" className="text-brand underline">
             시스템 상태
           </Link>{' '}
@@ -135,7 +143,12 @@ export default function LegalIndexPage() {
           실사·DPA 요청:{' '}
           <a href="mailto:team@dailydraft.me?subject=Legal%20Docs" className="text-brand underline">
             team@dailydraft.me
-          </a>
+          </a>{' '}
+          · 문의 유형별 라우팅은{' '}
+          <Link href="/contact" className="text-brand underline">
+            /contact
+          </Link>
+          .
         </p>
       </footer>
     </article>
