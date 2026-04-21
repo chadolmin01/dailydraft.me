@@ -77,6 +77,8 @@ export const ROUTE_TITLES: Record<string, string> = {
   '/help': '자주 묻는 질문',
   '/changelog': '릴리스 노트',
   '/trust': '신뢰 센터',
+  '/api-docs': '공개 API',
+  '/roadmap': '로드맵',
   '/recruit': 'Draft 1기 모집',
   '/idea-validator': '아이디어 검증',
 
