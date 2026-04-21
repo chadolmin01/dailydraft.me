@@ -1,0 +1,14 @@
+# Draft — Security Contact File (RFC 9116)
+#
+# 목적: 보안 연구자·벤더가 Draft 취약점을 발견했을 때 표준화된 경로로 제보할 수 있게.
+# 이 파일은 https://dailydraft.me/.well-known/security.txt 에서 공개됨.
+#
+# Meta App Review / 대학 실사 시 "vulnerability disclosure 정책이 있는가" 체크 항목 대응.
+# 정책 전문: /SECURITY.md (repo 루트) 및 https://dailydraft.me/legal/privacy §12.
+
+Contact: mailto:team@dailydraft.me
+Expires: 2027-04-21T00:00:00.000Z
+Preferred-Languages: ko, en
+Canonical: https://dailydraft.me/.well-known/security.txt
+Policy: https://github.com/chadolmin01/dailydraft.me/blob/main/main/SECURITY.md
+Acknowledgments: https://github.com/chadolmin01/dailydraft.me/blob/main/main/SECURITY.md#acknowledgements
