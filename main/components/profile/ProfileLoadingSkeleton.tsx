@@ -4,7 +4,7 @@ import { DashboardLayout } from '@/components/ui/DashboardLayout'
 
 export function ProfileLoadingSkeleton() {
   return (
-    <div className="bg-surface-bg min-h-full">
+    <div className="skeleton-delayed bg-surface-bg min-h-full">
       <DashboardLayout
         size="wide"
         sidebar={

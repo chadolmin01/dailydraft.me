@@ -3,7 +3,7 @@
  */
 export default function OperatorLoading() {
   return (
-    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+    <div className="skeleton-delayed max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       <div className="space-y-2">
         <div className="h-3 w-24 skeleton-shimmer rounded" />
         <div className="h-7 w-56 skeleton-shimmer rounded" />

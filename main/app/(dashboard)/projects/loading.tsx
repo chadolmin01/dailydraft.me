@@ -1,7 +1,7 @@
 // 프로젝트 대시보드: 통계 스트립 + 카드 리스트. 공용 loading.tsx는 2컬럼 그리드라 여기선 안 맞음.
 export default function ProjectsLoading() {
   return (
-    <div className="bg-surface-bg min-h-full">
+    <div className="skeleton-delayed bg-surface-bg min-h-full">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <div className="space-y-6">
           {/* Header */}

@@ -4,7 +4,7 @@
  */
 export default function DraftsLoading() {
   return (
-    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12 space-y-5">
+    <div className="skeleton-delayed max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12 space-y-5">
       <div className="space-y-2 mb-4">
         <div className="h-7 w-32 skeleton-shimmer rounded" />
         <div className="h-4 w-56 skeleton-shimmer rounded" />

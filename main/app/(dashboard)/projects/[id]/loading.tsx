@@ -5,7 +5,7 @@
  */
 export default function ProjectDetailLoading() {
   return (
-    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6">
+    <div className="skeleton-delayed max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6">
       {/* 뒤로가기 + 우측 액션 */}
       <div className="flex items-center justify-between">
         <div className="h-5 w-20 skeleton-shimmer rounded" />

@@ -4,7 +4,7 @@
  */
 export default function NotificationsLoading() {
   return (
-    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12 space-y-4">
+    <div className="skeleton-delayed max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12 space-y-4">
       <div className="flex items-baseline justify-between mb-4">
         <div className="h-6 w-24 skeleton-shimmer rounded" />
         <div className="h-4 w-16 skeleton-shimmer rounded" />

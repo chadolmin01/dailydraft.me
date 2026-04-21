@@ -2,7 +2,7 @@
 // 1400px 그리드와 어긋나므로 전용 스켈레톤.
 export default function FeedLoading() {
   return (
-    <div className="min-h-screen bg-surface-bg">
+    <div className="skeleton-delayed min-h-screen bg-surface-bg">
       <div className="max-w-[780px] mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-16">
         {/* Header */}
         <div className="mb-6 space-y-2">

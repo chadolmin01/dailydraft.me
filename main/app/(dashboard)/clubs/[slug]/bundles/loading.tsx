@@ -3,7 +3,7 @@
  */
 export default function BundlesLoading() {
   return (
-    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-5">
+    <div className="skeleton-delayed max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-5">
       <div className="flex items-center justify-between">
         <div className="space-y-1.5">
           <div className="h-3 w-16 skeleton-shimmer rounded" />

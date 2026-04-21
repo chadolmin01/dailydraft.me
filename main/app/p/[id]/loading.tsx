@@ -2,7 +2,7 @@
 // 외부 공유 링크 첫인상 페이지. ProjectDetail 레이아웃: max-w-4xl, hero + title + tags + 2-col 그리드.
 export default function ProjectDetailLoading() {
   return (
-    <div className="min-h-screen bg-surface-bg">
+    <div className="skeleton-delayed min-h-screen bg-surface-bg">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Hero 이미지 */}
         <div className="h-56 skeleton-shimmer rounded-xl mb-6" />

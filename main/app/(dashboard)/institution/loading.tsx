@@ -4,7 +4,7 @@
  */
 export default function InstitutionLoading() {
   return (
-    <div className="bg-surface-bg min-h-full">
+    <div className="skeleton-delayed bg-surface-bg min-h-full">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12 space-y-6">
         {/* Header */}
         <div className="space-y-2">
