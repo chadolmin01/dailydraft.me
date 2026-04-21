@@ -73,6 +73,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/legal/terms`, lastModified: new Date('2026-04-21'), changeFrequency: 'monthly', priority: 0.4 },
     { url: `${baseUrl}/legal/data-deletion`, lastModified: new Date('2026-04-21'), changeFrequency: 'monthly', priority: 0.3 },
     { url: `${baseUrl}/legal/subprocessors`, lastModified: new Date('2026-04-22'), changeFrequency: 'monthly', priority: 0.4 },
+    { url: `${baseUrl}/legal/cookies`, lastModified: new Date('2026-04-22'), changeFrequency: 'monthly', priority: 0.3 },
   ]
 
   // 동적 공개 엔티티 (실패 시 정적만 반환해서 sitemap 자체는 깨지지 않게)
