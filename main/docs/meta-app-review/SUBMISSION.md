@@ -72,14 +72,14 @@ Every row references the document of record and the actual implementation state 
 | Short-lived → long-lived token exchange (60 days) | **Implemented (main)** | `app/api/oauth/threads/callback/route.ts` | `expires_in ?? 5184000` |
 | AES-256-GCM token encryption at rest | **Implemented (main)** | `src/lib/personas/token-crypto.ts` | Env var: `TOKEN_ENCRYPTION_KEY` |
 | 2-step Threads publish (container → publish) | **Implemented (main)** | `src/lib/personas/publishers/threads.ts` | Matches Meta Threads API v1.0 pattern |
-| Deauthorize Callback webhook | **Implemented (pending merge)** | `feat/threads-compliance-callbacks` → `app/api/oauth/threads/deauthorize/route.ts` | Waiting on deployment quota reset (≤24h) |
-| Data Deletion Request webhook | **Implemented (pending merge)** | `feat/threads-compliance-callbacks` → `app/api/oauth/threads/data-deletion/route.ts` | Returns `{ url, confirmation_code }` per Meta spec |
-| Data Deletion status URL | **Implemented (pending merge)** | `feat/threads-compliance-callbacks` → `app/api/oauth/threads/data-deletion/status/route.ts` | Public GET endpoint |
-| `signed_request` HMAC-SHA256 verification | **Implemented (pending merge)** | `feat/threads-compliance-callbacks` → `src/lib/personas/meta-signed-request.ts` | Timing-safe compare |
-| `meta_data_deletion_requests` table | **Implemented (pending merge)** | `feat/threads-compliance-callbacks` → `supabase/migrations/20260421000000_meta_data_deletion_requests.sql` | RLS enabled |
-| `/legal/privacy` page | **Implemented (pending merge)** | `feat/meta-app-review-bundle` → `app/legal/privacy/page.tsx` | 14 sections, Meta-specific clause in §11 |
-| `/legal/terms` page | **Implemented (pending merge)** | `feat/meta-app-review-bundle` → `app/legal/terms/page.tsx` | 13 articles, automated-publish special clause (Art. 7) |
-| `/legal/data-deletion` page | **Implemented (pending merge)** | `feat/meta-app-review-bundle` → `app/legal/data-deletion/page.tsx` | 3 deletion paths + FAQ |
+| Deauthorize Callback webhook | **Implemented (main)** | `app/api/oauth/threads/deauthorize/route.ts` | HMAC-SHA256 signed_request verification, CSRF-exempt in middleware |
+| Data Deletion Request webhook | **Implemented (main)** | `app/api/oauth/threads/data-deletion/route.ts` | Returns `{ url, confirmation_code }` per Meta spec |
+| Data Deletion status URL | **Implemented (main)** | `app/api/oauth/threads/data-deletion/status/route.ts` | Public GET endpoint |
+| `signed_request` HMAC-SHA256 verification | **Implemented (main)** | `src/lib/personas/meta-signed-request.ts` | Timing-safe compare |
+| `meta_data_deletion_requests` table | **Implemented (main)** | `supabase/migrations/20260421000000_meta_data_deletion_requests.sql` | RLS enabled |
+| `/legal/privacy` page | **Implemented (main)** | `app/legal/privacy/page.tsx` | 14 sections, Meta-specific clause in §11 |
+| `/legal/terms` page | **Implemented (main)** | `app/legal/terms/page.tsx` | 13 articles, automated-publish special clause (Art. 7) |
+| `/legal/data-deletion` page | **Implemented (main)** | `app/legal/data-deletion/page.tsx` | 3 deletion paths + FAQ |
 | Row-Level Security on persona/channel tables | **Implemented (main)** | Multiple Supabase migrations | 7/7 CRITICAL findings from 2026-04-18 audit remediated |
 | Audit logging | **Implemented (main)** | `audit_logs` table + `writeAuditLog` | 8 call sites verified |
 | Rate limiting (API) | **Implemented (main, in-process)** | `src/lib/rate-limit/api-rate-limiter.ts` | Distributed (Redis) variant on roadmap |
@@ -87,12 +87,18 @@ Every row references the document of record and the actual implementation state 
 | HSTS header | **Implemented (main)** | `next.config.ts` `headers()` | `max-age=31536000; includeSubDomains; preload` |
 | Dependabot / SCA | **Implemented (main)** | `.github/dependabot.yml` | Weekly npm + monthly Actions, grouped by scope |
 | OAuth callback rate limit | **Implemented (main)** | `app/api/oauth/threads/{start,callback}/route.ts` | `applyRateLimit` IP-based guard at entry |
-| Secret rotation schedule | **Planned (Q2 2026)** | Internal runbook | First formal rotation Q2 2026 |
 | Secret-scanning CI | **Implemented (main)** | `.github/workflows/secret-scan.yml` | gitleaks + trufflehog on push/PR/weekly |
 | Secret rotation runbook | **Implemented (main)** | `docs/operations/secret-rotation-runbook.md` | Quarterly rotation procedure published; dual-key implementation Q3 2026 |
+| `security.txt` (RFC 9116) | **Implemented (main)** | `public/.well-known/security.txt` | Public machine-readable disclosure policy |
+| SLO / incident transparency | **Implemented (main)** | `/status` + `components/status/StatusPageClient.tsx` | Uptime/P95/RTO/RPO/security response targets; 30-day incident log |
+| E2E smoke tests (CI) | **Implemented (main)** | `tests/e2e/smoke.spec.ts` + `.github/workflows/e2e-smoke.yml` | 10 tests on legal/API/OAuth guard, hourly schedule + push |
+| Audit log CSV export | **Implemented (main)** | `/api/admin/audit?format=csv` | 5,000-row filtered export with UTF-8 BOM for Excel |
+| Persona learning-artifact confidentiality | **Implemented (main)** | `supabase/migrations/20260421010000_rls_hardening_h7_m4_m5.sql` | persona_fields/corpus/training SELECT scoped to editor-only |
+| SECURITY DEFINER function `search_path` pinning | **Implemented (main)** | Same migration | 20+ known functions pinned to `public` |
+| Schema.org structured data | **Implemented (main)** | `components/home/JsonLd.tsx` | Organization + WebSite + SoftwareApplication + FAQPage |
 | Penetration test | **Planned (Q3 2026)** | External engagement | Pre-scale-up target |
 
-**Summary**: of the 23 controls tracked for this submission, **21 are implemented on `main`**, and **1 remains on a dated roadmap** (third-party penetration test, Q3 2026). Token encryption key rotation has an operational runbook (`docs/operations/secret-rotation-runbook.md`); the dual-key automation is Q3 2026. Both remaining items are defense-in-depth rather than Threads-specific blockers.
+**Summary**: of the 29 controls tracked for this submission, **28 are implemented on `main`**, and **1 remains on a dated roadmap** (third-party penetration test, Q3 2026). Token encryption key rotation has an operational runbook (`docs/operations/secret-rotation-runbook.md`); the dual-key automation is Q3 2026. The remaining roadmap item is defense-in-depth rather than a Threads-specific blocker.
 
 ---
 
@@ -160,6 +166,7 @@ Draft Founder<br>
 | Version | Date | Author | Change |
 |---|---|---|---|
 | v1.0 | 2026-04-21 | Draft Team | Initial submission package. |
+| v1.1 | 2026-04-21 | Draft Team | Bundles A–J merged to `main`: webhooks + legal pages live, HSTS + Dependabot + OAuth rate limit + secret-scan CI + rotation runbook + CSV audit export + E2E smoke + structured data + SLO page. Control count 23→29, implemented 21→28. |
 
 ---
 
