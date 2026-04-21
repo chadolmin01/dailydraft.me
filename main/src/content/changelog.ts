@@ -24,13 +24,19 @@ export interface ChangelogEntry {
 export const CHANGELOG: ChangelogEntry[] = [
   {
     date: '2026-04-22',
-    version: 'v0.20',
+    version: 'v0.21',
     items: [
-      { type: 'feature', title: '공개 프로필 QR 명함', note: '학생이 자기 프로필 URL 을 명함·이력서에 QR 로 붙일 수 있도록 /u/[id] 에서 바로 생성·인쇄.' },
-      { type: 'feature', title: '클럽 초대 QR 자체 호스팅', note: '외부 서비스 의존성 제거. SVG 고해상도로 오프라인 인쇄 품질 향상.' },
-      { type: 'feature', title: '기관 리포트 PDF 인쇄·저장', note: '담당자가 학기말 실적 보고에 바로 쓸 수 있는 print-ready 레이아웃.' },
-      { type: 'feature', title: '공개 FAQ 페이지 /help', note: '시작하기·운영·데이터·보안·학교 도입·플랜 5개 카테고리 17개 질문.' },
-      { type: 'security', title: 'RLS H4 — platform_admins 테이블 도입', note: 'JWT app_metadata.is_admin 의존 제거 1단계. DB 진실 소스로 전환 개시.' },
+      { type: 'feature', title: '전역 Cmd+K 커맨드 팔레트', note: '어디서든 프로젝트·사람·클럽 통합 검색. cmdk 기반, 300ms 디바운스·Promise.allSettled 병렬 조회.' },
+      { type: 'feature', title: '공개 신뢰 센터 /trust', note: '엔터프라이즈 실사 단일 출발점. SLO·개인정보·보안·약관·릴리스·Meta 심사·실사자료 요청 7섹션 통합.' },
+      { type: 'feature', title: '공개 로드맵 /roadmap + Atom 피드', note: '분기별 theme·items + /roadmap/feed.xml RSS 구독. Changelog 와 대칭.' },
+      { type: 'feature', title: '공개 인시던트 이력 /status', note: 'status_incidents 테이블 + API. SEV-0/1 등급 장애가 발생하면 자동 노출. append-only.' },
+      { type: 'feature', title: '공개 지표 API + 랜딩 LiveMetrics', note: '/api/metrics/public 5 지표 + baseline 가드 있는 Hero 아래 노출. daily_metrics_snapshots cron.' },
+      { type: 'feature', title: 'Core Web Vitals 자체 계측', note: 'web-vitals 5.2 + PostHog 이벤트. LCP/INP/CLS/FCP/TTFB 대시보드 축적.' },
+      { type: 'feature', title: '가입 직후 Welcome 이메일', note: 'Resend 템플릿 + 중복 방지 로직. 재학생 인증 자동 감지 시 안내 카드 포함.' },
+      { type: 'feature', title: '기관 리포트 PDF 인쇄·저장', note: '학기말 실적 보고 직결.' },
+      { type: 'feature', title: '공개 프로필 QR 명함 + 클럽 초대 QR 자체 호스팅', note: '/api/qr SVG 고품질, 외부 qrserver 의존성 제거.' },
+      { type: 'feature', title: '공개 FAQ /help + Atom 피드', note: '5 카테고리 17 질문. HelpWidget 에 전체 보기 링크 연결.' },
+      { type: 'security', title: 'RLS H4 — platform_admins 테이블', note: 'JWT app_metadata.is_admin 의존 제거 1단계. is_platform_admin() RPC + 기존 admin 자동 마이그레이션.' },
     ],
   },
   {
