@@ -35,7 +35,7 @@ export const CommunityFeedback: React.FC = () => {
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-12">
           <SectionLabel>HOW DRAFT WORKS</SectionLabel>
-          <SectionTitle>이런 경험을 할 수 있어요</SectionTitle>
+          <SectionTitle>이런 경험을 할 수 있습니다</SectionTitle>
         </div>
 
         {/* Scenario Cards */}

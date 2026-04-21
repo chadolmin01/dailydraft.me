@@ -25,7 +25,7 @@ const tabs = [
     id: 'matching',
     label: 'AI 매칭',
     icon: Users,
-    title: '비전이 맞는 팀을\n찾아줘요',
+    title: '비전이 맞는 팀을\n찾아드립니다',
     description: '프로필과 프로젝트를 분석해서, 정말 잘 맞을 사람과 프로젝트를 추천합니다. 스킬뿐 아니라 방향성도 봅니다.',
     bullets: [
       '스킬 + 비전 기반 매칭 알고리즘',
@@ -40,7 +40,7 @@ const tabs = [
     label: '탐색 & 발견',
     icon: Search,
     title: '프로젝트와 사람을\n한눈에',
-    description: '지금 진행 중인 프로젝트를 탐색하고, 관심 분야의 사람들을 발견하세요. 필터와 검색으로 빠르게 찾을 수 있어요.',
+    description: '지금 진행 중인 프로젝트를 탐색하고, 관심 분야의 사람들을 발견하세요. 필터와 검색으로 빠르게 찾을 수 있습니다.',
     bullets: [
       '관심 태그·역할·분야별 필터',
       '프로젝트와 사람 탭 전환',
@@ -54,7 +54,7 @@ const tabs = [
     label: '커피챗',
     icon: Coffee,
     title: '가볍게 만나서\n확인하기',
-    description: '마음에 드는 팀이나 사람에게 커피챗을 신청하세요. 수락되면 연락처가 공개되고, 가볍게 만나볼 수 있어요.',
+    description: '마음에 드는 팀이나 사람에게 커피챗을 신청하세요. 수락되면 연락처가 공개되고, 가볍게 만나볼 수 있습니다.',
     bullets: [
       '한 줄 메시지로 간편 신청',
       '수락 시 연락처 자동 공개',
@@ -67,7 +67,7 @@ const tabs = [
     id: 'ideation',
     label: '아이디어 검증',
     icon: Lightbulb,
-    title: 'AI가 아이디어를\n검증해줘요',
+    title: 'AI가 아이디어를\n검증해드립니다',
     description: '아이디어를 입력하면 개발자·디자이너·투자자 3가지 관점에서 AI가 분석합니다.',
     bullets: [
       '3가지 페르소나 기반 AI 검증',
@@ -127,7 +127,7 @@ const OnboardingMockup = () => (
       <Sparkles size={12} className="text-brand shrink-0" />
       <div>
         <div className="text-[10px] font-bold text-brand">다음: 성향 인터뷰</div>
-        <div className="text-[10px] text-txt-tertiary">팀 스타일·소통 방식·강점을 파악해요</div>
+        <div className="text-[10px] text-txt-tertiary">팀 스타일·소통 방식·강점을 파악합니다</div>
       </div>
     </div>
   </div>
@@ -284,7 +284,7 @@ const IdeationMockup = () => (
     <div className="absolute inset-0 flex items-center justify-center">
       <div className="bg-surface-card border border-border rounded-full px-4 py-2 flex items-center gap-2 shadow-sm">
         <Lock size={12} className="text-txt-tertiary" />
-        <span className="text-xs font-bold text-txt-secondary">곧 공개될 예정이에요</span>
+        <span className="text-xs font-bold text-txt-secondary">곧 공개될 예정입니다</span>
       </div>
     </div>
   </div>

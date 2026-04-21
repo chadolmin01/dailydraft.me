@@ -150,14 +150,14 @@ export const PersonaEngine: React.FC = () => {
             >
               동아리의 목소리
             </span>
-            를 AI 가 기억합니다
+            를 AI가 기억합니다
           </motion.h2>
           <motion.p
             variants={fadeUp}
             className="text-[15px] sm:text-[16px] text-txt-secondary leading-[1.65] max-w-[36rem] mx-auto break-keep"
           >
             운영자가 직접 쓰던 Instagram · LinkedIn · Discord 공지 · 뉴스레터를
-            Draft 가 동아리 톤으로 초안까지 만들어 놓습니다. 검토·발행은 1분.
+            Draft가 동아리 톤으로 초안까지 만들어 둡니다. 검토·발행은 1분.
           </motion.p>
         </motion.div>
 
@@ -278,14 +278,14 @@ export const PersonaEngine: React.FC = () => {
             href="#pricing"
             className="group inline-flex items-center gap-1.5 bg-surface-inverse text-txt-inverse rounded-full px-6 py-3 text-[14px] font-semibold hover:opacity-90 active:scale-[0.98] transition-all"
           >
-            Pro 로 열기
+            Pro로 열기
             <ArrowRight
               size={14}
               className="group-hover:translate-x-0.5 transition-transform"
             />
           </Link>
           <p className="text-[12px] text-txt-tertiary">
-            Free 는 동아리 운영 코어 · Pro 부터 페르소나 엔진
+            Free는 동아리 운영 코어 · Pro부터 페르소나 엔진
           </p>
         </motion.div>
       </div>
