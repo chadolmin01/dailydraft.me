@@ -14,6 +14,7 @@ const footerLinks: Record<string, FooterLink[]> = {
     { label: '기능', href: '#features' },
     { label: '가격', href: '#pricing' },
     { label: '기관·기업 도입', href: '/enterprise' },
+    { label: 'Draft 소개', href: '/about' },
     { label: '자주 묻는 질문', href: '/help' },
     { label: '릴리스 노트', href: '/changelog' },
     { label: '로드맵', href: '/roadmap' },
