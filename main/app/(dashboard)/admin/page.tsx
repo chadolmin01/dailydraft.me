@@ -137,12 +137,16 @@ export default function AdminHubPage() {
   ] : []
 
   const platformLinks = [
+    { href: '/admin/metrics', label: 'KPI 대시보드', desc: '플랫폼 전체 지표 + 30일 trend', icon: BarChart3 },
     { href: '/admin/users', label: '사용자 관리', desc: '전체 사용자 조회·검색·삭제', icon: Users },
     { href: '/admin/opportunities', label: '프로젝트 관리', desc: '게시글 조회·필터·삭제', icon: Briefcase },
     { href: '/admin/institutions', label: '기관 관리', desc: '기관 CRUD·멤버 배정', icon: Building2 },
     { href: '/admin/invite-codes', label: '프리미엄 초대 코드', desc: '프리미엄 업그레이드 코드 발송', icon: Gift },
     { href: '/admin/error-logs', label: '에러 로그', desc: '시스템 에러 모니터링', icon: AlertCircle },
     { href: '/admin/activity', label: '활동 로그', desc: '전체 서비스 활동 타임라인', icon: Activity },
+    { href: '/admin/incidents', label: '인시던트 관리', desc: '공개 /status 페이지 업데이트', icon: AlertCircle },
+    { href: '/admin/audit', label: '감사 로그', desc: '모든 admin 작업 이력', icon: Shield },
+    { href: '/admin/platform-admins', label: '플랫폼 관리자', desc: 'admin 부여·박탈 (superadmin)', icon: Shield },
   ]
 
   return (
