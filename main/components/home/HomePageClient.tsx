@@ -39,6 +39,7 @@ export default function HomePageClient() {
 
       <main id="main-content" className="relative pt-14">
         <Hero />
+        <LiveMetrics />
         <FeatureBar />
         <CognitiveSystem />
         <BeforeAfterTabs />
