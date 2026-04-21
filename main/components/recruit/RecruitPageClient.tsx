@@ -426,6 +426,7 @@ export function RecruitPageClient() {
                 onChange={(e) => update('name', e.target.value)}
                 className={inputClass}
                 placeholder="홍길동"
+                autoComplete="name"
               />
             </Field>
 

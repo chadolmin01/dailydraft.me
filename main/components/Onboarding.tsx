@@ -531,6 +531,7 @@ function InfoContent({
             placeholder="어떻게 불러드릴까요?"
             className={`${INPUT_CLASS} ${nameEmpty ? '!border-status-danger-text' : ''}`}
             autoFocus
+            autoComplete="nickname"
             onKeyDown={(e) => e.key === 'Enter' && onSubmit()}
           />
           <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-mono text-txt-disabled">
