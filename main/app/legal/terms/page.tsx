@@ -9,7 +9,7 @@ import Link from 'next/link'
  *   - 발행 결과에 대한 책임은 이용자에게
  *   - 제3자 플랫폼(Threads/Instagram/LinkedIn) 정책 위반 시 회사 면책
  *
- * 운영 주체 플레이스홀더 — 사업자 등록 완료 시 `[운영 주체 명칭]` 을 실제 상호로 교체.
+ * 운영 주체 플레이스홀더 — 사업자 등록 완료 시 `이성민 (사업자 등록 예정)` 을 실제 상호로 교체.
  */
 
 export const metadata: Metadata = {
@@ -31,7 +31,7 @@ export default function TermsOfServicePage() {
       </p>
 
       <p className="text-txt-secondary leading-relaxed">
-        본 약관은 [운영 주체 명칭](이하 &quot;회사&quot;)이 제공하는 동아리·프로젝트 운영 플랫폼
+        본 약관은 이성민 (사업자 등록 예정)(이하 &quot;회사&quot;)이 제공하는 동아리·프로젝트 운영 플랫폼
         Draft(이하 &quot;서비스&quot;) 의 이용 조건 및 회사와 회원 간 권리·의무 사항을
         규정합니다.
       </p>
@@ -233,8 +233,8 @@ export default function TermsOfServicePage() {
       <h2 className="text-xl font-bold text-txt-primary mt-12 mb-4">제13조 (문의처)</h2>
       <p className="text-txt-secondary leading-relaxed">
         본 약관 또는 서비스 이용에 관한 문의는{' '}
-        <a href="mailto:chadolmin01@gmail.com" className="text-brand underline">
-          chadolmin01@gmail.com
+        <a href="mailto:team@dailydraft.me" className="text-brand underline">
+          team@dailydraft.me
         </a>
         으로 연락 주십시오.
       </p>

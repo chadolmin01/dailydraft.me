@@ -4,7 +4,7 @@
 
 Draft 에서 보안 취약점을 발견하셨다면 **공개하기 전 먼저 알려주시기를** 부탁드립니다.
 
-**연락처**: chadolmin01@gmail.com
+**연락처**: team@dailydraft.me
 
 신고 시 다음 정보를 포함해 주시면 빠른 대응이 가능합니다:
 - 취약점 유형 (SQL Injection, XSS, CSRF, IDOR, RLS 우회 등)

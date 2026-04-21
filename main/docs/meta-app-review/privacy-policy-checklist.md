@@ -128,11 +128,11 @@ Draft에서 데이터 삭제 방법:
   2. 확인 절차 완료 시 모든 개인정보·크레덴셜이 cascade 삭제됩니다.
 
 방법 3. 이메일 요청
-  privacy@dailydraft.me 로 계정 이메일과 함께 삭제 요청을 보내주세요.
+  team@dailydraft.me 로 계정 이메일과 함께 삭제 요청을 보내주세요.
   영업일 기준 7일 이내 처리되며, 처리 완료 후 확인 메일을 드립니다.
 
 방법 4. 본인 계정이 없어진 경우
-  예: Draft 미가입 상태에서 누군가 본인의 Threads 계정을 Draft에 연결했다는 사실을 알게 된 경우 — privacy@dailydraft.me 로 Threads 사용자명과 상황을 알려주시면 확인 후 삭제합니다.
+  예: Draft 미가입 상태에서 누군가 본인의 Threads 계정을 Draft에 연결했다는 사실을 알게 된 경우 — team@dailydraft.me 로 Threads 사용자명과 상황을 알려주시면 확인 후 삭제합니다.
 ```
 
 - [ ] 3가지 이상의 삭제 경로(UI, 이메일, 미가입 사용자용)가 모두 제공되는가?
@@ -147,12 +147,12 @@ Draft에서 데이터 삭제 방법:
 
 ```
 개인정보 관련 문의:
-이메일: privacy@dailydraft.me
-일반 지원: support@dailydraft.me
+이메일: team@dailydraft.me
+일반 지원: team@dailydraft.me
 처리 기한: 영업일 기준 7일 이내 답변
 ```
 
-- [ ] `privacy@dailydraft.me` 메일박스가 실제로 작동하는가? (자동 응답 포함)
+- [ ] `team@dailydraft.me` 메일박스가 실제로 작동하는가? (자동 응답 포함)
 - [ ] 연락처가 privacy policy 본문과 data-deletion 페이지 양쪽에 모두 표시되어 있는가?
 
 ### 항목 7. Meta 관련 특례 (Meta-specific clauses)
@@ -169,12 +169,12 @@ Draft는 Meta Platforms, Inc.의 Threads API를 통합합니다. 본 조항은 T
 1. 수집 범위: 본 고지의 "수집 데이터 목록" 섹션에 명시된 항목에 한함.
 2. 사용 제한: 수집된 데이터는 (i) 이용자가 Draft 안에서 명시적으로 승인한 콘텐츠를 이용자 본인의 Threads 계정에 게시하는 용도, 그리고 (ii) 연결된 계정을 UI에 표시하는 용도로만 사용됩니다.
 3. 자동 발행 없음: 이용자의 명시적 승인 없이 콘텐츠가 Threads에 게시되지 않습니다.
-4. 데이터 삭제: 이용자는 언제든지 페르소나 설정 > Threads 카드 > 연결 해제로 토큰을 즉시 삭제할 수 있습니다. 또한 privacy@dailydraft.me 로 계정 단위 전체 삭제를 요청할 수 있습니다.
+4. 데이터 삭제: 이용자는 언제든지 페르소나 설정 > Threads 카드 > 연결 해제로 토큰을 즉시 삭제할 수 있습니다. 또한 team@dailydraft.me 로 계정 단위 전체 삭제를 요청할 수 있습니다.
 5. 제3자 비공유: Meta Platform Data는 제3자에게 판매·공유·양도되지 않으며, 다른 통합 데이터와 결합되지 않습니다.
 6. 보안 조치: 모든 액세스 토큰은 AES-256-GCM으로 저장 시 암호화되며, 평문 토큰은 브라우저·로그·백업 어디에도 기록되지 않습니다.
 7. Meta 정책 준수: 본 서비스는 Meta Platform Terms (https://developers.facebook.com/terms/) 및 Developer Policies (https://developers.facebook.com/devpolicy/) 를 준수합니다.
 
-문의: privacy@dailydraft.me
+문의: team@dailydraft.me
 ```
 
 - [ ] 별도 섹션("Meta 플랫폼 데이터에 관한 고지")이 privacy policy에 포함되어 있는가?
@@ -198,7 +198,7 @@ Draft는 Meta Platforms, Inc.의 Threads API를 통합합니다. 본 조항은 T
 - [ ] 각 페이지가 한국어/영어 중 최소 한 언어로 완전히 렌더링되는가? (Meta 리뷰어는 영어 기반. 한국어만 있을 경우 영어 섹션 병기 권장)
 - [ ] 페이지에 "마지막 갱신일 (Last updated)" 이 표시되는가?
 - [ ] 개인정보처리방침 하단에 Meta 관련 특례 섹션이 있는가?
-- [ ] `privacy@dailydraft.me` 이메일이 실제 수신 가능한가?
+- [ ] `team@dailydraft.me` 이메일이 실제 수신 가능한가?
 
 ---
 
@@ -210,7 +210,7 @@ Draft는 Meta Platforms, Inc.의 Threads API를 통합합니다. 본 조항은 T
    - `app/legal/data-deletion/page.tsx` 신규 작성 — 4가지 삭제 경로 명시
 
 2. **Phase 2 — 이메일 인프라**
-   - `privacy@dailydraft.me` MX/수신 설정
+   - `team@dailydraft.me` MX/수신 설정
    - 자동 응답 템플릿 ("영업일 기준 7일 이내 처리") 등록
 
 3. **Phase 3 — 배포 및 검증**

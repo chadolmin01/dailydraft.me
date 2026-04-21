@@ -184,7 +184,7 @@ export const InviteCodeModal: React.FC<InviteCodeModalProps> = ({
               <p className="text-xs text-txt-disabled text-center mt-4">
                 초대 코드가 없으신가요?{' '}
                 <a
-                  href="mailto:support@dailydraft.io"
+                  href="mailto:team@dailydraft.me"
                   className="text-brand hover:underline"
                 >
                   문의하기

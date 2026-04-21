@@ -9,7 +9,7 @@ import Link from 'next/link'
  *     연락처 / Meta 특례 섹션 7개 항목 포함.
  *   - 근거 체크리스트: docs/meta-app-review/privacy-policy-checklist.md
  *
- * 운영 주체 플레이스홀더 — 사업자 등록 완료 시 `[운영 주체 명칭]` 을 실제 상호로 교체.
+ * 운영 주체 플레이스홀더 — 사업자 등록 완료 시 `이성민 (사업자 등록 예정)` 을 실제 상호로 교체.
  * 법무 검토 권장 — 대학·기관 계약 진입 시 PIPA 위탁 리스트·국외 이전 동의를 실계약 기준으로 갱신.
  *
  * 이 페이지는 `/legal/layout.tsx` 가 navbar 없는 공개 레이아웃을 제공하므로 추가 chrome 불필요.
@@ -34,7 +34,7 @@ export default function PrivacyPolicyPage() {
       </p>
 
       <p className="text-txt-secondary leading-relaxed">
-        [운영 주체 명칭](이하 &quot;회사&quot;)은(는) 「개인정보 보호법」 등 관련 법령을 준수하며,
+        이성민 (사업자 등록 예정)(이하 &quot;회사&quot;)은(는) 「개인정보 보호법」 등 관련 법령을 준수하며,
         정보주체의 권리를 보호하기 위하여 다음과 같이 개인정보처리방침을 수립·공개합니다.
         본 방침은 Draft(https://dailydraft.me, 이하 &quot;서비스&quot;) 이용 시 적용됩니다.
       </p>
@@ -211,8 +211,8 @@ export default function PrivacyPolicyPage() {
         </li>
         <li>
           이메일:{' '}
-          <a href="mailto:chadolmin01@gmail.com" className="text-brand underline">
-            chadolmin01@gmail.com
+          <a href="mailto:team@dailydraft.me" className="text-brand underline">
+            team@dailydraft.me
           </a>{' '}
           으로 가입 이메일과 함께 요청
         </li>
@@ -294,8 +294,8 @@ export default function PrivacyPolicyPage() {
         <li>책임자: Draft 운영팀</li>
         <li>
           이메일:{' '}
-          <a href="mailto:chadolmin01@gmail.com" className="text-brand underline">
-            chadolmin01@gmail.com
+          <a href="mailto:team@dailydraft.me" className="text-brand underline">
+            team@dailydraft.me
           </a>
         </li>
         <li>처리 기한: 영업일 기준 30일 이내 답변</li>

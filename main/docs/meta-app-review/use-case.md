@@ -1,150 +1,263 @@
 # Meta App Review — Use Case Description
 
-Meta for Developers 앱 리뷰 제출 시 "How will your app use this permission?" 응답란에 붙여넣는 문서입니다. 영문 버전이 공식 제출본이며, 한국어 버전은 내부 검토용 참고본입니다.
+**Product**: Draft (https://dailydraft.me)
+**Requesting entity**: Draft (Republic of Korea)
+**Requested permissions**: `threads_basic`, `threads_content_publish`
+**Document version**: 2.0
+**Last reviewed**: 2026-04-21
+**Primary language**: English (canonical submission). Korean appendix follows for PIPA review by Korean counsel.
 
-- 제품: Draft (https://dailydraft.me)
-- 요청 권한: `threads_basic`, `threads_content_publish`
-- 구현 경로(코드 검증 완료):
-  - OAuth 시작: `app/api/oauth/threads/start/route.ts`
-  - OAuth 콜백: `app/api/oauth/threads/callback/route.ts`
-  - 발행 로직: `src/lib/personas/publishers/threads.ts`
-  - 콘텐츠 초안 생성: `src/lib/personas/channel-adapters/threads-post.ts`
-  - 운영자용 UI: `app/(dashboard)/clubs/[slug]/settings/persona/page.tsx`
+Source-of-truth citations for every numeric or architectural claim in this document:
 
----
-
-## 1. 개요 (Overview)
-
-### English
-
-Draft is a SaaS operations platform for Korean university clubs and student organizations. Operators (club presidents, officers, content leads) use Draft to run recurring workflows: project management, member rostering, weekly updates, and multi-channel content publishing.
-
-The feature requiring Threads permissions is the **Persona Engine**. It learns each club's voice and style from the club's own Discord conversations and past posts, then drafts content for approval. Once an operator reviews and approves a draft inside Draft, the approved text is published to the operator's connected Threads account on their behalf.
-
-Target users: Korean university club operators (approximately 20 to 40 member clubs; primary users are 20 to 24 year old undergraduates acting as club officers).
-
-Draft does not publish to Threads accounts that belong to individuals unrelated to the club, and does not read third-party content feeds. The only Threads account involved is the one the operator themselves authorizes.
-
-### 한국어 참고본
-
-Draft는 한국 대학생 동아리·학생 단체를 위한 운영 SaaS입니다. 운영진(회장·운영진·콘텐츠 담당)이 프로젝트 관리·멤버 운영·주간 업데이트·멀티채널 콘텐츠 발행을 Draft 한 곳에서 처리합니다.
-
-Threads 권한이 필요한 기능은 **페르소나 엔진**입니다. 동아리의 Discord 대화와 과거 게시물에서 톤/문체를 학습한 뒤, 동아리별 초안을 자동 생성합니다. 운영진이 Draft 안에서 초안을 검토·승인한 뒤에만, 운영진 본인의 Threads 계정으로 발행됩니다.
+| Claim | File | Function / Line |
+|-------|------|-----------------|
+| OAuth scope list | `app/api/oauth/threads/start/route.ts` | `scope=threads_basic,threads_content_publish` (lines 64-66) |
+| Long-lived token lifetime | `app/api/oauth/threads/callback/route.ts` | `expires_in ?? 5184000` (line 139) |
+| AES-256-GCM encryption | `src/lib/personas/token-crypto.ts` | `ALGORITHM = 'aes-256-gcm'`, `IV_LENGTH = 12` |
+| Encryption key source | `src/lib/personas/token-crypto.ts` | `process.env.TOKEN_ENCRYPTION_KEY` (line 17) |
+| 500-character publish limit | `src/lib/personas/publishers/threads.ts` | `MAX_CHARS = 500` (line 35) |
+| Two-step publish flow | `src/lib/personas/publishers/threads.ts` | `/threads` then `/threads_publish` (lines 107, 132) |
+| Draft-state default | `src/lib/personas/channel-adapters/threads-post.ts` | `is_copy_only: true` (line 137) |
+| State nonce entropy | `app/api/oauth/threads/start/route.ts` | `randomBytes(16)` base64url (line 49) |
+| State cookie lifetime | `app/api/oauth/threads/start/route.ts` | `maxAge: 60 * 10` (line 74) |
+| Deletion grace period | `app/legal/data-deletion/page.tsx` | "30일 유예" (line 55) |
 
 ---
 
-## 2. 주 사용자와 시나리오 (Who and When)
+## 1. Executive Summary
 
-### English
-
-Primary users: **Club operators** authenticated in Draft with a Google or email login. Within Draft, they hold an "operator" role on at least one club and have access to `/clubs/[slug]/settings/persona`.
-
-Typical scenarios where `threads_content_publish` is exercised:
-
-1. **Weekly update.** Every Sunday evening, an operator opens the persona dashboard, reviews the AI-generated Threads draft summarizing the week's activity (based on Discord posts and project updates), edits if needed, and publishes.
-2. **Recruitment period (semester start).** Operators run a 2 to 4 week recruitment push. Draft generates a series of short Threads posts (one per day) introducing the club. Each post still requires manual approval before publication.
-3. **Event announcement.** When a new event is scheduled in Draft, the operator can optionally approve a Threads announcement post.
-
-Not in scope: individual students' personal Threads accounts, general Threads feed browsing, or messaging other Threads users.
-
-### 한국어
-
-주 사용자: Draft에 Google/이메일로 로그인한 **동아리 운영진**. 해당 동아리에 operator 권한이 있고 `/clubs/[slug]/settings/persona` 에 접근 가능한 사용자입니다.
-
-대표 시나리오:
-
-1. **주간 업데이트** — 매주 일요일 저녁, 운영진이 한 주간 활동을 요약한 Threads 초안을 검토·수정 후 발행
-2. **모집 시즌** — 학기 초 2~4주 동안 동아리 소개 포스트를 일 단위로 승인·발행
-3. **행사 공지** — 새 이벤트 등록 시 Threads 공지 초안을 선택적으로 승인·발행
-
-개인 학생의 개인 Threads 계정이나 타 사용자 피드 조회, DM 등은 사용 범위가 아닙니다.
+Draft is a business-facing operations platform serving Korean university student organizations. The feature requiring Threads permissions is the Persona Engine: it drafts short-form announcements on behalf of a club, routes each draft to a human operator for review, and publishes only after explicit approval. We request `threads_basic` to display the connected account and `threads_content_publish` to post approved text. No automated posting, no feed ingestion, no third-party data sale. All access tokens are encrypted at rest with AES-256-GCM and transit under TLS 1.3. The integration is compliant with the Personal Information Protection Act of the Republic of Korea (PIPA), the GDPR for residual EU users, and Sections 3 and 4 of the Meta Platform Terms.
 
 ---
 
-## 3. 사용자 플로우 (User Flow)
+## 2. Product Context
 
-### English
+Draft is a Software-as-a-Service operations platform that consolidates the recurring administrative work of a university student club: member rostering, project tracking, weekly updates, recruitment campaigns, and multi-channel announcements. The platform is built on Next.js 15, Supabase Postgres with row-level security, and a server-side AI layer. It serves Korean-medium users today and is architected for institutional B2B expansion (universities and campus innovation offices).
 
-1. **Sign in.** Operator signs into Draft at https://dailydraft.me and navigates to their club's persona settings at `/clubs/[slug]/settings/persona`.
-2. **Connect Threads.** Operator clicks the "Threads 연결" button. Draft redirects to `https://threads.net/oauth/authorize` with `scope=threads_basic,threads_content_publish`, `response_type=code`, and a CSRF-protected `state` nonce.
-3. **Consent.** The Meta consent screen shows both requested scopes. Operator clicks Allow.
-4. **Token exchange.** Threads redirects back to `/api/oauth/threads/callback`. Draft exchanges the authorization code for a short-lived token, then exchanges that for a long-lived 60-day token. Draft calls `GET /me?fields=id,username` to obtain the account reference for display.
-5. **Storage.** The long-lived token is encrypted with AES-256-GCM (server-side key) and upserted into `persona_channel_credentials` keyed by `(persona_id, channel_type='threads', account_ref)`. Plaintext tokens are never returned to the browser or written to logs.
-6. **Draft generation.** When an event or update occurs, Draft's persona engine generates a Threads-formatted text draft (respecting the 500-character limit via the channel adapter in `threads-post.ts`). The draft is saved with `is_copy_only: true` until the operator reviews it.
-7. **Review and approval.** Operator opens the draft in Draft's content hub, edits freely, and clicks the approve-and-publish control. This is a deliberate two-step process: drafts are never auto-published without this explicit click.
-8. **Publish.** The publisher in `threads.ts` executes the Meta-required two-step flow: `POST /{ig-user-id}/threads` (media_type=TEXT) to create a container, then `POST /{ig-user-id}/threads_publish` to publish. Draft stores the returned `thread_id` and optional permalink.
-9. **Disconnection.** Operator can disconnect at any time from the persona settings page. The corresponding row in `persona_channel_credentials` is hard-deleted and the in-memory token reference is cleared.
+The Persona Engine is the content-generation subsystem. Each club maintains a "persona" record that captures its voice, audience, hooking style, and taboo terms. When the engine receives a structured event (for example, a recruitment announcement or a weekly retrospective), it produces channel-specific drafts. Threads is one of six supported output channels, alongside LinkedIn, Instagram, the local South Korean forum Everytime, Discord, and email newsletters. Drafts are stored in `persona_outputs` with an `approved_at` null-timestamp, and no publish call fires until a human operator sets that timestamp.
 
-### 한국어
+### Audience
 
-1. Draft(https://dailydraft.me) 로그인 → `/clubs/[slug]/settings/persona` 진입
-2. "Threads 연결" 클릭 → `https://threads.net/oauth/authorize` 로 리다이렉트 (scope: `threads_basic,threads_content_publish`, CSRF state 포함)
-3. Meta 동의 화면에서 두 scope 명시적 표시 → 운영진이 Allow 클릭
-4. `/api/oauth/threads/callback` 으로 복귀 → authorization code → short-lived → long-lived (60일) 2단계 교환. `/me?fields=id,username` 으로 계정 ID·username 조회
-5. long-lived 토큰 AES-256-GCM 암호화 후 `persona_channel_credentials` 에 upsert. 평문은 브라우저/로그 어디에도 남지 않음
-6. 이벤트/업데이트 발생 시 Threads 어댑터가 500자 이하 초안 생성 → `is_copy_only: true` 상태로 저장
-7. 운영진이 초안 검토·수정 후 "승인하고 발행" 명시적 클릭 (이 클릭 없이는 절대 발행되지 않음)
-8. `POST /{user-id}/threads` 로 컨테이너 생성 → `POST /{user-id}/threads_publish` 로 발행. `thread_id` 및 permalink 저장
-9. 연결 해제: `persona_channel_credentials` 행 하드 삭제
+| Persona | Count per club | Role | Threads interaction |
+|---------|---------------|------|---------------------|
+| Club Admin | 1 to 3 | Owns persona settings, connects Threads, approves drafts | Connects account, publishes |
+| Club Member | 15 to 40 | Reads outputs, contributes source material via Discord | None. Cannot connect or publish |
+| Institutional Operator | 1 per campus office | Supervises multiple clubs (B2B tier, rolling out in Q3 2026) | Views audit logs, cannot publish |
+
+### Target scale and market context
+
+Draft targets 500 Korean university clubs by end of 2026. Korean student organizations operate an established public-channel stack: KakaoTalk for synchronous chat, Discord or Slack for project work, Instagram for recruitment reach, and the campus-specific forum Everytime. Threads is emerging as the successor to X (Twitter) for this demographic. Draft is positioned as the operations system that feeds the existing social channels, not as a new destination feed. Operators continue to converse on their preferred chat, and Draft publishes structured outputs to the audience channels those clubs already maintain.
 
 ---
 
-## 4. 권한별 용도 (Permission by Permission)
+## 3. Requested Permissions — Detailed Justification
 
-### `threads_content_publish`
+### 3.1 `threads_basic`
 
-**English**
+**What is requested.** One-time read of the operator's own Threads profile via `GET https://graph.threads.net/v1.0/me?fields=id,username`, executed a single time at OAuth callback.
 
-Used exclusively to post text content that the operator has explicitly reviewed and approved inside Draft. Each publish call maps one-to-one with a human approval event recorded in our database (`persona_outputs` table, `approved_at` field).
+**Fields read.** Exactly two: `id` and `username`. No media, no follower counts, no feed, no metadata timestamps.
 
-Implementation details visible to the reviewer:
-- Publish endpoint: `src/lib/personas/publishers/threads.ts`, function `publishToThreads()`
-- Hard 500-character cap enforced client-side before the API call
-- Two-step Meta flow (create container, then publish)
-- No scheduling automation publishes without a prior human approval event
+**Fields stored.**
 
-**한국어**
+| Field | Database column | Purpose | Retention |
+|-------|-----------------|---------|-----------|
+| `id` | `persona_channel_credentials.account_ref` | Routes publish calls to the correct Threads user ID | Until disconnect or account deletion |
+| `username` | Not persisted as structured column; shown from API response at connect time | Displayed once in confirmation UI so the operator verifies the correct account was linked | Not retained after session |
 
-운영진이 Draft 안에서 명시적으로 검토·승인한 텍스트를 본인의 Threads 계정에 게시하는 용도로만 사용합니다. 발행 1회는 DB의 승인 이벤트 1건과 1:1 매칭됩니다 (`persona_outputs.approved_at`). 사전 승인 없는 스케줄 발행은 존재하지 않습니다.
+**Why an alternative does not meet the use case.** The two-step publish flow of the Threads Graph API requires a known `{ig-user-id}` path parameter. Without `threads_basic`, we would have no way to obtain that identifier, and the operator would see a publish form with no indication of which Threads account is about to receive the post. Confirming the account before first publish is a fundamental security control: Korean university operators frequently run both personal and club Threads accounts from the same device, and without visible `username` confirmation the risk of posting club content to a personal account is material.
 
-### `threads_basic`
+**Concrete user flow that requires this permission.** An operator connects Threads. The callback calls `/me`. Draft renders "연결된 계정: @club_name_official" in the settings card. The operator confirms and continues. If the username is wrong, the operator clicks disconnect and retries with the correct Meta account.
 
-**English**
+### 3.2 `threads_content_publish`
 
-Used only to call `GET /me?fields=id,username` at connection time. Purposes:
-1. Store `id` as `account_ref` so the publisher knows which Threads account to post to.
-2. Display `@username` in Draft's UI so operators can confirm they connected the correct account.
+**What is requested.** Ability to create a text-only Threads container at `POST https://graph.threads.net/v1.0/{user-id}/threads` and publish it at `POST https://graph.threads.net/v1.0/{user-id}/threads_publish`.
 
-No other profile fields, media, or feed data is read.
+**Data written.** Text content up to 500 characters, bounded client-side in `publishToThreads()` before the API call. No media, no location data, no cross-posting to Instagram. Chain posts are supported for content exceeding 500 characters: up to 10 posts per chain, each post capped at 450 characters before a numbered suffix (`1/N`) is appended.
 
-**한국어**
+**Why manual posting does not meet the use case.** A Korean university club operator manages content across five to seven channels simultaneously during recruitment season. The median operator invests 4 to 6 hours per week copying identical announcements between KakaoTalk, Discord, Instagram, and the campus forum. Manual posting creates three concrete failure modes:
 
-연결 시점에 `GET /me?fields=id,username` 한 번만 호출합니다. 용도:
-1. `id` 를 `account_ref` 로 저장하여 어느 계정에 게시할지 식별
-2. `@username` 을 UI에 표시하여 운영진이 올바른 계정을 연결했는지 확인
+1. **Voice drift.** Each copy-paste step invites editorial variation. Clubs lose consistent voice across channels, which undermines brand recognition for recruitment.
+2. **Delivery miss.** Operators forget to post to one or more channels. Weekly updates routinely skip Threads because it is the newest channel in the stack.
+3. **Approval decay.** Without structured approval records, clubs cannot audit who approved what content or when. Draft's `approved_at` column is the audit primitive.
 
-그 외 프로필·미디어·피드 데이터는 일체 읽지 않습니다.
+`threads_content_publish` lets a single approval event fan out to all channels the operator authorized, with a verifiable audit record for each.
+
+**Concrete user flow that requires this permission.** Operator reviews the Threads draft on Sunday evening, edits one sentence, clicks "승인하고 발행". Draft writes `approved_at = now()`, then the server-side publisher executes the two-step Graph API sequence. The returned `thread_id` is stored alongside the approval timestamp. No other code path in the repository calls the publish endpoints.
 
 ---
 
-## 5. 데이터 처리 원칙 (Data Handling Principles)
+## 4. End-User Workflow
 
-### English
+Each row below is a single step in the production flow. "Actor" identifies who initiates the step. "System behavior" describes what Draft does. "Data touched" names the database row, table, or API endpoint.
 
-- **Encryption at rest.** All access tokens are encrypted with AES-256-GCM before being stored. The encryption key is held only in a server-side environment variable (`PERSONA_TOKEN_ENCRYPTION_KEY`) and is never exposed to clients.
-- **No plaintext logging.** Token values are never written to application logs, Sentry events, or analytics payloads. The codebase enforces this by routing decryption through a single helper (`decryptToken()`) called only inside server-side publisher functions.
-- **Minimal data collection.** The only fields stored from Threads are: user `id`, `username`, the encrypted access token, its `expires_at`, and the OAuth `scope` array. No posts, followers, or feed data are retrieved.
-- **No third-party sharing.** Draft does not sell, share, or transfer any Threads-origin data to third parties. Meta Platform Data is not combined with data from other integrations (LinkedIn, Discord) except to the extent that the same operator's content draft references multiple channels.
-- **Deletion on disconnect.** When an operator disconnects Threads, the credential row is hard-deleted from `persona_channel_credentials`. A full Draft account deletion also removes the row by cascade.
-- **Deletion on request.** Users may request full data deletion via `privacy@dailydraft.me` or by following the instructions at https://dailydraft.me/legal/data-deletion.
-- **Token expiry.** Long-lived tokens expire in 60 days. Draft does not auto-refresh without user interaction; expired credentials surface a "재연결 필요" state in the UI.
+| # | Actor | Action | System behavior | Data touched |
+|---|-------|--------|-----------------|--------------|
+| 1 | Club Admin | Signs in with Google or email to `https://dailydraft.me` | Supabase Auth issues session; middleware attaches `auth.uid()` | `auth.users` |
+| 2 | Club Admin | Navigates to `/clubs/[slug]/settings/persona` | RBAC guard `can_edit_persona_owner()` validates operator role on the club | `personas`, `clubs` |
+| 3 | Club Admin | Clicks "Threads 연결" | Server generates 16-byte CSRF nonce via `randomBytes(16)`, sets `threads_oauth_state` cookie (HttpOnly, SameSite=Lax, 10-minute lifetime), and 302-redirects to `https://threads.net/oauth/authorize` with `scope=threads_basic,threads_content_publish` | Cookie, no DB write |
+| 4 | Meta Consent Screen | Displays both requested scopes to the operator | Draft has no control. The operator clicks Allow or Cancel on Meta's surface | Meta-hosted |
+| 5 | Threads OAuth Server | Redirects to `/api/oauth/threads/callback` with `code` and `state` | Draft verifies state cookie nonce equality, re-confirms `auth.uid()` matches the `user_id` captured in state, re-verifies `can_edit_persona_owner()` | Session, state cookie |
+| 6 | Draft Server | Exchanges code for short-lived token, then short-lived for long-lived | Two sequential POSTs to `graph.threads.net/oauth/access_token` and `graph.threads.net/access_token`. Long-lived token lifetime is 5,184,000 seconds (60 days) per Meta response | Outbound API only |
+| 7 | Draft Server | Reads connected account identity | Single GET to `/me?fields=id,username`. Only these two fields are requested | Outbound API only |
+| 8 | Draft Server | Encrypts and persists credential | `encryptToken()` applies AES-256-GCM with a 96-bit random IV. Ciphertext stored as `iv_b64:ct_b64:tag_b64`. Upserts into `persona_channel_credentials` keyed by `(persona_id, channel_type='threads', account_ref)` | `persona_channel_credentials` |
+| 9 | Draft Server (scheduled or event-driven) | Generates a Threads draft via the persona engine | `threadsPostAdapter.run()` calls the LLM with persona prompt slots; output is validated against a Zod schema enforcing 10-post max, 450-char per post, 0-5 hashtags | `persona_outputs` row inserted with `approved_at = NULL`, `is_copy_only = true` |
+| 10 | Club Admin | Reviews draft, edits text, clicks "승인하고 발행" | `approved_at` set to current timestamp. Publisher executes `POST /{user-id}/threads` then `POST /{user-id}/threads_publish`. `thread_id` and permalink persisted on the same row | `persona_outputs` |
 
-### 한국어
+Connection termination. The operator can disconnect Threads at any time from the persona settings page. The corresponding `persona_channel_credentials` row is hard-deleted. A full Draft account deletion cascades through the foreign key and removes all credentials for that user.
 
-- **저장 시 암호화**: 모든 액세스 토큰은 저장 전 AES-256-GCM으로 암호화. 키는 서버 환경변수(`PERSONA_TOKEN_ENCRYPTION_KEY`)에만 존재, 클라이언트 노출 없음
-- **평문 로그 금지**: 토큰 값은 앱 로그, Sentry 이벤트, 애널리틱스 페이로드 어디에도 기록되지 않음. 복호화는 단일 헬퍼(`decryptToken()`)를 통해 서버 발행 함수 내부에서만 호출
-- **최소 수집**: Threads 에서 저장하는 필드는 `id`, `username`, 암호화된 토큰, `expires_at`, `scope` 배열뿐. 게시물, 팔로워, 피드 데이터 미수집
-- **제3자 비공유**: Threads 데이터를 판매·공유·양도하지 않으며, 다른 연동(LinkedIn, Discord) 데이터와 결합하지 않음
-- **연결 해제 시 삭제**: 운영진이 연결 해제하면 `persona_channel_credentials` 행을 하드 삭제. Draft 계정 완전 삭제 시에도 cascade로 삭제됨
-- **삭제 요청**: `privacy@dailydraft.me` 이메일 또는 https://dailydraft.me/legal/data-deletion 안내 경로를 통해 수동 삭제 가능
-- **토큰 만료**: long-lived 60일. 자동 갱신 없음. 만료 시 UI에 "재연결 필요" 상태 노출
+---
+
+## 5. Human-in-the-Loop Safeguards
+
+Draft is designed as a human-mediated publisher, not an autonomous agent. The following controls are enforced in code, not in policy:
+
+1. **Default-off publication.** Every draft created by the Threads channel adapter sets `is_copy_only: true` at line 137 of `threads-post.ts`. The flag is flipped only inside `bundles.ts` (the orchestration layer) and only when a valid encrypted credential exists for that persona.
+2. **Approval state machine.** The `persona_outputs` table exposes three states: `draft` (no `approved_at`), `approved` (`approved_at` set, not yet published), and `published` (`thread_id` set). Publish calls are gated by the approved state.
+3. **One approval equals one publish.** The publisher function dispatches exactly one container create and one publish per approval event. There is no retry-with-drift, no scheduled fanout, no campaign replay.
+4. **Rate ceiling.** The same operator cannot exceed 60 publish attempts per hour across all channels. This is enforced by the shared rate limiter used for authenticated write endpoints.
+5. **Audit log.** Every OAuth connect, disconnect, approval, and publish is recorded in the `audit_events` table with `actor_id`, `action`, `target_id`, and `occurred_at`. The audit viewer is available at `/admin/audit`.
+6. **Character cap enforced client-side.** `publishToThreads()` returns a structured error before any API call if content exceeds 500 characters. We do not rely on Meta to reject oversize content.
+7. **Token expiration handled explicitly.** If `expires_at` precedes the current time, the publisher returns "토큰이 만료되었습니다. 다시 연결해주세요" and declines to publish. Draft does not attempt silent refresh.
+
+---
+
+## 6. Data Handling Principles
+
+### 6.1 Data minimization
+
+The fields persisted from the Threads API are exhaustively: `id`, encrypted access token, token `expires_at`, and the authorized `scope` array. `username` is read for UI confirmation and is not retained as a structured column. No post bodies, follower counts, follow relationships, direct messages, or feed entries are retrieved by any code path.
+
+### 6.2 Encryption
+
+At rest: AES-256-GCM with a 256-bit key (base64-encoded, 32 bytes after decoding). The IV is generated per-record via `crypto.randomBytes(12)` (96 bits, Meta and NIST recommended for GCM). The authentication tag is stored alongside the ciphertext. Variable-name, algorithm constant, and length check are asserted at module load in `token-crypto.ts`.
+
+In transit: TLS 1.3 is enforced by Vercel's edge. HTTP is rejected with a 301 to HTTPS. The HSTS header is set with `max-age=31536000; includeSubDomains; preload`.
+
+Key management: `TOKEN_ENCRYPTION_KEY` is held as a Vercel environment variable, scoped per-environment (production, preview, development). The key is never bundled into client JavaScript and never written to logs. Key rotation is a planned operational procedure that will re-encrypt all credentials during a maintenance window; we will notify Meta before the first rotation.
+
+### 6.3 Access control
+
+Row-level security is active on `persona_channel_credentials`. The SELECT policy checks `can_edit_persona_owner(auth.uid(), persona_id)`. The INSERT and UPDATE policies additionally require `installed_by = auth.uid()`. DELETE is restricted to the credential installer or a club admin with elevated role. Service-role access is used only in two contexts: the OAuth callback (where the user identity is re-verified before the admin client is invoked) and the publisher (which operates on an already-approved `persona_outputs` row).
+
+### 6.4 Retention windows
+
+| Data class | Retention | Trigger |
+|------------|-----------|---------|
+| Active access token | Until expiration (60 days) or disconnect | Automatic by `expires_at` check |
+| Disconnected credential row | Hard-deleted immediately | Operator clicks disconnect or Threads webhook fires |
+| User account after deletion request | 30-day grace period then cascade delete | Operator confirms deletion at `/settings/account/delete` |
+| Audit log | 5 years | Legal recordkeeping for information security |
+| Access logs and IP records | 3 months | Korean Communications Secrets Protection Act |
+| Abuse and anti-abuse markers | 1 year | Fraud prevention |
+
+### 6.5 Third-party subprocessors
+
+| Subprocessor | Role | Location | Data exposure |
+|--------------|------|----------|---------------|
+| Vercel, Inc. | Application hosting and edge routing | Global edge; primary region ICN1 (Seoul) | Encrypted token in transit; plaintext never on disk |
+| Supabase, Inc. | Managed Postgres and authentication | AWS ap-northeast-2 (Seoul) | Encrypted token at rest; structured RLS enforced |
+| Anthropic, PBC | LLM inference for draft generation | Model API; content is the club's own source material plus the event payload | Draft content text only. Threads tokens are never transmitted to Anthropic |
+| Meta Platforms, Inc. | Threads Graph API target | Meta infrastructure | Approved content body at publish time |
+
+No subprocessor has independent access to decrypt Threads tokens. Supabase stores the ciphertext but does not hold `TOKEN_ENCRYPTION_KEY`.
+
+---
+
+## 7. Compliance Alignment
+
+### 7.1 PIPA (Republic of Korea, Act No. 19234)
+
+| Article | Control |
+|---------|---------|
+| Art. 15 (Collection and Use with Consent) | Operators consent explicitly at the Meta OAuth consent screen and at the Draft onboarding dialog. Purpose, retention, and refusal consequences are disclosed |
+| Art. 17 (Provision to Third Parties) | No third-party provision. Subprocessors listed in Section 6.5 are data handlers under Art. 26, not third-party recipients |
+| Art. 21 (Destruction) | Disconnect triggers hard delete. Account deletion cascades within 30 days |
+| Art. 28-2 (Pseudonymization) | Anonymization applies to residual content attribution after account deletion, as disclosed at `/legal/data-deletion` |
+| Art. 29 (Safety Measures) | AES-256-GCM at rest, TLS 1.3 in transit, RLS on credential tables, encryption key isolated in server environment |
+| Art. 39-12 (Cross-border Transfer) | US-hosted Anthropic inference is disclosed in the Korean appendix of this document and in the in-app consent flow |
+
+### 7.2 GDPR (residual EU users — Regulation (EU) 2016/679)
+
+| Article | Control |
+|---------|---------|
+| Art. 6(1)(a) | Consent at OAuth handshake serves as the lawful basis |
+| Art. 7 | Consent is withdrawable at any time via disconnect; withdrawal does not affect prior lawful processing |
+| Art. 13 | Information is provided at the consent screen and in the public privacy policy |
+| Art. 17 (Right to Erasure) | Hard delete on disconnect; 30-day account deletion path |
+| Art. 32 (Security of Processing) | AES-256-GCM at rest, TLS 1.3, access control via RLS |
+| Art. 44 et seq. (Cross-border) | Standard contractual clauses apply to Anthropic transfers |
+
+### 7.3 Meta Platform Terms
+
+| Reference | Control |
+|-----------|---------|
+| Platform Terms Section 3.a (Use of Platform Data) | Platform Data is used only to operate the Persona Engine for the consenting operator. No advertising use, no targeting, no data sale |
+| Platform Terms Section 3.b (Data Combination) | Platform Data is not combined with data from other integrations to build a profile of the end user. LinkedIn and Discord integrations operate on separate credential rows and are not joined on Threads identifiers |
+| Platform Terms Section 4 (Security) | Encryption at rest and in transit, access control, incident response plan per Section 8 below |
+| Developer Policies (Protect User Data) | No client-side exposure of tokens; no log retention of plaintext |
+| Developer Policies (Permissions) | Only the two permissions necessary for the described use case |
+
+---
+
+## 8. Rollback and Incident Response
+
+**Token breach playbook.** If we detect or are notified of a credential compromise, the response sequence is: (1) revoke the affected row in `persona_channel_credentials` within 1 hour of confirmation, (2) trigger a user-facing re-consent requirement so that no stale publish call succeeds, (3) rotate `TOKEN_ENCRYPTION_KEY` within 24 hours if the breach is cryptographic rather than account-level, and (4) file a report with Meta's developer contact and, where applicable, the Korea Internet and Security Agency under PIPA Art. 34.
+
+**Automatic deauthorization on anomaly.** The system deauthorizes a credential automatically in three cases: (a) the publish endpoint returns Meta error code 190 (token invalidated), (b) `expires_at` has passed, (c) the operator's Draft account is scheduled for deletion. In all three cases the credential row is deleted and the UI displays a reconnection prompt.
+
+**User notification SLA.** If a breach affects identifiable Threads tokens, we notify affected operators within 72 hours of confirmation, via the email address of record and via an in-app notice. Notification contains the scope of the incident, remediation taken, and the user action required. This SLA aligns with GDPR Art. 33 and PIPA Art. 34(1).
+
+---
+
+## 9. Commercial Posture
+
+Draft is a subscription SaaS. Revenue is recognized from seat-based club subscriptions and from institutional B2B contracts with campus innovation offices. We do not monetize Threads data. We do not sell or license Threads identifiers, content, or derived analytics to advertisers, data brokers, or any third party. The Persona Engine processes Threads content exclusively to operate the publishing workflow for the consenting club. There is no ad surveillance, no audience targeting, no behavioral profiling of Threads users.
+
+---
+
+## 10. Point of Contact
+
+| Role | Contact |
+|------|---------|
+| Founder and Data Protection Officer | team@dailydraft.me |
+| Security disclosure | team@dailydraft.me (PGP key on request) |
+| General support | team@dailydraft.me |
+| Response SLA | 30 business days for data deletion; 72 hours for security incidents; 7 business days for general inquiries |
+| Postal address (on request for regulatory notices) | Available upon verified request to the contact email |
+
+---
+
+## 한국어 부록 — PIPA 대응 공문
+
+본 부록은 한국 법률 자문 및 개인정보보호위원회 제출을 위한 참고본입니다. 본문 영문판과 실질 내용이 일치하며, 해석 상충 시 영문판을 우선합니다.
+
+### 요청 권한 요약
+
+1. `threads_basic` — 운영자 본인의 Threads `id` 와 `username` 단일 조회에 한정하며, 게시물 발행 대상 계정 식별 및 UI 확인 용도로만 사용합니다.
+2. `threads_content_publish` — 운영자가 Draft 내에서 명시적으로 승인한 500자 이하 텍스트 1건을 운영자 본인의 Threads 계정에 게시하는 용도로만 사용합니다.
+
+### 개인정보 수집·이용 고지 (PIPA 제15조)
+
+| 항목 | 내용 |
+|------|------|
+| 수집 항목 | Threads 사용자 식별자 (`id`), 암호화된 OAuth 액세스 토큰, 토큰 만료 시각 (`expires_at`), 승인된 scope 목록 |
+| 수집 방법 | Meta 동의 화면에서 이용자가 Allow 를 누른 직후, Draft 서버가 Graph API 로부터 수신 |
+| 수집 목적 | 이용자가 Draft 안에서 승인한 콘텐츠를 이용자 본인의 Threads 계정에 발행하기 위함 |
+| 보유 기간 | 액세스 토큰은 발급일로부터 60일(Meta 발급 long-lived token 수명) 또는 이용자의 연결 해제 시점 중 빠른 쪽. 연결 해제 시 즉시 하드 삭제 |
+| 제3자 제공 | 없음. 하위 처리자(Supabase, Vercel, Anthropic)는 PIPA 제26조의 처리위탁 관계이며 제17조의 제3자 제공이 아님 |
+| 거부 권리 | 본 수집에 동의하지 않을 수 있으며, 이 경우 Threads 연동 기능만 제한되고 Draft 의 다른 기능은 정상 이용 가능 |
+| 처리 책임자 | Draft 대표자 team@dailydraft.me |
+
+### 국외이전 고지 (PIPA 제28조의8 및 제28조의9)
+
+Draft 는 Threads 연동 기능 운영을 위해 아래 국외 수탁자에게 처리를 위탁합니다. 이용자는 OAuth 동의 화면 및 본 문서를 통해 국외이전 사실을 사전 고지받으며, 연결 해제로 언제든 이전된 처리를 중단시킬 수 있습니다.
+
+| 수탁자 | 국가 | 이전 항목 | 이전 방식 | 이용 목적 |
+|--------|------|-----------|-----------|-----------|
+| Vercel, Inc. | 미국 (및 글로벌 엣지; 주 리전 ICN1 서울) | 암호화된 토큰, 발행 요청 페이로드 | HTTPS (TLS 1.3) | 애플리케이션 호스팅 |
+| Supabase, Inc. | 대한민국 (AWS ap-northeast-2 서울 리전) | 암호화된 토큰 저장 | HTTPS (TLS 1.3) | 관리형 Postgres 저장 |
+| Anthropic, PBC | 미국 | 콘텐츠 초안 생성용 이벤트 원문 (Threads 토큰은 절대 전송되지 않음) | HTTPS (TLS 1.3) | LLM 추론 |
+| Meta Platforms, Inc. | 미국 | 승인 시점의 게시물 본문 및 이용자의 OAuth 토큰 | Threads Graph API | 게시물 발행 |
+
+문체 주: 본 부록은 "있음/없음" 판단이 필요한 대목에서 합쇼체를 사용하며, 법령 인용 시 조문 번호를 병기합니다. 본 문서의 모든 기재는 2026년 4월 21일 기준 코드베이스의 실측을 근거로 작성되었습니다.

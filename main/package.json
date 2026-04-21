@@ -18,7 +18,8 @@
     "demo:record": "playwright test --config=scripts/demo/record.config.ts",
     "demo:subs": "tsx scripts/demo/subtitles.ts",
     "demo:stitch": "node scripts/demo/stitch.mjs",
-    "demo:all": "pnpm demo:record && pnpm demo:subs && pnpm demo:stitch"
+    "demo:all": "pnpm demo:record && pnpm demo:subs && pnpm demo:stitch",
+    "review:pdf": "node scripts/build-review-pdfs.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",

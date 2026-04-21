@@ -99,10 +99,10 @@ export default function DataDeletionPage() {
             처리됩니다.
           </p>
           <a
-            href="mailto:chadolmin01@gmail.com?subject=%5BDraft%5D%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EC%82%AD%EC%A0%9C%20%EC%9A%94%EC%B2%AD"
+            href="mailto:team@dailydraft.me?subject=%5BDraft%5D%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EC%82%AD%EC%A0%9C%20%EC%9A%94%EC%B2%AD"
             className="inline-flex items-center text-sm font-semibold text-brand hover:underline"
           >
-            chadolmin01@gmail.com 으로 이메일 보내기 →
+            team@dailydraft.me 으로 이메일 보내기 →
           </a>
         </div>
       </div>
@@ -187,7 +187,7 @@ export default function DataDeletionPage() {
             Q. 제3자가 제 Threads 계정을 Draft 에 연결한 것 같습니다.
           </h3>
           <p className="text-txt-secondary leading-relaxed">
-            chadolmin01@gmail.com 으로 Threads 사용자명과 상황을 알려주십시오. 확인 후 해당 계정
+            team@dailydraft.me 으로 Threads 사용자명과 상황을 알려주십시오. 확인 후 해당 계정
             참조와 토큰을 즉시 삭제하고 관련 IP 기록을 조사합니다.
           </p>
         </div>
@@ -207,8 +207,8 @@ export default function DataDeletionPage() {
       <h2 className="text-xl font-bold text-txt-primary mt-12 mb-4">문의</h2>
       <p className="text-txt-secondary leading-relaxed">
         삭제 요청 관련 문의는{' '}
-        <a href="mailto:chadolmin01@gmail.com" className="text-brand underline">
-          chadolmin01@gmail.com
+        <a href="mailto:team@dailydraft.me" className="text-brand underline">
+          team@dailydraft.me
         </a>
         으로 연락 주십시오. 영업일 기준 30일 이내 답변드립니다.
       </p>
