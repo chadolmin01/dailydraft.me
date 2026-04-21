@@ -152,7 +152,14 @@ export default function InstitutionBusinessPlansPage() {
           ) : members.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16">
               <FileText size={48} className="mx-auto text-txt-disabled mb-4" />
-              <p className="text-txt-secondary text-sm">소속 학생이 없습니다</p>
+              <p className="text-txt-secondary text-sm mb-1">소속 학생이 없습니다</p>
+              <p className="text-txt-tertiary text-xs mb-4">학생을 등록하면 사업계획서 작성 현황을 확인할 수 있습니다</p>
+              <Link
+                href="/institution/members"
+                className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-txt-inverse bg-surface-inverse rounded-full hover:opacity-90 transition-opacity"
+              >
+                학생 관리 페이지로
+              </Link>
             </div>
           ) : (
             <div className="overflow-x-auto">

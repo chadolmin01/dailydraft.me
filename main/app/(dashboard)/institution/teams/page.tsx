@@ -160,6 +160,12 @@ export default function InstitutionTeamsPage() {
             <Handshake size={48} className="mx-auto text-txt-disabled mb-4" />
             <p className="text-txt-secondary text-sm">아직 생성된 팀이 없습니다</p>
             <p className="text-txt-tertiary text-xs mt-1">소속 학생들이 프로젝트를 만들면 여기에 표시됩니다</p>
+            <Link
+              href="/institution/announce"
+              className="inline-flex items-center gap-1.5 mt-6 px-4 py-2 text-xs font-semibold text-txt-inverse bg-surface-inverse rounded-full hover:opacity-90 transition-opacity"
+            >
+              학생들에게 안내 보내기
+            </Link>
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
