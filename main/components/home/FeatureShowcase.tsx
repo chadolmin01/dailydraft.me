@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
-import { MessageSquare, Users, Search, Coffee, Lightbulb, ArrowRight, Check, Lock, Sparkles, Rocket, Eye } from 'lucide-react'
+import { MessageSquare, Users, Search, Coffee, Lightbulb, ArrowRight, Check, Lock, Sparkles } from 'lucide-react'
 import { SectionLabel, SectionTitle } from './shared'
 
 const tabs = [
@@ -172,49 +173,17 @@ const MatchingMockup = () => (
 )
 
 const ExploreMockup = () => (
-  <div className="space-y-2.5">
-    {/* Tab bar */}
-    <div className="flex items-center gap-4 border-b border-border pb-2 mb-1">
-      <span className="text-[11px] font-bold text-brand border-b-2 border-brand pb-2 -mb-[calc(0.5rem+2px)]">프로젝트</span>
-      <span className="text-[11px] font-medium text-txt-tertiary">사람</span>
-    </div>
-    {/* Project cards grid — 실제 카드 UI */}
-    <div className="grid grid-cols-2 gap-2">
-      {[
-        { title: 'AI 이력서 분석', roles: ['프론트엔드', '디자이너'], views: 42, urgent: false },
-        { title: '캠퍼스 중고거래', roles: ['백엔드'], views: 18, urgent: true },
-      ].map((p) => (
-        <div key={p.title} className="bg-surface-card border border-border rounded-xl overflow-hidden">
-          {/* Dark cover header */}
-          <div className="relative h-16 bg-surface-inverse flex items-end p-2">
-            <span className="absolute top-2 left-2 text-[9px] font-mono font-bold bg-surface-card text-txt-primary px-1.5 py-0.5 flex items-center gap-1">
-              <span className="w-1 h-1 bg-black rounded-full inline-block" />
-              {p.urgent ? 'D-2 URGENT' : 'OPEN'}
-            </span>
-            <div className="w-6 h-6 bg-surface-card flex items-center justify-center border border-border">
-              <Rocket size={12} className="text-txt-primary" />
-            </div>
-          </div>
-          {/* Body */}
-          <div className="p-2.5 space-y-1.5">
-            <div className="text-[11px] font-bold text-txt-primary leading-snug">{p.title}</div>
-            <div className="flex items-center gap-1 flex-wrap">
-              <span className="text-[9px] font-mono font-bold text-brand bg-brand/10 px-1.5 py-0.5 border border-brand-border">NEED</span>
-              {p.roles.map(r => (
-                <span key={r} className="text-[9px] text-txt-secondary bg-surface-sunken px-1.5 py-0.5 border border-border">{r}</span>
-              ))}
-            </div>
-            <div className="flex items-center gap-2 pt-1 border-t border-border">
-              <span className="text-[9px] font-mono text-txt-tertiary">RECRUITING</span>
-              <span className="ml-auto text-[9px] font-mono text-txt-tertiary flex items-center gap-1">
-                <Eye size={9} />
-                {p.views}
-              </span>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
+  // 가짜 카드 2개 그리드 대신 실제 /explore 페이지 스크린샷.
+  // 민감 정보(유저 아바타·학교)는 블러 처리됨.
+  <div className="relative rounded-lg overflow-hidden border border-border">
+    <Image
+      src="/landing/screenshots/05_explore.png"
+      alt="Draft 발견 페이지 — 캠퍼스 맵과 프로젝트 필터"
+      width={2879}
+      height={1472}
+      className="w-full h-auto"
+      sizes="(min-width: 1024px) 520px, 100vw"
+    />
   </div>
 )
 
