@@ -4,6 +4,7 @@ import { InstallPrompt } from '@/components/InstallPrompt'
 import { HelpWidget } from '@/components/HelpWidget'
 import { RouteProgressBar } from '@/components/ui/RouteProgressBar'
 import { PageTransition } from '@/components/ui/PageTransition'
+import { CommandPalette } from '@/components/ui/CommandPalette'
 
 export default function DashboardLayout({
   children,
@@ -30,6 +31,7 @@ export default function DashboardLayout({
       </main>
       <BottomTabBar />
       <HelpWidget />
+      <CommandPalette />
     </div>
   )
 }

@@ -41,6 +41,7 @@
     "browser-image-compression": "^2.0.2",
     "chrono-node": "^2.9.0",
     "clsx": "^2.1.1",
+    "cmdk": "^1.1.1",
     "d3-geo": "^3.1.1",
     "framer-motion": "^12.34.0",
     "hwp.js": "^0.0.3",
