@@ -164,6 +164,13 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://phinf.pstatic.net" crossOrigin="anonymous" />
         {/* dns-prefetch 는 preconnect 미지원 브라우저용 폴백 */}
         <link rel="dns-prefetch" href="https://picsum.photos" />
+        {/* OpenSearch — 브라우저 주소창 검색엔진 등록 */}
+        <link
+          rel="search"
+          type="application/opensearchdescription+xml"
+          title="Draft"
+          href="/opensearch.xml"
+        />
       </head>
       <body>
         {/* 키보드 사용자용 skip link — Tab 으로 포커스되면 화면 좌상단에 노출.
