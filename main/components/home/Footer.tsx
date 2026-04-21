@@ -11,8 +11,11 @@ const footerLinks = {
   ],
   '신뢰·투명성': [
     { label: '시스템 상태', href: '/status' },
-    { label: '개인정보처리방침', href: '/privacy' },
-    { label: '이용약관', href: '/terms' },
+    // Meta App Review 제출 URL 과 일치시킴 (/legal/ 경로). 기존 /privacy·/terms 는 별도 라우트 그룹에
+    // 남아있고 호환용으로 유지되나, 공식 공개 링크는 /legal/* 로 통일해서 리뷰 시 혼선 방지.
+    { label: '개인정보처리방침', href: '/legal/privacy' },
+    { label: '이용약관', href: '/legal/terms' },
+    { label: '데이터 삭제', href: '/legal/data-deletion' },
   ],
   회사: [
     { label: '기관 문의', href: 'mailto:institution@dailydraft.me' },

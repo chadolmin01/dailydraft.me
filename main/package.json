@@ -13,7 +13,12 @@
     "db:types": "node scripts/gen-db-types.mjs",
     "db:types:check": "node scripts/gen-db-types.mjs --check",
     "bot": "npx tsx src/lib/discord/bot/index.ts",
-    "bot:register": "node scripts/register-bot-commands.mjs"
+    "bot:register": "node scripts/register-bot-commands.mjs",
+    "demo:install": "playwright install chromium",
+    "demo:record": "playwright test --config=scripts/demo/record.config.ts",
+    "demo:subs": "tsx scripts/demo/subtitles.ts",
+    "demo:stitch": "node scripts/demo/stitch.mjs",
+    "demo:all": "pnpm demo:record && pnpm demo:subs && pnpm demo:stitch"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",
