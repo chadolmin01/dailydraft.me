@@ -225,6 +225,7 @@ function LoginContent({ projects, people }: LoginClientProps) {
                            className="w-full px-4 py-3.5 bg-surface-sunken rounded-xl border border-border text-base sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand focus:bg-surface-card transition-all placeholder:text-txt-disabled"
                            placeholder="닉네임을 입력하세요"
                            required={isSignUp}
+                           autoComplete="nickname"
                         />
                      </div>
                   )}
@@ -253,6 +254,7 @@ function LoginContent({ projects, people }: LoginClientProps) {
                         placeholder="비밀번호를 입력하세요"
                         required
                         minLength={6}
+                        autoComplete={isSignUp ? 'new-password' : 'current-password'}
                      />
                   </div>
 
