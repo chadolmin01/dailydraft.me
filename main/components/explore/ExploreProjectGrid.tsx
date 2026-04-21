@@ -2,7 +2,7 @@
 
 import React, { useRef, useEffect } from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
+import { PrefetchLink as Link } from '@/components/ui/PrefetchLink'
 import { Rocket, Users, FolderOpen, Eye, Heart, Sparkles, ArrowRight } from 'lucide-react'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { SkeletonGrid } from '@/components/ui/Skeleton'

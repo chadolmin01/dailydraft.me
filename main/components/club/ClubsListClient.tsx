@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import Link from 'next/link'
+import { PrefetchLink as Link } from '@/components/ui/PrefetchLink'
 import Image from 'next/image'
 import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/src/context/AuthContext'
