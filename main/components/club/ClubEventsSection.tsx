@@ -272,6 +272,7 @@ function EventForm({ slug, onClose, onSuccess }: {
         <button
           onClick={onClose}
           className="text-txt-disabled hover:text-txt-tertiary"
+          aria-label="닫기"
         >
           <X size={14} />
         </button>

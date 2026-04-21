@@ -57,6 +57,7 @@ export const FormTemplateSelector: React.FC<FormTemplateSelectorProps> = ({
           <button
             onClick={onClose}
             className="p-2 hover:bg-surface-sunken transition-colors"
+            aria-label="닫기"
           >
             <X size={20} className="text-txt-tertiary" />
           </button>

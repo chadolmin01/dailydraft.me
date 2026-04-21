@@ -93,6 +93,7 @@ export const InviteCodeModal: React.FC<InviteCodeModalProps> = ({
             onClick={onClose}
             disabled={isSubmitting}
             className="p-1 hover:bg-surface-sunken transition-colors disabled:opacity-50"
+            aria-label="닫기"
           >
             <X size={20} className="text-txt-disabled" />
           </button>
