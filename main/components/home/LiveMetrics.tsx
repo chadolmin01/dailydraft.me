@@ -17,6 +17,14 @@ interface Metrics {
   profiles_public: number
   weekly_updates_recent: number
   public_universities: number
+  trend: {
+    clubs_public_delta: number
+    active_opportunities_delta: number
+    profiles_public_delta: number
+    weekly_updates_delta: number
+    public_universities_delta: number
+    since: string
+  } | null
 }
 
 const BASELINE = {
@@ -45,22 +53,40 @@ export function LiveMetrics() {
 
   if (!metrics) return null
 
-  // 지표별 baseline 통과한 것만 노출
-  const items: { label: string; value: string }[] = []
+  // 지표별 baseline 통과한 것만 노출. 증감은 양수일 때만(퇴보 표시 지양).
+  const items: { label: string; value: string; delta?: number }[] = []
   if (metrics.public_universities >= BASELINE.public_universities) {
-    items.push({ label: '참여 대학', value: `${metrics.public_universities}곳` })
+    items.push({
+      label: '참여 대학',
+      value: `${metrics.public_universities}곳`,
+      delta: metrics.trend?.public_universities_delta,
+    })
   }
   if (metrics.clubs_public >= BASELINE.clubs_public) {
-    items.push({ label: '공개 동아리', value: `${metrics.clubs_public}개` })
+    items.push({
+      label: '공개 동아리',
+      value: `${metrics.clubs_public}개`,
+      delta: metrics.trend?.clubs_public_delta,
+    })
   }
   if (metrics.active_opportunities >= BASELINE.active_opportunities) {
-    items.push({ label: '진행 중 프로젝트', value: `${metrics.active_opportunities}개` })
+    items.push({
+      label: '진행 중 프로젝트',
+      value: `${metrics.active_opportunities}개`,
+      delta: metrics.trend?.active_opportunities_delta,
+    })
   }
   if (metrics.weekly_updates_recent >= BASELINE.weekly_updates_recent) {
-    items.push({ label: '최근 90일 주간 기록', value: `${metrics.weekly_updates_recent}건` })
+    items.push({
+      label: '최근 90일 주간 기록',
+      value: `${metrics.weekly_updates_recent}건`,
+      delta: metrics.trend?.weekly_updates_delta,
+    })
   }
 
   if (items.length === 0) return null // 아직 baseline 부족 — 과장 방지
+
+  const anyPositiveDelta = items.some((i) => (i.delta ?? 0) > 0)
 
   return (
     <section
@@ -72,9 +98,22 @@ export function LiveMetrics() {
           <div key={item.label} className="flex items-baseline gap-2">
             <span className="text-[22px] font-bold text-txt-primary tabular-nums">{item.value}</span>
             <span className="text-[12px] text-txt-tertiary">{item.label}</span>
+            {typeof item.delta === 'number' && item.delta > 0 && (
+              <span
+                className="text-[11px] font-semibold text-indicator-online tabular-nums"
+                aria-label={`지난 주 대비 ${item.delta} 증가`}
+              >
+                +{item.delta}
+              </span>
+            )}
           </div>
         ))}
       </div>
+      {anyPositiveDelta && (
+        <p className="text-center text-[11px] text-txt-tertiary mt-2">
+          지난 주 대비 증감
+        </p>
+      )}
     </section>
   )
 }

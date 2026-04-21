@@ -43,18 +43,54 @@ export async function GET() {
       .filter((u): u is string => typeof u === 'string' && u.length > 0),
   ).size
 
-  const payload = {
+  const current = {
     clubs_public: clubsRes.count ?? 0,
     active_opportunities: oppsRes.count ?? 0,
     profiles_public: profilesRes.count ?? 0,
     weekly_updates_recent: updatesRes.count ?? 0,
     public_universities: uniqueUniversities,
-    fetched_at: new Date().toISOString(),
   }
 
-  return Response.json(payload, {
-    headers: {
-      'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=3600',
+  // 7일 전 스냅샷 → 증감 계산. 데이터 없으면 trend 는 null.
+  const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const snapshotRes = await (supabase as any)
+    .from('daily_metrics_snapshots')
+    .select('clubs_public, active_opportunities, profiles_public, weekly_updates_90d, public_universities')
+    .lte('snapshot_date', weekAgo)
+    .order('snapshot_date', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  const snap = snapshotRes.data as {
+    clubs_public: number
+    active_opportunities: number
+    profiles_public: number
+    weekly_updates_90d: number
+    public_universities: number
+  } | null
+
+  const trend = snap
+    ? {
+        clubs_public_delta: current.clubs_public - snap.clubs_public,
+        active_opportunities_delta: current.active_opportunities - snap.active_opportunities,
+        profiles_public_delta: current.profiles_public - snap.profiles_public,
+        weekly_updates_delta: current.weekly_updates_recent - snap.weekly_updates_90d,
+        public_universities_delta: current.public_universities - snap.public_universities,
+        since: weekAgo,
+      }
+    : null
+
+  return Response.json(
+    {
+      ...current,
+      trend,
+      fetched_at: new Date().toISOString(),
     },
-  })
+    {
+      headers: {
+        'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=3600',
+      },
+    },
+  )
 }
