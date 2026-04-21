@@ -29,10 +29,11 @@ export const Navbar: React.FC = () => {
     document.body.style.overflow = ''
   }, [mobileOpen])
 
+  // /feed 는 공개 클럽 수가 임계치에 도달하기 전까지 navbar 에서 제외.
+  // URL 과 sitemap 은 유지되므로 SEO 크롤러는 계속 접근.
   const navLinks = [
     { href: '#features', label: '기능' },
     { href: '#use-cases', label: '사례' },
-    { href: '/feed', label: '활동 피드' },
     { href: '#pricing', label: '가격' },
   ]
 

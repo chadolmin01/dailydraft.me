@@ -121,12 +121,6 @@ export default function ClubsListClient() {
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 <Link
-                  href="/feed"
-                  className="px-3 py-2 text-[12px] font-semibold bg-white/20 backdrop-blur-sm text-white rounded-full hover:bg-white/30 transition-colors"
-                >
-                  활동 피드
-                </Link>
-                <Link
                   href="/login?redirect=/clubs"
                   className="px-4 py-2 text-[13px] font-semibold bg-white text-brand rounded-full hover:opacity-90 transition-opacity"
                 >

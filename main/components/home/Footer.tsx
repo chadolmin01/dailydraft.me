@@ -7,7 +7,6 @@ const footerLinks = {
   제품: [
     { label: '기능', href: '#features' },
     { label: '가격', href: '#pricing' },
-    { label: '공개 피드', href: '/feed' },
   ],
   '신뢰·투명성': [
     { label: '시스템 상태', href: '/status' },

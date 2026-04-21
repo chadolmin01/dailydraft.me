@@ -277,27 +277,50 @@ export default async function FeedPage({
         )}
 
         {items.length === 0 ? (
-          <div className="bg-surface-card border border-border rounded-2xl p-12 text-center">
-            <FileText size={28} className="text-txt-disabled mx-auto mb-3" />
-            {activeCategory ? (
-              <>
-                <p className="text-[15px] font-semibold text-txt-primary mb-1">
-                  <span className="text-brand">{activeCategory}</span> 카테고리에 아직 공개된 기록이 없습니다
-                </p>
-                <p className="text-[13px] text-txt-tertiary mb-4">다른 카테고리를 둘러보세요</p>
-                <Link
-                  href="/feed"
-                  className="inline-flex items-center gap-1 px-4 py-2 text-[13px] font-semibold bg-surface-inverse text-txt-inverse rounded-full hover:opacity-90 transition-opacity"
-                >
-                  전체 피드 보기
-                </Link>
-              </>
-            ) : (
-              <>
-                <p className="text-[15px] font-semibold text-txt-primary mb-1">아직 공개된 기록이 없습니다</p>
-                <p className="text-[13px] text-txt-tertiary">곧 새로운 클럽들이 활동을 공유할 예정입니다</p>
-              </>
-            )}
+          <div className="bg-surface-card border border-border rounded-2xl p-10 sm:p-12">
+            <div className="max-w-md mx-auto text-center">
+              <FileText size={28} className="text-txt-disabled mx-auto mb-4" />
+              {activeCategory ? (
+                <>
+                  <p className="text-[15px] font-semibold text-txt-primary mb-2">
+                    <span className="text-brand">{activeCategory}</span> 카테고리에 공개된 기록이 없습니다
+                  </p>
+                  <p className="text-[13px] text-txt-tertiary mb-5 leading-relaxed">
+                    다른 카테고리를 둘러보거나, 전체 피드로 돌아가 보십시오.
+                  </p>
+                  <Link
+                    href="/feed"
+                    className="inline-flex items-center gap-1 px-4 py-2 text-[13px] font-semibold bg-surface-inverse text-txt-inverse rounded-full hover:opacity-90 transition-opacity"
+                  >
+                    전체 피드로 돌아가기
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <p className="text-[15px] font-semibold text-txt-primary mb-2">
+                    공개된 주간 기록이 아직 없습니다
+                  </p>
+                  <p className="text-[13px] text-txt-tertiary mb-5 leading-relaxed">
+                    이 페이지는 클럽이 <code className="text-[12px] px-1 py-0.5 rounded bg-surface-sunken font-mono">공개 업데이트</code>를 켠 프로젝트의 주간 기록만 모읍니다.
+                    Draft 의 기본값은 비공개 운영이며, 대부분 클럽은 외부에 공개하지 않습니다.
+                  </p>
+                  <div className="flex items-center justify-center gap-2 flex-wrap">
+                    <Link
+                      href="/explore?tab=clubs"
+                      className="inline-flex items-center gap-1 px-4 py-2 text-[13px] font-semibold bg-surface-inverse text-txt-inverse rounded-full hover:opacity-90 transition-opacity"
+                    >
+                      클럽 둘러보기
+                    </Link>
+                    <Link
+                      href="/clubs/new"
+                      className="inline-flex items-center gap-1 px-4 py-2 text-[13px] font-semibold text-txt-primary border border-border rounded-full hover:border-txt-tertiary transition-colors"
+                    >
+                      내 클럽 만들기
+                    </Link>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         ) : (
           <div className="space-y-8">
