@@ -98,7 +98,7 @@ export const SecuritySection: React.FC = () => {
               보안 기준을 먼저 갖췄습니다
             </h2>
             <p className="text-[15px] text-txt-secondary leading-relaxed max-w-xl mx-auto break-keep">
-              학생 데이터를 맡기려면 그만한 준비가 필요합니다. Draft 는 출시 전부터
+              학생 데이터를 맡기려면 그만한 준비가 필요합니다. Draft는 출시 전부터
               개인정보보호법 준수와 감사 추적, 복구 리허설까지 상시 운영합니다.
             </p>
           </motion.div>

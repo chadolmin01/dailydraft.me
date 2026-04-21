@@ -57,7 +57,7 @@ const LAYERS: Layer[] = [
     index: '02',
     icon: Sparkles,
     role: '신경계',
-    title: 'AI 가 중요한 것만 걸러',
+    title: 'AI가 중요한 것만 걸러',
     desc: '한 주간 쌓인 대화에서 진짜 진척·블로커·결정을 추려 내고, 운영자가 확인만 하면 되는 초안으로 만듭니다.',
     examples: ['주간 업데이트 초안', '블로커 하이라이트', '참여도 시그널'],
     accent:
@@ -67,7 +67,7 @@ const LAYERS: Layer[] = [
     index: '03',
     icon: Database,
     role: '구조화된 기억',
-    title: 'Draft 에 정리되어 쌓입니다',
+    title: 'Draft에 정리되어 쌓입니다',
     desc: '기수별 타임라인·멤버 기록·프로젝트 이력이 자동으로 축적됩니다. 다음 기수 회장이 열어 보면 바로 맥락이 잡힙니다.',
     examples: ['기수 타임라인', '멤버 포트폴리오', '성과 리포트', '알럼나이 네트워크'],
     accent: 'bg-surface-card border border-border text-txt-primary',
@@ -110,13 +110,13 @@ export const CognitiveSystem: React.FC = () => {
             className="text-[30px] sm:text-[40px] md:text-[46px] font-bold tracking-[-0.025em] leading-[1.1] text-txt-primary mb-5 break-keep"
           >
             소통 → 기억, 그 사이를{' '}
-            <span className="text-brand">AI 가 잇습니다</span>
+            <span className="text-brand">AI가 잇습니다</span>
           </motion.h2>
           <motion.p
             variants={fadeUp}
             className="text-[15px] sm:text-[16px] text-txt-secondary leading-[1.65] max-w-[32rem] mx-auto break-keep"
           >
-            Draft 는 감각기관을 대체하지 않습니다. 대신 거기서 벌어진 일을
+            Draft는 감각기관을 대체하지 않습니다. 대신 거기서 벌어진 일을
             읽어 내 동아리의 기록으로 쌓습니다.
           </motion.p>
         </motion.div>

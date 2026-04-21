@@ -113,7 +113,7 @@ export const Hero: React.FC = () => {
           >
             카톡·Slack·Discord — 어디서 얘기하든 동아리의 기록은 끊기지 않습니다.
             <br className="hidden sm:block" />
-            AI 가 감각과 기억 사이를 이어 줍니다.
+            AI가 감각과 기억 사이를 이어 줍니다.
           </motion.p>
 
           {/* CTAs */}
