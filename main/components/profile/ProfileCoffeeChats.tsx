@@ -291,7 +291,9 @@ export function ProfileCoffeeChats() {
             <EmptyState
               icon={Coffee}
               title="아직 받은 커피챗이 없습니다"
-              description="프로젝트에 관심을 표현하면 커피챗 요청이 올 수 있어요"
+              description="프로필을 공개해두면 관심 있는 메이커가 먼저 연락할 확률이 올라갑니다"
+              actionLabel="프로필 완성하기"
+              actionHref="/profile/edit"
             />
           )}
         </>
@@ -313,6 +315,8 @@ export function ProfileCoffeeChats() {
               icon={Send}
               title="아직 보낸 커피챗이 없습니다"
               description="관심 있는 프로젝트에 커피챗을 보내보세요"
+              actionLabel="프로젝트 둘러보기"
+              actionHref="/explore?scope=projects"
             />
           )}
         </>

@@ -223,7 +223,9 @@ export function ProfileInvitations() {
         <EmptyState
           icon={Mail}
           title="아직 받은 초대가 없습니다"
-          description="프로필을 완성하면 프로젝트 초대를 받을 수 있어요"
+          description="프로필을 완성하면 프로젝트 초대를 받을 확률이 올라갑니다"
+          actionLabel="프로필 완성하기"
+          actionHref="/profile/edit"
           size="compact"
         />
       )}
