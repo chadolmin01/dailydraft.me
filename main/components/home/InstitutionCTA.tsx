@@ -42,17 +42,17 @@ interface CtaLink {
 
 const CTAS: CtaLink[] = [
   {
-    label: '엔터프라이즈 데모 요청',
-    href: 'mailto:team@dailydraft.me?subject=Enterprise%20Demo',
+    label: '기관 도입 상세 보기',
+    href: '/enterprise',
     primary: true,
   },
   {
-    label: '실사 문서 받기',
+    label: '실사 자료 요청',
     href: 'mailto:team@dailydraft.me?subject=Due%20Diligence%20Docs',
   },
   {
-    label: '사례 보기',
-    href: '/#use-cases',
+    label: '신뢰 센터',
+    href: '/trust',
   },
 ]
 
