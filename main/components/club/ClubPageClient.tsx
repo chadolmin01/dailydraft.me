@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
-import Link from 'next/link'
+import { PrefetchLink as Link } from '@/components/ui/PrefetchLink'
 import { Settings, Users, FolderOpen, Archive, ChevronRight, ChevronLeft, Plus, Sparkles, UserPlus, FileText, Activity, BarChart3 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'

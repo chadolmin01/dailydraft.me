@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { User, LogOut, Bell, X, Plus, Settings, Search, ChevronRight, Shield, FolderOpen, Compass, Briefcase, AlertTriangle, Sun, Moon, Building2, Home } from 'lucide-react'
-import Link from 'next/link'
+import { ViewTransitionLink as Link } from '@/components/ui/ViewTransitionLink'
 import { useAuth } from '@/src/context/AuthContext'
 import { useProfile } from '@/src/hooks/useProfile'
 import { useAdmin } from '@/src/hooks/useAdmin'
