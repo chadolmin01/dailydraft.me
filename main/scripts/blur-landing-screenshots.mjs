@@ -63,6 +63,12 @@ const REGIONS = {
     // 좌측 사이드바 프로젝트 채널명
     { x: 0.075, y: 0.55, w: 0.22, h: 0.35, label: 'channel-names' },
   ],
+  '11_kpi_report.png': [
+    // 우상단 프로필 아바타·이름
+    { x: 0.92, y: 0.0, w: 0.08, h: 0.045, label: 'profile-pill' },
+  ],
+  // 12_cohorts.png: 모바일 뷰. 개인정보 노출 없음 — 원본 그대로 패스.
+  '12_cohorts.png': [],
 }
 
 async function processOne(file) {
@@ -71,6 +77,12 @@ async function processOne(file) {
   const regions = REGIONS[file]
   if (!regions) {
     console.log(`skip (no regions): ${file}`)
+    return
+  }
+  if (regions.length === 0) {
+    // 블러 영역 없음 — 원본 그대로 복사 (sharp 를 거치면 미세하게 재인코딩됨)
+    await sharp(src).toFile(dst)
+    console.log(`✓ ${file} → ${dst} (copy, no blur)`)
     return
   }
 

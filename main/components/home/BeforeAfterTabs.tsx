@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 
 /* ── Tab Data ── */
@@ -50,50 +51,22 @@ const WeeklyTrackingPanel = () => (
         <span className="text-xl text-txt-tertiary select-none">&darr;</span>
       </div>
 
-      {/* After — 실제 봇 출력 형태 */}
-      <div className="bg-surface-card border border-border rounded-xl p-5 sm:p-6 flex flex-col">
-        <span className="text-xs font-semibold text-brand mb-4">After</span>
-        <div className="flex-1">
-          {/* Bot message header */}
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-6 h-6 rounded-full bg-brand flex items-center justify-center shrink-0">
-              <span className="text-[10px] font-bold text-white">D</span>
-            </div>
-            <span className="text-xs font-semibold text-brand">Draft Bot</span>
-            <span className="text-[9px] px-1 py-0.5 bg-brand/10 text-brand rounded font-medium">봇</span>
-          </div>
-
-          {/* Summary embed */}
-          <div className="space-y-3 text-xs">
-            <p className="font-bold text-sm text-txt-primary">
-              팀A — 이번 주 내용 정리했습니다
-            </p>
-
-            <div>
-              <p className="font-semibold text-txt-primary mb-1">할 일</p>
-              <p className="text-txt-secondary leading-relaxed">
-                김민수 — API 연동 테스트 (금요일까지)<br />
-                이서연 — 디자인 시안 리뷰 반영<br />
-                박준혁 — 프론트 로그인 QA
-              </p>
-            </div>
-
-            <div>
-              <p className="font-semibold text-txt-primary mb-1">결정사항</p>
-              <p className="text-txt-secondary">로그인 방식: OAuth 소셜 로그인</p>
-            </div>
-
-            <div>
-              <p className="font-semibold text-txt-primary mb-1">다음 모임</p>
-              <p className="text-txt-secondary">금요일 오후 3시</p>
-            </div>
-
-            <p className="text-[10px] text-txt-tertiary pt-2 border-t border-border">
-              팀 대화에서 자동 생성 · 수동 취합 불필요
-            </p>
-          </div>
+      {/* After — 실제 Discord 서버에 발행된 Draft Bot 주간 리포트 */}
+      <div className="bg-surface-card border border-border rounded-xl overflow-hidden flex flex-col">
+        <div className="px-5 sm:px-6 pt-5 sm:pt-6 pb-3">
+          <span className="text-xs font-semibold text-brand">After</span>
         </div>
-        <div className="mt-5 pt-4 border-t border-border">
+        <div className="relative flex-1">
+          <Image
+            src="/landing/screenshots/03_ghostwriter.png"
+            alt="Draft Bot 이 Discord 에 자동 발행한 15주차 주간 현황"
+            width={2074}
+            height={1105}
+            className="w-full h-auto"
+            sizes="(min-width: 768px) 520px, 100vw"
+          />
+        </div>
+        <div className="px-5 sm:px-6 py-4 border-t border-border">
           <p className="text-xs text-brand font-medium">
             대화 기반 자동 요약 · 회장이 묻지 않아도 정리 완료
           </p>
@@ -144,32 +117,23 @@ const HandoffPanel = () => (
         <span className="text-xl text-txt-tertiary select-none">&darr;</span>
       </div>
 
-      {/* After */}
-      <div className="bg-surface-card border border-border rounded-xl p-5 sm:p-6 flex flex-col">
-        <span className="text-xs font-semibold text-brand mb-4">After</span>
-        <div className="space-y-3 flex-1">
-          {[
-            { gen: '5기', members: 24, projects: 8, reports: 16, opacity: 'opacity-100' },
-            { gen: '4기', members: 20, projects: 6, reports: 14, opacity: 'opacity-100' },
-            { gen: '3기', members: 18, projects: 5, reports: 12, opacity: 'opacity-70' },
-            { gen: '2기', members: 15, projects: 4, reports: 10, opacity: 'opacity-40' },
-          ].map((g) => (
-            <div
-              key={g.gen}
-              className={`flex items-center gap-4 p-3 rounded-lg bg-surface-sunken ${g.opacity} transition-opacity`}
-            >
-              <span className="text-sm font-bold text-txt-primary w-8 shrink-0">{g.gen}</span>
-              <div className="flex-1 min-w-0">
-                <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-txt-secondary">
-                  <span>{g.members}명</span>
-                  <span>프로젝트 {g.projects}개</span>
-                  <span>주간리포트 {g.reports}회</span>
-                </div>
-              </div>
-            </div>
-          ))}
+      {/* After — 실제 클럽 페이지 + 아카이브 탭. 운영 툴바(KPI·증명서·설정·페르소나·초대)에
+          다음 기수 회장이 받을 것들이 한 눈에 보임. */}
+      <div className="bg-surface-card border border-border rounded-xl overflow-hidden flex flex-col">
+        <div className="px-5 sm:px-6 pt-5 sm:pt-6 pb-3">
+          <span className="text-xs font-semibold text-brand">After</span>
         </div>
-        <div className="mt-5 pt-4 border-t border-border">
+        <div className="relative flex-1">
+          <Image
+            src="/landing/screenshots/12_cohorts.png"
+            alt="Draft 클럽 페이지 — 기수 아카이브와 운영 도구 한 곳에"
+            width={1428}
+            height={1438}
+            className="w-full h-auto"
+            sizes="(min-width: 768px) 520px, 100vw"
+          />
+        </div>
+        <div className="px-5 sm:px-6 py-4 border-t border-border">
           <p className="text-xs text-brand font-medium">
             관리자 권한 이전 · 5분 · 맥락 100% 보존
           </p>
@@ -229,45 +193,23 @@ const ReportPanel = () => (
         <span className="text-xl text-txt-tertiary select-none">&darr;</span>
       </div>
 
-      {/* After */}
-      <div className="bg-surface-card border border-border rounded-xl p-5 sm:p-6 flex flex-col">
-        <span className="text-xs font-semibold text-brand mb-4">After</span>
-        <div className="space-y-4 flex-1">
-          {/* Report header */}
-          <div className="space-y-1">
-            <p className="text-sm font-bold text-txt-primary">FLIP &mdash; 2026 1학기 성과 리포트</p>
-            <p className="text-xs text-txt-tertiary">자동 생성됨 · 2026.06.20</p>
-          </div>
-
-          {/* Stats row */}
-          <div className="grid grid-cols-2 gap-2">
-            {[
-              { label: '활동 멤버', value: '24명' },
-              { label: '프로젝트 완료', value: '8개' },
-              { label: '정기 회의', value: '32회' },
-              { label: '참여율', value: '92%' },
-            ].map((s) => (
-              <div
-                key={s.label}
-                className="bg-surface-sunken rounded-lg p-3 text-center"
-              >
-                <p className="text-lg font-bold text-txt-primary">{s.value}</p>
-                <p className="text-[10px] text-txt-tertiary mt-0.5">{s.label}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* Action buttons */}
-          <div className="flex gap-2">
-            <span className="flex-1 text-center py-2 bg-brand text-white text-xs font-semibold rounded-lg">
-              PDF 다운로드
-            </span>
-            <span className="flex-1 text-center py-2 border border-border text-txt-secondary text-xs font-medium rounded-lg">
-              학교 제출용 양식
-            </span>
-          </div>
+      {/* After — 실제 KPI 보고서 페이지. 창업지원단·LINC·RISE·캠퍼스타운 제출 포맷에
+          맞춘 정량·정성 지표를 자동 집계. */}
+      <div className="bg-surface-card border border-border rounded-xl overflow-hidden flex flex-col">
+        <div className="px-5 sm:px-6 pt-5 sm:pt-6 pb-3">
+          <span className="text-xs font-semibold text-brand">After</span>
         </div>
-        <div className="mt-5 pt-4 border-t border-border">
+        <div className="relative flex-1">
+          <Image
+            src="/landing/screenshots/11_kpi_report.png"
+            alt="FLIP KPI 보고서 — 창업지원단·LINC 제출용 자동 집계"
+            width={1430}
+            height={1440}
+            className="w-full h-auto"
+            sizes="(min-width: 768px) 520px, 100vw"
+          />
+        </div>
+        <div className="px-5 sm:px-6 py-4 border-t border-border">
           <p className="text-xs text-brand font-medium">
             원클릭 생성 · 10초 · 활동 기록에서 자동 집계
           </p>
