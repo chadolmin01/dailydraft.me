@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import Link from 'next/link'
+import { PrefetchLink as Link } from '@/components/ui/PrefetchLink'
 
 export const Navbar: React.FC = () => {
   const [scrolled, setScrolled] = useState(false)
