@@ -4,7 +4,7 @@ import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { Sparkles, ArrowRight, Lock } from 'lucide-react'
+import { Sparkles, ArrowRight } from 'lucide-react'
 
 /**
  * Persona Engine Section — 핵심 수익축 시각화
@@ -33,14 +33,6 @@ const fadeUp = {
     transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as const },
   },
 }
-
-/** 페르소나 슬롯 예시 — 실제 UI 구조 그대로 */
-const PERSONA_SLOTS = [
-  { label: '정체성', value: '창업동아리 FLIP · 10기' },
-  { label: '톤·화법', value: '합쇼체 · 수치 중심 · 과장 지양' },
-  { label: '독자', value: '20대 초반 창업 관심 학생' },
-  { label: '금기', value: '느낌표 남발 · 상투적 인사' },
-]
 
 export const PersonaEngine: React.FC = () => {
   return (
@@ -110,50 +102,21 @@ export const PersonaEngine: React.FC = () => {
           viewport={{ once: true, margin: '-80px' }}
           className="grid grid-cols-1 lg:grid-cols-5 gap-4"
         >
-          {/* ── LEFT: Persona Slots (large card) ── */}
+          {/* ── LEFT: 실제 페르소나 설정 화면 스크린샷 ──
+              텍스트 슬롯 리스트 목업 대신 실제 /clubs/[slug]/settings/persona 페이지.
+              "13 슬롯 + Discord 대화 학습 + 수동 수정" 메시지를 UI 로 직접 전달. */}
           <motion.div
             variants={fadeUp}
-            className="lg:col-span-2 bg-surface-card border border-border rounded-2xl p-6 sm:p-7 flex flex-col shadow-[0_1px_2px_rgba(0,0,0,0.04)]"
+            className="lg:col-span-2 relative rounded-2xl overflow-hidden border border-border shadow-[0_8px_32px_-8px_rgba(0,0,0,0.12)] bg-surface-card"
           >
-            <div className="flex items-center justify-between mb-5">
-              <div>
-                <p className="text-[11px] font-mono uppercase tracking-[0.14em] text-txt-tertiary mb-1">
-                  페르소나 슬롯
-                </p>
-                <h3 className="text-[17px] font-bold text-txt-primary">
-                  우리 동아리 톤
-                </h3>
-              </div>
-              <div className="w-8 h-8 rounded-lg bg-brand-bg flex items-center justify-center">
-                <Sparkles size={14} className="text-brand" />
-              </div>
-            </div>
-
-            <div className="space-y-2 flex-1">
-              {PERSONA_SLOTS.map((slot, i) => (
-                <div
-                  key={slot.label}
-                  className="flex items-start gap-3 p-3 bg-surface-bg rounded-xl"
-                >
-                  <span className="text-[10px] font-mono text-txt-disabled font-bold shrink-0 mt-0.5 w-4">
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[11px] font-semibold text-txt-tertiary mb-0.5">
-                      {slot.label}
-                    </p>
-                    <p className="text-[13px] text-txt-primary leading-[1.45]">
-                      {slot.value}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-5 pt-5 border-t border-border flex items-center gap-2 text-[11px] text-txt-tertiary">
-              <Lock size={11} />
-              Discord 대화에서 자동으로 학습 · 수동 수정 가능
-            </div>
+            <Image
+              src="/landing/screenshots/02_persona.png"
+              alt="Draft 페르소나 설정 — 13 슬롯으로 동아리 톤 정의"
+              width={2878}
+              height={1452}
+              className="w-full h-auto"
+              sizes="(min-width: 1024px) 480px, 100vw"
+            />
           </motion.div>
 
           {/* ── RIGHT: 실제 Draft Bot 주간 리포트 스크린샷 ──
