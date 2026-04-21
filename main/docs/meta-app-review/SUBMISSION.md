@@ -88,9 +88,11 @@ Every row references the document of record and the actual implementation state 
 | Dependabot / SCA | **Implemented (main)** | `.github/dependabot.yml` | Weekly npm + monthly Actions, grouped by scope |
 | OAuth callback rate limit | **Implemented (main)** | `app/api/oauth/threads/{start,callback}/route.ts` | `applyRateLimit` IP-based guard at entry |
 | Secret rotation schedule | **Planned (Q2 2026)** | Internal runbook | First formal rotation Q2 2026 |
+| Secret-scanning CI | **Implemented (main)** | `.github/workflows/secret-scan.yml` | gitleaks + trufflehog on push/PR/weekly |
+| Secret rotation runbook | **Implemented (main)** | `docs/operations/secret-rotation-runbook.md` | Quarterly rotation procedure published; dual-key implementation Q3 2026 |
 | Penetration test | **Planned (Q3 2026)** | External engagement | Pre-scale-up target |
 
-**Summary**: of the 21 controls tracked for this submission, **19 are implemented on `main`**, and **2 remain on a dated roadmap** (token encryption key rotation cadence; third-party penetration test). Both roadmap items are defense-in-depth rather than Threads-specific blockers.
+**Summary**: of the 23 controls tracked for this submission, **21 are implemented on `main`**, and **1 remains on a dated roadmap** (third-party penetration test, Q3 2026). Token encryption key rotation has an operational runbook (`docs/operations/secret-rotation-runbook.md`); the dual-key automation is Q3 2026. Both remaining items are defense-in-depth rather than Threads-specific blockers.
 
 ---
 

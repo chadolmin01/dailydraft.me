@@ -399,13 +399,13 @@ Listed in rough order of reviewer-visibility. Fix targets are sincere estimates;
 | ~~G3~~ | **Threads OAuth rate-limit** — **RESOLVED 2026-04-21** | — | `applyRateLimit` IP-based guard at `/api/oauth/threads/{start,callback}/route.ts` entry | Done |
 | G4 | **`TOKEN_ENCRYPTION_KEY` rotation not implemented** (§3, §7) | CWE-320 | Key stored in Vercel env (encrypted at provider), no git exposure | 2026-Q3 (dual-key rolling scheme) |
 | ~~G5~~ | **Dependabot** — **RESOLVED 2026-04-21** | — | `.github/dependabot.yml` — weekly npm, monthly GitHub Actions, grouped by scope | Done |
-| G6 | **Secret-scanning CI step missing** (§10) | CWE-798 | `.gitignore` enforced; backup file `.env.local.audit` gitignored (verified) | 2026-05-15 |
+| ~~G6~~ | **Secret-scanning CI** — **RESOLVED 2026-04-21** | — | `.github/workflows/secret-scan.yml` — gitleaks + trufflehog on push/PR/weekly | Done |
 | G7 | **3 MEDIUM RLS findings open** (§5) — M4, M5 partially closed 2026-04-21 | CWE-284 | None of the MEDIUM items affect Meta token data; H7 persona learning-artifact exposure closed via `persona_fields_select_editor_only` + corpus/training SELECT scoped to editor | 2026-Q2 |
 | G8 | **Rate limiter is in-memory, not distributed** (§6) | CWE-770 | Per-instance limits still apply; Vercel's own Edge throttles catastrophic abuse | 2026-Q2 (Upstash Redis) |
 | G9 | **No third-party penetration test on record** | — | Internal security reviews 2026-03-25, 2026-04-18, 2026-04-21 (this doc) | 2026-Q4 after institutional contract revenue |
 | G10 | **`script-src 'unsafe-inline'` in CSP** (§6) | CWE-79 | X-Frame-Options DENY; HttpOnly cookies; React output escaping | 2026-Q3 (nonce-based CSP) |
 
-Top remaining by reviewer relevance as of 2026-04-21: **G4 (key rotation)**, **G6 (secret-scan CI)**, **G9 (pen test)**. G1, G2, G3, G5 resolved in Bundle A. H7 RLS exposure resolved in Bundle B (migration `20260421010000_rls_hardening_h7_m4_m5.sql`).
+Top remaining by reviewer relevance as of 2026-04-21: **G4 (key rotation — runbook published, dual-key implementation Q3 2026)**, **G9 (third-party pen test)**. G1/G2/G3/G5/G6 resolved in Bundles A+F; H7 RLS exposure resolved in Bundle B (migration `20260421010000_rls_hardening_h7_m4_m5.sql`); `docs/operations/secret-rotation-runbook.md` published for G4 operational readiness.
 
 ---
 
