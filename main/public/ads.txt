@@ -1,0 +1,4 @@
+# Draft does not currently run advertising.
+# This empty ads.txt file signals that no authorized sellers exist.
+# If you see ads claiming to be from dailydraft.me, they are not authorized.
+# Contact: team@dailydraft.me · /security

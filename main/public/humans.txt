@@ -1,0 +1,37 @@
+/* TEAM */
+
+Creator · Founder: 이성민
+Role: Product, Design, Engineering
+Contact: team [at] dailydraft.me
+Site: https://dailydraft.me/about
+
+/* THANKS */
+
+경희대학교 국제캠퍼스 창업동아리 FLIP 10-1대 · 1기 파일럿 운영진
+아산 두어스 커뮤니티
+오픈소스 / SaaS 파트너 (Supabase, Vercel, Anthropic, Google, PostHog, Sentry, Upstash, Cloudflare)
+
+/* SITE */
+
+Last update: 2026-04-22
+Language: Korean (ko-KR)
+Doctype: HTML5
+Framework: Next.js 15 (App Router, Turbopack)
+Components: React 19, TypeScript, Tailwind CSS, shadcn-style tokens
+Database: Supabase Postgres + RLS
+Hosting: Vercel (Edge)
+Observability: PostHog + Sentry + Discord alert hooks
+
+/* CONTACT */
+
+General: team [at] dailydraft.me
+Press: team [at] dailydraft.me (subject: [Press])
+Security: team [at] dailydraft.me (subject: [Security])
+Partnership: team [at] dailydraft.me (subject: Partnership)
+
+/* PRINCIPLES */
+
+- Students first: reduce cognitive load, not add another tool.
+- Transparency: all major decisions recorded in /changelog.
+- Privacy by default: minimal collection, max retention strictly bounded.
+- No AI training on user content without explicit consent.
