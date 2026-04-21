@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
-import Link from 'next/link'
+import { PrefetchLink as Link } from '@/components/ui/PrefetchLink'
 import { useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'

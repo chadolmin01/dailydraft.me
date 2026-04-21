@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import Link from 'next/link'
+import { ViewTransitionLink as Link } from '@/components/ui/ViewTransitionLink'
 import { MessageSquare, Sun, Moon, LogOut, Shield, Building2, ChevronRight, Plus, Download, Share, Smartphone, Users, GraduationCap } from 'lucide-react'
 import { useAuth } from '@/src/context/AuthContext'
 import { useProfile } from '@/src/hooks/useProfile'
