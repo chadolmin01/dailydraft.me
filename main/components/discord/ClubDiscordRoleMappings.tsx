@@ -333,7 +333,7 @@ function MappingRow({
       <select
         value={selectedRoleId}
         onChange={e => onChange(e.target.value)}
-        className="flex-1 px-2.5 py-1.5 border border-border rounded-lg text-sm text-txt-primary bg-surface-card focus:outline-none focus:border-brand transition-colors appearance-none cursor-pointer"
+        className="flex-1 px-2.5 py-1.5 border border-border rounded-lg text-sm text-txt-primary bg-surface-card focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors appearance-none cursor-pointer"
       >
         <option value="">미지정</option>
         {discordRoles.map(role => (

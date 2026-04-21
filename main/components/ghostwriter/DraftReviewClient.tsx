@@ -461,7 +461,7 @@ export function DraftReviewClient({ draftId }: { draftId: string }) {
                 </div>
                 <input
                   type="text"
-                  className="w-full px-3 py-2 border border-border rounded-lg text-sm text-txt-primary focus:outline-none focus:border-brand"
+                  className="w-full px-3 py-2 border border-border rounded-lg text-sm text-txt-primary focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
                   placeholder="어떤 점이 아쉬웠나요? (선택)"
                   value={feedbackNote}
                   onChange={(e) => setFeedbackNote(e.target.value)}
