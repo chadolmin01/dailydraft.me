@@ -2,6 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { ArrowRight, Play, MessageSquare, Hash, Users } from 'lucide-react'
 
@@ -174,6 +175,29 @@ export const Hero: React.FC = () => {
               </div>
             </div>
           </motion.div>
+        </motion.div>
+      </div>
+
+      {/* ── 실제 Draft 대시보드 스크린샷 — Hero 텍스트 아래 이어서 노출 ──
+          Why: "인지 시스템" "운영 OS" 같은 추상 카피는 AI 티가 날 위험이 큼.
+               방문자 눈이 내려오는 첫 번째 지점에 "진짜 제품이 이렇게 생겼다"는 증빙을 배치.
+          민감 정보(유저 이름·프로필)는 블러 처리된 상태로 ship. */}
+      <div className="relative w-full px-4 sm:px-6 md:px-10 pb-20 sm:pb-28 -mt-8 sm:-mt-12">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          className="relative mx-auto max-w-5xl rounded-2xl overflow-hidden border border-border shadow-[0_20px_60px_-20px_rgba(94,106,210,0.35),0_8px_24px_-8px_rgba(0,0,0,0.12)] bg-surface-card"
+        >
+          <Image
+            src="/landing/screenshots/01_dashboard.png"
+            alt="Draft 대시보드 — 오늘 할 일과 운영 중인 클럽 한눈에"
+            width={2861}
+            height={1469}
+            priority
+            className="w-full h-auto"
+            sizes="(min-width: 1024px) 960px, 100vw"
+          />
         </motion.div>
       </div>
     </section>

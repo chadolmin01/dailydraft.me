@@ -2,16 +2,9 @@
 
 import React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion } from 'framer-motion'
-import {
-  Instagram,
-  Linkedin,
-  Hash,
-  Mail,
-  Sparkles,
-  ArrowRight,
-  Lock,
-} from 'lucide-react'
+import { Sparkles, ArrowRight, Lock } from 'lucide-react'
 
 /**
  * Persona Engine Section — 핵심 수익축 시각화
@@ -48,58 +41,6 @@ const PERSONA_SLOTS = [
   { label: '독자', value: '20대 초반 창업 관심 학생' },
   { label: '금기', value: '느낌표 남발 · 상투적 인사' },
 ]
-
-/** 채널별 브랜드 정체성 반영 */
-const CHANNELS = [
-  {
-    id: 'instagram',
-    icon: Instagram,
-    label: 'Instagram',
-    accent: 'from-pink-500 to-orange-400',
-    accentSolid: 'text-pink-500',
-    preview: {
-      kicker: '이번 주 팀 활동',
-      body: '10기 5개 팀이 이번 주 사용자 인터뷰를 끝냈습니다. 가장 많이 나온 피드백은 "결제 UX"였고, 다음 주 프로토타입에 반영합니다.',
-      tags: ['#FLIP10기', '#창업동아리', '#주간회고'],
-    },
-  },
-  {
-    id: 'linkedin',
-    icon: Linkedin,
-    label: 'LinkedIn',
-    accent: 'from-sky-600 to-blue-500',
-    accentSolid: 'text-sky-600',
-    preview: {
-      kicker: '운영자 업데이트',
-      body: 'FLIP 10기 중간 점검 완료. 5개 팀 중 3개 팀이 MVP 배포 단계에 진입했고, 2개 팀은 문제 정의 피벗 중입니다. 다음 단계는 투자자 네트워킹.',
-      tags: ['#StudentStartup', '#FLIP'],
-    },
-  },
-  {
-    id: 'discord',
-    icon: Hash,
-    label: 'Discord',
-    accent: 'from-indigo-500 to-violet-500',
-    accentSolid: 'text-indigo-500',
-    preview: {
-      kicker: '#공지',
-      body: '이번 주 발표 순서 공유드립니다. 화요일 7시, 10기 중간 데모데이입니다. 멘토 2분 모시고 진행합니다. 팀별 10분씩 준비해 주세요.',
-      tags: [],
-    },
-  },
-  {
-    id: 'email',
-    icon: Mail,
-    label: '뉴스레터',
-    accent: 'from-emerald-500 to-teal-500',
-    accentSolid: 'text-emerald-600',
-    preview: {
-      kicker: '10기 Week 5',
-      body: '안녕하세요, FLIP 알럼나이 여러분. 이번 주 10기 진척을 정리해 보내 드립니다. 지난주 인터뷰 40건, 프로토타입 3개가 사용자 테스트에 들어갔습니다.',
-      tags: [],
-    },
-  },
-] as const
 
 export const PersonaEngine: React.FC = () => {
   return (
@@ -215,55 +156,25 @@ export const PersonaEngine: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* ── RIGHT: 4 Channel Outputs (2x2) ── */}
-          <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {CHANNELS.map((ch) => {
-              const Icon = ch.icon
-              return (
-                <motion.div
-                  key={ch.id}
-                  variants={fadeUp}
-                  className="group relative bg-surface-card border border-border rounded-2xl p-5 flex flex-col overflow-hidden hover:border-brand/30 transition-colors duration-200"
-                >
-                  {/* Channel accent glow on hover */}
-                  <div
-                    aria-hidden
-                    className={`absolute -top-16 -right-16 w-40 h-40 rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-300 blur-2xl bg-gradient-to-br ${ch.accent}`}
-                  />
-
-                  {/* Channel badge */}
-                  <div className="relative flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-lg bg-surface-bg flex items-center justify-center">
-                        <Icon size={14} className={ch.accentSolid} />
-                      </div>
-                      <span className="text-[12px] font-semibold text-txt-primary">
-                        {ch.label}
-                      </span>
-                    </div>
-                    <span className="text-[9.5px] font-mono uppercase tracking-[0.14em] text-txt-disabled px-1.5 py-0.5 rounded bg-surface-bg">
-                      Draft
-                    </span>
-                  </div>
-
-                  {/* Preview content */}
-                  <div className="relative flex-1 flex flex-col">
-                    <p className="text-[10.5px] font-semibold text-txt-tertiary mb-1.5">
-                      {ch.preview.kicker}
-                    </p>
-                    <p className="text-[13px] text-txt-primary leading-[1.55] line-clamp-4 mb-3 break-keep">
-                      {ch.preview.body}
-                    </p>
-                    {ch.preview.tags.length > 0 && (
-                      <p className="text-[11px] text-brand font-medium mt-auto">
-                        {ch.preview.tags.join(' ')}
-                      </p>
-                    )}
-                  </div>
-                </motion.div>
-              )
-            })}
-          </div>
+          {/* ── RIGHT: 실제 Draft Bot 주간 리포트 스크린샷 ──
+              레퍼런스 목업 4개 대신 진짜 Discord 에 발행된 리포트 1 장으로 교체.
+              Why: "AI 가 우리 동아리 톤으로 써 준다"의 증빙은 목업이 아니라 실제 출력.
+                   3층 포지셔닝의 "소통은 원하는 곳에"가 Discord 맥락 안에서 자연스럽게 전달.
+          */}
+          <motion.div
+            variants={fadeUp}
+            className="lg:col-span-3 relative rounded-2xl overflow-hidden border border-border shadow-[0_8px_32px_-8px_rgba(0,0,0,0.12)] bg-surface-card"
+          >
+            <Image
+              src="/landing/screenshots/03_ghostwriter.png"
+              alt="Draft Bot 이 Discord 에 자동 발행한 주간 현황 리포트"
+              width={2074}
+              height={1105}
+              className="w-full h-auto"
+              sizes="(min-width: 1024px) 720px, 100vw"
+              priority={false}
+            />
+          </motion.div>
         </motion.div>
 
         {/* CTA */}

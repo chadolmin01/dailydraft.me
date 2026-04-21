@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useMemo } from 'react'
+import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 
 /* ── Tab Data ── */
@@ -159,146 +160,26 @@ function SliderInput({
 
 function DiscordDemoPanel() {
   return (
-    <div className="max-w-2xl mx-auto space-y-4">
+    <div className="max-w-3xl mx-auto space-y-4">
       <p className="text-sm sm:text-base text-txt-secondary text-center leading-relaxed break-keep">
-        팀 채널의 대화를 실시간으로 요약하고, 주간 리포트를 자동 생성합니다.
+        팀 채널에 실제로 발행된 Draft Bot 주간 리포트입니다. 대화 기반 자동 요약.
       </p>
 
-      {/* Discord window */}
-      <div className="bg-surface-card border border-border rounded-xl overflow-hidden shadow-sm">
-        {/* Channel header */}
-        <div className="flex items-center gap-3 px-4 py-3 border-b border-border bg-surface-sunken/50">
-          <span className="text-txt-tertiary text-sm font-medium">#</span>
-          <span className="text-sm font-semibold text-txt-primary">팀A-앱개발</span>
-          <span className="ml-auto text-xs text-txt-tertiary">8명 온라인</span>
-          <span className="w-2 h-2 rounded-full bg-indicator-online shrink-0" />
-        </div>
-
-        {/* Messages */}
-        <div className="p-4 space-y-4">
-          {/* Human messages */}
-          <DiscordMessage
-            avatar="김"
-            name="김민수"
-            time="오후 3:42"
-            message="API 연동 완료했습니다. 테스트 서버에 배포해뒀어요."
-          />
-          <DiscordMessage
-            avatar="이"
-            name="이서연"
-            time="오후 4:15"
-            message="디자인 시안 피그마에 올렸습니다. 확인 부탁드립니다."
-          />
-          <DiscordMessage
-            avatar="박"
-            name="박준혁"
-            time="오후 5:30"
-            message="프론트 로그인 페이지 완료했습니다. PR 올렸습니다."
-          />
-
-          {/* Divider */}
-          <div className="flex items-center gap-3 py-1">
-            <div className="flex-1 h-px bg-border" />
-            <span className="text-[10px] text-txt-tertiary shrink-0">Draft Bot · 월요일 오전 9:00</span>
-            <div className="flex-1 h-px bg-border" />
-          </div>
-
-          {/* Bot message */}
-          <div className="flex items-start gap-3">
-            <div className="w-8 h-8 rounded-full bg-brand flex items-center justify-center shrink-0">
-              <span className="text-xs font-bold text-white">D</span>
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-baseline gap-2 mb-1.5">
-                <span className="text-sm font-semibold text-brand">Draft Bot</span>
-                <span className="text-[10px] px-1.5 py-0.5 bg-brand/10 text-brand rounded text-[9px] font-medium">봇</span>
-                <span className="text-[10px] text-txt-tertiary">오전 9:00</span>
-              </div>
-
-              {/* Embed card */}
-              <div className="bg-surface-sunken rounded-lg p-4 space-y-3 max-w-md">
-                <p className="text-sm font-bold text-txt-primary">
-                  팀A &mdash; 주간 업데이트 (4월 2주차)
-                </p>
-
-                {/* Progress */}
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-txt-secondary">진행률</span>
-                    <span className="text-xs font-bold text-brand">80% (+15%)</span>
-                  </div>
-                  <div className="h-2 bg-surface-card rounded-full overflow-hidden">
-                    <div className="h-full w-4/5 bg-brand rounded-full" />
-                  </div>
-                </div>
-
-                {/* Status rows */}
-                <div className="space-y-2 text-xs">
-                  <div className="flex items-start gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-status-success-text mt-1.5 shrink-0" />
-                    <div>
-                      <span className="font-medium text-txt-primary">완료</span>
-                      <span className="text-txt-secondary ml-2">API 연동, 로그인 페이지</span>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-brand mt-1.5 shrink-0" />
-                    <div>
-                      <span className="font-medium text-txt-primary">진행중</span>
-                      <span className="text-txt-secondary ml-2">디자인 시안 리뷰, 대시보드 UI</span>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-status-danger-text mt-1.5 shrink-0" />
-                    <div>
-                      <span className="font-medium text-txt-primary">블로커</span>
-                      <span className="text-txt-secondary ml-2">없음</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Footer */}
-                <p className="text-[10px] text-txt-tertiary pt-2 border-t border-border">
-                  자동 생성 · 팀 대화 기반 요약
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* 실제 Discord 서버 스크린샷. 팀명·유저 정보는 블러 처리. */}
+      <div className="relative rounded-xl overflow-hidden border border-border shadow-sm bg-surface-card">
+        <Image
+          src="/landing/screenshots/07_discord_activity.png"
+          alt="Draft 팀 채널 — Discord 에 발행된 팀 업데이트"
+          width={2549}
+          height={1418}
+          className="w-full h-auto"
+          sizes="(min-width: 768px) 720px, 100vw"
+        />
       </div>
 
       <p className="text-xs text-txt-tertiary text-center">
-        실제 Discord 서버에서 이렇게 작동합니다.
+        실제 프로덕션 서버 캡처 · 개인정보 블러 처리
       </p>
-    </div>
-  )
-}
-
-/* ── Discord message helper ── */
-
-function DiscordMessage({
-  avatar,
-  name,
-  time,
-  message,
-}: {
-  avatar: string
-  name: string
-  time: string
-  message: string
-}) {
-  return (
-    <div className="flex items-start gap-3">
-      <div className="w-8 h-8 rounded-full bg-surface-sunken flex items-center justify-center shrink-0">
-        <span className="text-xs font-semibold text-txt-secondary">{avatar}</span>
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-baseline gap-2">
-          <span className="text-sm font-semibold text-txt-primary">{name}</span>
-          <span className="text-[10px] text-txt-tertiary">{time}</span>
-        </div>
-        <p className="text-sm text-txt-secondary mt-0.5">{message}</p>
-      </div>
     </div>
   )
 }
