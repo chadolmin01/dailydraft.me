@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { Shield, Lock, FileCheck2, AlertCircle, Database, Mail, Server, Sparkles } from 'lucide-react'
+import { Shield, Lock, FileCheck2, AlertCircle, Database, Mail, Server, Sparkles, Code } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: '신뢰 센터 · Draft',
@@ -117,6 +117,17 @@ export default function TrustCenterPage() {
       >
         <p>
           Threads 외부 발행 기능은 Meta Platform Terms 기준 App Review 절차를 거칩니다. 제출 대상 문서(use-case·compliance-attestation·security-architecture·reviewer-expectations) 은 내부적으로 작성되어 있고, 실사 단계에서 필요하시면 <LinkInline href="mailto:team@dailydraft.me?subject=Meta%20Review%20Docs" external>이메일 요청</LinkInline> 으로 개별 공유 드릴 수 있습니다.
+        </p>
+      </Section>
+
+      {/* 6.5 공개 API */}
+      <Section
+        id="public-api"
+        icon={Code}
+        title="공개 API 레퍼런스"
+      >
+        <p>
+          파트너·자동화 도구 빌더가 Draft 공개 데이터에 프로그래밍적으로 접근할 수 있는 엔드포인트를 <LinkInline href="/api-docs">공개 API 레퍼런스</LinkInline> 에 정리해두었습니다. 지표·인시던트·QR 생성·RSS 피드·검색 등 16개. 인증이 필요한 내부 API 는 별도 토큰 체계로 제공될 예정이며 기업 계약 단계에서 협의합니다.
         </p>
       </Section>
 
