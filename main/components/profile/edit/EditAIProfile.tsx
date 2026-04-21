@@ -37,6 +37,7 @@ function TagEditor({ label, tags, onChange, suggestions }: { label: string; tags
           className="flex-1 px-3 py-1.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
         />
         <button type="button" onClick={() => { add(input.trim()); setInput('') }}
+          aria-label="추가"
           className="px-2.5 py-1.5 text-sm border border-border text-txt-secondary hover:bg-surface-sunken transition-colors"
         ><Plus size={14} /></button>
       </div>
