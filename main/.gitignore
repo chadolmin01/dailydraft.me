@@ -45,6 +45,8 @@ nul
 *.png
 # Landing 실제 프로덕트 스크린샷은 공개 ship (블러 처리 완료본만)
 !public/landing/screenshots/*.png
+# 파트너십 별첨 문서용 스크린샷 — landing 본과 동일한 이미지 사본, docs 안에서 상대경로로 로드
+!docs/partnerships/screenshots/*.png
 
 # PWA (next-pwa build artifacts — regenerated on every build)
 public/sw.js
