@@ -33,7 +33,9 @@ export function ExploreClubGrid({
         <EmptyState
           icon={Building2}
           title="등록된 클럽이 없습니다"
-          description="클럽을 만들면 여기에 표시됩니다"
+          description="첫 번째 클럽을 만들어보세요"
+          actionLabel="클럽 만들기"
+          actionHref="/clubs/new"
         />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
