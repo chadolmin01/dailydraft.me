@@ -92,6 +92,12 @@ export const ROUTE_TITLES: Record<string, string> = {
   '/legal/privacy': '개인정보처리방침',
   '/legal/terms': '서비스 이용약관',
   '/legal/data-deletion': '데이터 삭제 요청',
+  '/legal/subprocessors': '수탁업체 목록',
+
+  // 추가 관리자 라우트
+  '/admin/metrics': '플랫폼 KPI · 관리자',
+  '/admin/incidents': '인시던트 · 관리자',
+  '/admin/platform-admins': '플랫폼 관리자',
 }
 
 const SORTED_ROUTES = Object.keys(ROUTE_TITLES).sort((a, b) => b.length - a.length)
