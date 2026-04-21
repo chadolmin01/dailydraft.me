@@ -104,6 +104,7 @@ export const ROUTE_TITLES: Record<string, string> = {
 
   // 추가 관리자 라우트
   '/admin/metrics': '플랫폼 KPI · 관리자',
+  '/admin/health': '헬스 모니터 · 관리자',
   '/admin/incidents': '인시던트 · 관리자',
   '/admin/platform-admins': '플랫폼 관리자',
 }

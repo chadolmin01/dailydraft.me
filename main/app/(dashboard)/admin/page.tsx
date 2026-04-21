@@ -138,6 +138,7 @@ export default function AdminHubPage() {
 
   const platformLinks = [
     { href: '/admin/metrics', label: 'KPI 대시보드', desc: '플랫폼 전체 지표 + 30일 trend', icon: BarChart3 },
+    { href: '/admin/health', label: '헬스 모니터', desc: '10초 폴링 · p50/p95/p99 응답 시간', icon: Activity },
     { href: '/admin/users', label: '사용자 관리', desc: '전체 사용자 조회·검색·삭제', icon: Users },
     { href: '/admin/opportunities', label: '프로젝트 관리', desc: '게시글 조회·필터·삭제', icon: Briefcase },
     { href: '/admin/institutions', label: '기관 관리', desc: '기관 CRUD·멤버 배정', icon: Building2 },
