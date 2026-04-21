@@ -781,6 +781,19 @@ a[class*="px-"]:active {
   animation: heartParticle 0.6s ease-out forwards;
 }
 
+/* ── View Transitions API (named: main) ──
+   dashboard/layout.tsx 의 <main> 에 viewTransitionName: 'main' 을 매치시킴.
+   지원 브라우저(Chrome/Edge) 에서 페이지 이동 시 main 영역만 크로스페이드 →
+   상단 Navbar·하단 TabBar 는 고정된 듯한 인상(shell stability). */
+@supports (view-transition-name: main) {
+  ::view-transition-old(main),
+  ::view-transition-new(main) {
+    animation-duration: 240ms;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    mix-blend-mode: normal;
+  }
+}
+
 /* ── Empty State Float ── */
 @keyframes emptyFloat {
   0%, 100% { transform: translateY(0); }
