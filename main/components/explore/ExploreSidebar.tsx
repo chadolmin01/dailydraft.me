@@ -3,7 +3,7 @@
 import React from 'react'
 import Image from 'next/image'
 import { ChevronRight, Rocket, Sparkles, User } from 'lucide-react'
-import Link from 'next/link'
+import { PrefetchLink as Link } from '@/components/ui/PrefetchLink'
 import { useAuth } from '@/src/context/AuthContext'
 import { useProfile } from '@/src/hooks/useProfile'
 import { positionLabel } from '@/src/constants/roles'
