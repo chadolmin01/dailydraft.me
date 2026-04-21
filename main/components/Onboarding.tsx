@@ -438,7 +438,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
 /* ─── Info Form ─── */
 
-const INPUT_CLASS = 'w-full px-4 py-3 bg-surface-card rounded-xl border border-border text-[14px] font-medium text-txt-primary focus:outline-none focus:border-surface-inverse transition-colors placeholder:text-txt-tertiary'
+const INPUT_CLASS = 'w-full px-4 py-3 bg-surface-card rounded-xl border border-border text-[14px] font-medium text-txt-primary focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors placeholder:text-txt-tertiary'
 
 function InfoContent({
   profile, aff, showUnivCombo, attempted, onChange, onSubmit,
