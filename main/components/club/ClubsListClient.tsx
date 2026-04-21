@@ -5,7 +5,7 @@ import { PrefetchLink as Link } from '@/components/ui/PrefetchLink'
 import Image from 'next/image'
 import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/src/context/AuthContext'
-import { Users, Plus, Search, Building2, GraduationCap, Sparkles } from 'lucide-react'
+import { Users, Plus, Search, Building2, GraduationCap, Sparkles, Loader2 } from 'lucide-react'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { SkeletonGrid } from '@/components/ui/Skeleton'
@@ -19,7 +19,7 @@ export default function ClubsListClient() {
   const [category, setCategory] = useState('전체')
   const [university, setUniversity] = useState<string | null>(null)
 
-  const { data: allClubs = [], isLoading, isError, refetch } = useQuery<ClubCard[]>({
+  const { data: allClubs = [], isLoading, isError, refetch, isFetching } = useQuery<ClubCard[]>({
     queryKey: ['clubs', 'list', category],
     queryFn: async () => {
       const params = new URLSearchParams({ limit: '50' })
@@ -31,6 +31,10 @@ export default function ClubsListClient() {
     },
     staleTime: 1000 * 60 * 2,
   })
+
+  // placeholderData(전역) + 이전 데이터 유지 상태를 시각화.
+  // isLoading=false AND isFetching=true 일 때 = "이전 카테고리 목록 보이면서 새 카테고리 fetch 중"
+  const isBackgroundRefetching = !isLoading && isFetching
 
   const { data: myClubs = [] } = useQuery<ClubCard[]>({
     queryKey: ['clubs', 'my', user?.id],
@@ -144,18 +148,23 @@ export default function ClubsListClient() {
         </div>
 
         {/* 카테고리 필터 */}
-        <div className="flex gap-2 mb-3 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+        <div className="flex gap-2 mb-3 overflow-x-auto items-center" style={{ scrollbarWidth: 'none' }}>
           {CATEGORIES.map(c => (
             <button
               key={c}
               onClick={() => setCategory(c)}
-              className={`shrink-0 px-3.5 py-1.5 text-[13px] font-medium rounded-full border transition-colors ${
+              className={`shrink-0 px-3.5 py-1.5 text-[13px] font-medium rounded-full border transition-colors inline-flex items-center gap-1.5 ${
                 category === c
                   ? 'bg-surface-inverse text-txt-inverse border-surface-inverse'
                   : 'text-txt-secondary border-border bg-surface-card hover:border-txt-tertiary'
               }`}
+              aria-busy={category === c && isBackgroundRefetching}
             >
               {c}
+              {/* 활성 탭 옆 tiny spinner — placeholderData 로 이전 목록 유지한 채 새로 fetch 중 */}
+              {category === c && isBackgroundRefetching && (
+                <Loader2 size={10} className="animate-spin shrink-0 opacity-70" aria-hidden="true" />
+              )}
             </button>
           ))}
         </div>

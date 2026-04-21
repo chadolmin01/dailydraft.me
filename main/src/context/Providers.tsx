@@ -113,6 +113,14 @@ export function Providers({ children, initialUser }: { children: React.ReactNode
               return failureCount < 3
             },
             retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
+            // queryKey 변경 시(필터/탭 전환) 이전 데이터를 유지하면서 백그라운드에서 새 데이터 fetch.
+            // `isLoading=false, isFetching=true` 상태 활용 가능 — 전체 skeleton flash 대신 subtle
+            // 인디케이터 표시 가능. React Query v5 의 keepPreviousData 와 동일 동작.
+            // 사이드 이펙트:
+            //   - 카테고리 탭 전환 시 이전 카테고리 목록이 잠깐 보임 (< 200ms) → 부드러운 전환
+            //   - mutate 후 invalidate 시에도 이전 값 유지 — 새 값 직접 옵티미스틱 업데이트 시 문제 없음
+            //   - enabled 토글로 시작되는 쿼리는 이전 데이터 없음이므로 정상 로딩
+            placeholderData: (previousData: unknown) => previousData,
           },
           mutations: {
             onError: (error) => {
