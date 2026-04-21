@@ -24,6 +24,24 @@ export interface ChangelogEntry {
 export const CHANGELOG: ChangelogEntry[] = [
   {
     date: '2026-04-22',
+    version: 'v0.22',
+    items: [
+      { type: 'feature', title: '엔터프라이즈 도입 페이지 /enterprise', note: '8개 기능 카드 + 4단계 도입 절차 + 가격 협의 + FAQ 4개.' },
+      { type: 'feature', title: '법적 고지 모음 /legal 인덱스 + 3종 신규 페이지', note: '/legal/subprocessors (수탁업체 12곳) · /legal/retention (보관·파기 12유형) · /legal/cookies (쿠키 전수). PIPA·DPA 대응.' },
+      { type: 'feature', title: '/security · /accessibility · /contact · /about · /press · /brand · /stats · /maintenance', note: '외부 공개 라우트 8종 신설. 엔터프라이즈 실사·언론·파트너십 진입점.' },
+      { type: 'feature', title: '/admin/metrics + /admin/health 내부 대시보드', note: 'KPI 30일 trend SVG 스파크라인 + 10초 폴링 p50/p95/p99 레이턴시.' },
+      { type: 'feature', title: '/status/feed.xml Atom 인시던트 피드', note: '엔터프라이즈 모니터링 도구가 Draft 인시던트 자동 구독 가능.' },
+      { type: 'feature', title: '/api/admin/audit/export CSV + 역감사', note: '감사 로그 반출 자체도 audit_logs 에 기록. 10,000 rows 한도.' },
+      { type: 'security', title: 'CSP report-uri + /api/csp-report', note: 'CSP 위반이 PostHog 로 자동 수집. 보안 이벤트 관측 체계.' },
+      { type: 'security', title: 'AI 크롤러 전면 차단 (robots.ts)', note: 'GPTBot·ChatGPT-User·CCBot·anthropic-ai·Claude-Web·Google-Extended·PerplexityBot·Bytespider.' },
+      { type: 'improvement', title: 'Footer 5컬럼 재구성', note: '법적 컬럼 독립 · 연락 컬럼 신설 · 신규 정책 페이지 전수 노출.' },
+      { type: 'improvement', title: '404·error 페이지 폴리시', note: '빠른 진입 4개 + /status 전역 장애 링크 + [Bug] mailto.' },
+      { type: 'improvement', title: 'PWA manifest + JSON-LD ContactPoint', note: 'shortcuts 4종 · orientation · customer/technical/security 연락처 선언.' },
+      { type: 'docs', title: 'humans.txt · ads.txt · opensearch.xml', note: '브랜드 신뢰 신호 + 브라우저 주소창 검색엔진 등록.' },
+    ],
+  },
+  {
+    date: '2026-04-22',
     version: 'v0.21',
     items: [
       { type: 'feature', title: '전역 Cmd+K 커맨드 팔레트', note: '어디서든 프로젝트·사람·클럽 통합 검색. cmdk 기반, 300ms 디바운스·Promise.allSettled 병렬 조회.' },
