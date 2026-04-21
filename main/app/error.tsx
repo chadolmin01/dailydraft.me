@@ -60,6 +60,22 @@ export default function GlobalError({
               홈으로
             </Link>
           </div>
+
+          <div className="mt-6 pt-5 border-t border-border text-[11px] text-txt-tertiary space-y-1">
+            <p>
+              전역 장애가 의심되면{' '}
+              <Link href="/status" className="text-brand underline">
+                시스템 상태
+              </Link>{' '}
+              페이지를 확인해 주세요.
+            </p>
+            <p>
+              계속 발생하면 문제 신고:{' '}
+              <a href="mailto:team@dailydraft.me?subject=%5BBug%5D" className="text-brand underline">
+                team@dailydraft.me
+              </a>
+            </p>
+          </div>
         </div>
       </div>
     </div>
