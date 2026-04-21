@@ -122,6 +122,8 @@ function addSecurityHeaders(response: NextResponse, allowEmbed = false) {
       `frame-ancestors 'none'`,
       `base-uri 'self'`,
       `form-action 'self'`,
+      // CSP 위반 리포트 — 브라우저가 여기로 application/csp-report POST
+      `report-uri /api/csp-report`,
     ].join('; ')
   )
   return response
@@ -139,6 +141,9 @@ async function middlewareImpl(request: NextRequest): Promise<NextResponse> {
     '/api/webhooks/',
     '/api/oauth/threads/deauthorize',
     '/api/oauth/threads/data-deletion',
+    // 브라우저 자체가 발송 — origin 없음. HMAC 불필요 (송신자 = 자체 브라우저),
+    // 엔드포인트 내부에서 body 크기 제한 + 204 응답으로 방어.
+    '/api/csp-report',
   ]
   const isCsrfExempt = csrfExemptPaths.some(p => pathname.startsWith(p))
 
