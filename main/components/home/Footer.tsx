@@ -16,9 +16,11 @@ const footerLinks: Record<string, FooterLink[]> = {
     { label: '학교·기관', href: '#institutions' },
     { label: '자주 묻는 질문', href: '/help' },
     { label: '릴리스 노트', href: '/changelog' },
+    { label: '로드맵', href: '/roadmap' },
   ],
   '신뢰·투명성': [
     // SLO target 은 실측이 아니라 목표치이므로 "target" 명시 — oversell 방지
+    { label: '신뢰 센터', href: '/trust' },
     { label: '시스템 상태', href: '/status', badge: '99.9% target' },
     // Meta App Review 제출 URL 과 일치시킴 (/legal/ 경로). 기존 /privacy·/terms 는 별도 라우트 그룹에
     // 남아있고 호환용으로 유지되나, 공식 공개 링크는 /legal/* 로 통일해서 리뷰 시 혼선 방지.
