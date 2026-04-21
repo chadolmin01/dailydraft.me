@@ -117,10 +117,27 @@ main/
 내부 팀 전용 저장소. 외부 기여는 현재 받지 않습니다.  
 취약점 신고: [SECURITY.md](./SECURITY.md) 참조.
 
+## 엔터프라이즈·기관 실사 공개 자료
+
+학교·기관 파트너십 검토 또는 법무·보안 실사 단계에서 먼저 찾아보실 수 있는 공개 URL:
+
+- [/trust](https://dailydraft.me/trust) — 통합 신뢰 센터 (SLO·개인정보·보안·약관·API·실사자료 요청)
+- [/status](https://dailydraft.me/status) — 시스템 상태 + SLO 5종 + 최근 30일 인시던트
+- [/changelog](https://dailydraft.me/changelog) — 공개 릴리스 노트 (Atom 피드 `/changelog/feed.xml`)
+- [/roadmap](https://dailydraft.me/roadmap) — 분기별 로드맵 (Atom 피드 `/roadmap/feed.xml`)
+- [/help](https://dailydraft.me/help) — 자주 묻는 질문
+- [/api-docs](https://dailydraft.me/api-docs) — 공개 API 레퍼런스
+- [/.well-known/security.txt](https://dailydraft.me/.well-known/security.txt) — RFC 9116 보안 제보 경로
+- [/legal/privacy](https://dailydraft.me/legal/privacy) · [/legal/terms](https://dailydraft.me/legal/terms) · [/legal/data-deletion](https://dailydraft.me/legal/data-deletion)
+
+보다 상세한 실사 자료(RoPA·보안 아키텍처 dossier·침입 시험 결과 등)는 [team@dailydraft.me](mailto:team@dailydraft.me?subject=Due%20Diligence%20Docs) 로 요청 주시면 개별 공유 드립니다.
+
 ## 관련 문서
 
 - [ACCESS_POLICY.md](./docs/ACCESS_POLICY.md) — 라우트 접근 tier
 - [DEPLOYMENT_CHECKLIST.md](./DEPLOYMENT_CHECKLIST.md) — 배포 점검
+- [SECURITY.md](./SECURITY.md) — 보안 정책·제보 경로
+- [docs/meta-app-review/](./docs/meta-app-review/) — Meta App Review 제출 패키지
 
 ---
 
