@@ -62,6 +62,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/explore`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.8 },
     { url: `${baseUrl}/recruit`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
     { url: `${baseUrl}/guide`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${baseUrl}/help`, lastModified: new Date('2026-04-22'), changeFrequency: 'weekly', priority: 0.7 },
     { url: `${baseUrl}/login`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.3 },
     // 법적 고지 (Meta App Review 제출 URL — 공개 접근 필수, 검색 노출 허용)
     { url: `${baseUrl}/legal/privacy`, lastModified: new Date('2026-04-21'), changeFrequency: 'monthly', priority: 0.4 },

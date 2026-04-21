@@ -74,6 +74,7 @@ export const ROUTE_TITLES: Record<string, string> = {
   '/landing': 'Draft',
   '/login': '로그인',
   '/guide': '가이드',
+  '/help': '자주 묻는 질문',
   '/recruit': 'Draft 1기 모집',
   '/idea-validator': '아이디어 검증',
 
