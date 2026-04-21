@@ -35,6 +35,7 @@ export const Navbar: React.FC = () => {
     { href: '#features', label: '기능' },
     { href: '#use-cases', label: '사례' },
     { href: '#pricing', label: '가격' },
+    { href: '/enterprise', label: '기관' },
   ]
 
   return (
