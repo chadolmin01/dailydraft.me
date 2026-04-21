@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { Card } from '@/components/ui/Card';
 
 export default function IdeatePage() {
@@ -22,12 +23,12 @@ export default function IdeatePage() {
       </Card>
 
       <div className="flex justify-end">
-        <a
+        <Link
           href="/project/plan"
           className="px-6 py-2.5 bg-surface-inverse text-txt-inverse text-sm font-medium border border-surface-inverse hover:bg-surface-inverse/90 transition-colors hover:opacity-90 active:scale-[0.97]"
         >
           다음: Plan &rarr;
-        </a>
+        </Link>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { Role, RoleInputData, AnalysisResult, LogEntry } from '@/types';
 import InputSection from '@/components/InputSection';
 import TriangleVisual from '@/components/TriangleVisual';
@@ -274,13 +275,13 @@ export default function PlanPage() {
 
       {/* Navigation */}
       <div className="flex justify-between pt-4 border-t border-border">
-        <a
+        <Link
           href="/project/ideate"
           className="px-6 py-2.5 border border-border text-txt-secondary text-sm font-medium hover:bg-black hover:text-white transition-colors"
         >
           &larr; 이전: Ideate
-        </a>
-        <a
+        </Link>
+        <Link
           href="/project/build"
           className={`px-6 py-2.5 text-sm font-medium transition-colors ${
             hasInitialSynthesis
@@ -289,7 +290,7 @@ export default function PlanPage() {
           }`}
         >
           다음: Build &rarr;
-        </a>
+        </Link>
       </div>
     </div>
   );
