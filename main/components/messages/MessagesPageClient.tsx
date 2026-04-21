@@ -265,7 +265,7 @@ function MessagesPageInner() {
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   placeholder="이름으로 검색..."
-                  className="w-full pl-9 pr-3 py-2 text-base sm:text-sm border border-border bg-surface-bg focus:outline-none focus:border-accent transition-colors rounded-xl"
+                  className="w-full pl-9 pr-3 py-2 text-base sm:text-sm border border-border bg-surface-bg focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors rounded-xl"
                 />
               </div>
             </div>
@@ -484,7 +484,7 @@ function MessagesPageInner() {
                       placeholder="쪽지를 입력하세요... (Shift+Enter로 줄바꿈)"
                       maxLength={2000}
                       rows={1}
-                      className="flex-1 px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-bg focus:outline-none focus:border-accent transition-colors rounded-xl resize-none leading-relaxed"
+                      className="flex-1 px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-bg focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors rounded-xl resize-none leading-relaxed"
                       style={{ maxHeight: 160 }}
                     />
                     <button
