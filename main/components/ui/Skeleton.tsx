@@ -46,12 +46,18 @@ function SkeletonCard({ rows = 3 }: { rows?: number }) {
   )
 }
 
-/** Grid of card skeletons */
+/** Grid of card skeletons — 카드마다 60ms stagger 로 계단식 등장 */
 function SkeletonGrid({ count = 4, cols = 2 }: { count?: number; cols?: number }) {
   return (
     <div className={`grid gap-4 skeleton-delayed ${cols === 1 ? 'grid-cols-1' : cols === 3 ? 'grid-cols-1 md:grid-cols-3' : 'grid-cols-1 md:grid-cols-2'}`}>
       {Array.from({ length: count }).map((_, i) => (
-        <SkeletonCard key={i} />
+        <div
+          key={i}
+          style={{ animationDelay: `${i * 60}ms` }}
+          className="skeleton-delayed"
+        >
+          <SkeletonCard />
+        </div>
       ))}
     </div>
   )
@@ -97,7 +103,11 @@ function SkeletonFeed({ count = 3 }: { count?: number }) {
   return (
     <div className="space-y-4 skeleton-delayed">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="bg-surface-card rounded-xl border border-border p-4">
+        <div
+          key={i}
+          style={{ animationDelay: `${i * 60}ms` }}
+          className="skeleton-delayed bg-surface-card rounded-xl border border-border p-4"
+        >
           <div className="flex items-center gap-3 mb-3">
             <Skeleton className="w-10 h-10 rounded-full shrink-0" />
             <div className="flex-1 space-y-1.5">
