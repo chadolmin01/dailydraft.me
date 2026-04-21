@@ -21,28 +21,30 @@ Across every source reviewed, three factors dominate approval outcomes:
 2. **Demo video completeness** — the screencast is the reviewer's only guided tour of the app. "Meta reviewers do not explore your app on their own — the screencast is their primary reference" (PostMoore). It must show the full flow: login → OAuth consent → permission use → outcome.
 3. **Privacy / data-deletion plumbing** — missing Data Deletion Callback, Deauthorize Callback, or a public deletion-instructions URL is a mechanical rejection. "Apps cannot be submitted for Review and switched to Live mode without implementing it" (Data Deletion Callback — developers.facebook.com).
 
-### 1.2 Draft readiness self-assessment: **6.5 / 10**
+### 1.2 Draft readiness self-assessment: **9.0 / 10** (updated 2026-04-21 post-Bundles A–K)
 
 Breakdown (1-10 per axis, equal weight):
 
 | Axis | Score | Evidence |
 |---|---|---|
 | Use-case clarity (written) | 9 | `use-case.md` §2-4 names primary user, enumerates 3 concrete scenarios, maps each permission to exactly one call. |
-| Demo video plan | 8 | `demo-video-script.md` covers login → OAuth consent (3s freeze on scope screen) → human approval → publish → disconnect. |
-| Privacy policy content | 7 | `privacy-policy-checklist.md` specifies all 7 required clauses, but the actual `/legal/privacy` page does **not yet exist** (gap G-1 below). |
-| Data deletion path | 6 | Page content is specified but the `/legal/data-deletion` route is **not yet deployed** (gap G-1). |
-| Deauthorize + Data Deletion callbacks | **3** | No evidence these webhook endpoints exist in `app/api/oauth/threads/` (gap G-2, blocker). |
-| Human-in-the-loop evidence | 8 | Two-click approval (approve + confirm modal) is scripted in demo §5; `is_copy_only` flag in DB is a second layer. |
-| Spam-prevention posture | 6 | Rate limits and approval state machine are described but not yet quantified in submission (gap G-3). |
-| Technical robustness (live app) | 7 | Production on Vercel, HTTPS, prod env vars documented; but app is still in Dev Mode until approval. |
+| Demo video plan | 8 | `demo-video-script.md` covers login → OAuth consent (3s freeze on scope screen) → human approval → publish → disconnect. Broadcast-grade shot list at 22 shots / 3:30 runtime. |
+| Privacy policy content | **10** | `/legal/privacy` live on `main` (HTTP 200), 14 sections including Meta-specific §11. Verified by curl. |
+| Data deletion path | **10** | `/legal/data-deletion` live on `main` (HTTP 200), 3 deletion paths + FAQ. `/me/data` PIPA data-subject page also live. |
+| Deauthorize + Data Deletion callbacks | **10** | Both endpoints live on `main` — `/api/oauth/threads/deauthorize` and `/api/oauth/threads/data-deletion` (+ `/status` sub-route). HMAC-SHA256 signed_request verification via `src/lib/personas/meta-signed-request.ts` with timing-safe compare. CSRF middleware exemption verified — 400 on invalid signature (not 403). |
+| Human-in-the-loop evidence | 8 | Two-click approval (approve + confirm modal) scripted in demo §5; `is_copy_only` flag in DB is second layer. |
+| Spam-prevention posture | 9 | Rate limits on OAuth routes (IP-based), in-process API rate limiter per-plan, per-persona daily cap, approval state machine. Quantified in use-case submission. |
+| Technical robustness (live app) | 10 | Production on Vercel, HTTPS, HSTS + security headers, Dependabot + secret-scan CI, E2E smoke tests on hourly schedule, SLO page public. App stays in Dev Mode until approval. |
 
-Weighted average = 6.75, rounded to 6.5 to reflect the two blocking gaps (G-1, G-2) that would cause a mechanical rejection today.
+Weighted average = 9.25; rounded to **9.0** to leave room for two non-blocking residual factors: (a) third-party penetration test (Q3 2026), (b) actual demo video recording (user action pending, not a code gap).
 
-### 1.3 Must-fix before submission (top 3 gaps)
+### 1.3 Residual items before submission
 
-- **G-1 (blocker)**: `/legal/privacy`, `/legal/terms`, `/legal/data-deletion` routes must actually exist and return 200 to anonymous traffic. `privacy-policy-checklist.md` §"현재 Draft 상태 감사 결과" already flags this.
-- **G-2 (blocker)**: Deauthorize Callback URL and Data Deletion Request Callback URL must be implemented as HMAC-SHA256 verifying webhooks and registered in the App Dashboard. These are separate from the user-facing data-deletion page.
-- **G-3 (strong recommendation)**: Quantify rate limiting in the use-case submission — numeric caps per persona per day, per-club daily ceiling, and the enforcement location in code. Reviewers flag "feels like spam" whenever these numbers are absent.
+- **Reviewer test account provisioning** — run `scripts/provision-reviewer-account.mjs --ticket <META-ID>` once Meta ticket assigned. Password goes to the Meta form's "Test User Credentials" field.
+- **Demo video recording** — follow `docs/meta-app-review/demo-video-script.md`. Xbox Game Bar (Win+G) or OBS are both acceptable. OAuth consent segment requires manual capture (15 s).
+- **Meta App Dashboard URL registration** — three URLs (OAuth Redirect, Deauthorize Callback, Data Deletion Request Callback) saved in the dashboard Settings.
+
+All code-side gaps named in prior drafts (G-1 legal pages, G-2 webhooks, G-3 rate-limit quantification) are resolved on `main` as of 2026-04-21.
 
 ---
 
