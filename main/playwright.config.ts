@@ -16,8 +16,12 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
+  // CI 에서는 rate limit 충돌 (동일 IP 병렬 호출 시 /api/oauth/threads/start 가 429) 을 막기 위해 단일 워커.
   workers: process.env.CI ? 1 : undefined,
-  reporter: process.env.CI ? 'github' : 'list',
+  // CI: GitHub 요약 + html(아티팩트 업로드용). 로컬: list.
+  reporter: process.env.CI
+    ? [['github'], ['html', { open: 'never', outputFolder: 'playwright-report' }]]
+    : 'list',
   use: {
     baseURL: process.env.E2E_BASE_URL ?? 'http://localhost:3000',
     trace: 'on-first-retry',

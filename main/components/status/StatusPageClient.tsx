@@ -108,6 +108,38 @@ export function StatusPageClient() {
             </div>
           </section>
 
+          {/* SLO / 목표치 — 엔터프라이즈 실사 대응 공개 지표 */}
+          <section className="space-y-3">
+            <h2 className="text-[13px] font-semibold text-txt-tertiary uppercase tracking-wider">
+              서비스 수준 목표 (SLO)
+            </h2>
+            <div className="bg-surface-card border border-border rounded-xl divide-y divide-border">
+              <SloRow label="가용성 (Uptime)" target="99.9%" description="월간 누적, 계획 유지보수 제외" />
+              <SloRow label="P95 API 응답" target="< 800ms" description="/api/* 경로, 콜드 스타트 제외" />
+              <SloRow label="인시던트 복구 (RTO)" target="< 4시간" description="서비스 등급 SEV-0·SEV-1 기준" />
+              <SloRow label="데이터 손실 허용 (RPO)" target="< 24시간" description="Supabase 자동 백업 주기" />
+              <SloRow label="보안 이슈 초기 응답" target="< 72시간" description="공개 또는 비공개 디스클로저 수령 시점부터" />
+            </div>
+          </section>
+
+          {/* 인시던트 이력 — 공개 투명성 */}
+          <section className="space-y-3">
+            <h2 className="text-[13px] font-semibold text-txt-tertiary uppercase tracking-wider">
+              최근 30일 인시던트
+            </h2>
+            <div className="bg-surface-card border border-border rounded-xl p-5 flex items-center gap-3">
+              <CheckCircle2 size={18} className="text-brand shrink-0" />
+              <div className="flex-1">
+                <p className="text-[13px] font-semibold text-txt-primary">
+                  공개된 인시던트 없음
+                </p>
+                <p className="text-[11px] text-txt-tertiary mt-0.5">
+                  SEV-0·SEV-1 등급 장애가 발생하면 이 섹션에서 타임라인·원인·후속 조치를 공개합니다.
+                </p>
+              </div>
+            </div>
+          </section>
+
           {/* 메타 */}
           <footer className="text-[11px] text-txt-tertiary font-mono flex flex-wrap items-center gap-x-4 gap-y-1 pt-4 border-t border-border">
             <span>릴리스: {state.data.release}</span>
@@ -118,12 +150,32 @@ export function StatusPageClient() {
       )}
 
       {/* 연락처 */}
-      <section className="text-[12px] text-txt-tertiary pt-4">
+      <section className="text-[12px] text-txt-tertiary pt-4 space-y-1">
         <p>
-          장애 관련 문의: <a href="mailto:ops@dailydraft.me" className="text-brand underline">ops@dailydraft.me</a>
+          장애·보안 관련 문의:{' '}
+          <a href="mailto:team@dailydraft.me" className="text-brand underline">
+            team@dailydraft.me
+          </a>
+        </p>
+        <p>
+          응답 SLA: 영업일 기준 72시간 이내 초기 응답, 심각도 SEV-0·SEV-1 사안은 24시간 이내.
         </p>
       </section>
     </article>
+  )
+}
+
+function SloRow({ label, target, description }: { label: string; target: string; description: string }) {
+  return (
+    <div className="p-4 flex items-start gap-4">
+      <div className="flex-1 min-w-0">
+        <div className="text-[13px] font-semibold text-txt-primary">{label}</div>
+        <div className="text-[11px] text-txt-tertiary mt-0.5">{description}</div>
+      </div>
+      <div className="text-[13px] font-mono font-bold text-brand tabular-nums shrink-0">
+        {target}
+      </div>
+    </div>
   )
 }
 

@@ -8,6 +8,7 @@ import { PersonaEngine } from '@/components/home/PersonaEngine'
 import { DemoTabs } from '@/components/home/DemoTabs'
 import { HowItWorks } from '@/components/home/HowItWorks'
 import { Scenarios } from '@/components/home/Scenarios'
+import { InstitutionCTA } from '@/components/home/InstitutionCTA'
 import { Pricing } from '@/components/home/Pricing'
 import { SecuritySection } from '@/components/home/SecuritySection'
 import { FAQ } from '@/components/home/FAQ'
@@ -25,10 +26,11 @@ import { Footer } from '@/components/home/Footer'
  * 6. DemoTabs        → 실기능 탐색 (이후 Phase C 에서 통합 예정)
  * 7. HowItWorks      → 3분 셋업 신뢰
  * 8. Scenarios       → 특정 오디언스 공감 (동아리 타입별)
- * 9. Pricing         → 전환 (+ 기관 문의)
- * 10. SecuritySection → 엔터프라이즈 신뢰 신호
- * 11. FAQ            → 마지막 장벽 제거
- * 12. FinalCTA       → 행동 전환
+ * 9. InstitutionCTA  → 학교·기관(B2B) 전용 CTA — Pricing 직전에 배치해 기관 오디언스 분기
+ * 10. Pricing         → 전환 (+ 기관 문의)
+ * 11. SecuritySection → 엔터프라이즈 신뢰 신호
+ * 12. FAQ            → 마지막 장벽 제거
+ * 13. FinalCTA       → 행동 전환
  */
 export default function HomePageClient() {
   return (
@@ -44,6 +46,7 @@ export default function HomePageClient() {
         <DemoTabs />
         <HowItWorks />
         <Scenarios />
+        <InstitutionCTA />
         <Pricing />
         <SecuritySection />
         <FAQ />

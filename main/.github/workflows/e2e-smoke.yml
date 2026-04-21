@@ -1,0 +1,73 @@
+name: E2E Smoke (prod)
+
+# 트리거 설계:
+#   - workflow_dispatch: 운영자가 수동으로 돌리고 싶을 때 (예: 배포 직후 즉시 확인)
+#   - schedule: 매시간 정각 — Vercel 배포 이벤트를 직접 받는 게 복잡하므로 주기 폴링으로 시작.
+#     CI 쿼터 보호 차원에서 매시간이 상한. 필요시 30분 등으로 조정.
+#   - push to main: 머지되면 곧바로 한 번 검증 (배포 완료를 90초 대기하는 sleep 포함).
+#     주의: Vercel 배포 시간이 1~2분 초과하는 경우 실패할 수 있음 — 실패해도 schedule 이 catch.
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: 'E2E_BASE_URL override (default: secrets.E2E_BASE_URL or https://dailydraft.me)'
+        required: false
+        type: string
+  schedule:
+    # UTC 기준 매시간 정각 (KST 매시간 +09:00)
+    - cron: '0 * * * *'
+  push:
+    branches: [main]
+
+jobs:
+  smoke:
+    name: Playwright smoke (chromium)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: main
+    env:
+      # 우선순위: workflow_dispatch input > secrets.E2E_BASE_URL > 기본값.
+      E2E_BASE_URL: ${{ github.event.inputs.base_url || secrets.E2E_BASE_URL || 'https://dailydraft.me' }}
+      CI: 'true'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+          cache-dependency-path: main/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers (chromium only)
+        run: pnpm exec playwright install --with-deps chromium
+
+      # push to main 일 때만: Vercel 배포 완료를 기다려야 함. 정확한 배포 API 대신 간단히 sleep.
+      # 실패해도 30분마다 돌아가는 schedule 이 다시 잡는다.
+      - name: Wait for deployment propagation
+        if: github.event_name == 'push'
+        run: sleep 90
+
+      - name: Run smoke tests
+        run: pnpm exec playwright test tests/e2e/smoke.spec.ts --project=chromium
+
+      - name: Upload HTML report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ github.run_id }}
+          path: main/playwright-report/
+          retention-days: 14
+          if-no-files-found: ignore
