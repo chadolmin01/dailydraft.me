@@ -97,6 +97,7 @@ export const ROUTE_TITLES: Record<string, string> = {
   '/about': 'Draft 소개',
   '/press': '프레스킷',
   '/brand': '브랜드 가이드라인',
+  '/maintenance': '점검 중',
   '/legal/privacy': '개인정보처리방침',
   '/legal/terms': '서비스 이용약관',
   '/legal/data-deletion': '데이터 삭제 요청',
