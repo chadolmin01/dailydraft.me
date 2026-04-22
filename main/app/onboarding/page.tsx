@@ -2,8 +2,9 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { CheckCircle2, Loader2, Sparkles, ArrowRight } from 'lucide-react'
+import { CheckCircle2, Loader2, Sparkles, ArrowRight, AlertCircle } from 'lucide-react'
 import { Onboarding } from '@/components/Onboarding'
+import { OfflineBanner } from '@/components/onboarding/OfflineBanner'
 import type { ProfileDraft } from '@/src/lib/onboarding/types'
 
 /** Preload critical onboarding SVGs — browser fetches before React renders */
@@ -66,33 +67,53 @@ export default function OnboardingPage() {
   }, [phase])
 
   // 유입 경로별 완료 후 landing 결정
+  const [landingError, setLandingError] = useState<string | null>(null)
+  const [landingBusy, setLandingBusy] = useState(false)
+
   const goToPathLanding = useCallback(async () => {
     const source = completedDraft?.source
     const code = completedDraft?.inviteCode
-    if (source === 'invite' && code) {
-      // 초대 코드로 바로 클럽 가입 시도. 성공하면 클럽 홈, 실패하면 GuideCTA 가 있는 dashboard.
-      try {
-        const res = await fetch('/api/clubs/join-by-code', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ code }),
-        })
-        const body = await res.json().catch(() => ({}))
-        const slug = body?.data?.club_slug as string | undefined
-        if (res.ok && slug) {
-          router.push(`/clubs/${slug}`)
-          return
+    setLandingError(null)
+    setLandingBusy(true)
+    try {
+      if (source === 'invite' && code) {
+        // 초대 코드로 바로 클럽 가입 시도.
+        try {
+          const res = await fetch('/api/clubs/join-by-code', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code }),
+          })
+          const body = await res.json().catch(() => ({}))
+          const slug = body?.data?.club_slug as string | undefined
+          if (res.ok && slug) {
+            router.push(`/clubs/${slug}`)
+            return
+          }
+          // 서버가 200 이지만 slug 없음 → 대시보드로 fallback, 배너로 안내
+          const serverMsg = (body?.error?.message as string | undefined)
+          setLandingError(
+            serverMsg ??
+              '초대 코드 확인에 시간이 걸리고 있습니다. 대시보드에서 바로 연결해 드릴게요.',
+          )
+        } catch {
+          setLandingError(
+            '네트워크가 불안정해 초대 코드를 지금 처리하지 못했습니다. 대시보드에서 재시도하실 수 있습니다.',
+          )
         }
-      } catch {
-        // network 오류 — dashboard 에서 GuideCTA 로 재시도
+        // invite 실패해도 dashboard 로 가서 GuideCTA invite landing 으로 이어짐
+        router.push('/dashboard')
+        return
       }
+      if (source === 'operator') {
+        router.push('/clubs/new')
+        return
+      }
+      // matching / exploring / 기타 모두 대시보드 GuideCTA 로
+      router.push('/dashboard')
+    } finally {
+      setLandingBusy(false)
     }
-    if (source === 'operator') {
-      router.push('/clubs/new')
-      return
-    }
-    // matching / exploring / 기타 모두 대시보드 GuideCTA 로
-    router.push('/dashboard')
   }, [completedDraft, router])
 
   // SVG 프리로드 대기 화면
@@ -144,65 +165,93 @@ export default function OnboardingPage() {
     const source = completedDraft?.source
     const isMatching = source === 'matching'
     return (
-      <div className="fixed inset-0 bg-surface-bg flex flex-col items-center justify-center p-6">
-        <div className="w-full max-w-md flex flex-col items-center animate-in fade-in duration-300">
-          <div
-            className="w-16 h-16 rounded-full bg-brand-bg flex items-center justify-center mb-6"
-            style={{ animation: 'ob-bubble-in 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) both' }}
-          >
-            <Sparkles size={28} className="text-brand" />
-          </div>
-          <h2 className="text-[20px] sm:text-[22px] font-bold text-txt-primary text-center mb-2">
-            {isMatching
-              ? '2분 대화로 매칭 정확도를 높여 보시겠어요?'
-              : '기본 정보를 저장했습니다'}
-          </h2>
-          <p className="text-[13px] text-txt-secondary text-center leading-relaxed mb-8 break-keep max-w-sm">
-            {isMatching
-              ? '작업 스타일·협업 성향 7가지 질문을 받아 팀원 추천 정확도를 올려 드립니다. 지금 건너뛰시고 나중에 프로필에서 언제든 진행하셔도 됩니다.'
-              : '원하시면 2분 대화로 매칭 정확도를 올릴 수도 있지만, 지금은 필요하지 않다면 바로 시작하셔도 됩니다.'}
-          </p>
-          <div className="w-full space-y-2.5">
-            <button
-              type="button"
-              onClick={() => {
-                if (isMatching) {
-                  router.push('/onboarding/interview')
-                } else {
-                  goToPathLanding()
-                }
-              }}
-              className="w-full flex items-center justify-center gap-2 py-4 bg-surface-inverse text-txt-inverse rounded-full text-[15px] font-black hover:opacity-90 active:scale-[0.97] transition-all"
+      <>
+        <OfflineBanner />
+        <div className="fixed inset-0 bg-surface-bg flex flex-col items-center justify-center p-6">
+          <div className="w-full max-w-md flex flex-col items-center animate-in fade-in duration-300">
+            <div
+              className="w-16 h-16 rounded-full bg-brand-bg flex items-center justify-center mb-6"
+              style={{ animation: 'ob-bubble-in 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) both' }}
             >
-              {isMatching ? <Sparkles size={15} /> : <ArrowRight size={15} />}
-              {isMatching ? 'AI 인터뷰 진행하기' : '바로 시작하기'}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                if (isMatching) {
-                  // matching 경로에서 "지금은 건너뛰기" 선택 → 대시보드로
-                  goToPathLanding()
-                } else {
-                  // 비매칭 경로에서 인터뷰 선택 → interview 페이지
-                  router.push('/onboarding/interview')
-                }
-              }}
-              className="w-full flex items-center justify-center gap-2 py-3.5 bg-surface-sunken text-txt-secondary rounded-full text-[14px] font-bold hover:bg-surface-card hover:text-txt-primary transition-all"
-            >
-              {isMatching ? '지금은 건너뛰기' : 'AI 인터뷰 먼저 하기 (2분)'}
-            </button>
+              <Sparkles size={28} className="text-brand" aria-hidden="true" />
+            </div>
+            <h2 className="text-[20px] sm:text-[22px] font-bold text-txt-primary text-center mb-2">
+              {isMatching
+                ? '2분 대화로 매칭 정확도를 높여 보시겠어요?'
+                : '기본 정보를 저장했습니다'}
+            </h2>
+            <p className="text-[13px] text-txt-secondary text-center leading-relaxed mb-6 break-keep max-w-sm">
+              {isMatching
+                ? '작업 스타일·협업 성향 7가지 질문을 받아 팀원 추천 정확도를 올려 드립니다. 지금 건너뛰시고 나중에 프로필에서 언제든 진행하셔도 됩니다.'
+                : '원하시면 2분 대화로 매칭 정확도를 올릴 수도 있지만, 지금은 필요하지 않다면 바로 시작하셔도 됩니다.'}
+            </p>
+
+            {/* 초대 코드 처리 실패·연결 이슈 안내 */}
+            {landingError && (
+              <div
+                role="alert"
+                className="w-full mb-4 bg-status-warn-bg border border-status-warn-text/30 rounded-xl p-3 flex items-start gap-2"
+              >
+                <AlertCircle size={14} className="text-status-warn-text shrink-0 mt-0.5" aria-hidden="true" />
+                <p className="text-[12px] text-status-warn-text leading-relaxed">{landingError}</p>
+              </div>
+            )}
+
+            <div className="w-full space-y-2.5">
+              <button
+                type="button"
+                disabled={landingBusy}
+                onClick={() => {
+                  if (isMatching) {
+                    router.push('/onboarding/interview')
+                  } else {
+                    goToPathLanding()
+                  }
+                }}
+                className="w-full flex items-center justify-center gap-2 py-4 bg-surface-inverse text-txt-inverse rounded-full text-[15px] font-black hover:opacity-90 active:scale-[0.97] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {landingBusy ? (
+                  <Loader2 size={15} className="animate-spin" aria-hidden="true" />
+                ) : isMatching ? (
+                  <Sparkles size={15} aria-hidden="true" />
+                ) : (
+                  <ArrowRight size={15} aria-hidden="true" />
+                )}
+                {landingBusy
+                  ? '이동 중...'
+                  : isMatching
+                    ? 'AI 인터뷰 진행하기'
+                    : '바로 시작하기'}
+              </button>
+              <button
+                type="button"
+                disabled={landingBusy}
+                onClick={() => {
+                  if (isMatching) {
+                    // matching 경로에서 "지금은 건너뛰기" 선택 → 대시보드로
+                    goToPathLanding()
+                  } else {
+                    // 비매칭 경로에서 인터뷰 선택 → interview 페이지
+                    router.push('/onboarding/interview')
+                  }
+                }}
+                className="w-full flex items-center justify-center gap-2 py-3.5 bg-surface-sunken text-txt-secondary rounded-full text-[14px] font-bold hover:bg-surface-card hover:text-txt-primary transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {isMatching ? '지금은 건너뛰기' : 'AI 인터뷰 먼저 하기 (2분)'}
+              </button>
+            </div>
+            <p className="text-[11px] text-txt-tertiary text-center mt-6 leading-relaxed">
+              AI 인터뷰는 프로필 페이지에서 언제든 다시 진행하실 수 있습니다.
+            </p>
           </div>
-          <p className="text-[11px] text-txt-tertiary text-center mt-6 leading-relaxed">
-            AI 인터뷰는 프로필 페이지에서 언제든 다시 진행하실 수 있습니다.
-          </p>
         </div>
-      </div>
+      </>
     )
   }
 
   return (
     <>
+      <OfflineBanner />
       {PRELOAD_SVGS.map(src => (
         <link key={src} rel="preload" as="image" type="image/svg+xml" href={src} />
       ))}
