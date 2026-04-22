@@ -36,7 +36,7 @@ export const POST = withErrorCapture(async (request: NextRequest) => {
     .eq('inviter_user_id', user.id)
     .gte('created_at', since)
   if ((dailyCount ?? 0) >= DAILY_INVITATION_LIMIT) {
-    return ApiResponse.rateLimited(`하루 초대 한도(${DAILY_INVITATION_LIMIT}건)를 초과했어요`)
+    return ApiResponse.rateLimited(`하루 초대 한도(${DAILY_INVITATION_LIMIT}건)를 초과했습니다. 자정이 지나면 다시 초대하실 수 있습니다.`)
   }
 
   const body = await request.json()

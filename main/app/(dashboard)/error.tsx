@@ -35,7 +35,7 @@ export default function DashboardError({
         </div>
 
         <h2 className="text-[18px] font-bold text-txt-primary mb-1.5">
-          이 페이지를 불러오지 못했어요
+          이 페이지를 불러오지 못했습니다
         </h2>
         <p className="text-[13px] text-txt-secondary leading-relaxed max-w-md mx-auto">
           일시적인 오류일 가능성이 높습니다. 다시 시도하거나 잠시 후 새로고침해 주세요.

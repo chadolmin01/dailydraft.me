@@ -70,25 +70,25 @@ export function generateRecommendationExplanation(
   );
 
   if (daysUntilDeadline <= 3) {
-    reasons.push('마감이 임박했어요!');
+    reasons.push('마감이 임박한 기회입니다');
   } else if (daysUntilDeadline <= 7) {
-    reasons.push('마감이 가까워요');
+    reasons.push('마감이 가까운 기회입니다');
   }
 
   // Freshness explanation
   if (scores.freshnessScore > 0.8) {
-    reasons.push('새로 등록된 행사예요');
+    reasons.push('새로 등록된 행사입니다');
   }
 
   // Event type specific reasons
   const eventTypeReasons: Record<string, string> = {
-    '공모전': '실력을 뽐낼 기회에요',
-    '대외활동': '다양한 경험을 쌓을 수 있어요',
-    '인턴십': '실무 경험을 쌓을 수 있어요',
-    '창업교육': '창업 역량을 키울 수 있어요',
-    '사업화': '아이디어를 실현할 기회에요',
-    '행사·네트워크': '네트워킹 기회가 있어요',
-    '글로벌': '글로벌 경험을 쌓을 수 있어요',
+    '공모전': '실력을 증명할 수 있는 기회입니다',
+    '대외활동': '다양한 경험을 쌓기 좋은 기회입니다',
+    '인턴십': '실무 경험을 쌓기 좋은 자리입니다',
+    '창업교육': '창업 역량을 키울 수 있는 프로그램입니다',
+    '사업화': '아이디어를 실현할 수 있는 기회입니다',
+    '행사·네트워크': '네트워킹 기회가 열려 있습니다',
+    '글로벌': '글로벌 경험을 쌓기 좋은 프로그램입니다',
   };
 
   if (eventTypeReasons[event.eventType] && reasons.length < 3) {
@@ -97,7 +97,7 @@ export function generateRecommendationExplanation(
 
   // Default reason if nothing specific
   if (reasons.length === 0) {
-    reasons.push('추천 알고리즘이 선정했어요');
+    reasons.push('추천 알고리즘이 선정한 결과입니다');
   }
 
   // Return top 2 reasons

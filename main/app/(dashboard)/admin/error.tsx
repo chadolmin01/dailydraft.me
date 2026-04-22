@@ -36,7 +36,7 @@ export default function AdminError({
           </div>
           <div>
             <h2 className="text-[18px] font-bold text-txt-primary mb-1">
-              관리자 페이지에서 오류가 발생했어요
+              관리자 페이지에서 오류가 발생했습니다
             </h2>
             <p className="text-[13px] text-txt-secondary leading-relaxed">
               데이터 조회·권한 확인 중 문제가 생긴 것으로 보입니다.

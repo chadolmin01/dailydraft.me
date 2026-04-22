@@ -315,7 +315,7 @@ function MatchAnalysisSection({ targetId, targetName }: { targetId: string; targ
         <div className="flex items-start gap-2.5 mb-3">
           <AlertCircle size={16} className="text-status-danger-text shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-bold text-txt-primary">분석에 실패했어요</p>
+            <p className="text-sm font-bold text-txt-primary">분석에 실패했습니다</p>
             <p className="text-xs text-txt-tertiary mt-0.5">{error.message}</p>
           </div>
         </div>

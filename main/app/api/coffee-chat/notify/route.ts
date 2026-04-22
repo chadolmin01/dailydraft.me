@@ -196,10 +196,10 @@ export const POST = withErrorCapture(async (req: NextRequest) => {
 
       // Web Push — 실패해도 메인 흐름 보호
       await sendPushToUser(chat.requester_user_id, {
-        title: type === 'accepted' ? '☕ 커피챗이 수락됐어요!' : '커피챗 결과 알림',
+        title: type === 'accepted' ? '☕ 커피챗이 수락되었습니다' : '커피챗 결과 알림',
         body: type === 'accepted'
-          ? `${ownerName}님이 커피챗을 수락했습니다. 연락처를 확인해보세요.`
-          : `${ownerName}님이 커피챗 신청을 거절했습니다.`,
+          ? `${ownerName} 님이 커피챗을 수락하셨습니다. 연락처를 확인하세요.`
+          : `${ownerName} 님이 커피챗 신청을 수락하지 않으셨습니다.`,
         url: '/notifications',
       }).catch(err => console.warn('[notify] push 실패 (무시):', err))
 

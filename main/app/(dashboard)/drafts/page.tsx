@@ -60,7 +60,7 @@ export default async function DraftsListPage() {
             승인 대기 중인 초안
           </h1>
           <p className="text-[14px] text-txt-secondary mt-1.5">
-            Ghostwriter가 디스코드 활동을 요약해 작성했어요. 검토 후 승인하면 프로젝트 업데이트로 게시됩니다
+            Ghostwriter 가 Discord 활동을 요약해 초안으로 만들어 둔 것입니다. 검토 후 승인하시면 프로젝트 업데이트로 게시됩니다.
           </p>
         </div>
 
