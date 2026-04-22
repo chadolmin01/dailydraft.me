@@ -155,7 +155,7 @@ export function DeckListShell({ slug, embedded = false }: Props) {
       ) : filtered.length === 0 ? (
         <EmptyBlock
           title={
-            filter === 'all' ? '아직 만든 덱이 없어요' : '이 상태의 덱이 없어요'
+            filter === 'all' ? '아직 만든 덱이 없습니다' : '이 상태의 덱은 없습니다'
           }
           hint={
             filter === 'all'

@@ -526,7 +526,7 @@ function GeneratingStep({ def }: { def: EventDef }) {
     <div className="max-w-xl mx-auto text-center py-16">
       <div className="inline-flex items-center gap-2 text-base font-bold text-txt-primary mb-3">
         <Loader2 size={20} className="animate-spin text-brand" />
-        AI가 글을 쓰고 있어요
+        AI 가 글을 쓰고 있습니다
       </div>
       <p className="text-sm text-txt-secondary leading-relaxed mb-1">
         {def.label} 글을 여러 채널에 맞춰 준비 중입니다.

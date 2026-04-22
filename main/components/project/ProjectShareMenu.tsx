@@ -24,9 +24,9 @@ function buildTemplates(args: Props) {
     : null
   return {
     kakao: [
-      `${args.projectTitle} 팀원을 찾고 있어요.`,
+      `${args.projectTitle} 팀원을 찾고 있습니다.`,
       rolesLine,
-      `자세한 내용은 여기서 확인해주세요 👇`,
+      `자세한 내용은 아래 링크에서 확인하실 수 있습니다 👇`,
       args.url,
     ].filter(Boolean).join('\n'),
     linkedin: [

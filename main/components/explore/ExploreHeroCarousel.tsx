@@ -92,7 +92,7 @@ export function ExploreHeroCarousel() {
                   Draft 팀에 <span className="text-txt-tertiary">합류하고 싶다면?</span>
                 </h2>
                 <p className="text-sm text-txt-tertiary break-keep mb-3 sm:mb-6">
-                  같이 만들어갈 팀원을 찾고 있어요. 프로젝트 페이지에서 지원해보세요.
+                  함께 만들어 갈 팀원을 찾고 있습니다. 프로젝트 페이지에서 자기소개와 함께 지원해 주세요.
                 </p>
                 <Link
                   href="/projects/b0de922b-c9ed-4f21-9a48-5454e6af5501"

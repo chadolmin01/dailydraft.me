@@ -136,7 +136,7 @@ export function InstallPrompt() {
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold leading-tight">Draft 앱으로 열기</p>
               <p className="text-[10px] font-mono text-txt-inverse/60 mt-0.5">
-                홈 화면에 추가하면 앱처럼 사용할 수 있어요
+                홈 화면에 추가하면 앱처럼 전체 화면으로 사용하실 수 있습니다
               </p>
             </div>
 

@@ -53,7 +53,7 @@ export function PersonaTemplateLibrary({ personaId, canEdit }: Props) {
             </span>
           </h2>
           <p className="text-xs text-txt-tertiary mt-0.5 leading-relaxed">
-            "이번 모집 시즌 톤"처럼 이름 붙여 저장해두면, 나중에 한 번 클릭으로 되돌릴 수 있어요.
+            &quot;이번 모집 시즌 톤&quot;처럼 이름을 붙여 저장해 두시면, 나중에 한 번 클릭으로 되돌리실 수 있습니다.
           </p>
         </div>
         {canEdit && (
@@ -205,7 +205,7 @@ function EmptyHint() {
   return (
     <div className="bg-surface-card border border-dashed border-border rounded-xl p-6 text-center">
       <p className="text-xs text-txt-secondary leading-relaxed">
-        아직 저장된 버전이 없어요.
+        아직 저장된 버전이 없습니다.
       </p>
       <p className="text-[11px] text-txt-tertiary leading-relaxed mt-1.5">
         💾 페르소나를 조금 다듬으시면 오른쪽 위 <strong className="text-txt-secondary">"템플릿으로 저장"</strong> 버튼을 눌러보세요.

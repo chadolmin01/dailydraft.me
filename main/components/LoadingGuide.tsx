@@ -272,7 +272,7 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
                 className="w-full flex items-center justify-center gap-1.5 text-[12px] text-txt-tertiary hover:text-txt-primary transition-colors"
               >
                 <Ticket size={12} />
-                초대 코드가 있어요
+                초대 코드가 있습니다
               </button>
             ) : (
               <div className="bg-surface-card border border-border rounded-xl p-4">

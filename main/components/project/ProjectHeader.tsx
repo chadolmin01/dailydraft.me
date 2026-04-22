@@ -161,7 +161,7 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
                 height={48}
                 className="opacity-30"
               />
-              <span className="text-[13px] text-txt-disabled">아직 등록된 이미지가 없어요</span>
+              <span className="text-[13px] text-txt-disabled">아직 등록된 이미지가 없습니다</span>
             </div>
           )}
         </div>

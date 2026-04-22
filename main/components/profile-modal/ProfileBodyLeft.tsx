@@ -436,7 +436,7 @@ function ContactSection({ email, isAuthenticated }: { email: string; isAuthentic
           className="flex items-center gap-2.5 px-4 py-3 bg-surface-sunken hover:bg-border-subtle text-sm text-txt-tertiary transition-colors rounded-2xl"
         >
           <Mail size={15} />
-          로그인하면 연락처를 볼 수 있어요
+          로그인하시면 연락처를 보실 수 있습니다
         </a>
       )}
     </section>

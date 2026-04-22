@@ -121,7 +121,7 @@ export function AIInterviewModal({ isOpen, onClose }: AIInterviewModalProps) {
 
       <ScriptedInterviewStep
         profile={profileDraft}
-        introMessage={`${profileDraft.name}님, 몇 가지만 골라주세요!`}
+        introMessage={`${profileDraft.name} 님, 몇 가지만 골라 주시면 추천 정확도가 올라갑니다. 2분 정도 걸립니다.`}
         onAnswer={() => {}}
         onComplete={handleComplete}
       />

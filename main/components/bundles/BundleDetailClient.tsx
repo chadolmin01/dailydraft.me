@@ -199,7 +199,7 @@ export function BundleDetailClient({ bundleId, canApprove, slug }: Props) {
                 </button>
               </div>
               <p className="text-[10px] text-txt-tertiary mt-3 leading-relaxed">
-                💡 "다시 쓸게요"를 누르시면 어떤 점이 아쉬웠는지 적으실 수 있어요. AI가 그걸 기억해서 다음부터 안 만들도록 학습합니다.
+                💡 &quot;다시 쓸게요&quot;를 누르시면 어떤 점이 아쉬웠는지 적으실 수 있습니다. AI 가 그 내용을 기억해 다음부터는 피하도록 학습합니다.
               </p>
             </section>
           )}

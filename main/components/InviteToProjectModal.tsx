@@ -115,7 +115,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
           {!loadingChatHistory && !hasCoffeeChatHistory && (
             <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/40 rounded-2xl p-3.5">
               <p className="text-[13px] text-amber-900 dark:text-amber-200 leading-relaxed mb-3">
-                💡 아직 {targetName}님과 커피챗 이력이 없어요. 먼저 짧게 이야기해보면 더 좋은 매칭이 될 수 있어요.
+                💡 아직 {targetName} 님과 커피챗 이력이 없습니다. 먼저 짧게 이야기를 나눠 보시면 서로의 방향성을 확인하실 수 있어 더 좋은 매칭이 됩니다.
               </p>
               <div className="flex items-center gap-2">
                 <button

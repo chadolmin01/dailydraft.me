@@ -186,7 +186,7 @@ export function DiscordSettingsWizard({ clubSlug }: { clubSlug: string }) {
   // ── Initial message ──
   useEffect(() => {
     if (club && messages.length === 0) {
-      addBotMessage(`${club.name}의 Discord 연동을 설정합니다. 아래 "시작하기"를 눌러주세요!`)
+      addBotMessage(`${club.name} 의 Discord 연동을 설정합니다. 아래 "시작하기" 버튼을 눌러 주세요.`)
     }
   }, [club, messages.length, addBotMessage])
 
