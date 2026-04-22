@@ -138,7 +138,7 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
   // 저장 핸들러
   const handleSave = async () => {
     if (!structuredData.problem && !structuredData.solution && !structuredData.target) {
-      setError('내용을 입력해주세요')
+      setError('문제·솔루션·타겟 고객 중 최소 한 항목은 채워 주세요. 완벽하지 않아도 괜찮습니다.')
       return
     }
 
@@ -200,7 +200,7 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
               <div className="absolute inset-0 w-14 h-14 border-[3px] border-border border-t-transparent animate-spin" />
             </div>
             <p className="text-sm font-medium text-txt-primary mb-1">{processingStatus}</p>
-            <p className="text-xs text-txt-tertiary">잠시만 기다려주세요</p>
+            <p className="text-xs text-txt-tertiary">잠시만 기다려 주세요. 파일이 클수록 시간이 조금 더 걸립니다.</p>
           </div>
         )}
 

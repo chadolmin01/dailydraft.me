@@ -443,6 +443,7 @@ function ApplicationCard({
                 type="button"
                 onClick={() => onAction(application, 'interviewing')}
                 disabled={isPending}
+                title="먼저 짧게 이야기를 나누신 뒤 결정하실 때 사용합니다"
                 className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold border border-border hover:border-brand hover:text-brand transition-colors disabled:opacity-50 rounded-xl"
               >
                 {isPending ? <Loader2 size={12} className="animate-spin" /> : <Calendar size={12} />}
@@ -452,6 +453,7 @@ function ApplicationCard({
                 type="button"
                 onClick={() => onAction(application, 'accepted')}
                 disabled={isPending}
+                title="팀에 바로 합류시키고 지원자에게 수락 알림이 발송됩니다"
                 className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold bg-surface-inverse text-white hover:opacity-90 transition-opacity disabled:opacity-50 rounded-xl"
               >
                 {isPending ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
@@ -462,8 +464,8 @@ function ApplicationCard({
                 onClick={() => onAction(application, 'rejected')}
                 disabled={isPending}
                 className="p-1.5 text-txt-disabled hover:text-status-danger-text transition-colors disabled:opacity-50"
-                title="거절"
-                aria-label="지원 거절"
+                title="거절 · 지원자에게 결과 알림이 발송됩니다"
+                aria-label="지원 거절 (지원자에게 알림이 발송됩니다)"
               >
                 <X size={14} />
               </button>
@@ -476,6 +478,7 @@ function ApplicationCard({
                 type="button"
                 onClick={() => onAction(application, 'accepted')}
                 disabled={isPending}
+                title="대화를 마친 뒤 합류를 확정합니다. 지원자에게 수락 알림이 발송됩니다."
                 className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold bg-surface-inverse text-white hover:opacity-90 transition-opacity disabled:opacity-50 rounded-xl"
               >
                 {isPending ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
@@ -486,8 +489,8 @@ function ApplicationCard({
                 onClick={() => onAction(application, 'rejected')}
                 disabled={isPending}
                 className="p-1.5 text-txt-disabled hover:text-status-danger-text transition-colors disabled:opacity-50"
-                title="거절"
-                aria-label="지원 거절"
+                title="거절 · 지원자에게 결과 알림이 발송됩니다"
+                aria-label="지원 거절 (지원자에게 알림이 발송됩니다)"
               >
                 <X size={14} />
               </button>

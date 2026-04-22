@@ -175,6 +175,8 @@ function Toggle({
         type="button"
         role="switch"
         aria-checked={checked}
+        aria-label={`${label} · ${checked ? '켜짐' : '꺼짐'} (누르시면 변경됩니다)`}
+        title={saving ? '저장 중입니다. 잠시만 기다려 주세요.' : checked ? '끄려면 누르세요' : '켜려면 누르세요'}
         onClick={() => onChange(!checked)}
         disabled={saving}
         className={`relative shrink-0 w-10 h-6 rounded-full transition-colors ${checked ? 'bg-brand' : 'bg-surface-sunken'} ${saving ? 'opacity-60' : ''}`}
