@@ -56,9 +56,13 @@ export function ClubShareMenu(props: Props) {
       await navigator.clipboard.writeText(text)
       setCopied(id)
       setTimeout(() => setCopied(null), 1500)
-      toast.success('복사했습니다')
+      toast.success('공유 문구를 복사했습니다', {
+        description: '카톡·Slack·Discord 등에 바로 붙여넣기 하시면 링크 미리보기가 자동으로 표시됩니다.',
+      })
     } catch {
-      toast.error('복사 실패')
+      toast.error('복사에 실패했습니다', {
+        description: '브라우저 권한 또는 HTTPS 여부를 확인해 주세요.',
+      })
     }
   }
 

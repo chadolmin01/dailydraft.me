@@ -22,9 +22,13 @@ export function ClubEmbedSnippet({ slug }: { slug: string }) {
       await navigator.clipboard.writeText(snippet)
       setCopied(true)
       setTimeout(() => setCopied(false), 1500)
-      toast.success('임베드 코드를 복사했습니다')
+      toast.success('임베드 코드를 복사했습니다', {
+        description: '동아리 홈페이지·노션 embed 블록에 붙여넣으시면 클럽 위젯이 표시됩니다.',
+      })
     } catch {
-      toast.error('복사에 실패했습니다')
+      toast.error('복사에 실패했습니다', {
+        description: '브라우저가 clipboard API 를 허용하지 않는 경우 수동으로 선택·복사해 주세요.',
+      })
     }
   }
 
