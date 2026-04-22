@@ -76,6 +76,8 @@ export const GET = withErrorCapture(async (request) => {
   let query = supabase
     .from('clubs')
     .select('id, slug, name, description, logo_url, category, created_at')
+    // 공개 목록은 verified 만 — pending/rejected 는 creator + admin 전용 (RLS 로도 이중 방어)
+    .eq('claim_status', 'verified')
     .order('created_at', { ascending: false })
     .range(offset, offset + limit - 1)
 
@@ -130,12 +132,24 @@ const RESERVED_SLUGS = new Set([
 ])
 
 /**
- * POST /api/clubs — 새 클럽 생성
+ * POST /api/clubs — 새 클럽 생성 (공식 인증 요청)
  *
- * Body: { name, slug?, description?, logo_url? }
+ * Body:
+ *   { name, slug?, description?, logo_url?,
+ *     university_id (REQUIRED),
+ *     verification_documents: {
+ *       representative_name (REQUIRED),
+ *       representative_email (REQUIRED),
+ *       founding_year (REQUIRED, 2000~current),
+ *       activity_summary (REQUIRED, 50~500자),
+ *       website_url?, sns_url?, charter_url?,
+ *     }
+ *   }
  *
- * slug 미제공 시 name에서 자동 생성.
- * DB 트리거(auto_add_club_owner)가 생성자를 owner로 자동 등록.
+ * 동작:
+ * - claim_status='pending' 으로 insert (RLS 로 creator/admin 만 조회 가능)
+ * - DB 트리거(auto_add_club_owner)가 생성자를 owner 로 자동 등록
+ * - Draft platform admin 이 /admin/clubs-moderation 에서 승인/거부
  */
 export const POST = withErrorCapture(async (request) => {
   const supabase = await createClient()
@@ -143,15 +157,80 @@ export const POST = withErrorCapture(async (request) => {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return ApiResponse.unauthorized()
 
-  const body = await request.json()
-  const { name, description, logo_url } = body
+  const body = await request.json().catch(() => ({}))
+  const {
+    name,
+    description,
+    logo_url,
+    university_id,
+    verification_documents,
+  } = body as {
+    name?: string
+    description?: string
+    logo_url?: string
+    university_id?: string
+    verification_documents?: {
+      representative_name?: string
+      representative_email?: string
+      founding_year?: number
+      activity_summary?: string
+      website_url?: string
+      sns_url?: string
+      charter_url?: string
+    }
+  }
 
   if (!name || typeof name !== 'string' || name.trim().length < 2) {
     return ApiResponse.badRequest('클럽 이름은 2자 이상이어야 합니다')
   }
-
   if (name.trim().length > 50) {
     return ApiResponse.badRequest('클럽 이름은 50자 이하여야 합니다')
+  }
+
+  // 학교 선택 필수
+  if (!university_id || typeof university_id !== 'string') {
+    return ApiResponse.badRequest('소속 학교를 선택해 주세요')
+  }
+  const { data: univ } = await supabase
+    .from('universities')
+    .select('id')
+    .eq('id', university_id)
+    .maybeSingle()
+  if (!univ) {
+    return ApiResponse.badRequest('선택하신 학교를 찾을 수 없습니다')
+  }
+
+  // 증빙 필수 필드 검증
+  if (!verification_documents || typeof verification_documents !== 'object') {
+    return ApiResponse.badRequest('증빙 정보를 입력해 주세요')
+  }
+  const docs = verification_documents
+  const errors: Record<string, string> = {}
+  if (!docs.representative_name?.trim()) errors.representative_name = '대표자 이름을 입력해 주세요'
+  if (!docs.representative_email?.trim()) errors.representative_email = '대표자 이메일을 입력해 주세요'
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(docs.representative_email.trim())) {
+    errors.representative_email = '올바른 이메일 형식이 아닙니다'
+  }
+  const thisYear = new Date().getFullYear()
+  if (!docs.founding_year || typeof docs.founding_year !== 'number'
+    || docs.founding_year < 2000 || docs.founding_year > thisYear) {
+    errors.founding_year = `창립 연도를 2000~${thisYear} 사이로 입력해 주세요`
+  }
+  const summary = docs.activity_summary?.trim() ?? ''
+  if (summary.length < 50) errors.activity_summary = '활동 요약을 50자 이상 입력해 주세요'
+  else if (summary.length > 500) errors.activity_summary = '활동 요약은 500자 이하로 입력해 주세요'
+
+  // URL 유효성 (선택 필드들, 값 있을 때만 검증)
+  const urlFields: Array<keyof typeof docs> = ['website_url', 'sns_url', 'charter_url']
+  for (const field of urlFields) {
+    const v = docs[field]
+    if (v && typeof v === 'string' && v.trim()) {
+      try { new URL(v.trim()) } catch { errors[field as string] = '올바른 URL 형식이 아닙니다' }
+    }
+  }
+
+  if (Object.keys(errors).length > 0) {
+    return ApiResponse.badRequest('입력값이 유효하지 않습니다', errors)
   }
 
   // 슬러그 생성: 제공되면 사용, 아니면 name에서 생성
@@ -172,11 +251,9 @@ export const POST = withErrorCapture(async (request) => {
     }
   }
 
-  // 슬러그 검증
   if (!/^[a-z0-9가-힣][a-z0-9가-힣-]{0,28}[a-z0-9가-힣]$/.test(slug) && slug.length < 2) {
     return ApiResponse.badRequest('슬러그는 2-30자의 영문 소문자, 숫자, 한글, 하이픈만 가능합니다')
   }
-
   if (RESERVED_SLUGS.has(slug)) {
     return ApiResponse.badRequest('사용할 수 없는 슬러그입니다')
   }
@@ -187,13 +264,13 @@ export const POST = withErrorCapture(async (request) => {
     .select('id')
     .eq('slug', slug)
     .maybeSingle()
-
   if (existing) {
     return ApiResponse.badRequest('이미 사용 중인 슬러그입니다')
   }
 
-  // 클럽 생성 (트리거가 owner 자동 등록)
-  const { data: club, error } = await supabase
+  // 클럽 생성 — claim_status 는 default('pending') 사용, DB 트리거가 owner 자동 등록
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: club, error } = await (supabase as any)
     .from('clubs')
     .insert({
       name: name.trim(),
@@ -201,21 +278,45 @@ export const POST = withErrorCapture(async (request) => {
       description: description?.trim() || null,
       logo_url: logo_url || null,
       created_by: user.id,
+      university_id,
+      verification_submitted_at: new Date().toISOString(),
+      verification_documents: {
+        representative_name: docs.representative_name!.trim(),
+        representative_email: docs.representative_email!.trim(),
+        founding_year: docs.founding_year,
+        activity_summary: summary,
+        website_url: docs.website_url?.trim() || null,
+        sns_url: docs.sns_url?.trim() || null,
+        charter_url: docs.charter_url?.trim() || null,
+      },
     })
-    .select()
+    .select('id, slug, name, claim_status')
     .single()
 
   if (error) {
     return ApiResponse.internalError('클럽 생성에 실패했습니다', error.message)
   }
 
-  // Funnel Stage 3a: 클럽 생성 = 운영자 전환 모먼트
-  // 대시보드/사이드바가 운영자 모드로 진입하는 핵심 활성화 이벤트.
-  captureServerEvent('club_created', {
+  // Funnel: 인증 요청 접수 (club_created 는 승인 시점으로 이동)
+  captureServerEvent('club_verification_requested', {
     userId: user.id,
     clubId: club.id,
     slug: club.slug,
+    universityId: university_id,
   }).catch(() => {})
 
-  return ApiResponse.created(club)
+  // 신청 접수 알림 (creator 에게)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (supabase as any)
+    .from('notifications')
+    .insert({
+      user_id: user.id,
+      type: 'club_verification_submitted',
+      title: '클럽 인증 신청이 접수되었습니다',
+      body: `${club.name} 의 공식 등록 검토를 1~3영업일 내에 안내드립니다`,
+      link_url: `/clubs/${club.slug}/pending`,
+    })
+    .then(() => {}, () => {}) // notifications 테이블 이슈 있어도 클럽 생성은 성공 처리
+
+  return ApiResponse.created({ ...club, claim_status: 'pending' })
 })

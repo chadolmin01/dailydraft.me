@@ -31,7 +31,10 @@ export async function fetchClubDetail(
     .select(`
       id, slug, name, description, logo_url, category,
       visibility, require_approval, team_channel_visibility,
-      created_by, created_at, updated_at
+      created_by, created_at, updated_at,
+      claim_status, university_id,
+      verification_submitted_at, verification_reviewed_at, verification_note,
+      verification_documents
     `)
     .eq('slug', slug)
     .maybeSingle()
@@ -124,6 +127,9 @@ export async function fetchClubsList(
   let query = supabase
     .from('clubs')
     .select('id, slug, name, description, logo_url, category, created_at')
+    // 공개 목록: verified 만 (pending/rejected 는 RLS 로도 차단되지만 명시적 필터 이중 방어)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .eq('claim_status' as any, 'verified')
     .order('created_at', { ascending: false })
     .range(offset, offset + limit - 1)
 

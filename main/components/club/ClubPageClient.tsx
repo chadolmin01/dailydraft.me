@@ -21,6 +21,8 @@ import { ClubShareMenu } from '@/components/club/ClubShareMenu'
 import { MemberRoleMenu } from '@/components/club/MemberRoleMenu'
 import { ClubAnnouncementsSection } from '@/components/club/ClubAnnouncementsSection'
 import { ClubEventsSection } from '@/components/club/ClubEventsSection'
+import { ClubStatusBanner } from '@/components/club/ClubStatusBanner'
+import { ClubVerifiedBadge } from '@/components/club/ClubVerifiedBadge'
 
 function StaggerCard({ children, staggerKey, index }: { children: React.ReactNode; staggerKey: string; index: number }) {
   const cls = useStaggerOnce(staggerKey)
@@ -181,6 +183,16 @@ export default function ClubPageClient() {
           </div>
         </div>
 
+        {/* 공식 인증 상태 배너 — pending/rejected/legacy 시 안내. verified + university_id 는 자동 숨김 */}
+        <ClubStatusBanner
+          claimStatus={club.claim_status}
+          universityId={club.university_id}
+          verificationNote={club.verification_note}
+          submittedAt={club.verification_submitted_at}
+          clubSlug={club.slug}
+          isOwner={isAdmin}
+        />
+
         {/* 운영자 전용 툴바 — owner/admin 일 때만. Progressive disclosure:
             멤버는 못 봄 → 일반 클럽 탐색자 UI 유지. 운영자는 여기서 자주 쓰는 액션 1클릭. */}
         {isAdmin && (
@@ -209,8 +221,14 @@ export default function ClubPageClient() {
             </div>
           )}
           <div className="flex-1 min-w-0 pt-1">
-            <div className="flex items-center gap-2.5 mb-1.5">
+            <div className="flex items-center gap-2.5 mb-1.5 flex-wrap">
               <h1 className="text-[22px] font-bold text-txt-primary truncate">{club.name}</h1>
+              <ClubVerifiedBadge
+                claimStatus={club.claim_status}
+                universityName={universityName}
+                reviewedAt={club.verification_reviewed_at}
+                size="md"
+              />
               {club.category && (
                 <span className="shrink-0 text-xs font-semibold text-brand bg-brand-bg px-2.5 py-0.5 rounded-full">
                   {club.category}
