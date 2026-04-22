@@ -40,7 +40,7 @@ export function useProfileInterest(
     hapticMedium()
     if (!user) return
     if (user.id === profileUserId) {
-      toast.error('내 프로필에는 관심 표시를 할 수 없어요')
+      toast.error('본인 프로필에는 관심 표시를 남길 수 없습니다')
       return
     }
     if (!profileId || interestLoading) return
@@ -51,12 +51,20 @@ export function useProfileInterest(
       if (res.ok) {
         setHasInterested(data.interested)
         setInterestCount(data.interest_count ?? 0)
-        toast.success(data.interested ? '관심을 표시했어요' : '관심 표시를 취소했어요')
+        toast.success(data.interested ? '관심을 표시했습니다' : '관심 표시를 취소했습니다', {
+          description: data.interested
+            ? '상대방에게 익명으로 관심 숫자만 전달됩니다.'
+            : '관심 숫자가 1 감소합니다.',
+        })
       } else {
-        toast.error('관심 표시에 실패했어요')
+        toast.error('관심 표시에 실패했습니다', {
+          description: '잠시 후 다시 시도해 주세요.',
+        })
       }
     } catch {
-      toast.error('네트워크 오류가 발생했어요')
+      toast.error('네트워크 오류가 발생했습니다', {
+        description: '인터넷 연결을 확인하신 뒤 다시 시도해 주세요.',
+      })
     }
     setInterestLoading(false)
   }, [user, profileUserId, profileId, interestLoading])

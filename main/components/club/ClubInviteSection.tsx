@@ -61,9 +61,18 @@ export function ClubInviteSection({ slug, clubName, viewerRole }: {
       })
       if (!res.ok) throw new Error()
       setCodes(prev => prev.map(c => c.id === code.id ? { ...c, is_active: !code.is_active } : c))
-      toast.success(code.is_active ? '코드가 비활성화되었습니다' : '코드가 다시 활성화되었습니다')
+      toast.success(
+        code.is_active ? '코드를 비활성화했습니다' : '코드를 다시 활성화했습니다',
+        {
+          description: code.is_active
+            ? '이 코드로는 더 이상 가입할 수 없습니다. 기존 멤버십은 유지됩니다.'
+            : '이제 이 코드로 다시 가입이 가능합니다. 링크를 재공유하시면 됩니다.',
+        },
+      )
     } catch {
-      toast.error('상태 변경에 실패했습니다')
+      toast.error('상태 변경에 실패했습니다', {
+        description: '잠시 후 다시 시도해 주세요. 문제가 계속되면 /status 를 확인해 주세요.',
+      })
     } finally {
       setMutating(false)
     }
@@ -76,9 +85,13 @@ export function ClubInviteSection({ slug, clubName, viewerRole }: {
       if (!res.ok) throw new Error()
       setCodes(prev => prev.filter(c => c.id !== code.id))
       if (activeCodeId === code.id) setActiveCodeId(null)
-      toast.success('코드를 삭제했습니다')
+      toast.success('초대 코드를 삭제했습니다', {
+        description: '이미 가입한 멤버에게는 영향이 없습니다. 새 초대가 필요하면 아래에서 코드를 새로 발급하실 수 있습니다.',
+      })
     } catch {
-      toast.error('삭제에 실패했습니다')
+      toast.error('삭제에 실패했습니다', {
+        description: '이미 여러 명이 사용한 코드는 감사 로그 보존을 위해 비활성화만 가능할 수 있습니다.',
+      })
     } finally {
       setMutating(false)
     }
@@ -119,11 +132,19 @@ export function ClubInviteSection({ slug, clubName, viewerRole }: {
       setActiveCodeId(newCode.id)
       setCohortInput('')
       setRoleInput('member')
-      toast.success(roleInput === 'admin'
-        ? '운영진 초대 코드가 생성되었습니다'
-        : '초대 코드가 생성되었습니다')
+      toast.success(
+        roleInput === 'admin' ? '운영진 초대 코드를 만들었습니다' : '초대 코드를 만들었습니다',
+        {
+          description:
+            roleInput === 'admin'
+              ? '이 코드로 가입한 유저는 자동으로 운영진(admin) 권한을 갖습니다. 신뢰할 수 있는 사람에게만 공유해 주세요.'
+              : '아래 링크를 복사해서 카톡·Slack·Discord 등 원하시는 곳으로 공유하실 수 있습니다.',
+        },
+      )
     } catch {
-      toast.error('코드 생성에 실패했습니다')
+      toast.error('초대 코드를 만들지 못했습니다', {
+        description: '클럽 owner 또는 admin 권한이 필요합니다. 권한이 있는데도 실패한다면 잠시 후 다시 시도해 주세요.',
+      })
     } finally {
       setIsCreating(false)
     }

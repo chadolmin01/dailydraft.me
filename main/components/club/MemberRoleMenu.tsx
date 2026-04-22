@@ -156,8 +156,8 @@ export function MemberRoleMenu({
         onClose={() => setShowRemoveConfirm(false)}
         onConfirm={async () => confirmRemove()}
         title="멤버 제거"
-        message={`${memberName ?? '멤버'} 님을 클럽에서 제거합니다. 이 작업은 되돌릴 수 없으며, 재가입은 초대 코드가 필요합니다.`}
-        confirmText="제거"
+        message={`${memberName ?? '이 멤버'} 님을 클럽에서 제거합니다. 제거 후에는 새 초대 코드를 통해서만 재가입이 가능하며, 이 멤버가 작성한 주간 업데이트·회의록·프로젝트 기록은 그대로 보존됩니다. 이 작업 자체는 감사 로그에 기록됩니다.`}
+        confirmText="제거하기"
         variant="danger"
       />
     </div>

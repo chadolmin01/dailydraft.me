@@ -226,7 +226,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
               : `${projectRoleLabel(role)} 모집이 완료되었습니다`
           )
         },
-        onError: () => toast.error('변경에 실패했어요'),
+        onError: () => toast.error('변경에 실패했습니다'),
       }
     )
   }
@@ -247,15 +247,19 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
       setShowCta(true)
       return
     }
-    if (isOwner) { toast.error('내 프로젝트에는 관심 표시를 할 수 없어요'); return }
-    if (hasInterested) { toast('이미 관심을 표시했어요'); return }
+    if (isOwner) { toast.error('본인 프로젝트에는 관심을 표시할 수 없습니다'); return }
+    if (hasInterested) { toast.info('이미 관심을 표시하신 프로젝트입니다'); return }
     if (interestLoading) return
     const success = await expressInterest(user.email ?? '')
     if (success) {
       setHasInterested(true)
-      toast.success('관심을 표시했어요')
+      toast.success('관심을 표시했습니다', {
+        description: '프로젝트 owner 에게는 숫자만 공유되고, 누가 눌렀는지는 노출되지 않습니다.',
+      })
     } else {
-      toast.error('관심 표시에 실패했어요')
+      toast.error('관심 표시에 실패했습니다', {
+        description: '잠시 후 다시 시도해 주세요.',
+      })
     }
   }
 

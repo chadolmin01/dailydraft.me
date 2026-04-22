@@ -189,7 +189,9 @@ function ExplorePageContent() {
   // Starter guide: completion toast
   useEffect(() => {
     if (guide.justCompleted) {
-      toast.success('시작 가이드를 모두 완료했어요! 🎉')
+      toast.success('시작 가이드를 모두 완료하셨습니다', {
+        description: '프로필·프로젝트·사람 탐색까지 기본 동선을 익히셨습니다. 이제 /dashboard 에서 본격적으로 사용해 보세요.',
+      })
     }
   }, [guide.justCompleted])
 

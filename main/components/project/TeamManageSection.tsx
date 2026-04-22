@@ -160,7 +160,9 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
       toast.success('역할이 수정되었습니다')
     },
     onError: () => {
-      toast.error('역할 수정에 실패했어요')
+      toast.error('역할 수정에 실패했습니다', {
+        description: '페이지를 새로고침하신 뒤 다시 시도해 주세요.',
+      })
     },
   })
 
@@ -179,7 +181,9 @@ export function TeamManageSection({ opportunityId }: { opportunityId: string }) 
       setRemovingId(null)
     },
     onError: () => {
-      toast.error('팀원 제거에 실패했어요')
+      toast.error('팀원 제거에 실패했습니다', {
+        description: '프로젝트 owner 권한이 필요하며, 본인 자신은 여기서 제거할 수 없습니다(나가기는 별도 메뉴).',
+      })
       setRemovingId(null)
     },
   })

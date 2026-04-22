@@ -165,10 +165,14 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
       if (user) {
         await supabase.from('profiles').update({ bio: trimmed }).eq('user_id', user.id)
       }
-      toast.success('자기소개가 저장됐어요')
+      toast.success('자기소개를 저장했습니다', {
+        description: '언제든 프로필 편집에서 다시 수정하실 수 있습니다.',
+      })
       setGeneratedBio(null)
     } catch {
-      toast.error('저장에 실패했어요. 프로필에서 다시 시도해주세요.')
+      toast.error('저장에 실패했습니다', {
+        description: '프로필 편집 화면에서 직접 다시 시도해 주세요.',
+      })
     } finally {
       setBioSaving(false)
     }

@@ -425,9 +425,9 @@ export default function AdminHubPage() {
         isOpen={showResetConfirm}
         onClose={() => setShowResetConfirm(false)}
         onConfirm={doResetOnboarding}
-        title="온보딩 리셋 (테스트)"
-        message="본인 계정의 온보딩 상태를 초기화합니다. personality·vision_summary 가 삭제되고 /onboarding 으로 이동합니다. 개발용 · 되돌릴 수 없습니다."
-        confirmText={resetting ? '처리 중...' : '리셋하고 이동'}
+        title="온보딩을 다시 시작하시겠습니까? (개발용)"
+        message="이 작업은 본인 계정의 personality·vision_summary 값만 지우고 /onboarding 으로 이동시킵니다. 작성한 프로젝트·클럽·지원서·주간 업데이트 등 실제 서비스 데이터는 그대로 유지됩니다. 다만 온보딩 결과 자체는 복구되지 않습니다 — 다시 입력하셔야 합니다."
+        confirmText={resetting ? '처리 중입니다...' : '다시 온보딩하기'}
         variant="warning"
       />
     </div>

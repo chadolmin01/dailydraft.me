@@ -57,7 +57,11 @@ export function UserProfilePageClient({ profileId }: { profileId: string }) {
       : `${name}${position ? ` (${position})` : ''} · Draft 포트폴리오\n\n대학 동아리·프로젝트 활동 이력과 주간 기록 링크입니다.\n${url}`
     try {
       await navigator.clipboard.writeText(text)
-      toast.success(kind === 'kakao' ? '카톡용 메시지를 복사했어요' : 'LinkedIn용 메시지를 복사했어요')
+      toast.success(kind === 'kakao' ? '카톡용 문구를 복사했습니다' : 'LinkedIn용 문구를 복사했습니다', {
+        description: kind === 'kakao'
+          ? '카톡에 붙여넣기 하시면 링크 미리보기가 자동으로 뜹니다.'
+          : 'LinkedIn 포스트에 붙여넣으시면 됩니다. 프로필 OG 이미지가 자동 첨부됩니다.',
+      })
       setShowShareMenu(false)
     } catch {
       toast.error('복사에 실패했습니다')
