@@ -139,7 +139,7 @@ function EditProjectContent() {
   }
 
   const generateDescription = async () => {
-    if (!title.trim()) { setError('먼저 프로젝트 이름을 입력해주세요'); return }
+    if (!title.trim()) { setError('먼저 프로젝트 이름을 입력해 주세요. AI 는 이름을 시작점으로 초안을 작성합니다.'); return }
     setAiLoading(true)
     setError('')
     try {
@@ -277,9 +277,9 @@ function EditProjectContent() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    if (!title.trim()) { setError('프로젝트 이름을 입력해주세요'); return }
-    if (!description.trim()) { setError('프로젝트 설명을 입력해주세요'); return }
-    if (selectedRoles.length === 0) { setError('필요한 역할을 최소 1개 선택해주세요'); return }
+    if (!title.trim()) { setError('프로젝트 이름을 입력해 주세요'); return }
+    if (!description.trim()) { setError('프로젝트 소개를 입력해 주세요 (최소 20자)'); return }
+    if (selectedRoles.length === 0) { setError('함께할 역할을 최소 1개 선택해 주세요. 나중에 편집에서 추가·삭제하실 수 있습니다.'); return }
 
     const projectLinks = links
       .filter(l => l.url.trim())
@@ -522,6 +522,8 @@ function EditProjectContent() {
                         type="button"
                         onClick={generateDescription}
                         disabled={aiLoading || !title.trim()}
+                        title={!title.trim() ? '먼저 프로젝트 이름을 입력하셔야 AI 초안을 생성할 수 있습니다' : 'AI 가 입력 정보를 바탕으로 소개글 초안을 작성합니다'}
+                        aria-label={!title.trim() ? 'AI 작성 (프로젝트 이름 입력 후 활성화)' : 'AI 로 소개글 작성'}
                         className="flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-medium border border-border-subtle rounded-lg text-txt-secondary hover:border-brand/30 hover:text-txt-primary transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                       >
                         {aiLoading ? (
@@ -531,6 +533,9 @@ function EditProjectContent() {
                         )}
                       </button>
                     </div>
+                    <p className="text-[11px] text-txt-tertiary mb-2 leading-relaxed">
+                      비전·해결할 문제·기대하는 팀원 역할을 50~500자 사이로 작성해 주세요. 구체적으로 쓰실수록 지원자의 질이 올라갑니다.
+                    </p>
                     <textarea
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
@@ -556,9 +561,12 @@ function EditProjectContent() {
 
                   {/* Pain Point */}
                   <section className={`p-4 border border-border-subtle rounded-xl transition-colors ${theme.painBg}`}>
-                    <h3 className="text-[10px] font-medium text-txt-tertiary mb-2">
+                    <h3 className="text-[10px] font-medium text-txt-tertiary mb-1">
                       {theme.painLabel}
                     </h3>
+                    <p className="text-[11px] text-txt-tertiary mb-2 leading-relaxed">
+                      선택 항목입니다. 팀원이 프로젝트의 맥락을 빨리 이해하도록 돕는 한두 문단 정도가 좋습니다.
+                    </p>
                     <textarea
                       value={painPoint}
                       onChange={(e) => setPainPoint(e.target.value)}
@@ -571,9 +579,12 @@ function EditProjectContent() {
 
                   {/* Links */}
                   <section>
-                    <h3 className="text-[10px] font-medium text-txt-tertiary mb-2">
+                    <h3 className="text-[10px] font-medium text-txt-tertiary mb-1">
                       프로젝트 링크
                     </h3>
+                    <p className="text-[11px] text-txt-tertiary mb-2 leading-relaxed">
+                      GitHub·배포 URL·Figma 등 3~5개 정도가 적당합니다. 이름은 &quot;GitHub&quot;, &quot;배포&quot; 처럼 한 단어로 명확하게 써 주세요.
+                    </p>
                     <div className="space-y-2">
                       {links.map((link, idx) => (
                         <div key={idx} className="flex gap-2">

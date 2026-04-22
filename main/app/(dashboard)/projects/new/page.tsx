@@ -127,7 +127,7 @@ function NewProjectContent() {
   }
 
   const generateDescription = async () => {
-    if (!title.trim()) { setError('먼저 프로젝트 이름을 입력해주세요'); return }
+    if (!title.trim()) { setError('먼저 프로젝트 이름을 입력해 주세요. AI 는 이름을 시작점으로 초안을 작성합니다.'); return }
     setAiLoading(true)
     setError('')
     try {
@@ -268,13 +268,13 @@ function NewProjectContent() {
     setError('')
     const errors: typeof fieldErrors = {}
 
-    if (!title.trim()) errors.title = '프로젝트 이름을 입력해주세요'
+    if (!title.trim()) errors.title = '프로젝트 이름을 입력해 주세요'
     else if (title.trim().length < 2) errors.title = '프로젝트 이름은 2자 이상이어야 해요'
 
-    if (!description.trim()) errors.description = '프로젝트 소개를 입력해주세요'
-    else if (description.trim().length < 20) errors.description = '프로젝트 소개는 20자 이상 작성해주세요'
+    if (!description.trim()) errors.description = '프로젝트 소개를 입력해 주세요'
+    else if (description.trim().length < 20) errors.description = '프로젝트 소개는 20자 이상 작성해 주세요 (무엇을·누구와·어떻게)'
 
-    if (selectedRoles.length === 0) errors.roles = '필요한 역할을 최소 1개 선택해주세요'
+    if (selectedRoles.length === 0) errors.roles = '함께할 역할을 최소 1개 선택해 주세요'
 
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors)
@@ -518,8 +518,8 @@ function NewProjectContent() {
                             <p className="text-[13px] font-semibold text-txt-primary">AI로 소개글 작성</p>
                             <p className="text-[11px] text-txt-tertiary mt-0.5">
                               {canGenerate
-                                ? '준비 완료! 더 채우면 더 정확한 소개글이 나와요'
-                                : '정보를 더 채워주세요 (최소 2개)'}
+                                ? '준비가 되었습니다. 정보를 더 채우실수록 더 정확한 초안이 나옵니다.'
+                                : '이름·태그·역할 중 최소 2개 항목을 먼저 채워 주세요.'}
                             </p>
                           </div>
                           <div className="flex items-center gap-2 shrink-0">

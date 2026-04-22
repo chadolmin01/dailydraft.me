@@ -47,8 +47,8 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
   const [error, setError] = useState('')
 
   const handleSubmit = async () => {
-    if (!title.trim()) { setError('제목을 입력해주세요'); return }
-    if (!content.trim()) { setError('내용을 입력해주세요'); return }
+    if (!title.trim()) { setError('업데이트 제목을 입력해 주세요. 이번 주 핵심을 한 줄로 요약하시면 좋습니다.'); return }
+    if (!content.trim()) { setError('업데이트 내용을 입력해 주세요. 무엇을 진행했고 다음 주에 무엇을 할지 순서대로 적으시면 도움이 됩니다.'); return }
     setError('')
 
     try {
