@@ -19,6 +19,7 @@ import { useProjectInvitations } from '@/src/hooks/useProjectInvitations'
 import { PageContainer } from '@/components/ui/PageContainer'
 import PendingDraftCard from '@/components/dashboard/PendingDraftCard'
 import { ProfileCompletionCard } from '@/components/dashboard/ProfileCompletionCard'
+import { MicroPromptCard } from '@/components/onboarding/MicroPromptCard'
 import { withRetry } from '@/src/lib/query-utils'
 
 /**
@@ -426,6 +427,19 @@ export default function DashboardClient() {
         <section className="mb-6">
           <ProfileCompletionCard />
         </section>
+
+        {/* ═══════════════════════════════════ */}
+        {/* MICRO PROMPT (Ambient data collection) */}
+        {/* AI 인터뷰 미완료 유저에게만. MicroPromptCard 자체가
+            - 이미 답한 질문은 자동 스킵
+            - 하루 2개 쿨다운
+            - 답이 남은 질문이 없으면 null 반환 — 조건부 렌더링 불필요. */}
+        {/* ═══════════════════════════════════ */}
+        {!profile?.ai_chat_completed && (
+          <section className="mb-6">
+            <MicroPromptCard slot="sidebar" dismissible />
+          </section>
+        )}
 
         {/* ═══════════════════════════════════ */}
         {/* PENDING DRAFTS                      */}
