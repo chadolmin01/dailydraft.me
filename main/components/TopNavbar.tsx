@@ -200,13 +200,23 @@ export const TopNavbar: React.FC = () => {
             : 'bg-surface-card'
         }`} />
         <div className="relative w-full px-4 h-full flex items-center justify-between">
-          <Link href="/projects/new" aria-label="새 프로젝트" className="w-9 h-9 flex items-center justify-center text-txt-primary active:scale-90 transition-transform">
+          <Link
+            href="/projects/new"
+            aria-label="새 프로젝트 만들기"
+            title="새 프로젝트 만들기"
+            className="w-9 h-9 flex items-center justify-center text-txt-primary active:scale-90 transition-transform"
+          >
             <Plus size={24} strokeWidth={1.8} />
           </Link>
-          <Link href="/dashboard" className="font-bold text-[20px] tracking-tight text-txt-primary">
+          <Link href="/dashboard" aria-label="홈으로" className="font-bold text-[20px] tracking-tight text-txt-primary">
             Draft
           </Link>
-          <Link href="/notifications" aria-label="알림" className="w-9 h-9 flex items-center justify-center text-txt-primary active:scale-90 transition-transform">
+          <Link
+            href="/notifications"
+            aria-label="알림 보기"
+            title="알림 · 지원서·커피챗·초대 등"
+            className="w-9 h-9 flex items-center justify-center text-txt-primary active:scale-90 transition-transform"
+          >
             <Bell size={22} strokeWidth={1.8} />
           </Link>
         </div>
@@ -411,7 +421,8 @@ export const TopNavbar: React.FC = () => {
                 <div className="relative ml-1" ref={menuRef}>
                   <button
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    aria-label="프로필 메뉴"
+                    aria-label={isMenuOpen ? '프로필 메뉴 닫기' : '프로필 메뉴 열기 · 프로필·설정·로그아웃'}
+                    title={isMenuOpen ? '메뉴 닫기' : '프로필·설정·로그아웃'}
                     aria-expanded={isMenuOpen}
                     className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold transition-all border ${
                       isMenuOpen
