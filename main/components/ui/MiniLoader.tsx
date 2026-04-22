@@ -19,6 +19,8 @@ type Variant = 'page' | 'inline' | 'tiny'
 
 interface MiniLoaderProps {
   heading?: string
+  /** 부가 설명 — heading 아래 더 작은 글씨. 로딩이 2초 이상일 때 맥락 전달용. */
+  subheading?: string
   variant?: Variant
   /** Tailwind 클래스로 outer wrapper 추가 조정 가능 */
   className?: string
@@ -43,6 +45,7 @@ const VARIANT_STYLES: Record<Variant, { wrapper: string; spinner: string }> = {
 
 export function MiniLoader({
   heading,
+  subheading,
   variant = 'page',
   className = '',
 }: MiniLoaderProps) {
@@ -69,6 +72,11 @@ export function MiniLoader({
           }
         >
           {heading}
+        </p>
+      )}
+      {subheading && variant !== 'tiny' && (
+        <p className="text-[11px] text-txt-disabled max-w-xs text-center leading-relaxed">
+          {subheading}
         </p>
       )}
       {/* sr-only 라벨 — tiny variant 에서는 heading 생략되지만 스크린리더 안내는 유지 */}
