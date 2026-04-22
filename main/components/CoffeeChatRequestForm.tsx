@@ -142,7 +142,9 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
         </span>
       )}
       <p className="text-[13px] text-txt-tertiary mb-5">
-        {isPersonMode ? '상대방에게 보낼 메시지를 작성해주세요' : '메이커에게 보낼 메시지를 작성해주세요'}
+        {isPersonMode
+          ? '상대방에게 보낼 소개 메시지를 작성해 주세요. 짧게라도 누구인지·왜 만나고 싶은지를 적으시면 수락률이 올라갑니다.'
+          : '프로젝트 owner 에게 보낼 메시지를 작성해 주세요. 짧게라도 어떤 역할에 관심이 있는지를 적으시면 좋습니다.'}
       </p>
 
       {/* Template buttons */}
@@ -160,7 +162,7 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
 
       {profile && !profile.ai_chat_completed && (
         <p className="text-[11px] text-[#5E6AD2] mb-2 text-left">
-          AI 매칭 분석을 완료하면 수락률이 올라가요
+          💡 AI 매칭 분석을 먼저 완료하시면 상대가 내 성향을 확인할 수 있어 수락률이 올라갑니다.
         </p>
       )}
 
