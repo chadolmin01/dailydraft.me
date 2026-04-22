@@ -121,11 +121,13 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
         {/* Title */}
         <div>
           <label className="block text-[12px] font-medium text-txt-tertiary mb-1.5">제목</label>
+          <p className="text-[11px] text-txt-disabled mb-2">이번 주 핵심을 한 문장으로 요약해 주세요.</p>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="이번 주의 가장 큰 진전은?"
+            placeholder="예: MVP 랜딩 페이지 배포, 첫 유저 10명 확보"
+            aria-label="주간 업데이트 제목"
             maxLength={100}
             className="w-full px-4 py-3 bg-[#F7F8F9] dark:bg-[#1C1C1E] text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#5E6AD2]/30 rounded-xl text-txt-primary placeholder-txt-disabled"
           />
@@ -137,7 +139,7 @@ export const WriteUpdateForm: React.FC<WriteUpdateFormProps> = ({
         {/* Content */}
         <div>
           <label className="block text-[12px] font-medium text-txt-tertiary mb-1.5">내용</label>
-          <p className="text-[11px] text-txt-disabled mb-2">구체적인 숫자나 결과물이 있으면 더 좋아요</p>
+          <p className="text-[11px] text-txt-disabled mb-2">구체적인 숫자(사용자 수·매출·코드 라인) 나 스크린샷 링크가 있으면 기관 리포트에도 자동 반영됩니다.</p>
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
