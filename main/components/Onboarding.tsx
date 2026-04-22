@@ -75,10 +75,10 @@ const SKILLS_BY_POSITION: Record<string, string[]> = {
 /* ─── Step config ─── */
 
 const STEP_CONFIG: Record<string, { title: string; hint?: string }> = {
-  info:      { title: '기본 정보를 알려주세요', hint: '닉네임만 필수 · 나중에 수정 가능' },
-  situation: { title: 'Draft에서 무엇을 하고 싶으세요?' },
-  position:  { title: '어떤 분야에서 활동하세요?' },
-  interests: { title: '관심 있는 프로젝트 분야는요?', hint: '관심사가 겹치는 팀원을 추천해드려요' },
+  info:      { title: '기본 정보를 알려 주세요', hint: '닉네임만 필수 입력이며, 나머지는 언제든 프로필에서 수정하실 수 있습니다.' },
+  situation: { title: '프로젝트 쪽에서는 무엇을 하실 예정인가요?', hint: '답변에 따라 추천 프로젝트와 랜딩 화면이 달라집니다.' },
+  position:  { title: '어떤 분야에서 활동하시나요?', hint: '선택하신 분야에 맞춰 관련 기술 스택을 추천해 드립니다.' },
+  interests: { title: '관심 있는 프로젝트 분야는 어느 쪽인가요?', hint: '관심사가 겹치는 사람·프로젝트를 우선 보여 드립니다.' },
 }
 
 /* ── Shared chip style builder ── */
@@ -790,13 +790,13 @@ function IntroScreen({ onStart }: { onStart: () => void }) {
           className="text-2xl sm:text-[26px] font-black text-txt-primary leading-tight mb-2 text-center"
           style={{ animation: 'ob-bubble-in 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) 0.1s both' }}
         >
-          Draft 시작하기
+          Draft 에 오신 것을 환영합니다
         </h2>
         <p
-          className="text-[14px] text-txt-secondary leading-relaxed mb-6 text-center"
+          className="text-[14px] text-txt-secondary leading-relaxed mb-6 text-center break-keep max-w-sm"
           style={{ animation: 'ob-bubble-in 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) 0.2s both' }}
         >
-          시작하시기 전에 아래 약관을 확인하고 동의해 주세요
+          Draft 는 동아리·프로젝트의 운영 기록을 쌓는 공간입니다. 시작하시기 전에 아래 필수 약관을 확인하고 동의해 주세요.
         </p>
 
         {/* 전체 동의 */}

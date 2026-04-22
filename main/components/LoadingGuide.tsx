@@ -45,7 +45,7 @@ interface CTAItem {
 
 const CTA_CONFIG: Record<string, CTAItem> = {
   has_project: {
-    title: '프로젝트를 함께할 팀원을 찾아볼까요?',
+    title: '프로젝트를 함께할 팀원을 찾아보실까요?',
     primary: {
       label: '내 프로젝트 등록하기',
       desc: '팀원 모집부터 일정 관리까지 한 곳에서',
@@ -55,34 +55,70 @@ const CTA_CONFIG: Record<string, CTAItem> = {
     secondary: { label: '다른 프로젝트 둘러보기', href: '/explore', icon: FolderOpen },
   },
   want_to_join: {
-    title: '나에게 맞는 프로젝트를 찾아볼까요?',
+    title: '나에게 맞는 프로젝트를 찾아보실까요?',
     primary: {
-      label: '나에게 맞는 프로젝트 보기',
-      desc: '관심 분야와 기술 스택 기반 추천',
+      label: '맞는 프로젝트 보기',
+      desc: '관심 분야와 기술 스택 기반으로 추천해 드립니다',
       href: '/explore',
       icon: Search,
     },
     secondary: { label: '프로필 완성하기', href: '/profile', icon: UserPen },
   },
   solo: {
-    title: '같이 시작할 사람을 찾아볼까요?',
+    title: '같이 시작할 사람을 찾아보실까요?',
     primary: {
       label: '지금 뜨는 프로젝트 구경하기',
-      desc: '이번 주 인기 프로젝트를 확인해보세요',
+      desc: '이번 주 인기 프로젝트를 모아 드렸습니다',
       href: '/explore',
       icon: TrendingUp,
     },
     secondary: { label: '내 프로젝트 만들기', href: '/projects/new', icon: Plus },
   },
   exploring: {
-    title: '어디서부터 시작할지 고민이라면,',
+    title: '어디서부터 시작할지 고민이시라면',
     primary: {
-      label: '어떤 사람들이 있는지 보기',
-      desc: '다양한 포지션의 사람들을 만나보세요',
+      label: '어떤 분들이 있는지 보기',
+      desc: '다양한 포지션의 사람들을 만나 보세요',
       href: '/explore?tab=people',
       icon: Users,
     },
     secondary: { label: '프로젝트 둘러보기', href: '/explore', icon: FolderOpen },
+  },
+}
+
+/* ─── CTA Config by onboarding_source (신규, situation 보다 우선) ─── */
+// 2026-04-23: 유입 경로별 맞춤 landing. source 가 'matching' 이면 기존 situation
+// 기반 CTA_CONFIG 를 사용하고, 다른 경로는 아래 config 가 우선한다.
+const SOURCE_CTA_CONFIG: Record<string, CTAItem> = {
+  invite: {
+    title: '이미 동아리에 가입하셨습니다',
+    primary: {
+      label: '내 클럽으로 이동',
+      desc: '가입한 클럽의 최근 활동을 확인해 보세요',
+      href: '/dashboard',
+      icon: FolderOpen,
+    },
+    secondary: { label: '프로필 완성하기', href: '/profile', icon: UserPen },
+  },
+  operator: {
+    title: '운영 중인 동아리를 등록해 보시겠어요?',
+    primary: {
+      label: '새 클럽 만들기',
+      desc: '멤버 초대·주간 업데이트·Discord 연동까지',
+      href: '/clubs/new',
+      icon: Plus,
+    },
+    secondary: { label: '먼저 둘러보기', href: '/explore?tab=clubs', icon: Search },
+  },
+  exploring: {
+    title: '편하게 둘러보실 수 있습니다',
+    primary: {
+      label: '공개 프로젝트 보기',
+      desc: '어떤 프로젝트가 올라와 있는지 확인해 보세요',
+      href: '/explore',
+      icon: FolderOpen,
+    },
+    secondary: { label: '사람 둘러보기', href: '/explore?tab=people', icon: Users },
   },
 }
 
@@ -184,8 +220,12 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
 
   // next/image priority 로 동일 효과 — 별도 프리로드 불필요
 
+  // 2026-04-23: 유입 경로(onboarding_source) 가 matching 이 아니면 source 기반 CTA 우선,
+  // matching 이거나 레거시(NULL) 이면 기존 situation 기반 CTA 로 폴백.
+  const source = (profile as Tables<'profiles'> & { onboarding_source?: string | null } | null)?.onboarding_source ?? null
   const situation = profile?.current_situation ?? 'exploring'
-  const cta = CTA_CONFIG[situation] ?? CTA_CONFIG.exploring
+  const sourceCta = source && source !== 'matching' ? SOURCE_CTA_CONFIG[source] : undefined
+  const cta = sourceCta ?? CTA_CONFIG[situation] ?? CTA_CONFIG.exploring
   const nickname = profile?.nickname ?? '회원'
   const showNudge = completion.pct < 100
 
