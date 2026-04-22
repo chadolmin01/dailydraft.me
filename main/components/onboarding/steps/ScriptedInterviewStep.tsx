@@ -9,7 +9,11 @@ import type {
   EmojiGridQuestion, QuickNumberQuestion, SpectrumPickQuestion,
   ThisOrThatOption, EmojiGridOption,
 } from '@/src/lib/onboarding/types'
-import { INTERVIEW_SCRIPT } from '@/src/lib/onboarding/interview-script'
+import {
+  INTERVIEW_SCRIPT,
+  INTERVIEW_SECTIONS,
+  isFirstInSection,
+} from '@/src/lib/onboarding/interview-script'
 import { INTERACTIVE_QUESTIONS } from '@/src/lib/onboarding/interactive-questions'
 import { ScenarioCard } from '../interactive/ScenarioCard'
 import { ThisOrThat } from '../interactive/ThisOrThat'
@@ -327,44 +331,62 @@ export function ScriptedInterviewStep({ profile, introMessage, onAnswer, onCompl
       <div className="px-6 sm:px-10 pt-8 pb-4 shrink-0">
         <div className="max-w-2xl mx-auto space-y-3">
 
-          {/* Top row: back button + counter */}
+          {/* Top row: back button + section label + counter */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <button
                 onClick={handleBack}
                 className="w-7 h-7 flex items-center justify-center rounded-lg text-txt-secondary hover:text-txt-primary hover:bg-surface-sunken transition-colors shrink-0"
-                aria-label="이전 질문"
+                aria-label="이전 질문으로"
               >
                 <ArrowLeft size={15} />
               </button>
+              {question && (
+                <span
+                  key={`section-${question.section}`}
+                  className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-txt-secondary bg-surface-sunken px-2 py-0.5 rounded-full animate-in fade-in slide-in-from-left-2 duration-300"
+                  aria-label={`현재 섹션 ${INTERVIEW_SECTIONS[question.section].title}`}
+                >
+                  <span aria-hidden="true">{INTERVIEW_SECTIONS[question.section].emoji}</span>
+                  {INTERVIEW_SECTIONS[question.section].title}
+                </span>
+              )}
             </div>
             <span className="text-[12px] font-mono text-txt-secondary tabular-nums">
               {qIndex + 1} <span className="text-txt-tertiary">/ {total}</span>
             </span>
           </div>
 
-          {/* Segmented bar */}
-          <div className="flex gap-1.5">
-            {INTERVIEW_SCRIPT.map((_, i) => {
+          {/* Segmented bar — 섹션 경계에 작은 gap 으로 그룹핑 표시 */}
+          <div className="flex gap-1.5 items-center">
+            {INTERVIEW_SCRIPT.map((q, i) => {
               const isDone = i < qIndex || (i === qIndex && phase === 'answered')
               const isCurrent = i === qIndex && phase !== 'answered'
+              // 섹션 첫 번째 질문 앞에 시각적 여백 (i>0)
+              const leadSection = i > 0 && isFirstInSection(i)
               return (
-                <div
-                  key={i}
-                  className="flex-1 h-[5px] rounded-full overflow-hidden bg-surface-sunken"
-                >
-                  <div
-                    className={`h-full rounded-full transition-all duration-500 ease-out ${
-                      isDone ? 'bg-surface-inverse w-full'
-                      : isCurrent ? 'bg-brand'
-                      : 'w-0'
-                    }`}
-                    style={isCurrent ? {
-                      width: '100%',
-                      animation: 'segment-fill 0.6s cubic-bezier(0.16, 1, 0.3, 1) both',
-                    } : undefined}
-                  />
-                </div>
+                <React.Fragment key={i}>
+                  {leadSection && (
+                    <span
+                      className="w-1 h-[5px] rounded-full bg-border-subtle shrink-0"
+                      aria-hidden="true"
+                      title={`섹션 전환: ${INTERVIEW_SECTIONS[q.section].title}`}
+                    />
+                  )}
+                  <div className="flex-1 h-[5px] rounded-full overflow-hidden bg-surface-sunken">
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ease-out ${
+                        isDone ? 'bg-surface-inverse w-full'
+                        : isCurrent ? 'bg-brand'
+                        : 'w-0'
+                      }`}
+                      style={isCurrent ? {
+                        width: '100%',
+                        animation: 'segment-fill 0.6s cubic-bezier(0.16, 1, 0.3, 1) both',
+                      } : undefined}
+                    />
+                  </div>
+                </React.Fragment>
               )
             })}
           </div>
