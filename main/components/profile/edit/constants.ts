@@ -9,10 +9,10 @@ export const INTEREST_OPTIONS = [
 ]
 
 export const SITUATION_OPTIONS = [
-  { value: 'has_project', label: '프로젝트 진행 중 — 팀원을 찾고 있어요' },
-  { value: 'want_to_join', label: '팀 합류 희망 — 좋은 프로젝트에 참여하고 싶어요' },
+  { value: 'has_project', label: '프로젝트 진행 중 — 팀원을 찾고 있습니다' },
+  { value: 'want_to_join', label: '팀 합류 희망 — 좋은 프로젝트에 참여하고 싶습니다' },
   { value: 'solo', label: '함께 시작할 팀원 탐색 중' },
-  { value: 'exploring', label: '탐색 중 — 아직 구체적인 계획은 없어요' },
+  { value: 'exploring', label: '탐색 중 — 아직 구체적인 계획은 없습니다' },
 ]
 
 export const AFFILIATION_OPTIONS = [

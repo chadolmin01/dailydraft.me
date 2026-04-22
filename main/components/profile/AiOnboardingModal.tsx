@@ -32,7 +32,7 @@ export function AiOnboardingModal({ isOpen, onClose, onConfirm }: AiOnboardingMo
             </button>
           </div>
           <p className="text-xs text-txt-secondary leading-relaxed">
-            AI와 짧은 대화를 나누면 작업 스타일과 성향을 분석해서 더 정확한 팀 매칭이 가능해요. 약 2분 정도 소요됩니다.
+            AI 와 짧게 대화하시면 작업 스타일과 성향을 분석해 더 정확한 팀 매칭이 가능합니다. 약 2분 정도 소요되며, 기존 프로필 정보는 유지됩니다.
           </p>
         </div>
         <div className="flex items-center gap-2 px-6 pb-6 pt-2">

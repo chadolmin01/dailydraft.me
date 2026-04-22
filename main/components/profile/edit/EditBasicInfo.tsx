@@ -36,7 +36,7 @@ export const EditBasicInfo: React.FC<EditBasicInfoProps> = ({
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono text-txt-disabled">{nickname.length}/7</span>
             </div>
             {!nickname.trim() && (
-              <p className="text-xs text-status-danger-text mt-1">닉네임은 필수예요</p>
+              <p className="text-xs text-status-danger-text mt-1">닉네임은 필수 입력 항목입니다</p>
             )}
           </div>
           <div>

@@ -17,7 +17,7 @@ function buildTemplates({ clubName, cohort, memberCount, url }: Props) {
     kakao: [
       `${clubName}${cohortLine} 소개입니다.`,
       `현재 멤버 ${memberCount}명이 함께하고 있습니다.`,
-      `활동 기록은 Draft에서 확인하실 수 있어요 👇`,
+      `활동 기록은 Draft 에서 확인하실 수 있습니다 👇`,
       url,
     ].join('\n'),
     linkedin: [

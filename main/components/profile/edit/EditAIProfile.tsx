@@ -88,7 +88,7 @@ export const EditAIProfile: React.FC<EditAIProfileProps> = ({
       <h3 className="text-[10px] font-medium text-txt-tertiary mb-4 flex items-center gap-2">
         <Sparkles size={14} /> AI 프로필 분석
       </h3>
-      <p className="text-xs text-txt-tertiary mb-4">온보딩 AI 대화에서 분석된 데이터입니다. 직접 수정할 수 있어요.</p>
+      <p className="text-xs text-txt-tertiary mb-4">온보딩 AI 대화에서 분석된 데이터입니다. 틀리거나 달라진 항목은 직접 수정하실 수 있습니다.</p>
 
       {/* 작업 스타일 — 선택형 버튼 */}
       <div className="space-y-4 mb-6">

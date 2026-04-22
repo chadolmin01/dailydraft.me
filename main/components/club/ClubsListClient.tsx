@@ -225,7 +225,7 @@ export default function ClubsListClient() {
             <EmptyState
               icon={Building2}
               title={search ? '검색 결과가 없습니다' : '등록된 클럽이 없습니다'}
-              description={search ? '다른 키워드로 검색해보세요' : user ? '첫 번째 클럽을 만들어보세요' : '로그인하면 클럽을 만들 수 있어요'}
+              description={search ? '다른 키워드로 검색하시거나 카테고리 필터를 해제해 보세요.' : user ? '첫 번째 클럽을 만들어 기수 활동을 기록하기 시작하세요.' : '로그인하시면 직접 클럽을 만드실 수 있습니다.'}
               actionLabel={search ? undefined : user ? '클럽 만들기' : '로그인하기'}
               actionHref={search ? undefined : user ? '/clubs/new' : '/login?redirect=/clubs'}
             />
