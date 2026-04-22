@@ -103,14 +103,22 @@ export function ApplicationManageSection({ opportunityId }: { opportunityId: str
       accepted: '합류를 환영합니다!',
       rejected: '',
     }
-    const toastMessages: Record<ActionType, string> = {
-      interviewing: '약속잡기가 완료되었습니다. 커피챗이 생성되었습니다.',
-      accepted: '지원자가 팀에 추가되었습니다.',
-      rejected: '지원이 거절되었습니다.',
+    const toastDescriptions: Record<ActionType, string | undefined> = {
+      interviewing: '지원자에게 "약속잡기" 알림이 발송되고, 커피챗 탭에서 대화를 이어가실 수 있습니다.',
+      accepted: '지원자에게 수락 알림이 발송되었습니다. 팀 관리 탭에서 역할을 확인하실 수 있습니다.',
+      rejected: '지원자에게 결과 알림이 조용히 전달됩니다. 다시 지원하실 수도 있습니다.',
+    }
+    const toastTitles: Record<ActionType, string> = {
+      interviewing: '약속을 잡았습니다',
+      accepted: '지원자를 팀에 추가했습니다',
+      rejected: '지원을 거절했습니다',
     }
     updateApplication.mutate(
       { id: app.id, status: action, message: messages[action] },
-      { onSuccess: () => toast.success(toastMessages[action]) }
+      {
+        onSuccess: () =>
+          toast.success(toastTitles[action], { description: toastDescriptions[action] }),
+      }
     )
   }
 
@@ -133,8 +141,8 @@ export function ApplicationManageSection({ opportunityId }: { opportunityId: str
       <EmptyState
         icon={Users}
         title="아직 지원자가 없습니다"
-        description="프로젝트 링크를 공유해 후보를 모아보세요"
-        actionLabel="맞는 사람 찾기"
+        description="공유 버튼으로 프로젝트 링크를 카톡·Discord 로 뿌리시거나, 사람 탐색에서 직접 초대하실 수도 있습니다. 프로젝트를 방금 등록하셨다면 검색 반영까지 몇 분이 걸립니다."
+        actionLabel="맞는 사람 찾아 초대하기"
         actionHref="/explore?scope=people"
       />
     )
@@ -169,8 +177,14 @@ export function ApplicationManageSection({ opportunityId }: { opportunityId: str
     queryClient.invalidateQueries({ queryKey: ['applications', opportunityId] })
     queryClient.invalidateQueries({ queryKey: ['pending-count'] })
     queryClient.invalidateQueries({ queryKey: ['team', opportunityId] })
-    if (ok > 0) toast.success(`${ok}건을 처리했습니다`)
-    else toast.error('처리에 실패했습니다')
+    if (ok > 0)
+      toast.success(`${ok}건을 처리했습니다`, {
+        description: '지원자들에게 상태별 알림이 동시에 발송되었습니다. 결과는 각 탭에서 확인하실 수 있습니다.',
+      })
+    else
+      toast.error('처리에 실패했습니다', {
+        description: '네트워크를 확인하신 뒤 다시 시도해 주세요. 일부만 실패한 경우 목록을 새로고침하시면 현재 상태가 반영됩니다.',
+      })
   }
 
   return (
