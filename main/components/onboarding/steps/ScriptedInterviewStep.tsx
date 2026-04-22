@@ -231,9 +231,9 @@ export function ScriptedInterviewStep({ profile, introMessage, onAnswer, onCompl
         <div className="flex flex-col items-center animate-in fade-in duration-300">
           <Loader2 size={36} className="text-brand animate-spin mb-6" />
           <h2 className="text-lg font-bold text-txt-primary mb-1">
-            매칭 프로필을 만들고 있어요
+            매칭 프로필을 만들고 있습니다
           </h2>
-          <p className="text-sm text-txt-tertiary">잠시만 기다려주세요...</p>
+          <p className="text-sm text-txt-tertiary">잠시만 기다려 주세요. 20초 이내에 완료됩니다.</p>
         </div>
       </div>
     )
@@ -251,10 +251,10 @@ export function ScriptedInterviewStep({ profile, introMessage, onAnswer, onCompl
             <CheckCircle2 size={32} className="text-white" />
           </div>
           <h2 className="text-lg font-bold text-txt-primary mb-1">
-            완벽해요!
+            완료되었습니다
           </h2>
           <p className="text-sm text-txt-secondary">
-            이제 딱 맞는 팀원을 찾아볼게요
+            이제 매칭 정확도가 올라간 상태로 팀원을 추천해 드립니다
           </p>
         </div>
       </div>
@@ -274,11 +274,11 @@ export function ScriptedInterviewStep({ profile, introMessage, onAnswer, onCompl
 
           {/* Value proposition */}
           <h2 className="text-2xl sm:text-[28px] font-black text-txt-primary leading-tight mb-3 ob-bubble">
-            {onSkip ? '거의 다 왔어요!' : '매칭 정확도를 높여볼까요?'}
+            {onSkip ? '거의 다 왔습니다' : '매칭 정확도를 높여 보시겠어요?'}
           </h2>
           <p className="text-[15px] text-txt-secondary leading-relaxed mb-4 ob-bubble" style={{ animationDelay: '100ms' }}>
-            작업 스타일을 알면<br />
-            <span className="font-bold text-txt-primary">나랑 잘 맞는 팀원</span>을 찾아드릴 수 있어요
+            작업 스타일을 알려 주시면<br />
+            <span className="font-bold text-txt-primary">나와 잘 맞는 팀원</span>을 추천해 드릴 수 있습니다
           </p>
 
           {/* Benefits */}

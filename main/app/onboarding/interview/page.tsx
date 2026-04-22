@@ -114,7 +114,7 @@ export default function OnboardingInterviewPage() {
     <div className="fixed inset-0 bg-surface-bg flex flex-col">
       <ScriptedInterviewStep
         profile={profileDraft}
-        introMessage={`${profileDraft.name}님, 몇 가지만 골라주세요!`}
+        introMessage={`${profileDraft.name} 님, 몇 가지만 골라 주시면 팀 매칭이 훨씬 정확해집니다. 2분 정도 걸립니다.`}
         onAnswer={() => {}}
         onComplete={handleInterviewComplete}
         onSkip={handleSkip}

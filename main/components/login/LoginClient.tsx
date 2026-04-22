@@ -92,7 +92,7 @@ function LoginContent({ projects, people }: LoginClientProps) {
         else router.push(redirectTo)
       }
     } catch {
-      setError('인증 중 오류가 발생했습니다')
+      setError('인증 중 오류가 발생했습니다. 이메일 주소 형식과 비밀번호를 다시 확인해 주세요.')
     } finally {
       setIsSubmitting(false)
     }
@@ -113,7 +113,8 @@ function LoginContent({ projects, people }: LoginClientProps) {
       }
       // 성공 시 Supabase가 외부 provider로 redirect — 페이지가 떠날 예정이라 pending 유지
     } catch {
-      setError(`${provider === 'google' ? 'Google' : provider === 'github' ? 'GitHub' : 'Discord'} 로그인 중 오류가 발생했습니다`)
+      const providerName = provider === 'google' ? 'Google' : provider === 'github' ? 'GitHub' : 'Discord'
+      setError(`${providerName} 로그인 중 오류가 발생했습니다. 팝업 차단이 켜져 있거나 네트워크가 불안정할 수 있습니다. 잠시 후 다시 시도해 주세요.`)
       setOauthPending(null)
     }
   }

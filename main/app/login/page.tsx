@@ -66,8 +66,8 @@ export default async function LoginPage({
 
   // 실데이터 부족 시 최소 보장용 더미 — 마퀴가 빈 상태로 뜨는 걸 방지
   const FALLBACK_PROJECTS: LoginShowcaseProject[] = [
-    { title: '함께 만들기', desc: '함께 만들어갈 팀원을 찾고 있어요', roles: ['프론트엔드'], tags: ['React'] },
-    { title: 'AI 프로젝트', desc: 'AI 기반 서비스를 함께 만들어요', roles: ['백엔드'], tags: ['Python'] },
+    { title: '함께 만들기', desc: '함께 만들어갈 팀원을 찾고 있습니다', roles: ['프론트엔드'], tags: ['React'] },
+    { title: 'AI 프로젝트', desc: 'AI 기반 서비스를 함께 만듭니다', roles: ['백엔드'], tags: ['Python'] },
   ]
   const FALLBACK_PEOPLE: LoginShowcasePeople[] = [
     { name: '프론트엔드 개발자', initial: 'F', role: '프론트엔드', univ: '대학생', tags: ['React'], status: 'OPEN' },
