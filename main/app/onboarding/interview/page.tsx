@@ -9,6 +9,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { GuideCTA } from '@/components/LoadingGuide'
 import { ScriptedInterviewStep } from '@/components/onboarding/steps/ScriptedInterviewStep'
 import { saveProfileFromInterview } from '@/src/lib/onboarding/api'
+import { clearDraftLocal, loadDraftLocal } from '@/src/lib/onboarding/draft-storage'
 import type { ProfileDraft, StructuredResponse } from '@/src/lib/onboarding/types'
 
 /** All SVGs used during the interview — prefetch on mount */
@@ -54,6 +55,7 @@ export default function OnboardingInterviewPage() {
   // 없으면 DB profile 에서 재구성 (새로고침·다른 기기·재진입 대응).
   // 둘 다 없으면 /onboarding 으로.
   useEffect(() => {
+    // 1순위: sessionStorage (같은 탭 내 이동)
     try {
       const raw = sessionStorage.getItem('onboarding-draft')
       if (raw) {
@@ -61,7 +63,13 @@ export default function OnboardingInterviewPage() {
         return
       }
     } catch {}
-    // DB fallback — profile 이 로드 완료 + basic 온보딩 완료 상태여야 함
+    // 2순위: localStorage (다른 탭·재접속 복구)
+    const stored = loadDraftLocal()
+    if (stored?.draft?.name?.trim()) {
+      setProfileDraft(stored.draft)
+      return
+    }
+    // 3순위: DB profile 재구성
     if (profile && profile.onboarding_completed) {
       const reconstructed: ProfileDraft = {
         name: profile.nickname || '',
@@ -103,12 +111,14 @@ export default function OnboardingInterviewPage() {
       new Promise(resolve => setTimeout(resolve, 2500)),
     ])
 
-    sessionStorage.removeItem('onboarding-draft')
+    // 성공 시 로컬 스냅샷 완전 정리 (recovery offer 가 다시 뜨지 않게)
+    clearDraftLocal()
     setPhase('guide')
   }, [profileDraft, queryClient, refreshProfile])
 
   const handleSkip = useCallback(() => {
-    sessionStorage.removeItem('onboarding-draft')
+    // 성공 시 로컬 스냅샷 완전 정리 (recovery offer 가 다시 뜨지 않게)
+    clearDraftLocal()
     setPhase('guide')
   }, [])
 

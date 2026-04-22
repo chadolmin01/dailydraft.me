@@ -19,6 +19,13 @@ import {
 } from '@/src/lib/universities'
 import type { ProfileDraft } from '@/src/lib/onboarding/types'
 import { OnboardingComboBox } from './onboarding/OnboardingComboBox'
+import {
+  loadDraftLocal,
+  pruneStaleDraft,
+  hasMeaningfulDraft,
+  clearDraftLocal,
+} from '@/src/lib/onboarding/draft-storage'
+import { useOnboardingAutoSave } from '@/src/hooks/useOnboardingAutoSave'
 
 /**
  * 이메일 기반 대학 매칭 결과.
@@ -111,16 +118,24 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   const [slideKey, setSlideKey] = useState(0)
   const [slideDir, setSlideDir] = useState<SlideDir>('forward')
   const [attempted, setAttempted] = useState(false)
+  // 복구 제안 배너 — 로컬 스냅샷 발견 시 "이어서 작성하시겠습니까?" 노출
+  const [recoveryOffer, setRecoveryOffer] = useState<ProfileDraft | null>(null)
 
   const initRef = useRef(false)
   const profileRef = useRef(profile)
   profileRef.current = profile
+
+  // 2초 debounce 로 로컬 자동 저장. 단계 이동 직전엔 flush() 로 즉시 저장.
+  const autoSave = useOnboardingAutoSave(profile, { step }, { debounceMs: 1500, minNameLength: 1 })
 
   /* ── Init: auth → resume or fresh ── */
   useEffect(() => {
     if (initRef.current || authLoading) return
     if (isAuthenticated && authProfile === null) return
     initRef.current = true
+
+    // 7일 이상 오래된 스냅샷은 자동 폐기 (신뢰 불가)
+    pruneStaleDraft()
 
     // If redo-chat mode, redirect to interview directly via profile page
     const redoChat = searchParams.get('mode') === 'redo-chat'
@@ -142,10 +157,45 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     const sourceHint = searchParams.get('source')
     if (code) {
       setProfile(prev => ({ ...prev, source: 'invite', inviteCode: code }))
-    } else if (sourceHint === 'invite' || sourceHint === 'matching' || sourceHint === 'operator' || sourceHint === 'exploring') {
+      return
+    }
+    if (sourceHint === 'invite' || sourceHint === 'matching' || sourceHint === 'operator' || sourceHint === 'exploring') {
       setProfile(prev => ({ ...prev, source: sourceHint }))
+      return
+    }
+
+    // 로컬 스냅샷이 있으면 "이어서 작성" 제안 (URL 파라미터·redo 없는 경우만)
+    const stored = loadDraftLocal()
+    if (stored && hasMeaningfulDraft(stored.draft)) {
+      setRecoveryOffer(stored.draft)
     }
   }, [authLoading, authProfile, isAuthenticated, searchParams])
+
+  /* 복구 제안 수락 — 저장된 draft 를 현재 state 에 복원하고 적절한 단계로 점프 */
+  const acceptRecovery = useCallback(() => {
+    if (!recoveryOffer) return
+    setProfile(recoveryOffer)
+    // 복원된 source 가 있으면 source 이후 단계로, 없으면 source 단계로
+    if (!recoveryOffer.source) {
+      setStep('source')
+    } else if (!recoveryOffer.name?.trim()) {
+      setStep('info')
+    } else if (recoveryOffer.source === 'matching' && !recoveryOffer.situation) {
+      setStep('situation')
+    } else if (recoveryOffer.source === 'matching' && !recoveryOffer.position) {
+      setStep('position')
+    } else if (recoveryOffer.source === 'matching' && recoveryOffer.interests.length === 0) {
+      setStep('interests')
+    } else {
+      setStep('info')
+    }
+    setRecoveryOffer(null)
+  }, [recoveryOffer])
+
+  const declineRecovery = useCallback(() => {
+    clearDraftLocal()
+    setRecoveryOffer(null)
+  }, [])
 
   /* ── Prefetch all onboarding SVGs (Toss-style: zero-delay rendering) ── */
   useEffect(() => {
@@ -215,6 +265,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       return
     }
 
+    // 단계 이동 직전 로컬 스냅샷 강제 flush (다음 단계로 가는 중 탭 닫혀도 복구 가능)
+    autoSave.flush()
+
     if (stepIndex < activeSteps.length - 1) {
       goTo(activeSteps[stepIndex + 1])
     } else {
@@ -223,7 +276,10 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       if (p.source !== 'matching' && !p.situation) {
         p.situation = 'exploring'
       }
-      saveProfileCheckpoint(p).catch(console.error)
+      // 서버 저장은 fire-and-forget, 성공 시 로컬 스냅샷 정리
+      saveProfileCheckpoint(p)
+        .then(() => clearDraftLocal())
+        .catch(console.error)
       onComplete(p)
     }
   }, [step, stepIndex, activeSteps, goTo, onComplete])
@@ -276,6 +332,17 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     )
   }
 
+  /* ── Recovery banner (이전 입력 복구 제안) ── */
+  if (recoveryOffer) {
+    return (
+      <RecoveryOffer
+        draft={recoveryOffer}
+        onResume={acceptRecovery}
+        onDiscard={declineRecovery}
+      />
+    )
+  }
+
   /* ── Intro screen ── */
   if (step === 'intro') {
     return <IntroScreen onStart={() => goTo('source')} />
@@ -313,6 +380,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
               <ArrowLeft size={15} />
             </button>
             <div className="flex items-center gap-3">
+              <SaveIndicator status={autoSave.status} />
               <span className="text-[12px] font-mono text-txt-secondary tabular-nums">
                 {stepIndex + 1} <span className="text-txt-tertiary">/ {activeSteps.length}</span>
               </span>
@@ -989,6 +1057,117 @@ function SourceStep({ selected, onSelect, onBack, onNext, errorMsg }: SourceStep
             <ArrowRight size={15} />
           </button>
         </div>
+      </div>
+    </div>
+  )
+}
+
+/* ─── Save Indicator (자동 저장 상태 표시) ─── */
+// progress bar 옆 미니 배지. "저장 중 / 저장됨 / 오류" 를 조용히 보여 줌.
+function SaveIndicator({ status }: { status: 'idle' | 'saving' | 'saved' | 'error' }) {
+  if (status === 'idle') return null
+  if (status === 'saving') {
+    return (
+      <span
+        className="hidden sm:inline-flex items-center gap-1 text-[10px] text-txt-tertiary"
+        title="입력하신 내용을 기기에 저장 중입니다"
+      >
+        <span className="w-1.5 h-1.5 rounded-full bg-txt-tertiary animate-pulse" />
+        저장 중
+      </span>
+    )
+  }
+  if (status === 'saved') {
+    return (
+      <span
+        className="hidden sm:inline-flex items-center gap-1 text-[10px] text-brand"
+        title="브라우저를 닫으셔도 내용이 유지됩니다"
+      >
+        <Check size={10} strokeWidth={2.5} />
+        저장됨
+      </span>
+    )
+  }
+  return (
+    <span
+      className="hidden sm:inline-flex items-center gap-1 text-[10px] text-status-danger-text"
+      title="기기 저장 실패. 서버에는 단계 이동 시 저장됩니다"
+    >
+      ⚠ 저장 실패
+    </span>
+  )
+}
+
+/* ─── Recovery Offer (이전 작성 이어쓰기 제안) ─── */
+// localStorage 에 의미 있는 draft 가 있을 때 intro 대신 먼저 노출.
+// "계속 작성하기 / 새로 시작하기" 두 선택지.
+interface RecoveryOfferProps {
+  draft: ProfileDraft
+  onResume: () => void
+  onDiscard: () => void
+}
+
+function RecoveryOffer({ draft, onResume, onDiscard }: RecoveryOfferProps) {
+  const filled: string[] = []
+  if (draft.name?.trim()) filled.push(`닉네임 "${draft.name.trim()}"`)
+  if (draft.source) {
+    const src = SOURCE_OPTIONS.find(s => s.value === draft.source)
+    if (src) filled.push(src.label.replace(/ 왔습니다$|이시다면$/, ''))
+  }
+  if (draft.position) filled.push('활동 분야')
+  if (draft.interests.length > 0) filled.push(`관심 분야 ${draft.interests.length}개`)
+  if (draft.skills.length > 0) filled.push(`스킬 ${draft.skills.length}개`)
+
+  return (
+    <div className="fixed inset-0 bg-surface-bg flex flex-col items-center justify-center p-6">
+      <div
+        className="max-w-md w-full bg-surface-card border border-border rounded-3xl shadow-xl p-6 sm:p-8"
+        style={{ animation: 'ob-bubble-in 0.4s cubic-bezier(0.34, 1.4, 0.64, 1) both' }}
+      >
+        <div className="w-12 h-12 rounded-2xl bg-brand-bg flex items-center justify-center mb-4">
+          <CheckCircle2 size={22} className="text-brand" strokeWidth={2} />
+        </div>
+        <h2 className="text-[20px] font-bold text-txt-primary mb-2 leading-tight">
+          이전에 작성하시던 내용이 있습니다
+        </h2>
+        <p className="text-[13px] text-txt-secondary leading-relaxed mb-4 break-keep">
+          이어서 작성하실 수 있도록 기기에 자동 저장되어 있었습니다. 처음부터 다시 시작하고 싶으시면 &quot;새로 시작&quot; 을 눌러 주세요.
+        </p>
+        {filled.length > 0 && (
+          <div className="bg-surface-sunken rounded-2xl p-3.5 mb-5">
+            <p className="text-[10px] font-semibold text-txt-tertiary uppercase tracking-wider mb-1.5">
+              저장된 항목
+            </p>
+            <ul className="text-[12px] text-txt-secondary space-y-0.5">
+              {filled.map((item, i) => (
+                <li key={i} className="flex items-start gap-1.5">
+                  <Check size={11} className="text-brand shrink-0 mt-1" strokeWidth={2.5} />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        <div className="space-y-2">
+          <button
+            type="button"
+            onClick={onResume}
+            className="w-full flex items-center justify-center gap-2 py-3.5 bg-surface-inverse text-txt-inverse rounded-full text-[14px] font-bold hover:opacity-90 active:scale-[0.97] transition-all"
+          >
+            <ArrowRight size={14} />
+            이어서 작성하기
+          </button>
+          <button
+            type="button"
+            onClick={onDiscard}
+            className="w-full py-3.5 text-[13px] font-semibold text-txt-secondary hover:text-txt-primary transition-colors"
+          >
+            새로 시작하기
+          </button>
+        </div>
+        <p className="text-[11px] text-txt-tertiary text-center mt-4 leading-relaxed">
+          저장된 내용은 기기에만 보관되며, 새로 시작하시면 완전히 삭제됩니다.
+        </p>
       </div>
     </div>
   )
