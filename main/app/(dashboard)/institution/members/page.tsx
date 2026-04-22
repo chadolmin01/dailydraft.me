@@ -100,7 +100,7 @@ export default function InstitutionMembersPage() {
       })
       if (!res.ok) {
         const err = await res.json()
-        throw new Error(err.error?.message || '멤버 추가 실패')
+        throw new Error(err.error?.message || '멤버를 추가하지 못했습니다. 이메일 중복 또는 권한 부족일 수 있습니다.')
       }
       return res.json()
     },
