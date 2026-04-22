@@ -30,7 +30,7 @@ export default function GlobalError({
           </div>
 
           <h2 className="text-[20px] font-bold text-txt-primary mb-2">
-            잠깐 문제가 생겼어요
+            잠깐 문제가 생겼습니다
           </h2>
           <p className="text-[14px] text-txt-secondary leading-relaxed mb-1">
             일시적인 오류입니다. 다시 시도하면 대부분 해결됩니다.

@@ -22,7 +22,7 @@ type TemplateKind = 'kakao' | 'discord' | 'poster'
 
 const TEMPLATES: Record<TemplateKind, (args: { clubName: string; inviteUrl: string; code: string; cohort: string | null }) => string> = {
   kakao: ({ clubName, inviteUrl, code, cohort }) =>
-    `안녕하세요! ${clubName}${cohort ? ` ${cohort}기` : ''} 가입 안내입니다 🙂\n\n아래 링크로 초대 코드를 입력하면 바로 가입할 수 있어요.\n\n${inviteUrl}\n\n초대 코드: ${code}\n\n기수 활동에서 만나요!`,
+    `안녕하세요! ${clubName}${cohort ? ` ${cohort}기` : ''} 가입 안내입니다 🙂\n\n아래 링크로 접속하시면 초대 코드가 자동 입력되어 바로 가입하실 수 있습니다.\n\n${inviteUrl}\n\n초대 코드: ${code}\n\n기수 활동에서 뵙겠습니다.`,
   discord: ({ clubName, inviteUrl, code, cohort }) =>
     `@everyone ${clubName}${cohort ? ` ${cohort}기` : ''} 신규 모집이 시작됐습니다.\n\n✅ 가입 링크: ${inviteUrl}\n✅ 초대 코드: \`${code}\`\n\n질문은 이 채널에 남겨주세요.`,
   poster: ({ clubName, inviteUrl, code, cohort }) =>

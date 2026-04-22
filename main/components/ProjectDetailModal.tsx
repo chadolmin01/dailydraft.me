@@ -433,7 +433,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                                   onClick={() => {
                                     updateOpportunity.mutate(
                                       { id: opportunity.id, updates: { type: opt.value as 'side_project' | 'startup' | 'study' } },
-                                      { onSuccess: () => toast.success('프로젝트 유형이 변경되었습니다'), onError: () => toast.error('변경에 실패했어요') },
+                                      { onSuccess: () => toast.success('프로젝트 유형이 변경되었습니다'), onError: () => toast.error('변경에 실패했습니다. 잠시 후 다시 시도해 주세요.') },
                                     )
                                     setShowTypeSelector(false)
                                   }}

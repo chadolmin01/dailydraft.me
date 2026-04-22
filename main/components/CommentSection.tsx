@@ -86,13 +86,13 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
       setContent('')
       showMessage('success', '댓글이 등록되었습니다')
     } else {
-      showMessage('error', '댓글 등록에 실패했어요')
+      showMessage('error', '댓글 등록에 실패했습니다. 잠시 후 다시 시도해 주세요.')
     }
     setSubmitting(false)
   }
 
   const handleVote = async (commentId: string) => {
-    if (votedComments.has(commentId)) { showMessage('info', '이미 평가한 댓글이에요'); return }
+    if (votedComments.has(commentId)) { showMessage('info', '이미 평가하신 댓글입니다'); return }
 
     const identifier = getVoterIdentifier()
     const success = await voteHelpful(commentId, identifier)
@@ -101,12 +101,12 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
       const newVoted = new Set(votedComments).add(commentId)
       setVotedComments(newVoted)
       localStorage.setItem(`voted_${opportunityId}`, JSON.stringify([...newVoted]))
-      showMessage('success', '도움이 됐어요!')
+      showMessage('success', '도움이 되셨다고 표시했습니다')
     }
   }
 
   const handleReport = async (commentId: string) => {
-    if (reportedComments.has(commentId)) { showMessage('info', '이미 신고한 댓글이에요'); return }
+    if (reportedComments.has(commentId)) { showMessage('info', '이미 신고하신 댓글입니다'); return }
 
     const identifier = getVoterIdentifier()
     const success = await reportComment(commentId, identifier, 'inappropriate')
@@ -115,9 +115,9 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
       const newReported = new Set(reportedComments).add(commentId)
       setReportedComments(newReported)
       localStorage.setItem(`reported_${opportunityId}`, JSON.stringify([...newReported]))
-      showMessage('success', '신고가 접수되었습니다')
+      showMessage('success', '신고가 접수되었습니다. 확인 후 운영진이 조치합니다.')
     } else {
-      showMessage('error', '신고 처리에 실패했어요')
+      showMessage('error', '신고 처리에 실패했습니다. 잠시 후 다시 시도해 주세요.')
     }
   }
 
@@ -129,9 +129,9 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
     setPendingDeleteId(null)
     deleteComment(id).then((success) => {
       if (success) {
-        showMessage('success', '댓글을 삭제했어요')
+        showMessage('success', '댓글을 삭제했습니다')
       } else {
-        showMessage('error', '삭제에 실패했어요')
+        showMessage('error', '삭제에 실패했습니다. 페이지 새로고침 후 다시 시도해 주세요.')
       }
     })
   }
@@ -216,7 +216,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
           <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-[#F2F3F5] dark:bg-[#2C2C2E] empty-float mb-3">
             <MessageCircle size={18} className="text-txt-disabled" strokeWidth={1.5} />
           </div>
-          <p className="text-[13px] text-txt-tertiary">아직 {COMMENT_LABEL}이 없어요</p>
+          <p className="text-[13px] text-txt-tertiary">아직 {COMMENT_LABEL}이 없습니다. 첫 {COMMENT_LABEL}을 남겨 보세요.</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -251,8 +251,8 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ opportunityId, o
         onClose={() => setPendingDeleteId(null)}
         onConfirm={handleDeleteConfirm}
         title="댓글 삭제"
-        message="이 댓글을 삭제하시겠어요? 삭제한 댓글은 복구할 수 없어요."
-        confirmText="삭제"
+        message="이 댓글을 삭제하시겠습니까? 삭제한 댓글은 복구되지 않으며, 다른 사용자가 남긴 답글은 그대로 유지됩니다."
+        confirmText="삭제하기"
         cancelText="취소"
         variant="danger"
       />

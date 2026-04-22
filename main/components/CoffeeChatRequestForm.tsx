@@ -80,11 +80,11 @@ export const CoffeeChatRequestForm: React.FC<CoffeeChatRequestFormProps> = ({
         <div className="w-14 h-14 bg-[#E8F5E9] dark:bg-[#1B3A2D] rounded-2xl flex items-center justify-center mb-4 mx-auto">
           <Coffee size={24} className="text-[#34C759]" />
         </div>
-        <h3 className="text-[20px] font-bold text-txt-primary mb-2">커피챗 신청 완료!</h3>
+        <h3 className="text-[20px] font-bold text-txt-primary mb-2">커피챗을 신청했습니다</h3>
         <p className="text-[14px] text-txt-tertiary mb-6">
           {isPersonMode
-            ? '상대방에게 알림이 전송되었습니다. 수락되면 연락처를 받을 수 있어요.'
-            : '메이커에게 알림이 전송되었습니다. 수락되면 연락처를 받을 수 있어요.'}
+            ? '상대방에게 알림이 전송되었습니다. 수락하시면 서로의 연락처가 자동으로 공유됩니다. 응답은 보통 1~3일 이내에 옵니다.'
+            : '프로젝트 owner 에게 알림이 전송되었습니다. 수락하시면 연락처가 공유됩니다. 응답은 보통 1~3일 이내에 옵니다.'}
         </p>
 
         {showPushPrompt && (

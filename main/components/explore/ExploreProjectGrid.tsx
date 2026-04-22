@@ -145,7 +145,7 @@ export function ExploreProjectGrid({
                 <Sparkles size={22} className="text-brand" />
               </div>
               <p className="text-base font-bold text-txt-primary mb-2">
-                지금 보고 있는 건 일반 정렬이에요
+                지금은 일반 정렬로 표시되고 있습니다
               </p>
               <p className="text-sm text-txt-secondary mb-6 leading-relaxed">
                 로그인하면 내 스킬·관심사 기반으로<br />
@@ -221,7 +221,7 @@ function ProjectCardItem({ card: p, index, onSelectProject, onPrefetchProject }:
         </div>
         <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5 z-[1]">
           {p.matchLabel && (
-            <span title="AI가 프로필 기반으로 추천했어요" className={`animate-badge-pop text-[10px] font-semibold px-2.5 py-1 rounded-full flex items-center gap-1 ${
+            <span title="AI 가 내 프로필·관심사·이전 활동을 기반으로 추천한 프로젝트입니다" className={`animate-badge-pop text-[10px] font-semibold px-2.5 py-1 rounded-full flex items-center gap-1 ${
               p.matchLabel === '잘 맞는 프로젝트'
                 ? 'bg-[#34C759] text-white'
                 : 'bg-black/70 backdrop-blur-sm text-white'
