@@ -291,10 +291,13 @@ export default function DashboardClient() {
         {/* ═══════════════════════════════════ */}
         {isOperator && operatorClubs.length > 0 && (
           <section className="mb-10">
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-2 mb-1">
               <TrendingUp size={16} className="text-txt-primary" />
               <h2 className="text-[17px] font-bold text-txt-primary">운영 중인 클럽</h2>
             </div>
+            <p className="text-[12px] text-txt-tertiary mb-4 leading-relaxed">
+              승인 대기 중인 멤버가 있으면 운영자 페이지로, 아니면 일반 클럽 페이지로 이동합니다. 카드에 표시되는 숫자는 지금 확인이 필요한 항목입니다.
+            </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {operatorClubs.map(club => {
                 const pending = operatorPending.find(p => p.slug === club.slug)
