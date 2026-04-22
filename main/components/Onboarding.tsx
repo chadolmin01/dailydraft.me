@@ -420,8 +420,8 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       {/* ── Content ── */}
       <div
         key={slideKey}
-        className={`flex-1 flex flex-col min-h-0 overflow-y-auto animate-in fade-in duration-300 ${
-          slideDir === 'back' ? 'slide-in-from-left-8' : 'slide-in-from-right-8'
+        className={`flex-1 flex flex-col min-h-0 overflow-y-auto ${
+          slideDir === 'back' ? 'ob-slide-back' : 'ob-slide-forward'
         }`}
       >
         <div className="max-w-2xl mx-auto w-full px-6 pt-2 pb-8 flex flex-col flex-1">
@@ -997,17 +997,20 @@ function SourceStep({ selected, onSelect, onBack, onNext, errorMsg }: SourceStep
           </p>
 
           <div className="space-y-2.5">
-            {SOURCE_OPTIONS.map((opt) => {
+            {SOURCE_OPTIONS.map((opt, i) => {
               const active = selected === opt.value
               return (
                 <button
                   key={opt.value}
                   type="button"
                   onClick={() => onSelect(opt.value)}
-                  className={`w-full text-left rounded-2xl border p-4 transition-all duration-150 ${
+                  style={{
+                    animation: `ob-chip-in 0.35s cubic-bezier(0.34, 1.4, 0.64, 1) ${i * 50}ms both`,
+                  }}
+                  className={`w-full text-left rounded-2xl border p-4 transition-all duration-200 ${
                     active
-                      ? 'bg-brand text-white border-brand shadow-sm'
-                      : 'bg-surface-card text-txt-primary border-border hover:border-txt-tertiary active:scale-[0.99]'
+                      ? 'bg-brand text-white border-brand shadow-md scale-[1.015]'
+                      : 'bg-surface-card text-txt-primary border-border hover:border-txt-tertiary hover:-translate-y-0.5 hover:shadow-sm active:scale-[0.99]'
                   }`}
                 >
                   <div className="flex items-start gap-3">
