@@ -213,8 +213,8 @@ export default function DashboardClient() {
 
         {/* Hero 인사 */}
         <div className="mb-8">
-          <p className="text-[13px] text-txt-tertiary mb-1">{greeting()}</p>
-          <h1 className="text-[28px] sm:text-[32px] font-bold text-txt-primary tracking-tight">
+          <p className="text-[13px] text-txt-tertiary mb-1 ob-stagger-item" style={{ ['--stagger' as string]: '20ms' }}>{greeting()}</p>
+          <h1 className="text-[28px] sm:text-[32px] font-bold text-txt-primary tracking-tight ob-title-rise">
             {profile?.nickname ?? user?.email?.split('@')[0] ?? '...'}
           </h1>
           {isOperator && (
