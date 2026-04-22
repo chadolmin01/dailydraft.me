@@ -597,12 +597,23 @@ a[class*="px-"]:active {
   .ob-select-pop,
   .ob-select-circle,
   .ob-slide-forward,
-  .ob-slide-back {
+  .ob-slide-back,
+  .ob-stagger-item,
+  .ob-title-rise,
+  .ob-card-select,
+  .ob-tick path {
     animation-duration: 0.12s !important;
     animation-timing-function: linear !important;
+    animation-delay: 0s !important;
   }
-  .ob-hover:hover { transform: none !important; }
+  .ob-hover:hover,
+  .ob-lift:hover,
+  .ob-ring-glow:hover,
+  .ob-press-spring:active { transform: none !important; }
   .ob-img-fade { transition-duration: 0.08s !important; }
+  .ob-progress-active::after { animation: none !important; display: none; }
+  .ob-atmos::before { opacity: 0.15 !important; }
+  .ob-check-pop { animation-duration: 0.14s !important; }
 }
 
 /* Interactive selection effects */
@@ -611,6 +622,213 @@ a[class*="px-"]:active {
 @keyframes ob-ripple { 0% { transform:scale(0.8);opacity:0.6 } 100% { transform:scale(2.2);opacity:0 } }
 .ob-select-pop { animation: ob-select-pop 0.35s cubic-bezier(0.34,1.4,0.64,1) both }
 .ob-select-circle { animation: ob-select-circle 0.3s cubic-bezier(0.34,1.56,0.64,1) both }
+
+/* ──────────────────────────────────────────────────────────────
+   Enterprise-grade micro-interaction layer (2026-04-23)
+   - 공통 스프링 easing · 스태거 진입 · 버튼 프레스 · 입력 포커스
+   - Linear/Toss 감성 기준. reduced-motion 에서는 모두 완화됨.
+   ────────────────────────────────────────────────────────────── */
+
+/* Stagger entry — 자식에 .ob-stagger-item + inline style={{'--stagger': '${i*40}ms'}} */
+@keyframes ob-stagger-in {
+  0% { opacity: 0; transform: translateY(10px) scale(0.98); filter: blur(2px); }
+  60% { opacity: 1; filter: blur(0); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+.ob-stagger-item {
+  animation: ob-stagger-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--stagger, 0ms);
+}
+
+/* Spring press — 버튼/카드 클릭 시 squeeze + bounce back */
+@keyframes ob-press {
+  0% { transform: scale(1); }
+  35% { transform: scale(0.96); }
+  100% { transform: scale(1); }
+}
+.ob-press-spring {
+  transition: transform 200ms cubic-bezier(0.34, 1.4, 0.64, 1),
+              box-shadow 200ms cubic-bezier(0.34, 1.4, 0.64, 1),
+              background-color 150ms ease-out;
+}
+.ob-press-spring:active { animation: ob-press 280ms cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+/* Lift — 카드 hover elevation */
+.ob-lift {
+  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 260ms cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 180ms ease-out;
+}
+.ob-lift:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px -4px rgba(0,0,0,0.08), 0 2px 6px -2px rgba(0,0,0,0.04);
+}
+.ob-lift:active:not(:disabled) {
+  transform: translateY(0);
+  transition-duration: 80ms;
+}
+
+/* Progress segment — 활성 세그먼트에 은은한 shimmer overlay */
+@keyframes ob-progress-shimmer {
+  0% { background-position: -120% 0; }
+  100% { background-position: 220% 0; }
+}
+.ob-progress-active {
+  position: relative;
+  overflow: hidden;
+}
+.ob-progress-active::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.45) 50%, transparent 100%);
+  background-size: 50% 100%;
+  background-repeat: no-repeat;
+  animation: ob-progress-shimmer 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  pointer-events: none;
+}
+
+/* Input focus — 부드러운 밑줄 bloom */
+@keyframes ob-underline-bloom {
+  0% { transform: scaleX(0); opacity: 0.6; }
+  100% { transform: scaleX(1); opacity: 1; }
+}
+.ob-focus-underline {
+  position: relative;
+}
+.ob-focus-underline::after {
+  content: '';
+  position: absolute; left: 0; right: 0; bottom: -1px;
+  height: 2px; border-radius: 2px;
+  background: var(--brand);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), opacity 160ms ease-out;
+  opacity: 0;
+}
+.ob-focus-underline:focus-within::after,
+.ob-focus-underline:has(:focus-visible)::after {
+  transform: scaleX(1);
+  opacity: 1;
+}
+
+/* Soft fade+rise for section headers during step transitions */
+@keyframes ob-title-rise {
+  0% { opacity: 0; transform: translateY(14px); letter-spacing: 0.01em; }
+  100% { opacity: 1; transform: translateY(0); letter-spacing: 0; }
+}
+.ob-title-rise { animation: ob-title-rise 0.44s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* Radio/checkbox tick bloom */
+@keyframes ob-tick-draw {
+  0% { stroke-dashoffset: 16; opacity: 0; transform: scale(0.7); }
+  55% { opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 1; transform: scale(1); }
+}
+.ob-tick path {
+  stroke-dasharray: 16;
+  animation: ob-tick-draw 0.36s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Selected card — highlight pulse on selection */
+@keyframes ob-card-select {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 var(--brand); }
+  40% { transform: scale(1.015); box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand) 18%, transparent); }
+  100% { transform: scale(1.015); box-shadow: 0 4px 14px -2px color-mix(in srgb, var(--brand) 22%, transparent); }
+}
+.ob-card-select { animation: ob-card-select 0.42s cubic-bezier(0.34, 1.4, 0.64, 1) both; }
+
+/* ──────────────────────────────────────────────────────────────
+   Atmospheric background — flat bg → 옅은 radial gradient 로 깊이감.
+   엔터프라이즈 랜딩 (Linear, Notion, Vercel) 공통 패턴: 중앙은 살짝
+   밝고 가장자리로 갈수록 옅은 그림자. 순간적으로 눈이 쉬어짐.
+   ────────────────────────────────────────────────────────────── */
+.ob-atmos {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, color-mix(in srgb, var(--brand) 4%, transparent) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 50% 100%, color-mix(in srgb, var(--brand) 3%, transparent) 0%, transparent 60%),
+    var(--surface-bg);
+  position: relative;
+}
+.ob-atmos::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--txt-primary) 3%, transparent) 1px, transparent 0);
+  background-size: 32px 32px;
+  opacity: 0.4;
+  pointer-events: none;
+  mask-image: radial-gradient(ellipse 90% 70% at 50% 30%, black 0%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 30%, black 0%, transparent 75%);
+}
+
+/* Ring glow — hover/focus 시 brand-tinted 퍼지는 링 (shadow 대신) */
+.ob-ring-glow {
+  transition: box-shadow 280ms cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 220ms cubic-bezier(0.22, 1, 0.36, 1),
+              transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+              background-color 200ms ease-out;
+}
+.ob-ring-glow:hover:not(:disabled):not([aria-checked="true"]) {
+  border-color: color-mix(in srgb, var(--brand) 35%, var(--border));
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand) 8%, transparent),
+              0 2px 8px -2px color-mix(in srgb, var(--brand) 12%, transparent);
+  transform: translateY(-1px);
+}
+.ob-ring-glow:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 35%, transparent);
+}
+.ob-ring-glow[aria-checked="true"],
+.ob-ring-glow.is-selected {
+  box-shadow: 0 0 0 2px var(--brand),
+              0 8px 24px -6px color-mix(in srgb, var(--brand) 30%, transparent),
+              inset 0 1px 0 color-mix(in srgb, white 15%, transparent);
+}
+
+/* Smoother color transitions — 기본 transition-colors 대체 */
+.ob-smooth-colors {
+  transition: color 240ms cubic-bezier(0.22, 1, 0.36, 1),
+              background-color 240ms cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Input refinement — focus 시 brand 링이 부드럽게 bloom */
+.ob-input {
+  transition: border-color 220ms cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 280ms cubic-bezier(0.22, 1, 0.36, 1),
+              background-color 220ms ease-out;
+}
+.ob-input:hover:not(:disabled):not(:focus) {
+  border-color: color-mix(in srgb, var(--txt-primary) 20%, var(--border));
+}
+.ob-input:focus {
+  outline: none;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand) 14%, transparent);
+}
+
+/* Progress container — 활성 세그먼트 하단에 은은한 brand glow */
+.ob-progress-container {
+  position: relative;
+}
+.ob-progress-container::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: -8px; height: 8px;
+  background: radial-gradient(ellipse 30% 100% at 50% 0%, color-mix(in srgb, var(--brand) 18%, transparent) 0%, transparent 80%);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Checkbox tick — 커스텀 체크박스 드로잉 */
+@keyframes ob-check-pop {
+  0% { transform: scale(0.3) rotate(-8deg); opacity: 0; }
+  60% { transform: scale(1.15) rotate(2deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+.ob-check-pop { animation: ob-check-pop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+/* Crossfade helper — SaveIndicator 상태 전환 등 */
+.ob-crossfade { animation: ob-stagger-in 0.28s cubic-bezier(0.22, 1, 0.36, 1) both; }
 
 /* ── Completing animation: pulse dot → expand circle → icon + text ── */
 

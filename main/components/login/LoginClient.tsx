@@ -172,7 +172,7 @@ function LoginContent({ projects, people }: LoginClientProps) {
                   onClick={oauthHandler('google')}
                   type="button"
                   disabled={oauthPending !== null}
-                  className="w-full flex items-center justify-center gap-3 px-4 py-3.5 bg-surface-card rounded-xl border border-border text-sm font-semibold text-txt-primary hover:bg-surface-sunken hover:border-border hover:shadow-sm active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="ob-press-spring ob-ring-glow w-full flex items-center justify-center gap-3 px-4 py-3.5 bg-surface-card rounded-xl border border-border text-sm font-semibold text-txt-primary disabled:opacity-60 disabled:cursor-not-allowed"
                >
                   {oauthPending === 'google' ? <Loader2 size={18} className="animate-spin" /> : <Chrome size={18} />}
                   Google로 계속하기
@@ -223,7 +223,7 @@ function LoginContent({ projects, people }: LoginClientProps) {
                            type="text"
                            value={nickname}
                            onChange={(e) => setNickname(e.target.value)}
-                           className="w-full px-4 py-3.5 bg-surface-sunken rounded-xl border border-border text-base sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand focus:bg-surface-card transition-all placeholder:text-txt-disabled"
+                           className="ob-input w-full px-4 py-3.5 bg-surface-sunken rounded-xl border border-border text-base sm:text-sm font-medium focus:bg-surface-card placeholder:text-txt-disabled"
                            placeholder="닉네임을 입력하세요"
                            required={isSignUp}
                            autoComplete="nickname"
@@ -237,7 +237,7 @@ function LoginContent({ projects, people }: LoginClientProps) {
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full px-4 py-3.5 bg-surface-sunken rounded-xl border border-border text-base sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand focus:bg-surface-card transition-all placeholder:text-txt-disabled font-mono"
+                        className="ob-input w-full px-4 py-3.5 bg-surface-sunken rounded-xl border border-border text-base sm:text-sm font-medium focus:bg-surface-card placeholder:text-txt-disabled font-mono"
                         placeholder="email@example.com"
                         inputMode="email"
                         autoComplete="email"
@@ -253,7 +253,7 @@ function LoginContent({ projects, people }: LoginClientProps) {
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="w-full px-4 py-3.5 bg-surface-sunken rounded-xl border border-border text-base sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand focus:bg-surface-card transition-all placeholder:text-txt-disabled"
+                        className="ob-input w-full px-4 py-3.5 bg-surface-sunken rounded-xl border border-border text-base sm:text-sm font-medium focus:bg-surface-card placeholder:text-txt-disabled"
                         placeholder={isSignUp ? '영문·숫자·기호 조합을 추천드립니다' : '로그인 비밀번호'}
                         aria-label={isSignUp ? '가입에 사용할 비밀번호 (최소 6자)' : '로그인 비밀번호'}
                         required
@@ -265,7 +265,7 @@ function LoginContent({ projects, people }: LoginClientProps) {
                   <button
                      type="submit"
                      disabled={isSubmitting || oauthPending !== null}
-                     className="w-full bg-brand text-white py-3.5 rounded-xl text-sm font-bold hover:bg-brand-hover transition-all flex items-center justify-center gap-2 group active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+                     className="ob-press-spring w-full bg-brand text-white py-3.5 rounded-xl text-sm font-bold hover:bg-brand-hover shadow-[0_4px_14px_-4px_rgba(94,106,210,0.35)] hover:shadow-[0_6px_20px_-4px_rgba(94,106,210,0.45)] flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                      {isSubmitting ? (
                         <Loader2 size={16} className="animate-spin" />
