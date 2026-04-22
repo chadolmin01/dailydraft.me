@@ -155,7 +155,7 @@ export function ProfileInvitations() {
                     <button
                       onClick={() => handleAccept(inv.id)}
                       disabled={respondToInvitation.isPending}
-                      className="px-3 py-1.5 text-xs font-bold bg-indicator-online text-white border border-indicator-online hover:bg-indicator-online/90 hover:opacity-90 active:scale-[0.97] transition-all"
+                      className="px-3 py-1.5 text-xs font-bold bg-indicator-online text-white border border-indicator-online hover:bg-indicator-online/90 hover:opacity-90 ob-press-spring"
                     >
                       수락
                     </button>
@@ -169,7 +169,7 @@ export function ProfileInvitations() {
                         }
                       }}
                       disabled={respondToInvitation.isPending}
-                      className="px-3 py-1.5 text-xs font-bold border border-border text-txt-secondary hover:bg-surface-sunken hover:shadow-md active:scale-[0.97] transition-all"
+                      className="px-3 py-1.5 text-xs font-bold border border-border text-txt-secondary hover:bg-surface-sunken hover:shadow-md ob-press-spring"
                     >
                       {decliningId === inv.id ? '거절 확정' : '거절'}
                     </button>

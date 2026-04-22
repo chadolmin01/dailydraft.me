@@ -152,7 +152,7 @@ export const PersonaEngine: React.FC = () => {
         >
           <Link
             href="#pricing"
-            className="group inline-flex items-center gap-1.5 bg-surface-inverse text-txt-inverse rounded-full px-6 py-3 text-[14px] font-semibold hover:opacity-90 active:scale-[0.98] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+            className="group inline-flex items-center gap-1.5 bg-surface-inverse text-txt-inverse rounded-full px-6 py-3 text-[14px] font-semibold ob-press-spring hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
           >
             Pro로 열기
             <ArrowRight

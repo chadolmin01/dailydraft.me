@@ -125,7 +125,7 @@ export function ProfileSentInvitations() {
                       <button
                         onClick={() => handleRemind(inv.id)}
                         disabled={remindInvitation.isPending}
-                        className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-bold bg-amber-500 text-white hover:bg-amber-600 active:scale-[0.97] transition-all rounded"
+                        className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-bold bg-amber-500 text-white hover:bg-amber-600 ob-press-spring rounded"
                         title="24시간 이상 응답 없음 — 리마인더 알림 재전송"
                       >
                         <Bell size={11} /> 리마인더
@@ -135,7 +135,7 @@ export function ProfileSentInvitations() {
                       <button
                         onClick={() => setCancelTarget(inv.id)}
                         disabled={cancelInvitation.isPending}
-                        className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-bold border border-border text-txt-secondary hover:bg-surface-sunken active:scale-[0.97] transition-all rounded"
+                        className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-bold border border-border text-txt-secondary hover:bg-surface-sunken ob-press-spring rounded"
                       >
                         <X size={11} /> 취소
                       </button>
@@ -144,7 +144,7 @@ export function ProfileSentInvitations() {
                       <button
                         onClick={() => handleResend(inv)}
                         disabled={createInvitation.isPending}
-                        className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-bold border border-brand text-brand hover:bg-brand-bg active:scale-[0.97] transition-all rounded"
+                        className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-bold border border-brand text-brand hover:bg-brand-bg ob-press-spring rounded"
                       >
                         <RotateCw size={11} /> 재발송
                       </button>
