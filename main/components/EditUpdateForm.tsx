@@ -131,6 +131,7 @@ export const EditUpdateForm: React.FC<EditUpdateFormProps> = ({
             onChange={(e) => setContent(e.target.value)}
             rows={6}
             maxLength={2000}
+            aria-label="업데이트 내용 (수정)"
             className="w-full px-3 py-2 border border-border text-base sm:text-sm focus:outline-none focus:border-border resize-none bg-surface-card rounded-xl text-txt-primary"
           />
           <div className="text-[10px] text-txt-tertiary font-mono text-right mt-1">

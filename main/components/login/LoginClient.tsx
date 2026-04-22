@@ -246,13 +246,16 @@ function LoginContent({ projects, people }: LoginClientProps) {
                   </div>
 
                   <div className="space-y-1.5">
-                     <label className="text-[0.6875rem] font-medium text-txt-tertiary">비밀번호</label>
+                     <label className="text-[0.6875rem] font-medium text-txt-tertiary">
+                        비밀번호 <span className="text-txt-disabled font-normal">(최소 6자)</span>
+                     </label>
                      <input
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className="w-full px-4 py-3.5 bg-surface-sunken rounded-xl border border-border text-base sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand focus:bg-surface-card transition-all placeholder:text-txt-disabled"
-                        placeholder="비밀번호를 입력하세요"
+                        placeholder={isSignUp ? '영문·숫자·기호 조합을 추천드립니다' : '로그인 비밀번호'}
+                        aria-label={isSignUp ? '가입에 사용할 비밀번호 (최소 6자)' : '로그인 비밀번호'}
                         required
                         minLength={6}
                         autoComplete={isSignUp ? 'new-password' : 'current-password'}
