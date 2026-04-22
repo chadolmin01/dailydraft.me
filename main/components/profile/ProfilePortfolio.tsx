@@ -175,14 +175,16 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
           <input
             value={title}
             onChange={e => setTitle(e.target.value.slice(0, 80))}
-            placeholder="제목"
+            placeholder="예: Draft — 동아리 운영 SaaS"
+            aria-label="포트폴리오 항목 제목"
             autoFocus
             className="w-full px-4 py-2.5 text-sm font-semibold bg-surface-sunken border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/40"
           />
           <textarea
             value={description}
             onChange={e => setDescription(e.target.value.slice(0, 300))}
-            placeholder="설명 (선택)"
+            placeholder="역할·기간·성과를 한두 문장으로 적어 주세요 (선택)"
+            aria-label="포트폴리오 항목 설명"
             rows={3}
             className="w-full px-4 py-2.5 text-sm bg-surface-sunken border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/40 resize-none"
           />

@@ -93,7 +93,8 @@ export function CoffeeChatAcceptModal({
                 type="email"
                 value={contactEmail}
                 onChange={e => setContactEmail(e.target.value)}
-                placeholder="이메일"
+                placeholder="예: you@example.com"
+                aria-label="연락받을 이메일"
                 inputMode="email"
                 autoComplete="email"
                 className="flex-1 px-3 py-2 text-base sm:text-sm border border-border bg-surface-card rounded-xl text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
@@ -107,7 +108,8 @@ export function CoffeeChatAcceptModal({
                 type="tel"
                 value={contactPhone}
                 onChange={e => setContactPhone(e.target.value)}
-                placeholder="전화번호"
+                placeholder="예: 010-1234-5678 (선택)"
+                aria-label="연락받을 전화번호 (선택)"
                 inputMode="tel"
                 autoComplete="tel"
                 className="flex-1 px-3 py-2 text-base sm:text-sm border border-border bg-surface-card rounded-xl text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"

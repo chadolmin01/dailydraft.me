@@ -281,7 +281,8 @@ function EventForm({ slug, onClose, onSuccess }: {
       <input
         value={title}
         onChange={e => setTitle(e.target.value.slice(0, 200))}
-        placeholder="일정 제목"
+        placeholder="예: 4/15 봄 정기모임, 5/1 아이디어 데모데이"
+        aria-label="일정 제목"
         autoFocus
         className="w-full px-3 py-2.5 text-[14px] font-semibold bg-surface-bg border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/40"
       />

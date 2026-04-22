@@ -269,14 +269,16 @@ export function ClubAnnouncementsSection({ slug, isAdmin }: Props) {
               <input
                 value={title}
                 onChange={e => setTitle(e.target.value.slice(0, 120))}
-                placeholder="공지 제목"
+                placeholder="예: 3월 정기모임 안내"
+                aria-label="공지 제목"
                 autoFocus
                 className="w-full px-4 py-3 text-[15px] font-bold bg-surface-bg border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/40"
               />
               <textarea
                 value={content}
                 onChange={e => setContent(e.target.value.slice(0, 4000))}
-                placeholder="공지 내용을 작성해주세요. 등록된 Discord/Slack 웹훅 채널로도 자동 전송됩니다"
+                placeholder="공지 내용을 작성해 주세요. 등록된 Discord·Slack 웹훅 채널로도 자동 전송됩니다."
+                aria-label="공지 내용"
                 rows={6}
                 className="w-full px-4 py-3 text-[14px] bg-surface-bg border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/40 resize-none"
               />
