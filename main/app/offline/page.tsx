@@ -35,10 +35,10 @@ export default function OfflinePage() {
             OFFLINE
           </p>
           <h1 className="text-2xl font-black text-black/80 tracking-tight">
-            연결이 끊겼어요
+            인터넷 연결이 끊겼습니다
           </h1>
           <p className="text-sm text-black/40 leading-relaxed break-keep">
-            인터넷 연결을 확인하고<br />다시 시도해주세요
+            Wi-Fi 또는 모바일 데이터 연결을 확인하신 뒤<br />아래 새로고침 버튼을 눌러 주세요
           </p>
         </div>
 

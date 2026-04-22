@@ -80,9 +80,9 @@ export default function OnboardingPage() {
           <div key="loading" className="flex flex-col items-center animate-in fade-in duration-300">
             <Loader2 size={36} className="text-brand animate-spin mb-6" />
             <h2 className="text-lg font-bold text-txt-primary mb-1">
-              프로필을 저장하고 있어요
+              프로필을 저장하고 있습니다
             </h2>
-            <p className="text-sm text-txt-tertiary">잠시만 기다려주세요...</p>
+            <p className="text-sm text-txt-tertiary">잠시만 기다려 주세요. 이 화면을 닫으시면 처음부터 다시 진행됩니다.</p>
           </div>
         ) : (
           <div key="done" className="flex flex-col items-center animate-in fade-in zoom-in-95 duration-300">

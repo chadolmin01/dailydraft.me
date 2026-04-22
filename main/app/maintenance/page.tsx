@@ -31,7 +31,7 @@ export default function MaintenancePage() {
         <p className="text-[14px] text-txt-secondary leading-relaxed mb-6 break-keep">
           예정된 유지보수가 진행되고 있습니다.
           <br />
-          평소보다 더 안정적으로 돌아오도록 준비하고 있어요.
+          평소보다 더 안정적으로 돌아오도록 준비하고 있습니다.
         </p>
 
         <div className="bg-surface-card border border-border rounded-2xl p-5 mb-6 text-left">

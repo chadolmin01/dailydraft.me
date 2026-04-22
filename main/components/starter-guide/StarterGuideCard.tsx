@@ -32,9 +32,9 @@ export function StarterGuideCard({
       <div className="bg-surface-card rounded-2xl shadow-xl overflow-hidden">
         <div className="px-4 py-4 sm:px-5 sm:py-5 space-y-3">
           <p className="text-[12px] sm:text-[13px] text-txt-secondary leading-relaxed">
-            프로필을 완성하면 팀 매칭 정확도가 높아져요.
+            프로필을 끝까지 채우시면 팀 매칭 정확도가 올라갑니다.
             <br />
-            시작 가이드는 <span className="font-semibold text-txt-primary">도움말(?)</span>에서 다시 볼 수 있어요.
+            시작 가이드는 언제든 <span className="font-semibold text-txt-primary">도움말(?) 버튼</span>에서 다시 여실 수 있습니다.
           </p>
           <div className="flex items-center gap-2">
             <button

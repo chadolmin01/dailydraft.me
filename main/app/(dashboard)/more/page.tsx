@@ -149,7 +149,7 @@ export default function MorePage() {
             <Smartphone size={20} className="text-[#34C759] shrink-0" />
             <div className="flex-1 text-left">
               <span className="text-[15px] text-txt-primary block">Draft 앱 설치</span>
-              <span className="text-[12px] text-txt-tertiary">홈 화면에 추가하면 앱처럼 사용할 수 있어요</span>
+              <span className="text-[12px] text-txt-tertiary">홈 화면에 추가하면 앱처럼 전체 화면으로 사용하실 수 있습니다</span>
             </div>
             <Download size={16} className="text-txt-disabled shrink-0" />
           </button>

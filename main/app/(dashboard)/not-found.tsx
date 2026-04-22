@@ -15,11 +15,11 @@ export default function DashboardNotFound() {
         </div>
 
         <h2 className="text-[20px] font-bold text-txt-primary mb-2">
-          찾으시는 페이지가 없어요
+          찾으시는 페이지가 없습니다
         </h2>
         <p className="text-[14px] text-txt-secondary leading-relaxed max-w-md mx-auto break-keep mb-6">
-          경로가 바뀌었거나 삭제된 항목일 수 있습니다.
-          홈에서 다시 시작하거나 탐색 페이지로 가보세요.
+          URL 이 바뀌었거나, 삭제된 항목이거나, 아직 권한이 없는 영역일 수 있습니다. 홈에서 다시
+          시작하시거나 아래 탐색 페이지로 이동해 주세요.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-2.5 justify-center">

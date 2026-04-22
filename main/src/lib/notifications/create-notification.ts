@@ -94,8 +94,8 @@ export async function notifyApplicationReceived(
   return createNotification({
     userId: creatorId,
     type: 'application_received',
-    title: '새로운 지원서가 도착했습니다',
-    message: `${applicantName}님이 "${opportunityTitle}"에 지원했습니다.`,
+    title: '지원서가 도착했습니다',
+    message: `${applicantName} 님이 "${opportunityTitle}"에 지원하셨습니다. 수락 또는 거절을 확인해 주세요.`,
     link: '/applications?tab=received',
     metadata: {
       opportunity_id: opportunityId,
@@ -113,8 +113,8 @@ export async function notifyApplicationAccepted(
   return createNotification({
     userId: applicantId,
     type: 'application_accepted',
-    title: '지원이 수락되었습니다!',
-    message: `"${opportunityTitle}"에 대한 지원이 수락되었습니다! 프로젝트를 확인하세요.`,
+    title: '지원이 수락되었습니다',
+    message: `"${opportunityTitle}" 팀 합류가 확정되었습니다. 프로젝트 상세에서 팀원과 다음 단계를 논의해 주세요.`,
     link: `/opportunities/${opportunityId}`,
     metadata: {
       opportunity_id: opportunityId,
@@ -132,7 +132,7 @@ export async function notifyApplicationRejected(
     userId: applicantId,
     type: 'application_rejected',
     title: '지원 결과 안내',
-    message: `"${opportunityTitle}"에 대한 지원이 거절되었습니다. 다른 기회를 찾아보세요.`,
+    message: `"${opportunityTitle}" 팀 합류가 성사되지 않았습니다. 프로필과 포트폴리오를 다듬으신 뒤 다른 프로젝트도 살펴보시기를 권합니다.`,
     link: '/opportunities',
     metadata: {
       opportunity_id: opportunityId,
@@ -149,8 +149,8 @@ export async function notifyNewConnection(
   return createNotification({
     userId,
     type: 'connection',
-    title: '새로운 연결이 생겼습니다!',
-    message: `${partnerName}님과 "${opportunityTitle}"를 통해 연결되었습니다.`,
+    title: '새로운 연결이 생겼습니다',
+    message: `${partnerName} 님과 "${opportunityTitle}"를 통해 연결되었습니다. 커피챗 탭에서 연락처를 확인하실 수 있습니다.`,
     link: '/profile?tab=coffee-chats',
   })
 }
@@ -164,7 +164,7 @@ export async function notifyCoffeeChatRequest(
     userId: ownerId,
     type: 'coffee_chat',
     title: '커피챗 요청이 도착했습니다',
-    message: `${requesterName}님이 "${projectTitle}" 관련 커피챗을 요청했습니다.`,
+    message: `${requesterName} 님이 "${projectTitle}" 관련 커피챗을 요청하셨습니다. 수락하시면 서로의 연락처가 공개됩니다.`,
     link: '/profile?tab=coffee-chats',
   })
 }
@@ -178,10 +178,10 @@ export async function notifyCoffeeChatResponse(
   return createNotification({
     userId: requesterId,
     type: 'coffee_chat',
-    title: accepted ? '커피챗이 수락되었습니다!' : '커피챗 결과 안내',
+    title: accepted ? '커피챗이 수락되었습니다' : '커피챗 결과 안내',
     message: accepted
-      ? `${ownerName}님이 "${projectTitle}" 커피챗을 수락했습니다. 연락처를 확인하세요.`
-      : `${ownerName}님이 "${projectTitle}" 커피챗을 거절했습니다.`,
+      ? `${ownerName} 님이 "${projectTitle}" 커피챗을 수락하셨습니다. 커피챗 탭에서 연락처를 확인해 주세요.`
+      : `${ownerName} 님이 "${projectTitle}" 커피챗을 수락하지 않으셨습니다. 다른 프로젝트도 살펴보시기를 권합니다.`,
     link: '/profile?tab=coffee-chats',
   })
 }
@@ -193,8 +193,8 @@ export async function notifyPersonCoffeeChatRequest(
   return createNotification({
     userId: targetUserId,
     type: 'coffee_chat',
-    title: '개인 커피챗 요청이 도착했습니다',
-    message: `${requesterName}님이 커피챗을 요청했습니다.`,
+    title: '커피챗 요청이 도착했습니다',
+    message: `${requesterName} 님이 개인 커피챗을 요청하셨습니다. 수락 시 서로의 연락처가 공유됩니다.`,
     link: '/profile?tab=coffee-chats',
   })
 }
@@ -207,10 +207,10 @@ export async function notifyPersonCoffeeChatResponse(
   return createNotification({
     userId: requesterId,
     type: 'coffee_chat',
-    title: accepted ? '커피챗이 수락되었습니다!' : '커피챗 결과 안내',
+    title: accepted ? '커피챗이 수락되었습니다' : '커피챗 결과 안내',
     message: accepted
-      ? `${targetName}님이 커피챗을 수락했습니다. 연락처를 확인하세요.`
-      : `${targetName}님이 커피챗을 거절했습니다.`,
+      ? `${targetName} 님이 커피챗을 수락하셨습니다. 커피챗 탭에서 연락처를 확인하실 수 있습니다.`
+      : `${targetName} 님이 이번 커피챗 요청을 수락하지 않으셨습니다. 쪽지로 먼저 관계를 틔워 보시는 것도 좋은 방법입니다.`,
     link: '/profile?tab=coffee-chats',
   })
 }
@@ -224,8 +224,8 @@ export async function notifyInterviewScheduled(
   return createNotification({
     userId: applicantId,
     type: 'coffee_chat',
-    title: '프로젝트 리더가 면담을 원합니다',
-    message: `${creatorName}님이 '${opportunityTitle}' 프로젝트에 대해 이야기를 나누고 싶어합니다.`,
+    title: '프로젝트 리더가 면담을 요청합니다',
+    message: `${creatorName} 님이 '${opportunityTitle}' 프로젝트에 대해 직접 이야기를 나누고 싶어 하십니다. 일정과 장소는 커피챗 탭에서 조율하실 수 있습니다.`,
     link: '/profile?tab=coffee-chats',
     metadata: {
       opportunity_id: opportunityId,
