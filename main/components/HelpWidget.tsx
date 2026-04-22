@@ -359,7 +359,10 @@ function ChatTab() {
             <div className="w-12 h-12 bg-[#F2F3F5] dark:bg-[#2C2C2E] rounded-full flex items-center justify-center">
               <Sparkles size={22} className="text-[#5E6AD2]" />
             </div>
-            <p className="text-[13px] text-txt-tertiary text-center">Draft에 대해 궁금한 점을<br />자유롭게 물어보세요!</p>
+            <p className="text-[13px] text-txt-tertiary text-center">Draft 사용에 대해 궁금한 점을<br />편하게 물어봐 주세요.</p>
+            <p className="text-[11px] text-txt-disabled text-center -mt-1">
+              AI 가 서비스 관련 질문만 답변합니다. 버그 신고는 옆 &quot;리포트&quot; 탭을 이용해 주세요.
+            </p>
             <div className="flex flex-wrap gap-1.5 mt-1 justify-center">
               {['프로젝트 등록 방법', '커피챗이 뭐예요?', 'AI 매칭 원리'].map(q => (
                 <button
