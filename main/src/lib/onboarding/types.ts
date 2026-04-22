@@ -110,6 +110,11 @@ export type InteractiveQuestion =
   | QuickNumberQuestion
   | SpectrumPickQuestion
 
+// ── Onboarding Source (유입 경로) ──
+// 2026-04-23: 온보딩이 개인 매칭 중심이었던 걸 실제 서비스 (클럽 운영) 에 맞게
+// 재설계. intro 직후 첫 질문이 "어떻게 오셨어요?" 로 source 를 선택하게 함.
+export type OnboardingSource = 'invite' | 'matching' | 'operator' | 'exploring'
+
 // ── Profile Draft ──
 
 export interface ProfileDraft {
@@ -122,6 +127,10 @@ export interface ProfileDraft {
   situation: string
   skills: string[]
   interests: string[]
+  // 온보딩 유입 경로. intro → source 단계에서 선택. 이후 경로별로 스텝이 분기된다.
+  source?: OnboardingSource
+  // 초대 경로에서 받은 코드 (optional)
+  inviteCode?: string
   // Phase 1-a: 학생 신원 (이메일 도메인으로 감지 + 학번 수기).
   // 재학생 경로에서만 채워지며, 비-학생/졸업생은 비움.
   studentId?: string

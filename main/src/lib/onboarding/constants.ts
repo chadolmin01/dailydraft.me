@@ -1,11 +1,41 @@
 import { POSITIONS } from '@/src/constants/roles'
 import { PROJECT_CATEGORIES } from '@/src/constants/categories'
 
+// 유입 경로 — 온보딩 첫 질문. 이후 스텝이 경로별로 분기됩니다.
+// 2026-04-23: 서비스 실체(클럽 운영 중심) 와 온보딩 설계(개인 매칭 중심) 의 괴리를
+// 해소하기 위해 도입. 매칭 경로만 기존 6단계 유지.
+export const SOURCE_OPTIONS = [
+  {
+    value: 'invite' as const,
+    label: '동아리·클럽 초대를 받아서 왔습니다',
+    desc: '초대 코드 또는 초대 링크로 가입하시는 경우',
+    emoji: '🎟️',
+  },
+  {
+    value: 'matching' as const,
+    label: '팀원·프로젝트를 찾으러 왔습니다',
+    desc: '매칭 정확도를 위해 몇 가지 질문을 더 드립니다',
+    emoji: '🤝',
+  },
+  {
+    value: 'operator' as const,
+    label: '동아리·프로젝트를 운영하러 왔습니다',
+    desc: '운영 중인 클럽을 Draft 로 옮기거나 새로 만드시는 경우',
+    emoji: '🏗️',
+  },
+  {
+    value: 'exploring' as const,
+    label: '일단 둘러보러 왔습니다',
+    desc: '기본 정보만 받고 바로 시작합니다',
+    emoji: '👀',
+  },
+] as const
+
 export const SITUATION_OPTIONS = [
-  { value: 'has_project', label: '팀원을 찾고 있어요', desc: '프로젝트 진행 중' },
-  { value: 'want_to_join', label: '프로젝트에 참여하고 싶어요', desc: '합류 희망' },
-  { value: 'solo', label: '같이 시작할 사람을 찾아요', desc: '함께 시작' },
-  { value: 'exploring', label: '아직 둘러보는 중이에요', desc: '탐색 중' },
+  { value: 'has_project', label: '팀원을 찾고 있습니다', desc: '프로젝트 진행 중' },
+  { value: 'want_to_join', label: '프로젝트에 참여하고 싶습니다', desc: '합류 희망' },
+  { value: 'solo', label: '같이 시작할 사람을 찾습니다', desc: '함께 시작' },
+  { value: 'exploring', label: '아직 둘러보는 중입니다', desc: '탐색 중' },
 ] as const
 
 export const AFFILIATION_OPTIONS = [

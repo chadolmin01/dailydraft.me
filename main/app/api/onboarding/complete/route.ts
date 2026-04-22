@@ -36,6 +36,8 @@ export const POST = withErrorCapture(async (request) => {
       personality,
       visionSummary,
       aiChatCompleted,
+      // 2026-04-23: 유입 경로 (invite / matching / operator / exploring)
+      onboardingSource,
       // Phase 1-a: 학생 신원 필드
       studentId,
       department,
@@ -44,6 +46,13 @@ export const POST = withErrorCapture(async (request) => {
       // P0-1c: PIPA 동의 (온보딩 intro 에서 필수 3종 체크시 true)
       dataConsent,
     } = body
+
+    // 유입 경로 값 검증 — 허용된 enum 만 저장
+    const ALLOWED_SOURCES = ['invite', 'matching', 'operator', 'exploring'] as const
+    const normalizedSource =
+      typeof onboardingSource === 'string' && (ALLOWED_SOURCES as readonly string[]).includes(onboardingSource)
+        ? onboardingSource
+        : null
 
     // 최소 필수: 닉네임만. location/currentSituation은 슬림 플로우에서 옵셔널.
     // 기존 풀 온보딩도 이 API를 쓰므로 필수는 닉네임으로만 축소.
@@ -125,6 +134,8 @@ export const POST = withErrorCapture(async (request) => {
       ...(parsedEntranceYear && { entrance_year: parsedEntranceYear }),
       ...(studentVerifiedAt && { student_verified_at: studentVerifiedAt }),
       ...(verificationMethod && { student_verification_method: verificationMethod }),
+      // 2026-04-23: 유입 경로. 20260423010000 마이그레이션 전에는 schema cache 에러로 재시도 경로 진입.
+      ...(normalizedSource && { onboarding_source: normalizedSource }),
     }
 
     const fullData = { ...profileData, ...optionalFields }
@@ -163,6 +174,8 @@ export const POST = withErrorCapture(async (request) => {
       has_student_id: !!studentId,
       student_verified: !!studentVerifiedAt,
       verification_method: verificationMethod,
+      // 2026-04-23: 유입 경로별 코호트 분석
+      onboarding_source: normalizedSource,
     }).catch(() => {})
 
     // ── Background tasks (non-blocking) ──

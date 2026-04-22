@@ -9,7 +9,7 @@ import { useAuth } from '@/src/context/AuthContext'
 import { useProfile } from '@/src/hooks/useProfile'
 import { determineResumeStep } from '@/src/lib/onboarding/resume'
 import { saveProfileCheckpoint } from '@/src/lib/onboarding/api'
-import { AFFILIATION_OPTIONS, SITUATION_OPTIONS } from '@/src/lib/onboarding/constants'
+import { AFFILIATION_OPTIONS, SITUATION_OPTIONS, SOURCE_OPTIONS } from '@/src/lib/onboarding/constants'
 import { POSITIONS } from '@/src/constants/roles'
 import { PROJECT_CATEGORIES } from '@/src/constants/categories'
 import { UNIVERSITY_LIST, LOCATION_OPTIONS } from '@/src/lib/constants/profile-options'
@@ -37,14 +37,25 @@ interface UniversityMatchState {
 
 /* ─── Types ─── */
 
-type Step = 'intro' | 'info' | 'situation' | 'position' | 'interests'
+type Step = 'intro' | 'source' | 'info' | 'situation' | 'position' | 'interests'
 type SlideDir = 'forward' | 'back'
 
-const PRE_INTERVIEW_STEPS: Step[] = ['info', 'situation', 'position', 'interests']
+// 경로별 단계 순서:
+//   invite/operator/exploring → info 만 받고 완료 (situation/position/interests 스킵)
+//   matching → 기존 전체 (info → situation → position → interests)
+// STEPS 배열은 동적으로 계산 — buildStepsForSource 참고.
+const ALL_POST_SOURCE_STEPS: Step[] = ['info', 'situation', 'position', 'interests']
+
+function buildStepsForSource(source: ProfileDraft['source']): Step[] {
+  if (source === 'matching') return ['info', 'situation', 'position', 'interests']
+  // invite / operator / exploring 은 info 만
+  return ['info']
+}
 
 const INITIAL_PROFILE: ProfileDraft = {
   name: '', affiliationType: '', university: '', major: '',
   locations: [], position: '', situation: '', skills: [], interests: [],
+  source: undefined, inviteCode: undefined,
   studentId: '', department: '', universityId: '', entranceYear: undefined,
 }
 
@@ -119,10 +130,20 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
         { redoChat },
       )
       if (resumeResult) {
-        setProfile(resumeResult.draft)
+        setProfile({ ...resumeResult.draft, source: 'matching' })
         setStep('info') // start fresh
         return
       }
+    }
+
+    // 초대 코드 URL 파라미터 감지 — ?code=ABC12DEF 또는 ?source=invite
+    // source 단계를 자동으로 'invite' 로 prefill 하고 코드는 이후 클럽 가입 플로우로.
+    const code = searchParams.get('code')
+    const sourceHint = searchParams.get('source')
+    if (code) {
+      setProfile(prev => ({ ...prev, source: 'invite', inviteCode: code }))
+    } else if (sourceHint === 'invite' || sourceHint === 'matching' || sourceHint === 'operator' || sourceHint === 'exploring') {
+      setProfile(prev => ({ ...prev, source: sourceHint }))
     }
   }, [authLoading, authProfile, isAuthenticated, searchParams])
 
@@ -150,12 +171,17 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     setAttempted(false)
   }, [])
 
-  const stepIndex = PRE_INTERVIEW_STEPS.indexOf(step)
+  // 현재 source 기반 동적 스텝 배열 (matching 만 4단계, 나머지는 info 1단계)
+  const activeSteps = buildStepsForSource(profile.source)
+  const stepIndex = activeSteps.indexOf(step as Step)
 
   const handleBack = useCallback(() => {
-    if (stepIndex <= 0) goTo('intro', 'back')
-    else goTo(PRE_INTERVIEW_STEPS[stepIndex - 1], 'back')
-  }, [stepIndex, goTo])
+    // source 단계에서 뒤로 가면 intro, info 단계에서 뒤로 가면 source
+    if (step === 'source') goTo('intro', 'back')
+    else if (step === 'info') goTo('source', 'back')
+    else if (stepIndex > 0) goTo(activeSteps[stepIndex - 1], 'back')
+    else goTo('source', 'back')
+  }, [step, stepIndex, activeSteps, goTo])
 
   const handleNext = useCallback(() => {
     const p = profileRef.current
@@ -163,6 +189,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
     // Validate current step
     switch (step) {
+      case 'source':
+        if (!p.source) return
+        break
       case 'info':
         if (!p.name.trim() || p.affiliationType === '') return
         break
@@ -178,15 +207,26 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     }
 
     setAttempted(false)
-    if (stepIndex < PRE_INTERVIEW_STEPS.length - 1) {
-      goTo(PRE_INTERVIEW_STEPS[stepIndex + 1])
+
+    // source 선택 직후 → activeSteps 첫 단계 (보통 'info')
+    if (step === 'source') {
+      const next = buildStepsForSource(p.source)[0]
+      goTo(next)
+      return
+    }
+
+    if (stepIndex < activeSteps.length - 1) {
+      goTo(activeSteps[stepIndex + 1])
     } else {
-      // Last step — save and pass draft to parent for interview flow
-      const p = profileRef.current
+      // Last step — save and pass draft to parent
+      // matching 이 아니면 situation 기본값을 'exploring' 으로 (매칭 경로 아니라도 GuideCTA 가 뭔가 보여줘야 함)
+      if (p.source !== 'matching' && !p.situation) {
+        p.situation = 'exploring'
+      }
       saveProfileCheckpoint(p).catch(console.error)
       onComplete(p)
     }
-  }, [step, stepIndex, goTo, onComplete])
+  }, [step, stepIndex, activeSteps, goTo, onComplete])
 
   const updateProfile = useCallback((partial: Partial<ProfileDraft>) => {
     setProfile(prev => ({ ...prev, ...partial }))
@@ -195,6 +235,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   /* ── Can proceed? ── */
   const canProceed = (() => {
     switch (step) {
+      case 'source': return !!profile.source
       case 'info': return profile.name.trim().length > 0 && profile.affiliationType !== ''
       case 'situation': return profile.situation !== ''
       case 'position': return profile.position !== ''
@@ -206,6 +247,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   /* ── Error message for current step ── */
   const errorMsg = attempted && !canProceed ? (() => {
     switch (step) {
+      case 'source': return '어떻게 오셨는지 하나 선택해 주세요'
       case 'info':
         if (!profile.name.trim()) return '닉네임을 입력해 주세요'
         if (profile.affiliationType === '') return '소속 유형을 선택해 주세요'
@@ -236,7 +278,20 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
   /* ── Intro screen ── */
   if (step === 'intro') {
-    return <IntroScreen onStart={() => goTo('info')} />
+    return <IntroScreen onStart={() => goTo('source')} />
+  }
+
+  /* ── Source step (유입 경로 선택) ── */
+  if (step === 'source') {
+    return (
+      <SourceStep
+        selected={profile.source}
+        onSelect={(src) => updateProfile({ source: src })}
+        onBack={handleBack}
+        onNext={handleNext}
+        errorMsg={errorMsg}
+      />
+    )
   }
 
   /* ── Pre-interview steps ── */
@@ -259,7 +314,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
             </button>
             <div className="flex items-center gap-3">
               <span className="text-[12px] font-mono text-txt-secondary tabular-nums">
-                {stepIndex + 1} <span className="text-txt-tertiary">/ {PRE_INTERVIEW_STEPS.length}</span>
+                {stepIndex + 1} <span className="text-txt-tertiary">/ {activeSteps.length}</span>
               </span>
               <button
                 onClick={() => {
@@ -276,7 +331,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
             </div>
           </div>
           <div className="flex gap-1.5">
-            {PRE_INTERVIEW_STEPS.map((_, i) => {
+            {activeSteps.map((_, i) => {
               const isDone = i < stepIndex
               const isCurrent = i === stepIndex
               return (
@@ -829,6 +884,114 @@ interface ConsentRowProps {
   emphasis?: boolean
   hint?: string
   link?: { href: string; label: string }
+}
+
+/* ─── Source Step (유입 경로 선택) ─── */
+// 2026-04-23 도입. Draft 는 개인 매칭이 주력이 아니라 클럽 운영 중심 인프라이므로
+// "어떻게 오셨어요?" 를 첫 질문으로 두고 이후 단계를 분기한다.
+// invite → info 만 묻고 클럽 가입으로
+// matching → 기존 4단계 (info → situation → position → interests)
+// operator → info 만 묻고 /clubs/new 유도
+// exploring → info 만 받고 /explore 로
+
+interface SourceStepProps {
+  selected: ProfileDraft['source']
+  onSelect: (source: ProfileDraft['source']) => void
+  onBack: () => void
+  onNext: () => void
+  errorMsg: string | null
+}
+
+function SourceStep({ selected, onSelect, onBack, onNext, errorMsg }: SourceStepProps) {
+  return (
+    <div className="fixed inset-0 bg-surface-bg flex flex-col">
+      <div className="px-6 sm:px-10 pt-8 pb-4 shrink-0">
+        <div className="max-w-2xl mx-auto space-y-3">
+          <div className="flex items-center justify-between">
+            <button
+              onClick={onBack}
+              className="w-7 h-7 flex items-center justify-center rounded-lg text-txt-secondary hover:text-txt-primary hover:bg-surface-sunken transition-colors shrink-0"
+              aria-label="이전 화면으로"
+            >
+              <ArrowLeft size={15} />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto px-6 sm:px-10 pb-40">
+        <div className="max-w-2xl mx-auto">
+          <h2 className="text-[22px] sm:text-[26px] font-bold text-txt-primary mb-2 leading-tight">
+            Draft 에 어떻게 오셨어요?
+          </h2>
+          <p className="text-[13px] text-txt-tertiary mb-6 leading-relaxed">
+            여기에 맞춰 이후 질문 개수와 랜딩 화면이 달라집니다. 나중에도 언제든 프로필에서 바꾸실 수 있습니다.
+          </p>
+
+          <div className="space-y-2.5">
+            {SOURCE_OPTIONS.map((opt) => {
+              const active = selected === opt.value
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => onSelect(opt.value)}
+                  className={`w-full text-left rounded-2xl border p-4 transition-all duration-150 ${
+                    active
+                      ? 'bg-brand text-white border-brand shadow-sm'
+                      : 'bg-surface-card text-txt-primary border-border hover:border-txt-tertiary active:scale-[0.99]'
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="text-[22px] leading-none mt-0.5" aria-hidden="true">
+                      {opt.emoji}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-[14px] font-bold ${active ? 'text-white' : 'text-txt-primary'}`}>
+                        {opt.label}
+                      </p>
+                      <p
+                        className={`text-[12px] mt-1 leading-relaxed ${
+                          active ? 'text-white/85' : 'text-txt-tertiary'
+                        }`}
+                      >
+                        {opt.desc}
+                      </p>
+                    </div>
+                    {active && (
+                      <Check size={16} className="text-white shrink-0 mt-1" strokeWidth={2.5} />
+                    )}
+                  </div>
+                </button>
+              )
+            })}
+          </div>
+
+          {errorMsg && (
+            <p className="text-[12px] text-status-danger-text mt-4 font-medium">{errorMsg}</p>
+          )}
+        </div>
+      </div>
+
+      <div className="fixed bottom-0 left-0 right-0 bg-surface-bg border-t border-border px-6 sm:px-10 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+        <div className="max-w-2xl mx-auto">
+          <button
+            type="button"
+            onClick={onNext}
+            disabled={!selected}
+            className={`w-full flex items-center justify-center gap-2 py-4 rounded-full text-[15px] font-black transition-all ${
+              selected
+                ? 'bg-surface-inverse text-txt-inverse hover:opacity-90 active:scale-[0.97]'
+                : 'bg-surface-sunken text-txt-disabled cursor-not-allowed'
+            }`}
+          >
+            다음
+            <ArrowRight size={15} />
+          </button>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 function ConsentRow({ checked, onToggle, label, required, emphasis, hint, link }: ConsentRowProps) {

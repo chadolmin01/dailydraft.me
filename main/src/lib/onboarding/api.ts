@@ -16,6 +16,8 @@ export async function saveProfileCheckpoint(profile: ProfileDraft): Promise<void
       skills: profile.skills.map(s => ({ name: s })),
       interestTags: profile.interests,
       personality: { risk: 3, time: 3, communication: 3, planning: 3, quality: 3, teamRole: 3 },
+      // 2026-04-23: 유입 경로. 이후 GuideCTA 가 경로별 랜딩을 결정.
+      onboardingSource: profile.source,
       // Phase 1-a
       studentId: profile.studentId,
       department: profile.department,
@@ -80,6 +82,9 @@ export async function saveProfileFromInterview(
       personality: { risk, time, communication, planning, quality, teamRole },
       visionSummary: JSON.stringify(visionSummary),
       aiChatCompleted: true,
+      // 2026-04-23: 유입 경로 (interview 단계에서는 이미 checkpoint 로 저장했지만
+      // 직접 진입 케이스 대비 중복 전송).
+      onboardingSource: profile.source,
       // Phase 1-a
       studentId: profile.studentId,
       department: profile.department,
