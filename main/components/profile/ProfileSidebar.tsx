@@ -120,7 +120,8 @@ export function ProfileSidebar({ profile, email, completion, isEditable = false 
                     if (e.key === 'Enter') { e.preventDefault(); addSkill() }
                     if (e.key === 'Escape') { setShowSkillInput(false); setNewSkill('') }
                   }}
-                  placeholder="스킬"
+                  placeholder="예: React, Figma, Python"
+                  aria-label="새로 추가할 스킬"
                   autoFocus
                   list="skill-suggestions"
                   className="w-24 px-2.5 py-1 text-xs bg-surface-sunken border border-border rounded-full outline-none focus:ring-2 focus:ring-brand/40"
@@ -164,28 +165,28 @@ export function ProfileSidebar({ profile, email, completion, isEditable = false 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <LinkField
             icon={Mail}
-            placeholder="이메일"
+            placeholder="예: you@example.com"
             value={drafts.contact_email ?? profile.contact_email ?? ''}
             onChange={v => editField('contact_email')(v)}
             editable={isEditable}
           />
           <LinkField
             icon={Globe}
-            placeholder="포트폴리오 URL"
+            placeholder="예: https://portfolio.me"
             value={drafts.portfolio_url ?? profile.portfolio_url ?? ''}
             onChange={v => editField('portfolio_url')(v)}
             editable={isEditable}
           />
           <LinkField
             icon={Github}
-            placeholder="GitHub URL"
+            placeholder="예: https://github.com/username"
             value={drafts.github_url ?? profile.github_url ?? ''}
             onChange={v => editField('github_url')(v)}
             editable={isEditable}
           />
           <LinkField
             icon={Linkedin}
-            placeholder="LinkedIn URL"
+            placeholder="예: https://linkedin.com/in/username"
             value={drafts.linkedin_url ?? profile.linkedin_url ?? ''}
             onChange={v => editField('linkedin_url')(v)}
             editable={isEditable}

@@ -152,7 +152,8 @@ export function ProfileHero({ profile, email, isEditable = false }: ProfileHeroP
             value={drafts.nickname ?? nickname}
             onChange={e => editField('nickname')(e.target.value)}
             disabled={!isEditable}
-            placeholder="닉네임"
+            placeholder="예: 김도윤 (활동명)"
+            aria-label="닉네임 · 동아리·프로젝트에서 노출되는 이름"
             className="w-full bg-transparent text-[22px] sm:text-[26px] font-bold text-txt-primary outline-none placeholder:text-txt-disabled border-b border-transparent focus:border-border transition-colors px-0 pb-1"
           />
           {/* 포지션 + 상황 */}
@@ -163,7 +164,8 @@ export function ProfileHero({ profile, email, isEditable = false }: ProfileHeroP
                 value={drafts.desired_position ?? position}
                 onChange={e => editField('desired_position')(e.target.value)}
                 disabled={!isEditable}
-                placeholder="포지션"
+                placeholder="예: 프론트엔드"
+                aria-label="희망 포지션"
                 className="bg-transparent outline-none w-24 placeholder:text-txt-disabled"
               />
               {position && <span className="text-txt-tertiary">·</span>}
@@ -208,7 +210,8 @@ export function ProfileHero({ profile, email, isEditable = false }: ProfileHeroP
                   value={drafts.university ?? university}
                   onChange={e => editField('university')(e.target.value)}
                   disabled={!isEditable}
-                  placeholder="소속"
+                  placeholder="예: 경희대"
+                  aria-label="소속 (학교 또는 회사)"
                   className="bg-transparent outline-none w-24 placeholder:text-txt-disabled focus:text-txt-primary"
                 />
               </span>
@@ -220,7 +223,8 @@ export function ProfileHero({ profile, email, isEditable = false }: ProfileHeroP
                   value={drafts.major ?? major}
                   onChange={e => editField('major')(e.target.value)}
                   disabled={!isEditable}
-                  placeholder="학과"
+                  placeholder="예: 컴공"
+                  aria-label="학과 또는 직무"
                   className="bg-transparent outline-none w-20 placeholder:text-txt-disabled focus:text-txt-primary"
                 />
               </>
@@ -234,7 +238,8 @@ export function ProfileHero({ profile, email, isEditable = false }: ProfileHeroP
                     value={drafts.location ?? locations}
                     onChange={e => editField('location')(e.target.value)}
                     disabled={!isEditable}
-                    placeholder="지역"
+                    placeholder="예: 서울"
+                    aria-label="주 활동 지역"
                     className="bg-transparent outline-none w-20 placeholder:text-txt-disabled focus:text-txt-primary"
                   />
                 </span>
@@ -253,7 +258,7 @@ export function ProfileHero({ profile, email, isEditable = false }: ProfileHeroP
               value={drafts.bio ?? bio}
               onChange={e => editField('bio')(e.target.value)}
               onBlur={() => setEditingBio(false)}
-              placeholder="간단한 자기소개를 작성해주세요"
+              placeholder="무엇을 하고 계신지, 어떤 팀을 찾고 계신지 한두 문장으로 소개해 주세요. 커피챗 요청자가 가장 먼저 읽는 곳입니다."
               rows={3}
               className="w-full bg-surface-sunken border border-border rounded-xl p-3 text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:ring-2 focus:ring-brand/40 resize-none"
             />
