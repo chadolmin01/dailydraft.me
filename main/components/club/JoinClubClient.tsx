@@ -114,7 +114,7 @@ export default function JoinClubClient({ slug, initialCode, club }: {
           <button
             type="submit"
             disabled={isSubmitting || !code.trim()}
-            className="w-full mt-5 flex items-center justify-center gap-1.5 py-3 text-[15px] font-semibold bg-brand text-white rounded-xl hover:bg-brand-hover disabled:opacity-50 transition-colors"
+            className="ob-press-spring w-full mt-5 flex items-center justify-center gap-1.5 py-3 text-[15px] font-semibold bg-brand text-white rounded-xl hover:bg-brand-hover disabled:opacity-50 shadow-[0_4px_14px_-4px_rgba(94,106,210,0.35)] hover:shadow-[0_6px_20px_-4px_rgba(94,106,210,0.45)]"
           >
             {isSubmitting ? <Loader2 size={15} className="animate-spin" /> : <CheckCircle2 size={15} />}
             {isSubmitting ? '가입 처리 중' : '가입하기'}

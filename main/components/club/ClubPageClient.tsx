@@ -456,7 +456,7 @@ export default function ClubPageClient() {
               <div className="flex justify-end mb-4">
                 <Link
                   href={`/projects/new?club=${club.id}&from=/clubs/${slug}`}
-                  className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold bg-brand text-white rounded-xl hover:bg-brand-hover active:scale-[0.97] transition-all"
+                  className="ob-press-spring flex items-center gap-1.5 px-4 py-2 text-sm font-semibold bg-brand text-white rounded-xl hover:bg-brand-hover"
                 >
                   <Plus size={15} />
                   프로젝트 추가
