@@ -286,7 +286,9 @@ export function BundleDetailClient({ bundleId, canApprove, slug }: Props) {
               <button
                 onClick={() => {
                   if (!rejectReason.trim()) {
-                    toast.error('어떤 점이 아쉬웠는지 한 줄이라도 적어주세요')
+                    toast.error('한 줄이라도 이유를 적어 주세요', {
+                      description: 'AI 가 그 내용을 학습해 다음 생성 때는 이런 패턴을 피하게 됩니다.',
+                    })
                     return
                   }
                   reject.mutate(rejectReason.trim(), {
@@ -583,7 +585,9 @@ function SchedulerInline({
         <button
           onClick={() => {
             if (!value) {
-              toast.error('날짜와 시간을 선택해주세요')
+              toast.error('발행 일시를 먼저 선택해 주세요', {
+                description: '날짜와 시간을 모두 고르시면 예약 발행으로 전환됩니다.',
+              })
               return
             }
             const iso = new Date(value).toISOString()

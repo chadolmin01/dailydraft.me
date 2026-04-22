@@ -233,7 +233,12 @@ export function ContentPlanningShell({ slug, embedded = false }: Props) {
                 onDismiss={(id) =>
                   update.mutate(
                     { id, patch: { status: 'dismissed' } },
-                    { onSuccess: () => toast.success('아이디어를 제외했습니다') },
+                    {
+                      onSuccess: () =>
+                        toast.success('이 아이디어를 제외했습니다', {
+                          description: '다음 자동 생성에서는 비슷한 주제가 올라오지 않도록 학습됩니다.',
+                        }),
+                    },
                   )
                 }
                 onDelete={(id) => del.mutate(id)}

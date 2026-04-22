@@ -135,10 +135,14 @@ export function NewBundleShell({ slug }: { slug: string }) {
       if (scheduleMode) {
         // 예약 모드: 덱 생성 후 바로 "언제 올릴지" 단계로 전환
         setCreatedBundleId(bundleId)
-        toast.success('AI가 글을 준비했습니다. 발행 시간만 정해주세요')
+        toast.success('AI 가 글을 준비했습니다', {
+          description: '발행 시간만 정해 주시면 예약되고, 그 시점에 자동으로 올라갑니다.',
+        })
         setStep('schedule')
       } else {
-        toast.success('AI가 글을 모두 준비했습니다')
+        toast.success('AI 가 글을 모두 준비했습니다', {
+          description: '각 채널별 초안을 확인하신 뒤 승인하시면 발행됩니다. 수정도 가능합니다.',
+        })
         router.push(`/clubs/${slug}/bundles/${bundleId}`)
       }
     } catch (err) {
@@ -172,7 +176,9 @@ export function NewBundleShell({ slug }: { slug: string }) {
   const handleSaveDraft = () => {
     if (!createdBundleId) return
     // 덱은 이미 pending_approval 상태로 DB에 있음 — 상세로 이동만
-    toast.success('덱이 내 덱 모음에 저장되었습니다')
+    toast.success('내 덱 모음에 저장했습니다', {
+      description: '나중에 승인해서 발행하시거나, 일부만 수정해 재사용하실 수 있습니다.',
+    })
     router.push(`/clubs/${slug}/contents?tab=decks`)
   }
 
@@ -602,16 +608,22 @@ function ScheduleStep({
 
   const handleScheduleClick = () => {
     if (!value) {
-      toast.error('날짜와 시간을 선택해주세요')
+      toast.error('발행 일시를 선택해 주세요', {
+        description: '날짜와 시간을 모두 지정하시면 해당 시점에 자동 발행됩니다.',
+      })
       return
     }
     const date = new Date(value)
     if (Number.isNaN(date.getTime())) {
-      toast.error('유효한 날짜가 아닙니다')
+      toast.error('유효한 날짜 형식이 아닙니다', {
+        description: '프리셋 버튼(오늘 저녁, 내일 아침 등)을 사용하시면 편리합니다.',
+      })
       return
     }
     if (date.getTime() < Date.now() - 60_000) {
-      toast.error('과거 시간으로는 예약할 수 없습니다')
+      toast.error('과거 시간으로는 예약하실 수 없습니다', {
+        description: '지금 바로 발행하시려면 "바로 발행" 버튼을, 예약은 미래 시점만 지정해 주세요.',
+      })
       return
     }
     onSchedule(date.toISOString())
