@@ -207,12 +207,12 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   const errorMsg = attempted && !canProceed ? (() => {
     switch (step) {
       case 'info':
-        if (!profile.name.trim()) return '닉네임을 입력해주세요'
-        if (profile.affiliationType === '') return '소속 유형을 선택해주세요'
+        if (!profile.name.trim()) return '닉네임을 입력해 주세요'
+        if (profile.affiliationType === '') return '소속 유형을 선택해 주세요'
         return null
-      case 'situation': return '하나를 선택해주��요'
-      case 'position': return '활동 분���를 선택해주세요'
-      case 'interests': return '관심 분야를 1개 ���상 선택해주세요'
+      case 'situation': return '하나를 선택해 주세요'
+      case 'position': return '활동 분야를 선택해 주세요'
+      case 'interests': return '관심 분야를 1개 이상 선택해 주세요'
       default: return null
     }
   })() : null
@@ -538,7 +538,7 @@ function InfoContent({
             {profile.name.length}/7
           </span>
         </div>
-        {nameEmpty && <p className="text-[11px] text-status-danger-text mt-1 font-medium">닉네임을 입력해주세요</p>}
+        {nameEmpty && <p className="text-[11px] text-status-danger-text mt-1 font-medium">닉네임을 입력해 주세요</p>}
       </div>
 
       {/* University verified banner — 이메일 매칭 시 노출 */}
@@ -641,7 +641,7 @@ function InfoContent({
               )}
               {studentIdError && (
                 <p className="text-[11px] text-status-danger-text mt-1 font-medium">
-                  숫자 6-10자리로 입력해주세요
+                  학번은 숫자 6~10자리로 입력해 주세요
                 </p>
               )}
             </div>
@@ -741,7 +741,7 @@ function IntroScreen({ onStart }: { onStart: () => void }) {
           className="text-[14px] text-txt-secondary leading-relaxed mb-6 text-center"
           style={{ animation: 'ob-bubble-in 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) 0.2s both' }}
         >
-          약관을 확인하고 동의해주세요
+          시작하시기 전에 아래 약관을 확인하고 동의해 주세요
         </p>
 
         {/* 전체 동의 */}

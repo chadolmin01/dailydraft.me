@@ -50,20 +50,40 @@ export default function OnboardingInterviewPage() {
     return () => clearTimeout(timeout)
   }, [])
 
-  // Load draft from sessionStorage (set by /onboarding page)
+  // Load draft from sessionStorage (set by /onboarding page).
+  // 없으면 DB profile 에서 재구성 (새로고침·다른 기기·재진입 대응).
+  // 둘 다 없으면 /onboarding 으로.
   useEffect(() => {
     try {
       const raw = sessionStorage.getItem('onboarding-draft')
       if (raw) {
         setProfileDraft(JSON.parse(raw))
-      } else {
-        // No draft — redirect back to onboarding
-        router.replace('/onboarding')
+        return
       }
-    } catch {
+    } catch {}
+    // DB fallback — profile 이 로드 완료 + basic 온보딩 완료 상태여야 함
+    if (profile && profile.onboarding_completed) {
+      const reconstructed: ProfileDraft = {
+        name: profile.nickname || '',
+        affiliationType: (profile.affiliation_type as string) || 'student',
+        university: profile.university || '',
+        major: profile.major || '',
+        locations: (profile.locations as string[] | null) ?? [],
+        position: profile.desired_position || '',
+        situation: profile.current_situation || 'exploring',
+        skills: (profile.skills as Array<{ name: string } | string> | null)?.map(s =>
+          typeof s === 'string' ? s : s?.name || '',
+        ).filter(Boolean) ?? [],
+        interests: (profile.interest_tags as string[] | null) ?? [],
+      }
+      setProfileDraft(reconstructed)
+      return
+    }
+    // profile 로드 끝났고 basic 도 미완료 — 처음부터
+    if (profile !== undefined && profile !== null && !profile?.onboarding_completed) {
       router.replace('/onboarding')
     }
-  }, [router])
+  }, [router, profile])
 
   const handleInterviewComplete = useCallback(async (responses: StructuredResponse[]) => {
     if (!profileDraft) return
