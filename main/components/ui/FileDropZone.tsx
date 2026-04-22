@@ -186,18 +186,19 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
               className={`mx-auto ${isDragging ? 'text-brand' : 'text-txt-tertiary'}`}
             />
             <p className="text-sm text-txt-secondary">
-              <span className="font-medium text-txt-primary">클릭</span>하거나{' '}
-              <span className="font-medium text-txt-primary">파일을 드래그</span>하세요
+              <span className="font-medium text-txt-primary">클릭</span>하시거나{' '}
+              <span className="font-medium text-txt-primary">파일을 끌어다 놓아</span> 주세요
             </p>
             <p className="text-xs text-txt-tertiary">
-              최대 {formatFileSize(maxSize)} · {multiple ? `최대 ${maxFiles}개` : '1개'}
+              최대 {formatFileSize(maxSize)} · {multiple ? `최대 ${maxFiles}개` : '1개 파일'}
+              {accept && accept.includes('image') && ' · PNG·JPG·WebP'}
             </p>
           </div>
         )}
 
         {isDragging && (
           <div className="absolute inset-0 bg-brand-bg flex items-center justify-center">
-            <p className="text-sm font-medium text-brand">여기에 놓으세요</p>
+            <p className="text-sm font-medium text-brand">여기에 놓으시면 업로드됩니다</p>
           </div>
         )}
       </div>
