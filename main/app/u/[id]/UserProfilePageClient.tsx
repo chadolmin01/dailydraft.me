@@ -417,7 +417,7 @@ export function UserProfilePageClient({ profileId }: { profileId: string }) {
           </p>
           <Link
             href="/login"
-            className="inline-flex items-center justify-center px-5 py-2.5 bg-brand text-white text-[14px] font-semibold rounded-full hover:bg-brand-hover transition-colors"
+            className="ob-press-spring inline-flex items-center justify-center px-5 py-2.5 bg-brand text-white text-[14px] font-semibold rounded-full hover:bg-brand-hover"
           >
             시작하기
           </Link>
