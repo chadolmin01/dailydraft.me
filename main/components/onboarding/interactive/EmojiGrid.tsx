@@ -48,7 +48,7 @@ function getComment(ids: string[]): string {
     if (STRENGTH_COMMENTS[key]) return STRENGTH_COMMENTS[key]
   }
 
-  return '멋진 조합이에요! 💪'
+  return '좋은 조합입니다 💪'
 }
 
 export const EmojiGrid: React.FC<EmojiGridProps> = ({ options, minSelect, maxSelect, onChange }) => {

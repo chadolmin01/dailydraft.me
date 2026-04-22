@@ -11,11 +11,11 @@ interface QuickNumberProps {
 }
 
 const HOUR_COMMENTS: { max: number; comment: string }[] = [
-  { max: 5,   comment: '하루 1시간 정도네요. 가볍게 참여하는 스타일! 🌱' },
-  { max: 10,  comment: '하루 2시간이에요. 꾸준히 할 수 있겠어요 👍' },
-  { max: 15,  comment: '하루 2-3시간, 꽤 진지하게 임하는 편이네요 💪' },
-  { max: 20,  comment: '하루 4시간 가까이요. 열정 넘치는 스타일! 🔥' },
-  { max: Infinity, comment: '거의 풀타임급이에요. 대단하시다! 🚀' },
+  { max: 5,   comment: '하루 1시간 정도 — 가볍게 참여하는 스타일입니다 🌱' },
+  { max: 10,  comment: '하루 2시간 — 꾸준히 하실 수 있는 분량입니다 👍' },
+  { max: 15,  comment: '하루 2~3시간 — 꽤 진지하게 임하는 편입니다 💪' },
+  { max: 20,  comment: '하루 4시간 가까이 — 열정이 넘치는 페이스입니다 🔥' },
+  { max: Infinity, comment: '거의 풀타임급 투입입니다 🚀' },
 ]
 
 function getHourComment(value: number): string {
@@ -52,7 +52,7 @@ export const QuickNumber: React.FC<QuickNumberProps> = ({ presets, subQuestion, 
     >
       {/* Comment */}
       <p key={selected?.value ?? 'default'} className="text-[13px] text-txt-secondary font-medium text-center mb-4 animate-in fade-in duration-200">
-        {selected ? getHourComment(selected.value) : '주 40시간이면 풀타임이에요 😅'}
+        {selected ? getHourComment(selected.value) : '주 40시간이면 사실상 풀타임입니다 😅'}
       </p>
 
       {/* Big value display */}

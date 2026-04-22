@@ -184,11 +184,11 @@ export function OperatorWelcomeModal({ clubSlug, clubName, clubId }: Props) {
                   운영자 권한 활성화
                 </div>
                 <h2 className="text-[22px] font-bold text-txt-primary mb-1.5">
-                  <span className="text-brand">{clubName}</span> 대표가 되셨어요
+                  <span className="text-brand">{clubName}</span> 대표가 되셨습니다
                 </h2>
                 <p className="text-[13px] text-txt-secondary leading-relaxed">
                   이제 멤버 관리·주간 업데이트 추적·Discord 연동을<br/>
-                  모두 쓸 수 있습니다. 시작할 3가지를 골라보세요
+                  모두 사용하실 수 있습니다. 아래에서 첫 3가지를 골라 보세요.
                 </p>
               </motion.div>
 
