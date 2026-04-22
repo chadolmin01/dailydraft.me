@@ -443,7 +443,8 @@ export default function InstitutionMembersPage() {
                   type="text"
                   value={addNotes}
                   onChange={(e) => setAddNotes(e.target.value)}
-                  placeholder="참고사항"
+                  placeholder="예: FLIP 10기 회장, 2026년 동계 인턴"
+                  aria-label="기관 멤버 참고사항 (선택)"
                   className="w-full px-3 py-2.5 bg-surface-sunken rounded-xl border border-border text-base sm:text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
                 />
               </div>

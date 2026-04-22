@@ -592,7 +592,8 @@ function EditProjectContent() {
                             type="text"
                             value={link.label}
                             onChange={(e) => updateLink(idx, 'label', e.target.value)}
-                            placeholder="이름"
+                            placeholder="예: GitHub, 배포"
+                            aria-label="링크 이름"
                             className="px-3 py-2 border border-border-subtle rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand/10 focus:border-brand w-1/3 bg-transparent transition-all"
                           />
                           <input
