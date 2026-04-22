@@ -12,6 +12,7 @@ import { useAuth } from '@/src/context/AuthContext'
 import { supabase } from '@/src/lib/supabase/client'
 import { cleanNickname } from '@/src/lib/clean-nickname'
 import { positionLabel } from '@/src/constants/roles'
+import { StudentVerifiedBadge } from './StudentVerifiedBadge'
 import type { Profile } from './types'
 import { SITUATION_LABELS } from './types'
 
@@ -213,6 +214,15 @@ export function ProfileHero({ profile, email, isEditable = false }: ProfileHeroP
                   placeholder="예: 경희대"
                   aria-label="소속 (학교 또는 회사)"
                   className="bg-transparent outline-none w-24 placeholder:text-txt-disabled focus:text-txt-primary"
+                />
+                <StudentVerifiedBadge
+                  verifiedAt={
+                    (profile as { student_verified_at?: string | null })?.student_verified_at
+                  }
+                  method={
+                    (profile as { student_verification_method?: string | null })?.student_verification_method
+                  }
+                  universityName={profile?.university}
                 />
               </span>
             )}

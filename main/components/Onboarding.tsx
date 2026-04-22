@@ -731,16 +731,45 @@ function InfoContent({
         {nameEmpty && <p className="text-[11px] text-status-danger-text mt-1 font-medium">닉네임을 입력해 주세요</p>}
       </div>
 
-      {/* University verified banner — 이메일 매칭 시 노출 */}
-      {verified && matchState.university && (
-        <div className="flex items-center gap-2 px-4 py-3 bg-brand/5 border border-brand/20 rounded-xl">
-          <CheckCircle2 size={16} className="text-brand shrink-0" />
+      {/* University match — 이메일 검증 UI: 로딩 → 인증됨 / 미인증 3가지 상태 */}
+      {matchState.loading && (
+        <div className="flex items-center gap-2 px-4 py-3 bg-surface-sunken border border-border rounded-xl animate-pulse">
+          <div className="w-4 h-4 rounded-full bg-border" aria-hidden="true" />
+          <div className="flex-1 min-w-0">
+            <div className="h-3 w-40 bg-border rounded-full" />
+            <div className="h-2 w-24 bg-border/70 rounded-full mt-1.5" />
+          </div>
+          <span className="sr-only" role="status" aria-live="polite">이메일 도메인으로 학교를 확인하고 있습니다</span>
+        </div>
+      )}
+
+      {!matchState.loading && verified && matchState.university && (
+        <div
+          className="flex items-center gap-2 px-4 py-3 bg-brand/5 border border-brand/20 rounded-xl animate-in fade-in slide-in-from-top-1 duration-300"
+          role="status"
+          aria-live="polite"
+        >
+          <CheckCircle2 size={16} className="text-brand shrink-0" aria-hidden="true" />
           <div className="flex-1 min-w-0">
             <div className="text-[13px] font-bold text-txt-primary">
               {matchState.university.name} 재학생으로 확인되었습니다
             </div>
             <div className="text-[11px] text-txt-tertiary mt-0.5">
-              학교 이메일({matchState.domain})로 인증됨
+              학교 이메일({matchState.domain}) 로 인증됨. 기관·동아리 리포트에 반영됩니다.
+            </div>
+          </div>
+        </div>
+      )}
+
+      {!matchState.loading && !verified && matchState.isAcademic && (
+        <div className="flex items-start gap-2 px-4 py-3 bg-status-warn-bg/50 border border-status-warn-text/20 rounded-xl">
+          <span aria-hidden="true" className="text-status-warn-text shrink-0 text-[14px] leading-none mt-0.5">ℹ</span>
+          <div className="flex-1 min-w-0">
+            <div className="text-[12px] font-semibold text-txt-primary">
+              학교 이메일 ({matchState.domain}) 이지만 자동 매칭이 안 되었습니다
+            </div>
+            <div className="text-[11px] text-txt-tertiary mt-0.5 leading-relaxed">
+              아래 소속 입력란에 학교명을 직접 선택해 주세요. 잠시 후 관리자가 확인해 정식 인증으로 전환해 드립니다.
             </div>
           </div>
         </div>
@@ -816,21 +845,38 @@ function InfoContent({
               <label className="text-[11px] font-medium text-txt-tertiary mb-2 block">
                 학번 <span className="text-txt-disabled">(선택 · 기관 리포트에 사용)</span>
               </label>
-              <input
-                type="text"
-                inputMode="numeric"
-                value={profile.studentId ?? ''}
-                onChange={(e) => handleStudentIdChange(e.target.value)}
-                placeholder="예: 2023123456"
-                className={`${INPUT_CLASS} ${studentIdError ? '!border-status-danger-text' : ''}`}
-              />
-              {profile.entranceYear && (
+              <div className="relative">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="off"
+                  value={profile.studentId ?? ''}
+                  onChange={(e) => handleStudentIdChange(e.target.value)}
+                  placeholder="예: 2023123456"
+                  aria-label="학번 (숫자 6~10자리)"
+                  aria-invalid={studentIdError}
+                  aria-describedby={profile.entranceYear ? 'student-id-hint' : undefined}
+                  className={`${INPUT_CLASS} ${studentIdError ? '!border-status-danger-text' : profile.entranceYear ? '!border-brand/40' : ''}`}
+                />
+                {profile.entranceYear && !studentIdError && (
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 inline-flex items-center gap-1 text-[11px] font-semibold text-brand">
+                    <CheckCircle2 size={12} aria-hidden="true" />
+                    {profile.entranceYear}학번
+                  </span>
+                )}
+              </div>
+              {profile.entranceYear && !studentIdError && (
+                <p id="student-id-hint" className="text-[11px] text-brand mt-1.5 font-medium" role="status" aria-live="polite">
+                  {profile.entranceYear}학번으로 인식했습니다. 틀렸다면 학번을 다시 입력해 주세요.
+                </p>
+              )}
+              {!profile.entranceYear && profile.studentId && !studentIdError && (
                 <p className="text-[11px] text-txt-tertiary mt-1">
-                  {profile.entranceYear}학번으로 인식했습니다
+                  학번에서 입학년도를 아직 추정하지 못했습니다. 6자리 이상 입력하시면 자동 인식됩니다.
                 </p>
               )}
               {studentIdError && (
-                <p className="text-[11px] text-status-danger-text mt-1 font-medium">
+                <p className="text-[11px] text-status-danger-text mt-1 font-medium" role="alert">
                   학번은 숫자 6~10자리로 입력해 주세요
                 </p>
               )}
