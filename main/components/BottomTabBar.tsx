@@ -67,7 +67,8 @@ export function BottomTabBar() {
                 key={tab.key}
                 href={tab.path}
                 className="flex-1 flex items-center justify-center"
-                aria-label="탐색"
+                aria-label="탐색 · 프로젝트·사람·클럽 찾기"
+                aria-current={isActive ? 'page' : undefined}
               >
                 <div className={`w-12 h-10 rounded-xl flex items-center justify-center transition-all duration-200 ${
                   isActive
@@ -78,6 +79,7 @@ export function BottomTabBar() {
                     size={20}
                     className={isActive ? 'text-txt-inverse' : 'text-txt-primary'}
                     strokeWidth={isActive ? 2.4 : 1.8}
+                    aria-hidden="true"
                   />
                 </div>
               </Link>
@@ -88,6 +90,12 @@ export function BottomTabBar() {
             <Link
               key={tab.key}
               href={tab.path}
+              aria-label={
+                badge > 0
+                  ? `${tab.label} · ${badge}건 확인 필요`
+                  : tab.label ?? undefined
+              }
+              aria-current={isActive ? 'page' : undefined}
               className={`flex-1 flex flex-col items-center justify-center gap-0.5 h-full relative transition-colors ${
                 isActive ? 'text-txt-primary' : 'text-txt-tertiary active:text-txt-secondary'
               }`}
@@ -97,9 +105,12 @@ export function BottomTabBar() {
               )}
 
               <span className="relative">
-                <Icon size={19} strokeWidth={isActive ? 2.2 : 1.5} />
+                <Icon size={19} strokeWidth={isActive ? 2.2 : 1.5} aria-hidden="true" />
                 {badgeText && (
-                  <span className="absolute -top-1.5 -right-2.5 min-w-[0.875rem] h-[0.875rem] flex items-center justify-center px-0.5 bg-indicator-alert text-white text-[0.5rem] font-bold rounded-full leading-none">
+                  <span
+                    aria-hidden="true"
+                    className="absolute -top-1.5 -right-2.5 min-w-[0.875rem] h-[0.875rem] flex items-center justify-center px-0.5 bg-indicator-alert text-white text-[0.5rem] font-bold rounded-full leading-none"
+                  >
                     {badgeText}
                   </span>
                 )}

@@ -122,7 +122,9 @@ export function NotificationDropdown() {
     },
     onError: (_err, _id, context) => {
       if (context?.prev) queryClient.setQueryData(['notifications'], context.prev)
-      toast.error('알림 읽음 처리에 실패했습니다')
+      toast.error('알림을 읽음으로 표시하지 못했습니다', {
+        description: '잠시 후 다시 시도해 주세요. 새로고침하시면 현재 상태가 반영됩니다.',
+      })
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] })
@@ -157,7 +159,9 @@ export function NotificationDropdown() {
     },
     onError: (_err, _vars, context) => {
       if (context?.prev) queryClient.setQueryData(['notifications'], context.prev)
-      toast.error('모두 읽음 처리에 실패했습니다')
+      toast.error('전체 읽음 처리에 실패했습니다', {
+        description: '네트워크 문제일 수 있습니다. 몇 초 뒤 다시 시도해 주세요.',
+      })
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] })
@@ -187,7 +191,12 @@ export function NotificationDropdown() {
       {/* Bell Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        aria-label="알림"
+        aria-label={
+          unreadCount > 0
+            ? `알림 · 읽지 않은 알림 ${unreadCount}건`
+            : '알림 · 새 소식 없음'
+        }
+        title={unreadCount > 0 ? `읽지 않은 알림 ${unreadCount}건` : '새 소식 없음'}
         aria-expanded={isOpen}
         className="relative w-10 h-10 flex items-center justify-center text-txt-tertiary hover:text-txt-primary hover:bg-surface-sunken rounded-xl transition-colors"
       >
@@ -259,8 +268,11 @@ export function NotificationDropdown() {
             {displayList.length === 0 ? (
               <div className="py-12 text-center">
                 <Bell size={28} className="mx-auto text-txt-disabled mb-2" />
-                <p className="text-xs text-txt-tertiary">
+                <p className="text-[13px] font-semibold text-txt-primary">
                   {showAll ? '알림 내역이 없습니다' : '새로운 알림이 없습니다'}
+                </p>
+                <p className="text-[11px] text-txt-tertiary mt-1 max-w-[220px] mx-auto leading-relaxed">
+                  지원서·커피챗·초대가 도착하면 이곳에 모입니다.
                 </p>
                 {!showAll && readNotifications.length > 0 && (
                   <button
