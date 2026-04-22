@@ -32,8 +32,8 @@ export function ExploreClubGrid({
       ) : clubs.length === 0 ? (
         <EmptyState
           icon={Building2}
-          title="등록된 클럽이 없습니다"
-          description="첫 번째 클럽을 만들어보세요"
+          title="조건에 맞는 클럽이 없습니다"
+          description="검색어를 넓혀 보시거나, 직접 클럽을 만드실 수도 있습니다. 클럽은 생성 후에도 언제든 이름·카테고리·공개 여부를 바꾸실 수 있습니다."
           actionLabel="클럽 만들기"
           actionHref="/clubs/new"
         />

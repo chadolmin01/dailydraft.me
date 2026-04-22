@@ -443,8 +443,8 @@ function NewProjectContent() {
                 if (fieldErrors.title) setFieldErrors(prev => ({ ...prev, title: undefined }))
               }}
               onBlur={() => {
-                if (!title.trim()) setFieldErrors(prev => ({ ...prev, title: '프로젝트 이름을 입력해주세요' }))
-                else if (title.trim().length < 2) setFieldErrors(prev => ({ ...prev, title: '프로젝트 이름은 2자 이상이어야 해요' }))
+                if (!title.trim()) setFieldErrors(prev => ({ ...prev, title: '프로젝트 이름을 입력해 주세요' }))
+                else if (title.trim().length < 2) setFieldErrors(prev => ({ ...prev, title: '프로젝트 이름은 2자 이상이어야 합니다' }))
               }}
               placeholder={theme.titlePlaceholder}
               maxLength={100}
@@ -590,8 +590,8 @@ function NewProjectContent() {
                       if (fieldErrors.description) setFieldErrors(prev => ({ ...prev, description: undefined }))
                     }}
                     onBlur={() => {
-                      if (!description.trim()) setFieldErrors(prev => ({ ...prev, description: '프로젝트 소개를 입력해주세요' }))
-                      else if (description.trim().length < 20) setFieldErrors(prev => ({ ...prev, description: '프로젝트 소개는 20자 이상 작성해주세요' }))
+                      if (!description.trim()) setFieldErrors(prev => ({ ...prev, description: '프로젝트 소개를 입력해 주세요' }))
+                      else if (description.trim().length < 20) setFieldErrors(prev => ({ ...prev, description: '프로젝트 소개는 20자 이상 작성해 주세요 (무엇을·누구와·어떻게)' }))
                     }}
                     placeholder={theme.descPlaceholder}
                     rows={7}

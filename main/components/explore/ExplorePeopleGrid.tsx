@@ -217,8 +217,10 @@ export function ExplorePeopleGrid({
       ) : talentCards.length === 0 ? (
         <EmptyState
           icon={Users}
-          title="등록된 사람이 없습니다"
-          description="프로필을 공개하면 여기에 표시됩니다"
+          title="조건에 맞는 사람이 없습니다"
+          description="검색·필터를 조금 넓히거나, 본인 프로필을 공개로 전환하면 다른 분들에게 발견될 수 있습니다. 프로필 공개 설정은 프로필 편집 화면에서 변경하실 수 있습니다."
+          actionLabel="내 프로필 편집"
+          actionHref="/profile"
         />
       ) : (
         <div className="grid grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">

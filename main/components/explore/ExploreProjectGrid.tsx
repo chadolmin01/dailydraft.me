@@ -82,10 +82,14 @@ export function ExploreProjectGrid({
     return (
       <EmptyState
         icon={FolderOpen}
-        title="등록된 프로젝트가 없습니다"
-        description={isAuthenticated ? "첫 번째 프로젝트를 만들어 팀원을 모집해보세요" : "로그인하면 프로젝트를 만들 수 있어요"}
-        actionLabel={isAuthenticated ? "프로젝트 만들기" : "로그인하기"}
-        actionHref={isAuthenticated ? "/projects/new" : "/login"}
+        title="조건에 맞는 프로젝트가 없습니다"
+        description={
+          isAuthenticated
+            ? '필터를 조금 넓히시거나, 직접 프로젝트를 만들어 팀원을 모집해 보세요. 탐색에 등록되는 데는 몇 분이 걸릴 수 있습니다.'
+            : '로그인하시면 나에게 맞는 프로젝트를 추천받고 직접 올리실 수도 있습니다.'
+        }
+        actionLabel={isAuthenticated ? '프로젝트 만들기' : '로그인하고 시작하기'}
+        actionHref={isAuthenticated ? '/projects/new' : '/login'}
       />
     )
   }

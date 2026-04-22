@@ -142,7 +142,8 @@ export default function ClubsListClient() {
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="클럽 이름 또는 설명으로 검색"
+            placeholder="예: FLIP · 스타트업 · 딥러닝 · 창업동아리"
+            aria-label="클럽 이름 또는 설명으로 검색"
             className="w-full pl-11 pr-4 py-3 text-[15px] bg-surface-sunken border border-border rounded-full text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-brand focus:bg-surface-card focus:shadow-[0_0_0_3px_rgba(0,149,246,0.1)] transition-all"
           />
         </div>
