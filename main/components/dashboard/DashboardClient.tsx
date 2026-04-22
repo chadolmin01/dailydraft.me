@@ -230,7 +230,7 @@ export default function DashboardClient() {
         {/* TRIAGE — 오늘 할 일                 */}
         {/* ═══════════════════════════════════ */}
         <section className="mb-10">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-1">
             <div className="flex items-center gap-2">
               <Inbox size={16} className="text-txt-primary" />
               <h2 className="text-[17px] font-bold text-txt-primary">오늘 할 일</h2>
@@ -241,12 +241,15 @@ export default function DashboardClient() {
               )}
             </div>
           </div>
+          <p className="text-[12px] text-txt-tertiary mb-4 leading-relaxed">
+            받은 지원서·커피챗 요청·초대를 한 곳에 모아 드립니다. 오래 둘수록 상대방이 기다리게 되니 가급적 빨리 응답해 주세요.
+          </p>
 
           {triageItems.length === 0 ? (
             <div className="bg-surface-card border border-border rounded-2xl p-8 text-center">
               <CheckCircle2 size={28} className="text-status-success-text mx-auto mb-3" />
-              <p className="text-[15px] font-semibold text-txt-primary mb-1">다 비어있어요 👏</p>
-              <p className="text-[13px] text-txt-tertiary">당장 처리할 항목이 없습니다. 잠시 쉬어가세요</p>
+              <p className="text-[15px] font-semibold text-txt-primary mb-1">모두 처리하셨습니다 👏</p>
+              <p className="text-[13px] text-txt-tertiary">받은 지원서·커피챗 요청·초대가 모두 정리되었습니다. 새 활동이 생기면 이 자리에 다시 모입니다.</p>
             </div>
           ) : (
             <div className="space-y-2">

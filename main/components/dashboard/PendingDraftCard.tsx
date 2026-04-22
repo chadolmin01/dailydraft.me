@@ -53,10 +53,10 @@ export default function PendingDraftCard() {
         </div>
         <div className="flex-1">
           <p className="text-[14px] font-bold text-txt-primary">
-            AI가 작성한 주간 업데이트 초안 {drafts.length}건
+            Ghostwriter 가 작성한 주간 업데이트 초안 {drafts.length}건
           </p>
           <p className="text-[12px] text-txt-tertiary mt-0.5">
-            승인하면 프로젝트 업데이트로 게시됩니다
+            Discord 활동을 요약한 초안입니다. 승인하시면 프로젝트 업데이트로 게시됩니다.
           </p>
         </div>
       </div>
