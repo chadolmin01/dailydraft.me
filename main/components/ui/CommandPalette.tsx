@@ -89,7 +89,8 @@ export function CommandPalette() {
           <Command.Input
             value={input}
             onValueChange={setInput}
-            placeholder="프로젝트·사람·클럽 검색하거나 이동할 곳 입력"
+            placeholder="무엇을 찾으시나요? 프로젝트·사람·클럽 또는 페이지 이름"
+            aria-label="전역 검색 · 2자 이상 입력하시면 검색이 시작됩니다"
             className="flex-1 bg-transparent outline-none text-[14px] text-txt-primary placeholder:text-txt-disabled"
             autoFocus
           />
@@ -125,8 +126,18 @@ export function CommandPalette() {
           )}
 
           {!loading && input.length >= 2 && results.length === 0 && (
-            <div className="px-4 py-6 text-center text-[12px] text-txt-tertiary">
-              검색 결과 없음. <button onClick={() => go(`/explore?q=${encodeURIComponent(input)}`)} className="text-brand underline">/explore 에서 다시 검색</button>
+            <div className="px-4 py-6 text-center text-[12px] text-txt-tertiary space-y-2">
+              <p>&quot;{input}&quot; 과 정확히 일치하는 결과가 없습니다.</p>
+              <p>
+                철자를 확인하시거나{' '}
+                <button
+                  onClick={() => go(`/explore?q=${encodeURIComponent(input)}`)}
+                  className="text-brand underline"
+                >
+                  /explore 에서 전체 범위로 검색
+                </button>
+                해 보세요.
+              </p>
             </div>
           )}
 
@@ -150,6 +161,26 @@ export function CommandPalette() {
             ),
           )}
         </Command.List>
+        {/* 힌트 푸터 — 키보드 단축키 안내 */}
+        <div className="hidden sm:flex items-center justify-between gap-3 px-4 py-2 border-t border-border text-[10px] text-txt-tertiary bg-surface-sunken/40">
+          <div className="flex items-center gap-3">
+            <span className="inline-flex items-center gap-1">
+              <kbd className="px-1.5 py-0.5 bg-surface-card rounded border border-border font-mono">↑↓</kbd>
+              이동
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <kbd className="px-1.5 py-0.5 bg-surface-card rounded border border-border font-mono">Enter</kbd>
+              선택
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <kbd className="px-1.5 py-0.5 bg-surface-card rounded border border-border font-mono">Esc</kbd>
+              닫기
+            </span>
+          </div>
+          <span className="text-txt-disabled">
+            <kbd className="px-1 py-0 font-mono">⌘K</kbd>·<kbd className="px-1 py-0 font-mono">Ctrl+K</kbd> 로 어디서든 다시 열기
+          </span>
+        </div>
       </Command>
     </div>
   )
