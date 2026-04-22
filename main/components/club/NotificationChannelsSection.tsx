@@ -193,9 +193,13 @@ export function NotificationChannelsSection({ clubId }: { clubId: string }) {
             <input
               value={label}
               onChange={e => setLabel(e.target.value.slice(0, 30))}
-              placeholder="운영 채널"
+              placeholder="예: 운영 채널, 마케팅 공유"
+              aria-label="채널 라벨 (선택)"
               className="w-full px-3 py-2 text-[13px] bg-surface-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/40"
             />
+            <p className="text-[11px] text-txt-tertiary mt-1">
+              여러 채널을 등록하실 때 구분하기 좋은 이름을 달아 주세요.
+            </p>
           </div>
           <div className="flex gap-2 pt-2">
             <button

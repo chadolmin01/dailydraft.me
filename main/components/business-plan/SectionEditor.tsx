@@ -346,7 +346,8 @@ export const BasicInfoEditor: React.FC<BasicInfoEditorProps> = ({
             type="number"
             value={data.fundingAmount || ''}
             onChange={(e) => onChange({ ...data, fundingAmount: e.target.value ? Number(e.target.value) : undefined })}
-            placeholder="5000"
+            placeholder="예: 5000 (만원 단위)"
+            aria-label="희망 지원금액 (만원 단위, 선택)"
             className="w-full px-4 py-2.5 pr-12 border border-border text-base sm:text-sm focus:outline-none focus:border-border"
           />
           <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-txt-tertiary">

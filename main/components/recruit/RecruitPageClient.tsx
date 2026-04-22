@@ -425,7 +425,8 @@ export function RecruitPageClient() {
                 value={form.name}
                 onChange={(e) => update('name', e.target.value)}
                 className={inputClass}
-                placeholder="홍길동"
+                placeholder="예: 이성민"
+                aria-label="신청자 이름"
                 autoComplete="name"
               />
             </Field>
