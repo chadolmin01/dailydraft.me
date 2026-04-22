@@ -230,7 +230,7 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
           {items.map(item => (
             <div
               key={item.id}
-              className="relative group bg-surface-card border border-border rounded-2xl overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+              className="relative group bg-surface-card border border-border rounded-2xl overflow-hidden ob-ring-glow"
             >
               {isEditable && (
                 <button

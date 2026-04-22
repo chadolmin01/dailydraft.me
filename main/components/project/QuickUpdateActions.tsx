@@ -105,7 +105,7 @@ export function QuickUpdateActions({ opportunityId, currentWeek }: Props) {
               key={a.key}
               onClick={() => handleQuickRecord(a.key, a.prompt)}
               disabled={isPending}
-              className="text-left bg-surface-card border border-border rounded-xl p-3 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-60 group"
+              className="text-left bg-surface-card border border-border rounded-xl p-3 ob-ring-glow ob-press-spring disabled:opacity-60 group"
             >
               <div className={`w-8 h-8 rounded-lg ${a.bg} flex items-center justify-center mb-2`}>
                 <Icon size={14} className={a.color} />

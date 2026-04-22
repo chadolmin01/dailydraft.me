@@ -21,7 +21,7 @@ export function ProfileCompletionCard() {
   return (
     <Link
       href="/profile"
-      className="block bg-surface-card border border-border rounded-2xl p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group"
+      className="ob-ring-glow ob-press-spring block bg-surface-card border border-border rounded-2xl p-5 group"
     >
       <div className="flex items-start gap-3 mb-3">
         <div className="w-10 h-10 rounded-xl bg-brand-bg flex items-center justify-center shrink-0">

@@ -142,7 +142,7 @@ function ProjectCard({
   return (
     <Link
       href={href}
-      className="bg-surface-card border border-border rounded-2xl overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col no-underline"
+      className="bg-surface-card border border-border rounded-2xl overflow-hidden ob-ring-glow flex flex-col no-underline"
     >
       {/* 커버 */}
       <div className="relative aspect-[16/9] bg-surface-sunken overflow-hidden">
@@ -228,7 +228,7 @@ function TeamCard({
   return (
     <Link
       href={href}
-      className="bg-surface-card border border-border rounded-2xl overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col no-underline"
+      className="bg-surface-card border border-border rounded-2xl overflow-hidden ob-ring-glow flex flex-col no-underline"
     >
       <div className="relative aspect-[16/9] bg-surface-sunken overflow-hidden">
         {coverSrc ? (

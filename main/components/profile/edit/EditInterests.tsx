@@ -60,7 +60,7 @@ export const EditInterests: React.FC<EditInterestsProps> = ({
           onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addCustomTag())}
           placeholder="관심 키워드를 입력해보세요"
           maxLength={20}
-          className="flex-1 px-3 py-2 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all"
+          className="flex-1 px-3 py-2 text-base sm:text-sm border border-border bg-surface-card rounded-lg ob-input"
         />
         <button
           type="button"
