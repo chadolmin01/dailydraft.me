@@ -366,8 +366,33 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   const aff = AFFILIATION_OPTIONS.find(a => a.value === profile.affiliationType) || AFFILIATION_OPTIONS[0]
   const showUnivCombo = profile.affiliationType === 'student' || profile.affiliationType === 'graduate'
 
+  // 키보드 Enter 로 단계 진행 (textarea·input 에서는 기본 동작 유지).
+  // Esc 로 뒤로 가기. 유저 입력 중에는 방해되지 않도록 target 검사.
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement
+    const inTextField =
+      target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable
+    if (e.key === 'Enter' && !e.shiftKey && canProceed && !inTextField) {
+      e.preventDefault()
+      handleNext()
+    } else if (e.key === 'Enter' && inTextField && target.tagName === 'INPUT' && canProceed) {
+      // 일반 input 에서 Enter 도 진행 (textarea 는 줄바꿈 유지)
+      e.preventDefault()
+      handleNext()
+    }
+  }
+
   return (
-    <div className="fixed inset-0 bg-surface-bg flex flex-col">
+    <div
+      role="form"
+      aria-label={`온보딩 — ${config?.title ?? ''}`}
+      onKeyDown={handleKeyDown}
+      className="fixed inset-0 bg-surface-bg flex flex-col"
+    >
+      {/* 단계 변경 시 스크린리더 공지 (본 컨텐츠 위에 시각 숨김) */}
+      <span className="sr-only" role="status" aria-live="polite" aria-atomic="true">
+        {config?.title ? `${stepIndex + 1}단계 중 ${activeSteps.length}단계: ${config.title}` : ''}
+      </span>
       {/* ── Progress bar ── */}
       <div className="px-6 sm:px-10 pt-8 pb-4 shrink-0">
         <div className="max-w-2xl mx-auto space-y-3">
@@ -971,8 +996,38 @@ interface SourceStepProps {
 }
 
 function SourceStep({ selected, onSelect, onBack, onNext, errorMsg }: SourceStepProps) {
+  // 방향키로 옵션 이동, 숫자 1~4 로 바로 선택, Enter 로 진행
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const currentIdx = SOURCE_OPTIONS.findIndex(o => o.value === selected)
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+      e.preventDefault()
+      const next = currentIdx < 0 ? 0 : (currentIdx + 1) % SOURCE_OPTIONS.length
+      onSelect(SOURCE_OPTIONS[next].value)
+    } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+      e.preventDefault()
+      const next = currentIdx < 0 ? SOURCE_OPTIONS.length - 1 : (currentIdx - 1 + SOURCE_OPTIONS.length) % SOURCE_OPTIONS.length
+      onSelect(SOURCE_OPTIONS[next].value)
+    } else if (/^[1-4]$/.test(e.key)) {
+      const idx = parseInt(e.key, 10) - 1
+      if (SOURCE_OPTIONS[idx]) {
+        onSelect(SOURCE_OPTIONS[idx].value)
+      }
+    } else if (e.key === 'Enter' && selected) {
+      e.preventDefault()
+      onNext()
+    } else if (e.key === 'Escape') {
+      e.preventDefault()
+      onBack()
+    }
+  }
   return (
-    <div className="fixed inset-0 bg-surface-bg flex flex-col">
+    <div
+      role="radiogroup"
+      aria-label="Draft 에 오신 경로"
+      onKeyDown={handleKeyDown}
+      tabIndex={-1}
+      className="fixed inset-0 bg-surface-bg flex flex-col"
+    >
       <div className="px-6 sm:px-10 pt-8 pb-4 shrink-0">
         <div className="max-w-2xl mx-auto space-y-3">
           <div className="flex items-center justify-between">
@@ -1003,11 +1058,14 @@ function SourceStep({ selected, onSelect, onBack, onNext, errorMsg }: SourceStep
                 <button
                   key={opt.value}
                   type="button"
+                  role="radio"
+                  aria-checked={active}
+                  aria-label={`${i + 1}번: ${opt.label}. ${opt.desc}`}
                   onClick={() => onSelect(opt.value)}
                   style={{
                     animation: `ob-chip-in 0.35s cubic-bezier(0.34, 1.4, 0.64, 1) ${i * 50}ms both`,
                   }}
-                  className={`w-full text-left rounded-2xl border p-4 transition-all duration-200 ${
+                  className={`w-full text-left rounded-2xl border p-4 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 ${
                     active
                       ? 'bg-brand text-white border-brand shadow-md scale-[1.015]'
                       : 'bg-surface-card text-txt-primary border-border hover:border-txt-tertiary hover:-translate-y-0.5 hover:shadow-sm active:scale-[0.99]'
@@ -1039,8 +1097,18 @@ function SourceStep({ selected, onSelect, onBack, onNext, errorMsg }: SourceStep
           </div>
 
           {errorMsg && (
-            <p className="text-[12px] text-status-danger-text mt-4 font-medium">{errorMsg}</p>
+            <p className="text-[12px] text-status-danger-text mt-4 font-medium" role="alert">{errorMsg}</p>
           )}
+
+          {/* 데스크톱 키보드 힌트 — 모바일에선 안 보임 */}
+          <p className="hidden md:block text-[11px] text-txt-tertiary mt-6 leading-relaxed">
+            <kbd className="px-1.5 py-0.5 bg-surface-sunken rounded border border-border font-mono text-[10px]">1~4</kbd>{' '}
+            숫자로 빠르게 선택,{' '}
+            <kbd className="px-1.5 py-0.5 bg-surface-sunken rounded border border-border font-mono text-[10px]">↑↓</kbd>{' '}
+            이동,{' '}
+            <kbd className="px-1.5 py-0.5 bg-surface-sunken rounded border border-border font-mono text-[10px]">Enter</kbd>{' '}
+            진행
+          </p>
         </div>
       </div>
 
@@ -1050,6 +1118,7 @@ function SourceStep({ selected, onSelect, onBack, onNext, errorMsg }: SourceStep
             type="button"
             onClick={onNext}
             disabled={!selected}
+            aria-label={selected ? '다음 단계로 이동' : '먼저 경로를 선택하시면 활성화됩니다'}
             className={`w-full flex items-center justify-center gap-2 py-4 rounded-full text-[15px] font-black transition-all ${
               selected
                 ? 'bg-surface-inverse text-txt-inverse hover:opacity-90 active:scale-[0.97]'
@@ -1057,7 +1126,7 @@ function SourceStep({ selected, onSelect, onBack, onNext, errorMsg }: SourceStep
             }`}
           >
             다음
-            <ArrowRight size={15} />
+            <ArrowRight size={15} aria-hidden="true" />
           </button>
         </div>
       </div>
