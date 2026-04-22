@@ -452,9 +452,13 @@ function ReportTab() {
       })
       if (!res.ok) throw new Error()
       setSubmitted(true)
-      toast.success('리포트가 접수되었습니다!')
+      toast.success('리포트가 접수되었습니다', {
+        description: '영업일 기준 2일 이내에 확인해 회신 드리며, 보안 제보는 24시간 이내 초기 응답입니다.',
+      })
     } catch {
-      toast.error('리포트 전송에 실패했습니다. 다시 시도해주세요.')
+      toast.error('리포트 전송에 실패했습니다', {
+        description: '인터넷 연결을 확인하신 뒤 다시 시도해 주세요. 문제가 계속되면 team@dailydraft.me 로 직접 보내 주세요.',
+      })
     } finally {
       setIsSubmitting(false)
     }
@@ -466,8 +470,11 @@ function ReportTab() {
         <div className="w-12 h-12 bg-[#E8F5E9] rounded-2xl flex items-center justify-center">
           <CheckCircle2 size={24} className="text-[#4CAF50]" />
         </div>
-        <h4 className="text-[14px] font-bold text-txt-primary">리포트가 접수되었습니다</h4>
-        <p className="text-[12px] text-txt-tertiary text-center">빠르게 확인하고 처리하겠습니다.</p>
+        <h4 className="text-[14px] font-bold text-txt-primary">리포트를 잘 받았습니다</h4>
+        <p className="text-[12px] text-txt-tertiary text-center leading-relaxed">
+          영업일 기준 2일 이내에 확인하고 회신 드립니다.<br />
+          보안 제보라면 24시간 내 초기 응답이 목표입니다.
+        </p>
         <button
           onClick={() => { setSubmitted(false); setCategory(''); setTitle(''); setDescription('') }}
           className="mt-2 px-4 py-2.5 text-[12px] font-semibold bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-2xl text-txt-secondary active:scale-[0.97] transition-all"
@@ -508,7 +515,8 @@ function ReportTab() {
           type="text"
           value={title}
           onChange={e => setTitle(e.target.value)}
-          placeholder="간단히 요약해주세요"
+          placeholder="예: 커피챗 수락 버튼이 눌리지 않습니다"
+          aria-label="리포트 제목"
           maxLength={200}
           className="w-full px-4 py-3 text-[13px] bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#5E6AD2]/20 transition-all placeholder:text-txt-disabled"
         />
@@ -517,11 +525,15 @@ function ReportTab() {
       {/* Description */}
       <div>
         <label className="text-[12px] font-semibold text-txt-tertiary mb-2 block px-1">상세 내용</label>
+        <p className="text-[10px] text-txt-disabled mb-1.5 px-1 leading-relaxed">
+          재현 단계(1→2→3) · 사용 기기·브라우저 · 기대 동작 · 실제 동작을 알려 주시면 더 빠르게 대응할 수 있습니다. 스크린샷이 있으시면 이미지 호스팅 링크를 본문에 넣어 주세요.
+        </p>
         <textarea
           value={description}
           onChange={e => setDescription(e.target.value)}
-          placeholder="어떤 상황에서 발생했는지, 기대했던 동작은 무엇인지 알려주세요"
-          rows={4}
+          placeholder="예: 1. /p/abc 프로젝트 상세 진입 → 2. 커피챗 요청 버튼 클릭 → 3. 모달이 열리지 않음. Chrome 120, Windows 11."
+          aria-label="리포트 상세 내용"
+          rows={5}
           maxLength={5000}
           className="w-full px-4 py-3 text-[13px] bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#5E6AD2]/20 transition-all resize-none placeholder:text-txt-disabled"
         />
