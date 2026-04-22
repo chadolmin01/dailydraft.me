@@ -425,7 +425,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       role="form"
       aria-label={`온보딩 — ${config?.title ?? ''}`}
       onKeyDown={handleKeyDown}
-      className="fixed inset-0 bg-surface-bg flex flex-col"
+      className="fixed inset-0 ob-atmos flex flex-col"
     >
       {/* 단계 변경 시 스크린리더 공지 (본 컨텐츠 위에 시각 숨김) */}
       <span className="sr-only" role="status" aria-live="polite" aria-atomic="true">
@@ -465,7 +465,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
               </button>
             </div>
           </div>
-          <div className="flex gap-1.5">
+          <div className="ob-progress-container flex gap-1.5" role="progressbar" aria-valuemin={0} aria-valuemax={activeSteps.length} aria-valuenow={stepIndex + 1}>
             {activeSteps.map((_, i) => {
               const isDone = i < stepIndex
               const isCurrent = i === stepIndex
@@ -473,7 +473,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                 <div key={i} className="flex-1 h-[5px] rounded-full overflow-hidden bg-surface-sunken">
                   <div
                     className={`h-full rounded-full transition-all duration-500 ease-out ${
-                      isDone ? 'bg-surface-inverse w-full' : isCurrent ? 'bg-brand' : 'w-0'
+                      isDone ? 'bg-surface-inverse w-full' : isCurrent ? 'bg-brand ob-progress-active' : 'w-0'
                     }`}
                     style={isCurrent ? { width: '100%', animation: 'segment-fill 0.6s cubic-bezier(0.16, 1, 0.3, 1) both' } : undefined}
                   />
@@ -493,17 +493,23 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       >
         <div className="max-w-2xl mx-auto w-full px-6 pt-2 pb-8 flex flex-col flex-1">
           {/* Title */}
-          <h2 className="text-2xl sm:text-[28px] font-black text-txt-primary leading-snug shrink-0 animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <h2 className="text-2xl sm:text-[28px] font-black text-txt-primary leading-snug shrink-0 ob-title-rise">
             {config?.title}
           </h2>
           {config?.hint && (
-            <p className="text-[12px] font-medium text-txt-secondary mt-2 shrink-0 animate-in fade-in duration-300" style={{ animationDelay: '50ms' }}>
+            <p
+              className="text-[12px] font-medium text-txt-secondary mt-2 shrink-0 ob-stagger-item"
+              style={{ ['--stagger' as string]: '80ms' }}
+            >
               {config.hint}
             </p>
           )}
 
           {/* Step content */}
-          <div className="flex-1 mt-6 animate-in fade-in slide-in-from-bottom-4 duration-300" style={{ animationDelay: '60ms' }}>
+          <div
+            className="flex-1 mt-6 ob-stagger-item"
+            style={{ ['--stagger' as string]: '140ms' }}
+          >
             {step === 'info' && (
               <InfoContent
                 profile={profile}
@@ -516,26 +522,33 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
             )}
             {step === 'situation' && (
               <div className="space-y-2">
-                {SITUATION_OPTIONS.map((sit) => (
-                  <button
-                    key={sit.value}
-                    onClick={() => updateProfile({ situation: sit.value })}
-                    className={`w-full text-left px-5 py-4 border rounded-xl transition-all duration-150 ${
-                      profile.situation === sit.value
-                        ? 'bg-brand border-brand'
-                        : attempted && !profile.situation
-                          ? 'bg-surface-card border-status-danger-text/50 active:scale-[0.99]'
-                          : 'bg-surface-card border-border active:scale-[0.99]'
-                    }`}
-                  >
-                    <div className={`text-[14px] font-bold ${profile.situation === sit.value ? 'text-white' : 'text-txt-primary'}`}>
-                      {sit.label}
-                    </div>
-                    <div className={`text-[12px] mt-0.5 ${profile.situation === sit.value ? 'text-white/70' : 'text-txt-tertiary'}`}>
-                      {sit.desc}
-                    </div>
-                  </button>
-                ))}
+                {SITUATION_OPTIONS.map((sit, i) => {
+                  const active = profile.situation === sit.value
+                  const danger = attempted && !profile.situation
+                  return (
+                    <button
+                      key={sit.value}
+                      onClick={() => updateProfile({ situation: sit.value })}
+                      aria-checked={active}
+                      role="radio"
+                      style={{ ['--stagger' as string]: `${i * 60}ms` }}
+                      className={`ob-stagger-item ob-ring-glow ob-press-spring w-full text-left px-5 py-4 border rounded-xl ${
+                        active
+                          ? 'bg-brand border-brand'
+                          : danger
+                            ? 'bg-surface-card border-status-danger-text/50'
+                            : 'bg-surface-card border-border'
+                      }`}
+                    >
+                      <div className={`text-[14px] font-bold ${active ? 'text-white' : 'text-txt-primary'}`}>
+                        {sit.label}
+                      </div>
+                      <div className={`text-[12px] mt-0.5 ${active ? 'text-white/70' : 'text-txt-tertiary'}`}>
+                        {sit.desc}
+                      </div>
+                    </button>
+                  )
+                })}
               </div>
             )}
             {step === 'position' && (
@@ -611,10 +624,11 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
           )}
           <button
             onClick={handleNext}
-            className={`w-full flex items-center justify-center gap-2 py-4 rounded-full text-[14px] font-black transition-all duration-200 active:scale-[0.97] ${
+            disabled={!canProceed}
+            className={`ob-press-spring w-full flex items-center justify-center gap-2 py-4 rounded-full text-[14px] font-black ${
               canProceed
-                ? 'bg-surface-inverse text-white hover:opacity-90'
-                : 'bg-surface-sunken text-txt-disabled'
+                ? 'bg-surface-inverse text-white hover:opacity-90 shadow-[0_4px_14px_-4px_rgba(0,0,0,0.25)] hover:shadow-[0_6px_20px_-4px_rgba(0,0,0,0.3)]'
+                : 'bg-surface-sunken text-txt-disabled cursor-not-allowed'
             }`}
           >
             다음으로
@@ -628,7 +642,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
 /* ─── Info Form ─── */
 
-const INPUT_CLASS = 'w-full px-4 py-3 bg-surface-card rounded-xl border border-border text-[14px] font-medium text-txt-primary focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors placeholder:text-txt-tertiary'
+const INPUT_CLASS = 'ob-input w-full px-4 py-3 bg-surface-card rounded-xl border border-border text-[14px] font-medium text-txt-primary placeholder:text-txt-tertiary'
 
 function InfoContent({
   profile, aff, showUnivCombo, attempted, onChange, onSubmit,
@@ -956,7 +970,7 @@ function IntroScreen({ onStart }: { onStart: () => void }) {
   }, [allChecked])
 
   return (
-    <div className="fixed inset-0 bg-surface-bg flex flex-col items-center justify-center p-6 overflow-y-auto">
+    <div className="fixed inset-0 ob-atmos flex flex-col items-center justify-center p-6 overflow-y-auto">
       <div className="max-w-lg w-full flex flex-col items-center py-8">
         <Image
           src="/onboarding/1.svg"
@@ -1039,9 +1053,9 @@ function IntroScreen({ onStart }: { onStart: () => void }) {
           <button
             onClick={onStart}
             disabled={!allRequired}
-            className={`w-full flex items-center justify-center gap-2 py-4 rounded-full text-[15px] font-black transition-all ${
+            className={`ob-press-spring w-full flex items-center justify-center gap-2 py-4 rounded-full text-[15px] font-black ${
               allRequired
-                ? 'bg-brand text-white hover:opacity-90 active:scale-[0.97]'
+                ? 'bg-brand text-white hover:opacity-90 shadow-[0_4px_14px_-4px_rgba(37,99,235,0.3)] hover:shadow-[0_6px_20px_-4px_rgba(37,99,235,0.4)]'
                 : 'bg-surface-sunken text-txt-disabled cursor-not-allowed'
             }`}
           >
@@ -1114,7 +1128,7 @@ function SourceStep({ selected, onSelect, onBack, onNext, errorMsg }: SourceStep
       aria-label="Draft 에 오신 경로"
       onKeyDown={handleKeyDown}
       tabIndex={-1}
-      className="fixed inset-0 bg-surface-bg flex flex-col"
+      className="fixed inset-0 ob-atmos flex flex-col"
     >
       <div className="px-6 sm:px-10 pt-8 pb-4 shrink-0">
         <div className="max-w-2xl mx-auto space-y-3">
@@ -1159,13 +1173,11 @@ function SourceStep({ selected, onSelect, onBack, onNext, errorMsg }: SourceStep
                   aria-checked={active}
                   aria-label={`${i + 1}번: ${opt.label}. ${opt.desc}`}
                   onClick={() => onSelect(opt.value)}
-                  style={{
-                    animation: `ob-chip-in 0.35s cubic-bezier(0.34, 1.4, 0.64, 1) ${i * 50}ms both`,
-                  }}
-                  className={`w-full text-left rounded-2xl border p-4 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 ${
+                  style={{ ['--stagger' as string]: `${i * 60}ms` }}
+                  className={`ob-stagger-item ob-press-spring ob-ring-glow w-full text-left rounded-2xl border p-4 ${
                     active
-                      ? 'bg-brand text-white border-brand shadow-md scale-[1.015]'
-                      : 'bg-surface-card text-txt-primary border-border hover:border-txt-tertiary hover:-translate-y-0.5 hover:shadow-sm active:scale-[0.99]'
+                      ? 'bg-brand text-white border-brand'
+                      : 'bg-surface-card text-txt-primary border-border'
                   }`}
                 >
                   <div className="flex items-start gap-3">
@@ -1216,9 +1228,9 @@ function SourceStep({ selected, onSelect, onBack, onNext, errorMsg }: SourceStep
             onClick={onNext}
             disabled={!selected}
             aria-label={selected ? '다음 단계로 이동' : '먼저 경로를 선택하시면 활성화됩니다'}
-            className={`w-full flex items-center justify-center gap-2 py-4 rounded-full text-[15px] font-black transition-all ${
+            className={`ob-press-spring w-full flex items-center justify-center gap-2 py-4 rounded-full text-[15px] font-black ${
               selected
-                ? 'bg-surface-inverse text-txt-inverse hover:opacity-90 active:scale-[0.97]'
+                ? 'bg-surface-inverse text-txt-inverse hover:opacity-90 shadow-[0_4px_14px_-4px_rgba(0,0,0,0.25)] hover:shadow-[0_6px_20px_-4px_rgba(0,0,0,0.3)]'
                 : 'bg-surface-sunken text-txt-disabled cursor-not-allowed'
             }`}
           >
@@ -1235,10 +1247,12 @@ function SourceStep({ selected, onSelect, onBack, onNext, errorMsg }: SourceStep
 // progress bar 옆 미니 배지. "저장 중 / 저장됨 / 오류" 를 조용히 보여 줌.
 function SaveIndicator({ status }: { status: 'idle' | 'saving' | 'saved' | 'error' }) {
   if (status === 'idle') return null
+  // status 를 key 로 사용해 상태 변경 시 crossfade in
   if (status === 'saving') {
     return (
       <span
-        className="hidden sm:inline-flex items-center gap-1 text-[10px] text-txt-tertiary"
+        key="saving"
+        className="ob-crossfade hidden sm:inline-flex items-center gap-1 text-[10px] text-txt-tertiary"
         title="입력하신 내용을 기기에 저장 중입니다"
       >
         <span className="w-1.5 h-1.5 rounded-full bg-txt-tertiary animate-pulse" />
@@ -1249,17 +1263,21 @@ function SaveIndicator({ status }: { status: 'idle' | 'saving' | 'saved' | 'erro
   if (status === 'saved') {
     return (
       <span
-        className="hidden sm:inline-flex items-center gap-1 text-[10px] text-brand"
+        key="saved"
+        className="ob-crossfade hidden sm:inline-flex items-center gap-1 text-[10px] text-brand"
         title="브라우저를 닫으셔도 내용이 유지됩니다"
       >
-        <Check size={10} strokeWidth={2.5} />
+        <span className="ob-check-pop inline-flex">
+          <Check size={10} strokeWidth={2.5} aria-hidden="true" />
+        </span>
         저장됨
       </span>
     )
   }
   return (
     <span
-      className="hidden sm:inline-flex items-center gap-1 text-[10px] text-status-danger-text"
+      key="error"
+      className="ob-crossfade hidden sm:inline-flex items-center gap-1 text-[10px] text-status-danger-text"
       title="기기 저장 실패. 서버에는 단계 이동 시 저장됩니다"
     >
       ⚠ 저장 실패
@@ -1344,24 +1362,35 @@ function RecoveryOffer({ draft, onResume, onDiscard }: RecoveryOfferProps) {
 
 function ConsentRow({ checked, onToggle, label, required, emphasis, hint, link }: ConsentRowProps) {
   return (
-    <div className="flex items-start gap-3 py-1.5">
+    <label
+      className="flex items-start gap-3 py-1.5 cursor-pointer group rounded-lg px-1 -mx-1 hover:bg-surface-sunken/40 ob-smooth-colors"
+      onClick={(e) => {
+        // Link 클릭은 체크 동작으로 바꾸지 않음
+        const target = e.target as HTMLElement
+        if (target.closest('a')) return
+      }}
+    >
       <button
         type="button"
         onClick={onToggle}
-        className={`w-5 h-5 rounded-md flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
+        className={`ob-ring-glow w-5 h-5 rounded-md flex items-center justify-center shrink-0 mt-0.5 ${
           checked
-            ? 'bg-brand text-white'
-            : 'bg-surface-card border border-border hover:border-brand/50'
+            ? 'bg-brand text-white border border-brand'
+            : 'bg-surface-card border border-border group-hover:border-brand/40'
         }`}
         aria-label={label}
         aria-checked={checked}
         role="checkbox"
       >
-        {checked && <Check size={12} strokeWidth={3} />}
+        {checked && (
+          <span className="ob-check-pop inline-flex">
+            <Check size={12} strokeWidth={3} aria-hidden="true" />
+          </span>
+        )}
       </button>
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0" onClick={onToggle}>
         <div className="flex items-center gap-1.5 flex-wrap">
-          <span className={`text-[13px] ${emphasis ? 'font-bold text-txt-primary' : 'text-txt-primary'}`}>
+          <span className={`text-[13px] ob-smooth-colors ${emphasis ? 'font-bold text-txt-primary' : checked ? 'text-txt-primary' : 'text-txt-secondary'}`}>
             {required && <span className="text-status-danger-text mr-1">*</span>}
             {label}
           </span>
@@ -1370,6 +1399,7 @@ function ConsentRow({ checked, onToggle, label, required, emphasis, hint, link }
               href={link.href}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
               className="text-[11px] text-brand underline underline-offset-2 hover:opacity-80"
             >
               {link.label}
@@ -1378,7 +1408,7 @@ function ConsentRow({ checked, onToggle, label, required, emphasis, hint, link }
         </div>
         {hint && <p className="text-[11px] text-txt-tertiary mt-0.5">{hint}</p>}
       </div>
-    </div>
+    </label>
   )
 }
 

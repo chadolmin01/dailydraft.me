@@ -20,6 +20,7 @@ import { PageContainer } from '@/components/ui/PageContainer'
 import PendingDraftCard from '@/components/dashboard/PendingDraftCard'
 import { ProfileCompletionCard } from '@/components/dashboard/ProfileCompletionCard'
 import { MicroPromptCard } from '@/components/onboarding/MicroPromptCard'
+import { InterviewContinueCard } from '@/components/onboarding/InterviewContinueCard'
 import { withRetry } from '@/src/lib/query-utils'
 
 /**
@@ -436,9 +437,14 @@ export default function DashboardClient() {
             - 답이 남은 질문이 없으면 null 반환 — 조건부 렌더링 불필요. */}
         {/* ═══════════════════════════════════ */}
         {!profile?.ai_chat_completed && (
-          <section className="mb-6">
-            <MicroPromptCard slot="sidebar" dismissible />
-          </section>
+          <>
+            {/* 이벤트 게이트: 임계치(3/7) 이상 답했으면 "이어가기" 카드 우선 노출.
+                미달이면 null 반환 → MicroPromptCard 로 계속 1문항 수집. */}
+            <InterviewContinueCard />
+            <section className="mb-6">
+              <MicroPromptCard slot="sidebar" dismissible />
+            </section>
+          </>
         )}
 
         {/* ═══════════════════════════════════ */}

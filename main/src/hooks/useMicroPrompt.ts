@@ -16,6 +16,8 @@ import { useCallback, useEffect, useState } from 'react'
 interface MicroPromptState {
   answered: Set<string>
   recentCount: number
+  /** 질문별 실제 응답 값 — 인터뷰 페이지 등에서 재사용 */
+  responses: Record<string, unknown>
   loaded: boolean
 }
 
@@ -25,6 +27,7 @@ export function useMicroPrompt() {
   const [state, setState] = useState<MicroPromptState>({
     answered: new Set(),
     recentCount: 0,
+    responses: {},
     loaded: false,
   })
 
@@ -38,6 +41,7 @@ export function useMicroPrompt() {
         setState({
           answered: new Set<string>(payload.answered ?? []),
           recentCount: payload.recentCount ?? 0,
+          responses: (payload.responses as Record<string, unknown>) ?? {},
           loaded: true,
         })
       })
@@ -72,6 +76,7 @@ export function useMicroPrompt() {
             ...s,
             answered: new Set([...s.answered, questionId]),
             recentCount: s.recentCount + 1,
+            responses: { ...s.responses, [questionId]: response },
           }))
         }
       } catch {

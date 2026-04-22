@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useCallback, useRef } from 'react'
+import React, { useState, useCallback, useRef, useMemo, useEffect } from 'react'
 import Image from 'next/image'
 import { ArrowRight, ArrowLeft, Sparkles, Loader2, CheckCircle2 } from 'lucide-react'
 import type {
@@ -28,6 +28,12 @@ type SlideDir = 'forward' | 'back'
 interface Props {
   profile: ProfileDraft
   introMessage?: string
+  /**
+   * 이미 Ambient MicroPrompt 로 답한 질문의 interactiveId → 응답 값 맵.
+   * 해당 질문은 인터뷰 화면에서 자동 스킵되고, 완료 시 responses 에 merge 되어 저장됨.
+   * 모든 질문이 이미 답변된 경우 즉시 completing 페이즈로 진입.
+   */
+  prefilledAnswers?: Record<string, unknown>
   onAnswer: (response: StructuredResponse) => void
   onComplete: (responses: StructuredResponse[]) => void
   onSkip?: () => void
@@ -45,9 +51,34 @@ const QUESTION_VISUALS: Record<string, { emoji: string; illustration: string | n
   emoji_grid_strengths:   { emoji: '✨', illustration: '/onboarding/6.svg',              hint: '최대 3개 선택해주세요', label: '나의 강점' },
 }
 
-export function ScriptedInterviewStep({ profile, introMessage, onAnswer, onComplete, onSkip }: Props) {
+export function ScriptedInterviewStep({ profile, introMessage, prefilledAnswers, onAnswer, onComplete, onSkip }: Props) {
+  // Ambient MicroPrompt 로 이미 답한 질문은 스크립트에서 제외.
+  // 이미 전부 답한 경우 activeScript 가 빈 배열 → completing 페이즈로 바로 진입.
+  const activeScript = useMemo(() => {
+    if (!prefilledAnswers) return INTERVIEW_SCRIPT
+    return INTERVIEW_SCRIPT.filter(q => !(q.interactiveId in prefilledAnswers))
+  }, [prefilledAnswers])
+  const prefilledCount = INTERVIEW_SCRIPT.length - activeScript.length
+  const prefilledResponses = useMemo<StructuredResponse[]>(() => {
+    if (!prefilledAnswers) return []
+    return INTERVIEW_SCRIPT
+      .filter(q => q.interactiveId in prefilledAnswers)
+      .map(q => ({
+        questionId: q.interactiveId,
+        type: (INTERACTIVE_QUESTIONS[q.interactiveId]?.type ?? 'spectrum-pick') as StructuredResponse['type'],
+        value: prefilledAnswers[q.interactiveId],
+        naturalLanguage: '',
+        measuredFields: INTERACTIVE_QUESTIONS[q.interactiveId]?.measuredFields ?? [],
+      }))
+  }, [prefilledAnswers])
+
   const [qIndex, setQIndex] = useState(0)
-  const [phase, setPhase] = useState<Phase>(introMessage ? 'intro' : 'showing')
+  // 이미 모든 질문이 답변돼 있으면 intro·showing 둘 다 건너뛰고 곧장 completing
+  const [phase, setPhase] = useState<Phase>(
+    activeScript.length === 0 ? 'completing'
+      : introMessage ? 'intro'
+        : 'showing'
+  )
   const [responses, setResponses] = useState<StructuredResponse[]>([])
   const [slideKey, setSlideKey] = useState(0)
   const [slideDir, setSlideDir] = useState<SlideDir>('forward')
@@ -56,10 +87,24 @@ export function ScriptedInterviewStep({ profile, introMessage, onAnswer, onCompl
   const responsesRef = useRef(responses)
   responsesRef.current = responses
 
-  const total = INTERVIEW_SCRIPT.length
-  const question = INTERVIEW_SCRIPT[qIndex]
+  // 이미 전부 답변된 경우 마운트 직후 부모에게 merge 된 응답 전달
+  useEffect(() => {
+    if (activeScript.length === 0 && prefilledResponses.length > 0) {
+      const t = setTimeout(() => onComplete(prefilledResponses), 600)
+      return () => clearTimeout(t)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const total = activeScript.length
+  const question = activeScript[qIndex]
   const questionDef = question ? INTERACTIVE_QUESTIONS[question.interactiveId] : null
-  const prevAnswers = Object.fromEntries(responses.map(r => [r.questionId, r.value]))
+  const prevAnswers = {
+    // 이전 session 답변(prefilled) 도 getMessage 의 prev 컨텍스트에 주입해
+    // "리더 스타일이시네요 → 소통은?" 같은 연결 카피가 유지됨
+    ...(prefilledAnswers ?? {}),
+    ...Object.fromEntries(responses.map(r => [r.questionId, r.value])),
+  }
   const visual = question ? (QUESTION_VISUALS[question.interactiveId] ?? { emoji: '💡', hint: '' }) : null
 
   const goToSlide = useCallback((nextIndex: number, dir: SlideDir) => {
@@ -80,16 +125,17 @@ export function ScriptedInterviewStep({ profile, introMessage, onAnswer, onCompl
     if (qIndex + 1 >= total) {
       setTimeout(() => {
         setPhase('saving')
-        // saving spinner (2s) → completing checkmark, then notify parent
+        // saving spinner → completing checkmark, then notify parent.
+        // MicroPrompt 로 이미 답한 것과 이번 session 응답 merge 해서 전달.
         setTimeout(() => {
           setPhase('completing')
-          onComplete(updated)
-        }, 2000)
-      }, 400)
+          onComplete([...prefilledResponses, ...updated])
+        }, 1200) // 기존 2s → 1.2s 로 단축 (체크 애니는 여전히 보임)
+      }, 300)
     } else {
       setTimeout(() => goToSlide(qIndex + 1, 'forward'), 350)
     }
-  }, [onAnswer, onComplete, qIndex, total, goToSlide])
+  }, [onAnswer, onComplete, qIndex, total, goToSlide, prefilledResponses])
 
   const handleBack = useCallback(() => {
     if (qIndex === 0) {
@@ -237,7 +283,7 @@ export function ScriptedInterviewStep({ profile, introMessage, onAnswer, onCompl
           <h2 className="text-lg font-bold text-txt-primary mb-1">
             매칭 프로필을 만들고 있습니다
           </h2>
-          <p className="text-sm text-txt-tertiary">잠시만 기다려 주세요. 20초 이내에 완료됩니다.</p>
+          <p className="text-sm text-txt-tertiary">잠시만 기다려 주세요.</p>
         </div>
       </div>
     )
@@ -352,18 +398,29 @@ export function ScriptedInterviewStep({ profile, introMessage, onAnswer, onCompl
                 </span>
               )}
             </div>
-            <span className="text-[12px] font-mono text-txt-secondary tabular-nums">
-              {qIndex + 1} <span className="text-txt-tertiary">/ {total}</span>
-            </span>
+            <div className="flex items-center gap-2">
+              {prefilledCount > 0 && (
+                <span
+                  className="hidden sm:inline-flex items-center gap-1 text-[10px] font-semibold text-brand bg-brand/10 px-2 py-0.5 rounded-full"
+                  title={`이미 답하신 질문 ${prefilledCount}개는 이어서 저장됩니다`}
+                >
+                  ✓ {prefilledCount}개 이미 완료
+                </span>
+              )}
+              <span className="text-[12px] font-mono text-txt-secondary tabular-nums">
+                {Math.min(qIndex + 1, total)} <span className="text-txt-tertiary">/ {total}</span>
+              </span>
+            </div>
           </div>
 
-          {/* Segmented bar — 섹션 경계에 작은 gap 으로 그룹핑 표시 */}
+          {/* Segmented bar — activeScript 기준. prefilled 가 있으면 이 바 자체가 남은 질문 수에 맞게 축소됨 */}
           <div className="flex gap-1.5 items-center">
-            {INTERVIEW_SCRIPT.map((q, i) => {
+            {activeScript.map((q, i) => {
               const isDone = i < qIndex || (i === qIndex && phase === 'answered')
               const isCurrent = i === qIndex && phase !== 'answered'
               // 섹션 첫 번째 질문 앞에 시각적 여백 (i>0)
-              const leadSection = i > 0 && isFirstInSection(i)
+              // activeScript 에선 filter 된 결과라 isFirstInSection 쓰기 위해 이전과 다른 섹션이면 표시
+              const leadSection = i > 0 && activeScript[i - 1].section !== q.section
               return (
                 <React.Fragment key={i}>
                   {leadSection && (

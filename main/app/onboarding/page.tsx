@@ -24,7 +24,6 @@ type Phase = 'loading' | 'basic' | 'transition' | 'post-basic'
 export default function OnboardingPage() {
   const router = useRouter()
   const [phase, setPhase] = useState<Phase>('loading')
-  const [transitionDone, setTransitionDone] = useState(false)
   const [completedDraft, setCompletedDraft] = useState<ProfileDraft | null>(null)
 
   // SVG 프리로드 — 첫 화면 SVG 로드 완료 후 basic phase 진입
@@ -34,8 +33,8 @@ export default function OnboardingPage() {
     critical.src = '/onboarding/1.svg'
     critical.onload = () => { if (!done) { done = true; setPhase('basic') } }
     critical.onerror = () => { if (!done) { done = true; setPhase('basic') } }
-    // 최대 1.5초 대기 — 그 안에 안 오면 그냥 진행
-    const timeout = setTimeout(() => { if (!done) { done = true; setPhase('basic') } }, 1500)
+    // 최대 0.5초 대기 — 그 안에 안 오면 그냥 진행 (SVG 는 백그라운드 로드 계속)
+    const timeout = setTimeout(() => { if (!done) { done = true; setPhase('basic') } }, 500)
     // 나머지 SVG 백그라운드 프리로드
     ALL_SVGS.forEach(src => { const img = new window.Image(); img.src = src })
     return () => clearTimeout(timeout)
@@ -61,9 +60,9 @@ export default function OnboardingPage() {
 
     // 2026-04-23: 자동 리다이렉트 제거. 저장 애니메이션 후 post-basic 화면에서
     // 유저가 AI 인터뷰 진행 / 건너뛰기를 직접 선택하게 전환.
-    const t1 = setTimeout(() => setTransitionDone(true), 1800)
-    const t2 = setTimeout(() => setPhase('post-basic'), 2800)
-    return () => { clearTimeout(t1); clearTimeout(t2) }
+    // 저장은 이미 basic 단계에서 완료된 상태 — 짧은 완료 확인(800ms) 만 보이고 바로 다음 단계.
+    const t = setTimeout(() => setPhase('post-basic'), 800)
+    return () => clearTimeout(t)
   }, [phase])
 
   // 유입 경로별 완료 후 landing 결정
@@ -127,34 +126,21 @@ export default function OnboardingPage() {
     )
   }
 
-  // Transition screen: loading → done → post-basic
+  // Transition screen: 저장 완료 확인 → post-basic. 실제 저장은 basic 단계에서 끝나므로
+  // 스피너 없이 체크마크만 0.8s 보여 주고 다음으로.
   if (phase === 'transition') {
     return (
-      <div className="fixed inset-0 bg-surface-bg flex flex-col items-center justify-center p-6">
-        {!transitionDone ? (
-          <div key="loading" className="flex flex-col items-center animate-in fade-in duration-300">
-            <Loader2 size={36} className="text-brand animate-spin mb-6" />
-            <h2 className="text-lg font-bold text-txt-primary mb-1">
-              프로필을 저장하고 있습니다
-            </h2>
-            <p className="text-sm text-txt-tertiary">잠시만 기다려 주세요. 이 화면을 닫으시면 처음부터 다시 진행됩니다.</p>
+      <div className="fixed inset-0 ob-atmos flex flex-col items-center justify-center p-6">
+        <div className="flex flex-col items-center animate-in fade-in zoom-in-95 duration-300">
+          <div
+            className="w-16 h-16 rounded-full bg-brand flex items-center justify-center mb-6"
+            style={{ animation: 'ob-bubble-in 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) both' }}
+          >
+            <CheckCircle2 size={32} className="text-white" />
           </div>
-        ) : (
-          <div key="done" className="flex flex-col items-center animate-in fade-in zoom-in-95 duration-300">
-            <div
-              className="w-16 h-16 rounded-full bg-brand flex items-center justify-center mb-6"
-              style={{ animation: 'ob-bubble-in 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) both' }}
-            >
-              <CheckCircle2 size={32} className="text-white" />
-            </div>
-            <h2 className="text-lg font-bold text-txt-primary mb-1">
-              저장 완료
-            </h2>
-            <p className="text-sm text-txt-secondary">
-              이제 Draft 를 시작하실 수 있습니다
-            </p>
-          </div>
-        )}
+          <h2 className="text-lg font-bold text-txt-primary mb-1">저장 완료</h2>
+          <p className="text-sm text-txt-secondary">이제 Draft 를 시작하실 수 있습니다</p>
+        </div>
       </div>
     )
   }
@@ -167,7 +153,7 @@ export default function OnboardingPage() {
     return (
       <>
         <OfflineBanner />
-        <div className="fixed inset-0 bg-surface-bg flex flex-col items-center justify-center p-6">
+        <div className="fixed inset-0 ob-atmos flex flex-col items-center justify-center p-6">
           <div className="w-full max-w-md flex flex-col items-center animate-in fade-in duration-300">
             <div
               className="w-16 h-16 rounded-full bg-brand-bg flex items-center justify-center mb-6"
@@ -208,7 +194,7 @@ export default function OnboardingPage() {
                     goToPathLanding()
                   }
                 }}
-                className="w-full flex items-center justify-center gap-2 py-4 bg-surface-inverse text-txt-inverse rounded-full text-[15px] font-black hover:opacity-90 active:scale-[0.97] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                className="ob-press-spring w-full flex items-center justify-center gap-2 py-4 bg-surface-inverse text-txt-inverse rounded-full text-[15px] font-black hover:opacity-90 shadow-[0_4px_14px_-4px_rgba(0,0,0,0.25)] hover:shadow-[0_6px_20px_-4px_rgba(0,0,0,0.3)] disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {landingBusy ? (
                   <Loader2 size={15} className="animate-spin" aria-hidden="true" />
@@ -235,7 +221,7 @@ export default function OnboardingPage() {
                     router.push('/onboarding/interview')
                   }
                 }}
-                className="w-full flex items-center justify-center gap-2 py-3.5 bg-surface-sunken text-txt-secondary rounded-full text-[14px] font-bold hover:bg-surface-card hover:text-txt-primary transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                className="ob-press-spring w-full flex items-center justify-center gap-2 py-3.5 bg-surface-sunken text-txt-secondary rounded-full text-[14px] font-bold hover:bg-surface-card hover:text-txt-primary disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {isMatching ? '지금은 건너뛰기' : 'AI 인터뷰 먼저 하기 (2분)'}
               </button>
