@@ -270,7 +270,7 @@ function SaveTemplateModal({
             placeholder="예) 모집 시즌 격식체"
             maxLength={80}
             disabled={saving}
-            className="w-full h-10 text-sm text-txt-primary bg-surface-bg border border-border rounded-xl px-3 focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors disabled:opacity-60"
+            className="w-full h-10 text-sm text-txt-primary bg-surface-bg border border-border rounded-xl px-3 ob-input disabled:opacity-60"
           />
           <p className="text-[10px] text-txt-tertiary mt-1">
             {name.length}/80자
@@ -288,7 +288,7 @@ function SaveTemplateModal({
             rows={3}
             maxLength={500}
             disabled={saving}
-            className="w-full text-sm text-txt-primary bg-surface-bg border border-border rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors leading-relaxed resize-none disabled:opacity-60"
+            className="w-full text-sm text-txt-primary bg-surface-bg border border-border rounded-xl px-3 py-2.5 ob-input leading-relaxed resize-none disabled:opacity-60"
           />
         </div>
 

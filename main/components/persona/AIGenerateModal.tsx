@@ -268,7 +268,7 @@ function FieldBlock({
           placeholder={placeholder}
           rows={rows}
           disabled={loading}
-          className={`w-full text-sm text-txt-primary bg-surface-bg border border-border rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors leading-relaxed resize-none ${
+          className={`w-full text-sm text-txt-primary bg-surface-bg border border-border rounded-xl px-3 py-2.5 ob-input leading-relaxed resize-none ${
             loading ? 'opacity-40' : ''
           }`}
         />

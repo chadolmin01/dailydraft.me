@@ -84,7 +84,7 @@ export const EditAffiliation: React.FC<EditAffiliationProps> = ({
             onChange={(e) => setPosition(e.target.value)}
             placeholder="또는 직접 입력"
             maxLength={50}
-            className="w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
+            className="w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg ob-input"
           />
         </div>
 
@@ -110,7 +110,7 @@ export const EditAffiliation: React.FC<EditAffiliationProps> = ({
                     onChange={(e) => setUniversity(e.target.value)}
                     placeholder={affConfig.orgPlaceholder}
                     maxLength={50}
-                    className="w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
+                    className="w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg ob-input"
                   />
                 )}
               </div>
@@ -122,7 +122,7 @@ export const EditAffiliation: React.FC<EditAffiliationProps> = ({
                   onChange={(e) => setMajor(e.target.value)}
                   placeholder={affConfig.rolePlaceholder}
                   maxLength={50}
-                  className="w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
+                  className="w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg ob-input"
                 />
               </div>
             </div>
@@ -175,7 +175,7 @@ export const EditAffiliation: React.FC<EditAffiliationProps> = ({
                     placeholder="university@snu.ac.kr"
                     inputMode="email"
                     autoComplete="email"
-                    className="flex-1 px-3 py-2 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
+                    className="flex-1 px-3 py-2 text-base sm:text-sm border border-border bg-surface-card rounded-lg ob-input"
                   />
                   <button
                     type="button"
@@ -216,7 +216,7 @@ export const EditAffiliation: React.FC<EditAffiliationProps> = ({
                     maxLength={6}
                     inputMode="numeric"
                     autoComplete="one-time-code"
-                    className="w-24 sm:w-32 px-3 py-2 text-base sm:text-sm font-mono text-center tracking-widest border border-border bg-surface-card rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
+                    className="w-24 sm:w-32 px-3 py-2 text-base sm:text-sm font-mono text-center tracking-widest border border-border bg-surface-card rounded-lg ob-input"
                   />
                   <button
                     type="button"

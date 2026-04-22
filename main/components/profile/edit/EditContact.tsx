@@ -52,7 +52,7 @@ export const EditContact: React.FC<EditContactProps & EditSocialLinksProps> = ({
             placeholder={userEmail || 'email@example.com'}
             inputMode="email"
             autoComplete="email"
-            className="w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
+            className="w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg ob-input"
           />
           <p className="text-xs text-txt-tertiary mt-1">커피챗 수락 시 상대방에게 공개됩니다</p>
         </div>
@@ -75,7 +75,7 @@ export const EditContact: React.FC<EditContactProps & EditSocialLinksProps> = ({
               placeholder="https://myportfolio.com"
               inputMode="url"
               autoComplete="url"
-              className="w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
+              className="w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg ob-input"
             />
           </div>
           <div>
@@ -89,7 +89,7 @@ export const EditContact: React.FC<EditContactProps & EditSocialLinksProps> = ({
               placeholder="https://github.com/username"
               inputMode="url"
               autoComplete="url"
-              className="w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
+              className="w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg ob-input"
             />
           </div>
           <div>
@@ -109,7 +109,7 @@ export const EditContact: React.FC<EditContactProps & EditSocialLinksProps> = ({
               }}
               placeholder="github-username"
               autoComplete="off"
-              className="w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
+              className="w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg ob-input"
             />
             <p className="text-xs text-txt-tertiary mt-1">GitHub 커밋 알림에서 본인을 자동 매칭합니다 (@ 또는 URL 입력 시 자동 변환)</p>
           </div>
@@ -124,7 +124,7 @@ export const EditContact: React.FC<EditContactProps & EditSocialLinksProps> = ({
               placeholder="https://linkedin.com/in/username"
               inputMode="url"
               autoComplete="url"
-              className="w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
+              className="w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg ob-input"
             />
           </div>
         </div>

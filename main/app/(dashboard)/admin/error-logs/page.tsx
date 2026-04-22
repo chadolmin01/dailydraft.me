@@ -173,7 +173,7 @@ export default function ErrorLogsPage() {
               placeholder="메시지, 엔드포인트 검색..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-surface-card rounded-xl border border-border text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
+              className="w-full pl-10 pr-4 py-2 bg-surface-card rounded-xl border border-border text-base sm:text-sm ob-input"
             />
           </div>
 
@@ -182,7 +182,7 @@ export default function ErrorLogsPage() {
             <select
               value={levelFilter}
               onChange={(e) => setLevelFilter(e.target.value)}
-              className="px-3 py-2 bg-surface-card rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
+              className="px-3 py-2 bg-surface-card rounded-xl border border-border text-sm ob-input"
             >
               <option value="all">모든 레벨</option>
               <option value="debug">Debug</option>
@@ -195,7 +195,7 @@ export default function ErrorLogsPage() {
             <select
               value={sourceFilter}
               onChange={(e) => setSourceFilter(e.target.value)}
-              className="px-3 py-2 bg-surface-card rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
+              className="px-3 py-2 bg-surface-card rounded-xl border border-border text-sm ob-input"
             >
               <option value="all">모든 소스</option>
               <option value="api">API</option>
