@@ -57,10 +57,10 @@ export function ExploreSearchBar({
               isSearchExpanded ? 'pl-11 pr-24 py-3.5' : 'pl-11 pr-24 py-3'
             }`}
             placeholder={
-              searchScope === 'projects' ? '프로젝트 이름, 설명으로 검색...'
-              : searchScope === 'people' ? '이름, 포지션으로 검색...'
-              : searchScope === 'skills' ? 'React, Python, Figma...'
-              : '프로젝트, 사람, 기술 스택 검색...'
+              searchScope === 'projects' ? '예: AI 매칭, 창업 아이디어, 디자인 스터디'
+              : searchScope === 'people' ? '예: 김도윤, 프론트엔드, 경희대'
+              : searchScope === 'skills' ? '예: React, Python, Figma, TypeScript'
+              : '프로젝트·사람·기술 스택을 한 번에 검색하실 수 있습니다'
             }
           />
           <div className="absolute right-3 flex items-center gap-1.5">
