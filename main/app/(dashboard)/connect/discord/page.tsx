@@ -208,12 +208,13 @@ export default function ConnectDiscordPage() {
       {/* 로그인 필요 */}
       {step === 'need-login' && (
         <div className="bg-surface-card rounded-2xl border border-border p-6 text-center">
-          <p className="text-txt-secondary mb-4">Discord 서버를 연결하려면 먼저 로그인이 필요합니다.</p>
+          <p className="text-txt-secondary mb-2">Discord 서버를 연결하시려면 먼저 Draft 에 로그인하셔야 합니다.</p>
+          <p className="text-[12px] text-txt-tertiary mb-4">로그인하신 뒤 자동으로 이 화면으로 돌아옵니다.</p>
           <button
             onClick={() => router.push(`/login?redirect=/connect/discord${guildIdParam ? `?guild=${guildIdParam}` : ''}`)}
             className="px-6 py-3 bg-surface-inverse text-txt-inverse rounded-xl font-semibold text-sm hover:opacity-90 active:scale-[0.98] transition-all"
           >
-            로그인하기
+            로그인하고 돌아오기
           </button>
         </div>
       )}
@@ -221,7 +222,10 @@ export default function ConnectDiscordPage() {
       {/* Discord 계정 연결 필요 */}
       {step === 'need-discord' && (
         <div className="bg-surface-card rounded-2xl border border-border p-6 text-center">
-          <p className="text-txt-secondary mb-4">Discord 계정이 Draft에 연결되어 있지 않습니다.</p>
+          <p className="text-txt-secondary mb-2">Draft 계정에 Discord 가 아직 연결되어 있지 않습니다.</p>
+          <p className="text-[12px] text-txt-tertiary mb-4">
+            Discord 로 한 번 로그인하시면 서버·채널 권한이 자동 부여되고 이 화면으로 돌아옵니다.
+          </p>
           <a
             href={`/api/discord/oauth?returnTo=/connect/discord${guildIdParam ? `?guild=${guildIdParam}` : ''}`}
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm text-white hover:opacity-90 active:scale-[0.98] transition-all"
@@ -237,7 +241,11 @@ export default function ConnectDiscordPage() {
       {step === 'no-pending' && (
         <div className="bg-surface-card rounded-2xl border border-border p-6 text-center">
           <p className="text-txt-secondary mb-2">연결 대기 중인 Discord 서버가 없습니다.</p>
-          <p className="text-xs text-txt-tertiary">Discord 서버에 Draft 봇을 먼저 초대해주세요.</p>
+          <p className="text-xs text-txt-tertiary leading-relaxed">
+            먼저 Discord 서버에 Draft 봇을 초대하신 뒤, 서버에서{' '}
+            <code className="text-[11px] bg-surface-sunken px-1 py-0.5 rounded font-mono">/setup</code>{' '}
+            명령을 실행해 주세요. 그러면 이 화면에 연결 대기 항목이 표시됩니다.
+          </p>
         </div>
       )}
 
