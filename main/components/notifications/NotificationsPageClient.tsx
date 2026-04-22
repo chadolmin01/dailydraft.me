@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -256,14 +257,29 @@ export default function NotificationsPageClient() {
               <div className="w-16 h-16 rounded-full bg-surface-sunken flex items-center justify-center mx-auto mb-4">
                 <Bell size={28} className="text-txt-tertiary bell-swing" strokeWidth={1.5} />
               </div>
-              <p className="text-sm font-medium text-txt-secondary mb-1">
-                {showAll ? '알림 내역이 없습니다' : '새로운 알림이 없어요'}
+              <p className="text-[15px] font-semibold text-txt-primary mb-1.5">
+                {showAll ? '알림 내역이 없습니다' : '새로운 알림이 없습니다'}
               </p>
-              <p className="text-xs text-txt-disabled">프로젝트 활동이나 커피챗 요청이 오면 여기에 표시됩니다</p>
+              <p className="text-[12px] text-txt-tertiary max-w-sm mx-auto leading-relaxed">
+                아래 상황이 발생하면 이곳에 모아집니다.
+              </p>
+              <ul className="text-[12px] text-txt-secondary mt-3 inline-block text-left space-y-1">
+                <li>· 프로젝트 지원·초대·수락</li>
+                <li>· 커피챗·메시지 수신</li>
+                <li>· 클럽 운영자의 공지</li>
+                <li>· 주간 업데이트 Ghostwriter 초안 완료</li>
+              </ul>
+              <p className="text-[11px] text-txt-tertiary mt-4">
+                알림 설정은{' '}
+                <Link href="/profile/settings" className="text-brand underline">
+                  프로필 설정
+                </Link>
+                에서 조정하실 수 있습니다.
+              </p>
               {!showAll && allNotifications.length > 0 && (
                 <button
                   onClick={() => setShowAll(true)}
-                  className="text-xs text-txt-tertiary hover:text-txt-primary mt-3 underline underline-offset-2"
+                  className="text-[12px] text-txt-tertiary hover:text-txt-primary mt-4 underline underline-offset-2"
                 >
                   이전 알림 보기 ({allNotifications.length}개)
                 </button>

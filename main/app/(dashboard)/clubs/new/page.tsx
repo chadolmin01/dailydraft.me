@@ -72,10 +72,14 @@ export default function NewClubPage() {
       }
 
       // 성공 — 트리거가 owner로 등록해둠. 바로 새 클럽 페이지로.
-      toast.success(`"${json.data?.name ?? name}" 클럽이 생성되었습니다`)
+      toast.success(`"${json.data?.name ?? name}" 클럽이 생성되었습니다`, {
+        description: '이제 멤버를 초대하거나 설정에서 Discord·공개 여부를 조정하실 수 있습니다.',
+      })
       router.push(`/clubs/${json.data?.slug ?? previewSlug}`)
     } catch {
-      setError('네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요')
+      setError(
+        '인터넷 연결을 확인하고 다시 시도해 주세요. 문제가 계속되면 /status 페이지에서 시스템 상태를 확인하실 수 있습니다.',
+      )
       setSubmitting(false)
     }
   }

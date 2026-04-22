@@ -67,11 +67,15 @@ export default function PlatformAdminsPage() {
     const res = await fetch(`/api/admin/platform-admins?user_id=${userId}`, { method: 'DELETE' })
     setRevoking(null)
     if (res.ok) {
-      toast.success('권한을 박탈했습니다')
+      toast.success('권한을 박탈했습니다', {
+        description: '이 작업은 audit_logs 에 자동 기록됩니다. 필요하면 /admin/audit 에서 이력을 확인하실 수 있습니다.',
+      })
       refresh()
     } else {
       const data = await res.json().catch(() => null)
-      toast.error(data?.error?.message ?? '박탈 실패')
+      toast.error(data?.error?.message ?? '박탈에 실패했습니다', {
+        description: '본인 자신을 박탈하거나 superadmin 권한이 없으면 차단됩니다.',
+      })
     }
   }
 
@@ -174,12 +178,16 @@ function GrantAdminModal({ onClose, onGranted }: { onClose: () => void; onGrante
     })
     setSubmitting(false)
     if (res.ok) {
-      toast.success('admin 권한을 부여했습니다')
+      toast.success('admin 권한을 부여했습니다', {
+        description: '해당 유저가 다음 로그인부터 /admin 허브에 접근할 수 있습니다. 작업 이력은 audit_logs 에 기록됩니다.',
+      })
       onGranted()
       onClose()
     } else {
       const data = await res.json().catch(() => null)
-      toast.error(data?.error?.message ?? '부여 실패')
+      toast.error(data?.error?.message ?? '부여에 실패했습니다', {
+        description: 'superadmin 권한이 필요하거나 user_id 형식(uuid)이 잘못된 경우입니다.',
+      })
     }
   }
 

@@ -283,17 +283,26 @@ export default async function FeedPage({
               {activeCategory ? (
                 <>
                   <p className="text-[15px] font-semibold text-txt-primary mb-2">
-                    <span className="text-brand">{activeCategory}</span> 카테고리에 공개된 기록이 없습니다
+                    <span className="text-brand">{activeCategory}</span> 카테고리에 공개된 기록이 아직 없습니다
                   </p>
                   <p className="text-[13px] text-txt-tertiary mb-5 leading-relaxed">
-                    다른 카테고리를 둘러보거나, 전체 피드로 돌아가 보십시오.
+                    이 카테고리의 프로젝트가 <code className="text-[11px] px-1 py-0.5 rounded bg-surface-sunken font-mono">공개 업데이트</code>를
+                    활성화하면 여기에 표시됩니다. 다른 카테고리를 둘러보시거나 전체 피드로 이동해 보세요.
                   </p>
-                  <Link
-                    href="/feed"
-                    className="inline-flex items-center gap-1 px-4 py-2 text-[13px] font-semibold bg-surface-inverse text-txt-inverse rounded-full hover:opacity-90 transition-opacity"
-                  >
-                    전체 피드로 돌아가기
-                  </Link>
+                  <div className="flex items-center justify-center gap-2 flex-wrap">
+                    <Link
+                      href="/feed"
+                      className="inline-flex items-center gap-1 px-4 py-2 text-[13px] font-semibold bg-surface-inverse text-txt-inverse rounded-full hover:opacity-90 transition-opacity"
+                    >
+                      전체 피드로 돌아가기
+                    </Link>
+                    <Link
+                      href="/explore"
+                      className="inline-flex items-center gap-1 px-4 py-2 text-[13px] font-semibold text-txt-primary border border-border rounded-full hover:border-txt-tertiary transition-colors"
+                    >
+                      프로젝트 탐색
+                    </Link>
+                  </div>
                 </>
               ) : (
                 <>

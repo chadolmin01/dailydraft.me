@@ -409,19 +409,29 @@ function EmptyState() {
       <div className="w-16 h-16 bg-surface-sunken rounded-full flex items-center justify-center mb-5 empty-float">
         <FolderOpen size={26} className="text-txt-tertiary" strokeWidth={1.5} />
       </div>
-      <h3 className="text-[17px] font-black text-txt-primary mb-2">아직 프로젝트가 없어요</h3>
-      <p className="text-[13px] text-txt-tertiary mb-8 leading-relaxed">
-        아이디어를 등록하고
-        <br />
-        함께할 팀원을 찾아보세요
+      <h3 className="text-[17px] font-black text-txt-primary mb-2">아직 참여한 프로젝트가 없습니다</h3>
+      <p className="text-[13px] text-txt-tertiary mb-6 leading-relaxed max-w-sm">
+        프로젝트를 만들어 팀원을 모집하거나, 탐색에서 이미 진행 중인 프로젝트에 지원할 수 있습니다.
       </p>
-      <Link
-        href="/projects/new"
-        className="inline-flex items-center gap-2 px-6 py-3.5 bg-surface-inverse text-txt-inverse text-[14px] font-black rounded-full hover:opacity-90 active:scale-[0.97] transition-all"
-      >
-        <Rocket size={16} />
-        첫 프로젝트 만들기
-      </Link>
+      <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+        <Link
+          href="/projects/new"
+          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-surface-inverse text-txt-inverse text-[14px] font-bold rounded-full hover:opacity-90 active:scale-[0.97] transition-all"
+        >
+          <Rocket size={15} />
+          프로젝트 만들기
+        </Link>
+        <Link
+          href="/explore"
+          className="inline-flex items-center justify-center gap-2 px-6 py-3 border border-border text-txt-primary text-[14px] font-semibold rounded-full hover:border-txt-tertiary transition-colors"
+        >
+          이미 있는 프로젝트 둘러보기
+        </Link>
+      </div>
+      <p className="text-[11px] text-txt-tertiary mt-5 leading-relaxed max-w-sm">
+        처음이신가요? <Link href="/guide" className="text-brand underline">시작 가이드</Link>에서
+        프로젝트를 작성하는 요령을 확인하실 수 있습니다.
+      </p>
     </div>
   )
 }

@@ -288,16 +288,20 @@ function MessagesPageInner() {
                   <div className="w-14 h-14 rounded-full bg-surface-sunken flex items-center justify-center empty-float mb-4">
                     <MailOpen size={24} className="text-txt-tertiary" strokeWidth={1.5} />
                   </div>
-                  <p className="text-sm font-medium text-txt-secondary mb-1">
-                    {searchQuery ? '검색 결과가 없습니다' : '아직 쪽지가 없습니다'}
+                  <p className="text-[14px] font-semibold text-txt-primary mb-1">
+                    {searchQuery ? '검색 결과가 없습니다' : '아직 주고받은 대화가 없습니다'}
                   </p>
-                  <p className="text-xs text-txt-disabled mb-4">Explore에서 마음에 드는 사람에게 쪽지를 보내보세요</p>
+                  <p className="text-[12px] text-txt-tertiary max-w-[220px] mx-auto leading-relaxed mb-4">
+                    {searchQuery
+                      ? '다른 이름으로 검색해보시거나 검색어를 지우면 전체 목록이 돌아옵니다.'
+                      : '마음에 드는 사람의 프로필에서 쪽지 보내기를 누르면 여기에 대화가 시작됩니다.'}
+                  </p>
                   {!searchQuery && (
                     <Link
                       href="/explore"
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-surface-inverse text-txt-inverse text-xs font-medium hover:opacity-90 active:scale-[0.97] transition-all"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-surface-inverse text-txt-inverse text-[12px] font-semibold hover:opacity-90 active:scale-[0.97] transition-all"
                     >
-                      <Compass size={14} /> Explore로 가기
+                      <Compass size={14} /> 사람 둘러보기
                     </Link>
                   )}
                 </div>
@@ -352,8 +356,10 @@ function MessagesPageInner() {
                 <div className="w-16 h-16 rounded-full bg-surface-sunken flex items-center justify-center empty-float mb-4">
                   <Mail size={28} className="text-txt-tertiary" strokeWidth={1.5} />
                 </div>
-                <p className="text-sm font-medium text-txt-secondary mb-1">대화를 선택하세요</p>
-                <p className="text-xs text-txt-disabled">왼쪽 목록에서 대화 상대를 선택해보세요</p>
+                <p className="text-[15px] font-semibold text-txt-primary mb-1.5">대화를 선택하세요</p>
+                <p className="text-[12px] text-txt-tertiary max-w-xs leading-relaxed">
+                  왼쪽 목록에서 대화 상대를 누르면 이 영역에 스레드가 열립니다. 모바일에서는 목록이 먼저 표시됩니다.
+                </p>
               </div>
             ) : (
               <>
