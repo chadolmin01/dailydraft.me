@@ -8,8 +8,10 @@ import { useProfileCompletion } from '@/src/hooks/useProfileCompletion'
 import { useQueryClient } from '@tanstack/react-query'
 import { GuideCTA } from '@/components/LoadingGuide'
 import { ScriptedInterviewStep } from '@/components/onboarding/steps/ScriptedInterviewStep'
-import { saveProfileFromInterview } from '@/src/lib/onboarding/api'
+import { saveProfileFromInterview, OnboardingError } from '@/src/lib/onboarding/api'
 import { clearDraftLocal, loadDraftLocal } from '@/src/lib/onboarding/draft-storage'
+import { trackOnboardingEvent } from '@/src/lib/onboarding/analytics'
+import { OfflineBanner } from '@/components/onboarding/OfflineBanner'
 import type { ProfileDraft, StructuredResponse } from '@/src/lib/onboarding/types'
 
 /** All SVGs used during the interview — prefetch on mount */
@@ -41,6 +43,7 @@ export default function OnboardingInterviewPage() {
 
   // Prefetch all interview SVGs — wait for first critical one
   useEffect(() => {
+    trackOnboardingEvent('onboarding_interview_started')
     let done = false
     const critical = new window.Image()
     critical.src = INTERVIEW_SVGS[1] // leader_follower.svg (first question)
@@ -103,7 +106,14 @@ export default function OnboardingInterviewPage() {
         queryClient.invalidateQueries({ queryKey: ['profile'] }),
         refreshProfile(),
       ]))
-      .catch(err => console.error('Failed to save interview:', err))
+      .catch(err => {
+        console.error('Failed to save interview:', err)
+        trackOnboardingEvent('onboarding_error', {
+          step: 'interview',
+          source: profileDraft.source ?? null,
+          errorKind: err instanceof OnboardingError ? err.kind : 'unknown',
+        })
+      })
 
     // Wait for the completing animation, then show guide
     await Promise.all([
@@ -111,16 +121,22 @@ export default function OnboardingInterviewPage() {
       new Promise(resolve => setTimeout(resolve, 2500)),
     ])
 
+    trackOnboardingEvent('onboarding_interview_completed', {
+      source: profileDraft.source ?? null,
+    })
     // 성공 시 로컬 스냅샷 완전 정리 (recovery offer 가 다시 뜨지 않게)
     clearDraftLocal()
     setPhase('guide')
   }, [profileDraft, queryClient, refreshProfile])
 
   const handleSkip = useCallback(() => {
+    trackOnboardingEvent('onboarding_interview_skipped', {
+      source: profileDraft?.source ?? null,
+    })
     // 성공 시 로컬 스냅샷 완전 정리 (recovery offer 가 다시 뜨지 않게)
     clearDraftLocal()
     setPhase('guide')
-  }, [])
+  }, [profileDraft])
 
   if (phase === 'loading') {
     return (
@@ -141,14 +157,17 @@ export default function OnboardingInterviewPage() {
   }
 
   return (
-    <div className="fixed inset-0 bg-surface-bg flex flex-col">
-      <ScriptedInterviewStep
-        profile={profileDraft}
-        introMessage={`${profileDraft.name} 님, 몇 가지만 골라 주시면 팀 매칭이 훨씬 정확해집니다. 2분 정도 걸립니다.`}
-        onAnswer={() => {}}
-        onComplete={handleInterviewComplete}
-        onSkip={handleSkip}
-      />
-    </div>
+    <>
+      <OfflineBanner />
+      <div className="fixed inset-0 bg-surface-bg flex flex-col">
+        <ScriptedInterviewStep
+          profile={profileDraft}
+          introMessage={`${profileDraft.name} 님, 몇 가지만 골라 주시면 팀 매칭이 훨씬 정확해집니다. 2분 정도 걸립니다.`}
+          onAnswer={() => {}}
+          onComplete={handleInterviewComplete}
+          onSkip={handleSkip}
+        />
+      </div>
+    </>
   )
 }

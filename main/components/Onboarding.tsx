@@ -26,6 +26,8 @@ import {
   clearDraftLocal,
 } from '@/src/lib/onboarding/draft-storage'
 import { useOnboardingAutoSave } from '@/src/hooks/useOnboardingAutoSave'
+import { trackOnboardingEvent, createStepTimer } from '@/src/lib/onboarding/analytics'
+import { friendlyErrorMessage, OnboardingError } from '@/src/lib/onboarding/api'
 
 /**
  * 이메일 기반 대학 매칭 결과.
@@ -124,9 +126,18 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   const initRef = useRef(false)
   const profileRef = useRef(profile)
   profileRef.current = profile
+  // 단계 체류 시간 측정기 (퍼널 이탈 분석용)
+  const timerRef = useRef(createStepTimer())
 
   // 2초 debounce 로 로컬 자동 저장. 단계 이동 직전엔 flush() 로 즉시 저장.
   const autoSave = useOnboardingAutoSave(profile, { step }, { debounceMs: 1500, minNameLength: 1 })
+
+  /* 단계 진입 시 step_viewed 이벤트 + 타이머 시작 */
+  useEffect(() => {
+    if (step === 'intro') return
+    trackOnboardingEvent('onboarding_step_viewed', { step, source: profile.source ?? null })
+    timerRef.current.begin(step)
+  }, [step, profile.source])
 
   /* ── Init: auth → resume or fresh ── */
   useEffect(() => {
@@ -168,12 +179,18 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     const stored = loadDraftLocal()
     if (stored && hasMeaningfulDraft(stored.draft)) {
       setRecoveryOffer(stored.draft)
+      trackOnboardingEvent('onboarding_recovery_offered', {
+        source: stored.draft.source ?? null,
+      })
     }
   }, [authLoading, authProfile, isAuthenticated, searchParams])
 
   /* 복구 제안 수락 — 저장된 draft 를 현재 state 에 복원하고 적절한 단계로 점프 */
   const acceptRecovery = useCallback(() => {
     if (!recoveryOffer) return
+    trackOnboardingEvent('onboarding_recovery_accepted', {
+      source: recoveryOffer.source ?? null,
+    })
     setProfile(recoveryOffer)
     // 복원된 source 가 있으면 source 이후 단계로, 없으면 source 단계로
     if (!recoveryOffer.source) {
@@ -193,6 +210,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   }, [recoveryOffer])
 
   const declineRecovery = useCallback(() => {
+    trackOnboardingEvent('onboarding_recovery_declined')
     clearDraftLocal()
     setRecoveryOffer(null)
   }, [])
@@ -226,6 +244,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   const stepIndex = activeSteps.indexOf(step as Step)
 
   const handleBack = useCallback(() => {
+    trackOnboardingEvent('onboarding_step_back', { step, source: profileRef.current.source ?? null })
     // source 단계에서 뒤로 가면 intro, info 단계에서 뒤로 가면 source
     if (step === 'source') goTo('intro', 'back')
     else if (step === 'info') goTo('source', 'back')
@@ -258,8 +277,20 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
     setAttempted(false)
 
+    // 체류 시간 측정 종료 + 이벤트 전송
+    const durationMs = timerRef.current.end(step) ?? undefined
+    trackOnboardingEvent('onboarding_step_completed', {
+      step,
+      source: p.source ?? null,
+      durationMs,
+    })
+
     // source 선택 직후 → activeSteps 첫 단계 (보통 'info')
     if (step === 'source') {
+      trackOnboardingEvent('onboarding_source_chosen', {
+        source: p.source ?? null,
+        durationMs,
+      })
       const next = buildStepsForSource(p.source)[0]
       goTo(next)
       return
@@ -279,10 +310,17 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       // 서버 저장은 fire-and-forget, 성공 시 로컬 스냅샷 정리
       saveProfileCheckpoint(p)
         .then(() => clearDraftLocal())
-        .catch(console.error)
+        .catch((err) => {
+          console.error(err)
+          trackOnboardingEvent('onboarding_error', {
+            step,
+            source: p.source ?? null,
+            errorKind: err instanceof OnboardingError ? err.kind : 'unknown',
+          })
+        })
       onComplete(p)
     }
-  }, [step, stepIndex, activeSteps, goTo, onComplete])
+  }, [step, stepIndex, activeSteps, goTo, onComplete, autoSave])
 
   const updateProfile = useCallback((partial: Partial<ProfileDraft>) => {
     setProfile(prev => ({ ...prev, ...partial }))
@@ -412,6 +450,10 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
               <button
                 onClick={() => {
                   const p = profileRef.current
+                  trackOnboardingEvent('onboarding_step_skipped', {
+                    step,
+                    source: p.source ?? null,
+                  })
                   if (p.name.trim()) {
                     saveProfileCheckpoint(p).catch(console.error)
                   }
@@ -1047,9 +1089,18 @@ function SourceStep({ selected, onSelect, onBack, onNext, errorMsg }: SourceStep
           <h2 className="text-[22px] sm:text-[26px] font-bold text-txt-primary mb-2 leading-tight">
             Draft 에 어떻게 오셨어요?
           </h2>
-          <p className="text-[13px] text-txt-tertiary mb-6 leading-relaxed">
+          <p className="text-[13px] text-txt-tertiary mb-3 leading-relaxed">
             여기에 맞춰 이후 질문 개수와 랜딩 화면이 달라집니다. 나중에도 언제든 프로필에서 바꾸실 수 있습니다.
           </p>
+          <details className="mb-5 group">
+            <summary className="text-[11px] text-txt-tertiary cursor-pointer hover:text-txt-secondary transition-colors inline-flex items-center gap-1 list-none">
+              <span className="group-open:rotate-90 transition-transform inline-block">▸</span>
+              왜 이걸 먼저 물어보나요?
+            </summary>
+            <p className="text-[11px] text-txt-tertiary mt-2 pl-3.5 leading-relaxed break-keep">
+              Draft 는 개인 프로필 플랫폼이 아니라 동아리·프로젝트의 운영 기록을 쌓는 도구입니다. 어떤 목적으로 오셨는지에 따라 필요한 정보가 많이 달라서, 불필요한 질문을 건너뛰려고 먼저 여쭙습니다.
+            </p>
+          </details>
 
           <div className="space-y-2.5">
             {SOURCE_OPTIONS.map((opt, i) => {
