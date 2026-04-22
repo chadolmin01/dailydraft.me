@@ -58,17 +58,17 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
 
       <div className="p-6">
         {/* Icon */}
-        <div className={`w-12 h-12 ${styles.icon} flex items-center justify-center mx-auto mb-4 border border-current/20`}>
+        <div className={`w-12 h-12 ${styles.icon} flex items-center justify-center mx-auto mb-4 border border-current/20`} aria-hidden="true">
           <AlertTriangle size={24} />
         </div>
 
         {/* Title */}
-        <h3 className="text-lg font-bold text-txt-primary text-center mb-2">
+        <h3 id="confirm-modal-title" className="text-lg font-bold text-txt-primary text-center mb-2">
           {title}
         </h3>
 
         {/* Message */}
-        <p className="text-sm text-txt-secondary text-center mb-6">
+        <p id="confirm-modal-desc" className="text-sm text-txt-secondary text-center mb-6 leading-relaxed whitespace-pre-line">
           {message}
         </p>
 
