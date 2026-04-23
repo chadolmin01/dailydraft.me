@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Draft — 역할·권한 매트릭스 시안</title>
+  <link
+    rel="stylesheet"
+    as="style"
+    crossorigin
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+  />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Pretendard Variable', 'Pretendard', '-apple-system', 'sans-serif'] },
+        },
+      },
+    };
+  </script>
+  <style>
+    html, body { font-family: 'Pretendard Variable', Pretendard, -apple-system, sans-serif; }
+    .cell-btn { transition: all .15s ease; }
+    .cell-btn:hover { transform: translateY(-1px); }
+    @keyframes modalIn {
+      from { opacity: 0; transform: translateY(8px) scale(.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes backdropIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    .modal-backdrop { animation: backdropIn .15s ease-out; }
+    .modal-card     { animation: modalIn    .2s  cubic-bezier(.2,.8,.2,1); }
+    @keyframes drawerIn {
+      from { transform: translateX(100%); }
+      to   { transform: translateX(0); }
+    }
+    .drawer-card { animation: drawerIn .25s cubic-bezier(.2,.8,.2,1); }
+    .role-name-btn { transition: color .15s ease; }
+    .role-name-btn:hover { color: #2563eb; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+    <!-- Breadcrumb -->
+    <div class="flex items-center gap-1.5 text-sm text-gray-400 mb-3">
+      <span>FLIP</span><span>·</span><span>설정</span><span>·</span>
+      <span class="text-gray-700">역할·권한</span>
+    </div>
+
+    <!-- Header -->
+    <header class="mb-8 flex items-end justify-between flex-wrap gap-4">
+      <div>
+        <h1 class="text-[28px] font-bold tracking-tight mb-2">역할·권한 매트릭스</h1>
+        <p class="text-gray-500">누가 어떤 채널에 접근할 수 있는지 한눈에 보고 편집합니다.</p>
+      </div>
+      <div class="flex items-center gap-2 text-sm">
+        <button onclick="addRole()" class="px-4 py-2 rounded-xl border border-gray-200 text-gray-700 hover:bg-white inline-flex items-center gap-1.5">
+          <span class="text-base leading-none">+</span><span>역할 추가</span>
+        </button>
+        <button onclick="addChannel()" class="px-4 py-2 rounded-xl border border-gray-200 text-gray-700 hover:bg-white inline-flex items-center gap-1.5">
+          <span class="text-base leading-none">+</span><span>채널 추가</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Safety Guard (conditional) -->
+    <div id="safety-guard"></div>
+
+    <!-- Preset CTA (moved up, prominent) -->
+    <div class="mb-5 p-5 sm:p-6 bg-gradient-to-br from-blue-50 to-blue-50/40 rounded-2xl border border-blue-100 flex items-center justify-between gap-4 flex-wrap">
+      <div class="flex items-start gap-4 min-w-0">
+        <div class="w-10 h-10 rounded-xl bg-white border border-blue-200 flex items-center justify-center text-blue-600 font-bold text-lg shrink-0">5</div>
+        <div class="min-w-0">
+          <div class="text-xs font-semibold text-blue-700 mb-1">동아리 프리셋 · 처음이라면 여기서</div>
+          <div class="font-semibold text-blue-950 text-[15px] mb-0.5">표준형 · 5단 위계를 불러옵니다</div>
+          <div class="text-sm text-blue-900/70">회장 · 부회장 · 팀장 · 팀원 · 게스트 — 가져온 뒤 우리 동아리에 맞춰 바꾸시면 됩니다.</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        <button class="px-3.5 py-2 text-sm rounded-xl text-blue-700 hover:bg-white/60">다른 프리셋 보기</button>
+        <button class="px-4 py-2 text-sm rounded-xl bg-blue-600 text-white hover:bg-blue-700 font-semibold shadow-sm">표준형 불러오기</button>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="flex flex-wrap items-center gap-2 mb-5 p-4 bg-white rounded-2xl border border-gray-200">
+      <span class="text-sm font-medium text-gray-600 mr-2">권한 레벨</span>
+      <span class="px-2.5 py-1 text-xs rounded-lg bg-blue-50 text-blue-700 font-medium ring-1 ring-blue-100">관리</span>
+      <span class="px-2.5 py-1 text-xs rounded-lg bg-gray-100 text-gray-700 font-medium">쓰기</span>
+      <span class="px-2.5 py-1 text-xs rounded-lg bg-gray-50 text-gray-500 font-medium">읽기</span>
+      <span class="px-2.5 py-1 text-xs rounded-lg bg-white text-gray-300 font-medium ring-1 ring-gray-100">없음</span>
+      <span class="text-xs text-gray-400 ml-auto">셀을 눌러 변경합니다</span>
+    </div>
+
+    <!-- Matrix -->
+    <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead id="matrix-head"></thead>
+          <tbody id="matrix-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Bottom action bar -->
+    <div class="mt-6 flex items-center justify-between flex-wrap gap-3">
+      <div id="dirty-indicator" class="text-sm text-gray-500 inline-flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-gray-300"></span>
+        <span>변경 사항 없음</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button class="px-4 py-2 text-sm rounded-xl border border-gray-200 text-gray-700 hover:bg-white">초기화</button>
+        <button onclick="openDiffModal()" class="px-4 py-2 text-sm rounded-xl bg-blue-600 text-white hover:bg-blue-700 font-semibold shadow-sm">Discord에 적용</button>
+      </div>
+    </div>
+
+    <!-- Side panels -->
+    <div class="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-5">
+      <!-- Preview -->
+      <div class="bg-white rounded-2xl border border-gray-200 p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-semibold">이 역할로 로그인하면</h3>
+          <select id="preview-role" class="text-sm border border-gray-200 rounded-lg px-2.5 py-1.5 bg-white"></select>
+        </div>
+        <ul id="preview-list" class="text-sm text-gray-700 space-y-2"></ul>
+      </div>
+
+      <!-- Auto-sync -->
+      <div class="bg-white rounded-2xl border border-gray-200 p-6">
+        <h3 class="font-semibold mb-4">자동 반영되는 것</h3>
+        <ul class="text-sm text-gray-700 space-y-3">
+          <li class="flex gap-2"><span class="text-blue-600">→</span>신규 가입자는 기본 역할(팀원)로 자동 배정됩니다.</li>
+          <li class="flex gap-2"><span class="text-blue-600">→</span>팀장으로 승격하면 해당 팀 채널 관리 권한이 붙습니다.</li>
+          <li class="flex gap-2"><span class="text-blue-600">→</span>퇴부 처리하면 전 채널 접근이 회수됩니다.</li>
+          <li class="flex gap-2"><span class="text-blue-600">→</span>Draft에서 변경한 내용은 Discord에 자동 동기화됩니다.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Footer note -->
+    <p class="text-xs text-gray-400 mt-10 text-center">
+      Draft 시안 · role-matrix-v1 · 2026-04-23
+    </p>
+
+  </div>
+
+  <!-- Modal mount point -->
+  <div id="modal-root"></div>
+
+  <!-- Toast mount point -->
+  <div id="toast-root" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-2 pointer-events-none"></div>
+
+  <script>
+    let ROLES = [
+      { name: '회장',         desc: '최고 권한',     dot: '#8b5cf6' },
+      { name: '부회장',       desc: '운영 전반',     dot: '#3b82f6' },
+      { name: '팀장 · 개발',  desc: '개발팀 관리',   dot: '#10b981' },
+      { name: '팀장 · 디자인',desc: '디자인팀 관리', dot: '#f59e0b' },
+      { name: '팀원',         desc: '소속 팀 활동',  dot: '#6b7280' },
+      { name: '게스트',       desc: '라운지만',      dot: '#9ca3af' },
+    ];
+    let CHANNELS = ['공지', '임원진', '개발팀', '디자인팀', '기획팀', '라운지', '개발-피드'];
+
+    // rows = ROLES, cols = CHANNELS
+    const initial = [
+      ['관리', '관리', '관리', '관리', '관리', '쓰기', '쓰기'],
+      ['관리', '관리', '쓰기', '쓰기', '쓰기', '쓰기', '읽기'],
+      ['읽기', '읽기', '관리', '읽기', '읽기', '쓰기', '쓰기'],
+      ['읽기', '읽기', '읽기', '관리', '읽기', '쓰기', '읽기'],
+      ['읽기', '없음', '쓰기', '쓰기', '쓰기', '쓰기', '읽기'],
+      ['읽기', '없음', '없음', '없음', '없음', '읽기', '없음'],
+    ];
+
+    const LEVELS = ['없음', '읽기', '쓰기', '관리'];
+    const STYLES = {
+      '관리': 'bg-blue-50 text-blue-700 ring-1 ring-blue-200',
+      '쓰기': 'bg-gray-100 text-gray-800',
+      '읽기': 'bg-gray-50 text-gray-500',
+      '없음': 'bg-white text-gray-300 ring-1 ring-gray-100',
+    };
+
+    const DOT_PALETTE = ['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#14b8a6', '#6b7280'];
+
+    // Mock FLIP members
+    const MEMBERS = [
+      { id: 1,  name: '김성민', team: '경영',   dot: '#8b5cf6' },
+      { id: 2,  name: '이지혜', team: '개발',   dot: '#3b82f6' },
+      { id: 3,  name: '박진우', team: '개발',   dot: '#10b981' },
+      { id: 4,  name: '최유나', team: '디자인', dot: '#f59e0b' },
+      { id: 5,  name: '정민석', team: '기획',   dot: '#ef4444' },
+      { id: 6,  name: '한소영', team: '디자인', dot: '#ec4899' },
+      { id: 7,  name: '조현우', team: '개발',   dot: '#14b8a6' },
+      { id: 8,  name: '윤서진', team: '기획',   dot: '#6b7280' },
+      { id: 9,  name: '배유진', team: '경영',   dot: '#8b5cf6' },
+      { id: 10, name: '임태호', team: '기획',   dot: '#3b82f6' },
+      { id: 11, name: '강다은', team: '디자인', dot: '#10b981' },
+      { id: 12, name: '신지훈', team: '개발',   dot: '#f59e0b' },
+    ];
+
+    // Role index → member ids
+    let assignments = { 0: [1], 1: [2], 2: [3], 3: [4], 4: [5,6,7,8,9,10,11,12], 5: [] };
+
+    function roleMemberCount(ri) {
+      return (assignments[ri] || []).length;
+    }
+    function memberById(id) { return MEMBERS.find((m) => m.id === id); }
+    function avatarInitial(name) { return name.slice(-2); }
+
+    let state = initial.map((r) => [...r]);
+    let snapshot = JSON.stringify(state);
+
+    function renderMatrix() {
+      const thead = document.getElementById('matrix-head');
+      thead.innerHTML = `
+        <tr class="bg-gray-50/60">
+          <th class="sticky left-0 z-10 bg-gray-50/60 px-6 py-4 text-left font-medium text-gray-500 border-r border-gray-200 min-w-[220px]">역할</th>
+          ${CHANNELS.map((ch, ci) => `
+            <th class="px-3 py-4 font-medium text-gray-600 min-w-[120px] group relative">
+              <div class="inline-flex items-center gap-1.5">
+                <span># ${ch}</span>
+                <button onclick="removeChannel(${ci})" title="채널 삭제"
+                  class="opacity-0 group-hover:opacity-100 w-5 h-5 rounded-md text-gray-400 hover:bg-red-50 hover:text-red-500 inline-flex items-center justify-center transition">✕</button>
+              </div>
+            </th>
+          `).join('')}
+        </tr>
+      `;
+
+      const tbody = document.getElementById('matrix-body');
+      tbody.innerHTML = ROLES.map((role, ri) => `
+        <tr class="border-t border-gray-100 hover:bg-gray-50/40 group">
+          <td class="sticky left-0 bg-white px-6 py-4 border-r border-gray-100">
+            <div class="flex items-center gap-3">
+              <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background:${role.dot}"></span>
+              <button onclick="openMemberDrawer(${ri})" class="role-name-btn flex-1 min-w-0 text-left">
+                <div class="font-semibold text-gray-900 truncate flex items-center gap-1.5">
+                  <span>${role.name}</span>
+                  <span class="text-xs font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-md">${roleMemberCount(ri)}</span>
+                </div>
+                <div class="text-xs text-gray-400 truncate">${role.desc}</div>
+              </button>
+              <button onclick="removeRole(${ri})" title="역할 삭제"
+                class="opacity-0 group-hover:opacity-100 w-7 h-7 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-500 inline-flex items-center justify-center transition shrink-0">✕</button>
+            </div>
+          </td>
+          ${state[ri].map((lvl, ci) => `
+            <td class="px-2 py-2.5 text-center">
+              <button onclick="cycle(${ri}, ${ci})"
+                class="cell-btn w-full px-3 py-1.5 rounded-lg text-xs font-semibold ${STYLES[lvl]}">
+                ${lvl}
+              </button>
+            </td>
+          `).join('')}
+        </tr>
+      `).join('');
+    }
+
+    // ----- Draft Modal -----
+    function escapeHtml(s = '') {
+      return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    function openModal(opts) {
+      const {
+        title,
+        description = '',
+        fields = [],
+        confirmText = '확인',
+        cancelText = '취소',
+        destructive = false,
+      } = opts;
+
+      return new Promise((resolve) => {
+        const root = document.getElementById('modal-root');
+        root.innerHTML = `
+          <div class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-950/40 backdrop-blur-[2px]">
+            <div class="modal-card w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 sm:p-7" role="dialog" aria-modal="true">
+              <h3 class="text-lg font-bold text-gray-900 mb-1.5">${escapeHtml(title)}</h3>
+              ${description ? `<p class="text-sm text-gray-500 mb-5 leading-relaxed">${escapeHtml(description)}</p>` : '<div class="mb-5"></div>'}
+              ${fields.map((f, i) => `
+                <label class="block mb-3.5">
+                  <span class="text-xs font-medium text-gray-600 block mb-1.5">
+                    ${escapeHtml(f.label)}${f.required ? ' <span class="text-blue-500">*</span>' : ''}
+                  </span>
+                  <input
+                    data-field-idx="${i}"
+                    type="text"
+                    placeholder="${escapeHtml(f.placeholder || '')}"
+                    value="${escapeHtml(f.default || '')}"
+                    class="modal-input w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition text-sm bg-gray-50 focus:bg-white"
+                  />
+                  ${f.hint ? `<span class="text-xs text-gray-400 mt-1 block">${escapeHtml(f.hint)}</span>` : ''}
+                </label>
+              `).join('')}
+              <div class="flex gap-2 mt-6">
+                <button class="modal-cancel flex-1 px-4 py-2.5 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 text-sm font-medium transition">
+                  ${escapeHtml(cancelText)}
+                </button>
+                <button class="modal-confirm flex-1 px-4 py-2.5 rounded-xl text-white text-sm font-semibold shadow-sm transition ${destructive ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'}">
+                  ${escapeHtml(confirmText)}
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+
+        const backdrop = root.querySelector('.modal-backdrop');
+        const card = root.querySelector('.modal-card');
+        const close = (result) => {
+          root.innerHTML = '';
+          document.removeEventListener('keydown', onKey);
+          resolve(result);
+        };
+        const onKey = (e) => {
+          if (e.key === 'Escape') close(null);
+          if (e.key === 'Enter' && e.target.tagName === 'INPUT') root.querySelector('.modal-confirm').click();
+        };
+        document.addEventListener('keydown', onKey);
+
+        root.querySelector('.modal-cancel').onclick = () => close(null);
+        backdrop.onclick = (e) => { if (e.target === backdrop) close(null); };
+        card.onclick = (e) => e.stopPropagation();
+
+        root.querySelector('.modal-confirm').onclick = () => {
+          const inputs = [...root.querySelectorAll('input[data-field-idx]')];
+          const values = inputs.map((el) => el.value.trim());
+          for (let i = 0; i < fields.length; i++) {
+            if (fields[i].required && !values[i]) {
+              inputs[i].focus();
+              inputs[i].classList.remove('border-gray-200', 'focus:ring-blue-100', 'focus:border-blue-500');
+              inputs[i].classList.add('border-red-400', 'ring-4', 'ring-red-100');
+              return;
+            }
+          }
+          close(values.length ? values : true);
+        };
+
+        setTimeout(() => {
+          const first = root.querySelector('input[data-field-idx]');
+          (first || root.querySelector('.modal-confirm')).focus();
+          if (first) first.select();
+        }, 50);
+      });
+    }
+
+    function showToast(message, variant = 'default') {
+      const root = document.getElementById('toast-root');
+      const el = document.createElement('div');
+      const base = 'pointer-events-auto px-4 py-2.5 rounded-xl shadow-lg text-sm font-medium modal-card';
+      const color = variant === 'danger'
+        ? 'bg-red-600 text-white'
+        : variant === 'success'
+          ? 'bg-gray-900 text-white'
+          : 'bg-gray-900 text-white';
+      el.className = `${base} ${color}`;
+      el.textContent = message;
+      root.appendChild(el);
+      setTimeout(() => {
+        el.style.transition = 'opacity .3s ease, transform .3s ease';
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(8px)';
+        setTimeout(() => el.remove(), 300);
+      }, 1800);
+    }
+
+    // ----- Add / Remove handlers -----
+    window.addRole = async () => {
+      const result = await openModal({
+        title: '새 역할 추가',
+        description: '역할 이름과 간단한 설명을 입력해주세요. 권한은 추가 후 매트릭스에서 설정합니다.',
+        fields: [
+          { label: '역할 이름', placeholder: '예: 팀장 · 마케팅', required: true },
+          { label: '설명', placeholder: '예: 마케팅팀 관리', hint: '생략할 수 있습니다.' },
+        ],
+        confirmText: '추가',
+      });
+      if (!result) return;
+      const [name, desc] = result;
+      const dot = DOT_PALETTE[ROLES.length % DOT_PALETTE.length];
+      ROLES.push({ name, desc: desc || '', dot });
+      state.push(CHANNELS.map(() => '없음'));
+      renderMatrix(); renderDirty(); renderPreview();
+      showToast(`"${name}" 역할을 추가했습니다`);
+    };
+
+    window.removeRole = async (ri) => {
+      const role = ROLES[ri];
+      const ok = await openModal({
+        title: '역할을 삭제하시겠습니까?',
+        description: `"${role.name}" 역할과 해당 권한 설정이 모두 제거됩니다. 되돌릴 수 없습니다.`,
+        confirmText: '삭제',
+        cancelText: '취소',
+        destructive: true,
+      });
+      if (!ok) return;
+      ROLES.splice(ri, 1);
+      state.splice(ri, 1);
+      renderMatrix(); renderDirty(); renderPreview();
+      showToast(`"${role.name}" 역할을 삭제했습니다`, 'danger');
+    };
+
+    window.addChannel = async () => {
+      const result = await openModal({
+        title: '새 채널 추가',
+        description: 'Discord에 생성될 채널 이름을 입력해주세요.',
+        fields: [
+          { label: '채널 이름', placeholder: '예: 마케팅팀', hint: '# 기호는 자동으로 붙습니다.', required: true },
+        ],
+        confirmText: '추가',
+      });
+      if (!result) return;
+      const name = result[0].replace(/^#\s*/, '');
+      CHANNELS.push(name);
+      state.forEach((row) => row.push('없음'));
+      renderMatrix(); renderDirty(); renderPreview();
+      showToast(`"# ${name}" 채널을 추가했습니다`);
+    };
+
+    window.removeChannel = async (ci) => {
+      const ch = CHANNELS[ci];
+      const ok = await openModal({
+        title: '채널을 삭제하시겠습니까?',
+        description: `"# ${ch}" 채널과 해당 권한 설정이 모두 제거됩니다. 되돌릴 수 없습니다.`,
+        confirmText: '삭제',
+        cancelText: '취소',
+        destructive: true,
+      });
+      if (!ok) return;
+      CHANNELS.splice(ci, 1);
+      state.forEach((row) => row.splice(ci, 1));
+      renderMatrix(); renderDirty(); renderPreview();
+      showToast(`"# ${ch}" 채널을 삭제했습니다`, 'danger');
+    };
+
+    function renderDirty() {
+      const dirty = JSON.stringify(state) !== snapshot;
+      const el = document.getElementById('dirty-indicator');
+      el.innerHTML = dirty
+        ? `<span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span><span class="text-blue-700 font-medium">저장되지 않은 변경 사항이 있습니다</span>`
+        : `<span class="w-2 h-2 rounded-full bg-gray-300"></span><span>변경 사항 없음</span>`;
+    }
+
+    let previewInit = false;
+    function renderPreview() {
+      const sel = document.getElementById('preview-role');
+      const prev = Number(sel.value);
+      sel.innerHTML = ROLES.map((r, i) => `<option value="${i}">${r.name}</option>`).join('');
+      if (!previewInit) {
+        const def = ROLES.findIndex((r) => r.name === '팀원');
+        sel.value = def >= 0 ? def : 0;
+        sel.addEventListener('change', renderPreview);
+        previewInit = true;
+      } else {
+        sel.value = Math.min(prev, ROLES.length - 1);
+      }
+      const ri = Number(sel.value);
+      if (ri < 0 || !state[ri]) {
+        document.getElementById('preview-list').innerHTML = '<li class="text-gray-400 text-sm">역할이 없습니다.</li>';
+        return;
+      }
+      const list = document.getElementById('preview-list');
+      list.innerHTML = CHANNELS.map((ch, ci) => {
+        const lvl = state[ri][ci];
+        const icon = lvl === '없음'
+          ? '<span class="text-gray-300">✕</span>'
+          : '<span class="text-blue-600">✓</span>';
+        const color = lvl === '없음' ? 'text-gray-400' : 'text-gray-800';
+        return `<li class="flex items-center justify-between ${color}">
+          <span class="inline-flex items-center gap-2">${icon} # ${ch}</span>
+          <span class="text-xs text-gray-400">${lvl}</span>
+        </li>`;
+      }).join('');
+    }
+
+    window.cycle = (ri, ci) => {
+      const cur = LEVELS.indexOf(state[ri][ci]);
+      state[ri][ci] = LEVELS[(cur + 1) % LEVELS.length];
+      renderMatrix();
+      renderDirty();
+      renderPreview();
+      renderSafety();
+    };
+
+    // ---------- Safety Guard ----------
+    function computeWarnings() {
+      const warnings = [];
+      const imwonCi = CHANNELS.indexOf('임원진');
+
+      // 1) 임원진 채널 관리자 0명 (Critical)
+      if (imwonCi >= 0) {
+        const admins = state.reduce((n, row, ri) =>
+          row[imwonCi] === '관리' && roleMemberCount(ri) > 0 ? n + roleMemberCount(ri) : n, 0);
+        if (admins === 0) {
+          warnings.push({
+            level: 'critical',
+            text: '#임원진 채널에 관리 권한을 가진 멤버가 없습니다.',
+            hint: '최소 1명의 관리자를 지정해주세요.',
+          });
+        }
+      }
+
+      // 2) 고립 채널 — 쓸 수 있는 멤버가 0명
+      CHANNELS.forEach((ch, ci) => {
+        const writers = state.reduce((n, row, ri) => {
+          const lvl = row[ci];
+          return (lvl === '쓰기' || lvl === '관리') ? n + roleMemberCount(ri) : n;
+        }, 0);
+        if (writers === 0) {
+          warnings.push({
+            level: 'warning',
+            text: `# ${ch} 채널에 쓰기 권한을 가진 멤버가 없습니다.`,
+            hint: '채널이 사실상 비활성화됩니다.',
+          });
+        }
+      });
+
+      // 3) 팀원 → 임원진 쓰기/관리 (Warning)
+      const teamRi = ROLES.findIndex((r) => r.name === '팀원');
+      if (teamRi >= 0 && imwonCi >= 0) {
+        const lvl = state[teamRi][imwonCi];
+        if (lvl === '쓰기' || lvl === '관리') {
+          warnings.push({
+            level: 'warning',
+            text: '팀원 역할이 #임원진 채널에 쓰기 이상 권한을 가지고 있습니다.',
+            hint: '임원진 전용 채널의 의미가 사라질 수 있습니다.',
+          });
+        }
+      }
+
+      // 4) 미배정 멤버
+      const assignedIds = new Set(Object.values(assignments).flat());
+      const unassigned = MEMBERS.filter((m) => !assignedIds.has(m.id));
+      if (unassigned.length > 0) {
+        warnings.push({
+          level: 'info',
+          text: `${unassigned.length}명의 멤버가 아직 배정되지 않았습니다.`,
+          hint: '역할을 눌러 배정해주세요.',
+        });
+      }
+
+      return warnings;
+    }
+
+    function renderSafety() {
+      const el = document.getElementById('safety-guard');
+      const warnings = computeWarnings();
+      if (warnings.length === 0) { el.innerHTML = ''; return; }
+
+      const hasCritical = warnings.some((w) => w.level === 'critical');
+      const hasWarning  = warnings.some((w) => w.level === 'warning');
+      const theme = hasCritical
+        ? { bg: 'bg-red-50',    border: 'border-red-200',    icon: 'bg-red-100 text-red-700',       title: 'text-red-900',    num: 'text-red-700' }
+        : hasWarning
+          ? { bg: 'bg-amber-50', border: 'border-amber-200', icon: 'bg-amber-100 text-amber-700',   title: 'text-amber-900',  num: 'text-amber-700' }
+          : { bg: 'bg-blue-50',  border: 'border-blue-200',  icon: 'bg-blue-100 text-blue-700',     title: 'text-blue-900',   num: 'text-blue-700' };
+
+      const iconChar = hasCritical ? '!' : hasWarning ? '!' : 'i';
+
+      el.innerHTML = `
+        <div class="mb-5 p-5 ${theme.bg} border ${theme.border} rounded-2xl">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-8 h-8 rounded-full ${theme.icon} flex items-center justify-center text-sm font-bold">${iconChar}</div>
+            <div class="font-semibold ${theme.title}">
+              <span class="${theme.num}">${warnings.length}건</span>의 확인이 필요합니다
+            </div>
+          </div>
+          <ul class="space-y-1.5 pl-11">
+            ${warnings.map((w) => {
+              const dotColor = w.level === 'critical' ? 'bg-red-400'
+                : w.level === 'warning' ? 'bg-amber-400' : 'bg-blue-400';
+              const textColor = w.level === 'critical' ? 'text-red-900'
+                : w.level === 'warning' ? 'text-amber-900' : 'text-blue-900';
+              return `<li class="flex items-start gap-2.5 text-sm">
+                <span class="w-1.5 h-1.5 rounded-full ${dotColor} mt-2 shrink-0"></span>
+                <div>
+                  <span class="${textColor} font-medium">${escapeHtml(w.text)}</span>
+                  <span class="text-gray-500"> ${escapeHtml(w.hint)}</span>
+                </div>
+              </li>`;
+            }).join('')}
+          </ul>
+        </div>
+      `;
+    }
+
+    // ---------- Member Drawer ----------
+    let drawerOpenRi = null;
+
+    function escDrawer(e) { if (e.key === 'Escape') closeDrawer(); }
+
+    window.openMemberDrawer = (ri) => {
+      drawerOpenRi = ri;
+      const role = ROLES[ri];
+      const ids = assignments[ri] || [];
+      const assigned = ids.map(memberById).filter(Boolean);
+      const assignedSet = new Set(ids);
+      const unassigned = MEMBERS.filter((m) => !assignedSet.has(m.id));
+
+      const otherRoleOf = (mid) => {
+        for (const [k, v] of Object.entries(assignments)) {
+          if (Number(k) !== ri && v.includes(mid)) return ROLES[Number(k)]?.name;
+        }
+        return null;
+      };
+
+      const root = document.getElementById('modal-root');
+      root.innerHTML = `
+        <div class="modal-backdrop fixed inset-0 z-50 bg-gray-950/40 backdrop-blur-[2px]" onclick="if(event.target===this) closeDrawer()">
+          <div class="drawer-card fixed top-0 right-0 bottom-0 w-full sm:w-[420px] bg-white shadow-2xl flex flex-col">
+            <header class="p-6 border-b border-gray-100 flex items-center justify-between">
+              <div class="flex items-center gap-3 min-w-0">
+                <span class="w-3 h-3 rounded-full shrink-0" style="background:${role.dot}"></span>
+                <div class="min-w-0">
+                  <div class="text-xs text-gray-500">역할 · 멤버 배정</div>
+                  <h3 class="font-bold text-gray-900 truncate">${escapeHtml(role.name)}</h3>
+                </div>
+              </div>
+              <button onclick="closeDrawer()" class="w-9 h-9 rounded-xl hover:bg-gray-100 inline-flex items-center justify-center text-gray-500 shrink-0" title="닫기">✕</button>
+            </header>
+
+            <div class="flex-1 overflow-y-auto">
+              <div class="p-6 border-b border-gray-100">
+                <div class="flex items-center justify-between mb-3">
+                  <div class="text-xs font-semibold text-gray-700">배정된 멤버</div>
+                  <div class="text-xs text-gray-400">${assigned.length}명</div>
+                </div>
+                ${assigned.length ? `
+                  <div class="space-y-1">
+                    ${assigned.map((m) => `
+                      <div class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-gray-50 group">
+                        <span class="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0" style="background:${m.dot}">${avatarInitial(m.name)}</span>
+                        <div class="flex-1 min-w-0">
+                          <div class="font-medium text-sm text-gray-900 truncate">${escapeHtml(m.name)}</div>
+                          <div class="text-xs text-gray-400">${escapeHtml(m.team)}팀</div>
+                        </div>
+                        <button onclick="unassignMember(${ri}, ${m.id})" class="opacity-0 group-hover:opacity-100 w-7 h-7 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 inline-flex items-center justify-center text-xs transition" title="배정 해제">✕</button>
+                      </div>
+                    `).join('')}
+                  </div>
+                ` : `
+                  <div class="text-sm text-gray-400 py-8 text-center bg-gray-50 rounded-xl">
+                    아직 배정된 멤버가 없습니다.
+                  </div>
+                `}
+              </div>
+
+              <div class="p-6">
+                <div class="flex items-center justify-between mb-3">
+                  <div class="text-xs font-semibold text-gray-700">다른 멤버 배정</div>
+                  <div class="text-xs text-gray-400">${unassigned.length}명</div>
+                </div>
+                ${unassigned.length ? `
+                  <div class="space-y-1">
+                    ${unassigned.map((m) => {
+                      const other = otherRoleOf(m.id);
+                      return `
+                        <button onclick="assignMember(${ri}, ${m.id})" class="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-blue-50 text-left transition">
+                          <span class="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0" style="background:${m.dot}">${avatarInitial(m.name)}</span>
+                          <div class="flex-1 min-w-0">
+                            <div class="font-medium text-sm text-gray-900 truncate">${escapeHtml(m.name)}</div>
+                            <div class="text-xs text-gray-400">${escapeHtml(m.team)}팀${other ? ` · 현재 ${escapeHtml(other)}` : ' · 미배정'}</div>
+                          </div>
+                          <span class="text-blue-600 text-xs font-semibold shrink-0">배정 +</span>
+                        </button>
+                      `;
+                    }).join('')}
+                  </div>
+                ` : `
+                  <div class="text-sm text-gray-400 py-8 text-center bg-gray-50 rounded-xl">
+                    배정 가능한 멤버가 없습니다.
+                  </div>
+                `}
+              </div>
+            </div>
+
+            <footer class="p-5 border-t border-gray-100 bg-gray-50/60">
+              <div class="text-xs text-gray-500 leading-relaxed">
+                <span class="text-gray-700 font-medium">팁</span> · 한 멤버는 하나의 역할만 가집니다. 다른 역할에 있는 멤버를 배정하면 기존 역할에서 자동으로 해제됩니다.
+              </div>
+            </footer>
+          </div>
+        </div>
+      `;
+      document.addEventListener('keydown', escDrawer);
+    };
+
+    window.closeDrawer = () => {
+      drawerOpenRi = null;
+      document.getElementById('modal-root').innerHTML = '';
+      document.removeEventListener('keydown', escDrawer);
+    };
+
+    window.assignMember = (ri, mid) => {
+      Object.keys(assignments).forEach((k) => {
+        assignments[k] = (assignments[k] || []).filter((id) => id !== mid);
+      });
+      if (!assignments[ri]) assignments[ri] = [];
+      assignments[ri].push(mid);
+      openMemberDrawer(ri);
+      renderMatrix();
+      renderSafety();
+    };
+
+    window.unassignMember = (ri, mid) => {
+      assignments[ri] = (assignments[ri] || []).filter((id) => id !== mid);
+      openMemberDrawer(ri);
+      renderMatrix();
+      renderSafety();
+    };
+
+    // ---------- Diff Modal ----------
+    function computeDiff() {
+      const before = JSON.parse(snapshot);
+      const changes = [];
+      const affectedRoleSet = new Set();
+      for (let ri = 0; ri < state.length; ri++) {
+        for (let ci = 0; ci < state[ri].length; ci++) {
+          const from = before[ri] ? before[ri][ci] : '없음';
+          const to = state[ri][ci];
+          if (from !== to) {
+            changes.push({ ri, ci, role: ROLES[ri].name, channel: CHANNELS[ci], from, to });
+            affectedRoleSet.add(ri);
+          }
+        }
+      }
+      const affectedMembers = [...affectedRoleSet].reduce((n, ri) => n + roleMemberCount(ri), 0);
+      return { changes, affectedMembers, affectedRoles: affectedRoleSet.size };
+    }
+
+    function escDiff(e) { if (e.key === 'Escape') closeDiff(); }
+
+    window.openDiffModal = () => {
+      const { changes, affectedMembers, affectedRoles } = computeDiff();
+      if (changes.length === 0) {
+        showToast('변경 사항이 없습니다');
+        return;
+      }
+
+      const byRole = {};
+      changes.forEach((c) => {
+        if (!byRole[c.role]) byRole[c.role] = [];
+        byRole[c.role].push(c);
+      });
+
+      const root = document.getElementById('modal-root');
+      root.innerHTML = `
+        <div class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-950/40 backdrop-blur-[2px]" onclick="if(event.target===this) closeDiff()">
+          <div class="modal-card w-full max-w-2xl bg-white rounded-2xl shadow-2xl max-h-[85vh] flex flex-col">
+            <header class="p-6 border-b border-gray-100">
+              <h3 class="text-lg font-bold text-gray-900 mb-1">Discord에 적용 전 확인</h3>
+              <p class="text-sm text-gray-500">아래 변경 사항이 Discord 서버에 그대로 반영됩니다.</p>
+            </header>
+
+            <div class="px-6 py-5 border-b border-gray-100 bg-gray-50/60">
+              <div class="grid grid-cols-3 gap-4 text-sm">
+                <div>
+                  <div class="text-xs text-gray-500 mb-1">변경될 권한</div>
+                  <div class="font-bold text-xl text-gray-900">${changes.length}건</div>
+                </div>
+                <div>
+                  <div class="text-xs text-gray-500 mb-1">영향받는 역할</div>
+                  <div class="font-bold text-xl text-gray-900">${affectedRoles}개</div>
+                </div>
+                <div>
+                  <div class="text-xs text-gray-500 mb-1">영향받는 멤버</div>
+                  <div class="font-bold text-xl text-blue-700">${affectedMembers}명</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6">
+              ${Object.entries(byRole).map(([roleName, items]) => {
+                const role = ROLES.find((r) => r.name === roleName);
+                return `
+                  <div class="mb-6 last:mb-0">
+                    <div class="flex items-center gap-2 mb-2.5">
+                      <span class="w-2 h-2 rounded-full" style="background:${role?.dot || '#9ca3af'}"></span>
+                      <span class="font-semibold text-sm text-gray-900">${escapeHtml(roleName)}</span>
+                      <span class="text-xs text-gray-400">${items.length}건</span>
+                    </div>
+                    <div class="space-y-1.5">
+                      ${items.map((c) => `
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-gray-50 text-sm">
+                          <span class="text-gray-700 flex-1 font-medium"># ${escapeHtml(c.channel)}</span>
+                          <span class="px-2 py-0.5 rounded-md text-xs ${STYLES[c.from]}">${c.from}</span>
+                          <span class="text-gray-300">→</span>
+                          <span class="px-2 py-0.5 rounded-md text-xs font-semibold ${STYLES[c.to]}">${c.to}</span>
+                        </div>
+                      `).join('')}
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+
+            <footer class="p-5 border-t border-gray-100 flex items-center gap-2">
+              <button onclick="closeDiff()" class="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 text-sm font-medium">취소</button>
+              <button onclick="confirmApply()" class="flex-1 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-sm">Discord에 적용하기</button>
+            </footer>
+          </div>
+        </div>
+      `;
+      document.addEventListener('keydown', escDiff);
+    };
+
+    window.closeDiff = () => {
+      document.getElementById('modal-root').innerHTML = '';
+      document.removeEventListener('keydown', escDiff);
+    };
+
+    window.confirmApply = () => {
+      closeDiff();
+      snapshot = JSON.stringify(state);
+      renderDirty();
+      showToast('Discord에 변경 사항을 적용했습니다', 'success');
+    };
+
+    renderMatrix();
+    renderDirty();
+    renderPreview();
+    renderSafety();
+  </script>
+</body>
+</html>
