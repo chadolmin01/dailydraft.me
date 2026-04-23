@@ -752,6 +752,7 @@ export type Database = {
       clubs: {
         Row: {
           category: string | null
+          claim_status: string
           created_at: string
           created_by: string
           deleted_at: string | null
@@ -763,11 +764,18 @@ export type Database = {
           require_approval: boolean
           slug: string
           team_channel_visibility: string
+          university_id: string | null
           updated_at: string
+          verification_documents: Json | null
+          verification_note: string | null
+          verification_reviewed_at: string | null
+          verification_reviewed_by: string | null
+          verification_submitted_at: string | null
           visibility: string
         }
         Insert: {
           category?: string | null
+          claim_status?: string
           created_at?: string
           created_by: string
           deleted_at?: string | null
@@ -779,11 +787,18 @@ export type Database = {
           require_approval?: boolean
           slug: string
           team_channel_visibility?: string
+          university_id?: string | null
           updated_at?: string
+          verification_documents?: Json | null
+          verification_note?: string | null
+          verification_reviewed_at?: string | null
+          verification_reviewed_by?: string | null
+          verification_submitted_at?: string | null
           visibility?: string
         }
         Update: {
           category?: string | null
+          claim_status?: string
           created_at?: string
           created_by?: string
           deleted_at?: string | null
@@ -795,10 +810,24 @@ export type Database = {
           require_approval?: boolean
           slug?: string
           team_channel_visibility?: string
+          university_id?: string | null
           updated_at?: string
+          verification_documents?: Json | null
+          verification_note?: string | null
+          verification_reviewed_at?: string | null
+          verification_reviewed_by?: string | null
+          verification_submitted_at?: string | null
           visibility?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "clubs_university_id_fkey"
+            columns: ["university_id"]
+            isOneToOne: false
+            referencedRelation: "universities"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       coffee_chats: {
         Row: {
@@ -971,6 +1000,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      daily_metrics_snapshots: {
+        Row: {
+          active_opportunities: number
+          captured_at: string
+          clubs_public: number
+          profiles_public: number
+          public_universities: number
+          snapshot_date: string
+          weekly_updates_90d: number
+        }
+        Insert: {
+          active_opportunities?: number
+          captured_at?: string
+          clubs_public?: number
+          profiles_public?: number
+          public_universities?: number
+          snapshot_date: string
+          weekly_updates_90d?: number
+        }
+        Update: {
+          active_opportunities?: number
+          captured_at?: string
+          clubs_public?: number
+          profiles_public?: number
+          public_universities?: number
+          snapshot_date?: string
+          weekly_updates_90d?: number
+        }
+        Relationships: []
       }
       direct_messages: {
         Row: {
@@ -1610,6 +1669,41 @@ export type Database = {
           },
         ]
       }
+      institution_custom_responses: {
+        Row: {
+          id: string
+          institution_id: string
+          responses: Json
+          submitted_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          institution_id: string
+          responses: Json
+          submitted_at?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          institution_id?: string
+          responses?: Json
+          submitted_at?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "institution_custom_responses_institution_id_fkey"
+            columns: ["institution_id"]
+            isOneToOne: false
+            referencedRelation: "institutions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       institution_members: {
         Row: {
           id: string
@@ -1653,6 +1747,7 @@ export type Database = {
           contact_email: string | null
           contact_phone: string | null
           created_at: string
+          custom_fields_schema: Json | null
           description: string | null
           email_domains: string[] | null
           id: string
@@ -1667,6 +1762,7 @@ export type Database = {
           contact_email?: string | null
           contact_phone?: string | null
           created_at?: string
+          custom_fields_schema?: Json | null
           description?: string | null
           email_domains?: string[] | null
           id?: string
@@ -1681,6 +1777,7 @@ export type Database = {
           contact_email?: string | null
           contact_phone?: string | null
           created_at?: string
+          custom_fields_schema?: Json | null
           description?: string | null
           email_domains?: string[] | null
           id?: string
@@ -1778,6 +1875,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      meta_data_deletion_requests: {
+        Row: {
+          completed_at: string | null
+          confirmation_code: string
+          created_at: string
+          external_user_id: string
+          id: string
+          provider: string
+          status: string
+        }
+        Insert: {
+          completed_at?: string | null
+          confirmation_code: string
+          created_at?: string
+          external_user_id: string
+          id?: string
+          provider: string
+          status?: string
+        }
+        Update: {
+          completed_at?: string | null
+          confirmation_code?: string
+          created_at?: string
+          external_user_id?: string
+          id?: string
+          provider?: string
+          status?: string
+        }
+        Relationships: []
       }
       micro_prompts_cooldown: {
         Row: {
@@ -2778,6 +2905,30 @@ export type Database = {
           },
         ]
       }
+      platform_admins: {
+        Row: {
+          granted_at: string
+          granted_by: string | null
+          notes: string | null
+          role: string
+          user_id: string
+        }
+        Insert: {
+          granted_at?: string
+          granted_by?: string | null
+          notes?: string | null
+          role?: string
+          user_id: string
+        }
+        Update: {
+          granted_at?: string
+          granted_by?: string | null
+          notes?: string | null
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       portfolio_items: {
         Row: {
           created_at: string | null
@@ -2883,6 +3034,7 @@ export type Database = {
           major: string | null
           nickname: string
           onboarding_completed: boolean | null
+          onboarding_source: string | null
           personality: Json | null
           portfolio_url: string | null
           premium_activated_at: string | null
@@ -2940,6 +3092,7 @@ export type Database = {
           major?: string | null
           nickname: string
           onboarding_completed?: boolean | null
+          onboarding_source?: string | null
           personality?: Json | null
           portfolio_url?: string | null
           premium_activated_at?: string | null
@@ -2997,6 +3150,7 @@ export type Database = {
           major?: string | null
           nickname?: string
           onboarding_completed?: boolean | null
+          onboarding_source?: string | null
           personality?: Json | null
           portfolio_url?: string | null
           premium_activated_at?: string | null
@@ -3437,6 +3591,57 @@ export type Database = {
           updated_at?: string | null
           upvotes?: number | null
           website_url?: string | null
+        }
+        Relationships: []
+      }
+      status_incidents: {
+        Row: {
+          affected_components: string[] | null
+          created_at: string
+          created_by: string | null
+          id: string
+          postmortem_url: string | null
+          resolved_at: string | null
+          root_cause: string | null
+          severity: string
+          started_at: string
+          status: string
+          summary: string
+          timeline: Json | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          affected_components?: string[] | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          postmortem_url?: string | null
+          resolved_at?: string | null
+          root_cause?: string | null
+          severity: string
+          started_at?: string
+          status?: string
+          summary: string
+          timeline?: Json | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          affected_components?: string[] | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          postmortem_url?: string | null
+          resolved_at?: string | null
+          root_cause?: string | null
+          severity?: string
+          started_at?: string
+          status?: string
+          summary?: string
+          timeline?: Json | null
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -4283,6 +4488,8 @@ export type Database = {
         Args: { p_club_id: string; p_user_id: string }
         Returns: boolean
       }
+      is_platform_admin: { Args: { p_user_id: string }; Returns: boolean }
+      is_platform_superadmin: { Args: { p_user_id: string }; Returns: boolean }
       match_opportunities:
         | {
             Args: {
