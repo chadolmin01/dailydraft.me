@@ -10,6 +10,11 @@ import { getMatchColorClass } from './constants'
 import { AFFILIATION_LABELS } from '@/components/profile-modal/types'
 import { Badges } from '@/components/ui/Badge'
 import { staggerOnceClass } from '@/src/hooks/useStaggerOnce'
+import {
+  trackMatchImpression,
+  trackMatchClick,
+  type MatchSurface,
+} from '@/src/lib/analytics/match-tracking'
 import type { TalentCard, PeopleSortBy } from './types'
 
 interface ExplorePeopleGridProps {
@@ -22,6 +27,16 @@ interface ExplorePeopleGridProps {
   onLoadMore: () => void
   onSelectProfile: (id: string, byUserId: boolean) => void
   peopleSortBy: PeopleSortBy
+  /** 매치 트래킹 — 어느 surface 에서 그리드가 노출됐는지. 미지정 시 트래킹 비활성. */
+  trackingSurface?: MatchSurface
+}
+
+/** matchDetails 에서 가장 높은 dimension 추출 — top dimension by score */
+function topDimension(details: TalentCard['matchDetails']): string | null {
+  if (!details) return null
+  const entries = Object.entries(details) as Array<[string, number]>
+  if (entries.length === 0) return null
+  return entries.reduce((max, cur) => (cur[1] > max[1] ? cur : max))[0]
 }
 
 /**
@@ -64,27 +79,71 @@ function PersonCard({
   peopleSortBy,
   onSelectProfile,
   staggerKey,
+  trackingSurface,
 }: {
   t: TalentCard
   index: number
   peopleSortBy: PeopleSortBy
   onSelectProfile: (id: string, byUserId: boolean) => void
   staggerKey: string
+  trackingSurface?: MatchSurface
 }) {
   const stagger = staggerOnceClass(staggerKey)
   const statusConfig = getStatusConfig(t.status)
   const bio = peopleSortBy === 'ai' && t.matchReason ? t.matchReason : t.visionSummary
+  const cardRef = useRef<HTMLDivElement>(null)
+
+  // viewport 진입 시 1회 임프레션. dedup 은 트래킹 모듈 내부에서 (surface, target) 단위.
+  useEffect(() => {
+    if (!trackingSurface) return
+    const el = cardRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          trackMatchImpression('people', {
+            surface: trackingSurface,
+            sortMethod: peopleSortBy,
+            matchScore: t.matchScore ?? null,
+            position: index,
+            topDimension: topDimension(t.matchDetails),
+            targetId: t.id,
+          })
+          observer.disconnect() // 한 번 발화 후 옵저버 해제
+        }
+      },
+      { threshold: 0.5 }, // 카드 절반 이상 보일 때
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [trackingSurface, peopleSortBy, t.matchScore, t.matchDetails, t.id, index])
+
+  const handleSelect = () => {
+    if (trackingSurface) {
+      trackMatchClick('people', {
+        surface: trackingSurface,
+        sortMethod: peopleSortBy,
+        matchScore: t.matchScore ?? null,
+        position: index,
+        topDimension: topDimension(t.matchDetails),
+        targetId: t.id,
+        destination: 'page', // /u/[id] 라우트
+      })
+    }
+    onSelectProfile(t.id, false)
+  }
 
   return (
     <div
+      ref={cardRef}
       role="button"
       tabIndex={0}
       onMouseDown={(e) => e.preventDefault()}
-      onClick={() => onSelectProfile(t.id, false)}
+      onClick={handleSelect}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()
-          onSelectProfile(t.id, false)
+          handleSelect()
         }
       }}
       style={stagger ? { animationDelay: `${Math.min(index * 50, 500)}ms` } : undefined}
@@ -237,6 +296,7 @@ export function ExplorePeopleGrid({
   onLoadMore,
   onSelectProfile,
   peopleSortBy,
+  trackingSurface,
 }: ExplorePeopleGridProps) {
   const sentinelRef = useRef<HTMLDivElement>(null)
 
@@ -275,6 +335,7 @@ export function ExplorePeopleGrid({
               peopleSortBy={peopleSortBy}
               onSelectProfile={onSelectProfile}
               staggerKey={`talent:${t.id}`}
+              trackingSurface={trackingSurface}
             />
           ))}
         </div>
