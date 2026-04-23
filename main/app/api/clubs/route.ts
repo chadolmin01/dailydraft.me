@@ -103,6 +103,35 @@ export const GET = withErrorCapture(async (request) => {
   const countMap: Record<string, number> = {}
   memberRows?.forEach(m => { countMap[m.club_id] = (countMap[m.club_id] || 0) + 1 })
 
+  // 공식 등록 뱃지 batch populate — 카드에 "✓ 경희대" 표시용.
+  // 이전엔 API 응답에 badges 없어서 ClubsListClient/ExploreClubGrid 에서 아예 뱃지 렌더 못 함.
+  const { data: credentials } = await supabase
+    .from('club_credentials')
+    .select('club_id, credential_type, university_id')
+    .in('club_id', clubIds)
+    .eq('credential_type', 'university')
+  const univIds = Array.from(new Set(
+    (credentials ?? []).map(c => c.university_id).filter(Boolean),
+  )) as string[]
+  let univMap: Record<string, { name: string; short_name: string | null }> = {}
+  if (univIds.length > 0) {
+    const { data: univs } = await supabase
+      .from('universities')
+      .select('id, name, short_name')
+      .in('id', univIds)
+    univMap = Object.fromEntries(
+      (univs ?? []).map(u => [u.id, { name: u.name, short_name: u.short_name }]),
+    )
+  }
+  const badgesByClub: Record<string, Array<{ type: string; university: { name: string; short_name: string | null } | null }>> = {}
+  for (const c of credentials ?? []) {
+    if (!badgesByClub[c.club_id]) badgesByClub[c.club_id] = []
+    badgesByClub[c.club_id].push({
+      type: c.credential_type,
+      university: c.university_id ? univMap[c.university_id] ?? null : null,
+    })
+  }
+
   const items = clubs.map(club => ({
     id: club.id,
     slug: club.slug,
@@ -111,6 +140,7 @@ export const GET = withErrorCapture(async (request) => {
     logo_url: club.logo_url,
     category: club.category,
     member_count: countMap[club.id] ?? 0,
+    badges: badgesByClub[club.id] ?? [],
   }))
 
   // CDN 캐시: 공개 클럽 목록은 자주 변하지 않음. 60s fresh + 300s stale-while-revalidate.

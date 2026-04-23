@@ -251,6 +251,15 @@ function ClubCardItem({ club }: { club: ClubCard }) {
     ? { label: '성장 중', tone: 'bg-status-info-bg text-status-info-text' }
     : null
 
+  // 공식 등록 뱃지 — fetchClubsList 가 반환하는 badges 에서 university credential 확인.
+  // 이전엔 /clubs 디렉터리 카드에서 공식 등록 여부가 전혀 안 보여 신뢰 시그널 유실.
+  const universityBadge = (() => {
+    const badges = (club as unknown as { badges?: Array<{ type: string; university?: { name?: string; short_name?: string | null } }> }).badges
+    const univ = badges?.find(b => b.type === 'university' && b.university?.name)
+    if (!univ?.university) return null
+    return univ.university.short_name ?? univ.university.name
+  })()
+
   return (
     <Link
       href={`/clubs/${club.slug}`}
@@ -266,6 +275,14 @@ function ClubCardItem({ club }: { club: ClubCard }) {
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-sm font-semibold text-txt-primary truncate">{club.name}</span>
+          {universityBadge && (
+            <span
+              title={`${universityBadge} 공식 등록 동아리`}
+              className="shrink-0 inline-flex items-center gap-1 text-[10px] font-semibold text-brand bg-brand/10 px-1.5 py-0.5 rounded-full"
+            >
+              ✓ {universityBadge}
+            </span>
+          )}
           {club.category && (
             <span className="shrink-0 text-[10px] font-semibold text-brand bg-brand-bg px-2 py-0.5 rounded-full">
               {club.category}

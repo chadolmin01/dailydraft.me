@@ -60,6 +60,11 @@ export interface ClubCard {
   logo_url: string | null
   category: string | null
   member_count: number
+  /** 공식 등록 뱃지 (university credential 등). 공개 목록 카드에 "{학교명} 공식 등록" 노출용. */
+  badges?: Array<{
+    type: string
+    university: { name: string; short_name: string | null } | null
+  }>
 }
 export type PeopleRoleFilter = 'all' | 'developer' | 'designer' | 'pm' | 'marketer' | 'data'
 export type ProjectRoleFilter = 'all' | 'developer' | 'designer' | 'pm' | 'marketer' | 'data'

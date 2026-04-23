@@ -22,6 +22,7 @@ import {
   ProfileSentInvitations,
 } from '@/components/profile'
 import { PersonalityScorecard } from '@/components/profile/PersonalityScorecard'
+import { ProfileInsightsWidget } from '@/components/profile/ProfileInsightsWidget'
 import { SkeletonProfile, SkeletonGrid } from '@/components/ui/Skeleton'
 
 type Tab = 'about' | 'portfolio' | 'projects' | 'activity'
@@ -201,6 +202,8 @@ export default function ProfilePageClient() {
         <div className="min-h-[40vh]">
           {activeTab === 'about' && (
             <div className="space-y-6">
+              {/* 프로필 인사이트 — profile_views·매칭 가능 프로젝트 수. 이전엔 DB 에만 쌓이고 안 보였음 */}
+              <ProfileInsightsWidget />
               {/* AI 인터뷰 결과 — 답한 값이 매칭에 어떻게 쓰이는지 즉시 보여 줌 */}
               <PersonalityScorecard
                 personality={
