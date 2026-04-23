@@ -87,10 +87,10 @@ export function PersonalityScorecard({ personality, hoursPerWeek, isOwn, compact
       )}
 
       <ul className="space-y-3.5">
-        {DIMENSIONS.map(dim => {
-          const value = personality?.[dim.key]
+        {DIMENSIONS.map(({ key, ...rest }) => {
+          const value = personality?.[key]
           if (typeof value !== 'number') return null
-          return <DimensionBar key={dim.key} {...dim} value={value} />
+          return <DimensionBar key={key} {...rest} value={value} />
         })}
       </ul>
 
