@@ -1,4 +1,5 @@
 import { createAdminClient } from '@/src/lib/supabase/admin'
+import { sendPushToUser } from '@/src/lib/push-notification'
 
 export type NotificationType =
   | 'deadline'
@@ -82,6 +83,15 @@ export async function createNotification({
       console.error('[createNotification] insert failed', { userId, type, error })
       return false
     }
+
+    // Web Push 도 같이 fire — fire-and-forget (VAPID 미설정이거나 구독 없으면 내부에서 조용히 return).
+    // 이전엔 coffee-chat/notify 에서만 sendPushToUser 직접 호출, 나머지 알림 타입(application_accepted,
+    // project_invitation, club_verification 등)은 인앱만 생성되고 PWA 푸시는 조용히 유실되던 상태.
+    sendPushToUser(userId, {
+      title,
+      body: message,
+      url: link ?? '/notifications',
+    }).catch(err => console.warn('[createNotification] push failed (무시):', err))
 
     return true
   } catch (error) {

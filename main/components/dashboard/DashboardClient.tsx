@@ -42,6 +42,73 @@ function greeting(): string {
   return '좋은 저녁입니다'
 }
 
+/**
+ * onboarding_source 별 Dashboard 부제·비어있는 triage 힌트.
+ * 각 유입 경로에 맞춰 "지금 당장 할 수 있는 것" 을 제시해서 dead-end 방지.
+ */
+type OnboardingSource = 'invite' | 'matching' | 'operator' | 'exploring' | null | undefined
+
+function getSourceContext(source: OnboardingSource, isOperator: boolean): {
+  subtitle: string
+  emptyHint: { title: string; desc: string; href: string; cta: string }
+} {
+  // Operator role override — onboarding_source 가 뭐든 운영자면 운영 중심
+  if (isOperator || source === 'operator') {
+    return {
+      subtitle: '오늘의 운영 현황을 한눈에',
+      emptyHint: {
+        title: '팀 현황·이번 주 업데이트를 점검해 보세요',
+        desc: '운영 대시보드에서 팀별 제출 상태와 지원서 대기열을 모아서 봅니다.',
+        href: '/clubs',
+        cta: '내 클럽',
+      },
+    }
+  }
+  if (source === 'invite') {
+    return {
+      subtitle: '초대받은 클럽의 활동과 일정을 확인해 보세요',
+      emptyHint: {
+        title: '내 클럽에서 공지·일정·팀 목록 확인하기',
+        desc: '가입한 클럽의 이번 주 활동과 기수별 아카이브를 바로 살펴볼 수 있습니다.',
+        href: '/clubs',
+        cta: '내 클럽',
+      },
+    }
+  }
+  if (source === 'matching') {
+    return {
+      subtitle: '관심사·스킬이 맞는 팀과 사람을 찾을 때입니다',
+      emptyHint: {
+        title: '지금 모집 중인 프로젝트 둘러보기',
+        desc: 'AI 매칭 정렬로 내 스킬·관심사·성향과 궁합이 높은 팀을 우선 추천합니다.',
+        href: '/explore?sort=ai',
+        cta: '맞는 팀 찾기',
+      },
+    }
+  }
+  if (source === 'exploring') {
+    return {
+      subtitle: '둘러보기 좋은 날입니다',
+      emptyHint: {
+        title: '공개 프로젝트 피드 · 이번 주 활동',
+        desc: '각 클럽이 이번 주에 뭘 했는지 피드로 빠르게 훑어볼 수 있습니다.',
+        href: '/feed',
+        cta: '피드 열기',
+      },
+    }
+  }
+  // source 없음 (레거시 유저) — 중립적 기본값
+  return {
+    subtitle: '',
+    emptyHint: {
+      title: '프로젝트·사람 탐색으로 시작해 보세요',
+      desc: 'Draft 에 올라온 클럽·프로젝트·포트폴리오를 한 곳에서 살펴볼 수 있습니다.',
+      href: '/explore',
+      cta: '탐색 열기',
+    },
+  }
+}
+
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime()
   const mins = Math.floor(diff / 60000)
@@ -212,21 +279,29 @@ export default function DashboardClient() {
     <div className="bg-surface-bg min-h-full">
       <PageContainer size="wide" className="pt-6 pb-16">
 
-        {/* Hero 인사 */}
-        <div className="mb-8">
-          <p className="text-[13px] text-txt-tertiary mb-1 ob-stagger-item" style={{ ['--stagger' as string]: '20ms' }}>{greeting()}</p>
-          <h1 className="text-[28px] sm:text-[32px] font-bold text-txt-primary tracking-tight ob-title-rise">
-            {profile?.nickname ?? user?.email?.split('@')[0] ?? '...'}
-          </h1>
-          {isOperator && (
-            <p className="text-[14px] text-txt-secondary mt-1.5">
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-brand-bg text-brand rounded-full text-[11px] font-semibold">
-                <Sparkles size={10} /> 운영자
-              </span>
-              <span className="ml-2">{operatorClubs.length}개 클럽 · {myProjects.length}개 프로젝트 운영 중</span>
-            </p>
-          )}
-        </div>
+        {/* Hero 인사 — onboarding_source 기반 부제 */}
+        {(() => {
+          const onboardingSource = (profile as (typeof profile & { onboarding_source?: string | null }) | undefined)?.onboarding_source as OnboardingSource
+          const ctx = getSourceContext(onboardingSource, isOperator)
+          return (
+            <div className="mb-8">
+              <p className="text-[13px] text-txt-tertiary mb-1 ob-stagger-item" style={{ ['--stagger' as string]: '20ms' }}>{greeting()}</p>
+              <h1 className="text-[28px] sm:text-[32px] font-bold text-txt-primary tracking-tight ob-title-rise">
+                {profile?.nickname ?? user?.email?.split('@')[0] ?? '...'}
+              </h1>
+              {isOperator ? (
+                <p className="text-[14px] text-txt-secondary mt-1.5">
+                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-brand-bg text-brand rounded-full text-[11px] font-semibold">
+                    <Sparkles size={10} /> 운영자
+                  </span>
+                  <span className="ml-2">{operatorClubs.length}개 클럽 · {myProjects.length}개 프로젝트 운영 중</span>
+                </p>
+              ) : ctx.subtitle ? (
+                <p className="text-[14px] text-txt-secondary mt-1.5">{ctx.subtitle}</p>
+              ) : null}
+            </div>
+          )
+        })()}
 
         {/* ═══════════════════════════════════ */}
         {/* TRIAGE — 오늘 할 일                 */}
@@ -248,11 +323,26 @@ export default function DashboardClient() {
           </p>
 
           {triageItems.length === 0 ? (
-            <div className="bg-surface-card border border-border rounded-2xl p-8 text-center">
-              <CheckCircle2 size={28} className="text-status-success-text mx-auto mb-3" />
-              <p className="text-[15px] font-semibold text-txt-primary mb-1">모두 처리하셨습니다 👏</p>
-              <p className="text-[13px] text-txt-tertiary">받은 지원서·커피챗 요청·초대가 모두 정리되었습니다. 새 활동이 생기면 이 자리에 다시 모입니다.</p>
-            </div>
+            (() => {
+              const src = (profile as (typeof profile & { onboarding_source?: string | null }) | undefined)?.onboarding_source as OnboardingSource
+              const ctx = getSourceContext(src, isOperator)
+              return (
+                <div className="bg-surface-card border border-border rounded-2xl p-8 text-center">
+                  <CheckCircle2 size={28} className="text-status-success-text mx-auto mb-3" />
+                  <p className="text-[15px] font-semibold text-txt-primary mb-1">모두 처리하셨습니다 👏</p>
+                  <p className="text-[13px] text-txt-tertiary mb-4">받은 지원서·커피챗·초대가 모두 정리되었습니다.</p>
+                  {/* Source-aware next step — dead-end 방지 */}
+                  <Link
+                    href={ctx.emptyHint.href}
+                    className="ob-press-spring inline-flex items-center gap-1.5 px-4 py-2 bg-surface-inverse text-txt-inverse rounded-full text-[13px] font-bold"
+                  >
+                    {ctx.emptyHint.cta}
+                    <ArrowRight size={13} />
+                  </Link>
+                  <p className="text-[11px] text-txt-tertiary mt-3 max-w-sm mx-auto">{ctx.emptyHint.desc}</p>
+                </div>
+              )
+            })()
           ) : (
             <div className="space-y-2">
               {triageItems.map(item => (
