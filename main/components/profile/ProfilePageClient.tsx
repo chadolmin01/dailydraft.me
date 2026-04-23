@@ -21,6 +21,7 @@ import {
   ProfileInvitations,
   ProfileSentInvitations,
 } from '@/components/profile'
+import { PersonalityScorecard } from '@/components/profile/PersonalityScorecard'
 import { SkeletonProfile, SkeletonGrid } from '@/components/ui/Skeleton'
 
 type Tab = 'about' | 'portfolio' | 'projects' | 'activity'
@@ -199,12 +200,33 @@ export default function ProfilePageClient() {
         {/* 탭 콘텐츠 */}
         <div className="min-h-[40vh]">
           {activeTab === 'about' && (
-            <ProfileSidebar
-              profile={profile}
-              email={user?.email}
-              completion={completion}
-              isEditable
-            />
+            <div className="space-y-6">
+              {/* AI 인터뷰 결과 — 답한 값이 매칭에 어떻게 쓰이는지 즉시 보여 줌 */}
+              <PersonalityScorecard
+                personality={
+                  (profile.personality as {
+                    teamRole?: number; communication?: number; planning?: number
+                    risk?: number; quality?: number; time?: number
+                  } | null) ?? null
+                }
+                hoursPerWeek={(() => {
+                  // vision_summary.availability.hours_per_week 에 실제 시간 저장됨
+                  if (!profile.vision_summary) return null
+                  try {
+                    const v = JSON.parse(profile.vision_summary)
+                    const h = v?.availability?.hours_per_week
+                    return typeof h === 'number' ? h : null
+                  } catch { return null }
+                })()}
+                isOwn
+              />
+              <ProfileSidebar
+                profile={profile}
+                email={user?.email}
+                completion={completion}
+                isEditable
+              />
+            </div>
           )}
           {activeTab === 'portfolio' && (
             <ProfilePortfolio items={portfolioItems} isEditable />

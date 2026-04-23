@@ -13,6 +13,7 @@ import { cleanNickname } from '@/src/lib/clean-nickname'
 import { positionLabel } from '@/src/constants/roles'
 import { AFFILIATION_LABELS, SITUATION_LABELS } from '@/components/profile-modal/types'
 import { PublicActivity } from '@/components/profile/PublicActivity'
+import { PersonalityScorecard } from '@/components/profile/PersonalityScorecard'
 import { QrCard } from '@/components/ui/QrCard'
 
 /**
@@ -369,6 +370,26 @@ export function UserProfilePageClient({ profileId }: { profileId: string }) {
               </a>
             )}
           </div>
+        </section>
+      )}
+
+      {/* AI 인터뷰 결과 — 매칭 축 공개 표시 (공개 프로필 한정 정보) */}
+      {profile.personality && (
+        <section className="mb-8">
+          <PersonalityScorecard
+            personality={profile.personality as {
+              teamRole?: number; communication?: number; planning?: number
+              risk?: number; quality?: number; time?: number
+            } | null}
+            hoursPerWeek={(() => {
+              if (!profile.vision_summary) return null
+              try {
+                const v = JSON.parse(profile.vision_summary as string)
+                const h = v?.availability?.hours_per_week
+                return typeof h === 'number' ? h : null
+              } catch { return null }
+            })()}
+          />
         </section>
       )}
 

@@ -156,6 +156,10 @@ function PersonCard({
             {bio}
           </p>
         )}
+        {/* AI 정렬에서 매칭 세부 — 4축 breakdown. 매칭 이유 투명성 ↑ */}
+        {peopleSortBy === 'ai' && t.matchDetails && (
+          <MatchBreakdown details={t.matchDetails} />
+        )}
       </div>
 
       {/* ── Footer: 상태 + 관심 ── */}
@@ -177,6 +181,47 @@ function PersonCard({
             <span>관심 {t.interestCount}</span>
           </>
         )}
+      </div>
+    </div>
+  )
+}
+
+/* ── 매칭 4축 breakdown — 왜 이 점수인지 투명하게 보여 줌 ── */
+function MatchBreakdown({
+  details,
+}: {
+  details: { skill: number; interest: number; situation: number; teamfit: number }
+}) {
+  const axes: Array<{ key: keyof typeof details; label: string }> = [
+    { key: 'skill',     label: '스킬' },
+    { key: 'interest',  label: '관심' },
+    { key: 'situation', label: '상황' },
+    { key: 'teamfit',   label: '팀핏' },
+  ]
+  return (
+    <div
+      className="mt-2 pt-2 border-t border-border-subtle"
+      title="매칭 점수는 스킬·관심·상황·팀핏 4축의 가중 평균입니다. 각 축 값은 0~100"
+      aria-label="매칭 세부 점수"
+    >
+      <div className="grid grid-cols-4 gap-1.5">
+        {axes.map(a => {
+          const v = Math.max(0, Math.min(100, Math.round(details[a.key])))
+          return (
+            <div key={a.key} className="min-w-0">
+              <div className="flex items-baseline justify-between gap-1 mb-0.5">
+                <span className="text-[9px] text-txt-tertiary">{a.label}</span>
+                <span className="text-[9px] font-mono tabular-nums text-txt-secondary">{v}</span>
+              </div>
+              <div className="h-[3px] bg-surface-sunken rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-brand/60 rounded-full"
+                  style={{ width: `${v}%` }}
+                />
+              </div>
+            </div>
+          )
+        })}
       </div>
     </div>
   )

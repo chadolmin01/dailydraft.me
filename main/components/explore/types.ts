@@ -27,6 +27,8 @@ export interface TalentCard {
   avatarUrl?: string | null
   matchScore?: number | null
   matchReason?: string | null
+  /** 4차원 점수 breakdown — 왜 이 점수인지 설명용. 매칭 투명성 ↑ */
+  matchDetails?: { skill: number; interest: number; situation: number; teamfit: number } | null
   badges?: string[] | null
   interestCount: number
   university?: string | null
