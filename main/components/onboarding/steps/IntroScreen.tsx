@@ -56,9 +56,14 @@ export function IntroScreen({ onStart }: { onStart: () => void }) {
   //
   // 세로 압축: 이전엔 일러스트 220 + py-8 + mb-6 으로 합산 ~880px → 일반 노트북에서 스크롤 발생.
   // 일러스트 140 + py-4 + mb-3/4 로 압축해 1280×720 (노트북 표준) 에서 한 화면 안에 들어오도록.
+  //
+  // 3-layer 센터링: outer scroll + middle min-h-full center + inner content.
+  // flex justify-center 단독은 환경/스크롤 컨테이너 조합에서 콘텐츠가 위쪽 정렬되는 케이스가 있어
+  // min-h-full 명시로 viewport 100% 보장.
   return (
-    <div className="fixed inset-0 ob-atmos flex flex-col items-center justify-center p-4 overflow-y-auto">
-      <div className="max-w-lg w-full flex flex-col items-center py-4">
+    <div className="fixed inset-0 ob-atmos overflow-y-auto">
+      <div className="min-h-full flex items-center justify-center p-4">
+        <div className="max-w-lg w-full flex flex-col items-center py-4">
         <Image
           src="/onboarding/1.svg"
           alt="환영"
@@ -152,6 +157,7 @@ export function IntroScreen({ onStart }: { onStart: () => void }) {
           <p className="text-[11px] text-txt-tertiary text-center mt-2">
             필수 항목 3개에 동의하시면 진행할 수 있습니다
           </p>
+        </div>
         </div>
       </div>
     </div>
