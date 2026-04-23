@@ -55,6 +55,36 @@ const typeConfig: Record<string, { icon: React.ElementType; color: string; readC
 
 const defaultConfig = { icon: Bell, color: 'text-txt-secondary bg-surface-sunken', readColor: 'text-txt-disabled bg-surface-sunken' }
 
+type CategoryKey = 'all' | 'match' | 'project' | 'coffee' | 'comment' | 'deadline'
+
+// 카테고리 → notification_type 매핑.
+// "기타"는 명시 카테고리 어디에도 안 잡히는 타입을 위한 안전망 — 새 타입이 추가돼도 "전체"에는 잡히도록.
+const CATEGORY_TYPES: Record<Exclude<CategoryKey, 'all'>, string[]> = {
+  match: ['new_match', 'recommendation', 'connection'],
+  project: ['application_received', 'application_accepted', 'application_rejected', 'project_invitation'],
+  coffee: ['coffee_chat'],
+  comment: ['comment'],
+  deadline: ['deadline'],
+}
+
+const CATEGORY_LABELS: Record<CategoryKey, string> = {
+  all: '전체',
+  match: '매칭',
+  project: '프로젝트',
+  coffee: '커피챗',
+  comment: '댓글',
+  deadline: '마감',
+}
+
+const CATEGORY_ORDER: CategoryKey[] = ['all', 'match', 'project', 'coffee', 'comment', 'deadline']
+
+function categoryOf(type: string): Exclude<CategoryKey, 'all'> | null {
+  for (const [cat, types] of Object.entries(CATEGORY_TYPES)) {
+    if (types.includes(type)) return cat as Exclude<CategoryKey, 'all'>
+  }
+  return null
+}
+
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime()
   const mins = Math.floor(diff / 60000)
@@ -72,6 +102,7 @@ export default function NotificationsPageClient() {
   const { user, isLoading: isAuthLoading } = useAuth()
   const queryClient = useQueryClient()
   const [showAll, setShowAll] = useState(false)
+  const [category, setCategory] = useState<CategoryKey>('all')
 
   const { data, isLoading } = useQuery<NotificationsResponse>({
     queryKey: ['notifications', 'full'],
@@ -181,7 +212,28 @@ export default function NotificationsPageClient() {
   const allNotifications = data?.notifications ?? []
   const unreadCount = data?.unread_count ?? 0
   const unreadNotifications = allNotifications.filter((n) => n.status === 'unread')
-  const displayList = showAll ? allNotifications : unreadNotifications
+
+  // 카테고리별 unread 카운트 — 칩 옆 회색 숫자.
+  // 전체 unread 안에서 집계하는 이유: "새 알림" 탭/"전체 내역" 탭 어느 쪽이든
+  // 사용자 관심사는 "이 카테고리에 안 본 게 몇 개인가" 이기 때문.
+  const categoryUnreadCounts: Record<CategoryKey, number> = {
+    all: unreadCount,
+    match: 0,
+    project: 0,
+    coffee: 0,
+    comment: 0,
+    deadline: 0,
+  }
+  for (const n of unreadNotifications) {
+    const cat = categoryOf(n.notification_type)
+    if (cat) categoryUnreadCounts[cat] += 1
+  }
+
+  const baseList = showAll ? allNotifications : unreadNotifications
+  const displayList =
+    category === 'all'
+      ? baseList
+      : baseList.filter((n) => categoryOf(n.notification_type) === category)
 
   return (
     <div className="bg-surface-bg min-h-full">
@@ -237,6 +289,34 @@ export default function NotificationsPageClient() {
           </button>
         </div>
 
+        {/* Category Filter — 칩은 항상 노출하되 카운트는 unread 0 이면 회색 톤다운.
+            거슬림 최소화: 빨간 뱃지 X, 점(dot) X, 작은 회색 숫자만. */}
+        <div className="flex flex-wrap gap-1.5 mb-4">
+          {CATEGORY_ORDER.map((key) => {
+            const count = categoryUnreadCounts[key]
+            const active = category === key
+            const hasUnread = count > 0
+            return (
+              <button
+                key={key}
+                onClick={() => setCategory(key)}
+                className={`px-2.5 py-1 text-[11px] rounded-full transition-colors border ${
+                  active
+                    ? 'border-txt-primary text-txt-primary bg-surface-card'
+                    : 'border-border text-txt-tertiary hover:text-txt-primary hover:border-txt-tertiary'
+                }`}
+              >
+                {CATEGORY_LABELS[key]}
+                {hasUnread && (
+                  <span className={`ml-1 ${active ? 'text-txt-tertiary' : 'text-txt-disabled'}`}>
+                    {count}
+                  </span>
+                )}
+              </button>
+            )
+          })}
+        </div>
+
         {/* Notification List */}
         <div className="bg-surface-card rounded-xl shadow-sm">
           {isLoading ? (
@@ -258,7 +338,11 @@ export default function NotificationsPageClient() {
                 <Bell size={28} className="text-txt-tertiary bell-swing" strokeWidth={1.5} />
               </div>
               <p className="text-[15px] font-semibold text-txt-primary mb-1.5">
-                {showAll ? '알림 내역이 없습니다' : '새로운 알림이 없습니다'}
+                {category !== 'all'
+                  ? `${CATEGORY_LABELS[category]} 알림이 없습니다`
+                  : showAll
+                    ? '알림 내역이 없습니다'
+                    : '새로운 알림이 없습니다'}
               </p>
               <p className="text-[12px] text-txt-tertiary max-w-sm mx-auto leading-relaxed">
                 아래 상황이 발생하면 이곳에 모아집니다.
