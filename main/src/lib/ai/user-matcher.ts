@@ -354,7 +354,16 @@ function calculateUserMatch(
 }
 
 /**
- * Rank candidates by match score
+ * Rank candidates by match score with daily diversity shuffle.
+ *
+ * 왜 셔플을 추가하나:
+ *   - 순수 점수 정렬은 같은 top 15 가 영원히 노출됨 → "동일한 사람만 보인다" UX 정체.
+ *   - 동점/근접점 후보 (±3pt 이내) 사이에서 일별 결정론적 셔플로 다양성 확보.
+ *   - 같은 날 같은 myProfile 의 결과는 동일 (페이지 새로고침 시 점프 방지).
+ *
+ * 트레이드오프:
+ *   - 점수 차이가 크면 (>3pt) 순서는 보존됨 — "최고 매치를 가린다" 불신 회피.
+ *   - 셔플 윈도우는 좁게 (±3pt) — 점수 신뢰성과 신선도 사이 균형점.
  */
 export function rankUserMatches(
   myProfile: Profile,
@@ -371,20 +380,46 @@ export function rankUserMatches(
     }
   }
 > {
-  return candidates
-    .map((candidate) => {
-      const match = calculateUserMatch(myProfile, candidate)
-      return {
-        ...candidate,
-        match_score: match.score,
-        match_reason: match.reason,
-        match_details: {
-          skill: match.skillComplementarity,
-          interest: match.interestOverlap,
-          situation: match.situationCompatibility,
-          teamfit: match.teamFit,
-        },
-      }
-    })
-    .sort((a, b) => b.match_score - a.match_score)
+  const ranked = candidates.map((candidate) => {
+    const match = calculateUserMatch(myProfile, candidate)
+    return {
+      ...candidate,
+      match_score: match.score,
+      match_reason: match.reason,
+      match_details: {
+        skill: match.skillComplementarity,
+        interest: match.interestOverlap,
+        situation: match.situationCompatibility,
+        teamfit: match.teamFit,
+      },
+    }
+  })
+
+  // 일별 결정론적 셔플 시드 — myProfile.user_id + 오늘 날짜 (UTC).
+  // 같은 유저가 같은 날 보면 같은 순서. 다음날 다시 보면 동점 그룹 내 순서가 바뀜.
+  const seedStr = `${myProfile.user_id || 'anon'}:${new Date().toISOString().slice(0, 10)}`
+  const seed = hashString(seedStr)
+
+  return ranked.sort((a, b) => {
+    const diff = b.match_score - a.match_score
+    // 점수 차 > 3 → 순수 점수 우선
+    if (Math.abs(diff) > 3) return diff
+    // 동점 그룹 내 → user_id + seed 기반 결정론적 의사난수 정렬
+    return pseudoRandom(`${a.user_id}:${seed}`) - pseudoRandom(`${b.user_id}:${seed}`)
+  })
+}
+
+/** 빠른 32-bit 문자열 해시 (FNV-1a). 외부 의존성 없이 결정론적. */
+function hashString(s: string): number {
+  let h = 2166136261
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i)
+    h = (h * 16777619) >>> 0
+  }
+  return h >>> 0
+}
+
+/** 0~1 범위의 의사난수 — 같은 입력 → 같은 출력 */
+function pseudoRandom(s: string): number {
+  return hashString(s) / 0xffffffff
 }
