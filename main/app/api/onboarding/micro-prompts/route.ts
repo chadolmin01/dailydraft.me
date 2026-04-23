@@ -8,10 +8,13 @@ export const runtime = 'nodejs'
 /**
  * GET /api/onboarding/micro-prompts
  *
- * 현재 유저의 micro-prompt 응답 히스토리 조회.
- * 쿨다운 판단(최근 24h 이내 응답 수) + 이미 답한 질문 필터 용도.
+ * 현재 유저의 micro-prompt 응답 전체 조회.
  *
- * 반환: { answered: string[], recentCount: number }
+ * 반환:
+ *   - answered: string[] — 이미 답한 question_id 리스트 (쿨다운·중복 필터용)
+ *   - recentCount: number — 최근 24h 응답 수 (하루 쿨다운 계산용)
+ *   - responses: Record<question_id, value> — 실제 응답 값
+ *     인터뷰 페이지가 "이미 답한 질문 스킵 + 저장 시 값 재사용" 하는 데 필요.
  */
 export const GET = withErrorCapture(async () => {
   const supabase = await createClient()
@@ -21,16 +24,24 @@ export const GET = withErrorCapture(async () => {
   const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data } = await (supabase as any)
+  const { data, error } = await (supabase as any)
     .from('micro_prompts_log')
-    .select('question_id, created_at')
+    .select('question_id, response, created_at')
     .eq('user_id', user.id)
 
-  const rows = (data ?? []) as Array<{ question_id: string; created_at: string }>
+  // 마이그레이션 미적용 시 빈 상태 반환 (graceful fallback)
+  if (error && (error.message?.includes('column') || error.message?.includes('schema') || error.message?.includes('relation'))) {
+    return ApiResponse.ok({ answered: [], recentCount: 0, responses: {} })
+  }
+
+  const rows = (data ?? []) as Array<{ question_id: string; response: unknown; created_at: string }>
   const answered = rows.map(r => r.question_id)
   const recentCount = rows.filter(r => r.created_at >= since24h).length
+  const responses: Record<string, unknown> = Object.fromEntries(
+    rows.map(r => [r.question_id, r.response]),
+  )
 
-  return ApiResponse.ok({ answered, recentCount })
+  return ApiResponse.ok({ answered, recentCount, responses })
 })
 
 /**

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/src/context/AuthContext'
 import { useProfile, profileKeys } from '@/src/hooks/useProfile'
 import { useProfileCompletion } from '@/src/hooks/useProfileCompletion'
+import { useMicroPrompt } from '@/src/hooks/useMicroPrompt'
 import { useQueryClient } from '@tanstack/react-query'
 import { GuideCTA } from '@/components/LoadingGuide'
 import { ScriptedInterviewStep } from '@/components/onboarding/steps/ScriptedInterviewStep'
@@ -33,6 +34,7 @@ export default function OnboardingInterviewPage() {
   const { user } = useAuth()
   const { data: profile } = useProfile()
   const completion = useProfileCompletion(profile ?? null)
+  const { state: microState } = useMicroPrompt()
   const queryClient = useQueryClient()
   const refreshProfile = useCallback(
     () => queryClient.invalidateQueries({ queryKey: profileKeys.detail(user?.id ?? '') }),
@@ -49,7 +51,7 @@ export default function OnboardingInterviewPage() {
     critical.src = INTERVIEW_SVGS[1] // leader_follower.svg (first question)
     critical.onload = () => { if (!done) { done = true; setPhase('interview') } }
     critical.onerror = () => { if (!done) { done = true; setPhase('interview') } }
-    const timeout = setTimeout(() => { if (!done) { done = true; setPhase('interview') } }, 1500)
+    const timeout = setTimeout(() => { if (!done) { done = true; setPhase('interview') } }, 500)
     INTERVIEW_SVGS.forEach(src => { const img = new window.Image(); img.src = src })
     return () => clearTimeout(timeout)
   }, [])
@@ -115,10 +117,10 @@ export default function OnboardingInterviewPage() {
         })
       })
 
-    // Wait for the completing animation, then show guide
+    // Wait for save + short completing animation, then show guide
     await Promise.all([
       savePromise,
-      new Promise(resolve => setTimeout(resolve, 2500)),
+      new Promise(resolve => setTimeout(resolve, 1200)),
     ])
 
     trackOnboardingEvent('onboarding_interview_completed', {
@@ -152,16 +154,18 @@ export default function OnboardingInterviewPage() {
     return <GuideCTA profile={profile ?? null} completion={completion} />
   }
 
-  if (!profileDraft) {
-    return null // loading draft from sessionStorage
+  // profileDraft + microState 둘 다 로드될 때까지 대기 (microState 는 smart skip 결정에 필요)
+  if (!profileDraft || !microState.loaded) {
+    return null
   }
 
   return (
     <>
       <OfflineBanner />
-      <div className="fixed inset-0 bg-surface-bg flex flex-col">
+      <div className="fixed inset-0 ob-atmos flex flex-col">
         <ScriptedInterviewStep
           profile={profileDraft}
+          prefilledAnswers={microState.loaded ? microState.responses : undefined}
           introMessage={`${profileDraft.name} 님, 몇 가지만 골라 주시면 팀 매칭이 훨씬 정확해집니다. 2분 정도 걸립니다.`}
           onAnswer={() => {}}
           onComplete={handleInterviewComplete}
