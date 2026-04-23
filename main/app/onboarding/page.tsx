@@ -115,75 +115,93 @@ export default function OnboardingPage() {
     }
   }, [completedDraft, router])
 
-  // SVG 프리로드 대기 화면
+  // SVG 프리로드 대기 화면 — D 로고 12×12 rounded-2xl 로 통일 (다른 loading 화면과 동일).
   if (phase === 'loading') {
     return (
       <div className="fixed inset-0 bg-surface-bg flex items-center justify-center">
-        <div className="w-10 h-10 bg-surface-inverse rounded-xl flex items-center justify-center animate-pulse">
+        <div className="w-12 h-12 bg-surface-inverse rounded-2xl flex items-center justify-center animate-pulse">
           <span className="text-txt-inverse font-black text-lg leading-none">D</span>
         </div>
       </div>
     )
   }
 
-  // Transition screen: 저장 완료 확인 → post-basic. 실제 저장은 basic 단계에서 끝나므로
-  // 스피너 없이 체크마크만 0.8s 보여 주고 다음으로.
+  // Transition screen: 저장 완료 확인 → post-basic. 통일 토큰 적용 — w-14 아이콘 + ob-stagger-item 60ms.
   if (phase === 'transition') {
     return (
-      <div className="fixed inset-0 ob-atmos flex flex-col items-center justify-center p-6">
-        <div className="flex flex-col items-center animate-in fade-in zoom-in-95 duration-300">
+      <div className="fixed inset-0 ob-atmos flex flex-col items-center justify-center p-4">
+        <div className="flex flex-col items-center">
           <div
-            className="w-16 h-16 rounded-full bg-brand flex items-center justify-center mb-6"
-            style={{ animation: 'ob-bubble-in 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) both' }}
+            className="ob-stagger-item w-14 h-14 rounded-full bg-brand flex items-center justify-center mb-4"
+            style={{ ['--stagger' as string]: '0ms' }}
           >
-            <CheckCircle2 size={32} className="text-white" />
+            <CheckCircle2 size={28} className="text-white" />
           </div>
-          <h2 className="text-lg font-bold text-txt-primary mb-1">저장 완료</h2>
-          <p className="text-sm text-txt-secondary">이제 Draft 를 시작하실 수 있습니다</p>
+          <h2
+            className="ob-stagger-item text-[18px] font-bold text-txt-primary mb-1 text-center"
+            style={{ ['--stagger' as string]: '60ms' }}
+          >
+            저장 완료
+          </h2>
+          <p
+            className="ob-stagger-item text-[13px] text-txt-secondary text-center"
+            style={{ ['--stagger' as string]: '120ms' }}
+          >
+            이제 Draft 를 시작하실 수 있습니다.
+          </p>
         </div>
       </div>
     )
   }
 
-  // Post-basic: 유저가 직접 선택 — AI 인터뷰 진행 또는 바로 시작
-  // matching 경로 유저에게만 인터뷰 CTA 를 primary 로, 나머지는 primary="바로 시작".
+  // Post-basic: 유저가 직접 선택 — AI 인터뷰 진행 또는 바로 시작.
+  // 통일 토큰 적용 — w-14 아이콘 / ob-stagger-item 60ms / Title milestone 사이즈 / CTA 표준 / 합쇼체.
   if (phase === 'post-basic') {
     const source = completedDraft?.source
     const isMatching = source === 'matching'
     return (
       <>
         <OfflineBanner />
-        <div className="fixed inset-0 ob-atmos flex flex-col items-center justify-center p-6">
-          <div className="w-full max-w-md flex flex-col items-center animate-in fade-in duration-300">
+        <div className="fixed inset-0 ob-atmos flex flex-col items-center justify-center p-4">
+          <div className="w-full max-w-md flex flex-col items-center">
             <div
-              className="w-16 h-16 rounded-full bg-brand-bg flex items-center justify-center mb-6"
-              style={{ animation: 'ob-bubble-in 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) both' }}
+              className="ob-stagger-item w-14 h-14 rounded-full bg-brand-bg flex items-center justify-center mb-4"
+              style={{ ['--stagger' as string]: '0ms' }}
             >
-              <Sparkles size={28} className="text-brand" aria-hidden="true" />
+              <Sparkles size={24} className="text-brand" aria-hidden="true" />
             </div>
-            <h2 className="text-[20px] sm:text-[22px] font-bold text-txt-primary text-center mb-2">
+            <h2
+              className="ob-stagger-item text-[22px] sm:text-[24px] font-black text-txt-primary text-center mb-2"
+              style={{ ['--stagger' as string]: '60ms' }}
+            >
               {isMatching
-                ? '2분 대화로 매칭 정확도를 높여 보시겠어요?'
+                ? '2분 대화로 매칭 정확도를 높여 보시겠습니까?'
                 : '기본 정보를 저장했습니다'}
             </h2>
-            <p className="text-[13px] text-txt-secondary text-center leading-relaxed mb-6 break-keep max-w-sm">
+            <p
+              className="ob-stagger-item text-[13px] text-txt-secondary text-center leading-relaxed mb-5 break-keep max-w-sm"
+              style={{ ['--stagger' as string]: '120ms' }}
+            >
               {isMatching
-                ? '작업 스타일·협업 성향 7가지 질문을 받아 팀원 추천 정확도를 올려 드립니다. 지금 건너뛰시고 나중에 프로필에서 언제든 진행하셔도 됩니다.'
-                : '원하시면 2분 대화로 매칭 정확도를 올릴 수도 있지만, 지금은 필요하지 않다면 바로 시작하셔도 됩니다.'}
+                ? '작업 스타일·협업 성향 7가지 질문을 받아 팀원 추천 정확도를 올려 드립니다. 지금 건너뛰셔도 나중에 프로필에서 언제든 진행하실 수 있습니다.'
+                : '원하시면 2분 대화로 매칭 정확도를 올리실 수 있고, 지금은 바로 시작하셔도 됩니다.'}
             </p>
 
             {/* 초대 코드 처리 실패·연결 이슈 안내 */}
             {landingError && (
               <div
                 role="alert"
-                className="w-full mb-4 bg-status-warn-bg border border-status-warn-text/30 rounded-xl p-3 flex items-start gap-2"
+                className="w-full mb-3 bg-status-warn-bg border border-status-warn-text/30 rounded-xl p-3 flex items-start gap-2"
               >
                 <AlertCircle size={14} className="text-status-warn-text shrink-0 mt-0.5" aria-hidden="true" />
                 <p className="text-[12px] text-status-warn-text leading-relaxed">{landingError}</p>
               </div>
             )}
 
-            <div className="w-full space-y-2.5">
+            <div
+              className="ob-stagger-item w-full space-y-2"
+              style={{ ['--stagger' as string]: '180ms' }}
+            >
               <button
                 type="button"
                 disabled={landingBusy}
@@ -194,7 +212,7 @@ export default function OnboardingPage() {
                     goToPathLanding()
                   }
                 }}
-                className="ob-press-spring w-full flex items-center justify-center gap-2 py-4 bg-surface-inverse text-txt-inverse rounded-full text-[15px] font-black hover:opacity-90 shadow-[0_4px_14px_-4px_rgba(0,0,0,0.25)] hover:shadow-[0_6px_20px_-4px_rgba(0,0,0,0.3)] disabled:opacity-60 disabled:cursor-not-allowed"
+                className="ob-press-spring w-full flex items-center justify-center gap-2 py-4 bg-surface-inverse text-txt-inverse rounded-full text-[14px] font-black hover:opacity-90 shadow-[0_4px_14px_-4px_rgba(0,0,0,0.25)] hover:shadow-[0_6px_20px_-4px_rgba(0,0,0,0.3)] disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {landingBusy ? (
                   <Loader2 size={15} className="animate-spin" aria-hidden="true" />
@@ -204,7 +222,7 @@ export default function OnboardingPage() {
                   <ArrowRight size={15} aria-hidden="true" />
                 )}
                 {landingBusy
-                  ? '이동 중...'
+                  ? '이동 중입니다'
                   : isMatching
                     ? 'AI 인터뷰 진행하기'
                     : '바로 시작하기'}
@@ -221,12 +239,15 @@ export default function OnboardingPage() {
                     router.push('/onboarding/interview')
                   }
                 }}
-                className="ob-press-spring w-full flex items-center justify-center gap-2 py-3.5 bg-surface-sunken text-txt-secondary rounded-full text-[14px] font-bold hover:bg-surface-card hover:text-txt-primary disabled:opacity-60 disabled:cursor-not-allowed"
+                className="ob-press-spring w-full flex items-center justify-center gap-2 py-3.5 bg-surface-sunken text-txt-secondary rounded-full text-[13px] font-bold hover:bg-surface-card hover:text-txt-primary disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {isMatching ? '지금은 건너뛰기' : 'AI 인터뷰 먼저 하기 (2분)'}
               </button>
             </div>
-            <p className="text-[11px] text-txt-tertiary text-center mt-6 leading-relaxed">
+            <p
+              className="ob-stagger-item text-[11px] text-txt-tertiary text-center mt-4 leading-relaxed"
+              style={{ ['--stagger' as string]: '240ms' }}
+            >
               AI 인터뷰는 프로필 페이지에서 언제든 다시 진행하실 수 있습니다.
             </p>
           </div>

@@ -274,37 +274,57 @@ export function ScriptedInterviewStep({ profile, introMessage, prefilledAnswers,
     }
   }
 
-  // -- Saving screen (spinner) --
+  // -- Saving / Completing milestone screens --
+  // 동일 토큰: 아이콘 원 w-14 h-14, title text-[18px] font-bold, hint text-[13px] text-secondary.
+  // ob-bubble-in (overshoot) → ob-stagger-item (60ms 간격) 으로 통일.
   if (phase === 'saving') {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center px-6 pb-10">
-        <div className="flex flex-col items-center animate-in fade-in duration-300">
-          <Loader2 size={36} className="text-brand animate-spin mb-6" />
-          <h2 className="text-lg font-bold text-txt-primary mb-1">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 pb-4">
+        <div className="flex flex-col items-center">
+          <div
+            className="ob-stagger-item w-14 h-14 rounded-full bg-surface-sunken flex items-center justify-center mb-4"
+            style={{ ['--stagger' as string]: '0ms' }}
+          >
+            <Loader2 size={28} className="text-brand animate-spin" />
+          </div>
+          <h2
+            className="ob-stagger-item text-[18px] font-bold text-txt-primary mb-1 text-center"
+            style={{ ['--stagger' as string]: '60ms' }}
+          >
             매칭 프로필을 만들고 있습니다
           </h2>
-          <p className="text-sm text-txt-tertiary">잠시만 기다려 주세요.</p>
+          <p
+            className="ob-stagger-item text-[13px] text-txt-tertiary text-center"
+            style={{ ['--stagger' as string]: '120ms' }}
+          >
+            잠시만 기다려 주십시오.
+          </p>
         </div>
       </div>
     )
   }
 
-  // -- Completing screen (checkmark) --
   if (phase === 'completing') {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center px-6 pb-10">
-        <div className="flex flex-col items-center animate-in fade-in zoom-in-95 duration-300">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 pb-4">
+        <div className="flex flex-col items-center">
           <div
-            className="w-16 h-16 rounded-full bg-brand flex items-center justify-center mb-6"
-            style={{ animation: 'ob-bubble-in 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) both' }}
+            className="ob-stagger-item w-14 h-14 rounded-full bg-brand flex items-center justify-center mb-4"
+            style={{ ['--stagger' as string]: '0ms' }}
           >
-            <CheckCircle2 size={32} className="text-white" />
+            <CheckCircle2 size={28} className="text-white" />
           </div>
-          <h2 className="text-lg font-bold text-txt-primary mb-1">
+          <h2
+            className="ob-stagger-item text-[18px] font-bold text-txt-primary mb-1 text-center"
+            style={{ ['--stagger' as string]: '60ms' }}
+          >
             완료되었습니다
           </h2>
-          <p className="text-sm text-txt-secondary">
-            이제 매칭 정확도가 올라간 상태로 팀원을 추천해 드립니다
+          <p
+            className="ob-stagger-item text-[13px] text-txt-secondary text-center break-keep max-w-sm"
+            style={{ ['--stagger' as string]: '120ms' }}
+          >
+            이제 매칭 정확도가 올라간 상태로 팀원을 추천해 드립니다.
           </p>
         </div>
       </div>
@@ -312,27 +332,45 @@ export function ScriptedInterviewStep({ profile, introMessage, prefilledAnswers,
   }
 
   // -- Intro screen --
+  // 통일 토큰 적용: 일러스트 140 + ob-stagger-item 60ms 간격 + bg-surface-inverse 버튼.
+  // 말투 합쇼체 — "보시겠어요? / 할게요" → "보시겠습니까? / 하지 않겠습니다".
   if (phase === 'intro') {
     return (
       <div className="flex-1 flex flex-col overflow-y-auto">
-        <div className="max-w-lg mx-auto w-full px-6 flex flex-col flex-1 justify-center py-10">
+        <div className="max-w-md mx-auto w-full px-4 flex flex-col flex-1 justify-center py-4">
 
           {/* Visual */}
-          <div className="flex justify-center mb-10">
-            <Image src="/onboarding/almost.svg" alt="거의 다 왔어요" width={260} height={260} className="w-full max-w-[260px] h-auto object-contain ob-avatar ob-img-fade loaded" />
+          <div className="flex justify-center mb-4">
+            <Image
+              src="/onboarding/almost.svg"
+              alt="거의 다 왔습니다"
+              width={140}
+              height={140}
+              className="ob-stagger-item w-full max-w-[140px] h-auto object-contain ob-img-fade loaded"
+              style={{ ['--stagger' as string]: '0ms' }}
+            />
           </div>
 
           {/* Value proposition */}
-          <h2 className="text-2xl sm:text-[28px] font-black text-txt-primary leading-tight mb-3 ob-bubble">
-            {onSkip ? '거의 다 왔습니다' : '매칭 정확도를 높여 보시겠어요?'}
+          <h2
+            className="ob-stagger-item text-[22px] sm:text-[24px] font-black text-txt-primary leading-tight mb-2 text-center"
+            style={{ ['--stagger' as string]: '60ms' }}
+          >
+            {onSkip ? '거의 다 왔습니다' : '매칭 정확도를 높여 보시겠습니까?'}
           </h2>
-          <p className="text-[15px] text-txt-secondary leading-relaxed mb-4 ob-bubble" style={{ animationDelay: '100ms' }}>
-            작업 스타일을 알려 주시면<br />
-            <span className="font-bold text-txt-primary">나와 잘 맞는 팀원</span>을 추천해 드릴 수 있습니다
+          <p
+            className="ob-stagger-item text-[13px] text-txt-secondary leading-relaxed mb-4 text-center break-keep max-w-sm mx-auto"
+            style={{ ['--stagger' as string]: '120ms' }}
+          >
+            작업 스타일을 알려 주시면{' '}
+            <span className="font-bold text-txt-primary">나와 잘 맞는 팀원</span>을 추천해 드릴 수 있습니다.
           </p>
 
           {/* Benefits */}
-          <div className="space-y-2 mb-10 ob-bubble" style={{ animationDelay: '180ms' }}>
+          <div
+            className="ob-stagger-item space-y-1.5 mb-5"
+            style={{ ['--stagger' as string]: '180ms' }}
+          >
             {[
               { emoji: '🎯', text: '성향이 맞는 팀원 매칭' },
               { emoji: '⚡', text: '선택지만 고르면 끝 — 약 1분' },
@@ -345,20 +383,23 @@ export function ScriptedInterviewStep({ profile, introMessage, prefilledAnswers,
           </div>
 
           {/* Start button */}
-          <div className="ob-chip" style={{ animationDelay: '300ms' }}>
+          <div
+            className="ob-stagger-item"
+            style={{ ['--stagger' as string]: '240ms' }}
+          >
             <button
               onClick={() => goToSlide(0, 'forward')}
-              className="w-full flex items-center justify-center gap-2 py-4 bg-brand text-white rounded-full text-[15px] font-black hover:opacity-90 active:scale-[0.97] transition-all"
+              className="ob-press-spring w-full flex items-center justify-center gap-2 py-4 bg-surface-inverse text-white rounded-full text-[14px] font-black hover:opacity-90 shadow-[0_4px_14px_-4px_rgba(0,0,0,0.25)] hover:shadow-[0_6px_20px_-4px_rgba(0,0,0,0.3)]"
             >
               매칭 정확도 높이기
-              <Sparkles size={16} />
+              <Sparkles size={15} />
             </button>
             {onSkip && (
               <button
                 onClick={onSkip}
-                className="w-full text-center text-[13px] text-txt-tertiary hover:text-txt-secondary transition-colors mt-4 py-1"
+                className="w-full text-center text-[13px] text-txt-tertiary hover:text-txt-secondary transition-colors mt-3 py-1"
               >
-                나중에 할게요
+                나중에 하겠습니다
               </button>
             )}
           </div>

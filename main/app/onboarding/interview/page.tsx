@@ -140,10 +140,11 @@ export default function OnboardingInterviewPage() {
     setPhase('guide')
   }, [profileDraft])
 
+  // Loading screen — D 12×12 rounded-2xl 통일 (다른 onboarding loading 화면과 동일).
   if (phase === 'loading') {
     return (
       <div className="fixed inset-0 bg-surface-bg flex items-center justify-center">
-        <div className="w-10 h-10 bg-surface-inverse rounded-xl flex items-center justify-center animate-pulse">
+        <div className="w-12 h-12 bg-surface-inverse rounded-2xl flex items-center justify-center animate-pulse">
           <span className="text-txt-inverse font-black text-lg leading-none">D</span>
         </div>
       </div>
