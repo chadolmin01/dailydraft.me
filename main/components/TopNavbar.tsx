@@ -10,6 +10,7 @@ import { useAdmin } from '@/src/hooks/useAdmin'
 import { useInstitutionAdmin } from '@/src/hooks/useInstitutionAdmin'
 import { useMyOperatorClubs } from '@/src/hooks/useMyOperatorClubs'
 import { NotificationDropdown } from '@/components/NotificationDropdown'
+import { useNotificationSummary } from '@/src/hooks/useNotificationSummary'
 import { useTheme } from '@/src/context/ThemeContext'
 import { useBackHandler } from '@/src/hooks/useBackHandler'
 
@@ -82,6 +83,8 @@ export const TopNavbar: React.FC = () => {
   const { isOperator } = useMyOperatorClubs()
   const hasAnyAdminAccess = isAdmin || isInstitutionAdmin || isOperator
   const { theme, toggleTheme } = useTheme()
+  // 모바일 bell badge — NotificationDropdown 과 동일 queryKey 공유 → 읽음 처리 시 자동 갱신
+  const { unreadCount } = useNotificationSummary()
 
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
@@ -213,11 +216,19 @@ export const TopNavbar: React.FC = () => {
           </Link>
           <Link
             href="/notifications"
-            aria-label="알림 보기"
-            title="알림 · 지원서·커피챗·초대 등"
-            className="w-9 h-9 flex items-center justify-center text-txt-primary active:scale-90 transition-transform"
+            aria-label={unreadCount > 0 ? `알림 · 읽지 않은 ${unreadCount}건` : '알림 보기'}
+            title={unreadCount > 0 ? `읽지 않은 알림 ${unreadCount}건` : '알림 · 지원서·커피챗·초대 등'}
+            className="relative w-9 h-9 flex items-center justify-center text-txt-primary active:scale-90 transition-transform"
           >
             <Bell size={22} strokeWidth={1.8} />
+            {unreadCount > 0 && (
+              <span
+                className="absolute top-1 right-1 min-w-[16px] h-[16px] px-1 flex items-center justify-center rounded-full bg-status-danger-text text-white text-[10px] font-bold tabular-nums"
+                aria-hidden="true"
+              >
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </span>
+            )}
           </Link>
         </div>
       </nav>

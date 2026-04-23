@@ -14,6 +14,7 @@ export type NotificationType =
   | 'profile_interest'
   | 'profile_milestone'
   | 'project_update'
+  | 'club_verification'
 
 interface CreateNotificationParams {
   userId: string
@@ -327,6 +328,55 @@ export async function notifyProfileViewMilestone(
     title: `프로필 조회수 ${views}회 돌파!`,
     message: `회원님의 프로필이 ${views}회 조회되었습니다. 관심이 높아지고 있어요!`,
     link: '/profile',
+  })
+}
+
+/** 클럽 공식 인증 승인 알림 (creator 에게) */
+export async function notifyClubVerificationApproved(
+  creatorId: string,
+  clubName: string,
+  clubSlug: string,
+) {
+  return createNotification({
+    userId: creatorId,
+    type: 'club_verification',
+    title: `${clubName} 공식 등록이 승인되었습니다`,
+    message: '이제 공개 목록에 노출되고, 학교 뱃지가 부여되었습니다.',
+    link: `/clubs/${clubSlug}`,
+    metadata: { club_slug: clubSlug },
+  })
+}
+
+/** 클럽 공식 인증 거부 알림 (creator 에게) */
+export async function notifyClubVerificationRejected(
+  creatorId: string,
+  clubName: string,
+  clubSlug: string,
+  reason: string,
+) {
+  return createNotification({
+    userId: creatorId,
+    type: 'club_verification',
+    title: `${clubName} 등록 신청이 반려되었습니다`,
+    message: `사유: ${reason} · 증빙을 보완하신 후 재제출하실 수 있습니다.`,
+    link: `/clubs/${clubSlug}/verify`,
+    metadata: { club_slug: clubSlug },
+  })
+}
+
+/** 클럽 공식 인증 신청 접수 알림 (creator 에게, 제출 직후) */
+export async function notifyClubVerificationSubmitted(
+  creatorId: string,
+  clubName: string,
+  clubSlug: string,
+) {
+  return createNotification({
+    userId: creatorId,
+    type: 'club_verification',
+    title: '클럽 인증 신청이 접수되었습니다',
+    message: `${clubName} 의 공식 등록 검토를 1~3영업일 내에 안내드립니다.`,
+    link: `/clubs/${clubSlug}`,
+    metadata: { club_slug: clubSlug },
   })
 }
 

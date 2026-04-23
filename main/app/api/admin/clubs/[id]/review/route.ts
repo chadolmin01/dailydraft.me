@@ -3,6 +3,10 @@ import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 import { captureServerEvent } from '@/src/lib/posthog/server'
+import {
+  notifyClubVerificationApproved,
+  notifyClubVerificationRejected,
+} from '@/src/lib/notifications/create-notification'
 
 export const runtime = 'nodejs'
 
@@ -92,18 +96,9 @@ export const POST = withErrorCapture(
           })
       }
 
-      // creator notification
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (supabase as any)
-        .from('notifications')
-        .insert({
-          user_id: club.created_by,
-          type: 'club_verification_approved',
-          title: `${club.name} 공식 등록이 승인되었습니다`,
-          body: '이제 공개 목록에 노출되고, 학교 뱃지가 부여되었습니다.',
-          link_url: `/clubs/${club.slug}`,
-        })
-        .then(() => {}, () => {})
+      // creator notification — event_notifications 테이블로 통일.
+      // 이전엔 legacy notifications 테이블에 insert 돼서 UI(bell·/notifications)에서 안 보이던 문제.
+      await notifyClubVerificationApproved(club.created_by, club.name, club.slug)
 
       captureServerEvent('club_verification_approved', {
         adminId: user.id,
@@ -127,17 +122,8 @@ export const POST = withErrorCapture(
       .eq('id', clubId)
     if (updErr) return ApiResponse.internalError('거부 처리 실패', updErr.message)
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (supabase as any)
-      .from('notifications')
-      .insert({
-        user_id: club.created_by,
-        type: 'club_verification_rejected',
-        title: `${club.name} 등록 신청이 반려되었습니다`,
-        body: `사유: ${note!.trim()} · 증빙을 보완하신 후 재제출하실 수 있습니다.`,
-        link_url: `/clubs/${club.slug}`,
-      })
-      .then(() => {}, () => {})
+    // event_notifications 테이블로 통일. 이전 legacy 테이블 → UI 누락 버그 수정.
+    await notifyClubVerificationRejected(club.created_by, club.name, club.slug, note!.trim())
 
     captureServerEvent('club_verification_rejected', {
       adminId: user.id,
