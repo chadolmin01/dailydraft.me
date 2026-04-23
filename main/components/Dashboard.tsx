@@ -249,8 +249,8 @@ export const Dashboard: React.FC = () => {
                   </div>
 
                   <div className="flex gap-6 text-[10px] text-txt-tertiary font-mono">
-                      <span className="hover:text-txt-primary transition-colors cursor-default">Terms of Service</span>
-                      <span className="hover:text-txt-primary transition-colors cursor-default">Privacy Policy</span>
+                      <a href="/legal/terms" className="hover:text-txt-primary transition-colors">Terms of Service</a>
+                      <a href="/legal/privacy" className="hover:text-txt-primary transition-colors">Privacy Policy</a>
                   </div>
 
                   <div className="text-[10px] text-txt-disabled font-mono">

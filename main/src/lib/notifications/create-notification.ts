@@ -43,22 +43,27 @@ export async function createNotification({
       .eq('user_id', userId)
       .single()
 
-    // 알림 설정에서 해당 유형이 비활성화되어 있으면 생성하지 않음
+    // 알림 설정에서 해당 유형이 비활성화되어 있으면 생성하지 않음.
+    // DB 스키마 (notification_settings 테이블): email_enabled, inapp_deadline,
+    // inapp_bookmark_reminder, inapp_new_match. 이전엔 가짜 키(deadline_reminders,
+    // application_updates, new_matches)를 읽어 undefined !== truthy 평가로 모든
+    // deadline/match 알림이 조용히 차단되던 버그 있었음.
     if (settings) {
       const settingsData = settings as unknown as {
-        deadline_reminders: boolean
-        application_updates: boolean
-        new_matches: boolean
+        inapp_deadline?: boolean
+        inapp_new_match?: boolean
+        inapp_bookmark_reminder?: boolean
       }
 
-      if (type === 'deadline' && !settingsData.deadline_reminders) return false
+      // 명시적으로 false 여야 차단. undefined/null 이면 허용(기본 on).
+      if (type === 'deadline' && settingsData.inapp_deadline === false) return false
       if (
-        ['application_received', 'application_accepted', 'application_rejected'].includes(type) &&
-        !settingsData.application_updates
+        ['recommendation', 'new_match'].includes(type) &&
+        settingsData.inapp_new_match === false
       )
         return false
-      if (['recommendation', 'new_match'].includes(type) && !settingsData.new_matches)
-        return false
+      // application_received/accepted/rejected 는 DB 스키마에 명시적 토글 없음 — 항상 전송.
+      // 필요하면 future 마이그레이션에서 inapp_application 컬럼 추가.
     }
 
     // 알림 생성 (event_notifications 테이블 사용)
