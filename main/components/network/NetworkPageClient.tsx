@@ -108,12 +108,18 @@ function NetworkContent() {
     isFetchingNextPage,
   } = useInfinitePublicProfiles(12)
   const profiles = useMemo(() => pages?.pages.flatMap(p => p.items) ?? [], [pages])
-  const { data: allRecs = [] } = useUserRecommendations({ limit: 50 })
+  const { data: allRecs = [], isLoading: isRecsLoading } = useUserRecommendations({ limit: 50 })
   const recsMap = useMemo(() => {
     const m = new Map<string, { match_score: number; match_reason: string }>()
     for (const r of allRecs) m.set(r.user_id, { match_score: r.match_score, match_reason: r.match_reason })
     return m
   }, [allRecs])
+
+  // AI 추천 데이터가 비어있으면 (온보딩 미완료/매치 데이터 부족) 'ai' 정렬은 모든 카드를
+  // 필터링해서 빈 화면이 됨 → 'latest' 로 자동 폴백 + 안내 배너 노출.
+  // 추천 로딩 중에는 폴백하지 않음 (스켈레톤 → 추천 도착 → 즉시 사라지는 깜빡임 방지).
+  const aiFallbackToLatest = sortBy === 'ai' && !isRecsLoading && recsMap.size === 0
+  const effectiveSort: PeopleSortBy = aiFallbackToLatest ? 'latest' : sortBy
 
   // matchData는 ProfileDetailModal에서 자체적으로 /api/user-recommendations를 다시 호출해서 가져옴.
   // 여기선 선택한 프로필에 대한 score만 돕고 싶으면 useUserRecommendations의 full rec 객체 필요 —
@@ -161,16 +167,16 @@ function NetworkContent() {
       }
     })
     .filter(card => {
-      if (sortBy === 'ai') return card.matchScore != null && card.matchScore > 0
+      if (effectiveSort === 'ai') return card.matchScore != null && card.matchScore > 0
       return true
     })
     .sort((a, b) => {
       const tie = a.id.localeCompare(b.id)
-      if (sortBy === 'ai') return ((b.matchScore ?? 0) - (a.matchScore ?? 0)) || tie
-      if (sortBy === 'popular') return ((b.interestCount || 0) - (a.interestCount || 0)) || tie
+      if (effectiveSort === 'ai') return ((b.matchScore ?? 0) - (a.matchScore ?? 0)) || tie
+      if (effectiveSort === 'popular') return ((b.interestCount || 0) - (a.interestCount || 0)) || tie
       return (new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()) || tie
     }),
-    [profiles, roleFilter, query, recsMap, sortBy]
+    [profiles, roleFilter, query, recsMap, effectiveSort]
   )
 
   const handleSelectProfile = (id: string, byUserId: boolean) => {
@@ -186,6 +192,25 @@ function NetworkContent() {
           <h1 className="text-[24px] sm:text-[28px] font-bold text-txt-primary tracking-tight">사람 탐색</h1>
           <p className="text-[13px] text-txt-tertiary mt-1">함께할 팀원·멘토·동료를 찾습니다</p>
         </div>
+
+        {/* AI 추천 데이터 부족 → 최신순 폴백 안내. AI 인터뷰/프로필 보강 유도 */}
+        {aiFallbackToLatest && (
+          <div className="mb-5 px-4 py-3 bg-surface-card border border-border rounded-xl flex items-start gap-3">
+            <span className="text-[12px] font-bold text-brand mt-0.5">AI</span>
+            <div className="flex-1 min-w-0">
+              <p className="text-[13px] font-semibold text-txt-primary">맞춤 추천 데이터가 아직 없어 최신순으로 보여드립니다</p>
+              <p className="text-[12px] text-txt-tertiary mt-0.5">
+                AI 인터뷰를 끝내고 프로필을 채우시면 4축(스킬·관심·상황·팀핏) 기반으로 맞춤 정렬이 켜집니다.
+              </p>
+            </div>
+            <a
+              href="/profile"
+              className="shrink-0 text-[12px] font-semibold text-brand hover:underline self-center"
+            >
+              프로필 보강
+            </a>
+          </div>
+        )}
 
         {/* 검색 */}
         <div className="relative mb-4">
