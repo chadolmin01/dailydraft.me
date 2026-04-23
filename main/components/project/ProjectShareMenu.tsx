@@ -65,7 +65,9 @@ export function ProjectShareMenu(props: Props) {
       await navigator.clipboard.writeText(text)
       setCopied(id)
       setTimeout(() => setCopied(null), 1500)
-      toast.success('복사했습니다')
+      toast.success('복사했습니다', {
+        description: '카톡·Slack·Discord 등에 바로 붙여넣으시면 링크 미리보기가 자동으로 표시됩니다.',
+      })
     } catch {
       toast.error('복사 실패')
     }

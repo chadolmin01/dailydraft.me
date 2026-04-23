@@ -194,9 +194,14 @@ export const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, data 
             {/* Sidebar */}
             <div className="w-full md:w-80 bg-surface-card border-l border-border p-6 md:p-8 space-y-6 flex flex-col h-full overflow-y-auto custom-scrollbar">
               <div className="space-y-3">
-                <Button variant="blue" fullWidth className="py-3">
-                  Apply Now <ArrowUpRight size={16} />
-                </Button>
+                {/* 기존 "Apply Now" placeholder 를 실제 프로젝트 상세로 연결.
+                    이전엔 modal dead-end — 유저가 더 많은 정보 보려면 모달 닫고 다시 탐색해야 했음. */}
+                <a
+                  href={`/p/${data.id}`}
+                  className="w-full flex items-center justify-center gap-1.5 py-3 bg-brand text-white text-sm font-bold rounded-xl hover:bg-brand-hover transition-colors"
+                >
+                  자세히 보기 <ArrowUpRight size={16} />
+                </a>
                 <div className="flex gap-2">
                   <Button variant="secondary" size="sm" fullWidth>
                     <Bookmark size={14} /> Save
