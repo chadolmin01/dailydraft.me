@@ -59,6 +59,29 @@ export const ACCESS_MANIFEST: RouteRule[] = [
   { pattern: '/status', tier: 'public', note: '공개 시스템 상태 페이지 (health polling)' },
   { pattern: '/idea-validator', tier: 'hidden', note: 'MVP 모드 숨김' },
 
+  // ── public (정적 페이지 — 엔터프라이즈 배치 신설) ──────
+  { pattern: '/about', tier: 'public' },
+  { pattern: '/accessibility', tier: 'public', note: 'WCAG 준수 성명' },
+  { pattern: '/api-docs', tier: 'public' },
+  { pattern: '/brand', tier: 'public', note: '브랜드 가이드라인' },
+  { pattern: '/changelog', tier: 'public' },
+  { pattern: '/contact', tier: 'public' },
+  { pattern: '/enterprise', tier: 'public', note: '학교·기관 도입 랜딩' },
+  { pattern: '/help', tier: 'public' },
+  { pattern: '/legal', tier: 'public', note: 'Legal 인덱스' },
+  { pattern: '/legal/cookies', tier: 'public' },
+  { pattern: '/legal/data-deletion', tier: 'public' },
+  { pattern: '/legal/privacy', tier: 'public' },
+  { pattern: '/legal/retention', tier: 'public', note: '데이터 보관 정책' },
+  { pattern: '/legal/subprocessors', tier: 'public', note: '하위처리자 목록' },
+  { pattern: '/legal/terms', tier: 'public' },
+  { pattern: '/maintenance', tier: 'public', note: '유지보수 안내 페이지' },
+  { pattern: '/press', tier: 'public' },
+  { pattern: '/roadmap', tier: 'public' },
+  { pattern: '/security', tier: 'public', note: '보안 정책' },
+  { pattern: '/stats', tier: 'public' },
+  { pattern: '/trust', tier: 'public', note: '신뢰 센터' },
+
   // ── auth ──────────────────────────────────────────────────
   { pattern: '/dashboard', tier: 'auth', note: 'Triage Home' },
   { pattern: '/onboarding', tier: 'auth' },
@@ -102,6 +125,7 @@ export const ACCESS_MANIFEST: RouteRule[] = [
   { pattern: '/clubs/:slug/reports', tier: 'club-admin', note: '클럽 리포트/통계' },
   { pattern: '/clubs/:slug/certificate', tier: 'club-admin', note: '활동 증명서 발급' },
   { pattern: '/clubs/:slug/cohorts/:cohort/archive', tier: 'auth', note: '기수별 아카이브 — 멤버 열람' },
+  { pattern: '/clubs/:slug/verify', tier: 'auth', note: '클럽 공식 등록 재제출·업그레이드 (creator 전용은 page 에서 체크)' },
 
   // ── platform-admin ────────────────────────────────────────
   { pattern: '/admin', tier: 'platform-admin' },
@@ -112,6 +136,11 @@ export const ACCESS_MANIFEST: RouteRule[] = [
   { pattern: '/admin/opportunities', tier: 'platform-admin' },
   { pattern: '/admin/users', tier: 'platform-admin' },
   { pattern: '/admin/audit', tier: 'platform-admin', note: '감사 로그 뷰어 (audit_logs 테이블)' },
+  { pattern: '/admin/health', tier: 'platform-admin', note: '헬스 모니터' },
+  { pattern: '/admin/incidents', tier: 'platform-admin', note: '인시던트 관리' },
+  { pattern: '/admin/metrics', tier: 'platform-admin', note: 'KPI 대시보드' },
+  { pattern: '/admin/platform-admins', tier: 'platform-admin', note: 'admin 권한 관리 (superadmin)' },
+  { pattern: '/admin/clubs-moderation', tier: 'platform-admin', note: '클럽 공식 등록 대기열' },
 
   // ── institution-admin ─────────────────────────────────────
   { pattern: '/institution', tier: 'institution-admin' },
