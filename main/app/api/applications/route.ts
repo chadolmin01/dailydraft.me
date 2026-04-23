@@ -7,6 +7,7 @@ import {
   incrementApplicationUsage,
 } from '@/src/lib/subscription/usage-checker'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
+import { captureServerEvent } from '@/src/lib/posthog/server'
 import type { Profile } from '@/src/types/profile'
 import type { Opportunity } from '@/src/types/opportunity'
 
@@ -134,8 +135,26 @@ export const POST = withErrorCapture(async (request) => {
     opportunityId
   )
 
+  // 매치 → 지원 전환 이벤트. 프로젝트별 funnel: impression → click → apply 분석.
+  // 점수가 매치 신호로 작용했는지 확인 + 향후 collaborative filtering 학습 데이터.
+  captureServerEvent('match_apply', {
+    userId: user.id,
+    target_id: opportunityId,
+    match_score: match.score,
+    score_band: scoreBandFor(match.score),
+  }).catch(() => {})
+
   return ApiResponse.created(data)
 })
+
+/** 점수 → 분석용 밴드 (client-side 와 동일 규칙) */
+function scoreBandFor(score: number): string {
+  if (score >= 80) return '80-100'
+  if (score >= 60) return '60-79'
+  if (score >= 40) return '40-59'
+  if (score >= 20) return '20-39'
+  return '0-19'
+}
 
 // GET: Get applications (sent or received)
 export const GET = withErrorCapture(async (request) => {
