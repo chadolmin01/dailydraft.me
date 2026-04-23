@@ -148,6 +148,35 @@ export async function fetchClubsList(
   const countMap: Record<string, number> = {}
   memberRows?.forEach(m => { countMap[m.club_id] = (countMap[m.club_id] || 0) + 1 })
 
+  // 공식 등록 뱃지 populate — 카드에서 "✓ 경희대" 같이 표시하려면 university 이름 필요.
+  // 이전엔 ClubsListClient 에서 university 필터만 쓰고 뱃지 렌더링 X → 카드에 뱃지 누락.
+  const { data: credentials } = await supabase
+    .from('club_credentials')
+    .select('club_id, credential_type, university_id, verified_at, verification_method')
+    .in('club_id', clubIds)
+    .eq('credential_type', 'university')
+  const universityIds = Array.from(new Set(
+    (credentials ?? []).map(c => c.university_id).filter(Boolean),
+  )) as string[]
+  let univMap: Record<string, { name: string; short_name: string | null }> = {}
+  if (universityIds.length > 0) {
+    const { data: univs } = await supabase
+      .from('universities')
+      .select('id, name, short_name')
+      .in('id', universityIds)
+    univMap = Object.fromEntries(
+      (univs ?? []).map(u => [u.id, { name: u.name, short_name: u.short_name }]),
+    )
+  }
+  const badgesByClub: Record<string, Array<{ type: string; university: { name: string; short_name: string | null } | null }>> = {}
+  for (const c of credentials ?? []) {
+    if (!badgesByClub[c.club_id]) badgesByClub[c.club_id] = []
+    badgesByClub[c.club_id].push({
+      type: c.credential_type,
+      university: c.university_id ? univMap[c.university_id] ?? null : null,
+    })
+  }
+
   const items = clubs.map(club => ({
     id: club.id,
     slug: club.slug,
@@ -156,6 +185,7 @@ export async function fetchClubsList(
     logo_url: club.logo_url,
     category: club.category,
     member_count: countMap[club.id] ?? 0,
+    badges: badgesByClub[club.id] ?? [],
   })) as ClubCard[]
 
   return { items, total: items.length }

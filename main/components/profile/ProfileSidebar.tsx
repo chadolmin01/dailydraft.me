@@ -93,23 +93,41 @@ export function ProfileSidebar({ profile, email, completion, isEditable = false 
       {/* 스킬 */}
       <Card title="스킬" icon={Sparkles}>
         <div className="flex flex-wrap gap-1.5">
-          {skills.map(s => (
-            <span
-              key={s.name}
-              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-sunken text-txt-secondary text-xs font-medium"
-            >
-              {s.name}
-              {isEditable && (
-                <button
-                  onClick={() => removeSkill(s.name)}
-                  className="text-txt-disabled hover:text-status-danger-text transition-colors"
-                  aria-label="스킬 제거"
-                >
-                  <X size={10} />
-                </button>
-              )}
-            </span>
-          ))}
+          {skills.map(s => {
+            // level 값: 'beginner' | 'intermediate' | 'advanced' | 'expert'. 이전엔 수집만 하고 표시 X.
+            // 이모지 레벨 인디케이터로 시각화.
+            const levelDots = s.level === 'expert' ? '●●●●'
+              : s.level === 'advanced' ? '●●●○'
+              : s.level === 'intermediate' ? '●●○○'
+              : s.level === 'beginner' ? '●○○○' : ''
+            const levelLabel = s.level === 'expert' ? '전문가'
+              : s.level === 'advanced' ? '숙련'
+              : s.level === 'intermediate' ? '중급'
+              : s.level === 'beginner' ? '초급' : ''
+            return (
+              <span
+                key={s.name}
+                title={levelLabel ? `${s.name} · ${levelLabel}` : s.name}
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-sunken text-txt-secondary text-xs font-medium"
+              >
+                {s.name}
+                {levelDots && (
+                  <span className="text-[8px] font-mono text-brand tracking-[-1px]" aria-label={`레벨: ${levelLabel}`}>
+                    {levelDots}
+                  </span>
+                )}
+                {isEditable && (
+                  <button
+                    onClick={() => removeSkill(s.name)}
+                    className="text-txt-disabled hover:text-status-danger-text transition-colors"
+                    aria-label="스킬 제거"
+                  >
+                    <X size={10} />
+                  </button>
+                )}
+              </span>
+            )
+          })}
           {isEditable && (
             showSkillInput ? (
               <span className="inline-flex items-center gap-1">

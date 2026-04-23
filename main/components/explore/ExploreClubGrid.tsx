@@ -67,11 +67,24 @@ export function ExploreClubGrid({
 
                 {/* Info section */}
                 <div className="flex-1 min-w-0">
-                  {/* Row 1: name + category badge */}
-                  <div className="flex items-center gap-2">
+                  {/* Row 1: name + university verified badge + category */}
+                  <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="text-sm font-semibold text-txt-primary truncate">
                       {club.name}
                     </h3>
+                    {(() => {
+                      const univ = club.badges?.find(b => b.type === 'university' && b.university)
+                      if (!univ?.university) return null
+                      const name = univ.university.short_name ?? univ.university.name
+                      return (
+                        <span
+                          title={`${name} 공식 등록 동아리`}
+                          className="shrink-0 inline-flex items-center gap-1 text-[10px] font-semibold text-brand bg-brand/10 px-1.5 py-0.5 rounded-full"
+                        >
+                          ✓ {name}
+                        </span>
+                      )
+                    })()}
                     {club.category && (
                       <span className="text-[10px] font-semibold text-brand bg-brand-bg px-2 py-0.5 rounded-full shrink-0">
                         {club.category}
