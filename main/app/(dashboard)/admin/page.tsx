@@ -29,6 +29,7 @@ import {
   Activity,
   Sparkles,
   Shield,
+  ShieldCheck,
   GraduationCap,
   LayoutDashboard,
 } from 'lucide-react'
@@ -141,6 +142,7 @@ export default function AdminHubPage() {
     { href: '/admin/health', label: '헬스 모니터', desc: '10초 폴링 · p50/p95/p99 응답 시간', icon: Activity },
     { href: '/admin/users', label: '사용자 관리', desc: '전체 사용자 조회·검색·삭제', icon: Users },
     { href: '/admin/opportunities', label: '프로젝트 관리', desc: '게시글 조회·필터·삭제', icon: Briefcase },
+    { href: '/admin/clubs-moderation', label: '클럽 인증 대기열', desc: '공식 등록 신청 승인·거부', icon: ShieldCheck },
     { href: '/admin/institutions', label: '기관 관리', desc: '기관 CRUD·멤버 배정', icon: Building2 },
     { href: '/admin/invite-codes', label: '프리미엄 초대 코드', desc: '프리미엄 업그레이드 코드 발송', icon: Gift },
     { href: '/admin/error-logs', label: '에러 로그', desc: '시스템 에러 모니터링', icon: AlertCircle },
