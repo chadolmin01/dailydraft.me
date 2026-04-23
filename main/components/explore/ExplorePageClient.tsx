@@ -41,6 +41,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/src/lib/supabase/client'
 import { useAuth } from '@/src/context/AuthContext'
 import { useProfile } from '@/src/hooks/useProfile'
+import { useProfileCompletion } from '@/src/hooks/useProfileCompletion'
+import { Sparkles, ArrowRight } from 'lucide-react'
 import { opportunityKeys } from '@/src/hooks/useOpportunities'
 import { PAGE_SIZE, PEOPLE_PAGE_SIZE, CLUBS_PAGE_SIZE } from './constants'
 import {
@@ -178,6 +180,7 @@ function ExplorePageContent() {
   const searchQuery = useDebouncedValue(searchInput, 300)
   const { isAuthenticated, user, isLoading: isAuthLoading } = useAuth()
   const { data: profile } = useProfile()
+  const profileCompletion = useProfileCompletion(profile ?? null)
   const queryClient = useQueryClient()
   const guide = useStarterGuide()
   const discordCarousel = useDiscordCarousel()
@@ -430,6 +433,7 @@ function ExplorePageContent() {
         avatarUrl: profile.avatar_url,
         matchScore: rec?.match_score ?? null,
         matchReason: rec?.match_reason ?? null,
+        matchDetails: rec?.match_details ?? null,
         badges: profile.badges ?? null,
         interestCount: profile.interest_count || 0,
         createdAt: profile.created_at,
@@ -1050,6 +1054,28 @@ function ExplorePageContent() {
 
             {/* 사람 그리드 */}
             <div className="flex-1 min-w-0">
+              {/* AI 정렬 + 내 프로필 완성도 낮음 → 정확도 영향 안내.
+                  유저가 "추천이 이상함" 느끼기 전에 선제적으로 이유 설명. */}
+              {peopleSortBy === 'ai' && profile && profileCompletion.pct < 60 && (
+                <div className="mb-4 p-3 rounded-xl border border-status-warn-text/25 bg-status-warn-bg flex items-start gap-2">
+                  <Sparkles size={14} className="text-status-warn-text shrink-0 mt-0.5" aria-hidden="true" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[12px] font-bold text-status-warn-text">
+                      프로필 완성도 {profileCompletion.pct}% · AI 추천 정확도가 낮을 수 있습니다
+                    </p>
+                    <p className="text-[11px] text-txt-secondary mt-0.5 leading-relaxed">
+                      스킬·관심사·AI 인터뷰를 채우시면 매칭 점수 4축(스킬·관심·상황·팀핏)이 모두 반영됩니다.
+                      지금은 일부 축만 계산돼요.
+                    </p>
+                    <Link
+                      href="/profile"
+                      className="mt-1.5 inline-flex items-center gap-1 text-[12px] font-bold text-brand hover:underline"
+                    >
+                      프로필 보강하기 <ArrowRight size={11} />
+                    </Link>
+                  </div>
+                </div>
+              )}
               <ExplorePeopleGrid
                 talentCards={talentCards}
                 isLoading={profilesLoading}

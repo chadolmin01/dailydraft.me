@@ -7,16 +7,20 @@ import { captureServerEvent } from '@/src/lib/posthog/server'
 export const runtime = 'nodejs'
 
 /**
- * POST /api/clubs/[id]/resubmit
+ * POST /api/clubs/[slug]/resubmit
  *
  * rejected 클럽의 creator 가 증빙을 보완한 뒤 다시 pending 으로 돌리는 API.
  * body: { verification_documents: {...} } — POST /api/clubs 와 동일 스키마
  *
  * 권한: clubs.created_by = auth.uid() AND claim_status = 'rejected'
+ *
+ * NOTE: 원래 [id]/resubmit 였으나 같은 경로 레벨에 [slug] 라우트들이 있어
+ * Next.js 라우팅 충돌(slug !== id)이 발생 → 빌드/HMR 가 깨지면서 다른 페이지의
+ * 클라 fetch까지 503 → "지원 관리 탭 빈 화면" 회귀의 근본 원인이었다.
  */
 export const POST = withErrorCapture(
-  async (request: NextRequest, ctx: { params: Promise<{ id: string }> }) => {
-    const { id: clubId } = await ctx.params
+  async (request: NextRequest, ctx: { params: Promise<{ slug: string }> }) => {
+    const { slug } = await ctx.params
     const supabase = await createClient()
 
     const { data: { user } } = await supabase.auth.getUser()
@@ -57,12 +61,12 @@ export const POST = withErrorCapture(
       return ApiResponse.badRequest('입력값이 유효하지 않습니다', errors)
     }
 
-    // 권한 확인 + 현 상태 체크
+    // 권한 확인 + 현 상태 체크 — slug 로 조회 (URL 파라미터와 일치)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: club } = await (supabase as any)
       .from('clubs')
       .select('id, slug, name, created_by, claim_status')
-      .eq('id', clubId)
+      .eq('slug', slug)
       .maybeSingle()
     if (!club) return ApiResponse.notFound('클럽을 찾을 수 없습니다')
     if (club.created_by !== user.id) return ApiResponse.forbidden('본인 클럽만 재제출할 수 있습니다')
@@ -89,12 +93,12 @@ export const POST = withErrorCapture(
           charter_url: docs.charter_url?.trim() || null,
         },
       })
-      .eq('id', clubId)
+      .eq('id', club.id)
     if (updErr) return ApiResponse.internalError('재제출 실패', updErr.message)
 
     captureServerEvent('club_verification_resubmitted', {
       userId: user.id,
-      clubId,
+      clubId: club.id,
       slug: club.slug,
     }).catch(() => {})
 

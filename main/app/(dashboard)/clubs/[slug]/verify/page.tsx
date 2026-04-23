@@ -85,7 +85,7 @@ export default function ClubVerifyPage() {
           charter_url: charterUrl.trim() || undefined,
         },
       }
-      const res = await fetch(`/api/clubs/${club.id}/resubmit`, {
+      const res = await fetch(`/api/clubs/${slug}/resubmit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
