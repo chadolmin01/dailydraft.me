@@ -51,9 +51,10 @@ export default function ClubsListClient() {
   const filtered = useMemo(() => {
     let list = allClubs
     if (university) {
+      const target = university.trim() // 공백 보호 (복붙·외부 데이터 대비)
       list = list.filter(c => {
         const badges = (c as unknown as { badges?: Array<{ type: string; university?: { name?: string } }> }).badges ?? []
-        return badges.some(b => b.type === 'university' && b.university?.name === university)
+        return badges.some(b => b.type === 'university' && b.university?.name?.trim() === target)
       })
     }
     if (search.trim()) {
@@ -66,16 +67,27 @@ export default function ClubsListClient() {
     return list
   }, [allClubs, search, university])
 
-  const universities = useMemo(() => {
-    const set = new Set<string>()
+  // 대학별 club count — 각 토글 옆에 숫자 표시해 필터 효과 가시화.
+  // 이전엔 count 없어서 "1개 대학만 있는 경우 토글 눌러도 동일 결과 → 고장난 느낌" 이었음.
+  const universityCounts = useMemo(() => {
+    const counts: Record<string, number> = {}
     for (const c of allClubs) {
       const badges = (c as unknown as { badges?: Array<{ type: string; university?: { name?: string } }> }).badges ?? []
+      const seenNames = new Set<string>()
       for (const b of badges) {
-        if (b.type === 'university' && b.university?.name) set.add(b.university.name)
+        const name = b.type === 'university' ? b.university?.name?.trim() : null
+        if (name && !seenNames.has(name)) {
+          seenNames.add(name)
+          counts[name] = (counts[name] || 0) + 1
+        }
       }
     }
-    return Array.from(set).sort((a, b) => a.localeCompare(b, 'ko'))
+    return counts
   }, [allClubs])
+
+  const universities = useMemo(() => {
+    return Object.keys(universityCounts).sort((a, b) => a.localeCompare(b, 'ko'))
+  }, [universityCounts])
 
   const myClubIds = new Set(myClubs.map(c => c.id))
   const otherClubs = filtered.filter(c => !myClubIds.has(c.id))
@@ -170,12 +182,13 @@ export default function ClubsListClient() {
           ))}
         </div>
 
-        {/* 대학 필터 */}
-        {universities.length > 0 && (
+        {/* 대학 필터 — 2개 이상일 때만 유의미 (1개뿐이면 필터링 효과 없음).
+            count 숫자를 각 버튼에 붙여 "클릭 시 몇 개가 남는지" 즉시 파악 가능. */}
+        {universities.length >= 2 && (
           <div className="flex gap-2 mb-6 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
             <button
               onClick={() => setUniversity(null)}
-              className={`shrink-0 flex items-center gap-1 px-3 py-1.5 text-[12px] font-medium rounded-full border transition-colors ${
+              className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium rounded-full border transition-colors ${
                 !university
                   ? 'bg-brand-bg text-brand border-brand-border'
                   : 'text-txt-tertiary border-border bg-surface-card hover:border-txt-tertiary'
@@ -183,18 +196,20 @@ export default function ClubsListClient() {
             >
               <Building2 size={11} />
               전체 대학
+              <span className="text-[11px] tabular-nums opacity-70">{allClubs.length}</span>
             </button>
             {universities.map(u => (
               <button
                 key={u}
-                onClick={() => setUniversity(u)}
-                className={`shrink-0 px-3 py-1.5 text-[12px] font-medium rounded-full border transition-colors ${
+                onClick={() => setUniversity(u === university ? null : u)}
+                className={`shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium rounded-full border transition-colors ${
                   university === u
                     ? 'bg-brand-bg text-brand border-brand-border'
                     : 'text-txt-tertiary border-border bg-surface-card hover:border-txt-tertiary'
                 }`}
               >
                 {u}
+                <span className="text-[11px] tabular-nums opacity-70">{universityCounts[u]}</span>
               </button>
             ))}
           </div>
