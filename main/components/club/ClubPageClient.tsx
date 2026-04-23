@@ -139,6 +139,7 @@ export default function ClubPageClient() {
   // 자주 쓰는 운영 액션에 1클릭으로 접근.
   const operatorQuickLinks = isAdmin ? [
     { href: `/clubs/${slug}/operator`, icon: Activity, label: '운영 대시보드' },
+    { href: `/clubs/${slug}/cohorts`, icon: Archive, label: '기수 기록' },
     { href: `/clubs/${slug}/reports`, icon: BarChart3, label: 'KPI 보고서' },
     { href: `/clubs/${slug}/certificate`, icon: FileText, label: '활동 증명서' },
     { href: `/clubs/${slug}/settings`, icon: Settings, label: '설정' },

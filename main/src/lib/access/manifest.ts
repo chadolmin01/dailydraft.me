@@ -125,6 +125,7 @@ export const ACCESS_MANIFEST: RouteRule[] = [
   { pattern: '/clubs/:slug/reports', tier: 'club-admin', note: '클럽 리포트/통계' },
   { pattern: '/clubs/:slug/certificate', tier: 'club-admin', note: '활동 증명서 발급' },
   { pattern: '/clubs/:slug/cohorts/:cohort/archive', tier: 'auth', note: '기수별 아카이브 — 멤버 열람' },
+  { pattern: '/clubs/:slug/cohorts', tier: 'auth', note: '기수 인덱스 — 운영 기록 진입점' },
   { pattern: '/clubs/:slug/verify', tier: 'auth', note: '클럽 공식 등록 재제출·업그레이드 (creator 전용은 page 에서 체크)' },
 
   // ── platform-admin ────────────────────────────────────────
