@@ -3,6 +3,7 @@ import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 import { captureServerEvent } from '@/src/lib/posthog/server'
+import { notifyClubVerificationSubmitted } from '@/src/lib/notifications/create-notification'
 
 /**
  * GET /api/clubs — 공개 클럽 목록 (Explore 탭용)
@@ -305,18 +306,8 @@ export const POST = withErrorCapture(async (request) => {
     universityId: university_id,
   }).catch(() => {})
 
-  // 신청 접수 알림 (creator 에게)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await (supabase as any)
-    .from('notifications')
-    .insert({
-      user_id: user.id,
-      type: 'club_verification_submitted',
-      title: '클럽 인증 신청이 접수되었습니다',
-      body: `${club.name} 의 공식 등록 검토를 1~3영업일 내에 안내드립니다`,
-      link_url: `/clubs/${club.slug}/pending`,
-    })
-    .then(() => {}, () => {}) // notifications 테이블 이슈 있어도 클럽 생성은 성공 처리
+  // 신청 접수 알림 — event_notifications 로 통일 (이전엔 legacy notifications 테이블에 들어가 UI 누락)
+  await notifyClubVerificationSubmitted(user.id, club.name, club.slug)
 
   return ApiResponse.created({ ...club, claim_status: 'pending' })
 })
