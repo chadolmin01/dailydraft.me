@@ -11,6 +11,10 @@ export interface ProjectCard {
   updatedAt?: string
   status: string | null
   matchLabel?: string | null
+  /** AI 매치 점수 0~100. 비로그인/추천 부족 시 null. */
+  matchScore?: number | null
+  /** 매치 이유 텍스트 — tooltip 등에서 노출. */
+  matchReason?: string | null
   badges?: string[] | null
   viewsCount: number
   interestCount: number

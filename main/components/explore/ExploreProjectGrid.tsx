@@ -10,6 +10,11 @@ import { ErrorState } from '@/components/ui/ErrorState'
 import { useAuth } from '@/src/context/AuthContext'
 import { getUpdateBadge } from './constants'
 import { trackProjectView } from '@/src/lib/pwa/engagement-tracker'
+import {
+  trackMatchImpression,
+  trackMatchClick,
+  type MatchSurface,
+} from '@/src/lib/analytics/match-tracking'
 import { Badges } from '@/components/ui/Badge'
 import { CATEGORY_SLUGS } from '@/src/constants/categories'
 import { useStaggerOnce } from '@/src/hooks/useStaggerOnce'
@@ -37,6 +42,8 @@ interface ExploreProjectGridProps {
   onSelectProject: (id: string) => void
   onPrefetchProject?: (id: string) => void
   sortBy?: string
+  /** 매치 트래킹 — 어느 surface 에서 그리드가 노출됐는지. 미지정 시 트래킹 비활성. */
+  trackingSurface?: MatchSurface
 }
 
 export function ExploreProjectGrid({
@@ -54,6 +61,7 @@ export function ExploreProjectGrid({
   onSelectProject,
   onPrefetchProject,
   sortBy,
+  trackingSurface,
 }: ExploreProjectGridProps) {
   const { isAuthenticated } = useAuth()
   const sentinelRef = useRef<HTMLDivElement>(null)
@@ -107,6 +115,8 @@ export function ExploreProjectGrid({
             index={index}
             onSelectProject={onSelectProject}
             onPrefetchProject={onPrefetchProject}
+            trackingSurface={trackingSurface}
+            sortBy={sortBy}
           />
         ))}
       </div>
@@ -175,23 +185,70 @@ export function ExploreProjectGrid({
 }
 
 /* ── 카드 아이템 (추출) ── */
-function ProjectCardItem({ card: p, index, onSelectProject, onPrefetchProject }: {
+function ProjectCardItem({ card: p, index, onSelectProject, onPrefetchProject, trackingSurface, sortBy }: {
   card: ProjectCard
   index: number
   onSelectProject: (id: string) => void
   onPrefetchProject?: (id: string) => void
+  trackingSurface?: MatchSurface
+  sortBy?: string
 }) {
   const updateBadge = getUpdateBadge(p.updatedAt)
   const isUrgent = p.daysLeft > 0 && p.daysLeft <= 3
   const staggerClass = useStaggerOnce(`project:${p.id}`)
+  const cardRef = useRef<HTMLDivElement>(null)
+
+  // viewport 진입 시 1회 매치 임프레션 (사람 그리드와 동일 패턴).
+  useEffect(() => {
+    if (!trackingSurface) return
+    const el = cardRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          trackMatchImpression('project', {
+            surface: trackingSurface,
+            sortMethod: sortBy === 'ai' || sortBy === 'latest' || sortBy === 'popular'
+              ? sortBy
+              : 'unspecified',
+            matchScore: p.matchScore ?? null,
+            position: index,
+            targetId: p.id,
+          })
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.5 },
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [trackingSurface, sortBy, p.matchScore, p.id, index])
+
+  const handleSelect = () => {
+    if (trackingSurface) {
+      trackMatchClick('project', {
+        surface: trackingSurface,
+        sortMethod: sortBy === 'ai' || sortBy === 'latest' || sortBy === 'popular'
+          ? sortBy
+          : 'unspecified',
+        matchScore: p.matchScore ?? null,
+        position: index,
+        targetId: p.id,
+        destination: 'modal',
+      })
+    }
+    onSelectProject(p.id)
+    trackProjectView()
+  }
 
   return (
     <div
+      ref={cardRef}
       role="button"
       tabIndex={0}
-      onClick={() => { onSelectProject(p.id); trackProjectView() }}
+      onClick={handleSelect}
       onMouseEnter={() => onPrefetchProject?.(p.id)}
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectProject(p.id) } }}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSelect() } }}
       style={staggerClass ? { animationDelay: `${Math.min(index * 60, 600)}ms` } : undefined}
       className={`${staggerClass} ob-ring-glow ob-press-spring relative bg-surface-card rounded-2xl overflow-hidden group cursor-pointer min-h-[21.25rem] flex flex-col border border-border focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 outline-none`}
     >

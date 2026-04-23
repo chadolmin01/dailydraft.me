@@ -36,6 +36,7 @@ import { useInfinitePublicProfiles, type PublicProfile } from '@/src/hooks/usePu
 import { useUserRecommendations, type UserRecommendation } from '@/src/hooks/useUserRecommendations'
 import { PEOPLE_ROLE_FILTERS, PROJECT_ROLE_FILTERS } from '@/components/explore/constants'
 import { SortPill } from '@/components/explore/SortPill'
+import { trackMatchClick } from '@/src/lib/analytics/match-tracking'
 import { positionLabel } from '@/src/constants/roles'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/src/lib/supabase/client'
@@ -689,12 +690,22 @@ function ExplorePageContent() {
                   <p className="text-sm text-txt-tertiary py-8 text-center">아직 추천할 프로젝트가 없습니다</p>
                 ) : (
                   <div ref={dragRefProjects} className="flex gap-3 overflow-x-auto pb-2 feed-scroll">
-                    {feedProjects.map(card => (
+                    {feedProjects.map((card, idx) => (
                       <div
                         key={card.id}
                         role="button"
                         tabIndex={0}
-                        onClick={() => handleSelectProject(card.id)}
+                        onClick={() => {
+                          trackMatchClick('project', {
+                            surface: 'dashboard',
+                            sortMethod: 'ai',
+                            matchScore: card.matchScore ?? null,
+                            position: idx,
+                            targetId: card.id,
+                            destination: 'modal',
+                          })
+                          handleSelectProject(card.id)
+                        }}
                         onMouseEnter={() => handlePrefetchProject(card.id)}
                         onKeyDown={e => { if (e.key === 'Enter') handleSelectProject(card.id) }}
                         className="ob-ring-glow ob-press-spring shrink-0 w-[280px] bg-surface-card border border-border rounded-xl overflow-hidden cursor-pointer flex flex-col"
