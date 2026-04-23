@@ -36,6 +36,7 @@ import { useInfinitePublicProfiles, type PublicProfile } from '@/src/hooks/usePu
 import { useUserRecommendations, type UserRecommendation } from '@/src/hooks/useUserRecommendations'
 import { PEOPLE_ROLE_FILTERS, PROJECT_ROLE_FILTERS } from '@/components/explore/constants'
 import { SortPill } from '@/components/explore/SortPill'
+import { resetMatchImpressionDedup } from '@/src/lib/analytics/match-tracking'
 import { positionLabel } from '@/src/constants/roles'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/src/lib/supabase/client'
@@ -176,6 +177,11 @@ function ExplorePageContent() {
   const [peopleSortBy, setPeopleSortBy] = useState<PeopleSortBy>('latest')
   const [searchInput, setSearchInput] = useState(initialQuery)
   const [searchScope, setSearchScope] = useState<SearchScope>(initialScope)
+
+  // 정렬 변경 시 매치 임프레션 dedup 리셋 — 다른 정렬에서 같은 카드 재노출 시 새 임프레션으로 셈.
+  useEffect(() => {
+    resetMatchImpressionDedup()
+  }, [peopleSortBy])
 
   const searchQuery = useDebouncedValue(searchInput, 300)
   const { isAuthenticated, user, isLoading: isAuthLoading } = useAuth()
@@ -1086,6 +1092,7 @@ function ExplorePageContent() {
                 onLoadMore={() => fetchNextProfiles()}
                 onSelectProfile={handleSelectProfile}
                 peopleSortBy={peopleSortBy}
+                trackingSurface="explore_people"
               />
             </div>
           </div>

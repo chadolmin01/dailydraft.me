@@ -12,6 +12,7 @@ import { useInfinitePublicProfiles, type PublicProfile } from '@/src/hooks/usePu
 import { useUserRecommendations } from '@/src/hooks/useUserRecommendations'
 import { cleanNickname } from '@/src/lib/clean-nickname'
 import { positionLabel } from '@/src/constants/roles'
+import { resetMatchImpressionDedup } from '@/src/lib/analytics/match-tracking'
 import type { PeopleRoleFilter, PeopleSortBy } from '@/components/explore/types'
 
 /**
@@ -120,6 +121,11 @@ function NetworkContent() {
   // 추천 로딩 중에는 폴백하지 않음 (스켈레톤 → 추천 도착 → 즉시 사라지는 깜빡임 방지).
   const aiFallbackToLatest = sortBy === 'ai' && !isRecsLoading && recsMap.size === 0
   const effectiveSort: PeopleSortBy = aiFallbackToLatest ? 'latest' : sortBy
+
+  // 정렬 변경 시 임프레션 dedup 리셋 — 같은 카드가 다른 정렬에서 다시 노출되면 새 임프레션으로 셈.
+  useEffect(() => {
+    resetMatchImpressionDedup()
+  }, [effectiveSort])
 
   // matchData는 ProfileDetailModal에서 자체적으로 /api/user-recommendations를 다시 호출해서 가져옴.
   // 여기선 선택한 프로필에 대한 score만 돕고 싶으면 useUserRecommendations의 full rec 객체 필요 —
@@ -263,6 +269,7 @@ function NetworkContent() {
           onLoadMore={() => fetchNextPage()}
           onSelectProfile={handleSelectProfile}
           peopleSortBy={sortBy}
+          trackingSurface="network"
         />
       </div>
 
