@@ -178,58 +178,55 @@ export function ProfileSidebar({ profile, email, completion, isEditable = false 
         </div>
       </Card>
 
-      {/* 연락처·링크 */}
-      <Card title="연락처·링크" icon={Mail}>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          <LinkField
-            icon={Mail}
-            placeholder="예: you@example.com"
-            value={drafts.contact_email ?? profile.contact_email ?? ''}
-            onChange={v => editField('contact_email')(v)}
-            editable={isEditable}
-          />
-          <LinkField
-            icon={Globe}
-            placeholder="예: https://portfolio.me"
-            value={drafts.portfolio_url ?? profile.portfolio_url ?? ''}
-            onChange={v => editField('portfolio_url')(v)}
-            editable={isEditable}
-          />
-          <LinkField
-            icon={Github}
-            placeholder="예: https://github.com/username"
-            value={drafts.github_url ?? profile.github_url ?? ''}
-            onChange={v => editField('github_url')(v)}
-            editable={isEditable}
-          />
-          <LinkField
-            icon={Linkedin}
-            placeholder="예: https://linkedin.com/in/username"
-            value={drafts.linkedin_url ?? profile.linkedin_url ?? ''}
-            onChange={v => editField('linkedin_url')(v)}
-            editable={isEditable}
-          />
-        </div>
+      {/* 연락처·링크.
+          본인 편집 모드(isEditable): 4슬롯 모두 노출해서 빈 것도 추가할 수 있게.
+          타인 열람 모드(!isEditable): 채워진 필드만 노출. 모두 비어 있으면 카드 자체 숨김 —
+          이전엔 4개 빈 placeholder 가 그대로 보여 "정보 없음" 느낌. */}
+      {(() => {
+        const items: Array<{ icon: typeof Mail; value: string; placeholder: string; fieldKey: 'contact_email' | 'portfolio_url' | 'github_url' | 'linkedin_url' }> = [
+          { icon: Mail, fieldKey: 'contact_email', placeholder: '예: you@example.com', value: drafts.contact_email ?? profile.contact_email ?? '' },
+          { icon: Globe, fieldKey: 'portfolio_url', placeholder: '예: https://portfolio.me', value: drafts.portfolio_url ?? profile.portfolio_url ?? '' },
+          { icon: Github, fieldKey: 'github_url', placeholder: '예: https://github.com/username', value: drafts.github_url ?? profile.github_url ?? '' },
+          { icon: Linkedin, fieldKey: 'linkedin_url', placeholder: '예: https://linkedin.com/in/username', value: drafts.linkedin_url ?? profile.linkedin_url ?? '' },
+        ]
+        const visibleItems = isEditable ? items : items.filter(i => i.value.trim().length > 0)
+        if (visibleItems.length === 0) return null
+        return (
+          <Card title="연락처·링크" icon={Mail}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {visibleItems.map(item => (
+                <LinkField
+                  key={item.fieldKey}
+                  icon={item.icon}
+                  placeholder={item.placeholder}
+                  value={item.value}
+                  onChange={v => editField(item.fieldKey)(v)}
+                  editable={isEditable}
+                />
+              ))}
+            </div>
 
-        {isEditable && hasPendingChanges && (
-          <div className="mt-4 pt-4 border-t border-border flex items-center justify-end gap-2">
-            <button
-              onClick={handleCancel}
-              className="px-3 py-1.5 text-xs font-medium text-txt-secondary hover:text-txt-primary transition-colors"
-            >
-              취소
-            </button>
-            <button
-              onClick={handleSave}
-              disabled={isPending}
-              className="flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold bg-brand text-white rounded-full hover:bg-brand-hover disabled:opacity-50 transition-colors"
-            >
-              {isPending ? <Loader2 size={11} className="animate-spin" /> : null}
-              저장
-            </button>
-          </div>
-        )}
-      </Card>
+            {isEditable && hasPendingChanges && (
+              <div className="mt-4 pt-4 border-t border-border flex items-center justify-end gap-2">
+                <button
+                  onClick={handleCancel}
+                  className="px-3 py-1.5 text-xs font-medium text-txt-secondary hover:text-txt-primary transition-colors"
+                >
+                  취소
+                </button>
+                <button
+                  onClick={handleSave}
+                  disabled={isPending}
+                  className="flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold bg-brand text-white rounded-full hover:bg-brand-hover disabled:opacity-50 transition-colors"
+                >
+                  {isPending ? <Loader2 size={11} className="animate-spin" /> : null}
+                  저장
+                </button>
+              </div>
+            )}
+          </Card>
+        )
+      })()}
 
       {/* 소속 클럽 */}
       {isEditable && myClubs.length > 0 && (

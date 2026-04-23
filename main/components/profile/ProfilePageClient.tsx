@@ -97,8 +97,11 @@ export default function ProfilePageClient() {
     )
   }
 
+  // 라벨: "소개" → "프로필" 로 변경. 이전엔 "소개"가 자기소개로 오해됐는데 실제 콘텐츠는
+  // AI 인터뷰 결과 + 스킬·링크·완성도 등 메타 정보 묶음이라 라벨 불일치. Hero 영역에 한 줄 소개가
+  // 별도로 있어서 더 혼란. "프로필"이 의미 일치.
   const tabs: Array<{ key: Tab; label: string; count?: number }> = [
-    { key: 'about', label: '소개' },
+    { key: 'about', label: '프로필' },
     { key: 'portfolio', label: '포트폴리오', count: portfolioItems.length },
     { key: 'projects', label: '프로젝트', count: myOpportunities.length + myTeams.length },
     { key: 'activity', label: '활동' },
@@ -202,9 +205,8 @@ export default function ProfilePageClient() {
         <div className="min-h-[40vh]">
           {activeTab === 'about' && (
             <div className="space-y-6">
-              {/* 프로필 인사이트 — profile_views·매칭 가능 프로젝트 수. 이전엔 DB 에만 쌓이고 안 보였음 */}
-              <ProfileInsightsWidget />
-              {/* AI 인터뷰 결과 — 답한 값이 매칭에 어떻게 쓰이는지 즉시 보여 줌 */}
+              {/* AI 인터뷰 결과 — 답한 값이 매칭에 어떻게 쓰이는지 즉시 보여 줌.
+                  인터뷰 미완료면 컴포넌트 내부에서 null 반환. */}
               <PersonalityScorecard
                 personality={
                   (profile.personality as {
@@ -239,6 +241,10 @@ export default function ProfilePageClient() {
           )}
           {activeTab === 'activity' && (
             <div className="space-y-6">
+              {/* 프로필 인사이트 (조회수·매칭 가능 프로젝트·평균 매칭 점수) — 본인 활동 데이터이므로
+                  "프로필" 탭이 아닌 "활동" 탭으로 이동. 이전엔 프로필 탭 최상단에 있어서
+                  "소개/프로필 정보"와 섞여 정체성 혼란. */}
+              <ProfileInsightsWidget />
               <ProfileCoffeeChats />
               <ProfileInvitations />
               <ProfileSentInvitations />
