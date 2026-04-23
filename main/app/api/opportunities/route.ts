@@ -7,6 +7,7 @@ import {
 } from '@/src/lib/subscription/usage-checker'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 import { captureServerEvent } from '@/src/lib/posthog/server'
+import { postSignal } from '@/src/lib/alerts/discord-signals'
 
 // Boost type priority for sorting
 const BOOST_PRIORITY: Record<string, number> = {
@@ -166,6 +167,21 @@ export const POST = withErrorCapture(async (request) => {
     type: data.type,
     has_embedding: !!embedding,
   }).catch(() => {})
+
+  // 실시간 Discord 알림 — 신규 프로젝트/스터디 발행
+  const kindLabel = data.type === 'startup' ? '창업' : data.type === 'study' ? '스터디' : '사이드 프로젝트'
+  const rolesPreview = Array.isArray(body.neededRoles) && body.neededRoles.length > 0
+    ? (body.neededRoles as string[]).slice(0, 3).join(' · ')
+    : '미정'
+  void postSignal('new_project', {
+    title: `🚀 새 ${kindLabel} 등록`,
+    description: `**${data.title}**`,
+    fields: [
+      { name: '모집 역할', value: rolesPreview, inline: true },
+      { name: '유형', value: kindLabel, inline: true },
+    ],
+    footer: `opportunity: ${data.id.slice(0, 8)}`,
+  })
 
   return ApiResponse.created(data)
 })

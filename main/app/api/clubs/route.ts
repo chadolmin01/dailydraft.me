@@ -3,6 +3,7 @@ import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 import { captureServerEvent } from '@/src/lib/posthog/server'
+import { postSignal } from '@/src/lib/alerts/discord-signals'
 import { notifyClubVerificationSubmitted } from '@/src/lib/notifications/create-notification'
 
 /**
@@ -338,6 +339,17 @@ export const POST = withErrorCapture(async (request) => {
 
   // 신청 접수 알림 — event_notifications 로 통일 (이전엔 legacy notifications 테이블에 들어가 UI 누락)
   await notifyClubVerificationSubmitted(user.id, club.name, club.slug)
+
+  // 실시간 Discord 알림 — 신규 클럽 claim 접수 (B2B 신호)
+  void postSignal('new_club', {
+    title: '🏢 새 클럽 신청',
+    description: `**${club.name}** — 인증 대기`,
+    fields: [
+      { name: '대표', value: docs.representative_name!.trim(), inline: true },
+      { name: '창립', value: `${docs.founding_year}년`, inline: true },
+    ],
+    footer: `slug: ${club.slug}`,
+  })
 
   return ApiResponse.created({ ...club, claim_status: 'pending' })
 })

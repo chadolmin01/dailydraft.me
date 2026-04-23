@@ -8,6 +8,7 @@ import {
 } from '@/src/lib/subscription/usage-checker'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 import { captureServerEvent } from '@/src/lib/posthog/server'
+import { postSignal } from '@/src/lib/alerts/discord-signals'
 import type { Profile } from '@/src/types/profile'
 import type { Opportunity } from '@/src/types/opportunity'
 
@@ -143,6 +144,16 @@ export const POST = withErrorCapture(async (request) => {
     match_score: match.score,
     score_band: scoreBandFor(match.score),
   }).catch(() => {})
+
+  // 실시간 Discord 알림 — 지원 생성 순간. 기다리지 않음 (성능 영향 0).
+  void postSignal('match_apply', {
+    title: '⚡ 새 지원',
+    description: `**${profile.nickname ?? '익명'}** → "${opportunity.title}" (${match.score}%)`,
+    fields: [
+      { name: '이유', value: match.reason.slice(0, 100), inline: false },
+    ],
+    footer: `opportunity: ${opportunityId.slice(0, 8)}`,
+  })
 
   return ApiResponse.created(data)
 })
