@@ -349,7 +349,7 @@ export default async function FeedPage({
                 <li key={item.update_id}>
                   <Link
                     href={`/p/${item.opportunity.id}`}
-                    className="block bg-surface-card border border-border rounded-2xl p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group no-underline"
+                    className="block bg-surface-card border border-border rounded-2xl p-5 ob-ring-glow group no-underline"
                   >
                     {/* Club chip */}
                     {item.club && (

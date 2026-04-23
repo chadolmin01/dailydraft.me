@@ -286,7 +286,7 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
             {/* Primary */}
             <Link
               href={cta.primary.href}
-              className="w-full flex items-center justify-center gap-2 py-4 bg-brand text-white rounded-full text-[15px] font-black hover:opacity-90 active:scale-[0.97] transition-all"
+              className="ob-press-spring w-full flex items-center justify-center gap-2 py-4 bg-brand text-white rounded-full text-[15px] font-black hover:opacity-90 shadow-[0_4px_14px_-4px_rgba(94,106,210,0.35)] hover:shadow-[0_6px_20px_-4px_rgba(94,106,210,0.45)]"
             >
               {/* @ts-expect-error lucide icon size prop */}
               <PrimaryIcon size={16} />
@@ -296,7 +296,7 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
             {/* Secondary */}
             <Link
               href={cta.secondary.href}
-              className="w-full flex items-center justify-center gap-2 py-4 bg-surface-sunken text-txt-secondary rounded-full text-[14px] font-bold hover:bg-surface-card hover:text-txt-primary active:scale-[0.97] transition-all"
+              className="ob-press-spring w-full flex items-center justify-center gap-2 py-4 bg-surface-sunken text-txt-secondary rounded-full text-[14px] font-bold hover:bg-surface-card hover:text-txt-primary"
             >
               {/* @ts-expect-error lucide icon size prop */}
               <SecondaryIcon size={16} />

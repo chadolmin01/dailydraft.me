@@ -21,9 +21,9 @@ export const Card: React.FC<CardProps> = ({
   onClick,
   variant = 'default',
 }) => {
-  const baseClasses = 'rounded-xl transition-all duration-200'
+  const baseClasses = 'rounded-xl'
 
-  const defaultClasses = 'bg-surface-card border border-border hover:shadow-md hover-spring'
+  const defaultClasses = 'bg-surface-card border border-border ob-ring-glow'
   const technicalClasses = 'bg-surface-card border border-border'
   const flatClasses = 'bg-surface-sunken rounded-xl border border-border'
   const solidClasses = 'bg-surface-card'
@@ -39,7 +39,7 @@ export const Card: React.FC<CardProps> = ({
       className={`
         ${baseClasses}
         ${variantClasses}
-        ${onClick ? 'cursor-pointer active:scale-[0.985]' : ''}
+        ${onClick ? 'cursor-pointer ob-press-spring' : ''}
         ${className}
       `}
     >

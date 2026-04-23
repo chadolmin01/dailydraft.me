@@ -88,11 +88,9 @@ function PersonCard({
         }
       }}
       style={stagger ? { animationDelay: `${Math.min(index * 50, 500)}ms` } : undefined}
-      className={`${stagger} bg-surface-card rounded-xl cursor-pointer
+      className={`${stagger} ob-ring-glow ob-press-spring bg-surface-card rounded-xl cursor-pointer
         flex flex-col overflow-hidden border border-border
-        hover:shadow-md hover:-translate-y-0.5 transition-all duration-200
-        focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none
-        active:scale-[0.985] active:shadow-none`}
+        focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 outline-none`}
     >
       {/* ── Header: 아바타 + 이름 + 역할 ── */}
       <div className="flex items-center gap-3 px-4 pt-4 pb-3">

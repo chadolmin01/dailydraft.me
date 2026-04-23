@@ -78,7 +78,7 @@ export default async function DraftsListPage() {
               <Link
                 key={d.id}
                 href={`/drafts/${d.id}`}
-                className="flex items-center gap-4 bg-surface-card rounded-2xl border border-border p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 hover-spring group"
+                className="flex items-center gap-4 bg-surface-card rounded-2xl border border-border p-5 ob-ring-glow hover-spring group"
               >
                 <div className="w-10 h-10 rounded-xl bg-brand-bg flex items-center justify-center shrink-0">
                   <FileEdit size={18} className="text-brand" />

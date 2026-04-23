@@ -133,7 +133,7 @@ export const Hero: React.FC = () => {
           >
             <Link
               href="/login"
-              className="group w-full sm:w-auto flex items-center justify-center gap-1.5 bg-surface-inverse text-txt-inverse px-7 py-3.5 rounded-full font-semibold text-[14px] hover:opacity-90 active:scale-[0.98] transition-all duration-200 shadow-[0_1px_3px_rgba(0,0,0,0.1),0_4px_16px_-2px_rgba(94,106,210,0.25)]"
+              className="ob-press-spring group w-full sm:w-auto flex items-center justify-center gap-1.5 bg-surface-inverse text-txt-inverse px-7 py-3.5 rounded-full font-semibold text-[14px] hover:opacity-90 shadow-[0_1px_3px_rgba(0,0,0,0.1),0_4px_16px_-2px_rgba(94,106,210,0.25)] hover:shadow-[0_2px_6px_rgba(0,0,0,0.12),0_8px_24px_-4px_rgba(94,106,210,0.35)]"
             >
               무료로 시작하기
               <ArrowRight

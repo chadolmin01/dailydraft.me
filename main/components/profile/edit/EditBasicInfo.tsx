@@ -31,7 +31,7 @@ export const EditBasicInfo: React.FC<EditBasicInfoProps> = ({
                 maxLength={7}
                 placeholder="어떻게 불러드릴까요?"
                 autoComplete="nickname"
-                className={`w-full px-3 py-2.5 text-base sm:text-sm border bg-surface-card rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all ${!nickname.trim() ? 'border-status-danger-text/30' : 'border-border'}`}
+                className={`ob-input w-full px-3 py-2.5 text-base sm:text-sm border bg-surface-card rounded-lg ${!nickname.trim() ? 'border-status-danger-text/30' : 'border-border'}`}
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono text-txt-disabled">{nickname.length}/7</span>
             </div>
@@ -47,7 +47,7 @@ export const EditBasicInfo: React.FC<EditBasicInfoProps> = ({
               placeholder="한 줄로 나를 표현해볼까요? 예: 사이드 프로젝트를 좋아하는 프론트엔드 개발자"
               rows={2}
               maxLength={200}
-              className="w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand resize-none transition-all"
+              className="ob-input w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg resize-none"
             />
             <p className={`text-xs mt-1 text-right font-mono ${vision.length >= 180 ? 'text-status-danger-text font-bold' : vision.length >= 150 ? 'text-status-warning-text' : 'text-txt-tertiary'}`}>{vision.length}/200</p>
           </div>

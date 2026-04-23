@@ -205,10 +205,10 @@ export default function NewClubPage() {
     )
   }
 
-  const INPUT_CLASS = 'w-full px-4 py-3 bg-surface-card border border-border rounded-xl text-[14px] text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-brand focus:shadow-[0_0_0_3px_rgba(94,106,210,0.12)] transition-all'
+  const INPUT_CLASS = 'ob-input w-full px-4 py-3 bg-surface-card border border-border rounded-xl text-[14px] text-txt-primary placeholder:text-txt-disabled'
 
   return (
-    <div className="bg-surface-bg min-h-full">
+    <div className="ob-atmos min-h-full">
       <div className="max-w-xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-16">
 
         {/* Header */}
@@ -580,7 +580,7 @@ export default function NewClubPage() {
                 (step === 2 && !canProceedStep2) ||
                 (step === 3 && !canProceedStep3)
               }
-              className="flex-1 flex items-center justify-center gap-2 px-5 py-3 bg-surface-inverse text-txt-inverse rounded-xl text-[14px] font-bold hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="ob-press-spring flex-1 flex items-center justify-center gap-2 px-5 py-3 bg-surface-inverse text-txt-inverse rounded-xl text-[14px] font-bold hover:opacity-90 shadow-[0_4px_14px_-4px_rgba(0,0,0,0.25)] hover:shadow-[0_6px_20px_-4px_rgba(0,0,0,0.3)] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               다음
               <ArrowRight size={14} />
@@ -592,7 +592,7 @@ export default function NewClubPage() {
               type="button"
               onClick={handleSubmit}
               disabled={submitting}
-              className="flex-1 flex items-center justify-center gap-2 px-5 py-3 bg-brand text-white rounded-xl text-[14px] font-bold hover:bg-brand-hover active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="ob-press-spring flex-1 flex items-center justify-center gap-2 px-5 py-3 bg-brand text-white rounded-xl text-[14px] font-bold hover:bg-brand-hover shadow-[0_4px_14px_-4px_rgba(94,106,210,0.35)] hover:shadow-[0_6px_20px_-4px_rgba(94,106,210,0.45)] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {submitting ? (
                 <>

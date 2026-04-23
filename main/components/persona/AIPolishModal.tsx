@@ -97,7 +97,7 @@ export function AIPolishModal({ personaId, isOpen, onClose }: Props) {
                 onChange={(e) => setInstruction(e.target.value)}
                 rows={5}
                 placeholder='예) 전체적으로 더 격식있게. 감성 표현 줄이고 수치 중심으로.'
-                className="w-full text-sm text-txt-primary bg-surface-bg border border-border rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors leading-relaxed resize-none"
+                className="w-full text-sm text-txt-primary bg-surface-bg border border-border rounded-xl px-3 py-2.5 ob-input leading-relaxed resize-none"
               />
               <p className="text-[10px] text-txt-tertiary mt-1">
                 {instruction.length}/300자

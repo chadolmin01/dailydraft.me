@@ -214,7 +214,7 @@ export function DiscordFeatureCarousel({ isOpen, onClose }: Props) {
             <>
               <a
                 href="/api/discord/oauth?returnTo=/explore"
-                className="w-full flex items-center justify-center gap-2 py-3.5 rounded-full text-sm font-bold text-white hover:opacity-90 active:scale-[0.97] transition-all"
+                className="w-full flex items-center justify-center gap-2 py-3.5 rounded-full text-sm font-bold text-white ob-press-spring hover:opacity-90"
                 style={{ backgroundColor: DISCORD_COLOR }}
               >
                 <DiscordIcon size={18} className="text-white" />
@@ -247,7 +247,7 @@ export function DiscordFeatureCarousel({ isOpen, onClose }: Props) {
               )}
               <button
                 onClick={goNext}
-                className="flex items-center gap-1.5 px-5 py-2.5 bg-surface-inverse text-txt-inverse rounded-full text-sm font-bold hover:opacity-90 active:scale-[0.97] transition-all"
+                className="flex items-center gap-1.5 px-5 py-2.5 bg-surface-inverse text-txt-inverse rounded-full text-sm font-bold ob-press-spring hover:opacity-90"
               >
                 다음
                 <ArrowRight size={15} />

@@ -442,7 +442,7 @@ export function GitHubSettingsPanel({ clubSlug, opportunityId, hideBackLink }: G
               <select
                 value={selectedChannelId}
                 onChange={(e) => setSelectedChannelId(e.target.value)}
-                className="w-full px-3 py-2 text-sm bg-surface-card border border-border rounded-xl text-txt-primary focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
+                className="w-full px-3 py-2 text-sm bg-surface-card border border-border rounded-xl text-txt-primary ob-input"
               >
                 <option value="">자동 (팀 채널 매핑 사용)</option>
                 {discordChannels.map((ch) => (
