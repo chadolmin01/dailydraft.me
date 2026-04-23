@@ -27,8 +27,10 @@ export function RecoveryOffer({ draft, onResume, onDiscard }: RecoveryOfferProps
   if (draft.skills.length > 0) filled.push(`스킬 ${draft.skills.length}개`)
 
   return (
-    <div className="fixed inset-0 ob-atmos flex flex-col items-center justify-center p-4 overflow-y-auto">
-      <div className="max-w-md w-full flex flex-col items-center py-4">
+    // 3-layer 센터링 (다른 milestone 화면과 동일).
+    <div className="fixed inset-0 ob-atmos overflow-y-auto">
+      <div className="min-h-full flex items-center justify-center p-4">
+        <div className="max-w-md w-full flex flex-col items-center py-4">
         <div
           className="ob-stagger-item w-14 h-14 rounded-full bg-brand-bg flex items-center justify-center mb-4"
           style={{ ['--stagger' as string]: '0ms' }}
@@ -91,6 +93,7 @@ export function RecoveryOffer({ draft, onResume, onDiscard }: RecoveryOfferProps
         >
           저장된 내용은 기기에만 보관되며, 새로 시작하시면 완전히 삭제됩니다.
         </p>
+        </div>
       </div>
     </div>
   )

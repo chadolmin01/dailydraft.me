@@ -127,10 +127,14 @@ export default function OnboardingPage() {
   }
 
   // Transition screen: 저장 완료 확인 → post-basic. 통일 토큰 적용 — w-14 아이콘 + ob-stagger-item 60ms.
+  // 3-layer 센터링: outer scroll + middle min-h-full center + inner content.
+  // flex justify-center 단독은 overflow-y-auto 와 같이 쓰이거나 콘텐츠가 작을 때 viewport 인식이
+  // 환경에 따라 위쪽 정렬되는 케이스가 있어 min-h-full 명시로 viewport 100% 보장.
   if (phase === 'transition') {
     return (
-      <div className="fixed inset-0 ob-atmos flex flex-col items-center justify-center p-4">
-        <div className="flex flex-col items-center">
+      <div className="fixed inset-0 ob-atmos overflow-y-auto">
+        <div className="min-h-full flex items-center justify-center p-4">
+          <div className="flex flex-col items-center">
           <div
             className="ob-stagger-item w-14 h-14 rounded-full bg-brand flex items-center justify-center mb-4"
             style={{ ['--stagger' as string]: '0ms' }}
@@ -149,6 +153,7 @@ export default function OnboardingPage() {
           >
             이제 Draft 를 시작하실 수 있습니다.
           </p>
+          </div>
         </div>
       </div>
     )
@@ -156,14 +161,16 @@ export default function OnboardingPage() {
 
   // Post-basic: 유저가 직접 선택 — AI 인터뷰 진행 또는 바로 시작.
   // 통일 토큰 적용 — w-14 아이콘 / ob-stagger-item 60ms / Title milestone 사이즈 / CTA 표준 / 합쇼체.
+  // 3-layer 센터링 (transition 화면과 동일 패턴).
   if (phase === 'post-basic') {
     const source = completedDraft?.source
     const isMatching = source === 'matching'
     return (
       <>
         <OfflineBanner />
-        <div className="fixed inset-0 ob-atmos flex flex-col items-center justify-center p-4">
-          <div className="w-full max-w-md flex flex-col items-center">
+        <div className="fixed inset-0 ob-atmos overflow-y-auto">
+          <div className="min-h-full flex items-center justify-center p-4">
+            <div className="w-full max-w-md flex flex-col items-center">
             <div
               className="ob-stagger-item w-14 h-14 rounded-full bg-brand-bg flex items-center justify-center mb-4"
               style={{ ['--stagger' as string]: '0ms' }}
@@ -250,6 +257,7 @@ export default function OnboardingPage() {
             >
               AI 인터뷰는 프로필 페이지에서 언제든 다시 진행하실 수 있습니다.
             </p>
+            </div>
           </div>
         </div>
       </>
