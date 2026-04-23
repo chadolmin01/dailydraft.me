@@ -323,19 +323,15 @@ export const ProfileEditPanel: React.FC<ProfileEditPanelProps> = ({ isOpen, onCl
       onClose={onClose}
       title="프로필 수정"
       subtitle="프로필 정보를 수정하세요"
+      // 2026-04-23: 상단 Save 버튼 제거. 하단 "변경사항 저장" primary 하나만 남겨
+      // 유저가 "둘 중 뭘 눌러야 하지?" 혼동하던 문제 해결. 저장 상태는 하단 버튼 텍스트로 표시.
       headerActions={
-        <button
-          onClick={handleSave}
-          disabled={updateProfile.isPending}
-          className="flex items-center gap-1.5 px-4 py-2 bg-brand text-white text-xs font-bold border border-brand hover:bg-brand-hover disabled:opacity-50 transition-all hover:opacity-90 active:scale-[0.97]"
-        >
-          {updateProfile.isPending ? (
-            <Loader2 size={14} className="animate-spin" />
-          ) : (
-            <Save size={14} />
-          )}
-          {saved ? '저장됨' : '저장'}
-        </button>
+        saved ? (
+          <span className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold text-brand bg-brand-bg rounded-full">
+            <Save size={11} />
+            저장됨
+          </span>
+        ) : undefined
       }
     >
       <div className="px-6 py-6 space-y-8">
