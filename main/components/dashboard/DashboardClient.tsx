@@ -214,8 +214,8 @@ export default function DashboardClient() {
 
         {/* Hero 인사 */}
         <div className="mb-8">
-          <p className="text-[13px] text-txt-tertiary mb-1">{greeting()}</p>
-          <h1 className="text-[28px] sm:text-[32px] font-bold text-txt-primary tracking-tight">
+          <p className="text-[13px] text-txt-tertiary mb-1 ob-stagger-item" style={{ ['--stagger' as string]: '20ms' }}>{greeting()}</p>
+          <h1 className="text-[28px] sm:text-[32px] font-bold text-txt-primary tracking-tight ob-title-rise">
             {profile?.nickname ?? user?.email?.split('@')[0] ?? '...'}
           </h1>
           {isOperator && (
@@ -259,7 +259,7 @@ export default function DashboardClient() {
                 <Link
                   key={item.id}
                   href={item.href}
-                  className={`flex items-center gap-3 p-4 rounded-xl border transition-all hover:shadow-md hover:-translate-y-0.5 hover-spring group ${
+                  className={`ob-ring-glow ob-press-spring flex items-center gap-3 p-4 rounded-xl border group ${
                     item.priority === 'high'
                       ? 'bg-status-danger-bg/30 border-status-danger-text/20'
                       : item.priority === 'mid'
@@ -307,7 +307,7 @@ export default function DashboardClient() {
                   <Link
                     key={club.slug}
                     href={pending && pending.pending_count > 0 ? `/clubs/${club.slug}/operator` : `/clubs/${club.slug}`}
-                    className="bg-surface-card rounded-2xl border border-border p-5 hover:shadow-md hover:-translate-y-0.5 hover-spring group"
+                    className="ob-ring-glow ob-press-spring bg-surface-card rounded-2xl border border-border p-5 group"
                   >
                     <div className="flex items-center gap-3 mb-3">
                       {club.logo_url ? (

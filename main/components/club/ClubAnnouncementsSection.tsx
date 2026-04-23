@@ -331,7 +331,7 @@ export function ClubAnnouncementsSection({ slug, isAdmin }: Props) {
                   <button
                     onClick={handleCreate}
                     disabled={submitting || !title.trim() || !content.trim()}
-                    className="flex items-center gap-1.5 px-4 py-1.5 text-[13px] font-semibold bg-brand text-white rounded-full hover:bg-brand-hover disabled:opacity-50 transition-colors"
+                    className="ob-press-spring flex items-center gap-1.5 px-4 py-1.5 text-[13px] font-semibold bg-brand text-white rounded-full hover:bg-brand-hover disabled:opacity-50"
                   >
                     {submitting ? <Loader2 size={13} className="animate-spin" /> : <Send size={13} />}
                     {scheduleDate ? '예약' : '게시'}

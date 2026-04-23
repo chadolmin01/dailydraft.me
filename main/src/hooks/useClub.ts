@@ -33,6 +33,21 @@ export interface ClubDetail {
   badges: ClubBadge[]
   owner: { user_id: string; nickname: string | null; avatar_url: string | null }
   my_role: string | null
+  // 공식 인증 관련 (2026-04-23 추가)
+  claim_status?: 'pending' | 'verified' | 'rejected' | null
+  university_id?: string | null
+  verification_submitted_at?: string | null
+  verification_reviewed_at?: string | null
+  verification_note?: string | null
+  verification_documents?: {
+    representative_name?: string
+    representative_email?: string
+    founding_year?: number
+    activity_summary?: string
+    website_url?: string | null
+    sns_url?: string | null
+    charter_url?: string | null
+  } | null
 }
 
 export interface ClubMember {

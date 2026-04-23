@@ -193,7 +193,7 @@ function ProjectCardItem({ card: p, index, onSelectProject, onPrefetchProject }:
       onMouseEnter={() => onPrefetchProject?.(p.id)}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectProject(p.id) } }}
       style={staggerClass ? { animationDelay: `${Math.min(index * 60, 600)}ms` } : undefined}
-      className={`${staggerClass} relative bg-surface-card rounded-2xl shadow-sm overflow-hidden group hover:shadow-md hover:-translate-y-0.5 hover-spring cursor-pointer min-h-[21.25rem] flex flex-col focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985] active:shadow-none`}
+      className={`${staggerClass} ob-ring-glow ob-press-spring relative bg-surface-card rounded-2xl overflow-hidden group cursor-pointer min-h-[21.25rem] flex flex-col border border-border focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 outline-none`}
     >
       {/* 헤더: 커버 */}
       <div className="relative h-36 shrink-0 bg-surface-inverse flex items-end p-4">

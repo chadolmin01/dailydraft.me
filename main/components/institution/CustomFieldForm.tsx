@@ -133,7 +133,7 @@ function FieldRow({
 }) {
   const labelId = `custom-field-${field.id}`
   const baseInput =
-    'w-full px-3 py-2.5 text-[13px] bg-surface-sunken border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors'
+    'w-full px-3 py-2.5 text-[13px] bg-surface-sunken border rounded-xl ob-input'
   const borderCls = error ? 'border-status-danger-text' : 'border-border'
 
   return (

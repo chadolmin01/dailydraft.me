@@ -81,7 +81,7 @@ export function PublicActivity({ userId }: { userId: string }) {
                 <Link
                   key={`${m.club.id}-${idx}`}
                   href={`/clubs/${m.club.slug}`}
-                  className="flex items-center gap-3 bg-surface-card border border-border rounded-xl p-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group"
+                  className="flex items-center gap-3 bg-surface-card border border-border rounded-xl p-4 ob-ring-glow group"
                 >
                   {m.club.logo_url ? (
                     <Image src={m.club.logo_url} alt={m.club.name} width={40} height={40} className="rounded-xl object-cover shrink-0" />
@@ -119,7 +119,7 @@ export function PublicActivity({ userId }: { userId: string }) {
               <Link
                 key={p.id}
                 href={`/p/${p.id}`}
-                className="block bg-surface-card border border-border rounded-xl p-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group"
+                className="block bg-surface-card border border-border rounded-xl p-4 ob-ring-glow group"
               >
                 <div className="flex items-start justify-between gap-2 mb-1">
                   <p className="text-sm font-bold text-txt-primary line-clamp-1 flex-1">{p.title}</p>

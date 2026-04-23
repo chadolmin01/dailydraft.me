@@ -75,7 +75,7 @@ export function CoffeeChatAcceptModal({
             onChange={e => setMessage(e.target.value)}
             rows={3}
             placeholder="상대방에게 전할 메시지를 작성하세요..."
-            className="w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-xl text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors resize-none"
+            className="w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-xl text-txt-primary placeholder:text-txt-disabled ob-input resize-none"
           />
         </div>
 
@@ -97,7 +97,7 @@ export function CoffeeChatAcceptModal({
                 aria-label="연락받을 이메일"
                 inputMode="email"
                 autoComplete="email"
-                className="flex-1 px-3 py-2 text-base sm:text-sm border border-border bg-surface-card rounded-xl text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
+                className="flex-1 px-3 py-2 text-base sm:text-sm border border-border bg-surface-card rounded-xl text-txt-primary placeholder:text-txt-disabled ob-input"
               />
             </div>
             <div className="flex items-center gap-2">
@@ -112,7 +112,7 @@ export function CoffeeChatAcceptModal({
                 aria-label="연락받을 전화번호 (선택)"
                 inputMode="tel"
                 autoComplete="tel"
-                className="flex-1 px-3 py-2 text-base sm:text-sm border border-border bg-surface-card rounded-xl text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
+                className="flex-1 px-3 py-2 text-base sm:text-sm border border-border bg-surface-card rounded-xl text-txt-primary placeholder:text-txt-disabled ob-input"
               />
             </div>
             <div className="flex items-center gap-2">
@@ -124,7 +124,7 @@ export function CoffeeChatAcceptModal({
                 value={contactKakao}
                 onChange={e => setContactKakao(e.target.value)}
                 placeholder="카카오톡 ID"
-                className="flex-1 px-3 py-2 text-base sm:text-sm border border-border bg-surface-card rounded-xl text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
+                className="flex-1 px-3 py-2 text-base sm:text-sm border border-border bg-surface-card rounded-xl text-txt-primary placeholder:text-txt-disabled ob-input"
               />
             </div>
           </div>
@@ -145,7 +145,7 @@ export function CoffeeChatAcceptModal({
             onChange={e => setRequirements(e.target.value)}
             rows={2}
             placeholder="포트폴리오, 이력서 등 요청할 내용이 있다면 작성하세요..."
-            className="w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-xl text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors resize-none"
+            className="w-full px-3 py-2.5 text-base sm:text-sm border border-border bg-surface-card rounded-xl text-txt-primary placeholder:text-txt-disabled ob-input resize-none"
           />
         </div>
       </div>

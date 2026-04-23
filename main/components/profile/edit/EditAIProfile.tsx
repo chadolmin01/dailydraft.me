@@ -34,7 +34,7 @@ function TagEditor({ label, tags, onChange, suggestions }: { label: string; tags
           type="text" value={input} onChange={e => setInput(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); add(input.trim()); setInput('') } }}
           placeholder="직접 입력" maxLength={20}
-          className="flex-1 px-3 py-1.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
+          className="flex-1 px-3 py-1.5 text-base sm:text-sm border border-border bg-surface-card rounded-lg ob-input"
         />
         <button type="button" onClick={() => { add(input.trim()); setInput('') }}
           aria-label="추가"
@@ -158,7 +158,7 @@ export const EditAIProfile: React.FC<EditAIProfileProps> = ({
               value={hoursPerWeek}
               onChange={e => setHoursPerWeek(e.target.value)}
               placeholder="예: 15"
-              className="w-32 px-3 py-2 text-base sm:text-sm border border-border bg-surface-card rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
+              className="w-32 px-3 py-2 text-base sm:text-sm border border-border bg-surface-card rounded-lg ob-input"
             />
             <span className="text-xs text-txt-tertiary">시간</span>
           </div>

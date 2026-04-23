@@ -441,7 +441,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                   {isOwner && (
                     <button
                       onClick={() => setShowWriteUpdate(true)}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 text-[12px] font-semibold bg-surface-inverse text-txt-inverse rounded-full hover:opacity-90 active:scale-[0.97] transition-all"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 text-[12px] font-semibold bg-surface-inverse text-txt-inverse rounded-full ob-press-spring hover:opacity-90"
                     >
                       + 작성하기
                     </button>
@@ -778,7 +778,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
       >
         <button
           onClick={handleCoffeeChatAction}
-          className="w-full bg-brand text-white py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 border border-brand hover:opacity-90 active:scale-[0.97] transition-all"
+          className="w-full bg-brand text-white py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 border border-brand ob-press-spring hover:opacity-90"
         >
           <Coffee size={16} />
           커피챗 신청

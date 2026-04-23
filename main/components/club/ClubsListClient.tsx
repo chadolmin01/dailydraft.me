@@ -254,7 +254,7 @@ function ClubCardItem({ club }: { club: ClubCard }) {
   return (
     <Link
       href={`/clubs/${club.slug}`}
-      className="h-[108px] flex items-start gap-3.5 p-4 bg-surface-card border border-border rounded-xl shadow-sm hover:shadow-md hover:-translate-y-[2px] transition-all duration-200 ease-out no-underline focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985]"
+      className="ob-ring-glow ob-press-spring h-[108px] flex items-start gap-3.5 p-4 bg-surface-card border border-border rounded-xl no-underline focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 outline-none"
     >
       {club.logo_url ? (
         <Image src={club.logo_url} alt={club.name} width={52} height={52} className="w-[52px] h-[52px] rounded-md object-cover shrink-0" />

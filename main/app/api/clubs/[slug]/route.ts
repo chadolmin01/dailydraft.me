@@ -26,7 +26,10 @@ export const GET = withErrorCapture(
         .select(`
           id, slug, name, description, logo_url, category,
           visibility, require_approval, team_channel_visibility,
-          created_by, created_at, updated_at
+          created_by, created_at, updated_at,
+          claim_status, university_id,
+          verification_submitted_at, verification_reviewed_at, verification_note,
+          verification_documents
         `)
         .eq('slug', slug)
         .maybeSingle(),

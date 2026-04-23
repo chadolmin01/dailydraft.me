@@ -693,7 +693,7 @@ function ExplorePageContent() {
                         onClick={() => handleSelectProject(card.id)}
                         onMouseEnter={() => handlePrefetchProject(card.id)}
                         onKeyDown={e => { if (e.key === 'Enter') handleSelectProject(card.id) }}
-                        className="shrink-0 w-[280px] bg-surface-card border border-border rounded-xl overflow-hidden cursor-pointer hover:shadow-md hover:-translate-y-[2px] transition-all duration-200 flex flex-col"
+                        className="ob-ring-glow ob-press-spring shrink-0 w-[280px] bg-surface-card border border-border rounded-xl overflow-hidden cursor-pointer flex flex-col"
                       >
                         {/* Body */}
                         <div className="p-5 flex-1 min-h-0">
@@ -793,7 +793,7 @@ function ExplorePageContent() {
                           onClick={() => handleSelectProject(wu.opportunity_id)}
                           onMouseEnter={() => handlePrefetchProject(wu.opportunity_id)}
                           onKeyDown={e => { if (e.key === 'Enter') handleSelectProject(wu.opportunity_id) }}
-                          className="shrink-0 w-[280px] bg-surface-card border border-border rounded-xl overflow-hidden cursor-pointer hover:shadow-md hover:-translate-y-[2px] transition-all duration-200"
+                          className="ob-ring-glow ob-press-spring shrink-0 w-[280px] bg-surface-card border border-border rounded-xl overflow-hidden cursor-pointer"
                         >
                           <div className="p-5">
                             {/* Project + club */}
@@ -847,7 +847,7 @@ function ExplorePageContent() {
                       tabIndex={0}
                       onClick={() => handleSelectProfile(t.id, false)}
                       onKeyDown={e => { if (e.key === 'Enter') handleSelectProfile(t.id, false) }}
-                      className="shrink-0 w-[200px] bg-surface-card border border-border rounded-xl overflow-hidden cursor-pointer hover:shadow-md hover:-translate-y-[2px] transition-all duration-200"
+                      className="ob-ring-glow ob-press-spring shrink-0 w-[200px] bg-surface-card border border-border rounded-xl overflow-hidden cursor-pointer"
                     >
                       <div className="p-5 pt-5 flex flex-col items-center text-center gap-2">
                         {/* Avatar */}
@@ -907,7 +907,7 @@ function ExplorePageContent() {
                     <Link
                       key={club.id}
                       href={`/clubs/${club.slug}`}
-                      className="shrink-0 w-[280px] bg-surface-card border border-border rounded-xl overflow-hidden no-underline text-inherit hover:shadow-md hover:-translate-y-[2px] transition-all duration-200"
+                      className="ob-ring-glow ob-press-spring shrink-0 w-[280px] bg-surface-card border border-border rounded-xl overflow-hidden no-underline text-inherit"
                     >
                       <div className="p-5">
                         {/* Club header: logo + info */}

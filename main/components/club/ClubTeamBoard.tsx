@@ -179,7 +179,7 @@ function SummaryCard({ value, label, highlight, alert, onClick }: {
     return (
       <button
         onClick={onClick}
-        className="bg-surface-card border border-border rounded-xl p-4 text-center hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+        className="bg-surface-card border border-border rounded-xl p-4 text-center ob-ring-glow"
       >
         {content}
       </button>
@@ -216,7 +216,7 @@ function TeamCard({ team, fromHref, isAdmin }: { team: ClubTeam; fromHref: strin
   return (
     <Link
       href={href}
-      className="block bg-surface-card border border-border rounded-xl p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group"
+      className="block bg-surface-card border border-border rounded-xl p-5 ob-ring-glow group"
     >
       {/* 헤더: 팀명 + 상태 */}
       <div className="flex items-center justify-between mb-3">

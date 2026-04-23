@@ -197,13 +197,13 @@ export function ProfileCoffeeChats() {
                     <div className="flex items-center gap-2 flex-shrink-0">
                       <button
                         onClick={() => setAcceptModalChat(chat)}
-                        className="px-3 py-1.5 text-xs font-bold bg-indicator-online text-white border border-indicator-online hover:bg-indicator-online/90 hover:opacity-90 active:scale-[0.97] transition-all"
+                        className="px-3 py-1.5 text-xs font-bold bg-indicator-online text-white border border-indicator-online hover:bg-indicator-online/90 hover:opacity-90 ob-press-spring"
                       >
                         수락
                       </button>
                       <button
                         onClick={() => setDeclineTarget(chat.id)}
-                        className="px-3 py-1.5 text-xs font-bold border border-border text-txt-secondary hover:bg-surface-sunken hover:shadow-md active:scale-[0.97] transition-all"
+                        className="px-3 py-1.5 text-xs font-bold border border-border text-txt-secondary hover:bg-surface-sunken hover:shadow-md ob-press-spring"
                       >
                         거절
                       </button>

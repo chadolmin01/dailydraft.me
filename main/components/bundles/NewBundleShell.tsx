@@ -464,7 +464,7 @@ function FillMetaStep({
                   }
                   placeholder={f.placeholder}
                   rows={3}
-                  className="w-full text-sm text-txt-primary bg-surface-bg border border-border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors leading-relaxed resize-none"
+                  className="w-full text-sm text-txt-primary bg-surface-bg border border-border rounded-xl px-3 py-2 ob-input leading-relaxed resize-none"
                 />
               ) : f.type === 'select' ? (
                 <select
@@ -472,7 +472,7 @@ function FillMetaStep({
                   onChange={(e) =>
                     onChange({ ...meta, [f.name]: e.target.value })
                   }
-                  className="w-full h-10 text-sm text-txt-primary bg-surface-bg border border-border rounded-xl px-3 focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
+                  className="w-full h-10 text-sm text-txt-primary bg-surface-bg border border-border rounded-xl px-3 ob-input"
                 >
                   <option value="">선택하세요...</option>
                   {(f.options ?? []).map((opt) => (
@@ -489,7 +489,7 @@ function FillMetaStep({
                     onChange({ ...meta, [f.name]: e.target.value })
                   }
                   placeholder={f.placeholder}
-                  className="w-full h-10 text-sm text-txt-primary bg-surface-bg border border-border rounded-xl px-3 focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
+                  className="w-full h-10 text-sm text-txt-primary bg-surface-bg border border-border rounded-xl px-3 ob-input"
                 />
               )}
             </div>
@@ -675,7 +675,7 @@ function ScheduleStep({
             type="datetime-local"
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            className="w-full h-11 text-sm text-txt-primary bg-surface-bg border border-border rounded-xl px-3 focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
+            className="w-full h-11 text-sm text-txt-primary bg-surface-bg border border-border rounded-xl px-3 ob-input"
           />
         </label>
 

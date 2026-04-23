@@ -207,7 +207,7 @@ export default function InstitutionMembersPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="이름으로 검색..."
-              className="w-full pl-10 pr-4 py-2.5 bg-surface-card rounded-xl border border-border text-base sm:text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
+              className="w-full pl-10 pr-4 py-2.5 bg-surface-card rounded-xl border border-border text-base sm:text-sm text-txt-primary placeholder:text-txt-disabled ob-input"
             />
           </div>
 
@@ -411,7 +411,7 @@ export default function InstitutionMembersPage() {
                   inputMode="email"
                   autoComplete="email"
                   required
-                  className="w-full px-3 py-2.5 bg-surface-sunken rounded-xl border border-border text-base sm:text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
+                  className="w-full px-3 py-2.5 bg-surface-sunken rounded-xl border border-border text-base sm:text-sm text-txt-primary placeholder:text-txt-disabled ob-input"
                 />
               </div>
               <div>
@@ -445,7 +445,7 @@ export default function InstitutionMembersPage() {
                   onChange={(e) => setAddNotes(e.target.value)}
                   placeholder="예: FLIP 10기 회장, 2026년 동계 인턴"
                   aria-label="기관 멤버 참고사항 (선택)"
-                  className="w-full px-3 py-2.5 bg-surface-sunken rounded-xl border border-border text-base sm:text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-colors"
+                  className="w-full px-3 py-2.5 bg-surface-sunken rounded-xl border border-border text-base sm:text-sm text-txt-primary placeholder:text-txt-disabled ob-input"
                 />
               </div>
               {addError && (

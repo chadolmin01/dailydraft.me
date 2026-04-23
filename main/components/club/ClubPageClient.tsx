@@ -21,6 +21,8 @@ import { ClubShareMenu } from '@/components/club/ClubShareMenu'
 import { MemberRoleMenu } from '@/components/club/MemberRoleMenu'
 import { ClubAnnouncementsSection } from '@/components/club/ClubAnnouncementsSection'
 import { ClubEventsSection } from '@/components/club/ClubEventsSection'
+import { ClubStatusBanner } from '@/components/club/ClubStatusBanner'
+import { ClubVerifiedBadge } from '@/components/club/ClubVerifiedBadge'
 
 function StaggerCard({ children, staggerKey, index }: { children: React.ReactNode; staggerKey: string; index: number }) {
   const cls = useStaggerOnce(staggerKey)
@@ -181,6 +183,16 @@ export default function ClubPageClient() {
           </div>
         </div>
 
+        {/* 공식 인증 상태 배너 — pending/rejected/legacy 시 안내. verified + university_id 는 자동 숨김 */}
+        <ClubStatusBanner
+          claimStatus={club.claim_status}
+          universityId={club.university_id}
+          verificationNote={club.verification_note}
+          submittedAt={club.verification_submitted_at}
+          clubSlug={club.slug}
+          isOwner={isAdmin}
+        />
+
         {/* 운영자 전용 툴바 — owner/admin 일 때만. Progressive disclosure:
             멤버는 못 봄 → 일반 클럽 탐색자 UI 유지. 운영자는 여기서 자주 쓰는 액션 1클릭. */}
         {isAdmin && (
@@ -209,8 +221,14 @@ export default function ClubPageClient() {
             </div>
           )}
           <div className="flex-1 min-w-0 pt-1">
-            <div className="flex items-center gap-2.5 mb-1.5">
+            <div className="flex items-center gap-2.5 mb-1.5 flex-wrap">
               <h1 className="text-[22px] font-bold text-txt-primary truncate">{club.name}</h1>
+              <ClubVerifiedBadge
+                claimStatus={club.claim_status}
+                universityName={universityName}
+                reviewedAt={club.verification_reviewed_at}
+                size="md"
+              />
               {club.category && (
                 <span className="shrink-0 text-xs font-semibold text-brand bg-brand-bg px-2.5 py-0.5 rounded-full">
                   {club.category}
@@ -325,7 +343,7 @@ export default function ClubPageClient() {
             {club.owner.nickname && (
               <div>
                 <h3 className="text-[15px] font-semibold text-txt-primary mb-3">운영</h3>
-                <div className="flex items-center gap-3 bg-surface-card border border-border rounded-xl p-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+                <div className="flex items-center gap-3 bg-surface-card border border-border rounded-xl p-4 ob-ring-glow">
                   <div className="w-10 h-10 rounded-full bg-brand-bg flex items-center justify-center text-sm font-bold text-brand shrink-0">
                     {club.owner.nickname[0]}
                   </div>
@@ -354,7 +372,7 @@ export default function ClubPageClient() {
                     <Link
                       key={p.id}
                       href={`/p/${p.id}`}
-                      className="bg-surface-card border border-border rounded-xl p-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group block no-underline"
+                      className="bg-surface-card border border-border rounded-xl p-4 ob-ring-glow group block no-underline"
                     >
                       <div className="flex items-center gap-2 mb-1">
                         <h4 className="text-[14px] font-bold text-txt-primary truncate flex-1">{p.title}</h4>
@@ -392,7 +410,7 @@ export default function ClubPageClient() {
                     { value: club.member_count, label: '멤버', key: 'stat-members' },
                   ].map((item, i) => (
                     <StaggerCard key={item.key} staggerKey={item.key} index={i}>
-                      <div className="bg-surface-card border border-border rounded-xl p-5 text-center hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+                      <div className="bg-surface-card border border-border rounded-xl p-5 text-center ob-ring-glow">
                         <div className="text-[22px] font-bold text-txt-primary">{item.value}</div>
                         <div className="text-[13px] text-txt-tertiary mt-0.5">{item.label}</div>
                       </div>
@@ -406,7 +424,7 @@ export default function ClubPageClient() {
             {isAdmin && (
               <Link
                 href={`/clubs/${slug}/settings`}
-                className="flex items-center gap-3 w-full p-5 bg-surface-card border border-border rounded-xl hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 text-left active:scale-[0.985]"
+                className="flex items-center gap-3 w-full p-5 bg-surface-card border border-border rounded-xl ob-ring-glow text-left active:scale-[0.985]"
               >
                 <Settings size={16} className="text-txt-tertiary" />
                 <span className="text-sm font-semibold text-txt-primary">클럽 설정 관리</span>
@@ -438,7 +456,7 @@ export default function ClubPageClient() {
               <div className="flex justify-end mb-4">
                 <Link
                   href={`/projects/new?club=${club.id}&from=/clubs/${slug}`}
-                  className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold bg-brand text-white rounded-xl hover:bg-brand-hover active:scale-[0.97] transition-all"
+                  className="ob-press-spring flex items-center gap-1.5 px-4 py-2 text-sm font-semibold bg-brand text-white rounded-xl hover:bg-brand-hover"
                 >
                   <Plus size={15} />
                   프로젝트 추가
@@ -461,7 +479,7 @@ export default function ClubPageClient() {
                   <StaggerCard key={p.id} staggerKey={`project:${p.id}`} index={i}>
                     <Link
                       href={`/explore?project=${p.id}`}
-                      className="bg-surface-card border border-border rounded-xl overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col h-full no-underline focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985]"
+                      className="bg-surface-card border border-border rounded-xl overflow-hidden ob-ring-glow flex flex-col h-full no-underline focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985]"
                     >
                       <div className="p-5 flex-1">
                         <div className="flex items-center gap-2 mb-1">
@@ -540,7 +558,7 @@ export default function ClubPageClient() {
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
               {(membersData?.members || []).map((m, i) => (
                 <StaggerCard key={m.id} staggerKey={`member:${m.id}`} index={i}>
-                  <div className="relative h-[180px] bg-surface-card border border-border rounded-xl p-5 flex flex-col items-center text-center gap-2 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+                  <div className="relative h-[180px] bg-surface-card border border-border rounded-xl p-5 flex flex-col items-center text-center gap-2 ob-ring-glow">
                     {/* 운영진 관리 메뉴 — owner/admin 만 */}
                     {isAdmin && (club.my_role === 'owner' || club.my_role === 'admin') && (
                       <div className="absolute top-2 right-2">
@@ -617,7 +635,7 @@ export default function ClubPageClient() {
                     <StaggerCard key={cohort} staggerKey={`cohort:${cohort}`} index={idx}>
                       <Link
                         href={`/clubs/${slug}/cohorts/${encodeURIComponent(cohort)}/archive`}
-                        className="bg-surface-card border border-border rounded-xl p-5 flex items-center justify-between hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group"
+                        className="bg-surface-card border border-border rounded-xl p-5 flex items-center justify-between ob-ring-glow group"
                       >
                         <div className="flex items-center gap-3">
                           <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${isLatest ? 'bg-status-success-text' : 'bg-border'}`} />
