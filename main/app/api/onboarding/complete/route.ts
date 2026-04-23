@@ -4,6 +4,7 @@ import { parseNickname } from '@/src/lib/clean-nickname'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 import { autoEnrollByEmail, autoEnrollByUniversity } from '@/src/lib/institution/auto-enroll'
 import { captureServerEvent } from '@/src/lib/posthog/server'
+import { postSignal } from '@/src/lib/alerts/discord-signals'
 import { sendWelcomeEmail } from '@/src/lib/email/send-welcome'
 import {
   findUniversityByEmail,
@@ -204,6 +205,20 @@ export const POST = withErrorCapture(async (request) => {
         universityName: inferredUniversity,
         isVerifiedStudent: !!studentVerifiedAt,
       }).catch(e => console.warn('[onboarding/complete] welcome email failed:', e))
+
+      // 최초 온보딩 완료 실시간 Discord 알림
+      const interestPreview = Array.isArray(interestTags) && interestTags.length > 0
+        ? (interestTags as string[]).slice(0, 3).join(' · ')
+        : '미설정'
+      void postSignal('new_user', {
+        title: '🎉 새 유저 합류',
+        description: `**${cleanName}**${inferredUniversity ? ` · ${inferredUniversity}` : ''}`,
+        fields: [
+          { name: '관심', value: interestPreview, inline: true },
+          { name: '직군', value: desiredPosition || '미설정', inline: true },
+          { name: '유입', value: normalizedSource || '미상', inline: true },
+        ],
+      })
     }
 
     return ApiResponse.ok({

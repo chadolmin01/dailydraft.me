@@ -11,6 +11,7 @@ import { createClient } from '@supabase/supabase-js'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
+import { postSignal } from '@/src/lib/alerts/discord-signals'
 import { APP_URL } from '@/src/constants'
 
 const supabaseAdmin = createClient(
@@ -143,6 +144,16 @@ export const POST = withErrorCapture(async (req: NextRequest) => {
       }
 
       // Web Push 는 createNotification() 내부에서 자동 fire — 중복 호출 제거 (2026-04-23)
+
+      // 실시간 Discord 알림 — 커피챗 신청 순간
+      void postSignal('coffee_chat', {
+        title: '☕ 커피챗 신청',
+        description: `**${requesterName}** → **${ownerName}**${isPersonMode ? '' : ` ("${projectTitle}")`}`,
+        fields: [
+          { name: '모드', value: isPersonMode ? '개인' : '프로젝트', inline: true },
+          { name: '메시지', value: (chat.message || '(없음)').slice(0, 80), inline: false },
+        ],
+      })
     } else if (type === 'accepted' || type === 'declined') {
       if (!requesterEmail) {
         return ApiResponse.validationError('Requester email not found')
