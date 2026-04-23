@@ -20,7 +20,6 @@ import {
   ProfileCoffeeChats,
   ProfileInvitations,
   ProfileSentInvitations,
-  AiOnboardingModal,
 } from '@/components/profile'
 import { SkeletonProfile, SkeletonGrid } from '@/components/ui/Skeleton'
 
@@ -76,7 +75,6 @@ export default function ProfilePageClient() {
   useCoffeeChats({ asOwner: false })
   useProjectInvitations({ asSender: false })
 
-  const [showAiConfirm, setShowAiConfirm] = useState(false)
   const [activeTab, setActiveTab] = useState<Tab>('about')
 
   // vision_summary 에서 강점 리스트 파싱 (Sidebar 에 전달)
@@ -108,45 +106,43 @@ export default function ProfilePageClient() {
     <div className="bg-surface-bg min-h-full">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
 
-        {/* AI 온보딩 유도 배너 — 대화형 매칭 미완료 시 */}
+        {/* AI 온보딩 유도 배너 — 대화형 매칭 미완료 시. 한 번 클릭으로 바로 진입 (confirm 모달 제거).
+            배너 누르는 시점에 현재 profile 로 draft 를 구성해 sessionStorage 에 저장. 인터뷰 페이지가
+            이 draft 를 읽어 개인정보 재입력 없이 바로 7문항 화면 시작. */}
         {!profile.ai_chat_completed && (
           <button
-            onClick={() => setShowAiConfirm(true)}
-            className="w-full group bg-surface-card border border-border rounded-2xl p-4 flex items-center gap-3 hover:border-brand hover:bg-brand-bg/30 transition-colors text-left"
+            type="button"
+            onClick={() => {
+              const draft = {
+                name: profile.nickname || '',
+                affiliationType: profile.affiliation_type || 'student',
+                university: profile.university || '',
+                major: profile.major || '',
+                locations: (profile.locations as string[] | null) ?? [],
+                position: profile.desired_position || '',
+                situation: profile.current_situation || 'exploring',
+                skills: (profile.skills as Array<{ name: string }> | null)?.map(s => s.name) ?? [],
+                interests: (profile.interest_tags as string[] | null) ?? [],
+                source: 'matching' as const,
+              }
+              sessionStorage.setItem('onboarding-draft', JSON.stringify(draft))
+              router.push('/onboarding/interview')
+            }}
+            className="ob-ring-glow ob-press-spring w-full group bg-surface-card border border-border rounded-2xl p-4 flex items-center gap-3 text-left"
           >
             <div className="w-10 h-10 rounded-xl bg-brand-bg flex items-center justify-center shrink-0">
               <Sparkles size={16} className="text-brand" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold text-txt-primary">2분 대화로 매칭 정확도 높이기</p>
-              <p className="text-xs text-txt-tertiary mt-0.5">작업 스타일·성향 분석 후 맞춤 팀원을 추천합니다</p>
+              <p className="text-xs text-txt-tertiary mt-0.5">7문항 답변으로 팀 스타일·성향을 분석해 맞춤 팀원을 추천합니다</p>
             </div>
-            <span className="shrink-0 flex items-center gap-1 text-xs font-semibold text-brand">
+            <span className="shrink-0 flex items-center gap-1 text-xs font-semibold text-brand group-hover:translate-x-0.5 transition-transform">
               시작
               <ArrowRight size={12} />
             </span>
           </button>
         )}
-        <AiOnboardingModal
-          isOpen={showAiConfirm}
-          onClose={() => setShowAiConfirm(false)}
-          onConfirm={() => {
-            setShowAiConfirm(false)
-            const draft = {
-              name: profile.nickname || '',
-              affiliationType: profile.affiliation_type || 'student',
-              university: profile.university || '',
-              major: profile.major || '',
-              locations: (profile.locations as string[] | null) ?? [],
-              position: profile.desired_position || '',
-              situation: profile.current_situation || 'exploring',
-              skills: (profile.skills as Array<{ name: string }> | null)?.map(s => s.name) ?? [],
-              interests: (profile.interest_tags as string[] | null) ?? [],
-            }
-            sessionStorage.setItem('onboarding-draft', JSON.stringify(draft))
-            router.push('/onboarding/interview')
-          }}
-        />
 
         {/* Hero — 아바타·이름·포지션·소개 */}
         <ProfileHero
