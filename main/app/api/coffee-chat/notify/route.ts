@@ -10,7 +10,6 @@ import { dmCoffeeChatRequest, dmPersonCoffeeChatRequest, dmCoffeeChatResponse, d
 import { createClient } from '@supabase/supabase-js'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
-import { sendPushToUser } from '@/src/lib/push-notification'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 import { APP_URL } from '@/src/constants'
 
@@ -143,12 +142,7 @@ export const POST = withErrorCapture(async (req: NextRequest) => {
         dmCoffeeChatRequest(chat.owner_user_id, requesterName, projectTitle).catch(() => {})
       }
 
-      // Web Push — 실패해도 메인 흐름 보호
-      await sendPushToUser(chat.owner_user_id, {
-        title: '☕ 커피챗 신청이 왔어요',
-        body: `${requesterName}님이 커피챗을 신청했습니다.`,
-        url: '/notifications',
-      }).catch(err => console.warn('[notify] push 실패 (무시):', err))
+      // Web Push 는 createNotification() 내부에서 자동 fire — 중복 호출 제거 (2026-04-23)
     } else if (type === 'accepted' || type === 'declined') {
       if (!requesterEmail) {
         return ApiResponse.validationError('Requester email not found')
@@ -194,14 +188,7 @@ export const POST = withErrorCapture(async (req: NextRequest) => {
         dmCoffeeChatResponse(chat.requester_user_id, ownerName, projectTitle, type === 'accepted').catch(() => {})
       }
 
-      // Web Push — 실패해도 메인 흐름 보호
-      await sendPushToUser(chat.requester_user_id, {
-        title: type === 'accepted' ? '☕ 커피챗이 수락되었습니다' : '커피챗 결과 알림',
-        body: type === 'accepted'
-          ? `${ownerName} 님이 커피챗을 수락하셨습니다. 연락처를 확인하세요.`
-          : `${ownerName} 님이 커피챗 신청을 수락하지 않으셨습니다.`,
-        url: '/notifications',
-      }).catch(err => console.warn('[notify] push 실패 (무시):', err))
+      // Web Push 는 createNotification() 내부에서 자동 fire — 중복 호출 제거 (2026-04-23)
 
       // Store invitation message if provided
       if (type === 'accepted' && body.invitationMessage) {
