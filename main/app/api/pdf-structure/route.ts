@@ -1,27 +1,29 @@
 import { createClient } from '@/src/lib/supabase/server'
-import { genAI } from '@/src/lib/ai/gemini-client'
+import { createGoogleGenerativeAI } from '@ai-sdk/google'
+import { generateObject } from 'ai'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { applyRateLimit } from '@/src/lib/rate-limit'
 import { logError } from '@/src/lib/error-logging'
-import { safeGenerate } from '@/src/lib/ai/safe-generate'
 import { PdfStructureSchema } from '@/src/lib/ai/schemas'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
 const SYSTEM_PROMPT = `당신은 스타트업 PM입니다. 업로드된 PDF 문서를 분석하여 다음 3가지를 추출하세요.
 문서에 명시되지 않은 내용은 "내용 없음"으로 표기하세요.
 
-반드시 아래 JSON 형식으로만 반환하세요:
-{
-  "problem": "해결하려는 문제",
-  "solution": "핵심 솔루션",
-  "target": "타겟 고객"
-}`
+출력 필드:
+- problem: 해결하려는 문제
+- solution: 핵심 솔루션
+- target: 타겟 고객`
 
 export interface StructuredIdea {
   problem: string
   solution: string
   target: string
 }
+
+const google = createGoogleGenerativeAI({
+  apiKey: process.env.GEMINI_API_KEY,
+})
 
 export const POST = withErrorCapture(async (request) => {
   try {
@@ -56,30 +58,28 @@ export const POST = withErrorCapture(async (request) => {
     }
     const mimeType = mimeTypeMap[ext || ''] || file.type || 'application/pdf'
 
-    // 문서를 base64로 변환 → Gemini에 직접 전송
+    // AI SDK 의 file content part — Buffer 를 그대로 전달, base64 변환 자동.
+    // 기존 수동 base64 인코딩 + inlineData 구조 + safeGenerate JSON 파싱 로직을 한 번에 대체.
     const arrayBuffer = await file.arrayBuffer()
-    const base64Data = Buffer.from(arrayBuffer).toString('base64')
+    const fileBuffer = Buffer.from(arrayBuffer)
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
-
-    const { data: structured } = await safeGenerate({
-      model,
-      prompt: {
-        contents: [{
-          role: 'user',
-          parts: [
-            { inlineData: { mimeType, data: base64Data } },
-            { text: '이 문서를 분석해주세요.' }
-          ]
-        }],
-        systemInstruction: { role: 'user', parts: [{ text: SYSTEM_PROMPT }] },
-        generationConfig: { temperature: 0.3, maxOutputTokens: 2000 }
-      },
+    const { object: structured } = await generateObject({
+      model: google('gemini-2.5-flash'),
       schema: PdfStructureSchema,
-      extractJson: 'object',
+      system: SYSTEM_PROMPT,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            { type: 'file', data: fileBuffer, mediaType: mimeType },
+            { type: 'text', text: '이 문서를 분석해주세요.' },
+          ],
+        },
+      ],
+      temperature: 0.3,
     })
-    return ApiResponse.ok({ data: structured })
 
+    return ApiResponse.ok({ data: structured })
   } catch (error: unknown) {
     const err = error instanceof Error ? error : new Error(String(error))
     await logError({

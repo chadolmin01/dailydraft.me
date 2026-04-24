@@ -2,26 +2,37 @@ import { NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { cookies } from 'next/headers'
-import Anthropic from '@anthropic-ai/sdk'
+import { createAnthropic } from '@ai-sdk/anthropic'
+import { generateObject } from 'ai'
+import { z } from 'zod'
 import { applyRateLimit, getClientIp } from '@/src/lib/rate-limit/api-rate-limiter'
 import { logApiError } from '@/src/lib/error-logging'
 import { withErrorCapture } from '@/src/lib/posthog/with-error-capture'
 
-const anthropic = new Anthropic({
+const anthropic = createAnthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 })
 
 const systemPrompt = `당신은 대학생/예비창업자를 위한 프로젝트 공고 작성 전문가입니다.
 주어진 정보를 바탕으로 매력적이고 구체적인 프로젝트 공고를 작성해주세요.
 
-공고 형식:
-1. 프로젝트 한 줄 소개 (20자 이내, title 필드)
-2. 우리가 해결하려는 문제 (2-3문장, problem 필드)
-3. 현재 진행 상황 (MVP/아이디어/런칭 등, status 필드)
-4. 필요한 팀원 역할과 기대하는 역량 (배열, neededRoles 필드)
-5. 함께하면 좋은 이유 (1-2문장, whyJoin 필드)
+각 필드 작성 규칙:
+1. title: 프로젝트 한 줄 소개 (20자 이내)
+2. problem: 우리가 해결하려는 문제 (2-3문장)
+3. status: 현재 진행 상황 (MVP/아이디어/런칭 등)
+4. neededRoles: 필요한 팀원 역할과 기대하는 역량 (배열)
+5. whyJoin: 함께하면 좋은 이유 (1-2문장)
+6. tags: 관련 태그 3개 이상`
 
-응답은 반드시 JSON 형식으로만 작성해주세요. 설명이나 다른 텍스트 없이 순수 JSON만 반환하세요.`
+// 출력 스키마. 기존 수동 JSON 파싱 + 마크다운 코드 블록 제거 로직을 대체.
+const PostSchema = z.object({
+  title: z.string().describe('프로젝트 한 줄 소개 (20자 이내)'),
+  problem: z.string().describe('우리가 해결하려는 문제 (2-3문장)'),
+  status: z.string().describe('현재 진행 상황'),
+  neededRoles: z.array(z.string()).describe('필요한 팀원 역할 목록'),
+  whyJoin: z.string().describe('함께하면 좋은 이유 (1-2문장)'),
+  tags: z.array(z.string()).describe('관련 태그 3개 이상'),
+})
 
 interface RequestBody {
   role: string // 창업자, 예비창업자, 합류희망자
@@ -29,15 +40,6 @@ interface RequestBody {
   field: string // AI·테크, 커머스, 헬스케어, 에듀테크, 소셜임팩트
   description: string // 프로젝트 한 줄 설명
   painPoint?: string // 고민 포인트 (선택)
-}
-
-interface GeneratedPost {
-  title: string
-  problem: string
-  status: string
-  neededRoles: string[]
-  whyJoin: string
-  tags: string[]
 }
 
 export const POST = withErrorCapture(async (request: NextRequest) => {
@@ -91,54 +93,14 @@ export const POST = withErrorCapture(async (request: NextRequest) => {
 프로젝트 설명: ${body.description}
 ${body.painPoint ? `고민 포인트: ${body.painPoint}` : ''}
 
-위 정보를 바탕으로 프로젝트 공고를 작성해주세요.
-응답은 다음 JSON 형식으로만 작성해주세요:
-{
-  "title": "프로젝트 한 줄 소개 (20자 이내)",
-  "problem": "우리가 해결하려는 문제 (2-3문장)",
-  "status": "현재 진행 상황",
-  "neededRoles": ["필요한 역할1", "필요한 역할2"],
-  "whyJoin": "함께하면 좋은 이유 (1-2문장)",
-  "tags": ["관련 태그1", "관련 태그2", "관련 태그3"]
-}`
+위 정보를 바탕으로 프로젝트 공고를 작성해주세요.`
 
-    const message = await anthropic.messages.create({
-      model: 'claude-3-5-haiku-20241022',
-      max_tokens: 1024,
-      messages: [
-        {
-          role: 'user',
-          content: userPrompt,
-        },
-      ],
+    const { object: generatedPost } = await generateObject({
+      model: anthropic('claude-haiku-4-5-20251001'),
+      schema: PostSchema,
       system: systemPrompt,
+      prompt: userPrompt,
     })
-
-    // Extract text content from response
-    const textContent = message.content.find((c) => c.type === 'text')
-    if (!textContent || textContent.type !== 'text') {
-      throw new Error('No text content in response')
-    }
-
-    // Parse JSON response
-    let generatedPost: GeneratedPost
-    try {
-      // Remove any markdown code blocks if present
-      let jsonStr = textContent.text.trim()
-      if (jsonStr.startsWith('```json')) {
-        jsonStr = jsonStr.slice(7)
-      }
-      if (jsonStr.startsWith('```')) {
-        jsonStr = jsonStr.slice(3)
-      }
-      if (jsonStr.endsWith('```')) {
-        jsonStr = jsonStr.slice(0, -3)
-      }
-      generatedPost = JSON.parse(jsonStr.trim())
-    } catch (parseError) {
-      console.error('Failed to parse AI response:', textContent.text)
-      throw new Error('Failed to parse AI response as JSON')
-    }
 
     return ApiResponse.ok({
       success: true,

@@ -24,6 +24,8 @@
     "review:pdf": "node scripts/build-review-pdfs.mjs"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.71",
+    "@ai-sdk/google": "^3.0.64",
     "@anthropic-ai/sdk": "^0.78.0",
     "@google/genai": "^1.49.0",
     "@react-three/drei": "^10.7.7",
@@ -38,6 +40,7 @@
     "@types/topojson-client": "^3.1.5",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.36.2",
+    "ai": "^6.0.168",
     "browser-image-compression": "^2.0.2",
     "chrono-node": "^2.9.0",
     "clsx": "^2.1.1",
