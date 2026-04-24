@@ -10,9 +10,16 @@
  *
  * content 필드는 DraftReviewClient가 기대하는 ParsedContent JSON 형식으로 저장됨:
  * {summary, tasks[], nextPlan, teamStatus, teamStatusReason, confidence{}}
+ *
+ * 2026-04-25: Vercel AI SDK 로 이관.
+ * - generateObject + Zod schema 로 JSON 파싱·검증 로직 제거
+ * - 멀티모달도 동일 인터페이스(messages content parts)로 통일
+ * - 텍스트/이미지 분기 로직이 단일 호출로 축소됨
  */
 
-import { chatModel, getAI } from '@/src/lib/ai/gemini-client'
+import { createGoogleGenerativeAI } from '@ai-sdk/google'
+import { generateObject } from 'ai'
+import { z } from 'zod'
 import type { DiscordMessage } from './client'
 
 /** 이미지 첨부파일의 최대 처리 개수 — 비용/속도 트레이드오프 */
@@ -21,6 +28,33 @@ const MAX_IMAGE_ATTACHMENTS = 10
 const IMAGE_FETCH_TIMEOUT = 5_000
 /** 허용할 이미지 MIME 타입 */
 const SUPPORTED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/gif']
+
+// 기존 GEMINI_API_KEY 환경변수 재사용. AI SDK 의 google provider 가 이 키로 인증.
+const google = createGoogleGenerativeAI({
+  apiKey: process.env.GEMINI_API_KEY,
+})
+
+// generateObject 가 강제할 출력 스키마.
+// 기존 수동 JSON 파싱 + 타입 단언 + 검증 코드를 한 번에 대체.
+const GhostwriterDraftSchema = z.object({
+  title: z.string().describe('이번 주 가장 중요한 성과 한 줄 (30자 이내)'),
+  updateType: z.enum(['ideation', 'design', 'development', 'launch', 'general']),
+  summary: z.string().describe('이번 주 활동 요약 (3~4문장)'),
+  tasks: z.array(z.object({
+    text: z.string(),
+    done: z.boolean(),
+    member: z.string().optional(),
+  })).describe('완료/진행 중 작업 목록'),
+  nextPlan: z.string().describe('다음 주 계획 (2~3문장)'),
+  teamStatus: z.enum(['good', 'normal', 'hard']),
+  teamStatusReason: z.string().describe('팀 상태 판단 근거 (1문장)'),
+  confidence: z.object({
+    summary: z.enum(['high', 'mid', 'low']),
+    tasks: z.enum(['high', 'mid', 'low']),
+    nextPlan: z.enum(['high', 'mid', 'low']),
+    teamStatus: z.enum(['high', 'mid', 'low']),
+  }),
+})
 
 export interface GhostwriterResult {
   title: string
@@ -195,11 +229,6 @@ function describeAttachment(filename: string): string {
 /**
  * 주간-체크인 포럼 메시지에서 구조화된 체크인 항목을 추출한다.
  * ✅/🔧/🚧 이모지 태그로 시작하는 줄을 파싱하여 AI가 더 정확하게 작업을 추출할 수 있게 함.
- *
- * 예시 입력:
- *   ✅ 이번 주 할 일: API 연동
- *   🔧 진행 중: 디자인 시안
- *   🚧 블로커: 백엔드 API 미완성
  */
 function parseCheckins(messages: DiscordMessage[]): string {
   if (!messages || messages.length === 0) return ''
@@ -213,19 +242,16 @@ function parseCheckins(messages: DiscordMessage[]): string {
       day: 'numeric',
     })
 
-    // 이모지 태그별 파싱
     const todoMatch = m.content.match(/✅\s*(?:이번\s*주\s*할\s*일\s*[:：]?\s*)([\s\S]*?)(?=🔧|🚧|$)/i)
     const wipMatch = m.content.match(/🔧\s*(?:진행\s*중\s*[:：]?\s*)([\s\S]*?)(?=✅|🚧|$)/i)
     const blockerMatch = m.content.match(/🚧\s*(?:블로커\s*[:：]?\s*)([\s\S]*?)(?=✅|🔧|$)/i)
 
     if (todoMatch || wipMatch || blockerMatch) {
-      // 구조화된 체크인
       lines.push(`[${date}] ${name}:`)
       if (todoMatch) lines.push(`  할 일: ${todoMatch[1].trim()}`)
       if (wipMatch) lines.push(`  진행 중: ${wipMatch[1].trim()}`)
       if (blockerMatch) lines.push(`  블로커: ${blockerMatch[1].trim()}`)
     } else {
-      // 양식 없이 자유롭게 작성된 체크인
       lines.push(`[${date}] ${name}: ${m.content.trim()}`)
     }
   }
@@ -233,10 +259,6 @@ function parseCheckins(messages: DiscordMessage[]): string {
   return lines.join('\n')
 }
 
-/**
- * 핀 메시지를 AI 컨텍스트용 텍스트로 변환한다.
- * 📌 핀 = 팀에서 "중요 결정"으로 표시한 메시지.
- */
 function formatPinnedMessages(messages: DiscordMessage[]): string {
   if (!messages || messages.length === 0) return ''
 
@@ -253,10 +275,6 @@ function formatPinnedMessages(messages: DiscordMessage[]): string {
     .join('\n')
 }
 
-/**
- * DraftReviewClient가 기대하는 구조화된 JSON을 AI에게 직접 요청한다.
- * summary/tasks/nextPlan/teamStatus/confidence 5개 섹션으로 분리.
- */
 /** AI 톤별 프롬프트 규칙 */
 const TONE_RULES: Record<string, string> = {
   formal: '6. **톤**: 합쇼체("-습니다/-입니다") 사용',
@@ -264,15 +282,8 @@ const TONE_RULES: Record<string, string> = {
   english: '6. **Tone**: Write in English. Professional but approachable',
 }
 
-const TONE_EXAMPLE: Record<string, { summary: string; tone: string }> = {
-  formal: { summary: '이번 주 활동 요약 (3~4문장, 합쇼체)', tone: '합쇼체' },
-  casual: { summary: '이번 주 ���동 요�� (3~4문장, 부드러운 합쇼체)', tone: '부드러운 합쇼체' },
-  english: { summary: 'This week\'s activity summary (3-4 sentences, English)', tone: 'English' },
-}
-
 function buildSystemPrompt(aiTone: string = 'formal', customHint?: string | null): string {
   const tone = TONE_RULES[aiTone] || TONE_RULES.formal
-  const example = TONE_EXAMPLE[aiTone] || TONE_EXAMPLE.formal
 
   const customLine = customHint
     ? `\n14. **동아리장 추가 지시**: ${customHint}`
@@ -307,30 +318,7 @@ ${tone}
 13. **이미지 분석**: 첨부된 이미지가 있으면 시각적 내용을 분석하여 tasks에 반영할 것. 예: UI 시안 이미지 → "메인 페이지 카드 레이아웃 시안 작업", 와이어프레임 → "온보딩 플로우 와이어프레임 작성". 이미지 내용에서 파악 가능한 구체적 디자인 요소(색상, 레이아웃, 컴포넌트 등)를 summary에 언급할 것
 14. **GitHub 활동 반영**: "GitHub 활동" 섹션이 있으면 커밋 메시지와 AI 요약을 분석하여 tasks(done=true)와 summary에 반영할 것. 커밋 메시지에서 구체적인 기능/수정 내용을 추출하고, Discord 대화와 교차 검증하여 정확도를 높일 것. GitHub 데이터는 confidence를 high로 설정${customLine}
 
-## 출력 형식 (JSON)
-
-\`\`\`json
-{
-  "title": "이번 주 가장 중요한 성과 한 줄 (30자 이내)",
-  "updateType": "ideation|design|development|launch|general",
-  "summary": "${example.summary}",
-  "tasks": [
-    {"text": "작업 내용", "done": true, "member": "팀원명"},
-    {"text": "진행 중인 작업", "done": false, "member": "팀원명"}
-  ],
-  "nextPlan": "다음 주 계획 (2~3문장, ${example.tone})",
-  "teamStatus": "good|normal|hard",
-  "teamStatusReason": "팀 상태 판단 근거 (1문장)",
-  "confidence": {
-    "summary": "high|mid|low",
-    "tasks": "high|mid|low",
-    "nextPlan": "high|mid|low",
-    "teamStatus": "high|mid|low"
-  }
-}
-\`\`\`
-
-JSON만 출력하세요. 다른 텍스트는 포함하지 마세요.`
+출력은 schema 에 맞는 JSON 객체로만. 다른 텍스트 없이.`
 }
 
 /**
@@ -349,14 +337,11 @@ export async function generateWeeklyDraft(
   // 체크인/핀 메시지도 카운트에 포함하여 최소 기준 판단
   const checkinText = parseCheckins(harness?.checkinMessages ?? [])
   const pinnedText = formatPinnedMessages(harness?.pinnedMessages ?? [])
-  // /마무리 회의록이 있으면 그 자체로 충분한 신호
   const mr = harness?.meetingRecords
   const hasMeetingRecords = mr && (mr.tasks.length > 0 || mr.decisions.length > 0 || mr.resources.length > 0)
-  // GitHub 커밋도 활동 신호로 카운트 — 코드만 작성하고 대화 안 하는 팀도 초안 생성 가능
   const hasGitHubActivity = (harness?.githubActivity?.commitCount ?? 0) > 0
   const totalSignals = count + (checkinText ? 1 : 0) + (pinnedText ? 1 : 0) + (hasMeetingRecords ? 3 : 0) + (hasGitHubActivity ? 2 : 0)
 
-  // 동아리장이 설정한 최소 메시지 수 (기본 3, settings.min_messages는 "의미 있는 메시지" 기준)
   const minRequired = Math.max(harness?.settings?.min_messages ?? 3, 1)
   if (totalSignals < minRequired) return null
 
@@ -367,7 +352,6 @@ export async function generateWeeklyDraft(
     `## 참여 멤버: ${members.join(', ')}`,
   ]
 
-  // /마무리 회의록 — 가장 정확한 구조화 데이터이므로 최우선 소스로 배치
   if (hasMeetingRecords) {
     const mrLines: string[] = []
     if (mr.tasks.length > 0) {
@@ -397,7 +381,6 @@ export async function generateWeeklyDraft(
     sections.push(`## 주요 결정사항 (📌 핀 메시지)\n\n${pinnedText}`)
   }
 
-  // 이전 피드백이 있으면 AI가 반복 실수를 피하도록 주입
   if (harness?.previousFeedback && harness.previousFeedback.length > 0) {
     const fbLines = harness.previousFeedback.map((fb) =>
       `- ${fb.weekNumber}주차 (${fb.score}/5): ${fb.note}`
@@ -407,7 +390,6 @@ export async function generateWeeklyDraft(
     )
   }
 
-  // GitHub 활동 데이터 (github_events 테이블에서 수집된 커밋 정보)
   const gh = harness?.githubActivity
   if (gh && (gh.commitCount > 0 || gh.summaries.length > 0)) {
     const ghLines: string[] = []
@@ -416,14 +398,12 @@ export async function generateWeeklyDraft(
       ghLines.push(`이번 주 총 ${gh.commitCount}건의 커밋이 push되었습니다.`)
     }
 
-    // AI 요약이 있으면 브랜치별 변경사항 요약 포함
     if (gh.summaries.length > 0) {
       ghLines.push('')
       ghLines.push('**브랜치별 변경사항 요약:**')
       gh.summaries.forEach(s => ghLines.push(`- ${s}`))
     }
 
-    // 주요 커밋 메시지 (최대 15개)
     if (gh.activities.length > 0) {
       ghLines.push('')
       ghLines.push('**주요 커밋:**')
@@ -444,132 +424,72 @@ export async function generateWeeklyDraft(
 
   const prompt = sections.join('\n\n')
 
-  // 동아리장 설정에 따라 AI 프롬프트 동적 생성
   const systemPrompt = buildSystemPrompt(
     harness?.settings?.ai_tone,
     harness?.settings?.custom_prompt_hint
   )
 
-  // 이미지 첨부파일 수집 — 디자이너 시안/스크린샷을 AI에게 시각적으로 전달
+  // 이미지 첨부파일 수집 — 디자이너 시안/스크린샷을 AI 에게 시각적으로 전달
   const imageAttachments = collectImageAttachments(messages)
-  const hasImages = imageAttachments.length > 0
 
-  let text: string
+  // AI SDK content parts 로 멀티모달 메시지 구성.
+  // 텍스트 + 이미지를 한 번의 호출로 처리 — 기존 분기 로직 (텍스트 전용 / 멀티모달 / 이미지 다운 실패)
+  // 이 단일 path 로 통합됨.
+  const userContent: Array<
+    | { type: 'text'; text: string }
+    | { type: 'image'; image: string }
+  > = [{ type: 'text', text: prompt }]
 
-  if (hasImages) {
-    // 멀티모달 모드: 이미지를 다운로드하여 Gemini에 인라인 전달
-    // gemini-2.5-flash-lite는 멀티모달 지원 — 이미지 + 텍스트 동시 입력 가능
-    const imageParts: { inlineData: { data: string; mimeType: string } }[] = []
-    const imageDescriptions: string[] = []
-
+  if (imageAttachments.length > 0) {
     const downloadResults = await Promise.allSettled(
-      imageAttachments.map(async (img) => {
-        const downloaded = await downloadImageAsBase64(img.url)
-        return { ...img, downloaded }
-      })
+      imageAttachments.map((img) => downloadImageAsBase64(img.url))
     )
 
-    for (const result of downloadResults) {
-      if (result.status === 'fulfilled' && result.value.downloaded) {
-        const { downloaded, filename, author } = result.value
-        imageParts.push({
-          inlineData: { data: downloaded.base64, mimeType: downloaded.mimeType },
-        })
-        imageDescriptions.push(`${filename} (by ${author})`)
+    const imageDescriptions: string[] = []
+    for (let i = 0; i < downloadResults.length; i++) {
+      const result = downloadResults[i]
+      const meta = imageAttachments[i]
+      if (result.status === 'fulfilled' && result.value) {
+        const dataUrl = `data:${result.value.mimeType};base64,${result.value.base64}`
+        userContent.push({ type: 'image', image: dataUrl })
+        imageDescriptions.push(`${meta.filename} (by ${meta.author})`)
       }
     }
 
-    if (imageParts.length > 0) {
-      // 이미지 컨텍스트를 프롬프트에 추가
-      const imageContext = `\n\n## 첨부 이미지 (${imageParts.length}개)\n아래 이미지는 팀원들이 Discord에 공유한 디자인 시안/스크린샷입니다.\n각 이미지의 내용을 분석하여 tasks와 summary에 반영해주세요.\n파일: ${imageDescriptions.join(', ')}`
-
-      const fullPrompt = prompt + imageContext
-
-      // @google/genai SDK 직접 사용 — 멀티모달 parts 배열 전달
-      const ai = getAI()
-      const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-lite',
-        contents: [
-          { role: 'user', parts: [{ text: systemPrompt }] },
-          { role: 'model', parts: [{ text: '네, 구조화된 주간 업데이트를 JSON으로 작성하겠습니다.' }] },
-          {
-            role: 'user',
-            parts: [
-              { text: fullPrompt },
-              ...imageParts,
-            ],
-          },
-        ],
+    if (imageDescriptions.length > 0) {
+      userContent.push({
+        type: 'text',
+        text: `\n\n## 첨부 이미지 (${imageDescriptions.length}개)\n아래 이미지는 팀원들이 Discord에 공유한 디자인 시안/스크린샷입니다.\n각 이미지의 내용을 분석하여 tasks와 summary에 반영해주세요.\n파일: ${imageDescriptions.join(', ')}`,
       })
-
-      text = response.text ?? ''
-    } else {
-      // 이미지 다운로드 전부 실패 — 텍스트만으로 진행
-      const result = await chatModel.generateContent({
-        contents: [
-          { role: 'user', parts: [{ text: systemPrompt }] },
-          { role: 'model', parts: [{ text: '네, 구조화된 주간 업데이트를 JSON으로 작성하겠습니다.' }] },
-          { role: 'user', parts: [{ text: prompt }] },
-        ],
-      })
-      text = result.response.text()
     }
-  } else {
-    // 텍스트 전용 모드 (이미지 없음)
-    const result = await chatModel.generateContent({
-      contents: [
-        { role: 'user', parts: [{ text: systemPrompt }] },
-        { role: 'model', parts: [{ text: '네, 구조화된 주간 업데이트를 JSON으로 작성하겠습니다.' }] },
-        { role: 'user', parts: [{ text: prompt }] },
-      ],
-    })
-    text = result.response.text()
   }
 
   try {
-    // JSON 블록 추출 (```json ... ``` 또는 순수 JSON)
-    const jsonMatch = text.match(/```json\s*([\s\S]*?)```/) || text.match(/(\{[\s\S]*\})/)
-    if (!jsonMatch) throw new Error('JSON 파싱 실패')
-
-    const parsed = JSON.parse(jsonMatch[1]) as {
-      title: string
-      updateType: string
-      summary: string
-      tasks: { text: string; done: boolean; member?: string }[]
-      nextPlan: string
-      teamStatus: string
-      teamStatusReason: string
-      confidence: Record<string, string>
-    }
-
-    const validTypes = ['ideation', 'design', 'development', 'launch', 'general'] as const
-    const updateType = validTypes.includes(parsed.updateType as (typeof validTypes)[number])
-      ? (parsed.updateType as (typeof validTypes)[number])
-      : 'general'
+    const { object } = await generateObject({
+      model: google('gemini-2.5-flash-lite'),
+      schema: GhostwriterDraftSchema,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userContent }],
+    })
 
     // content는 DraftReviewClient의 ParsedContent 형식 JSON으로 저장
     const structuredContent = JSON.stringify({
-      summary: parsed.summary || '',
-      tasks: Array.isArray(parsed.tasks) ? parsed.tasks : [],
-      nextPlan: parsed.nextPlan || '',
-      teamStatus: parsed.teamStatus || 'good',
-      teamStatusReason: parsed.teamStatusReason || '',
-      confidence: parsed.confidence || {
-        summary: 'mid',
-        tasks: 'mid',
-        nextPlan: 'mid',
-        teamStatus: 'mid',
-      },
+      summary: object.summary,
+      tasks: object.tasks,
+      nextPlan: object.nextPlan,
+      teamStatus: object.teamStatus,
+      teamStatusReason: object.teamStatusReason,
+      confidence: object.confidence,
     })
 
     return {
-      title: parsed.title || `${projectTitle} 주간 업데이트`,
+      title: object.title || `${projectTitle} 주간 업데이트`,
       content: structuredContent,
-      updateType,
+      updateType: object.updateType,
       sourceMessageCount: count,
     }
   } catch (error) {
-    console.error('[ghostwriter] AI 응답 파싱 실패', { text, error })
+    console.error('[ghostwriter] AI 응답 생성 실패', { error })
     return null
   }
 }
