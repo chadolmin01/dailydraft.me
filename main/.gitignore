@@ -48,13 +48,14 @@ nul
 # 파트너십 별첨 문서용 스크린샷 — landing 본과 동일한 이미지 사본, docs 안에서 상대경로로 로드
 !docs/partnerships/screenshots/*.png
 
-# PWA (next-pwa build artifacts — regenerated on every build)
+# PWA (serwist/next build artifacts — regenerated on every build)
 public/sw.js
 public/sw.js.map
 public/workbox-*.js
 public/workbox-*.js.map
 public/fallback-*.js
 public/swe-worker-*.js
+public/swe-worker-*.js.map
 
 # Self-reference prevention (main/ inside main/)
 main/

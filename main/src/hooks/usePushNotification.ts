@@ -23,11 +23,12 @@ export function usePushNotification() {
     }
     setPermission(Notification.permission as PushPermission)
 
-    navigator.serviceWorker.register('/sw.js').then((reg) => {
-      reg.pushManager.getSubscription().then((sub) => {
-        setIsSubscribed(!!sub)
-      })
-    }).catch(() => {})
+    // Serwist 가 SW 자동 등록 — 여기서는 ready 대기 후 구독 상태만 조회.
+    // 수동 register('/sw.js') 를 또 호출하면 Serwist 가 이미 등록한 것과 중복되어 무해하지만 혼란 유발.
+    navigator.serviceWorker.ready
+      .then((reg) => reg.pushManager.getSubscription())
+      .then((sub) => setIsSubscribed(!!sub))
+      .catch(() => {})
   }, [])
 
   const subscribe = useCallback(async () => {

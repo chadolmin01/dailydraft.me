@@ -1,41 +1,14 @@
 import type { NextConfig } from 'next'
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const withPWAInit = require('next-pwa')
+import withSerwistInit from '@serwist/next'
 
-// Customize default runtimeCaching: make APIs & page navigations NetworkOnly
-// to prevent stale SW cache from breaking Next.js App Router client navigation
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const defaultCache = require('next-pwa/cache') as Array<{options?: {cacheName?: string}; handler: string}>
-const runtimeCaching = defaultCache.map(entry => {
-  const name = entry.options?.cacheName
-  // APIs: never cache — React Query handles caching client-side
-  // Pages/RSC payloads: never cache — prevents stale navigation
-  // next-data: also skip cache
-  if (name === 'apis' || name === 'others' || name === 'next-data') {
-    const { networkTimeoutSeconds: _, ...rest } = (entry.options || {}) as Record<string, unknown>
-    return { ...entry, handler: 'NetworkOnly', options: rest }
-  }
-  // JS/CSS: NetworkFirst — prevents serving stale old design after deploy
-  // Next.js uses content-hashed filenames, so cache misses are rare anyway
-  if (name === 'static-js-assets' || name === 'static-style-assets') {
-    return { ...entry, handler: 'NetworkFirst' }
-  }
-  // Start URL: NetworkFirst with short timeout — always show latest HTML
-  if (name === 'start-url') {
-    return { ...entry, handler: 'NetworkFirst' }
-  }
-  return entry
-})
-
-const withPWA = withPWAInit({
-  dest: 'public',
+// PWA: @serwist/next — next-pwa 의 유지보수 중단 후계. Next 15 공식 호환.
+// 실제 캐싱 정책은 app/sw.ts 에서 정의 (NetworkOnly API, NetworkFirst static).
+const withSerwist = withSerwistInit({
+  swSrc: 'app/sw.ts',
+  swDest: 'public/sw.js',
   disable: process.env.NODE_ENV === 'development',
-  register: true,
-  skipWaiting: true,
-  fallbacks: {
-    document: '/offline',
-  },
-  runtimeCaching,
+  reloadOnOnline: true,
+  cacheOnNavigation: false,
 })
 
 const nextConfig: NextConfig = {
@@ -178,4 +151,4 @@ const nextConfig: NextConfig = {
   },
 }
 
-export default withPWA(nextConfig)
+export default withSerwist(nextConfig)
