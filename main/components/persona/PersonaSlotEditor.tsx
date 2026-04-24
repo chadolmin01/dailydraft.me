@@ -74,7 +74,7 @@ export function PersonaSlotEditor({
             rows={18}
             placeholder={placeholderForField(fieldKey)}
             disabled={disabled}
-            className="w-full h-full min-h-[320px] text-sm text-txt-primary bg-surface-bg border border-border rounded-xl px-3 py-2.5 focus:outline-none focus:border-brand leading-relaxed resize-none disabled:opacity-60"
+            className="w-full h-full min-h-[320px] text-sm text-txt-primary bg-surface-bg border border-border rounded-xl px-3 py-2.5 focus:outline-hidden focus:border-brand leading-relaxed resize-none disabled:opacity-60"
           />
         </div>
 

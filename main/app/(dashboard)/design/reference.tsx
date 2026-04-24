@@ -214,7 +214,7 @@ export default function DesignPage() {
               </div>
             }
           >
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center min-h-[12.5rem] flex flex-col items-center justify-center">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center min-h-50 flex flex-col items-center justify-center">
               <p className="text-xs font-medium text-blue-600">Main Content</p>
               <p className="text-[10px] text-blue-400 mt-1">flex-1, 나머지 공간 전부</p>
               <p className="text-[10px] text-blue-300 mt-3">Explore, Profile, Projects 페이지가 이 구조</p>
@@ -587,7 +587,7 @@ export default function DesignPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2 shrink-0">
-                <input type="text" placeholder="연락처 입력" className="w-32 px-2 py-1 text-xs border border-gray-300 rounded-lg focus:outline-none focus:border-border" />
+                <input type="text" placeholder="연락처 입력" className="w-32 px-2 py-1 text-xs border border-gray-300 rounded-lg focus:outline-hidden focus:border-border" />
                 <button className="p-1.5 bg-surface-inverse text-txt-inverse rounded-lg"><Check size={12} /></button>
                 <button className="p-1.5 bg-gray-200 text-gray-600 rounded-lg"><X size={12} /></button>
               </div>
@@ -601,7 +601,7 @@ export default function DesignPage() {
         <SectionLabel label="5. CTACard — 행동 유도" description="사이드바 하단, 빈 상태 등에서 사용." />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
 
-          <div className="bg-gradient-to-br from-gray-900 to-black rounded-xl p-5 text-white">
+          <div className="bg-linear-to-br from-gray-900 to-black rounded-xl p-5 text-white">
             <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center mb-4"><Rocket size={20} /></div>
             <h3 className="font-bold text-base mb-1">팀원을 찾고 계신가요?</h3>
             <p className="text-gray-400 text-xs mb-4">프로젝트를 등록하고 함께할 팀원을 모집하세요</p>

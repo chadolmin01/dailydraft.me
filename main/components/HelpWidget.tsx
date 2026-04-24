@@ -413,7 +413,7 @@ function ChatTab() {
             onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send()}
             placeholder="질문을 입력하세요..."
             disabled={isLoading}
-            className="flex-1 text-[13px] bg-transparent focus:outline-none placeholder:text-txt-disabled disabled:opacity-50"
+            className="flex-1 text-[13px] bg-transparent focus:outline-hidden placeholder:text-txt-disabled disabled:opacity-50"
           />
           <button
             onClick={() => send()}
@@ -518,7 +518,7 @@ function ReportTab() {
           placeholder="예: 커피챗 수락 버튼이 눌리지 않습니다"
           aria-label="리포트 제목"
           maxLength={200}
-          className="w-full px-4 py-3 text-[13px] bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#5E6AD2]/20 transition-all placeholder:text-txt-disabled"
+          className="w-full px-4 py-3 text-[13px] bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-2xl focus:outline-hidden focus:ring-2 focus:ring-[#5E6AD2]/20 transition-all placeholder:text-txt-disabled"
         />
       </div>
 
@@ -535,7 +535,7 @@ function ReportTab() {
           aria-label="리포트 상세 내용"
           rows={5}
           maxLength={5000}
-          className="w-full px-4 py-3 text-[13px] bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#5E6AD2]/20 transition-all resize-none placeholder:text-txt-disabled"
+          className="w-full px-4 py-3 text-[13px] bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-2xl focus:outline-hidden focus:ring-2 focus:ring-[#5E6AD2]/20 transition-all resize-none placeholder:text-txt-disabled"
         />
         <p className={`text-[10px] text-right mt-1 tabular-nums ${
           description.length >= 5000 ? 'text-status-danger-text font-semibold' :

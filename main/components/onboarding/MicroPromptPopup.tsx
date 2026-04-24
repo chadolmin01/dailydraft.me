@@ -78,7 +78,7 @@ export function MicroPromptPopup({ thresholdMs = 30_000, pathname }: Props) {
     <div
       role="region"
       aria-label="매칭 정확도 향상 질문 — 닫으시려면 Esc"
-      className="fixed z-[120] bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 sm:w-[340px] pointer-events-auto animate-in fade-in slide-in-from-bottom-4 duration-300"
+      className="fixed z-120 bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 sm:w-[340px] pointer-events-auto animate-in fade-in slide-in-from-bottom-4 duration-300"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
     >
       <div className="shadow-2xl rounded-2xl overflow-hidden">

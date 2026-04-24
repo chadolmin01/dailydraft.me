@@ -223,7 +223,7 @@ export default function AdminOpportunitiesPage() {
         {/* Filters */}
         <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
           <div className="flex flex-wrap gap-3 items-center flex-1">
-            <div className="relative flex-1 max-w-md min-w-[12.5rem]">
+            <div className="relative flex-1 max-w-md min-w-50">
               <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-txt-disabled" />
               <input
                 type="text"

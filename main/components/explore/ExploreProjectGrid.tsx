@@ -127,7 +127,7 @@ export function ExploreProjectGrid({
           {/* 블러된 카드들 */}
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 select-none pointer-events-none" aria-hidden="true">
             {blurredCards.map((p) => (
-              <div key={p.id} className="relative bg-surface-card rounded-2xl shadow-sm overflow-hidden min-h-[21.25rem] flex flex-col blur-[6px] opacity-50">
+              <div key={p.id} className="relative bg-surface-card rounded-2xl shadow-sm overflow-hidden min-h-85 flex flex-col blur-[6px] opacity-50">
                 <div className="relative h-36 shrink-0 bg-surface-inverse flex items-end p-4">
                   <Image
                     src={p.coverImage ?? getCategoryCover(p.tags)}
@@ -137,7 +137,7 @@ export function ExploreProjectGrid({
                     className="object-cover"
                     quality={40}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/30" />
+                  <div className="absolute inset-0 bg-linear-to-b from-black/50 via-transparent to-black/30" />
                 </div>
                 <div className="px-5 pt-5 flex-1">
                   <div className="h-4 bg-surface-sunken rounded w-3/4 mb-3" />
@@ -149,7 +149,7 @@ export function ExploreProjectGrid({
           </div>
 
           {/* CTA 오버레이 */}
-          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-transparent via-surface-bg/80 to-surface-bg">
+          <div className="absolute inset-0 flex items-center justify-center bg-linear-to-b from-transparent via-surface-bg/80 to-surface-bg">
             <div className="text-center px-6 py-8 max-w-sm">
               <div className="w-12 h-12 bg-brand/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <Sparkles size={22} className="text-brand" />
@@ -250,7 +250,7 @@ function ProjectCardItem({ card: p, index, onSelectProject, onPrefetchProject, t
       onMouseEnter={() => onPrefetchProject?.(p.id)}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSelect() } }}
       style={staggerClass ? { animationDelay: `${Math.min(index * 60, 600)}ms` } : undefined}
-      className={`${staggerClass} ob-ring-glow ob-press-spring relative bg-surface-card rounded-2xl overflow-hidden group cursor-pointer min-h-[21.25rem] flex flex-col border border-border focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 outline-none`}
+      className={`${staggerClass} ob-ring-glow ob-press-spring relative bg-surface-card rounded-2xl overflow-hidden group cursor-pointer min-h-85 flex flex-col border border-border focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 outline-hidden`}
     >
       {/* 헤더: 커버 */}
       <div className="relative h-36 shrink-0 bg-surface-inverse flex items-end p-4">
@@ -264,41 +264,41 @@ function ProjectCardItem({ card: p, index, onSelectProject, onPrefetchProject, t
             quality={85}
             onError={(e) => { e.currentTarget.src = getCategoryCover(p.tags) }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/30" />
+          <div className="absolute inset-0 bg-linear-to-b from-black/50 via-transparent to-black/30" />
         </>
-        <div className="absolute top-3 left-3 z-[1]">
+        <div className="absolute top-3 left-3 z-1">
           {isUrgent ? (
             <span title={`마감 ${p.daysLeft}일 전`} className="text-[10px] font-semibold bg-status-danger-text text-white px-2.5 py-1 rounded-full">D-{p.daysLeft}</span>
           ) : (
-            <span className="text-[10px] font-semibold bg-white/90 backdrop-blur-sm text-black px-2.5 py-1 rounded-full flex items-center gap-1.5">
+            <span className="text-[10px] font-semibold bg-white/90 backdrop-blur-xs text-black px-2.5 py-1 rounded-full flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 bg-[#34C759] rounded-full" />
               모집 중
             </span>
           )}
         </div>
-        <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5 z-[1]">
+        <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5 z-1">
           {p.matchLabel && (
             <span title="AI 가 내 프로필·관심사·이전 활동을 기반으로 추천한 프로젝트입니다" className={`animate-badge-pop text-[10px] font-semibold px-2.5 py-1 rounded-full flex items-center gap-1 ${
               p.matchLabel === '잘 맞는 프로젝트'
                 ? 'bg-[#34C759] text-white'
-                : 'bg-black/70 backdrop-blur-sm text-white'
+                : 'bg-black/70 backdrop-blur-xs text-white'
             }`}>
               ✦ {p.matchLabel}
             </span>
           )}
           {updateBadge && (
-            <span className="text-[10px] font-medium bg-white/90 backdrop-blur-sm text-txt-secondary px-2.5 py-1 rounded-full">{updateBadge}</span>
+            <span className="text-[10px] font-medium bg-white/90 backdrop-blur-xs text-txt-secondary px-2.5 py-1 rounded-full">{updateBadge}</span>
           )}
           {!updateBadge && !p.matchLabel && p.tags.slice(0, 2).map(tag => (
-            <span key={tag} className="text-[10px] font-medium bg-black/60 backdrop-blur-sm text-white px-2.5 py-1 rounded-full">{tag}</span>
+            <span key={tag} className="text-[10px] font-medium bg-black/60 backdrop-blur-xs text-white px-2.5 py-1 rounded-full">{tag}</span>
           ))}
         </div>
-        <div className="relative z-[1] w-10 h-10 bg-surface-card rounded-xl flex items-center justify-center shadow-sm">
+        <div className="relative z-1 w-10 h-10 bg-surface-card rounded-xl flex items-center justify-center shadow-sm">
           <Rocket size={18} className="text-black" />
         </div>
       </div>
       {/* 본문 */}
-      <div className="px-5 pt-5 h-[7.5rem] shrink-0 overflow-hidden">
+      <div className="px-5 pt-5 h-30 shrink-0 overflow-hidden">
         <div className="flex items-center gap-2 mb-1.5">
           <h3 className="font-bold text-base text-txt-primary truncate">{p.title}</h3>
           <Badges badges={p.badges} />
@@ -311,7 +311,7 @@ function ProjectCardItem({ card: p, index, onSelectProject, onPrefetchProject, t
         <p className="text-sm text-txt-secondary line-clamp-2">{p.desc}</p>
       </div>
       {/* 푸터 */}
-      <div className="px-5 pb-4 h-[4.75rem] shrink-0 flex items-end">
+      <div className="px-5 pb-4 h-19 shrink-0 flex items-end">
         <div className="flex items-center justify-between w-full pt-3 border-t border-border/50">
           <div className="flex items-center gap-2">
             <div className="w-5 h-5 bg-surface-sunken rounded-full flex items-center justify-center">
@@ -327,7 +327,7 @@ function ProjectCardItem({ card: p, index, onSelectProject, onPrefetchProject, t
               <span className="flex items-center gap-1 text-[#FF3B30]/70"><Heart size={12} fill="currentColor" />{p.interestCount}</span>
             )}
             {p.daysLeft > 0 && (
-              <span className={`text-txt-tertiary ${isUrgent ? '!text-[#FF3B30] font-bold' : ''}`}>D-{p.daysLeft}</span>
+              <span className={`text-txt-tertiary ${isUrgent ? 'text-[#FF3B30]! font-bold' : ''}`}>D-{p.daysLeft}</span>
             )}
           </div>
         </div>

@@ -57,7 +57,7 @@ export const CreateModal: React.FC<CreateModalProps> = ({
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} showClose={false} className="max-w-[25rem] bg-surface-card overflow-hidden">
+    <Modal isOpen={isOpen} onClose={onClose} showClose={false} className="max-w-100 bg-surface-card overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between p-6 pb-2">
         <div className="flex items-center gap-3">

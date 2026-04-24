@@ -130,7 +130,7 @@ export default function ChatPanel({ messages, isStreaming, phase, error, onSubmi
             placeholder={phase === 'input' ? '아이디어를 입력하세요...' : '추가 설명이나 답변을 입력하세요...'}
             disabled={isStreaming}
             rows={1}
-            className="flex-1 resize-none rounded-xl border border-border bg-transparent px-4 py-3 text-sm text-txt-primary placeholder:text-txt-tertiary focus:outline-none focus:ring-1 focus:ring-txt-tertiary/30 disabled:opacity-50"
+            className="flex-1 resize-none rounded-xl border border-border bg-transparent px-4 py-3 text-sm text-txt-primary placeholder:text-txt-tertiary focus:outline-hidden focus:ring-1 focus:ring-txt-tertiary/30 disabled:opacity-50"
             style={{ minHeight: '44px', maxHeight: '120px' }}
             onInput={e => {
               const t = e.target as HTMLTextAreaElement

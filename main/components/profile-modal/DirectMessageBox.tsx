@@ -89,7 +89,7 @@ export function DirectMessageBox({ receiverId }: { receiverId: string }) {
             placeholder="간단한 쪽지를 보내보세요..."
             rows={2}
             maxLength={2000}
-            className="w-full px-4 py-3 text-sm bg-surface-card rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/20 resize-none transition-all mb-2.5"
+            className="w-full px-4 py-3 text-sm bg-surface-card rounded-xl focus:outline-hidden focus:ring-2 focus:ring-brand/20 resize-none transition-all mb-2.5"
           />
           <div className="flex items-center justify-between">
             <span className={`text-xs tabular-nums ${

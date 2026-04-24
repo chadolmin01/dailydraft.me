@@ -120,7 +120,7 @@ export default function InstitutionAnnouncePage() {
               placeholder="공지 제목을 입력하세요"
               maxLength={100}
               disabled={sending}
-              className="w-full px-4 py-3 bg-surface-sunken border border-border text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-txt-primary transition-colors disabled:opacity-50"
+              className="w-full px-4 py-3 bg-surface-sunken border border-border text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-hidden focus:border-txt-primary transition-colors disabled:opacity-50"
             />
             <div className="text-[10px] text-txt-disabled mt-1 text-right">{subject.length}/100</div>
           </div>
@@ -136,7 +136,7 @@ export default function InstitutionAnnouncePage() {
               maxLength={5000}
               rows={10}
               disabled={sending}
-              className="w-full px-4 py-3 bg-surface-sunken border border-border text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-txt-primary transition-colors resize-y disabled:opacity-50"
+              className="w-full px-4 py-3 bg-surface-sunken border border-border text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-hidden focus:border-txt-primary transition-colors resize-y disabled:opacity-50"
             />
             <div className="text-[10px] text-txt-disabled mt-1 text-right">{body.length}/5000</div>
           </div>

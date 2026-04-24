@@ -72,7 +72,7 @@ export const PersonaEngine: React.FC = () => {
           <motion.h2
             id="persona-engine-title"
             variants={fadeUp}
-            className="text-[30px] sm:text-[40px] md:text-[46px] font-bold tracking-[-0.025em] leading-[1.1] text-txt-primary mb-5 break-keep"
+            className="text-[30px] sm:text-[40px] md:text-[46px] font-bold tracking-tight leading-[1.1] text-txt-primary mb-5 break-keep"
           >
             한 번 설정하면,
             <br />
@@ -89,7 +89,7 @@ export const PersonaEngine: React.FC = () => {
           </motion.h2>
           <motion.p
             variants={fadeUp}
-            className="text-[15px] sm:text-[16px] text-txt-secondary leading-[1.65] max-w-[36rem] mx-auto break-keep"
+            className="text-[15px] sm:text-[16px] text-txt-secondary leading-[1.65] max-w-xl mx-auto break-keep"
           >
             운영자가 직접 쓰던 Instagram · LinkedIn · Discord 공지 · 뉴스레터를
             Draft가 동아리 톤으로 초안까지 만들어 둡니다. 검토·발행은 1분.
@@ -152,7 +152,7 @@ export const PersonaEngine: React.FC = () => {
         >
           <Link
             href="#pricing"
-            className="group inline-flex items-center gap-1.5 bg-surface-inverse text-txt-inverse rounded-full px-6 py-3 text-[14px] font-semibold ob-press-spring hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+            className="group inline-flex items-center gap-1.5 bg-surface-inverse text-txt-inverse rounded-full px-6 py-3 text-[14px] font-semibold ob-press-spring hover:opacity-90 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
           >
             Pro로 열기
             <ArrowRight

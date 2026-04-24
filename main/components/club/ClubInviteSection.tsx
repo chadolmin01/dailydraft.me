@@ -198,7 +198,7 @@ export function ClubInviteSection({ slug, clubName, viewerRole }: {
             value={cohortInput}
             onChange={e => setCohortInput(e.target.value.slice(0, 20))}
             placeholder="기수 (예: 3)"
-            className="flex-1 min-w-0 px-3 py-2 text-[13px] border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/40"
+            className="flex-1 min-w-0 px-3 py-2 text-[13px] border border-border rounded-xl focus:outline-hidden focus:ring-2 focus:ring-brand/40"
           />
           <button
             onClick={handleCreate}

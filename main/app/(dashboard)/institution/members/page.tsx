@@ -335,7 +335,7 @@ export default function InstitutionMembersPage() {
                                   changeRole.mutate({ memberId: member.id, role: newRole })
                                 }}
                                 disabled={changeRole.isPending}
-                                className="px-2 py-1 text-[11px] bg-surface-card border border-border rounded focus:outline-none focus:border-brand cursor-pointer disabled:opacity-50"
+                                className="px-2 py-1 text-[11px] bg-surface-card border border-border rounded focus:outline-hidden focus:border-brand cursor-pointer disabled:opacity-50"
                                 aria-label="역할 변경"
                               >
                                 <option value="student">학생</option>

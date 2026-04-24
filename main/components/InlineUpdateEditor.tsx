@@ -194,7 +194,7 @@ export const InlineUpdateEditor: React.FC<InlineUpdateEditorProps> = ({
               placeholder={placeholder}
               rows={isExpanded ? 8 : 2}
               maxLength={2000}
-              className={`w-full px-4 py-3 text-base sm:text-sm resize-none bg-transparent focus:outline-none text-txt-primary placeholder-txt-disabled transition-opacity ${isDragging ? 'opacity-0' : 'opacity-100'}`}
+              className={`w-full px-4 py-3 text-base sm:text-sm resize-none bg-transparent focus:outline-hidden text-txt-primary placeholder-txt-disabled transition-opacity ${isDragging ? 'opacity-0' : 'opacity-100'}`}
             />
             {/* 템플릿 칩 — 비어있을 때 노출해 작성 시작 유도 */}
             {!content && (

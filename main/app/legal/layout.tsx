@@ -25,7 +25,7 @@ export default function LegalLayout({ children }: { children: React.ReactNode })
         <div className="max-w-3xl mx-auto px-6 h-14 flex items-center justify-between">
           <Link
             href="/"
-            className="flex items-center gap-2 text-[13px] text-txt-secondary hover:text-txt-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded"
+            className="flex items-center gap-2 text-[13px] text-txt-secondary hover:text-txt-primary transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded"
           >
             <ArrowLeft size={14} aria-hidden="true" />
             Draft 홈
@@ -33,44 +33,44 @@ export default function LegalLayout({ children }: { children: React.ReactNode })
           <nav aria-label="법적 페이지" className="flex items-center gap-3 flex-wrap text-[12px] text-txt-tertiary">
             <Link
               href="/legal/privacy"
-              className="hover:text-txt-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded"
+              className="hover:text-txt-primary transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded"
             >
               개인정보
             </Link>
             <Link
               href="/legal/terms"
-              className="hover:text-txt-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded"
+              className="hover:text-txt-primary transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded"
             >
               약관
             </Link>
             <Link
               href="/legal/data-deletion"
-              className="hover:text-txt-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded"
+              className="hover:text-txt-primary transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded"
             >
               데이터 삭제
             </Link>
             <Link
               href="/legal/retention"
-              className="hover:text-txt-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded"
+              className="hover:text-txt-primary transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded"
             >
               보관·파기
             </Link>
             <Link
               href="/legal/subprocessors"
-              className="hover:text-txt-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded"
+              className="hover:text-txt-primary transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded"
             >
               수탁업체
             </Link>
             <Link
               href="/legal/cookies"
-              className="hover:text-txt-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded"
+              className="hover:text-txt-primary transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded"
             >
               쿠키
             </Link>
           </nav>
         </div>
       </header>
-      <main id="main-content" tabIndex={-1} className="max-w-3xl mx-auto px-6 py-16 print:py-0 focus:outline-none">
+      <main id="main-content" tabIndex={-1} className="max-w-3xl mx-auto px-6 py-16 print:py-0 focus:outline-hidden">
         {children}
       </main>
     </div>

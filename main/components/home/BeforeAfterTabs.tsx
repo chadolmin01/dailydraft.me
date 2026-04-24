@@ -296,7 +296,7 @@ export function BeforeAfterTabs() {
                 aria-controls={`beforeafter-panel-${tab.id}`}
                 tabIndex={selected ? 0 : -1}
                 onClick={() => setActiveTab(tab.id)}
-                className={`relative px-5 py-3 text-sm transition-colors duration-200 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded-sm ${
+                className={`relative px-5 py-3 text-sm transition-colors duration-200 whitespace-nowrap focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded-sm ${
                   selected
                     ? 'font-semibold text-txt-primary'
                     : 'text-txt-tertiary hover:text-txt-secondary'
@@ -328,7 +328,7 @@ export function BeforeAfterTabs() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
-            className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded-md"
+            className="focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded-md"
           >
             <Panel />
           </motion.div>

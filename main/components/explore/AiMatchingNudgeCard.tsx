@@ -28,7 +28,7 @@ export function AiMatchingNudgeCard() {
 
   return (
     <div className="group relative overflow-hidden border border-border bg-surface-card rounded-xl shadow-sm mb-4 transition-all duration-300 hover:shadow-md">
-      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-brand via-brand/60 to-transparent" />
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-linear-to-r from-brand via-brand/60 to-transparent" />
 
       <div className="flex items-center gap-4 px-4 py-3.5">
         <div className="relative w-10 h-10 bg-surface-inverse rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-300">

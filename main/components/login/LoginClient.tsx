@@ -136,10 +136,10 @@ function LoginContent({ projects, people }: LoginClientProps) {
   const [col1, col2, col3] = buildColumns()
 
   return (
-    <div className="fixed inset-0 z-[100] flex h-screen w-screen overflow-hidden bg-surface-bg">
+    <div className="fixed inset-0 z-dropdown flex h-screen w-screen overflow-hidden bg-surface-bg">
 
       {/* LEFT: Login Panel */}
-      <div className="w-full lg:w-[30rem] xl:w-[34rem] flex flex-col bg-surface-card z-20 shadow-[4px_0_24px_-4px_rgba(0,0,0,0.08)] shrink-0 h-full relative">
+      <div className="w-full lg:w-120 xl:w-136 flex flex-col bg-surface-card z-20 shadow-[4px_0_24px_-4px_rgba(0,0,0,0.08)] shrink-0 h-full relative">
 
          <div className="p-5 sm:p-8 md:p-10">
             <div className="flex items-center gap-2.5">
@@ -305,17 +305,17 @@ function LoginContent({ projects, people }: LoginClientProps) {
       {/* RIGHT: Marquee */}
       <div className="hidden lg:flex flex-1 bg-surface-sunken relative overflow-hidden flex-col justify-center items-center">
          <div className="absolute inset-0 bg-grid-engineering opacity-50" />
-         <div className="absolute top-0 left-0 w-full h-40 bg-gradient-to-b from-surface-sunken to-transparent z-10 pointer-events-none" />
-         <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-surface-sunken to-transparent z-10 pointer-events-none" />
+         <div className="absolute top-0 left-0 w-full h-40 bg-linear-to-b from-surface-sunken to-transparent z-10 pointer-events-none" />
+         <div className="absolute bottom-0 left-0 w-full h-40 bg-linear-to-t from-surface-sunken to-transparent z-10 pointer-events-none" />
 
          <div className="flex gap-4 h-[120vh] -rotate-3 scale-105 opacity-80 shrink-0">
-            <div className="flex flex-col gap-4 animate-marquee-vertical-up shrink-0 w-[17rem]">
+            <div className="flex flex-col gap-4 animate-marquee-vertical-up shrink-0 w-68">
                {col1.map((item, idx) => <ShowcaseCard key={`col1-${idx}`} item={item} />)}
             </div>
-            <div className="flex flex-col gap-4 animate-marquee-vertical-down mt-16 shrink-0 w-[17rem]">
+            <div className="flex flex-col gap-4 animate-marquee-vertical-down mt-16 shrink-0 w-68">
                {col2.map((item, idx) => <ShowcaseCard key={`col2-${idx}`} item={item} />)}
             </div>
-            <div className="flex flex-col gap-4 animate-marquee-vertical-up mt-8 shrink-0 w-[17rem]">
+            <div className="flex flex-col gap-4 animate-marquee-vertical-up mt-8 shrink-0 w-68">
                {col3.map((item, idx) => <ShowcaseCard key={`col3-${idx}`} item={item} />)}
             </div>
          </div>
@@ -349,8 +349,8 @@ const ShowcaseCard = ({ item }: { item: ShowcaseItem }) => {
     const p = item.data
     const accentIdx = p.title.length % PROJECT_ACCENTS.length
     return (
-      <div className="w-[17rem] shrink-0 bg-surface-card rounded-2xl border border-border overflow-hidden shadow-sm">
-        <div className={`h-2.5 bg-gradient-to-r ${PROJECT_ACCENTS[accentIdx]}`} />
+      <div className="w-68 shrink-0 bg-surface-card rounded-2xl border border-border overflow-hidden shadow-sm">
+        <div className={`h-2.5 bg-linear-to-r ${PROJECT_ACCENTS[accentIdx]}`} />
         <div className="p-4 pt-3">
           <div className="flex items-center gap-2 mb-2.5">
             <div className="w-7 h-7 bg-brand-bg border border-brand-border rounded-xl flex items-center justify-center shrink-0">
@@ -377,7 +377,7 @@ const ShowcaseCard = ({ item }: { item: ShowcaseItem }) => {
 
   const t = item.data
   return (
-    <div className="w-[17rem] shrink-0 bg-surface-card rounded-2xl border border-border p-4 shadow-sm">
+    <div className="w-68 shrink-0 bg-surface-card rounded-2xl border border-border p-4 shadow-sm">
       <div className="flex items-center gap-2.5 mb-2">
         <div className="w-9 h-9 bg-brand-bg border border-brand-border rounded-full flex items-center justify-center text-sm font-bold text-brand shrink-0">
           {t.initial}

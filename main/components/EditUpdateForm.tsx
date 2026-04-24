@@ -80,7 +80,7 @@ export const EditUpdateForm: React.FC<EditUpdateFormProps> = ({
               min={1}
               value={weekNumber}
               onChange={(e) => setWeekNumber(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-border text-base sm:text-sm focus:outline-none focus:border-border bg-surface-card rounded-xl text-txt-primary"
+              className="w-full px-3 py-2 border border-border text-base sm:text-sm focus:outline-hidden focus:border-border bg-surface-card rounded-xl text-txt-primary"
             />
           </div>
           <div className="flex-1">
@@ -113,7 +113,7 @@ export const EditUpdateForm: React.FC<EditUpdateFormProps> = ({
             onChange={(e) => setTitle(e.target.value)}
             maxLength={100}
             aria-label="업데이트 제목 (수정)"
-            className="w-full px-3 py-2 border border-border text-base sm:text-sm focus:outline-none focus:border-border bg-surface-card rounded-xl text-txt-primary"
+            className="w-full px-3 py-2 border border-border text-base sm:text-sm focus:outline-hidden focus:border-border bg-surface-card rounded-xl text-txt-primary"
           />
           <div className="text-[10px] text-txt-tertiary font-mono text-right mt-1">
             {title.length}/100
@@ -132,7 +132,7 @@ export const EditUpdateForm: React.FC<EditUpdateFormProps> = ({
             rows={6}
             maxLength={2000}
             aria-label="업데이트 내용 (수정)"
-            className="w-full px-3 py-2 border border-border text-base sm:text-sm focus:outline-none focus:border-border resize-none bg-surface-card rounded-xl text-txt-primary"
+            className="w-full px-3 py-2 border border-border text-base sm:text-sm focus:outline-hidden focus:border-border resize-none bg-surface-card rounded-xl text-txt-primary"
           />
           <div className="text-[10px] text-txt-tertiary font-mono text-right mt-1">
             {content.length}/2000

@@ -250,7 +250,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
   return (
     <div className="min-h-screen bg-surface-bg">
       {/* Top Navigation Bar */}
-      <nav className="sticky top-0 z-40 bg-surface-card/95 backdrop-blur-sm border-b border-border">
+      <nav className="sticky top-0 z-40 bg-surface-card/95 backdrop-blur-xs border-b border-border">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
           <button
             onClick={() => router.back()}
@@ -452,7 +452,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
               {realUpdates.length > 0 ? (
                 <div className="relative">
                   {/* Timeline Line */}
-                  <div className="absolute left-[0.9375rem] top-2 bottom-2 w-[1px] bg-border" />
+                  <div className="absolute left-3.75 top-2 bottom-2 w-px bg-border" />
 
                   <div className="space-y-6">
                     {realUpdates.map((update, index) => {
@@ -460,7 +460,7 @@ export const ProjectDetail: React.FC<{ id: string }> = ({ id }) => {
                       return (
                         <div key={update.id} className="relative pl-10">
                           {/* Timeline Dot */}
-                          <div className={`absolute left-[0.6875rem] top-2 w-2.5 h-2.5 rounded-full border-2 bg-surface-card ${
+                          <div className={`absolute left-2.75 top-2 w-2.5 h-2.5 rounded-full border-2 bg-surface-card ${
                             index === 0 ? 'border-brand' : 'border-border'
                           }`} />
 

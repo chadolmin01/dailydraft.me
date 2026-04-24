@@ -448,7 +448,7 @@ function NewProjectContent() {
               }}
               placeholder={theme.titlePlaceholder}
               maxLength={100}
-              className={`w-full text-2xl font-bold text-txt-primary placeholder:text-txt-disabled border-none outline-none bg-transparent leading-tight break-keep ${fieldErrors.title ? 'ring-1 ring-status-danger-text/30 rounded px-1 -mx-1' : ''}`}
+              className={`w-full text-2xl font-bold text-txt-primary placeholder:text-txt-disabled border-none outline-hidden bg-transparent leading-tight break-keep ${fieldErrors.title ? 'ring-1 ring-status-danger-text/30 rounded px-1 -mx-1' : ''}`}
             />
             {fieldErrors.title && <p className="text-status-danger-text text-xs mt-1">{fieldErrors.title}</p>}
 
@@ -596,7 +596,7 @@ function NewProjectContent() {
                     placeholder={theme.descPlaceholder}
                     rows={7}
                     maxLength={500}
-                    className={`w-full text-base sm:text-sm text-txt-secondary leading-[1.8] placeholder:text-txt-disabled border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-brand/10 focus:border-brand resize-none bg-transparent transition-all ${fieldErrors.description ? 'border-status-danger-text/30' : 'border-border-subtle'}`}
+                    className={`w-full text-base sm:text-sm text-txt-secondary leading-[1.8] placeholder:text-txt-disabled border rounded-lg p-3 focus:outline-hidden focus:ring-2 focus:ring-brand/10 focus:border-brand resize-none bg-transparent transition-all ${fieldErrors.description ? 'border-status-danger-text/30' : 'border-border-subtle'}`}
                   />
                   {fieldErrors.description && <p className="text-status-danger-text text-xs mt-1">{fieldErrors.description}</p>}
                   <div className="mt-1.5 flex items-center gap-3">
@@ -625,7 +625,7 @@ function NewProjectContent() {
                     placeholder={theme.painPlaceholder}
                     rows={3}
                     maxLength={1000}
-                    className="w-full text-base sm:text-sm text-txt-secondary leading-relaxed placeholder:text-txt-disabled border-none outline-none bg-transparent resize-none"
+                    className="w-full text-base sm:text-sm text-txt-secondary leading-relaxed placeholder:text-txt-disabled border-none outline-hidden bg-transparent resize-none"
                   />
                 </section>
 
@@ -642,7 +642,7 @@ function NewProjectContent() {
                           value={link.label}
                           onChange={(e) => updateLink(idx, 'label', e.target.value)}
                           placeholder="예: GitHub, 노션"
-                          className="px-3 py-2 border border-border-subtle rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand/10 focus:border-brand w-1/3 bg-transparent transition-all"
+                          className="px-3 py-2 border border-border-subtle rounded-lg text-base sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-brand/10 focus:border-brand w-1/3 bg-transparent transition-all"
                         />
                         <input
                           type="url"
@@ -650,7 +650,7 @@ function NewProjectContent() {
                           onChange={(e) => updateLink(idx, 'url', e.target.value)}
                           placeholder="https://github.com/..."
                           inputMode="url"
-                          className="px-3 py-2 border border-border-subtle rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand/10 focus:border-brand flex-1 bg-transparent transition-all"
+                          className="px-3 py-2 border border-border-subtle rounded-lg text-base sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-brand/10 focus:border-brand flex-1 bg-transparent transition-all"
                         />
                         <button
                           type="button"
@@ -709,7 +709,7 @@ function NewProjectContent() {
               disabled={createOpportunity.isPending || imageUploading}
               className={`group/mob relative w-full h-12 font-bold text-sm rounded-xl flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden active:scale-[0.97] ${theme.mobileBtn}`}
             >
-              <span className="absolute inset-0 -translate-x-full group-hover/mob:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/15 to-transparent" />
+              <span className="absolute inset-0 -translate-x-full group-hover/mob:translate-x-full transition-transform duration-700 bg-linear-to-r from-transparent via-white/15 to-transparent" />
               <span className="relative flex items-center gap-2">
                 {imageUploading ? (
                   <><Loader2 size={14} className="animate-spin" /> 이미지 업로드 중...</>

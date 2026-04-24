@@ -338,7 +338,7 @@ export const SectionFeedbackSummary: React.FC<SectionFeedbackSummaryProps> = ({
 
       <div className="text-right">
         {topIssue && (
-          <div className="text-xs text-txt-tertiary max-w-[9.375rem] truncate">{topIssue}</div>
+          <div className="text-xs text-txt-tertiary max-w-37.5 truncate">{topIssue}</div>
         )}
         {potentialGain && potentialGain > 0 && (
           <div className="text-xs font-medium text-status-success-text">+{potentialGain}점 가능</div>

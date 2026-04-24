@@ -80,7 +80,7 @@ export function PersonalPersonaTeaser({ userEmail }: Props) {
       </div>
 
       {/* 메인 배너 */}
-      <div className="bg-gradient-to-r from-brand-bg to-brand-bg/40 border border-brand/20 rounded-2xl p-6 md:p-8 mb-6">
+      <div className="bg-linear-to-r from-brand-bg to-brand-bg/40 border border-brand/20 rounded-2xl p-6 md:p-8 mb-6">
         <div className="flex items-baseline justify-between gap-3 mb-3">
           <h2 className="text-lg font-bold text-txt-primary">개인 페르소나</h2>
           <span className="text-[11px] font-semibold text-brand bg-brand-bg px-2.5 py-1 rounded-full shrink-0">
@@ -140,7 +140,7 @@ export function PersonalPersonaTeaser({ userEmail }: Props) {
                   }
                 }}
                 placeholder="your@email.com"
-                className="flex-1 min-w-0 text-sm px-3 py-2 rounded-lg bg-surface-bg border border-border focus:outline-none focus:border-brand transition-colors"
+                className="flex-1 min-w-0 text-sm px-3 py-2 rounded-lg bg-surface-bg border border-border focus:outline-hidden focus:border-brand transition-colors"
               />
               <button
                 onClick={() => subscribeMut.mutate()}

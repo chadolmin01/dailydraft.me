@@ -338,7 +338,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
             {canGoBack && (
               <button
                 onClick={(e) => { e.stopPropagation(); goBack() }}
-                className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-surface-card/90 dark:bg-[#1C1C1E]/90 backdrop-blur-sm shadow-lg hidden sm:flex items-center justify-center hover:bg-surface-card active:scale-95 transition-all"
+                className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-surface-card/90 dark:bg-[#1C1C1E]/90 backdrop-blur-xs shadow-lg hidden sm:flex items-center justify-center hover:bg-surface-card active:scale-95 transition-all"
                 aria-label="이전 프로젝트"
               >
                 <ChevronLeft size={20} className="text-txt-primary" />
@@ -350,7 +350,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
               <button
                 onClick={(e) => { e.stopPropagation(); goNext() }}
                 disabled={!canGoForward}
-                className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-surface-card/90 dark:bg-[#1C1C1E]/90 backdrop-blur-sm shadow-lg hidden sm:flex items-center justify-center hover:bg-surface-card active:scale-95 transition-all disabled:opacity-40"
+                className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-surface-card/90 dark:bg-[#1C1C1E]/90 backdrop-blur-xs shadow-lg hidden sm:flex items-center justify-center hover:bg-surface-card active:scale-95 transition-all disabled:opacity-40"
                 aria-label="다음 유사 프로젝트"
                 title={nextSimilar ? nextSimilar.title : undefined}
               >
@@ -422,7 +422,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ projectI
                             <Edit3 size={10} />
                           </button>
                           {showTypeSelector && (
-                            <div className="absolute top-full left-0 mt-1 bg-surface-card rounded-2xl shadow-lg z-popover min-w-[8rem] overflow-hidden">
+                            <div className="absolute top-full left-0 mt-1 bg-surface-card rounded-2xl shadow-lg z-popover min-w-32 overflow-hidden">
                               {[
                                 { value: 'side_project', label: '함께 만들기' },
                                 { value: 'startup', label: '창업 준비' },

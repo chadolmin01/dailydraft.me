@@ -48,7 +48,7 @@ function InstagramFrame({
     <div className="bg-white dark:bg-neutral-900 border border-border rounded-2xl overflow-hidden max-w-md mx-auto shadow-sm">
       {/* 헤더: 계정 */}
       <div className="flex items-center gap-2 px-3 py-2.5 border-b border-border">
-        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 p-0.5">
+        <div className="w-8 h-8 rounded-full bg-linear-to-tr from-yellow-400 via-pink-500 to-purple-600 p-0.5">
           <div className="w-full h-full rounded-full bg-white dark:bg-neutral-900 flex items-center justify-center">
             <span className="text-[10px] font-bold text-neutral-900 dark:text-white">
               {orgName.slice(0, 2)}
@@ -60,7 +60,7 @@ function InstagramFrame({
         </span>
       </div>
       {/* 이미지 자리 (placeholder) */}
-      <div className="aspect-square bg-gradient-to-br from-neutral-100 to-neutral-200 dark:from-neutral-800 dark:to-neutral-700 flex items-center justify-center">
+      <div className="aspect-square bg-linear-to-br from-neutral-100 to-neutral-200 dark:from-neutral-800 dark:to-neutral-700 flex items-center justify-center">
         <p className="text-xs text-neutral-400">이미지 자리 · 1:1</p>
       </div>
       {/* 액션 아이콘 */}
@@ -75,9 +75,9 @@ function InstagramFrame({
         <span className="font-semibold mr-1.5">
           {orgName.toLowerCase().replace(/\s+/g, '_')}
         </span>
-        <span className="whitespace-pre-wrap break-words">{caption}</span>
+        <span className="whitespace-pre-wrap wrap-break-word">{caption}</span>
         {hashtags.length > 0 && (
-          <p className="mt-2 text-brand break-words">{hashtags.join(' ')}</p>
+          <p className="mt-2 text-brand wrap-break-word">{hashtags.join(' ')}</p>
         )}
       </div>
     </div>
@@ -124,10 +124,10 @@ function LinkedInFrame({
           <p className="text-[11px] text-neutral-500">Now · Public</p>
         </div>
       </div>
-      <div className="px-4 pb-3 text-[14px] leading-relaxed text-neutral-900 dark:text-neutral-100 whitespace-pre-wrap break-words">
+      <div className="px-4 pb-3 text-[14px] leading-relaxed text-neutral-900 dark:text-neutral-100 whitespace-pre-wrap wrap-break-word">
         {body}
         {hashtags.length > 0 && (
-          <p className="mt-2 text-[#0A66C2] break-words">{hashtags.join(' ')}</p>
+          <p className="mt-2 text-[#0A66C2] wrap-break-word">{hashtags.join(' ')}</p>
         )}
       </div>
       <div className="flex items-center gap-1 border-t border-border px-1 py-1">
@@ -190,7 +190,7 @@ function EverytimeFrame({ output }: { output: PersonaOutputRow }) {
         </div>
       </div>
       {/* 본문 */}
-      <div className="px-4 py-4 text-sm leading-relaxed text-neutral-900 dark:text-neutral-100 whitespace-pre-wrap break-words">
+      <div className="px-4 py-4 text-sm leading-relaxed text-neutral-900 dark:text-neutral-100 whitespace-pre-wrap wrap-break-word">
         {body}
       </div>
       {/* 좋아요·댓글 */}
@@ -247,7 +247,7 @@ function EmailFrame({
         </div>
       </div>
       {/* 본문 */}
-      <div className="px-4 py-4 text-sm leading-relaxed text-neutral-900 dark:text-neutral-100 whitespace-pre-wrap break-words">
+      <div className="px-4 py-4 text-sm leading-relaxed text-neutral-900 dark:text-neutral-100 whitespace-pre-wrap wrap-break-word">
         {parsed.body}
       </div>
     </div>
@@ -305,7 +305,7 @@ function DiscordFrame({
             {title && (
               <p className="text-sm font-bold text-white mb-1">{title}</p>
             )}
-            <div className="text-[14px] leading-relaxed text-[#DBDEE1] whitespace-pre-wrap break-words">
+            <div className="text-[14px] leading-relaxed text-[#DBDEE1] whitespace-pre-wrap wrap-break-word">
               {output.generated_content}
             </div>
           </div>
@@ -320,7 +320,7 @@ function DiscordFrame({
 // ============================================================
 function RawFrame({ output }: { output: PersonaOutputRow }) {
   return (
-    <pre className="bg-surface-bg rounded-xl p-4 text-sm text-txt-primary whitespace-pre-wrap break-words leading-relaxed font-sans max-h-96 overflow-y-auto">
+    <pre className="bg-surface-bg rounded-xl p-4 text-sm text-txt-primary whitespace-pre-wrap wrap-break-word leading-relaxed font-sans max-h-96 overflow-y-auto">
       {output.generated_content}
     </pre>
   )

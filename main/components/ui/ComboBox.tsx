@@ -73,7 +73,7 @@ export const ComboBox: React.FC<ComboBoxProps> = ({
           }}
           placeholder={placeholder}
           maxLength={maxLength}
-          className="flex-1 px-3 py-2.5 text-base sm:text-sm bg-transparent focus:outline-none placeholder:text-txt-disabled min-w-0"
+          className="flex-1 px-3 py-2.5 text-base sm:text-sm bg-transparent focus:outline-hidden placeholder:text-txt-disabled min-w-0"
         />
         {value && (
           <button onClick={handleClear} className="p-3 sm:p-1.5 text-txt-disabled hover:text-txt-secondary transition-colors">

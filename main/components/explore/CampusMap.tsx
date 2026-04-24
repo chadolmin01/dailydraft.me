@@ -82,7 +82,7 @@ function UniNode({ uni, weeklyCounts, onClick }: { uni: University; weeklyCounts
   return (
     <button
       onClick={uni.active ? onClick : undefined}
-      className={`group relative flex flex-col items-center py-7 px-3 transition-colors border-r border-b border-[#F0F0F0] dark:border-[#2C2C2E] last:border-r-0 [&:nth-child(4n)]:border-r-0 ${
+      className={`group relative flex flex-col items-center py-7 px-3 transition-colors border-r border-b border-[#F0F0F0] dark:border-[#2C2C2E] last:border-r-0 nth-[4n]:border-r-0 ${
         uni.active
           ? 'cursor-pointer hover:bg-[#F5F5F5] dark:hover:bg-[#252527]'
           : 'cursor-default'

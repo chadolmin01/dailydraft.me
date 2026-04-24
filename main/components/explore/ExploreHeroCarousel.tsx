@@ -43,18 +43,18 @@ export function ExploreHeroCarousel() {
 
   return (
     <PageContainer size="wide" className="pt-3 pb-1">
-      <div className="flex gap-3 h-[16rem] sm:h-[18rem]">
+      <div className="flex gap-3 h-64 sm:h-72">
 
         {/* ===== 왼쪽: 메인 강조 슬라이드 ===== */}
         <div
-          className="relative flex-[2] min-w-0 bg-surface-card rounded-xl border border-border overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,0.08)] cursor-pointer transition-all duration-300 hover:shadow-lg hover:border-border/80 active:scale-[0.995]"
+          className="relative flex-2 min-w-0 bg-surface-card rounded-xl border border-border overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,0.08)] cursor-pointer transition-all duration-300 hover:shadow-lg hover:border-border/80 active:scale-[0.995]"
           onClick={goNext}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
           <div className="absolute inset-0 bg-grid-engineering opacity-40" />
-          <div className="absolute inset-0 bg-gradient-to-r from-surface-card via-surface-card/80 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-r from-surface-card via-surface-card/80 to-transparent" />
 
           {/* 코너 마크 */}
           <div className="absolute top-2 left-2 w-3 h-3 border-l border-t border-surface-inverse/30 z-10" />

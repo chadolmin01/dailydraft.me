@@ -43,10 +43,10 @@ export function BottomTabBar() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-fixed md:hidden bg-surface-card/[0.97] backdrop-blur-xl border-t border-border/20"
+      className="fixed bottom-0 left-0 right-0 z-fixed md:hidden bg-surface-card/97 backdrop-blur-xl border-t border-border/20"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
     >
-      <div className="flex items-center h-[3.25rem]">
+      <div className="flex items-center h-13">
         {TABS.map((tab) => {
           const isExplore = tab.key === 'explore'
           const isActive = segment === tab.key
@@ -109,7 +109,7 @@ export function BottomTabBar() {
                 {badgeText && (
                   <span
                     aria-hidden="true"
-                    className="absolute -top-1.5 -right-2.5 min-w-[0.875rem] h-[0.875rem] flex items-center justify-center px-0.5 bg-indicator-alert text-white text-[0.5rem] font-bold rounded-full leading-none"
+                    className="absolute -top-1.5 -right-2.5 min-w-3.5 h-3.5 flex items-center justify-center px-0.5 bg-indicator-alert text-white text-[0.5rem] font-bold rounded-full leading-none"
                   >
                     {badgeText}
                   </span>

@@ -487,7 +487,7 @@ function EditProjectContent() {
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder={theme.titlePlaceholder}
                 maxLength={100}
-                className="w-full text-2xl font-bold text-txt-primary placeholder:text-txt-disabled border-none outline-none bg-transparent leading-tight break-keep"
+                className="w-full text-2xl font-bold text-txt-primary placeholder:text-txt-disabled border-none outline-hidden bg-transparent leading-tight break-keep"
               />
               <div className="flex flex-wrap gap-1.5 mt-4">
                 {CATEGORY_TAGS.map(slug => (
@@ -542,7 +542,7 @@ function EditProjectContent() {
                       placeholder={theme.descPlaceholder}
                       rows={7}
                       maxLength={500}
-                      className="w-full text-base sm:text-sm text-txt-secondary leading-[1.8] placeholder:text-txt-disabled border border-border-subtle rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-brand/10 focus:border-brand resize-none bg-transparent transition-all"
+                      className="w-full text-base sm:text-sm text-txt-secondary leading-[1.8] placeholder:text-txt-disabled border border-border-subtle rounded-lg p-3 focus:outline-hidden focus:ring-2 focus:ring-brand/10 focus:border-brand resize-none bg-transparent transition-all"
                     />
                     <div className="mt-1.5 flex items-center gap-3">
                       <div className="flex-1 h-1 bg-surface-sunken rounded-full overflow-hidden">
@@ -573,7 +573,7 @@ function EditProjectContent() {
                       placeholder={theme.painPlaceholder}
                       rows={3}
                       maxLength={1000}
-                      className="w-full text-base sm:text-sm text-txt-secondary leading-relaxed placeholder:text-txt-disabled border-none outline-none bg-transparent resize-none"
+                      className="w-full text-base sm:text-sm text-txt-secondary leading-relaxed placeholder:text-txt-disabled border-none outline-hidden bg-transparent resize-none"
                     />
                   </section>
 
@@ -594,7 +594,7 @@ function EditProjectContent() {
                             onChange={(e) => updateLink(idx, 'label', e.target.value)}
                             placeholder="예: GitHub, 배포"
                             aria-label="링크 이름"
-                            className="px-3 py-2 border border-border-subtle rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand/10 focus:border-brand w-1/3 bg-transparent transition-all"
+                            className="px-3 py-2 border border-border-subtle rounded-lg text-base sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-brand/10 focus:border-brand w-1/3 bg-transparent transition-all"
                           />
                           <input
                             type="url"
@@ -602,7 +602,7 @@ function EditProjectContent() {
                             onChange={(e) => updateLink(idx, 'url', e.target.value)}
                             placeholder="https://..."
                             inputMode="url"
-                            className="px-3 py-2 border border-border-subtle rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand/10 focus:border-brand flex-1 bg-transparent transition-all"
+                            className="px-3 py-2 border border-border-subtle rounded-lg text-base sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-brand/10 focus:border-brand flex-1 bg-transparent transition-all"
                           />
                           <button
                             type="button"
@@ -694,7 +694,7 @@ function EditProjectContent() {
                 disabled={updateOpportunity.isPending || imageUploading}
                 className={`group/mob relative w-full h-12 font-bold text-sm rounded-xl flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden active:scale-[0.97] ${theme.mobileBtn}`}
               >
-                <span className="absolute inset-0 -translate-x-full group-hover/mob:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/15 to-transparent" />
+                <span className="absolute inset-0 -translate-x-full group-hover/mob:translate-x-full transition-transform duration-700 bg-linear-to-r from-transparent via-white/15 to-transparent" />
                 <span className="relative flex items-center gap-2">
                   {imageUploading ? (
                     <><Loader2 size={14} className="animate-spin" /> 이미지 업로드 중...</>

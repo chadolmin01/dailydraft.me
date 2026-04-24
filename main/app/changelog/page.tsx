@@ -56,7 +56,7 @@ export default function ChangelogPage() {
         {CHANGELOG.map((entry) => (
           <article key={entry.date} className="relative pl-6 border-l-2 border-border">
             {/* 날짜 + 버전 헤더 */}
-            <div className="absolute -left-[7px] top-1 w-3 h-3 rounded-full bg-brand ring-4 ring-surface-bg" aria-hidden="true" />
+            <div className="absolute left-[-7px] top-1 w-3 h-3 rounded-full bg-brand ring-4 ring-surface-bg" aria-hidden="true" />
             <header className="mb-4 flex items-baseline gap-3 flex-wrap">
               <h2 className="text-[16px] font-bold text-txt-primary">
                 {formatDate(entry.date)}

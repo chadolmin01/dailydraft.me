@@ -204,7 +204,7 @@ export default function PlanPage() {
           {/* Triangle Visual */}
           <div className="bg-surface-card rounded-xl border border-border p-4">
             <div className="text-[10px] font-medium text-txt-disabled mb-2">Alignment Map</div>
-            <div className="h-[17.5rem]">
+            <div className="h-70">
               <TriangleVisual
                 inputs={inputs}
                 analyzing={isAnalyzing}
@@ -217,7 +217,7 @@ export default function PlanPage() {
 
           {/* Input Section */}
           <div className="bg-surface-card rounded-xl border border-border overflow-hidden">
-            <div className="h-[20rem]">
+            <div className="h-80">
               <InputSection
                 inputs={inputs}
                 logs={logs}
@@ -266,7 +266,7 @@ export default function PlanPage() {
             )}
 
             {/* Result Content */}
-            <div className="max-h-[31.25rem] overflow-y-auto custom-scrollbar">
+            <div className="max-h-125 overflow-y-auto custom-scrollbar">
               <ResultSection result={result} selectedView={selectedView} logs={logs} prdResult={prdResult} />
             </div>
           </div>

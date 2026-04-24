@@ -313,7 +313,7 @@ export const TopNavbar: React.FC = () => {
                       }
                     }
                   }}
-                  className="flex-1 pl-2 pr-3 py-2 bg-transparent text-base sm:text-sm focus:outline-none"
+                  className="flex-1 pl-2 pr-3 py-2 bg-transparent text-base sm:text-sm focus:outline-hidden"
                   placeholder="페이지, 프로젝트, 사람 검색..."
                 />
               )}

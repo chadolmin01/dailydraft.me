@@ -263,7 +263,7 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
                 id="direct-input-problem"
                 value={structuredData.problem}
                 onChange={(e) => setStructuredData(prev => ({ ...prev, problem: e.target.value }))}
-                className="w-full h-24 px-4 py-3 bg-surface-sunken rounded-xl border border-border focus:border-border resize-none focus:outline-none focus:ring-2 focus:ring-brand text-base sm:text-sm placeholder:text-txt-disabled transition-shadow"
+                className="w-full h-24 px-4 py-3 bg-surface-sunken rounded-xl border border-border focus:border-border resize-none focus:outline-hidden focus:ring-2 focus:ring-brand text-base sm:text-sm placeholder:text-txt-disabled transition-shadow"
                 placeholder="해결하려는 문제를 입력하세요..."
               />
             </div>
@@ -278,7 +278,7 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
                 id="direct-input-solution"
                 value={structuredData.solution}
                 onChange={(e) => setStructuredData(prev => ({ ...prev, solution: e.target.value }))}
-                className="w-full h-24 px-4 py-3 bg-surface-sunken rounded-xl border border-border focus:border-border resize-none focus:outline-none focus:ring-2 focus:ring-brand text-base sm:text-sm placeholder:text-txt-disabled transition-shadow"
+                className="w-full h-24 px-4 py-3 bg-surface-sunken rounded-xl border border-border focus:border-border resize-none focus:outline-hidden focus:ring-2 focus:ring-brand text-base sm:text-sm placeholder:text-txt-disabled transition-shadow"
                 placeholder="핵심 솔루션을 입력하세요..."
               />
             </div>
@@ -293,7 +293,7 @@ export const DirectInputModal: React.FC<DirectInputModalProps> = ({
                 id="direct-input-target"
                 value={structuredData.target}
                 onChange={(e) => setStructuredData(prev => ({ ...prev, target: e.target.value }))}
-                className="w-full h-24 px-4 py-3 bg-surface-sunken rounded-xl border border-border focus:border-border resize-none focus:outline-none focus:ring-2 focus:ring-brand text-base sm:text-sm placeholder:text-txt-disabled transition-shadow"
+                className="w-full h-24 px-4 py-3 bg-surface-sunken rounded-xl border border-border focus:border-border resize-none focus:outline-hidden focus:ring-2 focus:ring-brand text-base sm:text-sm placeholder:text-txt-disabled transition-shadow"
                 placeholder="타겟 고객을 입력하세요..."
               />
             </div>

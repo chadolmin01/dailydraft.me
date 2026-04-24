@@ -120,7 +120,7 @@ export function ProfileSentInvitations() {
                     </p>
                   </div>
 
-                  <div className="flex items-center gap-1.5 flex-shrink-0">
+                  <div className="flex items-center gap-1.5 shrink-0">
                     {inv.status === 'pending' && stale && (
                       <button
                         onClick={() => handleRemind(inv.id)}

@@ -46,7 +46,7 @@ export function ExploreClubGrid({
                 key={club.id}
                 href={`/clubs/${club.slug}`}
                 style={stagger ? { animationDelay: `${Math.min(index * 50, 500)}ms` } : undefined}
-                className={`${stagger} ob-ring-glow ob-press-spring h-[108px] flex items-start gap-3.5 p-4 bg-surface-card border border-border rounded-xl focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 outline-none`}
+                className={`${stagger} ob-ring-glow ob-press-spring h-[108px] flex items-start gap-3.5 p-4 bg-surface-card border border-border rounded-xl focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 outline-hidden`}
               >
                 {/* Logo: 52x52, rounded-md */}
                 {club.logo_url ? (

@@ -443,7 +443,7 @@ export function DiscordSettingsWizard({ clubSlug }: { clubSlug: string }) {
                           <select
                             value={selectedOpp}
                             onChange={e => setChannelMappings(prev => ({ ...prev, [ch.id]: e.target.value }))}
-                            className="flex-1 min-w-0 text-sm border border-border rounded-lg px-2 py-1.5 bg-surface-card text-txt-primary focus:outline-none focus:border-brand transition-colors"
+                            className="flex-1 min-w-0 text-sm border border-border rounded-lg px-2 py-1.5 bg-surface-card text-txt-primary focus:outline-hidden focus:border-brand transition-colors"
                           >
                             <option value="">연결 안 함</option>
                             {channelData.opportunities.map(opp => (
@@ -588,7 +588,7 @@ export function DiscordSettingsWizard({ clubSlug }: { clubSlug: string }) {
                   onChange={e => setCustomPrompt(e.target.value)}
                   placeholder="예: 기술 스택 언급 금지"
                   maxLength={200}
-                  className="w-full px-3 py-2.5 border border-border rounded-xl text-sm text-txt-primary bg-surface-card resize-none h-20 focus:outline-none focus:border-brand transition-colors placeholder:text-txt-disabled"
+                  className="w-full px-3 py-2.5 border border-border rounded-xl text-sm text-txt-primary bg-surface-card resize-none h-20 focus:outline-hidden focus:border-brand transition-colors placeholder:text-txt-disabled"
                 />
                 <div className="text-right text-[11px] text-txt-disabled mt-1">{customPrompt.length}/200</div>
               </div>

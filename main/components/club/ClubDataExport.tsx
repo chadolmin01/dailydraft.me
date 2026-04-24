@@ -65,7 +65,7 @@ export function ClubDataExport({ slug }: { slug: string }) {
             <select
               value={cohort}
               onChange={e => setCohort(e.target.value)}
-              className="w-full px-3 py-2 text-[13px] bg-surface-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/40"
+              className="w-full px-3 py-2 text-[13px] bg-surface-card border border-border rounded-lg focus:outline-hidden focus:ring-2 focus:ring-brand/40"
             >
               <option value="">전체 기수</option>
               {[...cohorts].reverse().map(c => (

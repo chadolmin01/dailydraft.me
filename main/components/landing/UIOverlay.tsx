@@ -90,7 +90,7 @@ export default function UIOverlay({
             exit={{ opacity: 0 }}
             className="absolute bottom-24 left-1/2 -translate-x-1/2"
           >
-            <div className="text-gray-400 text-sm bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm">
+            <div className="text-gray-400 text-sm bg-white/80 backdrop-blur-xs px-3 py-1 rounded-full shadow-sm">
               {hoveredProvince}
             </div>
           </motion.div>
@@ -108,7 +108,7 @@ export default function UIOverlay({
           >
             <button
               onClick={onBack}
-              className="flex items-center gap-2 text-gray-500 hover:text-gray-800 text-sm transition-colors bg-white/90 hover:bg-white backdrop-blur-sm px-4 py-2 rounded-lg border border-gray-200 shadow-sm"
+              className="flex items-center gap-2 text-gray-500 hover:text-gray-800 text-sm transition-colors bg-white/90 hover:bg-white backdrop-blur-xs px-4 py-2 rounded-lg border border-gray-200 shadow-sm"
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path

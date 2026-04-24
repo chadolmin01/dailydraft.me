@@ -358,7 +358,7 @@ export default function NewClubPage() {
                   onChange={(e) => setSlugInput(e.target.value)}
                   placeholder={autoSlug(name) || 'my-club'}
                   maxLength={30}
-                  className="flex-1 min-w-0 pr-4 py-3 bg-transparent text-[13px] text-txt-primary placeholder:text-txt-disabled focus:outline-none font-mono"
+                  className="flex-1 min-w-0 pr-4 py-3 bg-transparent text-[13px] text-txt-primary placeholder:text-txt-disabled focus:outline-hidden font-mono"
                 />
               </div>
               <p className="text-[11px] text-txt-disabled pt-1">

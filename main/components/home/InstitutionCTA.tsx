@@ -115,7 +115,7 @@ export const InstitutionCTA: React.FC = () => {
                 <Link
                   key={cta.label}
                   href={cta.href}
-                  className="group inline-flex items-center justify-center gap-1.5 bg-surface-inverse text-txt-inverse px-6 py-3 rounded-full font-semibold text-[14px] ob-press-spring hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+                  className="group inline-flex items-center justify-center gap-1.5 bg-surface-inverse text-txt-inverse px-6 py-3 rounded-full font-semibold text-[14px] ob-press-spring hover:opacity-90 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
                 >
                   {cta.label}
                   <ArrowRight
@@ -128,7 +128,7 @@ export const InstitutionCTA: React.FC = () => {
                 <Link
                   key={cta.label}
                   href={cta.href}
-                  className="inline-flex items-center justify-center px-6 py-3 rounded-full font-semibold text-[14px] text-txt-secondary bg-surface-card border border-border hover:bg-surface-card hover:text-txt-primary transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+                  className="inline-flex items-center justify-center px-6 py-3 rounded-full font-semibold text-[14px] text-txt-secondary bg-surface-card border border-border hover:bg-surface-card hover:text-txt-primary transition-colors duration-200 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
                 >
                   {cta.label}
                 </Link>

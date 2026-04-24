@@ -178,7 +178,7 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
             placeholder="예: Draft — 동아리 운영 SaaS"
             aria-label="포트폴리오 항목 제목"
             autoFocus
-            className="w-full px-4 py-2.5 text-sm font-semibold bg-surface-sunken border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/40"
+            className="w-full px-4 py-2.5 text-sm font-semibold bg-surface-sunken border border-border rounded-xl focus:outline-hidden focus:ring-2 focus:ring-brand/40"
           />
           <textarea
             value={description}
@@ -186,13 +186,13 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
             placeholder="역할·기간·성과를 한두 문장으로 적어 주세요 (선택)"
             aria-label="포트폴리오 항목 설명"
             rows={3}
-            className="w-full px-4 py-2.5 text-sm bg-surface-sunken border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/40 resize-none"
+            className="w-full px-4 py-2.5 text-sm bg-surface-sunken border border-border rounded-xl focus:outline-hidden focus:ring-2 focus:ring-brand/40 resize-none"
           />
           <input
             value={linkUrl}
             onChange={e => setLinkUrl(e.target.value)}
             placeholder="링크 URL (선택)"
-            className="w-full px-4 py-2.5 text-sm bg-surface-sunken border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/40"
+            className="w-full px-4 py-2.5 text-sm bg-surface-sunken border border-border rounded-xl focus:outline-hidden focus:ring-2 focus:ring-brand/40"
           />
 
           <div className="flex items-center justify-end gap-2 pt-1">
@@ -248,7 +248,7 @@ export function ProfilePortfolio({ items, isEditable = false }: ProfilePortfolio
                   <Image src={item.image_url} alt={item.title} fill className="object-cover" />
                 </div>
               ) : (
-                <div className="aspect-video bg-gradient-to-br from-brand-bg to-surface-sunken flex items-center justify-center">
+                <div className="aspect-video bg-linear-to-br from-brand-bg to-surface-sunken flex items-center justify-center">
                   <ImageIcon size={24} className="text-txt-disabled" />
                 </div>
               )}

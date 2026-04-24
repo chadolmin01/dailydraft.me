@@ -120,7 +120,7 @@ export default function MorePage() {
           <MessageSquare size={20} className="text-[#5E6AD2] shrink-0" />
           <span className="flex-1 text-[15px] text-txt-primary">메시지</span>
           {msgUnread > 0 && (
-            <span className="min-w-[1.25rem] h-5 flex items-center justify-center px-1.5 bg-indicator-alert text-white text-[11px] font-bold rounded-full">
+            <span className="min-w-5 h-5 flex items-center justify-center px-1.5 bg-indicator-alert text-white text-[11px] font-bold rounded-full">
               {msgUnread > 9 ? '9+' : msgUnread}
             </span>
           )}

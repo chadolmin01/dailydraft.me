@@ -77,7 +77,7 @@ const TriangleVisual: React.FC<TriangleVisualProps> = ({ inputs, analyzing, comp
 
   return (
     <div className="w-full flex justify-center select-none h-full items-center relative">
-      <svg width="300" height="260" viewBox="0 0 300 260" className="drop-shadow-sm max-w-full max-h-full overflow-visible">
+      <svg width="300" height="260" viewBox="0 0 300 260" className="drop-shadow-xs max-w-full max-h-full overflow-visible">
         {/* Connections to center */}
         <line
           x1={top.x} y1={top.y} x2={center.x} y2={center.y}
@@ -197,7 +197,7 @@ const TriangleVisual: React.FC<TriangleVisualProps> = ({ inputs, analyzing, comp
 
       {/* Tooltip Overlay */}
       {hoveredNode && (
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-surface-inverse/90 text-white px-3 py-1.5 rounded-full text-xs font-medium shadow-lg backdrop-blur-sm pointer-events-none animate-fade-in z-20 whitespace-nowrap">
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-surface-inverse/90 text-white px-3 py-1.5 rounded-full text-xs font-medium shadow-lg backdrop-blur-xs pointer-events-none animate-fade-in z-20 whitespace-nowrap">
             {getTooltipText()}
         </div>
       )}

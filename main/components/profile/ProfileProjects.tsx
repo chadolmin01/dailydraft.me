@@ -145,7 +145,7 @@ function ProjectCard({
       className="bg-surface-card border border-border rounded-2xl overflow-hidden ob-ring-glow flex flex-col no-underline"
     >
       {/* 커버 */}
-      <div className="relative aspect-[16/9] bg-surface-sunken overflow-hidden">
+      <div className="relative aspect-video bg-surface-sunken overflow-hidden">
         {coverSrc ? (
           <Image
             src={coverSrc}
@@ -230,7 +230,7 @@ function TeamCard({
       href={href}
       className="bg-surface-card border border-border rounded-2xl overflow-hidden ob-ring-glow flex flex-col no-underline"
     >
-      <div className="relative aspect-[16/9] bg-surface-sunken overflow-hidden">
+      <div className="relative aspect-video bg-surface-sunken overflow-hidden">
         {coverSrc ? (
           <Image
             src={coverSrc}

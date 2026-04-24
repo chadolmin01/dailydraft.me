@@ -138,7 +138,7 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
           {hasImages ? (
             <div className="flex gap-2 h-full overflow-x-auto snap-x snap-mandatory px-3 py-3 scrollbar-hide">
               {opportunity.demo_images!.map((src, idx) => (
-                <div key={idx} className="relative h-full aspect-[4/3] shrink-0 rounded-xl overflow-hidden snap-center">
+                <div key={idx} className="relative h-full aspect-4/3 shrink-0 rounded-xl overflow-hidden snap-center">
                   <Image
                     src={src}
                     alt={`${opportunity.title} ${idx + 1}`}

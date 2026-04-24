@@ -23,7 +23,7 @@ export function Tooltip({ text, children, position = 'top', className = '' }: To
         {text}
         <span
           className={`absolute left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-surface-inverse rotate-45 ${
-            position === 'top' ? '-bottom-[3px]' : '-top-[3px]'
+            position === 'top' ? 'bottom-[-3px]' : 'top-[-3px]'
           }`}
         />
       </span>

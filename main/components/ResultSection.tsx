@@ -84,7 +84,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
                         <ul className="mt-3 space-y-3">
                             {result.coreFeatures.p0.map((f, i) => (
                                 <li key={i} className="flex items-start gap-3 text-sm text-txt-primary break-keep group">
-                                    <CheckCircle2 className="w-4 h-4 text-indicator-online mt-0.5 flex-shrink-0" />
+                                    <CheckCircle2 className="w-4 h-4 text-indicator-online mt-0.5 shrink-0" />
                                     <span className="leading-snug">{f}</span>
                                 </li>
                             ))}
@@ -95,7 +95,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
                         <ul className="mt-3 space-y-3">
                             {result.coreFeatures.p1.map((f, i) => (
                                 <li key={i} className="flex items-start gap-3 text-sm text-txt-tertiary break-keep">
-                                    <span className="w-1.5 h-1.5 bg-status-info-text/40 mt-1.5 flex-shrink-0"></span>
+                                    <span className="w-1.5 h-1.5 bg-status-info-text/40 mt-1.5 shrink-0"></span>
                                     <span className="leading-snug">{f}</span>
                                 </li>
                             ))}
@@ -137,7 +137,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
                 <div className="flex flex-col gap-2">
                     {result.openQuestions.map((q, i) => (
                         <span key={i} className="text-sm text-txt-secondary font-medium flex items-center gap-2 break-keep">
-                            <span className="w-1.5 h-1.5 bg-surface-inverse flex-shrink-0"></span> {q}
+                            <span className="w-1.5 h-1.5 bg-surface-inverse shrink-0"></span> {q}
                         </span>
                     ))}
                 </div>
@@ -211,7 +211,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
                 {prdResult.core_features.filter(f => f.priority === 'P0').map((f, i) => (
                   <li key={i} className="flex flex-col gap-1 text-sm text-txt-primary break-keep group bg-status-success-bg/30 p-3 border border-indicator-online/20">
                     <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-indicator-online flex-shrink-0" />
+                      <CheckCircle2 className="w-4 h-4 text-indicator-online shrink-0" />
                       <span className="font-semibold">{f.feature_name}</span>
                     </div>
                     <span className="text-txt-tertiary text-xs ml-6">{f.user_story}</span>
@@ -227,7 +227,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
                 {prdResult.core_features.filter(f => f.priority === 'P1').map((f, i) => (
                   <li key={i} className="flex flex-col gap-1 text-sm text-txt-tertiary break-keep">
                     <div className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 bg-status-info-text/40 flex-shrink-0"></span>
+                      <span className="w-1.5 h-1.5 bg-status-info-text/40 shrink-0"></span>
                       <span className="font-medium">{f.feature_name}</span>
                     </div>
                     <span className="text-txt-disabled text-xs ml-4">{f.user_story}</span>
@@ -243,7 +243,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ result, selectedView, log
                 <ul className="mt-3 space-y-2">
                   {prdResult.core_features.filter(f => f.priority === 'P2').map((f, i) => (
                     <li key={i} className="flex items-center gap-2 text-sm text-txt-disabled break-keep">
-                      <span className="w-1 h-1 bg-txt-disabled flex-shrink-0"></span>
+                      <span className="w-1 h-1 bg-txt-disabled shrink-0"></span>
                       <span>{f.feature_name}</span>
                     </li>
                   ))}

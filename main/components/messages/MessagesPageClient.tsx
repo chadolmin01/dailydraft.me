@@ -435,7 +435,7 @@ function MessagesPageInner() {
                                   : 'bg-surface-inverse text-txt-inverse border border-surface-inverse shadow-sm'
                                 : 'bg-surface-sunken text-txt-primary border border-border'
                             } ${isSending ? 'opacity-60' : ''}`}>
-                              <p className="whitespace-pre-wrap break-words">
+                              <p className="whitespace-pre-wrap wrap-break-word">
                                 {renderMessageContent(msg.content)}
                               </p>
                             </div>

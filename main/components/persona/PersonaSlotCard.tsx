@@ -137,7 +137,7 @@ export function PersonaSlotCard({ personaId, fieldKey, field, canEdit }: Props) 
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
                 rows={8}
-                className="w-full text-sm text-txt-primary bg-surface-bg border border-border rounded-xl px-3 py-2.5 focus:outline-none focus:border-brand leading-relaxed resize-none"
+                className="w-full text-sm text-txt-primary bg-surface-bg border border-border rounded-xl px-3 py-2.5 focus:outline-hidden focus:border-brand leading-relaxed resize-none"
                 placeholder={placeholderForField(fieldKey)}
               />
               <div className="flex items-center justify-end gap-2 mt-3">

@@ -49,7 +49,7 @@ export function ProjectPreviewModal({ projectId, onClose }: Props) {
         exit={{ opacity: 0 }}
         transition={{ duration: 0.2 }}
         onClick={onClose}
-        className="fixed inset-0 bg-black/40 backdrop-blur-sm z-modal-backdrop"
+        className="fixed inset-0 bg-black/40 backdrop-blur-xs z-modal-backdrop"
       />
       <motion.div
         initial={{ opacity: 0, scale: 0.96, y: 10 }}

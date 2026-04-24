@@ -23,7 +23,7 @@ export const CropModal: React.FC<CropModalProps> = ({
   if (!cropImage) return null
 
   return (
-    <div className="fixed inset-0 z-popover flex items-center justify-center bg-black/70 backdrop-blur-sm">
+    <div className="fixed inset-0 z-popover flex items-center justify-center bg-black/70 backdrop-blur-xs">
       <div className="bg-surface-card rounded-xl border border-border shadow-lg-xl w-full max-w-lg mx-4 flex flex-col">
         {/* 헤더 */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-surface-sunken">

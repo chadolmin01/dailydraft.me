@@ -50,7 +50,7 @@ export function ExploreTabBar({
           <div className="flex items-center shrink-0">
             <button
               onClick={() => onTabChange('projects')}
-              className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-bold border-b-2 -mb-[2px] transition-colors ${
+              className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-bold border-b-2 mb-[-2px] transition-colors ${
                 activeTab === 'projects' ? 'border-brand text-brand' : 'border-transparent text-txt-tertiary hover:text-txt-secondary'
               }`}
             >
@@ -60,7 +60,7 @@ export function ExploreTabBar({
             </button>
             <button
               onClick={() => onTabChange('people')}
-              className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-bold border-b-2 -mb-[2px] transition-colors ${
+              className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-bold border-b-2 mb-[-2px] transition-colors ${
                 activeTab === 'people' ? 'border-brand text-brand' : 'border-transparent text-txt-tertiary hover:text-txt-secondary'
               }`}
             >
@@ -70,7 +70,7 @@ export function ExploreTabBar({
             </button>
             <button
               onClick={() => onTabChange('clubs')}
-              className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-bold border-b-2 -mb-[2px] transition-colors ${
+              className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-bold border-b-2 mb-[-2px] transition-colors ${
                 activeTab === 'clubs' ? 'border-brand text-brand' : 'border-transparent text-txt-tertiary hover:text-txt-secondary'
               }`}
             >
@@ -118,7 +118,7 @@ export function ExploreTabBar({
               value={searchInput ?? ''}
               onChange={(e) => onSearchInputChange(e.target.value)}
               autoFocus
-              className="w-full pl-10 pr-10 py-2.5 text-base sm:text-sm bg-transparent focus:outline-none"
+              className="w-full pl-10 pr-10 py-2.5 text-base sm:text-sm bg-transparent focus:outline-hidden"
               placeholder="프로젝트, 사람, 기술 검색..."
             />
             {searchInput && (

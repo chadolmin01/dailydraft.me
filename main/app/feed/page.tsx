@@ -335,7 +335,7 @@ export default async function FeedPage({
           <div className="space-y-8">
           {groups.map(group => (
           <section key={group.bucket}>
-            <h2 className="text-[11px] font-bold text-txt-tertiary uppercase tracking-wider mb-3 sticky top-0 bg-surface-bg/80 backdrop-blur-sm py-1 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 z-[1]">
+            <h2 className="text-[11px] font-bold text-txt-tertiary uppercase tracking-wider mb-3 sticky top-0 bg-surface-bg/80 backdrop-blur-xs py-1 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 z-1">
               {BUCKET_LABEL[group.bucket]}
               <span className="ml-2 text-txt-disabled normal-case tracking-normal font-medium">
                 {group.items.length}건
@@ -405,8 +405,8 @@ export default async function FeedPage({
           </div>
         )}
 
-        <div className="mt-10 bg-gradient-to-br from-brand to-brand/80 text-white rounded-2xl p-6 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center shrink-0">
+        <div className="mt-10 bg-linear-to-br from-brand to-brand/80 text-white rounded-2xl p-6 flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-xs flex items-center justify-center shrink-0">
             <Building2 size={20} />
           </div>
           <div className="flex-1 min-w-0">

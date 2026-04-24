@@ -146,7 +146,7 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
 
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
-        <header className="h-14 border-b border-border bg-surface-card px-4 flex items-center justify-between flex-shrink-0">
+        <header className="h-14 border-b border-border bg-surface-card px-4 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             {viewState === 'KANBAN' && (
               <button
@@ -276,7 +276,7 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
           ) : (
             <div className="h-full flex flex-col p-4">
               {/* Control Bar */}
-              <div className="flex flex-col gap-3 mb-3 flex-shrink-0">
+              <div className="flex flex-col gap-3 mb-3 shrink-0">
                 <div className="flex justify-between items-end">
                   <div className="flex-1">
                     <RoleFilter
@@ -307,7 +307,7 @@ export const BuildModule: React.FC<BuildModuleProps> = ({ prdData }) => {
                   {COLUMNS.map(column => (
                     <div
                       key={column.id}
-                      className="flex-1 min-w-[15rem] max-w-xs flex flex-col h-full bg-surface-sunken rounded-xl border border-border hover:bg-surface-sunken/80 transition-colors"
+                      className="flex-1 min-w-60 max-w-xs flex flex-col h-full bg-surface-sunken rounded-xl border border-border hover:bg-surface-sunken/80 transition-colors"
                       onDragOver={handleDragOver}
                       onDrop={(e) => handleDrop(e, column.id)}
                     >

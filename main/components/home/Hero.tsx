@@ -110,7 +110,7 @@ export const Hero: React.FC = () => {
           {/* Sub copy — 인지 시스템 메타포 직접 활용 */}
           <motion.p
             variants={fadeUp}
-            className="text-[15px] sm:text-[17px] md:text-[18px] text-txt-secondary leading-[1.65] max-w-[36rem] mb-4 break-keep"
+            className="text-[15px] sm:text-[17px] md:text-[18px] text-txt-secondary leading-[1.65] max-w-xl mb-4 break-keep"
           >
             카톡·Slack·Discord — 어디서 얘기하든 동아리의 기록은 끊기지 않습니다.
             <br className="hidden sm:block" />

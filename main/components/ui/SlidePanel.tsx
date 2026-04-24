@@ -11,7 +11,7 @@ interface SlidePanelProps {
   children: React.ReactNode
   /** Actions rendered in the header right side */
   headerActions?: React.ReactNode
-  /** Panel width class, default w-[28rem] */
+  /** Panel width class, default w-md */
   width?: string
 }
 
@@ -22,7 +22,7 @@ export const SlidePanel: React.FC<SlidePanelProps> = ({
   subtitle,
   children,
   headerActions,
-  width = 'w-[28rem]',
+  width = 'w-md',
 }) => {
   const handleEscape = useCallback((e: KeyboardEvent) => {
     if (e.key === 'Escape') onClose()
@@ -43,7 +43,7 @@ export const SlidePanel: React.FC<SlidePanelProps> = ({
     <>
       {/* Overlay */}
       <div
-        className={`fixed inset-0 z-modal-backdrop bg-black/30 backdrop-blur-sm transition-opacity duration-300 ${
+        className={`fixed inset-0 z-modal-backdrop bg-black/30 backdrop-blur-xs transition-opacity duration-300 ${
           isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
         onClick={onClose}

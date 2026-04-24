@@ -149,7 +149,7 @@ function PersonCard({
       style={stagger ? { animationDelay: `${Math.min(index * 50, 500)}ms` } : undefined}
       className={`${stagger} ob-ring-glow ob-press-spring bg-surface-card rounded-xl cursor-pointer
         flex flex-col overflow-hidden border border-border
-        focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 outline-none`}
+        focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 outline-hidden`}
     >
       {/* ── Header: 아바타 + 이름 + 역할 ── */}
       <div className="flex items-center gap-3 px-4 pt-4 pb-3">

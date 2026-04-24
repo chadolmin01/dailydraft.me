@@ -301,7 +301,7 @@ export const FeatureShowcase: React.FC = () => {
   return (
     <section id="features" className="w-full py-16 px-6 md:px-10 relative overflow-hidden">
       {/* Subtle background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-surface-card via-surface-sunken/40 to-surface-card pointer-events-none" />
+      <div className="absolute inset-0 bg-linear-to-b from-surface-card via-surface-sunken/40 to-surface-card pointer-events-none" />
 
       <div className="max-w-5xl mx-auto relative">
         {/* Header */}

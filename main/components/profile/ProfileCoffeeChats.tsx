@@ -158,7 +158,7 @@ export function ProfileCoffeeChats() {
                           type="button"
                           onClick={() => chat.requester_user_id && setViewingProfileUserId(chat.requester_user_id)}
                           disabled={!chat.requester_user_id}
-                          className={`w-9 h-9 bg-indicator-premium/10 border border-indicator-premium-border/30 flex items-center justify-center text-xs font-bold text-indicator-premium-border flex-shrink-0 ${
+                          className={`w-9 h-9 bg-indicator-premium/10 border border-indicator-premium-border/30 flex items-center justify-center text-xs font-bold text-indicator-premium-border shrink-0 ${
                             chat.requester_user_id ? 'cursor-pointer hover:ring-2 hover:ring-brand/40 transition-all' : ''
                           }`}
                           title={chat.requester_user_id ? '프로필 보기' : ''}
@@ -194,7 +194,7 @@ export function ProfileCoffeeChats() {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 flex-shrink-0">
+                    <div className="flex items-center gap-2 shrink-0">
                       <button
                         onClick={() => setAcceptModalChat(chat)}
                         className="px-3 py-1.5 text-xs font-bold bg-indicator-online text-white border border-indicator-online hover:bg-indicator-online/90 hover:opacity-90 ob-press-spring"
@@ -219,7 +219,7 @@ export function ProfileCoffeeChats() {
                       type="button"
                       onClick={() => chat.requester_user_id && setViewingProfileUserId(chat.requester_user_id)}
                       disabled={!chat.requester_user_id}
-                      className={`w-9 h-9 bg-surface-sunken rounded-xl border border-border flex items-center justify-center text-xs font-bold text-txt-tertiary flex-shrink-0 ${
+                      className={`w-9 h-9 bg-surface-sunken rounded-xl border border-border flex items-center justify-center text-xs font-bold text-txt-tertiary shrink-0 ${
                         chat.requester_user_id ? 'cursor-pointer hover:ring-2 hover:ring-brand/40 transition-all' : ''
                       }`}
                       title={chat.requester_user_id ? '프로필 보기' : ''}
@@ -378,7 +378,7 @@ function SentChatCard({ chat }: { chat: CoffeeChat }) {
     <div className="bg-surface-card rounded-xl border border-border overflow-hidden hover:shadow-md hover-spring">
       {/* Header */}
       <div className="flex items-center gap-3 p-4">
-        <div className={`w-9 h-9 border flex items-center justify-center text-xs font-bold flex-shrink-0 ${
+        <div className={`w-9 h-9 border flex items-center justify-center text-xs font-bold shrink-0 ${
           isAccepted ? 'bg-status-success-bg border-indicator-online/30 text-indicator-online' :
           chat.status === 'declined' ? 'bg-surface-sunken border-border text-txt-tertiary' :
           'bg-indicator-premium/10 border-indicator-premium-border/30 text-indicator-premium-border'

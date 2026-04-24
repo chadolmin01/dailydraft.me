@@ -16,7 +16,7 @@ import { CampusMap } from '@/components/explore/CampusMap'
 import { timeAgo } from '@/src/lib/utils'
 
 const ModalLoadingFallback = () => (
-  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-modal-backdrop">
+  <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center z-modal-backdrop">
     <div className="bg-surface-card rounded-xl border border-border px-6 py-4 shadow-lg">
       <span className="text-sm text-txt-secondary font-mono">로딩 중...</span>
     </div>
@@ -595,7 +595,7 @@ function ExplorePageContent() {
               : activeTab === 'people' ? '사람 검색 — 이름·대학·역할로'
               : '클럽 검색 — 이름·카테고리로'
             }
-            className="w-full pl-11 pr-4 py-3 text-[15px] bg-surface-sunken border border-border rounded-full text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-brand focus:bg-surface-card focus:shadow-[0_0_0_3px_rgba(94,106,210,0.15)] transition-all"
+            className="w-full pl-11 pr-4 py-3 text-[15px] bg-surface-sunken border border-border rounded-full text-txt-primary placeholder:text-txt-disabled focus:outline-hidden focus:border-brand focus:bg-surface-card focus:shadow-[0_0_0_3px_rgba(94,106,210,0.15)] transition-all"
           />
         </div>
 

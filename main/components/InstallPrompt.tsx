@@ -115,7 +115,7 @@ export function InstallPrompt() {
 
   return (
     <div
-      className={`fixed top-0 left-0 right-0 z-[400] md:hidden transition-transform duration-300 ease-out ${
+      className={`fixed top-0 left-0 right-0 z-modal-backdrop md:hidden transition-transform duration-300 ease-out ${
         closing ? '-translate-y-full' : 'translate-y-0 animate-slideDown'
       }`}
     >

@@ -43,7 +43,7 @@ export function PersonaEmptyState({ clubName, canCreate, isCreating, onCreate }:
         <ChannelDot
           icon={Instagram}
           label="인스타"
-          bg="bg-gradient-to-tr from-[#F58529] via-[#DD2A7B] to-[#8134AF]"
+          bg="bg-linear-to-tr from-[#F58529] via-[#DD2A7B] to-[#8134AF]"
           text="text-white"
           gradient
         />

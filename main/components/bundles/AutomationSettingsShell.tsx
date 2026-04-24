@@ -351,7 +351,7 @@ function CreateAutomationForm({
         <select
           value={eventType}
           onChange={(e) => setEventType(e.target.value as EventType)}
-          className="w-full h-10 text-sm text-txt-primary bg-surface-bg border border-border rounded-lg px-3 focus:outline-none focus:border-brand"
+          className="w-full h-10 text-sm text-txt-primary bg-surface-bg border border-border rounded-lg px-3 focus:outline-hidden focus:border-brand"
         >
           {EVENT_TYPES.map((t) => (
             <option key={t} value={t}>
@@ -421,7 +421,7 @@ function CreateAutomationForm({
             max={28}
             value={runDayOfMonth}
             onChange={(e) => setRunDayOfMonth(Number(e.target.value))}
-            className="w-24 h-10 text-sm text-txt-primary bg-surface-bg border border-border rounded-lg px-3 focus:outline-none focus:border-brand"
+            className="w-24 h-10 text-sm text-txt-primary bg-surface-bg border border-border rounded-lg px-3 focus:outline-hidden focus:border-brand"
           />
           <p className="text-[11px] text-txt-tertiary mt-1">
             1~28일까지 선택 가능 (말일 보장을 위해)
@@ -438,7 +438,7 @@ function CreateAutomationForm({
           <select
             value={runHour}
             onChange={(e) => setRunHour(Number(e.target.value))}
-            className="h-10 text-sm text-txt-primary bg-surface-bg border border-border rounded-lg px-3 focus:outline-none focus:border-brand"
+            className="h-10 text-sm text-txt-primary bg-surface-bg border border-border rounded-lg px-3 focus:outline-hidden focus:border-brand"
           >
             {Array.from({ length: 24 }, (_, i) => (
               <option key={i} value={i}>
@@ -449,7 +449,7 @@ function CreateAutomationForm({
           <select
             value={runMinute}
             onChange={(e) => setRunMinute(Number(e.target.value))}
-            className="h-10 text-sm text-txt-primary bg-surface-bg border border-border rounded-lg px-3 focus:outline-none focus:border-brand"
+            className="h-10 text-sm text-txt-primary bg-surface-bg border border-border rounded-lg px-3 focus:outline-hidden focus:border-brand"
           >
             {[0, 15, 30, 45].map((m) => (
               <option key={m} value={m}>
@@ -472,7 +472,7 @@ function CreateAutomationForm({
           max={5}
           value={dailyCount}
           onChange={(e) => setDailyCount(Number(e.target.value))}
-          className="w-24 h-10 text-sm text-txt-primary bg-surface-bg border border-border rounded-lg px-3 focus:outline-none focus:border-brand"
+          className="w-24 h-10 text-sm text-txt-primary bg-surface-bg border border-border rounded-lg px-3 focus:outline-hidden focus:border-brand"
         />
         <p className="text-[11px] text-txt-tertiary mt-1">1~5개 (보통 1개 권장)</p>
       </div>

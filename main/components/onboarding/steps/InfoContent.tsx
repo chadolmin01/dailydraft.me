@@ -121,7 +121,7 @@ export function InfoContent({
             onChange={(e) => onChange({ name: e.target.value.slice(0, 7) })}
             maxLength={7}
             placeholder="어떻게 불러드릴까요?"
-            className={`${INPUT_CLASS} ${nameEmpty ? '!border-status-danger-text' : ''}`}
+            className={`${INPUT_CLASS} ${nameEmpty ? 'border-status-danger-text!' : ''}`}
             autoFocus
             autoComplete="nickname"
             onKeyDown={(e) => e.key === 'Enter' && onSubmit()}
@@ -207,7 +207,7 @@ export function InfoContent({
               </label>
               {verified && isStudent ? (
                 // 이메일 인증 완료: 매칭된 대학을 readonly로 표시
-                <div className={`${INPUT_CLASS} !bg-surface-sunken !text-txt-secondary flex items-center`}>
+                <div className={`${INPUT_CLASS} bg-surface-sunken! text-txt-secondary! flex items-center`}>
                   {matchState.university?.name ?? profile.university}
                 </div>
               ) : showUnivCombo ? (
@@ -258,7 +258,7 @@ export function InfoContent({
                   aria-label="학번 (숫자 6~10자리)"
                   aria-invalid={studentIdError}
                   aria-describedby={profile.entranceYear ? 'student-id-hint' : undefined}
-                  className={`${INPUT_CLASS} ${studentIdError ? '!border-status-danger-text' : profile.entranceYear ? '!border-brand/40' : ''}`}
+                  className={`${INPUT_CLASS} ${studentIdError ? 'border-status-danger-text!' : profile.entranceYear ? 'border-brand/40!' : ''}`}
                 />
                 {profile.entranceYear && !studentIdError && (
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 inline-flex items-center gap-1 text-[11px] font-semibold text-brand">

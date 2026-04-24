@@ -434,7 +434,7 @@ export function DraftReviewClient({ draftId }: { draftId: string }) {
         </div>
 
         {/* Bottom Actions */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-border z-50 px-5 pb-[calc(12px+env(safe-area-inset-bottom))] pt-3">
+        <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xs border-t border-border z-50 px-5 pb-[calc(12px+env(safe-area-inset-bottom))] pt-3">
           <div className="max-w-[600px] mx-auto">
             {/* AI 피드백 토글 */}
             {showFeedback && (
@@ -502,7 +502,7 @@ export function DraftReviewClient({ draftId }: { draftId: string }) {
                   variant="ghost"
                   loading={submitting}
                   onClick={handleReject}
-                  className="!text-status-danger-text"
+                  className="text-status-danger-text!"
                 >
                   거절
                 </Button>
@@ -538,7 +538,7 @@ export function DraftReviewClient({ draftId }: { draftId: string }) {
         <div className="mb-5">
           <label className="text-[15px] font-bold text-txt-primary mb-2.5 block">이번 주 요약</label>
           <textarea
-            className="w-full px-4 py-3 border border-border rounded-xl text-sm text-txt-primary leading-relaxed resize-y focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/10"
+            className="w-full px-4 py-3 border border-border rounded-xl text-sm text-txt-primary leading-relaxed resize-y focus:outline-hidden focus:border-brand focus:ring-2 focus:ring-brand/10"
             rows={3}
             value={editSummary}
             onChange={e => setEditSummary(e.target.value)}
@@ -569,7 +569,7 @@ export function DraftReviewClient({ draftId }: { draftId: string }) {
                 </button>
                 <input
                   type="text"
-                  className={`flex-1 border-none outline-none text-sm bg-transparent ${
+                  className={`flex-1 border-none outline-hidden text-sm bg-transparent ${
                     task.done ? 'line-through text-txt-tertiary' : 'text-txt-primary'
                   }`}
                   placeholder="할 일을 입력하세요"
@@ -605,7 +605,7 @@ export function DraftReviewClient({ draftId }: { draftId: string }) {
         <div className="mb-5">
           <label className="text-[15px] font-bold text-txt-primary mb-2.5 block">다음 주 계획</label>
           <textarea
-            className="w-full px-4 py-3 border border-border rounded-xl text-sm text-txt-primary leading-relaxed resize-y focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/10"
+            className="w-full px-4 py-3 border border-border rounded-xl text-sm text-txt-primary leading-relaxed resize-y focus:outline-hidden focus:border-brand focus:ring-2 focus:ring-brand/10"
             rows={3}
             value={editNextPlan}
             onChange={e => setEditNextPlan(e.target.value)}
@@ -645,7 +645,7 @@ export function DraftReviewClient({ draftId }: { draftId: string }) {
             <div className="mt-3">
               <label className="text-[15px] font-bold text-txt-primary mb-2.5 block">어떤 부분이 어려우신가요?</label>
               <textarea
-                className="w-full px-4 py-3 border border-border rounded-xl text-sm text-txt-primary leading-relaxed resize-y focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/10"
+                className="w-full px-4 py-3 border border-border rounded-xl text-sm text-txt-primary leading-relaxed resize-y focus:outline-hidden focus:border-brand focus:ring-2 focus:ring-brand/10"
                 rows={2}
                 placeholder="겪고 있는 어려움을 적어주시면 팀원이나 멘토가 도움을 드릴 수 있습니다"
                 value={editHelpText}
@@ -658,7 +658,7 @@ export function DraftReviewClient({ draftId }: { draftId: string }) {
       </div>
 
       {/* Bottom Actions */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-border z-50 px-5 pb-[calc(12px+env(safe-area-inset-bottom))] pt-3">
+      <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xs border-t border-border z-50 px-5 pb-[calc(12px+env(safe-area-inset-bottom))] pt-3">
         <div className="max-w-[600px] mx-auto">
           <button
             onClick={() => setIsPublic(!isPublic)}

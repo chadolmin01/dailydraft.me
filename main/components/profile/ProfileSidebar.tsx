@@ -142,7 +142,7 @@ export function ProfileSidebar({ profile, email, completion, isEditable = false 
                   aria-label="새로 추가할 스킬"
                   autoFocus
                   list="skill-suggestions"
-                  className="w-24 px-2.5 py-1 text-xs bg-surface-sunken border border-border rounded-full outline-none focus:ring-2 focus:ring-brand/40"
+                  className="w-24 px-2.5 py-1 text-xs bg-surface-sunken border border-border rounded-full outline-hidden focus:ring-2 focus:ring-brand/40"
                 />
                 <datalist id="skill-suggestions">
                   {SKILL_SUGGESTIONS?.map((s: string) => <option key={s} value={s} />)}
@@ -327,7 +327,7 @@ function LinkField({ icon: Icon, placeholder, value, onChange, editable }: {
         onChange={e => onChange(e.target.value)}
         disabled={!editable}
         placeholder={placeholder}
-        className="flex-1 min-w-0 bg-transparent text-sm text-txt-primary outline-none placeholder:text-txt-disabled"
+        className="flex-1 min-w-0 bg-transparent text-sm text-txt-primary outline-hidden placeholder:text-txt-disabled"
       />
     </label>
   )

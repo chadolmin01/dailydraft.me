@@ -121,7 +121,7 @@ export const Cohort1Section: React.FC = () => {
                     placeholder="이메일"
                     required
                     disabled={submitting}
-                    className="flex-1 px-4 py-3 rounded-full border border-border bg-surface-card text-txt-primary text-sm placeholder:text-txt-tertiary focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition-colors disabled:opacity-50"
+                    className="flex-1 px-4 py-3 rounded-full border border-border bg-surface-card text-txt-primary text-sm placeholder:text-txt-tertiary focus:outline-hidden focus:border-brand focus:ring-2 focus:ring-brand/20 transition-colors disabled:opacity-50"
                   />
                   <button
                     type="submit"

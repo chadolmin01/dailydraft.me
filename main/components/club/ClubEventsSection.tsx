@@ -284,7 +284,7 @@ function EventForm({ slug, onClose, onSuccess }: {
         placeholder="예: 4/15 봄 정기모임, 5/1 아이디어 데모데이"
         aria-label="일정 제목"
         autoFocus
-        className="w-full px-3 py-2.5 text-[14px] font-semibold bg-surface-bg border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/40"
+        className="w-full px-3 py-2.5 text-[14px] font-semibold bg-surface-bg border border-border rounded-xl focus:outline-hidden focus:ring-2 focus:ring-brand/40"
       />
 
       {/* 유형 */}
@@ -315,14 +315,14 @@ function EventForm({ slug, onClose, onSuccess }: {
           type="date"
           value={startDate}
           onChange={e => setStartDate(e.target.value)}
-          className="px-3 py-2 text-[13px] bg-surface-bg border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/40"
+          className="px-3 py-2 text-[13px] bg-surface-bg border border-border rounded-xl focus:outline-hidden focus:ring-2 focus:ring-brand/40"
         />
         <input
           type="time"
           value={startTime}
           onChange={e => setStartTime(e.target.value)}
           disabled={allDay}
-          className="px-3 py-2 text-[13px] bg-surface-bg border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/40 disabled:opacity-50"
+          className="px-3 py-2 text-[13px] bg-surface-bg border border-border rounded-xl focus:outline-hidden focus:ring-2 focus:ring-brand/40 disabled:opacity-50"
         />
       </div>
       <label className="flex items-center gap-2 text-[12px] text-txt-secondary cursor-pointer">
@@ -334,14 +334,14 @@ function EventForm({ slug, onClose, onSuccess }: {
         value={location}
         onChange={e => setLocation(e.target.value.slice(0, 200))}
         placeholder="장소 (예: 공학관 301호 / Discord #일반)"
-        className="w-full px-3 py-2 text-[13px] bg-surface-bg border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/40"
+        className="w-full px-3 py-2 text-[13px] bg-surface-bg border border-border rounded-xl focus:outline-hidden focus:ring-2 focus:ring-brand/40"
       />
 
       <input
         value={cohort}
         onChange={e => setCohort(e.target.value.slice(0, 20))}
         placeholder="특정 기수 한정 (선택, 예: 3)"
-        className="w-full px-3 py-2 text-[13px] bg-surface-bg border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/40"
+        className="w-full px-3 py-2 text-[13px] bg-surface-bg border border-border rounded-xl focus:outline-hidden focus:ring-2 focus:ring-brand/40"
       />
 
       <textarea
@@ -349,7 +349,7 @@ function EventForm({ slug, onClose, onSuccess }: {
         onChange={e => setDescription(e.target.value.slice(0, 2000))}
         placeholder="설명 (선택)"
         rows={3}
-        className="w-full px-3 py-2 text-[13px] bg-surface-bg border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/40 resize-none"
+        className="w-full px-3 py-2 text-[13px] bg-surface-bg border border-border rounded-xl focus:outline-hidden focus:ring-2 focus:ring-brand/40 resize-none"
       />
 
       <div className="flex items-center gap-2 justify-end">

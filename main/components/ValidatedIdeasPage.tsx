@@ -197,16 +197,16 @@ export const ValidatedIdeasPage: React.FC = () => {
 
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-3 mb-6">
-        <div className="relative flex-1 min-w-[12.5rem]">
+        <div className="relative flex-1 min-w-50">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-txt-disabled" />
-          <input type="text" placeholder="아이디어 검색..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-full pl-10 pr-4 py-2 border border-border text-base sm:text-sm focus:outline-none focus:border-brand transition-colors" />
+          <input type="text" placeholder="아이디어 검색..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-full pl-10 pr-4 py-2 border border-border text-base sm:text-sm focus:outline-hidden focus:border-brand transition-colors" />
           {searchQuery && (
             <button type="button" onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-txt-disabled hover:text-txt-secondary" aria-label="검색어 지우기"><X size={14} /></button>
           )}
         </div>
         <div className="flex items-center gap-2">
           <Filter size={14} className="text-txt-disabled" aria-hidden="true" />
-          <select aria-label="문서 필터" value={filterHasArtifacts === null ? 'all' : filterHasArtifacts ? 'with' : 'without'} onChange={e => { const val = e.target.value; setFilterHasArtifacts(val === 'all' ? null : val === 'with') }} className="px-3 py-2 border border-border text-sm focus:outline-none focus:border-brand">
+          <select aria-label="문서 필터" value={filterHasArtifacts === null ? 'all' : filterHasArtifacts ? 'with' : 'without'} onChange={e => { const val = e.target.value; setFilterHasArtifacts(val === 'all' ? null : val === 'with') }} className="px-3 py-2 border border-border text-sm focus:outline-hidden focus:border-brand">
             <option value="all">전체</option>
             <option value="with">문서 있음</option>
             <option value="without">문서 없음</option>
@@ -242,7 +242,7 @@ export const ValidatedIdeasPage: React.FC = () => {
         {filteredAndSortedIdeas.map(idea => {
           const adviceList = getAdviceList(idea)
           return (
-            <div key={idea.id} role="listitem" tabIndex={0} onClick={() => setSelectedIdea(idea)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedIdea(idea) } }} className={`bg-surface-card border p-5 cursor-pointer hover:shadow-md hover-spring focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 group ${selectedIdea?.id === idea.id ? 'border-border ring-1 ring-black' : 'border-border hover:border-border'}`}>
+            <div key={idea.id} role="listitem" tabIndex={0} onClick={() => setSelectedIdea(idea)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedIdea(idea) } }} className={`bg-surface-card border p-5 cursor-pointer hover:shadow-md hover-spring focus:outline-hidden focus:ring-2 focus:ring-black focus:ring-offset-2 group ${selectedIdea?.id === idea.id ? 'border-border ring-1 ring-black' : 'border-border hover:border-border'}`}>
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-2">

@@ -131,7 +131,7 @@ export function DiscordChannelSelect({
         <select
           value={selectedChannel}
           onChange={e => handleChange(e.target.value)}
-          className="w-full text-xs border border-border-subtle rounded-lg px-3 py-1.5 bg-surface-card text-txt-primary focus:outline-none focus:ring-2 focus:ring-brand/10 focus:border-brand transition-all"
+          className="w-full text-xs border border-border-subtle rounded-lg px-3 py-1.5 bg-surface-card text-txt-primary focus:outline-hidden focus:ring-2 focus:ring-brand/10 focus:border-brand transition-all"
         >
           <option value="">연결 안 함</option>
           {data.available_channels.map(ch => (

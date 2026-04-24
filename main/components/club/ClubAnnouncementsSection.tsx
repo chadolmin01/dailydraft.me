@@ -272,7 +272,7 @@ export function ClubAnnouncementsSection({ slug, isAdmin }: Props) {
                 placeholder="예: 3월 정기모임 안내"
                 aria-label="공지 제목"
                 autoFocus
-                className="w-full px-4 py-3 text-[15px] font-bold bg-surface-bg border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/40"
+                className="w-full px-4 py-3 text-[15px] font-bold bg-surface-bg border border-border rounded-xl focus:outline-hidden focus:ring-2 focus:ring-brand/40"
               />
               <textarea
                 value={content}
@@ -280,7 +280,7 @@ export function ClubAnnouncementsSection({ slug, isAdmin }: Props) {
                 placeholder="공지 내용을 작성해 주세요. 등록된 Discord·Slack 웹훅 채널로도 자동 전송됩니다."
                 aria-label="공지 내용"
                 rows={6}
-                className="w-full px-4 py-3 text-[14px] bg-surface-bg border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/40 resize-none"
+                className="w-full px-4 py-3 text-[14px] bg-surface-bg border border-border rounded-xl focus:outline-hidden focus:ring-2 focus:ring-brand/40 resize-none"
               />
 
               {/* 예약 발송 */}
@@ -291,14 +291,14 @@ export function ClubAnnouncementsSection({ slug, isAdmin }: Props) {
                   type="date"
                   value={scheduleDate}
                   onChange={e => setScheduleDate(e.target.value)}
-                  className="px-2 py-1 text-[12px] bg-surface-bg border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/40"
+                  className="px-2 py-1 text-[12px] bg-surface-bg border border-border rounded-lg focus:outline-hidden focus:ring-2 focus:ring-brand/40"
                 />
                 <input
                   type="time"
                   value={scheduleTime}
                   onChange={e => setScheduleTime(e.target.value)}
                   disabled={!scheduleDate}
-                  className="px-2 py-1 text-[12px] bg-surface-bg border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/40 disabled:opacity-50"
+                  className="px-2 py-1 text-[12px] bg-surface-bg border border-border rounded-lg focus:outline-hidden focus:ring-2 focus:ring-brand/40 disabled:opacity-50"
                 />
                 {scheduleDate && (
                   <button

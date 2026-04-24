@@ -198,7 +198,7 @@ export const Dashboard: React.FC = () => {
                        padding="p-4"
                        onClick={() => handleOpenModal(opp)}
                     >
-                       <div className="flex flex-col h-[8.125rem] justify-between">
+                       <div className="flex flex-col h-32.5 justify-between">
                          <div>
                             <div className="flex justify-between items-start mb-2">
                                 <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded-sm border text-[10px] font-bold font-mono ${styles.badgeClass}`}>

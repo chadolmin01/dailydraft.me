@@ -125,8 +125,8 @@ export default function ClubsListClient() {
 
           {/* 비로그인 방문자용 배너 */}
           {!authLoading && !user && (
-            <div className="mt-5 bg-gradient-to-br from-brand to-brand/80 text-white rounded-2xl p-5 flex items-center gap-4 flex-wrap">
-              <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center shrink-0">
+            <div className="mt-5 bg-linear-to-br from-brand to-brand/80 text-white rounded-2xl p-5 flex items-center gap-4 flex-wrap">
+              <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-xs flex items-center justify-center shrink-0">
                 <Sparkles size={20} />
               </div>
               <div className="flex-1 min-w-0">
@@ -156,7 +156,7 @@ export default function ClubsListClient() {
             onChange={e => setSearch(e.target.value)}
             placeholder="예: FLIP · 스타트업 · 딥러닝 · 창업동아리"
             aria-label="클럽 이름 또는 설명으로 검색"
-            className="w-full pl-11 pr-4 py-3 text-[15px] bg-surface-sunken border border-border rounded-full text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-brand focus:bg-surface-card focus:shadow-[0_0_0_3px_rgba(0,149,246,0.1)] transition-all"
+            className="w-full pl-11 pr-4 py-3 text-[15px] bg-surface-sunken border border-border rounded-full text-txt-primary placeholder:text-txt-disabled focus:outline-hidden focus:border-brand focus:bg-surface-card focus:shadow-[0_0_0_3px_rgba(0,149,246,0.1)] transition-all"
           />
         </div>
 
@@ -278,7 +278,7 @@ function ClubCardItem({ club }: { club: ClubCard }) {
   return (
     <Link
       href={`/clubs/${club.slug}`}
-      className="ob-ring-glow ob-press-spring h-[108px] flex items-start gap-3.5 p-4 bg-surface-card border border-border rounded-xl no-underline focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 outline-none"
+      className="ob-ring-glow ob-press-spring h-[108px] flex items-start gap-3.5 p-4 bg-surface-card border border-border rounded-xl no-underline focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 outline-hidden"
     >
       {club.logo_url ? (
         <Image src={club.logo_url} alt={club.name} width={52} height={52} className="w-[52px] h-[52px] rounded-md object-cover shrink-0" />

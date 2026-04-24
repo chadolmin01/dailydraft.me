@@ -66,7 +66,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
   // 커피챗 폼으로 전환된 상태: 모달 안에서 커피챗 보내기
   if (showCoffeeForm) {
     return (
-      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-popover p-4" onClick={(e) => { e.stopPropagation(); onClose() }} role="dialog" aria-modal="true" aria-label="커피챗 신청">
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center z-popover p-4" onClick={(e) => { e.stopPropagation(); onClose() }} role="dialog" aria-modal="true" aria-label="커피챗 신청">
         <div className="bg-surface-card dark:bg-[#1C1C1E] rounded-2xl shadow-2xl w-full max-w-md max-h-[85vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
           <CoffeeChatRequestForm targetUserId={targetUserId} onClose={onClose} />
         </div>
@@ -76,7 +76,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
 
   if (sent) {
     return (
-      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-popover p-4" onClick={(e) => { e.stopPropagation(); onClose() }} role="dialog" aria-modal="true" aria-label="초대 완료">
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center z-popover p-4" onClick={(e) => { e.stopPropagation(); onClose() }} role="dialog" aria-modal="true" aria-label="초대 완료">
         <div className="bg-surface-card dark:bg-[#1C1C1E] rounded-2xl shadow-2xl w-full max-w-md" onClick={e => e.stopPropagation()}>
           <div className="p-8 text-center">
             <div className="w-14 h-14 bg-[#E8F5E9] dark:bg-[#1B3A2D] rounded-2xl flex items-center justify-center mb-4 mx-auto">
@@ -99,7 +99,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-popover p-4" onClick={(e) => { e.stopPropagation(); onClose() }} role="dialog" aria-modal="true" aria-labelledby="invite-modal-title">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center z-popover p-4" onClick={(e) => { e.stopPropagation(); onClose() }} role="dialog" aria-modal="true" aria-labelledby="invite-modal-title">
       <div className="bg-surface-card dark:bg-[#1C1C1E] rounded-2xl shadow-2xl w-full max-w-md max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 shrink-0">
@@ -203,7 +203,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
                       placeholder="역할을 입력하세요 (예: Frontend Developer)"
                       value={selectedRole || ''}
                       onChange={e => setSelectedRole(e.target.value || null)}
-                      className="w-full px-4 py-3 text-[14px] bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5E6AD2]/20"
+                      className="w-full px-4 py-3 text-[14px] bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-xl focus:outline-hidden focus:ring-2 focus:ring-[#5E6AD2]/20"
                     />
                   )}
                 </div>
@@ -221,7 +221,7 @@ export const InviteToProjectModal: React.FC<InviteToProjectModalProps> = ({
                     placeholder="함께 하고 싶어서 연락드립니다..."
                     rows={3}
                     maxLength={500}
-                    className="w-full px-4 py-3 text-[14px] bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5E6AD2]/20 resize-none"
+                    className="w-full px-4 py-3 text-[14px] bg-[#F7F8F9] dark:bg-[#2C2C2E] rounded-xl focus:outline-hidden focus:ring-2 focus:ring-[#5E6AD2]/20 resize-none"
                   />
                   <p className={`text-[11px] text-right mt-1 tabular-nums ${
                     message.length >= 500 ? 'text-status-danger-text font-semibold' :

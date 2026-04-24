@@ -29,7 +29,7 @@ export const EditPhotos: React.FC<EditPhotosProps> = ({
           {profile?.cover_image_url ? (
             <Image src={profile.cover_image_url} alt="cover" fill className="object-cover" />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-surface-sunken to-border flex items-center justify-center">
+            <div className="w-full h-full bg-linear-to-br from-surface-sunken to-border flex items-center justify-center">
               <ImageIcon size={20} className="text-txt-tertiary" />
             </div>
           )}
@@ -52,7 +52,7 @@ export const EditPhotos: React.FC<EditPhotosProps> = ({
         <div className="flex items-center gap-4">
           <button
             onClick={() => avatarInputRef.current?.click()}
-            className="relative group w-20 h-20 border border-border overflow-hidden flex-shrink-0"
+            className="relative group w-20 h-20 border border-border overflow-hidden shrink-0"
           >
             {profile?.avatar_url ? (
               <Image src={profile.avatar_url} alt="avatar" fill className="object-cover" />

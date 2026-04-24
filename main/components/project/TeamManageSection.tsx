@@ -435,7 +435,7 @@ function MemberCard({
             {showRoleSelect && (
               <>
                 <div className="fixed inset-0 z-popover" onClick={() => setShowRoleSelect(false)} />
-                <div className="absolute right-0 top-full mt-1 z-popover bg-surface-card rounded-xl border border-border shadow-lg min-w-[8rem]">
+                <div className="absolute right-0 top-full mt-1 z-popover bg-surface-card rounded-xl border border-border shadow-lg min-w-32">
                   {ROLE_OPTIONS.map(({ value }) => (
                     <button
                       key={value}

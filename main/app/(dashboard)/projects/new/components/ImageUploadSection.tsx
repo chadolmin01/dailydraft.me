@@ -55,7 +55,7 @@ export function ImageUploadSection({ imagePreviews, imageFilesLength, onImageSel
             alt="메인 이미지"
             className="w-full aspect-video object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="absolute inset-0 bg-linear-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
           {isDragOver && (
             <div className="absolute inset-0 bg-brand/10 flex items-center justify-center animate-fade-in">
               <div className="flex items-center gap-2 px-4 py-2 bg-white/90 rounded-lg shadow-sm">
@@ -94,7 +94,7 @@ export function ImageUploadSection({ imagePreviews, imageFilesLength, onImageSel
                   <img
                     src={src}
                     alt={`이미지 ${idx + 1}`}
-                    className="w-full h-[4.5rem] object-cover"
+                    className="w-full h-18 object-cover"
                   />
                   <button
                     type="button"
@@ -117,7 +117,7 @@ export function ImageUploadSection({ imagePreviews, imageFilesLength, onImageSel
               )
             })}
             {imageFilesLength < 5 && (
-              <label className="flex-1 min-w-0 flex items-center justify-center border border-dashed border-border-subtle rounded-lg cursor-pointer hover:border-brand/30 hover:bg-surface-sunken transition-colors h-[4.5rem]">
+              <label className="flex-1 min-w-0 flex items-center justify-center border border-dashed border-border-subtle rounded-lg cursor-pointer hover:border-brand/30 hover:bg-surface-sunken transition-colors h-18">
                 <div className="text-center">
                   <Plus size={14} className="text-txt-disabled mx-auto mb-0.5" />
                   <span className="text-[10px] text-txt-disabled">추가</span>

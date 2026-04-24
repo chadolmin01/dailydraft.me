@@ -262,7 +262,7 @@ export function UsageDashboard() {
 
   if (error || !data) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[25rem] gap-4">
+      <div className="flex flex-col items-center justify-center min-h-100 gap-4">
         <AlertCircle className="w-12 h-12 text-status-danger-text" />
         <p className="text-txt-secondary">{error || '데이터를 불러올 수 없습니다.'}</p>
         <button

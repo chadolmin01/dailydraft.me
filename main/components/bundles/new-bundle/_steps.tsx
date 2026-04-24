@@ -480,7 +480,7 @@ function MobilePreview({
 }) {
   if (!format || !content) {
     return (
-      <div className="aspect-[9/19] rounded-[2.5rem] bg-surface-bg border-2 border-border/60 flex items-center justify-center p-6">
+      <div className="aspect-9/19 rounded-[2.5rem] bg-surface-bg border-2 border-border/60 flex items-center justify-center p-6">
         <p className="text-xs text-txt-tertiary text-center leading-relaxed">
           프리뷰를 준비하는 중입니다
         </p>
@@ -495,7 +495,7 @@ function MobilePreview({
     <div className="relative rounded-[2.5rem] bg-black p-2 shadow-xl">
       {/* 노치 */}
       <div className="absolute top-2 left-1/2 -translate-x-1/2 w-24 h-4 bg-black rounded-b-2xl z-10" />
-      <div className="rounded-[2rem] bg-white overflow-hidden min-h-[520px]">
+      <div className="rounded-4xl bg-white overflow-hidden min-h-[520px]">
         {/* 헤더 */}
         <div className="flex items-center gap-2 px-4 py-3 border-b border-zinc-200">
           {Icon && <Icon size={14} className="text-zinc-600" />}
@@ -512,7 +512,7 @@ function MobilePreview({
               <p className="text-[10px] text-zinc-500">방금 · 미리보기</p>
             </div>
           </div>
-          <p className="text-[12px] text-zinc-800 whitespace-pre-wrap leading-relaxed break-words">
+          <p className="text-[12px] text-zinc-800 whitespace-pre-wrap leading-relaxed wrap-break-word">
             {content.slice(0, 800)}
             {content.length > 800 && '…'}
           </p>

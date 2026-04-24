@@ -93,7 +93,7 @@ const StepItem: React.FC<StepItemProps> = ({
         >
           {step.title}
         </div>
-        <div className="text-[10px] text-txt-tertiary hidden md:block max-w-[6.25rem]">
+        <div className="text-[10px] text-txt-tertiary hidden md:block max-w-25">
           {step.description}
         </div>
       </div>

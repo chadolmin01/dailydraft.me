@@ -1,6 +1,284 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --z-index-dropdown: 100;
+  --z-index-sticky: 200;
+  --z-index-fixed: 300;
+  --z-index-modal-backdrop: 400;
+  --z-index-modal: 401;
+  --z-index-popover: 500;
+  --z-index-tooltip: 600;
+
+  --container-container-narrow: 48rem;
+  --container-container-standard: 56.25rem;
+  --container-container-wide: 87.5rem;
+
+  --font-sans: var(--font-noto-sans-kr), 'Noto Sans KR', sans-serif;
+  --font-mono: var(--font-jetbrains-mono), 'JetBrains Mono', monospace;
+
+  --color-surface-bg: var(--surface-bg);
+  --color-surface-card: var(--surface-card);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-surface-inverse: var(--surface-inverse);
+
+  --color-txt-primary: var(--text-primary);
+  --color-txt-secondary: var(--text-secondary);
+  --color-txt-tertiary: var(--text-tertiary);
+  --color-txt-disabled: var(--text-disabled);
+  --color-txt-inverse: var(--text-inverse);
+
+  --color-border: var(--border-default);
+  --color-border-strong: var(--border-strong);
+  --color-border-subtle: var(--border-subtle);
+
+  --color-accent: var(--accent-primary);
+  --color-accent-hover: var(--accent-primary-hover);
+  --color-accent-secondary: var(--accent-secondary);
+  --color-accent-secondary-hover: var(--accent-secondary-hover);
+
+  --color-status-success-bg: var(--status-success-bg);
+  --color-status-success-text: var(--status-success-text);
+  --color-status-warning-bg: var(--status-warning-bg);
+  --color-status-warning-text: var(--status-warning-text);
+  --color-status-danger-bg: var(--status-danger-bg);
+  --color-status-danger-text: var(--status-danger-text);
+  --color-status-info-bg: var(--status-info-bg);
+  --color-status-info-text: var(--status-info-text);
+  --color-status-neutral-bg: var(--status-neutral-bg);
+  --color-status-neutral-text: var(--status-neutral-text);
+  --color-status-danger-accent: var(--status-danger-accent);
+
+  --color-tag-default-bg: var(--tag-default-bg);
+  --color-tag-default-text: var(--tag-default-text);
+  --color-tag-strong-bg: var(--tag-strong-bg);
+  --color-tag-strong-text: var(--tag-strong-text);
+
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-bg: var(--brand-bg);
+  --color-brand-border: var(--brand-border);
+
+  --color-indicator-online: var(--indicator-online);
+  --color-indicator-premium: var(--indicator-premium);
+  --color-indicator-premium-border: var(--indicator-premium-border);
+  --color-indicator-alert: var(--indicator-alert);
+  --color-indicator-trending: var(--indicator-trending);
+
+  --radius-none: 0px;
+  --radius-xs: var(--radius-xs);
+  --radius-sm: var(--radius-sm);
+  --radius: var(--radius-md);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-2xl: var(--radius-xl);
+  --radius-3xl: var(--radius-xl);
+  --radius-full: 9999px;
+
+  --shadow-sm: var(--shadow-sm);
+  --shadow: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-xl: var(--shadow-xl);
+  --shadow-2xl: var(--shadow-xl);
+  --shadow-soft: var(--shadow-sm);
+  --shadow-sharp: var(--shadow-md);
+  --shadow-brutal: var(--shadow-lg);
+  --shadow-brutal-xl: var(--shadow-xl);
+  --shadow-solid: var(--shadow-solid);
+  --shadow-solid-sm: var(--shadow-solid-sm);
+  --shadow-none: none;
+
+  --animate-marquee: marquee 30s linear infinite;
+  --animate-marquee-vertical-up: marqueeUp 40s linear infinite;
+  --animate-marquee-vertical-down: marqueeDown 40s linear infinite;
+  --animate-scan-line: scanline 2s ease-in-out forwards;
+  --animate-blink: blink 1s step-end infinite;
+  --animate-slide-up-fade: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-float-delayed: float 6s ease-in-out infinite 2s;
+  --animate-float-slow: float 8s ease-in-out infinite 1s;
+  --animate-modal-in: modalIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-backdrop-in: backdropIn 0.2s ease-out forwards;
+  --animate-fade-in-up: fadeInUp 0.6s ease-out forwards;
+  --animate-page-enter: pageEnter 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-fade-in: fadeIn 0.4s ease-out forwards;
+  --animate-shimmer: shimmer 1.5s ease-in-out infinite;
+  --animate-stagger-in: staggerFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1)
+    forwards;
+  --animate-badge-pop: badgePop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+
+  @keyframes marquee {
+    0% {
+      transform: translateX(0%);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+  @keyframes marqueeUp {
+    0% {
+      transform: translateY(0%);
+    }
+    100% {
+      transform: translateY(-50%);
+    }
+  }
+  @keyframes marqueeDown {
+    0% {
+      transform: translateY(-50%);
+    }
+    100% {
+      transform: translateY(0%);
+    }
+  }
+  @keyframes scanline {
+    0% {
+      top: 0%;
+      opacity: 0;
+    }
+    10% {
+      opacity: 1;
+    }
+    90% {
+      opacity: 1;
+    }
+    100% {
+      top: 100%;
+      opacity: 0;
+    }
+  }
+  @keyframes blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+  }
+  @keyframes slideUpFade {
+    0% {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+  @keyframes modalIn {
+    0% {
+      opacity: 0;
+      transform: scale(0.95) translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+  @keyframes backdropIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  @keyframes fadeInUp {
+    0% {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes pageEnter {
+    0% {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+  @keyframes staggerFadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes badgePop {
+    0% {
+      opacity: 0;
+      transform: scale(0.4) translateY(-6px);
+    }
+    60% {
+      opacity: 1;
+      transform: scale(1.18) translateY(0);
+    }
+    80% {
+      transform: scale(0.94);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
 
 /* ============================================================
    DRAFT DESIGN SYSTEM — CSS Custom Properties

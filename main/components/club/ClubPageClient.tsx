@@ -281,7 +281,7 @@ export default function ClubPageClient() {
               {activeTab === tab.key && (
                 <motion.div
                   layoutId="club-tab-underline"
-                  className="absolute -bottom-[1px] left-0 right-0 h-[2px] bg-txt-primary"
+                  className="absolute -bottom-px left-0 right-0 h-[2px] bg-txt-primary"
                   transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                 />
               )}
@@ -296,7 +296,7 @@ export default function ClubPageClient() {
           <div className="space-y-8">
             {/* 비로그인 방문자 CTA — 외부 공유된 초대 링크를 통해 들어온 케이스 */}
             {!isAuthed && (
-              <div className="bg-gradient-to-br from-brand to-brand/80 text-white rounded-2xl p-6">
+              <div className="bg-linear-to-br from-brand to-brand/80 text-white rounded-2xl p-6">
                 <p className="text-[12px] font-semibold opacity-80 mb-1">가입 초대</p>
                 <h3 className="text-[18px] font-bold mb-1.5">{club.name}에 참여하시나요?</h3>
                 <p className="text-[13px] opacity-90 mb-4 leading-relaxed">
@@ -311,7 +311,7 @@ export default function ClubPageClient() {
                   </Link>
                   <Link
                     href={`/login?redirect=/clubs/${slug}`}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold bg-white/20 backdrop-blur-sm text-white rounded-full hover:bg-white/30 transition-colors"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold bg-white/20 backdrop-blur-xs text-white rounded-full hover:bg-white/30 transition-colors"
                   >
                     로그인
                   </Link>
@@ -480,7 +480,7 @@ export default function ClubPageClient() {
                   <StaggerCard key={p.id} staggerKey={`project:${p.id}`} index={i}>
                     <Link
                       href={`/explore?project=${p.id}`}
-                      className="bg-surface-card border border-border rounded-xl overflow-hidden ob-ring-glow flex flex-col h-full no-underline focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-none active:scale-[0.985]"
+                      className="bg-surface-card border border-border rounded-xl overflow-hidden ob-ring-glow flex flex-col h-full no-underline focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 outline-hidden active:scale-[0.985]"
                     >
                       <div className="p-5 flex-1">
                         <div className="flex items-center gap-2 mb-1">

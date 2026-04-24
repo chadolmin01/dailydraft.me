@@ -228,7 +228,7 @@ function NetworkContent() {
             value={searchInput}
             onChange={e => setSearchInput(e.target.value)}
             placeholder="이름·대학·역할·관심사로 검색"
-            className="w-full pl-11 pr-4 py-3 text-[15px] bg-surface-sunken border border-border rounded-full text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-brand focus:bg-surface-card focus:shadow-[0_0_0_3px_rgba(94,106,210,0.15)] transition-all"
+            className="w-full pl-11 pr-4 py-3 text-[15px] bg-surface-sunken border border-border rounded-full text-txt-primary placeholder:text-txt-disabled focus:outline-hidden focus:border-brand focus:bg-surface-card focus:shadow-[0_0_0_3px_rgba(94,106,210,0.15)] transition-all"
           />
         </div>
 

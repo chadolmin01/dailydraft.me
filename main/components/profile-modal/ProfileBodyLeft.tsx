@@ -331,7 +331,7 @@ function MatchAnalysisSection({ targetId, targetName }: { targetId: string; targ
 
   if (!analysis) {
     return (
-      <div className="px-5 py-8 bg-gradient-to-br from-[#EBF4FF] to-[#F7F8F9] dark:from-[#1A2A42] dark:to-[#1C1C1E] rounded-2xl text-center">
+      <div className="px-5 py-8 bg-linear-to-br from-[#EBF4FF] to-[#F7F8F9] dark:from-[#1A2A42] dark:to-[#1C1C1E] rounded-2xl text-center">
         <div className="inline-flex items-center justify-center w-11 h-11 bg-surface-card rounded-full mb-3 shadow-sm">
           <Sparkles size={18} className="text-brand" />
         </div>
@@ -356,7 +356,7 @@ function MatchAnalysisSection({ targetId, targetName }: { targetId: string; targ
   return (
     <div className="space-y-5">
       {/* Synergy */}
-      <section className="px-5 py-4 bg-gradient-to-br from-[#EBF4FF] to-transparent dark:from-[#1A2A42] dark:to-transparent rounded-2xl">
+      <section className="px-5 py-4 bg-linear-to-br from-[#EBF4FF] to-transparent dark:from-[#1A2A42] dark:to-transparent rounded-2xl">
         <div className="flex items-center gap-1.5 mb-2">
           <Sparkles size={13} className="text-brand" />
           <span className="text-xs font-bold text-brand">시너지</span>

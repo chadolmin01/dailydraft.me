@@ -262,7 +262,7 @@ function ProjectManageContent() {
               {tab === t.key && (
                 <motion.div
                   layoutId="project-tab-underline"
-                  className="absolute -bottom-[1px] left-0 right-0 h-[2px] bg-txt-primary"
+                  className="absolute -bottom-px left-0 right-0 h-[2px] bg-txt-primary"
                   transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                 />
               )}

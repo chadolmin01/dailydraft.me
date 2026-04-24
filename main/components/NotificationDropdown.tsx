@@ -264,7 +264,7 @@ export function NotificationDropdown() {
           </div>
 
           {/* Notification List */}
-          <div className="max-h-[24rem] overflow-y-auto">
+          <div className="max-h-96 overflow-y-auto">
             {displayList.length === 0 ? (
               <div className="py-12 text-center">
                 <Bell size={28} className="mx-auto text-txt-disabled mb-2" />

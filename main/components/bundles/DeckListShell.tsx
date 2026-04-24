@@ -212,7 +212,7 @@ function DeckCard({
               </span>
             )}
           </div>
-          <h3 className="text-sm font-bold text-txt-primary line-clamp-2 leading-snug min-h-[2.5rem]">
+          <h3 className="text-sm font-bold text-txt-primary line-clamp-2 leading-snug min-h-10">
             {title ?? `${label} 덱`}
           </h3>
         </div>

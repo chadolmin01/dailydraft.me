@@ -114,7 +114,7 @@ export const Sidebar: React.FC = () => {
 
   return (
     <div
-      className={`${widthClass} flex-shrink-0 bg-surface-card border-r border-border flex flex-col h-screen sticky top-0 z-50 transition-[width] duration-200 ease-out`}
+      className={`${widthClass} shrink-0 bg-surface-card border-r border-border flex flex-col h-screen sticky top-0 z-50 transition-[width] duration-200 ease-out`}
     >
 
       {/* ── 상단: 로고 + 토글 ── */}
@@ -283,7 +283,7 @@ export const Sidebar: React.FC = () => {
       {/* ── 하단: 프로필 메뉴 ── */}
       <div className={`shrink-0 relative ${expanded ? 'p-3' : 'px-3 pb-4'}`} ref={menuRef}>
         {isMenuOpen && (
-          <div className="absolute bottom-16 left-3 right-3 min-w-[14rem] bg-surface-card rounded-xl border border-border shadow-md p-1 flex flex-col gap-0.5 z-50 animate-in fade-in zoom-in-95 duration-100 origin-bottom-left">
+          <div className="absolute bottom-16 left-3 right-3 min-w-56 bg-surface-card rounded-xl border border-border shadow-md p-1 flex flex-col gap-0.5 z-50 animate-in fade-in zoom-in-95 duration-100 origin-bottom-left">
             <div className="px-3 py-2.5 mb-1 border-b border-border">
               <div className="flex items-center gap-2">
                 <span className="font-bold text-sm text-txt-primary truncate">{profile?.nickname || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}</span>

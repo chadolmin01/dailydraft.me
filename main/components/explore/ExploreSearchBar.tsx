@@ -53,7 +53,7 @@ export function ExploreSearchBar({
               if (e.key === 'Escape') { setIsSearchExpanded(false); (e.target as HTMLInputElement).blur() }
               if (e.key === 'Enter') setIsSearchExpanded(false)
             }}
-            className={`w-full bg-transparent text-base sm:text-sm focus:outline-none transition-all ${
+            className={`w-full bg-transparent text-base sm:text-sm focus:outline-hidden transition-all ${
               isSearchExpanded ? 'pl-11 pr-24 py-3.5' : 'pl-11 pr-24 py-3'
             }`}
             placeholder={

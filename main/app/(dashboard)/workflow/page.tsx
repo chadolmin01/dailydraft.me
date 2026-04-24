@@ -39,7 +39,7 @@ const BusinessPlanEditor = dynamic(
 // 로딩 스피너 컴포넌트
 function LoadingSpinner({ message }: { message: string }) {
   return (
-    <div className="flex flex-col items-center justify-center h-full min-h-[25rem]">
+    <div className="flex flex-col items-center justify-center h-full min-h-100">
       <div className="w-12 h-12 border-4 border-border border-t-brand animate-spin mb-4" />
       <p className="text-sm text-txt-tertiary">{message}</p>
     </div>
@@ -271,7 +271,7 @@ function WorkflowContent() {
         {currentStep === 'prd' && (
           <div className="h-full overflow-y-auto p-6">
             {workflowData.projectIdea ? (
-              <div className="flex flex-col items-center justify-center h-full min-h-[25rem] text-center">
+              <div className="flex flex-col items-center justify-center h-full min-h-100 text-center">
                 <div className="w-16 h-16 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl flex items-center justify-center mb-4">
                   <span className="text-2xl">✓</span>
                 </div>
@@ -290,7 +290,7 @@ function WorkflowContent() {
                 </button>
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center h-full min-h-[25rem] text-center">
+              <div className="flex flex-col items-center justify-center h-full min-h-100 text-center">
                 <div className="w-16 h-16 bg-status-warning-bg border border-status-warning-text flex items-center justify-center mb-4">
                   <span className="text-2xl">⚠️</span>
                 </div>

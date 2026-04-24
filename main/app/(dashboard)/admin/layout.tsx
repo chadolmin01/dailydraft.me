@@ -34,7 +34,7 @@ export default function AdminSectionLayout({ children }: { children: React.React
       {/* 상단 sub-nav — 스크롤 가능, 모바일에서도 손상 없음 */}
       <nav
         aria-label="관리자 메뉴"
-        className="sticky top-0 z-20 bg-surface-card/90 backdrop-blur border-b border-border"
+        className="sticky top-0 z-20 bg-surface-card/90 backdrop-blur-sm border-b border-border"
       >
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
           <ul className="flex items-center gap-1 overflow-x-auto py-2 text-[12px] font-semibold text-txt-secondary scrollbar-hide">

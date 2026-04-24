@@ -68,7 +68,7 @@ export function ProfileActions({
 
       {/* Coffee Chat Form Overlay */}
       {showCoffeeChatForm && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-popover p-4" onClick={(e) => { e.stopPropagation(); setShowCoffeeChatForm(false) }} role="dialog" aria-modal="true" aria-label="커피챗 신청">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center z-popover p-4" onClick={(e) => { e.stopPropagation(); setShowCoffeeChatForm(false) }} role="dialog" aria-modal="true" aria-label="커피챗 신청">
           <div className="bg-surface-card rounded-2xl shadow-2xl w-full max-w-md p-6" onClick={e => e.stopPropagation()}>
             <CoffeeChatRequestForm
               targetUserId={targetUserId}

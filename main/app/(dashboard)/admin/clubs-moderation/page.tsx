@@ -300,7 +300,7 @@ export default function ClubsModerationPage() {
                 onChange={(e) => setRejectNote(e.target.value)}
                 rows={4}
                 placeholder="예: 활동 요약이 일반적이라 학교 등록 동아리 여부를 확인할 수 없습니다. 정기 활동 사진이나 학교 공인 문서 링크를 추가해 주세요."
-                className="w-full px-3 py-2.5 bg-surface-bg border border-border rounded-xl text-[13px] text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:border-brand focus:shadow-[0_0_0_3px_rgba(94,106,210,0.12)] transition-all resize-none"
+                className="w-full px-3 py-2.5 bg-surface-bg border border-border rounded-xl text-[13px] text-txt-primary placeholder:text-txt-disabled focus:outline-hidden focus:border-brand focus:shadow-[0_0_0_3px_rgba(94,106,210,0.12)] transition-all resize-none"
               />
               <div className="flex items-center gap-2 mt-4">
                 <button

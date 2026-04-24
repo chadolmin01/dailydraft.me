@@ -538,7 +538,7 @@ export const BusinessPlanEditor: React.FC<BusinessPlanEditorProps> = ({
             className="absolute inset-0 bg-black/30"
             onClick={() => setShowValidation(false)}
           />
-          <div className="relative bg-surface-card w-[26.25rem] h-full shadow-lg overflow-y-auto">
+          <div className="relative bg-surface-card w-105 h-full shadow-lg overflow-y-auto">
             <div className="sticky top-0 bg-surface-card border-b border-border px-4 py-3 flex items-center justify-between z-10">
               <h3 className="font-bold text-txt-primary">실시간 점수 분석</h3>
               <button

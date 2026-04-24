@@ -143,7 +143,7 @@ export const ProfileDetailModal: React.FC<ProfileDetailModalProps> = ({ profileI
         exit={{ opacity: 0 }}
         transition={{ duration: 0.2 }}
         onClick={onClose}
-        className="fixed inset-0 bg-black/40 backdrop-blur-sm z-modal-backdrop"
+        className="fixed inset-0 bg-black/40 backdrop-blur-xs z-modal-backdrop"
       />
 
       {/* Modal */}

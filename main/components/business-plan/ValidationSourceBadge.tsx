@@ -169,7 +169,7 @@ export const ValidationFeedbackModal: React.FC<ValidationFeedbackModalProps> = (
         </div>
 
         {/* Content */}
-        <div className="p-4 max-h-[25rem] overflow-y-auto">
+        <div className="p-4 max-h-100 overflow-y-auto">
           <h4 className="text-[10px] font-medium text-txt-tertiary mb-3">
             주요 피드백
           </h4>

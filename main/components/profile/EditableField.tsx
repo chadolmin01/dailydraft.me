@@ -61,7 +61,7 @@ export function EditableField(props: EditableFieldProps) {
             onKeyDown={(e) => { if (e.key === 'Escape') close() }}
             placeholder={placeholder}
             rows={3}
-            className={`bg-surface-bg border border-border rounded-xl outline-none w-full px-2 py-1.5 resize-none focus:border-brand transition-colors ${className || ''}`}
+            className={`bg-surface-bg border border-border rounded-xl outline-hidden w-full px-2 py-1.5 resize-none focus:border-brand transition-colors ${className || ''}`}
           />
         )
       }
@@ -76,7 +76,7 @@ export function EditableField(props: EditableFieldProps) {
           }}
           onBlur={close}
           placeholder={placeholder}
-          className={`bg-surface-bg border border-border rounded-xl outline-none w-full px-2 py-0.5 focus:border-brand transition-colors ${className || ''}`}
+          className={`bg-surface-bg border border-border rounded-xl outline-hidden w-full px-2 py-0.5 focus:border-brand transition-colors ${className || ''}`}
         />
       )
     }
@@ -109,7 +109,7 @@ export function EditableField(props: EditableFieldProps) {
           onBlur={close}
           onKeyDown={(e) => { if (e.key === 'Enter' || e.key === 'Escape') close() }}
           placeholder={placeholder}
-          className="flex-1 min-w-0 bg-transparent outline-none text-xs text-txt-primary placeholder:text-txt-disabled"
+          className="flex-1 min-w-0 bg-transparent outline-hidden text-xs text-txt-primary placeholder:text-txt-disabled"
         />
       </div>
     )

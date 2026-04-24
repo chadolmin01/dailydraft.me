@@ -39,7 +39,7 @@ export const OnboardingComboBox: React.FC<OnboardingComboBoxProps> = ({
           onFocus={() => { setIsOpen(true); setSearch(value) }}
           placeholder={placeholder}
           maxLength={50}
-          className="flex-1 px-4 py-3 text-[14px] font-medium bg-transparent rounded-xl text-txt-primary focus:outline-none placeholder:text-txt-tertiary min-w-0"
+          className="flex-1 px-4 py-3 text-[14px] font-medium bg-transparent rounded-xl text-txt-primary focus:outline-hidden placeholder:text-txt-tertiary min-w-0"
         />
         <button
           type="button"

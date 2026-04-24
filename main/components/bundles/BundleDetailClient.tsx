@@ -271,7 +271,7 @@ export function BundleDetailClient({ bundleId, canApprove, slug }: Props) {
               onChange={(e) => setRejectReason(e.target.value)}
               rows={5}
               placeholder={`예1) 너무 홍보 느낌이 강합니다. "우리만의 특별한" 같은 표현 자제해 주세요.\n예2) 이번 주 MVP 성과는 언급하지 않았습니다. 수치 포함해서 다시 써주세요.`}
-              className="w-full text-sm text-txt-primary bg-surface-bg border border-border rounded-xl px-3 py-2.5 focus:outline-none focus:border-brand leading-relaxed resize-none"
+              className="w-full text-sm text-txt-primary bg-surface-bg border border-border rounded-xl px-3 py-2.5 focus:outline-hidden focus:border-brand leading-relaxed resize-none"
             />
             <div className="flex justify-end gap-2 mt-4">
               <button
@@ -471,7 +471,7 @@ function OutputPanel({
       {fmt ? (
         <ChannelFrame format={fmt} output={output} />
       ) : (
-        <pre className="bg-surface-bg rounded-xl p-4 text-sm text-txt-primary whitespace-pre-wrap break-words leading-relaxed font-sans max-h-96 overflow-y-auto">
+        <pre className="bg-surface-bg rounded-xl p-4 text-sm text-txt-primary whitespace-pre-wrap wrap-break-word leading-relaxed font-sans max-h-96 overflow-y-auto">
           {output.generated_content}
         </pre>
       )}
@@ -571,7 +571,7 @@ function SchedulerInline({
           type="datetime-local"
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          className="w-full h-10 text-sm text-txt-primary bg-surface-bg border border-border rounded-lg px-3 focus:outline-none focus:border-brand"
+          className="w-full h-10 text-sm text-txt-primary bg-surface-bg border border-border rounded-lg px-3 focus:outline-hidden focus:border-brand"
         />
       </div>
       <div className="flex justify-end gap-2">
@@ -662,7 +662,7 @@ function MetadataSummary({ metadata }: { metadata: Record<string, unknown> }) {
       {entries.slice(0, 8).map(([k, v]) => (
         <div key={k} className="text-xs flex items-start gap-2">
           <dt className="text-txt-tertiary shrink-0">{k}</dt>
-          <dd className="text-txt-primary min-w-0 break-words">
+          <dd className="text-txt-primary min-w-0 wrap-break-word">
             {renderValue(v)}
           </dd>
         </div>

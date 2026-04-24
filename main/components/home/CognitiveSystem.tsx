@@ -109,14 +109,14 @@ export const CognitiveSystem: React.FC = () => {
           <motion.h2
             id="cognitive-system-title"
             variants={fadeUp}
-            className="text-[30px] sm:text-[40px] md:text-[46px] font-bold tracking-[-0.025em] leading-[1.1] text-txt-primary mb-5 break-keep"
+            className="text-[30px] sm:text-[40px] md:text-[46px] font-bold tracking-tight leading-[1.1] text-txt-primary mb-5 break-keep"
           >
             소통 → 기억, 그 사이를{' '}
             <span className="text-brand">AI가 잇습니다</span>
           </motion.h2>
           <motion.p
             variants={fadeUp}
-            className="text-[15px] sm:text-[16px] text-txt-secondary leading-[1.65] max-w-[32rem] mx-auto break-keep"
+            className="text-[15px] sm:text-[16px] text-txt-secondary leading-[1.65] max-w-lg mx-auto break-keep"
           >
             Draft는 감각기관을 대체하지 않습니다. 대신 거기서 벌어진 일을
             읽어 내 동아리의 기록으로 쌓습니다.
@@ -168,7 +168,7 @@ export const CognitiveSystem: React.FC = () => {
                 </p>
 
                 {/* Title */}
-                <h3 className="text-[19px] sm:text-[21px] font-bold text-txt-primary mb-3 leading-[1.25] break-keep">
+                <h3 className="text-[19px] sm:text-[21px] font-bold text-txt-primary mb-3 leading-tight break-keep">
                   {layer.title}
                 </h3>
 
@@ -202,7 +202,7 @@ export const CognitiveSystem: React.FC = () => {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="text-center text-[13px] text-txt-tertiary mt-20 max-w-[34rem] mx-auto leading-[1.65] break-keep"
+          className="text-center text-[13px] text-txt-tertiary mt-20 max-w-136 mx-auto leading-[1.65] break-keep"
         >
           <span className="font-semibold text-txt-secondary">학생이 추가로 해야 할 일은 없습니다.</span>
           <br />

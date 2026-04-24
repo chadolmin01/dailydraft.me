@@ -153,7 +153,7 @@ export function RecruitPageClient() {
       </div>
 
       {/* Section 1 — Hero (모바일 풀스크린, 데스크탑은 자연 높이) */}
-      <section className="relative min-h-[100svh] sm:min-h-0 flex flex-col items-center justify-center max-w-3xl mx-auto px-6 pt-16 pb-12 sm:pt-24 sm:pb-20 text-center overflow-hidden">
+      <section className="relative min-h-svh sm:min-h-0 flex flex-col items-center justify-center max-w-3xl mx-auto px-6 pt-16 pb-12 sm:pt-24 sm:pb-20 text-center overflow-hidden">
         {/* 배경 패턴 — 절제된 점 그리드 */}
         <div
           className="absolute inset-0 -z-10 opacity-[0.03] pointer-events-none"
@@ -388,7 +388,7 @@ export function RecruitPageClient() {
             >
               {/* 도트 */}
               <div
-                className={`absolute -left-[26px] sm:-left-[30px] top-1.5 w-3 h-3 rounded-full border-2 ${
+                className={`absolute left-[-26px] sm:left-[-30px] top-1.5 w-3 h-3 rounded-full border-2 ${
                   item.highlight
                     ? 'bg-brand border-brand ring-4 ring-brand/15'
                     : 'bg-surface-card border-border'
@@ -718,7 +718,7 @@ function FaqList() {
 }
 
 const inputClass =
-  'w-full px-4 py-3 rounded-xl border border-border bg-surface-card text-txt-primary text-sm placeholder:text-txt-tertiary focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition-colors'
+  'w-full px-4 py-3 rounded-xl border border-border bg-surface-card text-txt-primary text-sm placeholder:text-txt-tertiary focus:outline-hidden focus:border-brand focus:ring-2 focus:ring-brand/20 transition-colors'
 
 function Field({
   label,

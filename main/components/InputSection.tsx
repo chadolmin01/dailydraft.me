@@ -50,7 +50,7 @@ const InputSection: React.FC<InputSectionProps> = ({ inputs, logs, onChange, onS
     <div className="flex flex-col w-full bg-surface-card h-full">
 
       {/* Compact Tabs */}
-      <div className="flex border-b border-border px-4 pt-2 gap-2 flex-shrink-0">
+      <div className="flex border-b border-border px-4 pt-2 gap-2 shrink-0">
         {tabs.map((tab) => {
            const isTabSubmitted = inputs.find(i => i.role === tab.role)?.isSubmitted;
            return (
@@ -88,14 +88,14 @@ const InputSection: React.FC<InputSectionProps> = ({ inputs, logs, onChange, onS
       <div className="flex-1 overflow-y-auto p-4 bg-surface-card relative flex flex-col gap-4">
 
         {/* 1. Text Input */}
-        <div className="relative border border-border bg-surface-sunken focus-within:bg-surface-card rounded-xl focus-within:border-border focus-within:shadow-md transition-all duration-200 flex-shrink-0">
+        <div className="relative border border-border bg-surface-sunken focus-within:bg-surface-card rounded-xl focus-within:border-border focus-within:shadow-md transition-all duration-200 shrink-0">
             <textarea
                 value={activeInput}
                 onChange={(e) => onChange(activeTab, e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={getPlaceholder(activeTab)}
                 rows={3}
-                className="w-full p-4 resize-none outline-none text-base sm:text-sm text-txt-primary leading-relaxed font-sans placeholder-txt-disabled bg-transparent"
+                className="w-full p-4 resize-none outline-hidden text-base sm:text-sm text-txt-primary leading-relaxed font-sans placeholder-txt-disabled bg-transparent"
                 disabled={isAnalyzing}
             />
 

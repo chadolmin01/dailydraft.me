@@ -121,7 +121,7 @@ export function OperatorWelcomeModal({ clubSlug, clubName, clubId }: Props) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-modal-backdrop"
+            className="fixed inset-0 bg-black/40 backdrop-blur-xs z-modal-backdrop"
             onClick={() => dismiss('backdrop')}
           />
 
@@ -137,7 +137,7 @@ export function OperatorWelcomeModal({ clubSlug, clubName, clubId }: Props) {
             className="w-full max-w-[480px] bg-surface-card rounded-3xl shadow-2xl overflow-hidden pointer-events-auto"
           >
             {/* 상단 장식 — 파티 효과 */}
-            <div className="relative h-32 bg-gradient-to-br from-brand to-brand/70 overflow-hidden">
+            <div className="relative h-32 bg-linear-to-br from-brand to-brand/70 overflow-hidden">
               <motion.div
                 initial={{ y: 100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -164,7 +164,7 @@ export function OperatorWelcomeModal({ clubSlug, clubName, clubId }: Props) {
               </motion.div>
               <button
                 onClick={() => dismiss('close_button')}
-                className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/30 transition-colors"
+                className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/20 backdrop-blur-xs flex items-center justify-center text-white hover:bg-white/30 transition-colors"
                 aria-label="닫기"
               >
                 <X size={16} />

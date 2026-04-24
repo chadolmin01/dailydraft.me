@@ -92,7 +92,7 @@ export function ProjectPersonaDashboard({
         <div className="grid md:grid-cols-[2fr_1fr] gap-3">
           <Link
             href={`/projects/${projectId}`}
-            className="group flex items-center gap-4 bg-gradient-to-r from-brand to-brand-hover rounded-2xl p-5 hover:shadow-md transition-shadow text-white"
+            className="group flex items-center gap-4 bg-linear-to-r from-brand to-brand-hover rounded-2xl p-5 hover:shadow-md transition-shadow text-white"
           >
             <div className="w-11 h-11 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
               <Sparkles size={20} />

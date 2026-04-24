@@ -73,10 +73,10 @@ export function CommandPalette() {
       role="dialog"
       aria-modal="true"
       aria-label="전역 검색"
-      className="fixed inset-0 z-[9999] flex items-start justify-center pt-20 px-4"
+      className="fixed inset-0 z-9999 flex items-start justify-center pt-20 px-4"
     >
       <div
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/40 backdrop-blur-xs"
         onClick={() => setOpen(false)}
         aria-hidden="true"
       />
@@ -91,7 +91,7 @@ export function CommandPalette() {
             onValueChange={setInput}
             placeholder="무엇을 찾으시나요? 프로젝트·사람·클럽 또는 페이지 이름"
             aria-label="전역 검색 · 2자 이상 입력하시면 검색이 시작됩니다"
-            className="flex-1 bg-transparent outline-none text-[14px] text-txt-primary placeholder:text-txt-disabled"
+            className="flex-1 bg-transparent outline-hidden text-[14px] text-txt-primary placeholder:text-txt-disabled"
             autoFocus
           />
           <kbd className="hidden sm:inline-flex items-center gap-1 text-[10px] font-mono text-txt-tertiary bg-surface-sunken px-1.5 py-0.5 rounded">

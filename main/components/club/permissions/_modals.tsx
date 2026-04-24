@@ -166,8 +166,8 @@ export function MemberDrawer({
   }
 
   return createPortal(
-    <div className="fixed inset-0 z-[500]" onClick={onClose}>
-      <div className="absolute inset-0 bg-surface-inverse/40 backdrop-blur-sm" />
+    <div className="fixed inset-0 z-popover" onClick={onClose}>
+      <div className="absolute inset-0 bg-surface-inverse/40 backdrop-blur-xs" />
       <div
         className="absolute top-0 right-0 bottom-0 w-full sm:w-[420px] bg-surface-elevated shadow-2xl flex flex-col animate-in slide-in-from-right duration-200"
         onClick={(e) => e.stopPropagation()}
@@ -488,7 +488,7 @@ export function AddRoleModal({
             }}
             placeholder="예: 팀장 · 마케팅"
             className={cn(
-              'w-full px-4 py-2.5 rounded-xl border outline-none transition text-sm bg-surface-sunken focus:bg-surface-card focus:ring-4',
+              'w-full px-4 py-2.5 rounded-xl border outline-hidden transition text-sm bg-surface-sunken focus:bg-surface-card focus:ring-4',
               err
                 ? 'border-red-400 ring-4 ring-red-100'
                 : 'border-border focus:border-brand focus:ring-brand/20'
@@ -502,7 +502,7 @@ export function AddRoleModal({
             value={desc}
             onChange={(e) => setDesc(e.target.value)}
             placeholder="예: 마케팅팀 관리"
-            className="w-full px-4 py-2.5 rounded-xl border border-border focus:border-brand focus:ring-4 focus:ring-brand/20 outline-none transition text-sm bg-surface-sunken focus:bg-surface-card"
+            className="w-full px-4 py-2.5 rounded-xl border border-border focus:border-brand focus:ring-4 focus:ring-brand/20 outline-hidden transition text-sm bg-surface-sunken focus:bg-surface-card"
           />
           <span className="text-xs text-txt-tertiary mt-1 block">생략할 수 있습니다.</span>
         </label>
@@ -563,7 +563,7 @@ export function AddChannelModal({
             }}
             placeholder="예: 마케팅"
             className={cn(
-              'w-full px-4 py-2.5 rounded-xl border outline-none transition text-sm bg-surface-sunken focus:bg-surface-card focus:ring-4',
+              'w-full px-4 py-2.5 rounded-xl border outline-hidden transition text-sm bg-surface-sunken focus:bg-surface-card focus:ring-4',
               err
                 ? 'border-red-400 ring-4 ring-red-100'
                 : 'border-border focus:border-brand focus:ring-brand/20'
@@ -579,7 +579,7 @@ export function AddChannelModal({
           <input
             value={cat}
             onChange={(e) => setCat(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl border border-border focus:border-brand focus:ring-4 focus:ring-brand/20 outline-none transition text-sm bg-surface-sunken focus:bg-surface-card"
+            className="w-full px-4 py-2.5 rounded-xl border border-border focus:border-brand focus:ring-4 focus:ring-brand/20 outline-hidden transition text-sm bg-surface-sunken focus:bg-surface-card"
           />
           <span className="text-xs text-txt-tertiary mt-1 block">
             기존: {existingCategories.join(', ') || '없음'}

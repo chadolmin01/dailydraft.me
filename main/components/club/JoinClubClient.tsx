@@ -104,7 +104,7 @@ export default function JoinClubClient({ slug, initialCode, club }: {
               autoComplete="off"
               autoCapitalize="characters"
               spellCheck={false}
-              className="w-full mt-2 px-4 py-3 text-[18px] tracking-wider tabular-nums font-bold bg-surface-bg border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/40"
+              className="w-full mt-2 px-4 py-3 text-[18px] tracking-wider tabular-nums font-bold bg-surface-bg border border-border rounded-xl focus:outline-hidden focus:ring-2 focus:ring-brand/40"
             />
             <p className="text-[11px] text-txt-tertiary mt-2">
               운영진에게 받은 8자리 코드를 입력해주세요

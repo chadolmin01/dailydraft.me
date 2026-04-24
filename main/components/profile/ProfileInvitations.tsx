@@ -151,7 +151,7 @@ export function ProfileInvitations() {
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
+                  <div className="flex items-center gap-2 shrink-0">
                     <button
                       onClick={() => handleAccept(inv.id)}
                       disabled={respondToInvitation.isPending}
@@ -183,7 +183,7 @@ export function ProfileInvitations() {
                       placeholder="거절 사유 (선택) — 발신자가 다음에 더 잘 매칭할 수 있도록 도와줍니다"
                       rows={2}
                       maxLength={500}
-                      className="w-full px-3 py-2 text-xs bg-surface-sunken rounded focus:outline-none focus:ring-2 focus:ring-brand/20 resize-none"
+                      className="w-full px-3 py-2 text-xs bg-surface-sunken rounded focus:outline-hidden focus:ring-2 focus:ring-brand/20 resize-none"
                     />
                     <button
                       onClick={() => { setDecliningId(null); setDeclineReason('') }}

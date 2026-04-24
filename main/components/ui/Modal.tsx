@@ -55,7 +55,7 @@ export const Modal: React.FC<ModalProps> = ({
   return createPortal(
     <div
       className={cn(
-        'fixed inset-0 z-[500] flex items-end sm:items-center justify-center p-0 pt-6 sm:p-4',
+        'fixed inset-0 z-popover flex items-end sm:items-center justify-center p-0 pt-6 sm:p-4',
         'transition-opacity duration-200',
         isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
       )}
@@ -65,7 +65,7 @@ export const Modal: React.FC<ModalProps> = ({
     >
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-surface-inverse/40 backdrop-blur-sm transition-opacity duration-200"
+        className="absolute inset-0 bg-surface-inverse/40 backdrop-blur-xs transition-opacity duration-200"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -75,7 +75,7 @@ export const Modal: React.FC<ModalProps> = ({
         ref={containerRef}
         tabIndex={-1}
         className={cn(
-          'relative z-[501] bg-surface-elevated w-full shadow-2xl rounded-2xl sm:rounded-2xl',
+          'relative z-501 bg-surface-elevated w-full shadow-2xl rounded-2xl sm:rounded-2xl',
           'pb-[max(0.5rem,env(safe-area-inset-bottom,0.5rem))] sm:pb-0',
           'transition-all duration-200',
           isOpen

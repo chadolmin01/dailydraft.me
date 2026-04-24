@@ -326,7 +326,7 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
                     onChange={e => setInviteCode(e.target.value.toUpperCase().slice(0, 30))}
                     placeholder="XXXXXXXX"
                     autoFocus
-                    className="flex-1 px-3 py-2 text-[14px] tracking-wider tabular-nums font-bold bg-surface-bg border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/40"
+                    className="flex-1 px-3 py-2 text-[14px] tracking-wider tabular-nums font-bold bg-surface-bg border border-border rounded-lg focus:outline-hidden focus:ring-2 focus:ring-brand/40"
                   />
                   <button
                     onClick={handleRedeemCode}
@@ -416,7 +416,7 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
                   onChange={e => setBioEdit(e.target.value)}
                   maxLength={200}
                   rows={3}
-                  className="w-full text-sm text-txt-primary bg-surface-sunken border border-border rounded-lg p-3 resize-none focus:outline-none focus:ring-1 focus:ring-brand/30"
+                  className="w-full text-sm text-txt-primary bg-surface-sunken border border-border rounded-lg p-3 resize-none focus:outline-hidden focus:ring-1 focus:ring-brand/30"
                   autoFocus
                 />
               ) : (
@@ -472,7 +472,7 @@ export function GuideCTA({ profile, completion }: GuideCTAProps) {
         )}
 
         {/* Glow */}
-        <div className="absolute -inset-4 bg-gradient-to-r from-brand/10 to-brand/5 blur-2xl -z-10" />
+        <div className="absolute -inset-4 bg-linear-to-r from-brand/10 to-brand/5 blur-2xl -z-10" />
       </div>
     </div>
   )

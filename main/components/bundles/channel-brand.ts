@@ -57,11 +57,11 @@ export const CHANNEL_BRANDS: Record<ChannelFormat, ChannelBrand> = {
       '팔로워에게 보여줄 피드용 캡션입니다. 해시태그까지 함께 준비해두었습니다.',
     action_verb: '복사해서 올리기',
     icon: Instagram,
-    accent: 'bg-gradient-to-tr from-[#F58529] via-[#DD2A7B] to-[#8134AF]',
+    accent: 'bg-linear-to-tr from-[#F58529] via-[#DD2A7B] to-[#8134AF]',
     bg: 'bg-[#DD2A7B]/5',
     text: 'text-[#DD2A7B]',
     activeClass:
-      'bg-gradient-to-tr from-[#F58529] via-[#DD2A7B] to-[#8134AF] text-white',
+      'bg-linear-to-tr from-[#F58529] via-[#DD2A7B] to-[#8134AF] text-white',
     inactiveHoverClass: 'hover:text-[#DD2A7B]',
     is_copy_only: true,
   },

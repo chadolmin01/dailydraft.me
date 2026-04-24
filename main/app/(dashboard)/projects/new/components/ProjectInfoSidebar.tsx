@@ -115,7 +115,7 @@ export function ProjectInfoSidebar({
               value={compensationDetails}
               onChange={(e) => onSetCompensationDetails(e.target.value)}
               placeholder="상세 (예: 지분 5%, 월 50만원)"
-              className="px-3 py-2 border border-border-subtle rounded-lg text-base sm:text-sm ml-5 w-[calc(100%-1.25rem)] focus:outline-none focus:ring-2 focus:ring-brand/10 focus:border-brand bg-transparent transition-all"
+              className="px-3 py-2 border border-border-subtle rounded-lg text-base sm:text-sm ml-5 w-[calc(100%-1.25rem)] focus:outline-hidden focus:ring-2 focus:ring-brand/10 focus:border-brand bg-transparent transition-all"
             />
           </div>
           {/* Discord 채널 — clubId가 있고 봇 설치된 경우만 자동 표시 */}
@@ -139,7 +139,7 @@ export function ProjectInfoSidebar({
           className={`group/cta relative w-full py-3 font-bold text-sm rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 overflow-hidden hover:scale-[1.01] active:scale-[0.98] ${theme.ctaBtn}`}
         >
           {/* Shimmer effect */}
-          <span className="absolute inset-0 -translate-x-full group-hover/cta:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+          <span className="absolute inset-0 -translate-x-full group-hover/cta:translate-x-full transition-transform duration-700 bg-linear-to-r from-transparent via-white/20 to-transparent" />
           <span className="relative flex items-center gap-2">
             {imageUploading ? (
               <><Loader2 size={14} className="animate-spin" /> 이미지 업로드 중...</>

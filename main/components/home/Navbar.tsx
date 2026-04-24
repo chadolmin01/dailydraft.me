@@ -99,7 +99,7 @@ export const Navbar: React.FC = () => {
           />
           <span
             className={`block w-5 h-[1.5px] bg-txt-primary transition-all duration-200 ${
-              mobileOpen ? '-rotate-45 -translate-y-[1.5px]' : ''
+              mobileOpen ? '-rotate-45 translate-y-[-1.5px]' : ''
             }`}
           />
         </button>

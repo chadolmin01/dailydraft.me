@@ -229,7 +229,7 @@ export function ClubDiscordRoleMappings({ clubSlug }: { clubSlug: string }) {
                   }
                 }}
                 placeholder="예: 1기, 2기"
-                className="flex-1 px-3 py-1.5 border border-border rounded-lg text-sm text-txt-primary bg-surface-card focus:outline-none focus:border-brand transition-colors placeholder:text-txt-disabled"
+                className="flex-1 px-3 py-1.5 border border-border rounded-lg text-sm text-txt-primary bg-surface-card focus:outline-hidden focus:border-brand transition-colors placeholder:text-txt-disabled"
               />
               <button
                 type="button"

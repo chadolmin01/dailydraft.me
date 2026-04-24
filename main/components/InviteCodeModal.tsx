@@ -79,7 +79,7 @@ export const InviteCodeModal: React.FC<InviteCodeModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center z-50 p-4"
       onClick={handleBackdropClick}
     >
       <div className="bg-surface-card shadow-lg border border-border max-w-md w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200">
@@ -118,7 +118,7 @@ export const InviteCodeModal: React.FC<InviteCodeModalProps> = ({
               {/* Description */}
               <div className="bg-brand-bg border border-brand p-4 mb-6">
                 <div className="flex items-start gap-3">
-                  <Sparkles size={20} className="text-brand flex-shrink-0 mt-0.5" />
+                  <Sparkles size={20} className="text-brand shrink-0 mt-0.5" />
                   <div>
                     <p className="text-sm text-brand font-medium mb-1">
                       프리미엄 초대 코드
@@ -144,7 +144,7 @@ export const InviteCodeModal: React.FC<InviteCodeModalProps> = ({
                     autoComplete="off"
                     autoCapitalize="characters"
                     spellCheck={false}
-                    className={`w-full px-4 py-3 text-center text-xl font-mono tracking-wider border focus:outline-none focus:border-border bg-surface-card text-txt-primary ${
+                    className={`w-full px-4 py-3 text-center text-xl font-mono tracking-wider border focus:outline-hidden focus:border-border bg-surface-card text-txt-primary ${
                       error ? 'border-status-danger-text' : 'border-border'
                     }`}
                     disabled={isSubmitting}

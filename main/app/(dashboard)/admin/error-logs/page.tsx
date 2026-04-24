@@ -166,7 +166,7 @@ export default function ErrorLogsPage() {
 
         {/* Filters */}
         <div className="flex flex-wrap gap-4 items-center">
-          <div className="relative flex-1 min-w-[12.5rem] max-w-md">
+          <div className="relative flex-1 min-w-50 max-w-md">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-txt-disabled" />
             <input
               type="text"

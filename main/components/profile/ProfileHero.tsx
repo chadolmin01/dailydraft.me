@@ -155,7 +155,7 @@ export function ProfileHero({ profile, email, isEditable = false }: ProfileHeroP
             disabled={!isEditable}
             placeholder="예: 김도윤 (활동명)"
             aria-label="닉네임 · 동아리·프로젝트에서 노출되는 이름"
-            className="w-full bg-transparent text-[22px] sm:text-[26px] font-bold text-txt-primary outline-none placeholder:text-txt-disabled border-b border-transparent focus:border-border transition-colors px-0 pb-1"
+            className="w-full bg-transparent text-[22px] sm:text-[26px] font-bold text-txt-primary outline-hidden placeholder:text-txt-disabled border-b border-transparent focus:border-border transition-colors px-0 pb-1"
           />
           {/* 포지션 + 상황 */}
           <div className="flex items-center gap-2 mt-2 flex-wrap">
@@ -167,7 +167,7 @@ export function ProfileHero({ profile, email, isEditable = false }: ProfileHeroP
                 disabled={!isEditable}
                 placeholder="예: 프론트엔드"
                 aria-label="희망 포지션"
-                className="bg-transparent outline-none w-24 placeholder:text-txt-disabled"
+                className="bg-transparent outline-hidden w-24 placeholder:text-txt-disabled"
               />
               {position && <span className="text-txt-tertiary">·</span>}
               {position && <span className="text-txt-tertiary">{positionLabel(position) || position}</span>}
@@ -213,7 +213,7 @@ export function ProfileHero({ profile, email, isEditable = false }: ProfileHeroP
                   disabled={!isEditable}
                   placeholder="예: 경희대"
                   aria-label="소속 (학교 또는 회사)"
-                  className="bg-transparent outline-none w-24 placeholder:text-txt-disabled focus:text-txt-primary"
+                  className="bg-transparent outline-hidden w-24 placeholder:text-txt-disabled focus:text-txt-primary"
                 />
                 <StudentVerifiedBadge
                   verifiedAt={
@@ -235,7 +235,7 @@ export function ProfileHero({ profile, email, isEditable = false }: ProfileHeroP
                   disabled={!isEditable}
                   placeholder="예: 컴공"
                   aria-label="학과 또는 직무"
-                  className="bg-transparent outline-none w-20 placeholder:text-txt-disabled focus:text-txt-primary"
+                  className="bg-transparent outline-hidden w-20 placeholder:text-txt-disabled focus:text-txt-primary"
                 />
               </>
             )}
@@ -250,7 +250,7 @@ export function ProfileHero({ profile, email, isEditable = false }: ProfileHeroP
                     disabled={!isEditable}
                     placeholder="예: 서울"
                     aria-label="주 활동 지역"
-                    className="bg-transparent outline-none w-20 placeholder:text-txt-disabled focus:text-txt-primary"
+                    className="bg-transparent outline-hidden w-20 placeholder:text-txt-disabled focus:text-txt-primary"
                   />
                 </span>
               </>
@@ -270,7 +270,7 @@ export function ProfileHero({ profile, email, isEditable = false }: ProfileHeroP
               onBlur={() => setEditingBio(false)}
               placeholder="무엇을 하고 계신지, 어떤 팀을 찾고 계신지 한두 문장으로 소개해 주세요. 커피챗 요청자가 가장 먼저 읽는 곳입니다."
               rows={3}
-              className="w-full bg-surface-sunken border border-border rounded-xl p-3 text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-none focus:ring-2 focus:ring-brand/40 resize-none"
+              className="w-full bg-surface-sunken border border-border rounded-xl p-3 text-sm text-txt-primary placeholder:text-txt-disabled focus:outline-hidden focus:ring-2 focus:ring-brand/40 resize-none"
             />
           </div>
         ) : (
@@ -381,7 +381,7 @@ function InterestTags({ profile }: { profile: Profile }) {
             }}
             placeholder="추가"
             autoFocus
-            className="w-20 px-2 py-1 text-xs bg-surface-sunken border border-border rounded-full outline-none focus:ring-2 focus:ring-brand/40"
+            className="w-20 px-2 py-1 text-xs bg-surface-sunken border border-border rounded-full outline-hidden focus:ring-2 focus:ring-brand/40"
           />
           <button
             onClick={() => { setShowEditor(false); setCustomTag('') }}
