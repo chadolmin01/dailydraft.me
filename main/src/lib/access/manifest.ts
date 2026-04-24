@@ -112,6 +112,7 @@ export const ACCESS_MANIFEST: RouteRule[] = [
   { pattern: '/clubs/:slug/settings/discord', tier: 'club-admin' },
   { pattern: '/clubs/:slug/settings/github', tier: 'club-admin' },
   { pattern: '/clubs/:slug/settings/persona', tier: 'club-admin' },
+  { pattern: '/clubs/:slug/settings/permissions', tier: 'club-admin' },
   { pattern: '/clubs/:slug/bundles/new', tier: 'club-admin' },
   { pattern: '/clubs/:slug/bundles/:bundleId', tier: 'auth', note: '번들 열람은 멤버 가능' },
   { pattern: '/clubs/:slug/bundles', tier: 'club-admin', note: '콘텐츠 허브로 redirect' },
