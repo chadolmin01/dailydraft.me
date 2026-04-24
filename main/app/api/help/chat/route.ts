@@ -1,4 +1,5 @@
-import { genAI } from '@/src/lib/ai/gemini-client'
+import { createGoogleGenerativeAI } from '@ai-sdk/google'
+import { streamText, type ModelMessage } from 'ai'
 import { createClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { checkAIRateLimit, getClientIp } from '@/src/lib/rate-limit/redis-rate-limiter'
@@ -46,6 +47,12 @@ Draft는 대학생/청년을 위한 프로젝트 팀 매칭 플랫폼입니다.
 - 예시: "[OFF_TOPIC] 죄송합니다. 저는 Draft 플랫폼 관련 질문만 도와드릴 수 있습니다. 플랫폼 사용에 대해 궁금한 점이 있으시면 편하게 물어봐 주세요."
 - 욕설·부적절한 발언에도 [OFF_TOPIC] 태그를 붙이고 부드럽게 안내합니다.`
 
+// Vercel AI SDK 기반 Gemini 프로바이더.
+// 기존 @google/genai 의 GEMINI_API_KEY 환경변수를 그대로 재사용.
+const google = createGoogleGenerativeAI({
+  apiKey: process.env.GEMINI_API_KEY,
+})
+
 export const POST = withErrorCapture(async (request: NextRequest) => {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -61,39 +68,34 @@ export const POST = withErrorCapture(async (request: NextRequest) => {
     return ApiResponse.badRequest('Invalid messages')
   }
 
-  const historyMessages = messages.slice(0, -1)
-  const chatHistory = historyMessages.map(m => ({
-    role: m.role === 'user' ? 'user' as const : 'model' as const,
-    parts: [{ text: m.content }],
+  // Vercel AI SDK 의 ModelMessage 포맷으로 변환.
+  // 기존 Gemini native "parts" 구조 대신 role/content 단일 계층만 다루면 됨.
+  const coreMessages: ModelMessage[] = messages.map(m => ({
+    role: m.role,
+    content: m.content,
   }))
 
-  const model = genAI.getGenerativeModel({
-    model: 'gemini-2.0-flash-lite',
-    systemInstruction: SYSTEM_PROMPT,
+  const result = streamText({
+    model: google('gemini-2.0-flash-lite'),
+    system: SYSTEM_PROMPT,
+    messages: coreMessages,
   })
 
-  const chat = model.startChat({
-    history: chatHistory.length > 0 ? chatHistory : undefined,
-  })
-
-  const lastMsg = messages[messages.length - 1].content
-
-  // Stream response for faster TTFB
-  const { stream } = await chat.sendMessageStream(lastMsg)
-
+  // 기존 클라이언트(HelpWidget.tsx) 가 파싱하는 SSE 포맷을 유지.
+  // AI SDK 의 표준 toDataStreamResponse() 포맷은 다르기 때문에,
+  // PoC 단계에서는 클라이언트 변경 없이 서버만 교체하는 것을 원칙으로 함.
   const encoder = new TextEncoder()
   const readable = new ReadableStream({
     async start(controller) {
       try {
-        for await (const chunk of stream) {
-          const text = chunk.text()
-          if (text) {
-            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text })}\n\n`))
+        for await (const chunk of result.textStream) {
+          if (chunk) {
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text: chunk })}\n\n`))
           }
         }
         controller.enqueue(encoder.encode('data: [DONE]\n\n'))
         controller.close()
-      } catch (err) {
+      } catch {
         controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: true })}\n\n`))
         controller.close()
       }
