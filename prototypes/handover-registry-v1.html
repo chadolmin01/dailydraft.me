@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Draft — 운영자산 등록부 + 인수인계 V1</title>
+  <link
+    rel="stylesheet"
+    as="style"
+    crossorigin
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+  />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { fontFamily: { sans: ['Pretendard Variable','Pretendard','-apple-system','sans-serif'] } } },
+    };
+  </script>
+  <style>
+    html, body { font-family: 'Pretendard Variable', Pretendard, -apple-system, sans-serif; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes modalIn { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes backdropIn { from { opacity: 0; } to { opacity: 1; } }
+    .fade-in { animation: fadeIn .25s cubic-bezier(.2,.8,.2,1) both; }
+    .modal-card { animation: modalIn .2s cubic-bezier(.2,.8,.2,1); }
+    .modal-backdrop { animation: backdropIn .15s ease-out; }
+    .progress-fill { transition: width .6s cubic-bezier(.2,.8,.2,1); }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="flex items-center gap-1.5 text-sm text-gray-400 mb-3">
+      <span>FLIP</span><span>·</span><span>설정</span><span>·</span>
+      <span class="text-gray-700">운영 자산</span>
+    </div>
+
+    <!-- Mode toggle -->
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight">운영 자산 등록부</h1>
+        <p class="text-sm text-gray-500 mt-1">동아리에서 쓰는 외부 도구·계정·문서의 위치와 담당자를 한 곳에 정리합니다</p>
+      </div>
+      <div class="inline-flex bg-white border border-gray-200 rounded-full p-1 shadow-sm">
+        <button id="tab-normal" class="px-4 py-1.5 text-[13px] font-semibold rounded-full transition-all">평상시</button>
+        <button id="tab-handover" class="px-4 py-1.5 text-[13px] font-semibold rounded-full transition-all">인수인계 시즌</button>
+      </div>
+    </div>
+
+    <div id="app"></div>
+
+    <p class="text-xs text-gray-400 mt-12 text-center">Draft 시안 · handover-registry-v1 · 2026-04-25</p>
+  </div>
+
+  <div id="modal-root"></div>
+
+  <script>
+    // ============================================
+    // 목업 데이터 — FLIP 운영 자산
+    // ============================================
+    const ASSETS = [
+      {
+        id: 'a1',
+        type: 'drive',
+        name: '21기 기수 자료',
+        url: 'drive.google.com/drive/folders/1Bx...',
+        owner: { name: '김성민', role: '회장', avatar: '#8b5cf6' },
+        credentialLocation: '회장 Workspace 계정',
+        notes: '공식 자료·로고·발표 ppt 모음',
+      },
+      {
+        id: 'a2',
+        type: 'drive',
+        name: '20기 아카이브',
+        url: 'drive.google.com/drive/folders/1Ay...',
+        owner: { name: '이전 회장', role: '20기', avatar: '#94a3b8' },
+        credentialLocation: '20기 회장 계정 (담당 변경 필요)',
+        notes: '인수인계 시 owner 변경 필수',
+        warning: true,
+      },
+      {
+        id: 'a3',
+        type: 'notion',
+        name: '회장단 노션',
+        url: 'notion.so/flip-ops',
+        owner: { name: '김성민', role: '회장', avatar: '#8b5cf6' },
+        credentialLocation: '회장 Notion 워크스페이스 admin',
+        notes: '운영진만 보는 공간',
+      },
+      {
+        id: 'a4',
+        type: 'instagram',
+        name: '공식 인스타그램',
+        url: 'instagram.com/flip_official',
+        owner: { name: '박지원', role: '홍보팀장', avatar: '#ec4899' },
+        credentialLocation: '비즈니스 매니저 (담당자만)',
+        notes: '비번은 1Password 팀 vault',
+      },
+      {
+        id: 'a5',
+        type: 'email',
+        name: '공식 메일',
+        url: 'flip.official@gmail.com',
+        owner: { name: '김성민', role: '회장', avatar: '#8b5cf6' },
+        credentialLocation: '1Password > flip-ops',
+        notes: '대외 연락·신청 메일 수신용',
+      },
+      {
+        id: 'a6',
+        type: 'github',
+        name: 'GitHub Organization',
+        url: 'github.com/flip-club',
+        owner: { name: '최개발', role: '개발팀장', avatar: '#10b981' },
+        credentialLocation: 'org owner — 회장+개발팀장',
+        notes: '',
+      },
+      {
+        id: 'a7',
+        type: 'figma',
+        name: '디자인팀 Figma',
+        url: 'figma.com/files/team/flip',
+        owner: { name: '정디자', role: '디자인팀장', avatar: '#f59e0b' },
+        credentialLocation: '팀 admin 권한',
+        notes: '',
+      },
+    ];
+
+    const TYPE_META = {
+      drive:     { label: '구글 드라이브', icon: '📁', color: 'bg-blue-50  text-blue-700' },
+      notion:    { label: '노션',         icon: '📝', color: 'bg-gray-100 text-gray-700' },
+      instagram: { label: '인스타그램',   icon: '📷', color: 'bg-pink-50  text-pink-700' },
+      email:     { label: '이메일',       icon: '✉️', color: 'bg-amber-50 text-amber-700' },
+      github:    { label: 'GitHub',       icon: '⌨️', color: 'bg-gray-100 text-gray-700' },
+      figma:     { label: 'Figma',        icon: '🎨', color: 'bg-orange-50 text-orange-700' },
+      other:     { label: '기타',         icon: '🔗', color: 'bg-gray-100 text-gray-700' },
+    };
+
+    // ============================================
+    // 평상시 모드 — 자산 카드 그리드
+    // ============================================
+    function renderNormal() {
+      const app = document.getElementById('app');
+      app.innerHTML = `
+        <div class="fade-in">
+          <!-- Top stats + add button -->
+          <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-6">
+              <div>
+                <div class="text-2xl font-bold tabular-nums leading-none">${ASSETS.length}</div>
+                <div class="text-[11px] text-gray-500 mt-1">전체 자산</div>
+              </div>
+              <div class="h-8 w-px bg-gray-200"></div>
+              <div>
+                <div class="text-2xl font-bold tabular-nums leading-none text-amber-600">${ASSETS.filter(a => a.warning).length}</div>
+                <div class="text-[11px] text-gray-500 mt-1">담당 변경 필요</div>
+              </div>
+            </div>
+            <button id="add-asset-btn" class="flex items-center gap-1.5 px-4 py-2.5 bg-gray-900 text-white text-[13px] font-bold rounded-full hover:opacity-90 active:scale-[0.97] transition-all">
+              <span class="text-base leading-none">+</span>
+              자산 추가
+            </button>
+          </div>
+
+          <!-- Filter chips -->
+          <div class="flex items-center gap-2 mb-5 flex-wrap">
+            <button class="px-3 py-1.5 text-[12px] font-semibold rounded-full bg-gray-900 text-white">전체</button>
+            ${Object.entries(TYPE_META).slice(0, 6).map(([k, m]) => `
+              <button class="px-3 py-1.5 text-[12px] font-medium rounded-full bg-white border border-gray-200 text-gray-600 hover:border-gray-400 transition-colors">
+                ${m.icon} ${m.label}
+              </button>
+            `).join('')}
+          </div>
+
+          <!-- Asset grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            ${ASSETS.map(renderAssetCard).join('')}
+          </div>
+
+          <!-- Hint -->
+          <div class="mt-8 p-4 bg-white border border-gray-200 rounded-2xl flex items-start gap-3">
+            <div class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-base shrink-0">💡</div>
+            <div class="text-[13px] text-gray-600 leading-relaxed">
+              <span class="font-semibold text-gray-900">비밀번호는 등록하지 마세요.</span>
+              어디에 보관되는지 위치만 적어두면 인수인계 때 담당자 변경만으로 정리됩니다.
+              자세한 보관 권장은 <span class="text-blue-600 underline cursor-pointer">동아리 자산 관리 가이드</span>를 참고해주세요.
+            </div>
+          </div>
+        </div>
+      `;
+      document.getElementById('add-asset-btn').addEventListener('click', openAddModal);
+    }
+
+    function renderAssetCard(a) {
+      const meta = TYPE_META[a.type];
+      return `
+        <div class="bg-white border border-gray-200 rounded-2xl p-5 hover:border-gray-400 hover:shadow-sm transition-all group">
+          <div class="flex items-start justify-between mb-3">
+            <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-[11px] font-semibold ${meta.color}">
+              <span>${meta.icon}</span>
+              ${meta.label}
+            </span>
+            ${a.warning ? `
+              <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-700">
+                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                담당 변경 필요
+              </span>
+            ` : ''}
+          </div>
+          <h3 class="text-[15px] font-bold text-gray-900 leading-snug">${a.name}</h3>
+          <p class="text-[12px] text-gray-500 mt-1 truncate font-mono">${a.url}</p>
+
+          <div class="flex items-center gap-2 mt-4">
+            <div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-[11px] font-bold" style="background:${a.owner.avatar}">
+              ${a.owner.name[0]}
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="text-[12px] font-semibold text-gray-900 truncate">${a.owner.name}</div>
+              <div class="text-[10px] text-gray-500 truncate">${a.owner.role}</div>
+            </div>
+          </div>
+
+          <div class="mt-3 pt-3 border-t border-gray-100">
+            <div class="text-[10px] text-gray-400 mb-1">비번 보관 위치</div>
+            <div class="text-[12px] text-gray-700">${a.credentialLocation}</div>
+            ${a.notes ? `<div class="text-[11px] text-gray-500 mt-2 leading-relaxed">${a.notes}</div>` : ''}
+          </div>
+
+          <div class="flex items-center gap-2 mt-4 pt-3 border-t border-gray-100 text-[12px]">
+            <a href="#" class="text-gray-700 font-semibold hover:text-blue-600 transition-colors">링크 열기 →</a>
+            <span class="text-gray-300">·</span>
+            <button class="text-gray-500 hover:text-gray-900 transition-colors">수정</button>
+          </div>
+        </div>
+      `;
+    }
+
+    // ============================================
+    // 인수인계 모드 — 체크리스트
+    // ============================================
+    function renderHandover() {
+      const total = ASSETS.length;
+      const done = 2; // 목업: 2건 완료
+      const percent = Math.round((done / total) * 100);
+
+      const app = document.getElementById('app');
+      app.innerHTML = `
+        <div class="fade-in">
+          <!-- Banner -->
+          <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 mb-6 flex items-start gap-3">
+            <div class="w-9 h-9 bg-white rounded-lg flex items-center justify-center text-lg shrink-0">🔑</div>
+            <div class="flex-1">
+              <div class="text-[14px] font-bold text-amber-900">인수인계 시즌이 시작되었습니다</div>
+              <div class="text-[12px] text-amber-800 mt-1 leading-relaxed">
+                회장 교체 시점에 모든 운영 자산의 담당자를 새 회장에게 양도해야 합니다.
+                항목별 가이드를 따라 하나씩 처리하시면 됩니다.
+              </div>
+            </div>
+            <button class="px-3 py-1.5 text-[12px] font-semibold border border-amber-300 text-amber-900 rounded-full hover:bg-amber-100 transition-colors shrink-0">
+              평상시로
+            </button>
+          </div>
+
+          <!-- Progress -->
+          <div class="bg-white border border-gray-200 rounded-2xl p-5 mb-6">
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <div class="text-[12px] font-semibold text-gray-500">진행률</div>
+                <div class="flex items-baseline gap-1.5 mt-0.5">
+                  <span class="text-3xl font-bold tabular-nums text-gray-900">${done}</span>
+                  <span class="text-base text-gray-400">/ ${total}</span>
+                  <span class="text-[13px] font-semibold text-gray-600 ml-2">${percent}%</span>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="text-[12px] text-gray-500">새 회장</div>
+                <div class="flex items-center gap-2 mt-0.5">
+                  <div class="w-7 h-7 rounded-full bg-emerald-500 flex items-center justify-center text-white text-[11px] font-bold">정</div>
+                  <span class="text-[13px] font-semibold text-gray-900">정새회장</span>
+                </div>
+              </div>
+            </div>
+            <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+              <div class="h-full bg-gray-900 rounded-full progress-fill" style="width: ${percent}%"></div>
+            </div>
+          </div>
+
+          <!-- Bulk actions -->
+          <div class="flex items-center gap-2 mb-5">
+            <button class="flex items-center gap-1.5 px-3.5 py-2 bg-white border border-gray-300 text-[12px] font-semibold rounded-full hover:border-gray-900 transition-all">
+              ⚡ 구글 드라이브 일괄 양도
+              <span class="px-1.5 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold rounded-full">2건</span>
+            </button>
+            <button class="flex items-center gap-1.5 px-3.5 py-2 bg-white border border-gray-300 text-[12px] font-semibold rounded-full hover:border-gray-900 transition-all opacity-60 cursor-not-allowed" title="검증 후 추가 예정">
+              ⚡ 노션 일괄 양도
+              <span class="text-[10px] text-gray-400">곧</span>
+            </button>
+          </div>
+
+          <!-- Checklist -->
+          <div class="space-y-2">
+            ${ASSETS.map((a, i) => renderHandoverRow(a, i < done)).join('')}
+          </div>
+
+          <!-- Bottom CTA -->
+          <div class="mt-8 p-5 bg-white border border-gray-200 rounded-2xl flex items-center justify-between">
+            <div>
+              <div class="text-[13px] font-bold text-gray-900">${total - done}건이 남았습니다</div>
+              <div class="text-[11px] text-gray-500 mt-0.5">완료되면 새 회장에게 자동 알림이 발송됩니다</div>
+            </div>
+            <button class="px-5 py-2.5 bg-gray-900 text-white text-[13px] font-bold rounded-full hover:opacity-90 active:scale-[0.97] transition-all opacity-60 cursor-not-allowed">
+              인수인계 완료 처리
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderHandoverRow(a, done) {
+      const meta = TYPE_META[a.type];
+      return `
+        <div class="bg-white border ${done ? 'border-emerald-200 bg-emerald-50/30' : 'border-gray-200'} rounded-2xl p-4 flex items-center gap-4 transition-all">
+          <button class="w-6 h-6 rounded-full border-2 ${done ? 'bg-emerald-500 border-emerald-500' : 'border-gray-300 hover:border-gray-900'} flex items-center justify-center transition-all shrink-0">
+            ${done ? '<span class="text-white text-xs font-bold">✓</span>' : ''}
+          </button>
+
+          <div class="w-9 h-9 rounded-lg flex items-center justify-center text-base ${meta.color} shrink-0">
+            ${meta.icon}
+          </div>
+
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2">
+              <span class="text-[14px] font-bold text-gray-900 ${done ? 'line-through opacity-60' : ''}">${a.name}</span>
+              <span class="text-[10px] font-medium text-gray-400">${meta.label}</span>
+            </div>
+            <div class="text-[12px] text-gray-500 mt-0.5">
+              ${done
+                ? `정새회장에게 양도 완료`
+                : `${a.owner.name} (${a.owner.role}) → 정새회장에게 양도 필요`
+              }
+            </div>
+          </div>
+
+          <button onclick="openGuideModal('${a.id}')" class="px-3 py-1.5 text-[12px] font-semibold border border-gray-300 rounded-full hover:border-gray-900 transition-colors shrink-0 ${done ? 'opacity-50' : ''}">
+            ${done ? '재확인' : '양도 방법'}
+          </button>
+        </div>
+      `;
+    }
+
+    // ============================================
+    // 양도 가이드 모달
+    // ============================================
+    function openGuideModal(id) {
+      const a = ASSETS.find(x => x.id === id);
+      if (!a) return;
+      const meta = TYPE_META[a.type];
+
+      const guides = {
+        drive: [
+          '구글 드라이브 폴더 페이지로 이동합니다.',
+          '폴더 우클릭 → 공유 → 정새회장 이메일 추가 (편집자 권한)',
+          '담당 변경 후 우측 상단 메뉴에서 소유권 이전을 클릭합니다.',
+          '정새회장이 수락하면 양도 완료. Draft 에서 담당자를 변경해주세요.',
+        ],
+        notion: [
+          '노션 워크스페이스 설정 → 멤버를 엽니다.',
+          '정새회장을 멤버에서 워크스페이스 admin 으로 승격합니다.',
+          'Settings → People → Owner change 에서 소유권을 이전합니다.',
+          '본인 권한은 admin 으로 유지하거나 멤버로 강등합니다.',
+        ],
+        instagram: [
+          '인스타그램 비즈니스 계정은 메타 비즈니스 매니저에서 관리합니다.',
+          'business.facebook.com 접속 → 자산 → Instagram 계정 선택',
+          '담당자 추가에서 정새회장 페이스북 계정을 add admin 으로 등록합니다.',
+          '본인은 한 단계 강등하거나 제거합니다.',
+        ],
+        email: [
+          '이메일 비번 자체는 Draft 에 저장되지 않습니다.',
+          '1Password 팀 vault 에서 정새회장에게 권한을 부여합니다.',
+          '필요 시 비번을 회전 (재설정) 한 후 새 비번을 vault 에 등록합니다.',
+          'Draft 에서 담당자를 정새회장으로 변경하면 완료.',
+        ],
+        github: [
+          'GitHub Organization → Settings → Member privileges',
+          '정새회장을 Owner 로 승격합니다.',
+          '본인 권한은 Owner 유지 또는 Member 로 강등합니다.',
+          'Draft 에서 담당자를 변경해주세요.',
+        ],
+        figma: [
+          'Figma Team Settings → Members',
+          '정새회장의 권한을 admin 으로 변경합니다.',
+          '본인 권한 강등 후 Draft 에서 담당자 변경.',
+        ],
+        other: ['수동으로 양도 후 Draft 에서 담당자만 변경해주세요.'],
+      };
+      const steps = guides[a.type] || guides.other;
+
+      document.getElementById('modal-root').innerHTML = `
+        <div class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 modal-backdrop p-4" onclick="if(event.target===this) closeModal()">
+          <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full modal-card overflow-hidden">
+            <div class="p-6 pb-4 border-b border-gray-100">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg ${meta.color}">${meta.icon}</div>
+                <div class="flex-1">
+                  <div class="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">${meta.label} 양도 가이드</div>
+                  <h3 class="text-[16px] font-bold text-gray-900">${a.name}</h3>
+                </div>
+                <button onclick="closeModal()" class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-400 transition-colors">✕</button>
+              </div>
+              <div class="text-[12px] text-gray-600">
+                현재: <span class="font-semibold text-gray-900">${a.owner.name} (${a.owner.role})</span>
+                → 양도 대상: <span class="font-semibold text-gray-900">정새회장</span>
+              </div>
+            </div>
+            <div class="p-6">
+              <ol class="space-y-3">
+                ${steps.map((s, i) => `
+                  <li class="flex gap-3">
+                    <span class="w-6 h-6 rounded-full bg-gray-900 text-white text-[11px] font-bold flex items-center justify-center shrink-0">${i+1}</span>
+                    <span class="text-[13px] text-gray-700 leading-relaxed pt-0.5">${s}</span>
+                  </li>
+                `).join('')}
+              </ol>
+            </div>
+            <div class="p-5 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+              <button onclick="closeModal()" class="px-4 py-2 text-[12px] font-semibold text-gray-600 hover:text-gray-900 transition-colors">닫기</button>
+              <button onclick="closeModal()" class="px-4 py-2 bg-gray-900 text-white text-[12px] font-bold rounded-full hover:opacity-90 transition-all">양도 완료로 표시</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function closeModal() {
+      document.getElementById('modal-root').innerHTML = '';
+    }
+
+    // ============================================
+    // 자산 추가 모달 (평상시 모드)
+    // ============================================
+    function openAddModal() {
+      document.getElementById('modal-root').innerHTML = `
+        <div class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 modal-backdrop p-4" onclick="if(event.target===this) closeModal()">
+          <div class="bg-white rounded-2xl shadow-xl max-w-md w-full modal-card overflow-hidden">
+            <div class="p-6 pb-4 border-b border-gray-100">
+              <h3 class="text-[16px] font-bold text-gray-900">자산 추가</h3>
+              <p class="text-[12px] text-gray-500 mt-1">동아리에서 쓰는 외부 도구·문서·계정을 등록합니다</p>
+            </div>
+            <div class="p-6 space-y-4">
+              <div>
+                <label class="block text-[12px] font-semibold text-gray-700 mb-1.5">유형</label>
+                <select class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-[13px] focus:border-gray-900 focus:outline-none">
+                  ${Object.entries(TYPE_META).map(([k, m]) => `<option value="${k}">${m.icon} ${m.label}</option>`).join('')}
+                </select>
+              </div>
+              <div>
+                <label class="block text-[12px] font-semibold text-gray-700 mb-1.5">이름</label>
+                <input type="text" placeholder="예: 21기 기수 자료" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-[13px] focus:border-gray-900 focus:outline-none" />
+              </div>
+              <div>
+                <label class="block text-[12px] font-semibold text-gray-700 mb-1.5">URL</label>
+                <input type="text" placeholder="https://..." class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-[13px] focus:border-gray-900 focus:outline-none font-mono" />
+              </div>
+              <div>
+                <label class="block text-[12px] font-semibold text-gray-700 mb-1.5">담당자</label>
+                <select class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-[13px] focus:border-gray-900 focus:outline-none">
+                  <option>김성민 (회장)</option>
+                  <option>박지원 (홍보팀장)</option>
+                  <option>최개발 (개발팀장)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[12px] font-semibold text-gray-700 mb-1.5">
+                  비번 보관 위치
+                  <span class="text-[11px] font-normal text-gray-400 ml-1">· 비번 자체는 입력하지 마세요</span>
+                </label>
+                <input type="text" placeholder="예: 1Password 팀 vault > flip-ops" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-[13px] focus:border-gray-900 focus:outline-none" />
+              </div>
+              <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 flex gap-2">
+                <span class="text-base shrink-0">⚠️</span>
+                <p class="text-[11px] text-amber-900 leading-relaxed">
+                  <span class="font-bold">비번을 직접 입력하지 마세요.</span>
+                  Draft 는 비번을 저장하지 않습니다. 1Password·Bitwarden 같은 비밀번호 관리 도구의 위치만 적어주세요.
+                </p>
+              </div>
+            </div>
+            <div class="p-5 bg-gray-50 border-t border-gray-100 flex items-center justify-end gap-2">
+              <button onclick="closeModal()" class="px-4 py-2 text-[12px] font-semibold text-gray-600 hover:text-gray-900 transition-colors">취소</button>
+              <button onclick="closeModal()" class="px-4 py-2 bg-gray-900 text-white text-[12px] font-bold rounded-full hover:opacity-90 transition-all">자산 추가</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ============================================
+    // Tab switching
+    // ============================================
+    let currentTab = 'normal';
+    function setTab(tab) {
+      currentTab = tab;
+      const normalBtn = document.getElementById('tab-normal');
+      const handoverBtn = document.getElementById('tab-handover');
+      if (tab === 'normal') {
+        normalBtn.className = 'px-4 py-1.5 text-[13px] font-semibold rounded-full transition-all bg-gray-900 text-white';
+        handoverBtn.className = 'px-4 py-1.5 text-[13px] font-semibold rounded-full transition-all text-gray-600 hover:text-gray-900';
+        renderNormal();
+      } else {
+        handoverBtn.className = 'px-4 py-1.5 text-[13px] font-semibold rounded-full transition-all bg-gray-900 text-white';
+        normalBtn.className = 'px-4 py-1.5 text-[13px] font-semibold rounded-full transition-all text-gray-600 hover:text-gray-900';
+        renderHandover();
+      }
+    }
+
+    document.getElementById('tab-normal').addEventListener('click', () => setTab('normal'));
+    document.getElementById('tab-handover').addEventListener('click', () => setTab('handover'));
+    setTab('normal');
+  </script>
+</body>
+</html>

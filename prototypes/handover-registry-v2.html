@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Draft — 운영자산 등록부 + 스마트 인수인계 V2</title>
+  <link
+    rel="stylesheet"
+    as="style"
+    crossorigin
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+  />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { fontFamily: { sans: ['Pretendard Variable','Pretendard','-apple-system','sans-serif'] } } },
+    };
+  </script>
+  <style>
+    html, body { font-family: 'Pretendard Variable', Pretendard, -apple-system, sans-serif; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes modalIn { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes backdropIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+    .fade-in { animation: fadeIn .25s cubic-bezier(.2,.8,.2,1) both; }
+    .modal-card { animation: modalIn .2s cubic-bezier(.2,.8,.2,1); }
+    .modal-backdrop { animation: backdropIn .15s ease-out; }
+    .progress-fill { transition: width .6s cubic-bezier(.2,.8,.2,1); }
+    .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; }
+    .pulse-dot { animation: pulse 1.4s ease-in-out infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="flex items-center gap-1.5 text-sm text-gray-400 mb-3">
+      <span>FLIP</span><span>·</span><span>설정</span><span>·</span>
+      <span class="text-gray-700">운영 자산</span>
+    </div>
+
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight">운영 자산 등록부</h1>
+        <p class="text-sm text-gray-500 mt-1">URL만 등록하면 양도 페이지로 바로 가는 딥링크와 자동 양도를 제공합니다</p>
+      </div>
+      <div class="inline-flex bg-white border border-gray-200 rounded-full p-1 shadow-sm">
+        <button id="tab-normal" class="px-4 py-1.5 text-[13px] font-semibold rounded-full transition-all">평상시</button>
+        <button id="tab-handover" class="px-4 py-1.5 text-[13px] font-semibold rounded-full transition-all">인수인계 시즌</button>
+      </div>
+    </div>
+
+    <!-- Connections strip -->
+    <div id="connections-strip"></div>
+
+    <div id="app"></div>
+
+    <p class="text-xs text-gray-400 mt-12 text-center">Draft 시안 · handover-registry-v2 (스마트 양도) · 2026-04-25</p>
+  </div>
+
+  <div id="modal-root"></div>
+  <div id="toast-root" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-2 pointer-events-none"></div>
+
+  <script>
+    // ============================================
+    // 플랫폼 능력 매트릭스
+    // ============================================
+    // - oauth: API 연결되면 1클릭 자동 양도 가능
+    // - deepLink: URL ID 추출해서 양도 페이지로 바로 가기 가능
+    // - manualOnly: 수동 가이드만
+    const PLATFORM_CAPS = {
+      drive:     { oauth: true,  deepLink: true,  autoLabel: '소유권 자동 이전' },
+      gmail:     { oauth: true,  deepLink: false, autoLabel: '권한 자동 추가' },
+      notion:    { oauth: true,  deepLink: true,  autoLabel: '멤버 admin 자동 승격' },
+      github:    { oauth: true,  deepLink: true,  autoLabel: 'Owner 자동 승격' },
+      discord:   { oauth: true,  deepLink: true,  autoLabel: '서버 소유권 이전' },
+      figma:     { oauth: true,  deepLink: true,  autoLabel: 'admin 권한 자동 부여' },
+      instagram: { oauth: false, deepLink: true,  autoLabel: null },
+      email:     { oauth: false, deepLink: false, autoLabel: null },
+      other:     { oauth: false, deepLink: false, autoLabel: null },
+    };
+
+    // ============================================
+    // OAuth 연결 상태 (FLIP 클럽 기준 목업)
+    // ============================================
+    const CONNECTIONS = {
+      drive:    { connected: true,  account: 'flip.official@gmail.com', connectedAt: '2026-04-22' },
+      notion:   { connected: false },
+      github:   { connected: true,  account: 'flip-club', connectedAt: '2026-04-23' },
+      discord:  { connected: true,  account: 'FLIP Server', connectedAt: '2026-03-12' },
+      figma:    { connected: false },
+      gmail:    { connected: true,  account: 'flip.official@gmail.com', connectedAt: '2026-04-22' },
+    };
+
+    const PLATFORMS_FOR_STRIP = [
+      { key: 'drive',   icon: '📁', label: '구글 드라이브' },
+      { key: 'notion',  icon: '📝', label: '노션' },
+      { key: 'github',  icon: '⌨️', label: 'GitHub' },
+      { key: 'discord', icon: '💬', label: '디스코드' },
+      { key: 'figma',   icon: '🎨', label: 'Figma' },
+    ];
+
+    // ============================================
+    // 목업 자산 데이터 — URL 그대로 두면 v2 가 ID 추출
+    // ============================================
+    const ASSETS = [
+      { id: 'a1', type: 'drive',     name: '21기 기수 자료',      url: 'https://drive.google.com/drive/folders/1Bx7yKj3mLQ',      ownerName: '김성민',     ownerRole: '회장',       avatar: '#8b5cf6', credentialLocation: '회장 Workspace 계정' },
+      { id: 'a2', type: 'drive',     name: '20기 아카이브',       url: 'https://drive.google.com/drive/folders/1Ay5xJh2nNP',      ownerName: '이전 회장',  ownerRole: '20기 회장',  avatar: '#94a3b8', credentialLocation: '20기 회장 계정',     warning: true },
+      { id: 'a3', type: 'notion',    name: '회장단 노션',         url: 'https://www.notion.so/flip-club/Operations-3d8f2',         ownerName: '김성민',     ownerRole: '회장',       avatar: '#8b5cf6', credentialLocation: 'Notion admin 권한' },
+      { id: 'a4', type: 'github',    name: 'GitHub Organization', url: 'https://github.com/flip-club',                            ownerName: '최개발',     ownerRole: '개발팀장',   avatar: '#10b981', credentialLocation: 'org owner — 회장+개발팀장' },
+      { id: 'a5', type: 'discord',   name: 'Discord 서버',        url: 'https://discord.com/channels/9123456789012345678',        ownerName: '김성민',     ownerRole: '회장',       avatar: '#8b5cf6', credentialLocation: 'Discord 계정' },
+      { id: 'a6', type: 'figma',     name: '디자인팀 Figma',      url: 'https://www.figma.com/files/team/8821/Flip-Design',       ownerName: '정디자',     ownerRole: '디자인팀장', avatar: '#f59e0b', credentialLocation: '팀 admin 권한' },
+      { id: 'a7', type: 'instagram', name: '공식 인스타그램',     url: 'https://instagram.com/flip_official',                     ownerName: '박지원',     ownerRole: '홍보팀장',   avatar: '#ec4899', credentialLocation: '비즈니스 매니저' },
+      { id: 'a8', type: 'gmail',     name: '공식 메일',           url: 'flip.official@gmail.com',                                  ownerName: '김성민',     ownerRole: '회장',       avatar: '#8b5cf6', credentialLocation: '1Password > flip-ops' },
+    ];
+
+    const TYPE_META = {
+      drive:     { label: '구글 드라이브', icon: '📁', color: 'bg-blue-50 text-blue-700' },
+      gmail:     { label: '구글 메일',     icon: '✉️', color: 'bg-amber-50 text-amber-700' },
+      notion:    { label: '노션',          icon: '📝', color: 'bg-gray-100 text-gray-700' },
+      instagram: { label: '인스타그램',    icon: '📷', color: 'bg-pink-50 text-pink-700' },
+      email:     { label: '이메일',        icon: '✉️', color: 'bg-amber-50 text-amber-700' },
+      github:    { label: 'GitHub',        icon: '⌨️', color: 'bg-gray-100 text-gray-700' },
+      discord:   { label: '디스코드',      icon: '💬', color: 'bg-indigo-50 text-indigo-700' },
+      figma:     { label: 'Figma',         icon: '🎨', color: 'bg-orange-50 text-orange-700' },
+      other:     { label: '기타',          icon: '🔗', color: 'bg-gray-100 text-gray-700' },
+    };
+
+    // ============================================
+    // URL → 양도 페이지 딥링크 변환기
+    // 핵심: URL 에서 ID 추출 → 각 플랫폼의 권한/멤버 페이지로 점프
+    // ============================================
+    function deriveDeepLinks(asset) {
+      const url = asset.url;
+      const out = {
+        resource: url,           // 자산 자체로 가기
+        adminPage: null,         // 권한·멤버 관리 페이지로 바로 가기
+        adminPageLabel: null,
+      };
+      try {
+        if (asset.type === 'drive') {
+          const m = url.match(/folders\/([\w-]+)/);
+          if (m) {
+            const id = m[1];
+            // 공유·소유권 변경 패널이 있는 폴더 페이지
+            out.adminPage = `https://drive.google.com/drive/folders/${id}?ths=true`;
+            out.adminPageLabel = '폴더 공유 패널 열기';
+          }
+        } else if (asset.type === 'notion') {
+          // 노션 워크스페이스 멤버 설정 페이지
+          const wsMatch = url.match(/notion\.so\/([\w-]+)\//);
+          if (wsMatch) {
+            out.adminPage = `https://www.notion.so/${wsMatch[1]}/settings/people`;
+            out.adminPageLabel = '워크스페이스 멤버 설정';
+          } else {
+            out.adminPage = 'https://www.notion.so/me/settings/people';
+            out.adminPageLabel = '워크스페이스 멤버 설정';
+          }
+        } else if (asset.type === 'github') {
+          const m = url.match(/github\.com\/([\w-]+)/);
+          if (m) {
+            const org = m[1];
+            out.adminPage = `https://github.com/orgs/${org}/people`;
+            out.adminPageLabel = 'Org 멤버 관리 페이지';
+          }
+        } else if (asset.type === 'discord') {
+          const m = url.match(/channels\/(\d+)/);
+          if (m) {
+            const guildId = m[1];
+            out.adminPage = `https://discord.com/channels/${guildId}`;
+            out.adminPageLabel = '서버 설정 → 멤버';
+          }
+        } else if (asset.type === 'figma') {
+          const m = url.match(/team\/(\d+)/);
+          if (m) {
+            const teamId = m[1];
+            out.adminPage = `https://www.figma.com/files/team/${teamId}/settings/members`;
+            out.adminPageLabel = '팀 멤버 설정';
+          }
+        } else if (asset.type === 'instagram') {
+          out.adminPage = 'https://business.facebook.com/settings/instagram-accounts';
+          out.adminPageLabel = '비즈니스 매니저 → IG 계정';
+        } else if (asset.type === 'gmail') {
+          out.adminPage = 'https://admin.google.com/ac/users';
+          out.adminPageLabel = 'Workspace 사용자 관리';
+        }
+      } catch (e) {}
+      return out;
+    }
+
+    function platformConnected(type) {
+      const c = CONNECTIONS[type];
+      return c && c.connected;
+    }
+
+    function canAutoTransfer(type) {
+      return PLATFORM_CAPS[type]?.oauth && platformConnected(type);
+    }
+
+    // ============================================
+    // 연결 상태 strip
+    // ============================================
+    function renderConnectionsStrip() {
+      const root = document.getElementById('connections-strip');
+      const connectedCount = PLATFORMS_FOR_STRIP.filter(p => CONNECTIONS[p.key]?.connected).length;
+      root.innerHTML = `
+        <div class="mb-6 p-4 bg-white border border-gray-200 rounded-2xl">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <span class="text-[12px] font-bold text-gray-900">플랫폼 연결</span>
+              <span class="text-[11px] text-gray-500">· ${connectedCount}/${PLATFORMS_FOR_STRIP.length} 연결됨</span>
+            </div>
+            <button class="text-[11px] text-blue-600 font-semibold hover:underline">전체 관리 →</button>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            ${PLATFORMS_FOR_STRIP.map(p => {
+              const c = CONNECTIONS[p.key];
+              const connected = c?.connected;
+              return `
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[12px] font-medium border ${connected ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-gray-50 border-gray-200 text-gray-500'}">
+                  <span>${p.icon}</span>
+                  <span>${p.label}</span>
+                  ${connected
+                    ? `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>`
+                    : `<button class="text-[11px] text-blue-600 font-semibold hover:underline">연결</button>`
+                  }
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // ============================================
+    // 평상시 모드
+    // ============================================
+    function renderNormal() {
+      const app = document.getElementById('app');
+      app.innerHTML = `
+        <div class="fade-in">
+          <div class="flex items-center justify-between mb-5">
+            <div class="flex items-center gap-6">
+              <div>
+                <div class="text-2xl font-bold tabular-nums leading-none">${ASSETS.length}</div>
+                <div class="text-[11px] text-gray-500 mt-1">전체 자산</div>
+              </div>
+              <div class="h-8 w-px bg-gray-200"></div>
+              <div>
+                <div class="text-2xl font-bold tabular-nums leading-none text-emerald-600">${ASSETS.filter(a => canAutoTransfer(a.type)).length}</div>
+                <div class="text-[11px] text-gray-500 mt-1">자동 양도 가능</div>
+              </div>
+              <div class="h-8 w-px bg-gray-200"></div>
+              <div>
+                <div class="text-2xl font-bold tabular-nums leading-none text-amber-600">${ASSETS.filter(a => a.warning).length}</div>
+                <div class="text-[11px] text-gray-500 mt-1">담당 변경 필요</div>
+              </div>
+            </div>
+            <button id="add-asset-btn" class="flex items-center gap-1.5 px-4 py-2.5 bg-gray-900 text-white text-[13px] font-bold rounded-full hover:opacity-90 active:scale-[0.97] transition-all">
+              <span class="text-base leading-none">+</span>
+              자산 추가
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            ${ASSETS.map(renderAssetCard).join('')}
+          </div>
+
+          <div class="mt-8 p-4 bg-white border border-gray-200 rounded-2xl flex items-start gap-3">
+            <div class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-base shrink-0">💡</div>
+            <div class="text-[13px] text-gray-600 leading-relaxed">
+              <span class="font-semibold text-gray-900">URL 만 등록하면 됩니다.</span>
+              Draft 가 자동으로 ID 를 추출해서 권한 페이지 딥링크를 만들어주고, OAuth 연결된 플랫폼은 인수인계 시 1클릭으로 양도됩니다.
+              비밀번호는 절대 저장하지 마세요 — 위치만 적어두면 충분합니다.
+            </div>
+          </div>
+        </div>
+      `;
+      document.getElementById('add-asset-btn').addEventListener('click', openAddModal);
+    }
+
+    function renderAssetCard(a) {
+      const meta = TYPE_META[a.type];
+      const auto = canAutoTransfer(a.type);
+      const links = deriveDeepLinks(a);
+      return `
+        <div class="bg-white border border-gray-200 rounded-2xl p-5 hover:border-gray-400 hover:shadow-sm transition-all group">
+          <div class="flex items-start justify-between mb-3">
+            <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-[11px] font-semibold ${meta.color}">
+              <span>${meta.icon}</span>
+              ${meta.label}
+            </span>
+            ${auto ? `
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                자동 양도
+              </span>
+            ` : a.warning ? `
+              <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-700">
+                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                담당 변경 필요
+              </span>
+            ` : ''}
+          </div>
+          <h3 class="text-[15px] font-bold text-gray-900 leading-snug">${a.name}</h3>
+          <p class="text-[12px] text-gray-500 mt-1 truncate font-mono">${a.url.replace(/^https?:\/\//, '')}</p>
+
+          <div class="flex items-center gap-2 mt-4">
+            <div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-[11px] font-bold" style="background:${a.avatar}">
+              ${a.ownerName[0]}
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="text-[12px] font-semibold text-gray-900 truncate">${a.ownerName}</div>
+              <div class="text-[10px] text-gray-500 truncate">${a.ownerRole}</div>
+            </div>
+          </div>
+
+          <div class="mt-3 pt-3 border-t border-gray-100">
+            <div class="text-[10px] text-gray-400 mb-1">비번 보관 위치</div>
+            <div class="text-[12px] text-gray-700">${a.credentialLocation}</div>
+          </div>
+
+          <div class="flex items-center gap-3 mt-4 pt-3 border-t border-gray-100 text-[12px]">
+            <a href="${links.resource}" target="_blank" class="text-gray-700 font-semibold hover:text-blue-600 transition-colors">자산 열기 →</a>
+            ${links.adminPage ? `
+              <span class="text-gray-300">·</span>
+              <a href="${links.adminPage}" target="_blank" class="text-blue-600 font-semibold hover:underline">권한 페이지</a>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    // ============================================
+    // 인수인계 모드
+    // ============================================
+    let HANDOVER_STATE = ASSETS.reduce((acc, a) => { acc[a.id] = false; return acc; }, {});
+    HANDOVER_STATE['a4'] = true; // a4 (GitHub) 만 미리 완료된 상태로 데모
+
+    function renderHandover() {
+      const total = ASSETS.length;
+      const done = Object.values(HANDOVER_STATE).filter(Boolean).length;
+      const percent = Math.round((done / total) * 100);
+      const autoCount = ASSETS.filter(a => canAutoTransfer(a.type) && !HANDOVER_STATE[a.id]).length;
+      const deepLinkCount = ASSETS.filter(a => !canAutoTransfer(a.type) && deriveDeepLinks(a).adminPage && !HANDOVER_STATE[a.id]).length;
+      const manualCount = ASSETS.filter(a => !canAutoTransfer(a.type) && !deriveDeepLinks(a).adminPage && !HANDOVER_STATE[a.id]).length;
+
+      const app = document.getElementById('app');
+      app.innerHTML = `
+        <div class="fade-in">
+          <!-- 진행률 카드 -->
+          <div class="bg-white border border-gray-200 rounded-2xl p-5 mb-5">
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <div class="text-[12px] font-semibold text-gray-500">인수인계 진행률</div>
+                <div class="flex items-baseline gap-1.5 mt-0.5">
+                  <span class="text-3xl font-bold tabular-nums text-gray-900">${done}</span>
+                  <span class="text-base text-gray-400">/ ${total}</span>
+                  <span class="text-[13px] font-semibold text-gray-600 ml-2">${percent}%</span>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="text-[12px] text-gray-500">새 회장</div>
+                <div class="flex items-center gap-2 mt-0.5">
+                  <div class="w-7 h-7 rounded-full bg-emerald-500 flex items-center justify-center text-white text-[11px] font-bold">정</div>
+                  <div>
+                    <div class="text-[13px] font-semibold text-gray-900">정새회장</div>
+                    <div class="text-[10px] text-gray-500">jung@flip.kr</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+              <div class="h-full bg-gray-900 rounded-full progress-fill" style="width: ${percent}%"></div>
+            </div>
+            <div class="flex items-center gap-4 mt-4 text-[11px]">
+              <div class="flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span class="text-gray-600">자동 양도 <span class="font-bold tabular-nums text-gray-900">${autoCount}</span></span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                <span class="text-gray-600">권한 페이지 딥링크 <span class="font-bold tabular-nums text-gray-900">${deepLinkCount}</span></span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-gray-400"></span>
+                <span class="text-gray-600">수동 가이드 <span class="font-bold tabular-nums text-gray-900">${manualCount}</span></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 일괄 액션 -->
+          <div class="bg-gray-900 rounded-2xl p-5 mb-5 text-white">
+            <div class="flex items-center justify-between gap-4 flex-wrap">
+              <div class="flex-1 min-w-[200px]">
+                <div class="text-[13px] font-bold flex items-center gap-2">
+                  <span class="text-base">⚡</span>
+                  일괄 자동 양도
+                </div>
+                <div class="text-[12px] text-gray-300 mt-1">OAuth 연결된 플랫폼 ${autoCount}건을 한번에 정새회장에게 양도합니다</div>
+              </div>
+              <button onclick="openBulkConfirmModal()" class="flex items-center gap-1.5 px-5 py-2.5 bg-white text-gray-900 text-[13px] font-bold rounded-full hover:opacity-90 active:scale-[0.97] transition-all">
+                ${autoCount}건 자동 양도
+                <span class="text-xs">→</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 체크리스트 -->
+          <div class="space-y-2">
+            ${ASSETS.map(a => renderHandoverRow(a, HANDOVER_STATE[a.id])).join('')}
+          </div>
+
+          <div class="mt-8 p-5 bg-white border border-gray-200 rounded-2xl flex items-center justify-between">
+            <div>
+              <div class="text-[13px] font-bold text-gray-900">${total - done}건이 남았습니다</div>
+              <div class="text-[11px] text-gray-500 mt-0.5">완료되면 새 회장에게 자동 알림이 발송됩니다</div>
+            </div>
+            <button class="px-5 py-2.5 ${done === total ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-400 cursor-not-allowed'} text-[13px] font-bold rounded-full transition-all">
+              인수인계 완료 처리
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderHandoverRow(a, done) {
+      const meta = TYPE_META[a.type];
+      const auto = canAutoTransfer(a.type);
+      const links = deriveDeepLinks(a);
+      const tier = auto ? 'auto' : (links.adminPage ? 'deepLink' : 'manual');
+      const tierBadge = {
+        auto:     `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700">⚡ 자동</span>`,
+        deepLink: `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700">🎯 딥링크</span>`,
+        manual:   `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 text-gray-700">📖 수동</span>`,
+      }[tier];
+
+      return `
+        <div class="bg-white border ${done ? 'border-emerald-200 bg-emerald-50/30' : 'border-gray-200'} rounded-2xl p-4 flex items-center gap-4 transition-all">
+          <button onclick="toggleDone('${a.id}')" class="w-6 h-6 rounded-full border-2 ${done ? 'bg-emerald-500 border-emerald-500' : 'border-gray-300 hover:border-gray-900'} flex items-center justify-center transition-all shrink-0">
+            ${done ? '<span class="text-white text-xs font-bold">✓</span>' : ''}
+          </button>
+
+          <div class="w-9 h-9 rounded-lg flex items-center justify-center text-base ${meta.color} shrink-0">
+            ${meta.icon}
+          </div>
+
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-[14px] font-bold text-gray-900 ${done ? 'line-through opacity-60' : ''}">${a.name}</span>
+              <span class="text-[10px] font-medium text-gray-400">${meta.label}</span>
+              ${!done ? tierBadge : ''}
+            </div>
+            <div class="text-[12px] text-gray-500 mt-0.5">
+              ${done
+                ? `정새회장에게 양도 완료 · ${new Date().toLocaleDateString('ko-KR')}`
+                : `${a.ownerName} (${a.ownerRole}) → 정새회장에게 양도 필요`
+              }
+            </div>
+          </div>
+
+          ${done ? `
+            <button onclick="toggleDone('${a.id}')" class="px-3 py-1.5 text-[12px] font-medium text-gray-500 hover:text-gray-900 transition-colors shrink-0">취소</button>
+          ` : tier === 'auto' ? `
+            <button onclick="openTransferModal('${a.id}')" class="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-bold bg-emerald-600 text-white rounded-full hover:bg-emerald-700 transition-all shrink-0">
+              ⚡ 자동 양도
+            </button>
+          ` : tier === 'deepLink' ? `
+            <button onclick="openTransferModal('${a.id}')" class="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-bold bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-all shrink-0">
+              🎯 양도 페이지 열기
+            </button>
+          ` : `
+            <button onclick="openTransferModal('${a.id}')" class="px-3 py-1.5 text-[12px] font-semibold border border-gray-300 rounded-full hover:border-gray-900 transition-colors shrink-0">
+              가이드
+            </button>
+          `}
+        </div>
+      `;
+    }
+
+    function toggleDone(id) {
+      HANDOVER_STATE[id] = !HANDOVER_STATE[id];
+      renderHandover();
+    }
+
+    // ============================================
+    // 양도 모달 — 3 tier (auto · deepLink · manual)
+    // ============================================
+    function openTransferModal(id) {
+      const a = ASSETS.find(x => x.id === id);
+      if (!a) return;
+      const meta = TYPE_META[a.type];
+      const auto = canAutoTransfer(a.type);
+      const links = deriveDeepLinks(a);
+      const cap = PLATFORM_CAPS[a.type] || {};
+
+      // 수동 가이드 (fallback)
+      const manualSteps = {
+        drive:    [`자산 페이지에서 정새회장 이메일을 추가합니다 (편집자 권한).`,`설정 메뉴에서 소유권 이전을 클릭합니다.`,`정새회장이 수락하면 양도 완료.`],
+        notion:   [`워크스페이스 멤버 설정으로 이동합니다.`,`정새회장을 admin 으로 승격합니다.`,`Settings → People → Owner change 에서 owner 이전.`],
+        github:   [`Org People 페이지로 이동합니다.`,`정새회장의 role 을 Owner 로 변경합니다.`,`본인 권한은 유지하거나 강등.`],
+        discord:  [`서버 설정 → 멤버에서 정새회장을 찾습니다.`,`서버 설정 → 우클릭 → "소유권 이전" (2FA 필요).`],
+        figma:    [`팀 멤버 설정에서 정새회장의 role 을 admin 으로 변경합니다.`],
+        instagram:[`비즈니스 매니저 → IG 계정 → 사용자 추가.`,`정새회장을 admin 으로 등록합니다.`],
+        gmail:    [`Workspace 사용자 관리에서 정새회장 admin 권한 부여.`],
+        email:    [`수동으로 비번을 1Password vault 에서 정새회장에게 공유합니다.`],
+        other:    [`수동으로 권한을 양도한 후 Draft 에서 담당자를 변경해주세요.`],
+      };
+      const steps = manualSteps[a.type] || manualSteps.other;
+
+      document.getElementById('modal-root').innerHTML = `
+        <div class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 modal-backdrop p-4" onclick="if(event.target===this) closeModal()">
+          <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full modal-card overflow-hidden">
+            <div class="p-6 pb-4 border-b border-gray-100">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg ${meta.color}">${meta.icon}</div>
+                <div class="flex-1">
+                  <div class="text-[11px] font-semibold text-gray-500">${meta.label} 양도</div>
+                  <h3 class="text-[16px] font-bold text-gray-900">${a.name}</h3>
+                </div>
+                <button onclick="closeModal()" class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-400 transition-colors">✕</button>
+              </div>
+              <div class="text-[12px] text-gray-600">
+                <span class="font-semibold text-gray-900">${a.ownerName} (${a.ownerRole})</span>
+                <span class="text-gray-400 mx-1">→</span>
+                <span class="font-semibold text-gray-900">정새회장</span>
+              </div>
+            </div>
+
+            <div class="p-6 space-y-3">
+              ${auto ? `
+                <!-- Tier 1: 자동 양도 -->
+                <div class="border-2 border-emerald-500 bg-emerald-50/40 rounded-2xl p-4">
+                  <div class="flex items-start gap-3 mb-3">
+                    <div class="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-white text-sm shrink-0">⚡</div>
+                    <div class="flex-1">
+                      <div class="text-[13px] font-bold text-gray-900">자동 양도 (권장)</div>
+                      <div class="text-[12px] text-gray-600 mt-0.5">${cap.autoLabel} · OAuth 로 Draft 가 직접 처리</div>
+                    </div>
+                  </div>
+                  <button onclick="runAutoTransfer('${a.id}')" class="w-full py-2.5 bg-emerald-600 text-white text-[13px] font-bold rounded-xl hover:bg-emerald-700 transition-all">
+                    지금 자동 양도 실행
+                  </button>
+                  <div class="text-[10px] text-gray-500 mt-2 text-center">실행 후 정새회장에게 알림이 발송됩니다</div>
+                </div>
+              ` : ''}
+
+              ${links.adminPage ? `
+                <!-- Tier 2: 권한 페이지 딥링크 -->
+                <div class="border ${auto ? 'border-gray-200' : 'border-2 border-blue-500 bg-blue-50/40'} rounded-2xl p-4">
+                  <div class="flex items-start gap-3 mb-3">
+                    <div class="w-8 h-8 rounded-lg ${auto ? 'bg-gray-100 text-gray-600' : 'bg-blue-500 text-white'} flex items-center justify-center text-sm shrink-0">🎯</div>
+                    <div class="flex-1">
+                      <div class="text-[13px] font-bold text-gray-900">${auto ? '직접 처리 (대안)' : '양도 페이지 바로 열기 (권장)'}</div>
+                      <div class="text-[12px] text-gray-600 mt-0.5">${links.adminPageLabel} · 클릭 한 번으로 점프</div>
+                    </div>
+                  </div>
+                  <a href="${links.adminPage}" target="_blank" class="block w-full py-2.5 ${auto ? 'border border-gray-300 text-gray-700 hover:border-gray-900' : 'bg-blue-600 text-white hover:bg-blue-700'} text-[13px] font-bold rounded-xl text-center transition-all">
+                    ${links.adminPageLabel} →
+                  </a>
+                </div>
+              ` : ''}
+
+              <!-- Tier 3: 수동 가이드 (항상 표시) -->
+              <details class="border border-gray-200 rounded-2xl ${(auto || links.adminPage) ? '' : 'border-2 border-gray-300'}">
+                <summary class="p-4 cursor-pointer flex items-start gap-3 list-none">
+                  <div class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-sm text-gray-600 shrink-0">📖</div>
+                  <div class="flex-1">
+                    <div class="text-[13px] font-bold text-gray-900">수동 가이드 ${(auto || links.adminPage) ? '' : '(권장)'}</div>
+                    <div class="text-[12px] text-gray-600 mt-0.5">${steps.length}단계 텍스트 가이드</div>
+                  </div>
+                  <span class="text-gray-400">▼</span>
+                </summary>
+                <div class="px-4 pb-4 pt-2 border-t border-gray-100">
+                  <ol class="space-y-2.5">
+                    ${steps.map((s, i) => `
+                      <li class="flex gap-2.5">
+                        <span class="w-5 h-5 rounded-full bg-gray-900 text-white text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">${i+1}</span>
+                        <span class="text-[12px] text-gray-700 leading-relaxed">${s}</span>
+                      </li>
+                    `).join('')}
+                  </ol>
+                </div>
+              </details>
+            </div>
+
+            <div class="p-5 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+              <button onclick="closeModal()" class="px-4 py-2 text-[12px] font-semibold text-gray-600 hover:text-gray-900 transition-colors">닫기</button>
+              <button onclick="markDone('${a.id}')" class="px-4 py-2 bg-gray-900 text-white text-[12px] font-bold rounded-full hover:opacity-90 transition-all">양도 완료로 표시</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function runAutoTransfer(id) {
+      // 자동 양도 시뮬레이션 (실제 구현 시: Draft API → 플랫폼 OAuth API 호출)
+      const a = ASSETS.find(x => x.id === id);
+      if (!a) return;
+      const meta = TYPE_META[a.type];
+      document.getElementById('modal-root').innerHTML = `
+        <div class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 modal-backdrop p-4">
+          <div class="bg-white rounded-2xl shadow-xl max-w-md w-full modal-card overflow-hidden">
+            <div class="p-8 text-center">
+              <div class="w-14 h-14 rounded-full bg-emerald-50 mx-auto mb-4 flex items-center justify-center">
+                <div class="spinner" style="width:24px;height:24px;border-color:rgba(16,185,129,.3);border-top-color:#059669"></div>
+              </div>
+              <div class="text-[15px] font-bold text-gray-900">자동 양도 실행 중</div>
+              <div class="text-[12px] text-gray-500 mt-1">${meta.icon} ${a.name}</div>
+              <div class="text-[11px] text-gray-400 mt-3">${PLATFORM_CAPS[a.type].autoLabel}</div>
+            </div>
+          </div>
+        </div>
+      `;
+      setTimeout(() => {
+        markDone(id);
+        showToast(`${a.name} 자동 양도 완료`);
+      }, 1400);
+    }
+
+    function markDone(id) {
+      HANDOVER_STATE[id] = true;
+      closeModal();
+      renderHandover();
+    }
+
+    function showToast(msg) {
+      const el = document.createElement('div');
+      el.className = 'pointer-events-auto bg-gray-900 text-white text-[13px] font-semibold px-4 py-2.5 rounded-full shadow-xl fade-in';
+      el.textContent = msg;
+      document.getElementById('toast-root').appendChild(el);
+      setTimeout(() => el.remove(), 2400);
+    }
+
+    // ============================================
+    // 일괄 양도 모달
+    // ============================================
+    function openBulkConfirmModal() {
+      const targets = ASSETS.filter(a => canAutoTransfer(a.type) && !HANDOVER_STATE[a.id]);
+      if (targets.length === 0) {
+        showToast('자동 양도 가능한 자산이 없습니다');
+        return;
+      }
+      document.getElementById('modal-root').innerHTML = `
+        <div class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 modal-backdrop p-4" onclick="if(event.target===this) closeModal()">
+          <div class="bg-white rounded-2xl shadow-xl max-w-md w-full modal-card overflow-hidden">
+            <div class="p-6 pb-4 border-b border-gray-100">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gray-900 text-white flex items-center justify-center text-base">⚡</div>
+                <div>
+                  <h3 class="text-[16px] font-bold text-gray-900">일괄 자동 양도</h3>
+                  <div class="text-[12px] text-gray-500 mt-0.5">${targets.length}개 자산을 정새회장에게 한번에 양도</div>
+                </div>
+              </div>
+            </div>
+            <div class="p-6">
+              <div class="text-[12px] font-semibold text-gray-500 mb-3">대상 자산</div>
+              <div class="space-y-2 mb-5">
+                ${targets.map(t => {
+                  const m = TYPE_META[t.type];
+                  return `
+                    <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                      <div class="w-7 h-7 rounded-lg flex items-center justify-center text-sm ${m.color}">${m.icon}</div>
+                      <div class="flex-1 min-w-0">
+                        <div class="text-[13px] font-semibold text-gray-900 truncate">${t.name}</div>
+                        <div class="text-[11px] text-gray-500">${PLATFORM_CAPS[t.type].autoLabel}</div>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+              <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 flex gap-2">
+                <span class="text-base shrink-0">⚠️</span>
+                <p class="text-[11px] text-amber-900 leading-relaxed">
+                  <span class="font-bold">실행 후 되돌리려면 각 플랫폼에서 수동으로 권한을 다시 변경해야 합니다.</span>
+                  정새회장이 권한을 받았는지 확인 후 진행해주세요.
+                </p>
+              </div>
+            </div>
+            <div class="p-5 bg-gray-50 border-t border-gray-100 flex items-center justify-end gap-2">
+              <button onclick="closeModal()" class="px-4 py-2 text-[12px] font-semibold text-gray-600 hover:text-gray-900 transition-colors">취소</button>
+              <button onclick="runBulkTransfer()" class="px-4 py-2 bg-gray-900 text-white text-[12px] font-bold rounded-full hover:opacity-90 transition-all">
+                ${targets.length}건 양도 실행
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function runBulkTransfer() {
+      const targets = ASSETS.filter(a => canAutoTransfer(a.type) && !HANDOVER_STATE[a.id]);
+      let i = 0;
+      document.getElementById('modal-root').innerHTML = `
+        <div class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 modal-backdrop p-4">
+          <div class="bg-white rounded-2xl shadow-xl max-w-md w-full modal-card overflow-hidden">
+            <div class="p-6">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-xl bg-gray-900 text-white flex items-center justify-center">
+                  <div class="spinner" style="border-color:rgba(255,255,255,.3);border-top-color:#fff"></div>
+                </div>
+                <div>
+                  <h3 class="text-[15px] font-bold text-gray-900">일괄 양도 진행 중</h3>
+                  <div class="text-[11px] text-gray-500 mt-0.5"><span id="bulk-progress">0</span>/${targets.length}</div>
+                </div>
+              </div>
+              <div id="bulk-list" class="space-y-2"></div>
+            </div>
+          </div>
+        </div>
+      `;
+      const listEl = document.getElementById('bulk-list');
+      const progressEl = document.getElementById('bulk-progress');
+      function next() {
+        if (i >= targets.length) {
+          setTimeout(() => {
+            closeModal();
+            renderHandover();
+            showToast(`${targets.length}건 자동 양도 완료`);
+          }, 500);
+          return;
+        }
+        const t = targets[i];
+        const m = TYPE_META[t.type];
+        const row = document.createElement('div');
+        row.className = 'flex items-center gap-3 p-2.5 bg-gray-50 rounded-lg';
+        row.innerHTML = `
+          <div class="w-6 h-6 rounded-md flex items-center justify-center text-sm ${m.color} shrink-0">${m.icon}</div>
+          <div class="flex-1 text-[12px] text-gray-700 truncate">${t.name}</div>
+          <div class="spinner" style="border-color:rgba(0,0,0,.1);border-top-color:#000"></div>
+        `;
+        listEl.appendChild(row);
+        setTimeout(() => {
+          HANDOVER_STATE[t.id] = true;
+          row.lastElementChild.outerHTML = '<span class="text-emerald-600 text-base font-bold">✓</span>';
+          i++;
+          progressEl.textContent = i;
+          next();
+        }, 700);
+      }
+      next();
+    }
+
+    // ============================================
+    // 자산 추가 모달
+    // ============================================
+    function openAddModal() {
+      document.getElementById('modal-root').innerHTML = `
+        <div class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 modal-backdrop p-4" onclick="if(event.target===this) closeModal()">
+          <div class="bg-white rounded-2xl shadow-xl max-w-md w-full modal-card overflow-hidden">
+            <div class="p-6 pb-4 border-b border-gray-100">
+              <h3 class="text-[16px] font-bold text-gray-900">자산 추가</h3>
+              <p class="text-[12px] text-gray-500 mt-1">URL 만 붙여넣으면 Draft 가 유형·ID 를 자동 인식합니다</p>
+            </div>
+            <div class="p-6 space-y-4">
+              <div>
+                <label class="block text-[12px] font-semibold text-gray-700 mb-1.5">URL</label>
+                <input type="text" id="add-url" placeholder="https://..." class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-[13px] focus:border-gray-900 focus:outline-none font-mono" />
+                <div id="add-url-detect" class="text-[11px] text-gray-500 mt-1.5 h-4"></div>
+              </div>
+              <div>
+                <label class="block text-[12px] font-semibold text-gray-700 mb-1.5">이름</label>
+                <input type="text" placeholder="예: 21기 기수 자료" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-[13px] focus:border-gray-900 focus:outline-none" />
+              </div>
+              <div>
+                <label class="block text-[12px] font-semibold text-gray-700 mb-1.5">담당자</label>
+                <select class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-[13px] focus:border-gray-900 focus:outline-none">
+                  <option>김성민 (회장)</option>
+                  <option>박지원 (홍보팀장)</option>
+                  <option>최개발 (개발팀장)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[12px] font-semibold text-gray-700 mb-1.5">
+                  비번 보관 위치
+                  <span class="text-[11px] font-normal text-gray-400 ml-1">· 비번 자체는 입력하지 마세요</span>
+                </label>
+                <input type="text" placeholder="예: 1Password 팀 vault > flip-ops" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-[13px] focus:border-gray-900 focus:outline-none" />
+              </div>
+            </div>
+            <div class="p-5 bg-gray-50 border-t border-gray-100 flex items-center justify-end gap-2">
+              <button onclick="closeModal()" class="px-4 py-2 text-[12px] font-semibold text-gray-600 hover:text-gray-900 transition-colors">취소</button>
+              <button onclick="closeModal()" class="px-4 py-2 bg-gray-900 text-white text-[12px] font-bold rounded-full hover:opacity-90 transition-all">자산 추가</button>
+            </div>
+          </div>
+        </div>
+      `;
+      const urlInput = document.getElementById('add-url');
+      const detect = document.getElementById('add-url-detect');
+      urlInput.addEventListener('input', () => {
+        const v = urlInput.value;
+        let type = 'other';
+        if (v.includes('drive.google.com')) type = 'drive';
+        else if (v.includes('notion.so')) type = 'notion';
+        else if (v.includes('github.com')) type = 'github';
+        else if (v.includes('discord.com')) type = 'discord';
+        else if (v.includes('figma.com')) type = 'figma';
+        else if (v.includes('instagram.com')) type = 'instagram';
+        else if (/^[\w.-]+@[\w.-]+/.test(v)) type = 'gmail';
+        if (v && type !== 'other') {
+          const m = TYPE_META[type];
+          const auto = canAutoTransfer(type);
+          detect.innerHTML = `<span class="text-emerald-700 font-semibold">✓ ${m.icon} ${m.label} 인식됨</span>${auto ? ` <span class="text-gray-400">· 자동 양도 가능</span>` : ''}`;
+        } else if (v) {
+          detect.innerHTML = `<span class="text-gray-500">유형 미인식 · "기타" 로 등록됩니다</span>`;
+        } else {
+          detect.textContent = '';
+        }
+      });
+    }
+
+    function closeModal() {
+      document.getElementById('modal-root').innerHTML = '';
+    }
+
+    // ============================================
+    // Tab switching
+    // ============================================
+    let currentTab = 'normal';
+    function setTab(tab) {
+      currentTab = tab;
+      const normalBtn = document.getElementById('tab-normal');
+      const handoverBtn = document.getElementById('tab-handover');
+      if (tab === 'normal') {
+        normalBtn.className = 'px-4 py-1.5 text-[13px] font-semibold rounded-full transition-all bg-gray-900 text-white';
+        handoverBtn.className = 'px-4 py-1.5 text-[13px] font-semibold rounded-full transition-all text-gray-600 hover:text-gray-900';
+        renderNormal();
+      } else {
+        handoverBtn.className = 'px-4 py-1.5 text-[13px] font-semibold rounded-full transition-all bg-gray-900 text-white';
+        normalBtn.className = 'px-4 py-1.5 text-[13px] font-semibold rounded-full transition-all text-gray-600 hover:text-gray-900';
+        renderHandover();
+      }
+    }
+
+    document.getElementById('tab-normal').addEventListener('click', () => setTab('normal'));
+    document.getElementById('tab-handover').addEventListener('click', () => setTab('handover'));
+
+    renderConnectionsStrip();
+    setTab('normal');
+  </script>
+</body>
+</html>
