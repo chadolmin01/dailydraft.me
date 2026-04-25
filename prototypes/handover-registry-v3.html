@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Draft — 운영자산 등록부 V3 (임베드 미리보기)</title>
+  <link
+    rel="stylesheet"
+    as="style"
+    crossorigin
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+  />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { fontFamily: { sans: ['Pretendard Variable','Pretendard','-apple-system','sans-serif'] } } },
+    };
+  </script>
+  <style>
+    html, body { font-family: 'Pretendard Variable', Pretendard, -apple-system, sans-serif; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+    .fade-in { animation: fadeIn .25s cubic-bezier(.2,.8,.2,1) both; }
+    .stagger > *:nth-child(1) { animation-delay: 0ms }
+    .stagger > *:nth-child(2) { animation-delay: 40ms }
+    .stagger > *:nth-child(3) { animation-delay: 80ms }
+    .stagger > *:nth-child(4) { animation-delay: 120ms }
+    .stagger > *:nth-child(5) { animation-delay: 160ms }
+    .stagger > *:nth-child(6) { animation-delay: 200ms }
+    .stagger > *:nth-child(7) { animation-delay: 240ms }
+    .stagger > *:nth-child(8) { animation-delay: 280ms }
+    .pulse-dot { animation: pulse 1.6s ease-in-out infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1 } 50% { opacity: .35 } }
+    .activity-bar { animation: barIn .6s cubic-bezier(.2,.8,.2,1) both; transform-origin: bottom; }
+    @keyframes barIn { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="flex items-center gap-1.5 text-sm text-gray-400 mb-3">
+      <span>FLIP</span><span>·</span><span>설정</span><span>·</span>
+      <span class="text-gray-700">운영 자산</span>
+    </div>
+
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight">운영 자산 등록부</h1>
+        <p class="text-sm text-gray-500 mt-1">URL만 등록하면 Draft 가 미리보기·활동·딥링크를 자동으로 가져옵니다 — 콘텐츠는 원본 그대로</p>
+      </div>
+      <button id="add-btn" class="flex items-center gap-1.5 px-4 py-2.5 bg-gray-900 text-white text-[13px] font-bold rounded-full hover:opacity-90 active:scale-[0.97] transition-all">
+        <span class="text-base leading-none">+</span>
+        자산 추가
+      </button>
+    </div>
+
+    <!-- 활동 요약 strip -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+      <div class="bg-white border border-gray-200 rounded-2xl p-4">
+        <div class="text-[11px] text-gray-500 mb-1">전체 자산</div>
+        <div class="text-2xl font-bold tabular-nums">8</div>
+      </div>
+      <div class="bg-white border border-gray-200 rounded-2xl p-4">
+        <div class="text-[11px] text-gray-500 mb-1">이번 주 활동</div>
+        <div class="text-2xl font-bold tabular-nums text-emerald-600">+47</div>
+      </div>
+      <div class="bg-white border border-gray-200 rounded-2xl p-4">
+        <div class="text-[11px] text-gray-500 mb-1">자동 양도 가능</div>
+        <div class="text-2xl font-bold tabular-nums">5<span class="text-base text-gray-400">/8</span></div>
+      </div>
+      <div class="bg-white border border-gray-200 rounded-2xl p-4">
+        <div class="text-[11px] text-gray-500 mb-1">담당 변경 필요</div>
+        <div class="text-2xl font-bold tabular-nums text-amber-600">1</div>
+      </div>
+    </div>
+
+    <!-- 카드 그리드 (임베드 미리보기) -->
+    <div id="grid" class="grid grid-cols-1 md:grid-cols-2 gap-4 stagger"></div>
+
+    <!-- 안내 -->
+    <div class="mt-8 p-4 bg-white border border-gray-200 rounded-2xl flex items-start gap-3">
+      <div class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-base shrink-0">💡</div>
+      <div class="text-[13px] text-gray-600 leading-relaxed">
+        <span class="font-semibold text-gray-900">콘텐츠는 원본에 그대로 둡니다.</span>
+        Draft 는 노션·드라이브·GitHub API 로 메타데이터와 활동 정보만 실시간으로 가져옵니다.
+        이중작성 부담이 없고, 권한·실시간 협업은 원본 도구에서 그대로 이뤄집니다.
+      </div>
+    </div>
+
+    <p class="text-xs text-gray-400 mt-12 text-center">Draft 시안 · handover-registry-v3 (임베드 미리보기) · 2026-04-25</p>
+  </div>
+
+  <div id="modal-root"></div>
+
+  <script>
+    // ============================================
+    // 자산 + 임베드 미리보기 (각 플랫폼 API mock)
+    // ============================================
+    const ASSETS = [
+      {
+        id: 'a1', type: 'drive', name: '21기 기수 자료',
+        url: 'https://drive.google.com/drive/folders/1Bx7yKj3mLQ',
+        owner: { name: '김성민', role: '회장', color: '#8b5cf6' },
+        canAuto: true,
+        embed: {
+          fileCount: 47,
+          lastModified: '3시간 전',
+          recentFiles: [
+            { name: '23-1학기 기획안.pdf', icon: '📄', mod: '3시간 전', author: '김성민' },
+            { name: '로고 모음.zip',       icon: '📦', mod: '어제',    author: '정디자' },
+            { name: '예산_2026.xlsx',      icon: '📊', mod: '2일 전',  author: '박지원' },
+          ],
+        },
+      },
+      {
+        id: 'a2', type: 'notion', name: '회장단 노션',
+        url: 'https://www.notion.so/flip-club/Operations-3d8f2',
+        owner: { name: '김성민', role: '회장', color: '#8b5cf6' },
+        canAuto: true,
+        embed: {
+          icon: '📋',
+          pageTitle: '회장단 운영 노션',
+          subPages: 12,
+          lastEditor: '김성민',
+          lastEdit: '5분 전',
+          activeMembers: 6,
+          recentPages: [
+            { title: '주간 회의록 — 4월 4주차', editor: '김성민', when: '5분 전' },
+            { title: '신학기 행사 기획',        editor: '박지원', when: '어제' },
+            { title: '예산 운영 가이드',       editor: '김성민', when: '3일 전' },
+          ],
+        },
+      },
+      {
+        id: 'a3', type: 'github', name: 'flip-club Org',
+        url: 'https://github.com/flip-club',
+        owner: { name: '최개발', role: '개발팀장', color: '#10b981' },
+        canAuto: true,
+        embed: {
+          repoCount: 7,
+          openIssues: 14,
+          openPRs: 3,
+          activity7d: [3, 7, 12, 4, 8, 15, 9],
+          recent: [
+            { type: 'pr',     title: 'feat: add weekly report', repo: 'flip-web', author: '최개발', when: '2시간 전' },
+            { type: 'issue',  title: '디자인팀 페이지 깨짐',     repo: 'flip-web', author: '정디자', when: '어제' },
+            { type: 'commit', title: 'refactor: cleanup auth',   repo: 'flip-api', author: '최개발', when: '어제' },
+          ],
+        },
+      },
+      {
+        id: 'a4', type: 'discord', name: 'FLIP Discord 서버',
+        url: 'https://discord.com/channels/9123456789012345678',
+        owner: { name: '김성민', role: '회장', color: '#8b5cf6' },
+        canAuto: true,
+        embed: {
+          memberCount: 142,
+          channelCount: 23,
+          activeNow: 18,
+          messages7d: 1247,
+          topChannels: [
+            { name: '공지사항',     msgs: 12 },
+            { name: '주간-업데이트', msgs: 47 },
+            { name: '개발팀',       msgs: 234 },
+          ],
+        },
+      },
+      {
+        id: 'a5', type: 'figma', name: '디자인팀 Figma',
+        url: 'https://www.figma.com/files/team/8821/Flip-Design',
+        owner: { name: '정디자', role: '디자인팀장', color: '#f59e0b' },
+        canAuto: true,
+        embed: {
+          fileCount: 8,
+          lastEdit: '15분 전',
+          team: 4,
+          coverFiles: [
+            { name: '랜딩 v3', edits: 47 },
+            { name: '브랜드 가이드', edits: 23 },
+            { name: '대시보드 디자인', edits: 89 },
+          ],
+        },
+      },
+      {
+        id: 'a6', type: 'instagram', name: '공식 인스타그램',
+        url: 'https://instagram.com/flip_official',
+        owner: { name: '박지원', role: '홍보팀장', color: '#ec4899' },
+        canAuto: false,
+        embed: {
+          followers: 1247,
+          posts: 89,
+          recentPost: { caption: '23-1학기 모집 공고 🎉', when: '어제', likes: 47, comments: 8 },
+        },
+      },
+      {
+        id: 'a7', type: 'gmail', name: '공식 메일 (gmail)',
+        url: 'flip.official@gmail.com',
+        owner: { name: '김성민', role: '회장', color: '#8b5cf6' },
+        canAuto: true,
+        embed: {
+          unread: 3,
+          recentSenders: ['경희대 창업교육센터', '아산나눔재단', '경희대 학생처'],
+        },
+      },
+      {
+        id: 'a8', type: 'drive', name: '20기 아카이브',
+        url: 'https://drive.google.com/drive/folders/1Ay5xJh2nNP',
+        owner: { name: '이전 회장', role: '20기 회장', color: '#94a3b8' },
+        canAuto: true,
+        warning: true,
+        embed: {
+          fileCount: 124,
+          lastModified: '8개월 전',
+          recentFiles: [
+            { name: '22-2학기 결산.xlsx', icon: '📊', mod: '8개월 전', author: '이전 회장' },
+          ],
+        },
+      },
+    ];
+
+    const TYPE_META = {
+      drive:     { label: '구글 드라이브', icon: '📁', color: 'bg-blue-50 text-blue-700',     dot: '#2563eb' },
+      gmail:     { label: '구글 메일',     icon: '✉️', color: 'bg-amber-50 text-amber-700',   dot: '#d97706' },
+      notion:    { label: '노션',          icon: '📝', color: 'bg-gray-100 text-gray-700',     dot: '#374151' },
+      instagram: { label: '인스타그램',    icon: '📷', color: 'bg-pink-50 text-pink-700',     dot: '#db2777' },
+      github:    { label: 'GitHub',        icon: '⌨️', color: 'bg-gray-100 text-gray-700',     dot: '#111827' },
+      discord:   { label: '디스코드',      icon: '💬', color: 'bg-indigo-50 text-indigo-700', dot: '#4f46e5' },
+      figma:     { label: 'Figma',         icon: '🎨', color: 'bg-orange-50 text-orange-700', dot: '#ea580c' },
+      other:     { label: '기타',          icon: '🔗', color: 'bg-gray-100 text-gray-700',     dot: '#6b7280' },
+    };
+
+    // ============================================
+    // 임베드 미리보기 렌더러 (플랫폼별 다른 모양)
+    // ============================================
+    function renderEmbed(a) {
+      const e = a.embed;
+      switch (a.type) {
+        case 'drive':
+          return `
+            <div class="space-y-1">
+              <div class="flex items-center gap-3 text-[11px] text-gray-500 mb-2">
+                <span><span class="font-bold text-gray-900 tabular-nums">${e.fileCount}</span>개 파일</span>
+                <span>·</span>
+                <span>최근 수정 <span class="font-semibold text-gray-700">${e.lastModified}</span></span>
+              </div>
+              ${e.recentFiles.map(f => `
+                <div class="flex items-center gap-2 px-2.5 py-1.5 bg-gray-50 rounded-lg">
+                  <span class="text-sm">${f.icon}</span>
+                  <span class="text-[12px] text-gray-900 truncate flex-1">${f.name}</span>
+                  <span class="text-[10px] text-gray-400 shrink-0">${f.mod}</span>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        case 'notion':
+          return `
+            <div class="space-y-1">
+              <div class="flex items-center gap-3 text-[11px] text-gray-500 mb-2">
+                <span><span class="font-bold text-gray-900 tabular-nums">${e.subPages}</span>개 페이지</span>
+                <span>·</span>
+                <span>활성 멤버 <span class="font-bold text-gray-900 tabular-nums">${e.activeMembers}</span></span>
+                <span>·</span>
+                <span>${e.lastEdit}</span>
+              </div>
+              ${e.recentPages.map(p => `
+                <div class="flex items-center gap-2 px-2.5 py-1.5 bg-gray-50 rounded-lg">
+                  <span class="text-sm">📄</span>
+                  <span class="text-[12px] text-gray-900 truncate flex-1">${p.title}</span>
+                  <span class="text-[10px] text-gray-400 shrink-0">${p.editor} · ${p.when}</span>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        case 'github':
+          return `
+            <div>
+              <div class="flex items-center gap-3 text-[11px] text-gray-500 mb-2">
+                <span><span class="font-bold text-gray-900 tabular-nums">${e.repoCount}</span> repo</span>
+                <span>·</span>
+                <span>이슈 <span class="font-bold text-gray-900 tabular-nums">${e.openIssues}</span></span>
+                <span>·</span>
+                <span>PR <span class="font-bold text-gray-900 tabular-nums">${e.openPRs}</span></span>
+              </div>
+              <div class="flex items-end gap-1 h-10 mb-2">
+                ${e.activity7d.map((v, i) => `
+                  <div class="flex-1 bg-gray-900 rounded-sm activity-bar" style="height: ${v * 6}%; animation-delay: ${i * 30}ms"></div>
+                `).join('')}
+              </div>
+              <div class="text-[10px] text-gray-400 mb-2">최근 7일 활동</div>
+              ${e.recent.slice(0, 2).map(r => `
+                <div class="flex items-center gap-2 px-2.5 py-1.5 bg-gray-50 rounded-lg mb-1">
+                  <span class="text-[10px] font-bold px-1.5 py-0.5 rounded ${r.type === 'pr' ? 'bg-emerald-100 text-emerald-700' : r.type === 'issue' ? 'bg-amber-100 text-amber-700' : 'bg-gray-200 text-gray-700'}">${r.type.toUpperCase()}</span>
+                  <span class="text-[12px] text-gray-900 truncate flex-1">${r.title}</span>
+                  <span class="text-[10px] text-gray-400 shrink-0">${r.when}</span>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        case 'discord':
+          return `
+            <div>
+              <div class="flex items-center gap-3 text-[11px] text-gray-500 mb-3">
+                <span><span class="font-bold text-gray-900 tabular-nums">${e.memberCount}</span>명</span>
+                <span>·</span>
+                <span class="flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 pulse-dot"></span>
+                  <span class="font-bold text-emerald-700 tabular-nums">${e.activeNow}</span>명 활성
+                </span>
+                <span>·</span>
+                <span>7일 메시지 <span class="font-bold text-gray-900 tabular-nums">${e.messages7d.toLocaleString()}</span></span>
+              </div>
+              <div class="space-y-1">
+                ${e.topChannels.map(c => `
+                  <div class="flex items-center gap-2 px-2.5 py-1.5 bg-gray-50 rounded-lg">
+                    <span class="text-gray-400 text-[12px]">#</span>
+                    <span class="text-[12px] text-gray-900 truncate flex-1">${c.name}</span>
+                    <span class="text-[10px] text-gray-400 tabular-nums">${c.msgs} msgs</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        case 'figma':
+          return `
+            <div>
+              <div class="flex items-center gap-3 text-[11px] text-gray-500 mb-2">
+                <span><span class="font-bold text-gray-900 tabular-nums">${e.fileCount}</span>개 파일</span>
+                <span>·</span>
+                <span>팀 <span class="font-bold text-gray-900 tabular-nums">${e.team}</span>명</span>
+                <span>·</span>
+                <span>${e.lastEdit}</span>
+              </div>
+              <div class="grid grid-cols-3 gap-1.5">
+                ${e.coverFiles.map(f => `
+                  <div class="bg-gradient-to-br from-orange-100 to-pink-100 rounded-lg aspect-video flex flex-col items-center justify-center text-center px-2">
+                    <div class="text-[10px] font-semibold text-gray-900 truncate w-full">${f.name}</div>
+                    <div class="text-[9px] text-gray-500 mt-0.5">${f.edits} edits</div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        case 'instagram':
+          return `
+            <div>
+              <div class="flex items-center gap-3 text-[11px] text-gray-500 mb-2">
+                <span><span class="font-bold text-gray-900 tabular-nums">${e.followers.toLocaleString()}</span> 팔로워</span>
+                <span>·</span>
+                <span><span class="font-bold text-gray-900 tabular-nums">${e.posts}</span>개 게시물</span>
+              </div>
+              <div class="flex items-center gap-2.5 px-3 py-2 bg-gradient-to-br from-pink-50 to-orange-50 rounded-lg">
+                <div class="w-9 h-9 bg-pink-200 rounded-md flex items-center justify-center text-base shrink-0">📷</div>
+                <div class="flex-1 min-w-0">
+                  <div class="text-[12px] text-gray-900 truncate">${e.recentPost.caption}</div>
+                  <div class="text-[10px] text-gray-500 mt-0.5">
+                    ❤️ ${e.recentPost.likes} · 💬 ${e.recentPost.comments} · ${e.recentPost.when}
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        case 'gmail':
+          return `
+            <div>
+              <div class="flex items-center gap-3 text-[11px] text-gray-500 mb-2">
+                <span class="flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                  안 읽은 메일 <span class="font-bold text-amber-700 tabular-nums">${e.unread}</span>
+                </span>
+              </div>
+              <div class="space-y-1">
+                ${e.recentSenders.map(s => `
+                  <div class="flex items-center gap-2 px-2.5 py-1.5 bg-gray-50 rounded-lg">
+                    <span class="text-sm">✉️</span>
+                    <span class="text-[12px] text-gray-900 truncate flex-1">${s}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        default:
+          return `<div class="text-[12px] text-gray-400">미리보기를 가져올 수 없습니다.</div>`;
+      }
+    }
+
+    function renderCard(a) {
+      const m = TYPE_META[a.type];
+      return `
+        <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:border-gray-400 hover:shadow-sm transition-all fade-in">
+          <!-- Header -->
+          <div class="px-5 pt-5 pb-3 flex items-start justify-between gap-3">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <div class="w-9 h-9 rounded-lg flex items-center justify-center text-base ${m.color} shrink-0">${m.icon}</div>
+              <div class="min-w-0">
+                <h3 class="text-[15px] font-bold text-gray-900 leading-tight truncate">${a.name}</h3>
+                <div class="flex items-center gap-1.5 mt-0.5">
+                  <span class="text-[11px] text-gray-500">${m.label}</span>
+                  ${a.canAuto ? `<span class="text-[10px] font-bold text-emerald-700">· ⚡ 자동 양도</span>` : ''}
+                  ${a.warning ? `<span class="text-[10px] font-bold text-amber-700">· 담당 변경 필요</span>` : ''}
+                </div>
+              </div>
+            </div>
+            <a href="${a.url}" target="_blank" class="text-[11px] text-gray-500 hover:text-gray-900 transition-colors shrink-0 px-2 py-1">열기 ↗</a>
+          </div>
+
+          <!-- Embed preview (live data from external API) -->
+          <div class="px-5 pb-4">
+            <div class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 pulse-dot"></span>
+              실시간 미리보기
+            </div>
+            ${renderEmbed(a)}
+          </div>
+
+          <!-- Footer -->
+          <div class="px-5 py-3 border-t border-gray-100 flex items-center justify-between bg-gray-50/50">
+            <div class="flex items-center gap-2 min-w-0">
+              <div class="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-bold shrink-0" style="background:${a.owner.color}">${a.owner.name[0]}</div>
+              <span class="text-[12px] text-gray-600 truncate">${a.owner.name} <span class="text-gray-400">· ${a.owner.role}</span></span>
+            </div>
+            <button class="text-[11px] text-gray-500 hover:text-gray-900 transition-colors">담당 변경</button>
+          </div>
+        </div>
+      `;
+    }
+
+    document.getElementById('grid').innerHTML = ASSETS.map(renderCard).join('');
+
+    document.getElementById('add-btn').addEventListener('click', () => {
+      const root = document.getElementById('modal-root');
+      root.innerHTML = `
+        <div class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4 fade-in" onclick="if(event.target===this) this.parentElement.innerHTML=''">
+          <div class="bg-white rounded-2xl shadow-xl max-w-md w-full overflow-hidden">
+            <div class="p-6 pb-4 border-b border-gray-100">
+              <h3 class="text-[16px] font-bold text-gray-900">자산 추가</h3>
+              <p class="text-[12px] text-gray-500 mt-1">URL 만 붙여넣으면 Draft 가 미리보기를 자동으로 가져옵니다 — 콘텐츠는 옮기지 않습니다</p>
+            </div>
+            <div class="p-6 space-y-4">
+              <div>
+                <label class="block text-[12px] font-semibold text-gray-700 mb-1.5">URL</label>
+                <input type="text" placeholder="https://drive.google.com/drive/folders/..." class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-[13px] focus:border-gray-900 focus:outline-none font-mono" />
+                <div class="text-[11px] text-emerald-700 font-semibold mt-1.5">✓ 구글 드라이브 인식됨 · 자동 양도 가능</div>
+              </div>
+              <div>
+                <label class="block text-[12px] font-semibold text-gray-700 mb-1.5">이름</label>
+                <input type="text" placeholder="예: 21기 기수 자료" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-[13px] focus:border-gray-900 focus:outline-none" />
+              </div>
+              <div>
+                <label class="block text-[12px] font-semibold text-gray-700 mb-1.5">담당자</label>
+                <select class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-[13px] focus:border-gray-900 focus:outline-none">
+                  <option>김성민 (회장)</option>
+                </select>
+              </div>
+              <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 flex gap-2">
+                <span class="text-base shrink-0">ℹ️</span>
+                <p class="text-[11px] text-blue-900 leading-relaxed">
+                  <span class="font-bold">Draft 는 콘텐츠를 복사하지 않습니다.</span>
+                  노션·드라이브·GitHub API 로 미리보기·활동만 실시간으로 가져와서 보여줍니다. 권한과 실시간 협업은 원본 도구에서 그대로.
+                </p>
+              </div>
+            </div>
+            <div class="p-5 bg-gray-50 border-t border-gray-100 flex items-center justify-end gap-2">
+              <button onclick="document.getElementById('modal-root').innerHTML=''" class="px-4 py-2 text-[12px] font-semibold text-gray-600">취소</button>
+              <button onclick="document.getElementById('modal-root').innerHTML=''" class="px-4 py-2 bg-gray-900 text-white text-[12px] font-bold rounded-full">자산 추가</button>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+  </script>
+</body>
+</html>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { ChevronLeft, Lock, Sparkles, Users, ArrowRight } from 'lucide-react'
+import { ChevronLeft, Lock, Sparkles, Users, ArrowRight, FolderOpen } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { useClub } from '@/src/hooks/useClub'
@@ -88,6 +88,25 @@ export function ClubSettingsClient({ slug }: { slug: string }) {
               <ArrowRight size={13} />
             </div>
           </div>
+        </Link>
+      </div>
+
+      {/* MID — 운영 자산 등록부 진입점 (Phase 0) */}
+      <div className="mb-6">
+        <Link
+          href={`/clubs/${slug}/settings/assets`}
+          className="group flex items-center gap-4 bg-surface-card border border-border rounded-2xl p-5 hover:border-brand-border hover:bg-brand-bg/30 transition-colors"
+        >
+          <div className="w-10 h-10 rounded-xl bg-brand-bg flex items-center justify-center shrink-0">
+            <FolderOpen size={18} className="text-brand" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h2 className="text-base font-bold text-txt-primary">운영 자산 등록부</h2>
+            <p className="text-[12px] text-txt-tertiary mt-0.5">
+              구글 드라이브·노션·디스코드·GitHub·Figma 같은 외부 도구 위치와 담당자를 한 곳에 정리합니다
+            </p>
+          </div>
+          <ArrowRight size={16} className="text-txt-disabled group-hover:text-brand transition-colors shrink-0" />
         </Link>
       </div>
 
