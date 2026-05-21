@@ -174,7 +174,7 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
       <aside className="bg-surface-dark text-on-dark border-b md:border-b-0 md:border-r border-hairline-dark flex flex-col md:h-screen max-h-[60vh] md:max-h-none" aria-label="챗봇">
         <header className="px-5 py-5 border-b border-hairline-dark flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <h2 className="text-title-md text-on-dark">Draft</h2>
+            <h2 className="text-title-md text-on-dark truncate">{foldersQuery.data?.workspace.name ?? 'Draft'}</h2>
             <p className="text-caption text-on-dark-soft mt-1 truncate">{userEmail}</p>
           </div>
           <div className="flex items-center gap-3 shrink-0">
