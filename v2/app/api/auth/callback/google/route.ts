@@ -81,7 +81,6 @@ export async function GET(request: Request) {
   // 3) google_tokens 에 upsert (service_role 로 RLS 우회)
   const admin = createAdminClient()
   const expiresAt = new Date(Date.now() + tokens.expires_in * 1000).toISOString()
-  // @ts-expect-error V2 Database stub — google_tokens 테이블이 generated types 에 반영되면 제거
   const { error: tokenUpsertError } = await admin.from('google_tokens').upsert({
     user_id: sessionData.user.id,
     access_token: tokens.access_token,
