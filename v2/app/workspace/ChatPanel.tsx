@@ -23,27 +23,42 @@ function extractText(content: unknown): string {
     .join('\n\n')
 }
 
-// mailto 링크 자동 추출 — 챗봇이 compose_email_draft 호출 후 텍스트에 URL 넣을 수 있음.
-// 또한 tool_result 안 mailto_url 도 떼서 별도 버튼으로 표시.
-function extractMailtoLinks(content: unknown): string[] {
-  const links: string[] = []
-  if (Array.isArray(content)) {
-    for (const block of content) {
-      if (typeof block !== 'object' || block === null) continue
-      if ('type' in block && (block as { type: unknown }).type === 'tool_result') {
-        const inner = (block as { content: unknown }).content
-        if (typeof inner === 'string') {
-          try {
-            const parsed = JSON.parse(inner)
-            if (parsed && typeof parsed === 'object' && typeof parsed.mailto_url === 'string') {
-              links.push(parsed.mailto_url)
-            }
-          } catch {}
-        }
+interface EmailDraftRef {
+  kind: 'gmail_draft' | 'mailto'
+  url: string
+  subject?: string
+  recipientCount?: number
+}
+
+// 메일 초안 추출 — compose_email_draft 도구 결과에서 Gmail 초안 또는 mailto 링크.
+function extractEmailDrafts(content: unknown): EmailDraftRef[] {
+  const refs: EmailDraftRef[] = []
+  if (!Array.isArray(content)) return refs
+  for (const block of content) {
+    if (typeof block !== 'object' || block === null) continue
+    if (!('type' in block) || (block as { type: unknown }).type !== 'tool_result') continue
+    const inner = (block as { content: unknown }).content
+    if (typeof inner !== 'string') continue
+    try {
+      const parsed = JSON.parse(inner) as Record<string, unknown>
+      if (parsed.kind === 'gmail_draft' && typeof parsed.gmail_url === 'string') {
+        refs.push({
+          kind: 'gmail_draft',
+          url: parsed.gmail_url,
+          subject: typeof parsed.subject === 'string' ? parsed.subject : undefined,
+          recipientCount: typeof parsed.recipient_count === 'number' ? parsed.recipient_count : undefined,
+        })
+      } else if (typeof parsed.mailto_url === 'string') {
+        refs.push({
+          kind: 'mailto',
+          url: parsed.mailto_url,
+          subject: typeof parsed.subject === 'string' ? parsed.subject : undefined,
+          recipientCount: typeof parsed.recipient_count === 'number' ? parsed.recipient_count : undefined,
+        })
       }
-    }
+    } catch {}
   }
-  return links
+  return refs
 }
 
 interface Props {
@@ -118,14 +133,13 @@ export function ChatPanel({ folderId }: Props) {
 
         {rows.map(row => {
           if (row.role === 'tool') {
-            // tool_result 자체는 안 보이게 하되, 안에 mailto_url 이 있으면 그 자리에 카드.
-            // → 카드가 누적되지 않고 해당 turn 옆에 자연스럽게 위치.
-            const mailtos = extractMailtoLinks(row.content)
-            if (mailtos.length === 0) return null
+            // tool_result 자체는 안 보이게 하되, 안에 메일 초안 정보가 있으면 그 자리에 카드.
+            const drafts = extractEmailDrafts(row.content)
+            if (drafts.length === 0) return null
             return (
               <div key={row.id} className="space-y-2">
-                {mailtos.map((href, i) => (
-                  <MailtoCard key={`${row.id}-${i}`} href={href} />
+                {drafts.map((draft, i) => (
+                  <EmailDraftCard key={`${row.id}-${i}`} draft={draft} />
                 ))}
               </div>
             )
@@ -193,15 +207,28 @@ function Message({
   )
 }
 
-function MailtoCard({ href }: { href: string }) {
+function EmailDraftCard({ draft }: { draft: EmailDraftRef }) {
+  const label = draft.kind === 'gmail_draft' ? 'Gmail 초안함에 저장됨' : '메일 초안 열기'
+  const sub = draft.subject
+    ? `${draft.subject}${draft.recipientCount ? ` · 수신 ${draft.recipientCount}명` : ''}`
+    : draft.recipientCount
+      ? `수신 ${draft.recipientCount}명`
+      : '클릭하면 새 창에서 열립니다'
+
   return (
     <a
-      href={href}
+      href={draft.url}
       target="_blank"
       rel="noreferrer"
-      className="block rounded-md bg-surface-dark-elevated border border-hairline-dark px-4 py-3 text-body-sm text-on-dark hover:bg-surface-dark-soft transition-colors"
+      className="block rounded-md bg-surface-dark-elevated border border-hairline-dark px-4 py-3 hover:bg-surface-dark-soft transition-colors"
     >
-      메일 초안 열기 → Gmail
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-body-sm text-on-dark font-medium">{label}</p>
+          <p className="text-caption text-on-dark-soft mt-0.5 truncate">{sub}</p>
+        </div>
+        <span className="text-caption text-on-dark-soft shrink-0">Gmail 에서 열기 ↗</span>
+      </div>
     </a>
   )
 }

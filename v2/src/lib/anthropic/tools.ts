@@ -13,6 +13,7 @@ import type { Database } from '@/src/types/database'
 import { getValidAccessToken } from '@/src/lib/google/tokens'
 import { listFolderFiles } from '@/src/lib/google/drive'
 import { readRange } from '@/src/lib/google/sheets'
+import { createGmailDraft } from '@/src/lib/google/gmail'
 import { parseFilenames } from '@/src/lib/parsers/filename'
 import { buildMatrix, parseRosterFromSheet, type ParsedDriveFile } from '@/src/lib/matrix'
 
@@ -42,11 +43,12 @@ export const TOOL_DEFINITIONS = [
   },
   {
     name: 'compose_email_draft',
-    description: 'Gmail 메일 초안용 mailto 링크를 생성합니다. 자동 발송하지 않고, 매니저가 클릭해서 Gmail 에서 직접 보냅니다.',
+    description: 'Gmail 초안함에 메일 초안을 저장합니다. 매니저가 Gmail 에서 직접 열어 검토 후 보냅니다. 자동 발송하지 않습니다.',
     input_schema: {
       type: 'object',
       properties: {
         to: { type: 'array', items: { type: 'string' }, description: '수신자 이메일 배열' },
+        cc: { type: 'array', items: { type: 'string' }, description: '참조 이메일 배열 (선택)' },
         subject: { type: 'string' },
         body: { type: 'string' },
       },
@@ -63,7 +65,7 @@ export interface ToolContext {
 interface ToolInputs {
   list_folder_files: { folder_id: string }
   find_missing_teams: { folder_id: string; week: number }
-  compose_email_draft: { to: string[]; subject: string; body: string }
+  compose_email_draft: { to: string[]; subject: string; body: string; cc?: string[] }
 }
 
 type ToolName = keyof ToolInputs
@@ -79,7 +81,7 @@ export async function executeTool(
     case 'find_missing_teams':
       return findMissingTeamsTool(ctx, input as ToolInputs['find_missing_teams'])
     case 'compose_email_draft':
-      return composeEmailDraftTool(input as ToolInputs['compose_email_draft'])
+      return composeEmailDraftTool(ctx, input as ToolInputs['compose_email_draft'])
     default:
       throw new Error(`알 수 없는 도구: ${name}`)
   }
@@ -157,17 +159,44 @@ async function findMissingTeamsTool(ctx: ToolContext, input: ToolInputs['find_mi
   }
 }
 
-function composeEmailDraftTool(input: ToolInputs['compose_email_draft']) {
-  const params = new URLSearchParams()
-  if (input.subject) params.set('subject', input.subject)
-  if (input.body) params.set('body', input.body)
+async function composeEmailDraftTool(
+  ctx: ToolContext,
+  input: ToolInputs['compose_email_draft'],
+) {
+  // 우선 Gmail API 로 진짜 초안 생성 시도 — 매니저가 Gmail "초안함" 에서 바로 열 수 있음.
+  // 실패 (권한 / 네트워크) 시 mailto 링크로 폴백.
+  try {
+    const { getValidAccessToken } = await import('@/src/lib/google/tokens')
+    const accessToken = await getValidAccessToken(ctx.userId)
+    const draft = await createGmailDraft(accessToken, {
+      to: input.to,
+      cc: input.cc,
+      subject: input.subject,
+      body: input.body,
+    })
 
-  const to = input.to.join(',')
-  const url = `mailto:${to}?${params.toString()}`
+    return {
+      kind: 'gmail_draft',
+      gmail_url: draft.gmailUrl,
+      draft_id: draft.id,
+      recipient_count: input.to.length,
+      subject: input.subject,
+      note: 'Gmail 초안함에 저장했습니다. 매니저가 Gmail 에서 열어 보내주십시오. 자동 발송되지 않습니다.',
+    }
+  } catch (e) {
+    // mailto 폴백 — 클라이언트가 새 창 띄움
+    const params = new URLSearchParams()
+    if (input.subject) params.set('subject', input.subject)
+    if (input.body) params.set('body', input.body)
+    const url = `mailto:${input.to.join(',')}?${params.toString()}`
 
-  return {
-    mailto_url: url,
-    recipient_count: input.to.length,
-    note: '이 링크를 클릭하면 Gmail 새 창이 열립니다. 자동 발송되지 않습니다.',
+    return {
+      kind: 'mailto',
+      mailto_url: url,
+      recipient_count: input.to.length,
+      subject: input.subject,
+      fallback_reason: `Gmail 초안 저장 실패: ${(e as Error).message}`,
+      note: '이 링크를 클릭하면 Gmail 새 창이 열립니다. 자동 발송되지 않습니다.',
+    }
   }
 }
