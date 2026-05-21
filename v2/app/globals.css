@@ -270,6 +270,24 @@ h1, h2, h3, h4 {
   border-radius: var(--radius-xs);
 }
 
+/* 모달/팝오버 진입 애니메이션 — 200ms fade-in. prefers-reduced-motion 존중. */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+[role="dialog"] {
+  animation: fade-in var(--duration-fast) var(--ease-out);
+}
+
+[role="dialog"] > div {
+  animation: scale-in var(--duration-fast) var(--ease-out);
+}
+
 /* 챗 마크다운 렌더 — dark 패널 안에서 가독성 유지. body 텍스트 위주 + 인라인 강조. */
 .chat-markdown p {
   margin: 0 0 var(--space-2) 0;

@@ -995,6 +995,14 @@ function ProgressGrid({
 }
 
 function CellDetail({ cell, onClose }: { cell: MatrixCell; onClose: () => void }) {
+  useEffect(() => {
+    const onEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', onEsc)
+    return () => window.removeEventListener('keydown', onEsc)
+  }, [onClose])
+
   return (
     <div
       role="dialog"
