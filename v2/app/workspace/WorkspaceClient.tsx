@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/src/context/AuthContext'
 import { extractDriveFolderId, extractSheetId } from '@/src/lib/parsers/google-url'
+import { DrivePickerButton } from './DrivePickerButton'
 
 interface Folder {
   id: string
@@ -251,16 +252,28 @@ function AddFolderForm({
       }}
       className="rounded-lg border border-hairline bg-canvas p-6 space-y-5"
     >
-      {/* 검색 */}
-      <Field label="폴더 검색" hint="이름 일부 입력 → 본인 Drive 에서 일치하는 폴더 표시">
-        <input
-          type="text"
-          value={folderQuery}
-          onChange={(e) => setFolderQuery(e.target.value)}
-          placeholder="예: FLIP"
-          className="w-full h-10 px-3 bg-canvas border border-hairline rounded-md text-body-md text-ink focus:outline-none focus:border-ink"
+      {/* Picker (셋업되면 표시) + 검색 — 두 가지 방법 제공 */}
+      <div className="space-y-3">
+        <DrivePickerButton
+          type="folder"
+          onPick={(item) => {
+            setForm({
+              ...form,
+              drive_folder_id: item.id,
+              name: form.name || item.name,
+            })
+          }}
         />
-      </Field>
+        <Field label="폴더 검색" hint="이름 일부 입력 → 본인 Drive 에서 일치하는 폴더 표시">
+          <input
+            type="text"
+            value={folderQuery}
+            onChange={(e) => setFolderQuery(e.target.value)}
+            placeholder="예: FLIP"
+            className="w-full h-10 px-3 bg-canvas border border-hairline rounded-md text-body-md text-ink focus:outline-none focus:border-ink"
+          />
+        </Field>
+      </div>
 
       {folderQuery.trim() ? (
         <SearchResults
@@ -302,16 +315,22 @@ function AddFolderForm({
         />
       </Field>
 
-      {/* Sheets — 검색 + 직접 입력 */}
-      <Field label="Sheets 검색 (선택)" hint="명단 시트 이름 일부">
-        <input
-          type="text"
-          value={sheetQuery}
-          onChange={(e) => setSheetQuery(e.target.value)}
-          placeholder="예: 팀명단"
-          className="w-full h-10 px-3 bg-canvas border border-hairline rounded-md text-body-md text-ink focus:outline-none focus:border-ink"
+      {/* Sheets — Picker + 검색 + 직접 입력 */}
+      <div className="space-y-3">
+        <DrivePickerButton
+          type="sheet"
+          onPick={(item) => setForm({ ...form, sheet_id: item.id })}
         />
-      </Field>
+        <Field label="Sheets 검색 (선택)" hint="명단 시트 이름 일부">
+          <input
+            type="text"
+            value={sheetQuery}
+            onChange={(e) => setSheetQuery(e.target.value)}
+            placeholder="예: 팀명단"
+            className="w-full h-10 px-3 bg-canvas border border-hairline rounded-md text-body-md text-ink focus:outline-none focus:border-ink"
+          />
+        </Field>
+      </div>
 
       {sheetQuery.trim() ? (
         <SearchResults
