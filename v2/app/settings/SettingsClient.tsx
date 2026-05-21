@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 interface Props {
   email: string | null
@@ -9,6 +9,40 @@ interface Props {
 export function SettingsClient({ email }: Props) {
   const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // 워크스페이스 이름
+  const [wsName, setWsName] = useState('')
+  const [wsSaving, setWsSaving] = useState(false)
+  const [wsError, setWsError] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetch('/api/workspace')
+      .then(r => r.ok ? r.json() : Promise.reject(new Error('failed')))
+      .then((ws: { name: string }) => setWsName(ws.name))
+      .catch(() => {})
+  }, [])
+
+  const saveWsName = async () => {
+    const name = wsName.trim()
+    if (!name) return
+    setWsSaving(true)
+    setWsError(null)
+    try {
+      const res = await fetch('/api/workspace', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.error?.message ?? '저장 실패')
+      }
+    } catch (e) {
+      setWsError((e as Error).message)
+    } finally {
+      setWsSaving(false)
+    }
+  }
 
   const handleDelete = async () => {
     const phrase = '삭제'
@@ -54,6 +88,34 @@ export function SettingsClient({ email }: Props) {
             <Row k="이메일" v={email ?? '—'} />
             <Row k="로그인" v="Google" />
           </dl>
+        </section>
+
+        <section className="rounded-lg border border-hairline bg-canvas p-6 space-y-3">
+          <h2 className="text-title-lg text-ink">워크스페이스</h2>
+          <div className="space-y-2">
+            <label className="block">
+              <span className="text-title-sm text-ink block mb-1">이름</span>
+              <input
+                type="text"
+                value={wsName}
+                onChange={(e) => setWsName(e.target.value)}
+                placeholder="내 워크스페이스"
+                maxLength={60}
+                className="w-full h-10 px-3 bg-canvas border border-hairline rounded-md text-body-md text-ink focus:outline-none focus:border-ink"
+              />
+            </label>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={saveWsName}
+                disabled={wsSaving || !wsName.trim()}
+                className="h-10 px-4 rounded-md bg-ink text-canvas text-button font-medium hover:bg-body-strong transition-colors disabled:opacity-50"
+              >
+                {wsSaving ? '저장 중…' : '저장'}
+              </button>
+              {wsError ? <p className="text-body-sm text-muted">{wsError}</p> : null}
+            </div>
+          </div>
         </section>
 
         <section className="rounded-lg border border-hairline bg-canvas p-6 space-y-3">
