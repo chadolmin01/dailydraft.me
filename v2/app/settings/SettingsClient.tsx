@@ -57,6 +57,21 @@ export function SettingsClient({ email }: Props) {
         </section>
 
         <section className="rounded-lg border border-hairline bg-canvas p-6 space-y-3">
+          <h2 className="text-title-lg text-ink">데이터 내보내기</h2>
+          <p className="text-body-sm text-muted">
+            Draft 에 저장된 워크스페이스 · 폴더 · 채팅 기록을 JSON 으로 다운로드합니다.
+            Google 토큰 값은 보안상 메타데이터만 포함됩니다.
+          </p>
+          <a
+            href="/api/account/export"
+            download
+            className="inline-flex items-center h-10 px-4 rounded-md border border-hairline text-ink text-button font-medium hover:bg-surface-soft transition-colors"
+          >
+            JSON 다운로드
+          </a>
+        </section>
+
+        <section className="rounded-lg border border-hairline bg-canvas p-6 space-y-3">
           <h2 className="text-title-lg text-ink">Google 연결</h2>
           <p className="text-body-sm text-muted">
             Google 권한이 끊겼거나 다른 계정으로 바꾸려면 다시 연결해 주세요. Draft 가
