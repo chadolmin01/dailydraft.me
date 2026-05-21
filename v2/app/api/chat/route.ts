@@ -8,6 +8,7 @@ import { ApiResponse } from '@/src/lib/api-utils'
 import { getOrCreateWorkspace } from '@/src/lib/workspace'
 import { getAnthropic, CHAT_MODEL, SYSTEM_PROMPT } from '@/src/lib/anthropic/client'
 import { TOOL_DEFINITIONS, executeTool, type ToolContext } from '@/src/lib/anthropic/tools'
+import { consumeToken } from '@/src/lib/rate-limit'
 import type Anthropic from '@anthropic-ai/sdk'
 import type { Json } from '@/src/types/database'
 
@@ -32,6 +33,12 @@ export async function POST(request: NextRequest) {
   const supabase = await createServerSupabaseClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return ApiResponse.unauthorized()
+
+  // Rate limit — 매니저당 분당 20 메시지. 무한 루프 / 도용 방어.
+  // 분당 20 = 3초당 1 → 정상 사용 (생각 시간 포함) 으론 절대 안 걸림.
+  if (!consumeToken(`chat:${user.id}`, { capacity: 20, refillMs: 3_000 })) {
+    return ApiResponse.rateLimited('잠시 후 다시 시도해 주세요. 1분에 20개까지 메시지를 보낼 수 있습니다.')
+  }
 
   const body = (await request.json().catch(() => ({}))) as { message?: string; folder_id?: string }
   const message = body.message?.trim()
