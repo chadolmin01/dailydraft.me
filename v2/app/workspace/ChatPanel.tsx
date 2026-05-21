@@ -287,21 +287,39 @@ function Message({
   role: 'user' | 'assistant'
   text: string
 }) {
+  const [copied, setCopied] = useState(false)
+
   if (role === 'user') {
-    // 사용자 입력은 markdown 파싱 안 함 (그대로 표시)
     return (
       <div className="ml-auto max-w-[88%] bg-surface-dark-elevated rounded-lg px-3 py-2 text-body-sm text-on-dark whitespace-pre-wrap">
         {text}
       </div>
     )
   }
-  // assistant 응답은 markdown 렌더 — 굵게/코드/링크/목록 등.
+
   const html = renderMarkdown(text)
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1500)
+    } catch {}
+  }
+
   return (
-    <div
-      className="max-w-[92%] border-l-2 border-on-dark pl-3 text-body-sm text-on-dark chat-markdown"
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
+    <div className="max-w-[92%] border-l-2 border-on-dark pl-3 group relative">
+      <div
+        className="text-body-sm text-on-dark chat-markdown"
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
+      <button
+        type="button"
+        onClick={handleCopy}
+        className="absolute -right-1 top-0 px-2 py-0.5 rounded text-caption text-on-dark-soft hover:text-on-dark hover:bg-surface-dark-elevated opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
+      >
+        {copied ? '복사됨' : '복사'}
+      </button>
+    </div>
   )
 }
 
