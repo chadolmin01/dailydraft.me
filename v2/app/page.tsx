@@ -1,11 +1,59 @@
-export default function HomePage() {
+// 랜딩 / 로그인. 미들웨어가 로그인 상태면 /workspace 로 보내므로 여기는 항상 비로그인 상태.
+
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>
+}) {
+  const { error } = await searchParams
+  const errorMessage = error ? mapError(error) : null
+
   return (
-    <main className="min-h-screen flex items-center justify-center p-8">
-      <div className="text-center space-y-3">
-        <h1 className="text-2xl font-bold">Draft V2</h1>
-        <p className="text-sm text-gray-500">새 스키마, 새 시작.</p>
-        <p className="text-xs text-gray-400">M6 코드 참조: <code className="bg-gray-100 px-1.5 py-0.5 rounded">v1/</code></p>
+    <main className="min-h-screen flex flex-col items-center justify-center bg-canvas px-4">
+      <div className="w-full max-w-md text-center space-y-8">
+        <div className="space-y-3">
+          <h1 className="text-display-md text-ink">Draft</h1>
+          <p className="text-body-md text-muted">창업기관 운영자 워크스페이스</p>
+        </div>
+
+        <a
+          href="/api/auth/google"
+          className="inline-flex items-center justify-center gap-3 h-12 px-6 rounded-md bg-ink text-canvas font-body text-button font-medium transition-colors hover:bg-body-strong"
+        >
+          Google 계정으로 시작하기
+        </a>
+
+        {errorMessage ? (
+          <p className="text-body-sm text-muted-soft">{errorMessage}</p>
+        ) : null}
+
+        <p className="text-caption text-muted-soft pt-section">
+          시작하면 Draft 가 매니저님의 Google Drive · Sheets · Gmail 에 접근합니다.
+        </p>
       </div>
     </main>
   )
+}
+
+function mapError(code: string): string {
+  switch (code) {
+    case 'access_denied':
+      return 'Google 권한 동의가 취소되었습니다.'
+    case 'state_mismatch':
+      return '인증 상태가 일치하지 않습니다. 다시 시도해 주세요.'
+    case 'no_refresh_token':
+      return '재인증 토큰을 받지 못했습니다. Google 계정 권한에서 Draft 를 제거한 뒤 다시 시도해 주세요.'
+    case 'supabase_signin_failed':
+      return '세션 발급에 실패했습니다. 잠시 후 다시 시도해 주세요.'
+    case 'token_save_failed':
+      return '토큰 저장에 실패했습니다. 관리자에게 문의해 주세요.'
+    case 'token_exchange_failed':
+      return 'Google 토큰 교환에 실패했습니다.'
+    case 'missing_code_or_state':
+      return '인증 응답이 잘못되었습니다.'
+    case 'no_id_token':
+      return 'Google ID 토큰을 받지 못했습니다.'
+    default:
+      return `오류가 발생했습니다. (${code})`
+  }
 }
