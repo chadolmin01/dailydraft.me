@@ -75,3 +75,6 @@ scripts/demo/.env.demo
 !scripts/demo/out/.gitkeep
 docs/meta-app-review/dist/
 chrome/
+
+# M6 Extractor 런타임 산출물 (verify_extractor 가 생성)
+glossary/fixtures/**/actual_extracted.json
