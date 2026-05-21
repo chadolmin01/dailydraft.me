@@ -103,6 +103,25 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
     },
   })
 
+  const updateFolder = useMutation({
+    mutationFn: async (input: { id: string; updates: Partial<Pick<Folder, 'name' | 'sheet_id' | 'program' | 'program_start_date'>> }) => {
+      const res = await fetch(`/api/folders/${input.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input.updates),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.error?.message ?? '폴더 수정 실패')
+      }
+      return res.json() as Promise<Folder>
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['folders'] })
+      queryClient.invalidateQueries({ queryKey: ['folder-matrix'] })
+    },
+  })
+
   const deleteFolder = useMutation({
     mutationFn: async (folderId: string) => {
       const res = await fetch(`/api/folders/${folderId}`, { method: 'DELETE' })
@@ -266,9 +285,10 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
 
           {selectedFolder?.drive_folder_id ? (
             <FolderTabs
-              folderName={selectedFolder.name}
-              rootDriveFolderId={selectedFolder.drive_folder_id}
+              folder={selectedFolder}
               matrixQuery={matrixQuery}
+              onUpdate={(updates) => updateFolder.mutate({ id: selectedFolder.id, updates })}
+              updating={updateFolder.isPending}
             />
           ) : null}
         </div>
@@ -538,14 +558,19 @@ function Field({ label, required, hint, children }: { label: string; required?: 
 }
 
 function FolderTabs({
-  folderName,
-  rootDriveFolderId,
+  folder,
   matrixQuery,
+  onUpdate,
+  updating,
 }: {
-  folderName: string
-  rootDriveFolderId: string
+  folder: Folder
   matrixQuery: ReturnType<typeof useQuery<MatrixResponse, Error>>
+  onUpdate: (updates: Partial<Pick<Folder, 'name' | 'sheet_id' | 'program' | 'program_start_date'>>) => void
+  updating: boolean
 }) {
+  const folderName = folder.name
+  const rootDriveFolderId = folder.drive_folder_id!
+  const [editing, setEditing] = useState(false)
   const [tab, setTab] = useState<'folder' | 'matrix'>('folder')
   const matrix = matrixQuery.data?.matrix
   const hasMatrixData = !!matrix && matrix.source.fileCount > 0
@@ -561,8 +586,17 @@ function FolderTabs({
 
   return (
     <section className="space-y-4 border-t border-hairline pt-6">
-      <div className="flex items-end justify-between gap-4">
-        <h2 className="text-display-sm text-ink">{folderName}</h2>
+      <div className="flex items-end justify-between gap-4 flex-wrap">
+        <div className="flex items-baseline gap-3">
+          <h2 className="text-display-sm text-ink">{folderName}</h2>
+          <button
+            type="button"
+            onClick={() => setEditing(v => !v)}
+            className="text-caption text-muted hover:text-ink transition-colors"
+          >
+            {editing ? '편집 닫기' : '설정 수정'}
+          </button>
+        </div>
         <div role="tablist" aria-label="폴더 보기" className="flex items-center gap-1 border-b border-hairline -mb-px">
           <TabButton active={tab === 'folder'} onClick={() => setTab('folder')}>폴더</TabButton>
           <TabButton
@@ -575,6 +609,17 @@ function FolderTabs({
           </TabButton>
         </div>
       </div>
+
+      {editing ? (
+        <FolderEditForm
+          folder={folder}
+          pending={updating}
+          onSave={(updates) => {
+            onUpdate(updates)
+            setEditing(false)
+          }}
+        />
+      ) : null}
 
       {tab === 'folder' ? (
         <div role="tabpanel" className="space-y-3">
@@ -628,6 +673,81 @@ function ConventionHint({ unmatchedCount }: { unmatchedCount: number }) {
         <p className="mt-1">예: <code className="filename">[FLIP1기_3주차]_3팀_MVP기획서.pdf</code></p>
       </div>
     </div>
+  )
+}
+
+function FolderEditForm({
+  folder,
+  pending,
+  onSave,
+}: {
+  folder: Folder
+  pending: boolean
+  onSave: (updates: Partial<Pick<Folder, 'name' | 'sheet_id' | 'program' | 'program_start_date'>>) => void
+}) {
+  const [name, setName] = useState(folder.name)
+  const [program, setProgram] = useState(folder.program ?? '')
+  const [sheetId, setSheetId] = useState(folder.sheet_id ?? '')
+  const [startDate, setStartDate] = useState(folder.program_start_date ?? '')
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault()
+        onSave({
+          name: name.trim() !== folder.name ? name.trim() : undefined,
+          program: (program.trim() || null) !== folder.program ? (program.trim() || null) : undefined,
+          sheet_id: (sheetId.trim() || null) !== folder.sheet_id ? (sheetId.trim() || null) : undefined,
+          program_start_date: (startDate || null) !== folder.program_start_date ? (startDate || null) : undefined,
+        })
+      }}
+      className="rounded-lg border border-hairline bg-canvas p-5 space-y-4"
+    >
+      <Field label="이름" required>
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+          className="w-full h-10 px-3 bg-canvas border border-hairline rounded-md text-body-md text-ink focus:outline-none focus:border-ink"
+        />
+      </Field>
+      <div className="grid grid-cols-2 gap-4">
+        <Field label="Program" hint="파일명 컨벤션의 program 부분">
+          <input
+            type="text"
+            value={program}
+            onChange={(e) => setProgram(e.target.value)}
+            placeholder="예: FLIP1기"
+            className="w-full h-10 px-3 bg-canvas border border-hairline rounded-md text-body-md text-ink focus:outline-none focus:border-ink"
+          />
+        </Field>
+        <Field label="프로그램 시작일">
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            className="w-full h-10 px-3 bg-canvas border border-hairline rounded-md text-body-md text-ink focus:outline-none focus:border-ink"
+          />
+        </Field>
+      </div>
+      <Field label="Sheets ID 또는 URL">
+        <input
+          type="text"
+          value={sheetId}
+          onChange={(e) => setSheetId(e.target.value)}
+          placeholder="비우면 명단 연결 해제"
+          className="w-full h-10 px-3 font-mono text-mono-md bg-canvas border border-hairline rounded-md text-ink focus:outline-none focus:border-ink"
+        />
+      </Field>
+      <button
+        type="submit"
+        disabled={pending}
+        className="h-10 px-4 rounded-md bg-ink text-canvas text-button font-medium hover:bg-body-strong transition-colors disabled:opacity-50"
+      >
+        {pending ? '저장 중…' : '저장'}
+      </button>
+    </form>
   )
 }
 
