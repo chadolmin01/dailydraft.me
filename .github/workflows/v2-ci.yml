@@ -1,0 +1,55 @@
+name: V2 CI
+
+# v2/ 변경 시 tsc + vitest + next build 가 모두 통과해야 한다.
+# branch protection 에 "V2 CI / verify" 를 required check 으로 등록 권장.
+
+on:
+  pull_request:
+    paths:
+      - 'v2/**'
+      - '.github/workflows/v2-ci.yml'
+  push:
+    branches: [main, 'v2/**']
+    paths:
+      - 'v2/**'
+      - '.github/workflows/v2-ci.yml'
+
+jobs:
+  verify:
+    name: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: v2
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+          cache-dependency-path: v2/pnpm-lock.yaml
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm exec tsc --noEmit
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        env:
+          # 빌드 시점에 검증되는 NEXT_PUBLIC_* placeholder.
+          # 진짜 secrets 는 Vercel 환경변수 사용.
+          NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder
+          NEXT_PUBLIC_APP_URL: https://dailydraft.me
+        run: pnpm build
