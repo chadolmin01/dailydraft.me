@@ -50,7 +50,9 @@ export default async function HomePage({
           시작하면 Draft 가 매니저님의 Google Drive · Sheets · Gmail 에 접근합니다.
         </p>
 
-        <footer className="pt-8 flex items-center justify-center gap-5 text-caption text-muted-soft">
+        <footer className="pt-8 flex items-center justify-center gap-5 text-caption text-muted-soft flex-wrap">
+          <a href="/help" className="hover:text-ink transition-colors">도움말</a>
+          <span className="opacity-40">·</span>
           <a href="/privacy" className="hover:text-ink transition-colors">개인정보 처리방침</a>
           <span className="opacity-40">·</span>
           <a href="/terms" className="hover:text-ink transition-colors">이용약관</a>

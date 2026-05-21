@@ -179,6 +179,12 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
           </div>
           <div className="flex items-center gap-3 shrink-0">
             <a
+              href="/help"
+              className="text-caption text-on-dark-soft hover:text-on-dark transition-colors"
+            >
+              도움말
+            </a>
+            <a
               href="/settings"
               className="text-caption text-on-dark-soft hover:text-on-dark transition-colors"
             >
