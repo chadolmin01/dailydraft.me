@@ -1,6 +1,8 @@
 // Gmail API wrapper — V1 은 drafts.create 만 사용 (D5: 자동 발송 X).
 // scope: gmail.compose (드래프트 생성, 열기, 삭제 가능. 발송은 별도 scope 필요).
 
+import { fetchWithRetry } from '@/src/lib/fetch-retry'
+
 const GMAIL_DRAFTS_URL = 'https://gmail.googleapis.com/gmail/v1/users/me/drafts'
 
 export interface CreateDraftResult {
@@ -23,7 +25,7 @@ export async function createGmailDraft(
   const mime = buildRfc822Message(input)
   const raw = base64Url(mime)
 
-  const res = await fetch(GMAIL_DRAFTS_URL, {
+  const res = await fetchWithRetry(GMAIL_DRAFTS_URL, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${accessToken}`,

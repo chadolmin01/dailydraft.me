@@ -2,6 +2,8 @@
 // googleapis SDK 대신 raw fetch — 번들 크기 + cold start 최소화.
 // scope: drive.readonly (CLAUDE.md Hard Rules)
 
+import { fetchWithRetry } from '@/src/lib/fetch-retry'
+
 export interface DriveFile {
   id: string
   name: string
@@ -38,7 +40,7 @@ export async function listFolderFiles(
     })
     if (pageToken) params.set('pageToken', pageToken)
 
-    const res = await fetch(`https://www.googleapis.com/drive/v3/files?${params}`, {
+    const res = await fetchWithRetry(`https://www.googleapis.com/drive/v3/files?${params}`, {
       headers: { Authorization: `Bearer ${accessToken}` },
       // Next.js 서버에서 호출 — 캐시 안 함 (실시간 상태가 중요)
       cache: 'no-store',
@@ -104,7 +106,7 @@ export async function getFolderMeta(
   accessToken: string,
   folderId: string,
 ): Promise<{ id: string; name: string; mimeType: string }> {
-  const res = await fetch(
+  const res = await fetchWithRetry(
     `https://www.googleapis.com/drive/v3/files/${folderId}?fields=id,name,mimeType`,
     {
       headers: { Authorization: `Bearer ${accessToken}` },

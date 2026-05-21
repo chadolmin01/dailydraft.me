@@ -1,6 +1,8 @@
 // Google Sheets REST API wrapper.
 // scope: spreadsheets (read + write)
 
+import { fetchWithRetry } from '@/src/lib/fetch-retry'
+
 export interface SheetRange {
   range: string
   values: string[][]
@@ -16,7 +18,7 @@ export async function readRange(
   range: string,
 ): Promise<string[][]> {
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(range)}`
-  const res = await fetch(url, {
+  const res = await fetchWithRetry(url, {
     headers: { Authorization: `Bearer ${accessToken}` },
     cache: 'no-store',
   })
@@ -41,7 +43,7 @@ export async function writeRange(
   values: string[][],
 ): Promise<void> {
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`
-  const res = await fetch(url, {
+  const res = await fetchWithRetry(url, {
     method: 'PUT',
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -64,7 +66,7 @@ export async function getSpreadsheetMeta(
   spreadsheetId: string,
 ): Promise<{ title: string; sheets: Array<{ sheetId: number; title: string }> }> {
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}?fields=properties.title,sheets.properties(sheetId,title)`
-  const res = await fetch(url, {
+  const res = await fetchWithRetry(url, {
     headers: { Authorization: `Bearer ${accessToken}` },
     cache: 'no-store',
   })
