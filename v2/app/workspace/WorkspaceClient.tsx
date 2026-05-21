@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/src/context/AuthContext'
 import { extractDriveFolderId, extractSheetId } from '@/src/lib/parsers/google-url'
-import { Trash2 } from 'lucide-react'
+import { Trash2, Folder as FolderIcon, Search, Plus } from 'lucide-react'
 import { DrivePickerButton } from './DrivePickerButton'
 import { ChatPanel } from './ChatPanel'
 import { FolderBrowser } from './FolderBrowser'
@@ -60,11 +60,15 @@ interface MatrixResponse {
   rosterError?: string
 }
 
+type FolderTab = 'recent' | 'all'
+
 export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
   const { signOut } = useAuth()
   const queryClient = useQueryClient()
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null)
   const [showAddForm, setShowAddForm] = useState(false)
+  const [folderTab, setFolderTab] = useState<FolderTab>('recent')
+  const [folderSearch, setFolderSearch] = useState('')
 
   const [googleAuthBroken, setGoogleAuthBroken] = useState(false)
 
@@ -182,6 +186,28 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
   const folders = foldersQuery.data?.folders ?? []
   const selectedFolder = folders.find(f => f.id === selectedFolderId)
 
+  // 검색 + 탭 필터 — 클라이언트에서. recent 는 React Query 캐시에서 latest_modified 읽음.
+  const filteredFolders = (() => {
+    let list = folders
+    if (folderSearch.trim()) {
+      const q = folderSearch.toLowerCase()
+      list = list.filter(f =>
+        f.name.toLowerCase().includes(q) ||
+        (f.program?.toLowerCase().includes(q) ?? false),
+      )
+    }
+    if (folderTab === 'recent') {
+      list = [...list].sort((a, b) => {
+        const aStats = queryClient.getQueryData<{ latest_modified: string | null }>(['folder-stats', a.id])
+        const bStats = queryClient.getQueryData<{ latest_modified: string | null }>(['folder-stats', b.id])
+        const aT = aStats?.latest_modified ?? a.created_at
+        const bT = bStats?.latest_modified ?? b.created_at
+        return bT.localeCompare(aT)
+      })
+    }
+    return list
+  })()
+
   return (
     <div className="min-h-screen md:h-screen flex flex-col md:grid md:grid-cols-[var(--layout-chat-width)_1fr] bg-canvas">
       <a href="#workspace-main" className="sr-only focus:not-sr-only">
@@ -243,21 +269,38 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
             <TodaysActivity folderIds={folders.map(f => f.id)} folderNames={Object.fromEntries(folders.map(f => [f.id, f.name]))} />
           ) : null}
 
-          <header className="flex items-end justify-between gap-4">
-            <div className="space-y-1">
-              <h1 className="text-display-md text-ink">폴더</h1>
-              <p className="text-body-sm text-muted">
-                {foldersQuery.isLoading ? '불러오는 중…' : `${folders.length}개 연결됨`}
-              </p>
+          {/* 탭 + 검색 + 연결 — 상단 컨트롤 바 */}
+          <div className="flex items-center justify-between gap-4 flex-wrap border-b border-hairline">
+            <div role="tablist" aria-label="폴더 보기" className="flex items-center gap-1 -mb-px">
+              <FolderTabHead active={folderTab === 'recent'} onClick={() => setFolderTab('recent')}>
+                최근
+              </FolderTabHead>
+              <FolderTabHead active={folderTab === 'all'} onClick={() => setFolderTab('all')}>
+                모든 폴더
+              </FolderTabHead>
             </div>
-            <button
-              type="button"
-              onClick={() => setShowAddForm(v => !v)}
-              className="h-10 px-4 rounded-md bg-ink text-canvas text-button font-medium hover:bg-body-strong transition-colors"
-            >
-              {showAddForm ? '취소' : '폴더 연결'}
-            </button>
-          </header>
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-soft pointer-events-none" />
+                <input
+                  type="search"
+                  value={folderSearch}
+                  onChange={(e) => setFolderSearch(e.target.value)}
+                  placeholder="폴더 검색"
+                  className="h-9 pl-8 pr-3 rounded-full bg-surface-soft border border-hairline text-body-sm text-ink placeholder:text-muted-soft focus:outline-none focus:border-ink w-44 md:w-56 transition-colors"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowAddForm(v => !v)}
+                className="h-9 px-3 rounded-full bg-ink text-canvas text-caption font-medium hover:bg-body-strong transition-colors inline-flex items-center gap-1.5"
+                aria-label="폴더 연결"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>연결</span>
+              </button>
+            </div>
+          </div>
 
           {showAddForm ? <AddFolderForm onSubmit={(v) => addFolder.mutate(v)} pending={addFolder.isPending} error={addFolder.error?.message ?? null} /> : null}
 
@@ -269,13 +312,9 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
           ) : null}
 
           {foldersQuery.isLoading && folders.length === 0 ? (
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-              {[0, 1, 2].map(i => (
-                <div key={i} className="rounded-xl bg-surface-card p-5 space-y-2 animate-pulse">
-                  <div className="h-6 w-32 bg-canvas rounded opacity-60" />
-                  <div className="h-3 w-20 bg-canvas rounded opacity-40" />
-                  <div className="h-3 w-24 bg-canvas rounded opacity-40" />
-                </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {[0, 1, 2, 3].map(i => (
+                <FolderCardSkeleton key={i} />
               ))}
             </div>
           ) : null}
@@ -306,39 +345,25 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
             </div>
           ) : null}
 
-          {folders.length > 0 ? (
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-              {folders.map(folder => (
-                <div
+          {folders.length > 0 && filteredFolders.length === 0 ? (
+            <div className="rounded-lg border border-hairline bg-surface-soft p-6 text-center text-body-sm text-muted">
+              {folderSearch.trim()
+                ? `"${folderSearch}" 와 일치하는 폴더가 없습니다.`
+                : '이 탭에 보여줄 폴더가 없습니다.'}
+            </div>
+          ) : null}
+
+          {filteredFolders.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {filteredFolders.map(folder => (
+                <FolderCard
                   key={folder.id}
-                  className={`relative group rounded-xl transition-colors ${
-                    selectedFolderId === folder.id
-                      ? 'bg-surface-strong'
-                      : 'bg-surface-card hover:bg-surface-strong'
-                  }`}
-                >
-                  <button
-                    type="button"
-                    onClick={() => setSelectedFolderId(folder.id === selectedFolderId ? null : folder.id)}
-                    className="w-full text-left p-5 pr-12 space-y-1"
-                  >
-                    <p className="text-display-sm text-ink">{folder.name}</p>
-                    <p className="text-caption text-muted">
-                      {folder.program ?? 'program 미지정'} · {folder.sheet_id ? 'Sheets 연결됨' : 'Sheets 없음'}
-                    </p>
-                    <FolderCardStats folderId={folder.id} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDelete(folder)}
-                    disabled={deleteFolder.isPending}
-                    aria-label={`${folder.name} 연결 해제`}
-                    title="연결 해제"
-                    className="absolute top-3 right-3 p-1.5 rounded-md text-muted-soft hover:text-ink hover:bg-canvas opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
+                  folder={folder}
+                  selected={selectedFolderId === folder.id}
+                  onSelect={() => setSelectedFolderId(folder.id === selectedFolderId ? null : folder.id)}
+                  onDelete={() => handleDelete(folder)}
+                  deleting={deleteFolder.isPending}
+                />
               ))}
             </div>
           ) : null}
@@ -701,6 +726,125 @@ function TodaysActivity({ folderIds, folderNames }: { folderIds: string[]; folde
         ))}
       </ul>
     </section>
+  )
+}
+
+function FolderTabHead({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      role="tab"
+      aria-selected={active}
+      onClick={onClick}
+      className={`px-4 py-3 text-body-sm border-b-2 transition-colors -mb-px ${
+        active
+          ? 'text-ink border-ink font-medium'
+          : 'text-muted border-transparent hover:text-ink'
+      }`}
+    >
+      {children}
+    </button>
+  )
+}
+
+function FolderCardSkeleton() {
+  return (
+    <div className="rounded-xl overflow-hidden border border-hairline bg-canvas animate-pulse">
+      <div className="aspect-[5/3] bg-surface-card opacity-60" />
+      <div className="p-4 space-y-2">
+        <div className="h-4 w-24 bg-surface-card rounded opacity-60" />
+        <div className="h-3 w-32 bg-surface-card rounded opacity-40" />
+      </div>
+    </div>
+  )
+}
+
+function FolderCard({
+  folder,
+  selected,
+  onSelect,
+  onDelete,
+  deleting,
+}: {
+  folder: Folder
+  selected: boolean
+  onSelect: () => void
+  onDelete: () => void
+  deleting: boolean
+}) {
+  const stats = useQuery({
+    queryKey: ['folder-stats', folder.id],
+    staleTime: 60_000,
+    queryFn: async () => {
+      const res = await fetch(`/api/folders/${folder.id}/stats`)
+      if (!res.ok) throw new Error('stats')
+      return res.json() as Promise<{ file_count: number; latest_modified: string | null; latest_name: string | null }>
+    },
+  })
+
+  const isRecent = stats.data?.latest_modified
+    && (Date.now() - new Date(stats.data.latest_modified).getTime() < 24 * 60 * 60 * 1000)
+
+  return (
+    <div
+      className={`relative group rounded-xl overflow-hidden border transition-all ${
+        selected
+          ? 'border-ink shadow-md'
+          : 'border-hairline hover:border-muted-soft hover:shadow-sm'
+      }`}
+    >
+      <button
+        type="button"
+        onClick={onSelect}
+        className="block w-full text-left"
+      >
+        {/* 폴더 아이콘 영역 — OS Finder 느낌 */}
+        <div className={`relative aspect-[5/3] flex items-center justify-center transition-colors ${
+          selected ? 'bg-surface-strong' : 'bg-surface-card group-hover:bg-surface-strong'
+        }`}>
+          <FolderIcon
+            className="w-12 h-12 text-muted"
+            strokeWidth={1.2}
+            fill="currentColor"
+            fillOpacity={0.15}
+          />
+          {/* 우상단 라벨 — Sheets 연결, design system 식 작은 뱃지 */}
+          {folder.sheet_id ? (
+            <span className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full bg-canvas/80 backdrop-blur text-caption text-muted-soft">
+              명단 연결됨
+            </span>
+          ) : null}
+          {/* 최근 활동 dot */}
+          {isRecent ? (
+            <span
+              className="absolute top-3 right-3 w-2 h-2 rounded-full bg-ink"
+              title="오늘 활동 있음"
+              aria-label="오늘 활동 있음"
+            />
+          ) : null}
+        </div>
+        {/* 메타 정보 영역 */}
+        <div className="bg-canvas p-4 space-y-1">
+          <p className="text-body-md text-ink font-medium truncate">{folder.name}</p>
+          <p className="text-caption text-muted-soft tabular truncate">
+            {stats.data
+              ? <>파일 {stats.data.file_count}개 {stats.data.latest_modified ? `· ${formatRelative(stats.data.latest_modified)}` : ''}</>
+              : '불러오는 중…'}
+          </p>
+        </div>
+      </button>
+      {/* 휴지통 — 호버 시 우상단 (라벨 위) */}
+      <button
+        type="button"
+        onClick={onDelete}
+        disabled={deleting}
+        aria-label={`${folder.name} 연결 해제`}
+        title="연결 해제"
+        className="absolute bottom-3 right-3 p-1.5 rounded-md bg-canvas/80 backdrop-blur text-muted-soft hover:text-ink opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+      >
+        <Trash2 className="w-3.5 h-3.5" />
+      </button>
+    </div>
   )
 }
 
