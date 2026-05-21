@@ -138,6 +138,19 @@ export function ChatPanel({ folderId, folderName }: Props) {
     }
   }
 
+  // 외부에서 챗 전송 트리거 가능하게 — window event 리스너.
+  // 예: 매트릭스 "미제출 팀에 메일" 버튼이 dispatchEvent('draft:chat', {detail: '...'}).
+  useEffect(() => {
+    const onExternal = (e: Event) => {
+      const detail = (e as CustomEvent<string>).detail
+      if (typeof detail === 'string' && detail.trim() && !send.isPending) {
+        send.mutate(detail)
+      }
+    }
+    window.addEventListener('draft:chat', onExternal)
+    return () => window.removeEventListener('draft:chat', onExternal)
+  }, [send])
+
   const handleExport = () => {
     if (rows.length === 0) return
     const lines: string[] = []

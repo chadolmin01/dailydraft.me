@@ -1053,13 +1053,53 @@ function MatrixSummaryBar({ cells }: { cells: MatrixCell[] }) {
   const empty = cells.filter(c => c.status === 'empty').length
   const rate = total > 0 ? Math.round((done / total) * 100) : 0
 
+  // late 와 pending 의 팀+주차 (메일 prefill 용)
+  const lateTeams = Array.from(new Set(cells.filter(c => c.status === 'late').map(c => c.team)))
+  const pendingTeams = Array.from(new Set(cells.filter(c => c.status === 'pending').map(c => c.team)))
+
+  const triggerEmailForLate = () => {
+    if (lateTeams.length === 0) return
+    const msg = `미제출 팀 ${lateTeams.join(', ')} 에게 보낼 정중한 리마인드 메일 초안을 만들어주세요. 마감과 제출 위치를 명확히 적어주시고, 본문은 모바일 한 화면 안에 들어가게 부탁드립니다.`
+    window.dispatchEvent(new CustomEvent('draft:chat', { detail: msg }))
+  }
+
+  const triggerEmailForPending = () => {
+    if (pendingTeams.length === 0) return
+    const msg = `이번 주차에 아직 제출 없는 팀 ${pendingTeams.join(', ')} 에게 가벼운 안내 메일 초안을 만들어주세요. 압박하지 말고 일정만 짚어주시기 바랍니다.`
+    window.dispatchEvent(new CustomEvent('draft:chat', { detail: msg }))
+  }
+
   return (
-    <div className="rounded-lg border border-hairline bg-surface-soft p-4 grid grid-cols-2 md:grid-cols-5 gap-3 text-center">
-      <Stat label="제출률" value={`${rate}%`} accent />
-      <Stat label="제출" value={String(done)} icon="●" />
-      <Stat label="진행" value={String(pending)} icon="◐" />
-      <Stat label="미제출" value={String(late)} icon="✕" />
-      <Stat label="예정" value={String(empty)} icon="○" />
+    <div className="space-y-3">
+      <div className="rounded-lg border border-hairline bg-surface-soft p-4 grid grid-cols-2 md:grid-cols-5 gap-3 text-center">
+        <Stat label="제출률" value={`${rate}%`} accent />
+        <Stat label="제출" value={String(done)} icon="●" />
+        <Stat label="진행" value={String(pending)} icon="◐" />
+        <Stat label="미제출" value={String(late)} icon="✕" />
+        <Stat label="예정" value={String(empty)} icon="○" />
+      </div>
+      {(late > 0 || pending > 0) ? (
+        <div className="flex gap-2 flex-wrap">
+          {late > 0 ? (
+            <button
+              type="button"
+              onClick={triggerEmailForLate}
+              className="text-caption text-ink border border-hairline px-3 py-1.5 rounded-full hover:bg-surface-soft transition-colors"
+            >
+              미제출 팀 {lateTeams.length}개에 메일 초안 →
+            </button>
+          ) : null}
+          {pending > 0 ? (
+            <button
+              type="button"
+              onClick={triggerEmailForPending}
+              className="text-caption text-muted border border-hairline px-3 py-1.5 rounded-full hover:bg-surface-soft transition-colors"
+            >
+              이번 주차 안내 메일 초안 →
+            </button>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   )
 }
