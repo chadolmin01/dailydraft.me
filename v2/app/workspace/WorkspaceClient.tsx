@@ -632,14 +632,23 @@ function FolderTabs({
 
       {tab === 'matrix' && hasMatrixData && matrix ? (
         <div role="tabpanel" className="space-y-3">
-          <p className="text-body-sm text-muted">
-            팀 {matrix.teams.length}개 · 주차 {matrix.weeks.length}개 ·
-            파일 {matrix.source.fileCount}개
-            {matrix.source.teamSource === 'derived'
-              ? ' · 명단 시트 미연결 (파일에서 추출)'
-              : ' · 명단 시트 기반'}
-            {unmatchedCount > 0 ? ` · 미매칭 ${unmatchedCount}개 (파일 탭에서 확인)` : ''}
-          </p>
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <p className="text-body-sm text-muted">
+              팀 {matrix.teams.length}개 · 주차 {matrix.weeks.length}개 ·
+              파일 {matrix.source.fileCount}개
+              {matrix.source.teamSource === 'derived'
+                ? ' · 명단 시트 미연결 (파일에서 추출)'
+                : ' · 명단 시트 기반'}
+              {unmatchedCount > 0 ? ` · 미매칭 ${unmatchedCount}개 (파일 탭에서 확인)` : ''}
+            </p>
+            <button
+              type="button"
+              onClick={() => downloadMatrixCsv(folder.name, matrix.teams, matrix.weeks, matrix.cells)}
+              className="text-caption text-muted hover:text-ink transition-colors"
+            >
+              CSV 다운로드
+            </button>
+          </div>
 
           {matrixQuery.data?.rosterError ? (
             <p className="text-body-sm text-muted">
@@ -674,6 +683,50 @@ function ConventionHint({ unmatchedCount }: { unmatchedCount: number }) {
       </div>
     </div>
   )
+}
+
+function downloadMatrixCsv(
+  folderName: string,
+  teams: string[],
+  weeks: number[],
+  cells: MatrixCell[],
+) {
+  const cellMap = new Map<string, MatrixCell>()
+  for (const c of cells) cellMap.set(`${c.team}|${c.week}`, c)
+
+  const STATUS: Record<MatrixCell['status'], string> = {
+    done: '제출',
+    pending: '진행',
+    late: '미제출',
+    empty: '예정',
+  }
+
+  const escape = (v: string) =>
+    /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v
+
+  const header = ['팀', ...weeks.map(w => `${w}주차`), '제출률']
+  const rows = teams.map(team => {
+    const cols = weeks.map(w => {
+      const cell = cellMap.get(`${team}|${w}`)
+      return STATUS[cell?.status ?? 'empty']
+    })
+    const done = cols.filter(s => s === '제출').length
+    const rate = weeks.length > 0 ? `${Math.round((done / weeks.length) * 100)}%` : '—'
+    return [team, ...cols, rate]
+  })
+
+  const csv = [header, ...rows].map(r => r.map(escape).join(',')).join('\n')
+  // Excel 한글 깨짐 방지 — BOM 추가
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '')
+  a.download = `${folderName}_진행도_${dateStr}.csv`
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
 }
 
 function FolderEditForm({
