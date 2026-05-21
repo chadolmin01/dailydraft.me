@@ -222,6 +222,10 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
             </div>
           ) : null}
 
+          {folders.length > 0 && !foldersQuery.isLoading ? (
+            <TodaysActivity folderIds={folders.map(f => f.id)} folderNames={Object.fromEntries(folders.map(f => [f.id, f.name]))} />
+          ) : null}
+
           <header className="flex items-end justify-between gap-4">
             <div className="space-y-1">
               <h1 className="text-display-md text-ink">폴더</h1>
@@ -644,6 +648,42 @@ function Field({ label, required, hint, children }: { label: string; required?: 
       {children}
       {hint ? <span className="block text-caption text-muted-soft">{hint}</span> : null}
     </label>
+  )
+}
+
+function TodaysActivity({ folderIds, folderNames }: { folderIds: string[]; folderNames: Record<string, string> }) {
+  // 각 폴더 stats 를 React Query 캐시에서 읽기 (FolderCardStats 가 이미 fetch 하므로 재요청 X)
+  const qc = useQueryClient()
+  const recent: Array<{ folderId: string; folderName: string; latest: string; latestName: string }> = []
+  for (const fid of folderIds) {
+    const data = qc.getQueryData<{ file_count: number; latest_modified: string | null; latest_name: string | null }>(['folder-stats', fid])
+    if (data?.latest_modified && data.latest_name) {
+      const ms = Date.now() - new Date(data.latest_modified).getTime()
+      if (ms < 24 * 60 * 60 * 1000) {
+        recent.push({ folderId: fid, folderName: folderNames[fid], latest: data.latest_modified, latestName: data.latest_name })
+      }
+    }
+  }
+
+  if (recent.length === 0) return null
+
+  return (
+    <section className="rounded-lg border border-hairline bg-canvas p-4 space-y-2">
+      <h3 className="text-title-sm text-ink flex items-center gap-2">
+        <span className="inline-block w-1.5 h-1.5 rounded-full bg-ink" />
+        오늘의 활동
+      </h3>
+      <ul className="space-y-1.5">
+        {recent.map(r => (
+          <li key={r.folderId} className="text-body-sm text-body flex items-baseline gap-2">
+            <span className="text-muted shrink-0">{r.folderName}</span>
+            <span className="text-muted-soft">·</span>
+            <span className="truncate">{r.latestName}</span>
+            <span className="text-caption text-muted-soft tabular shrink-0 ml-auto">{formatRelative(r.latest)}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
   )
 }
 
