@@ -75,8 +75,58 @@ function addSecurityHeaders(response: NextResponse) {
   return response
 }
 
+const STATE_CHANGING_METHODS = ['POST', 'PATCH', 'PUT', 'DELETE']
+
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
+
+  // CSRF 보호 — /api/* 의 상태 변경 요청은 same-origin 만 허용.
+  // V2 는 외부 webhook 없음. OAuth 콜백은 GET 이라 적용 안 됨.
+  if (pathname.startsWith('/api/') && STATE_CHANGING_METHODS.includes(request.method)) {
+    const origin = request.headers.get('origin')
+    const host = request.headers.get('host')
+    if (origin && host) {
+      try {
+        const originHost = new URL(origin).host
+        if (originHost !== host) {
+          return NextResponse.json(
+            { error: { code: 'FORBIDDEN', message: '요청이 거부되었습니다' } },
+            { status: 403 },
+          )
+        }
+      } catch {
+        return NextResponse.json(
+          { error: { code: 'FORBIDDEN', message: '요청이 거부되었습니다' } },
+          { status: 403 },
+        )
+      }
+    } else if (!origin) {
+      // Origin 없으면 Referer 폴백 검사 (일부 브라우저가 same-origin 시 Origin 생략)
+      const referer = request.headers.get('referer')
+      if (referer) {
+        try {
+          const refererHost = new URL(referer).host
+          if (refererHost !== host) {
+            return NextResponse.json(
+              { error: { code: 'FORBIDDEN', message: '요청이 거부되었습니다' } },
+              { status: 403 },
+            )
+          }
+        } catch {
+          return NextResponse.json(
+            { error: { code: 'FORBIDDEN', message: '요청이 거부되었습니다' } },
+            { status: 403 },
+          )
+        }
+      } else {
+        // Origin / Referer 둘 다 없음 → 비브라우저 요청 → 차단
+        return NextResponse.json(
+          { error: { code: 'FORBIDDEN', message: '요청이 거부되었습니다' } },
+          { status: 403 },
+        )
+      }
+    }
+  }
 
   // /api/auth/* 는 OAuth 콜백 + 세션 발급 경로라 게이팅 스킵 (세션 쿠키만 갱신)
   if (pathname.startsWith('/api/auth/')) {
