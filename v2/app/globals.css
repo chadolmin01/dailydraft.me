@@ -269,3 +269,80 @@ h1, h2, h3, h4 {
   padding: 2px var(--space-2);
   border-radius: var(--radius-xs);
 }
+
+/* 챗 마크다운 렌더 — dark 패널 안에서 가독성 유지. body 텍스트 위주 + 인라인 강조. */
+.chat-markdown p {
+  margin: 0 0 var(--space-2) 0;
+  line-height: 1.65;
+}
+.chat-markdown p:last-child {
+  margin-bottom: 0;
+}
+.chat-markdown strong {
+  color: var(--color-on-dark);
+  font-weight: 600;
+}
+.chat-markdown em {
+  font-style: italic;
+}
+.chat-markdown code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--color-surface-dark-elevated);
+  padding: 1px 4px;
+  border-radius: var(--radius-xs);
+  color: var(--color-on-dark);
+}
+.chat-markdown pre {
+  background: var(--color-surface-dark-elevated);
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  overflow-x: auto;
+  margin: var(--space-2) 0;
+}
+.chat-markdown pre code {
+  background: transparent;
+  padding: 0;
+}
+.chat-markdown a {
+  color: var(--color-on-dark);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.chat-markdown a:hover {
+  color: var(--color-on-dark-soft);
+}
+.chat-markdown ul,
+.chat-markdown ol {
+  margin: var(--space-2) 0;
+  padding-left: var(--space-5);
+}
+.chat-markdown li {
+  margin: 2px 0;
+}
+.chat-markdown blockquote {
+  border-left: 2px solid var(--color-on-dark-soft);
+  padding-left: var(--space-3);
+  margin: var(--space-2) 0;
+  color: var(--color-on-dark-soft);
+}
+.chat-markdown h1, .chat-markdown h2, .chat-markdown h3 {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: var(--text-body-md);
+  margin: var(--space-3) 0 var(--space-1) 0;
+  color: var(--color-on-dark);
+  letter-spacing: 0;
+}
+.chat-markdown table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--space-2) 0;
+  font-size: 0.95em;
+}
+.chat-markdown th,
+.chat-markdown td {
+  text-align: left;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--color-hairline-dark);
+}
