@@ -131,8 +131,11 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
 
   return (
     <div className="h-screen grid grid-cols-[var(--layout-chat-width)_1fr] bg-canvas">
+      <a href="#workspace-main" className="sr-only focus:not-sr-only">
+        본문으로 건너뛰기
+      </a>
       {/* 좌측 — 챗봇 패널 (다크) */}
-      <aside className="bg-surface-dark text-on-dark border-r border-hairline-dark flex flex-col">
+      <aside className="bg-surface-dark text-on-dark border-r border-hairline-dark flex flex-col" aria-label="챗봇">
         <header className="px-5 py-5 border-b border-hairline-dark flex items-start justify-between gap-3">
           <div className="min-w-0">
             <h2 className="text-title-md text-on-dark">Draft</h2>
@@ -150,7 +153,7 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
       </aside>
 
       {/* 우측 — 콘텐츠 (cream) */}
-      <main className="overflow-y-auto p-6">
+      <main id="workspace-main" className="overflow-y-auto p-6" aria-label="폴더와 진행도">
         <div className="max-w-layout-content mx-auto space-y-7">
           {googleAuthBroken ? (
             <div className="rounded-lg border border-hairline bg-surface-soft p-5 flex items-start justify-between gap-4">
@@ -535,7 +538,7 @@ function FolderTabs({
     <section className="space-y-4 border-t border-hairline pt-6">
       <div className="flex items-end justify-between gap-4">
         <h2 className="text-display-sm text-ink">{folderName}</h2>
-        <div className="flex items-center gap-1 border-b border-hairline -mb-px">
+        <div role="tablist" aria-label="폴더 보기" className="flex items-center gap-1 border-b border-hairline -mb-px">
           <TabButton active={tab === 'folder'} onClick={() => setTab('folder')}>폴더</TabButton>
           <TabButton
             active={tab === 'matrix'}
@@ -549,16 +552,16 @@ function FolderTabs({
       </div>
 
       {tab === 'folder' ? (
-        <>
+        <div role="tabpanel" className="space-y-3">
           {unmatchedCount > 0 && !hasMatrixData ? (
             <ConventionHint unmatchedCount={unmatchedCount} />
           ) : null}
           <FolderBrowser rootDriveFolderId={rootDriveFolderId} rootName={folderName} />
-        </>
+        </div>
       ) : null}
 
       {tab === 'matrix' && hasMatrixData && matrix ? (
-        <div className="space-y-3">
+        <div role="tabpanel" className="space-y-3">
           <p className="text-body-sm text-muted">
             팀 {matrix.teams.length}개 · 주차 {matrix.weeks.length}개 ·
             파일 {matrix.source.fileCount}개
@@ -619,6 +622,9 @@ function TabButton({
   return (
     <button
       type="button"
+      role="tab"
+      aria-selected={active}
+      aria-disabled={disabled}
       onClick={onClick}
       disabled={disabled}
       title={hint}

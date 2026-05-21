@@ -169,6 +169,51 @@ h1, h2, h3, h4 {
   }
 }
 
+/* 키보드 포커스 — 마우스 클릭 시는 안 보이고 키보드 탐색 시에만 표시.
+   Hard Rule 4 의 디자인 토큰 (ink) 사용. 어두운 패널 안 요소는 on-dark 톤. */
+*:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.bg-surface-dark *:focus-visible,
+[class*="surface-dark"] *:focus-visible {
+  outline-color: var(--color-on-dark);
+}
+
+/* 스크린리더 전용 (skip link 등) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.sr-only:focus,
+.focus\:not-sr-only:focus {
+  position: fixed;
+  width: auto;
+  height: auto;
+  padding: var(--space-2) var(--space-4);
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+  top: var(--space-3);
+  left: var(--space-3);
+  z-index: 100;
+  background: var(--color-ink);
+  color: var(--color-canvas);
+  border-radius: var(--radius-md);
+  font-size: var(--text-body-sm);
+}
+
 /* ============================================================
    진행도 셀 — 데이터 시각화 (design.md Progress Cell 참조)
    ============================================================ */
