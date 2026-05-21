@@ -3,12 +3,15 @@
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; deleted?: string; revoke?: string }>
+  searchParams: Promise<{ error?: string; deleted?: string; revoke?: string; signedout?: string }>
 }) {
-  const { error, deleted, revoke } = await searchParams
+  const { error, deleted, revoke, signedout } = await searchParams
   const errorMessage = error ? mapError(error) : null
   const deletedMessage = deleted === '1'
     ? '계정과 데이터가 삭제되었습니다. Google 권한도 회수하시려면 아래 링크에서 Draft 를 제거해 주세요.'
+    : null
+  const signedoutMessage = signedout === '1' && !deleted
+    ? '로그아웃되었습니다.'
     : null
 
   return (
@@ -28,6 +31,10 @@ export default async function HomePage({
 
         {errorMessage ? (
           <p className="text-body-sm text-muted-soft">{errorMessage}</p>
+        ) : null}
+
+        {signedoutMessage ? (
+          <p className="text-body-sm text-muted">{signedoutMessage}</p>
         ) : null}
 
         {deletedMessage ? (

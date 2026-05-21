@@ -1,9 +1,19 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextRequest, NextResponse } from 'next/server'
 
+// 클라이언트 signOut() 가 호출하는 정식 경로.
 export async function POST(request: NextRequest) {
-  const response = NextResponse.json({ success: true })
+  return doSignout(request, NextResponse.json({ success: true }))
+}
 
+// GET fallback — 주소창에 직접 /api/auth/signout 쳐도 동작하도록.
+// 로그아웃 후 / 로 redirect.
+export async function GET(request: NextRequest) {
+  const origin = new URL(request.url).origin
+  return doSignout(request, NextResponse.redirect(`${origin}/?signedout=1`))
+}
+
+async function doSignout(request: NextRequest, response: NextResponse) {
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -22,6 +32,5 @@ export async function POST(request: NextRequest) {
   )
 
   await supabase.auth.signOut()
-
   return response
 }
