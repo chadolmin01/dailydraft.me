@@ -1,4 +1,8 @@
 import { type NextRequest } from 'next/server'
+
+// Claude tool loop 가 도구 6회까지 호출 — Vercel 기본 10s 로는 부족.
+// Pro 플랜이면 60s 까지 가능, Hobby 는 10s 고정 (이 설정 무시됨).
+export const maxDuration = 60
 import { createServerSupabaseClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { getOrCreateWorkspace } from '@/src/lib/workspace'

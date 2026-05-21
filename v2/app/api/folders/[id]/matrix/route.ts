@@ -1,4 +1,7 @@
 import { type NextRequest } from 'next/server'
+
+// 큰 Drive 폴더 + Sheets 조회 두 번 → Vercel 기본 10s 부족 가능.
+export const maxDuration = 60
 import { createServerSupabaseClient } from '@/src/lib/supabase/server'
 import { ApiResponse, isValidUUID } from '@/src/lib/api-utils'
 import { getValidAccessToken, GoogleAuthRequiredError } from '@/src/lib/google/tokens'
