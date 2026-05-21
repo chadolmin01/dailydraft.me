@@ -6,6 +6,7 @@ import { useAuth } from '@/src/context/AuthContext'
 import { extractDriveFolderId, extractSheetId } from '@/src/lib/parsers/google-url'
 import { DrivePickerButton } from './DrivePickerButton'
 import { ChatPanel } from './ChatPanel'
+import { FolderBrowser } from './FolderBrowser'
 
 interface Folder {
   id: string
@@ -19,17 +20,6 @@ interface Folder {
 interface FoldersResponse {
   workspace: { id: string; name: string }
   folders: Folder[]
-}
-
-interface FilesResponse {
-  folder: { id: string; name: string; program: string | null }
-  files: Array<{ id: string; name: string; mimeType: string; modifiedTime: string }>
-  parsed: Array<{
-    name: string
-    parsed: { program: string; week: number; team: string; task: string; ext: string }
-  }>
-  unmatched: string[]
-  summary: { total: number; matched: number; unmatched: number }
 }
 
 interface MatrixCell {
@@ -62,16 +52,6 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
     queryFn: async (): Promise<FoldersResponse> => {
       const res = await fetch('/api/folders')
       if (!res.ok) throw new Error('폴더 목록 조회 실패')
-      return res.json()
-    },
-  })
-
-  const filesQuery = useQuery({
-    queryKey: ['folder-files', selectedFolderId],
-    enabled: !!selectedFolderId,
-    queryFn: async (): Promise<FilesResponse> => {
-      const res = await fetch(`/api/folders/${selectedFolderId}/files`)
-      if (!res.ok) throw new Error('파일 조회 실패')
       return res.json()
     },
   })
@@ -183,10 +163,13 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
             </div>
           ) : null}
 
-          {selectedFolder ? (
+          {selectedFolder?.drive_folder_id ? (
             <>
               <MatrixSection folderName={selectedFolder.name} query={matrixQuery} />
-              <FolderFilesSection folderName={selectedFolder.name} query={filesQuery} />
+              <FolderBrowser
+                rootDriveFolderId={selectedFolder.drive_folder_id}
+                rootName={selectedFolder.name}
+              />
             </>
           ) : null}
         </div>
@@ -539,57 +522,3 @@ function Cell({ cell }: { cell?: MatrixCell }) {
   return <span className="progress-cell progress-cell--empty" aria-label="empty">○</span>
 }
 
-function FolderFilesSection({
-  folderName,
-  query,
-}: {
-  folderName: string
-  query: ReturnType<typeof useQuery<FilesResponse, Error>>
-}) {
-  return (
-    <section className="space-y-3 border-t border-hairline pt-7">
-      <h2 className="text-display-sm text-ink">{folderName} · 파일</h2>
-
-      {query.isLoading ? <p className="text-body-sm text-muted">불러오는 중…</p> : null}
-
-      {query.isError ? (
-        <p className="text-body-sm text-muted">{query.error.message}</p>
-      ) : null}
-
-      {query.data ? (
-        <div className="space-y-4">
-          <p className="text-body-sm text-muted">
-            전체 {query.data.summary.total}개 · 매칭 {query.data.summary.matched}개 ·
-            미매칭 {query.data.summary.unmatched}개
-          </p>
-
-          {query.data.parsed.length > 0 ? (
-            <ul className="rounded-lg border border-hairline divide-y divide-hairline overflow-hidden bg-canvas">
-              {query.data.parsed.map(({ name, parsed }) => (
-                <li key={name} className="px-4 py-3 flex items-center justify-between gap-4">
-                  <code className="filename truncate">{name}</code>
-                  <span className="text-caption text-muted shrink-0 tabular">
-                    {parsed.program} · {parsed.week}주차 · {parsed.team} · {parsed.task}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          ) : null}
-
-          {query.data.unmatched.length > 0 ? (
-            <details className="rounded-lg border border-hairline bg-surface-soft p-4">
-              <summary className="text-body-sm text-muted cursor-pointer">
-                미매칭 {query.data.unmatched.length}개 펼치기
-              </summary>
-              <ul className="mt-3 space-y-1">
-                {query.data.unmatched.map(name => (
-                  <li key={name}><code className="filename">{name}</code></li>
-                ))}
-              </ul>
-            </details>
-          ) : null}
-        </div>
-      ) : null}
-    </section>
-  )
-}
