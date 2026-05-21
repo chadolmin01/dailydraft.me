@@ -31,6 +31,25 @@ interface FilesResponse {
   summary: { total: number; matched: number; unmatched: number }
 }
 
+interface MatrixCell {
+  team: string
+  week: number
+  status: 'done' | 'empty'
+  files: Array<{ id: string; name: string; modifiedTime: string }>
+}
+
+interface MatrixResponse {
+  folder: { id: string; name: string; program: string | null }
+  matrix: {
+    teams: string[]
+    weeks: number[]
+    cells: MatrixCell[]
+    source: { teamSource: 'roster' | 'derived'; rosterSize?: number; fileCount: number }
+  }
+  unmatched: string[]
+  rosterError?: string
+}
+
 export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
   const { signOut } = useAuth()
   const queryClient = useQueryClient()
@@ -52,6 +71,16 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
     queryFn: async (): Promise<FilesResponse> => {
       const res = await fetch(`/api/folders/${selectedFolderId}/files`)
       if (!res.ok) throw new Error('파일 조회 실패')
+      return res.json()
+    },
+  })
+
+  const matrixQuery = useQuery({
+    queryKey: ['folder-matrix', selectedFolderId],
+    enabled: !!selectedFolderId,
+    queryFn: async (): Promise<MatrixResponse> => {
+      const res = await fetch(`/api/folders/${selectedFolderId}/matrix`)
+      if (!res.ok) throw new Error('매트릭스 조회 실패')
       return res.json()
     },
   })
@@ -167,7 +196,12 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
             </div>
           ) : null}
 
-          {selectedFolder ? <FolderFilesSection folderName={selectedFolder.name} query={filesQuery} /> : null}
+          {selectedFolder ? (
+            <>
+              <MatrixSection folderName={selectedFolder.name} query={matrixQuery} />
+              <FolderFilesSection folderName={selectedFolder.name} query={filesQuery} />
+            </>
+          ) : null}
         </div>
       </main>
     </div>
@@ -422,6 +456,100 @@ function Field({ label, required, hint, children }: { label: string; required?: 
       {hint ? <span className="block text-caption text-muted-soft">{hint}</span> : null}
     </label>
   )
+}
+
+function MatrixSection({
+  folderName,
+  query,
+}: {
+  folderName: string
+  query: ReturnType<typeof useQuery<MatrixResponse, Error>>
+}) {
+  return (
+    <section className="space-y-3 border-t border-hairline pt-7">
+      <h2 className="text-display-sm text-ink">{folderName} · 진행도</h2>
+
+      {query.isLoading ? <p className="text-body-sm text-muted">계산 중…</p> : null}
+      {query.isError ? <p className="text-body-sm text-muted">{query.error.message}</p> : null}
+
+      {query.data ? (
+        <div className="space-y-3">
+          <p className="text-body-sm text-muted">
+            팀 {query.data.matrix.teams.length}개 · 주차 {query.data.matrix.weeks.length}개 ·
+            파일 {query.data.matrix.source.fileCount}개
+            {query.data.matrix.source.teamSource === 'derived'
+              ? ' · 명단 시트 미연결 (파일에서 추출)'
+              : ' · 명단 시트 기반'}
+          </p>
+
+          {query.data.rosterError ? (
+            <p className="text-body-sm text-muted">명단 시트 읽기 실패: {query.data.rosterError}</p>
+          ) : null}
+
+          <ProgressGrid teams={query.data.matrix.teams} weeks={query.data.matrix.weeks} cells={query.data.matrix.cells} />
+        </div>
+      ) : null}
+    </section>
+  )
+}
+
+function ProgressGrid({
+  teams,
+  weeks,
+  cells,
+}: {
+  teams: string[]
+  weeks: number[]
+  cells: MatrixCell[]
+}) {
+  // team × week 빠른 조회용 인덱스
+  const cellMap = new Map<string, MatrixCell>()
+  for (const c of cells) cellMap.set(`${c.team}|${c.week}`, c)
+
+  return (
+    <div className="overflow-x-auto rounded-lg border border-hairline bg-canvas">
+      <table className="w-full text-body-sm">
+        <thead>
+          <tr className="bg-surface-soft">
+            <th className="text-left px-4 py-2 text-title-sm text-ink sticky left-0 bg-surface-soft">팀</th>
+            {weeks.map(w => (
+              <th key={w} className="px-2 py-2 text-title-sm text-ink text-center tabular">
+                {w}주차
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {teams.map(team => (
+            <tr key={team} className="border-t border-hairline-soft">
+              <td className="px-4 py-2 text-body-sm text-ink sticky left-0 bg-canvas">{team}</td>
+              {weeks.map(w => {
+                const cell = cellMap.get(`${team}|${w}`)
+                return (
+                  <td key={w} className="px-2 py-2 text-center">
+                    <Cell cell={cell} />
+                  </td>
+                )
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+function Cell({ cell }: { cell?: MatrixCell }) {
+  if (!cell) return <span className="progress-cell progress-cell--empty" aria-label="empty">○</span>
+  if (cell.status === 'done') {
+    const title = cell.files.map(f => f.name).join('\n')
+    return (
+      <span className="progress-cell progress-cell--done" title={title} aria-label={`done (${cell.files.length})`}>
+        ●
+      </span>
+    )
+  }
+  return <span className="progress-cell progress-cell--empty" aria-label="empty">○</span>
 }
 
 function FolderFilesSection({
