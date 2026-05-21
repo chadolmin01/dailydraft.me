@@ -287,12 +287,13 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
                   <button
                     type="button"
                     onClick={() => setSelectedFolderId(folder.id === selectedFolderId ? null : folder.id)}
-                    className="w-full text-left p-5 pr-12"
+                    className="w-full text-left p-5 pr-12 space-y-1"
                   >
                     <p className="text-display-sm text-ink">{folder.name}</p>
-                    <p className="text-caption text-muted mt-1">
+                    <p className="text-caption text-muted">
                       {folder.program ?? 'program 미지정'} · {folder.sheet_id ? 'Sheets 연결됨' : 'Sheets 없음'}
                     </p>
+                    <FolderCardStats folderId={folder.id} />
                   </button>
                   <button
                     type="button"
@@ -581,6 +582,42 @@ function Field({ label, required, hint, children }: { label: string; required?: 
       {hint ? <span className="block text-caption text-muted-soft">{hint}</span> : null}
     </label>
   )
+}
+
+function FolderCardStats({ folderId }: { folderId: string }) {
+  const query = useQuery({
+    queryKey: ['folder-stats', folderId],
+    staleTime: 60_000,
+    queryFn: async () => {
+      const res = await fetch(`/api/folders/${folderId}/stats`)
+      if (!res.ok) throw new Error('stats fail')
+      return res.json() as Promise<{ file_count: number; latest_modified: string | null; latest_name: string | null }>
+    },
+  })
+
+  if (query.isLoading || query.isError || !query.data) {
+    return <p className="text-caption text-muted-soft">파일 정보 불러오는 중…</p>
+  }
+
+  const { file_count, latest_modified } = query.data
+  return (
+    <p className="text-caption text-muted-soft tabular">
+      파일 {file_count}개
+      {latest_modified ? ` · ${formatRelative(latest_modified)}` : ''}
+    </p>
+  )
+}
+
+function formatRelative(iso: string): string {
+  const d = new Date(iso).getTime()
+  const diff = Date.now() - d
+  const day = 24 * 60 * 60 * 1000
+  if (diff < day) return '오늘'
+  if (diff < 2 * day) return '어제'
+  if (diff < 7 * day) return `${Math.floor(diff / day)}일 전`
+  if (diff < 30 * day) return `${Math.floor(diff / (7 * day))}주 전`
+  if (diff < 365 * day) return `${Math.floor(diff / (30 * day))}달 전`
+  return `${Math.floor(diff / (365 * day))}년 전`
 }
 
 function FolderTabs({
