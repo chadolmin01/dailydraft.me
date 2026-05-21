@@ -98,6 +98,23 @@ export function ChatPanel({ folderId }: Props) {
     },
   })
 
+  const clearHistory = useMutation({
+    mutationFn: async () => {
+      const res = await fetch('/api/chat', { method: 'DELETE' })
+      if (!res.ok) throw new Error('대화 기록 삭제 실패')
+    },
+    onSuccess: () => {
+      qc.setQueryData(['chat-history'], { rows: [] })
+    },
+  })
+
+  const handleClear = () => {
+    if (rows.length === 0) return
+    if (window.confirm(`대화 기록 ${rows.length}건을 모두 삭제하시겠습니까?\n폴더와 파일에는 영향이 없습니다.`)) {
+      clearHistory.mutate()
+    }
+  }
+
   const rows = history.data?.rows ?? []
 
   // 새 메시지 도착 / 응답 완료 시 자동 스크롤
@@ -163,6 +180,19 @@ export function ChatPanel({ folderId }: Props) {
           </div>
         ) : null}
       </div>
+
+      {rows.length > 0 ? (
+        <div className="px-5 pb-2 flex justify-end">
+          <button
+            type="button"
+            onClick={handleClear}
+            disabled={clearHistory.isPending}
+            className="text-caption text-on-dark-soft hover:text-on-dark transition-colors disabled:opacity-40"
+          >
+            {clearHistory.isPending ? '지우는 중…' : '대화 지우기'}
+          </button>
+        </div>
+      ) : null}
 
       <form onSubmit={handleSubmit} className="px-5 py-4 border-t border-hairline-dark">
         <textarea

@@ -214,6 +214,24 @@ export async function GET() {
   return ApiResponse.ok({ rows: rows ?? [] })
 }
 
+// DELETE — 워크스페이스의 채팅 기록 전체 삭제
+export async function DELETE() {
+  const supabase = await createServerSupabaseClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return ApiResponse.unauthorized()
+
+  const workspace = await getOrCreateWorkspace(supabase, user.id)
+
+  const { error } = await supabase
+    .from('chats')
+    .delete()
+    .eq('workspace_id', workspace.id)
+
+  if (error) return ApiResponse.internalError(error.message)
+
+  return ApiResponse.noContent()
+}
+
 // chats.content 에 저장된 JSON 을 Anthropic API 메시지로 복원.
 function rowToMessage(role: string, content: unknown): Anthropic.MessageParam {
   // role 'tool' (우리 DB 컨벤션) → Anthropic 의 user role + tool_result blocks

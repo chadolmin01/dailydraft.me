@@ -111,9 +111,26 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
         throw new Error(data.error?.message ?? '폴더 삭제 실패')
       }
     },
-    onSuccess: (_data, folderId) => {
-      queryClient.invalidateQueries({ queryKey: ['folders'] })
+    // Optimistic update — 즉각 사라지고, 실패 시 롤백
+    onMutate: async (folderId) => {
+      await queryClient.cancelQueries({ queryKey: ['folders'] })
+      const prev = queryClient.getQueryData<FoldersResponse>(['folders'])
+      if (prev) {
+        queryClient.setQueryData<FoldersResponse>(['folders'], {
+          ...prev,
+          folders: prev.folders.filter(f => f.id !== folderId),
+        })
+      }
       if (selectedFolderId === folderId) setSelectedFolderId(null)
+      return { prev }
+    },
+    onError: (_err, _folderId, context) => {
+      if (context?.prev) {
+        queryClient.setQueryData(['folders'], context.prev)
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['folders'] })
     },
   })
 
