@@ -476,6 +476,12 @@ function AddFolderForm({
           placeholder="ID 또는 https://drive.google.com/drive/folders/..."
           className="w-full h-10 px-3 font-mono text-mono-md bg-canvas border border-hairline rounded-md text-ink focus:outline-none focus:border-ink"
         />
+        <FolderIdPreview
+          id={form.drive_folder_id}
+          onResolved={(name) => {
+            if (!form.name && name) setForm((f) => ({ ...f, name }))
+          }}
+        />
       </Field>
 
       {/* Sheets — Picker + 검색 + 직접 입력 */}
@@ -544,6 +550,51 @@ function AddFolderForm({
       </button>
     </form>
   )
+}
+
+function FolderIdPreview({ id, onResolved }: { id: string; onResolved: (name: string) => void }) {
+  const [debouncedId, setDebouncedId] = useState('')
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedId(id.trim()), 600)
+    return () => clearTimeout(t)
+  }, [id])
+
+  const query = useQuery({
+    queryKey: ['folder-meta', debouncedId],
+    enabled: debouncedId.length >= 20,  // Drive ID 는 보통 25+ chars
+    queryFn: async () => {
+      const res = await fetch(`/api/google/drive/folder-meta?id=${encodeURIComponent(debouncedId)}`)
+      if (!res.ok) throw new Error('not found')
+      return res.json() as Promise<{ id: string; name: string; mimeType: string }>
+    },
+    retry: false,
+  })
+
+  useEffect(() => {
+    if (query.data?.name) onResolved(query.data.name)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query.data?.name])
+
+  if (!debouncedId || debouncedId.length < 20) return null
+  if (query.isLoading) {
+    return <p className="text-caption text-muted-soft mt-1">확인 중…</p>
+  }
+  if (query.isError) {
+    return <p className="text-caption text-muted-soft mt-1">폴더를 찾지 못했거나 접근 권한이 없습니다.</p>
+  }
+  if (query.data) {
+    const isFolder = query.data.mimeType === 'application/vnd.google-apps.folder'
+    return (
+      <p className="text-caption mt-1 truncate">
+        {isFolder ? (
+          <span className="text-ink">✓ {query.data.name}</span>
+        ) : (
+          <span className="text-muted">이건 폴더가 아닙니다 ({query.data.name})</span>
+        )}
+      </p>
+    )
+  }
+  return null
 }
 
 function SearchResults({
