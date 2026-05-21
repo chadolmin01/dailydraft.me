@@ -27,11 +27,25 @@ export const metadata: Metadata = {
     default: 'Draft',
     template: '%s — Draft',
   },
-  description: '창업기관 운영자 워크스페이스',
+  description: '창업기관 매니저가 Drive · Sheets · Gmail 자료를 한 화면에서 관리합니다.',
+  applicationName: 'Draft',
+  category: 'productivity',
+  openGraph: {
+    title: 'Draft',
+    description: '창업기관 매니저가 Drive · Sheets · Gmail 자료를 한 화면에서 관리합니다.',
+    url: APP_URL,
+    siteName: 'Draft',
+    locale: 'ko_KR',
+    type: 'website',
+  },
   formatDetection: {
     telephone: false,
     email: false,
     address: false,
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 }
 
