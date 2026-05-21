@@ -248,8 +248,28 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
           ) : null}
 
           {folders.length === 0 && !foldersQuery.isLoading && !showAddForm ? (
-            <div className="rounded-lg border border-hairline bg-surface-soft p-7 text-center text-body-sm text-muted">
-              연결된 폴더가 없습니다. 우측 상단 &quot;폴더 연결&quot; 을 눌러주세요.
+            <div className="rounded-lg border border-hairline bg-surface-soft p-8 text-center space-y-5">
+              <div className="space-y-2">
+                <h3 className="text-display-sm text-ink">시작하기 전 한 가지</h3>
+                <p className="text-body-md text-muted">
+                  운영 중인 Google Drive 폴더 하나만 연결하면 됩니다.
+                </p>
+              </div>
+              <ol className="text-body-sm text-body space-y-1.5 max-w-md mx-auto text-left list-decimal list-inside">
+                <li>FLIP 1기 같은 운영 단위의 Drive 폴더를 준비합니다.</li>
+                <li>(선택) 팀 명단이 적힌 Sheets 도 함께.</li>
+                <li>아래 버튼으로 연결하면 즉시 매트릭스가 그려집니다.</li>
+              </ol>
+              <button
+                type="button"
+                onClick={() => setShowAddForm(true)}
+                className="h-10 px-5 rounded-md bg-ink text-canvas text-button font-medium hover:bg-body-strong transition-colors"
+              >
+                폴더 연결하기
+              </button>
+              <p className="text-caption text-muted-soft">
+                사용법이 궁금하시면 <a href="/help" className="underline underline-offset-2 hover:text-ink">도움말</a> 을 먼저 보세요.
+              </p>
             </div>
           ) : null}
 
