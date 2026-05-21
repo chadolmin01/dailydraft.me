@@ -66,6 +66,12 @@ interface Props {
   folderId: string | null
 }
 
+const SUGGESTIONS = [
+  '전체 진행 상황을 한 줄로 요약해주세요.',
+  '이번 주차에 아직 안 낸 팀을 알려주세요.',
+  '가장 최근에 올라온 파일 3개를 보여주세요.',
+] as const
+
 export function ChatPanel({ folderId }: Props) {
   const qc = useQueryClient()
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -149,13 +155,21 @@ export function ChatPanel({ folderId }: Props) {
         ) : null}
 
         {rows.length === 0 && !history.isLoading ? (
-          <div className="text-body-sm text-on-dark-soft">
+          <div className="text-body-sm text-on-dark-soft space-y-3">
             <p>무엇을 도와드릴까요?</p>
-            <ul className="mt-3 space-y-1.5 text-on-dark-soft text-caption">
-              <li>· {'"3주차 미제출 팀 알려주세요."'}</li>
-              <li>· {'"미제출 팀에 보낼 메일 초안 만들어주세요."'}</li>
-              <li>· {'"FLIP 폴더에 어떤 파일이 있나요?"'}</li>
-            </ul>
+            <div className="space-y-2">
+              {SUGGESTIONS.map(s => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => send.mutate(s)}
+                  disabled={send.isPending}
+                  className="block w-full text-left px-3 py-2 rounded-md border border-hairline-dark hover:bg-surface-dark-elevated transition-colors text-body-sm text-on-dark disabled:opacity-50"
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
           </div>
         ) : null}
 
