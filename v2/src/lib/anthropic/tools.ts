@@ -27,6 +27,14 @@ export const TOOL_DEFINITIONS = [
     },
   },
   {
+    name: 'list_all_folders_summary',
+    description: '모든 연결된 폴더의 한 줄 요약을 병렬로 가져옵니다. 사용자가 "전체 상황", "워크스페이스 요약" 등을 물을 때 사용. 폴더당 file_count + 최근 활동 일자 반환.',
+    input_schema: {
+      type: 'object',
+      properties: {},
+    },
+  },
+  {
     name: 'get_folder_summary',
     description: '폴더의 진행 상황을 한눈에 요약합니다. 팀 수, 주차 수, 매칭/미매칭 파일 수, 최근 활동 파일을 반환. 사용자가 "현황", "요약", "어떻게 돼가" 라고 물을 때 사용.',
     input_schema: {
@@ -83,6 +91,7 @@ export interface ToolContext {
 
 interface ToolInputs {
   list_workspace_folders: Record<string, never>
+  list_all_folders_summary: Record<string, never>
   get_folder_summary: { folder_id: string }
   list_folder_files: { folder_id: string }
   find_missing_teams: { folder_id: string; week: number }
@@ -99,6 +108,8 @@ export async function executeTool(
   switch (name as ToolName) {
     case 'list_workspace_folders':
       return listWorkspaceFoldersTool(ctx)
+    case 'list_all_folders_summary':
+      return listAllFoldersSummaryTool(ctx)
     case 'get_folder_summary':
       return getFolderSummaryTool(ctx, input as ToolInputs['get_folder_summary'])
     case 'list_folder_files':
@@ -140,6 +151,49 @@ async function listWorkspaceFoldersTool(ctx: ToolContext) {
       has_sheet: !!f.sheet_id,
     })),
   }
+}
+
+async function listAllFoldersSummaryTool(ctx: ToolContext) {
+  const list = await listWorkspaceFoldersTool(ctx)
+  if (list.folder_count === 0) {
+    return { folder_count: 0, summaries: [] }
+  }
+
+  // 폴더당 light 요약 — Drive 통계만 (매트릭스 계산 X, 비용 절감)
+  const accessToken = await getValidAccessToken(ctx.userId)
+  const { listFolderFiles: list_drive_files_local } = await import('@/src/lib/google/drive')
+
+  const summaries = await Promise.all(
+    list.folders.map(async (f) => {
+      try {
+        const folderMeta = await ctx.supabase
+          .from('folders')
+          .select('drive_folder_id')
+          .eq('id', f.folder_id)
+          .maybeSingle()
+        if (!folderMeta.data?.drive_folder_id) {
+          return { folder_id: f.folder_id, name: f.name, error: 'Drive folder 없음' }
+        }
+        const files = await list_drive_files_local(accessToken, folderMeta.data.drive_folder_id)
+        const latest = files.reduce<typeof files[0] | null>((best, file) => {
+          if (!best) return file
+          return file.modifiedTime > best.modifiedTime ? file : best
+        }, null)
+        return {
+          folder_id: f.folder_id,
+          name: f.name,
+          program: f.program,
+          file_count: files.length,
+          latest_file: latest?.name ?? null,
+          latest_modified: latest?.modifiedTime ?? null,
+        }
+      } catch (e) {
+        return { folder_id: f.folder_id, name: f.name, error: (e as Error).message }
+      }
+    }),
+  )
+
+  return { folder_count: summaries.length, summaries }
 }
 
 async function getFolderSummaryTool(ctx: ToolContext, input: ToolInputs['get_folder_summary']) {
