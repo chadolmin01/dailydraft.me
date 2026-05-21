@@ -612,10 +612,22 @@ function FolderCardStats({ folderId }: { folderId: string }) {
   }
 
   const { file_count, latest_modified } = query.data
+  // 24시간 이내 활동 = "활발함" 표시
+  const isRecent = latest_modified && (Date.now() - new Date(latest_modified).getTime() < 24 * 60 * 60 * 1000)
+
   return (
-    <p className="text-caption text-muted-soft tabular">
-      파일 {file_count}개
-      {latest_modified ? ` · ${formatRelative(latest_modified)}` : ''}
+    <p className="text-caption text-muted-soft tabular flex items-center gap-1.5">
+      {isRecent ? (
+        <span
+          className="inline-block w-1.5 h-1.5 rounded-full bg-ink"
+          aria-label="오늘 활동 있음"
+          title="오늘 활동 있음"
+        />
+      ) : null}
+      <span>
+        파일 {file_count}개
+        {latest_modified ? ` · ${formatRelative(latest_modified)}` : ''}
+      </span>
     </p>
   )
 }
