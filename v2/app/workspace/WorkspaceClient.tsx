@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/src/context/AuthContext'
 import { extractDriveFolderId, extractSheetId } from '@/src/lib/parsers/google-url'
 import { DrivePickerButton } from './DrivePickerButton'
+import { ChatPanel } from './ChatPanel'
 
 interface Folder {
   id: string
@@ -124,21 +125,7 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
           </button>
         </header>
 
-        <div className="flex-1 overflow-y-auto px-5 py-4 text-body-sm text-on-dark-soft">
-          무엇을 도와드릴까요?
-          <p className="text-caption text-on-dark-soft mt-2 opacity-60">
-            (챗봇은 Day 3 에서 연결)
-          </p>
-        </div>
-
-        <form className="px-5 py-4 border-t border-hairline-dark">
-          <input
-            type="text"
-            placeholder="메시지를 입력하세요"
-            className="w-full h-10 px-4 bg-surface-dark-elevated border border-hairline-dark rounded-md font-body text-body-md text-on-dark placeholder:text-on-dark-soft focus:outline-none focus:border-on-dark"
-            disabled
-          />
-        </form>
+        <ChatPanel folderId={selectedFolderId} />
       </aside>
 
       {/* 우측 — 콘텐츠 (cream) */}
