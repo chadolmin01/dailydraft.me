@@ -64,6 +64,7 @@ function extractEmailDrafts(content: unknown): EmailDraftRef[] {
 
 interface Props {
   folderId: string | null
+  folderName?: string
 }
 
 const SUGGESTIONS = [
@@ -72,7 +73,7 @@ const SUGGESTIONS = [
   '가장 최근에 올라온 파일 3개를 보여주세요.',
 ] as const
 
-export function ChatPanel({ folderId }: Props) {
+export function ChatPanel({ folderId, folderName }: Props) {
   const qc = useQueryClient()
   const scrollRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -149,6 +150,11 @@ export function ChatPanel({ folderId }: Props) {
 
   return (
     <div className="flex flex-col h-full">
+      {folderId && folderName ? (
+        <div className="px-5 py-2 border-b border-hairline-dark text-caption text-on-dark-soft">
+          현재 폴더: <span className="text-on-dark">{folderName}</span>
+        </div>
+      ) : null}
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
         {history.isLoading ? (
           <p className="text-body-sm text-on-dark-soft">불러오는 중…</p>

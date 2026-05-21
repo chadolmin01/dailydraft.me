@@ -199,7 +199,7 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
           </div>
         </header>
 
-        <ChatPanel folderId={selectedFolderId} />
+        <ChatPanel folderId={selectedFolderId} folderName={selectedFolder?.name} />
       </aside>
 
       {/* 우측 (모바일에서는 하단) — 콘텐츠 (cream) */}
