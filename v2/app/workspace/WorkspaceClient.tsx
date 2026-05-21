@@ -59,6 +59,11 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
           const data = await res.json().catch(() => ({}))
           if (data.error?.code === 'GOOGLE_AUTH_REQUIRED') {
             setGoogleAuthBroken(true)
+          } else {
+            // Supabase 세션이 만료됨 (Google 권한과 무관) — 미들웨어가 /로 보내도록 reload
+            if (typeof window !== 'undefined') {
+              window.location.href = '/'
+            }
           }
         }
         throw new Error('폴더 목록 조회 실패')
