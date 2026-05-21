@@ -132,6 +132,31 @@ export function ChatPanel({ folderId, folderName }: Props) {
     }
   }
 
+  const handleExport = () => {
+    if (rows.length === 0) return
+    const lines: string[] = []
+    lines.push(`Draft 대화 기록 — ${new Date().toLocaleString('ko-KR')}`)
+    lines.push('')
+    for (const row of rows) {
+      const text = extractText(row.content)
+      if (!text) continue
+      const ts = new Date(row.created_at).toLocaleString('ko-KR')
+      const who = row.role === 'user' ? '나' : '비서'
+      lines.push(`[${ts}] ${who}`)
+      lines.push(text)
+      lines.push('')
+    }
+    const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `draft-chat-${new Date().toISOString().slice(0, 10)}.txt`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+
   const rows = history.data?.rows ?? []
 
   // 새 메시지 도착 / 응답 완료 시 자동 스크롤
@@ -212,7 +237,14 @@ export function ChatPanel({ folderId, folderName }: Props) {
       </div>
 
       {rows.length > 0 ? (
-        <div className="px-5 pb-2 flex justify-end">
+        <div className="px-5 pb-2 flex justify-end gap-3">
+          <button
+            type="button"
+            onClick={handleExport}
+            className="text-caption text-on-dark-soft hover:text-on-dark transition-colors"
+          >
+            내보내기
+          </button>
           <button
             type="button"
             onClick={handleClear}
