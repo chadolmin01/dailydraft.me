@@ -68,17 +68,23 @@ export async function listFolderFiles(
 export async function searchDriveItems(
   accessToken: string,
   keyword: string,
-  kind: 'folder' | 'sheet',
+  kind: 'folder' | 'sheet' | 'all',
 ): Promise<DriveFile[]> {
-  const mime = kind === 'folder'
-    ? 'application/vnd.google-apps.folder'
-    : 'application/vnd.google-apps.spreadsheet'
-
   // Drive 쿼리 문자열에서 single quote 는 backslash 로 이스케이프
   const safeKeyword = keyword.replace(/'/g, "\\'")
 
+  let q: string
+  if (kind === 'folder') {
+    q = `name contains '${safeKeyword}' and mimeType = 'application/vnd.google-apps.folder' and trashed = false`
+  } else if (kind === 'sheet') {
+    q = `name contains '${safeKeyword}' and mimeType = 'application/vnd.google-apps.spreadsheet' and trashed = false`
+  } else {
+    // all: name OR fullText, 폴더 제외
+    q = `(name contains '${safeKeyword}' or fullText contains '${safeKeyword}') and mimeType != 'application/vnd.google-apps.folder' and trashed = false`
+  }
+
   const params = new URLSearchParams({
-    q: `name contains '${safeKeyword}' and mimeType = '${mime}' and trashed = false`,
+    q,
     fields: 'files(id,name,mimeType,modifiedTime,webViewLink)',
     pageSize: '20',
     orderBy: 'modifiedTime desc',

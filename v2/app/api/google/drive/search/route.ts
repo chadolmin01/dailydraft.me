@@ -11,7 +11,10 @@ import { searchDriveItems } from '@/src/lib/google/drive'
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const q = searchParams.get('q')?.trim()
-  const type = searchParams.get('type') === 'sheet' ? 'sheet' : 'folder'
+  const typeParam = searchParams.get('type')
+  const type: 'folder' | 'sheet' | 'all' =
+    typeParam === 'sheet' ? 'sheet' :
+    typeParam === 'all' ? 'all' : 'folder'
 
   if (!q || q.length < 1) {
     return ApiResponse.ok({ items: [] })
