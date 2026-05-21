@@ -8,11 +8,70 @@ import { updateSession } from '@/src/lib/supabase/middleware'
 //   - /            : 로그인되어 있으면 → /workspace 로 redirect (한 번 더 거치지 않게)
 //   - /api/auth/*  : 항상 통과 (OAuth 흐름)
 
+// CSP (Content Security Policy) — XSS 방어선.
+// V2 가 외부에서 로드하는 것들:
+//   - script: Google Picker (apis.google.com) + Next.js 인라인 (unsafe-inline 필요)
+//   - style: Pretendard CDN (jsdelivr) + Tailwind 인라인 (unsafe-inline)
+//   - font: Google Fonts (gstatic) + Pretendard (jsdelivr)
+//   - frame: Picker (accounts.google.com 등)
+//   - img: Supabase storage + Google avatars + data:/blob:
+//   - connect: Supabase REST/Realtime + Google APIs (Drive/Sheets/Gmail)
+//
+// Dev 모드에서는 'unsafe-eval' 도 필요 (Next.js HMR).
+function buildCsp(isDev: boolean): string {
+  const directives: Record<string, string[]> = {
+    'default-src': ["'self'"],
+    'script-src': [
+      "'self'",
+      "'unsafe-inline'",
+      ...(isDev ? ["'unsafe-eval'"] : []),
+      'https://apis.google.com',
+    ],
+    'style-src': ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net'],
+    'font-src': ["'self'", 'data:', 'https://fonts.gstatic.com', 'https://cdn.jsdelivr.net'],
+    'img-src': [
+      "'self'",
+      'data:',
+      'blob:',
+      'https://*.supabase.co',
+      'https://lh3.googleusercontent.com',
+      'https://*.googleusercontent.com',
+    ],
+    'connect-src': [
+      "'self'",
+      'https://*.supabase.co',
+      'wss://*.supabase.co',
+      'https://www.googleapis.com',
+      'https://oauth2.googleapis.com',
+      'https://gmail.googleapis.com',
+      'https://sheets.googleapis.com',
+      'https://accounts.google.com',
+    ],
+    'frame-src': [
+      "'self'",
+      'https://accounts.google.com',
+      'https://content.googleapis.com',
+      'https://docs.google.com',
+    ],
+    'object-src': ["'none'"],
+    'base-uri': ["'self'"],
+    'form-action': ["'self'"],
+    'frame-ancestors': ["'none'"],
+  }
+  return Object.entries(directives)
+    .map(([k, v]) => `${k} ${v.join(' ')}`)
+    .join('; ')
+}
+
+const IS_DEV = process.env.NODE_ENV === 'development'
+const CSP = buildCsp(IS_DEV)
+
 function addSecurityHeaders(response: NextResponse) {
   response.headers.set('X-Content-Type-Options', 'nosniff')
   response.headers.set('X-Frame-Options', 'DENY')
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
+  response.headers.set('Content-Security-Policy', CSP)
   return response
 }
 
