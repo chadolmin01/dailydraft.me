@@ -725,9 +725,7 @@ function FolderTabs({
         </div>
       ) : null}
 
-      {tab === 'matrix' && matrixQuery.isLoading ? (
-        <p className="text-body-sm text-muted">진행도를 계산하고 있습니다…</p>
-      ) : null}
+      {tab === 'matrix' && matrixQuery.isLoading ? <MatrixSkeleton /> : null}
       {tab === 'matrix' && matrixQuery.isError ? (
         <p className="text-body-sm text-muted">진행도를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p>
       ) : null}
@@ -901,6 +899,34 @@ function TabButton({
     >
       {children}
     </button>
+  )
+}
+
+function MatrixSkeleton() {
+  return (
+    <div className="space-y-3">
+      <div className="h-4 w-72 bg-surface-card rounded animate-pulse opacity-60" />
+      <div className="rounded-lg border border-hairline bg-surface-soft p-4 grid grid-cols-2 md:grid-cols-5 gap-3 text-center">
+        {[0, 1, 2, 3, 4].map(i => (
+          <div key={i} className="space-y-1">
+            <div className="h-7 w-12 mx-auto bg-canvas rounded animate-pulse opacity-60" />
+            <div className="h-3 w-10 mx-auto bg-canvas rounded animate-pulse opacity-40" />
+          </div>
+        ))}
+      </div>
+      <div className="overflow-x-auto rounded-lg border border-hairline bg-canvas">
+        <div className="p-3 space-y-2">
+          {[0, 1, 2, 3, 4].map(r => (
+            <div key={r} className="flex gap-2">
+              <div className="h-7 w-16 bg-surface-card rounded animate-pulse opacity-60" />
+              {[0, 1, 2, 3, 4, 5].map(c => (
+                <div key={c} className="h-7 w-8 bg-surface-card rounded animate-pulse opacity-40" />
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   )
 }
 
