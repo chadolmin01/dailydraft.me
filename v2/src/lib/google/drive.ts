@@ -58,6 +58,46 @@ export async function listFolderFiles(
 }
 
 /**
+ * 키워드로 폴더 / 스프레드시트 검색.
+ *   - keyword: 부분 일치 (Drive 의 `name contains` 사용)
+ *   - kind: 'folder' | 'sheet'
+ *   - 최대 20개 결과 반환 (UX 상 더 많이 보여줘봐야 선택 부담)
+ */
+export async function searchDriveItems(
+  accessToken: string,
+  keyword: string,
+  kind: 'folder' | 'sheet',
+): Promise<DriveFile[]> {
+  const mime = kind === 'folder'
+    ? 'application/vnd.google-apps.folder'
+    : 'application/vnd.google-apps.spreadsheet'
+
+  // Drive 쿼리 문자열에서 single quote 는 backslash 로 이스케이프
+  const safeKeyword = keyword.replace(/'/g, "\\'")
+
+  const params = new URLSearchParams({
+    q: `name contains '${safeKeyword}' and mimeType = '${mime}' and trashed = false`,
+    fields: 'files(id,name,mimeType,modifiedTime,webViewLink)',
+    pageSize: '20',
+    orderBy: 'modifiedTime desc',
+    corpora: 'user',
+  })
+
+  const res = await fetch(`https://www.googleapis.com/drive/v3/files?${params}`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+    cache: 'no-store',
+  })
+
+  if (!res.ok) {
+    const text = await res.text()
+    throw new Error(`Drive search failed (${res.status}): ${text}`)
+  }
+
+  const data = (await res.json()) as ListResponse
+  return data.files ?? []
+}
+
+/**
  * 폴더 1개의 메타정보 (이름 검증 등). 없거나 권한 없으면 throw.
  */
 export async function getFolderMeta(

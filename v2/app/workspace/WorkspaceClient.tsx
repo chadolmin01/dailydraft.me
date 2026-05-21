@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/src/context/AuthContext'
+import { extractDriveFolderId, extractSheetId } from '@/src/lib/parsers/google-url'
 
 interface Folder {
   id: string
@@ -172,6 +173,13 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
   )
 }
 
+interface DriveItem {
+  id: string
+  name: string
+  mimeType: string
+  webViewLink?: string
+}
+
 function AddFolderForm({
   onSubmit,
   pending,
@@ -182,6 +190,53 @@ function AddFolderForm({
   error: string | null
 }) {
   const [form, setForm] = useState({ name: '', drive_folder_id: '', sheet_id: '', program: '' })
+
+  // 폴더 검색: 디바운스된 키워드 → /api/google/drive/search 호출.
+  // 사용자가 폴더 ID 를 모를 때 이름만 알면 검색해서 찾을 수 있게.
+  const [folderQuery, setFolderQuery] = useState('')
+  const [debouncedFolderQuery, setDebouncedFolderQuery] = useState('')
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedFolderQuery(folderQuery), 300)
+    return () => clearTimeout(t)
+  }, [folderQuery])
+
+  const folderSearch = useQuery({
+    queryKey: ['drive-search', 'folder', debouncedFolderQuery],
+    enabled: debouncedFolderQuery.trim().length > 0,
+    queryFn: async (): Promise<{ items: DriveItem[] }> => {
+      const res = await fetch(`/api/google/drive/search?q=${encodeURIComponent(debouncedFolderQuery)}&type=folder`)
+      if (!res.ok) throw new Error('Drive 검색 실패')
+      return res.json()
+    },
+  })
+
+  // Sheets 검색 (선택 필드 — 명단 시트 찾기)
+  const [sheetQuery, setSheetQuery] = useState('')
+  const [debouncedSheetQuery, setDebouncedSheetQuery] = useState('')
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSheetQuery(sheetQuery), 300)
+    return () => clearTimeout(t)
+  }, [sheetQuery])
+
+  const sheetSearch = useQuery({
+    queryKey: ['drive-search', 'sheet', debouncedSheetQuery],
+    enabled: debouncedSheetQuery.trim().length > 0,
+    queryFn: async (): Promise<{ items: DriveItem[] }> => {
+      const res = await fetch(`/api/google/drive/search?q=${encodeURIComponent(debouncedSheetQuery)}&type=sheet`)
+      if (!res.ok) throw new Error('Sheets 검색 실패')
+      return res.json()
+    },
+  })
+
+  const handleDriveIdChange = (raw: string) => {
+    const extracted = extractDriveFolderId(raw)
+    setForm({ ...form, drive_folder_id: extracted ?? raw })
+  }
+
+  const handleSheetIdChange = (raw: string) => {
+    const extracted = extractSheetId(raw)
+    setForm({ ...form, sheet_id: extracted ?? raw })
+  }
 
   return (
     <form
@@ -194,8 +249,37 @@ function AddFolderForm({
           program: form.program.trim() || undefined,
         })
       }}
-      className="rounded-lg border border-hairline bg-canvas p-6 space-y-4"
+      className="rounded-lg border border-hairline bg-canvas p-6 space-y-5"
     >
+      {/* 검색 */}
+      <Field label="폴더 검색" hint="이름 일부 입력 → 본인 Drive 에서 일치하는 폴더 표시">
+        <input
+          type="text"
+          value={folderQuery}
+          onChange={(e) => setFolderQuery(e.target.value)}
+          placeholder="예: FLIP"
+          className="w-full h-10 px-3 bg-canvas border border-hairline rounded-md text-body-md text-ink focus:outline-none focus:border-ink"
+        />
+      </Field>
+
+      {folderQuery.trim() ? (
+        <SearchResults
+          isLoading={folderSearch.isLoading}
+          items={folderSearch.data?.items ?? []}
+          selectedId={form.drive_folder_id}
+          onSelect={(item) => {
+            setForm({
+              ...form,
+              drive_folder_id: item.id,
+              name: form.name || item.name,
+            })
+          }}
+        />
+      ) : null}
+
+      <hr className="border-hairline" />
+
+      {/* 수동 입력 / URL 붙여넣기 */}
       <Field label="이름" required>
         <input
           type="text"
@@ -206,23 +290,45 @@ function AddFolderForm({
           className="w-full h-10 px-3 bg-canvas border border-hairline rounded-md text-body-md text-ink focus:outline-none focus:border-ink"
         />
       </Field>
-      <Field label="Drive 폴더 ID" required hint="Drive 폴더 URL 의 /folders/ 뒤 부분">
+
+      <Field label="Drive 폴더 ID 또는 URL" required hint="URL 붙여넣으면 ID 자동 추출">
         <input
           type="text"
           value={form.drive_folder_id}
-          onChange={(e) => setForm({ ...form, drive_folder_id: e.target.value })}
+          onChange={(e) => handleDriveIdChange(e.target.value)}
           required
-          placeholder="1a2B3c..."
+          placeholder="ID 또는 https://drive.google.com/drive/folders/..."
           className="w-full h-10 px-3 font-mono text-mono-md bg-canvas border border-hairline rounded-md text-ink focus:outline-none focus:border-ink"
         />
       </Field>
+
+      {/* Sheets — 검색 + 직접 입력 */}
+      <Field label="Sheets 검색 (선택)" hint="명단 시트 이름 일부">
+        <input
+          type="text"
+          value={sheetQuery}
+          onChange={(e) => setSheetQuery(e.target.value)}
+          placeholder="예: 팀명단"
+          className="w-full h-10 px-3 bg-canvas border border-hairline rounded-md text-body-md text-ink focus:outline-none focus:border-ink"
+        />
+      </Field>
+
+      {sheetQuery.trim() ? (
+        <SearchResults
+          isLoading={sheetSearch.isLoading}
+          items={sheetSearch.data?.items ?? []}
+          selectedId={form.sheet_id}
+          onSelect={(item) => setForm({ ...form, sheet_id: item.id })}
+        />
+      ) : null}
+
       <div className="grid grid-cols-2 gap-4">
-        <Field label="Sheets ID (선택)" hint="명단 시트, 없으면 나중에">
+        <Field label="Sheets ID 또는 URL (선택)">
           <input
             type="text"
             value={form.sheet_id}
-            onChange={(e) => setForm({ ...form, sheet_id: e.target.value })}
-            placeholder="1Aa2Bb..."
+            onChange={(e) => handleSheetIdChange(e.target.value)}
+            placeholder="ID 또는 docs.google.com URL"
             className="w-full h-10 px-3 font-mono text-mono-md bg-canvas border border-hairline rounded-md text-ink focus:outline-none focus:border-ink"
           />
         </Field>
@@ -236,6 +342,7 @@ function AddFolderForm({
           />
         </Field>
       </div>
+
       {error ? <p className="text-body-sm text-muted">{error}</p> : null}
       <button
         type="submit"
@@ -245,6 +352,43 @@ function AddFolderForm({
         {pending ? '연결 중…' : '연결'}
       </button>
     </form>
+  )
+}
+
+function SearchResults({
+  isLoading,
+  items,
+  selectedId,
+  onSelect,
+}: {
+  isLoading: boolean
+  items: DriveItem[]
+  selectedId: string
+  onSelect: (item: DriveItem) => void
+}) {
+  if (isLoading) return <p className="text-body-sm text-muted">검색 중…</p>
+  if (items.length === 0) return <p className="text-body-sm text-muted">결과 없음</p>
+
+  return (
+    <ul className="rounded-md border border-hairline divide-y divide-hairline overflow-hidden bg-canvas max-h-60 overflow-y-auto">
+      {items.map(item => {
+        const selected = item.id === selectedId
+        return (
+          <li key={item.id}>
+            <button
+              type="button"
+              onClick={() => onSelect(item)}
+              className={`w-full text-left px-4 py-3 transition-colors ${
+                selected ? 'bg-surface-strong' : 'hover:bg-surface-soft'
+              }`}
+            >
+              <p className="text-body-md text-ink">{item.name}</p>
+              <p className="text-caption text-muted-soft mt-0.5 font-mono">{item.id}</p>
+            </button>
+          </li>
+        )
+      })}
+    </ul>
   )
 }
 
