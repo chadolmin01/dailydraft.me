@@ -69,7 +69,17 @@ interface Props {
 export function ChatPanel({ folderId }: Props) {
   const qc = useQueryClient()
   const scrollRef = useRef<HTMLDivElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
   const [draft, setDraft] = useState('')
+
+  // 입력 길이에 맞춰 textarea 자동 높이 — 최대 7줄까지.
+  useEffect(() => {
+    const ta = textareaRef.current
+    if (!ta) return
+    ta.style.height = 'auto'
+    const max = parseFloat(getComputedStyle(ta).lineHeight) * 7 + 16
+    ta.style.height = `${Math.min(ta.scrollHeight, max)}px`
+  }, [draft])
 
   const history = useQuery({
     queryKey: ['chat-history'],
@@ -196,6 +206,7 @@ export function ChatPanel({ folderId }: Props) {
 
       <form onSubmit={handleSubmit} className="px-5 py-4 border-t border-hairline-dark">
         <textarea
+          ref={textareaRef}
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => {
@@ -205,8 +216,8 @@ export function ChatPanel({ folderId }: Props) {
             }
           }}
           placeholder={folderId ? '메시지를 입력하세요' : '폴더를 선택한 뒤 질문해주세요'}
-          rows={2}
-          className="w-full px-4 py-2 bg-surface-dark-elevated border border-hairline-dark rounded-md font-body text-body-md text-on-dark placeholder:text-on-dark-soft focus:outline-none focus:border-on-dark resize-none"
+          rows={1}
+          className="w-full px-4 py-2 bg-surface-dark-elevated border border-hairline-dark rounded-md font-body text-body-md text-on-dark placeholder:text-on-dark-soft focus:outline-none focus:border-on-dark resize-none overflow-y-auto"
           disabled={send.isPending}
         />
         <p className="text-caption text-on-dark-soft mt-2 opacity-60">

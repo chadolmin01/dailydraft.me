@@ -795,39 +795,109 @@ function ProgressGrid({
   weeks: number[]
   cells: MatrixCell[]
 }) {
+  const [selected, setSelected] = useState<MatrixCell | null>(null)
+
   // team × week 빠른 조회용 인덱스
   const cellMap = new Map<string, MatrixCell>()
   for (const c of cells) cellMap.set(`${c.team}|${c.week}`, c)
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-hairline bg-canvas">
-      <table className="w-full text-body-sm">
-        <thead>
-          <tr className="bg-surface-soft">
-            <th className="text-left px-4 py-2 text-title-sm text-ink sticky left-0 bg-surface-soft">팀</th>
-            {weeks.map(w => (
-              <th key={w} className="px-2 py-2 text-title-sm text-ink text-center tabular">
-                {w}주차
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {teams.map(team => (
-            <tr key={team} className="border-t border-hairline-soft">
-              <td className="px-4 py-2 text-body-sm text-ink sticky left-0 bg-canvas">{team}</td>
-              {weeks.map(w => {
-                const cell = cellMap.get(`${team}|${w}`)
-                return (
-                  <td key={w} className="px-2 py-2 text-center">
-                    <Cell cell={cell} />
-                  </td>
-                )
-              })}
+    <>
+      <div className="overflow-x-auto rounded-lg border border-hairline bg-canvas">
+        <table className="w-full text-body-sm">
+          <thead>
+            <tr className="bg-surface-soft">
+              <th className="text-left px-4 py-2 text-title-sm text-ink sticky left-0 bg-surface-soft">팀</th>
+              {weeks.map(w => (
+                <th key={w} className="px-2 py-2 text-title-sm text-ink text-center tabular">
+                  {w}주차
+                </th>
+              ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {teams.map(team => (
+              <tr key={team} className="border-t border-hairline-soft">
+                <td className="px-4 py-2 text-body-sm text-ink sticky left-0 bg-canvas">{team}</td>
+                {weeks.map(w => {
+                  const cell = cellMap.get(`${team}|${w}`)
+                  return (
+                    <td key={w} className="px-2 py-2 text-center">
+                      <button
+                        type="button"
+                        onClick={() => cell && setSelected(cell)}
+                        className="cursor-pointer"
+                        aria-label={`${team} ${w}주차 상세`}
+                      >
+                        <Cell cell={cell} />
+                      </button>
+                    </td>
+                  )
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {selected ? <CellDetail cell={selected} onClose={() => setSelected(null)} /> : null}
+    </>
+  )
+}
+
+function CellDetail({ cell, onClose }: { cell: MatrixCell; onClose: () => void }) {
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={`${cell.team} ${cell.week}주차 상세`}
+      onClick={onClose}
+      className="fixed inset-0 bg-ink/30 flex items-center justify-center z-50 p-4"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-md bg-canvas rounded-lg border border-hairline p-6 space-y-4"
+      >
+        <header className="flex items-center justify-between">
+          <h3 className="text-title-lg text-ink">
+            {cell.team} · {cell.week}주차
+          </h3>
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-caption text-muted hover:text-ink transition-colors"
+          >
+            닫기
+          </button>
+        </header>
+
+        <p className="text-body-sm text-muted">
+          {cell.status === 'done' && `제출됨 — 파일 ${cell.files.length}개`}
+          {cell.status === 'pending' && '이번 주차 — 아직 제출 없음'}
+          {cell.status === 'late' && '지나간 주차 — 미제출'}
+          {cell.status === 'empty' && '비어 있음'}
+        </p>
+
+        {cell.files.length > 0 ? (
+          <ul className="space-y-2">
+            {cell.files.map(f => (
+              <li key={f.id} className="rounded-md border border-hairline bg-surface-soft p-3">
+                <a
+                  href={`https://drive.google.com/file/d/${f.id}/view`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-body-sm text-ink hover:underline underline-offset-2 truncate block"
+                >
+                  {f.name}
+                </a>
+                <p className="text-caption text-muted-soft mt-0.5 tabular">
+                  {new Date(f.modifiedTime).toLocaleString('ko-KR')}
+                </p>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+      </div>
     </div>
   )
 }
