@@ -117,21 +117,25 @@ export function ChatPanel({ folderId }: Props) {
         ) : null}
 
         {rows.map(row => {
-          if (row.role === 'tool') return null  // 시스템 내부 — UI 미표시
+          if (row.role === 'tool') {
+            // tool_result 자체는 안 보이게 하되, 안에 mailto_url 이 있으면 그 자리에 카드.
+            // → 카드가 누적되지 않고 해당 turn 옆에 자연스럽게 위치.
+            const mailtos = extractMailtoLinks(row.content)
+            if (mailtos.length === 0) return null
+            return (
+              <div key={row.id} className="space-y-2">
+                {mailtos.map((href, i) => (
+                  <MailtoCard key={`${row.id}-${i}`} href={href} />
+                ))}
+              </div>
+            )
+          }
           const text = extractText(row.content)
-          if (!text && row.role === 'assistant') return null  // 도구만 호출하고 텍스트 없는 turn
+          if (!text && row.role === 'assistant') return null
           return (
             <Message key={row.id} role={row.role} text={text} />
           )
         })}
-
-        {/* tool_result 안의 mailto 도 별도로 노출 (직전 tool row 들에서 추출) */}
-        {rows
-          .filter(r => r.role === 'tool')
-          .flatMap(r => extractMailtoLinks(r.content))
-          .map((href, i) => (
-            <MailtoCard key={`${href}-${i}`} href={href} />
-          ))}
 
         {send.isPending ? (
           <p className="text-body-sm text-on-dark-soft opacity-70">처리 중…</p>
