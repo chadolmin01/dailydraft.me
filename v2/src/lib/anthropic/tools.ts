@@ -11,7 +11,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '@/src/types/database'
 import { getValidAccessToken } from '@/src/lib/google/tokens'
-import { listFolderFiles } from '@/src/lib/google/drive'
+import { listFolderFiles, searchDriveItems } from '@/src/lib/google/drive'
 import { readRange } from '@/src/lib/google/sheets'
 import { createGmailDraft } from '@/src/lib/google/gmail'
 import { parseFilenames } from '@/src/lib/parsers/filename'
@@ -69,6 +69,17 @@ export const TOOL_DEFINITIONS = [
     },
   },
   {
+    name: 'search_drive_files',
+    description: '매니저의 Google Drive 전체에서 파일을 검색합니다 (이름 + 본문 텍스트). 폴더 안 어느 위치든 찾아냅니다. 연결된 Draft 폴더에 한정되지 않습니다. 사용자가 "어디 있더라", "찾아주세요" 같은 표현 쓸 때 사용.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        keyword: { type: 'string', description: '검색어 (한국어 가능)' },
+      },
+      required: ['keyword'],
+    },
+  },
+  {
     name: 'compose_email_draft',
     description: 'Gmail 초안함에 메일 초안을 저장합니다. 매니저가 Gmail 에서 직접 열어 검토 후 보냅니다. 자동 발송하지 않습니다.',
     input_schema: {
@@ -95,6 +106,7 @@ interface ToolInputs {
   get_folder_summary: { folder_id: string }
   list_folder_files: { folder_id: string }
   find_missing_teams: { folder_id: string; week: number }
+  search_drive_files: { keyword: string }
   compose_email_draft: { to: string[]; subject: string; body: string; cc?: string[] }
 }
 
@@ -116,6 +128,8 @@ export async function executeTool(
       return listFolderFilesTool(ctx, input as ToolInputs['list_folder_files'])
     case 'find_missing_teams':
       return findMissingTeamsTool(ctx, input as ToolInputs['find_missing_teams'])
+    case 'search_drive_files':
+      return searchDriveFilesTool(ctx, input as ToolInputs['search_drive_files'])
     case 'compose_email_draft':
       return composeEmailDraftTool(ctx, input as ToolInputs['compose_email_draft'])
     default:
@@ -309,6 +323,21 @@ async function findMissingTeamsTool(ctx: ToolContext, input: ToolInputs['find_mi
     submitted_count: submittedTeams.size,
     missing_count: missing.length,
     missing_teams: missing,
+  }
+}
+
+async function searchDriveFilesTool(ctx: ToolContext, input: ToolInputs['search_drive_files']) {
+  const accessToken = await getValidAccessToken(ctx.userId)
+  const files = await searchDriveItems(accessToken, input.keyword, 'all')
+  return {
+    keyword: input.keyword,
+    count: files.length,
+    files: files.map(f => ({
+      id: f.id,
+      name: f.name,
+      modified: f.modifiedTime,
+      url: f.webViewLink ?? `https://drive.google.com/file/d/${f.id}/view`,
+    })),
   }
 }
 
