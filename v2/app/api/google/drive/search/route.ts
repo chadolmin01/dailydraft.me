@@ -1,7 +1,7 @@
 import { type NextRequest } from 'next/server'
 import { createServerSupabaseClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
-import { getValidAccessToken } from '@/src/lib/google/tokens'
+import { getValidAccessToken, GoogleAuthRequiredError } from '@/src/lib/google/tokens'
 import { searchDriveItems } from '@/src/lib/google/drive'
 
 // GET /api/google/drive/search?q=FLIP&type=folder
@@ -26,6 +26,7 @@ export async function GET(request: NextRequest) {
     const items = await searchDriveItems(accessToken, q, type)
     return ApiResponse.ok({ items })
   } catch (e) {
+    if (e instanceof GoogleAuthRequiredError) return ApiResponse.googleAuthRequired(e.message)
     return ApiResponse.internalError(`Drive 검색 실패: ${(e as Error).message}`)
   }
 }

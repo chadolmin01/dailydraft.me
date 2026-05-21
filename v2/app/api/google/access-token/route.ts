@@ -1,6 +1,6 @@
 import { createServerSupabaseClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
-import { getValidAccessToken } from '@/src/lib/google/tokens'
+import { getValidAccessToken, GoogleAuthRequiredError } from '@/src/lib/google/tokens'
 
 // GET /api/google/access-token
 //
@@ -21,6 +21,7 @@ export async function GET() {
     const access_token = await getValidAccessToken(user.id)
     return ApiResponse.ok({ access_token })
   } catch (e) {
+    if (e instanceof GoogleAuthRequiredError) return ApiResponse.googleAuthRequired(e.message)
     return ApiResponse.internalError((e as Error).message)
   }
 }

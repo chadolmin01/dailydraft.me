@@ -1,7 +1,7 @@
 import { type NextRequest } from 'next/server'
 import { createServerSupabaseClient } from '@/src/lib/supabase/server'
 import { ApiResponse, isValidUUID } from '@/src/lib/api-utils'
-import { getValidAccessToken } from '@/src/lib/google/tokens'
+import { getValidAccessToken, GoogleAuthRequiredError } from '@/src/lib/google/tokens'
 import { listFolderFiles } from '@/src/lib/google/drive'
 import { parseFilenames } from '@/src/lib/parsers/filename'
 
@@ -36,6 +36,7 @@ export async function GET(
     const accessToken = await getValidAccessToken(user.id)
     files = await listFolderFiles(accessToken, folder.drive_folder_id)
   } catch (e) {
+    if (e instanceof GoogleAuthRequiredError) return ApiResponse.googleAuthRequired(e.message)
     return ApiResponse.internalError(`Drive 조회 실패: ${(e as Error).message}`)
   }
 

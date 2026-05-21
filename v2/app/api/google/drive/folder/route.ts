@@ -1,7 +1,7 @@
 import { type NextRequest } from 'next/server'
 import { createServerSupabaseClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
-import { getValidAccessToken } from '@/src/lib/google/tokens'
+import { getValidAccessToken, GoogleAuthRequiredError } from '@/src/lib/google/tokens'
 import { listFolderFiles } from '@/src/lib/google/drive'
 
 // GET /api/google/drive/folder?id=DRIVE_FOLDER_ID
@@ -34,6 +34,7 @@ export async function GET(request: NextRequest) {
       summary: { total: items.length, subfolders: subfolders.length, files: files.length },
     })
   } catch (e) {
+    if (e instanceof GoogleAuthRequiredError) return ApiResponse.googleAuthRequired(e.message)
     return ApiResponse.internalError(`Drive 조회 실패: ${(e as Error).message}`)
   }
 }

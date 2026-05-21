@@ -48,11 +48,22 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null)
   const [showAddForm, setShowAddForm] = useState(false)
 
+  const [googleAuthBroken, setGoogleAuthBroken] = useState(false)
+
   const foldersQuery = useQuery({
     queryKey: ['folders'],
     queryFn: async (): Promise<FoldersResponse> => {
       const res = await fetch('/api/folders')
-      if (!res.ok) throw new Error('폴더 목록 조회 실패')
+      if (!res.ok) {
+        if (res.status === 401) {
+          const data = await res.json().catch(() => ({}))
+          if (data.error?.code === 'GOOGLE_AUTH_REQUIRED') {
+            setGoogleAuthBroken(true)
+          }
+        }
+        throw new Error('폴더 목록 조회 실패')
+      }
+      setGoogleAuthBroken(false)
       return res.json()
     },
   })
@@ -135,6 +146,23 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
       {/* 우측 — 콘텐츠 (cream) */}
       <main className="overflow-y-auto p-6">
         <div className="max-w-layout-content mx-auto space-y-7">
+          {googleAuthBroken ? (
+            <div className="rounded-lg border border-hairline bg-surface-soft p-5 flex items-start justify-between gap-4">
+              <div>
+                <p className="text-title-md text-ink">Google 권한이 끊겼습니다.</p>
+                <p className="text-body-sm text-muted mt-1">
+                  Google 계정을 다시 연결해야 폴더와 시트를 불러올 수 있습니다.
+                </p>
+              </div>
+              <a
+                href="/api/auth/google"
+                className="h-10 px-4 rounded-md bg-ink text-canvas text-button font-medium hover:bg-body-strong transition-colors inline-flex items-center shrink-0"
+              >
+                다시 연결
+              </a>
+            </div>
+          ) : null}
+
           <header className="flex items-end justify-between gap-4">
             <div className="space-y-1">
               <h1 className="text-display-md text-ink">폴더</h1>

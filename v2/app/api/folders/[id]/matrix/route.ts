@@ -1,7 +1,7 @@
 import { type NextRequest } from 'next/server'
 import { createServerSupabaseClient } from '@/src/lib/supabase/server'
 import { ApiResponse, isValidUUID } from '@/src/lib/api-utils'
-import { getValidAccessToken } from '@/src/lib/google/tokens'
+import { getValidAccessToken, GoogleAuthRequiredError } from '@/src/lib/google/tokens'
 import { listFolderFiles } from '@/src/lib/google/drive'
 import { readRange } from '@/src/lib/google/sheets'
 import { parseFilenames } from '@/src/lib/parsers/filename'
@@ -68,6 +68,7 @@ export async function GET(
       rosterError,
     })
   } catch (e) {
+    if (e instanceof GoogleAuthRequiredError) return ApiResponse.googleAuthRequired(e.message)
     return ApiResponse.internalError(`매트릭스 계산 실패: ${(e as Error).message}`)
   }
 }

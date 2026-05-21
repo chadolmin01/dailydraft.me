@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { createServerSupabaseClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { getOrCreateWorkspace } from '@/src/lib/workspace'
-import { getValidAccessToken } from '@/src/lib/google/tokens'
+import { getValidAccessToken, GoogleAuthRequiredError } from '@/src/lib/google/tokens'
 import { getFolderMeta } from '@/src/lib/google/drive'
 
 interface CreateFolderBody {
@@ -58,6 +58,7 @@ export async function POST(request: NextRequest) {
       return ApiResponse.badRequest('해당 ID 는 폴더가 아닙니다')
     }
   } catch (e) {
+    if (e instanceof GoogleAuthRequiredError) return ApiResponse.googleAuthRequired(e.message)
     return ApiResponse.badRequest(`Drive 폴더 확인 실패: ${(e as Error).message}`)
   }
 

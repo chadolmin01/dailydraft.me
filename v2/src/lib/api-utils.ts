@@ -75,6 +75,13 @@ export const ApiResponse = {
 
   serviceUnavailable: (message = '서비스를 일시적으로 사용할 수 없습니다') =>
     apiError({ code: ErrorCode.SERVICE_UNAVAILABLE, message }, 503),
+
+  // Google 권한 재연결 필요 — 클라이언트가 이 code 를 보고 /api/auth/google 으로 보냄
+  googleAuthRequired: (message = 'Google 권한 재연결이 필요합니다') =>
+    NextResponse.json(
+      { error: { code: 'GOOGLE_AUTH_REQUIRED', message, reauth_url: '/api/auth/google' } },
+      { status: 401 },
+    ),
 }
 
 // Wrap async handler with error catching
