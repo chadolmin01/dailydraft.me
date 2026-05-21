@@ -19,6 +19,25 @@ import { buildMatrix, parseRosterFromSheet, type ParsedDriveFile } from '@/src/l
 
 export const TOOL_DEFINITIONS = [
   {
+    name: 'list_workspace_folders',
+    description: '매니저의 워크스페이스에 연결된 모든 폴더 목록을 반환합니다. 사용자가 특정 폴더를 언급하지 않을 때 먼저 이 도구로 폴더 ID 와 이름을 확인하세요.',
+    input_schema: {
+      type: 'object',
+      properties: {},
+    },
+  },
+  {
+    name: 'get_folder_summary',
+    description: '폴더의 진행 상황을 한눈에 요약합니다. 팀 수, 주차 수, 매칭/미매칭 파일 수, 최근 활동 파일을 반환. 사용자가 "현황", "요약", "어떻게 돼가" 라고 물을 때 사용.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        folder_id: { type: 'string', description: 'Draft folder UUID' },
+      },
+      required: ['folder_id'],
+    },
+  },
+  {
     name: 'list_folder_files',
     description: '연결된 폴더 안의 Drive 파일 목록과 파일명 컨벤션 파싱 결과를 가져옵니다. 폴더 ID 가 필요합니다.',
     input_schema: {
@@ -63,6 +82,8 @@ export interface ToolContext {
 }
 
 interface ToolInputs {
+  list_workspace_folders: Record<string, never>
+  get_folder_summary: { folder_id: string }
   list_folder_files: { folder_id: string }
   find_missing_teams: { folder_id: string; week: number }
   compose_email_draft: { to: string[]; subject: string; body: string; cc?: string[] }
@@ -76,6 +97,10 @@ export async function executeTool(
   input: unknown,
 ): Promise<unknown> {
   switch (name as ToolName) {
+    case 'list_workspace_folders':
+      return listWorkspaceFoldersTool(ctx)
+    case 'get_folder_summary':
+      return getFolderSummaryTool(ctx, input as ToolInputs['get_folder_summary'])
     case 'list_folder_files':
       return listFolderFilesTool(ctx, input as ToolInputs['list_folder_files'])
     case 'find_missing_teams':
@@ -84,6 +109,80 @@ export async function executeTool(
       return composeEmailDraftTool(ctx, input as ToolInputs['compose_email_draft'])
     default:
       throw new Error(`알 수 없는 도구: ${name}`)
+  }
+}
+
+async function listWorkspaceFoldersTool(ctx: ToolContext) {
+  const { data: workspaces } = await ctx.supabase
+    .from('workspaces')
+    .select('id, name')
+    .eq('owner_id', ctx.userId)
+    .maybeSingle()
+
+  if (!workspaces) {
+    return { folder_count: 0, folders: [], note: '워크스페이스가 아직 없습니다.' }
+  }
+
+  const { data: folders, error } = await ctx.supabase
+    .from('folders')
+    .select('id, name, program, drive_folder_id, sheet_id, created_at')
+    .eq('workspace_id', workspaces.id)
+    .order('created_at', { ascending: true })
+
+  if (error) throw new Error(`folders 조회 실패: ${error.message}`)
+
+  return {
+    folder_count: folders?.length ?? 0,
+    folders: (folders ?? []).map(f => ({
+      folder_id: f.id,
+      name: f.name,
+      program: f.program,
+      has_sheet: !!f.sheet_id,
+    })),
+  }
+}
+
+async function getFolderSummaryTool(ctx: ToolContext, input: ToolInputs['get_folder_summary']) {
+  const { folder, accessToken, files } = await loadFolderAndFiles(ctx, input.folder_id)
+  const { parsed, unmatched } = parseFilenames(files.map(f => f.name))
+
+  const filesByName = new Map(files.map(f => [f.name, f]))
+  const parsedFiles: ParsedDriveFile[] = parsed.map(({ name, parsed: p }) => {
+    const file = filesByName.get(name)!
+    return { id: file.id, name: file.name, modifiedTime: file.modifiedTime, parsed: p }
+  })
+
+  let rosterTeams: string[] | undefined
+  if (folder.sheet_id) {
+    try {
+      const rows = await readRange(accessToken, folder.sheet_id, 'A:A')
+      rosterTeams = parseRosterFromSheet(rows)
+    } catch {}
+  }
+
+  const matrix = buildMatrix({ parsedFiles, rosterTeams })
+
+  // 가장 최근 활동 파일 3개
+  const recent = [...files]
+    .sort((a, b) => b.modifiedTime.localeCompare(a.modifiedTime))
+    .slice(0, 3)
+    .map(f => ({ name: f.name, modified: f.modifiedTime }))
+
+  // 주차별 제출 통계
+  const weeklyStats = matrix.weeks.map(week => {
+    const submitted = matrix.cells.filter(c => c.week === week && c.status === 'done').length
+    return { week, submitted, total: matrix.teams.length, missing: matrix.teams.length - submitted }
+  })
+
+  return {
+    folder_name: folder.name,
+    program: folder.program,
+    team_count: matrix.teams.length,
+    week_count: matrix.weeks.length,
+    matched_files: parsed.length,
+    unmatched_files: unmatched.length,
+    weekly_stats: weeklyStats,
+    recent_activity: recent,
   }
 }
 
