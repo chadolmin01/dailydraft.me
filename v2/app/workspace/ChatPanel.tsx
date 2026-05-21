@@ -192,11 +192,32 @@ export function ChatPanel({ folderId, folderName }: Props) {
     setDraft('')
   }
 
+  // 챗 내 검색
+  const [searchQuery, setSearchQuery] = useState('')
+  const filteredRows = searchQuery.trim()
+    ? rows.filter(r => {
+        const text = extractText(r.content).toLowerCase()
+        return text.includes(searchQuery.toLowerCase())
+      })
+    : rows
+
   return (
     <div className="flex flex-col h-full">
       {folderId && folderName ? (
         <div className="px-5 py-2 border-b border-hairline-dark text-caption text-on-dark-soft">
           현재 폴더: <span className="text-on-dark">{folderName}</span>
+        </div>
+      ) : null}
+
+      {rows.length > 5 ? (
+        <div className="px-5 py-2 border-b border-hairline-dark">
+          <input
+            type="search"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="대화 내 검색"
+            className="w-full h-7 px-2 bg-surface-dark-elevated border border-hairline-dark rounded text-caption text-on-dark placeholder:text-on-dark-soft focus:outline-none focus:border-on-dark-soft"
+          />
         </div>
       ) : null}
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
@@ -223,7 +244,11 @@ export function ChatPanel({ folderId, folderName }: Props) {
           </div>
         ) : null}
 
-        {rows.map(row => {
+        {searchQuery.trim() && filteredRows.length === 0 ? (
+          <p className="text-body-sm text-on-dark-soft">검색 결과가 없습니다.</p>
+        ) : null}
+
+        {filteredRows.map(row => {
           if (row.role === 'tool') {
             // tool_result 자체는 안 보이게 하되, 안에 메일 초안 정보가 있으면 그 자리에 카드.
             const drafts = extractEmailDrafts(row.content)
