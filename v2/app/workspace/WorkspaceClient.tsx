@@ -819,13 +819,28 @@ function FolderTabs({
                 : ' · 명단 시트 기반'}
               {unmatchedCount > 0 ? ` · 미매칭 ${unmatchedCount}개 (파일 탭에서 확인)` : ''}
             </p>
-            <button
-              type="button"
-              onClick={() => downloadMatrixCsv(folder.name, matrix.teams, matrix.weeks, matrix.cells)}
-              className="text-caption text-muted hover:text-ink transition-colors"
-            >
-              CSV 다운로드
-            </button>
+            <div className="flex items-center gap-3">
+              {matrixQuery.dataUpdatedAt ? (
+                <span className="text-caption text-muted-soft tabular" title={new Date(matrixQuery.dataUpdatedAt).toLocaleString('ko-KR')}>
+                  {formatRelative(new Date(matrixQuery.dataUpdatedAt).toISOString())} 기준
+                </span>
+              ) : null}
+              <button
+                type="button"
+                onClick={() => matrixQuery.refetch()}
+                disabled={matrixQuery.isFetching}
+                className="text-caption text-muted hover:text-ink transition-colors disabled:opacity-50"
+              >
+                {matrixQuery.isFetching ? '갱신 중…' : '새로고침'}
+              </button>
+              <button
+                type="button"
+                onClick={() => downloadMatrixCsv(folder.name, matrix.teams, matrix.weeks, matrix.cells)}
+                className="text-caption text-muted hover:text-ink transition-colors"
+              >
+                CSV 다운로드
+              </button>
+            </div>
           </div>
 
           {matrixQuery.data?.rosterError ? (
