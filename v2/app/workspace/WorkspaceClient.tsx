@@ -247,6 +247,18 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
             </div>
           ) : null}
 
+          {foldersQuery.isLoading && folders.length === 0 ? (
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+              {[0, 1, 2].map(i => (
+                <div key={i} className="rounded-xl bg-surface-card p-5 space-y-2 animate-pulse">
+                  <div className="h-6 w-32 bg-canvas rounded opacity-60" />
+                  <div className="h-3 w-20 bg-canvas rounded opacity-40" />
+                  <div className="h-3 w-24 bg-canvas rounded opacity-40" />
+                </div>
+              ))}
+            </div>
+          ) : null}
+
           {folders.length === 0 && !foldersQuery.isLoading && !showAddForm ? (
             <div className="rounded-lg border border-hairline bg-surface-soft p-8 text-center space-y-5">
               <div className="space-y-2">
