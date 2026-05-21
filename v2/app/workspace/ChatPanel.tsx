@@ -138,7 +138,10 @@ export function ChatPanel({ folderId }: Props) {
         ) : null}
 
         {send.error ? (
-          <p className="text-body-sm text-on-dark-soft">{(send.error as Error).message}</p>
+          <div className="text-body-sm text-on-dark-soft border-l-2 border-on-dark-soft pl-3">
+            <p>답변을 만들지 못했습니다.</p>
+            <p className="text-caption opacity-70 mt-1">잠시 후 다시 시도해 주세요.</p>
+          </div>
         ) : null}
       </div>
 

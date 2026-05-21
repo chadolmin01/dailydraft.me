@@ -94,7 +94,10 @@ export function FolderBrowser({ rootDriveFolderId, rootName }: Props) {
       ) : null}
 
       {query.isError ? (
-        <div className="px-4 py-8 text-center text-body-sm text-muted">{query.error.message}</div>
+        <div className="px-4 py-8 text-center space-y-2">
+          <p className="text-body-sm text-muted">폴더를 불러오지 못했습니다.</p>
+          <p className="text-caption text-muted-soft">Drive 권한이 끊겼거나 일시 네트워크 문제일 수 있습니다.</p>
+        </div>
       ) : null}
 
       {query.data && allItems.length === 0 ? (

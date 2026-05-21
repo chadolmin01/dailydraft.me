@@ -181,9 +181,10 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
 
           {showAddForm ? <AddFolderForm onSubmit={(v) => addFolder.mutate(v)} pending={addFolder.isPending} error={addFolder.error?.message ?? null} /> : null}
 
-          {foldersQuery.isError ? (
-            <div className="rounded-md border border-hairline bg-surface-soft p-4 text-body-sm text-muted">
-              {(foldersQuery.error as Error).message}
+          {foldersQuery.isError && !googleAuthBroken ? (
+            <div className="rounded-md border border-hairline bg-surface-soft p-4 space-y-1">
+              <p className="text-body-sm text-ink">폴더 목록을 불러오지 못했습니다.</p>
+              <p className="text-caption text-muted-soft">새로고침하거나 잠시 후 다시 시도해 주세요.</p>
             </div>
           ) : null}
 
@@ -504,6 +505,15 @@ function FolderTabs({
   const [tab, setTab] = useState<'folder' | 'matrix'>('folder')
   const matrix = matrixQuery.data?.matrix
   const hasMatrixData = !!matrix && matrix.source.fileCount > 0
+  const unmatchedCount = matrixQuery.data?.unmatched?.length ?? 0
+
+  // 진행도 탭 비활성 사유 — 파일 자체가 없는지, 파일은 있는데 이름 규칙이 안 맞는지
+  const matrixHint = (() => {
+    if (matrixQuery.isLoading) return '계산 중…'
+    if (hasMatrixData) return undefined
+    if (unmatchedCount > 0) return '파일명 규칙에 맞는 파일이 없습니다'
+    return '폴더에 파일이 없습니다'
+  })()
 
   return (
     <section className="space-y-4 border-t border-hairline pt-6">
@@ -511,12 +521,24 @@ function FolderTabs({
         <h2 className="text-display-sm text-ink">{folderName}</h2>
         <div className="flex items-center gap-1 border-b border-hairline -mb-px">
           <TabButton active={tab === 'folder'} onClick={() => setTab('folder')}>폴더</TabButton>
-          <TabButton active={tab === 'matrix'} onClick={() => setTab('matrix')} disabled={!hasMatrixData} hint={!hasMatrixData ? '데이터 없음' : undefined}>진행도</TabButton>
+          <TabButton
+            active={tab === 'matrix'}
+            onClick={() => setTab('matrix')}
+            disabled={!hasMatrixData}
+            hint={matrixHint}
+          >
+            진행도
+          </TabButton>
         </div>
       </div>
 
       {tab === 'folder' ? (
-        <FolderBrowser rootDriveFolderId={rootDriveFolderId} rootName={folderName} />
+        <>
+          {unmatchedCount > 0 && !hasMatrixData ? (
+            <ConventionHint unmatchedCount={unmatchedCount} />
+          ) : null}
+          <FolderBrowser rootDriveFolderId={rootDriveFolderId} rootName={folderName} />
+        </>
       ) : null}
 
       {tab === 'matrix' && hasMatrixData && matrix ? (
@@ -527,10 +549,13 @@ function FolderTabs({
             {matrix.source.teamSource === 'derived'
               ? ' · 명단 시트 미연결 (파일에서 추출)'
               : ' · 명단 시트 기반'}
+            {unmatchedCount > 0 ? ` · 미매칭 ${unmatchedCount}개 (파일 탭에서 확인)` : ''}
           </p>
 
           {matrixQuery.data?.rosterError ? (
-            <p className="text-body-sm text-muted">명단 시트 읽기 실패: {matrixQuery.data.rosterError}</p>
+            <p className="text-body-sm text-muted">
+              명단 시트를 읽지 못해 파일에서 팀을 추출했습니다.
+            </p>
           ) : null}
 
           <ProgressGrid teams={matrix.teams} weeks={matrix.weeks} cells={matrix.cells} />
@@ -538,12 +563,27 @@ function FolderTabs({
       ) : null}
 
       {tab === 'matrix' && matrixQuery.isLoading ? (
-        <p className="text-body-sm text-muted">계산 중…</p>
+        <p className="text-body-sm text-muted">진행도를 계산하고 있습니다…</p>
       ) : null}
       {tab === 'matrix' && matrixQuery.isError ? (
-        <p className="text-body-sm text-muted">{matrixQuery.error.message}</p>
+        <p className="text-body-sm text-muted">진행도를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p>
       ) : null}
     </section>
+  )
+}
+
+function ConventionHint({ unmatchedCount }: { unmatchedCount: number }) {
+  return (
+    <div className="rounded-lg border border-hairline bg-surface-soft p-5 space-y-2">
+      <p className="text-title-sm text-ink">진행도를 그리려면 파일명 규칙이 필요합니다.</p>
+      <p className="text-body-sm text-muted">
+        지금 폴더에 있는 파일 <span className="tabular">{unmatchedCount}</span>개가 모두 규칙에 맞지 않아 진행도 탭이 비활성 상태입니다.
+      </p>
+      <div className="text-body-sm text-muted">
+        <p>규칙: <code className="filename">[프로그램_N주차]_팀명_과제명.확장자</code></p>
+        <p className="mt-1">예: <code className="filename">[FLIP1기_3주차]_3팀_MVP기획서.pdf</code></p>
+      </div>
+    </div>
   )
 }
 
