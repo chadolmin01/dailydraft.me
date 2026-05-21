@@ -719,6 +719,8 @@ function FolderTabs({
             </p>
           ) : null}
 
+          <MatrixSummaryBar cells={matrix.cells} />
+
           <ProgressGrid teams={matrix.teams} weeks={matrix.weeks} cells={matrix.cells} />
         </div>
       ) : null}
@@ -899,6 +901,37 @@ function TabButton({
     >
       {children}
     </button>
+  )
+}
+
+function MatrixSummaryBar({ cells }: { cells: MatrixCell[] }) {
+  const total = cells.length
+  const done = cells.filter(c => c.status === 'done').length
+  const pending = cells.filter(c => c.status === 'pending').length
+  const late = cells.filter(c => c.status === 'late').length
+  const empty = cells.filter(c => c.status === 'empty').length
+  const rate = total > 0 ? Math.round((done / total) * 100) : 0
+
+  return (
+    <div className="rounded-lg border border-hairline bg-surface-soft p-4 grid grid-cols-2 md:grid-cols-5 gap-3 text-center">
+      <Stat label="제출률" value={`${rate}%`} accent />
+      <Stat label="제출" value={String(done)} icon="●" />
+      <Stat label="진행" value={String(pending)} icon="◐" />
+      <Stat label="미제출" value={String(late)} icon="✕" />
+      <Stat label="예정" value={String(empty)} icon="○" />
+    </div>
+  )
+}
+
+function Stat({ label, value, icon, accent }: { label: string; value: string; icon?: string; accent?: boolean }) {
+  return (
+    <div className="space-y-1">
+      <div className={`text-display-sm tabular ${accent ? 'text-ink' : 'text-body'}`}>
+        {icon ? <span className="text-muted mr-1">{icon}</span> : null}
+        {value}
+      </div>
+      <div className="text-caption text-muted-soft">{label}</div>
+    </div>
   )
 }
 
