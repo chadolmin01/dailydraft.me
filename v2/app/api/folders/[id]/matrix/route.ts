@@ -1,19 +1,20 @@
 import { type NextRequest } from 'next/server'
 
-// 큰 Drive 폴더 + Sheets 조회 두 번 → Vercel 기본 10s 부족 가능.
+// 재귀 폴더 스캔 + Sheets 조회 → Vercel 기본 10s 부족 가능.
 export const maxDuration = 60
+
 import { createServerSupabaseClient } from '@/src/lib/supabase/server'
 import { ApiResponse, isValidUUID } from '@/src/lib/api-utils'
 import { getValidAccessToken, GoogleAuthRequiredError } from '@/src/lib/google/tokens'
-import { listFolderFiles } from '@/src/lib/google/drive'
+import { listFolderFilesRecursive } from '@/src/lib/google/drive-recursive'
 import { readRange } from '@/src/lib/google/sheets'
-import { parseFilenames } from '@/src/lib/parsers/filename'
-import { buildMatrix, parseRosterFromSheet, type ParsedDriveFile } from '@/src/lib/matrix'
+import { extractAtomsFromFile } from '@/src/lib/m6/extractor'
+import { buildMatrix, parseRosterFromSheet, type FileWithAtoms } from '@/src/lib/matrix'
 
 // GET /api/folders/[id]/matrix
-//   - 폴더의 Drive 파일 + (있으면) Sheets 명단을 실시간으로 가져와서 매트릭스 계산
-//   - DB 캐싱 없음 (spec F4: 실시간 계산)
-//   - 명단 시트 첫 열을 팀 명단으로 해석 (헤더 자동 skip)
+//   - 재귀 폴더 스캔 → 각 File 에서 M6 Atom 추출 → 매트릭스 계산
+//   - DB 캐싱 없음 (spec F4: 실시간)
+//   - D8: filename + path 양쪽에서 deterministic 추출 (LLM X — D4)
 
 export async function GET(
   _request: NextRequest,
@@ -38,18 +39,19 @@ export async function GET(
   try {
     const accessToken = await getValidAccessToken(user.id)
 
-    // 1) Drive 파일 목록 + 파싱
-    const files = await listFolderFiles(accessToken, folder.drive_folder_id)
-    const { parsed: parsedNames, unmatched } = parseFilenames(files.map(f => f.name))
+    // 1) Drive 재귀 스캔
+    const scan = await listFolderFilesRecursive(accessToken, folder.drive_folder_id)
 
-    // parsedNames 와 원본 files 를 합쳐서 ParsedDriveFile[] 만들기
-    const filesByName = new Map(files.map(f => [f.name, f]))
-    const parsedFiles: ParsedDriveFile[] = parsedNames.map(({ name, parsed }) => {
-      const file = filesByName.get(name)!
-      return { id: file.id, name: file.name, modifiedTime: file.modifiedTime, parsed }
-    })
+    // 2) 각 File 에서 Atom 추출 → FileWithAtoms
+    const filesWithAtoms: FileWithAtoms[] = scan.files.map(f => ({
+      file_id: f.id,
+      name: f.name,
+      modifiedTime: f.modifiedTime,
+      path: f.path,
+      atoms: extractAtomsFromFile({ file_id: f.id, name: f.name, path: f.path }),
+    }))
 
-    // 2) (있으면) Sheets 명단 — 첫 열만 사용
+    // 3) (있으면) Sheets 명단
     let rosterTeams: string[] | undefined
     let rosterError: string | undefined
     if (folder.sheet_id) {
@@ -61,12 +63,27 @@ export async function GET(
       }
     }
 
-    // 3) 매트릭스 계산
+    // 4) 매트릭스 계산
     const matrix = buildMatrix({
-      parsedFiles,
+      files: filesWithAtoms,
       rosterTeams,
       programStartDate: folder.program_start_date,
     })
+
+    // 미매칭 파일 — week 또는 team Atom 둘 중 하나 이상 없음
+    const unmatchedFiles = filesWithAtoms
+      .filter(f => !f.atoms.some(a => a.canonical_key?.startsWith('week:')) ||
+                   !f.atoms.some(a => a.canonical_key?.startsWith('team:')))
+      .map(f => {
+        const hasWeek = f.atoms.some(a => a.canonical_key?.startsWith('week:'))
+        const hasTeam = f.atoms.some(a => a.canonical_key?.startsWith('team:'))
+        return {
+          id: f.file_id,
+          name: f.name,
+          path: f.path,
+          missing: [hasWeek ? null : '주차', hasTeam ? null : '팀'].filter(Boolean),
+        }
+      })
 
     return ApiResponse.ok({
       folder: {
@@ -76,7 +93,12 @@ export async function GET(
         program_start_date: folder.program_start_date,
       },
       matrix,
-      unmatched,
+      unmatched_files: unmatchedFiles,
+      scan: {
+        truncated: scan.truncated,
+        nodes_scanned: scan.nodes_scanned,
+        max_depth_reached: scan.max_depth_reached,
+      },
       rosterError,
     })
   } catch (e) {

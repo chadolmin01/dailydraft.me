@@ -28,7 +28,23 @@ interface MatrixCell {
   team: string
   week: number
   status: 'done' | 'pending' | 'late' | 'empty'
-  files: Array<{ id: string; name: string; modifiedTime: string }>
+  files: Array<{
+    id: string
+    name: string
+    modifiedTime: string
+    path: string[]
+    /** week Atom + team Atom 평균 confidence (M6 v1.1) */
+    confidence: number
+    /** 출처 요약 — 'filename' | 'path' | 'mixed' */
+    provenance_summary: 'filename' | 'path' | 'mixed'
+  }>
+}
+
+interface UnmatchedFile {
+  id: string
+  name: string
+  path: string[]
+  missing: string[]
 }
 
 interface MatrixResponse {
@@ -37,9 +53,10 @@ interface MatrixResponse {
     teams: string[]
     weeks: number[]
     cells: MatrixCell[]
-    source: { teamSource: 'roster' | 'derived'; rosterSize?: number; fileCount: number }
+    source: { teamSource: 'roster' | 'derived'; rosterSize?: number; fileCount: number; unmatchedCount: number }
   }
-  unmatched: string[]
+  unmatched_files: UnmatchedFile[]
+  scan: { truncated: boolean; nodes_scanned: number; max_depth_reached: number }
   rosterError?: string
 }
 
@@ -752,7 +769,8 @@ function FolderTabs({
   const [tab, setTab] = useState<'folder' | 'matrix'>('folder')
   const matrix = matrixQuery.data?.matrix
   const hasMatrixData = !!matrix && matrix.source.fileCount > 0
-  const unmatchedCount = matrixQuery.data?.unmatched?.length ?? 0
+  const unmatchedCount = matrixQuery.data?.matrix.source.unmatchedCount ?? 0
+  const unmatchedFiles = matrixQuery.data?.unmatched_files ?? []
 
   // 진행도 탭 비활성 사유 — 파일 자체가 없는지, 파일은 있는데 이름 규칙이 안 맞는지
   const matrixHint = (() => {
@@ -802,7 +820,7 @@ function FolderTabs({
       {tab === 'folder' ? (
         <div role="tabpanel" className="space-y-3">
           {unmatchedCount > 0 && !hasMatrixData ? (
-            <ConventionHint unmatchedCount={unmatchedCount} />
+            <ConventionHint unmatchedCount={unmatchedCount} unmatchedFiles={unmatchedFiles} />
           ) : null}
           <FolderBrowser rootDriveFolderId={rootDriveFolderId} rootName={folderName} />
         </div>
@@ -863,17 +881,39 @@ function FolderTabs({
   )
 }
 
-function ConventionHint({ unmatchedCount }: { unmatchedCount: number }) {
+function ConventionHint({ unmatchedCount, unmatchedFiles }: { unmatchedCount: number; unmatchedFiles: UnmatchedFile[] }) {
   return (
-    <div className="rounded-lg border border-hairline bg-surface-soft p-5 space-y-2">
-      <p className="text-title-sm text-ink">진행도를 그리려면 파일명 규칙이 필요합니다.</p>
+    <div className="rounded-lg border border-hairline bg-surface-soft p-5 space-y-3">
+      <p className="text-title-sm text-ink">진행도를 그리려면 주차와 팀 정보가 필요합니다.</p>
       <p className="text-body-sm text-muted">
-        지금 폴더에 있는 파일 <span className="tabular">{unmatchedCount}</span>개가 모두 규칙에 맞지 않아 진행도 탭이 비활성 상태입니다.
+        지금 폴더에 있는 파일 <span className="tabular">{unmatchedCount}</span>개에서 주차/팀을 인식하지 못했습니다.
       </p>
-      <div className="text-body-sm text-muted">
-        <p>규칙: <code className="filename">[프로그램_N주차]_팀명_과제명.확장자</code></p>
-        <p className="mt-1">예: <code className="filename">[FLIP1기_3주차]_3팀_MVP기획서.pdf</code></p>
+      <div className="text-body-sm text-muted space-y-2">
+        <p>Draft 가 인식하는 방식 (둘 중 하나만 맞으면 됩니다):</p>
+        <ul className="list-disc list-inside pl-2 space-y-1">
+          <li>파일명: <code className="filename">[FLIP1기_3주차]_3팀_MVP기획서.pdf</code></li>
+          <li>폴더 구조: <code className="filename">3주차 / 3팀 / 임의이름.pdf</code></li>
+        </ul>
+        <p className="text-caption text-muted-soft">
+          폴더 이름에 "3주차" "Week 3" "3팀" "Team 3" "3조" 등이 있어도 자동 인식.
+        </p>
       </div>
+      {unmatchedFiles.length > 0 ? (
+        <details className="text-caption">
+          <summary className="text-muted cursor-pointer">미매칭 파일 {unmatchedFiles.length}개 보기</summary>
+          <ul className="mt-2 space-y-1">
+            {unmatchedFiles.slice(0, 10).map(f => (
+              <li key={f.id} className="text-muted-soft">
+                <code className="filename">{f.path.length > 0 ? f.path.join(' / ') + ' / ' : ''}{f.name}</code>
+                <span className="ml-2">({f.missing.join(' · ')} 모름)</span>
+              </li>
+            ))}
+            {unmatchedFiles.length > 10 ? (
+              <li className="text-muted-soft">… 외 {unmatchedFiles.length - 10}개</li>
+            ) : null}
+          </ul>
+        </details>
+      ) : null}
     </div>
   )
 }
@@ -1232,6 +1272,13 @@ function FilterChip({ active, onClick, children }: { active: boolean; onClick: (
   )
 }
 
+function labelProvenance(p: 'filename' | 'path' | 'mixed'): string {
+  // M6 Glossary 의 Provenance UI 라벨 = "출처"
+  if (p === 'filename') return '파일명에서 인식'
+  if (p === 'path') return '폴더 경로에서 인식'
+  return '파일명 + 폴더 경로'
+}
+
 function CellDetail({ cell, onClose }: { cell: MatrixCell; onClose: () => void }) {
   useEffect(() => {
     const onEsc = (e: KeyboardEvent) => {
@@ -1276,7 +1323,7 @@ function CellDetail({ cell, onClose }: { cell: MatrixCell; onClose: () => void }
         {cell.files.length > 0 ? (
           <ul className="space-y-2">
             {cell.files.map(f => (
-              <li key={f.id} className="rounded-md border border-hairline bg-surface-soft p-3">
+              <li key={f.id} className="rounded-md border border-hairline bg-surface-soft p-3 space-y-1">
                 <a
                   href={`https://drive.google.com/file/d/${f.id}/view`}
                   target="_blank"
@@ -1285,8 +1332,17 @@ function CellDetail({ cell, onClose }: { cell: MatrixCell; onClose: () => void }
                 >
                   {f.name}
                 </a>
-                <p className="text-caption text-muted-soft mt-0.5 tabular">
-                  {new Date(f.modifiedTime).toLocaleString('ko-KR')}
+                {f.path.length > 0 ? (
+                  <p className="text-caption text-muted-soft truncate">
+                    경로: {f.path.join(' / ')}
+                  </p>
+                ) : null}
+                <p className="text-caption text-muted-soft tabular flex items-center gap-2 flex-wrap">
+                  <span>{new Date(f.modifiedTime).toLocaleString('ko-KR')}</span>
+                  <span aria-hidden>·</span>
+                  <span title={`출처: ${labelProvenance(f.provenance_summary)} · 신뢰도 ${Math.round(f.confidence * 100)}%`}>
+                    {labelProvenance(f.provenance_summary)} ({Math.round(f.confidence * 100)}%)
+                  </span>
                 </p>
               </li>
             ))}

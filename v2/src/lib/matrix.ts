@@ -1,82 +1,111 @@
-// 팀 × 주차 진행도 매트릭스 계산.
+// 팀 × 주차 진행도 매트릭스 — M6 v1.1 Atom 기반.
 //
-// spec F4 + tasks.md Day 2 — 실시간 계산 (DB 캐싱 X).
-// 입력: 파일명 컨벤션으로 파싱된 Drive 파일 + (선택) Sheets 명단
-// 출력: 2D 매트릭스 (행=팀, 열=주차, 셀=상태+파일목록)
+// spec F4 + D8 (인식 확장):
+//   입력 = File 리스트 + 각 File 에서 추출된 Atom 들 (week=Event, team=Entity).
+//   처리 = 같은 File 의 week Atom + team Atom 쌍을 한 셀에 카운트.
 //
-// V1 상태값: done / empty 만. late / pending 은 program 시작일이 정해진 후 (V1.5+).
+// 명단 시트 (rosterTeams) 가 있으면 그 팀 목록 우선, 없으면 Atom 에서 추출.
+// 실시간 계산 (DB 캐싱 X).
 
-import type { ParsedFilename } from './parsers/filename'
+import type { Atom } from './m6/types'
 
 export type CellStatus = 'done' | 'pending' | 'late' | 'empty'
 
-export interface ParsedDriveFile {
-  id: string
+/** File + 그 File 에서 추출된 Atom 들. matrix 의 입력 단위. */
+export interface FileWithAtoms {
+  file_id: string
   name: string
   modifiedTime: string
-  parsed: ParsedFilename
+  path: string[]
+  atoms: Atom[]
 }
 
 export interface MatrixCell {
   team: string
   week: number
   status: CellStatus
-  files: Array<{ id: string; name: string; modifiedTime: string }>
+  files: Array<{
+    id: string
+    name: string
+    modifiedTime: string
+    path: string[]
+    /** week + team Atom 의 평균 confidence */
+    confidence: number
+    /** 인식 출처 요약: 'filename' | 'path' | 'mixed' */
+    provenance_summary: 'filename' | 'path' | 'mixed'
+  }>
 }
 
 export interface MatrixData {
-  teams: string[]          // 표시 순서
-  weeks: number[]          // 1, 2, 3, ...
-  cells: MatrixCell[]      // teams.length * weeks.length 개
+  teams: string[]
+  weeks: number[]
+  cells: MatrixCell[]
   source: {
     teamSource: 'roster' | 'derived'
     rosterSize?: number
     fileCount: number
+    unmatchedCount: number
   }
 }
 
 interface BuildInput {
-  parsedFiles: ParsedDriveFile[]
-  rosterTeams?: string[]   // Sheets 에서 읽은 명단 (있으면 우선)
-  weeksOverride?: number   // UI 에서 명시적으로 N 주차까지 보고 싶을 때
-  programStartDate?: string | null  // ISO date — 있으면 현재 주차 계산해 late/pending 분기
-  today?: Date             // 테스트용 (기본: new Date())
+  files: FileWithAtoms[]
+  rosterTeams?: string[]
+  weeksOverride?: number
+  programStartDate?: string | null
+  today?: Date
 }
 
-// program_start_date 와 오늘 날짜로 현재 진행 주차 계산.
-// 예: start = 2026-05-01 (월요일), today = 2026-05-15 (목요일) → 2주차 (둘째 주의 4일째).
 function calcCurrentWeek(programStartDate: string, today: Date): number {
   const start = new Date(programStartDate + 'T00:00:00')
   const ms = today.getTime() - start.getTime()
   const days = Math.floor(ms / (1000 * 60 * 60 * 24))
-  if (days < 0) return 0       // 아직 시작 안 함
+  if (days < 0) return 0
   return Math.floor(days / 7) + 1
 }
 
-export function buildMatrix({ parsedFiles, rosterTeams, weeksOverride, programStartDate, today }: BuildInput): MatrixData {
-  // 1) 팀 목록 결정 — 명단 시트 있으면 그대로, 없으면 파싱된 파일에서 추출
-  const teamsFromFiles = Array.from(new Set(parsedFiles.map(f => f.parsed.team)))
+interface MatchedFile {
+  file: FileWithAtoms
+  weekAtom: Atom
+  teamAtom: Atom
+  week: number
+  team: string
+}
+
+export function buildMatrix({ files, rosterTeams, weeksOverride, programStartDate, today }: BuildInput): MatrixData {
+  const matched: MatchedFile[] = []
+  let unmatchedCount = 0
+  for (const file of files) {
+    const weekAtom = file.atoms.find(a => a.canonical_key?.startsWith('week:'))
+    const teamAtom = file.atoms.find(a => a.canonical_key?.startsWith('team:'))
+    if (!weekAtom || !teamAtom) {
+      unmatchedCount++
+      continue
+    }
+    const weekNum = Number.parseInt(weekAtom.canonical_key!.split(':')[1], 10)
+    const teamStr = teamAtom.content
+    matched.push({ file, weekAtom, teamAtom, week: weekNum, team: teamStr })
+  }
+
+  const teamsFromAtoms = Array.from(new Set(matched.map(m => m.team)))
   const useRoster = rosterTeams && rosterTeams.length > 0
   const teams = useRoster
     ? [...rosterTeams!]
-    : teamsFromFiles.sort(compareTeam)
+    : teamsFromAtoms.sort(compareTeam)
 
-  // 2) 주차 범위 — override 있으면 그대로, 없으면 최대 주차까지
-  const weeksFromFiles = parsedFiles.map(f => f.parsed.week)
-  const maxWeek = weeksFromFiles.length > 0 ? Math.max(...weeksFromFiles) : 1
+  const weeksFromAtoms = matched.map(m => m.week)
+  const maxWeek = weeksFromAtoms.length > 0 ? Math.max(...weeksFromAtoms) : 1
   const weekCount = weeksOverride ?? maxWeek
   const weeks = Array.from({ length: weekCount }, (_, i) => i + 1)
 
-  // 3) 파일을 team|week 키로 그룹핑
-  const groups = new Map<string, ParsedDriveFile[]>()
-  for (const f of parsedFiles) {
-    const key = `${f.parsed.team}|${f.parsed.week}`
+  const groups = new Map<string, MatchedFile[]>()
+  for (const m of matched) {
+    const key = `${m.team}|${m.week}`
     const arr = groups.get(key) ?? []
-    arr.push(f)
+    arr.push(m)
     groups.set(key, arr)
   }
 
-  // 4) 셀 생성 — programStartDate 있으면 late/pending 분기, 없으면 done/empty 만
   const now = today ?? new Date()
   const currentWeek = programStartDate ? calcCurrentWeek(programStartDate, now) : null
 
@@ -84,24 +113,40 @@ export function buildMatrix({ parsedFiles, rosterTeams, weeksOverride, programSt
   for (const team of teams) {
     for (const week of weeks) {
       const key = `${team}|${week}`
-      const files = groups.get(key) ?? []
+      const matchedFiles = groups.get(key) ?? []
       let status: CellStatus
-      if (files.length > 0) {
+      if (matchedFiles.length > 0) {
         status = 'done'
       } else if (currentWeek === null) {
-        status = 'empty'  // 시작일 모르면 단순 empty
+        status = 'empty'
       } else if (week < currentWeek) {
-        status = 'late'   // 지나간 주차에 안 냄
+        status = 'late'
       } else if (week === currentWeek) {
-        status = 'pending'  // 이번 주차 — 아직
+        status = 'pending'
       } else {
-        status = 'empty'  // 미래 주차
+        status = 'empty'
       }
       cells.push({
         team,
         week,
         status,
-        files: files.map(f => ({ id: f.id, name: f.name, modifiedTime: f.modifiedTime })),
+        files: matchedFiles.map(mf => {
+          const confidence = (mf.weekAtom.confidence + mf.teamAtom.confidence) / 2
+          const weekFromFilename = mf.weekAtom.provenance.source.location === 'filename'
+          const teamFromFilename = mf.teamAtom.provenance.source.location === 'filename'
+          const provenance_summary: 'filename' | 'path' | 'mixed' =
+            weekFromFilename && teamFromFilename ? 'filename'
+              : !weekFromFilename && !teamFromFilename ? 'path'
+                : 'mixed'
+          return {
+            id: mf.file.file_id,
+            name: mf.file.name,
+            modifiedTime: mf.file.modifiedTime,
+            path: mf.file.path,
+            confidence,
+            provenance_summary,
+          }
+        }),
       })
     }
   }
@@ -113,12 +158,12 @@ export function buildMatrix({ parsedFiles, rosterTeams, weeksOverride, programSt
     source: {
       teamSource: useRoster ? 'roster' : 'derived',
       rosterSize: useRoster ? rosterTeams!.length : undefined,
-      fileCount: parsedFiles.length,
+      fileCount: matched.length,
+      unmatchedCount,
     },
   }
 }
 
-// "3팀" < "10팀" 처럼 숫자 부분 기준 정렬
 function compareTeam(a: string, b: string): number {
   const na = Number.parseInt(a, 10)
   const nb = Number.parseInt(b, 10)
@@ -126,10 +171,6 @@ function compareTeam(a: string, b: string): number {
   return na - nb
 }
 
-/**
- * Sheets 의 첫 열을 명단으로 해석.
- * 빈 값 / 헤더로 보이는 값 ('팀명', '팀', '#' 등) 은 skip.
- */
 const HEADER_HINTS = ['팀명', '팀', 'team', '#', '번호', '순번']
 
 export function parseRosterFromSheet(rows: string[][]): string[] {

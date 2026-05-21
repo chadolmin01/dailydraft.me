@@ -12,10 +12,11 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '@/src/types/database'
 import { getValidAccessToken } from '@/src/lib/google/tokens'
 import { listFolderFiles, searchDriveItems } from '@/src/lib/google/drive'
+import { listFolderFilesRecursive } from '@/src/lib/google/drive-recursive'
 import { readRange } from '@/src/lib/google/sheets'
 import { createGmailDraft } from '@/src/lib/google/gmail'
-import { parseFilenames } from '@/src/lib/parsers/filename'
-import { buildMatrix, parseRosterFromSheet, type ParsedDriveFile } from '@/src/lib/matrix'
+import { extractAtomsFromFile } from '@/src/lib/m6/extractor'
+import { buildMatrix, parseRosterFromSheet, type FileWithAtoms } from '@/src/lib/matrix'
 
 export const TOOL_DEFINITIONS = [
   {
@@ -211,14 +212,66 @@ async function listAllFoldersSummaryTool(ctx: ToolContext) {
 }
 
 async function getFolderSummaryTool(ctx: ToolContext, input: ToolInputs['get_folder_summary']) {
-  const { folder, accessToken, files } = await loadFolderAndFiles(ctx, input.folder_id)
-  const { parsed, unmatched } = parseFilenames(files.map(f => f.name))
-
-  const filesByName = new Map(files.map(f => [f.name, f]))
-  const parsedFiles: ParsedDriveFile[] = parsed.map(({ name, parsed: p }) => {
-    const file = filesByName.get(name)!
-    return { id: file.id, name: file.name, modifiedTime: file.modifiedTime, parsed: p }
+  const { folder, filesWithAtoms, rosterTeams } = await loadFolderAndRecognize(ctx, input.folder_id)
+  const matrix = buildMatrix({
+    files: filesWithAtoms,
+    rosterTeams,
+    programStartDate: folder.program_start_date,
   })
+
+  // 최근 활동 3개
+  const recent = [...filesWithAtoms]
+    .sort((a, b) => b.modifiedTime.localeCompare(a.modifiedTime))
+    .slice(0, 3)
+    .map(f => ({ name: f.name, path: f.path.join(' / '), modified: f.modifiedTime }))
+
+  const weeklyStats = matrix.weeks.map(week => {
+    const submitted = matrix.cells.filter(c => c.week === week && c.status === 'done').length
+    return { week, submitted, total: matrix.teams.length, missing: matrix.teams.length - submitted }
+  })
+
+  // 인식 출처 분포 (matrix 셀의 provenance_summary 기반)
+  const provenanceCounts: Record<string, number> = { filename: 0, path: 0, mixed: 0 }
+  for (const cell of matrix.cells) {
+    for (const f of cell.files) {
+      provenanceCounts[f.provenance_summary]++
+    }
+  }
+
+  return {
+    folder_name: folder.name,
+    program: folder.program,
+    team_count: matrix.teams.length,
+    week_count: matrix.weeks.length,
+    matched_files: matrix.source.fileCount,
+    unmatched_files: matrix.source.unmatchedCount,
+    provenance_breakdown: provenanceCounts,
+    weekly_stats: weeklyStats,
+    recent_activity: recent,
+  }
+}
+
+// D8: 폴더 재귀 스캔 + path-based 인식 + 명단 — 모든 매트릭스 도구가 공유.
+async function loadFolderAndRecognize(ctx: ToolContext, folderId: string) {
+  const { data: folder, error } = await ctx.supabase
+    .from('folders')
+    .select('id, name, drive_folder_id, sheet_id, program, program_start_date')
+    .eq('id', folderId)
+    .maybeSingle()
+
+  if (error) throw new Error(`폴더 조회 실패: ${error.message}`)
+  if (!folder || !folder.drive_folder_id) throw new Error('폴더를 찾을 수 없습니다')
+
+  const accessToken = await getValidAccessToken(ctx.userId)
+  const scan = await listFolderFilesRecursive(accessToken, folder.drive_folder_id)
+
+  const filesWithAtoms: FileWithAtoms[] = scan.files.map(f => ({
+    file_id: f.id,
+    name: f.name,
+    modifiedTime: f.modifiedTime,
+    path: f.path,
+    atoms: extractAtomsFromFile({ file_id: f.id, name: f.name, path: f.path }),
+  }))
 
   let rosterTeams: string[] | undefined
   if (folder.sheet_id) {
@@ -228,87 +281,54 @@ async function getFolderSummaryTool(ctx: ToolContext, input: ToolInputs['get_fol
     } catch {}
   }
 
-  const matrix = buildMatrix({ parsedFiles, rosterTeams })
-
-  // 가장 최근 활동 파일 3개
-  const recent = [...files]
-    .sort((a, b) => b.modifiedTime.localeCompare(a.modifiedTime))
-    .slice(0, 3)
-    .map(f => ({ name: f.name, modified: f.modifiedTime }))
-
-  // 주차별 제출 통계
-  const weeklyStats = matrix.weeks.map(week => {
-    const submitted = matrix.cells.filter(c => c.week === week && c.status === 'done').length
-    return { week, submitted, total: matrix.teams.length, missing: matrix.teams.length - submitted }
-  })
-
-  return {
-    folder_name: folder.name,
-    program: folder.program,
-    team_count: matrix.teams.length,
-    week_count: matrix.weeks.length,
-    matched_files: parsed.length,
-    unmatched_files: unmatched.length,
-    weekly_stats: weeklyStats,
-    recent_activity: recent,
-  }
-}
-
-async function loadFolderAndFiles(ctx: ToolContext, folderId: string) {
-  const { data: folder, error } = await ctx.supabase
-    .from('folders')
-    .select('id, name, drive_folder_id, sheet_id, program')
-    .eq('id', folderId)
-    .maybeSingle()
-
-  if (error) throw new Error(`폴더 조회 실패: ${error.message}`)
-  if (!folder || !folder.drive_folder_id) throw new Error('폴더를 찾을 수 없습니다')
-
-  const accessToken = await getValidAccessToken(ctx.userId)
-  const files = await listFolderFiles(accessToken, folder.drive_folder_id)
-  return { folder, accessToken, files }
+  return { folder, accessToken, scan, filesWithAtoms, rosterTeams }
 }
 
 async function listFolderFilesTool(ctx: ToolContext, input: ToolInputs['list_folder_files']) {
-  const { folder, files } = await loadFolderAndFiles(ctx, input.folder_id)
-  const { parsed, unmatched } = parseFilenames(files.map(f => f.name))
+  const { folder, filesWithAtoms } = await loadFolderAndRecognize(ctx, input.folder_id)
+  const matched = filesWithAtoms.filter(f =>
+    f.atoms.some(a => a.canonical_key?.startsWith('week:')) &&
+    f.atoms.some(a => a.canonical_key?.startsWith('team:')),
+  )
+  const unmatched = filesWithAtoms.filter(f =>
+    !f.atoms.some(a => a.canonical_key?.startsWith('week:')) ||
+    !f.atoms.some(a => a.canonical_key?.startsWith('team:')),
+  )
   return {
     folder_name: folder.name,
     program: folder.program,
-    total_files: files.length,
-    matched: parsed.length,
+    total_files: filesWithAtoms.length,
+    matched: matched.length,
     unmatched_count: unmatched.length,
-    files: parsed.map(({ name, parsed }) => ({
-      name,
-      team: parsed.team,
-      week: parsed.week,
-      task: parsed.task,
+    files: matched.map(f => {
+      const week = f.atoms.find(a => a.canonical_key?.startsWith('week:'))!
+      const team = f.atoms.find(a => a.canonical_key?.startsWith('team:'))!
+      return {
+        name: f.name,
+        path: f.path.join(' / '),
+        team: team.content,
+        week: Number.parseInt(week.canonical_key!.split(':')[1], 10),
+        confidence: (week.confidence + team.confidence) / 2,
+      }
+    }),
+    unmatched_names: unmatched.map(f => ({
+      name: f.name,
+      path: f.path.join(' / '),
+      missing: [
+        f.atoms.some(a => a.canonical_key?.startsWith('week:')) ? null : '주차',
+        f.atoms.some(a => a.canonical_key?.startsWith('team:')) ? null : '팀',
+      ].filter(Boolean),
     })),
-    unmatched_names: unmatched,
   }
 }
 
 async function findMissingTeamsTool(ctx: ToolContext, input: ToolInputs['find_missing_teams']) {
-  const { folder, accessToken, files } = await loadFolderAndFiles(ctx, input.folder_id)
-  const { parsed } = parseFilenames(files.map(f => f.name))
-
-  const filesByName = new Map(files.map(f => [f.name, f]))
-  const parsedFiles: ParsedDriveFile[] = parsed.map(({ name, parsed: p }) => {
-    const file = filesByName.get(name)!
-    return { id: file.id, name: file.name, modifiedTime: file.modifiedTime, parsed: p }
+  const { folder, filesWithAtoms, rosterTeams } = await loadFolderAndRecognize(ctx, input.folder_id)
+  const matrix = buildMatrix({
+    files: filesWithAtoms,
+    rosterTeams,
+    programStartDate: folder.program_start_date,
   })
-
-  let rosterTeams: string[] | undefined
-  if (folder.sheet_id) {
-    try {
-      const rows = await readRange(accessToken, folder.sheet_id, 'A:A')
-      rosterTeams = parseRosterFromSheet(rows)
-    } catch {
-      // 시트 읽기 실패 → 명단 없이 진행
-    }
-  }
-
-  const matrix = buildMatrix({ parsedFiles, rosterTeams })
 
   const submittedTeams = new Set(
     matrix.cells.filter(c => c.week === input.week && c.status === 'done').map(c => c.team),
