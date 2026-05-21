@@ -3,9 +3,9 @@
 
 export default function WorkspaceLoading() {
   return (
-    <div className="h-screen grid grid-cols-[var(--layout-chat-width)_1fr] bg-canvas">
-      {/* 좌측 — 챗봇 패널 (다크) */}
-      <aside className="bg-surface-dark border-r border-hairline-dark flex flex-col">
+    <div className="min-h-screen md:h-screen flex flex-col md:grid md:grid-cols-[var(--layout-chat-width)_1fr] bg-canvas">
+      {/* 좌측 (모바일 상단) — 챗봇 패널 (다크) */}
+      <aside className="bg-surface-dark border-b md:border-b-0 md:border-r border-hairline-dark flex flex-col max-h-[60vh] md:max-h-none md:h-screen">
         <header className="px-5 py-5 border-b border-hairline-dark">
           <div className="h-5 w-16 bg-surface-dark-elevated rounded animate-pulse" />
           <div className="h-3 w-32 bg-surface-dark-elevated rounded animate-pulse mt-2 opacity-60" />
@@ -18,8 +18,8 @@ export default function WorkspaceLoading() {
         </form>
       </aside>
 
-      {/* 우측 — 콘텐츠 */}
-      <main className="overflow-y-auto p-6">
+      {/* 우측 (모바일 하단) — 콘텐츠 */}
+      <main className="overflow-y-auto p-4 md:p-6 md:h-screen">
         <div className="max-w-layout-content mx-auto space-y-7">
           <div className="flex items-end justify-between gap-4">
             <div className="space-y-2">

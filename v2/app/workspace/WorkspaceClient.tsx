@@ -130,12 +130,12 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
   const selectedFolder = folders.find(f => f.id === selectedFolderId)
 
   return (
-    <div className="h-screen grid grid-cols-[var(--layout-chat-width)_1fr] bg-canvas">
+    <div className="min-h-screen md:h-screen flex flex-col md:grid md:grid-cols-[var(--layout-chat-width)_1fr] bg-canvas">
       <a href="#workspace-main" className="sr-only focus:not-sr-only">
         본문으로 건너뛰기
       </a>
-      {/* 좌측 — 챗봇 패널 (다크) */}
-      <aside className="bg-surface-dark text-on-dark border-r border-hairline-dark flex flex-col" aria-label="챗봇">
+      {/* 좌측 (모바일에서는 상단) — 챗봇 패널 (다크) */}
+      <aside className="bg-surface-dark text-on-dark border-b md:border-b-0 md:border-r border-hairline-dark flex flex-col md:h-screen max-h-[60vh] md:max-h-none" aria-label="챗봇">
         <header className="px-5 py-5 border-b border-hairline-dark flex items-start justify-between gap-3">
           <div className="min-w-0">
             <h2 className="text-title-md text-on-dark">Draft</h2>
@@ -152,8 +152,8 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
         <ChatPanel folderId={selectedFolderId} />
       </aside>
 
-      {/* 우측 — 콘텐츠 (cream) */}
-      <main id="workspace-main" className="overflow-y-auto p-6" aria-label="폴더와 진행도">
+      {/* 우측 (모바일에서는 하단) — 콘텐츠 (cream) */}
+      <main id="workspace-main" className="overflow-y-auto p-4 md:p-6 md:h-screen" aria-label="폴더와 진행도">
         <div className="max-w-layout-content mx-auto space-y-7">
           {googleAuthBroken ? (
             <div className="rounded-lg border border-hairline bg-surface-soft p-5 flex items-start justify-between gap-4">
