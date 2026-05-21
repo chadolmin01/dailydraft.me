@@ -1,0 +1,546 @@
+{
+  "$schema_version": "1.1",
+  "$glossary_version": "1.1",
+  "$description": "Expected extraction output from sample_report_input.md. Used as golden truth for validating M6 Extractor accuracy. Confidence scores represent the human-verified confidence — Extractor should approximate these.",
+  "$source_file": {
+    "id": "file_sample_flip3_w2",
+    "filename": "FLIP_3팀_2주차_진척보고서.md",
+    "tenant_id": "tenant_flip_2026s1",
+    "uploaded_by": "user_kim_minsoo"
+  },
+
+  "atoms": [
+    {
+      "id": "R1",
+      "type": "Requirement",
+      "content": "지방 거주자 인터뷰 5건 추가 진행",
+      "attributes": {
+        "action_verb": "진행하다",
+        "object": "지방 거주자 인터뷰 5건",
+        "issued_by_ref": "E4",
+        "assigned_to_ref": "E1",
+        "is_mandatory": true
+      },
+      "provenance": {
+        "source": {
+          "file_id": "file_sample_flip3_w2",
+          "location": "section 1 — 1주차 피드백 반영",
+          "raw_text": "이성민 매니저가 지방 거주자 인터뷰 5건을 추가하라고 요청하셨습니다"
+        }
+      },
+      "confidence": 0.95
+    },
+    {
+      "id": "R2",
+      "type": "Requirement",
+      "content": "60대 사용자 대상 사용성 테스트 8건 진행",
+      "attributes": {
+        "action_verb": "진행하다",
+        "object": "60대 사용자 사용성 테스트 8건",
+        "assigned_to_ref": "E1",
+        "is_mandatory": true,
+        "planning_phase": "3주차 계획"
+      },
+      "provenance": {
+        "source": {
+          "file_id": "file_sample_flip3_w2",
+          "location": "section 3 — 다음 주 계획",
+          "raw_text": "60대 사용자 대상 사용성 테스트 8건을 진행할 예정입니다"
+        }
+      },
+      "confidence": 0.93
+    },
+    {
+      "id": "R3",
+      "type": "Requirement",
+      "content": "3주차 사용성 테스트 결과 정리 완료",
+      "attributes": {
+        "action_verb": "정리하다",
+        "object": "사용성 테스트 결과",
+        "assigned_to_ref": "E3",
+        "deadline_ref": "D2",
+        "is_mandatory": true
+      },
+      "provenance": {
+        "source": {
+          "file_id": "file_sample_flip3_w2",
+          "location": "section 3 — 다음 주 계획",
+          "raw_text": "박서연 팀원이 테스트 설계를 담당하고, 2026-03-29까지 결과 정리를 완료합니다"
+        }
+      },
+      "confidence": 0.90
+    },
+    {
+      "id": "R4",
+      "type": "Requirement",
+      "content": "LINC 중간평가 자료 초안 준비",
+      "attributes": {
+        "action_verb": "준비하다",
+        "object": "LINC 중간평가 자료 초안",
+        "assigned_to_ref": "E1",
+        "deadline_ref": "D3",
+        "issued_by_ref": "E4",
+        "is_mandatory": true
+      },
+      "provenance": {
+        "source": {
+          "file_id": "file_sample_flip3_w2",
+          "location": "section 3 — 다음 주 계획",
+          "raw_text": "LINC 중간평가 자료(NRF 표준양식, PDF 10페이지 이내)를 2026-04-10 마감 전 초안으로 준비하겠습니다"
+        }
+      },
+      "confidence": 0.88
+    },
+
+    {
+      "id": "D1",
+      "type": "Deadline",
+      "content": "2026-03-22 — R1 완료 마감",
+      "attributes": {
+        "due_at": "2026-03-22",
+        "requirement_ref": "R1",
+        "status": "met"
+      },
+      "provenance": {
+        "source": {
+          "file_id": "file_sample_flip3_w2",
+          "location": "section 1",
+          "raw_text": "2026-03-22까지 완료했습니다"
+        }
+      },
+      "confidence": 0.97
+    },
+    {
+      "id": "D2",
+      "type": "Deadline",
+      "content": "2026-03-29 — R3 결과 정리 마감",
+      "attributes": {
+        "due_at": "2026-03-29",
+        "requirement_ref": "R3",
+        "status": "upcoming"
+      },
+      "provenance": {
+        "source": {
+          "file_id": "file_sample_flip3_w2",
+          "location": "section 3",
+          "raw_text": "2026-03-29까지 결과 정리를 완료합니다"
+        }
+      },
+      "confidence": 0.95
+    },
+    {
+      "id": "D3",
+      "type": "Deadline",
+      "content": "2026-04-10 — LINC 중간평가 마감",
+      "attributes": {
+        "due_at": "2026-04-10",
+        "requirement_ref": "R4",
+        "status": "upcoming",
+        "issuer": "LINC 사업단"
+      },
+      "provenance": {
+        "source": {
+          "file_id": "file_sample_flip3_w2",
+          "location": "section 3",
+          "raw_text": "2026-04-10 마감"
+        }
+      },
+      "confidence": 0.92
+    },
+
+    {
+      "id": "E1",
+      "type": "Entity",
+      "content": "3팀 (FLIP 1기)",
+      "attributes": {
+        "entity_kind": "team",
+        "affiliation": "FLIP 1기",
+        "representative_ref": "E2"
+      },
+      "provenance": {
+        "source": {
+          "file_id": "file_sample_flip3_w2",
+          "location": "header",
+          "raw_text": "FLIP 1기 3팀 2주차 진척 보고서"
+        }
+      },
+      "confidence": 0.98
+    },
+    {
+      "id": "E2",
+      "type": "Entity",
+      "content": "김민수 (3팀 대표)",
+      "attributes": {
+        "entity_kind": "person",
+        "role": "팀 대표",
+        "team_ref": "E1"
+      },
+      "provenance": {
+        "source": {
+          "file_id": "file_sample_flip3_w2",
+          "location": "header — 작성자",
+          "raw_text": "작성자: 김민수 (3팀 대표)"
+        }
+      },
+      "confidence": 0.98
+    },
+    {
+      "id": "E3",
+      "type": "Entity",
+      "content": "박서연 (3팀 팀원, 테스트 설계 담당)",
+      "attributes": {
+        "entity_kind": "person",
+        "role": "팀원",
+        "team_ref": "E1",
+        "responsibility": "사용성 테스트 설계"
+      },
+      "provenance": {
+        "source": {
+          "file_id": "file_sample_flip3_w2",
+          "location": "section 3",
+          "raw_text": "박서연 팀원이 테스트 설계를 담당하고"
+        }
+      },
+      "confidence": 0.94
+    },
+    {
+      "id": "E4",
+      "type": "Entity",
+      "content": "이성민 매니저 (FLIP 1기 운영)",
+      "attributes": {
+        "entity_kind": "person",
+        "role": "운영 매니저",
+        "affiliation": "FLIP 1기"
+      },
+      "provenance": {
+        "source": {
+          "file_id": "file_sample_flip3_w2",
+          "location": "header — 수신",
+          "raw_text": "수신: 이성민 매니저"
+        }
+      },
+      "confidence": 0.97
+    },
+    {
+      "id": "E5",
+      "type": "Entity",
+      "content": "창교 (시니어 창업 프로그램 운영)",
+      "attributes": {
+        "entity_kind": "organization",
+        "role": "프로그램 운영 기관"
+      },
+      "provenance": {
+        "source": {
+          "file_id": "file_sample_flip3_w2",
+          "location": "section 4 — 요청사항",
+          "raw_text": "창교에서 시니어 창업 프로그램 참여자 연락처를 공유받을 수 있을지"
+        }
+      },
+      "confidence": 0.85
+    },
+
+    {
+      "id": "M1",
+      "type": "Metric",
+      "content": "2주차 부산 인터뷰 2건",
+      "attributes": {
+        "value": 2,
+        "unit": "건",
+        "subject": "부산 거주자 인터뷰",
+        "measured_at": "2026-03-22",
+        "phase": "2주차"
+      },
+      "provenance": {
+        "source": {
+          "file_id": "file_sample_flip3_w2",
+          "location": "section 1",
+          "raw_text": "부산 2건"
+        }
+      },
+      "confidence": 0.96
+    },
+    {
+      "id": "M2",
+      "type": "Metric",
+      "content": "2주차 광주 인터뷰 2건",
+      "attributes": {
+        "value": 2,
+        "unit": "건",
+        "subject": "광주 거주자 인터뷰",
+        "measured_at": "2026-03-22",
+        "phase": "2주차"
+      },
+      "provenance": {
+        "source": {
+          "file_id": "file_sample_flip3_w2",
+          "location": "section 1",
+          "raw_text": "광주 2건"
+        }
+      },
+      "confidence": 0.96
+    },
+    {
+      "id": "M3",
+      "type": "Metric",
+      "content": "2주차 대전 인터뷰 1건",
+      "attributes": {
+        "value": 1,
+        "unit": "건",
+        "subject": "대전 거주자 인터뷰",
+        "measured_at": "2026-03-22",
+        "phase": "2주차"
+      },
+      "provenance": {
+        "source": {
+          "file_id": "file_sample_flip3_w2",
+          "location": "section 1",
+          "raw_text": "대전 1건"
+        }
+      },
+      "confidence": 0.96
+    },
+    {
+      "id": "M4",
+      "type": "Metric",
+      "content": "2주차 누적 인터뷰 17건",
+      "attributes": {
+        "value": 17,
+        "unit": "건",
+        "subject": "누적 인터뷰",
+        "measured_at": "2026-03-22",
+        "phase": "2주차",
+        "cumulative": true
+      },
+      "provenance": {
+        "source": {
+          "file_id": "file_sample_flip3_w2",
+          "location": "section 1",
+          "raw_text": "총 누적 인터뷰 수는 17건이며"
+        }
+      },
+      "confidence": 0.97
+    },
+    {
+      "id": "M5",
+      "type": "Metric",
+      "content": "2주차 서울 외 지역 비중 29%",
+      "attributes": {
+        "value": 29,
+        "unit": "%",
+        "subject": "서울 외 지역 인터뷰 비중",
+        "measured_at": "2026-03-22",
+        "phase": "2주차"
+      },
+      "provenance": {
+        "source": {
+          "file_id": "file_sample_flip3_w2",
+          "location": "section 1",
+          "raw_text": "서울 외 지역 비중은 29%로 늘었습니다"
+        }
+      },
+      "confidence": 0.93
+    },
+    {
+      "id": "M6",
+      "type": "Metric",
+      "content": "60대 응답자 카카오페이 사용률 23%",
+      "attributes": {
+        "value": 23,
+        "unit": "%",
+        "subject": "60대 응답자 카카오페이 사용률",
+        "measured_at": "2026-03-22",
+        "phase": "2주차"
+      },
+      "provenance": {
+        "source": {
+          "file_id": "file_sample_flip3_w2",
+          "location": "section 2 — 핵심 발견",
+          "raw_text": "60대 응답자의 경우 카카오페이 사용률이 23%에 그쳤습니다"
+        }
+      },
+      "confidence": 0.94
+    },
+    {
+      "id": "M7",
+      "type": "Metric",
+      "content": "3주차 사용성 테스트 8건 (계획)",
+      "attributes": {
+        "value": 8,
+        "unit": "건",
+        "subject": "사용성 테스트",
+        "planned_at": "3주차",
+        "status": "planned",
+        "is_target": true
+      },
+      "provenance": {
+        "source": {
+          "file_id": "file_sample_flip3_w2",
+          "location": "section 3",
+          "raw_text": "60대 사용자 대상 사용성 테스트 8건을 진행할 예정입니다"
+        }
+      },
+      "confidence": 0.90
+    },
+
+    {
+      "id": "N1",
+      "type": "Narrative",
+      "content": "지방 거주자 5명 중 4명이 서울 거주자 대비 모바일 결제 사용 빈도가 낮음",
+      "attributes": {
+        "subject": "지방 거주자 모바일 결제 패턴",
+        "observed_at": "2026-03-22",
+        "implications": "MVP 결제 UX 설계에 영향 가능"
+      },
+      "provenance": {
+        "source": {
+          "file_id": "file_sample_flip3_w2",
+          "location": "section 2 — 핵심 발견",
+          "raw_text": "지방 거주자 5명 중 4명이 서울 거주자 대비 모바일 결제 사용 빈도가 낮다는 패턴이 관찰되었습니다"
+        }
+      },
+      "confidence": 0.88
+    },
+
+    {
+      "id": "C1",
+      "type": "Constraint",
+      "content": "LINC 중간평가 자료는 NRF 표준양식 사용",
+      "attributes": {
+        "applies_to_ref": "R4",
+        "constraint_kind": "format"
+      },
+      "provenance": {
+        "source": {
+          "file_id": "file_sample_flip3_w2",
+          "location": "section 3",
+          "raw_text": "NRF 표준양식"
+        }
+      },
+      "confidence": 0.95
+    },
+    {
+      "id": "C2",
+      "type": "Constraint",
+      "content": "LINC 중간평가 자료는 PDF 10페이지 이내",
+      "attributes": {
+        "applies_to_ref": "R4",
+        "constraint_kind": "format",
+        "limit": "10 pages",
+        "format": "PDF"
+      },
+      "provenance": {
+        "source": {
+          "file_id": "file_sample_flip3_w2",
+          "location": "section 3",
+          "raw_text": "PDF 10페이지 이내"
+        }
+      },
+      "confidence": 0.96
+    },
+
+    {
+      "id": "Q1",
+      "type": "Question",
+      "content": "창교에 시니어 창업 프로그램 참여자 연락처 공유 요청",
+      "attributes": {
+        "asker_ref": "E1",
+        "addressee_ref": "E5",
+        "asked_at": "2026-03-22",
+        "status": "pending",
+        "blocks_ref": "R2"
+      },
+      "provenance": {
+        "source": {
+          "file_id": "file_sample_flip3_w2",
+          "location": "section 4 — 요청사항",
+          "raw_text": "창교에서 시니어 창업 프로그램 참여자 연락처를 공유받을 수 있을지 문의드립니다"
+        }
+      },
+      "confidence": 0.90
+    },
+
+    {
+      "id": "DL1",
+      "type": "Deliverable",
+      "content": "FLIP 1기 3팀 2주차 진척 보고서",
+      "attributes": {
+        "author_ref": "E2",
+        "created_at": "2026-03-22",
+        "format": "보고서 (markdown 원본)",
+        "self_reference": true
+      },
+      "provenance": {
+        "source": {
+          "file_id": "file_sample_flip3_w2",
+          "location": "document itself",
+          "raw_text": "FLIP 1기 3팀 2주차 진척 보고서"
+        }
+      },
+      "confidence": 0.99
+    }
+  ],
+
+  "relations": [
+    { "from": "R1", "to": "E1", "type": "assigned_to", "confidence": 0.95 },
+    { "from": "R1", "to": "D1", "type": "requires", "confidence": 0.95 },
+    { "from": "R1", "to": "E4", "type": "produced_by", "confidence": 0.85, "note": "issued by E4 manager" },
+
+    { "from": "R2", "to": "E1", "type": "assigned_to", "confidence": 0.92 },
+    { "from": "M7", "to": "R2", "type": "fulfills", "confidence": 0.90 },
+    { "from": "R2", "to": "Q1", "type": "triggers", "confidence": 0.78, "note": "60대 모집 어려움이 Q1 발생 원인" },
+
+    { "from": "R3", "to": "E3", "type": "assigned_to", "confidence": 0.94 },
+    { "from": "R3", "to": "D2", "type": "requires", "confidence": 0.95 },
+    { "from": "R3", "to": "R2", "type": "responds_to", "confidence": 0.82, "note": "R3는 R2의 후속 정리 작업" },
+
+    { "from": "R4", "to": "E1", "type": "assigned_to", "confidence": 0.88 },
+    { "from": "R4", "to": "D3", "type": "requires", "confidence": 0.94 },
+    { "from": "C1", "to": "R4", "type": "references", "confidence": 0.95, "note": "C1 constrains R4" },
+    { "from": "C2", "to": "R4", "type": "references", "confidence": 0.95 },
+
+    { "from": "M1", "to": "M4", "type": "fulfills", "confidence": 0.80, "note": "M1+M2+M3 → M4 누적" },
+    { "from": "M2", "to": "M4", "type": "fulfills", "confidence": 0.80 },
+    { "from": "M3", "to": "M4", "type": "fulfills", "confidence": 0.80 },
+
+    { "from": "M6", "to": "N1", "type": "references", "confidence": 0.85, "note": "M6 수치가 N1 서술의 근거" },
+    { "from": "N1", "to": "R2", "type": "triggers", "confidence": 0.83, "note": "N1 발견이 R2 계획을 트리거" },
+
+    { "from": "Q1", "to": "E5", "type": "assigned_to", "confidence": 0.92 },
+    { "from": "Q1", "to": "R2", "type": "responds_to", "confidence": 0.78, "note": "Q1 해결되어야 R2 수행 가능" },
+
+    { "from": "DL1", "to": "E2", "type": "produced_by", "confidence": 0.99 }
+  ],
+
+  "expected_counts": {
+    "Requirement": 4,
+    "Deadline": 3,
+    "Constraint": 2,
+    "Deliverable": 1,
+    "Metric": 7,
+    "Narrative": 1,
+    "Event": 0,
+    "Question": 1,
+    "Decision": 0,
+    "Reference": 0,
+    "Definition": 0,
+    "Entity": 5,
+    "_total_atoms": 24,
+    "_total_relations": 21
+  },
+
+  "validation_targets": {
+    "precision_min": 0.85,
+    "recall_min": 0.75,
+    "schema_compliance": 1.0,
+    "hallucination_max": 0.05,
+    "type_classification_accuracy_min": 0.90
+  },
+
+  "notes_for_extractor": [
+    "M1, M2, M3은 같은 문장 안에 있지만 각각 독립적인 Metric. 분해 못하면 recall 감점.",
+    "DL1은 문서 자체에 대한 self-referential Atom. 누락하기 쉬움.",
+    "R3의 assigned_to는 E3(박서연), R3의 issued_by는 E2(김민수)가 아니라 직접 명시되지 않음 — 추론 금지.",
+    "N1과 M6의 관계는 'M6 supports N1' 패턴. references 관계로 표현.",
+    "Q1은 R2 수행에 blocking이지만, 코드 상 blocks 관계는 없으므로 responds_to로 표현."
+  ]
+}
