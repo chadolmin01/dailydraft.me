@@ -3,10 +3,13 @@
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>
+  searchParams: Promise<{ error?: string; deleted?: string; revoke?: string }>
 }) {
-  const { error } = await searchParams
+  const { error, deleted, revoke } = await searchParams
   const errorMessage = error ? mapError(error) : null
+  const deletedMessage = deleted === '1'
+    ? '계정과 데이터가 삭제되었습니다. Google 권한도 회수하시려면 아래 링크에서 Draft 를 제거해 주세요.'
+    : null
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center bg-canvas px-4">
@@ -25,6 +28,22 @@ export default async function HomePage({
 
         {errorMessage ? (
           <p className="text-body-sm text-muted-soft">{errorMessage}</p>
+        ) : null}
+
+        {deletedMessage ? (
+          <div className="rounded-md border border-hairline bg-surface-soft p-4 text-left space-y-2">
+            <p className="text-body-sm text-ink">{deletedMessage}</p>
+            {revoke ? (
+              <a
+                href={revoke}
+                target="_blank"
+                rel="noreferrer"
+                className="text-body-sm text-ink underline underline-offset-2 hover:opacity-70"
+              >
+                Google 권한 페이지로 이동 ↗
+              </a>
+            ) : null}
+          </div>
         ) : null}
 
         <p className="text-caption text-muted-soft pt-section">

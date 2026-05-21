@@ -141,12 +141,20 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
             <h2 className="text-title-md text-on-dark">Draft</h2>
             <p className="text-caption text-on-dark-soft mt-1 truncate">{userEmail}</p>
           </div>
-          <button
-            onClick={() => signOut()}
-            className="text-caption text-on-dark-soft hover:text-on-dark transition-colors"
-          >
-            로그아웃
-          </button>
+          <div className="flex items-center gap-3 shrink-0">
+            <a
+              href="/settings"
+              className="text-caption text-on-dark-soft hover:text-on-dark transition-colors"
+            >
+              설정
+            </a>
+            <button
+              onClick={() => signOut()}
+              className="text-caption text-on-dark-soft hover:text-on-dark transition-colors"
+            >
+              로그아웃
+            </button>
+          </div>
         </header>
 
         <ChatPanel folderId={selectedFolderId} />
