@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/src/context/AuthContext'
 import { extractDriveFolderId, extractSheetId } from '@/src/lib/parsers/google-url'
+import { Trash2 } from 'lucide-react'
 import { DrivePickerButton } from './DrivePickerButton'
 import { ChatPanel } from './ChatPanel'
 import { FolderBrowser } from './FolderBrowser'
@@ -85,6 +86,29 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
     },
   })
 
+  const deleteFolder = useMutation({
+    mutationFn: async (folderId: string) => {
+      const res = await fetch(`/api/folders/${folderId}`, { method: 'DELETE' })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.error?.message ?? '폴더 삭제 실패')
+      }
+    },
+    onSuccess: (_data, folderId) => {
+      queryClient.invalidateQueries({ queryKey: ['folders'] })
+      if (selectedFolderId === folderId) setSelectedFolderId(null)
+    },
+  })
+
+  const handleDelete = (folder: Folder) => {
+    const ok = window.confirm(
+      `"${folder.name}" 연결을 해제하시겠습니까?\n\n` +
+      `Draft 의 폴더 연결만 끊깁니다. Google Drive 폴더와 그 안의 파일은 그대로 남습니다.\n` +
+      `이 폴더와 관련된 대화 기록은 보존되지만 폴더 라벨이 사라집니다.`,
+    )
+    if (ok) deleteFolder.mutate(folder.id)
+  }
+
   const folders = foldersQuery.data?.folders ?? []
   const selectedFolder = folders.find(f => f.id === selectedFolderId)
 
@@ -144,21 +168,35 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
           {folders.length > 0 ? (
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
               {folders.map(folder => (
-                <button
+                <div
                   key={folder.id}
-                  type="button"
-                  onClick={() => setSelectedFolderId(folder.id === selectedFolderId ? null : folder.id)}
-                  className={`text-left p-5 rounded-xl transition-colors ${
+                  className={`relative group rounded-xl transition-colors ${
                     selectedFolderId === folder.id
                       ? 'bg-surface-strong'
                       : 'bg-surface-card hover:bg-surface-strong'
                   }`}
                 >
-                  <p className="text-display-sm text-ink">{folder.name}</p>
-                  <p className="text-caption text-muted mt-1">
-                    {folder.program ?? 'program 미지정'} · {folder.sheet_id ? 'Sheets 연결됨' : 'Sheets 없음'}
-                  </p>
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedFolderId(folder.id === selectedFolderId ? null : folder.id)}
+                    className="w-full text-left p-5 pr-12"
+                  >
+                    <p className="text-display-sm text-ink">{folder.name}</p>
+                    <p className="text-caption text-muted mt-1">
+                      {folder.program ?? 'program 미지정'} · {folder.sheet_id ? 'Sheets 연결됨' : 'Sheets 없음'}
+                    </p>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(folder)}
+                    disabled={deleteFolder.isPending}
+                    aria-label={`${folder.name} 연결 해제`}
+                    title="연결 해제"
+                    className="absolute top-3 right-3 p-1.5 rounded-md text-muted-soft hover:text-ink hover:bg-canvas opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
               ))}
             </div>
           ) : null}
