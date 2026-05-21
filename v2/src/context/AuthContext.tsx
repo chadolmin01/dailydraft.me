@@ -165,8 +165,9 @@ export function AuthProvider({ children, initialUser }: { children: React.ReactN
       },
     })
 
-    // Create profile after signup
+    // TODO(V2): profiles 테이블이 V2 스키마에 정의되면 활성화. 지금은 Database stub 이 비어있어 타입 에러.
     if (!error && data.user) {
+      // @ts-expect-error V2 스키마에 profiles 테이블이 아직 없음 — 마이그레이션 추가 후 이 주석 제거
       const { error: profileError } = await supabase.from('profiles').insert({
         user_id: data.user.id,
         nickname,

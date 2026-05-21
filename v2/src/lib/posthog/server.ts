@@ -20,6 +20,10 @@ function getServerPostHog(): PostHog | null {
 export interface ServerErrorContext {
   route?: string
   userId?: string
+  method?: string
+  source?: 'middleware' | 'api' | 'render'
+  ip?: string
+  userAgent?: string
   extra?: Record<string, unknown>
 }
 
