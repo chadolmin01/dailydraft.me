@@ -73,6 +73,12 @@ const SUGGESTIONS = [
   '가장 최근에 올라온 파일 3개를 보여주세요.',
 ] as const
 
+const QUICK_ACTIONS = [
+  '미제출 팀',
+  '오늘 활동',
+  '메일 초안',
+] as const
+
 export function ChatPanel({ folderId, folderName }: Props) {
   const qc = useQueryClient()
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -253,6 +259,22 @@ export function ChatPanel({ folderId, folderName }: Props) {
           >
             {clearHistory.isPending ? '지우는 중…' : '대화 지우기'}
           </button>
+        </div>
+      ) : null}
+
+      {folderId && rows.length > 0 ? (
+        <div className="px-5 pt-3 pb-2 flex gap-2 flex-wrap border-t border-hairline-dark">
+          {QUICK_ACTIONS.map(q => (
+            <button
+              key={q}
+              type="button"
+              onClick={() => send.mutate(q)}
+              disabled={send.isPending}
+              className="text-caption text-on-dark-soft border border-hairline-dark px-2.5 py-1 rounded-full hover:text-on-dark hover:border-on-dark-soft transition-colors disabled:opacity-40"
+            >
+              {q}
+            </button>
+          ))}
         </div>
       ) : null}
 
