@@ -1126,19 +1126,38 @@ function ProgressGrid({
   cells: MatrixCell[]
 }) {
   const [selected, setSelected] = useState<MatrixCell | null>(null)
+  const [filter, setFilter] = useState<MatrixCell['status'] | 'all'>('all')
 
   // team × week 빠른 조회용 인덱스
   const cellMap = new Map<string, MatrixCell>()
   for (const c of cells) cellMap.set(`${c.team}|${c.week}`, c)
 
+  // 필터 적용: 필터 active 일 때 해당 status 없는 팀 행 숨김
+  const visibleTeams = filter === 'all'
+    ? teams
+    : teams.filter(team => weeks.some(w => cellMap.get(`${team}|${w}`)?.status === filter))
+
+  const visibleWeeks = filter === 'all'
+    ? weeks
+    : weeks.filter(w => teams.some(team => cellMap.get(`${team}|${w}`)?.status === filter))
+
   return (
     <>
+      <div className="flex items-center gap-1.5 flex-wrap">
+        <span className="text-caption text-muted-soft mr-1">필터</span>
+        <FilterChip active={filter === 'all'} onClick={() => setFilter('all')}>전체</FilterChip>
+        <FilterChip active={filter === 'done'} onClick={() => setFilter('done')}>제출</FilterChip>
+        <FilterChip active={filter === 'pending'} onClick={() => setFilter('pending')}>진행</FilterChip>
+        <FilterChip active={filter === 'late'} onClick={() => setFilter('late')}>미제출</FilterChip>
+        <FilterChip active={filter === 'empty'} onClick={() => setFilter('empty')}>예정</FilterChip>
+      </div>
+
       <div className="overflow-x-auto rounded-lg border border-hairline bg-canvas">
         <table className="w-full text-body-sm">
           <thead>
             <tr className="bg-surface-soft">
               <th className="text-left px-4 py-2 text-title-sm text-ink sticky left-0 bg-surface-soft">팀</th>
-              {weeks.map(w => (
+              {visibleWeeks.map(w => (
                 <th key={w} className="px-2 py-2 text-title-sm text-ink text-center tabular">
                   {w}주차
                 </th>
@@ -1146,10 +1165,10 @@ function ProgressGrid({
             </tr>
           </thead>
           <tbody>
-            {teams.map(team => (
+            {visibleTeams.map(team => (
               <tr key={team} className="border-t border-hairline-soft">
                 <td className="px-4 py-2 text-body-sm text-ink sticky left-0 bg-canvas">{team}</td>
-                {weeks.map(w => {
+                {visibleWeeks.map(w => {
                   const cell = cellMap.get(`${team}|${w}`)
                   return (
                     <td key={w} className="px-2 py-2 text-center">
@@ -1166,12 +1185,35 @@ function ProgressGrid({
                 })}
               </tr>
             ))}
+            {visibleTeams.length === 0 ? (
+              <tr>
+                <td colSpan={visibleWeeks.length + 1} className="px-4 py-6 text-center text-body-sm text-muted">
+                  해당 상태의 셀이 없습니다.
+                </td>
+              </tr>
+            ) : null}
           </tbody>
         </table>
       </div>
 
       {selected ? <CellDetail cell={selected} onClose={() => setSelected(null)} /> : null}
     </>
+  )
+}
+
+function FilterChip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`text-caption px-3 py-1 rounded-full border transition-colors ${
+        active
+          ? 'bg-ink text-canvas border-ink'
+          : 'text-muted border-hairline hover:text-ink hover:border-muted'
+      }`}
+    >
+      {children}
+    </button>
   )
 }
 
