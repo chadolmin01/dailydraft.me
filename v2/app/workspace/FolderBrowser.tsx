@@ -2,6 +2,19 @@
 
 import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import {
+  Folder,
+  FileText,
+  FileSpreadsheet,
+  Presentation,
+  FileImage,
+  FileVideo,
+  FileType,
+  File as FileIcon,
+  ChevronRight,
+  ArrowUpRight,
+  Home,
+} from 'lucide-react'
 
 interface DriveItem {
   id: string
@@ -24,23 +37,15 @@ interface PathSegment {
 }
 
 interface Props {
-  // 연결된 Draft 폴더의 루트 — 진입 지점
   rootDriveFolderId: string
   rootName: string
 }
 
-// Drive 의 폴더 트리를 브라우저처럼 탐색.
-// 폴더 카드 클릭 → 들어감 / 브레드크럼으로 상위 복귀.
-// 파일 클릭 → Drive 새 창 (webViewLink).
-//
-// Draft 의 connected folder 정보는 root 한 번만 — 그 안의 하위 폴더는 Drive 그대로.
 export function FolderBrowser({ rootDriveFolderId, rootName }: Props) {
-  // 경로 = root → subfolder → subsubfolder ... 마지막이 현재 위치
   const [path, setPath] = useState<PathSegment[]>([
     { id: rootDriveFolderId, name: rootName },
   ])
 
-  // root 가 바뀌면 path 리셋 (다른 connected folder 선택 시)
   useEffect(() => {
     setPath([{ id: rootDriveFolderId, name: rootName }])
   }, [rootDriveFolderId, rootName])
@@ -64,124 +69,164 @@ export function FolderBrowser({ rootDriveFolderId, rootName }: Props) {
     setPath(path.slice(0, index + 1))
   }
 
+  const allItems = query.data
+    ? [
+        ...query.data.subfolders.map(i => ({ ...i, kind: 'folder' as const })),
+        ...query.data.files.map(i => ({ ...i, kind: 'file' as const })),
+      ]
+    : []
+
   return (
-    <section className="space-y-3 border-t border-hairline pt-7">
-      <div className="flex items-center justify-between gap-3">
-        <h2 className="text-display-sm text-ink">파일 브라우저</h2>
+    <div className="rounded-lg border border-hairline bg-canvas overflow-hidden">
+      {/* 툴바: 브레드크럼 + 카운트 */}
+      <div className="flex items-center justify-between gap-4 px-4 py-3 border-b border-hairline bg-surface-soft">
+        <Breadcrumb path={path} onJump={jumpTo} />
         {query.data ? (
-          <p className="text-caption text-muted">
-            폴더 {query.data.summary.subfolders}개 · 파일 {query.data.summary.files}개
+          <p className="text-caption text-muted-soft shrink-0 tabular">
+            폴더 {query.data.summary.subfolders} · 파일 {query.data.summary.files}
           </p>
         ) : null}
       </div>
 
-      <Breadcrumb path={path} onJump={jumpTo} />
-
+      {/* 본문 */}
       {query.isLoading ? (
-        <p className="text-body-sm text-muted">불러오는 중…</p>
+        <div className="px-4 py-8 text-center text-body-sm text-muted">불러오는 중…</div>
       ) : null}
 
       {query.isError ? (
-        <p className="text-body-sm text-muted">{query.error.message}</p>
+        <div className="px-4 py-8 text-center text-body-sm text-muted">{query.error.message}</div>
       ) : null}
 
-      {query.data ? (
-        <div className="space-y-5">
-          {query.data.subfolders.length > 0 ? (
-            <div>
-              <h3 className="text-title-sm text-muted mb-2">폴더</h3>
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-                {query.data.subfolders.map(item => (
+      {query.data && allItems.length === 0 ? (
+        <div className="px-4 py-12 text-center text-body-sm text-muted">빈 폴더입니다.</div>
+      ) : null}
+
+      {query.data && allItems.length > 0 ? (
+        <>
+          {/* 헤더 행 */}
+          <div className="hidden md:grid grid-cols-[1fr_120px_110px_90px] gap-4 px-4 py-2 border-b border-hairline-soft text-caption text-muted-soft">
+            <div>이름</div>
+            <div>종류</div>
+            <div>수정</div>
+            <div className="text-right">크기</div>
+          </div>
+
+          <ul className="divide-y divide-hairline-soft">
+            {allItems.map(item => (
+              <li key={item.id}>
+                {item.kind === 'folder' ? (
                   <button
-                    key={item.id}
                     type="button"
                     onClick={() => enterSubfolder(item)}
-                    className="text-left p-4 rounded-lg bg-surface-card hover:bg-surface-strong transition-colors"
+                    className="w-full grid md:grid-cols-[1fr_120px_110px_90px] gap-4 px-4 py-2.5 text-left hover:bg-surface-soft transition-colors items-center"
                   >
-                    <p className="text-body-md text-ink truncate">📁 {item.name}</p>
-                    <p className="text-caption text-muted-soft mt-1">
+                    <Row
+                      icon={<Folder className="w-4 h-4 text-ink shrink-0" />}
+                      name={item.name}
+                      isFolder
+                    />
+                    <span className="hidden md:block text-body-sm text-muted">폴더</span>
+                    <span className="hidden md:block text-body-sm text-muted-soft tabular">
                       {formatDate(item.modifiedTime)}
-                    </p>
+                    </span>
+                    <span className="hidden md:block text-body-sm text-muted-soft text-right">—</span>
                   </button>
-                ))}
-              </div>
-            </div>
-          ) : null}
-
-          {query.data.files.length > 0 ? (
-            <div>
-              <h3 className="text-title-sm text-muted mb-2">파일</h3>
-              <ul className="rounded-lg border border-hairline divide-y divide-hairline overflow-hidden bg-canvas">
-                {query.data.files.map(file => (
-                  <li key={file.id}>
-                    <a
-                      href={file.webViewLink ?? `https://drive.google.com/file/d/${file.id}/view`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex items-center justify-between gap-4 px-4 py-3 hover:bg-surface-soft transition-colors"
-                    >
-                      <div className="min-w-0 flex-1">
-                        <p className="text-body-md text-ink truncate">{file.name}</p>
-                        <p className="text-caption text-muted-soft mt-0.5">
-                          {fileTypeLabel(file.mimeType)} · {formatDate(file.modifiedTime)}
-                          {file.size ? ` · ${formatSize(file.size)}` : ''}
-                        </p>
-                      </div>
-                      <span className="text-caption text-muted-soft shrink-0">열기 ↗</span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-
-          {query.data.subfolders.length === 0 && query.data.files.length === 0 ? (
-            <p className="text-body-sm text-muted">빈 폴더입니다.</p>
-          ) : null}
-        </div>
+                ) : (
+                  <a
+                    href={item.webViewLink ?? `https://drive.google.com/file/d/${item.id}/view`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="grid md:grid-cols-[1fr_120px_110px_90px] gap-4 px-4 py-2.5 hover:bg-surface-soft transition-colors items-center group"
+                  >
+                    <Row
+                      icon={<FileTypeIcon mimeType={item.mimeType} />}
+                      name={item.name}
+                      external
+                    />
+                    <span className="hidden md:block text-body-sm text-muted">
+                      {fileTypeLabel(item.mimeType)}
+                    </span>
+                    <span className="hidden md:block text-body-sm text-muted-soft tabular">
+                      {formatDate(item.modifiedTime)}
+                    </span>
+                    <span className="hidden md:block text-body-sm text-muted-soft text-right tabular">
+                      {item.size ? formatSize(item.size) : '—'}
+                    </span>
+                  </a>
+                )}
+              </li>
+            ))}
+          </ul>
+        </>
       ) : null}
-    </section>
+    </div>
+  )
+}
+
+function Row({
+  icon,
+  name,
+  isFolder,
+  external,
+}: {
+  icon: React.ReactNode
+  name: string
+  isFolder?: boolean
+  external?: boolean
+}) {
+  return (
+    <div className="flex items-center gap-3 min-w-0">
+      {icon}
+      <span className={`text-body-md text-ink truncate ${isFolder ? 'font-medium' : ''}`}>
+        {name}
+      </span>
+      {external ? <ArrowUpRight className="w-3.5 h-3.5 text-muted-soft shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" /> : null}
+    </div>
   )
 }
 
 function Breadcrumb({ path, onJump }: { path: PathSegment[]; onJump: (i: number) => void }) {
   return (
-    <nav className="flex items-center gap-1.5 text-body-sm text-muted flex-wrap">
-      {path.map((seg, i) => (
-        <span key={`${seg.id}-${i}`} className="flex items-center gap-1.5">
-          {i > 0 ? <span className="text-muted-soft">/</span> : null}
-          {i === path.length - 1 ? (
-            <span className="text-ink font-medium">{seg.name}</span>
-          ) : (
-            <button
-              type="button"
-              onClick={() => onJump(i)}
-              className="hover:text-ink transition-colors"
-            >
-              {seg.name}
-            </button>
-          )}
-        </span>
-      ))}
+    <nav className="flex items-center gap-1 text-body-sm text-muted flex-wrap min-w-0">
+      {path.map((seg, i) => {
+        const isLast = i === path.length - 1
+        return (
+          <span key={`${seg.id}-${i}`} className="flex items-center gap-1 min-w-0">
+            {i > 0 ? <ChevronRight className="w-3.5 h-3.5 text-muted-soft shrink-0" /> : null}
+            {isLast ? (
+              <span className="text-ink font-medium truncate flex items-center gap-1.5">
+                {i === 0 ? <Home className="w-3.5 h-3.5 shrink-0" /> : null}
+                {seg.name}
+              </span>
+            ) : (
+              <button
+                type="button"
+                onClick={() => onJump(i)}
+                className="hover:text-ink transition-colors truncate flex items-center gap-1.5 shrink-0"
+              >
+                {i === 0 ? <Home className="w-3.5 h-3.5 shrink-0" /> : null}
+                {seg.name}
+              </button>
+            )}
+          </span>
+        )
+      })}
     </nav>
   )
 }
 
-function formatDate(iso: string): string {
-  const d = new Date(iso)
-  const yy = d.getFullYear().toString().slice(2)
-  const mm = String(d.getMonth() + 1).padStart(2, '0')
-  const dd = String(d.getDate()).padStart(2, '0')
-  return `${yy}.${mm}.${dd}`
-}
-
-function formatSize(bytes: string): string {
-  const n = Number.parseInt(bytes, 10)
-  if (Number.isNaN(n)) return ''
-  if (n < 1024) return `${n}B`
-  if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)}KB`
-  if (n < 1024 * 1024 * 1024) return `${(n / 1024 / 1024).toFixed(1)}MB`
-  return `${(n / 1024 / 1024 / 1024).toFixed(1)}GB`
+function FileTypeIcon({ mimeType }: { mimeType: string }) {
+  const className = 'w-4 h-4 shrink-0 text-muted'
+  if (mimeType === 'application/vnd.google-apps.document') return <FileText className={className} />
+  if (mimeType === 'application/vnd.google-apps.spreadsheet') return <FileSpreadsheet className={className} />
+  if (mimeType === 'application/vnd.google-apps.presentation') return <Presentation className={className} />
+  if (mimeType === 'application/pdf') return <FileType className={className} />
+  if (mimeType.startsWith('image/')) return <FileImage className={className} />
+  if (mimeType.startsWith('video/')) return <FileVideo className={className} />
+  if (mimeType.includes('word') || mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') return <FileText className={className} />
+  if (mimeType.includes('excel') || mimeType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') return <FileSpreadsheet className={className} />
+  if (mimeType.includes('powerpoint') || mimeType === 'application/vnd.openxmlformats-officedocument.presentationml.presentation') return <Presentation className={className} />
+  return <FileIcon className={className} />
 }
 
 function fileTypeLabel(mimeType: string): string {
@@ -191,9 +236,28 @@ function fileTypeLabel(mimeType: string): string {
   if (mimeType === 'application/pdf') return 'PDF'
   if (mimeType.startsWith('image/')) return '이미지'
   if (mimeType.startsWith('video/')) return '동영상'
-  if (mimeType.includes('word') || mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') return 'Word'
+  if (mimeType.includes('word')) return 'Word'
   if (mimeType.includes('excel') || mimeType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') return 'Excel'
   if (mimeType.includes('powerpoint') || mimeType === 'application/vnd.openxmlformats-officedocument.presentationml.presentation') return 'PowerPoint'
   if (mimeType.includes('hwp')) return '한글'
-  return mimeType.split('/').pop() ?? '파일'
+  return '파일'
+}
+
+function formatDate(iso: string): string {
+  const d = new Date(iso)
+  const now = new Date()
+  const sameYear = d.getFullYear() === now.getFullYear()
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const dd = String(d.getDate()).padStart(2, '0')
+  if (sameYear) return `${mm}.${dd}`
+  return `${d.getFullYear()}.${mm}.${dd}`
+}
+
+function formatSize(bytes: string): string {
+  const n = Number.parseInt(bytes, 10)
+  if (Number.isNaN(n)) return ''
+  if (n < 1024) return `${n}B`
+  if (n < 1024 * 1024) return `${(n / 1024).toFixed(0)}KB`
+  if (n < 1024 * 1024 * 1024) return `${(n / 1024 / 1024).toFixed(1)}MB`
+  return `${(n / 1024 / 1024 / 1024).toFixed(1)}GB`
 }

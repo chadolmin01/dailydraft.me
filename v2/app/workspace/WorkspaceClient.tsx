@@ -164,13 +164,11 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
           ) : null}
 
           {selectedFolder?.drive_folder_id ? (
-            <>
-              <MatrixSection folderName={selectedFolder.name} query={matrixQuery} />
-              <FolderBrowser
-                rootDriveFolderId={selectedFolder.drive_folder_id}
-                rootName={selectedFolder.name}
-              />
-            </>
+            <FolderTabs
+              folderName={selectedFolder.name}
+              rootDriveFolderId={selectedFolder.drive_folder_id}
+              matrixQuery={matrixQuery}
+            />
           ) : null}
         </div>
       </main>
@@ -428,38 +426,90 @@ function Field({ label, required, hint, children }: { label: string; required?: 
   )
 }
 
-function MatrixSection({
+function FolderTabs({
   folderName,
-  query,
+  rootDriveFolderId,
+  matrixQuery,
 }: {
   folderName: string
-  query: ReturnType<typeof useQuery<MatrixResponse, Error>>
+  rootDriveFolderId: string
+  matrixQuery: ReturnType<typeof useQuery<MatrixResponse, Error>>
 }) {
+  const [tab, setTab] = useState<'folder' | 'matrix'>('folder')
+  const matrix = matrixQuery.data?.matrix
+  const hasMatrixData = !!matrix && matrix.source.fileCount > 0
+
   return (
-    <section className="space-y-3 border-t border-hairline pt-7">
-      <h2 className="text-display-sm text-ink">{folderName} · 진행도</h2>
+    <section className="space-y-4 border-t border-hairline pt-6">
+      <div className="flex items-end justify-between gap-4">
+        <h2 className="text-display-sm text-ink">{folderName}</h2>
+        <div className="flex items-center gap-1 border-b border-hairline -mb-px">
+          <TabButton active={tab === 'folder'} onClick={() => setTab('folder')}>폴더</TabButton>
+          <TabButton active={tab === 'matrix'} onClick={() => setTab('matrix')} disabled={!hasMatrixData} hint={!hasMatrixData ? '데이터 없음' : undefined}>진행도</TabButton>
+        </div>
+      </div>
 
-      {query.isLoading ? <p className="text-body-sm text-muted">계산 중…</p> : null}
-      {query.isError ? <p className="text-body-sm text-muted">{query.error.message}</p> : null}
+      {tab === 'folder' ? (
+        <FolderBrowser rootDriveFolderId={rootDriveFolderId} rootName={folderName} />
+      ) : null}
 
-      {query.data ? (
+      {tab === 'matrix' && hasMatrixData && matrix ? (
         <div className="space-y-3">
           <p className="text-body-sm text-muted">
-            팀 {query.data.matrix.teams.length}개 · 주차 {query.data.matrix.weeks.length}개 ·
-            파일 {query.data.matrix.source.fileCount}개
-            {query.data.matrix.source.teamSource === 'derived'
+            팀 {matrix.teams.length}개 · 주차 {matrix.weeks.length}개 ·
+            파일 {matrix.source.fileCount}개
+            {matrix.source.teamSource === 'derived'
               ? ' · 명단 시트 미연결 (파일에서 추출)'
               : ' · 명단 시트 기반'}
           </p>
 
-          {query.data.rosterError ? (
-            <p className="text-body-sm text-muted">명단 시트 읽기 실패: {query.data.rosterError}</p>
+          {matrixQuery.data?.rosterError ? (
+            <p className="text-body-sm text-muted">명단 시트 읽기 실패: {matrixQuery.data.rosterError}</p>
           ) : null}
 
-          <ProgressGrid teams={query.data.matrix.teams} weeks={query.data.matrix.weeks} cells={query.data.matrix.cells} />
+          <ProgressGrid teams={matrix.teams} weeks={matrix.weeks} cells={matrix.cells} />
         </div>
       ) : null}
+
+      {tab === 'matrix' && matrixQuery.isLoading ? (
+        <p className="text-body-sm text-muted">계산 중…</p>
+      ) : null}
+      {tab === 'matrix' && matrixQuery.isError ? (
+        <p className="text-body-sm text-muted">{matrixQuery.error.message}</p>
+      ) : null}
     </section>
+  )
+}
+
+function TabButton({
+  active,
+  onClick,
+  disabled,
+  hint,
+  children,
+}: {
+  active: boolean
+  onClick: () => void
+  disabled?: boolean
+  hint?: string
+  children: React.ReactNode
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      title={hint}
+      className={`relative px-4 py-2.5 text-body-sm transition-colors -mb-px border-b-2 ${
+        active
+          ? 'text-ink border-ink font-medium'
+          : disabled
+            ? 'text-muted-soft border-transparent cursor-not-allowed'
+            : 'text-muted border-transparent hover:text-ink'
+      }`}
+    >
+      {children}
+    </button>
   )
 }
 
