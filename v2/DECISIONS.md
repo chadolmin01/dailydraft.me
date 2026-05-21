@@ -50,3 +50,27 @@
 - Files: CLAUDE.md, spec.md, design.md, tasks.md, CONVENTIONS.md, DECISIONS.md
 - Why: AI 에이전트가 일관되게 작업, 사람도 빠르게 온보딩
 - Not in V1: ARCHITECTURE.md, SKILL.md, CHANGELOG.md
+
+## D8. 인식 — 폴더 경로 + 파일명 hybrid + M6 Atom 매핑
+
+- Date: 2026-05-22
+- Why: 실 사용 시 매니저의 Drive 는 중첩 폴더 + 파일명 들쭉날쭉. D4 의 파일명 컨벤션만으로는 매트릭스 못 그림.
+- D4 유지: LLM 안 씀. 정규식 + 폴더 위계 기반 deterministic 추출.
+- Hybrid 우선순위:
+  1. 파일명 매칭 → confidence 1.0
+  2. 폴더 경로 매칭 → confidence 0.85
+  3. 양쪽 일치 → confidence 1.0
+  4. 둘 다 못 찾으면 unmatched (사용자에게 "주차/팀 모름" 표시)
+- 표기 변형 대응: 주차/Week/Wk/W, 팀/Team/T/조
+- M6 Glossary v1.1 적용:
+  - 추출된 주차 = `Atom { type: 'Event' }` (UI 라벨: 일정)
+  - 추출된 팀 = `Atom { type: 'Entity' }` (UI 라벨: 주체)
+  - 인식 출처는 `Provenance.source.location = 'filename' | 'path:N'`
+  - `Confidence` 점수 보존 → 매니저가 신뢰도 판단 가능
+  - V1 deterministic extractor 메타: `extracted_by.model = 'rules-v1'`
+- 매트릭스 셀의 `provenance_summary` (filename / path / mixed) UI 노출
+- 매니저 자율 정렬 (B 안 — Drive 직접 rename/move) 은 D8 의 인식 결과를 기반으로 V2/V3 검토.
+
+이유 (D8 의 의미):
+- glossary 가 V2/V3 연구 추상화로만 남아있으면 검증 안 됨 → V1 에 실제 적용해서 어휘가 작동하는지 확인.
+- 어휘 충돌 / 누락 발견되면 glossary v1.2 로 업데이트 가능.
