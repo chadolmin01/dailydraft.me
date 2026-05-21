@@ -66,6 +66,7 @@ export type Database = {
           id: string
           name: string
           program: string | null
+          program_start_date: string | null
           sheet_id: string | null
           updated_at: string
           workspace_id: string
@@ -76,6 +77,7 @@ export type Database = {
           id?: string
           name: string
           program?: string | null
+          program_start_date?: string | null
           sheet_id?: string | null
           updated_at?: string
           workspace_id: string
@@ -86,6 +88,7 @@ export type Database = {
           id?: string
           name?: string
           program?: string | null
+          program_start_date?: string | null
           sheet_id?: string | null
           updated_at?: string
           workspace_id?: string
@@ -295,4 +298,3 @@ export const Constants = {
     Enums: {},
   },
 } as const
-

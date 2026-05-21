@@ -8,7 +8,7 @@
 
 import type { ParsedFilename } from './parsers/filename'
 
-export type CellStatus = 'done' | 'empty'
+export type CellStatus = 'done' | 'pending' | 'late' | 'empty'
 
 export interface ParsedDriveFile {
   id: string
@@ -39,9 +39,21 @@ interface BuildInput {
   parsedFiles: ParsedDriveFile[]
   rosterTeams?: string[]   // Sheets 에서 읽은 명단 (있으면 우선)
   weeksOverride?: number   // UI 에서 명시적으로 N 주차까지 보고 싶을 때
+  programStartDate?: string | null  // ISO date — 있으면 현재 주차 계산해 late/pending 분기
+  today?: Date             // 테스트용 (기본: new Date())
 }
 
-export function buildMatrix({ parsedFiles, rosterTeams, weeksOverride }: BuildInput): MatrixData {
+// program_start_date 와 오늘 날짜로 현재 진행 주차 계산.
+// 예: start = 2026-05-01 (월요일), today = 2026-05-15 (목요일) → 2주차 (둘째 주의 4일째).
+function calcCurrentWeek(programStartDate: string, today: Date): number {
+  const start = new Date(programStartDate + 'T00:00:00')
+  const ms = today.getTime() - start.getTime()
+  const days = Math.floor(ms / (1000 * 60 * 60 * 24))
+  if (days < 0) return 0       // 아직 시작 안 함
+  return Math.floor(days / 7) + 1
+}
+
+export function buildMatrix({ parsedFiles, rosterTeams, weeksOverride, programStartDate, today }: BuildInput): MatrixData {
   // 1) 팀 목록 결정 — 명단 시트 있으면 그대로, 없으면 파싱된 파일에서 추출
   const teamsFromFiles = Array.from(new Set(parsedFiles.map(f => f.parsed.team)))
   const useRoster = rosterTeams && rosterTeams.length > 0
@@ -64,16 +76,31 @@ export function buildMatrix({ parsedFiles, rosterTeams, weeksOverride }: BuildIn
     groups.set(key, arr)
   }
 
-  // 4) 셀 생성
+  // 4) 셀 생성 — programStartDate 있으면 late/pending 분기, 없으면 done/empty 만
+  const now = today ?? new Date()
+  const currentWeek = programStartDate ? calcCurrentWeek(programStartDate, now) : null
+
   const cells: MatrixCell[] = []
   for (const team of teams) {
     for (const week of weeks) {
       const key = `${team}|${week}`
       const files = groups.get(key) ?? []
+      let status: CellStatus
+      if (files.length > 0) {
+        status = 'done'
+      } else if (currentWeek === null) {
+        status = 'empty'  // 시작일 모르면 단순 empty
+      } else if (week < currentWeek) {
+        status = 'late'   // 지나간 주차에 안 냄
+      } else if (week === currentWeek) {
+        status = 'pending'  // 이번 주차 — 아직
+      } else {
+        status = 'empty'  // 미래 주차
+      }
       cells.push({
         team,
         week,
-        status: files.length > 0 ? 'done' : 'empty',
+        status,
         files: files.map(f => ({ id: f.id, name: f.name, modifiedTime: f.modifiedTime })),
       })
     }

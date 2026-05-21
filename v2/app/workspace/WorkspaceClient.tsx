@@ -15,6 +15,7 @@ interface Folder {
   drive_folder_id: string | null
   sheet_id: string | null
   program: string | null
+  program_start_date: string | null
   created_at: string
 }
 
@@ -26,7 +27,7 @@ interface FoldersResponse {
 interface MatrixCell {
   team: string
   week: number
-  status: 'done' | 'empty'
+  status: 'done' | 'pending' | 'late' | 'empty'
   files: Array<{ id: string; name: string; modifiedTime: string }>
 }
 
@@ -84,7 +85,7 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
   })
 
   const addFolder = useMutation({
-    mutationFn: async (input: { name: string; drive_folder_id: string; sheet_id?: string; program?: string }) => {
+    mutationFn: async (input: { name: string; drive_folder_id: string; sheet_id?: string; program?: string; program_start_date?: string }) => {
       const res = await fetch('/api/folders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -260,11 +261,11 @@ function AddFolderForm({
   pending,
   error,
 }: {
-  onSubmit: (input: { name: string; drive_folder_id: string; sheet_id?: string; program?: string }) => void
+  onSubmit: (input: { name: string; drive_folder_id: string; sheet_id?: string; program?: string; program_start_date?: string }) => void
   pending: boolean
   error: string | null
 }) {
-  const [form, setForm] = useState({ name: '', drive_folder_id: '', sheet_id: '', program: '' })
+  const [form, setForm] = useState({ name: '', drive_folder_id: '', sheet_id: '', program: '', program_start_date: '' })
 
   // 폴더 검색: 디바운스된 키워드 → /api/google/drive/search 호출.
   // 사용자가 폴더 ID 를 모를 때 이름만 알면 검색해서 찾을 수 있게.
@@ -322,6 +323,7 @@ function AddFolderForm({
           drive_folder_id: form.drive_folder_id.trim(),
           sheet_id: form.sheet_id.trim() || undefined,
           program: form.program.trim() || undefined,
+          program_start_date: form.program_start_date || undefined,
         })
       }}
       className="rounded-lg border border-hairline bg-canvas p-6 space-y-5"
@@ -435,6 +437,15 @@ function AddFolderForm({
           />
         </Field>
       </div>
+
+      <Field label="프로그램 시작일 (선택)" hint="설정하면 매트릭스가 지나간 주차를 미제출(✕) 로, 이번 주차를 진행 중(◐) 으로 표시">
+        <input
+          type="date"
+          value={form.program_start_date}
+          onChange={(e) => setForm({ ...form, program_start_date: e.target.value })}
+          className="w-full h-10 px-3 bg-canvas border border-hairline rounded-md text-body-md text-ink focus:outline-none focus:border-ink"
+        />
+      </Field>
 
       {error ? <p className="text-body-sm text-muted">{error}</p> : null}
       <button
@@ -671,15 +682,29 @@ function ProgressGrid({
 }
 
 function Cell({ cell }: { cell?: MatrixCell }) {
-  if (!cell) return <span className="progress-cell progress-cell--empty" aria-label="empty">○</span>
+  if (!cell) return <span className="progress-cell progress-cell--empty" aria-label="비어 있음">○</span>
   if (cell.status === 'done') {
     const title = cell.files.map(f => f.name).join('\n')
     return (
-      <span className="progress-cell progress-cell--done" title={title} aria-label={`done (${cell.files.length})`}>
+      <span className="progress-cell progress-cell--done" title={title} aria-label={`제출 ${cell.files.length}건`}>
         ●
       </span>
     )
   }
-  return <span className="progress-cell progress-cell--empty" aria-label="empty">○</span>
+  if (cell.status === 'pending') {
+    return (
+      <span className="progress-cell progress-cell--pending" title="이번 주차 — 아직 미제출" aria-label="진행 중">
+        ◐
+      </span>
+    )
+  }
+  if (cell.status === 'late') {
+    return (
+      <span className="progress-cell progress-cell--late" title="지나간 주차 — 미제출" aria-label="미제출">
+        ✕
+      </span>
+    )
+  }
+  return <span className="progress-cell progress-cell--empty" aria-label="비어 있음">○</span>
 }
 

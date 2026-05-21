@@ -10,6 +10,7 @@ interface CreateFolderBody {
   drive_folder_id?: string
   sheet_id?: string
   program?: string
+  program_start_date?: string  // ISO date (YYYY-MM-DD)
 }
 
 // GET /api/folders — 매니저의 워크스페이스에 속한 모든 폴더 목록
@@ -22,7 +23,7 @@ export async function GET() {
 
   const { data: folders, error } = await supabase
     .from('folders')
-    .select('id, name, drive_folder_id, sheet_id, program, created_at')
+    .select('id, name, drive_folder_id, sheet_id, program, program_start_date, created_at')
     .eq('workspace_id', workspace.id)
     .order('created_at', { ascending: true })
 
@@ -72,8 +73,9 @@ export async function POST(request: NextRequest) {
       drive_folder_id: driveFolderId,
       sheet_id: body.sheet_id?.trim() || null,
       program: body.program?.trim() || null,
+      program_start_date: body.program_start_date?.trim() || null,
     })
-    .select('id, name, drive_folder_id, sheet_id, program, created_at')
+    .select('id, name, drive_folder_id, sheet_id, program, program_start_date, created_at')
     .single()
 
   if (error) return ApiResponse.internalError(error.message)

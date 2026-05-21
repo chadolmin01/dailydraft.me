@@ -25,7 +25,7 @@ export async function GET(
 
   const { data: folder, error: folderError } = await supabase
     .from('folders')
-    .select('id, name, drive_folder_id, sheet_id, program')
+    .select('id, name, drive_folder_id, sheet_id, program, program_start_date')
     .eq('id', id)
     .maybeSingle()
 
@@ -59,10 +59,19 @@ export async function GET(
     }
 
     // 3) 매트릭스 계산
-    const matrix = buildMatrix({ parsedFiles, rosterTeams })
+    const matrix = buildMatrix({
+      parsedFiles,
+      rosterTeams,
+      programStartDate: folder.program_start_date,
+    })
 
     return ApiResponse.ok({
-      folder: { id: folder.id, name: folder.name, program: folder.program },
+      folder: {
+        id: folder.id,
+        name: folder.name,
+        program: folder.program,
+        program_start_date: folder.program_start_date,
+      },
       matrix,
       unmatched,
       rosterError,
