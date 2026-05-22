@@ -833,12 +833,22 @@ function FolderCard({
   const stats = useQuery({
     queryKey: ['folder-stats', folder.id],
     staleTime: 60_000,
-    // 점멸 방지: 폴더 재선택/리스트 재정렬 시 직전 stats 를 유지하다 부드럽게 교체.
     placeholderData: keepPreviousData,
     queryFn: async () => {
       const res = await fetch(`/api/folders/${folder.id}/stats`)
       if (!res.ok) throw new Error('stats')
       return res.json() as Promise<{ file_count: number; latest_modified: string | null; latest_name: string | null }>
+    },
+  })
+
+  // 폴더당 추출된 atom 합계 — 카드에 보여서 "처리 했는지" 한 눈에.
+  const atomCounts = useQuery({
+    queryKey: ['folder-atom-counts', folder.id],
+    staleTime: 60_000,
+    queryFn: async () => {
+      const res = await fetch(`/api/atoms/counts?folder_id=${folder.id}`)
+      if (!res.ok) throw new Error('atom counts')
+      return res.json() as Promise<{ counts: Record<string, number>; total: number; processed_files: number }>
     },
   })
 
@@ -868,12 +878,22 @@ function FolderCard({
             fill="currentColor"
             fillOpacity={0.15}
           />
-          {/* 우상단 라벨 — Sheets 연결, design system 식 작은 뱃지 */}
-          {folder.sheet_id ? (
-            <span className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full bg-canvas/80 backdrop-blur text-caption text-muted-soft">
-              명단 연결됨
-            </span>
-          ) : null}
+          {/* 좌상단 라벨 — Sheets 연결 + Atom 처리됨 (위 아래로 stack) */}
+          <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 items-start">
+            {folder.sheet_id ? (
+              <span className="px-2 py-0.5 rounded-full bg-canvas/80 backdrop-blur text-caption text-muted-soft">
+                명단 연결됨
+              </span>
+            ) : null}
+            {atomCounts.data && atomCounts.data.processed_files > 0 ? (
+              <span
+                className="px-2 py-0.5 rounded-full bg-canvas/80 backdrop-blur text-caption text-ink"
+                title={`처리된 파일 ${atomCounts.data.processed_files}개`}
+              >
+                Atom {atomCounts.data.total}
+              </span>
+            ) : null}
+          </div>
           {/* 최근 활동 dot */}
           {isRecent ? (
             <span
