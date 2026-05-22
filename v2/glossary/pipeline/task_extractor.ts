@@ -165,9 +165,10 @@ export async function extractFromText(
 
 ${text}`
 
-  // 의도: Anthropic 529 (overloaded) / 5xx 일시 오류를 한 번 재시도 (백오프 2초).
-  //       processed_files 의 parsing_error 가 529 로 도배되는 사고 재발 방지.
+  // 의도: Anthropic 529 (overloaded) / 5xx 일시 오류를 최대 3회 재시도 (지수 백오프 2/5/10s).
+  //       처음엔 1회만 재시도였는데 Anthropic 과부하가 길게 지속될 때 그대로 영구실패로 떨어지는 사고.
   //       4xx (잘못된 요청 등) 는 재시도 안 함.
+  //       Vercel maxDuration=60s 범위 안에 들도록 합계 백오프 ~17s 가드.
   const callOnce = () =>
     client.messages.create({
       model,
@@ -182,17 +183,28 @@ ${text}`
       messages: [{ role: 'user', content: userMessage }],
     })
 
-  let response: Awaited<ReturnType<typeof callOnce>>
-  try {
-    response = await callOnce()
-  } catch (e) {
-    const msg = (e as Error).message
-    const isRetryable = /\b(429|529|500|502|503|504)\b/.test(msg) || /overloaded/i.test(msg)
-    if (!isRetryable) throw e
-    // 2 초 + jitter
-    await new Promise(r => setTimeout(r, 2000 + Math.random() * 500))
-    response = await callOnce()
+  const backoffs = [2000, 5000, 10000]
+  let response: Awaited<ReturnType<typeof callOnce>> | undefined
+  let lastError: Error | undefined
+  for (let attempt = 0; attempt <= backoffs.length; attempt++) {
+    try {
+      response = await callOnce()
+      break
+    } catch (e) {
+      lastError = e as Error
+      const msg = lastError.message
+      const isRetryable = /\b(429|529|500|502|503|504)\b/.test(msg) || /overloaded/i.test(msg)
+      if (!isRetryable || attempt === backoffs.length) {
+        // 사용자 친화적 메시지로 wrap — UI 가 "API 일시 과부하" 라고 표시 가능
+        if (/overloaded/i.test(msg) || /\b529\b/.test(msg)) {
+          throw new Error('Anthropic API 일시 과부하 (재시도 3회 모두 실패). 잠시 후 다시 시도해 주세요.')
+        }
+        throw lastError
+      }
+      await new Promise(r => setTimeout(r, backoffs[attempt] + Math.random() * 500))
+    }
   }
+  if (!response) throw lastError ?? new Error('extractor: response 없음')
 
   const rawText = response.content
     .filter((b): b is Anthropic.TextBlock => b.type === 'text')
