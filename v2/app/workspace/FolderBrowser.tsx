@@ -496,6 +496,20 @@ function ProcessCell({
         </button>
       )
     }
+    // 처리는 성공했지만 추출 항목 0 — 이미지 위주 PDF, 빈 문서, 무의미한 텍스트 등.
+    if (processed.atom_count === 0) {
+      return (
+        <button
+          type="button"
+          onClick={() => onView(processed.id)}
+          title="텍스트는 추출됐지만 요구사항·마감 같은 의미 단위가 발견되지 않았습니다."
+          className="hidden md:inline-flex items-center gap-1.5 text-caption text-muted-soft hover:text-ink transition-colors"
+        >
+          <AlertCircle className="w-3 h-3" />
+          항목 없음
+        </button>
+      )
+    }
     return (
       <button
         type="button"
@@ -661,10 +675,27 @@ function AtomViewer({
           ) : null}
 
           {query.data && query.data.atoms.length === 0 ? (
-            <p className="text-body-sm text-muted">
-              추출된 Atom 이 없습니다.
-              {query.data.file.parsing_error ? ` (${query.data.file.parsing_error})` : ''}
-            </p>
+            <div className="rounded-md bg-surface-soft border border-hairline p-4 text-body-sm text-body space-y-2">
+              {query.data.file.parsing_error ? (
+                <>
+                  <p className="text-ink">처리 실패</p>
+                  <p className="text-muted">{query.data.file.parsing_error}</p>
+                  <p className="text-caption text-muted-soft">
+                    파일이 손상됐거나 권한이 끊겼을 수 있습니다. [다시 처리] 로 재시도해 주세요.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="text-ink">의미 단위가 발견되지 않았습니다</p>
+                  <p className="text-muted">
+                    텍스트는 추출되었지만 요구사항·마감·결정사항 같은 항목을 찾지 못했습니다.
+                  </p>
+                  <p className="text-caption text-muted-soft">
+                    이미지 위주 PDF·표만 있는 시트·짧은 메모 등에서 자주 발생합니다.
+                  </p>
+                </>
+              )}
+            </div>
           ) : null}
 
           {grouped.map(([type, atoms]) => (
