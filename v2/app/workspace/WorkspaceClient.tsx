@@ -321,7 +321,10 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
           ) : null}
 
           {folders.length > 0 && !foldersQuery.isLoading ? (
-            <TodaysActivity folderIds={folders.map(f => f.id)} folderNames={Object.fromEntries(folders.map(f => [f.id, f.name]))} />
+            <div className="grid md:grid-cols-2 gap-4">
+              <TodaysActivity folderIds={folders.map(f => f.id)} folderNames={Object.fromEntries(folders.map(f => [f.id, f.name]))} />
+              <UpcomingDeadlines folderNames={Object.fromEntries(folders.map(f => [f.id, f.name]))} />
+            </div>
           ) : null}
 
           {/* 탭 + 검색 + 연결 — 상단 컨트롤 바 */}
@@ -1783,6 +1786,79 @@ function AtomDigest({ folderId, folderName }: { folderId: string; folderName: st
         })}
       </ul>
     </div>
+  )
+}
+
+// 워크스페이스 전체 다가오는 마감 — Deadline AtomType 만 추출 + due_at 정렬.
+// 의도: 매니저가 우측 상단에서 다음 일정 즉시 보기. 폴더 안 들어가도.
+function UpcomingDeadlines({ folderNames }: { folderNames: Record<string, string> }) {
+  const q = useQuery({
+    queryKey: ['upcoming-deadlines'],
+    queryFn: async (): Promise<AtomDigestResponse> => {
+      const res = await fetch('/api/atoms/search?type=Deadline&limit=50')
+      if (!res.ok) throw new Error('마감 조회 실패')
+      return res.json()
+    },
+    staleTime: 60_000,
+  })
+
+  const today = new Date().toISOString().slice(0, 10)
+  const upcoming = (q.data?.atoms ?? [])
+    .map((a) => {
+      const due = typeof a.attributes?.due_at === 'string' ? a.attributes.due_at : null
+      return { ...a, due }
+    })
+    .filter((a) => a.due && a.due >= today)
+    .sort((a, b) => (a.due ?? '').localeCompare(b.due ?? ''))
+    .slice(0, 5)
+
+  if (q.isLoading) {
+    return (
+      <section className="rounded-lg border border-hairline bg-canvas p-4 space-y-2">
+        <h3 className="text-title-sm text-ink">다가오는 마감</h3>
+        <p className="text-caption text-muted-soft">불러오는 중…</p>
+      </section>
+    )
+  }
+
+  if (upcoming.length === 0) {
+    return (
+      <section className="rounded-lg border border-hairline bg-canvas p-4 space-y-2">
+        <h3 className="text-title-sm text-ink">다가오는 마감</h3>
+        <p className="text-caption text-muted-soft">
+          {q.data && q.data.atoms.length === 0
+            ? '처리된 파일에서 마감 정보가 발견되지 않았습니다.'
+            : '예정된 마감이 없습니다.'}
+        </p>
+      </section>
+    )
+  }
+
+  return (
+    <section className="rounded-lg border border-hairline bg-canvas p-4 space-y-2">
+      <h3 className="text-title-sm text-ink flex items-center gap-2">
+        <span className="inline-block w-1.5 h-1.5 rounded-full bg-ink" />
+        다가오는 마감
+      </h3>
+      <ul className="space-y-1.5">
+        {upcoming.map((a) => {
+          const folderLabel = folderNames[a.from_file.folder_id] ?? ''
+          return (
+            <li
+              key={`${a.from_file.processed_file_id}-${a.local_id}`}
+              className="text-body-sm text-body flex items-baseline gap-2"
+            >
+              <span className="text-ink tabular shrink-0">{a.due}</span>
+              <span className="text-muted-soft">·</span>
+              <span className="truncate flex-1">{a.content}</span>
+              {folderLabel ? (
+                <span className="text-caption text-muted-soft shrink-0">{folderLabel}</span>
+              ) : null}
+            </li>
+          )
+        })}
+      </ul>
+    </section>
   )
 }
 
