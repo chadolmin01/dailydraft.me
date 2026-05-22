@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>Draft — 5분 발표</title>
+<style>
+  /* Draft 디자인 토큰 — design.md 와 동일. PDF 인쇄 호환 (web font 없이 시스템 폴백). */
+  :root {
+    --cream: #FAF9F5;
+    --ink: #141413;
+    --muted: #6C6A64;
+    --muted-soft: #8E8B82;
+    --hairline: #E6DFD8;
+    --surface-soft: #F5F0E8;
+    --surface-card: #EFE9DE;
+  }
+  @page { size: 1280px 720px; margin: 0; }
+  html, body { margin: 0; padding: 0; background: var(--cream); color: var(--ink); }
+  body {
+    font-family: "Pretendard Variable", "Pretendard", -apple-system, BlinkMacSystemFont, "맑은 고딕", "Malgun Gothic", sans-serif;
+    font-size: 18px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .slide {
+    width: 1280px;
+    height: 720px;
+    padding: 70px 80px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    page-break-after: always;
+    position: relative;
+    border-bottom: 1px solid var(--hairline);  /* 화면 미리보기용, PDF 에선 page-break 가 우선 */
+  }
+  .slide:last-child { page-break-after: auto; }
+  .page-num {
+    position: absolute;
+    right: 80px;
+    bottom: 40px;
+    font-size: 12px;
+    color: var(--muted-soft);
+    font-variant-numeric: tabular-nums;
+  }
+  h1, h2, h3 {
+    font-family: "함초롬바탕", "Nanum Myeongjo", Georgia, "Times New Roman", serif;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin: 0;
+    line-height: 1.15;
+  }
+  h1 { font-size: 88px; }
+  h2 { font-size: 56px; }
+  h3 { font-size: 32px; }
+  .eyebrow {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .sub { color: var(--muted); font-size: 24px; line-height: 1.5; margin-top: 24px; max-width: 920px; }
+  .big { font-size: 64px; line-height: 1.2; max-width: 1000px; color: var(--ink); }
+  .body { font-size: 22px; line-height: 1.7; color: #3D3D3A; max-width: 920px; }
+  ul.clean { list-style: none; padding: 0; margin: 0; }
+  ul.clean li { padding: 14px 0; border-bottom: 1px solid var(--hairline); font-size: 22px; }
+  ul.clean li:last-child { border-bottom: none; }
+  .tabular { font-variant-numeric: tabular-nums; }
+  .stat-row { display: flex; gap: 64px; margin-top: 48px; }
+  .stat { flex: 1; }
+  .stat .num { font-family: "함초롬바탕", "Nanum Myeongjo", serif; font-size: 64px; color: var(--ink); line-height: 1; }
+  .stat .label { font-size: 16px; color: var(--muted); margin-top: 10px; }
+  table { border-collapse: collapse; width: 100%; margin-top: 32px; font-size: 20px; }
+  th, td { text-align: left; padding: 14px 18px; border-bottom: 1px solid var(--hairline); }
+  th { color: var(--muted); font-weight: 400; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; }
+  td.highlight { background: var(--ink); color: var(--cream); font-weight: 500; }
+  .center { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; height: 100%; }
+  .footer-meta { font-size: 14px; color: var(--muted-soft); position: absolute; left: 80px; bottom: 40px; }
+  .market-row { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; margin-top: 40px; }
+  .market-item { padding: 24px 28px; border-left: 3px solid var(--ink); }
+  .market-item .name { font-size: 18px; color: var(--muted); }
+  .market-item .amount { font-family: "함초롬바탕", serif; font-size: 36px; color: var(--ink); margin-top: 6px; }
+  .pull-quote { font-family: "함초롬바탕", serif; font-size: 44px; line-height: 1.35; color: var(--ink); max-width: 1000px; }
+  .ink-pill {
+    display: inline-block;
+    background: var(--ink);
+    color: var(--cream);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+  }
+  .badge {
+    display: inline-block;
+    border: 1px solid var(--hairline);
+    padding: 4px 10px;
+    border-radius: 14px;
+    font-size: 13px;
+    color: var(--muted);
+    margin-right: 8px;
+  }
+  .phase-row { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-top: 40px; }
+  .phase {
+    padding: 24px 28px;
+    border: 1px solid var(--hairline);
+    background: var(--cream);
+    border-radius: 12px;
+  }
+  .phase .label { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .phase .title { font-family: "함초롬바탕", serif; font-size: 28px; color: var(--ink); margin: 10px 0 14px; }
+  .phase .desc { font-size: 17px; color: #3D3D3A; line-height: 1.6; }
+  .ask-list { font-size: 26px; line-height: 1.6; color: var(--ink); }
+  .ask-list li { margin-bottom: 14px; }
+  .demo-frame {
+    margin-top: 28px;
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+    background: var(--cream);
+    padding: 24px 28px;
+  }
+  .demo-frame .frame-title { font-size: 14px; color: var(--muted); margin-bottom: 18px; }
+  .demo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .demo-card {
+    background: var(--surface-soft);
+    border: 1px solid var(--hairline);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .demo-card .t { font-size: 11px; color: var(--muted-soft); text-transform: uppercase; letter-spacing: 0.04em; }
+  .demo-card .c { font-size: 16px; color: var(--ink); margin-top: 6px; line-height: 1.5; }
+  .demo-card .src { font-size: 11px; color: var(--muted-soft); margin-top: 8px; font-family: monospace; }
+</style>
+</head>
+<body>
+
+<!-- 1. Cover -->
+<section class="slide center">
+  <div class="eyebrow">5분 발표 · FLIP 1기 데모데이</div>
+  <h1>Draft</h1>
+  <p class="sub">한국 창업기관 매니저의 운영 비서.</p>
+  <div class="footer-meta">2026 · 발표자 ○○○</div>
+  <div class="page-num tabular">1 / 10</div>
+</section>
+
+<!-- 2. Problem -->
+<section class="slide">
+  <div class="eyebrow">문제</div>
+  <h2>매니저 한 명이 매주 일요일 밤 5시간을<br/>시트에 베끼는 작업으로 보냅니다</h2>
+  <p class="body" style="margin-top: 32px;">
+    FLIP 1기 회장과의 인터뷰 기준. 8개 팀, 5주차, Drive 폴더 40개, 카톡·이메일 3 채널.
+    이게 게으름이 아니라 학교 보고 양식이 그렇게 요구하기 때문입니다.
+  </p>
+  <div class="stat-row">
+    <div class="stat"><div class="num">5h</div><div class="label">주당 운영 시간</div></div>
+    <div class="stat"><div class="num">40+</div><div class="label">Drive 폴더</div></div>
+    <div class="stat"><div class="num">3</div><div class="label">소통 채널</div></div>
+  </div>
+  <div class="page-num tabular">2 / 10</div>
+</section>
+
+<!-- 3. Why now / Market -->
+<section class="slide">
+  <div class="eyebrow">시장이 지금 신경 쓰는 이유</div>
+  <h2>학교가 매년 수천억을 쓰고,<br/>그 돈마다 활동 증빙이 따라붙습니다</h2>
+  <div class="market-row">
+    <div class="market-item">
+      <div class="name">서울 캠퍼스타운 2026</div>
+      <div class="amount">312억 / 13개 대학</div>
+    </div>
+    <div class="market-item">
+      <div class="name">서울 RISE 2025~2029</div>
+      <div class="amount">4,225억 / 35개 대학</div>
+    </div>
+    <div class="market-item">
+      <div class="name">LINC 3.0 연 사업비</div>
+      <div class="amount">3,025억 / 년</div>
+    </div>
+    <div class="market-item">
+      <div class="name">공통 요구사항</div>
+      <div class="amount">정성·정량 활동 증빙</div>
+    </div>
+  </div>
+  <p class="body" style="margin-top: 28px; color: var(--muted);">출처: 서울시 대학협력과 공시, 교육부 RISE 시행계획.</p>
+  <div class="page-num tabular">3 / 10</div>
+</section>
+
+<!-- 4. Solution (one sentence) -->
+<section class="slide center">
+  <div class="eyebrow">해결</div>
+  <p class="pull-quote">
+    Drive 폴더만 연결하면,<br/>
+    마감과 요구사항과 결정사항이<br/>
+    <span style="color: var(--muted);">자동으로 정리됩니다.</span>
+  </p>
+  <div class="page-num tabular">4 / 10</div>
+</section>
+
+<!-- 5. Product demo -->
+<section class="slide">
+  <div class="eyebrow">실제 작동</div>
+  <h3>"FLIP 1기" 폴더에서 추출된 항목</h3>
+  <div class="demo-frame">
+    <div class="frame-title">Atom Digest · 마감 5 · 요구사항 7 · 결정 3</div>
+    <div class="demo-grid">
+      <div class="demo-card">
+        <div class="t">마감</div>
+        <div class="c">3주차 사용성 테스트 결과 정리 완료</div>
+        <div class="src">3팀_2주차보고서.pdf · 2026-03-29</div>
+      </div>
+      <div class="demo-card">
+        <div class="t">요구사항</div>
+        <div class="c">60대 사용자 사용성 테스트 8건 진행</div>
+        <div class="src">3팀_2주차보고서.pdf · section 3</div>
+      </div>
+      <div class="demo-card">
+        <div class="t">결정</div>
+        <div class="c">LINC 중간평가 자료는 NRF 표준양식, PDF 10페이지 이내</div>
+        <div class="src">3팀_2주차보고서.pdf · section 3</div>
+      </div>
+    </div>
+  </div>
+  <p class="body" style="margin-top: 24px;">
+    매니저가 챗봇에게 "다가오는 마감 알려줘" 라고 묻습니다. 답이 출처 파일과 함께 즉시 나옵니다.
+  </p>
+  <div class="page-num tabular">5 / 10</div>
+</section>
+
+<!-- 6. Differentiation -->
+<section class="slide">
+  <div class="eyebrow">다른 점</div>
+  <h2>학생에게 새 작업을 0건 추가합니다</h2>
+  <table>
+    <thead>
+      <tr><th></th><th>Notion / Sheets</th><th>Draft</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>누가 입력</td>
+        <td>학생</td>
+        <td class="highlight">매니저만, 자동 추출</td>
+      </tr>
+      <tr>
+        <td>형식</td>
+        <td>형식 강제</td>
+        <td class="highlight">자유 형식 그대로</td>
+      </tr>
+      <tr>
+        <td>활동 증빙</td>
+        <td>매뉴얼 정리</td>
+        <td class="highlight">원본 출처 자동 인용</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="page-num tabular">6 / 10</div>
+</section>
+
+<!-- 7. Traction -->
+<section class="slide">
+  <div class="eyebrow">트랙션</div>
+  <h2>지금까지</h2>
+  <div class="stat-row" style="margin-top: 56px;">
+    <div class="stat">
+      <div class="num">8팀</div>
+      <div class="label">FLIP 1기 운영 중 (데모데이 6/26)</div>
+    </div>
+    <div class="stat">
+      <div class="num">100%</div>
+      <div class="label">사내 검증 24개 항목 정확도</div>
+    </div>
+    <div class="stat">
+      <div class="num">5h → 30분</div>
+      <div class="label">주당 운영 시간 단축 (예측)</div>
+    </div>
+  </div>
+  <div class="page-num tabular">7 / 10</div>
+</section>
+
+<!-- 8. Business model -->
+<section class="slide">
+  <div class="eyebrow">누가 돈을 내는가</div>
+  <h2>대학 창업지원단 직계약, 사업단 단위 SaaS</h2>
+  <div class="phase-row">
+    <div class="phase">
+      <div class="label">Phase 1 — 2026 하반기 ~ 2027</div>
+      <div class="title">대학당 연 600만 ~ 1,200만 원</div>
+      <div class="desc">
+        RISE·캠퍼스타운 콘텐츠·디지털 항목으로 합법적 집행.
+        의사결정자 = 창업지원단장 (부총장급 재량).
+      </div>
+    </div>
+    <div class="phase">
+      <div class="label">Phase 2 — 2027 이후</div>
+      <div class="title">학교 안 확산 + 입주 공간</div>
+      <div class="desc">
+        같은 학교 안 학과·연구실 + 입주 기업 (TIPS, AC).
+        해외 진출은 QANDA 경로 — 학생 B2C 도구 이식.
+      </div>
+    </div>
+  </div>
+  <div class="page-num tabular">8 / 10</div>
+</section>
+
+<!-- 9. Team -->
+<section class="slide">
+  <div class="eyebrow">팀</div>
+  <h2>본인이 매주 일요일에 시트를 베끼던 사람입니다</h2>
+  <p class="body" style="margin-top: 32px;">
+    Founder · CEO ○○○ — FLIP 1기 운영. 매니저로서 본인의 페인을 본인이 풀고 있습니다.
+    첫 고객 8팀이 지금 저희 제품 안에서 운영되고 있습니다.
+  </p>
+  <p class="body" style="margin-top: 24px;">
+    제품 엔지니어링 (Claude Code 협업) — Next.js 15 + Supabase + 멀티 LLM (Claude · Gemini fallback).
+  </p>
+  <div class="page-num tabular">9 / 10</div>
+</section>
+
+<!-- 10. Ask -->
+<section class="slide">
+  <div class="eyebrow">다음 12개월</div>
+  <h2>Pre-seed 3 ~ 5 억 모집 중</h2>
+  <ul class="ask-list" style="margin-top: 40px; padding-left: 24px;">
+    <li>정규직 엔지니어 1인 + 영업 1인 채용</li>
+    <li>대학 5개 학교로 PoC 확장</li>
+    <li>KPI: 유료 3교 계약 · MAU 500</li>
+  </ul>
+  <p class="body" style="margin-top: 56px; color: var(--ink);">
+    오늘 자리에서 한 분이라도 follow-up 미팅 가능하시면, 끝나고 명함 부탁드립니다.
+  </p>
+  <div class="footer-meta">○○○ · email@draft.kr · 010-XXXX-XXXX</div>
+  <div class="page-num tabular">10 / 10</div>
+</section>
+
+</body>
+</html>
