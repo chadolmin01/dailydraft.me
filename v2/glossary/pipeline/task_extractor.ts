@@ -95,10 +95,18 @@ const EXTRACTION_INSTRUCTIONS = `
 
 핵심 규칙:
 - 모든 Atom 은 Provenance 필수. raw_text 가 원문에 정확히 포함되어야 함 (hallucination 금지).
+- raw_text 는 원문 그대로 — 마크다운 (**, *, # 등) 까지 그대로 복사하지 말고 ASCII 텍스트 일부만 발췌.
 - 같은 문장의 여러 Metric (예: "부산 2건, 광주 2건, 대전 1건") 은 각각 분리.
 - 명시 안 된 attribute 은 비울 것. 추론으로 채우지 말 것.
 - Atom id 는 prefix 사용: R(Requirement), D(Deadline), E(Entity), M(Metric), C(Constraint), Q(Question), DL(Deliverable), N(Narrative), Ev(Event), Dc(Decision), Rf(Reference), Df(Definition).
 - 응답은 ONLY valid JSON. 마크다운 코드블록 사용 금지.
+
+타입별 추출 가이드 (자주 누락되는 패턴):
+- Requirement: 과거형 "X를 했습니다" 뿐 아니라 미래/계획형도 포함. "다음 주차에 X 할 예정", "Y 까지 Z 준비하겠습니다", "A 를 진행할 계획" 같은 표현 = 명시적 작업이면 Requirement.
+- Entity: 사람만 아님. 팀 (예: "3팀") 도 entity_kind="team", 조직/회사/사업단 (예: "창교", "LINC 사업단") 도 entity_kind="organization". 문서 본문에 한 번이라도 주체로 언급되면 추출.
+- Deadline: 단순 날짜 언급 + "까지" 조사 = Deadline. due_at 은 YYYY-MM-DD 표준화.
+- Constraint: 형식/수량 제한 (예: "PDF 10페이지 이내", "NRF 표준양식") 은 별도 Constraint, 관련 Requirement 와 references 관계 연결.
+- Question: 불확실하거나 외부 의존 요청 (예: "○○에서 ... 가능할지 문의") = Question. asker_ref / addressee_ref attributes 함께.
 `
 
 export const TASK_EXTRACTOR_VERSION = 'm6-task-extractor-v1.0'
@@ -260,10 +268,19 @@ ${text}`
     })
   }
 
-  // 4중 방어선 #3: raw_text grounding (hallucination check)
+  // 4중 방어선 #3: raw_text grounding (hallucination check).
+  // 의도: markdown bold/italic/heading 부호는 normalize 후 비교.
+  // 마크다운으로 둘러싸인 텍스트라도 의미 단위가 원문에 있으면 grounded 로 인정.
+  const normalize = (s: string) =>
+    s
+      .replace(/[*_`#~]/g, '')      // markdown 부호 제거
+      .replace(/\s+/g, ' ')         // 공백 정규화
+      .trim()
+  const normText = normalize(text)
   let groundedCount = 0
   for (const atom of atoms) {
-    if (text.includes(atom.provenance.source.raw_text)) {
+    const normRaw = normalize(atom.provenance.source.raw_text)
+    if (normText.includes(normRaw)) {
       groundedCount++
     } else {
       issues.push(`atom ${atom.id}: raw_text "${atom.provenance.source.raw_text.slice(0, 40)}..." not in source`)
