@@ -94,6 +94,38 @@ export const TOOL_DEFINITIONS = [
       required: ['to', 'subject', 'body'],
     },
   },
+  {
+    name: 'search_extracted_atoms',
+    description: '이미 처리된 파일들에서 추출된 Atom 들을 조건으로 검색합니다. 매니저가 "다가오는 마감", "최근 결정사항", "어떤 팀이 뭘 요청했는지" 같은 질문을 할 때 사용. type 으로 필터하면 (예: Deadline) 빠르게 좁힐 수 있음. keyword 는 content 부분 일치. 결과에는 출처 파일명과 raw_text 포함.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        type: {
+          type: 'string',
+          enum: [
+            'Requirement', 'Deadline', 'Constraint', 'Deliverable',
+            'Metric', 'Narrative', 'Event', 'Question', 'Decision',
+            'Reference', 'Definition', 'Entity',
+          ],
+          description: 'M6 v1.1 의 12 AtomType 중 하나 (선택). 비우면 전체.',
+        },
+        keyword: { type: 'string', description: 'content 안에서 찾을 부분 문자열 (선택, 한국어 가능)' },
+        folder_id: { type: 'string', description: '특정 Draft folder UUID 로 제한 (선택)' },
+        limit: { type: 'number', description: '최대 결과 수 (기본 30, 최대 100)' },
+      },
+    },
+  },
+  {
+    name: 'get_file_atoms',
+    description: '특정 처리된 파일 한 개의 모든 Atom 을 가져옵니다. processed_file UUID 가 필요. 매니저가 특정 파일의 요약을 묻거나 "○○ 보고서 내용 알려줘" 라고 할 때.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        processed_file_id: { type: 'string', description: 'processed_files.id (uuid)' },
+      },
+      required: ['processed_file_id'],
+    },
+  },
 ] as const
 
 export interface ToolContext {
@@ -109,6 +141,8 @@ interface ToolInputs {
   find_missing_teams: { folder_id: string; week: number }
   search_drive_files: { keyword: string }
   compose_email_draft: { to: string[]; subject: string; body: string; cc?: string[] }
+  search_extracted_atoms: { type?: string; keyword?: string; folder_id?: string; limit?: number }
+  get_file_atoms: { processed_file_id: string }
 }
 
 type ToolName = keyof ToolInputs
@@ -133,6 +167,10 @@ export async function executeTool(
       return searchDriveFilesTool(ctx, input as ToolInputs['search_drive_files'])
     case 'compose_email_draft':
       return composeEmailDraftTool(ctx, input as ToolInputs['compose_email_draft'])
+    case 'search_extracted_atoms':
+      return searchExtractedAtomsTool(ctx, input as ToolInputs['search_extracted_atoms'])
+    case 'get_file_atoms':
+      return getFileAtomsTool(ctx, input as ToolInputs['get_file_atoms'])
     default:
       throw new Error(`알 수 없는 도구: ${name}`)
   }
@@ -400,5 +438,114 @@ async function composeEmailDraftTool(
       fallback_reason: `Gmail 초안 저장 실패: ${(e as Error).message}`,
       note: '이 링크를 클릭하면 Gmail 새 창이 열립니다. 자동 발송되지 않습니다.',
     }
+  }
+}
+
+// ── M6 Atom 검색 ─────────────────────────────────────────────────────────
+// 의도: 매니저가 직접 파일 열어보지 않고 자연어로 Atom 조회.
+// "다가오는 마감" → type=Deadline 으로 좁힌 뒤 due_at 정렬은 호출자(LLM) 책임.
+async function searchExtractedAtomsTool(
+  ctx: ToolContext,
+  input: ToolInputs['search_extracted_atoms'],
+) {
+  const { data: workspace } = await ctx.supabase
+    .from('workspaces')
+    .select('id')
+    .eq('owner_id', ctx.userId)
+    .maybeSingle()
+  if (!workspace) return { atoms: [], note: '워크스페이스 없음' }
+
+  const limit = Math.min(100, Math.max(1, input.limit ?? 30))
+
+  // processed_files 조인해서 출처 파일명 + folder_id 같이 가져옴.
+  // 의도: 결과만 보고 매니저가 원본 파일을 바로 찾을 수 있게.
+  let q = ctx.supabase
+    .from('extracted_atoms')
+    .select(
+      'id, local_id, type, content, attributes, provenance, confidence, processed_file_id, processed_files!inner(id, filename, folder_id)',
+    )
+    .eq('workspace_id', workspace.id)
+    .order('created_at', { ascending: false })
+    .limit(limit)
+
+  if (input.type) q = q.eq('type', input.type)
+  if (input.keyword) q = q.ilike('content', `%${input.keyword.replace(/[%_]/g, '\\$&')}%`)
+  if (input.folder_id) {
+    q = q.eq('processed_files.folder_id', input.folder_id)
+  }
+
+  const { data: rows, error } = await q
+  if (error) return { atoms: [], error: error.message }
+
+  return {
+    count: rows?.length ?? 0,
+    filter: {
+      type: input.type ?? null,
+      keyword: input.keyword ?? null,
+      folder_id: input.folder_id ?? null,
+    },
+    atoms: (rows ?? []).map((r) => {
+      const pf = (r as unknown as { processed_files: { id: string; filename: string; folder_id: string } }).processed_files
+      const prov = r.provenance as { source?: { raw_text?: string; location?: string } } | null
+      return {
+        local_id: r.local_id,
+        type: r.type,
+        content: r.content,
+        confidence: r.confidence,
+        attributes: r.attributes,
+        raw_text: prov?.source?.raw_text ?? null,
+        location: prov?.source?.location ?? null,
+        from_file: { processed_file_id: pf.id, filename: pf.filename, folder_id: pf.folder_id },
+      }
+    }),
+  }
+}
+
+async function getFileAtomsTool(
+  ctx: ToolContext,
+  input: ToolInputs['get_file_atoms'],
+) {
+  const { data: workspace } = await ctx.supabase
+    .from('workspaces')
+    .select('id')
+    .eq('owner_id', ctx.userId)
+    .maybeSingle()
+  if (!workspace) return { atoms: [], note: '워크스페이스 없음' }
+
+  const { data: file, error: fileErr } = await ctx.supabase
+    .from('processed_files')
+    .select('id, filename, atom_count, relation_count, parsing_completed_at, parsing_error')
+    .eq('id', input.processed_file_id)
+    .eq('workspace_id', workspace.id)
+    .maybeSingle()
+  if (fileErr || !file) return { error: '해당 파일을 찾을 수 없음' }
+
+  const { data: atoms, error: aErr } = await ctx.supabase
+    .from('extracted_atoms')
+    .select('local_id, type, content, attributes, provenance, confidence')
+    .eq('processed_file_id', input.processed_file_id)
+    .order('local_id', { ascending: true })
+  if (aErr) return { error: aErr.message }
+
+  return {
+    file: {
+      filename: file.filename,
+      atom_count: file.atom_count,
+      relation_count: file.relation_count,
+      processed_at: file.parsing_completed_at,
+      parsing_error: file.parsing_error,
+    },
+    atoms: (atoms ?? []).map((a) => {
+      const prov = a.provenance as { source?: { raw_text?: string; location?: string } } | null
+      return {
+        local_id: a.local_id,
+        type: a.type,
+        content: a.content,
+        confidence: a.confidence,
+        attributes: a.attributes,
+        raw_text: prov?.source?.raw_text ?? null,
+        location: prov?.source?.location ?? null,
+      }
+    }),
   }
 }
