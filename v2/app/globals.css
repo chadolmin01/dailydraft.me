@@ -288,6 +288,42 @@ h1, h2, h3, h4 {
   animation: scale-in var(--duration-fast) var(--ease-out);
 }
 
+/* 챗 말풍선 — 200ms fade + 8px slide-up. prefers-reduced-motion 존중. */
+@keyframes bubble-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.chat-bubble-in {
+  animation: bubble-in 200ms var(--ease-out) both;
+}
+
+/* 타이핑 indicator — 3 dots 위로 출렁. */
+@keyframes typing-dot {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  30% {
+    transform: translateY(-3px);
+    opacity: 1;
+  }
+}
+.typing-dot {
+  animation: typing-dot 1.2s var(--ease-in-out) infinite;
+}
+.typing-dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.typing-dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
 /* 챗 마크다운 렌더 — dark 패널 안에서 가독성 유지. body 텍스트 위주 + 인라인 강조. */
 .chat-markdown p {
   margin: 0 0 var(--space-2) 0;

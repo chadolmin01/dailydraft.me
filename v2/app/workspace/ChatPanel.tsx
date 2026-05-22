@@ -2,7 +2,24 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { renderMarkdown } from '@/src/lib/markdown'
+import {
+  ArrowDown,
+  ListChecks,
+  Mail,
+  Search as SearchIcon,
+  Sparkles,
+  Trash2,
+  Download,
+  RefreshCw,
+  AlertTriangle,
+} from 'lucide-react'
+import { ChatInput } from './chat/ChatInput'
+import { MessageBubble } from './chat/MessageBubble'
+import { TypingIndicator } from './chat/TypingIndicator'
+import { EmailDraftCard, extractEmailDrafts } from './chat/EmailDraftCard'
+import { SuggestionCard } from './chat/SuggestionCard'
+import { ChipButton } from './chat/ChipButton'
+import { IconButton } from './chat/IconButton'
 
 interface ChatRow {
   id: string
@@ -24,75 +41,40 @@ function extractText(content: unknown): string {
     .join('\n\n')
 }
 
-interface EmailDraftRef {
-  kind: 'gmail_draft' | 'mailto'
-  url: string
-  subject?: string
-  recipientCount?: number
-}
-
-// 메일 초안 추출 — compose_email_draft 도구 결과에서 Gmail 초안 또는 mailto 링크.
-function extractEmailDrafts(content: unknown): EmailDraftRef[] {
-  const refs: EmailDraftRef[] = []
-  if (!Array.isArray(content)) return refs
-  for (const block of content) {
-    if (typeof block !== 'object' || block === null) continue
-    if (!('type' in block) || (block as { type: unknown }).type !== 'tool_result') continue
-    const inner = (block as { content: unknown }).content
-    if (typeof inner !== 'string') continue
-    try {
-      const parsed = JSON.parse(inner) as Record<string, unknown>
-      if (parsed.kind === 'gmail_draft' && typeof parsed.gmail_url === 'string') {
-        refs.push({
-          kind: 'gmail_draft',
-          url: parsed.gmail_url,
-          subject: typeof parsed.subject === 'string' ? parsed.subject : undefined,
-          recipientCount: typeof parsed.recipient_count === 'number' ? parsed.recipient_count : undefined,
-        })
-      } else if (typeof parsed.mailto_url === 'string') {
-        refs.push({
-          kind: 'mailto',
-          url: parsed.mailto_url,
-          subject: typeof parsed.subject === 'string' ? parsed.subject : undefined,
-          recipientCount: typeof parsed.recipient_count === 'number' ? parsed.recipient_count : undefined,
-        })
-      }
-    } catch {}
-  }
-  return refs
-}
-
 interface Props {
   folderId: string | null
   folderName?: string
 }
 
 const SUGGESTIONS = [
-  '전체 진행 상황을 한 줄로 요약해주세요.',
-  '이번 주차에 아직 안 낸 팀을 알려주세요.',
-  '가장 최근에 올라온 파일 3개를 보여주세요.',
+  {
+    icon: <Sparkles size={14} />,
+    label: '전체 진행 상황을 한 줄로 요약해주세요.',
+    description: '폴더에 올라온 파일 기준',
+  },
+  {
+    icon: <ListChecks size={14} />,
+    label: '이번 주차에 아직 안 낸 팀을 알려주세요.',
+    description: '매트릭스를 분석',
+  },
+  {
+    icon: <Mail size={14} />,
+    label: '미제출 팀에 보낼 리마인드 메일 초안을 만들어주세요.',
+    description: 'Gmail 초안함에 저장',
+  },
 ] as const
 
-const QUICK_ACTIONS = [
-  '미제출 팀',
-  '오늘 활동',
-  '메일 초안',
-] as const
+const QUICK_ACTIONS = ['미제출 팀', '오늘 활동', '메일 초안'] as const
 
 export function ChatPanel({ folderId, folderName }: Props) {
   const qc = useQueryClient()
   const scrollRef = useRef<HTMLDivElement>(null)
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const abortRef = useRef<AbortController | null>(null)
   const [draft, setDraft] = useState('')
-
-  // 입력 길이에 맞춰 textarea 자동 높이 — 최대 7줄까지.
-  useEffect(() => {
-    const ta = textareaRef.current
-    if (!ta) return
-    ta.style.height = 'auto'
-    const max = parseFloat(getComputedStyle(ta).lineHeight) * 7 + 16
-    ta.style.height = `${Math.min(ta.scrollHeight, max)}px`
-  }, [draft])
+  const [searchQuery, setSearchQuery] = useState('')
+  const [showSearch, setShowSearch] = useState(false)
+  const [showScrollDown, setShowScrollDown] = useState(false)
+  const [lastUserMessage, setLastUserMessage] = useState<string | null>(null)
 
   const history = useQuery({
     queryKey: ['chat-history'],
@@ -103,12 +85,20 @@ export function ChatPanel({ folderId, folderName }: Props) {
     },
   })
 
+  const rows = history.data?.rows ?? []
+
   const send = useMutation({
-    mutationFn: async (message: string): Promise<{ text: string; rows: ChatRow[]; tool_loops: number }> => {
+    mutationFn: async (
+      message: string,
+    ): Promise<{ text: string; rows: ChatRow[]; tool_loops: number }> => {
+      abortRef.current?.abort()
+      const ctrl = new AbortController()
+      abortRef.current = ctrl
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message, folder_id: folderId }),
+        signal: ctrl.signal,
       })
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
@@ -116,10 +106,40 @@ export function ChatPanel({ folderId, folderName }: Props) {
       }
       return res.json()
     },
+    onMutate: (message) => {
+      setLastUserMessage(message)
+    },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['chat-history'] })
+      abortRef.current = null
+    },
+    onError: () => {
+      abortRef.current = null
     },
   })
+
+  const handleCancel = () => {
+    abortRef.current?.abort()
+    abortRef.current = null
+    send.reset()
+  }
+
+  const handleSend = (message: string) => {
+    const trimmed = message.trim()
+    if (!trimmed || send.isPending) return
+    send.mutate(trimmed)
+  }
+
+  const handleRetry = () => {
+    if (lastUserMessage) {
+      send.mutate(lastUserMessage)
+    }
+  }
+
+  const handleSubmit = () => {
+    handleSend(draft)
+    setDraft('')
+  }
 
   const clearHistory = useMutation({
     mutationFn: async () => {
@@ -128,12 +148,19 @@ export function ChatPanel({ folderId, folderName }: Props) {
     },
     onSuccess: () => {
       qc.setQueryData(['chat-history'], { rows: [] })
+      setLastUserMessage(null)
+      setShowSearch(false)
+      setSearchQuery('')
     },
   })
 
   const handleClear = () => {
     if (rows.length === 0) return
-    if (window.confirm(`대화 기록 ${rows.length}건을 모두 삭제하시겠습니까?\n폴더와 파일에는 영향이 없습니다.`)) {
+    if (
+      window.confirm(
+        `대화 기록 ${rows.length}건을 모두 삭제하시겠습니까?\n폴더와 파일에는 영향이 없습니다.`,
+      )
+    ) {
       clearHistory.mutate()
     }
   }
@@ -150,6 +177,38 @@ export function ChatPanel({ folderId, folderName }: Props) {
     window.addEventListener('draft:chat', onExternal)
     return () => window.removeEventListener('draft:chat', onExternal)
   }, [send])
+
+  // 스크롤 위치 기반 자동 스크롤 — 이미 하단 근처일 때만 자동 따라가게,
+  // 사용자가 위로 스크롤 중이면 끌어내리지 않음.
+  const isNearBottom = () => {
+    const el = scrollRef.current
+    if (!el) return true
+    return el.scrollHeight - el.scrollTop - el.clientHeight < 80
+  }
+
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+    if (isNearBottom()) {
+      el.scrollTop = el.scrollHeight
+    }
+  }, [rows.length, send.isPending])
+
+  // 스크롤 위치 변화 감지 → 하단 floating "맨 아래로" 버튼 표시.
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+    const onScroll = () => setShowScrollDown(!isNearBottom() && rows.length > 3)
+    el.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+    return () => el.removeEventListener('scroll', onScroll)
+  }, [rows.length])
+
+  const scrollToBottom = () => {
+    const el = scrollRef.current
+    if (!el) return
+    el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
+  }
 
   const handleExport = () => {
     if (rows.length === 0) return
@@ -176,235 +235,198 @@ export function ChatPanel({ folderId, folderName }: Props) {
     URL.revokeObjectURL(url)
   }
 
-  const rows = history.data?.rows ?? []
-
-  // 새 메시지 도착 / 응답 완료 시 자동 스크롤
-  useEffect(() => {
-    if (!scrollRef.current) return
-    scrollRef.current.scrollTop = scrollRef.current.scrollHeight
-  }, [rows.length, send.isPending])
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    const trimmed = draft.trim()
-    if (!trimmed || send.isPending) return
-    send.mutate(trimmed)
-    setDraft('')
-  }
-
-  // 챗 내 검색
-  const [searchQuery, setSearchQuery] = useState('')
+  // 챗 내 검색 필터
   const filteredRows = searchQuery.trim()
-    ? rows.filter(r => {
+    ? rows.filter((r) => {
         const text = extractText(r.content).toLowerCase()
         return text.includes(searchQuery.toLowerCase())
       })
     : rows
 
   return (
-    <div className="flex flex-col h-full">
-      {folderId && folderName ? (
-        <div className="px-5 py-2 border-b border-hairline-dark text-caption text-on-dark-soft">
-          현재 폴더: <span className="text-on-dark">{folderName}</span>
+    <div className="flex flex-col h-full min-h-0">
+      {/* 폴더 컨텍스트 + 액션 바 */}
+      {(folderId && folderName) || rows.length > 0 ? (
+        <div className="px-4 py-2 border-b border-hairline-dark flex items-center justify-between gap-2">
+          <p className="text-caption text-on-dark-soft truncate min-w-0 flex-1">
+            {folderId && folderName ? (
+              <>
+                현재 폴더 <span className="text-on-dark">{folderName}</span>
+              </>
+            ) : (
+              <span>대화 {rows.length}건</span>
+            )}
+          </p>
+          <div className="flex items-center gap-1 shrink-0">
+            {rows.length >= 5 ? (
+              <IconButton
+                variant="ghost"
+                size="sm"
+                label={showSearch ? '검색 닫기' : '대화 내 검색'}
+                onClick={() => {
+                  setShowSearch((s) => !s)
+                  if (showSearch) setSearchQuery('')
+                }}
+              >
+                <SearchIcon size={14} />
+              </IconButton>
+            ) : null}
+            {rows.length > 0 ? (
+              <>
+                <IconButton variant="ghost" size="sm" label="대화 내보내기" onClick={handleExport}>
+                  <Download size={14} />
+                </IconButton>
+                <IconButton
+                  variant="ghost"
+                  size="sm"
+                  label="대화 지우기"
+                  onClick={handleClear}
+                  disabled={clearHistory.isPending}
+                >
+                  <Trash2 size={14} />
+                </IconButton>
+              </>
+            ) : null}
+          </div>
         </div>
       ) : null}
 
-      {rows.length > 5 ? (
-        <div className="px-5 py-2 border-b border-hairline-dark">
+      {/* 검색 입력 */}
+      {showSearch ? (
+        <div className="px-4 py-2 border-b border-hairline-dark">
           <input
             type="search"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="대화 내 검색"
-            className="w-full h-7 px-2 bg-surface-dark-elevated border border-hairline-dark rounded text-caption text-on-dark placeholder:text-on-dark-soft focus:outline-none focus:border-on-dark-soft"
+            autoFocus
+            className="w-full h-8 px-3 bg-surface-dark-elevated border border-hairline-dark rounded-md text-caption text-on-dark placeholder:text-on-dark-soft focus:outline-none focus:border-on-dark-soft"
           />
         </div>
       ) : null}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
-        {history.isLoading ? (
-          <p className="text-body-sm text-on-dark-soft">불러오는 중…</p>
-        ) : null}
 
-        {rows.length === 0 && !history.isLoading ? (
-          <div className="text-body-sm text-on-dark-soft space-y-3">
-            <p>무엇을 도와드릴까요?</p>
-            <div className="space-y-2">
-              {SUGGESTIONS.map(s => (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => send.mutate(s)}
-                  disabled={send.isPending}
-                  className="block w-full text-left px-3 py-2 rounded-md border border-hairline-dark hover:bg-surface-dark-elevated transition-colors text-body-sm text-on-dark disabled:opacity-50"
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-          </div>
-        ) : null}
+      {/* 메시지 스크롤 영역 */}
+      <div className="relative flex-1 min-h-0">
+        <div
+          ref={scrollRef}
+          className="absolute inset-0 overflow-y-auto px-4 py-5 space-y-4"
+          role="log"
+          aria-live="polite"
+          aria-label="대화 기록"
+        >
+          {history.isLoading ? (
+            <p className="text-body-sm text-on-dark-soft">불러오는 중…</p>
+          ) : null}
 
-        {searchQuery.trim() && filteredRows.length === 0 ? (
-          <p className="text-body-sm text-on-dark-soft">검색 결과가 없습니다.</p>
-        ) : null}
-
-        {filteredRows.map(row => {
-          if (row.role === 'tool') {
-            // tool_result 자체는 안 보이게 하되, 안에 메일 초안 정보가 있으면 그 자리에 카드.
-            const drafts = extractEmailDrafts(row.content)
-            if (drafts.length === 0) return null
-            return (
-              <div key={row.id} className="space-y-2">
-                {drafts.map((draft, i) => (
-                  <EmailDraftCard key={`${row.id}-${i}`} draft={draft} />
+          {rows.length === 0 && !history.isLoading ? (
+            <div className="space-y-4">
+              <div className="space-y-1">
+                <p className="text-title-md text-on-dark">무엇을 도와드릴까요?</p>
+                <p className="text-caption text-on-dark-soft">
+                  아래 질문을 눌러보거나 직접 입력해보세요.
+                </p>
+              </div>
+              <div className="space-y-2">
+                {SUGGESTIONS.map((s) => (
+                  <SuggestionCard
+                    key={s.label}
+                    icon={s.icon}
+                    label={s.label}
+                    description={s.description}
+                    onClick={() => handleSend(s.label)}
+                    disabled={send.isPending}
+                  />
                 ))}
               </div>
+            </div>
+          ) : null}
+
+          {searchQuery.trim() && filteredRows.length === 0 ? (
+            <p className="text-body-sm text-on-dark-soft">검색 결과가 없습니다.</p>
+          ) : null}
+
+          {filteredRows.map((row) => {
+            if (row.role === 'tool') {
+              // tool_result 자체는 안 보이게 하되, 안에 메일 초안 정보가 있으면 그 자리에 카드.
+              const drafts = extractEmailDrafts(row.content)
+              if (drafts.length === 0) return null
+              return (
+                <div key={row.id} className="space-y-2">
+                  {drafts.map((draft, i) => (
+                    <EmailDraftCard key={`${row.id}-${i}`} draft={draft} />
+                  ))}
+                </div>
+              )
+            }
+            const text = extractText(row.content)
+            if (!text && row.role === 'assistant') return null
+            return (
+              <MessageBubble
+                key={row.id}
+                role={row.role}
+                text={text}
+                createdAt={row.created_at}
+              />
             )
-          }
-          const text = extractText(row.content)
-          if (!text && row.role === 'assistant') return null
-          return (
-            <Message key={row.id} role={row.role} text={text} />
-          )
-        })}
+          })}
 
-        {send.isPending ? (
-          <p className="text-body-sm text-on-dark-soft opacity-70">처리 중…</p>
-        ) : null}
+          {send.isPending ? <TypingIndicator /> : null}
 
-        {send.error ? (
-          <div className="text-body-sm text-on-dark-soft border-l-2 border-on-dark-soft pl-3">
-            <p>답변을 만들지 못했습니다.</p>
-            <p className="text-caption opacity-70 mt-1">잠시 후 다시 시도해 주세요.</p>
+          {send.error && !send.isPending ? (
+            <div className="chat-bubble-in rounded-2xl rounded-bl-md border border-on-dark-soft/40 bg-surface-dark-elevated px-4 py-3 max-w-[92%]">
+              <div className="flex items-start gap-2">
+                <AlertTriangle size={14} className="text-on-dark mt-0.5 shrink-0" />
+                <div className="flex-1">
+                  <p className="text-body-sm text-on-dark">답변을 만들지 못했습니다.</p>
+                  <p className="text-caption text-on-dark-soft mt-1">
+                    잠시 후 다시 시도해 주세요.
+                  </p>
+                  {lastUserMessage ? (
+                    <button
+                      type="button"
+                      onClick={handleRetry}
+                      className="inline-flex items-center gap-1 mt-2 text-caption text-on-dark hover:text-on-dark-soft transition-colors"
+                    >
+                      <RefreshCw size={11} /> 다시 시도
+                    </button>
+                  ) : null}
+                </div>
+              </div>
+            </div>
+          ) : null}
+        </div>
+
+        {/* 맨 아래로 floating 버튼 */}
+        {showScrollDown ? (
+          <div className="absolute bottom-3 right-3 chat-bubble-in">
+            <IconButton variant="solid" size="md" label="맨 아래로" onClick={scrollToBottom}>
+              <ArrowDown size={16} strokeWidth={2.5} />
+            </IconButton>
           </div>
         ) : null}
       </div>
 
-      {rows.length > 0 ? (
-        <div className="px-5 pb-2 flex justify-end gap-3">
-          <button
-            type="button"
-            onClick={handleExport}
-            className="text-caption text-on-dark-soft hover:text-on-dark transition-colors"
-          >
-            내보내기
-          </button>
-          <button
-            type="button"
-            onClick={handleClear}
-            disabled={clearHistory.isPending}
-            className="text-caption text-on-dark-soft hover:text-on-dark transition-colors disabled:opacity-40"
-          >
-            {clearHistory.isPending ? '지우는 중…' : '대화 지우기'}
-          </button>
-        </div>
-      ) : null}
-
+      {/* Quick actions */}
       {folderId && rows.length > 0 ? (
-        <div className="px-5 pt-3 pb-2 flex gap-2 flex-wrap border-t border-hairline-dark">
-          {QUICK_ACTIONS.map(q => (
-            <button
-              key={q}
-              type="button"
-              onClick={() => send.mutate(q)}
-              disabled={send.isPending}
-              className="text-caption text-on-dark-soft border border-hairline-dark px-2.5 py-1 rounded-full hover:text-on-dark hover:border-on-dark-soft transition-colors disabled:opacity-40"
-            >
+        <div className="px-4 pt-2 pb-1 flex gap-2 overflow-x-auto border-t border-hairline-dark">
+          {QUICK_ACTIONS.map((q) => (
+            <ChipButton key={q} onClick={() => handleSend(q)} disabled={send.isPending}>
               {q}
-            </button>
+            </ChipButton>
           ))}
         </div>
       ) : null}
 
-      <form onSubmit={handleSubmit} className="px-5 py-4 border-t border-hairline-dark">
-        <textarea
-          ref={textareaRef}
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-              e.preventDefault()
-              handleSubmit(e)
-            }
-          }}
-          placeholder={folderId ? '메시지를 입력하세요' : '폴더를 선택한 뒤 질문해주세요'}
-          rows={1}
-          className="w-full px-4 py-2 bg-surface-dark-elevated border border-hairline-dark rounded-md font-body text-body-md text-on-dark placeholder:text-on-dark-soft focus:outline-none focus:border-on-dark resize-none overflow-y-auto"
-          disabled={send.isPending}
-        />
-        <p className="text-caption text-on-dark-soft mt-2 opacity-60">
-          Enter 로 보내기 · Shift+Enter 줄바꿈
-        </p>
-      </form>
-    </div>
-  )
-}
-
-function Message({
-  role,
-  text,
-}: {
-  role: 'user' | 'assistant'
-  text: string
-}) {
-  const [copied, setCopied] = useState(false)
-
-  if (role === 'user') {
-    return (
-      <div className="ml-auto max-w-[88%] bg-surface-dark-elevated rounded-lg px-3 py-2 text-body-sm text-on-dark whitespace-pre-wrap">
-        {text}
-      </div>
-    )
-  }
-
-  const html = renderMarkdown(text)
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(text)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 1500)
-    } catch {}
-  }
-
-  return (
-    <div className="max-w-[92%] border-l-2 border-on-dark pl-3 group relative">
-      <div
-        className="text-body-sm text-on-dark chat-markdown"
-        dangerouslySetInnerHTML={{ __html: html }}
+      {/* 입력창 */}
+      <ChatInput
+        value={draft}
+        onChange={setDraft}
+        onSubmit={handleSubmit}
+        onCancel={handleCancel}
+        pending={send.isPending}
+        disabled={false}
+        placeholder={folderId ? '메시지를 입력하세요' : '폴더 없이도 일반 대화는 가능합니다'}
       />
-      <button
-        type="button"
-        onClick={handleCopy}
-        className="absolute -right-1 top-0 px-2 py-0.5 rounded text-caption text-on-dark-soft hover:text-on-dark hover:bg-surface-dark-elevated opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
-      >
-        {copied ? '복사됨' : '복사'}
-      </button>
     </div>
-  )
-}
-
-function EmailDraftCard({ draft }: { draft: EmailDraftRef }) {
-  const label = draft.kind === 'gmail_draft' ? 'Gmail 초안함에 저장됨' : '메일 초안 열기'
-  const sub = draft.subject
-    ? `${draft.subject}${draft.recipientCount ? ` · 수신 ${draft.recipientCount}명` : ''}`
-    : draft.recipientCount
-      ? `수신 ${draft.recipientCount}명`
-      : '클릭하면 새 창에서 열립니다'
-
-  return (
-    <a
-      href={draft.url}
-      target="_blank"
-      rel="noreferrer"
-      className="block rounded-md bg-surface-dark-elevated border border-hairline-dark px-4 py-3 hover:bg-surface-dark-soft transition-colors"
-    >
-      <div className="flex items-center justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-body-sm text-on-dark font-medium">{label}</p>
-          <p className="text-caption text-on-dark-soft mt-0.5 truncate">{sub}</p>
-        </div>
-        <span className="text-caption text-on-dark-soft shrink-0">Gmail 에서 열기 ↗</span>
-      </div>
-    </a>
   )
 }
