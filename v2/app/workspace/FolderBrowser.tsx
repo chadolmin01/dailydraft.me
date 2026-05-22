@@ -762,8 +762,70 @@ function AtomViewer({
               </ul>
             </section>
           ))}
+
+          {/* Relations 섹션 — 추출된 Triple 시각화 */}
+          {query.data && query.data.relations.length > 0 ? (
+            <RelationsSection atoms={query.data.atoms} relations={query.data.relations} />
+          ) : null}
         </div>
       </div>
     </div>
+  )
+}
+
+const RELATION_LABELS: Record<string, string> = {
+  requires: '필요로 함',
+  fulfills: '충족',
+  references: '참조',
+  assigned_to: '담당',
+  produced_by: '작성/제출',
+  temporally_after: '이후',
+  responds_to: '응답',
+  triggers: '촉발',
+  approves: '승인',
+  evolves_to: '발전',
+}
+
+function RelationsSection({
+  atoms,
+  relations,
+}: {
+  atoms: AtomDetail[]
+  relations: RelationDetail[]
+}) {
+  const atomById = new Map(atoms.map(a => [a.id, a]))
+
+  // 한 줄로 표현: "[R1 요구사항] → 담당 → [E1 주체]"
+  const renderTuple = (rel: RelationDetail) => {
+    const from = atomById.get(rel.from_atom_id)
+    const to = atomById.get(rel.to_atom_id)
+    if (!from || !to) return null
+    return (
+      <li key={rel.id} className="text-body-sm text-body flex items-baseline gap-2 flex-wrap">
+        <span className="text-caption text-muted-soft shrink-0">{from.local_id}</span>
+        <span className="text-ink truncate flex-1 min-w-0" title={from.content}>
+          {from.content}
+        </span>
+        <span className="text-caption text-muted shrink-0 border border-hairline rounded-full px-2 py-0.5">
+          {RELATION_LABELS[rel.type] ?? rel.type}
+        </span>
+        <span className="text-caption text-muted-soft shrink-0">{to.local_id}</span>
+        <span className="text-ink truncate flex-1 min-w-0" title={to.content}>
+          {to.content}
+        </span>
+      </li>
+    )
+  }
+
+  return (
+    <section className="space-y-2 pt-2 border-t border-hairline-soft">
+      <h4 className="text-title-sm text-ink flex items-baseline gap-2">
+        <span>연결</span>
+        <span className="text-caption text-muted-soft tabular">{relations.length}</span>
+      </h4>
+      <ul className="space-y-1.5">
+        {relations.map(renderTuple)}
+      </ul>
+    </section>
   )
 }
